@@ -334,3 +334,54 @@ Route::get('/feed/atom', function (FeedService $feedService) {
     return response($feedService->generateAtom())
         ->header('Content-Type', 'application/atom+xml');
 });
+
+// ========================================
+// ENTERPRISE ANALYTICS ENGINE
+// ========================================
+use App\Http\Controllers\Api\AnalyticsController;
+
+// Public event tracking (client-side)
+Route::prefix('analytics')->group(function () {
+    Route::post('/track', [AnalyticsController::class, 'trackEvent']);
+    Route::post('/pageview', [AnalyticsController::class, 'trackPageView']);
+    Route::post('/batch', [AnalyticsController::class, 'trackBatch']);
+});
+
+// Protected analytics API (admin)
+Route::middleware(['auth:sanctum'])->prefix('admin/analytics')->group(function () {
+    // Dashboard & KPIs
+    Route::get('/dashboard', [AnalyticsController::class, 'getDashboard']);
+    Route::get('/kpis', [AnalyticsController::class, 'getKpiDefinitions']);
+    Route::get('/kpis/{kpiKey}', [AnalyticsController::class, 'getKpi']);
+
+    // Funnel Analytics
+    Route::get('/funnels', [AnalyticsController::class, 'getFunnels']);
+    Route::get('/funnels/{funnelKey}', [AnalyticsController::class, 'getFunnelAnalysis']);
+    Route::get('/funnels/{funnelKey}/dropoff', [AnalyticsController::class, 'getFunnelDropOff']);
+    Route::get('/funnels/{funnelKey}/segment', [AnalyticsController::class, 'getFunnelBySegment']);
+
+    // Cohort Analytics
+    Route::get('/cohorts', [AnalyticsController::class, 'getCohorts']);
+    Route::get('/cohorts/{cohortKey}/matrix', [AnalyticsController::class, 'getCohortMatrix']);
+    Route::get('/cohorts/{cohortKey}/curve', [AnalyticsController::class, 'getCohortCurve']);
+    Route::get('/cohorts/{cohortKey}/ltv', [AnalyticsController::class, 'getCohortLTV']);
+
+    // Attribution Analytics
+    Route::get('/attribution/channels', [AnalyticsController::class, 'getChannelAttribution']);
+    Route::get('/attribution/campaigns', [AnalyticsController::class, 'getCampaignAttribution']);
+    Route::get('/attribution/paths', [AnalyticsController::class, 'getConversionPaths']);
+    Route::get('/attribution/compare', [AnalyticsController::class, 'compareAttributionModels']);
+
+    // Forecasting
+    Route::get('/forecast/{kpiKey}', [AnalyticsController::class, 'getForecast']);
+    Route::get('/forecast/{kpiKey}/accuracy', [AnalyticsController::class, 'getForecastAccuracy']);
+
+    // Segments
+    Route::get('/segments', [AnalyticsController::class, 'getSegments']);
+    Route::get('/segments/{segmentKey}', [AnalyticsController::class, 'getSegment']);
+
+    // Event Explorer
+    Route::get('/events/timeseries', [AnalyticsController::class, 'getEventTimeSeries']);
+    Route::get('/events/breakdown', [AnalyticsController::class, 'getEventBreakdown']);
+    Route::get('/realtime', [AnalyticsController::class, 'getRealTimeMetrics']);
+});
