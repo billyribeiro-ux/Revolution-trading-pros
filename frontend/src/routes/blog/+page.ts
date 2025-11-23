@@ -7,7 +7,10 @@ export const ssr = false; // Client-side rendering only
 
 export const load: PageLoad = async ({ fetch: svelteKitFetch }) => {
 	try {
-		const posts = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list);
+		// Pass SvelteKit's fetch to apiFetch for proper SSR support
+		const posts = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list, {
+			fetch: svelteKitFetch
+		});
 
 		return {
 			posts: posts.data,

@@ -154,15 +154,20 @@ export const ERROR_MESSAGES = {
 
 /**
  * Enhanced fetch wrapper with error handling and retries
+ * Accepts optional fetch function for SSR compatibility
  */
 export async function apiFetch<T>(
 	endpoint: string,
 	options: RequestInit & { 
 		params?: Record<string, any>,
 		retries?: number,
-		retryDelay?: number 
+		retryDelay?: number,
+		fetch?: typeof fetch  // Optional fetch function for SSR
 	} = {}
 ): Promise<T> {
+	// Use provided fetch or fall back to global fetch
+	const fetchFn = options.fetch || (typeof window !== 'undefined' ? window.fetch : fetch);
+	
 	// Build URL with params
 	let url = `${API_BASE_URL}${endpoint}`;
 	
@@ -195,7 +200,7 @@ export async function apiFetch<T>(
 			const controller = new AbortController();
 			const timeoutId = setTimeout(() => controller.abort(), REQUEST_CONFIG.timeout);
 
-			const response = await fetch(url, {
+			const response = await fetchFn(url, {
 				...options,
 				headers,
 				signal: controller.signal

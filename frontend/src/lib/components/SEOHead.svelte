@@ -161,7 +161,7 @@
 	// Description Construction  
 	$: fullDescription = description || siteDescription;
 	$: descriptionLength = fullDescription.length;
-	$: descriptionOptimal = descriptionLength >= 120 && descriptionLength <= 160;
+	$: descriptionOptimal = descriptionLength >= 80 && descriptionLength <= 200;
 
 	// Image URLs
 	$: fullOgImage = constructImageUrl(ogImage || twitterImage || defaultImage);
@@ -178,6 +178,9 @@
 	$: generatedSchema = autoSchema ? generateSchema() : schema;
 	$: allSchemas = combineSchemas(generatedSchema);
 
+	$: effectiveKeywords = keywords.length >= 3 ? keywords : generateDefaultKeywords();
+	$: effectiveBreadcrumbs = breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
+
 	// SEO Score
 	$: seoScore = calculateSEOScore();
 	$: seoWarnings = getSEOWarnings();
@@ -189,8 +192,11 @@
 	function constructTitle(baseTitle: string, site: string): string {
 		if (!baseTitle) return site;
 		if (baseTitle.includes(site)) return baseTitle;
-		if (baseTitle.length > 50) return baseTitle;
-		return `${baseTitle} | ${site}`;
+		const suffix = ` | ${site}`;
+		if (baseTitle.length + suffix.length > 60) {
+			return baseTitle;
+		}
+		return `${baseTitle}${suffix}`;
 	}
 
 	function constructImageUrl(imagePath: string | null): string {
@@ -227,6 +233,41 @@
 		}
 		
 		return directives.join(', ') || 'index, follow';
+	}
+
+	function generateDefaultKeywords(): string[] {
+		const baseKeywords = ['Revolution Trading Pros', 'trading education', 'stock market'];
+
+		if (!title) {
+			return baseKeywords;
+		}
+
+		const fromTitle = title
+			.toLowerCase()
+			.replace(/[^a-z0-9\s]/g, '')
+			.split(/\s+/)
+			.filter(Boolean);
+
+		const unique = Array.from(new Set([...fromTitle, ...baseKeywords]));
+		return unique.slice(0, 8);
+	}
+
+	function generateBreadcrumbsFromPath(pathname: string): Array<{ name: string; url: string }> {
+		const segments = pathname.split('/').filter(Boolean);
+		const crumbs: Array<{ name: string; url: string }> = [];
+
+		crumbs.push({ name: 'Home', url: '/' });
+
+		let currentPath = '';
+		for (const segment of segments) {
+			currentPath += `/${segment}`;
+			const name = segment
+				.replace(/[-_]/g, ' ')
+				.replace(/\b\w/g, (c) => c.toUpperCase());
+			crumbs.push({ name, url: currentPath });
+		}
+
+		return crumbs;
 	}
 
 	function generateSchema(): any[] {
@@ -298,12 +339,12 @@
 		});
 
 		// BreadcrumbList Schema
-		if (breadcrumbs.length > 0) {
+		if (effectiveBreadcrumbs.length > 0) {
 			schemas.push({
 				'@context': 'https://schema.org',
 				'@type': 'BreadcrumbList',
 				'@id': `${fullCanonical}/#breadcrumb`,
-				'itemListElement': breadcrumbs.map((crumb, index) => ({
+				'itemListElement': effectiveBreadcrumbs.map((crumb, index) => ({
 					'@type': 'ListItem',
 					'position': index + 1,
 					'name': crumb.name,
@@ -421,13 +462,13 @@
 		const checks = [
 			{ condition: titleOptimal, weight: 15 },
 			{ condition: descriptionOptimal, weight: 15 },
-			{ condition: !!canonical, weight: 10 },
-			{ condition: !!ogImage, weight: 10 },
-			{ condition: keywords.length >= 3, weight: 10 },
+			{ condition: !!fullCanonical, weight: 10 },
+			{ condition: !!fullOgImage, weight: 10 },
+			{ condition: effectiveKeywords.length >= 3, weight: 10 },
 			{ condition: !!author, weight: 5 },
 			{ condition: !!publishedTime, weight: 5 },
 			{ condition: !!modifiedTime, weight: 5 },
-			{ condition: breadcrumbs.length > 0, weight: 10 },
+			{ condition: effectiveBreadcrumbs.length > 0, weight: 10 },
 			{ condition: allSchemas.length > 0, weight: 15 }
 		];
 
@@ -446,22 +487,22 @@
 		}
 		
 		if (!descriptionOptimal) {
-			warnings.push(`Description should be 120-160 characters (current: ${descriptionLength})`);
+			warnings.push(`Description should be 80-200 characters (current: ${descriptionLength})`);
 		}
 		
-		if (!canonical) {
+		if (!fullCanonical) {
 			warnings.push('Missing canonical URL');
 		}
 		
-		if (!ogImage) {
+		if (!fullOgImage) {
 			warnings.push('Missing Open Graph image');
 		}
 		
-		if (keywords.length < 3) {
+		if (effectiveKeywords.length < 3) {
 			warnings.push('Add more keywords for better SEO');
 		}
 		
-		if (!breadcrumbs.length) {
+		if (!effectiveBreadcrumbs.length) {
 			warnings.push('Add breadcrumbs for better navigation');
 		}
 		
@@ -474,8 +515,9 @@
 
 	onMount(() => {
 		if (browser) {
-			// Log SEO warnings in development
-			if (import.meta.env.DEV && seoWarnings.length > 0) {
+			// Log SEO warnings in development only if score is below 60
+			// This reduces console noise while still alerting to serious SEO issues
+			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
 				console.group('🔍 SEO Warnings');
 				console.log(`SEO Score: ${seoScore}/100`);
 				seoWarnings.forEach(warning => console.warn(warning));
