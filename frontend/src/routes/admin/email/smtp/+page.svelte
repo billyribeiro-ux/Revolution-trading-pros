@@ -1,0 +1,323 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { apiFetch } from '$lib/api/config';
+
+	let settings = {
+		provider: 'smtp',
+		host: '',
+		port: 587,
+		username: '',
+		password: '',
+		encryption: 'tls',
+		from_address: '',
+		from_name: 'Revolution Trading Pros'
+	};
+
+	let loading = false;
+	let message = '';
+	let messageType: 'success' | 'error' = 'success';
+	let testing = false;
+
+	onMount(async () => {
+		await loadSettings();
+	});
+
+	async function loadSettings() {
+		try {
+			const data = (await apiFetch('/admin/email/settings')) as any;
+			settings = data;
+		} catch (error) {
+			console.error('Failed to load settings:', error);
+		}
+	}
+
+	async function saveSettings() {
+		loading = true;
+		message = '';
+
+		try {
+			await apiFetch('/admin/email/settings', {
+				method: 'POST',
+				body: JSON.stringify(settings)
+			});
+
+			message = 'Settings saved successfully!';
+			messageType = 'success';
+		} catch (error) {
+			message = 'Failed to save settings';
+			messageType = 'error';
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function testConnection() {
+		testing = true;
+		message = '';
+
+		try {
+			const result: any = await apiFetch('/admin/email/settings/test', {
+				method: 'POST',
+				body: JSON.stringify(settings)
+			});
+
+			message = result.message || 'Test successful!';
+			messageType = result.success ? 'success' : 'error';
+		} catch (error: any) {
+			message = error.message || 'Test failed';
+			messageType = 'error';
+		} finally {
+			testing = false;
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>Email Settings | Admin | Revolution Trading Pros</title>
+</svelte:head>
+
+<div class="smtp-settings">
+	<div class="page-header">
+		<div>
+			<h1>SMTP Email Configuration</h1>
+			<p>Configure your email server settings for sending emails</p>
+		</div>
+	</div>
+
+	{#if message}
+		<div class="alert alert-{messageType}">
+			{message}
+		</div>
+	{/if}
+
+	<div class="settings-card">
+		<form on:submit|preventDefault={saveSettings}>
+			<div class="form-grid">
+				<!-- Host -->
+				<div class="form-group">
+					<label for="host">SMTP Host</label>
+					<input
+						id="host"
+						type="text"
+						bind:value={settings.host}
+						placeholder="smtp.gmail.com"
+						required
+					/>
+				</div>
+
+				<!-- Port -->
+				<div class="form-group">
+					<label for="port">Port</label>
+					<input id="port" type="number" bind:value={settings.port} required />
+				</div>
+
+				<!-- Encryption -->
+				<div class="form-group">
+					<label for="encryption">Encryption</label>
+					<select id="encryption" bind:value={settings.encryption}>
+						<option value="tls">TLS</option>
+						<option value="ssl">SSL</option>
+						<option value="null">None</option>
+					</select>
+				</div>
+
+				<!-- Username -->
+				<div class="form-group full-width">
+					<label for="username">Username</label>
+					<input
+						id="username"
+						type="text"
+						bind:value={settings.username}
+						placeholder="your-email@gmail.com"
+					/>
+				</div>
+
+				<!-- Password -->
+				<div class="form-group full-width">
+					<label for="password">Password / App Password</label>
+					<input
+						id="password"
+						type="password"
+						bind:value={settings.password}
+						placeholder="Enter password"
+					/>
+				</div>
+
+				<!-- From Address -->
+				<div class="form-group">
+					<label for="from_address">From Email</label>
+					<input
+						id="from_address"
+						type="email"
+						bind:value={settings.from_address}
+						placeholder="noreply@revolutiontradingpros.com"
+						required
+					/>
+				</div>
+
+				<!-- From Name -->
+				<div class="form-group">
+					<label for="from_name">From Name</label>
+					<input
+						id="from_name"
+						type="text"
+						bind:value={settings.from_name}
+						placeholder="Revolution Trading Pros"
+						required
+					/>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<button type="button" on:click={testConnection} disabled={testing} class="btn-secondary">
+					{testing ? 'Testing...' : 'Test Connection'}
+				</button>
+				<button type="submit" disabled={loading} class="btn-primary">
+					{loading ? 'Saving...' : 'Save Settings'}
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<style>
+	.smtp-settings {
+		max-width: 900px;
+	}
+
+	.page-header {
+		margin-bottom: 2rem;
+	}
+
+	.page-header h1 {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin-bottom: 0.5rem;
+	}
+
+	.page-header p {
+		color: #94a3b8;
+		font-size: 1rem;
+	}
+
+	.alert {
+		padding: 1rem 1.25rem;
+		border-radius: 10px;
+		margin-bottom: 1.5rem;
+		font-weight: 500;
+	}
+
+	.alert-success {
+		background: rgba(34, 197, 94, 0.1);
+		color: #22c55e;
+		border: 1px solid rgba(34, 197, 94, 0.3);
+	}
+
+	.alert-error {
+		background: rgba(239, 68, 68, 0.1);
+		color: #ef4444;
+		border: 1px solid rgba(239, 68, 68, 0.3);
+	}
+
+	.settings-card {
+		background: rgba(30, 41, 59, 0.5);
+		backdrop-filter: blur(10px);
+		border-radius: 16px;
+		border: 1px solid rgba(99, 102, 241, 0.1);
+		padding: 2rem;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.form-group.full-width {
+		grid-column: 1 / -1;
+	}
+
+	label {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #e2e8f0;
+	}
+
+	input,
+	select {
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.5);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 8px;
+		color: #f1f5f9;
+		font-size: 0.9375rem;
+		transition: all 0.2s;
+	}
+
+	input:focus,
+	select:focus {
+		outline: none;
+		border-color: #6366f1;
+		background: rgba(15, 23, 42, 0.7);
+	}
+
+	.form-actions {
+		display: flex;
+		gap: 1rem;
+		justify-content: flex-end;
+	}
+
+	.btn-primary,
+	.btn-secondary {
+		padding: 0.875rem 1.75rem;
+		border-radius: 8px;
+		font-weight: 600;
+		font-size: 0.9375rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: none;
+	}
+
+	.btn-primary {
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+	}
+
+	.btn-primary:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+	}
+
+	.btn-secondary {
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+	}
+
+	.btn-secondary:hover:not(:disabled) {
+		background: rgba(100, 116, 139, 0.3);
+	}
+
+	button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	@media (max-width: 640px) {
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.form-actions {
+			flex-direction: column;
+		}
+	}
+</style>

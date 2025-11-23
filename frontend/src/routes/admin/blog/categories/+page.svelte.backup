@@ -1,0 +1,598 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { IconPlus, IconEdit, IconTrash, IconTag, IconFolder } from '@tabler/icons-svelte';
+
+	let categories: any[] = [];
+	let tags: any[] = [];
+	let showCategoryModal = false;
+	let showTagModal = false;
+	let editingCategory: any = null;
+	let editingTag: any = null;
+
+	let categoryForm = {
+		name: '',
+		slug: '',
+		description: '',
+		color: '#3b82f6'
+	};
+
+	let tagForm = {
+		name: '',
+		slug: '',
+		color: '#10b981'
+	};
+
+	onMount(() => {
+		loadCategories();
+		loadTags();
+	});
+
+	async function loadCategories() {
+		try {
+			const response = await fetch('/api/admin/categories');
+			const data = await response.json();
+			categories = data.data || [];
+		} catch (error) {
+			console.error('Failed to load categories:', error);
+		}
+	}
+
+	async function loadTags() {
+		try {
+			const response = await fetch('/api/admin/tags');
+			const data = await response.json();
+			tags = data.data || [];
+		} catch (error) {
+			console.error('Failed to load tags:', error);
+		}
+	}
+
+	function openCategoryModal(category: any = null) {
+		if (category) {
+			editingCategory = category;
+			categoryForm = { ...category };
+		} else {
+			editingCategory = null;
+			categoryForm = { name: '', slug: '', description: '', color: '#3b82f6' };
+		}
+		showCategoryModal = true;
+	}
+
+	function openTagModal(tag: any = null) {
+		if (tag) {
+			editingTag = tag;
+			tagForm = { ...tag };
+		} else {
+			editingTag = null;
+			tagForm = { name: '', slug: '', color: '#10b981' };
+		}
+		showTagModal = true;
+	}
+
+	async function saveCategory() {
+		try {
+			const url = editingCategory
+				? `/api/admin/categories/${editingCategory.id}`
+				: '/api/admin/categories';
+
+			const method = editingCategory ? 'PUT' : 'POST';
+
+			const response = await fetch(url, {
+				method,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(categoryForm)
+			});
+
+			if (response.ok) {
+				loadCategories();
+				showCategoryModal = false;
+			}
+		} catch (error) {
+			console.error('Failed to save category:', error);
+		}
+	}
+
+	async function saveTag() {
+		try {
+			const url = editingTag ? `/api/admin/tags/${editingTag.id}` : '/api/admin/tags';
+
+			const method = editingTag ? 'PUT' : 'POST';
+
+			const response = await fetch(url, {
+				method,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(tagForm)
+			});
+
+			if (response.ok) {
+				loadTags();
+				showTagModal = false;
+			}
+		} catch (error) {
+			console.error('Failed to save tag:', error);
+		}
+	}
+
+	async function deleteCategory(id: number) {
+		if (!confirm('Delete this category? Posts will not be deleted.')) return;
+
+		try {
+			await fetch(`/api/admin/categories/${id}`, { method: 'DELETE' });
+			loadCategories();
+		} catch (error) {
+			console.error('Failed to delete category:', error);
+		}
+	}
+
+	async function deleteTag(id: number) {
+		if (!confirm('Delete this tag? Posts will not be deleted.')) return;
+
+		try {
+			await fetch(`/api/admin/tags/${id}`, { method: 'DELETE' });
+			loadTags();
+		} catch (error) {
+			console.error('Failed to delete tag:', error);
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>Categories & Tags | Blog</title>
+</svelte:head>
+
+<div class="categories-page">
+	<header class="page-header">
+		<h1>Categories & Tags</h1>
+		<p>Organize your blog posts</p>
+	</header>
+
+	<div class="content-grid">
+		<!-- Categories Section -->
+		<div class="section">
+			<div class="section-header">
+				<h2><IconFolder size={24} /> Categories</h2>
+				<button class="btn-primary" on:click={() => openCategoryModal()}>
+					<IconPlus size={18} />
+					Add Category
+				</button>
+			</div>
+
+			<div class="items-list">
+				{#each categories as category}
+					<div class="item-card">
+						<div class="item-color" style="background: {category.color}"></div>
+						<div class="item-info">
+							<h3>{category.name}</h3>
+							{#if category.description}
+								<p>{category.description}</p>
+							{/if}
+							<span class="item-count">{category.post_count || 0} posts</span>
+						</div>
+						<div class="item-actions">
+							<button class="action-btn" on:click={() => openCategoryModal(category)}>
+								<IconEdit size={18} />
+							</button>
+							<button class="action-btn danger" on:click={() => deleteCategory(category.id)}>
+								<IconTrash size={18} />
+							</button>
+						</div>
+					</div>
+				{/each}
+
+				{#if categories.length === 0}
+					<div class="empty-state">
+						<p>No categories yet. Create your first one!</p>
+					</div>
+				{/if}
+			</div>
+		</div>
+
+		<!-- Tags Section -->
+		<div class="section">
+			<div class="section-header">
+				<h2><IconTag size={24} /> Tags</h2>
+				<button class="btn-primary" on:click={() => openTagModal()}>
+					<IconPlus size={18} />
+					Add Tag
+				</button>
+			</div>
+
+			<div class="items-list">
+				{#each tags as tag}
+					<div class="item-card">
+						<div class="item-color" style="background: {tag.color}"></div>
+						<div class="item-info">
+							<h3>{tag.name}</h3>
+							<span class="item-count">{tag.post_count || 0} posts</span>
+						</div>
+						<div class="item-actions">
+							<button class="action-btn" on:click={() => openTagModal(tag)}>
+								<IconEdit size={18} />
+							</button>
+							<button class="action-btn danger" on:click={() => deleteTag(tag.id)}>
+								<IconTrash size={18} />
+							</button>
+						</div>
+					</div>
+				{/each}
+
+				{#if tags.length === 0}
+					<div class="empty-state">
+						<p>No tags yet. Create your first one!</p>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Category Modal -->
+{#if showCategoryModal}
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		on:click={() => (showCategoryModal = false)}
+		on:keydown={(e) => e.key === 'Escape' && (showCategoryModal = false)}
+	>
+		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation>
+			<div class="modal-header">
+				<h3>{editingCategory ? 'Edit' : 'Add'} Category</h3>
+				<button class="close-btn" on:click={() => (showCategoryModal = false)}>×</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="cat-name">Name</label>
+					<input
+						id="cat-name"
+						type="text"
+						bind:value={categoryForm.name}
+						placeholder="Category name"
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="cat-slug">Slug</label>
+					<input
+						id="cat-slug"
+						type="text"
+						bind:value={categoryForm.slug}
+						placeholder="category-slug"
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="cat-desc">Description</label>
+					<textarea
+						id="cat-desc"
+						bind:value={categoryForm.description}
+						placeholder="Brief description"
+						rows="3"
+					></textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="cat-color">Color</label>
+					<input id="cat-color" type="color" bind:value={categoryForm.color} />
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-secondary" on:click={() => (showCategoryModal = false)}>Cancel</button>
+				<button class="btn-primary" on:click={saveCategory}>Save</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Tag Modal -->
+{#if showTagModal}
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		on:click={() => (showTagModal = false)}
+		on:keydown={(e) => e.key === 'Escape' && (showTagModal = false)}
+	>
+		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation>
+			<div class="modal-header">
+				<h3>{editingTag ? 'Edit' : 'Add'} Tag</h3>
+				<button class="close-btn" on:click={() => (showTagModal = false)}>×</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="tag-name">Name</label>
+					<input id="tag-name" type="text" bind:value={tagForm.name} placeholder="Tag name" />
+				</div>
+
+				<div class="form-group">
+					<label for="tag-slug">Slug</label>
+					<input id="tag-slug" type="text" bind:value={tagForm.slug} placeholder="tag-slug" />
+				</div>
+
+				<div class="form-group">
+					<label for="tag-color">Color</label>
+					<input id="tag-color" type="color" bind:value={tagForm.color} />
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-secondary" on:click={() => (showTagModal = false)}>Cancel</button>
+				<button class="btn-primary" on:click={saveTag}>Save</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.categories-page {
+		padding: 2rem;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.page-header {
+		margin-bottom: 2rem;
+	}
+
+	.page-header h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #1a1a1a;
+		margin-bottom: 0.5rem;
+	}
+
+	.page-header p {
+		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.content-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+		gap: 2rem;
+	}
+
+	.section {
+		background: white;
+		border-radius: 12px;
+		border: 1px solid #e5e5e5;
+		padding: 1.5rem;
+	}
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #f0f0f0;
+	}
+
+	.section-header h2 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #1a1a1a;
+		margin: 0;
+	}
+
+	.btn-primary {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1rem;
+		background: #3b82f6;
+		color: white;
+		border: none;
+		border-radius: 6px;
+		font-weight: 500;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+
+	.btn-primary:hover {
+		background: #2563eb;
+	}
+
+	.items-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.item-card {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1rem;
+		border: 1px solid #e5e5e5;
+		border-radius: 8px;
+		transition: all 0.2s;
+	}
+
+	.item-card:hover {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.item-color {
+		width: 40px;
+		height: 40px;
+		border-radius: 8px;
+		flex-shrink: 0;
+	}
+
+	.item-info {
+		flex: 1;
+	}
+
+	.item-info h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #1a1a1a;
+		margin: 0 0 0.25rem;
+	}
+
+	.item-info p {
+		font-size: 0.85rem;
+		color: #666;
+		margin: 0 0 0.25rem;
+	}
+
+	.item-count {
+		font-size: 0.8rem;
+		color: #999;
+	}
+
+	.item-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.action-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: white;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		color: #666;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.action-btn:hover {
+		background: #f8f9fa;
+	}
+
+	.action-btn.danger {
+		color: #ef4444;
+		border-color: #fee2e2;
+	}
+
+	.action-btn.danger:hover {
+		background: #fee2e2;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 3rem 1rem;
+		color: #999;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+	}
+
+	.modal {
+		background: white;
+		border-radius: 12px;
+		width: 100%;
+		max-width: 500px;
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+	}
+
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.5rem;
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.modal-header h3 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	.close-btn {
+		background: none;
+		border: none;
+		font-size: 2rem;
+		color: #666;
+		cursor: pointer;
+		line-height: 1;
+	}
+
+	.modal-body {
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.form-group label {
+		font-weight: 500;
+		color: #1a1a1a;
+		font-size: 0.95rem;
+	}
+
+	.form-group input,
+	.form-group textarea {
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		font-size: 0.95rem;
+		font-family: inherit;
+	}
+
+	.form-group input[type='color'] {
+		height: 50px;
+		cursor: pointer;
+	}
+
+	.form-group textarea {
+		resize: vertical;
+	}
+
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		padding: 1.5rem;
+		border-top: 1px solid #e5e5e5;
+	}
+
+	.btn-secondary {
+		padding: 0.625rem 1.25rem;
+		background: white;
+		color: #666;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		font-weight: 500;
+		cursor: pointer;
+	}
+
+	.btn-secondary:hover {
+		background: #f8f9fa;
+	}
+
+	@media (max-width: 1024px) {
+		.content-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,423 @@
+@import 'tailwindcss';
+
+/**
+ * Revolution Trading Pros - Global Styles
+ * Enterprise-grade CSS with performance optimizations
+ *
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * CSS Custom Properties - Design System Tokens
+ * Enterprise-grade design tokens for consistency and maintainability
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@layer base {
+	:root {
+		/* Color Scheme */
+		color-scheme: light dark;
+
+		/* RTP Brand Colors - Microsoft-inspired palette */
+		--color-rtp-bg: 243 243 243;
+		--color-rtp-surface: 255 255 255;
+		--color-rtp-border: 209 213 219;
+		--color-rtp-text: 31 41 55;
+		--color-rtp-muted: 107 114 128;
+		--color-rtp-primary: 0 120 212;
+		--color-rtp-primarySoft: 229 241 251;
+		--color-rtp-emerald: 16 124 16;
+		--color-rtp-indigo: 92 45 145;
+		--color-rtp-blue: 43 136 216;
+
+		/* Chart Colors */
+		--color-chart-up: 52 211 153;
+		--color-chart-down: 239 68 68;
+
+		/* Transition Tokens - Consistent animation timing */
+		--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		--transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+		--transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+		/* Shadow Tokens */
+		--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+		--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+		--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+		--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+		/* Border Radius Tokens */
+		--radius-sm: 0.375rem;
+		--radius-md: 0.5rem;
+		--radius-lg: 0.75rem;
+		--radius-xl: 1rem;
+		--radius-2xl: 1.5rem;
+		--radius-full: 9999px;
+
+		/* Spacing Tokens */
+		--spacing-safe: max(1rem, env(safe-area-inset-bottom));
+
+		/* Z-Index Scale */
+		--z-dropdown: 100;
+		--z-sticky: 200;
+		--z-modal: 500;
+		--z-popover: 600;
+		--z-tooltip: 700;
+		--z-toast: 800;
+		--z-overlay: 900;
+		--z-max: 1000;
+
+		/* Focus Ring */
+		--focus-ring: 0 0 0 3px rgb(99 102 241 / 0.4);
+		--focus-ring-offset: 2px;
+	}
+
+	/* Dark mode color scheme preference */
+	@media (prefers-color-scheme: dark) {
+		:root {
+			color-scheme: dark;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Performance Optimizations
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Smooth scrolling with reduced motion support */
+	html {
+		scroll-behavior: smooth;
+		/* Optimize font rendering */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+	}
+
+	/* Respect user's motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
+
+	/* Base body styles */
+	body {
+		background-color: rgb(243 243 243);
+		color: rgb(31 41 55);
+		font-family:
+			'Open Sans Pro',
+			'Open Sans',
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			sans-serif;
+		line-height: 1.5;
+		/* Prevent horizontal scroll */
+		overflow-x: hidden;
+		/* Optimize paint performance */
+		contain: layout style;
+	}
+
+	/* Typography defaults */
+	p {
+		font-family:
+			'Open Sans Pro',
+			'Open Sans',
+			system-ui,
+			sans-serif;
+	}
+
+	/* Box sizing reset - More specific than universal selector */
+	html {
+		box-sizing: border-box;
+	}
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: inherit;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Focus Styles - Enterprise Accessibility
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Focus visible for interactive elements */
+	:focus-visible {
+		outline: 2px solid rgb(99 102 241);
+		outline-offset: var(--focus-ring-offset);
+	}
+
+	/* Remove default focus styles */
+	:focus:not(:focus-visible) {
+		outline: none;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Selection Styles
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	::selection {
+		background-color: rgb(99 102 241 / 0.3);
+		color: inherit;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Image Optimization Defaults
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	img,
+	video {
+		max-width: 100%;
+		height: auto;
+		/* Prevent layout shift */
+		vertical-align: middle;
+	}
+
+	/* Lazy loading placeholder */
+	img[loading='lazy'] {
+		background-color: rgb(243 244 246);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Form Element Defaults
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	button,
+	input,
+	select,
+	textarea {
+		font-family: inherit;
+		font-size: 100%;
+		line-height: 1.15;
+	}
+
+	button {
+		cursor: pointer;
+	}
+
+	button:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Scrollbar Styling (Webkit)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: rgb(243 244 246);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: rgb(156 163 175);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: rgb(107 114 128);
+	}
+
+	/* Firefox scrollbar */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: rgb(156 163 175) rgb(243 244 246);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Utility Classes
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@layer utilities {
+	/* Performance hints for animated elements */
+	.will-change-transform {
+		will-change: transform;
+	}
+
+	.will-change-opacity {
+		will-change: opacity;
+	}
+
+	.will-change-auto {
+		will-change: auto;
+	}
+
+	/* GPU acceleration for animations */
+	.gpu-accelerate {
+		transform: translateZ(0);
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+	}
+
+	/* Content visibility for performance */
+	.content-visibility-auto {
+		content-visibility: auto;
+		contain-intrinsic-size: auto 500px;
+	}
+
+	/* Line clamp utilities with vendor prefixes */
+	.line-clamp-1 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 1;
+		line-clamp: 1;
+		overflow: hidden;
+	}
+
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
+	}
+
+	.line-clamp-3 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		overflow: hidden;
+	}
+
+	/* Backdrop filter with vendor prefix */
+	.backdrop-blur-sm {
+		-webkit-backdrop-filter: blur(4px);
+		backdrop-filter: blur(4px);
+	}
+
+	.backdrop-blur {
+		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(8px);
+	}
+
+	.backdrop-blur-md {
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+	}
+
+	.backdrop-blur-lg {
+		-webkit-backdrop-filter: blur(16px);
+		backdrop-filter: blur(16px);
+	}
+
+	.backdrop-blur-xl {
+		-webkit-backdrop-filter: blur(24px);
+		backdrop-filter: blur(24px);
+	}
+
+	/* Safe area insets for mobile */
+	.pb-safe {
+		padding-bottom: var(--spacing-safe);
+	}
+
+	.pt-safe {
+		padding-top: env(safe-area-inset-top);
+	}
+
+	/* Screen reader only */
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+
+	/* Focus visible only */
+	.focus-visible-only:not(:focus-visible) {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+
+	/* Transition utilities using design tokens */
+	.transition-fast {
+		transition-duration: 150ms;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.transition-base {
+		transition-duration: 250ms;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.transition-slow {
+		transition-duration: 350ms;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Print Styles
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@media print {
+	*,
+	*::before,
+	*::after {
+		background: transparent !important;
+		color: black !important;
+		box-shadow: none !important;
+		text-shadow: none !important;
+	}
+
+	body {
+		font-size: 12pt;
+		line-height: 1.4;
+	}
+
+	a,
+	a:visited {
+		text-decoration: underline;
+	}
+
+	a[href]::after {
+		content: ' (' attr(href) ')';
+	}
+
+	img {
+		max-width: 100% !important;
+		page-break-inside: avoid;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		page-break-after: avoid;
+	}
+
+	p,
+	h2,
+	h3 {
+		orphans: 3;
+		widows: 3;
+	}
+}

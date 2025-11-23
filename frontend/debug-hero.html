@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Debug Hero</title>
+		<style>
+			body {
+				font-family: monospace;
+				background: #000;
+				color: #0f0;
+				padding: 20px;
+			}
+			pre {
+				background: #111;
+				padding: 10px;
+				border: 1px solid #0f0;
+				overflow-x: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Hero Component Debug</h1>
+		<pre id="output"></pre>
+
+		<script>
+			const output = document.getElementById('output');
+
+			function log(msg) {
+				output.textContent += msg + '\n';
+				console.log(msg);
+			}
+
+			// Wait for page to load
+			window.addEventListener('load', async () => {
+				log('Page loaded');
+
+				// Wait a bit for Svelte to mount
+				await new Promise((r) => setTimeout(r, 3000));
+
+				// Check DOM
+				const heroSection = document.querySelector('#hero');
+				const chartContainer = document.querySelector('.hero-chart');
+				const canvas = chartContainer?.querySelector('canvas');
+				const slides = document.querySelectorAll('[data-slide]');
+				const activeSlide = document.querySelector('[data-slide].active');
+
+				log(`\n=== DOM STATE ===`);
+				log(`Hero section: ${!!heroSection}`);
+				log(`Chart container: ${!!chartContainer}`);
+				log(`Canvas: ${!!canvas}`);
+				if (canvas) {
+					log(`Canvas size: ${canvas.width}x${canvas.height}`);
+				}
+				log(`Slides: ${slides.length}`);
+				log(`Active slide: ${activeSlide?.getAttribute('data-slide')}`);
+
+				// Try to access window variables
+				log(`\n=== WINDOW STATE ===`);
+				log(`window.location: ${window.location.href}`);
+
+				// Check for errors
+				log(`\n=== CHECKING FOR ERRORS ===`);
+
+				// Monkey-patch console to capture errors
+				const errors = [];
+				window.addEventListener('error', (e) => {
+					errors.push(e.message);
+					log(`ERROR: ${e.message}`);
+				});
+
+				// Wait another 3 seconds
+				await new Promise((r) => setTimeout(r, 3000));
+
+				log(`\n=== FINAL STATE ===`);
+				const canvas2 = document.querySelector('.hero-chart canvas');
+				log(`Canvas exists: ${!!canvas2}`);
+				const activeSlide2 = document.querySelector('[data-slide].active');
+				log(`Active slide: ${activeSlide2?.getAttribute('data-slide')}`);
+
+				log(`\n=== DONE ===`);
+			});
+		</script>
+	</body>
+</html>
