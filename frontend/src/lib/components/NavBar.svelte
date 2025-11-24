@@ -67,6 +67,9 @@
                 { href: '/indicators', label: 'Indicators' }
             ]
         },
+        { id: 'analytics', label: 'Analytics', href: '/analytics' },
+        { id: 'media', label: 'Media', href: '/media' },
+        { id: 'email', label: 'Email', href: '/email' },
         { id: 'about', label: 'About', href: '/about' },
         { id: 'blog', label: 'Blog', href: '/blog' }
     ];
