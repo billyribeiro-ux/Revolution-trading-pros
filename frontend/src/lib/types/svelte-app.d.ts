@@ -188,22 +188,8 @@ declare module '@tabler/icons-svelte' {
     // Add any other icons you use as needed
 }
 
-// Generic Svelte module declarations to silence type errors
-declare module 'svelte' {
-    export * from 'svelte/internal';
-    export function onMount(fn: () => any | (() => void)): void;
-}
-
-declare module 'svelte/types/*' {
-    const value: any;
-    export default value;
-}
-
-// Explicit declaration for the problematic index.d.ts file
-declare module 'svelte/types/index.d.ts' {
-    const value: any;
-    export default value;
-}
+// Note: We don't need to declare 'svelte' module as it's provided by the package itself
+// The svelte/internal import is deprecated in Svelte 5 and will be removed in Svelte 6
 
 
 

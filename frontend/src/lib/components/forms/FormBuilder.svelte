@@ -25,7 +25,7 @@
 	};
 
 	let fields: FormField[] = formData.fields || [];
-	let availableFieldTypes: Record<string, string> = {};
+	let availableFieldTypes: { type: string; label: string; icon: string }[] = [];
 	let showFieldEditor = false;
 	let editingField: FormField | null = null;
 	let editingFieldIndex = -1;
@@ -53,13 +53,17 @@
 	})();
 
 	function handleAddField(fieldType: string) {
+		const fieldTypeInfo = availableFieldTypes.find(ft => ft.type === fieldType);
 		const newField: FormField = {
+			field_type: fieldType as import('$lib/api/forms').FieldType,
+			label: fieldTypeInfo?.label || fieldType,
 			field_type: fieldType as any,
 			label: availableFieldTypes[fieldType] || fieldType,
 			name: `field_${Date.now()}`,
 			placeholder: '',
 			required: false,
 			order: fields.length,
+			width: 12
 			width: 100 as any
 		};
 

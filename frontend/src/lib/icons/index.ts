@@ -215,8 +215,15 @@ export {
 	IconPictureInPictureOn
 };
 
+import type { Component } from 'svelte';
+
 /**
  * Type-safe icon component type
  * Use this for props that accept icon components
  */
-export type IconComponent = typeof IconUser;
+export type IconComponent = Component<{
+	size?: number | string;
+	stroke?: number | string;
+	color?: string;
+	class?: string;
+}>;

@@ -1,17 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
+	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { IconEdit, IconTrash, IconEye, IconPlus } from '@tabler/icons-svelte';
-
-	interface EmailTemplate {
-		id: number;
-		name: string;
-		slug: string;
-		subject: string;
-		email_type: string;
-		is_active: boolean;
-	}
 
 	let templates: EmailTemplate[] = [];
 	let loading = true;

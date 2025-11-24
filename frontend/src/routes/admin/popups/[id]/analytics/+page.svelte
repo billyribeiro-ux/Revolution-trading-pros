@@ -72,9 +72,8 @@
 			const popupResponse = await popupsApi.get(popupId);
 			popup = popupResponse.popup;
 
-			// Load analytics data
-			const analyticsResponse = await popupsApi.getAnalytics(popupId);
-			analytics = analyticsResponse as any;
+			// Load analytics data - getAnalytics returns PopupAnalytics directly
+			analytics = await popupsApi.getAnalytics(popupId);
 		} catch (error) {
 			console.error('Failed to load analytics:', error);
 			addToast({ type: 'error', message: 'Failed to load analytics' });

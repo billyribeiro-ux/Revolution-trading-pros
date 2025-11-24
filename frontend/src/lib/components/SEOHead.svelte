@@ -189,6 +189,16 @@
 	// Helper Functions
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	function generateJsonLdScript(schema: Record<string, unknown>): string {
+		const tag = 'script';
+		return `<${tag} type="application/ld+json">${JSON.stringify(schema)}</${tag}>`;
+	}
+
+	function generateGtmScript(id: string): string {
+		const tag = 'script';
+		return `<${tag}>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');</${tag}>`;
+	}
+
 	function constructTitle(baseTitle: string, site: string): string {
 		if (!baseTitle) return site;
 		if (baseTitle.includes(site)) return baseTitle;
@@ -707,23 +717,15 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	
 	{#each allSchemas as schemaItem}
-		{@html `<script type="application/ld+json">${JSON.stringify(schemaItem)}</script>`}
+		{@html generateJsonLdScript(schemaItem)}
 	{/each}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Google Tag Manager -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	{#if gtmId && browser}
-		{@html `
-			<script>
-				(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-				new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-				'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-				})(window,document,'script','dataLayer','${gtmId}');
-			</script>
-		`}
+		{@html generateGtmScript(gtmId)}
 	{/if}
 </svelte:head>
 

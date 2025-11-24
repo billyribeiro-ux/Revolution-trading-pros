@@ -50,7 +50,7 @@
 
 	async function handleToggleStatus(popup: Popup) {
 		try {
-			await togglePopupStatus(popup.id, !popup.isActive);
+			await togglePopupStatus(popup.id);
 			await loadPopups();
 		} catch (error) {
 			console.error('Error toggling popup status:', error);

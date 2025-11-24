@@ -22,8 +22,8 @@
 	async function loadErrors() {
 		try {
 			loading = true;
-			const response = await seoApi.list404s();
-			errors = Array.isArray(response) ? response : (response as any).data || [];
+			// list404s returns Error404[] directly
+			errors = await seoApi.list404s() || [];
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to load 404 errors' });
 		} finally {

@@ -909,17 +909,17 @@
 	// Helper Functions
 	// ═══════════════════════════════════════════════════════════════════════════
 	
-	function debounce(func: Function, wait: number) {
+	function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
 		let timeout: number;
-		return (...args: any[]) => {
+		return (...args: Parameters<T>) => {
 			clearTimeout(timeout);
 			timeout = window.setTimeout(() => func(...args), wait);
 		};
 	}
-	
-	function throttle(func: Function, limit: number) {
+
+	function throttle<T extends (...args: unknown[]) => void>(func: T, limit: number): (...args: Parameters<T>) => void {
 		let inThrottle: boolean;
-		return (...args: any[]) => {
+		return (...args: Parameters<T>) => {
 			if (!inThrottle) {
 				func(...args);
 				inThrottle = true;

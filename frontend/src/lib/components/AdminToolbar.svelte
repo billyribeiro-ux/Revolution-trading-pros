@@ -226,25 +226,15 @@
 	// ─────────────────────────────────────────────────────────────────────────────
 
 	async function checkSession(): Promise<void> {
-		if (!browser || !currentUser) return;
+		if (!browser || !$authStore.isAuthenticated) return;
 
 		try {
-			// Check if token is still valid
-			const token = authStore.getToken();
-			if (!token) {
-				await handleSessionExpired();
-				return;
-			}
-
-			// Check session expiry if available
-			if (currentUser.session_expiry) {
-				const now = Date.now();
-				if (now >= currentUser.session_expiry) {
-					await handleSessionExpired();
-				}
-			}
+			// Verify session is still valid by fetching user data
+			await getUser();
 		} catch (error) {
-			console.error('[AdminToolbar] Session check failed:', error);
+			console.warn('[AdminToolbar] Session check failed:', error);
+			// Session may have expired
+			await handleSessionExpired();
 		}
 	}
 

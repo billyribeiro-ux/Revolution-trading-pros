@@ -223,6 +223,17 @@
 			<div class="checkbox-group">
 				{#if field.options}
 					{#each field.options as option}
+						<label class="checkbox-label">
+							<input
+								type="checkbox"
+								value={typeof option === 'string' ? option : option.value}
+								checked={isChecked(typeof option === 'string' ? option : option.value)}
+								on:change={(e) => handleCheckboxChange(typeof option === 'string' ? option : option.value, e.currentTarget.checked)}
+								{...field.attributes || {}}
+							/>
+							<span>{typeof option === 'string' ? option : option.label}</span>
+						</label>
+					{/each}
 					{@const optionValue = typeof option === 'string' ? option : option.value}
 					{@const optionLabel = typeof option === 'string' ? option : option.label}
 					<label class="checkbox-label">
