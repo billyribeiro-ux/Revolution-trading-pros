@@ -1,9 +1,9 @@
 /**
  * SEO Management Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. AI-POWERED ANALYSIS:
  *    - Content optimization
  *    - Keyword research
@@ -11,7 +11,7 @@
  *    - SERP tracking
  *    - Topic clustering
  *    - Intent matching
- * 
+ *
  * 2. TECHNICAL SEO:
  *    - Site auditing
  *    - Core Web Vitals
@@ -19,7 +19,7 @@
  *    - XML sitemaps
  *    - Robots.txt management
  *    - Crawl optimization
- * 
+ *
  * 3. CONTENT OPTIMIZATION:
  *    - Readability analysis
  *    - Keyword density
@@ -27,7 +27,7 @@
  *    - Internal linking
  *    - Content gap analysis
  *    - E-A-T scoring
- * 
+ *
  * 4. MONITORING & ALERTS:
  *    - Rank tracking
  *    - Backlink monitoring
@@ -35,7 +35,7 @@
  *    - Redirect chains
  *    - Performance metrics
  *    - Algorithm updates
- * 
+ *
  * 5. REPORTING & INSIGHTS:
  *    - Custom dashboards
  *    - White-label reports
@@ -43,7 +43,7 @@
  *    - Competitor benchmarking
  *    - Forecast modeling
  *    - Executive summaries
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -77,7 +77,7 @@ export interface EnhancedSeoAnalysis extends SeoAnalysis {
 	technical_score: number;
 	content_score: number;
 	user_experience_score: number;
-	
+
 	// Analysis data (for compatibility)
 	analysis?: {
 		overall_score: number;
@@ -86,25 +86,25 @@ export interface EnhancedSeoAnalysis extends SeoAnalysis {
 		user_experience_score: number;
 		suggestions: Suggestion[];
 	};
-	
+
 	// Advanced analysis
 	competitor_comparison?: CompetitorAnalysis;
 	keyword_opportunities?: KeywordOpportunity[];
 	content_gaps?: ContentGap[];
 	link_opportunities?: LinkOpportunity[];
 	schema_suggestions?: SchemaMarkup[];
-	
+
 	// Performance metrics
 	page_speed?: PageSpeedMetrics;
 	core_web_vitals?: CoreWebVitals;
 	mobile_usability?: MobileUsability;
-	
+
 	// Content quality
 	readability?: ReadabilityMetrics;
 	semantic_analysis?: SemanticAnalysis;
 	topic_relevance?: TopicRelevance;
 	eat_score?: EATScore;
-	
+
 	// Technical issues
 	technical_issues?: TechnicalIssue[];
 	accessibility_issues?: AccessibilityIssue[];
@@ -542,7 +542,7 @@ class SeoManagementService {
 	private rankCheckInterval?: number;
 	private alertCheckInterval?: number;
 	private pendingAnalyses = new Map<string, Promise<any>>();
-	
+
 	// Stores
 	public analyses = writable<EnhancedSeoAnalysis[]>([]);
 	public currentAnalysis = writable<EnhancedSeoAnalysis | null>(null);
@@ -554,24 +554,22 @@ class SeoManagementService {
 	public alerts = writable<SeoAlert[]>([]);
 	public isLoading = writable(false);
 	public error = writable<string | null>(null);
-	
+
 	// Derived stores
 	public criticalIssues = derived(
 		this.currentAnalysis,
-		$analysis => $analysis?.technical_issues?.filter(i => i.severity === 'critical') || []
+		($analysis) => $analysis?.technical_issues?.filter((i) => i.severity === 'critical') || []
 	);
-	
+
 	public topOpportunities = derived(
 		this.currentAnalysis,
-		$analysis => $analysis?.keyword_opportunities?.sort((a, b) => 
-			b.opportunity_score - a.opportunity_score
-		).slice(0, 10) || []
+		($analysis) =>
+			$analysis?.keyword_opportunities
+				?.sort((a, b) => b.opportunity_score - a.opportunity_score)
+				.slice(0, 10) || []
 	);
-	
-	public overallScore = derived(
-		this.currentAnalysis,
-		$analysis => $analysis?.overall_score || 0
-	);
+
+	public overallScore = derived(this.currentAnalysis, ($analysis) => $analysis?.overall_score || 0);
 
 	private constructor() {
 		this.initialize();
@@ -592,13 +590,13 @@ class SeoManagementService {
 
 		// Setup WebSocket for real-time updates
 		this.setupWebSocket();
-		
+
 		// Start rank tracking
 		this.startRankTracking();
-		
+
 		// Start alert monitoring
 		this.startAlertMonitoring();
-		
+
 		// Load initial data
 		this.loadInitialData();
 
@@ -613,7 +611,7 @@ class SeoManagementService {
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_BASE}/seo`);
-			
+
 			this.wsConnection.onopen = () => {
 				console.debug('[SeoService] WebSocket connected');
 				this.subscribeToUpdates();
@@ -637,16 +635,18 @@ class SeoManagementService {
 	}
 
 	private subscribeToUpdates(): void {
-		this.wsConnection?.send(JSON.stringify({
-			type: 'subscribe',
-			channels: ['rankings', 'crawl', 'alerts', 'competitors']
-		}));
+		this.wsConnection?.send(
+			JSON.stringify({
+				type: 'subscribe',
+				channels: ['rankings', 'crawl', 'alerts', 'competitors']
+			})
+		);
 	}
 
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			switch (message.type) {
 				case 'ranking_update':
 					this.handleRankingUpdate(message.data);
@@ -670,8 +670,8 @@ class SeoManagementService {
 	}
 
 	private handleRankingUpdate(data: RankTracking): void {
-		this.rankings.update(rankings => {
-			const index = rankings.findIndex(r => r.keyword === data.keyword);
+		this.rankings.update((rankings) => {
+			const index = rankings.findIndex((r) => r.keyword === data.keyword);
 			if (index >= 0) {
 				rankings[index] = data;
 			} else {
@@ -695,13 +695,13 @@ class SeoManagementService {
 	}
 
 	private handleNew404(error404: Error404): void {
-		this.errors404.update(errors => [...errors, error404]);
+		this.errors404.update((errors) => [...errors, error404]);
 		this.showNotification(`New 404 error detected: ${error404.url}`, 'warning');
 	}
 
 	private handleCompetitorUpdate(competitor: Competitor): void {
-		this.competitors.update(comps => {
-			const index = comps.findIndex(c => c.domain === competitor.domain);
+		this.competitors.update((comps) => {
+			const index = comps.findIndex((c) => c.domain === competitor.domain);
 			if (index >= 0) {
 				comps[index] = competitor;
 			} else {
@@ -712,7 +712,7 @@ class SeoManagementService {
 	}
 
 	private handleSeoAlert(alert: SeoAlert): void {
-		this.alerts.update(alerts => [alert, ...alerts]);
+		this.alerts.update((alerts) => [alert, ...alerts]);
 		this.showNotification(alert.message, alert.severity);
 	}
 
@@ -771,9 +771,9 @@ class SeoManagementService {
 	private async checkAlerts(): Promise<void> {
 		try {
 			const alerts = await api.get<{ alerts: SeoAlert[] }>('/seo/alerts/check');
-			
+
 			// Process new alerts
-			alerts.alerts.forEach(alert => {
+			alerts.alerts.forEach((alert) => {
 				if (alert.is_new) {
 					this.handleSeoAlert(alert);
 				}
@@ -800,58 +800,61 @@ class SeoManagementService {
 		this.error.set(null);
 
 		const analysisKey = `${contentType}_${contentId}`;
-		
+
 		// Debounce analysis
 		if (this.analysisDebounceTimers.has(analysisKey)) {
 			clearTimeout(this.analysisDebounceTimers.get(analysisKey));
 		}
 
 		return new Promise((resolve, reject) => {
-			const timer = window.setTimeout(async () => {
-				try {
-					// Check if analysis is already pending
-					if (this.pendingAnalyses.has(analysisKey)) {
-						const result = await this.pendingAnalyses.get(analysisKey);
-						resolve(result);
-						return;
-					}
-
-					// Create analysis promise
-					const analysisPromise = this.performAnalysis(
-						contentType,
-						contentId,
-						focusKeyword,
-						options
-					);
-
-					// Store pending analysis
-					this.pendingAnalyses.set(analysisKey, analysisPromise);
-
-					const analysis = await analysisPromise;
-					
-					// Update stores
-					this.currentAnalysis.set(analysis);
-					this.analyses.update(analyses => {
-						const index = analyses.findIndex(
-							a => a.analyzable_type === contentType && a.analyzable_id === contentId
-						);
-						if (index >= 0) {
-							analyses[index] = analysis;
-						} else {
-							analyses.push(analysis);
+			const timer = window.setTimeout(
+				async () => {
+					try {
+						// Check if analysis is already pending
+						if (this.pendingAnalyses.has(analysisKey)) {
+							const result = await this.pendingAnalyses.get(analysisKey);
+							resolve(result);
+							return;
 						}
-						return analyses;
-					});
 
-					resolve(analysis);
-				} catch (error: any) {
-					this.error.set(error.message);
-					reject(error);
-				} finally {
-					this.pendingAnalyses.delete(analysisKey);
-					this.isLoading.set(false);
-				}
-			}, options.immediate ? 0 : ANALYSIS_DEBOUNCE);
+						// Create analysis promise
+						const analysisPromise = this.performAnalysis(
+							contentType,
+							contentId,
+							focusKeyword,
+							options
+						);
+
+						// Store pending analysis
+						this.pendingAnalyses.set(analysisKey, analysisPromise);
+
+						const analysis = await analysisPromise;
+
+						// Update stores
+						this.currentAnalysis.set(analysis);
+						this.analyses.update((analyses) => {
+							const index = analyses.findIndex(
+								(a) => a.analyzable_type === contentType && a.analyzable_id === contentId
+							);
+							if (index >= 0) {
+								analyses[index] = analysis;
+							} else {
+								analyses.push(analysis);
+							}
+							return analyses;
+						});
+
+						resolve(analysis);
+					} catch (error: any) {
+						this.error.set(error.message);
+						reject(error);
+					} finally {
+						this.pendingAnalyses.delete(analysisKey);
+						this.isLoading.set(false);
+					}
+				},
+				options.immediate ? 0 : ANALYSIS_DEBOUNCE
+			);
 
 			this.analysisDebounceTimers.set(analysisKey, timer);
 		});
@@ -898,7 +901,7 @@ class SeoManagementService {
 		return {
 			...basicAnalysis,
 			overall_score: overallScore,
-			technical_score: technicalAudit ? 100 - (technicalAudit.issues.length * 5) : 100,
+			technical_score: technicalAudit ? 100 - technicalAudit.issues.length * 5 : 100,
 			content_score: basicAnalysis.seo_score,
 			user_experience_score: performanceMetrics?.pageSpeed.score || 100,
 			competitor_comparison: competitorAnalysis,
@@ -927,10 +930,9 @@ class SeoManagementService {
 	private async analyzeCompetitors(keyword?: string): Promise<CompetitorAnalysis | null> {
 		if (!keyword) return null;
 
-		const response = await api.post<{ analysis: CompetitorAnalysis }>(
-			'/seo/competitors/analyze',
-			{ keyword }
-		);
+		const response = await api.post<{ analysis: CompetitorAnalysis }>('/seo/competitors/analyze', {
+			keyword
+		});
 		return response.analysis;
 	}
 
@@ -945,10 +947,7 @@ class SeoManagementService {
 	private async analyzeContentGaps(keyword?: string): Promise<ContentGap[] | null> {
 		if (!keyword) return null;
 
-		const response = await api.post<{ gaps: ContentGap[] }>(
-			'/seo/content/gaps',
-			{ keyword }
-		);
+		const response = await api.post<{ gaps: ContentGap[] }>('/seo/content/gaps', { keyword });
 		return response.gaps;
 	}
 
@@ -956,10 +955,10 @@ class SeoManagementService {
 		contentType: string,
 		contentId: number
 	): Promise<{ issues: TechnicalIssue[] } | null> {
-		const response = await api.post<{ issues: TechnicalIssue[] }>(
-			'/seo/technical/audit',
-			{ content_type: contentType, content_id: contentId }
-		);
+		const response = await api.post<{ issues: TechnicalIssue[] }>('/seo/technical/audit', {
+			content_type: contentType,
+			content_id: contentId
+		});
 		return { issues: response.issues };
 	}
 
@@ -987,16 +986,16 @@ class SeoManagementService {
 		};
 
 		let score = 0;
-		
+
 		if (data.basicAnalysis) {
 			score += data.basicAnalysis.seo_score * weights.content;
 		}
-		
+
 		if (data.technicalAudit) {
-			const technicalScore = 100 - (data.technicalAudit.issues.length * 5);
+			const technicalScore = 100 - data.technicalAudit.issues.length * 5;
 			score += Math.max(0, technicalScore) * weights.technical;
 		}
-		
+
 		if (data.performanceMetrics) {
 			score += data.performanceMetrics.pageSpeed.score * weights.performance;
 		}
@@ -1023,7 +1022,7 @@ class SeoManagementService {
 	async getAnalysis(contentType: string, contentId: number): Promise<EnhancedSeoAnalysis> {
 		const cacheKey = `analysis_${contentType}_${contentId}`;
 		const cached = this.getFromCache(cacheKey);
-		
+
 		if (cached) {
 			return cached;
 		}
@@ -1031,7 +1030,7 @@ class SeoManagementService {
 		const response = await api.get<{ analysis: EnhancedSeoAnalysis }>(
 			`/seo/analyze/${contentType}/${contentId}`
 		);
-		
+
 		this.setCache(cacheKey, response.analysis);
 		return response.analysis;
 	}
@@ -1039,10 +1038,7 @@ class SeoManagementService {
 	/**
 	 * Get SEO recommendations
 	 */
-	async getRecommendations(
-		contentType: string,
-		contentId: number
-	): Promise<Suggestion[]> {
+	async getRecommendations(contentType: string, contentId: number): Promise<Suggestion[]> {
 		const response = await api.get<{ recommendations: Suggestion[] }>(
 			`/seo/analyze/${contentType}/${contentId}/recommendations`
 		);
@@ -1057,18 +1053,15 @@ class SeoManagementService {
 		contentId: number,
 		issues: string[]
 	): Promise<{ fixed: string[]; failed: string[] }> {
-		const response = await api.post<{ fixed: string[]; failed: string[] }>(
-			'/seo/auto-fix',
-			{
-				content_type: contentType,
-				content_id: contentId,
-				issues
-			}
-		);
-		
+		const response = await api.post<{ fixed: string[]; failed: string[] }>('/seo/auto-fix', {
+			content_type: contentType,
+			content_id: contentId,
+			issues
+		});
+
 		// Refresh analysis after fixes
 		await this.analyze(contentType, contentId, undefined, { immediate: true });
-		
+
 		return response;
 	}
 
@@ -1084,33 +1077,33 @@ class SeoManagementService {
 
 	async createRedirect(data: Partial<Redirect>): Promise<Redirect> {
 		const response = await api.post<{ redirect: Redirect }>('/redirects', data);
-		
-		this.redirects.update(redirects => [...redirects, response.redirect]);
-		
+
+		this.redirects.update((redirects) => [...redirects, response.redirect]);
+
 		// Track redirect creation
 		this.trackEvent('redirect_created', { from: data.from_path, to: data.to_path });
-		
+
 		return response.redirect;
 	}
 
 	async updateRedirect(id: number, data: Partial<Redirect>): Promise<Redirect> {
 		const response = await api.put<{ redirect: Redirect }>(`/redirects/${id}`, data);
-		
-		this.redirects.update(redirects => {
-			const index = redirects.findIndex(r => r.id === id);
+
+		this.redirects.update((redirects) => {
+			const index = redirects.findIndex((r) => r.id === id);
 			if (index >= 0) {
 				redirects[index] = response.redirect;
 			}
 			return redirects;
 		});
-		
+
 		return response.redirect;
 	}
 
 	async deleteRedirect(id: number): Promise<void> {
 		await api.delete(`/redirects/${id}`);
-		
-		this.redirects.update(redirects => redirects.filter(r => r.id !== id));
+
+		this.redirects.update((redirects) => redirects.filter((r) => r.id !== id));
 	}
 
 	async detectRedirectChains(): Promise<RedirectChain[]> {
@@ -1121,7 +1114,7 @@ class SeoManagementService {
 	async importRedirects(file: File): Promise<{ imported: number; failed: number }> {
 		const formData = new FormData();
 		formData.append('file', file);
-		
+
 		const response = await api.post<{ imported: number; failed: number }>(
 			'/redirects/import',
 			formData,
@@ -1131,10 +1124,10 @@ class SeoManagementService {
 				}
 			}
 		);
-		
+
 		// Reload redirects
 		await this.loadRedirects();
-		
+
 		return response;
 	}
 
@@ -1163,21 +1156,21 @@ class SeoManagementService {
 				type: 'automatic'
 			});
 		}
-		
+
 		// Mark as resolved
 		await api.put(`/404-errors/${id}/resolve`);
-		
-		this.errors404.update(errors =>
-			errors.map(e => e.id === id ? { ...e, is_resolved: true } : e)
+
+		this.errors404.update((errors) =>
+			errors.map((e) => (e.id === id ? { ...e, is_resolved: true } : e))
 		);
 	}
 
 	private async get404(id: number): Promise<Error404> {
 		const errors = get(this.errors404);
-		const error = errors.find(e => e.id === id);
-		
+		const error = errors.find((e) => e.id === id);
+
 		if (error) return error;
-		
+
 		const response = await api.get<{ error: Error404 }>(`/404-errors/${id}`);
 		return response.error;
 	}
@@ -1190,18 +1183,15 @@ class SeoManagementService {
 			resolved_only: resolvedOnly,
 			older_than_days: olderThanDays
 		});
-		
+
 		// Reload 404 errors
 		await this.load404Errors();
-		
+
 		return response;
 	}
 
 	async findSimilarPages(url: string): Promise<string[]> {
-		const response = await api.post<{ suggestions: string[] }>(
-			'/404-errors/find-similar',
-			{ url }
-		);
+		const response = await api.post<{ suggestions: string[] }>('/404-errors/find-similar', { url });
 		return response.suggestions;
 	}
 
@@ -1227,9 +1217,9 @@ class SeoManagementService {
 			url,
 			...options
 		});
-		
-		this.rankings.update(rankings => [...rankings, response.tracking]);
-		
+
+		this.rankings.update((rankings) => [...rankings, response.tracking]);
+
 		return response.tracking;
 	}
 
@@ -1239,10 +1229,7 @@ class SeoManagementService {
 		return response.rankings;
 	}
 
-	async getRankingHistory(
-		keyword: string,
-		days: number = 30
-	): Promise<RankHistory[]> {
+	async getRankingHistory(keyword: string, days: number = 30): Promise<RankHistory[]> {
 		const response = await api.get<{ history: RankHistory[] }>(
 			`/seo/rankings/${encodeURIComponent(keyword)}/history`,
 			{ params: { days } }
@@ -1352,9 +1339,9 @@ class SeoManagementService {
 	private async loadTechnicalIssues(): Promise<void> {
 		try {
 			const response = await api.get<{ issues: TechnicalIssue[] }>('/seo/technical/issues');
-			
+
 			// Update current analysis with new issues
-			this.currentAnalysis.update(analysis => {
+			this.currentAnalysis.update((analysis) => {
 				if (analysis) {
 					analysis.technical_issues = response.issues;
 				}
@@ -1365,7 +1352,10 @@ class SeoManagementService {
 		}
 	}
 
-	private showNotification(message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info'): void {
+	private showNotification(
+		message: string,
+		type: 'info' | 'success' | 'warning' | 'error' = 'info'
+	): void {
 		// Implement notification system
 		console.log(`[${type.toUpperCase()}] ${message}`);
 	}
@@ -1393,7 +1383,7 @@ class SeoManagementService {
 		this.wsConnection?.close();
 
 		// Clear debounce timers
-		this.analysisDebounceTimers.forEach(timer => clearTimeout(timer));
+		this.analysisDebounceTimers.forEach((timer) => clearTimeout(timer));
 		this.analysisDebounceTimers.clear();
 	}
 }
@@ -1464,8 +1454,12 @@ export const error = seoService.error;
 // Export main API object with all methods
 export const seoApi = {
 	// Analysis
-	analyze: (contentType: string, contentId: number, focusKeyword?: string, options?: AnalysisOptions) =>
-		seoService.analyze(contentType, contentId, focusKeyword, options),
+	analyze: (
+		contentType: string,
+		contentId: number,
+		focusKeyword?: string,
+		options?: AnalysisOptions
+	) => seoService.analyze(contentType, contentId, focusKeyword, options),
 	getAnalysis: (contentType: string, contentId: number) =>
 		seoService.getAnalysis(contentType, contentId),
 	getRecommendations: (contentType: string, contentId: number) =>

@@ -365,16 +365,16 @@ function createPopupStore() {
 
 				const newState = { ...state, popupHistory: history };
 				savePopupState(newState);
-				
+
 				// Send to backend API
 				if (browser) {
 					import('$lib/api/popups').then(({ recordPopupImpression }) => {
-						recordPopupImpression(popupId).catch(err => {
+						recordPopupImpression(popupId).catch((err) => {
 							console.error('Failed to record impression:', err);
 						});
 					});
 				}
-				
+
 				return newState;
 			});
 		},
@@ -384,7 +384,7 @@ function createPopupStore() {
 			// Send to backend API
 			if (browser) {
 				import('$lib/api/popups').then(({ recordPopupConversion }) => {
-					recordPopupConversion(popupId, data).catch(err => {
+					recordPopupConversion(popupId, data).catch((err) => {
 						console.error('Failed to record conversion:', err);
 					});
 				});

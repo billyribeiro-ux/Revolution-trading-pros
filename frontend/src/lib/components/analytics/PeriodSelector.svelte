@@ -29,9 +29,7 @@
 	{#each periods as period}
 		<button
 			class="px-3 py-1.5 text-sm font-medium rounded-md transition-all
-				{value === period.value
-					? 'bg-white text-gray-900 shadow-sm'
-					: 'text-gray-600 hover:text-gray-900'}"
+				{value === period.value ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
 			on:click={() => selectPeriod(period.value)}
 		>
 			{period.label}
@@ -41,9 +39,9 @@
 	{#if showCustom}
 		<button
 			class="px-3 py-1.5 text-sm font-medium rounded-md transition-all
-				{!periods.find(p => p.value === value)
-					? 'bg-white text-gray-900 shadow-sm'
-					: 'text-gray-600 hover:text-gray-900'}"
+				{!periods.find((p) => p.value === value)
+				? 'bg-white text-gray-900 shadow-sm'
+				: 'text-gray-600 hover:text-gray-900'}"
 		>
 			Custom
 		</button>

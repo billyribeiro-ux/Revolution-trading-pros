@@ -1,39 +1,39 @@
 /**
  * Admin API Client - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. COMPLETE TYPE SAFETY:
  *    - Full TypeScript interfaces for all endpoints
  *    - Type-safe request/response handling
  *    - Exhaustive type checking
  *    - Generic type constraints
- * 
+ *
  * 2. ADVANCED ERROR HANDLING:
  *    - Retry mechanism with exponential backoff
  *    - Circuit breaker pattern
  *    - Error recovery strategies
  *    - Detailed error telemetry
- * 
+ *
  * 3. PERFORMANCE OPTIMIZATIONS:
  *    - Request deduplication
  *    - Response caching with TTL
  *    - Request queuing and batching
  *    - Concurrent request limiting
- * 
+ *
  * 4. SECURITY:
  *    - Automatic token refresh
  *    - Request signing
  *    - CSRF protection
  *    - Rate limiting
- * 
+ *
  * 5. OBSERVABILITY:
  *    - Request/response logging
  *    - Performance metrics
  *    - Error tracking
  *    - Analytics integration
- * 
+ *
  * @version 2.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -258,7 +258,15 @@ export interface Tag {
 // Request types
 export interface CouponCreateData {
 	code: string;
-	type: 'fixed' | 'percentage' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
+	type:
+		| 'fixed'
+		| 'percentage'
+		| 'bogo'
+		| 'free_shipping'
+		| 'tiered'
+		| 'bundle'
+		| 'cashback'
+		| 'points';
 	value: number;
 	display_name?: string;
 	description?: string;
@@ -439,10 +447,7 @@ class RequestManager {
 	/**
 	 * Deduplicate requests
 	 */
-	async deduplicateRequest<T>(
-		key: string,
-		requestFn: () => Promise<T>
-	): Promise<T> {
+	async deduplicateRequest<T>(key: string, requestFn: () => Promise<T>): Promise<T> {
 		// Check if request is already pending
 		if (this.pendingRequests.has(key)) {
 			console.debug(`[API] Deduplicating request: ${key}`);
@@ -476,7 +481,7 @@ class RequestManager {
 
 		// Wait if too many concurrent requests
 		while (this.activeRequests >= MAX_CONCURRENT_REQUESTS) {
-			await new Promise(resolve => setTimeout(resolve, 100));
+			await new Promise((resolve) => setTimeout(resolve, 100));
 		}
 
 		this.activeRequests++;
@@ -490,12 +495,12 @@ class RequestManager {
 			// Update circuit breaker
 			this.circuitBreaker.failures++;
 			this.circuitBreaker.lastFailure = Date.now();
-			
+
 			if (this.circuitBreaker.failures >= CIRCUIT_BREAKER_THRESHOLD) {
 				this.circuitBreaker.isOpen = true;
 				console.error('[API] Circuit breaker opened due to repeated failures');
 			}
-			
+
 			throw error;
 		} finally {
 			this.activeRequests--;
@@ -514,7 +519,7 @@ const requestManager = new RequestManager();
  */
 async function makeRequest<T = any>(
 	endpoint: string,
-	options: RequestInit & { 
+	options: RequestInit & {
 		skipCache?: boolean;
 		cacheTTL?: number;
 		retries?: number;
@@ -528,7 +533,12 @@ async function makeRequest<T = any>(
 	}
 
 	const url = `${API_BASE_URL}${endpoint}`;
-	const { skipCache = false, cacheTTL = CACHE_TTL, retries = MAX_RETRIES, ...fetchOptions } = options;
+	const {
+		skipCache = false,
+		cacheTTL = CACHE_TTL,
+		retries = MAX_RETRIES,
+		...fetchOptions
+	} = options;
 
 	// Check cache for GET requests
 	if (!skipCache && fetchOptions.method === 'GET') {
@@ -538,20 +548,26 @@ async function makeRequest<T = any>(
 
 	// Deduplicate identical requests
 	const dedupeKey = `${fetchOptions.method || 'GET'}:${endpoint}`;
-	
+
 	return requestManager.deduplicateRequest(dedupeKey, async () => {
 		return requestManager.queueRequest(async () => {
-			return executeRequestWithRetry<T>(url, {
-				...fetchOptions,
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-					'Authorization': `Bearer ${token}`,
-					'X-API-Version': API_VERSION,
-					'X-Request-ID': generateRequestId(),
-					...fetchOptions.headers
-				}
-			}, retries, endpoint, cacheTTL);
+			return executeRequestWithRetry<T>(
+				url,
+				{
+					...fetchOptions,
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+						Authorization: `Bearer ${token}`,
+						'X-API-Version': API_VERSION,
+						'X-Request-ID': generateRequestId(),
+						...fetchOptions.headers
+					}
+				},
+				retries,
+				endpoint,
+				cacheTTL
+			);
 		});
 	});
 }
@@ -572,7 +588,7 @@ async function executeRequestWithRetry<T>(
 	try {
 		// Performance tracking
 		const startTime = performance.now();
-		
+
 		const response = await fetch(url, {
 			...options,
 			signal: controller.signal
@@ -590,7 +606,7 @@ async function executeRequestWithRetry<T>(
 		// Parse response
 		let data: any;
 		const contentType = response.headers.get('content-type');
-		
+
 		if (contentType?.includes('application/json')) {
 			data = await response.json();
 		} else {
@@ -613,7 +629,6 @@ async function executeRequestWithRetry<T>(
 		}
 
 		return data;
-
 	} catch (error) {
 		clearTimeout(timeoutId);
 
@@ -625,16 +640,17 @@ async function executeRequestWithRetry<T>(
 		// Determine if we should retry
 		if (error instanceof AdminApiError && error.shouldRetry && retriesLeft > 0) {
 			const delay = RETRY_DELAY_BASE * Math.pow(2, MAX_RETRIES - retriesLeft);
-			console.warn(`[API] Retrying request to ${endpoint} after ${delay}ms (${retriesLeft} retries left)`);
-			
-			await new Promise(resolve => setTimeout(resolve, delay));
+			console.warn(
+				`[API] Retrying request to ${endpoint} after ${delay}ms (${retriesLeft} retries left)`
+			);
+
+			await new Promise((resolve) => setTimeout(resolve, delay));
 			return executeRequestWithRetry<T>(url, options, retriesLeft - 1, endpoint, cacheTTL);
 		}
 
 		// Log error
 		logApiError(endpoint, error);
 		throw error;
-
 	} finally {
 		clearTimeout(timeoutId);
 	}
@@ -701,17 +717,17 @@ function logApiError(endpoint: string, error: any): void {
  */
 function buildQueryString(params: Record<string, any>): string {
 	const searchParams = new URLSearchParams();
-	
+
 	for (const [key, value] of Object.entries(params)) {
 		if (value !== undefined && value !== null && value !== '') {
 			if (Array.isArray(value)) {
-				value.forEach(v => searchParams.append(`${key}[]`, String(v)));
+				value.forEach((v) => searchParams.append(`${key}[]`, String(v)));
 			} else {
 				searchParams.append(key, String(value));
 			}
 		}
 	}
-	
+
 	const query = searchParams.toString();
 	return query ? `?${query}` : '';
 }
@@ -791,7 +807,7 @@ export const couponsApi = {
 		const response = await fetch(`${API_BASE_URL}/admin/coupons/import`, {
 			method: 'POST',
 			headers: {
-				'Authorization': `Bearer ${auth.token}`,
+				Authorization: `Bearer ${auth.token}`,
 				'X-API-Version': API_VERSION
 			},
 			body: formData
@@ -799,11 +815,7 @@ export const couponsApi = {
 
 		if (!response.ok) {
 			const data = await response.json();
-			throw new AdminApiError(
-				data.message || 'Import failed',
-				response.status,
-				data
-			);
+			throw new AdminApiError(data.message || 'Import failed', response.status, data);
 		}
 
 		const data = await response.json();
@@ -829,14 +841,16 @@ export const couponsApi = {
 		});
 	},
 
-	async preview(data: any): Promise<ApiResponse<{
-		formatted_value: string;
-		example_discount: number;
-		affected_products: number;
-		eligible_users: number;
-		estimated_usage: number;
-		revenue_impact: number;
-	}>> {
+	async preview(data: any): Promise<
+		ApiResponse<{
+			formatted_value: string;
+			example_discount: number;
+			affected_products: number;
+			eligible_users: number;
+			estimated_usage: number;
+			revenue_impact: number;
+		}>
+	> {
 		return makeRequest('/admin/coupons/preview', {
 			method: 'POST',
 			body: JSON.stringify(data),
@@ -1081,16 +1095,19 @@ export const formsApi = {
 
 	async exportSubmissions(formId: number, format: 'csv' | 'excel' = 'csv'): Promise<Blob> {
 		const auth = get(authStore);
-		const response = await fetch(`${API_BASE_URL}/forms/${formId}/submissions/export?format=${format}`, {
-			headers: {
-				'Authorization': `Bearer ${auth.token}`
+		const response = await fetch(
+			`${API_BASE_URL}/forms/${formId}/submissions/export?format=${format}`,
+			{
+				headers: {
+					Authorization: `Bearer ${auth.token}`
+				}
 			}
-		});
-		
+		);
+
 		if (!response.ok) {
 			throw new AdminApiError('Export failed', response.status);
 		}
-		
+
 		return response.blob();
 	}
 };
@@ -1117,7 +1134,10 @@ export const subscriptionPlansApi = {
 		return response;
 	},
 
-	async update(id: number, data: Partial<SubscriptionPlan>): Promise<ApiResponse<SubscriptionPlan>> {
+	async update(
+		id: number,
+		data: Partial<SubscriptionPlan>
+	): Promise<ApiResponse<SubscriptionPlan>> {
 		const response = await makeRequest<SubscriptionPlan>(`/admin/subscriptions/plans/${id}`, {
 			method: 'PUT',
 			body: JSON.stringify(data)
@@ -1308,7 +1328,10 @@ export const productsApi = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const categoriesApi = {
-	async list(params?: PaginationParams & FilterParams & { is_visible?: boolean; parent_id?: number | null; all?: boolean }): Promise<ApiResponse<Category[]>> {
+	async list(
+		params?: PaginationParams &
+			FilterParams & { is_visible?: boolean; parent_id?: number | null; all?: boolean }
+	): Promise<ApiResponse<Category[]>> {
 		const query = params ? buildQueryString(params) : '';
 		return makeRequest<Category[]>(`/admin/categories${query}`);
 	},
@@ -1344,7 +1367,10 @@ export const categoriesApi = {
 		});
 	},
 
-	async bulkUpdateVisibility(ids: number[], is_visible: boolean): Promise<ApiResponse<{ updated_count: number }>> {
+	async bulkUpdateVisibility(
+		ids: number[],
+		is_visible: boolean
+	): Promise<ApiResponse<{ updated_count: number }>> {
 		return makeRequest<{ updated_count: number }>('/admin/categories/bulk-update-visibility', {
 			method: 'POST',
 			body: JSON.stringify({ ids, is_visible })
@@ -1381,7 +1407,9 @@ export const categoriesApi = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const tagsApi = {
-	async list(params?: PaginationParams & FilterParams & { is_visible?: boolean; all?: boolean }): Promise<ApiResponse<Tag[]>> {
+	async list(
+		params?: PaginationParams & FilterParams & { is_visible?: boolean; all?: boolean }
+	): Promise<ApiResponse<Tag[]>> {
 		const query = params ? buildQueryString(params) : '';
 		return makeRequest<Tag[]>(`/admin/tags${query}`);
 	},
@@ -1417,7 +1445,10 @@ export const tagsApi = {
 		});
 	},
 
-	async bulkUpdateVisibility(ids: number[], is_visible: boolean): Promise<ApiResponse<{ updated_count: number }>> {
+	async bulkUpdateVisibility(
+		ids: number[],
+		is_visible: boolean
+	): Promise<ApiResponse<{ updated_count: number }>> {
 		return makeRequest<{ updated_count: number }>('/admin/tags/bulk-update-visibility', {
 			method: 'POST',
 			body: JSON.stringify({ ids, is_visible })
@@ -1537,13 +1568,13 @@ export function clearApiCachePattern(pattern: string): void {
  * Prefetch data for better UX
  */
 export async function prefetchData(endpoints: string[]): Promise<void> {
-	const promises = endpoints.map(endpoint => 
-		makeRequest(endpoint).catch(err => {
+	const promises = endpoints.map((endpoint) =>
+		makeRequest(endpoint).catch((err) => {
 			console.warn(`[API] Prefetch failed for ${endpoint}:`, err);
 			return null;
 		})
 	);
-	
+
 	await Promise.all(promises);
 }
 
@@ -1568,7 +1599,7 @@ export const teamsApi = {
 	get: async (id: number) => ({ data: null }),
 	create: async (data: any) => ({ data: null }),
 	update: async (id: number, data: any) => ({ data: null }),
-	delete: async (id: number) => ({ success: true }),
+	delete: async (id: number) => ({ success: true })
 };
 
 export const departmentsApi = {
@@ -1576,5 +1607,5 @@ export const departmentsApi = {
 	get: async (id: number) => ({ data: null }),
 	create: async (data: any) => ({ data: null }),
 	update: async (id: number, data: any) => ({ data: null }),
-	delete: async (id: number) => ({ success: true }),
+	delete: async (id: number) => ({ success: true })
 };

@@ -1,7 +1,7 @@
 /**
  * Circuit Breaker Pattern - Enterprise Implementation
  * Google L7+ Principal Engineer Level
- * 
+ *
  * Features:
  * - Automatic failure detection
  * - Exponential backoff
@@ -11,7 +11,12 @@
  */
 
 import { writable, derived } from 'svelte/store';
-import { recordMetric, incrementCounter, warn, error as logError } from '../observability/telemetry';
+import {
+	recordMetric,
+	incrementCounter,
+	warn,
+	error as logError
+} from '../observability/telemetry';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -21,12 +26,12 @@ export type CircuitState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
 
 export interface CircuitBreakerConfig {
 	name: string;
-	failureThreshold: number;        // Number of failures before opening
-	successThreshold: number;        // Number of successes to close from half-open
-	timeout: number;                 // Request timeout in ms
-	resetTimeout: number;            // Time before trying half-open in ms
-	monitoringPeriod: number;        // Rolling window for failure rate in ms
-	volumeThreshold: number;         // Minimum requests before calculating failure rate
+	failureThreshold: number; // Number of failures before opening
+	successThreshold: number; // Number of successes to close from half-open
+	timeout: number; // Request timeout in ms
+	resetTimeout: number; // Time before trying half-open in ms
+	monitoringPeriod: number; // Rolling window for failure rate in ms
+	volumeThreshold: number; // Minimum requests before calculating failure rate
 	errorThresholdPercentage: number; // Percentage of errors to open circuit
 }
 
@@ -69,9 +74,9 @@ export class CircuitBreaker<T = any> {
 
 	// Stores for reactive UI
 	public stats = writable<CircuitBreakerStats>(this.getStats());
-	public isOpen = derived(this.stats, $stats => $stats.state === 'OPEN');
-	public isHalfOpen = derived(this.stats, $stats => $stats.state === 'HALF_OPEN');
-	public isClosed = derived(this.stats, $stats => $stats.state === 'CLOSED');
+	public isOpen = derived(this.stats, ($stats) => $stats.state === 'OPEN');
+	public isHalfOpen = derived(this.stats, ($stats) => $stats.state === 'HALF_OPEN');
+	public isClosed = derived(this.stats, ($stats) => $stats.state === 'CLOSED');
 
 	constructor(config: Partial<CircuitBreakerConfig> = {}) {
 		this.config = {
@@ -99,12 +104,12 @@ export class CircuitBreaker<T = any> {
 					`Circuit breaker '${this.config.name}' is OPEN`,
 					this.nextAttemptTime
 				);
-				
+
 				if (this.fallbackFn) {
 					warn(`Circuit breaker ${this.config.name} is OPEN, using fallback`);
 					return this.fallbackFn(error) as Promise<R>;
 				}
-				
+
 				throw error;
 			}
 		}
@@ -115,22 +120,22 @@ export class CircuitBreaker<T = any> {
 		try {
 			// Execute with timeout
 			const result = await this.executeWithTimeout(fn);
-			
+
 			const duration = performance.now() - startTime;
 			this.onSuccess(duration);
-			
+
 			return result;
 		} catch (error: any) {
 			const duration = performance.now() - startTime;
 			this.onFailure(duration, error);
-			
+
 			if (this.fallbackFn) {
 				warn(`Request failed, using fallback for ${this.config.name}`, {
 					error: error.message
 				});
 				return this.fallbackFn(error) as Promise<R>;
 			}
-			
+
 			throw error;
 		}
 	}
@@ -162,10 +167,7 @@ export class CircuitBreaker<T = any> {
 		this.recordRequest(true, duration);
 
 		// Transition from HALF_OPEN to CLOSED if threshold met
-		if (
-			this.state === 'HALF_OPEN' &&
-			this.consecutiveSuccesses >= this.config.successThreshold
-		) {
+		if (this.state === 'HALF_OPEN' && this.consecutiveSuccesses >= this.config.successThreshold) {
 			this.transitionTo('CLOSED');
 		}
 
@@ -231,7 +233,7 @@ export class CircuitBreaker<T = any> {
 			return false;
 		}
 
-		const failureRate = recentRequests.filter(r => !r.success).length / recentRequests.length;
+		const failureRate = recentRequests.filter((r) => !r.success).length / recentRequests.length;
 		return failureRate * 100 >= this.config.errorThresholdPercentage;
 	}
 
@@ -306,7 +308,7 @@ export class CircuitBreaker<T = any> {
 	 */
 	private getRecentRequests(): RequestRecord[] {
 		const cutoff = Date.now() - this.config.monitoringPeriod;
-		return this.requestHistory.filter(r => r.timestamp >= cutoff);
+		return this.requestHistory.filter((r) => r.timestamp >= cutoff);
 	}
 
 	/**
@@ -314,7 +316,7 @@ export class CircuitBreaker<T = any> {
 	 */
 	private cleanRequestHistory(): void {
 		const cutoff = Date.now() - this.config.monitoringPeriod;
-		this.requestHistory = this.requestHistory.filter(r => r.timestamp >= cutoff);
+		this.requestHistory = this.requestHistory.filter((r) => r.timestamp >= cutoff);
 	}
 
 	/**
@@ -323,7 +325,7 @@ export class CircuitBreaker<T = any> {
 	private getFailureRate(): number {
 		const recent = this.getRecentRequests();
 		if (recent.length === 0) return 0;
-		return (recent.filter(r => !r.success).length / recent.length) * 100;
+		return (recent.filter((r) => !r.success).length / recent.length) * 100;
 	}
 
 	/**

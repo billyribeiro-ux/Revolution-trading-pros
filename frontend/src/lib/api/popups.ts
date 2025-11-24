@@ -1,9 +1,9 @@
 /**
  * Popup & Engagement Management Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. INTELLIGENT TARGETING:
  *    - Behavioral triggers
  *    - Geo-targeting
@@ -11,7 +11,7 @@
  *    - User segmentation
  *    - Time-based rules
  *    - Scroll depth tracking
- * 
+ *
  * 2. CONVERSION OPTIMIZATION:
  *    - A/B/n testing
  *    - AI-powered optimization
@@ -19,7 +19,7 @@
  *    - Personalization
  *    - Exit intent detection
  *    - Smart timing
- * 
+ *
  * 3. ENGAGEMENT TYPES:
  *    - Modal popups
  *    - Slide-ins
@@ -27,7 +27,7 @@
  *    - Full-screen overlays
  *    - Floating widgets
  *    - Interactive gamification
- * 
+ *
  * 4. ADVANCED TRIGGERS:
  *    - Exit intent
  *    - Time on page
@@ -35,7 +35,7 @@
  *    - Inactivity detection
  *    - Cart abandonment
  *    - Custom events
- * 
+ *
  * 5. ANALYTICS & INSIGHTS:
  *    - Real-time metrics
  *    - Heatmaps
@@ -43,7 +43,7 @@
  *    - Conversion funnels
  *    - Revenue attribution
  *    - Predictive analytics
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -60,8 +60,8 @@ export type { Popup } from '$lib/stores/popups';
 // ═══════════════════════════════════════════════════════════════════════════
 
 const API_BASE = '/api';
-const WS_URL = browser ? (import.meta.env.VITE_WS_URL || 'ws://localhost:8000') : '';
-const ML_API = browser ? (import.meta.env.VITE_ML_API || 'http://localhost:8001/api') : '';
+const WS_URL = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
+const ML_API = browser ? import.meta.env.VITE_ML_API || 'http://localhost:8001/api' : '';
 
 const IMPRESSION_DEBOUNCE = 1000; // 1 second
 const CONVERSION_TIMEOUT = 30000; // 30 seconds
@@ -79,27 +79,27 @@ export interface EnhancedPopup extends Popup {
 	// Campaign details
 	campaign?: PopupCampaign;
 	variant?: ABTestVariant;
-	
+
 	// Advanced targeting
 	targeting?: TargetingRules;
 	triggers?: TriggerConfig[];
 	scheduling?: SchedulingConfig;
-	
+
 	// Personalization
 	personalization?: PersonalizationConfig;
 	dynamicContent?: DynamicContent[];
-	
+
 	// Analytics
 	analytics?: PopupAnalytics;
 	performance?: PerformanceMetrics;
-	
+
 	// Behavior
 	behavior?: PopupBehavior;
 	animations?: AnimationConfig;
-	
+
 	// Compliance
 	compliance?: ComplianceConfig;
-	
+
 	// Metadata
 	tags?: string[];
 	version?: number;
@@ -116,7 +116,7 @@ export interface PopupCampaign {
 	spent?: number;
 }
 
-export type CampaignType = 
+export type CampaignType =
 	| 'lead_generation'
 	| 'promotion'
 	| 'announcement'
@@ -161,29 +161,29 @@ export interface TargetingRules {
 	// User targeting
 	userSegments?: string[];
 	userAttributes?: UserAttribute[];
-	
+
 	// Geo targeting
 	countries?: string[];
 	regions?: string[];
 	cities?: string[];
 	languages?: string[];
-	
+
 	// Device targeting
 	devices?: DeviceType[];
 	browsers?: string[];
 	operatingSystems?: string[];
-	
+
 	// Traffic source
 	sources?: TrafficSource[];
 	referrers?: string[];
 	utmParams?: UTMParameters[];
-	
+
 	// Behavior
 	newVisitors?: boolean;
 	returningVisitors?: boolean;
 	pageViews?: { min?: number; max?: number };
 	sessionDuration?: { min?: number; max?: number };
-	
+
 	// Custom rules
 	customRules?: CustomRule[];
 }
@@ -225,7 +225,7 @@ export interface TriggerConfig {
 	frequency?: TriggerFrequency;
 }
 
-export type TriggerType = 
+export type TriggerType =
 	| 'immediate'
 	| 'time_delay'
 	| 'scroll_depth'
@@ -338,11 +338,16 @@ export interface PopupDesign {
 	customCSS?: string;
 }
 
-export type PopupPosition = 
+export type PopupPosition =
 	| 'center'
-	| 'top-left' | 'top-center' | 'top-right'
-	| 'bottom-left' | 'bottom-center' | 'bottom-right'
-	| 'slide-left' | 'slide-right';
+	| 'top-left'
+	| 'top-center'
+	| 'top-right'
+	| 'bottom-left'
+	| 'bottom-center'
+	| 'bottom-right'
+	| 'slide-left'
+	| 'slide-right';
 
 export interface PopupSize {
 	width?: string;
@@ -400,7 +405,7 @@ export interface AnimationConfig {
 	attention?: AttentionAnimation;
 }
 
-export type AnimationType = 
+export type AnimationType =
 	| 'none'
 	| 'fade'
 	| 'slide'
@@ -481,7 +486,7 @@ export interface PopupEvent {
 	data?: Record<string, any>;
 }
 
-export type EventType = 
+export type EventType =
 	| 'impression'
 	| 'interaction'
 	| 'conversion'
@@ -506,7 +511,7 @@ class PopupEngagementService {
 	private sessionId: string;
 	private viewedPopups = new Set<string>();
 	private convertedPopups = new Set<string>();
-	
+
 	// Stores
 	public popups = writable<EnhancedPopup[]>([]);
 	public activePopup = writable<EnhancedPopup | null>(null);
@@ -514,22 +519,13 @@ class PopupEngagementService {
 	public analytics = writable<Record<string, PopupAnalytics>>({});
 	public isLoading = writable(false);
 	public error = writable<string | null>(null);
-	
+
 	// Derived stores
-	public hasActivePopup = derived(
-		this.activePopup,
-		$active => $active !== null
-	);
-	
-	public popupQueue = derived(
-		this.queuedPopups,
-		$queued => $queued
-	);
-	
-	public nextPopup = derived(
-		this.queuedPopups,
-		$queued => $queued[0] || null
-	);
+	public hasActivePopup = derived(this.activePopup, ($active) => $active !== null);
+
+	public popupQueue = derived(this.queuedPopups, ($queued) => $queued);
+
+	public nextPopup = derived(this.queuedPopups, ($queued) => $queued[0] || null);
 
 	private constructor() {
 		this.sessionId = this.generateSessionId();
@@ -551,16 +547,16 @@ class PopupEngagementService {
 
 		// Setup WebSocket for real-time updates
 		this.setupWebSocket();
-		
+
 		// Setup behavioral tracking
 		this.setupBehavioralTracking();
-		
+
 		// Load active popups for current page
 		this.loadActivePopups();
-		
+
 		// Setup event listeners
 		this.setupEventListeners();
-		
+
 		// Start analytics processing
 		this.startAnalyticsProcessing();
 
@@ -582,7 +578,7 @@ class PopupEngagementService {
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_URL}/popups`);
-			
+
 			this.wsConnection.onopen = () => {
 				console.debug('[PopupService] WebSocket connected');
 				this.sendSessionInfo();
@@ -607,23 +603,25 @@ class PopupEngagementService {
 
 	private sendSessionInfo(): void {
 		if (!this.wsConnection) return;
-		
-		this.wsConnection.send(JSON.stringify({
-			type: 'session',
-			sessionId: this.sessionId,
-			page: window.location.pathname,
-			userAgent: navigator.userAgent,
-			viewport: {
-				width: window.innerWidth,
-				height: window.innerHeight
-			}
-		}));
+
+		this.wsConnection.send(
+			JSON.stringify({
+				type: 'session',
+				sessionId: this.sessionId,
+				page: window.location.pathname,
+				userAgent: navigator.userAgent,
+				viewport: {
+					width: window.innerWidth,
+					height: window.innerHeight
+				}
+			})
+		);
 	}
 
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			switch (message.type) {
 				case 'popup_update':
 					this.handlePopupUpdate(message.data);
@@ -644,8 +642,8 @@ class PopupEngagementService {
 	}
 
 	private handlePopupUpdate(popup: EnhancedPopup): void {
-		this.popups.update(popups => {
-			const index = popups.findIndex(p => p.id === popup.id);
+		this.popups.update((popups) => {
+			const index = popups.findIndex((p) => p.id === popup.id);
 			if (index >= 0) {
 				popups[index] = popup;
 			} else {
@@ -660,7 +658,7 @@ class PopupEngagementService {
 	}
 
 	private handleAnalyticsUpdate(data: { popupId: string; analytics: PopupAnalytics }): void {
-		this.analytics.update(analytics => {
+		this.analytics.update((analytics) => {
 			analytics[data.popupId] = data.analytics;
 			return analytics;
 		});
@@ -678,13 +676,13 @@ class PopupEngagementService {
 
 		// Exit intent detection
 		this.setupExitIntentDetection();
-		
+
 		// Scroll depth tracking
 		this.setupScrollTracking();
-		
+
 		// Inactivity detection
 		this.setupInactivityDetection();
-		
+
 		// Page interaction tracking
 		this.setupInteractionTracking();
 	}
@@ -695,27 +693,27 @@ class PopupEngagementService {
 				this.triggerExitIntentPopups();
 			}
 		};
-		
+
 		document.addEventListener('mousemove', this.exitIntentListener);
 	}
 
 	private setupScrollTracking(): void {
 		let lastScrollDepth = 0;
-		
+
 		this.scrollListener = () => {
 			const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
 			const scrollDepth = Math.round((window.scrollY / scrollHeight) * 100);
-			
+
 			// Trigger popups at scroll milestones
-			[25, 50, 75, 100].forEach(milestone => {
+			[25, 50, 75, 100].forEach((milestone) => {
 				if (scrollDepth >= milestone && lastScrollDepth < milestone) {
 					this.triggerScrollPopups(milestone);
 				}
 			});
-			
+
 			lastScrollDepth = scrollDepth;
 		};
-		
+
 		window.addEventListener('scroll', this.scrollListener, { passive: true });
 	}
 
@@ -724,16 +722,16 @@ class PopupEngagementService {
 			if (this.inactivityTimer) {
 				clearTimeout(this.inactivityTimer);
 			}
-			
+
 			this.inactivityTimer = window.setTimeout(() => {
 				this.triggerInactivityPopups();
 			}, INACTIVITY_THRESHOLD);
 		};
-		
-		['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+
+		['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach((event) => {
 			document.addEventListener(event, resetTimer, true);
 		});
-		
+
 		resetTimer();
 	}
 
@@ -742,7 +740,7 @@ class PopupEngagementService {
 		document.addEventListener('click', (e) => {
 			const target = e.target as HTMLElement;
 			const popupElement = target.closest('[data-popup-id]');
-			
+
 			if (popupElement) {
 				const popupId = popupElement.getAttribute('data-popup-id');
 				if (popupId) {
@@ -816,7 +814,7 @@ class PopupEngagementService {
 
 			const data = await response.json();
 			this.popups.set(data.popups);
-			
+
 			return data.popups;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -834,7 +832,7 @@ class PopupEngagementService {
 
 		const page = window.location.pathname;
 		const cacheKey = `active_popups_${page}`;
-		
+
 		// Check cache
 		const cached = this.getFromCache(cacheKey);
 		if (cached) {
@@ -843,9 +841,7 @@ class PopupEngagementService {
 		}
 
 		try {
-			const response = await fetch(
-				`${API_BASE}/popups/active?page=${encodeURIComponent(page)}`
-			);
+			const response = await fetch(`${API_BASE}/popups/active?page=${encodeURIComponent(page)}`);
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch active popups');
@@ -853,10 +849,10 @@ class PopupEngagementService {
 
 			const data = await response.json();
 			const popups = data.popups as EnhancedPopup[];
-			
+
 			// Cache result
 			this.setCache(cacheKey, popups);
-			
+
 			// Process popups
 			this.processActivePopups(popups);
 		} catch (error) {
@@ -866,13 +862,13 @@ class PopupEngagementService {
 
 	private processActivePopups(popups: EnhancedPopup[]): void {
 		// Filter by targeting rules
-		const eligible = popups.filter(popup => this.isEligible(popup));
-		
+		const eligible = popups.filter((popup) => this.isEligible(popup));
+
 		// Sort by priority
 		eligible.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-		
+
 		// Queue eligible popups
-		eligible.forEach(popup => {
+		eligible.forEach((popup) => {
 			this.schedulePopup(popup);
 		});
 	}
@@ -904,12 +900,12 @@ class PopupEngagementService {
 			}
 
 			const created = await response.json();
-			
-			this.popups.update(popups => [...popups, created]);
-			
+
+			this.popups.update((popups) => [...popups, created]);
+
 			// Track creation
 			this.trackEvent('popup_created', { popupId: created.id });
-			
+
 			return created;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -941,10 +937,10 @@ class PopupEngagementService {
 			}
 
 			const updated = await response.json();
-			
+
 			this.handlePopupUpdate(updated);
 			this.clearCache();
-			
+
 			return updated;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -971,7 +967,7 @@ class PopupEngagementService {
 				throw new Error('Failed to delete popup');
 			}
 
-			this.popups.update(popups => popups.filter(p => p.id !== id));
+			this.popups.update((popups) => popups.filter((p) => p.id !== id));
 			this.clearCache();
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -996,19 +992,19 @@ class PopupEngagementService {
 
 		// Set as active
 		this.activePopup.set(popup);
-		
+
 		// Track impression
 		this.recordImpression(popup.id);
-		
+
 		// Set display cookie
 		this.setDisplayCookie(popup);
-		
+
 		// Start conversion tracking
 		this.startConversionTracking(popup);
-		
+
 		// Apply animations
 		this.applyAnimations(popup);
-		
+
 		// Track event
 		this.trackEvent('popup_shown', {
 			popupId: popup.id,
@@ -1021,22 +1017,22 @@ class PopupEngagementService {
 	 */
 	closePopup(popupId?: string): void {
 		const current = get(this.activePopup);
-		
+
 		if (!current || (popupId && current.id !== popupId)) {
 			return;
 		}
 
 		// Apply exit animation
 		this.applyExitAnimation(current);
-		
+
 		// Clear active popup
 		setTimeout(() => {
 			this.activePopup.set(null);
-			
+
 			// Show next in queue
 			this.showNextInQueue();
 		}, 300);
-		
+
 		// Track close
 		this.trackEvent('popup_closed', {
 			popupId: current.id,
@@ -1056,13 +1052,13 @@ class PopupEngagementService {
 	 * Queue popup for display
 	 */
 	private queuePopup(popup: EnhancedPopup): void {
-		this.queuedPopups.update(queue => {
-			if (!queue.find(p => p.id === popup.id)) {
+		this.queuedPopups.update((queue) => {
+			if (!queue.find((p) => p.id === popup.id)) {
 				queue.push(popup);
 			}
 			return queue;
 		});
-		
+
 		// If no active popup, show immediately
 		if (!get(this.activePopup)) {
 			this.showNextInQueue();
@@ -1071,9 +1067,9 @@ class PopupEngagementService {
 
 	private showNextInQueue(): void {
 		const queue = get(this.queuedPopups);
-		
+
 		if (queue.length === 0) return;
-		
+
 		const next = queue.shift();
 		if (next) {
 			this.queuedPopups.set(queue);
@@ -1091,9 +1087,9 @@ class PopupEngagementService {
 			return;
 		}
 
-		popup.triggers.forEach(trigger => {
+		popup.triggers.forEach((trigger) => {
 			if (!trigger.enabled) return;
-			
+
 			switch (trigger.type) {
 				case 'immediate':
 					this.queuePopup(popup);
@@ -1121,9 +1117,13 @@ class PopupEngagementService {
 		if (trigger.type === 'custom_event' && trigger.conditions) {
 			const eventName = trigger.conditions[0]?.value;
 			if (eventName) {
-				document.addEventListener(eventName, () => {
-					this.queuePopup(popup);
-				}, { once: true });
+				document.addEventListener(
+					eventName,
+					() => {
+						this.queuePopup(popup);
+					},
+					{ once: true }
+				);
 			}
 		}
 	}
@@ -1138,10 +1138,10 @@ class PopupEngagementService {
 	async recordImpression(popupId: string): Promise<void> {
 		// Prevent duplicate impressions
 		if (this.viewedPopups.has(popupId)) return;
-		
+
 		this.viewedPopups.add(popupId);
 		this.impressionTimers.set(popupId, Date.now());
-		
+
 		// Add to event buffer
 		this.eventBuffer.push({
 			type: 'impression',
@@ -1149,7 +1149,7 @@ class PopupEngagementService {
 			timestamp: new Date().toISOString(),
 			sessionId: this.sessionId
 		});
-		
+
 		// Send immediately for important events
 		try {
 			await fetch(`${API_BASE}/popups/${popupId}/impression`, {
@@ -1173,11 +1173,11 @@ class PopupEngagementService {
 	async recordConversion(popupId: string, data?: ConversionData): Promise<void> {
 		// Prevent duplicate conversions
 		if (this.convertedPopups.has(popupId)) return;
-		
+
 		this.convertedPopups.add(popupId);
-		
+
 		const conversionTime = Date.now() - (this.impressionTimers.get(popupId) || Date.now());
-		
+
 		// Add to event buffer
 		this.eventBuffer.push({
 			type: 'conversion',
@@ -1189,7 +1189,7 @@ class PopupEngagementService {
 				conversionTime
 			}
 		});
-		
+
 		// Send immediately
 		try {
 			await fetch(`${API_BASE}/popups/${popupId}/conversion`, {
@@ -1206,7 +1206,7 @@ class PopupEngagementService {
 		} catch (error) {
 			console.error('[PopupService] Failed to record conversion:', error);
 		}
-		
+
 		// Close popup on conversion
 		this.closePopup(popupId);
 	}
@@ -1237,13 +1237,13 @@ class PopupEngagementService {
 		}
 
 		const analytics = await response.json();
-		
+
 		// Update store
-		this.analytics.update(a => {
+		this.analytics.update((a) => {
 			a[popupId] = analytics;
 			return a;
 		});
-		
+
 		return analytics;
 	}
 
@@ -1254,10 +1254,7 @@ class PopupEngagementService {
 	/**
 	 * Create A/B test
 	 */
-	async createABTest(
-		basePopupId: string,
-		variants: Partial<ABTestVariant>[]
-	): Promise<string> {
+	async createABTest(basePopupId: string, variants: Partial<ABTestVariant>[]): Promise<string> {
 		const response = await fetch(`${API_BASE}/popups/${basePopupId}/ab-test`, {
 			method: 'POST',
 			headers: {
@@ -1299,64 +1296,64 @@ class PopupEngagementService {
 		if (!this.checkTargeting(popup)) return false;
 		if (!this.checkSchedule(popup)) return false;
 		if (this.hasReachedFrequencyLimit(popup)) return false;
-		
+
 		return true;
 	}
 
 	private checkTargeting(popup: EnhancedPopup): boolean {
 		if (!popup.targeting) return true;
-		
+
 		const rules = popup.targeting;
-		
+
 		// Check device
 		if (rules.devices && rules.devices.length > 0) {
 			const deviceType = this.getDeviceType();
 			if (!rules.devices.includes(deviceType)) return false;
 		}
-		
+
 		// Check new vs returning
 		if (rules.newVisitors !== undefined) {
 			const isNew = !this.getCookie('returning_visitor');
 			if (rules.newVisitors !== isNew) return false;
 		}
-		
+
 		// Add more targeting checks as needed
-		
+
 		return true;
 	}
 
 	private checkSchedule(popup: EnhancedPopup): boolean {
 		if (!popup.scheduling) return true;
-		
+
 		const now = new Date();
 		const schedule = popup.scheduling;
-		
+
 		// Check date range
 		if (schedule.startDate && new Date(schedule.startDate) > now) return false;
 		if (schedule.endDate && new Date(schedule.endDate) < now) return false;
-		
+
 		// Check day of week
 		if (schedule.daysOfWeek && schedule.daysOfWeek.length > 0) {
 			if (!schedule.daysOfWeek.includes(now.getDay())) return false;
 		}
-		
+
 		// Check hour of day
 		if (schedule.hoursOfDay && schedule.hoursOfDay.length > 0) {
 			if (!schedule.hoursOfDay.includes(now.getHours())) return false;
 		}
-		
+
 		return true;
 	}
 
 	private hasReachedFrequencyLimit(popup: EnhancedPopup): boolean {
 		if (!popup.behavior?.showFrequency) return false;
-		
+
 		const frequency = popup.behavior.showFrequency;
 		const cookieName = `popup_${popup.id}_shown`;
 		const shown = this.getCookie(cookieName);
-		
+
 		if (!shown) return false;
-		
+
 		switch (frequency.type) {
 			case 'once':
 				return true;
@@ -1374,9 +1371,9 @@ class PopupEngagementService {
 	private setDisplayCookie(popup: EnhancedPopup): void {
 		const cookieName = `popup_${popup.id}_shown`;
 		const expiry = popup.behavior?.cookieExpiry || 30;
-		
+
 		this.setCookie(cookieName, new Date().toISOString(), expiry);
-		
+
 		if (popup.behavior?.showFrequency?.type === 'session') {
 			sessionStorage.setItem(cookieName, 'true');
 		}
@@ -1397,7 +1394,7 @@ class PopupEngagementService {
 			// Implementation depends on rendering framework
 			console.debug(`[PopupService] Applying ${popup.animations.entrance} animation`);
 		}
-		
+
 		// Schedule attention animation
 		if (popup.animations?.attention) {
 			setTimeout(() => {
@@ -1431,11 +1428,11 @@ class PopupEngagementService {
 	}
 
 	private triggerExitIntentPopups(): void {
-		const popups = get(this.popups).filter(p => 
-			p.triggers?.some(t => t.type === 'exit_intent' && t.enabled)
+		const popups = get(this.popups).filter((p) =>
+			p.triggers?.some((t) => t.type === 'exit_intent' && t.enabled)
 		);
-		
-		popups.forEach(popup => {
+
+		popups.forEach((popup) => {
 			if (this.isEligible(popup)) {
 				this.queuePopup(popup);
 			}
@@ -1443,15 +1440,14 @@ class PopupEngagementService {
 	}
 
 	private triggerScrollPopups(depth: number): void {
-		const popups = get(this.popups).filter(p => 
-			p.triggers?.some(t => 
-				t.type === 'scroll_depth' && 
-				t.enabled && 
-				t.conditions?.some(c => c.value === depth)
+		const popups = get(this.popups).filter((p) =>
+			p.triggers?.some(
+				(t) =>
+					t.type === 'scroll_depth' && t.enabled && t.conditions?.some((c) => c.value === depth)
 			)
 		);
-		
-		popups.forEach(popup => {
+
+		popups.forEach((popup) => {
 			if (this.isEligible(popup)) {
 				this.queuePopup(popup);
 			}
@@ -1459,11 +1455,11 @@ class PopupEngagementService {
 	}
 
 	private triggerInactivityPopups(): void {
-		const popups = get(this.popups).filter(p => 
-			p.triggers?.some(t => t.type === 'inactivity' && t.enabled)
+		const popups = get(this.popups).filter((p) =>
+			p.triggers?.some((t) => t.type === 'inactivity' && t.enabled)
 		);
-		
-		popups.forEach(popup => {
+
+		popups.forEach((popup) => {
 			if (this.isEligible(popup)) {
 				this.queuePopup(popup);
 			}
@@ -1487,23 +1483,23 @@ class PopupEngagementService {
 		} catch (error) {
 			console.error('[PopupService] AI optimization failed:', error);
 		}
-		
+
 		return popup;
 	}
 
 	private flushEventBuffer(): void {
 		if (this.eventBuffer.length === 0) return;
-		
+
 		const events = [...this.eventBuffer];
 		this.eventBuffer = [];
-		
+
 		fetch(`${API_BASE}/popups/events`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ events })
-		}).catch(error => {
+		}).catch((error) => {
 			console.error('[PopupService] Failed to send events:', error);
 			// Re-add events to buffer
 			this.eventBuffer.unshift(...events);
@@ -1562,19 +1558,19 @@ class PopupEngagementService {
 		if (this.wsConnection) {
 			this.wsConnection.close();
 		}
-		
+
 		if (this.exitIntentListener) {
 			document.removeEventListener('mousemove', this.exitIntentListener);
 		}
-		
+
 		if (this.scrollListener) {
 			window.removeEventListener('scroll', this.scrollListener);
 		}
-		
+
 		if (this.inactivityTimer) {
 			clearTimeout(this.inactivityTimer);
 		}
-		
+
 		this.flushEventBuffer();
 	}
 }
@@ -1600,16 +1596,19 @@ export const error = popupService.error;
 export const getAllPopups = () => popupService.getAllPopups();
 export const getActivePopups = (page: string) => popupService.loadActivePopups();
 export const createPopup = (popup: Partial<EnhancedPopup>) => popupService.createPopup(popup);
-export const updatePopup = (id: string, updates: Partial<EnhancedPopup>) => popupService.updatePopup(id, updates);
+export const updatePopup = (id: string, updates: Partial<EnhancedPopup>) =>
+	popupService.updatePopup(id, updates);
 export const deletePopup = (id: string) => popupService.deletePopup(id);
 export const showPopup = (popup: EnhancedPopup) => popupService.showPopup(popup);
 export const closePopup = (popupId?: string) => popupService.closePopup(popupId);
 export const recordPopupImpression = (popupId: string) => popupService.recordImpression(popupId);
-export const recordPopupConversion = (popupId: string, data?: ConversionData) => popupService.recordConversion(popupId, data);
+export const recordPopupConversion = (popupId: string, data?: ConversionData) =>
+	popupService.recordConversion(popupId, data);
 export const getPopupAnalytics = (popupId: string) => popupService.getAnalytics(popupId);
-export const createABTest = (basePopupId: string, variants: Partial<ABTestVariant>[]) => popupService.createABTest(basePopupId, variants);
+export const createABTest = (basePopupId: string, variants: Partial<ABTestVariant>[]) =>
+	popupService.createABTest(basePopupId, variants);
 export const duplicatePopup = async (id: string) => {
-	const popup = get(popups).find(p => p.id === id);
+	const popup = get(popups).find((p) => p.id === id);
 	if (!popup) throw new Error('Popup not found');
 	const duplicate = { ...popup, id: undefined, name: `${popup.name} (Copy)` };
 	return createPopup(duplicate);
@@ -1621,13 +1620,16 @@ export const togglePopupStatus = async (id: string, isActive: boolean) => {
 // Legacy API compatibility
 export const popupsApi = {
 	list: async () => ({ data: await getAllPopups() }),
-	get: async (id: number) => ({ popup: get(popups).find(p => p.id === String(id)) }),
+	get: async (id: number) => ({ popup: get(popups).find((p) => p.id === String(id)) }),
 	getActive: async (page: string) => {
 		await getActivePopups(page);
 		return get(popups);
 	},
 	create: async (data: any) => ({ popup: await createPopup(data), message: 'Created' }),
-	update: async (id: number, data: any) => ({ popup: await updatePopup(String(id), data), message: 'Updated' }),
+	update: async (id: number, data: any) => ({
+		popup: await updatePopup(String(id), data),
+		message: 'Updated'
+	}),
 	delete: async (id: number) => {
 		await deletePopup(String(id));
 		return { message: 'Deleted' };
@@ -1636,7 +1638,8 @@ export const popupsApi = {
 	analytics: async (id: number) => getPopupAnalytics(String(id)),
 	getAnalytics: async (id: number) => getPopupAnalytics(String(id)),
 	trackView: async (popupId: number) => recordPopupImpression(String(popupId)),
-	trackConversion: async (popupId: number, data?: any) => recordPopupConversion(String(popupId), data)
+	trackConversion: async (popupId: number, data?: any) =>
+		recordPopupConversion(String(popupId), data)
 };
 
 export default popupService;

@@ -37,10 +37,10 @@
 	$: periodNumbers = Array.from({ length: maxPeriods }, (_, i) => i);
 
 	// Calculate average retention per period
-	$: periodAverages = periodNumbers.map(period => {
+	$: periodAverages = periodNumbers.map((period) => {
 		const values = data
-			.filter(row => row.periods && row.periods[period])
-			.map(row => {
+			.filter((row) => row.periods && row.periods[period])
+			.map((row) => {
 				const periodData = row.periods![period];
 				return typeof periodData === 'number' ? periodData : periodData.retention_rate;
 			});
@@ -65,9 +65,7 @@
 					<th class="px-3 py-2 text-left font-medium text-gray-600 sticky left-0 bg-gray-50 z-10">
 						Cohort
 					</th>
-					<th class="px-3 py-2 text-center font-medium text-gray-600">
-						Size
-					</th>
+					<th class="px-3 py-2 text-center font-medium text-gray-600"> Size </th>
 					{#each periodNumbers as period}
 						<th class="px-2 py-2 text-center font-medium text-gray-600 min-w-[60px]">
 							{period === 0 ? 'Day 0' : `Week ${period}`}
@@ -88,16 +86,17 @@
 							{@const periodData = row.periods ? row.periods[period] : null}
 							<td class="px-1 py-1">
 								{#if periodData && typeof periodData === 'object'}
-									{@const value = metricType === 'retention'
-										? periodData.retention_rate
-										: periodData.total_revenue}
+									{@const value =
+										metricType === 'retention'
+											? periodData.retention_rate
+											: periodData.total_revenue}
 									<div
 										class="w-full h-8 rounded flex items-center justify-center text-xs font-medium
 											{getRetentionColor(periodData.retention_rate)}
 											{getTextColor(periodData.retention_rate)}"
-										title="{metricType === 'retention'
+										title={metricType === 'retention'
 											? `${periodData.active_users} users (${periodData.retention_rate.toFixed(1)}%)`
-											: `$${periodData.total_revenue.toFixed(0)}`}"
+											: `$${periodData.total_revenue.toFixed(0)}`}
 									>
 										{metricType === 'retention'
 											? `${periodData.retention_rate.toFixed(0)}%`
@@ -117,7 +116,9 @@
 						Average
 					</td>
 					<td class="px-3 py-2 text-center text-gray-600">
-						{Math.round(data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length).toLocaleString()}
+						{Math.round(
+							data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length
+						).toLocaleString()}
 					</td>
 					{#each periodAverages as avg, period}
 						<td class="px-1 py-1">

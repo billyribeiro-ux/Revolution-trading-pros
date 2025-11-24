@@ -249,28 +249,30 @@
 				</h3>
 				<div class="preview-field-wrapper">
 					<label
+						for="preview-name"
 						style="color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
 					>
 						Your Name
 					</label>
 					<input
+						id="preview-name"
 						type="text"
 						placeholder="Enter your name"
-						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors
-							.text}; font-family: {selectedTheme.fonts.body}"
+						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
 					/>
 				</div>
 				<div class="preview-field-wrapper">
 					<label
+						for="preview-email"
 						style="color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
 					>
 						Email Address
 					</label>
 					<input
+						id="preview-email"
 						type="email"
 						placeholder="you@example.com"
-						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors
-							.text}; font-family: {selectedTheme.fonts.body}"
+						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
 					/>
 				</div>
 				<button

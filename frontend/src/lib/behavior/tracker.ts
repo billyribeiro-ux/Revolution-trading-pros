@@ -105,7 +105,7 @@ export class BehaviorTracker {
 		// Idle tracking
 		if (this.config.trackIdleTime) {
 			this.resetIdleTimer();
-			['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+			['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach((event) => {
 				document.addEventListener(event, this.resetIdleTimer.bind(this), { passive: true });
 			});
 		}
@@ -142,7 +142,7 @@ export class BehaviorTracker {
 		if (scrollPercent > this.maxScrollDepth && [25, 50, 75, 90, 100].includes(scrollPercent)) {
 			this.maxScrollDepth = scrollPercent;
 			const timeSincePageLoad = Date.now() - this.sessionStartTime;
-			
+
 			this.trackEvent({
 				event_type: 'scroll_depth',
 				timestamp: Date.now(),
@@ -213,12 +213,13 @@ export class BehaviorTracker {
 		if (this.config.trackRageClicks) {
 			this.clickPositions.push({ x: event.clientX, y: event.clientY, time: now });
 			this.clickPositions = this.clickPositions.filter(
-				click => now - click.time < this.config.rageClickWindow
+				(click) => now - click.time < this.config.rageClickWindow
 			);
 
 			if (this.clickPositions.length >= this.config.rageClickThreshold) {
 				const isInSameArea = this.clickPositions.every(
-					click => Math.abs(click.x - event.clientX) < 50 && Math.abs(click.y - event.clientY) < 50
+					(click) =>
+						Math.abs(click.x - event.clientX) < 50 && Math.abs(click.y - event.clientY) < 50
 				);
 
 				if (isInSameArea) {
@@ -243,10 +244,11 @@ export class BehaviorTracker {
 
 		// CTA tracking
 		if (target.matches('button, a, [role="button"]')) {
-			const isCTA = target.classList.contains('cta') || 
-			              target.classList.contains('btn-primary') ||
-			              target.getAttribute('data-cta') === 'true';
-			
+			const isCTA =
+				target.classList.contains('cta') ||
+				target.classList.contains('btn-primary') ||
+				target.getAttribute('data-cta') === 'true';
+
 			if (isCTA) {
 				this.trackEvent({
 					event_type: 'cta_click',
@@ -267,10 +269,11 @@ export class BehaviorTracker {
 		setTimeout(() => {
 			if (this.hoverElement === target && this.hoverStartTime) {
 				const hoverDuration = Date.now() - this.hoverStartTime;
-				
+
 				if (hoverDuration >= this.config.hoverIntentDuration) {
-					const intentStrength = hoverDuration < 2500 ? 'weak' : hoverDuration < 4000 ? 'moderate' : 'strong';
-					
+					const intentStrength =
+						hoverDuration < 2500 ? 'weak' : hoverDuration < 4000 ? 'moderate' : 'strong';
+
 					this.trackEvent({
 						event_type: 'hover_intent',
 						timestamp: Date.now(),
@@ -296,7 +299,7 @@ export class BehaviorTracker {
 
 	private handleFocus(event: FocusEvent) {
 		const target = event.target as HTMLElement;
-		
+
 		if (target.matches('input, textarea, select')) {
 			this.trackEvent({
 				event_type: 'form_focus',
@@ -315,7 +318,7 @@ export class BehaviorTracker {
 
 	private handleBlur(event: FocusEvent) {
 		const target = event.target as HTMLInputElement;
-		
+
 		if (target.matches('input, textarea, select')) {
 			this.trackEvent({
 				event_type: 'form_blur',
@@ -334,19 +337,22 @@ export class BehaviorTracker {
 
 	private handleFormSubmit(event: Event) {
 		const form = event.target as HTMLFormElement;
-		
-		this.trackEvent({
-			event_type: 'form_submit',
-			timestamp: Date.now(),
-			page_url: window.location.href,
-			element: 'FORM',
-			element_selector: this.getSelector(form),
-			event_metadata: {
-				form_id: form.id,
-				fields_count: form.elements.length,
-				action: form.action
-			}
-		}, true); // Immediate dispatch
+
+		this.trackEvent(
+			{
+				event_type: 'form_submit',
+				timestamp: Date.now(),
+				page_url: window.location.href,
+				element: 'FORM',
+				element_selector: this.getSelector(form),
+				event_metadata: {
+					form_id: form.id,
+					fields_count: form.elements.length,
+					action: form.action
+				}
+			},
+			true
+		); // Immediate dispatch
 	}
 
 	private handleVisibilityChange() {
@@ -366,16 +372,19 @@ export class BehaviorTracker {
 	}
 
 	private handlePageExit() {
-		this.trackEvent({
-			event_type: 'page_exit',
-			timestamp: Date.now(),
-			page_url: window.location.href,
-			event_metadata: {
-				duration: Date.now() - this.sessionStartTime,
-				max_scroll_depth: this.maxScrollDepth
-			}
-		}, true); // Immediate dispatch
-		
+		this.trackEvent(
+			{
+				event_type: 'page_exit',
+				timestamp: Date.now(),
+				page_url: window.location.href,
+				event_metadata: {
+					duration: Date.now() - this.sessionStartTime,
+					max_scroll_depth: this.maxScrollDepth
+				}
+			},
+			true
+		); // Immediate dispatch
+
 		this.flush();
 	}
 
@@ -420,11 +429,16 @@ export class BehaviorTracker {
 	private getEntryType(): 'direct' | 'referral' | 'search' | 'social' | 'campaign' {
 		const referrer = document.referrer;
 		const hasUTM = window.location.search.includes('utm_');
-		
+
 		if (hasUTM) return 'campaign';
 		if (!referrer) return 'direct';
 		if (referrer.includes('google') || referrer.includes('bing')) return 'search';
-		if (referrer.includes('facebook') || referrer.includes('twitter') || referrer.includes('linkedin')) return 'social';
+		if (
+			referrer.includes('facebook') ||
+			referrer.includes('twitter') ||
+			referrer.includes('linkedin')
+		)
+			return 'social';
 		return 'referral';
 	}
 
@@ -462,7 +476,7 @@ export class BehaviorTracker {
 		};
 
 		this.eventBuffer = [];
-		
+
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
 			this.bufferTimer = undefined;

@@ -77,10 +77,15 @@
 					</div>
 					<div class="coupon-details">
 						<span class="coupon-type">{coupon.type}</span>
-						<span class="coupon-value">{coupon.value}{coupon.type === 'percentage' ? '%' : '$'} off</span>
+						<span class="coupon-value"
+							>{coupon.value}{coupon.type === 'percentage' ? '%' : '$'} off</span
+						>
 					</div>
 					<div class="coupon-actions">
-						<button class="action-btn edit" on:click={() => goto(`/admin/coupons/edit/${coupon.id}`)}>
+						<button
+							class="action-btn edit"
+							on:click={() => goto(`/admin/coupons/edit/${coupon.id}`)}
+						>
 							<IconEdit size={16} />
 							Edit
 						</button>

@@ -284,7 +284,8 @@ class MediaApiClient {
 		if (options?.alt_text) formData.append('alt_text', options.alt_text);
 		if (options?.tags) formData.append('tags', JSON.stringify(options.tags));
 		if (options?.optimize !== undefined) formData.append('optimize', String(options.optimize));
-		if (options?.generate_webp !== undefined) formData.append('generate_webp', String(options.generate_webp));
+		if (options?.generate_webp !== undefined)
+			formData.append('generate_webp', String(options.generate_webp));
 
 		// For progress tracking, we need XMLHttpRequest
 		if (onProgress) {
@@ -381,7 +382,9 @@ class MediaApiClient {
 	}
 
 	async deleteFolder(id: string, deleteFiles: boolean = false): Promise<{ success: boolean }> {
-		return this.request('DELETE', `/admin/media/folders/${id}`, undefined, { delete_files: deleteFiles });
+		return this.request('DELETE', `/admin/media/folders/${id}`, undefined, {
+			delete_files: deleteFiles
+		});
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -392,7 +395,10 @@ class MediaApiClient {
 		return this.request('POST', `/admin/media/files/${id}/ai-metadata`);
 	}
 
-	async applyAIMetadata(id: string, fields: string[]): Promise<{ success: boolean; file: MediaFile }> {
+	async applyAIMetadata(
+		id: string,
+		fields: string[]
+	): Promise<{ success: boolean; file: MediaFile }> {
 		return this.request('POST', `/admin/media/files/${id}/apply-ai-metadata`, { fields });
 	}
 
@@ -431,7 +437,11 @@ class MediaApiClient {
 		return this.request('GET', `/admin/media/files/${id}/versions`);
 	}
 
-	async createVersion(id: string, file: File, changes: string): Promise<{ success: boolean; version: MediaVersion }> {
+	async createVersion(
+		id: string,
+		file: File,
+		changes: string
+	): Promise<{ success: boolean; version: MediaVersion }> {
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('changes', changes);
@@ -439,7 +449,10 @@ class MediaApiClient {
 		return this.request('POST', `/admin/media/files/${id}/versions`, formData, undefined, true);
 	}
 
-	async restoreVersion(id: string, versionId: string): Promise<{ success: boolean; file: MediaFile }> {
+	async restoreVersion(
+		id: string,
+		versionId: string
+	): Promise<{ success: boolean; file: MediaFile }> {
 		return this.request('POST', `/admin/media/files/${id}/versions/${versionId}/restore`);
 	}
 
@@ -492,7 +505,9 @@ class MediaApiClient {
 		return this.request('GET', '/admin/media/stats');
 	}
 
-	async getMostUsed(limit: number = 10): Promise<{ files: Array<MediaFile & { usage_count: number }> }> {
+	async getMostUsed(
+		limit: number = 10
+	): Promise<{ files: Array<MediaFile & { usage_count: number }> }> {
 		return this.request('GET', '/admin/media/most-used', undefined, { limit });
 	}
 
@@ -500,13 +515,16 @@ class MediaApiClient {
 	// Search
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async search(query: string, filters?: {
-		file_type?: string;
-		folder_id?: string;
-		tags?: string[];
-		date_from?: string;
-		date_to?: string;
-	}): Promise<{ files: MediaFile[] }> {
+	async search(
+		query: string,
+		filters?: {
+			file_type?: string;
+			folder_id?: string;
+			tags?: string[];
+			date_from?: string;
+			date_to?: string;
+		}
+	): Promise<{ files: MediaFile[] }> {
 		return this.request('GET', '/admin/media/search', undefined, { query, ...filters });
 	}
 

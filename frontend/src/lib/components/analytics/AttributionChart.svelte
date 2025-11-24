@@ -61,7 +61,9 @@
 			<div class="space-y-2">
 				<div class="flex items-center justify-between text-sm">
 					<div class="flex items-center gap-2">
-						<div class="w-3 h-3 rounded-full {channelColors[channel.channel] || 'bg-gray-400'}"></div>
+						<div
+							class="w-3 h-3 rounded-full {channelColors[channel.channel] || 'bg-gray-400'}"
+						></div>
 						<span class="font-medium capitalize">{channel.channel}</span>
 					</div>
 					<div class="flex items-center gap-4 text-gray-600">
@@ -79,7 +81,9 @@
 						style="width: {barWidth}%"
 					>
 						{#if barWidth > 15}
-							<span class="absolute inset-0 flex items-center justify-center text-xs text-white font-medium">
+							<span
+								class="absolute inset-0 flex items-center justify-center text-xs text-white font-medium"
+							>
 								{channel.revenue_share.toFixed(1)}%
 							</span>
 						{/if}

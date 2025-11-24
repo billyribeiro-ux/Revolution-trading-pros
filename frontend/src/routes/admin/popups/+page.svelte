@@ -495,7 +495,6 @@
 		text-align: center;
 	}
 
-
 	.empty-state h3 {
 		font-size: 1.5rem;
 		font-weight: 700;

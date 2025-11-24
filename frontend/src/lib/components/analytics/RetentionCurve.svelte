@@ -28,15 +28,23 @@
 	$: padding = { top: 20, right: 20, bottom: 40, left: 50 };
 	$: chartWidth = width - padding.left - padding.right;
 	$: chartHeight = height - padding.top - padding.bottom;
-
 	$: maxDay = Math.max(...cohorts.flatMap((c) => c.data.map((d) => d.day)));
-	$: xScale = (day: number) => (day / maxDay) * chartWidth;
-	$: yScale = (retention: number) => chartHeight - (retention / 100) * chartHeight;
+
+	// Scale functions - computed from reactive values
+	function getXScale(day: number, maxDay: number, chartWidth: number): number {
+		return (day / maxDay) * chartWidth;
+	}
+
+	function getYScale(retention: number, chartHeight: number): number {
+		return chartHeight - (retention / 100) * chartHeight;
+	}
 
 	function generatePath(data: Array<{ day: number; retention: number }>): string {
 		if (data.length === 0) return '';
 
-		const points = data.map((d) => `${xScale(d.day)},${yScale(d.retention)}`);
+		const points = data.map(
+			(d) => `${getXScale(d.day, maxDay, chartWidth)},${getYScale(d.retention, chartHeight)}`
+		);
 		return `M ${points.join(' L ')}`;
 	}
 
@@ -69,14 +77,20 @@
 			{#each [0, 25, 50, 75, 100] as tick}
 				<line
 					x1="0"
-					y1={yScale(tick)}
+					y1={getYScale(tick, chartHeight)}
 					x2={chartWidth}
-					y2={yScale(tick)}
+					y2={getYScale(tick, chartHeight)}
 					stroke="#374151"
 					stroke-width="1"
 					stroke-dasharray="4"
 				/>
-				<text x="-10" y={yScale(tick)} text-anchor="end" dominant-baseline="middle" class="axis-label">
+				<text
+					x="-10"
+					y={getYScale(tick, chartHeight)}
+					text-anchor="end"
+					dominant-baseline="middle"
+					class="axis-label"
+				>
 					{tick}%
 				</text>
 			{/each}
@@ -85,7 +99,7 @@
 			{#each [0, 7, 14, 30, 60, 90] as day}
 				{#if day <= maxDay}
 					<text
-						x={xScale(day)}
+						x={getXScale(day, maxDay, chartWidth)}
 						y={chartHeight + 20}
 						text-anchor="middle"
 						class="axis-label"
@@ -108,8 +122,8 @@
 				<!-- Data points -->
 				{#each cohort.data as point}
 					<circle
-						cx={xScale(point.day)}
-						cy={yScale(point.retention)}
+						cx={getXScale(point.day, maxDay, chartWidth)}
+						cy={getYScale(point.retention, chartHeight)}
 						r="4"
 						fill={cohort.color}
 						class="data-point"

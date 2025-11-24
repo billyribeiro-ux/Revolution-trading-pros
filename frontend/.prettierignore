@@ -1,0 +1,29 @@
+# Build outputs
+.svelte-kit/
+build/
+dist/
+.vercel/
+.netlify/
+
+# Dependencies
+node_modules/
+
+# Cache
+.cache/
+.turbo/
+
+# Test results
+test-results/
+playwright-report/
+coverage/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Package manager
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

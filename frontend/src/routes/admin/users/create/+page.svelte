@@ -54,9 +54,9 @@
 	import { goto } from '$app/navigation';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { usersApi, teamsApi, departmentsApi, AdminApiError } from '$lib/api/admin';
-	import { 
-		IconCheck, 
-		IconX, 
+	import {
+		IconCheck,
+		IconX,
 		IconUser,
 		IconShield,
 		IconLock,
@@ -95,11 +95,11 @@
 		IconBriefcase,
 		IconBuildingStore
 	} from '$lib/icons';
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	interface UserFormData {
 		// Identity
 		first_name: string;
@@ -109,7 +109,7 @@
 		alternate_email: string;
 		phone: string;
 		employee_id: string;
-		
+
 		// Security
 		password: string;
 		password_confirmation: string;
@@ -119,12 +119,12 @@
 		require_2fa: boolean;
 		allowed_ips: string[];
 		session_timeout: number;
-		
+
 		// Role & Permissions
 		role: 'admin' | 'trader' | 'member';
 		custom_permissions: string[];
 		access_scope: AccessScope;
-		
+
 		// Organization
 		department: string;
 		team: string;
@@ -133,14 +133,14 @@
 		location: string;
 		office: string;
 		cost_center: string;
-		
+
 		// Preferences
 		timezone: string;
 		language: string;
 		date_format: string;
 		currency: string;
 		notification_preferences: NotificationPreferences;
-		
+
 		// Compliance
 		terms_accepted: boolean;
 		privacy_accepted: boolean;
@@ -148,7 +148,7 @@
 		marketing_consent: boolean;
 		background_check_status: 'pending' | 'completed' | 'failed' | 'not_required';
 		background_check_date: string;
-		
+
 		// Onboarding
 		start_date: string;
 		probation_end_date: string;
@@ -156,20 +156,20 @@
 		training_modules: string[];
 		assigned_equipment: string[];
 		assigned_buddy: string;
-		
+
 		// Status
 		status: 'pending' | 'active' | 'suspended' | 'inactive';
 		activation_method: 'email' | 'manual' | 'auto';
 		send_welcome_email: boolean;
 		add_to_directory: boolean;
 		sync_to_systems: string[];
-		
+
 		// Meta
 		notes: string;
 		tags: string[];
 		custom_fields: Record<string, any>;
 	}
-	
+
 	interface AccessScope {
 		products: 'all' | 'category' | 'specific' | 'none';
 		orders: 'all' | 'own' | 'team' | 'none';
@@ -177,7 +177,7 @@
 		reports: 'all' | 'standard' | 'none';
 		settings: 'all' | 'limited' | 'none';
 	}
-	
+
 	interface NotificationPreferences {
 		email: boolean;
 		sms: boolean;
@@ -192,7 +192,7 @@
 			tasks: boolean;
 		};
 	}
-	
+
 	interface PasswordStrength {
 		score: number;
 		feedback: string[];
@@ -200,13 +200,13 @@
 		crackTime: string;
 		isBreached: boolean;
 	}
-	
+
 	interface ValidationError {
 		field: string;
 		message: string;
 		severity: 'error' | 'warning' | 'info';
 	}
-	
+
 	interface RoleDefinition {
 		name: string;
 		key: 'admin' | 'trader' | 'member';
@@ -217,11 +217,11 @@
 		restrictions: string[];
 		accessLevel: number;
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Role Definitions
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	const ROLE_DEFINITIONS: RoleDefinition[] = [
 		{
 			name: 'Administrator',
@@ -289,18 +289,25 @@
 			accessLevel: 10
 		}
 	];
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	let saving = false;
 	let validating = false;
 	let checkingUsername = false;
 	let checkingEmail = false;
 	let loadingManagers = false;
 	let errors: ValidationError[] = [];
-	let activeStep: 'identity' | 'security' | 'role' | 'organization' | 'preferences' | 'compliance' | 'review' = 'identity';
+	let activeStep:
+		| 'identity'
+		| 'security'
+		| 'role'
+		| 'organization'
+		| 'preferences'
+		| 'compliance'
+		| 'review' = 'identity';
 	let passwordVisible = false;
 	let confirmPasswordVisible = false;
 	let passwordStrength: PasswordStrength | null = null;
@@ -310,7 +317,7 @@
 	let showPermissionDetails = false;
 	let profilePhotoFile: File | null = null;
 	let profilePhotoPreview: string | null = null;
-	
+
 	// Form Data with defaults
 	let formData: UserFormData = {
 		first_name: '',
@@ -383,7 +390,7 @@
 		tags: [],
 		custom_fields: {}
 	};
-	
+
 	// Lookup data
 	let departments: any[] = [];
 	let teams: any[] = [];
@@ -391,26 +398,26 @@
 	let locations: any[] = [];
 	let trainingModules: any[] = [];
 	let onboardingPlans: any[] = [];
-	
+
 	// Progress calculation
 	$: completionPercentage = calculateCompletion();
 	$: currentStepIndex = getStepIndex(activeStep);
 	$: canProceed = validateCurrentStep();
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	onMount(async () => {
 		await loadLookupData();
 		initializeDefaults();
 		setupRealtimeValidation();
 	});
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	async function loadLookupData() {
 		try {
 			// Mock data for demo - would be real API calls in production
@@ -421,27 +428,27 @@
 				{ id: 'support', name: 'Support' },
 				{ id: 'finance', name: 'Finance' }
 			];
-			
+
 			teams = [
 				{ id: 'frontend', name: 'Frontend Team' },
 				{ id: 'backend', name: 'Backend Team' },
 				{ id: 'mobile', name: 'Mobile Team' },
 				{ id: 'devops', name: 'DevOps Team' }
 			];
-			
+
 			managers = [
 				{ id: '1', name: 'John Smith', job_title: 'Engineering Manager' },
 				{ id: '2', name: 'Sarah Johnson', job_title: 'Sales Director' },
 				{ id: '3', name: 'Mike Wilson', job_title: 'Team Lead' }
 			];
-			
+
 			locations = [
 				{ id: 'sf', name: 'San Francisco HQ', timezone: 'America/Los_Angeles' },
 				{ id: 'ny', name: 'New York', timezone: 'America/New_York' },
 				{ id: 'lon', name: 'London', timezone: 'Europe/London' },
 				{ id: 'remote', name: 'Remote', timezone: 'UTC' }
 			];
-			
+
 			trainingModules = [
 				{ id: 'security', name: 'Security Fundamentals', required: true },
 				{ id: 'compliance', name: 'Compliance Training', required: true },
@@ -449,7 +456,7 @@
 				{ id: 'sales', name: 'Sales Training', required: false },
 				{ id: 'support', name: 'Customer Support', required: false }
 			];
-			
+
 			onboardingPlans = [
 				{ id: 'standard', name: 'Standard Onboarding', duration: 5 },
 				{ id: 'accelerated', name: 'Accelerated Program', duration: 3 },
@@ -460,27 +467,27 @@
 			console.error('Failed to load lookup data:', error);
 		}
 	}
-	
+
 	function initializeDefaults() {
 		const today = new Date();
 		const nextMonday = getNextMonday();
 		const threeMonthsLater = new Date(nextMonday);
 		threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-		
+
 		formData.start_date = formatDate(nextMonday);
 		formData.probation_end_date = formatDate(threeMonthsLater);
-		
+
 		const passwordExpiry = new Date();
 		passwordExpiry.setDate(passwordExpiry.getDate() + 90);
 		formData.password_expires_at = formatDate(passwordExpiry);
-		
+
 		formData.employee_id = generateEmployeeId();
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Form Navigation
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	const STEPS = [
 		{ key: 'identity', label: 'Identity', icon: IconUser },
 		{ key: 'security', label: 'Security', icon: IconShield },
@@ -490,54 +497,54 @@
 		{ key: 'compliance', label: 'Compliance', icon: IconCheckupList },
 		{ key: 'review', label: 'Review', icon: IconCheck }
 	];
-	
+
 	function nextStep() {
 		const currentIndex = getStepIndex(activeStep);
 		if (currentIndex < STEPS.length - 1) {
 			activeStep = STEPS[currentIndex + 1].key as typeof activeStep;
 		}
 	}
-	
+
 	function previousStep() {
 		const currentIndex = getStepIndex(activeStep);
 		if (currentIndex > 0) {
 			activeStep = STEPS[currentIndex - 1].key as typeof activeStep;
 		}
 	}
-	
+
 	function goToStep(step: typeof activeStep) {
 		activeStep = step;
 	}
-	
+
 	function getStepIndex(step: string): number {
-		return STEPS.findIndex(s => s.key === step);
+		return STEPS.findIndex((s) => s.key === step);
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Form Submission
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	async function handleSubmit() {
 		const validationErrors = await validateForm();
 		if (validationErrors.length > 0) {
 			errors = validationErrors;
 			return;
 		}
-		
+
 		saving = true;
 		try {
 			const submitData = await prepareSubmitData();
-			
+
 			if (profilePhotoFile) {
 				const photoUrl = await uploadProfilePhoto(profilePhotoFile);
 				(submitData as any).profile_photo = photoUrl;
 			}
-			
+
 			const user = await usersApi.create(submitData);
-			
+
 			await sendNotifications(user);
 			trackUserCreation(user);
-			
+
 			if (shouldCreateAnother()) {
 				resetForm();
 				showSuccessMessage('User created successfully');
@@ -555,31 +562,35 @@
 			saving = false;
 		}
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Validation
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	async function validateForm(): Promise<ValidationError[]> {
 		const errors: ValidationError[] = [];
-		
+
 		// Identity validation
 		if (!formData.first_name.trim()) {
 			errors.push({ field: 'first_name', message: 'First name is required', severity: 'error' });
 		}
-		
+
 		if (!formData.last_name.trim()) {
 			errors.push({ field: 'last_name', message: 'Last name is required', severity: 'error' });
 		}
-		
+
 		if (!formData.username.trim()) {
 			errors.push({ field: 'username', message: 'Username is required', severity: 'error' });
 		} else if (!isValidUsername(formData.username)) {
-			errors.push({ field: 'username', message: 'Username must be 3-20 characters, alphanumeric with underscores', severity: 'error' });
+			errors.push({
+				field: 'username',
+				message: 'Username must be 3-20 characters, alphanumeric with underscores',
+				severity: 'error'
+			});
 		} else if (!usernameAvailable) {
 			errors.push({ field: 'username', message: 'Username is already taken', severity: 'error' });
 		}
-		
+
 		if (!formData.email.trim()) {
 			errors.push({ field: 'email', message: 'Email is required', severity: 'error' });
 		} else if (!isValidEmail(formData.email)) {
@@ -587,60 +598,84 @@
 		} else if (!emailAvailable) {
 			errors.push({ field: 'email', message: 'Email is already registered', severity: 'error' });
 		}
-		
+
 		// Security validation
 		if (!formData.password) {
 			errors.push({ field: 'password', message: 'Password is required', severity: 'error' });
 		} else if (passwordStrength && passwordStrength.score < 3) {
 			errors.push({ field: 'password', message: 'Password is too weak', severity: 'error' });
 		} else if (passwordStrength?.isBreached) {
-			errors.push({ field: 'password', message: 'This password has been found in data breaches', severity: 'error' });
+			errors.push({
+				field: 'password',
+				message: 'This password has been found in data breaches',
+				severity: 'error'
+			});
 		}
-		
+
 		if (formData.password !== formData.password_confirmation) {
-			errors.push({ field: 'password_confirmation', message: 'Passwords do not match', severity: 'error' });
+			errors.push({
+				field: 'password_confirmation',
+				message: 'Passwords do not match',
+				severity: 'error'
+			});
 		}
-		
+
 		// Role validation
 		if (!formData.role) {
 			errors.push({ field: 'role', message: 'Role selection is required', severity: 'error' });
 		}
-		
+
 		// Organization validation
 		if (!formData.department) {
 			errors.push({ field: 'department', message: 'Department is required', severity: 'error' });
 		}
-		
+
 		if (!formData.location) {
 			errors.push({ field: 'location', message: 'Location is required', severity: 'error' });
 		}
-		
+
 		// Compliance validation
 		if (!formData.terms_accepted) {
-			errors.push({ field: 'terms_accepted', message: 'Terms must be accepted', severity: 'error' });
+			errors.push({
+				field: 'terms_accepted',
+				message: 'Terms must be accepted',
+				severity: 'error'
+			});
 		}
-		
+
 		if (!formData.privacy_accepted) {
-			errors.push({ field: 'privacy_accepted', message: 'Privacy policy must be accepted', severity: 'error' });
+			errors.push({
+				field: 'privacy_accepted',
+				message: 'Privacy policy must be accepted',
+				severity: 'error'
+			});
 		}
-		
+
 		// Date validation
 		if (formData.start_date) {
 			const startDate = new Date(formData.start_date);
 			if (startDate < new Date()) {
-				errors.push({ field: 'start_date', message: 'Start date cannot be in the past', severity: 'warning' });
+				errors.push({
+					field: 'start_date',
+					message: 'Start date cannot be in the past',
+					severity: 'warning'
+				});
 			}
 		}
-		
+
 		return errors;
 	}
-	
+
 	function validateCurrentStep(): boolean {
 		switch (activeStep) {
 			case 'identity':
 				return !!(formData.first_name && formData.last_name && formData.username && formData.email);
 			case 'security':
-				return !!(formData.password && formData.password_confirmation && formData.password === formData.password_confirmation);
+				return !!(
+					formData.password &&
+					formData.password_confirmation &&
+					formData.password === formData.password_confirmation
+				);
 			case 'role':
 				return !!formData.role;
 			case 'organization':
@@ -655,25 +690,25 @@
 				return false;
 		}
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Real-time Validation
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function setupRealtimeValidation() {
 		// Real-time validation setup would go here
 	}
-	
+
 	async function checkUsernameAvailability() {
 		if (!formData.username || formData.username.length < 3) {
 			usernameAvailable = null;
 			return;
 		}
-		
+
 		checkingUsername = true;
 		try {
 			// Mock API call
-			await new Promise(resolve => setTimeout(resolve, 500));
+			await new Promise((resolve) => setTimeout(resolve, 500));
 			usernameAvailable = Math.random() > 0.3; // Mock 70% availability
 		} catch (error) {
 			console.error('Failed to check username:', error);
@@ -682,17 +717,17 @@
 			checkingUsername = false;
 		}
 	}
-	
+
 	async function checkEmailAvailability() {
 		if (!isValidEmail(formData.email)) {
 			emailAvailable = null;
 			return;
 		}
-		
+
 		checkingEmail = true;
 		try {
 			// Mock API call
-			await new Promise(resolve => setTimeout(resolve, 500));
+			await new Promise((resolve) => setTimeout(resolve, 500));
 			emailAvailable = Math.random() > 0.2; // Mock 80% availability
 		} catch (error) {
 			console.error('Failed to check email:', error);
@@ -701,17 +736,17 @@
 			checkingEmail = false;
 		}
 	}
-	
+
 	async function checkPasswordStrength(password: string) {
 		if (!password) {
 			passwordStrength = null;
 			return;
 		}
-		
+
 		let score = 0;
 		const feedback: string[] = [];
 		const suggestions: string[] = [];
-		
+
 		// Length check
 		if (password.length >= 8) score++;
 		if (password.length >= 12) score++;
@@ -719,37 +754,37 @@
 			feedback.push('Password is too short');
 			suggestions.push('Use at least 8 characters');
 		}
-		
+
 		// Complexity checks
 		if (/[a-z]/.test(password)) score++;
 		else suggestions.push('Add lowercase letters');
-		
+
 		if (/[A-Z]/.test(password)) score++;
 		else suggestions.push('Add uppercase letters');
-		
+
 		if (/\d/.test(password)) score++;
 		else suggestions.push('Add numbers');
-		
+
 		if (/[^a-zA-Z0-9]/.test(password)) score++;
 		else suggestions.push('Add special characters');
-		
+
 		// Common patterns check
 		if (/(.)\1{2,}/.test(password)) {
 			feedback.push('Avoid repeated characters');
 			score--;
 		}
-		
+
 		if (/^(password|123456|qwerty)/i.test(password)) {
 			feedback.push('This is a commonly used password');
 			score = 0;
 		}
-		
+
 		// Check against breach database (mock)
 		const isBreached = await checkBreachDatabase(password);
-		
+
 		// Calculate crack time
 		const crackTime = calculateCrackTime(score);
-		
+
 		passwordStrength = {
 			score: Math.max(0, Math.min(5, score)),
 			feedback,
@@ -758,32 +793,24 @@
 			isBreached
 		};
 	}
-	
+
 	async function checkBreachDatabase(password: string): Promise<boolean> {
 		const commonPasswords = ['password', '123456', 'qwerty', 'admin', 'letmein'];
 		return commonPasswords.includes(password.toLowerCase());
 	}
-	
+
 	function calculateCrackTime(score: number): string {
-		const times = [
-			'Instant',
-			'Minutes',
-			'Hours',
-			'Days',
-			'Months',
-			'Years',
-			'Centuries'
-		];
+		const times = ['Instant', 'Minutes', 'Hours', 'Days', 'Months', 'Years', 'Centuries'];
 		return times[Math.min(score, times.length - 1)];
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Role & Permission Management
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function selectRole(role: 'admin' | 'trader' | 'member') {
 		formData.role = role;
-		
+
 		// Auto-configure access scope based on role
 		switch (role) {
 			case 'admin':
@@ -820,14 +847,14 @@
 				formData.session_timeout = 720;
 				break;
 		}
-		
+
 		// Set default training based on role
 		updateTrainingModules(role);
 	}
-	
+
 	function updateTrainingModules(role: string) {
 		const baseModules = ['security', 'compliance'];
-		
+
 		switch (role) {
 			case 'admin':
 				formData.training_modules = [...baseModules, 'product', 'support', 'admin'];
@@ -840,88 +867,90 @@
 				break;
 		}
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// File Upload
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function handlePhotoUpload(event: Event) {
 		const input = event.target as HTMLInputElement;
 		const file = input.files?.[0];
-		
+
 		if (!file) return;
-		
+
 		if (!file.type.startsWith('image/')) {
 			showError('Please upload an image file');
 			return;
 		}
-		
+
 		if (file.size > 5 * 1024 * 1024) {
 			showError('Image must be less than 5MB');
 			return;
 		}
-		
+
 		profilePhotoFile = file;
-		
+
 		const reader = new FileReader();
 		reader.onload = (e) => {
 			profilePhotoPreview = e.target?.result as string;
 		};
 		reader.readAsDataURL(file);
 	}
-	
+
 	async function uploadProfilePhoto(file: File): Promise<string> {
 		const formData = new FormData();
 		formData.append('photo', file);
-		
+
 		// Mock upload - would be real API call
 		return 'https://example.com/photo.jpg';
 	}
-	
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Helper Functions
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function calculateCompletion(): number {
 		let completed = 0;
 		let total = 0;
-		
+
 		// Identity fields
 		if (formData.first_name) completed++;
 		if (formData.last_name) completed++;
 		if (formData.username) completed++;
 		if (formData.email) completed++;
 		total += 4;
-		
+
 		// Security fields
 		if (formData.password) completed++;
 		if (formData.password_confirmation) completed++;
 		total += 2;
-		
+
 		// Role
 		if (formData.role) completed++;
 		total += 1;
-		
+
 		// Organization
 		if (formData.department) completed++;
 		if (formData.location) completed++;
 		total += 2;
-		
+
 		// Compliance
 		if (formData.terms_accepted) completed++;
 		if (formData.privacy_accepted) completed++;
 		total += 2;
-		
+
 		return Math.round((completed / total) * 100);
 	}
-	
+
 	function generateEmployeeId(): string {
 		const prefix = 'EMP';
 		const year = new Date().getFullYear();
-		const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+		const random = Math.floor(Math.random() * 10000)
+			.toString()
+			.padStart(4, '0');
 		return `${prefix}${year}${random}`;
 	}
-	
+
 	function generateUsername(): void {
 		if (formData.first_name && formData.last_name) {
 			const base = `${formData.first_name.toLowerCase()}.${formData.last_name.toLowerCase()}`;
@@ -929,33 +958,33 @@
 			checkUsernameAvailability();
 		}
 	}
-	
+
 	function formatDate(date: Date): string {
 		return date.toISOString().split('T')[0];
 	}
-	
+
 	function getNextMonday(): Date {
 		const date = new Date();
 		const day = date.getDay();
 		const diff = date.getDate() - day + (day === 0 ? -6 : 1) + 7;
 		return new Date(date.setDate(diff));
 	}
-	
+
 	function isValidEmail(email: string): boolean {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		return emailRegex.test(email);
 	}
-	
+
 	function isValidUsername(username: string): boolean {
 		const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
 		return usernameRegex.test(username);
 	}
-	
+
 	function isValidPhone(phone: string): boolean {
 		const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 		return phoneRegex.test(phone.replace(/\s/g, ''));
 	}
-	
+
 	async function prepareSubmitData() {
 		return {
 			...formData,
@@ -968,21 +997,21 @@
 			}
 		};
 	}
-	
+
 	async function sendNotifications(user: any) {
 		// Mock notification sending
 		console.log('Sending notifications for user:', user);
 	}
-	
+
 	function trackUserCreation(user: any) {
 		// Analytics tracking
 		console.log('Tracking user creation:', user);
 	}
-	
+
 	function shouldCreateAnother(): boolean {
 		return new URLSearchParams(window.location.search).get('create_another') === 'true';
 	}
-	
+
 	function resetForm() {
 		const preserveFields = {
 			department: formData.department,
@@ -990,10 +1019,10 @@
 			location: formData.location,
 			office: formData.office
 		};
-		
+
 		initializeDefaults();
 		Object.assign(formData, preserveFields);
-		
+
 		profilePhotoFile = null;
 		profilePhotoPreview = null;
 		passwordStrength = null;
@@ -1001,7 +1030,7 @@
 		emailAvailable = null;
 		activeStep = 'identity';
 	}
-	
+
 	function handleApiError(error: AdminApiError) {
 		if (error.validationErrors) {
 			errors = Object.entries(error.validationErrors).map(([field, message]) => ({
@@ -1013,25 +1042,25 @@
 			errors = [{ field: 'general', message: error.message, severity: 'error' as const }];
 		}
 	}
-	
+
 	function showError(message: string) {
 		errors = [{ field: 'general', message, severity: 'error' }];
 	}
-	
+
 	function showSuccessMessage(message: string) {
 		console.log('Success:', message);
 		// Could use a toast notification system here
 	}
-	
+
 	// Reactive statements for real-time validation
 	$: if (formData.username) {
 		checkUsernameAvailability();
 	}
-	
+
 	$: if (formData.email) {
 		checkEmailAvailability();
 	}
-	
+
 	$: if (formData.password) {
 		checkPasswordStrength(formData.password);
 	}

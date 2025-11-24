@@ -47,7 +47,9 @@
 				<!-- Step Bar -->
 				<div class="relative h-12 flex items-center">
 					<div
-						class="{stepColors[index % stepColors.length]} h-full rounded-lg relative overflow-hidden
+						class="{stepColors[
+							index % stepColors.length
+						]} h-full rounded-lg relative overflow-hidden
 							{animated ? 'transition-all duration-700 ease-out' : ''}"
 						style="width: {width}%"
 					>
@@ -64,11 +66,13 @@
 
 					<!-- Conversion Rate Badge -->
 					<div class="ml-4 flex-shrink-0">
-						<span class="text-sm font-semibold {
-							step.conversion_rate >= 80 ? 'text-green-600' :
-							step.conversion_rate >= 50 ? 'text-yellow-600' :
-							'text-red-600'
-						}">
+						<span
+							class="text-sm font-semibold {step.conversion_rate >= 80
+								? 'text-green-600'
+								: step.conversion_rate >= 50
+									? 'text-yellow-600'
+									: 'text-red-600'}"
+						>
 							{step.conversion_rate.toFixed(1)}%
 						</span>
 					</div>
@@ -104,9 +108,11 @@
 				</div>
 				<div>
 					<span class="text-gray-500">Overall Rate:</span>
-					<span class="font-semibold ml-1 {
-						lastStep.overall_conversion_rate >= 10 ? 'text-green-600' : 'text-orange-600'
-					}">
+					<span
+						class="font-semibold ml-1 {lastStep.overall_conversion_rate >= 10
+							? 'text-green-600'
+							: 'text-orange-600'}"
+					>
 						{lastStep.overall_conversion_rate.toFixed(2)}%
 					</span>
 				</div>

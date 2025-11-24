@@ -14,7 +14,7 @@
 	export let columns: 2 | 3 | 4 | 5 = 4;
 	export let onKpiClick: ((kpi: KpiValue) => void) | null = null;
 
-	$: filteredKpis = kpis.filter(kpi => {
+	$: filteredKpis = kpis.filter((kpi) => {
 		if (showPrimaryOnly && !kpi.is_primary) return false;
 		if (category && kpi.category !== category) return false;
 		return true;
@@ -28,14 +28,14 @@
 	}[columns];
 
 	// Group KPIs by category
-	$: categories = [...new Set(kpis.map(k => k.category))];
+	$: categories = [...new Set(kpis.map((k) => k.category))];
 </script>
 
 <div class="space-y-6">
 	{#if category === null && !showPrimaryOnly}
 		<!-- Show by category -->
 		{#each categories as cat}
-			{@const categoryKpis = filteredKpis.filter(k => k.category === cat)}
+			{@const categoryKpis = filteredKpis.filter((k) => k.category === cat)}
 			{#if categoryKpis.length > 0}
 				<div>
 					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 capitalize">
@@ -43,7 +43,12 @@
 					</h3>
 					<div class="grid {gridCols} gap-4">
 						{#each categoryKpis as kpi (kpi.kpi_key)}
-							<div on:click={() => onKpiClick?.(kpi)} on:keypress={() => onKpiClick?.(kpi)}>
+							<div
+						role="button"
+						tabindex="0"
+						on:click={() => onKpiClick?.(kpi)}
+						on:keypress={() => onKpiClick?.(kpi)}
+					>
 								<KpiCard {kpi} clickable={!!onKpiClick} />
 							</div>
 						{/each}
@@ -55,7 +60,12 @@
 		<!-- Flat grid -->
 		<div class="grid {gridCols} gap-4">
 			{#each filteredKpis as kpi (kpi.kpi_key)}
-				<div on:click={() => onKpiClick?.(kpi)} on:keypress={() => onKpiClick?.(kpi)}>
+				<div
+					role="button"
+					tabindex="0"
+					on:click={() => onKpiClick?.(kpi)}
+					on:keypress={() => onKpiClick?.(kpi)}
+				>
 					<KpiCard {kpi} clickable={!!onKpiClick} />
 				</div>
 			{/each}

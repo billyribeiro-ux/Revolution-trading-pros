@@ -1,9 +1,9 @@
 /**
  * Authentication API Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. SECURITY:
  *    - Token refresh with JWT rotation
  *    - Biometric authentication support
@@ -11,25 +11,25 @@
  *    - Session fingerprinting
  *    - Rate limiting
  *    - CSRF protection
- * 
+ *
  * 2. RELIABILITY:
  *    - Automatic retry with exponential backoff
  *    - Offline queue for critical operations
  *    - Token refresh before expiry
  *    - Graceful degradation
- * 
+ *
  * 3. PERFORMANCE:
  *    - Request deduplication
  *    - Response caching
  *    - Optimistic updates
  *    - Background sync
- * 
+ *
  * 4. OBSERVABILITY:
  *    - Comprehensive logging
  *    - Performance metrics
  *    - Security event tracking
  *    - Analytics integration
- * 
+ *
  * @version 2.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -275,12 +275,7 @@ class AuthenticationService {
 		}
 
 		// Create request promise
-		const requestPromise = this.executeRequest<T>(
-			endpoint,
-			fetchOptions,
-			skipAuth,
-			retries
-		);
+		const requestPromise = this.executeRequest<T>(endpoint, fetchOptions, skipAuth, retries);
 
 		// Store in queue for deduplication
 		if (fetchOptions.method === 'GET') {
@@ -328,7 +323,6 @@ class AuthenticationService {
 
 			// Handle response
 			return await this.handleResponse<T>(response, endpoint, options, skipAuth, retriesLeft);
-
 		} catch (error) {
 			clearTimeout(timeoutId);
 
@@ -336,8 +330,8 @@ class AuthenticationService {
 			if (retriesLeft > 0 && this.shouldRetry(error)) {
 				const delay = RETRY_DELAY_BASE * Math.pow(2, MAX_RETRIES - retriesLeft);
 				console.warn(`[AuthService] Retrying request to ${endpoint} after ${delay}ms`);
-				
-				await new Promise(resolve => setTimeout(resolve, delay));
+
+				await new Promise((resolve) => setTimeout(resolve, delay));
 				return this.executeRequest<T>(endpoint, options, skipAuth, retriesLeft - 1);
 			}
 
@@ -348,10 +342,13 @@ class AuthenticationService {
 	/**
 	 * Build request headers
 	 */
-	private async buildHeaders(skipAuth: boolean, customHeaders?: HeadersInit): Promise<Record<string, string>> {
+	private async buildHeaders(
+		skipAuth: boolean,
+		customHeaders?: HeadersInit
+	): Promise<Record<string, string>> {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json',
+			Accept: 'application/json',
 			'X-API-Version': API_VERSION
 		};
 
@@ -382,7 +379,7 @@ class AuthenticationService {
 	 */
 	private async getValidToken(): Promise<string | null> {
 		const auth = get(authStore);
-		
+
 		if (!auth.token) return null;
 
 		// Check if token needs refresh
@@ -427,7 +424,7 @@ class AuthenticationService {
 					throw new UnauthorizedError();
 				}
 			}
-			
+
 			authStore.clearAuth();
 			throw new UnauthorizedError();
 		}
@@ -441,7 +438,10 @@ class AuthenticationService {
 		// Handle other errors
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));
-			throw new AuthError(error.message || `Request failed with status ${response.status}`, error.code);
+			throw new AuthError(
+				error.message || `Request failed with status ${response.status}`,
+				error.code
+			);
 		}
 
 		// Parse successful response
@@ -455,11 +455,13 @@ class AuthenticationService {
 		if (error instanceof RateLimitError) return false;
 		if (error instanceof ValidationError) return false;
 		if (error instanceof UnauthorizedError) return false;
-		
+
 		// Retry on network errors or 5xx errors
-		return error.name === 'AbortError' || 
-			   error.name === 'NetworkError' ||
-			   (error instanceof AuthError && error.code?.startsWith('5'));
+		return (
+			error.name === 'AbortError' ||
+			error.name === 'NetworkError' ||
+			(error instanceof AuthError && error.code?.startsWith('5'))
+		);
 	}
 
 	/**
@@ -467,15 +469,15 @@ class AuthenticationService {
 	 */
 	private transformError(error: any): Error {
 		if (error instanceof AuthError) return error;
-		
+
 		if (error.name === 'AbortError') {
 			return new AuthError('Request timeout', 'TIMEOUT');
 		}
-		
+
 		if (error.name === 'NetworkError') {
 			return new AuthError('Network error', 'NETWORK_ERROR');
 		}
-		
+
 		return new AuthError(error.message || 'Unknown error', 'UNKNOWN');
 	}
 
@@ -492,7 +494,7 @@ class AuthenticationService {
 	 */
 	private getCSRFToken(): string | null {
 		if (!browser) return null;
-		
+
 		// Try to get from cookie
 		const cookies = document.cookie.split(';');
 		for (const cookie of cookies) {
@@ -501,7 +503,7 @@ class AuthenticationService {
 				return decodeURIComponent(value);
 			}
 		}
-		
+
 		// Try to get from meta tag
 		const metaTag = document.querySelector('meta[name="csrf-token"]');
 		return metaTag?.getAttribute('content') || null;
@@ -534,7 +536,9 @@ class AuthenticationService {
 		// Track registration
 		this.trackEvent('user_registered', { email: data.email });
 
-		return response.message || 'Registration successful. Please check your email to verify your account.';
+		return (
+			response.message || 'Registration successful. Please check your email to verify your account.'
+		);
 	}
 
 	/**
@@ -570,13 +574,13 @@ class AuthenticationService {
 		// Fetch full user data
 		try {
 			const fullUser = await this.getUser();
-			
+
 			// Track successful login
-			this.trackEvent('user_logged_in', { 
+			this.trackEvent('user_logged_in', {
 				email: fullUser.email,
 				method: 'password'
 			});
-			
+
 			return fullUser;
 		} catch (error) {
 			console.error('[AuthService] Failed to fetch user data:', error);
@@ -622,7 +626,7 @@ class AuthenticationService {
 			await this.apiRequest<MessageResponse>('/logout', {
 				method: 'POST'
 			});
-			
+
 			// Track logout
 			const user = get(authStore).user;
 			if (user) {
@@ -650,7 +654,7 @@ class AuthenticationService {
 	 */
 	async updateProfile(data: UpdateProfileData): Promise<User> {
 		const formData = new FormData();
-		
+
 		// Add text fields
 		Object.entries(data).forEach(([key, value]) => {
 			if (value !== undefined && !(value instanceof File)) {
@@ -672,10 +676,10 @@ class AuthenticationService {
 		});
 
 		authStore.setUser(user);
-		
+
 		// Track profile update
 		this.trackEvent('profile_updated', { email: user.email });
-		
+
 		return user;
 	}
 
@@ -769,7 +773,11 @@ class AuthenticationService {
 	 * Enable MFA - Step 1: Get QR code and secret
 	 */
 	async enableMFA(): Promise<{ qr_code: string; secret: string; backup_codes: string[] }> {
-		const response = await this.apiRequest<{ qr_code: string; secret: string; backup_codes: string[] }>('/me/mfa/enable', {
+		const response = await this.apiRequest<{
+			qr_code: string;
+			secret: string;
+			backup_codes: string[];
+		}>('/me/mfa/enable', {
 			method: 'POST'
 		});
 
@@ -812,11 +820,16 @@ class AuthenticationService {
 	/**
 	 * Login with MFA code
 	 */
-	async loginWithMFA(email: string, password: string, mfaCode?: string, backupCode?: string): Promise<AuthResponse> {
+	async loginWithMFA(
+		email: string,
+		password: string,
+		mfaCode?: string,
+		backupCode?: string
+	): Promise<AuthResponse> {
 		const response = await this.apiRequest<AuthResponse>('/login/mfa', {
 			method: 'POST',
-			body: JSON.stringify({ 
-				email, 
+			body: JSON.stringify({
+				email,
 				password,
 				mfa_code: mfaCode,
 				backup_code: backupCode
@@ -859,7 +872,7 @@ class AuthenticationService {
 		}
 
 		this.pendingRefresh = this.performTokenRefresh();
-		
+
 		try {
 			const result = await this.pendingRefresh;
 			return result;
@@ -873,7 +886,7 @@ class AuthenticationService {
 	 */
 	private async performTokenRefresh(): Promise<TokenResponse> {
 		const auth = get(authStore);
-		
+
 		if (!auth.refreshToken) {
 			throw new UnauthorizedError('No refresh token available');
 		}
@@ -910,12 +923,10 @@ class AuthenticationService {
 		if (!auth.token) return;
 
 		// Calculate refresh time (5 minutes before expiry)
-		const refreshTime = expiresIn 
-			? expiresIn - TOKEN_REFRESH_THRESHOLD
-			: TOKEN_REFRESH_THRESHOLD;
+		const refreshTime = expiresIn ? expiresIn - TOKEN_REFRESH_THRESHOLD : TOKEN_REFRESH_THRESHOLD;
 
 		this.tokenRefreshTimeout = window.setTimeout(() => {
-			this.refreshToken().catch(error => {
+			this.refreshToken().catch((error) => {
 				console.error('[AuthService] Scheduled token refresh failed:', error);
 				this.clearAuth();
 			});
@@ -1043,7 +1054,7 @@ class AuthenticationService {
 			'https://www.googletagmanager.com'
 		];
 
-		return trustedDomains.some(domain => src.startsWith(domain));
+		return trustedDomains.some((domain) => src.startsWith(domain));
 	}
 
 	/**
@@ -1088,7 +1099,7 @@ class AuthenticationService {
 		if (!browser) return '';
 
 		let deviceId = localStorage.getItem('device_id');
-		
+
 		if (!deviceId) {
 			deviceId = crypto.randomUUID();
 			localStorage.setItem('device_id', deviceId);
@@ -1130,7 +1141,7 @@ class AuthenticationService {
 				data,
 				timestamp: new Date().toISOString()
 			})
-		}).catch(error => {
+		}).catch((error) => {
 			console.error('[AuthService] Failed to track security event:', error);
 		});
 	}
@@ -1148,9 +1159,14 @@ export const registerAndLogin = async (data: RegisterData) => {
 	await authService.register(data);
 	return authService.login({ email: data.email, password: data.password });
 };
-export const loginWithMFA = (email: string, password: string, mfaCode?: string, backupCode?: string) => 
-	authService.loginWithMFA(email, password, mfaCode, backupCode);
-export const loginWithBiometric = (credential: string) => authService.loginWithBiometric(credential);
+export const loginWithMFA = (
+	email: string,
+	password: string,
+	mfaCode?: string,
+	backupCode?: string
+) => authService.loginWithMFA(email, password, mfaCode, backupCode);
+export const loginWithBiometric = (credential: string) =>
+	authService.loginWithBiometric(credential);
 export const logout = () => authService.logout();
 export const getUser = () => authService.getUser();
 export const updateProfile = (data: UpdateProfileData) => authService.updateProfile(data);
@@ -1158,7 +1174,8 @@ export const changePassword = (data: ChangePasswordData) => authService.changePa
 export const forgotPassword = (data: ForgotPasswordData) => authService.forgotPassword(data);
 export const resetPassword = (data: ResetPasswordData) => authService.resetPassword(data);
 export const sendEmailVerification = () => authService.sendEmailVerification();
-export const verifyEmail = (id: string, hash: string, signature: string) => authService.verifyEmail(id, hash, signature);
+export const verifyEmail = (id: string, hash: string, signature: string) =>
+	authService.verifyEmail(id, hash, signature);
 export const enableMFA = () => authService.enableMFA();
 export const verifyMFA = (code: string) => authService.verifyMFA(code);
 export const disableMFA = (password: string) => authService.disableMFA(password);

@@ -38,7 +38,9 @@
 			} else {
 				const paginatedResponse = response as any;
 				forms = paginatedResponse.data || paginatedResponse.forms || [];
-				totalPages = Math.ceil((paginatedResponse.total || forms.length) / (paginatedResponse.perPage || 20));
+				totalPages = Math.ceil(
+					(paginatedResponse.total || forms.length) / (paginatedResponse.perPage || 20)
+				);
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load forms';
@@ -375,11 +377,12 @@
 	}
 
 	.form-description-preview {
-		font-size: 0.75rem;
-		color: #94a3b8;
+		color: #6b7280;
+		font-size: 0.875rem;
 		margin: 0;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

@@ -121,7 +121,9 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+			<div
+				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+			></div>
 		</div>
 	{:else if error}
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -177,11 +179,7 @@
 		<!-- Selected Funnel Detail -->
 		{#if selectedFunnel}
 			<div class="space-y-6">
-				<FunnelChart
-					steps={selectedFunnel.steps}
-					title={selectedFunnel.name}
-					showDropOff={true}
-				/>
+				<FunnelChart steps={selectedFunnel.steps} title={selectedFunnel.name} showDropOff={true} />
 
 				<!-- Step Details Table -->
 				<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -201,13 +199,16 @@
 							</thead>
 							<tbody class="divide-y divide-gray-100">
 								{#each selectedFunnel.steps as step, i}
-									{@const fromStart = selectedFunnel.steps[0].count > 0
-										? (step.count / selectedFunnel.steps[0].count) * 100
-										: 0}
+									{@const fromStart =
+										selectedFunnel.steps[0].count > 0
+											? (step.count / selectedFunnel.steps[0].count) * 100
+											: 0}
 									<tr class="hover:bg-gray-50">
 										<td class="py-3 px-4">
 											<div class="flex items-center gap-3">
-												<span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+												<span
+													class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium"
+												>
 													{i + 1}
 												</span>
 												<span class="font-medium text-gray-900">{step.name}</span>
@@ -272,18 +273,20 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-						<input
-							type="text"
-							bind:value={newFunnel.name}
+					<label for="funnel-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+					<input
+						id="funnel-name"
+						type="text"
+						bind:value={newFunnel.name}
 							placeholder="e.g., Purchase Funnel"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-						<textarea
-							bind:value={newFunnel.description}
+					<label for="funnel-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<textarea
+						id="funnel-description"
+						bind:value={newFunnel.description}
 							placeholder="Describe this funnel..."
 							rows={2}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -294,7 +297,7 @@
 				<!-- Steps -->
 				<div>
 					<div class="flex items-center justify-between mb-3">
-						<label class="text-sm font-medium text-gray-700">Funnel Steps</label>
+						<span class="text-sm font-medium text-gray-700">Funnel Steps</span>
 						<button
 							on:click={addStep}
 							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -305,7 +308,9 @@
 					<div class="space-y-3">
 						{#each newFunnel.steps as step, index}
 							<div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-								<span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+								<span
+									class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
+								>
 									{index + 1}
 								</span>
 								<input

@@ -33,7 +33,7 @@
 	onMount(() => {
 		fetchMetrics();
 		interval = setInterval(fetchMetrics, refreshInterval);
-		
+
 		// Cleanup function (Svelte 5 pattern)
 		return () => {
 			if (interval) clearInterval(interval);

@@ -18,15 +18,15 @@
 	const iconMap: Record<string, string> = {
 		'currency-dollar': '💰',
 		'shopping-cart': '🛒',
-		'users': '👥',
-		'clock': '⏱️',
-		'target': '🎯',
+		users: '👥',
+		clock: '⏱️',
+		target: '🎯',
 		'trending-up': '📈',
 		'user-plus': '➕',
 		'check-circle': '✅',
-		'heart': '❤️',
-		'crown': '👑',
-		'star': '⭐'
+		heart: '❤️',
+		crown: '👑',
+		star: '⭐'
 	};
 
 	// Color classes based on KPI color
@@ -42,11 +42,8 @@
 		gray: 'bg-gray-500/10 text-gray-600 border-gray-500/20'
 	};
 
-	$: trendClass = kpi.trend === 'up'
-		? 'text-green-500'
-		: kpi.trend === 'down'
-			? 'text-red-500'
-			: 'text-gray-500';
+	$: trendClass =
+		kpi.trend === 'up' ? 'text-green-500' : kpi.trend === 'down' ? 'text-red-500' : 'text-gray-500';
 
 	$: trendIcon = kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→';
 
@@ -143,13 +140,18 @@
 	<!-- Target Status -->
 	{#if kpi.target_status}
 		<div class="mt-2">
-			<span class="text-xs px-2 py-0.5 rounded-full {
-				kpi.target_status === 'on_track' ? 'bg-green-500/20 text-green-600' :
-				kpi.target_status === 'at_risk' ? 'bg-yellow-500/20 text-yellow-600' :
-				'bg-red-500/20 text-red-600'
-			}">
-				{kpi.target_status === 'on_track' ? 'On Track' :
-				 kpi.target_status === 'at_risk' ? 'At Risk' : 'Behind'}
+			<span
+				class="text-xs px-2 py-0.5 rounded-full {kpi.target_status === 'on_track'
+					? 'bg-green-500/20 text-green-600'
+					: kpi.target_status === 'at_risk'
+						? 'bg-yellow-500/20 text-yellow-600'
+						: 'bg-red-500/20 text-red-600'}"
+			>
+				{kpi.target_status === 'on_track'
+					? 'On Track'
+					: kpi.target_status === 'at_risk'
+						? 'At Risk'
+						: 'Behind'}
 			</span>
 		</div>
 	{/if}

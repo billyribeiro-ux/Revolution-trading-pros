@@ -423,8 +423,15 @@ class AnalyticsApiClient {
 		return this.request('GET', '/admin/analytics/kpis');
 	}
 
-	async getKpi(kpiKey: string, period: string = '30d', granularity: string = 'daily'): Promise<KpiDetails> {
-		return this.request('GET', `/admin/analytics/kpis/${kpiKey}`, undefined, { period, granularity });
+	async getKpi(
+		kpiKey: string,
+		period: string = '30d',
+		granularity: string = 'daily'
+	): Promise<KpiDetails> {
+		return this.request('GET', `/admin/analytics/kpis/${kpiKey}`, undefined, {
+			period,
+			granularity
+		});
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -436,7 +443,9 @@ class AnalyticsApiClient {
 	}
 
 	async getFunnelDropOff(funnelKey: string, period: string = '30d'): Promise<any> {
-		return this.request('GET', `/admin/analytics/funnels/${funnelKey}/dropoff`, undefined, { period });
+		return this.request('GET', `/admin/analytics/funnels/${funnelKey}/dropoff`, undefined, {
+			period
+		});
 	}
 
 	async getFunnelBySegment(
@@ -454,12 +463,22 @@ class AnalyticsApiClient {
 	// Cohort Analytics
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getCohortMatrix(cohortKey: string, period: string = '90d'): Promise<{ cohort_key: string; matrix: CohortRow[] }> {
-		return this.request('GET', `/admin/analytics/cohorts/${cohortKey}/matrix`, undefined, { period });
+	async getCohortMatrix(
+		cohortKey: string,
+		period: string = '90d'
+	): Promise<{ cohort_key: string; matrix: CohortRow[] }> {
+		return this.request('GET', `/admin/analytics/cohorts/${cohortKey}/matrix`, undefined, {
+			period
+		});
 	}
 
-	async getCohortCurve(cohortKey: string, period: string = '90d'): Promise<{ cohort_key: string; curve: RetentionCurvePoint[] }> {
-		return this.request('GET', `/admin/analytics/cohorts/${cohortKey}/curve`, undefined, { period });
+	async getCohortCurve(
+		cohortKey: string,
+		period: string = '90d'
+	): Promise<{ cohort_key: string; curve: RetentionCurvePoint[] }> {
+		return this.request('GET', `/admin/analytics/cohorts/${cohortKey}/curve`, undefined, {
+			period
+		});
 	}
 
 	async getCohortLTV(cohortKey: string, period: string = '90d'): Promise<any> {
@@ -474,10 +493,16 @@ class AnalyticsApiClient {
 		model: string = 'linear',
 		period: string = '30d'
 	): Promise<{ campaigns: any[] }> {
-		return this.request('GET', '/admin/analytics/attribution/campaigns', undefined, { model, period });
+		return this.request('GET', '/admin/analytics/attribution/campaigns', undefined, {
+			model,
+			period
+		});
 	}
 
-	async getConversionPaths(period: string = '30d', limit: number = 20): Promise<{ paths: ConversionPath[] }> {
+	async getConversionPaths(
+		period: string = '30d',
+		limit: number = 20
+	): Promise<{ paths: ConversionPath[] }> {
 		return this.request('GET', '/admin/analytics/attribution/paths', undefined, { period, limit });
 	}
 
@@ -503,7 +528,9 @@ class AnalyticsApiClient {
 	}
 
 	async getForecastAccuracy(kpiKey: string, granularity: string = 'daily'): Promise<any> {
-		return this.request('GET', `/admin/analytics/forecast/${kpiKey}/accuracy`, undefined, { granularity });
+		return this.request('GET', `/admin/analytics/forecast/${kpiKey}/accuracy`, undefined, {
+			granularity
+		});
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -538,7 +565,10 @@ class AnalyticsApiClient {
 		dimension: 'channel' | 'device_type' | 'country_code' | 'browser' | 'event_name',
 		period: string = '30d'
 	): Promise<{ breakdown: Array<{ [key: string]: any; count: number }> }> {
-		return this.request('GET', '/admin/analytics/events/breakdown', undefined, { dimension, period });
+		return this.request('GET', '/admin/analytics/events/breakdown', undefined, {
+			dimension,
+			period
+		});
 	}
 
 	async getRealTimeMetrics(): Promise<{
@@ -610,10 +640,7 @@ class AnalyticsApiClient {
 	// Cohort Management
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getCohorts(params?: {
-		period?: string;
-		granularity?: string;
-	}): Promise<{
+	async getCohorts(params?: { period?: string; granularity?: string }): Promise<{
 		cohorts: Array<{
 			key: string;
 			name: string;
@@ -688,7 +715,10 @@ class AnalyticsApiClient {
 		model: string = 'linear',
 		period: string = '30d'
 	): Promise<AttributionReport & { conversion_paths?: ConversionPathData[] }> {
-		return this.request('GET', '/admin/analytics/attribution/channels', undefined, { model, period });
+		return this.request('GET', '/admin/analytics/attribution/channels', undefined, {
+			model,
+			period
+		});
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════

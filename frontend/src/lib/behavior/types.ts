@@ -217,7 +217,13 @@ export interface IntentSignal {
 	id: string;
 	session_id: string;
 	user_id?: string;
-	signal_type: 'cta_hover' | 'form_start' | 'product_view' | 'pricing_view' | 'demo_request' | 'other';
+	signal_type:
+		| 'cta_hover'
+		| 'form_start'
+		| 'product_view'
+		| 'pricing_view'
+		| 'demo_request'
+		| 'other';
 	intent_strength: 'weak' | 'moderate' | 'strong';
 	element?: string;
 	page_url: string;

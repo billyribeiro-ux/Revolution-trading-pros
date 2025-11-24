@@ -1,10 +1,10 @@
 /**
  * Email Marketing & Automation API Client
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Enterprise email marketing system that surpasses ActiveCampaign, Klaviyo,
  * Mailchimp, ConvertKit, and HubSpot.
- * 
+ *
  * @version 1.0.0
  */
 
@@ -303,7 +303,10 @@ class EmailAPI {
 		return this.request('POST', '/admin/email/campaigns', data);
 	}
 
-	async updateCampaign(id: string, data: Partial<EmailCampaign>): Promise<{ campaign: EmailCampaign }> {
+	async updateCampaign(
+		id: string,
+		data: Partial<EmailCampaign>
+	): Promise<{ campaign: EmailCampaign }> {
 		return this.request('PUT', `/admin/email/campaigns/${id}`, data);
 	}
 
@@ -351,7 +354,10 @@ class EmailAPI {
 		return this.request('POST', '/admin/email/templates', data);
 	}
 
-	async updateTemplate(id: string, data: Partial<EmailTemplate>): Promise<{ template: EmailTemplate }> {
+	async updateTemplate(
+		id: string,
+		data: Partial<EmailTemplate>
+	): Promise<{ template: EmailTemplate }> {
 		return this.request('PUT', `/admin/email/templates/${id}`, data);
 	}
 
@@ -383,7 +389,10 @@ class EmailAPI {
 		return this.request('POST', '/admin/email/sequences', data);
 	}
 
-	async updateSequence(id: string, data: Partial<EmailSequence>): Promise<{ sequence: EmailSequence }> {
+	async updateSequence(
+		id: string,
+		data: Partial<EmailSequence>
+	): Promise<{ sequence: EmailSequence }> {
 		return this.request('PUT', `/admin/email/sequences/${id}`, data);
 	}
 
@@ -399,11 +408,18 @@ class EmailAPI {
 		return this.request('POST', `/admin/email/sequences/${id}/pause`);
 	}
 
-	async addSequenceEmail(sequenceId: string, data: Partial<SequenceEmail>): Promise<{ email: SequenceEmail }> {
+	async addSequenceEmail(
+		sequenceId: string,
+		data: Partial<SequenceEmail>
+	): Promise<{ email: SequenceEmail }> {
 		return this.request('POST', `/admin/email/sequences/${sequenceId}/emails`, data);
 	}
 
-	async updateSequenceEmail(sequenceId: string, emailId: string, data: Partial<SequenceEmail>): Promise<{ email: SequenceEmail }> {
+	async updateSequenceEmail(
+		sequenceId: string,
+		emailId: string,
+		data: Partial<SequenceEmail>
+	): Promise<{ email: SequenceEmail }> {
 		return this.request('PUT', `/admin/email/sequences/${sequenceId}/emails/${emailId}`, data);
 	}
 
@@ -431,7 +447,10 @@ class EmailAPI {
 		return this.request('POST', '/admin/email/automations', data);
 	}
 
-	async updateAutomation(id: string, data: Partial<EmailAutomation>): Promise<{ automation: EmailAutomation }> {
+	async updateAutomation(
+		id: string,
+		data: Partial<EmailAutomation>
+	): Promise<{ automation: EmailAutomation }> {
 		return this.request('PUT', `/admin/email/automations/${id}`, data);
 	}
 
@@ -474,10 +493,13 @@ class EmailAPI {
 		return this.request('DELETE', `/admin/email/segments/${id}`);
 	}
 
-	async getSegmentSubscribers(id: string, params?: {
-		page?: number;
-		per_page?: number;
-	}): Promise<{ subscribers: EmailSubscriber[]; total: number }> {
+	async getSegmentSubscribers(
+		id: string,
+		params?: {
+			page?: number;
+			per_page?: number;
+		}
+	): Promise<{ subscribers: EmailSubscriber[]; total: number }> {
 		return this.request('GET', `/admin/email/segments/${id}/subscribers`, undefined, params);
 	}
 
@@ -503,7 +525,10 @@ class EmailAPI {
 		return this.request('POST', '/admin/email/subscribers', data);
 	}
 
-	async updateSubscriber(id: string, data: Partial<EmailSubscriber>): Promise<{ subscriber: EmailSubscriber }> {
+	async updateSubscriber(
+		id: string,
+		data: Partial<EmailSubscriber>
+	): Promise<{ subscriber: EmailSubscriber }> {
 		return this.request('PUT', `/admin/email/subscribers/${id}`, data);
 	}
 
@@ -565,7 +590,7 @@ class EmailAPI {
 		return this.request('GET', '/admin/email/deliverability');
 	}
 
-	async checkDomainAuth(domain: string): Promise<{ 
+	async checkDomainAuth(domain: string): Promise<{
 		spf: boolean;
 		dkim: boolean;
 		dmarc: boolean;
@@ -578,7 +603,10 @@ class EmailAPI {
 	// AI Features
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async generateEmailContent(prompt: string, context?: any): Promise<{ 
+	async generateEmailContent(
+		prompt: string,
+		context?: any
+	): Promise<{
 		subject: string;
 		html_content: string;
 		plain_text_content: string;
@@ -586,14 +614,14 @@ class EmailAPI {
 		return this.request('POST', '/admin/email/ai/generate', { prompt, context });
 	}
 
-	async optimizeSubjectLine(subject: string): Promise<{ 
+	async optimizeSubjectLine(subject: string): Promise<{
 		suggestions: string[];
 		scores: number[];
 	}> {
 		return this.request('POST', '/admin/email/ai/optimize-subject', { subject });
 	}
 
-	async predictSendTime(subscriberId: string): Promise<{ 
+	async predictSendTime(subscriberId: string): Promise<{
 		recommended_time: string;
 		confidence: number;
 	}> {

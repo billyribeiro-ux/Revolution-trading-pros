@@ -6,7 +6,6 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('Comprehensive E2E Tests', () => {
-	
 	test.describe('Core Pages - Load & Render', () => {
 		const pages = [
 			{ path: '/', title: 'Revolution', description: 'Home page' },
@@ -16,7 +15,7 @@ test.describe('Comprehensive E2E Tests', () => {
 			{ path: '/blog', title: 'Blog', description: 'Blog listing' },
 			{ path: '/resources', title: 'Resources', description: 'Resources page' },
 			{ path: '/cart', title: 'Cart', description: 'Shopping cart' },
-			{ path: '/checkout', title: 'Cart|Checkout', description: 'Checkout page' },
+			{ path: '/checkout', title: 'Cart|Checkout', description: 'Checkout page' }
 		];
 
 		for (const page of pages) {
@@ -32,7 +31,7 @@ test.describe('Comprehensive E2E Tests', () => {
 		const rooms = [
 			'/live-trading-rooms/day-trading',
 			'/live-trading-rooms/swing-trading',
-			'/live-trading-rooms/small-accounts',
+			'/live-trading-rooms/small-accounts'
 		];
 
 		for (const room of rooms) {
@@ -47,10 +46,7 @@ test.describe('Comprehensive E2E Tests', () => {
 	});
 
 	test.describe('Alert Services Pages', () => {
-		const services = [
-			'/alert-services/spx-profit-pulse',
-			'/alert-services/explosive-swings',
-		];
+		const services = ['/alert-services/spx-profit-pulse', '/alert-services/explosive-swings'];
 
 		for (const service of services) {
 			test(`${service} should load and display pricing`, async ({ page }) => {
@@ -84,7 +80,7 @@ test.describe('Comprehensive E2E Tests', () => {
 		});
 
 		const indicators = ['/indicators/rsi', '/indicators/macd'];
-		
+
 		for (const indicator of indicators) {
 			test(`${indicator} should load`, async ({ page }) => {
 				await page.goto(indicator);
@@ -118,7 +114,7 @@ test.describe('Comprehensive E2E Tests', () => {
 			'/admin/popups',
 			'/admin/email',
 			'/admin/media',
-			'/admin/seo/analysis',
+			'/admin/seo/analysis'
 		];
 
 		for (const adminPage of adminPages) {
@@ -134,12 +130,12 @@ test.describe('Comprehensive E2E Tests', () => {
 		test('All main nav links should be clickable', async ({ page }) => {
 			await page.goto('/');
 			await page.waitForLoadState('networkidle');
-			
+
 			const navLinks = page.locator('nav a, header a');
 			const count = await navLinks.count();
-			
+
 			expect(count).toBeGreaterThan(0);
-			
+
 			// Check first few links are valid
 			for (let i = 0; i < Math.min(5, count); i++) {
 				const href = await navLinks.nth(i).getAttribute('href');
@@ -152,7 +148,7 @@ test.describe('Comprehensive E2E Tests', () => {
 			await page.waitForLoadState('networkidle');
 			await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 			await page.waitForTimeout(1000);
-			
+
 			// Check for footer or any bottom content
 			const footer = page.locator('footer, [role="contentinfo"], .footer');
 			const footerExists = await footer.count();
@@ -164,7 +160,7 @@ test.describe('Comprehensive E2E Tests', () => {
 		const viewports = [
 			{ name: 'Mobile', width: 375, height: 667 },
 			{ name: 'Tablet', width: 768, height: 1024 },
-			{ name: 'Desktop', width: 1920, height: 1080 },
+			{ name: 'Desktop', width: 1920, height: 1080 }
 		];
 
 		for (const viewport of viewports) {
@@ -184,7 +180,7 @@ test.describe('Comprehensive E2E Tests', () => {
 			const startTime = Date.now();
 			await page.goto('/');
 			const loadTime = Date.now() - startTime;
-			
+
 			expect(loadTime).toBeLessThan(3000);
 		});
 
@@ -195,17 +191,15 @@ test.describe('Comprehensive E2E Tests', () => {
 					errors.push(msg.text());
 				}
 			});
-			
+
 			await page.goto('/');
 			await page.waitForLoadState('networkidle');
-			
+
 			// Filter out known acceptable errors
-			const criticalErrors = errors.filter(e => 
-				!e.includes('favicon') && 
-				!e.includes('404') &&
-				!e.includes('net::ERR')
+			const criticalErrors = errors.filter(
+				(e) => !e.includes('favicon') && !e.includes('404') && !e.includes('net::ERR')
 			);
-			
+
 			expect(criticalErrors.length).toBe(0);
 		});
 	});
@@ -213,18 +207,21 @@ test.describe('Comprehensive E2E Tests', () => {
 	test.describe('SEO & Meta Tags', () => {
 		test('Home page should have proper meta tags', async ({ page }) => {
 			await page.goto('/');
-			
+
 			const title = await page.title();
 			expect(title.length).toBeGreaterThan(0);
-			
-			const metaDescription = await page.locator('meta[name="description"]').first().getAttribute('content');
+
+			const metaDescription = await page
+				.locator('meta[name="description"]')
+				.first()
+				.getAttribute('content');
 			expect(metaDescription).toBeTruthy();
 		});
 
 		test('Pages should have Open Graph tags', async ({ page }) => {
 			await page.goto('/');
 			await page.waitForLoadState('networkidle');
-			
+
 			// Check if OG tags exist (may not be present on all pages)
 			const ogTags = await page.locator('meta[property^="og:"]').count();
 			expect(ogTags).toBeGreaterThanOrEqual(0); // Just verify page loaded
@@ -235,16 +232,16 @@ test.describe('Comprehensive E2E Tests', () => {
 		test('Contact/Newsletter forms should be present', async ({ page }) => {
 			await page.goto('/');
 			await page.waitForLoadState('networkidle');
-			
+
 			// Look for any form or input elements
 			const forms = page.locator('form');
 			const inputs = page.locator('input[type="email"]');
 			const buttons = page.locator('button, a');
-			
+
 			const formCount = await forms.count();
 			const inputCount = await inputs.count();
 			const buttonCount = await buttons.count();
-			
+
 			// Page should have interactive elements
 			expect(formCount + inputCount + buttonCount).toBeGreaterThan(0);
 		});
@@ -256,10 +253,10 @@ test.describe('Comprehensive E2E Tests', () => {
 			page.on('pageerror', (error) => {
 				errors.push(error.message);
 			});
-			
+
 			await page.goto('/analytics');
 			await page.waitForTimeout(1000);
-			
+
 			// Should redirect to login or load, but no JS errors
 			expect(errors.length).toBe(0);
 		});
@@ -268,12 +265,12 @@ test.describe('Comprehensive E2E Tests', () => {
 	test.describe('Media & Assets', () => {
 		test('Images should load on home page', async ({ page }) => {
 			await page.goto('/');
-			
+
 			const images = page.locator('img');
 			const count = await images.count();
-			
+
 			expect(count).toBeGreaterThan(0);
-			
+
 			// Check first image loads
 			if (count > 0) {
 				const firstImg = images.first();

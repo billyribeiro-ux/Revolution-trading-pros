@@ -56,7 +56,13 @@
 	import { page } from '$app/stores';
 	import { fade, fly, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { couponsApi, productsApi, categoriesApi, segmentsApi, AdminApiError } from '$lib/api/admin';
+	import {
+		couponsApi,
+		productsApi,
+		categoriesApi,
+		segmentsApi,
+		AdminApiError
+	} from '$lib/api/admin';
 	import {
 		IconTicket,
 		IconCheck,
@@ -977,7 +983,7 @@
 	function handleApiError(error: AdminApiError) {
 		if (error.isValidationError && error.validationErrors) {
 			errors = Object.entries(error.validationErrors).flatMap(([field, messages]) =>
-				messages.map(message => ({
+				messages.map((message) => ({
 					field,
 					message,
 					severity: 'error' as const
@@ -1495,7 +1501,13 @@
 
 					<div class="form-group">
 						<label for="eligible-segments">Eligible Segments</label>
-						<select id="eligible-segments" multiple bind:value={formData.user_segments} class="input input-multi" size="5">
+						<select
+							id="eligible-segments"
+							multiple
+							bind:value={formData.user_segments}
+							class="input input-multi"
+							size="5"
+						>
 							{#each availableSegments as segment}
 								<option value={segment.id}>{segment.name}</option>
 							{/each}

@@ -2,7 +2,13 @@
  * RevolutionBehavior-L8-System - API Client
  */
 
-import type { BehaviorEventBatch, BehaviorSession, BehaviorDashboardData, FrictionPoint, IntentSignal } from '$lib/behavior/types';
+import type {
+	BehaviorEventBatch,
+	BehaviorSession,
+	BehaviorDashboardData,
+	FrictionPoint,
+	IntentSignal
+} from '$lib/behavior/types';
 import { apiClient } from './client';
 
 export class BehaviorAPI {

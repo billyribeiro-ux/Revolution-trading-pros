@@ -1,9 +1,9 @@
 /**
  * Subscription Management Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. BILLING ENGINE:
  *    - Multi-currency support
  *    - Usage-based billing
@@ -11,7 +11,7 @@
  *    - Proration handling
  *    - Tax calculation
  *    - Dunning management
- * 
+ *
  * 2. PAYMENT ORCHESTRATION:
  *    - Multiple payment providers
  *    - Smart routing
@@ -19,7 +19,7 @@
  *    - Fraud detection
  *    - PCI compliance
  *    - 3D Secure
- * 
+ *
  * 3. REVENUE OPTIMIZATION:
  *    - Churn prediction
  *    - Upsell recommendations
@@ -27,7 +27,7 @@
  *    - Win-back campaigns
  *    - Revenue forecasting
  *    - LTV calculation
- * 
+ *
  * 4. ANALYTICS & INSIGHTS:
  *    - MRR/ARR tracking
  *    - Cohort analysis
@@ -35,7 +35,7 @@
  *    - Payment analytics
  *    - Customer segmentation
  *    - Real-time metrics
- * 
+ *
  * 5. AUTOMATION:
  *    - Smart dunning
  *    - Auto-renewal
@@ -43,7 +43,7 @@
  *    - Payment recovery
  *    - Lifecycle emails
  *    - Webhook orchestration
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -64,7 +64,9 @@ import type {
 
 const API_BASE = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
 const WS_BASE = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
-const ANALYTICS_API = browser ? import.meta.env.VITE_ANALYTICS_API || 'http://localhost:8002/api' : '';
+const ANALYTICS_API = browser
+	? import.meta.env.VITE_ANALYTICS_API || 'http://localhost:8002/api'
+	: '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const RETRY_ATTEMPTS = 3;
@@ -86,23 +88,23 @@ export interface EnhancedSubscription extends Subscription {
 	taxes: Tax[];
 	invoices: Invoice[];
 	planId?: string;
-	
+
 	// Metrics
 	mrr: number;
 	arr: number;
 	ltv: number;
 	churnRisk: number;
 	health: SubscriptionHealth;
-	
+
 	// Payment
 	failedAttempts: number;
 	dunningStatus?: DunningStatus;
-	
+
 	// Customer
 	customer: Customer;
 	usage?: UsageData;
 	engagement: EngagementMetrics;
-	
+
 	// Metadata
 	customFields?: Record<string, any>;
 	tags?: string[];
@@ -378,7 +380,7 @@ class SubscriptionService {
 	private metricsInterval?: number;
 	private pendingRequests = new Map<string, Promise<any>>();
 	private retryQueue: RetryItem[] = [];
-	
+
 	// Stores
 	public subscriptions = writable<EnhancedSubscription[]>([]);
 	public currentSubscription = writable<EnhancedSubscription | null>(null);
@@ -389,21 +391,19 @@ class SubscriptionService {
 	public error = writable<string | null>(null);
 
 	// Derived stores
-	public activeSubscriptions = derived(
-		this.subscriptions,
-		$subs => $subs.filter(s => s.status === 'active')
+	public activeSubscriptions = derived(this.subscriptions, ($subs) =>
+		$subs.filter((s) => s.status === 'active')
 	);
 
-	public atRiskSubscriptions = derived(
-		this.subscriptions,
-		$subs => $subs.filter(s => s.health?.status === 'at-risk')
+	public atRiskSubscriptions = derived(this.subscriptions, ($subs) =>
+		$subs.filter((s) => s.health?.status === 'at-risk')
 	);
 
-	public upcomingRenewals = derived(
-		this.subscriptions,
-		$subs => $subs.filter(s => {
+	public upcomingRenewals = derived(this.subscriptions, ($subs) =>
+		$subs.filter((s) => {
 			if (!s.billingCycle?.currentPeriodEnd) return false;
-			const daysUntil = (new Date(s.billingCycle.currentPeriodEnd).getTime() - Date.now()) / 86400000;
+			const daysUntil =
+				(new Date(s.billingCycle.currentPeriodEnd).getTime() - Date.now()) / 86400000;
 			return daysUntil <= 7 && daysUntil >= 0;
 		})
 	);
@@ -427,10 +427,10 @@ class SubscriptionService {
 
 		// Setup WebSocket
 		this.setupWebSocket();
-		
+
 		// Start metrics collection
 		this.startMetricsCollection();
-		
+
 		// Process retry queue
 		this.processRetryQueue();
 
@@ -456,12 +456,7 @@ class SubscriptionService {
 			retryable?: boolean;
 		} = {}
 	): Promise<T> {
-		const {
-			skipCache = false,
-			cacheTTL = CACHE_TTL,
-			retryable = true,
-			...fetchOptions
-		} = options;
+		const { skipCache = false, cacheTTL = CACHE_TTL, retryable = true, ...fetchOptions } = options;
 
 		// Check cache
 		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
@@ -477,7 +472,7 @@ class SubscriptionService {
 
 		// Create request
 		const requestPromise = this.executeRequest<T>(url, fetchOptions, retryable);
-		
+
 		// Store pending
 		if (!fetchOptions.method || fetchOptions.method === 'GET') {
 			this.pendingRequests.set(cacheKey, requestPromise);
@@ -485,12 +480,12 @@ class SubscriptionService {
 
 		try {
 			const result = await requestPromise;
-			
+
 			// Cache result
 			if (!fetchOptions.method || fetchOptions.method === 'GET') {
 				this.setCache(cacheKey, result, cacheTTL);
 			}
-			
+
 			return result;
 		} finally {
 			this.pendingRequests.delete(cacheKey);
@@ -514,8 +509,8 @@ class SubscriptionService {
 				...options,
 				headers: {
 					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-					'Authorization': `Bearer ${this.getAuthToken()}`,
+					Accept: 'application/json',
+					Authorization: `Bearer ${this.getAuthToken()}`,
 					'X-Request-ID': this.generateRequestId(),
 					'X-Idempotency-Key': this.generateIdempotencyKey(url, options),
 					...options.headers
@@ -528,7 +523,7 @@ class SubscriptionService {
 
 			if (!response.ok) {
 				const error = await response.json().catch(() => ({ message: 'Request failed' }));
-				
+
 				// Handle specific error codes
 				if (response.status === 402) {
 					throw new PaymentRequiredError(error.message);
@@ -537,7 +532,7 @@ class SubscriptionService {
 					const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
 					throw new RateLimitError(error.message, retryAfter);
 				}
-				
+
 				throw new Error(error.message || `HTTP ${response.status}`);
 			}
 
@@ -548,19 +543,19 @@ class SubscriptionService {
 			// Retry logic
 			if (retryable && attemptNumber < RETRY_ATTEMPTS && this.shouldRetry(error)) {
 				const delay = RETRY_DELAY * Math.pow(2, attemptNumber - 1);
-				await new Promise(resolve => setTimeout(resolve, delay));
-				
+				await new Promise((resolve) => setTimeout(resolve, delay));
+
 				return this.executeRequest<T>(url, options, retryable, attemptNumber + 1);
 			}
 
 			// Add to retry queue for critical operations
 			if (this.isCriticalOperation(url, options)) {
-				this.addToRetryQueue({ 
-					url, 
-					options, 
-					error, 
-					timestamp: Date.now(), 
-					attempts: 0 
+				this.addToRetryQueue({
+					url,
+					options,
+					error,
+					timestamp: Date.now(),
+					attempts: 0
 				});
 			}
 
@@ -576,7 +571,7 @@ class SubscriptionService {
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_BASE}/subscriptions`);
-			
+
 			this.wsConnection.onopen = () => {
 				console.debug('[SubscriptionService] WebSocket connected');
 				this.authenticate();
@@ -601,23 +596,27 @@ class SubscriptionService {
 	}
 
 	private authenticate(): void {
-		this.wsConnection?.send(JSON.stringify({
-			type: 'auth',
-			token: this.getAuthToken()
-		}));
+		this.wsConnection?.send(
+			JSON.stringify({
+				type: 'auth',
+				token: this.getAuthToken()
+			})
+		);
 	}
 
 	private subscribeToUpdates(): void {
-		this.wsConnection?.send(JSON.stringify({
-			type: 'subscribe',
-			channels: ['subscriptions', 'payments', 'metrics']
-		}));
+		this.wsConnection?.send(
+			JSON.stringify({
+				type: 'subscribe',
+				channels: ['subscriptions', 'payments', 'metrics']
+			})
+		);
 	}
 
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			switch (message.type) {
 				case 'subscription_updated':
 					this.handleSubscriptionUpdate(message.data);
@@ -638,8 +637,8 @@ class SubscriptionService {
 	}
 
 	private handleSubscriptionUpdate(subscription: EnhancedSubscription): void {
-		this.subscriptions.update(subs => {
-			const index = subs.findIndex(s => s.id === subscription.id);
+		this.subscriptions.update((subs) => {
+			const index = subs.findIndex((s) => s.id === subscription.id);
 			if (index >= 0) {
 				subs[index] = subscription;
 			} else {
@@ -660,19 +659,24 @@ class SubscriptionService {
 
 	private handlePaymentUpdate(payment: PaymentHistory): void {
 		// Update relevant subscription
-		this.subscriptions.update(subs => {
-			const sub = subs.find(s => s.id === payment.metadata?.subscriptionId);
+		this.subscriptions.update((subs) => {
+			const sub = subs.find((s) => s.id === payment.metadata?.subscriptionId);
 			if (sub) {
 				// Convert PaymentHistory to SubscriptionPayment format
 				const subscriptionPayment: SubscriptionPayment = {
 					id: payment.id,
 					amount: payment.amount,
-					status: payment.status === 'succeeded' ? 'paid' : payment.status === 'failed' ? 'failed' : 'pending',
+					status:
+						payment.status === 'succeeded'
+							? 'paid'
+							: payment.status === 'failed'
+								? 'failed'
+								: 'pending',
 					paymentDate: payment.createdAt,
 					dueDate: payment.createdAt,
 					paymentMethod: typeof payment.method === 'string' ? payment.method : payment.method.type,
-					failureReason: payment.attempts.find(a => a.error)?.error,
-					retryCount: payment.attempts.length - 1,
+					failureReason: payment.attempts.find((a) => a.error)?.error,
+					retryCount: payment.attempts.length - 1
 				};
 				sub.paymentHistory = [...(sub.paymentHistory || []), subscriptionPayment];
 			}
@@ -681,15 +685,21 @@ class SubscriptionService {
 
 		// Show notification for failures
 		if (payment.status === 'failed') {
-			this.showNotification(`Payment failed for subscription ${payment.metadata?.subscriptionId}`, 'error');
+			this.showNotification(
+				`Payment failed for subscription ${payment.metadata?.subscriptionId}`,
+				'error'
+			);
 		}
 	}
 
 	private handleMetricsUpdate(metrics: Partial<RevenueMetrics>): void {
-		this.revenueMetrics.update(current => ({
-			...current,
-			...metrics
-		}) as RevenueMetrics);
+		this.revenueMetrics.update(
+			(current) =>
+				({
+					...current,
+					...metrics
+				}) as RevenueMetrics
+		);
 	}
 
 	private handleAlert(alert: any): void {
@@ -745,19 +755,19 @@ class SubscriptionService {
 		setInterval(async () => {
 			const now = Date.now();
 			const pending = this.retryQueue.filter(
-				item => now - item.timestamp > RETRY_DELAY * Math.pow(2, item.attempts)
+				(item) => now - item.timestamp > RETRY_DELAY * Math.pow(2, item.attempts)
 			);
 
 			for (const item of pending) {
 				try {
 					await this.executeRequest(item.url, item.options, false);
 					// Remove from queue on success
-					this.retryQueue = this.retryQueue.filter(i => i !== item);
+					this.retryQueue = this.retryQueue.filter((i) => i !== item);
 				} catch (error) {
 					item.attempts++;
 					if (item.attempts >= RETRY_ATTEMPTS) {
 						// Remove after max attempts
-						this.retryQueue = this.retryQueue.filter(i => i !== item);
+						this.retryQueue = this.retryQueue.filter((i) => i !== item);
 						console.error('[SubscriptionService] Max retries reached:', item);
 					}
 				}
@@ -804,13 +814,15 @@ class SubscriptionService {
 
 	private generateIdempotencyKey(url: string, options: RequestInit): string {
 		const data = `${url}${JSON.stringify(options.body || {})}`;
-		return btoa(data).replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+		return btoa(data)
+			.replace(/[^a-zA-Z0-9]/g, '')
+			.substring(0, 32);
 	}
 
 	private shouldRetry(error: any): boolean {
 		// Don't retry client errors (4xx)
 		if (error.status >= 400 && error.status < 500) return false;
-		
+
 		// Retry network and server errors
 		return true;
 	}
@@ -818,14 +830,17 @@ class SubscriptionService {
 	private isCriticalOperation(url: string, options: RequestInit): boolean {
 		// Payment operations are critical
 		if (url.includes('/payment') || url.includes('/charge')) return true;
-		
+
 		// Subscription state changes are critical
 		if (options.method === 'POST' && url.includes('/subscriptions')) return true;
-		
+
 		return false;
 	}
 
-	private showNotification(message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info'): void {
+	private showNotification(
+		message: string,
+		type: 'info' | 'success' | 'warning' | 'error' = 'info'
+	): void {
 		// Implement notification system
 		console.log(`[${type.toUpperCase()}] ${message}`);
 	}
@@ -890,7 +905,7 @@ class SubscriptionService {
 				}
 			);
 
-			this.subscriptions.update(subs => [...subs, subscription]);
+			this.subscriptions.update((subs) => [...subs, subscription]);
 			this.clearCache('/subscriptions');
 
 			// Track event
@@ -1004,10 +1019,7 @@ class SubscriptionService {
 	/**
 	 * Payment Management
 	 */
-	async processPayment(
-		subscriptionId: string,
-		amount?: number
-	): Promise<PaymentHistory> {
+	async processPayment(subscriptionId: string, amount?: number): Promise<PaymentHistory> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -1028,7 +1040,7 @@ class SubscriptionService {
 			return payment;
 		} catch (error: any) {
 			this.error.set(error.message);
-			
+
 			// Track payment failure
 			this.trackEvent('payment_failed', {
 				subscription_id: subscriptionId,
@@ -1042,10 +1054,7 @@ class SubscriptionService {
 		}
 	}
 
-	async retryPayment(
-		subscriptionId: string,
-		paymentId: string
-	): Promise<PaymentHistory> {
+	async retryPayment(subscriptionId: string, paymentId: string): Promise<PaymentHistory> {
 		return this.authFetch<PaymentHistory>(
 			`${API_BASE}/my/subscriptions/${subscriptionId}/retry-payment`,
 			{
@@ -1121,9 +1130,7 @@ class SubscriptionService {
 	}
 
 	async getDunningCampaigns(): Promise<any[]> {
-		const response = await this.authFetch<{ campaigns: any[] }>(
-			`${API_BASE}/dunning/campaigns`
-		);
+		const response = await this.authFetch<{ campaigns: any[] }>(`${API_BASE}/dunning/campaigns`);
 		return response.campaigns;
 	}
 
@@ -1157,7 +1164,7 @@ class SubscriptionService {
 	async downloadInvoice(invoiceId: string): Promise<Blob> {
 		const response = await fetch(`${API_BASE}/invoices/${invoiceId}/download`, {
 			headers: {
-				'Authorization': `Bearer ${this.getAuthToken()}`
+				Authorization: `Bearer ${this.getAuthToken()}`
 			}
 		});
 
@@ -1174,7 +1181,7 @@ class SubscriptionService {
 	async exportSubscriptions(format: 'csv' | 'excel' | 'json' = 'csv'): Promise<Blob> {
 		const response = await fetch(`${API_BASE}/subscriptions/export?format=${format}`, {
 			headers: {
-				'Authorization': `Bearer ${this.getAuthToken()}`
+				Authorization: `Bearer ${this.getAuthToken()}`
 			}
 		});
 
@@ -1205,14 +1212,11 @@ class SubscriptionService {
 	}
 
 	async testWebhook(url: string, event: string): Promise<boolean> {
-		const response = await this.authFetch<{ success: boolean }>(
-			`${API_BASE}/webhooks/test`,
-			{
-				method: 'POST',
-				body: JSON.stringify({ url, event }),
-				skipCache: true
-			}
-		);
+		const response = await this.authFetch<{ success: boolean }>(`${API_BASE}/webhooks/test`, {
+			method: 'POST',
+			body: JSON.stringify({ url, event }),
+			skipCache: true
+		});
 		return response.success;
 	}
 
@@ -1224,10 +1228,10 @@ class SubscriptionService {
 
 		if (filters) {
 			if (filters.status) {
-				filters.status.forEach(s => params.append('status[]', s));
+				filters.status.forEach((s) => params.append('status[]', s));
 			}
 			if (filters.interval) {
-				filters.interval.forEach(i => params.append('interval[]', i));
+				filters.interval.forEach((i) => params.append('interval[]', i));
 			}
 			if (filters.searchQuery) {
 				params.append('search', filters.searchQuery);
@@ -1254,7 +1258,7 @@ class SubscriptionService {
 			method: 'POST',
 			body: JSON.stringify({ event, data, timestamp: Date.now() }),
 			skipCache: true
-		}).catch(error => {
+		}).catch((error) => {
 			console.error('[SubscriptionService] Failed to track event:', error);
 		});
 	}
@@ -1272,7 +1276,10 @@ class PaymentRequiredError extends Error {
 }
 
 class RateLimitError extends Error {
-	constructor(message: string, public retryAfter: number) {
+	constructor(
+		message: string,
+		public retryAfter: number
+	) {
 		super(message);
 		this.name = 'RateLimitError';
 	}
@@ -1308,8 +1315,7 @@ export const error = subscriptionService.error;
 export const getSubscriptions = (filters?: SubscriptionFilters) =>
 	subscriptionService.getSubscriptions(filters);
 
-export const getSubscription = (id: string) =>
-	subscriptionService.getSubscription(id);
+export const getSubscription = (id: string) => subscriptionService.getSubscription(id);
 
 export const createSubscription = (data: Partial<EnhancedSubscription>) =>
 	subscriptionService.createSubscription(data);
@@ -1320,8 +1326,7 @@ export const updateSubscription = (id: string, updates: Partial<EnhancedSubscrip
 export const pauseSubscription = (id: string, reason: string) =>
 	subscriptionService.pauseSubscription(id, reason);
 
-export const resumeSubscription = (id: string) =>
-	subscriptionService.resumeSubscription(id);
+export const resumeSubscription = (id: string) => subscriptionService.resumeSubscription(id);
 
 export const cancelSubscription = (id: string, reason: string, immediate?: boolean) =>
 	subscriptionService.cancelSubscription(id, reason, immediate);
@@ -1341,20 +1346,15 @@ export const updatePaymentMethod = (subscriptionId: string, paymentMethod: Payme
 export const getPaymentHistory = (subscriptionId: string) =>
 	subscriptionService.getPaymentHistory(subscriptionId);
 
-export const getStats = () =>
-	subscriptionService.getStats();
+export const getStats = () => subscriptionService.getStats();
 
-export const getRevenueMetrics = () =>
-	subscriptionService.getRevenueMetrics();
+export const getRevenueMetrics = () => subscriptionService.getRevenueMetrics();
 
-export const getChurnMetrics = () =>
-	subscriptionService.getChurnMetrics();
+export const getChurnMetrics = () => subscriptionService.getChurnMetrics();
 
-export const getCohortAnalysis = (cohort: string) =>
-	subscriptionService.getCohortAnalysis(cohort);
+export const getCohortAnalysis = (cohort: string) => subscriptionService.getCohortAnalysis(cohort);
 
-export const getChurnPredictions = () =>
-	subscriptionService.getChurnPredictions();
+export const getChurnPredictions = () => subscriptionService.getChurnPredictions();
 
 export const getUpsellRecommendations = (customerId: string) =>
 	subscriptionService.getUpsellRecommendations(customerId);
@@ -1381,10 +1381,9 @@ export const getUpcomingRenewals = () => {
 
 export const getFailedPayments = () => {
 	const allSubs = get(subscriptionService.subscriptions);
-	return allSubs.filter(sub =>
-		sub.failedAttempts > 0 ||
-		sub.dunningStatus?.stage === 'cancelled' ||
-		sub.status === 'on-hold'
+	return allSubs.filter(
+		(sub) =>
+			sub.failedAttempts > 0 || sub.dunningStatus?.stage === 'cancelled' || sub.status === 'on-hold'
 	);
 };
 

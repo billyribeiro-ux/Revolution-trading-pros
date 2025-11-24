@@ -1,7 +1,7 @@
 /**
  * Enhanced API Client - Enterprise Grade
  * Google L7+ Principal Engineer Level
- * 
+ *
  * Features:
  * - Circuit breaker integration
  * - Automatic retries with exponential backoff
@@ -34,25 +34,25 @@ export interface RequestConfig extends Omit<RequestInit, 'cache'> {
 	// Circuit breaker
 	useCircuitBreaker?: boolean;
 	circuitBreakerName?: string;
-	
+
 	// Retry
 	retry?: boolean;
 	maxRetries?: number;
-	
+
 	// Caching
 	useCache?: boolean;
 	cacheTTL?: number;
-	
+
 	// Tracing
 	trace?: boolean;
-	
+
 	// Idempotency
 	idempotent?: boolean;
 	idempotencyKey?: string;
-	
+
 	// Timeout
 	timeout?: number;
-	
+
 	// Rate limiting
 	rateLimit?: {
 		maxRequests: number;
@@ -90,8 +90,12 @@ export class EnhancedApiClient {
 	private defaultConfig: RequestConfig;
 	private cache = new Map<string, CacheEntry>();
 	private rateLimits = new Map<string, RateLimitState>();
-	private requestInterceptors: Array<(config: RequestConfig) => RequestConfig | Promise<RequestConfig>> = [];
-	private responseInterceptors: Array<(response: ApiResponse) => ApiResponse | Promise<ApiResponse>> = [];
+	private requestInterceptors: Array<
+		(config: RequestConfig) => RequestConfig | Promise<RequestConfig>
+	> = [];
+	private responseInterceptors: Array<
+		(response: ApiResponse) => ApiResponse | Promise<ApiResponse>
+	> = [];
 	private errorInterceptors: Array<(error: Error) => Error | Promise<Error>> = [];
 
 	constructor(baseURL: string, defaultConfig: RequestConfig = {}) {
@@ -121,7 +125,11 @@ export class EnhancedApiClient {
 		});
 	}
 
-	async post<T = any>(url: string, data?: any, config: RequestConfig = {}): Promise<ApiResponse<T>> {
+	async post<T = any>(
+		url: string,
+		data?: any,
+		config: RequestConfig = {}
+	): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'POST',
@@ -139,7 +147,11 @@ export class EnhancedApiClient {
 		});
 	}
 
-	async patch<T = any>(url: string, data?: any, config: RequestConfig = {}): Promise<ApiResponse<T>> {
+	async patch<T = any>(
+		url: string,
+		data?: any,
+		config: RequestConfig = {}
+	): Promise<ApiResponse<T>> {
 		return this.request<T>(url, {
 			...config,
 			method: 'PATCH',
@@ -163,7 +175,7 @@ export class EnhancedApiClient {
 		const fullConfig = { ...this.defaultConfig, ...config };
 		const fullURL = url.startsWith('http') ? url : `${this.baseURL}${url}`;
 		const method = fullConfig.method || 'GET';
-		
+
 		// Start tracing
 		let spanId: string | undefined;
 		if (fullConfig.trace) {
@@ -191,7 +203,7 @@ export class EnhancedApiClient {
 						addSpanEvent(spanId, 'cache_hit', { url: fullURL });
 						endSpan(spanId, { code: 'OK' });
 					}
-					
+
 					incrementCounter('api_cache_hit_total', {
 						endpoint: url,
 						method
@@ -219,7 +231,12 @@ export class EnhancedApiClient {
 			const response = await this.executeRequest<T>(fullURL, interceptedConfig, spanId);
 
 			// Cache successful GET requests
-			if (method === 'GET' && interceptedConfig.useCache && response.status >= 200 && response.status < 300) {
+			if (
+				method === 'GET' &&
+				interceptedConfig.useCache &&
+				response.status >= 200 &&
+				response.status < 300
+			) {
 				this.setCache(fullURL, response.data, interceptedConfig.cacheTTL!);
 			}
 
@@ -307,7 +324,7 @@ export class EnhancedApiClient {
 					signal: controller.signal,
 					headers: {
 						'Content-Type': 'application/json',
-						'Accept': 'application/json',
+						Accept: 'application/json',
 						...this.getAuthHeaders(),
 						...config.headers
 					}
@@ -336,15 +353,11 @@ export class EnhancedApiClient {
 				};
 			} catch (error: any) {
 				clearTimeout(timeoutId);
-				
+
 				if (error.name === 'AbortError') {
-					throw new ApiError(
-						`Request timeout after ${config.timeout}ms`,
-						408,
-						'Request Timeout'
-					);
+					throw new ApiError(`Request timeout after ${config.timeout}ms`, 408, 'Request Timeout');
 				}
-				
+
 				throw error;
 			}
 		};
@@ -352,11 +365,8 @@ export class EnhancedApiClient {
 		// Wrap with idempotency if needed
 		let requestFn = executeFetch;
 		if (config.idempotent) {
-			const key = config.idempotencyKey || generateIdempotencyKey(
-				config.method || 'GET',
-				url,
-				config.body
-			);
+			const key =
+				config.idempotencyKey || generateIdempotencyKey(config.method || 'GET', url, config.body);
 			requestFn = () => withIdempotency(key, executeFetch);
 		}
 
@@ -458,7 +468,7 @@ export class EnhancedApiClient {
 		}
 
 		// Remove old requests outside window
-		state.requests = state.requests.filter(time => now - time < state.windowMs);
+		state.requests = state.requests.filter((time) => now - time < state.windowMs);
 
 		// Check if limit exceeded
 		if (state.requests.length >= state.maxRequests) {
@@ -481,11 +491,15 @@ export class EnhancedApiClient {
 	// Interceptors
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	addRequestInterceptor(interceptor: (config: RequestConfig) => RequestConfig | Promise<RequestConfig>): void {
+	addRequestInterceptor(
+		interceptor: (config: RequestConfig) => RequestConfig | Promise<RequestConfig>
+	): void {
 		this.requestInterceptors.push(interceptor);
 	}
 
-	addResponseInterceptor(interceptor: (response: ApiResponse) => ApiResponse | Promise<ApiResponse>): void {
+	addResponseInterceptor(
+		interceptor: (response: ApiResponse) => ApiResponse | Promise<ApiResponse>
+	): void {
 		this.responseInterceptors.push(interceptor);
 	}
 
@@ -504,7 +518,7 @@ export class EnhancedApiClient {
 		if (!token) return {};
 
 		return {
-			'Authorization': `Bearer ${token}`
+			Authorization: `Bearer ${token}`
 		};
 	}
 
@@ -548,9 +562,7 @@ export class RateLimitError extends Error {
 // Default Instance
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = browser 
-	? import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
-	: '';
+const API_BASE_URL = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
 
 export const apiClient = new EnhancedApiClient(API_BASE_URL);
 
