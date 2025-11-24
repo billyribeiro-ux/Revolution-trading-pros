@@ -69,13 +69,13 @@ export interface KpiDetails {
 }
 
 export interface FunnelStep {
-	step_number: number;
+	step_number?: number;
 	name: string;
-	event_name: string;
+	event_name?: string;
 	count: number;
 	conversion_rate: number;
-	overall_conversion_rate: number;
-	drop_off: number;
+	overall_conversion_rate?: number;
+	drop_off?: number;
 	drop_off_rate: number;
 }
 
@@ -120,9 +120,11 @@ export interface CohortPeriod {
 }
 
 export interface CohortRow {
-	cohort_date: string;
-	cohort_size: number;
-	periods: Record<number, CohortPeriod>;
+	cohort?: string; // Alternative cohort identifier
+	cohort_date?: string;
+	size?: number; // Alternative size field
+	cohort_size?: number;
+	periods?: Record<number, CohortPeriod> | number[]; // Support both formats
 }
 
 export interface CohortDefinition {
@@ -132,6 +134,20 @@ export interface CohortDefinition {
 	type: string;
 	grouping: string;
 	metric_type: string;
+}
+
+export interface Cohort {
+	key: string;
+	name: string;
+	description?: string;
+	type: string;
+	granularity: string;
+	retention_matrix: CohortRow[];
+	summary?: {
+		avg_retention: number;
+		best_cohort: string;
+		worst_cohort: string;
+	};
 }
 
 export interface RetentionCurvePoint {
@@ -148,6 +164,12 @@ export interface ChannelAttribution {
 	touchpoints: number;
 	conversion_share: number;
 	revenue_share: number;
+	// Attribution model shares
+	first_touch_share?: number;
+	last_touch_share?: number;
+	linear_share?: number;
+	time_decay_share?: number;
+	position_based_share?: number;
 }
 
 export interface AttributionReport {
@@ -161,6 +183,7 @@ export interface AttributionReport {
 		total_revenue: number;
 	};
 	channels: ChannelAttribution[];
+	conversion_paths?: ConversionPath[];
 }
 
 export interface ConversionPath {
@@ -179,6 +202,7 @@ export interface Segment {
 	color?: string;
 	icon?: string;
 	is_system: boolean;
+	rules?: any[]; // Segment rules/conditions
 }
 
 export interface Forecast {
