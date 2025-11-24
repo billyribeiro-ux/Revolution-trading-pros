@@ -108,7 +108,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('template_id')->constrained('email_templates')->onDelete('restrict');
-            $table->foreignId('segment_id')->nullable()->constrained('user_segments')->onDelete('set null');
+            $table->unsignedBigInteger('segment_id')->nullable();
             $table->string('subject');
             $table->string('from_name');
             $table->string('from_email');

@@ -251,8 +251,8 @@ return new class extends Migration
             $table->timestamp('applied_at')->nullable();
             $table->timestamps();
             
-            $table->index(['source_content_type', 'source_content_id']);
-            $table->index(['target_content_type', 'target_content_id']);
+            $table->index(['source_content_type', 'source_content_id'], 'seo_link_suggestions_source_idx');
+            $table->index(['target_content_type', 'target_content_id'], 'seo_link_suggestions_target_idx');
             $table->index(['status', 'priority']);
         });
 
