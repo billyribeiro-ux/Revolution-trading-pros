@@ -1,0 +1,247 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner "Main navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - link "Revolution Trading Pros" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Revolution Trading Pros" [ref=e7]
+      - button "Open Menu" [ref=e9] [cursor=pointer]:
+        - img [ref=e10]
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - table [ref=e15]:
+        - row [ref=e16]:
+          - cell
+          - cell [ref=e17]:
+            - link "Charting by TradingView" [ref=e21] [cursor=pointer]:
+              - /url: https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=localhost/
+              - img [ref=e22]
+          - cell [ref=e26]
+      - generic [ref=e32]:
+        - heading "Live Trading Rooms" [level=1] [ref=e33]
+        - heading "Institutional-Style Sessions" [level=2] [ref=e34]
+        - paragraph [ref=e35]: Join structured sessions with clear levels, real-time execution, and disciplined risk management.
+        - generic [ref=e36]:
+          - link "Explore Rooms" [ref=e37] [cursor=pointer]:
+            - /url: /live-trading-rooms/day-trading
+          - link "Create Free Account" [ref=e38] [cursor=pointer]:
+            - /url: /signup
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - heading "Why Revolution Trading Pros?" [level=2] [ref=e45]
+        - paragraph [ref=e46]: "We built Revolution Trading Pros because the industry needed an alternative to hype-driven education. Our ecosystem combines live trading rooms, precision alerts, structured courses, and professional indicators—all aligned around one philosophy: disciplined, risk-first execution."
+      - generic [ref=e47]:
+        - generic [ref=e51]:
+          - img [ref=e55]
+          - heading "Structured Learning" [level=3] [ref=e60]
+          - paragraph [ref=e61]: No random callouts. Learn proven frameworks in live rooms and comprehensive courses designed for real skill development.
+        - generic [ref=e65]:
+          - img [ref=e69]
+          - heading "Risk-First Philosophy" [level=3] [ref=e72]
+          - paragraph [ref=e73]: Every alert, every trade, every lesson emphasizes risk management and position sizing. We teach survival before growth.
+        - generic [ref=e77]:
+          - img [ref=e81]
+          - heading "Professional Tools" [level=3] [ref=e84]
+          - paragraph [ref=e85]: Access institutional-grade indicators and analysis tools built by traders, for traders. No toy indicators here.
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]: PROFESSIONAL SERVICES
+        - heading "Live Trading Rooms" [level=2] [ref=e93]
+        - paragraph [ref=e94]: Join structured trading sessions where process beats prediction. Learn real-time execution, risk management, and market analysis from experienced professionals.
+      - generic [ref=e95]:
+        - generic [ref=e100]:
+          - img [ref=e105]
+          - heading "Day Trading Room" [level=3] [ref=e109]
+          - paragraph [ref=e110]: Active market sessions with real-time level identification, trade execution process, and risk management. Professional structure, zero chaos.
+          - list [ref=e111]:
+            - listitem [ref=e112]:
+              - img [ref=e116]
+              - generic [ref=e118]: Live market analysis
+            - listitem [ref=e119]:
+              - img [ref=e123]
+              - generic [ref=e125]: Clear entry/exit levels
+            - listitem [ref=e126]:
+              - img [ref=e130]
+              - generic [ref=e132]: Risk-first execution
+            - listitem [ref=e133]:
+              - img [ref=e137]
+              - generic [ref=e139]: Daily recap & review
+          - link "Learn More" [ref=e140] [cursor=pointer]:
+            - /url: /live-trading-rooms/day-trading
+            - text: Learn More
+        - generic [ref=e147]:
+          - img [ref=e152]
+          - heading "Swing Trading Room" [level=3] [ref=e155]
+          - paragraph [ref=e156]: Multi-day setups with institutional positioning analysis. Learn to hold winners and manage overnight risk professionally.
+          - list [ref=e157]:
+            - listitem [ref=e158]:
+              - img [ref=e162]
+              - generic [ref=e164]: Multi-timeframe analysis
+            - listitem [ref=e165]:
+              - img [ref=e169]
+              - generic [ref=e171]: Position sizing guidance
+            - listitem [ref=e172]:
+              - img [ref=e176]
+              - generic [ref=e178]: Exit strategy development
+            - listitem [ref=e179]:
+              - img [ref=e183]
+              - generic [ref=e185]: Weekly market review
+          - link "Learn More" [ref=e186] [cursor=pointer]:
+            - /url: /live-trading-rooms/swing-trading
+            - text: Learn More
+        - generic [ref=e193]:
+          - img [ref=e198]
+          - heading "Small Accounts Room" [level=3] [ref=e201]
+          - paragraph [ref=e202]: Structured approach for accounts under $25K. Focus on risk management, consistency, and building capital systematically.
+          - list [ref=e203]:
+            - listitem [ref=e204]:
+              - img [ref=e208]
+              - generic [ref=e210]: Capital preservation focus
+            - listitem [ref=e211]:
+              - img [ref=e215]
+              - generic [ref=e217]: Realistic expectations
+            - listitem [ref=e218]:
+              - img [ref=e222]
+              - generic [ref=e224]: Scaling strategies
+            - listitem [ref=e225]:
+              - img [ref=e229]
+              - generic [ref=e231]: Community support
+          - link "Learn More" [ref=e232] [cursor=pointer]:
+            - /url: /live-trading-rooms/small-accounts
+            - text: Learn More
+    - generic [ref=e241]:
+      - generic [ref=e242]:
+        - generic [ref=e243]:
+          - img [ref=e244]
+          - generic [ref=e249]: PREMIUM OFFERINGS
+        - heading "Alert Services" [level=2] [ref=e250]
+        - paragraph [ref=e251]: Receive fully contextualized trade alerts with complete risk parameters. No lottery tickets, no spam—just professional setups with clear structure.
+      - generic [ref=e252]:
+        - generic [ref=e255]:
+          - generic [ref=e256]:
+            - img [ref=e261]
+            - generic [ref=e266]: From $97/mo
+          - heading "SPX Profit Pulse" [level=3] [ref=e268]
+          - paragraph [ref=e269]: Context-rich SPX 0DTE alerts with complete trade structure. Entry levels, invalidation points, size guidance, and risk parameters—never lottery tickets.
+          - list [ref=e270]:
+            - listitem [ref=e271]:
+              - img [ref=e274]
+              - generic [ref=e276]: Full trade context
+            - listitem [ref=e277]:
+              - img [ref=e280]
+              - generic [ref=e282]: Risk-defined setups
+            - listitem [ref=e283]:
+              - img [ref=e286]
+              - generic [ref=e288]: Real-time updates
+            - listitem [ref=e289]:
+              - img [ref=e292]
+              - generic [ref=e294]: Performance tracking
+          - link "View Details" [ref=e295] [cursor=pointer]:
+            - /url: /alert-services/spx-profit-pulse
+            - generic [ref=e296]:
+              - generic [ref=e297]: View Details
+              - img [ref=e298]
+        - generic [ref=e302]:
+          - generic [ref=e303]:
+            - img [ref=e308]
+            - generic [ref=e313]: From $127/mo
+          - heading "Explosive Swings" [level=3] [ref=e315]
+          - paragraph [ref=e316]: High-probability swing setups in stocks and ETFs. Multi-day holds with institutional edge and clear risk management.
+          - list [ref=e317]:
+            - listitem [ref=e318]:
+              - img [ref=e321]
+              - generic [ref=e323]: Multi-day setups
+            - listitem [ref=e324]:
+              - img [ref=e327]
+              - generic [ref=e329]: Stock & ETF focus
+            - listitem [ref=e330]:
+              - img [ref=e333]
+              - generic [ref=e335]: Position management
+            - listitem [ref=e336]:
+              - img [ref=e339]
+              - generic [ref=e341]: Entry/exit guidance
+          - link "View Details" [ref=e342] [cursor=pointer]:
+            - /url: /alert-services/explosive-swings
+            - generic [ref=e343]:
+              - generic [ref=e344]: View Details
+              - img [ref=e345]
+    - generic [ref=e356]:
+      - generic [ref=e357]:
+        - img [ref=e358]
+        - generic [ref=e360]: ELITE PROGRAM
+        - img [ref=e361]
+      - img [ref=e367]
+      - heading "1-on-1 Mentorship" [level=2] [ref=e370]
+      - paragraph [ref=e371]:
+        - text: Work directly with experienced traders in private mentorship sessions. Custom curriculum, personalized feedback, and accountability to accelerate your development.
+        - generic [ref=e372]: Limited availability.
+      - generic [ref=e373]:
+        - generic [ref=e374]:
+          - generic [ref=e375]: 👤
+          - generic [ref=e376]: Private Sessions
+        - generic [ref=e377]:
+          - generic [ref=e378]: 📚
+          - generic [ref=e379]: Custom Curriculum
+        - generic [ref=e380]:
+          - generic [ref=e381]: 💬
+          - generic [ref=e382]: Direct Feedback
+      - link "Apply for Mentorship" [ref=e385] [cursor=pointer]:
+        - /url: /mentorship
+        - generic [ref=e386]:
+          - img [ref=e387]
+          - generic [ref=e389]: Apply for Mentorship
+          - img [ref=e390]
+      - paragraph [ref=e392]: Application required • Personalized review • Investment starting at $2,500/month
+    - generic [ref=e394]:
+      - generic [ref=e395]:
+        - heading "Latest Blog Posts" [level=2] [ref=e396]
+        - link "See All Blogs" [ref=e397] [cursor=pointer]:
+          - /url: /blog
+          - generic [ref=e398]: See All Blogs
+          - img [ref=e399]
+      - paragraph [ref=e403]: No blog posts available yet. Check back soon!
+    - generic [ref=e429]:
+      - generic [ref=e430]:
+        - img [ref=e431]
+        - generic [ref=e433]: JOIN THOUSANDS OF DISCIPLINED TRADERS
+        - img [ref=e434]
+      - heading "Ready to Trade with Discipline?" [level=2] [ref=e436]:
+        - generic [ref=e437]: Ready to Trade
+        - generic [ref=e438]: with Discipline?
+      - paragraph [ref=e439]:
+        - text: Join thousands of traders who've chosen the risk-first approach.
+        - generic [ref=e440]: Start your journey today.
+      - generic [ref=e441]:
+        - generic [ref=e442]:
+          - generic [ref=e443]: 👥
+          - generic [ref=e444]: 5,000+
+          - generic [ref=e445]: Active Members
+        - generic [ref=e446]:
+          - generic [ref=e447]: 📊
+          - generic [ref=e448]: 10,000+
+          - generic [ref=e449]: Trades Analyzed
+        - generic [ref=e450]:
+          - generic [ref=e451]: ⭐
+          - generic [ref=e452]: 4.9/5
+          - generic [ref=e453]: Member Rating
+      - link "Create Your Free Account" [ref=e456] [cursor=pointer]:
+        - /url: /signup
+        - generic [ref=e457]:
+          - img [ref=e458]
+          - generic [ref=e462]: Create Your Free Account
+          - img [ref=e463]
+      - paragraph [ref=e467]:
+        - generic [ref=e468]:
+          - img [ref=e469]
+          - generic [ref=e471]: No credit card required
+        - text: •
+        - generic [ref=e472]:
+          - img [ref=e473]
+          - generic [ref=e475]: Cancel anytime
+        - text: •
+        - generic [ref=e476]:
+          - img [ref=e477]
+          - generic [ref=e479]: Instant access
+```
