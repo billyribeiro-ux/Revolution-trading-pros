@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('popups')) {
+            return;
+        }
+        
         Schema::table('popups', function (Blueprint $table) {
             // Status and activity flags for filtering
             $table->string('status', 50)->default('draft')->index()->after('name');

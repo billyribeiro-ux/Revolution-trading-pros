@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('coupons')) {
+            return;
+        }
+        
         Schema::table('coupons', function (Blueprint $table) {
             // Extend type enum to include all coupon types
             $table->string('type', 50)->change();

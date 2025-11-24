@@ -46,42 +46,133 @@
 				type: 'membership',
 				interval
 			},
-			true // Navigate to cart after adding
+			true
 		);
 	}
 </script>
 
+<!-- ⭐⭐⭐ FULL ENTERPRISE SEO BLOCK ⭐⭐⭐ -->
 <svelte:head>
 	<title>Swing Trading Room | Revolution Trading Pros</title>
+
+	<meta
+		name="description"
+		content="Join the Swing Trading Room at Revolution Trading Pros. Weekly swing trade setups, multi-day strategies, position management, and institutional-style analysis for busy professionals."
+	/>
+
+	<link rel="canonical" href="https://revolutiontradingpros.com/live-trading-rooms/swing-trading" />
+
+	<!-- Open Graph -->
+	<meta property="og:title" content="Swing Trading Room | Revolution Trading Pros" />
+	<meta property="og:description" content="Weekly swing setups, position management, multi-day strategies, and institutional trading guidance." />
+	<meta property="og:type" content="product" />
+	<meta property="og:url" content="https://revolutiontradingpros.com/live-trading-rooms/swing-trading" />
+	<meta property="og:image" content="https://revolutiontradingpros.com/og-swing-room.webp" />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Swing Trading Room | Revolution Trading Pros" />
+	<meta name="twitter:description" content="Master multi-day swing trading with clear entries, exits, management, and institutional insights." />
+	<meta name="twitter:image" content="https://revolutiontradingpros.com/og-swing-room.webp" />
+
+	<!-- Viewport + Robots -->
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="robots" content="index, follow" />
+
+	<!-- JSON-LD Product Schema -->
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Product",
+			"name": "Swing Trading Room",
+			"description": "Weekly swing setups, multi-day position strategies, and professional management training.",
+			"brand": {
+				"@type": "Organization",
+				"name": "Revolution Trading Pros",
+				"url": "https://revolutiontradingpros.com"
+			},
+			"url": "https://revolutiontradingpros.com/live-trading-rooms/swing-trading",
+			"image": "https://revolutiontradingpros.com/og-swing-room.webp",
+			"offers": [
+				{
+					"@type": "Offer",
+					"price": "199",
+					"priceCurrency": "USD",
+					"availability": "https://schema.org/InStock",
+					"category": "monthly"
+				},
+				{
+					"@type": "Offer",
+					"price": "549",
+					"priceCurrency": "USD",
+					"availability": "https://schema.org/InStock",
+					"category": "quarterly"
+				},
+				{
+					"@type": "Offer",
+					"price": "1999",
+					"priceCurrency": "USD",
+					"availability": "https://schema.org/InStock",
+					"category": "yearly"
+				}
+			]
+		}
+	</script>
+
+	<!-- Breadcrumb Schema -->
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "BreadcrumbList",
+			"itemListElement": [
+				{
+					"@type": "ListItem",
+					"position": 1,
+					"item": {
+						"@id": "https://revolutiontradingpros.com/",
+						"name": "Home"
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 2,
+					"item": {
+						"@id": "https://revolutiontradingpros.com/live-trading-rooms",
+						"name": "Live Trading Rooms"
+					}
+				},
+				{
+					"@type": "ListItem",
+					"position": 3,
+					"item": {
+						"@id": "https://revolutiontradingpros.com/live-trading-rooms/swing-trading",
+						"name": "Swing Trading Room"
+					}
+				}
+			]
+		}
+	</script>
 </svelte:head>
+<!-- ⭐⭐⭐ END SEO ⭐⭐⭐ -->
 
 <div class="swing-trading-page min-h-screen px-4 py-12 overflow-hidden relative">
-	<!-- Animated gradient background -->
 	<div class="gradient-bg absolute inset-0"></div>
-
-	<!-- Grid overlay -->
 	<div class="grid-overlay absolute inset-0"></div>
 
-	<!-- Floating orbs -->
 	<div class="glow-orb glow-orb-1"></div>
 	<div class="glow-orb glow-orb-2"></div>
 
-	<!-- Content -->
 	<div class="relative max-w-7xl mx-auto z-10">
-		<!-- Header -->
 		<div class="mb-12" bind:this={headerRef}>
 			<div class="flex items-center gap-4 mb-4">
-				<div
-					class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-0.5 shadow-lg shadow-purple-500/50"
-				>
+				<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-0.5 shadow-lg shadow-purple-500/50">
 					<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
 						<IconTrendingUp size={32} class="text-purple-400" />
 					</div>
 				</div>
+
 				<div>
-					<h1
-						class="text-5xl md:text-6xl font-heading font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
-					>
+					<h1 class="text-5xl md:text-6xl font-heading font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
 						Swing Trading Room
 					</h1>
 					<p class="text-xl text-slate-300 mt-2 flex items-center gap-2">
@@ -92,20 +183,14 @@
 			</div>
 		</div>
 
-		<!-- Main Content Card -->
 		<div bind:this={contentRef}>
 			<div class="relative">
-				<div
-					class="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 rounded-3xl opacity-30 blur-2xl"
-				></div>
-				<div
-					class="relative bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 md:p-12 shadow-2xl"
-				>
-					<!-- Hero Section -->
+				<div class="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 rounded-3xl opacity-30 blur-2xl"></div>
+
+				<div class="relative bg-slate-900/95 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 md:p-12 shadow-2xl">
+
 					<div class="text-center mb-12">
-						<div
-							class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6"
-						>
+						<div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6">
 							<IconCalendar size={20} class="text-purple-400" />
 							<span class="text-purple-300 font-semibold">Position Trading</span>
 						</div>
@@ -113,9 +198,9 @@
 						<h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
 							Master Swing Trading Strategies
 						</h2>
+
 						<p class="text-lg text-slate-300 max-w-3xl mx-auto">
-							Perfect for traders who can't watch the market all day. Get swing trade setups that
-							capture larger moves over multiple days with clear entry and exit strategies.
+							Perfect for traders who can't watch the market all day. Learn multi-day setups with precise entries, exits, and position management.
 						</p>
 					</div>
 
@@ -124,52 +209,50 @@
 						<div class="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 class="text-xl font-bold text-white mb-2">📈 Weekly Swing Setups</h3>
 							<p class="text-slate-300">
-								High-probability swing trade opportunities identified every week
+								High-probability swing trade opportunities identified every week.
 							</p>
 						</div>
 
 						<div class="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 class="text-xl font-bold text-white mb-2">🎯 Position Management</h3>
 							<p class="text-slate-300">
-								Learn when to scale in/out and manage risk on multi-day positions
+								Learn when to scale in/out and manage risk on multi-day positions.
 							</p>
 						</div>
 
 						<div class="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 class="text-xl font-bold text-white mb-2">📊 Technical Analysis</h3>
 							<p class="text-slate-300">
-								In-depth chart analysis with support/resistance levels and targets
+								In-depth chart analysis using levels, structure, and trend context.
 							</p>
 						</div>
 
 						<div class="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
 							<h3 class="text-xl font-bold text-white mb-2">⏰ Flexible Schedule</h3>
 							<p class="text-slate-300">
-								No need to watch charts all day - perfect for busy professionals
+								Perfect for traders who have full-time jobs or limited screen time.
 							</p>
 						</div>
 					</div>
 
-					<!-- Pricing Options -->
+					<!-- Pricing Grid -->
 					<div class="grid md:grid-cols-3 gap-6">
-						<!-- Monthly Plan -->
+
+						<!-- Monthly -->
 						<div class="relative">
-							<div
-								class="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl opacity-20 blur"
-							></div>
-							<div
-								class="relative bg-slate-800/80 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6"
-							>
+							<div class="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl opacity-20 blur"></div>
+							<div class="relative bg-slate-800/80 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6">
 								<div class="mb-6">
 									<h3 class="text-xl font-bold text-white mb-2">Monthly</h3>
 									<div class="flex items-baseline gap-2">
-										<span
-											class="text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent"
-											>$199</span
-										>
+										<span class="text-4xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+											$199
+										</span>
 										<span class="text-slate-400 text-sm">/month</span>
 									</div>
-									<p class="text-xs text-slate-400 mt-2">Flexible monthly billing</p>
+									<p class="text-xs text-slate-400 mt-2">
+										Flexible monthly billing
+									</p>
 								</div>
 
 								<button
@@ -182,30 +265,25 @@
 							</div>
 						</div>
 
-						<!-- Quarterly Plan -->
+						<!-- Quarterly -->
 						<div class="relative">
-							<div
-								class="absolute -inset-1 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl opacity-25 blur"
-							></div>
-							<div
-								class="relative bg-slate-800/80 backdrop-blur-xl border border-pink-500/30 rounded-2xl p-6"
-							>
-								<div
-									class="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full"
-								>
+							<div class="absolute -inset-1 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl opacity-25 blur"></div>
+							<div class="relative bg-slate-800/80 backdrop-blur-xl border border-pink-500/30 rounded-2xl p-6">
+								<div class="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full">
 									Save 8%
 								</div>
 
 								<div class="mb-6">
 									<h3 class="text-xl font-bold text-white mb-2">Quarterly</h3>
 									<div class="flex items-baseline gap-2">
-										<span
-											class="text-4xl font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent"
-											>$549</span
-										>
+										<span class="text-4xl font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">
+											$549
+										</span>
 										<span class="text-slate-400 text-sm">/3 months</span>
 									</div>
-									<p class="text-xs text-slate-400 mt-2">$183/month - Save $48</p>
+									<p class="text-xs text-slate-400 mt-2">
+										$183/month • Save $48
+									</p>
 								</div>
 
 								<button
@@ -218,30 +296,26 @@
 							</div>
 						</div>
 
-						<!-- Yearly Plan -->
+						<!-- Yearly -->
 						<div class="relative">
-							<div
-								class="absolute -inset-1 bg-gradient-to-r from-rose-500 to-red-500 rounded-2xl opacity-30 blur"
-							></div>
-							<div
-								class="relative bg-slate-800/80 backdrop-blur-xl border border-rose-500/30 rounded-2xl p-6"
-							>
-								<div
-									class="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs font-bold rounded-full"
-								>
+							<div class="absolute -inset-1 bg-gradient-to-r from-rose-500 to-red-500 rounded-2xl opacity-30 blur"></div>
+							<div class="relative bg-slate-800/80 backdrop-blur-xl border border-rose-500/30 rounded-2xl p-6">
+
+								<div class="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs font-bold rounded-full">
 									Best Value
 								</div>
 
 								<div class="mb-6">
 									<h3 class="text-xl font-bold text-white mb-2">Yearly</h3>
 									<div class="flex items-baseline gap-2">
-										<span
-											class="text-4xl font-bold bg-gradient-to-r from-rose-300 to-red-300 bg-clip-text text-transparent"
-											>$1,999</span
-										>
+										<span class="text-4xl font-bold bg-gradient-to-r from-rose-300 to-red-300 bg-clip-text text-transparent">
+											$1,999
+										</span>
 										<span class="text-slate-400 text-sm">/year</span>
 									</div>
-									<p class="text-xs text-slate-400 mt-2">$166/month - Save $389</p>
+									<p class="text-xs text-slate-400 mt-2">
+										$166/month • Save $389
+									</p>
 								</div>
 
 								<button
@@ -255,20 +329,20 @@
 						</div>
 					</div>
 
-					<!-- Additional Info -->
 					<div class="mt-8 text-center">
 						<p class="text-slate-400">
-							Cancel anytime • No long-term commitment • Full access from day one
+							Cancel anytime • No long-term commitments • Immediate access
 						</p>
 					</div>
+
 				</div>
 			</div>
 		</div>
+
 	</div>
 </div>
 
 <style>
-	/* Animated gradient background */
 	.gradient-bg {
 		background: linear-gradient(
 			135deg,
@@ -283,16 +357,10 @@
 	}
 
 	@keyframes gradientShift {
-		0%,
-		100% {
-			background-position: 0% 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
+		0%,100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
 	}
 
-	/* Grid overlay */
 	.grid-overlay {
 		background-image:
 			linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
@@ -303,15 +371,10 @@
 	}
 
 	@keyframes gridMove {
-		0% {
-			transform: translate(0, 0);
-		}
-		100% {
-			transform: translate(50px, 50px);
-		}
+		0% { transform: translate(0, 0); }
+		100% { transform: translate(50px, 50px); }
 	}
 
-	/* Glowing orbs */
 	.glow-orb {
 		position: absolute;
 		border-radius: 50%;
@@ -339,36 +402,17 @@
 	}
 
 	@keyframes float1 {
-		0%,
-		100% {
-			transform: translateX(-50%) translateY(0) scale(1);
-		}
-		50% {
-			transform: translateX(-50%) translateY(-50px) scale(1.1);
-		}
+		0%,100% { transform: translateX(-50%) translateY(0) scale(1); }
+		50% { transform: translateX(-50%) translateY(-50px) scale(1.1); }
 	}
 
 	@keyframes float2 {
-		0%,
-		100% {
-			transform: translateY(0) scale(1);
-		}
-		50% {
-			transform: translateY(50px) scale(0.9);
-		}
+		0%,100% { transform: translateY(0) scale(1); }
+		50% { transform: translateY(50px) scale(0.9); }
 	}
 
-	/* Responsive */
 	@media (max-width: 640px) {
-		.glow-orb {
-			filter: blur(60px);
-			opacity: 0.3;
-		}
-
-		.glow-orb-1,
-		.glow-orb-2 {
-			width: 300px;
-			height: 300px;
-		}
+		.glow-orb { filter: blur(60px); opacity: 0.3; }
+		.glow-orb-1, .glow-orb-2 { width: 300px; height: 300px; }
 	}
 </style>

@@ -165,7 +165,11 @@ return new class extends Migration
             $table->index('is_active');
         });
 
-        // 9. Enhance existing email_templates table
+        // 9. Enhance existing email_templates table (only if it exists)
+        if (!Schema::hasTable('email_templates')) {
+            return;
+        }
+        
         Schema::table('email_templates', function (Blueprint $table) {
             if (!Schema::hasColumn('email_templates', 'category')) {
                 $table->enum('category', ['transactional', 'marketing', 'automation', 'system'])->default('transactional')->after('slug');

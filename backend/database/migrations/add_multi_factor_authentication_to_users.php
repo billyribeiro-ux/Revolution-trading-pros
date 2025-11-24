@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('users')) {
+            return;
+        }
+        
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('mfa_enabled')->default(false)->after('password');
             $table->string('mfa_secret')->nullable()->after('mfa_enabled');

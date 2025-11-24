@@ -37,6 +37,15 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('subscription_plan_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['active', 'paused', 'on-hold', 'cancelled', 'expired', 'pending', 'pending-cancel', 'trial'])->default('pending');
+            $table->string('interval')->nullable(); // monthly, yearly, etc.
+            $table->string('currency')->default('USD');
+            $table->decimal('total_paid', 10, 2)->default(0);
+            $table->integer('failed_payments')->default(0);
+            $table->integer('successful_payments')->default(0);
+            $table->integer('renewal_count')->default(0);
+            $table->boolean('auto_renew')->default(true);
+            $table->timestamp('start_date')->nullable();
+            $table->timestamp('next_payment_date')->nullable();
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('current_period_start')->nullable();
             $table->timestamp('current_period_end')->nullable();
