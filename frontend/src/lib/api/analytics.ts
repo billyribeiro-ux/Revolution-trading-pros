@@ -406,10 +406,6 @@ class AnalyticsApiClient {
 	// Funnel Analytics
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getFunnels(): Promise<{ funnels: FunnelDefinition[] }> {
-		return this.request('GET', '/admin/analytics/funnels');
-	}
-
 	async getFunnelAnalysis(funnelKey: string, period: string = '30d'): Promise<FunnelAnalysis> {
 		return this.request('GET', `/admin/analytics/funnels/${funnelKey}`, undefined, { period });
 	}
@@ -433,10 +429,6 @@ class AnalyticsApiClient {
 	// Cohort Analytics
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getCohorts(): Promise<{ cohorts: CohortDefinition[] }> {
-		return this.request('GET', '/admin/analytics/cohorts');
-	}
-
 	async getCohortMatrix(cohortKey: string, period: string = '90d'): Promise<{ cohort_key: string; matrix: CohortRow[] }> {
 		return this.request('GET', `/admin/analytics/cohorts/${cohortKey}/matrix`, undefined, { period });
 	}
@@ -452,13 +444,6 @@ class AnalyticsApiClient {
 	// ═══════════════════════════════════════════════════════════════════════
 	// Attribution Analytics
 	// ═══════════════════════════════════════════════════════════════════════
-
-	async getChannelAttribution(
-		model: string = 'linear',
-		period: string = '30d'
-	): Promise<AttributionReport> {
-		return this.request('GET', '/admin/analytics/attribution/channels', undefined, { model, period });
-	}
 
 	async getCampaignAttribution(
 		model: string = 'linear',

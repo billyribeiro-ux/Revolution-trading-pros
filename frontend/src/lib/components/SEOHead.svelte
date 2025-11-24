@@ -338,13 +338,14 @@
 			}]
 		});
 
-		// BreadcrumbList Schema
-		if (effectiveBreadcrumbs.length > 0) {
+		// BreadcrumbList Schema - with safety check
+		const crumbs = breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
+		if (crumbs && crumbs.length > 0) {
 			schemas.push({
 				'@context': 'https://schema.org',
 				'@type': 'BreadcrumbList',
 				'@id': `${fullCanonical}/#breadcrumb`,
-				'itemListElement': effectiveBreadcrumbs.map((crumb, index) => ({
+				'itemListElement': crumbs.map((crumb, index) => ({
 					'@type': 'ListItem',
 					'position': index + 1,
 					'name': crumb.name,

@@ -147,8 +147,11 @@
 </div>
 
 <style lang="postcss">
+	@reference "../../../app.css";
 	.upload-container {
-		@apply space-y-4;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	.dropzone {
@@ -183,7 +186,10 @@
 	}
 
 	.upload-list {
-		@apply bg-gray-800/50 rounded-xl p-4 border border-gray-700/50;
+		background-color: rgba(30, 41, 59, 0.5);
+		border-radius: 0.75rem;
+		padding: 1rem;
+		border: 1px solid rgba(51, 65, 85, 0.5);
 	}
 
 	.upload-list-title {

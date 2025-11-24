@@ -254,7 +254,7 @@
 		transform: translateX(8px);
 	}
 
-	.check-icon {
+	:global(.check-icon) {
 		color: #10b981;
 		flex-shrink: 0;
 	}
@@ -268,7 +268,7 @@
 		backdrop-filter: blur(10px);
 	}
 
-	.sparkle-icon {
+	:global(.sparkle-icon) {
 		color: #10b981;
 		margin: 0 auto 1.5rem;
 		animation: sparkle 2s ease-in-out infinite;

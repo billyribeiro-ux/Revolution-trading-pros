@@ -16,9 +16,9 @@
 		intensity: number;
 		type: 'click' | 'hover' | 'scroll';
 	}> = [];
-	export let width: number = 800;
-	export let height: number = 600;
-	export let showLegend: boolean = true;
+	export let width = 800;
+	export let height = 600;
+	export let showLegend = true;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
@@ -106,54 +106,84 @@
 
 <style lang="postcss">
 	.heatmap-container {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50;
+		background-color: rgba(30, 41, 59, 0.5);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(51, 65, 85, 0.5);
 	}
 
 	.heatmap-header {
-		@apply flex items-center justify-between mb-4;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1rem;
 	}
 
 	.heatmap-title {
-		@apply flex items-center gap-2 text-lg font-semibold text-white;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: white;
 	}
 
 	.heatmap-legend {
-		@apply flex items-center gap-4;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
 	}
 
 	.legend-item {
-		@apply flex items-center gap-2 text-sm text-gray-400;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.legend-color {
-		@apply w-4 h-4 rounded;
+		width: 1rem;
+		height: 1rem;
+		border-radius: 0.25rem;
 	}
 
 	.legend-color.click {
-		@apply bg-yellow-400;
+		background-color: #fbbf24;
 	}
 
 	.legend-color.hover {
-		@apply bg-blue-400;
+		background-color: #60a5fa;
 	}
 
 	.legend-color.scroll {
-		@apply bg-green-400;
+		background-color: #4ade80;
 	}
 
 	.heatmap-canvas-wrapper {
-		@apply relative overflow-hidden rounded-lg bg-gray-900/50 mb-4;
+		position: relative;
+		overflow: hidden;
+		border-radius: 0.5rem;
+		background-color: rgba(17, 24, 39, 0.5);
+		margin-bottom: 1rem;
 	}
 
 	.heatmap-canvas {
-		@apply w-full h-auto;
+		width: 100%;
+		height: auto;
 	}
 
 	.heatmap-stats {
-		@apply flex items-center gap-6 text-sm text-gray-400;
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		font-size: 0.875rem;
+		color: #9ca3af;
 	}
 
 	.stat {
-		@apply flex items-center gap-2;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>

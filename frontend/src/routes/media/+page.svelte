@@ -317,8 +317,11 @@
 </div>
 
 <style lang="postcss">
+	@reference "../../app.css";
 	.media-dashboard {
-		@apply min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6;
+		min-height: 100vh;
+		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
+		padding: 1.5rem;
 	}
 
 	.dashboard-header {

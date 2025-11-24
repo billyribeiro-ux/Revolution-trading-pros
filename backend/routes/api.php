@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\EmailTemplateController;
+use App\Http\Controllers\Api\EmailTemplateBuilderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
@@ -173,6 +174,21 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::put('/email/templates/{id}', [EmailTemplateController::class, 'update']);
     Route::delete('/email/templates/{id}', [EmailTemplateController::class, 'destroy']);
     Route::post('/email/templates/{id}/preview', [EmailTemplateController::class, 'preview']);
+    
+    // Email Template Builder
+    Route::get('/email/builder/templates', [EmailTemplateBuilderController::class, 'index']);
+    Route::post('/email/builder/templates', [EmailTemplateBuilderController::class, 'store']);
+    Route::get('/email/builder/templates/{id}', [EmailTemplateBuilderController::class, 'show']);
+    Route::put('/email/builder/templates/{id}', [EmailTemplateBuilderController::class, 'update']);
+    Route::delete('/email/builder/templates/{id}', [EmailTemplateBuilderController::class, 'destroy']);
+    Route::post('/email/builder/templates/{id}/preview', [EmailTemplateBuilderController::class, 'preview']);
+    Route::post('/email/builder/templates/{id}/duplicate', [EmailTemplateBuilderController::class, 'duplicate']);
+    Route::post('/email/builder/templates/{id}/blocks', [EmailTemplateBuilderController::class, 'addBlock']);
+    Route::put('/email/builder/templates/{id}/blocks/{blockId}', [EmailTemplateBuilderController::class, 'updateBlock']);
+    Route::delete('/email/builder/templates/{id}/blocks/{blockId}', [EmailTemplateBuilderController::class, 'deleteBlock']);
+    Route::post('/email/builder/templates/{id}/blocks/reorder', [EmailTemplateBuilderController::class, 'reorderBlocks']);
+    Route::get('/email/builder/variables', [EmailTemplateBuilderController::class, 'getVariables']);
+    Route::get('/email/builder/layouts', [EmailTemplateBuilderController::class, 'getLayouts']);
 
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);

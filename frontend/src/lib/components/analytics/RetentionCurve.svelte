@@ -14,7 +14,7 @@
 		data: Array<{ day: number; retention: number }>;
 	}> = [];
 
-	export let height: number = 300;
+	export let height = 300;
 
 	let containerEl: HTMLDivElement;
 	let width = 600;
@@ -144,8 +144,12 @@
 </div>
 
 <style lang="postcss">
+	@reference "../../../app.css";
 	.retention-curve {
-		@apply bg-gray-800/50 rounded-xl p-6 border border-gray-700/50;
+		background-color: rgba(30, 41, 59, 0.5);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(51, 65, 85, 0.5);
 	}
 
 	.curve-header {
@@ -193,7 +197,7 @@
 	}
 
 	.data-point:hover {
-		@apply r-[6];
+		@apply scale-125;
 	}
 
 	.curve-insights {

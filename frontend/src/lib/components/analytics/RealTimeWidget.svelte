@@ -5,11 +5,11 @@
 	 * Displays real-time metrics with auto-refresh and
 	 * animated counters.
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { analyticsApi, type RealTimeMetrics } from '$lib/api/analytics';
 
-	export let refreshInterval: number = 30000; // 30 seconds
-	export let compact: boolean = false;
+	export let refreshInterval = 30000; // 30 seconds
+	export let compact = false;
 
 	let metrics: RealTimeMetrics | null = null;
 	let loading = true;
@@ -33,10 +33,11 @@
 	onMount(() => {
 		fetchMetrics();
 		interval = setInterval(fetchMetrics, refreshInterval);
-	});
-
-	onDestroy(() => {
-		if (interval) clearInterval(interval);
+		
+		// Cleanup function (Svelte 5 pattern)
+		return () => {
+			if (interval) clearInterval(interval);
+		};
 	});
 
 	function formatNumber(num: number): string {
@@ -54,7 +55,7 @@
 	}
 </script>
 
-<div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 text-white">
+<div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 text-white">
 	<!-- Header -->
 	<div class="flex items-center justify-between mb-4">
 		<div class="flex items-center gap-2">
