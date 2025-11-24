@@ -385,3 +385,20 @@ Route::middleware(['auth:sanctum'])->prefix('admin/analytics')->group(function (
     Route::get('/events/breakdown', [AnalyticsController::class, 'getEventBreakdown']);
     Route::get('/realtime', [AnalyticsController::class, 'getRealTimeMetrics']);
 });
+
+// ========================================
+// REVOLUTION BEHAVIOR L8 SYSTEM
+// ========================================
+use App\Http\Controllers\Admin\BehaviorController;
+
+// Public behavior tracking (client-side)
+Route::post('/behavior/events', [BehaviorController::class, 'ingestEvents']);
+
+// Protected behavior analytics API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/behavior')->group(function () {
+    Route::get('/dashboard', [BehaviorController::class, 'getDashboard']);
+    Route::get('/sessions/{sessionId}', [BehaviorController::class, 'getSession']);
+    Route::get('/friction-points', [BehaviorController::class, 'getFrictionPoints']);
+    Route::get('/intent-signals', [BehaviorController::class, 'getIntentSignals']);
+    Route::patch('/friction-points/{id}/resolve', [BehaviorController::class, 'resolveFrictionPoint']);
+});
