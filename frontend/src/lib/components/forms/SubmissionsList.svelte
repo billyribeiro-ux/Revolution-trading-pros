@@ -51,7 +51,7 @@
 		newStatus: FormSubmission['status']
 	) {
 		try {
-			await updateSubmissionStatus(Number(submission.submission_id), newStatus);
+			await updateSubmissionStatus(formId, Number(submission.submission_id), newStatus);
 			await loadData();
 		} catch (err) {
 			alert(err instanceof Error ? err.message : 'Failed to update status');
@@ -62,7 +62,7 @@
 		if (!confirm('Delete this submission?')) return;
 
 		try {
-			await deleteSubmission(Number(submission.submission_id));
+			await deleteSubmission(formId, Number(submission.submission_id));
 			await loadData();
 		} catch (err) {
 			alert(err instanceof Error ? err.message : 'Failed to delete submission');
@@ -73,7 +73,7 @@
 		if (selectedSubmissions.size === 0) return;
 
 		try {
-			await bulkUpdateSubmissionStatus(Array.from(selectedSubmissions).map(Number), newStatus);
+			await bulkUpdateSubmissionStatus(formId, Array.from(selectedSubmissions).map(Number), newStatus);
 			selectedSubmissions.clear();
 			await loadData();
 		} catch (err) {
@@ -86,7 +86,7 @@
 		if (!confirm(`Delete ${selectedSubmissions.size} submissions?`)) return;
 
 		try {
-			await bulkDeleteSubmissions(Array.from(selectedSubmissions).map(Number));
+			await bulkDeleteSubmissions(formId, Array.from(selectedSubmissions).map(Number));
 			selectedSubmissions.clear();
 			await loadData();
 		} catch (err) {

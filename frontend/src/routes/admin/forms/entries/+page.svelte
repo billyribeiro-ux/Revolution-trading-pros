@@ -6,7 +6,7 @@
 	import { IconDownload, IconEye } from '@tabler/icons-svelte';
 
 	let forms: Form[] = [];
-	let entries: FormSubmission[] = [];
+	let entries: FormEntry[] = [];
 	let selectedFormId: number | null = null;
 	let loading = true;
 

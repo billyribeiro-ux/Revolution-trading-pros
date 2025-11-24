@@ -25,7 +25,8 @@
 	};
 
 	let fields: FormField[] = formData.fields || [];
-	let availableFieldTypes: { type: string; label: string; icon: string }[] = [];
+	let availableFieldTypes: { type: string; label: string; icon?: string }[] = [];
+	let fieldTypeMap: Record<string, string> = {};
 	let showFieldEditor = false;
 	let editingField: FormField | null = null;
 	let editingFieldIndex = -1;
@@ -36,19 +37,29 @@
 	(async () => {
 		try {
 			const types = await getFieldTypes();
-			// Convert array to Record if needed
+			// Handle both array and object formats
 			if (Array.isArray(types)) {
-				availableFieldTypes = types.reduce(
-					(acc, item) => {
-						if (typeof item === 'object' && 'type' in item && 'label' in item) {
-							acc[item.type] = item.label;
-						}
+				availableFieldTypes = types.map((item) => {
+					if (typeof item === 'object' && 'type' in item && 'label' in item) {
+						return { type: item.type, label: item.label, icon: item.icon };
+					}
+					return { type: String(item), label: String(item) };
+				});
+				// Also build a lookup map for display
+				fieldTypeMap = availableFieldTypes.reduce(
+					(acc, ft) => {
+						acc[ft.type] = ft.label;
 						return acc;
 					},
 					{} as Record<string, string>
 				);
-			} else {
-				availableFieldTypes = types;
+			} else if (typeof types === 'object') {
+				// Convert object to array format
+				availableFieldTypes = Object.entries(types).map(([type, label]) => ({
+					type,
+					label: String(label)
+				}));
+				fieldTypeMap = types as Record<string, string>;
 			}
 		} catch (err) {
 			console.error('Failed to load field types:', err);
@@ -56,18 +67,15 @@
 	})();
 
 	function handleAddField(fieldType: string) {
-		const fieldTypeInfo = availableFieldTypes.find(ft => ft.type === fieldType);
+		const fieldTypeInfo = availableFieldTypes.find((ft) => ft.type === fieldType);
 		const newField: FormField = {
 			field_type: fieldType as import('$lib/api/forms').FieldType,
 			label: fieldTypeInfo?.label || fieldType,
-			field_type: fieldType as any,
-			label: availableFieldTypes[fieldType] || fieldType,
 			name: `field_${Date.now()}`,
 			placeholder: '',
 			required: false,
 			order: fields.length,
 			width: 12
-			width: 100 as any
 		};
 
 		editingField = newField;
@@ -259,7 +267,7 @@
 						<div class="field-item">
 							<div class="field-info">
 								<div class="field-type-badge">
-									{availableFieldTypes[field.field_type] || field.field_type}
+									{fieldTypeMap[field.field_type] || field.field_type}
 								</div>
 								<div class="field-details">
 									<strong>{field.label}</strong>
@@ -306,7 +314,7 @@
 			<div class="add-field-section">
 				<h4>Add Field</h4>
 				<div class="field-types-grid">
-					{#each Object.entries(availableFieldTypes) as [type, label]}
+					{#each availableFieldTypes as { type, label }}
 						<button class="field-type-button" on:click={() => handleAddField(type)}>
 							{label}
 						</button>

@@ -44,12 +44,12 @@
 
 		try {
 			analyzing = true;
-			analysis = await seoApi.analyze(
+			const result = await seoApi.analyze(
 				contentType,
 				parseInt(contentId),
 				focusKeyword || undefined
 			);
-			analysis = response;
+			analysis = result;
 			addToast({ type: 'success', message: 'SEO analysis completed!' });
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to analyze content' });
