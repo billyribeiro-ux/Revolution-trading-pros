@@ -33,12 +33,13 @@
 	);
 
 	function handleSave() {
-		// Parse options from textarea
+		// Parse options from textarea - convert strings to FieldOption objects
 		if (needsOptions && optionsText.trim()) {
 			fieldData.options = optionsText
 				.split('\n')
 				.map((s) => s.trim())
-				.filter(Boolean);
+				.filter(Boolean)
+				.map((text) => ({ label: text, value: text }));
 		} else {
 			fieldData.options = null;
 		}
@@ -66,6 +67,7 @@
 	function addConditionalRule() {
 		if (!fieldData.conditional_logic) {
 			fieldData.conditional_logic = {
+				enabled: true,
 				action: 'show',
 				logic: 'all',
 				rules: []
@@ -188,7 +190,7 @@
 					class="form-input"
 					rows="5"
 					required
-				/>
+				></textarea>
 			</div>
 		{/if}
 
@@ -288,16 +290,16 @@
 				<div class="conditional-config">
 					<div class="form-row">
 						<div class="form-group">
-							<label>Action</label>
-							<select bind:value={fieldData.conditional_logic.action} class="form-input">
+							<label for="conditional-action">Action</label>
+							<select id="conditional-action" bind:value={fieldData.conditional_logic.action} class="form-input">
 								<option value="show">Show this field if</option>
 								<option value="hide">Hide this field if</option>
 							</select>
 						</div>
 
 						<div class="form-group">
-							<label>Match</label>
-							<select bind:value={fieldData.conditional_logic.logic} class="form-input">
+							<label for="conditional-match">Match</label>
+							<select id="conditional-match" bind:value={fieldData.conditional_logic.logic} class="form-input">
 								<option value="all">All conditions are met</option>
 								<option value="any">Any condition is met</option>
 							</select>

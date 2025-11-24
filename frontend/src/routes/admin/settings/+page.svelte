@@ -19,13 +19,18 @@
 		error = '';
 		try {
 			const response = await settingsApi.list();
-			groupedSettings = response.data;
-			
+			// Group settings by their group property
+			const settingsList = response.data || [];
+			groupedSettings = settingsList.reduce((acc: Record<string, typeof settingsList>, setting) => {
+				const group = (setting as { group?: string }).group || 'general';
+				if (!acc[group]) acc[group] = [];
+				acc[group].push(setting);
+				return acc;
+			}, {});
+
 			// Flatten for editing
-			Object.values(response.data).forEach((group: any) => {
-				group.forEach((setting: any) => {
-					settings[setting.key] = setting.value;
-				});
+			settingsList.forEach((setting: { key: string; value: unknown }) => {
+				settings[setting.key] = setting.value;
 			});
 		} catch (err) {
 			if (err instanceof AdminApiError) {

@@ -288,7 +288,7 @@ export interface CouponCreateData {
 	tiers?: any[];
 }
 
-export interface CouponUpdateData extends Partial<CouponCreateData> {}
+export type CouponUpdateData = Partial<CouponCreateData>;
 
 export interface UserCreateData {
 	name: string;

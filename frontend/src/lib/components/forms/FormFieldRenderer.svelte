@@ -176,7 +176,7 @@
 				minlength={field.validation?.min_length}
 				maxlength={field.validation?.max_length}
 				{...field.attributes || {}}
-			/>
+			></textarea>
 
 			<!-- Select Dropdown -->
 		{:else if field.field_type === 'select'}
@@ -226,12 +226,12 @@
 						<label class="checkbox-label">
 							<input
 								type="checkbox"
-								value={option}
-								checked={isChecked(option)}
-								on:change={(e) => handleCheckboxChange(option, e.currentTarget.checked)}
+								value={typeof option === 'string' ? option : option.value}
+								checked={isChecked(typeof option === 'string' ? option : option.value)}
+								on:change={(e) => handleCheckboxChange(typeof option === 'string' ? option : option.value, e.currentTarget.checked)}
 								{...field.attributes || {}}
 							/>
-							<span>{option}</span>
+							<span>{typeof option === 'string' ? option : option.label}</span>
 						</label>
 					{/each}
 				{/if}

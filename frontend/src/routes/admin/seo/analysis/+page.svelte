@@ -3,19 +3,19 @@
 	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
-	import { formsApi, type Form } from '$lib/api/forms';
+	import { getForms, type Form } from '$lib/api/forms';
 	import { IconSearch, IconRefresh, IconChartBar } from '@tabler/icons-svelte';
 
 	let contentType = 'posts';
 	let contentId = '';
 	let focusKeyword = '';
-	let analysis: SeoAnalysis | null = null;
+	let analysis: Partial<SeoAnalysis> | null = null;
 	let loading = false;
 	let analyzing = false;
 
 	// For content selector
 	let forms: Form[] = [];
-	let selectedContent: any = null;
+	let selectedContent: Record<string, unknown> | null = null;
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },
@@ -29,8 +29,8 @@
 
 	async function loadForms() {
 		try {
-			const response = await formsApi.list();
-			forms = response.data || [];
+			const response = await getForms();
+			forms = response.forms || [];
 		} catch (error) {
 			console.error('Failed to load forms:', error);
 		}
@@ -49,7 +49,7 @@
 				parseInt(contentId),
 				focusKeyword || undefined
 			);
-			analysis = response.analysis;
+			analysis = response;
 			addToast({ type: 'success', message: 'SEO analysis completed!' });
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to analyze content' });
@@ -64,7 +64,7 @@
 		try {
 			loading = true;
 			const response = await seoApi.getAnalysis(contentType, parseInt(contentId));
-			analysis = response.analysis;
+			analysis = response;
 		} catch (error) {
 			analysis = null;
 		} finally {

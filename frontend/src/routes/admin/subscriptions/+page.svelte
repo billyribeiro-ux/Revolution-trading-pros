@@ -60,7 +60,7 @@
 					searchQuery: searchQuery || undefined
 				}),
 				getSubscriptionStats(),
-				getUpcomingRenewals(7),
+				getUpcomingRenewals(),
 				getFailedPayments()
 			]);
 

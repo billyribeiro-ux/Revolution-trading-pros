@@ -135,7 +135,7 @@ export interface MessageResponse {
 	success?: boolean;
 }
 
-export interface ValidationError {
+export interface ValidationErrorResponse {
 	message: string;
 	errors?: Record<string, string[]>;
 	code?: string;

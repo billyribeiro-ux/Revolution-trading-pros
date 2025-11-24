@@ -778,7 +778,7 @@ class FormsService {
 	/**
 	 * Forms Management
 	 */
-	async getForms(page = 1, perPage = 20, filters?: any): Promise<Form[]> {
+	async getForms(page = 1, perPage = 20, filters?: any): Promise<{ forms: Form[]; total: number; perPage: number }> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -789,12 +789,16 @@ class FormsService {
 				...filters
 			});
 
-			const response = await this.authFetch<{ forms: Form[] }>(
+			const response = await this.authFetch<{ forms: Form[]; total?: number; perPage?: number }>(
 				`${API_BASE}/forms?${params}`
 			);
 
 			this.forms.set(response.forms);
-			return response.forms;
+			return {
+				forms: response.forms,
+				total: response.total ?? response.forms.length,
+				perPage: response.perPage ?? perPage
+			};
 		} catch (error: any) {
 			this.error.set(error.message);
 			throw error;
@@ -1278,7 +1282,7 @@ export const error = formsService.error;
 export const offlineMode = formsService.offlineMode;
 
 // Export methods
-export const getForms = (page?: number, perPage?: number, filters?: any) => 
+export const getForms = (page?: number, perPage?: number, filters?: any): Promise<{ forms: Form[]; total: number; perPage: number }> =>
 	formsService.getForms(page, perPage, filters);
 
 export const getForm = (id: number) => 
@@ -1377,24 +1381,24 @@ export const archiveForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'archived' });
 
 // Submission management
-export const updateSubmissionStatus = async (submissionId: number, status: string) => {
-	// Placeholder implementation
-	return { success: true, submission: { id: submissionId, status } };
+export const updateSubmissionStatus = async (formId: number, submissionId: number | string, status: string) => {
+	// Placeholder implementation - formId used for API routing
+	return { success: true, submission: { id: submissionId, status, form_id: formId } };
 };
 
-export const deleteSubmission = async (submissionId: number) => {
-	// Placeholder implementation
-	return { success: true };
+export const deleteSubmission = async (formId: number, submissionId: number | string) => {
+	// Placeholder implementation - formId used for API routing
+	return { success: true, form_id: formId };
 };
 
-export const bulkUpdateSubmissionStatus = async (submissionIds: number[], status: string) => {
-	// Placeholder implementation
-	return { success: true, updated: submissionIds.length };
+export const bulkUpdateSubmissionStatus = async (formId: number, submissionIds: (number | string)[], status: string) => {
+	// Placeholder implementation - formId used for API routing
+	return { success: true, updated: submissionIds.length, form_id: formId };
 };
 
-export const bulkDeleteSubmissions = async (submissionIds: number[]) => {
-	// Placeholder implementation
-	return { success: true, deleted: submissionIds.length };
+export const bulkDeleteSubmissions = async (formId: number, submissionIds: (number | string)[]) => {
+	// Placeholder implementation - formId used for API routing
+	return { success: true, deleted: submissionIds.length, form_id: formId };
 };
 
 // Type exports (placeholders)

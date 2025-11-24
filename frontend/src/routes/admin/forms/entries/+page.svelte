@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
-	import { formsApi, type Form, type FormEntry } from '$lib/api/forms';
+	import { getForms, getSubmissions, exportSubmissions, type Form, type FormEntry } from '$lib/api/forms';
 	import { IconDownload, IconEye } from '@tabler/icons-svelte';
 
 	let forms: Form[] = [];
@@ -16,9 +16,9 @@
 
 	async function loadForms() {
 		try {
-			const response = await formsApi.list();
-			forms = response.data || [];
-			if (forms.length > 0) {
+			const response = await getForms();
+			forms = response.forms || [];
+			if (forms.length > 0 && forms[0].id) {
 				selectedFormId = forms[0].id;
 				await loadEntries(forms[0].id);
 			}
@@ -32,10 +32,17 @@
 	async function loadEntries(formId: number) {
 		try {
 			loading = true;
-			const response = await formsApi.getEntries(formId);
-			entries = response.data || [];
+			const response = await getSubmissions(formId);
+			// Map submissions to entries format
+			entries = (response.submissions || []).map((s) => ({
+				id: s.id ?? 0,
+				form_id: s.form_id ?? formId,
+				data: s.data || {},
+				created_at: s.created_at ?? ''
+			}));
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to load entries' });
+			entries = [];
 		} finally {
 			loading = false;
 		}
@@ -51,7 +58,14 @@
 		if (!selectedFormId) return;
 
 		try {
-			await formsApi.exportEntries(selectedFormId);
+			const blob = await exportSubmissions(selectedFormId, 'csv');
+			// Create download link
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `form-entries-${selectedFormId}.csv`;
+			a.click();
+			window.URL.revokeObjectURL(url);
 			addToast({ type: 'success', message: 'Entries exported successfully' });
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to export entries' });

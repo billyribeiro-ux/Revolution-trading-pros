@@ -225,6 +225,19 @@
 	// Session Management
 	// ─────────────────────────────────────────────────────────────────────────────
 
+	async function checkSession(): Promise<void> {
+		if (!browser || !$authStore.isAuthenticated) return;
+
+		try {
+			// Verify session is still valid by fetching user data
+			await getUser();
+		} catch (error) {
+			console.warn('[AdminToolbar] Session check failed:', error);
+			// Session may have expired
+			await handleSessionExpired();
+		}
+	}
+
 	async function handleSessionExpired(): Promise<void> {
 		// Show notification to user
 		showNotification('Session expired. Please log in again.', 'warning');

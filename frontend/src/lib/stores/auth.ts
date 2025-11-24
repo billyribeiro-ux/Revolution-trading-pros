@@ -15,6 +15,9 @@ export interface User {
 	email_verified_at: string | null;
 	created_at: string;
 	updated_at: string;
+	// Optional user detail fields
+	first_name?: string;
+	last_name?: string;
 	// Optional role metadata from backend (Spatie roles)
 	roles?: string[];
 	is_admin?: boolean;
