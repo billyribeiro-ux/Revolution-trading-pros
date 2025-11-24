@@ -78,7 +78,7 @@
 	on:click={cancel}
 	on:keydown={(e) => e.key === 'Escape' && cancel()}
 >
-	<div class="modal" on:click|stopPropagation>
+	<div class="modal" role="dialog" tabindex="-1" on:click|stopPropagation on:keypress|stopPropagation>
 		<div class="modal-header">
 			<h2>{redirect ? 'Edit Redirect' : 'Create Redirect'}</h2>
 			<button class="close-btn" on:click={cancel}>

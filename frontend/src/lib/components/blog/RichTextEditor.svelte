@@ -266,6 +266,7 @@
 									type="button"
 									class="color-preset"
 									style="background: {color}"
+									aria-label="Set color to {color}"
 									on:click={() => changeTextColor(color)}
 								></button>
 							{/each}
@@ -390,7 +391,14 @@
 		on:click={() => (showLinkDialog = false)}
 		on:keydown={(e) => e.key === 'Escape' && (showLinkDialog = false)}
 	>
-		<div class="dialog" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation>
+		<div
+			class="dialog"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			on:click|stopPropagation
+			on:keypress|stopPropagation
+		>
 			<h3>Insert Link</h3>
 			<input type="url" bind:value={linkUrl} placeholder="https://example.com" />
 			<div class="dialog-actions">
@@ -412,7 +420,14 @@
 		on:click={() => (showImageDialog = false)}
 		on:keydown={(e) => e.key === 'Escape' && (showImageDialog = false)}
 	>
-		<div class="dialog" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation>
+		<div
+			class="dialog"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			on:click|stopPropagation
+			on:keypress|stopPropagation
+		>
 			<h3>Insert Image</h3>
 			<input type="url" bind:value={imageUrl} placeholder="https://example.com/image.jpg" />
 			<div class="dialog-actions">

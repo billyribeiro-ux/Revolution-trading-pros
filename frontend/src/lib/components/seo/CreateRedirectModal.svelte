@@ -65,6 +65,7 @@
 		on:keydown|stopPropagation
 		role="dialog"
 		aria-modal="true"
+		tabindex="-1"
 	>
 		<div class="modal-header">
 			<h2>Create Redirect from 404</h2>

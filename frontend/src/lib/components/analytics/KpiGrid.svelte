@@ -43,7 +43,12 @@
 					</h3>
 					<div class="grid {gridCols} gap-4">
 						{#each categoryKpis as kpi (kpi.kpi_key)}
-							<div on:click={() => onKpiClick?.(kpi)} on:keypress={() => onKpiClick?.(kpi)}>
+							<div
+						role="button"
+						tabindex="0"
+						on:click={() => onKpiClick?.(kpi)}
+						on:keypress={() => onKpiClick?.(kpi)}
+					>
 								<KpiCard {kpi} clickable={!!onKpiClick} />
 							</div>
 						{/each}
@@ -55,7 +60,12 @@
 		<!-- Flat grid -->
 		<div class="grid {gridCols} gap-4">
 			{#each filteredKpis as kpi (kpi.kpi_key)}
-				<div on:click={() => onKpiClick?.(kpi)} on:keypress={() => onKpiClick?.(kpi)}>
+				<div
+					role="button"
+					tabindex="0"
+					on:click={() => onKpiClick?.(kpi)}
+					on:keypress={() => onKpiClick?.(kpi)}
+				>
 					<KpiCard {kpi} clickable={!!onKpiClick} />
 				</div>
 			{/each}

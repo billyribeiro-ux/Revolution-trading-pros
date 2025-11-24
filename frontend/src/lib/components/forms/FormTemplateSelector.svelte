@@ -77,7 +77,13 @@
 			</div>
 		{:else}
 			{#each filteredTemplates as template}
-				<div class="template-card" on:click={() => handleSelect(template)}>
+				<div
+					class="template-card"
+					role="button"
+					tabindex="0"
+					on:click={() => handleSelect(template)}
+					on:keypress={(e) => e.key === 'Enter' && handleSelect(template)}
+				>
 					<div class="template-icon">{template.icon}</div>
 					<div class="template-content">
 						<h3>{template.name}</h3>
