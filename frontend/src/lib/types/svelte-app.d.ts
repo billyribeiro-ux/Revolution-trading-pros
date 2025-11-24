@@ -193,7 +193,6 @@ declare module '@tabler/icons-svelte' {
 
 // Generic Svelte module declarations to silence type errors
 declare module 'svelte' {
-	export * from 'svelte/internal';
 	export function onMount(fn: () => any | (() => void)): void;
 }
 

@@ -224,16 +224,12 @@ function createMediaStore() {
 		// ───────────────────────────────────────────────────────────────────
 
 		async deleteFile(id: string, force: boolean = false) {
-			try {
-				await mediaApi.deleteFile(id, force);
-				update((state) => ({
-					...state,
-					files: state.files.filter((f) => f.id !== id),
-					selectedFiles: new Set([...state.selectedFiles].filter((fid) => fid !== id))
-				}));
-			} catch (error) {
-				throw error;
-			}
+			await mediaApi.deleteFile(id, force);
+			update((state) => ({
+				...state,
+				files: state.files.filter((f) => f.id !== id),
+				selectedFiles: new Set([...state.selectedFiles].filter((fid) => fid !== id))
+			}));
 		},
 
 		async bulkDelete(force: boolean = false) {
@@ -242,16 +238,12 @@ function createMediaStore() {
 
 			if (ids.length === 0) return;
 
-			try {
-				await mediaApi.bulkDelete(ids, force);
-				update((s) => ({
-					...s,
-					files: s.files.filter((f) => !ids.includes(f.id)),
-					selectedFiles: new Set()
-				}));
-			} catch (error) {
-				throw error;
-			}
+			await mediaApi.bulkDelete(ids, force);
+			update((s) => ({
+				...s,
+				files: s.files.filter((f) => !ids.includes(f.id)),
+				selectedFiles: new Set()
+			}));
 		},
 
 		async bulkMove(folderId: string) {
@@ -260,13 +252,9 @@ function createMediaStore() {
 
 			if (ids.length === 0) return;
 
-			try {
-				await mediaApi.bulkMove(ids, folderId);
-				this.loadFiles();
-				this.deselectAll();
-			} catch (error) {
-				throw error;
-			}
+			await mediaApi.bulkMove(ids, folderId);
+			this.loadFiles();
+			this.deselectAll();
 		},
 
 		// ───────────────────────────────────────────────────────────────────
@@ -274,29 +262,21 @@ function createMediaStore() {
 		// ───────────────────────────────────────────────────────────────────
 
 		async createFolder(data: { name: string; parent_id?: string; description?: string }) {
-			try {
-				const response = await mediaApi.createFolder(data);
-				update((state) => ({
-					...state,
-					folders: [...state.folders, response.folder]
-				}));
-				return response.folder;
-			} catch (error) {
-				throw error;
-			}
+			const response = await mediaApi.createFolder(data);
+			update((state) => ({
+				...state,
+				folders: [...state.folders, response.folder]
+			}));
+			return response.folder;
 		},
 
 		async deleteFolder(id: string, deleteFiles: boolean = false) {
-			try {
-				await mediaApi.deleteFolder(id, deleteFiles);
-				update((state) => ({
-					...state,
-					folders: state.folders.filter((f) => f.id !== id),
-					currentFolder: state.currentFolder === id ? null : state.currentFolder
-				}));
-			} catch (error) {
-				throw error;
-			}
+			await mediaApi.deleteFolder(id, deleteFiles);
+			update((state) => ({
+				...state,
+				folders: state.folders.filter((f) => f.id !== id),
+				currentFolder: state.currentFolder === id ? null : state.currentFolder
+			}));
 		},
 
 		// ───────────────────────────────────────────────────────────────────

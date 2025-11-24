@@ -68,8 +68,7 @@ function createDashboardStore() {
 
 			try {
 				const currentDashboard = await new Promise<Dashboard>((resolve, reject) => {
-					let unsubscribe: () => void;
-					unsubscribe = subscribe((state) => {
+					const unsubscribe = subscribe((state) => {
 						if (state.currentDashboard) {
 							unsubscribe();
 							resolve(state.currentDashboard);
@@ -114,8 +113,7 @@ function createDashboardStore() {
 
 			try {
 				const currentDashboard = await new Promise<Dashboard>((resolve) => {
-					let unsubscribe: () => void;
-					unsubscribe = subscribe((state) => {
+					const unsubscribe = subscribe((state) => {
 						if (state.currentDashboard) {
 							unsubscribe();
 							resolve(state.currentDashboard);

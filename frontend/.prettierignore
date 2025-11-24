@@ -12,6 +12,11 @@ node_modules/
 .cache/
 .turbo/
 
+# Test results
+test-results/
+playwright-report/
+coverage/
+
 # Logs
 *.log
 

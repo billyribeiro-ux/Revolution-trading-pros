@@ -909,7 +909,7 @@
 	// Helper Functions
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function debounce(func: Function, wait: number) {
+	function debounce(func: (...args: any[]) => void, wait: number) {
 		let timeout: number;
 		return (...args: any[]) => {
 			clearTimeout(timeout);
@@ -917,7 +917,7 @@
 		};
 	}
 
-	function throttle(func: Function, limit: number) {
+	function throttle(func: (...args: any[]) => void, limit: number) {
 		let inThrottle: boolean;
 		return (...args: any[]) => {
 			if (!inThrottle) {
