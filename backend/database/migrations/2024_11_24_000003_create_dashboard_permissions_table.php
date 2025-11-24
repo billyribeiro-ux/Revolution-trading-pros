@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('dashboard_id')->constrained()->onDelete('cascade');
             $table->string('role')->nullable(); // admin, user, subscriber, etc.
-            $table->char('user_id', 36)->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->boolean('can_view')->default(true);
             $table->boolean('can_edit')->default(false);
             $table->boolean('can_delete')->default(false);

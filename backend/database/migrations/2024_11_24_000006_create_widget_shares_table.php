@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::create('widget_shares', function (Blueprint $table) {
             $table->id();
             $table->foreignId('widget_id')->constrained('dashboard_widgets')->onDelete('cascade');
-            $table->char('user_id', 36);
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('can_view')->default(true);
             $table->boolean('can_edit')->default(false);
             $table->boolean('can_delete')->default(false);
@@ -38,8 +37,7 @@ return new class extends Migration
         Schema::create('widget_views', function (Blueprint $table) {
             $table->id();
             $table->foreignId('widget_id')->constrained('dashboard_widgets')->onDelete('cascade');
-            $table->char('user_id', 36)->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('ip_address')->nullable();
             $table->timestamp('viewed_at');
 

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dashboard_widgets', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('dashboard_id')->constrained()->onDelete('cascade');
+            $table->id();
+            $table->foreignId('dashboard_id')->constrained()->onDelete('cascade');
             $table->string('widget_type'); // crm_kpi, revenue_mrr, email_performance, etc.
             $table->string('title');
             $table->json('config')->nullable(); // Widget-specific configuration

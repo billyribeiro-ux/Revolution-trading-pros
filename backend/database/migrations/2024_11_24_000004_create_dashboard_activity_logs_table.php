@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('dashboard_activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->char('user_id', 36)->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('entity_type'); // User, Subscription, Email, Form, etc.
             $table->unsignedBigInteger('entity_id')->nullable();
             $table->string('action'); // created, updated, deleted, viewed, etc.

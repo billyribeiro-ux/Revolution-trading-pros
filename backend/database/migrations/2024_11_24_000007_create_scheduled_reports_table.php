@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::create('scheduled_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('dashboard_id')->constrained()->onDelete('cascade');
-            $table->char('user_id', 36);
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->enum('frequency', ['daily', 'weekly', 'monthly']);
             $table->json('recipients'); // Array of email addresses

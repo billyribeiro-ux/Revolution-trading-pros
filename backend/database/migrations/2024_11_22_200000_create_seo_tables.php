@@ -63,7 +63,7 @@ return new class extends Migration
         if (!Schema::hasTable('rank_histories')) {
             Schema::create('rank_histories', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('rank_tracking_id')->constrained()->onDelete('cascade');
+                $table->foreignId('rank_tracking_id')->constrained('rank_tracking')->onDelete('cascade');
                 $table->integer('position');
                 $table->date('date');
                 $table->timestamps();

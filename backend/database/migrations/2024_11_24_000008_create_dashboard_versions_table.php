@@ -15,8 +15,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->json('dashboard_snapshot');
             $table->json('widgets_snapshot');
-            $table->char('created_by', 36);
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamp('created_at');
 
             $table->unique(['dashboard_id', 'version_number']);
