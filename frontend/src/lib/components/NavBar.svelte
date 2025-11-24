@@ -67,6 +67,15 @@
                 { href: '/indicators', label: 'Indicators' }
             ]
         },
+        {
+            id: 'crm',
+            label: 'CRM',
+            submenu: [
+                { href: '/crm/contacts', label: 'Contacts' },
+                { href: '/crm/deals', label: 'Deals Pipeline' }
+            ]
+        },
+        { id: 'behavior', label: 'Behavior', href: '/behavior' },
         { id: 'analytics', label: 'Analytics', href: '/analytics' },
         { id: 'media', label: 'Media', href: '/media' },
         { id: 'email', label: 'Email', href: '/email' },
