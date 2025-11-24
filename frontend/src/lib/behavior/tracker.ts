@@ -4,7 +4,7 @@
  */
 
 import type { BehaviorEvent, BehaviorEventBatch, BehaviorTrackerConfig } from './types';
-import { generateSessionId, generateVisitorId, getDeviceType, getBrowser } from './utils';
+import { generateSessionId, generateVisitorId, getDeviceType, getBrowser } from './utils.js';
 
 export class BehaviorTracker {
 	private config: BehaviorTrackerConfig;
