@@ -188,11 +188,16 @@
 						<div class="timeline-bar">
 							<div
 								class="bar-fill"
-								style="height: {(point.sessions / Math.max(...$dashboardData.session_timeline.map(p => p.sessions))) * 100}%"
+								style="height: {(point.sessions /
+									Math.max(...$dashboardData.session_timeline.map((p) => p.sessions))) *
+									100}%"
 								title="{point.sessions} sessions, {point.avg_engagement.toFixed(1)}% engagement"
 							></div>
 							<div class="bar-label">
-								{new Date(point.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+								{new Date(point.timestamp).toLocaleDateString('en-US', {
+									month: 'short',
+									day: 'numeric'
+								})}
 							</div>
 						</div>
 					{/each}

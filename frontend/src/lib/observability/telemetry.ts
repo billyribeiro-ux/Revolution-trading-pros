@@ -1,7 +1,7 @@
 /**
  * Enterprise Observability - OpenTelemetry Integration
  * Google L7+ Principal Engineer Level
- * 
+ *
  * Features:
  * - Distributed tracing
  * - Metrics collection
@@ -239,11 +239,7 @@ class TelemetryService {
 	// Logging
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	log(
-		level: LogEntry['level'],
-		message: string,
-		attributes: Record<string, any> = {}
-	): void {
+	log(level: LogEntry['level'], message: string, attributes: Record<string, any> = {}): void {
 		const entry: LogEntry = {
 			level,
 			message,
@@ -319,13 +315,15 @@ class TelemetryService {
 		const metrics = {
 			dns_lookup: navigation.domainLookupEnd - navigation.domainLookupStart,
 			tcp_connection: navigation.connectEnd - navigation.connectStart,
-			tls_negotiation: navigation.secureConnectionStart > 0 
-				? navigation.connectEnd - navigation.secureConnectionStart 
-				: 0,
+			tls_negotiation:
+				navigation.secureConnectionStart > 0
+					? navigation.connectEnd - navigation.secureConnectionStart
+					: 0,
 			request_time: navigation.responseStart - navigation.requestStart,
 			response_time: navigation.responseEnd - navigation.responseStart,
 			dom_processing: navigation.domComplete - navigation.domInteractive,
-			dom_content_loaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+			dom_content_loaded:
+				navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
 			load_complete: navigation.loadEventEnd - navigation.loadEventStart,
 			total_time: navigation.loadEventEnd - navigation.fetchStart
 		};
@@ -382,7 +380,7 @@ class TelemetryService {
 	private async flush(): Promise<void> {
 		if (!browser) return;
 
-		const spans = Array.from(this.spans.values()).filter(s => s.endTime);
+		const spans = Array.from(this.spans.values()).filter((s) => s.endTime);
 		const metrics = [...this.metrics];
 		const logs = [...this.logs];
 
@@ -404,7 +402,7 @@ class TelemetryService {
 			});
 
 			// Clear sent data
-			spans.forEach(span => this.spans.delete(span.spanId));
+			spans.forEach((span) => this.spans.delete(span.spanId));
 			this.metrics = [];
 			this.logs = [];
 
@@ -478,14 +476,17 @@ const telemetry = TelemetryService.getInstance();
 export const startSpan = (name: string, attributes?: Record<string, any>) =>
 	telemetry.startSpan(name, attributes);
 
-export const endSpan = (spanId: string, status?: SpanStatus) =>
-	telemetry.endSpan(spanId, status);
+export const endSpan = (spanId: string, status?: SpanStatus) => telemetry.endSpan(spanId, status);
 
 export const addSpanEvent = (spanId: string, name: string, attributes?: Record<string, any>) =>
 	telemetry.addSpanEvent(spanId, name, attributes);
 
-export const recordMetric = (name: string, value: number, type?: 'counter' | 'gauge' | 'histogram', labels?: Record<string, string>) =>
-	telemetry.recordMetric(name, value, type, labels);
+export const recordMetric = (
+	name: string,
+	value: number,
+	type?: 'counter' | 'gauge' | 'histogram',
+	labels?: Record<string, string>
+) => telemetry.recordMetric(name, value, type, labels);
 
 export const incrementCounter = (name: string, labels?: Record<string, string>) =>
 	telemetry.incrementCounter(name, labels);
@@ -514,20 +515,15 @@ export const fatal = (message: string, attributes?: Record<string, any>) =>
 export const recordError = (err: Error | any, context?: Record<string, any>) =>
 	telemetry.recordError(err, context);
 
-export const recordPageLoad = () =>
-	telemetry.recordPageLoad();
+export const recordPageLoad = () => telemetry.recordPageLoad();
 
-export const recordWebVitals = () =>
-	telemetry.recordWebVitals();
+export const recordWebVitals = () => telemetry.recordWebVitals();
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Decorators & Higher-Order Functions
 // ═══════════════════════════════════════════════════════════════════════════
 
-export function traced<T extends (...args: any[]) => any>(
-	name: string,
-	fn: T
-): T {
+export function traced<T extends (...args: any[]) => any>(name: string, fn: T): T {
 	return ((...args: any[]) => {
 		const spanId = startSpan(name, {
 			'function.name': fn.name,

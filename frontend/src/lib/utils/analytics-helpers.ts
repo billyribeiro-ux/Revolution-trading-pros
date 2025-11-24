@@ -50,7 +50,10 @@ export function formatDuration(seconds: number): string {
 	return `${Math.round(seconds / 86400)}d`;
 }
 
-export function formatDate(date: string | Date, format: 'short' | 'long' | 'relative' = 'short'): string {
+export function formatDate(
+	date: string | Date,
+	format: 'short' | 'long' | 'relative' = 'short'
+): string {
 	const d = typeof date === 'string' ? new Date(date) : date;
 
 	if (format === 'relative') {
@@ -201,7 +204,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 				r: parseInt(result[1], 16),
 				g: parseInt(result[2], 16),
 				b: parseInt(result[3], 16)
-		  }
+			}
 		: null;
 }
 

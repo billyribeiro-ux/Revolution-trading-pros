@@ -8,7 +8,13 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { analyticsStore, dashboard, realtime, isLoading, selectedPeriod } from '$lib/stores/analytics';
+	import {
+		analyticsStore,
+		dashboard,
+		realtime,
+		isLoading,
+		selectedPeriod
+	} from '$lib/stores/analytics';
 	import {
 		KpiGrid,
 		RealTimeWidget,
@@ -30,7 +36,8 @@
 		IconAlertTriangle
 	} from '@tabler/icons-svelte';
 
-	let selectedTab: 'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue' = 'overview';
+	let selectedTab: 'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue' =
+		'overview';
 
 	onMount(() => {
 		analyticsStore.loadDashboard($selectedPeriod);
@@ -48,7 +55,10 @@
 
 <svelte:head>
 	<title>Analytics Dashboard | Revolution Trading Pros</title>
-	<meta name="description" content="Enterprise analytics dashboard with real-time metrics, funnels, cohorts, and AI insights" />
+	<meta
+		name="description"
+		content="Enterprise analytics dashboard with real-time metrics, funnels, cohorts, and AI insights"
+	/>
 </svelte:head>
 
 <div class="analytics-dashboard">
@@ -119,7 +129,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'revenue'}
-			on:click={() => (selectedTab === 'revenue')}
+			on:click={() => selectedTab === 'revenue'}
 		>
 			<IconCurrencyDollar size={20} />
 			Revenue
@@ -258,14 +268,14 @@
 					{#if $dashboard.cohorts && $dashboard.cohorts.length > 0}
 						<div class="cohorts-list">
 							{#each $dashboard.cohorts as cohort}
-								{@const transformedData = cohort.retention_matrix.map(row => ({
+								{@const transformedData = cohort.retention_matrix.map((row) => ({
 									cohort_date: row.cohort,
 									cohort_size: row.size,
 									periods: Object.fromEntries(
 										row.periods.map((retention, index) => [
 											index,
 											{
-												active_users: Math.round(row.size * retention / 100),
+												active_users: Math.round((row.size * retention) / 100),
 												retention_rate: retention,
 												total_revenue: 0,
 												avg_revenue_per_user: 0
@@ -280,7 +290,9 @@
 						<div class="empty-state">
 							<IconUsers size={64} class="text-gray-600" />
 							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Cohorts Yet</h3>
-							<p class="text-gray-500 mt-2">Create cohorts to analyze user retention and behavior</p>
+							<p class="text-gray-500 mt-2">
+								Create cohorts to analyze user retention and behavior
+							</p>
 							<button class="btn-primary mt-4">Create Cohort</button>
 						</div>
 					{/if}
@@ -307,7 +319,9 @@
 						<div class="empty-state">
 							<IconTrendingUp size={64} class="text-gray-600" />
 							<h3 class="text-xl font-semibold text-gray-400 mt-4">No Attribution Data</h3>
-							<p class="text-gray-500 mt-2">Attribution data will appear once conversions are tracked</p>
+							<p class="text-gray-500 mt-2">
+								Attribution data will appear once conversions are tracked
+							</p>
 						</div>
 					{/if}
 				</div>
@@ -368,7 +382,11 @@
 								<div class="revenue-kpi-card">
 									<div class="kpi-label">{kpi.name}</div>
 									<div class="kpi-value">{kpi.formatted_value}</div>
-									<div class="kpi-change" class:positive={kpi.trend === 'up'} class:negative={kpi.trend === 'down'}>
+									<div
+										class="kpi-change"
+										class:positive={kpi.trend === 'up'}
+										class:negative={kpi.trend === 'down'}
+									>
 										{kpi.change_percentage > 0 ? '+' : ''}{kpi.change_percentage}%
 									</div>
 								</div>

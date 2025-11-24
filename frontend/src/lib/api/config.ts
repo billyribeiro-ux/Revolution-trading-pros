@@ -50,7 +50,8 @@ export const API_ENDPOINTS = {
 	indicators: {
 		list: '/api/indicators',
 		single: (slug: string) => `/api/indicators/${slug}`,
-		download: (slug: string, downloadId: string) => `/api/indicators/${slug}/download/${downloadId}`,
+		download: (slug: string, downloadId: string) =>
+			`/api/indicators/${slug}/download/${downloadId}`,
 		purchased: '/api/indicators/purchased'
 	},
 
@@ -111,7 +112,7 @@ export const API_ENDPOINTS = {
 
 	// Upload
 	upload: '/api/upload',
-	
+
 	// Search
 	search: '/api/search',
 
@@ -135,7 +136,7 @@ export const REQUEST_CONFIG = {
 	retryDelay: 1000, // 1 second
 	headers: {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json'
+		Accept: 'application/json'
 	}
 } as const;
 
@@ -158,19 +159,19 @@ export const ERROR_MESSAGES = {
  */
 export async function apiFetch<T>(
 	endpoint: string,
-	options: RequestInit & { 
-		params?: Record<string, any>,
-		retries?: number,
-		retryDelay?: number,
-		fetch?: typeof fetch  // Optional fetch function for SSR
+	options: RequestInit & {
+		params?: Record<string, any>;
+		retries?: number;
+		retryDelay?: number;
+		fetch?: typeof fetch; // Optional fetch function for SSR
 	} = {}
 ): Promise<T> {
 	// Use provided fetch or fall back to global fetch
 	const fetchFn = options.fetch || (typeof window !== 'undefined' ? window.fetch : fetch);
-	
+
 	// Build URL with params
 	let url = `${API_BASE_URL}${endpoint}`;
-	
+
 	if (options.params) {
 		const queryString = new URLSearchParams(options.params).toString();
 		url += `?${queryString}`;
@@ -211,7 +212,7 @@ export async function apiFetch<T>(
 			// Handle error responses
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				
+
 				// Don't retry on client errors (except 429)
 				if (response.status >= 400 && response.status < 500 && response.status !== 429) {
 					throw new ApiError(
@@ -239,15 +240,20 @@ export async function apiFetch<T>(
 				if (error.name === 'AbortError') {
 					throw new ApiError(ERROR_MESSAGES.TIMEOUT_ERROR, 0);
 				}
-				
-				if (error instanceof ApiError && error.status >= 400 && error.status < 500 && error.status !== 429) {
+
+				if (
+					error instanceof ApiError &&
+					error.status >= 400 &&
+					error.status < 500 &&
+					error.status !== 429
+				) {
 					throw error;
 				}
 			}
 
 			// Wait before retry (exponential backoff)
 			if (attempt < maxRetries - 1) {
-				await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
+				await new Promise((resolve) => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
 			}
 		}
 	}
@@ -329,12 +335,12 @@ export const api = {
  */
 export function buildApiUrl(endpoint: string, params?: Record<string, any>): string {
 	let url = `${API_BASE_URL}${endpoint}`;
-	
+
 	if (params) {
 		const queryString = new URLSearchParams(params).toString();
 		url += `?${queryString}`;
 	}
-	
+
 	return url;
 }
 

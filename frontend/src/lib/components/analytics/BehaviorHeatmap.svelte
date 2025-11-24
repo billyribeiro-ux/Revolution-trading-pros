@@ -48,7 +48,12 @@
 			);
 
 			// Color based on type
-			const color = point.type === 'click' ? '255, 193, 7' : point.type === 'hover' ? '96, 165, 250' : '16, 185, 129';
+			const color =
+				point.type === 'click'
+					? '255, 193, 7'
+					: point.type === 'hover'
+						? '96, 165, 250'
+						: '16, 185, 129';
 
 			gradient.addColorStop(0, `rgba(${color}, ${point.intensity})`);
 			gradient.addColorStop(0.5, `rgba(${color}, ${point.intensity * 0.5})`);

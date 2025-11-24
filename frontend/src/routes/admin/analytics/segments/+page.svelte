@@ -72,10 +72,7 @@
 	}
 
 	function addRule() {
-		newSegment.rules = [
-			...newSegment.rules,
-			{ field: 'total_revenue', operator: '>', value: '' }
-		];
+		newSegment.rules = [...newSegment.rules, { field: 'total_revenue', operator: '>', value: '' }];
 	}
 
 	function removeRule(index: number) {
@@ -122,7 +119,9 @@
 	<div class="flex items-center justify-between mb-8">
 		<div>
 			<h1 class="text-2xl font-bold text-gray-900">User Segments</h1>
-			<p class="text-sm text-gray-500 mt-1">Create and manage user segments for targeted analysis</p>
+			<p class="text-sm text-gray-500 mt-1">
+				Create and manage user segments for targeted analysis
+			</p>
 		</div>
 		<button
 			on:click={() => (showCreateModal = true)}
@@ -160,7 +159,9 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+			<div
+				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+			></div>
 		</div>
 	{:else if error}
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">

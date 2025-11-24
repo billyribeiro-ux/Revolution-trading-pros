@@ -9,10 +9,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
-	import { 
-		IconPlus, IconEdit, IconTrash, IconTag, IconFolder,
-		IconSearch, IconRefresh, IconCheck, IconX, IconAlertCircle,
-		IconChartBar, IconEye, IconEyeOff, IconCopy
+	import {
+		IconPlus,
+		IconEdit,
+		IconTrash,
+		IconTag,
+		IconFolder,
+		IconSearch,
+		IconRefresh,
+		IconCheck,
+		IconX,
+		IconAlertCircle,
+		IconChartBar,
+		IconEye,
+		IconEyeOff,
+		IconCopy
 	} from '@tabler/icons-svelte';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
 
@@ -104,14 +115,15 @@
 	}
 
 	function applyFilters() {
-		filteredCategories = categories.filter(cat => {
-			const matchesSearch = cat.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
+		filteredCategories = categories.filter((cat) => {
+			const matchesSearch =
+				cat.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
 				cat.description?.toLowerCase().includes(categorySearch.toLowerCase());
 			const matchesVisibility = showHidden || cat.is_visible;
 			return matchesSearch && matchesVisibility;
 		});
 
-		filteredTags = tags.filter(tag => {
+		filteredTags = tags.filter((tag) => {
 			const matchesSearch = tag.name.toLowerCase().includes(tagSearch.toLowerCase());
 			const matchesVisibility = showHidden || tag.is_visible;
 			return matchesSearch && matchesVisibility;
@@ -241,10 +253,11 @@
 	}
 
 	async function deleteCategory(id: number) {
-		const category = categories.find(c => c.id === id);
+		const category = categories.find((c) => c.id === id);
 		if (!category) return;
 
-		if (!confirm(`Delete "${category.name}"? ${category.post_count} posts will not be deleted.`)) return;
+		if (!confirm(`Delete "${category.name}"? ${category.post_count} posts will not be deleted.`))
+			return;
 
 		try {
 			await categoriesApi.delete(id);
@@ -261,7 +274,7 @@
 	}
 
 	async function deleteTag(id: number) {
-		const tag = tags.find(t => t.id === id);
+		const tag = tags.find((t) => t.id === id);
 		if (!tag) return;
 
 		if (!confirm(`Delete "${tag.name}"? ${tag.post_count} posts will not be deleted.`)) return;
@@ -275,7 +288,7 @@
 			if (error instanceof AdminApiError) {
 				showToastMessage(error.message, 'error');
 			} else {
-					showToastMessage('Failed to delete tag', 'error');
+				showToastMessage('Failed to delete tag', 'error');
 			}
 		}
 	}
@@ -317,7 +330,9 @@
 
 	// Utility functions
 	function generateSlug(name: string): string {
-		return name.toLowerCase().trim()
+		return name
+			.toLowerCase()
+			.trim()
 			.replace(/[^\w\s-]/g, '')
 			.replace(/[\s_-]+/g, '-')
 			.replace(/^-+|-+$/g, '');
@@ -327,7 +342,9 @@
 		toastMessage = message;
 		toastType = type;
 		showToast = true;
-		setTimeout(() => { showToast = false; }, 5000);
+		setTimeout(() => {
+			showToast = false;
+		}, 5000);
 	}
 
 	// Auto-generate slug when name changes
@@ -354,7 +371,7 @@
 				<IconAlertCircle size={20} />
 			{/if}
 			<span>{toastMessage}</span>
-			<button on:click={() => showToast = false}>
+			<button on:click={() => (showToast = false)}>
 				<IconX size={16} />
 			</button>
 		</div>
@@ -367,7 +384,7 @@
 				<p>Organize your blog posts with categories and tags</p>
 			</div>
 			<button class="btn-secondary" on:click={loadData} disabled={loading}>
-				<IconRefresh size={18} class="{loading ? 'spinning' : ''}" />
+				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 				Refresh
 			</button>
 		</div>
@@ -466,13 +483,25 @@
 								</div>
 							</div>
 							<div class="item-actions">
-								<button class="action-btn" on:click={() => openCategoryModal(category)} title="Edit">
+								<button
+									class="action-btn"
+									on:click={() => openCategoryModal(category)}
+									title="Edit"
+								>
 									<IconEdit size={18} />
 								</button>
-								<button class="action-btn" on:click={() => navigator.clipboard.writeText(category.slug)} title="Copy slug">
+								<button
+									class="action-btn"
+									on:click={() => navigator.clipboard.writeText(category.slug)}
+									title="Copy slug"
+								>
 									<IconCopy size={18} />
 								</button>
-								<button class="action-btn danger" on:click={() => deleteCategory(category.id)} title="Delete">
+								<button
+									class="action-btn danger"
+									on:click={() => deleteCategory(category.id)}
+									title="Delete"
+								>
 									<IconTrash size={18} />
 								</button>
 							</div>
@@ -557,7 +586,11 @@
 								<button class="action-btn" on:click={() => openTagModal(tag)} title="Edit">
 									<IconEdit size={18} />
 								</button>
-								<button class="action-btn" on:click={() => navigator.clipboard.writeText(tag.slug)} title="Copy slug">
+								<button
+									class="action-btn"
+									on:click={() => navigator.clipboard.writeText(tag.slug)}
+									title="Copy slug"
+								>
 									<IconCopy size={18} />
 								</button>
 								<button class="action-btn danger" on:click={() => deleteTag(tag.id)} title="Delete">
@@ -581,7 +614,14 @@
 		on:click={() => (showCategoryModal = false)}
 		on:keydown={(e) => e.key === 'Escape' && (showCategoryModal = false)}
 	>
-		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			on:click|stopPropagation
+			on:keydown|stopPropagation
+		>
 			<div class="modal-header">
 				<h3>{editingCategory ? 'Edit' : 'Add'} Category</h3>
 				<button class="close-btn" on:click={() => (showCategoryModal = false)}>×</button>
@@ -649,7 +689,9 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showCategoryModal = false)} disabled={saving}>Cancel</button>
+				<button class="btn-secondary" on:click={() => (showCategoryModal = false)} disabled={saving}
+					>Cancel</button
+				>
 				<button class="btn-primary" on:click={saveCategory} disabled={saving}>
 					{#if saving}
 						Saving...
@@ -671,7 +713,14 @@
 		on:click={() => (showTagModal = false)}
 		on:keydown={(e) => e.key === 'Escape' && (showTagModal = false)}
 	>
-		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			on:click|stopPropagation
+			on:keydown|stopPropagation
+		>
 			<div class="modal-header">
 				<h3>{editingTag ? 'Edit' : 'Add'} Tag</h3>
 				<button class="close-btn" on:click={() => (showTagModal = false)}>×</button>
@@ -691,12 +740,24 @@
 
 				<div class="form-group">
 					<label for="tag-name">Name *</label>
-					<input id="tag-name" type="text" bind:value={tagForm.name} placeholder="Tag name" required />
+					<input
+						id="tag-name"
+						type="text"
+						bind:value={tagForm.name}
+						placeholder="Tag name"
+						required
+					/>
 				</div>
 
 				<div class="form-group">
 					<label for="tag-slug">Slug *</label>
-					<input id="tag-slug" type="text" bind:value={tagForm.slug} placeholder="tag-slug" required />
+					<input
+						id="tag-slug"
+						type="text"
+						bind:value={tagForm.slug}
+						placeholder="tag-slug"
+						required
+					/>
 					<p class="help-text">Lowercase letters, numbers, and hyphens only</p>
 				</div>
 
@@ -717,7 +778,9 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showTagModal = false)} disabled={saving}>Cancel</button>
+				<button class="btn-secondary" on:click={() => (showTagModal = false)} disabled={saving}
+					>Cancel</button
+				>
 				<button class="btn-primary" on:click={saveTag} disabled={saving}>
 					{#if saving}
 						Saving...
@@ -1130,7 +1193,7 @@
 		cursor: pointer;
 	}
 
-	.checkbox-wrapper input[type="checkbox"] {
+	.checkbox-wrapper input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
 		cursor: pointer;
@@ -1191,8 +1254,12 @@
 	}
 
 	@keyframes loading {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	.spinning {
@@ -1200,8 +1267,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Error Banner */

@@ -10,7 +10,12 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { analyticsApi, type DashboardData, type RealTimeMetrics, type KpiValue } from '$lib/api/analytics';
+import {
+	analyticsApi,
+	type DashboardData,
+	type RealTimeMetrics,
+	type KpiValue
+} from '$lib/api/analytics';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -357,10 +362,12 @@ export const isLoading = derived(analyticsStore, ($analytics) => $analytics.isLo
 export const selectedPeriod = derived(analyticsStore, ($analytics) => $analytics.selectedPeriod);
 
 // KPI helpers
-export const primaryKpis = derived(dashboard, ($dashboard) =>
-	$dashboard?.kpis?.filter((kpi) => kpi.is_primary) || []
+export const primaryKpis = derived(
+	dashboard,
+	($dashboard) => $dashboard?.kpis?.filter((kpi) => kpi.is_primary) || []
 );
 
-export const anomalyKpis = derived(dashboard, ($dashboard) =>
-	$dashboard?.kpis?.filter((kpi) => kpi.is_anomaly) || []
+export const anomalyKpis = derived(
+	dashboard,
+	($dashboard) => $dashboard?.kpis?.filter((kpi) => kpi.is_anomaly) || []
 );

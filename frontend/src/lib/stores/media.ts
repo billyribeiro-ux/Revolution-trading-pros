@@ -374,20 +374,16 @@ function createUploadStore() {
 						return { ...state, uploads: newUploads };
 					});
 
-					const result = await mediaApi.uploadFile(
-						upload.file,
-						options,
-						(progress) => {
-							update((state) => {
-								const newUploads = new Map(state.uploads);
-								const current = newUploads.get(id);
-								if (current) {
-									newUploads.set(id, { ...current, progress });
-								}
-								return { ...state, uploads: newUploads };
-							});
-						}
-					);
+					const result = await mediaApi.uploadFile(upload.file, options, (progress) => {
+						update((state) => {
+							const newUploads = new Map(state.uploads);
+							const current = newUploads.get(id);
+							if (current) {
+								newUploads.set(id, { ...current, progress });
+							}
+							return { ...state, uploads: newUploads };
+						});
+					});
 
 					update((state) => {
 						const newUploads = new Map(state.uploads);
@@ -462,7 +458,9 @@ export const viewMode = derived(mediaStore, ($media) => $media.viewMode);
 export const isLoading = derived(mediaStore, ($media) => $media.isLoading);
 
 // Upload derived stores
-export const activeUploads = derived(uploadStore, ($upload) => Array.from($upload.uploads.values()));
+export const activeUploads = derived(uploadStore, ($upload) =>
+	Array.from($upload.uploads.values())
+);
 export const uploadCount = derived(activeUploads, ($uploads) => $uploads.length);
 export const isUploading = derived(uploadStore, ($upload) => $upload.isUploading);
 export const uploadProgress = derived(activeUploads, ($uploads) => {

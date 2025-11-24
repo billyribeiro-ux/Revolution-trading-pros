@@ -15,7 +15,8 @@
 	export let serverTime: Date | null = null;
 
 	// Pass-through props with same defaults as CountdownTimer
-	export let format: 'default' | 'digital' | 'circular' | 'flip' | 'minimal' | 'bar' | 'custom' = 'default';
+	export let format: 'default' | 'digital' | 'circular' | 'flip' | 'minimal' | 'bar' | 'custom' =
+		'default';
 	export let showDays: boolean = true;
 	export let showHours: boolean = true;
 	export let showMinutes: boolean = true;

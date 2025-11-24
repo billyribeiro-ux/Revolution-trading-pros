@@ -8,7 +8,14 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { mediaStore, uploadStore, currentFiles, selectedCount, viewMode, isLoading } from '$lib/stores/media';
+	import {
+		mediaStore,
+		uploadStore,
+		currentFiles,
+		selectedCount,
+		viewMode,
+		isLoading
+	} from '$lib/stores/media';
 	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
 	import FolderTree from '$lib/components/media/FolderTree.svelte';
 	import {
@@ -136,7 +143,10 @@
 					<!-- Filter -->
 					<select
 						bind:value={selectedFileType}
-						on:change={(e) => mediaStore.setFilterType(e.currentTarget.value === 'all' ? null : e.currentTarget.value)}
+						on:change={(e) =>
+							mediaStore.setFilterType(
+								e.currentTarget.value === 'all' ? null : e.currentTarget.value
+							)}
 						class="filter-select"
 					>
 						<option value="all">All Types</option>
@@ -175,9 +185,7 @@
 								<IconTrash size={18} />
 								Delete
 							</button>
-							<button class="bulk-btn" on:click={() => mediaStore.deselectAll()}>
-								Clear
-							</button>
+							<button class="bulk-btn" on:click={() => mediaStore.deselectAll()}> Clear </button>
 						</div>
 					{/if}
 				</div>
@@ -207,7 +215,11 @@
 									</div>
 								{:else}
 									<div class="file-icon-wrapper">
-										<svelte:component this={getFileIcon(file.file_type)} size={48} class="text-gray-400" />
+										<svelte:component
+											this={getFileIcon(file.file_type)}
+											size={48}
+											class="text-gray-400"
+										/>
 									</div>
 								{/if}
 
@@ -258,7 +270,11 @@
 										</td>
 										<td class="file-name-cell">
 											{#if file.file_type === 'image'}
-												<img src={file.thumbnail_url || file.url} alt={file.alt_text} class="file-thumb-small" />
+												<img
+													src={file.thumbnail_url || file.url}
+													alt={file.alt_text}
+													class="file-thumb-small"
+												/>
 											{/if}
 											<span>{file.title || file.filename}</span>
 										</td>

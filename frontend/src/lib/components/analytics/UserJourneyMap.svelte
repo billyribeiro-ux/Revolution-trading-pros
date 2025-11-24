@@ -36,7 +36,8 @@
 				{formatNumber(journeyData[0]?.users || 0)} users started
 			</span>
 			<span class="stat-item">
-				{((journeyData[journeyData.length - 1]?.users / journeyData[0]?.users) * 100).toFixed(1)}% completed
+				{((journeyData[journeyData.length - 1]?.users / journeyData[0]?.users) * 100).toFixed(1)}%
+				completed
 			</span>
 		</div>
 	</div>

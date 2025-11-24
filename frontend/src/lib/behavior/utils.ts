@@ -39,8 +39,8 @@ export function calculateEngagementScore(data: {
 }): number {
 	const weights = {
 		scrollDepth: 0.25,
-		timeOnPage: 0.30,
-		interaction: 0.30,
+		timeOnPage: 0.3,
+		interaction: 0.3,
 		content: 0.15
 	};
 
@@ -64,9 +64,9 @@ export function calculateIntentScore(data: {
 	goalOrientedActions: number;
 }): number {
 	const weights = {
-		cta: 0.40,
+		cta: 0.4,
 		hover: 0.25,
-		form: 0.20,
+		form: 0.2,
 		navigation: 0.15
 	};
 
@@ -121,11 +121,11 @@ export function calculateChurnRisk(data: {
 	idleTimeRatio: number;
 }): number {
 	const weights = {
-		exitIntent: 0.30,
+		exitIntent: 0.3,
 		lowEngagement: 0.25,
-		highFriction: 0.20,
+		highFriction: 0.2,
 		abandonment: 0.15,
-		idle: 0.10
+		idle: 0.1
 	};
 
 	const exitScore = data.exitIntentDetected ? 100 : 0;

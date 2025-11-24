@@ -16,7 +16,7 @@
 <div class="min-h-screen bg-rtp-bg text-rtp-text">
 	<!-- Admin Toolbar (only shows for logged-in admins) -->
 	<AdminToolbar />
-	
+
 	<NavBar />
 
 	<main>

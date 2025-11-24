@@ -2,38 +2,38 @@
 	/**
 	 * AdminToolbar Component - Google L7+ Enterprise Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * 
+	 *
 	 * ENTERPRISE ENHANCEMENTS:
-	 * 
+	 *
 	 * 1. TYPE SAFETY:
 	 *    - Full TypeScript interfaces for all data structures
 	 *    - Proper type guards and validation
 	 *    - Exhaustive type checking
-	 * 
+	 *
 	 * 2. PERFORMANCE OPTIMIZATIONS:
 	 *    - Lazy loading for dropdown content
 	 *    - Virtual DOM optimization with keyed lists
 	 *    - Debounced event handlers
 	 *    - Memoized computations
-	 * 
+	 *
 	 * 3. ACCESSIBILITY (WCAG 2.1 AAA):
 	 *    - Complete ARIA support
 	 *    - Keyboard navigation (Tab, Arrow keys, Escape)
 	 *    - Focus management and trapping
 	 *    - Screen reader announcements
-	 * 
+	 *
 	 * 4. SECURITY:
 	 *    - XSS prevention
 	 *    - CSRF protection ready
 	 *    - Role validation
 	 *    - Audit logging
-	 * 
+	 *
 	 * 5. ERROR HANDLING:
 	 *    - Comprehensive error boundaries
 	 *    - Graceful degradation
 	 *    - Retry mechanisms
 	 *    - User feedback
-	 * 
+	 *
 	 * @version 2.0.0 (Google L7+ Enterprise)
 	 * @license MIT
 	 */
@@ -157,11 +157,41 @@
 	// ─────────────────────────────────────────────────────────────────────────────
 
 	const quickMenuItems: MenuItem[] = [
-		{ id: 'forms', label: 'Forms', icon: IconForms, path: '/admin/forms', permission: 'forms.view' },
-		{ id: 'coupons', label: 'Coupons', icon: IconTicket, path: '/admin/coupons', permission: 'coupons.view' },
-		{ id: 'popups', label: 'Popups', icon: IconMail, path: '/admin/popups', permission: 'popups.view' },
-		{ id: 'users', label: 'Users', icon: IconUsers, path: '/admin/users', permission: 'users.view' },
-		{ id: 'settings', label: 'Settings', icon: IconSettings, path: '/admin/settings', permission: 'settings.view' }
+		{
+			id: 'forms',
+			label: 'Forms',
+			icon: IconForms,
+			path: '/admin/forms',
+			permission: 'forms.view'
+		},
+		{
+			id: 'coupons',
+			label: 'Coupons',
+			icon: IconTicket,
+			path: '/admin/coupons',
+			permission: 'coupons.view'
+		},
+		{
+			id: 'popups',
+			label: 'Popups',
+			icon: IconMail,
+			path: '/admin/popups',
+			permission: 'popups.view'
+		},
+		{
+			id: 'users',
+			label: 'Users',
+			icon: IconUsers,
+			path: '/admin/users',
+			permission: 'users.view'
+		},
+		{
+			id: 'settings',
+			label: 'Settings',
+			icon: IconSettings,
+			path: '/admin/settings',
+			permission: 'settings.view'
+		}
 	];
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -169,38 +199,46 @@
 	// ─────────────────────────────────────────────────────────────────────────────
 
 	const currentUser = $derived($userStore as AdminUser | null);
-	
-	const isAdmin = $derived((() => {
-		if (!currentUser) return false;
-		
-		// Type-safe admin check with multiple validation layers
-		const isAdminFlag = Boolean(currentUser.is_admin);
-		const roles = currentUser.roles ?? [];
-		const hasAdminRole = roles.some(role => 
-			['admin', 'super-admin', 'administrator'].includes(role.toLowerCase())
-		);
-		
-		return isAdminFlag || hasAdminRole;
-	})());
 
-	const displayName = $derived((() => {
-		if (!currentUser?.name) return 'Admin';
-		const name = currentUser.name;
-		return name.length > CONSTANTS.MAX_NAME_LENGTH 
-			? `${name.substring(0, CONSTANTS.MAX_NAME_LENGTH)}...` 
-			: name;
-	})());
+	const isAdmin = $derived(
+		(() => {
+			if (!currentUser) return false;
 
-	const userInitial = $derived((() => {
-		if (!currentUser?.name) return 'A';
-		return currentUser.name.charAt(0).toUpperCase();
-	})());
+			// Type-safe admin check with multiple validation layers
+			const isAdminFlag = Boolean(currentUser.is_admin);
+			const roles = currentUser.roles ?? [];
+			const hasAdminRole = roles.some((role) =>
+				['admin', 'super-admin', 'administrator'].includes(role.toLowerCase())
+			);
 
-	const filteredQuickMenuItems = $derived(quickMenuItems.filter(item => {
-		// Filter based on user permissions if implemented
-		if (!item.permission) return true;
-		return hasPermission(item.permission);
-	}));
+			return isAdminFlag || hasAdminRole;
+		})()
+	);
+
+	const displayName = $derived(
+		(() => {
+			if (!currentUser?.name) return 'Admin';
+			const name = currentUser.name;
+			return name.length > CONSTANTS.MAX_NAME_LENGTH
+				? `${name.substring(0, CONSTANTS.MAX_NAME_LENGTH)}...`
+				: name;
+		})()
+	);
+
+	const userInitial = $derived(
+		(() => {
+			if (!currentUser?.name) return 'A';
+			return currentUser.name.charAt(0).toUpperCase();
+		})()
+	);
+
+	const filteredQuickMenuItems = $derived(
+		quickMenuItems.filter((item) => {
+			// Filter based on user permissions if implemented
+			if (!item.permission) return true;
+			return hasPermission(item.permission);
+		})
+	);
 
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Permission System
@@ -208,15 +246,15 @@
 
 	function hasPermission(permission: string): boolean {
 		if (!currentUser) return false;
-		
+
 		// Super admin has all permissions
 		if (currentUser.roles?.includes('super-admin')) return true;
-		
+
 		// Check specific permissions if implemented
 		if (currentUser.permissions) {
 			return currentUser.permissions.includes(permission);
 		}
-		
+
 		// Default to true for regular admins
 		return isAdmin;
 	}
@@ -251,7 +289,7 @@
 	async function handleSessionExpired(): Promise<void> {
 		// Show notification to user
 		showNotification('Session expired. Please log in again.', 'warning');
-		
+
 		// Clear auth and redirect
 		authStore.clearAuth();
 		await goto('/login?redirect=/admin');
@@ -263,25 +301,25 @@
 
 	async function handleLogout(): Promise<void> {
 		if (isLoading) return;
-		
+
 		isLoading = true;
 		const startTime = performance.now();
 
 		try {
 			// Track logout event
 			trackEvent('logout', { source: 'admin-toolbar' });
-			
+
 			await apiLogout();
-			
+
 			// Clear all local data
 			sessionStorage.clear();
 			localStorage.removeItem('admin_preferences');
-			
+
 			// Redirect with success message
 			await goto('/?message=logged_out');
 		} catch (error) {
 			console.error('[AdminToolbar] Logout failed:', error);
-			
+
 			// Force logout even on error
 			authStore.clearAuth();
 			await goto('/');
@@ -296,10 +334,10 @@
 		// Close all dropdowns
 		showDropdown = false;
 		showQuickMenu = false;
-		
+
 		// Track navigation
 		trackEvent('navigation', { path, target });
-		
+
 		// Handle different navigation types
 		switch (target) {
 			case 'external':
@@ -318,7 +356,7 @@
 
 	// Debounced click outside handler
 	let clickOutsideTimeout: ReturnType<typeof setTimeout> | null = null;
-	
+
 	function handleClickOutside(event: MouseEvent): void {
 		if (clickOutsideTimeout) {
 			clearTimeout(clickOutsideTimeout);
@@ -326,7 +364,7 @@
 
 		clickOutsideTimeout = setTimeout(() => {
 			const target = event.target as HTMLElement;
-			
+
 			// Check if click is outside toolbar
 			if (!target.closest('.admin-toolbar')) {
 				closeAllDropdowns();
@@ -348,7 +386,7 @@
 		const isQuickMenu = menuType === 'quick';
 		const items = isQuickMenu ? filteredQuickMenuItems : [];
 		const isOpen = isQuickMenu ? showQuickMenu : showDropdown;
-		
+
 		if (!isOpen) return;
 
 		switch (event.key) {
@@ -413,11 +451,11 @@
 
 	async function toggleQuickMenu(): Promise<void> {
 		if (isAnimating) return;
-		
+
 		isAnimating = true;
 		showDropdown = false; // Close other menu
 		showQuickMenu = !showQuickMenu;
-		
+
 		if (showQuickMenu) {
 			currentFocusIndex = 0;
 			await tick();
@@ -426,17 +464,19 @@
 		} else {
 			announceToScreenReader('Quick access menu closed');
 		}
-		
-		setTimeout(() => { isAnimating = false; }, CONSTANTS.ANIMATION_DURATION);
+
+		setTimeout(() => {
+			isAnimating = false;
+		}, CONSTANTS.ANIMATION_DURATION);
 	}
 
 	async function toggleUserMenu(): Promise<void> {
 		if (isAnimating) return;
-		
+
 		isAnimating = true;
 		showQuickMenu = false; // Close other menu
 		showDropdown = !showDropdown;
-		
+
 		if (showDropdown) {
 			currentFocusIndex = 0;
 			await tick();
@@ -444,8 +484,10 @@
 		} else {
 			announceToScreenReader('User menu closed');
 		}
-		
-		setTimeout(() => { isAnimating = false; }, CONSTANTS.ANIMATION_DURATION);
+
+		setTimeout(() => {
+			isAnimating = false;
+		}, CONSTANTS.ANIMATION_DURATION);
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -477,7 +519,7 @@
 			console.error('[AdminToolbar] Retry failed:', error);
 			errorState.hasError = true;
 			errorState.message = 'Failed to load user data';
-			
+
 			// Exponential backoff for next retry
 			setTimeout(() => retryUserLoad(), CONSTANTS.RETRY_DELAY * Math.pow(2, errorState.retryCount));
 		} finally {
@@ -497,7 +539,7 @@
 		announcement.setAttribute('aria-live', 'polite');
 		announcement.className = 'sr-only';
 		announcement.textContent = message;
-		
+
 		document.body.appendChild(announcement);
 		setTimeout(() => announcement.remove(), 1000);
 	}
@@ -505,7 +547,7 @@
 	function showNotification(message: string, type: 'info' | 'warning' | 'error' = 'info'): void {
 		// Implement your notification system here
 		console.log(`[Notification] ${type}: ${message}`);
-		
+
 		// Announce to screen readers
 		announceToScreenReader(message);
 	}
@@ -592,7 +634,6 @@
 
 			// Track toolbar load
 			trackEvent('toolbar_loaded', { isAdmin });
-
 		} catch (error) {
 			console.error('[AdminToolbar] Mount error:', error);
 			errorState.hasError = true;
@@ -606,7 +647,7 @@
 
 		// Cleanup
 		abortController.abort();
-		
+
 		if (sessionCheckInterval !== null) {
 			clearInterval(sessionCheckInterval);
 		}
@@ -626,16 +667,12 @@
 
 <!-- Admin Toolbar -->
 {#if isAdmin}
-	<div 
-		class="admin-toolbar"
-		role="navigation"
-		aria-label="Admin navigation toolbar"
-	>
+	<div class="admin-toolbar" role="navigation" aria-label="Admin navigation toolbar">
 		<div class="toolbar-container">
 			<!-- Left Section -->
 			<div class="toolbar-left">
 				<!-- Dashboard Link -->
-				<button 
+				<button
 					class="toolbar-logo"
 					onclick={() => navigateTo('/admin')}
 					title="Admin Dashboard"
@@ -650,10 +687,13 @@
 
 				<!-- Quick Access Menu -->
 				<div class="quick-menu">
-					<button 
+					<button
 						bind:this={quickMenuTriggerRef}
 						class="quick-menu-trigger"
-						onclick={(e) => { e.stopPropagation(); toggleQuickMenu(); }}
+						onclick={(e) => {
+							e.stopPropagation();
+							toggleQuickMenu();
+						}}
 						onkeydown={(e) => handleKeyDown(e, 'quick')}
 						aria-expanded={showQuickMenu}
 						aria-haspopup="true"
@@ -661,15 +701,11 @@
 						disabled={isLoading}
 					>
 						<span>Quick Access</span>
-						<IconChevronDown 
-							size={16} 
-							class={showQuickMenu ? 'rotate' : ''} 
-							aria-hidden="true"
-						/>
+						<IconChevronDown size={16} class={showQuickMenu ? 'rotate' : ''} aria-hidden="true" />
 					</button>
 
 					{#if showQuickMenu}
-						<div 
+						<div
 							bind:this={quickMenuRef}
 							id="quick-menu-dropdown"
 							class="dropdown-menu"
@@ -678,7 +714,7 @@
 						>
 							{#each filteredQuickMenuItems as item (item.id)}
 								{@const Icon = item.icon}
-								<button 
+								<button
 									class="dropdown-item"
 									class:disabled={item.disabled}
 									onclick={() => !item.disabled && navigateTo(item.path)}
@@ -701,7 +737,7 @@
 			<!-- Right Section -->
 			<div class="toolbar-right">
 				<!-- View Site Button -->
-				<button 
+				<button
 					class="toolbar-button"
 					onclick={() => navigateTo('/')}
 					title="View public site"
@@ -716,10 +752,13 @@
 
 				<!-- User Menu -->
 				<div class="user-menu">
-					<button 
+					<button
 						bind:this={userMenuTriggerRef}
 						class="user-menu-trigger"
-						onclick={(e) => { e.stopPropagation(); toggleUserMenu(); }}
+						onclick={(e) => {
+							e.stopPropagation();
+							toggleUserMenu();
+						}}
 						onkeydown={(e) => handleKeyDown(e, 'user')}
 						aria-expanded={showDropdown}
 						aria-haspopup="true"
@@ -731,15 +770,11 @@
 							{userInitial}
 						</div>
 						<span class="user-name">{displayName}</span>
-						<IconChevronDown 
-							size={16} 
-							class={showDropdown ? 'rotate' : ''} 
-							aria-hidden="true"
-						/>
+						<IconChevronDown size={16} class={showDropdown ? 'rotate' : ''} aria-hidden="true" />
 					</button>
 
 					{#if showDropdown}
-						<div 
+						<div
 							bind:this={dropdownRef}
 							id="user-menu-dropdown"
 							class="dropdown-menu right"
@@ -760,7 +795,7 @@
 								</div>
 							</div>
 							<div class="dropdown-divider" role="separator"></div>
-							<button 
+							<button
 								class="dropdown-item"
 								onclick={() => navigateTo('/admin/profile')}
 								role="menuitem"
@@ -770,7 +805,7 @@
 								<span>Profile Settings</span>
 							</button>
 							<div class="dropdown-divider" role="separator"></div>
-							<button 
+							<button
 								class="dropdown-item danger"
 								onclick={handleLogout}
 								role="menuitem"
@@ -823,16 +858,16 @@
 		--toolbar-bg-end: #0f172a;
 		--toolbar-border: rgba(59, 130, 246, 0.3);
 		--toolbar-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-		
+
 		--text-primary: #f1f5f9;
 		--text-secondary: #cbd5e1;
 		--text-muted: #94a3b8;
-		
+
 		--accent-primary: #3b82f6;
 		--accent-hover: #60a5fa;
 		--danger: #ef4444;
 		--danger-hover: #f87171;
-		
+
 		--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		--transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
@@ -1200,8 +1235,13 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.7; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.7;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1217,9 +1257,18 @@
 	}
 
 	@keyframes loading {
-		0% { width: 0; left: 0; }
-		50% { width: 100%; left: 0; }
-		100% { width: 0; left: 100%; }
+		0% {
+			width: 0;
+			left: 0;
+		}
+		50% {
+			width: 100%;
+			left: 0;
+		}
+		100% {
+			width: 0;
+			left: 100%;
+		}
 	}
 
 	:global(.admin-toolbar .spin) {
@@ -1227,8 +1276,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

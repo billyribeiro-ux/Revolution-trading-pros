@@ -70,7 +70,12 @@ function createAuthStore() {
 		/**
 		 * Set authenticated user and token
 		 */
-		setAuth: (user: User, token: string, refreshToken?: string | null, expiresInSeconds?: number) => {
+		setAuth: (
+			user: User,
+			token: string,
+			refreshToken?: string | null,
+			expiresInSeconds?: number
+		) => {
 			let tokenExpiry: number | null = null;
 			if (expiresInSeconds) {
 				tokenExpiry = Date.now() + expiresInSeconds * 1000;

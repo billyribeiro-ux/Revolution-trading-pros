@@ -1,0 +1,201 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner "Main navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - link "Revolution Trading Pros" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Revolution Trading Pros" [ref=e7]
+      - navigation [ref=e8]:
+        - button "Live Trading" [ref=e10] [cursor=pointer]:
+          - text: Live Trading
+          - img [ref=e11]
+        - button "Alerts" [ref=e13] [cursor=pointer]:
+          - text: Alerts
+          - img [ref=e14]
+        - link "Mentorship" [ref=e15] [cursor=pointer]:
+          - /url: /mentorship
+        - button "Store" [ref=e17] [cursor=pointer]:
+          - text: Store
+          - img [ref=e18]
+        - button "CRM" [ref=e20] [cursor=pointer]:
+          - text: CRM
+          - img [ref=e21]
+        - link "Behavior" [ref=e22] [cursor=pointer]:
+          - /url: /behavior
+        - link "Analytics" [ref=e23] [cursor=pointer]:
+          - /url: /analytics
+        - link "Media" [ref=e24] [cursor=pointer]:
+          - /url: /media
+        - link "Email" [ref=e25] [cursor=pointer]:
+          - /url: /email
+        - link "About" [ref=e26] [cursor=pointer]:
+          - /url: /about
+        - link "Blog" [ref=e27] [cursor=pointer]:
+          - /url: /blog
+      - link "Login" [ref=e29] [cursor=pointer]:
+        - /url: /login
+        - img [ref=e30]
+        - generic [ref=e31]: Login
+  - main [ref=e32]:
+    - main [ref=e34]:
+      - navigation [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]: Revolution // Institutional
+          - generic [ref=e38]:
+            - generic [ref=e41]: Secure Uplink
+            - generic [ref=e43]: "Client ID: Guest"
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - img [ref=e49]
+            - text: Restricted Access
+          - heading "Strategic Alpha Audit." [level=1] [ref=e52]:
+            - text: Strategic
+            - text: Alpha Audit.
+          - paragraph [ref=e54]: A high-velocity, forensic deconstruction of your trading business. Designed strictly for Portfolio Managers and Proprietary Traders deploying 7-8 figure capital.
+          - generic [ref=e55]:
+            - generic [ref=e56]:
+              - generic [ref=e57]: Consultation Fee
+              - generic [ref=e58]: $25,000 USD
+            - generic [ref=e59]:
+              - generic [ref=e60]: Duration
+              - generic [ref=e61]: 120 MINUTES
+            - generic [ref=e62]:
+              - generic [ref=e63]: Availability
+              - generic [ref=e64]: "Q4: 2 SLOTS"
+        - generic [ref=e66]:
+          - img [ref=e68]
+          - heading "Scope of Engagement" [level=3] [ref=e71]
+          - list [ref=e72]:
+            - listitem [ref=e73]:
+              - generic [ref=e74]: "> Execution Audit"
+              - generic [ref=e77]: Active
+            - listitem [ref=e78]:
+              - generic [ref=e79]: "> Risk Parameterization"
+              - generic [ref=e82]: Active
+            - listitem [ref=e83]:
+              - generic [ref=e84]: "> Psychological Mapping"
+              - generic [ref=e87]: Active
+            - listitem [ref=e88]:
+              - generic [ref=e89]: "> Infrastructure Review"
+              - generic [ref=e92]: Active
+          - paragraph [ref=e94]: "WARNING: This service is not educational. It is advisory. We assume the client possesses sophisticated knowledge of derivatives, margin mechanics, and market microstructure."
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - heading "The Liquidity Ceiling." [level=2] [ref=e99]
+          - generic [ref=e100]:
+            - paragraph [ref=e101]: Scaling a portfolio from $100,000 to $1,000,000 is a math problem. Scaling from $10,000,000 to $100,000,000 is a liquidity problem.
+            - paragraph [ref=e102]:
+              - text: At institutional size, your entry
+              - emphasis [ref=e103]: is
+              - text: the market. Alpha decays the moment you execute. Without optimizing your participation rate, dark pool routing, and variance drag, you are simply paying a "Size Tax" to HFT firms.
+            - paragraph [ref=e104]:
+              - text: Revolution Trading Pros intervenes at this inflection point. We do not teach you
+              - emphasis [ref=e105]: how
+              - text: to trade. We engineer your business to scale without breaking.
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - img [ref=e109]
+            - generic [ref=e111]:
+              - generic [ref=e112]: "-18%"
+              - generic [ref=e113]: Avg. Execution Drag
+          - generic [ref=e114]:
+            - img [ref=e116]
+            - generic [ref=e119]:
+              - generic [ref=e120]: Bias
+              - generic [ref=e121]: Primary Bottleneck
+          - generic [ref=e122]:
+            - img [ref=e124]
+            - generic [ref=e126]:
+              - generic [ref=e127]: Zero
+              - generic [ref=e128]: Latency Tolerance
+          - generic [ref=e129]:
+            - img [ref=e131]
+            - generic [ref=e133]:
+              - generic [ref=e134]: MNDA
+              - generic [ref=e135]: Legal Protection
+      - generic [ref=e137]:
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - heading "The 120-Minute Protocol" [level=2] [ref=e140]
+            - paragraph [ref=e141]: Session Agenda // Confidential
+          - generic [ref=e142]:
+            - generic [ref=e143]: NYC / LON / SIN
+            - generic [ref=e144]: Global Availability
+        - generic [ref=e145]:
+          - generic [ref=e147]:
+            - generic [ref=e148]: 00:00 - 00:30
+            - generic [ref=e149]:
+              - 'heading "Phase I: Microstructure Audit" [level=3] [ref=e150]'
+              - paragraph [ref=e151]: Forensic analysis of your trade logs (last 1,000 executions). We measure your slippage against ADV, analyze your fill quality across venues, and identify 'Alpha Decay' where execution drag is eroding edge.
+          - generic [ref=e153]:
+            - generic [ref=e154]: 00:30 - 01:00
+            - generic [ref=e155]:
+              - 'heading "Phase II: Risk Parameterization" [level=3] [ref=e156]'
+              - paragraph [ref=e157]: Stress-testing your current risk model against 6-sigma events. We reconstruct your position sizing logic using Kelly Criterion modified for fat-tail distribution to optimize Geometric Mean Return.
+          - generic [ref=e159]:
+            - generic [ref=e160]: 01:00 - 01:45
+            - generic [ref=e161]:
+              - 'heading "Phase III: Edge Calibration" [level=3] [ref=e162]'
+              - paragraph [ref=e163]: Strategic realignment. We overlay your discretionary edge with institutional data sets (Dark Pool prints, GEX levels, Vanna Flows) to create a 'Confluence Filter' that filters out B-grade setups.
+          - generic [ref=e165]:
+            - generic [ref=e166]: 01:45 - 02:00
+            - generic [ref=e167]:
+              - 'heading "Phase IV: Neural Mapping" [level=3] [ref=e168]'
+              - paragraph [ref=e169]: Addressing the 'Psychological Ceiling.' We identify the specific cognitive biases (Loss Aversion, Recency Bias) preventing you from scaling size and implement a 'Circuit Breaker' protocol.
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - img [ref=e175]
+            - heading "Technical Prerequisites" [level=3] [ref=e178]
+          - generic [ref=e179]:
+            - paragraph [ref=e180]: To ensure maximum utility of the 120-minute window, we require the following data points to be uploaded to our encrypted portal 48 hours prior to the session.
+            - list [ref=e181]:
+              - listitem [ref=e182]:
+                - generic [ref=e183]: ">>"
+                - text: Past 12 Months of Brokerage Statements (Redacted PII)
+              - listitem [ref=e184]:
+                - generic [ref=e185]: ">>"
+                - text: Current Risk Management Policy Document
+              - listitem [ref=e186]:
+                - generic [ref=e187]: ">>"
+                - text: List of Execution Venues / Prime Brokerage Relationships
+              - listitem [ref=e188]:
+                - generic [ref=e189]: ">>"
+                - text: Signed Mutual Non-Disclosure Agreement (MNDA)
+        - generic [ref=e190]:
+          - generic [ref=e191]:
+            - img [ref=e193]
+            - heading "Engagement Protocols" [level=3] [ref=e195]
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - button "CONFIDENTIALITY & DATA SOVEREIGNTY" [ref=e198] [cursor=pointer]:
+                - generic [ref=e199]: CONFIDENTIALITY & DATA SOVEREIGNTY
+                - img [ref=e201]
+              - generic [ref=e203]: Revolution Trading Pros operates under a strict code of silence. We execute a Mutual Non-Disclosure Agreement (MNDA) before receiving any trade logs. We do not store client data on cloud servers; all analysis is performed on air-gapped local machines and wiped post-session.
+            - button "CONFLICT OF INTEREST" [ref=e205] [cursor=pointer]:
+              - generic [ref=e206]: CONFLICT OF INTEREST
+              - img [ref=e208]
+            - button "LOGISTICS & EXPENSING" [ref=e211] [cursor=pointer]:
+              - generic [ref=e212]: LOGISTICS & EXPENSING
+              - img [ref=e214]
+      - generic [ref=e220]:
+        - generic [ref=e221]:
+          - img [ref=e223]
+          - heading "Initiate Application" [level=2] [ref=e225]
+          - paragraph [ref=e226]: "Reference: Q4-INST-AUDIT"
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - generic [ref=e229]: Wire Amount
+            - generic [ref=e230]: $25,000.00
+          - generic [ref=e231]:
+            - generic [ref=e232]: Payment Terms
+            - generic [ref=e233]: Net 0
+        - link "Submit Request" [ref=e234] [cursor=pointer]:
+          - /url: mailto:institutional@revolutiontradingpros.com?subject=Institutional%20Audit%20Application
+        - paragraph [ref=e235]:
+          - text: Due to high demand, applications are reviewed weekly.
+          - text: We reserve the right to decline engagements based on fit.
+```

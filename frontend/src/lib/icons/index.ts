@@ -1,10 +1,10 @@
 /**
  * Tabler Icons - Proper Enterprise Export Barrel
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * All icons are re-exported from '@tabler/icons-svelte' main package.
  * The package exports all 5900+ icons via barrel export pattern.
- * 
+ *
  * Usage:
  * import { IconMapPin, IconUser, IconMail } from '$lib/icons';
  */

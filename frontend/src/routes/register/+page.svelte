@@ -120,7 +120,14 @@
 		}
 
 		// Kill all GSAP animations on this component
-		gsap.killTweensOf([cardRef, formRef, '.register-header', '.form-field', '.register-footer', '.sparkle-icon']);
+		gsap.killTweensOf([
+			cardRef,
+			formRef,
+			'.register-header',
+			'.form-field',
+			'.register-footer',
+			'.sparkle-icon'
+		]);
 	}
 
 	onDestroy(() => {

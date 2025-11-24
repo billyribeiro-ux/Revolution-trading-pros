@@ -1,6 +1,6 @@
 /**
  * RevolutionBehavior-L8-System - Auto-Initialization
- * 
+ *
  * Import this in your root layout to enable behavior tracking
  */
 
@@ -11,7 +11,7 @@ let tracker: BehaviorTracker | null = null;
 
 export function initBehaviorTracking() {
 	if (!browser) return;
-	
+
 	if (!tracker) {
 		tracker = new BehaviorTracker({
 			apiEndpoint: '/api/behavior/events',
@@ -20,12 +20,12 @@ export function initBehaviorTracking() {
 			trackHoverIntent: true,
 			trackFormBehavior: true,
 			trackIdleTime: true,
-			sampleRate: 1.0, // 100% sampling
+			sampleRate: 1.0 // 100% sampling
 		});
-		
+
 		console.log('[RevolutionBehavior-L8] Tracker initialized');
 	}
-	
+
 	return tracker;
 }
 

@@ -1,7 +1,7 @@
 /**
  * Retry Pattern with Exponential Backoff
  * Google L7+ Principal Engineer Level
- * 
+ *
  * Features:
  * - Exponential backoff
  * - Jitter for thundering herd prevention
@@ -63,7 +63,7 @@ export class RetryPolicy {
 				500, // Internal Server Error
 				502, // Bad Gateway
 				503, // Service Unavailable
-				504  // Gateway Timeout
+				504 // Gateway Timeout
 			],
 			onRetry: config.onRetry
 		};
@@ -82,7 +82,7 @@ export class RetryPolicy {
 
 			try {
 				const result = await fn();
-				
+
 				// Record success metrics
 				const duration = performance.now() - startTime;
 				recordMetric('retry_success_total', 1, 'counter', {
@@ -167,12 +167,9 @@ export class RetryPolicy {
 		if (this.config.retryableErrors) {
 			const errorName = error.name || error.constructor?.name || '';
 			const errorMessage = error.message || '';
-			
+
 			for (const retryableError of this.config.retryableErrors) {
-				if (
-					errorName.includes(retryableError) ||
-					errorMessage.includes(retryableError)
-				) {
+				if (errorName.includes(retryableError) || errorMessage.includes(retryableError)) {
 					return true;
 				}
 			}
@@ -214,7 +211,7 @@ export class RetryPolicy {
 	 * Sleep for specified duration
 	 */
 	private sleep(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms));
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	/**
@@ -254,10 +251,7 @@ export class RetryExhaustedError extends Error {
 /**
  * Retry a function with default configuration
  */
-export async function retry<T>(
-	fn: () => Promise<T>,
-	config?: Partial<RetryConfig>
-): Promise<T> {
+export async function retry<T>(fn: () => Promise<T>, config?: Partial<RetryConfig>): Promise<T> {
 	const policy = new RetryPolicy(config);
 	return policy.execute(fn);
 }
@@ -352,22 +346,18 @@ export async function withIdempotency<T>(
 /**
  * Generate idempotency key from request details
  */
-export function generateIdempotencyKey(
-	method: string,
-	url: string,
-	body?: any
-): string {
+export function generateIdempotencyKey(method: string, url: string, body?: any): string {
 	const bodyStr = body ? JSON.stringify(body) : '';
 	const combined = `${method}:${url}:${bodyStr}`;
-	
+
 	// Simple hash function
 	let hash = 0;
 	for (let i = 0; i < combined.length; i++) {
 		const char = combined.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
+		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32bit integer
 	}
-	
+
 	return `idem_${Math.abs(hash).toString(36)}`;
 }
 

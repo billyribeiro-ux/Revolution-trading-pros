@@ -121,7 +121,9 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+			<div
+				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+			></div>
 		</div>
 	{:else if error}
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -177,11 +179,7 @@
 		<!-- Selected Funnel Detail -->
 		{#if selectedFunnel}
 			<div class="space-y-6">
-				<FunnelChart
-					steps={selectedFunnel.steps}
-					title={selectedFunnel.name}
-					showDropOff={true}
-				/>
+				<FunnelChart steps={selectedFunnel.steps} title={selectedFunnel.name} showDropOff={true} />
 
 				<!-- Step Details Table -->
 				<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -201,13 +199,16 @@
 							</thead>
 							<tbody class="divide-y divide-gray-100">
 								{#each selectedFunnel.steps as step, i}
-									{@const fromStart = selectedFunnel.steps[0].count > 0
-										? (step.count / selectedFunnel.steps[0].count) * 100
-										: 0}
+									{@const fromStart =
+										selectedFunnel.steps[0].count > 0
+											? (step.count / selectedFunnel.steps[0].count) * 100
+											: 0}
 									<tr class="hover:bg-gray-50">
 										<td class="py-3 px-4">
 											<div class="flex items-center gap-3">
-												<span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+												<span
+													class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium"
+												>
 													{i + 1}
 												</span>
 												<span class="font-medium text-gray-900">{step.name}</span>
@@ -305,7 +306,9 @@
 					<div class="space-y-3">
 						{#each newFunnel.steps as step, index}
 							<div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-								<span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+								<span
+									class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
+								>
 									{index + 1}
 								</span>
 								<input

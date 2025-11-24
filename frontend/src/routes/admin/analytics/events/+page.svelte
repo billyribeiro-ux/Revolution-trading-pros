@@ -181,7 +181,9 @@
 
 		{#if loading}
 			<div class="flex items-center justify-center py-20">
-				<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+				<div
+					class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+				></div>
 			</div>
 		{:else if error}
 			<div class="p-6 text-center text-red-600">
@@ -217,7 +219,8 @@
 							<tr class="hover:bg-gray-50 cursor-pointer">
 								<td class="py-3 px-4">
 									<span
-										class="px-2 py-1 rounded text-xs font-medium {eventColors[event.event_type] || 'bg-gray-100 text-gray-700'}"
+										class="px-2 py-1 rounded text-xs font-medium {eventColors[event.event_type] ||
+											'bg-gray-100 text-gray-700'}"
 									>
 										{event.event_name}
 									</span>

@@ -83,7 +83,7 @@ describe('EnhancedApiClient', () => {
 				useCircuitBreaker: true,
 				circuitBreakerName: 'test-api'
 			};
-			
+
 			// Configuration should be accepted
 			expect(config.useCircuitBreaker).toBe(true);
 		});
@@ -93,7 +93,7 @@ describe('EnhancedApiClient', () => {
 				retry: true,
 				maxRetries: 5
 			};
-			
+
 			expect(config.retry).toBe(true);
 			expect(config.maxRetries).toBe(5);
 		});
@@ -103,7 +103,7 @@ describe('EnhancedApiClient', () => {
 				useCache: true,
 				cacheTTL: 60000
 			};
-			
+
 			expect(config.useCache).toBe(true);
 			expect(config.cacheTTL).toBe(60000);
 		});
@@ -112,7 +112,7 @@ describe('EnhancedApiClient', () => {
 			const config = {
 				trace: true
 			};
-			
+
 			expect(config.trace).toBe(true);
 		});
 
@@ -121,7 +121,7 @@ describe('EnhancedApiClient', () => {
 				idempotent: true,
 				idempotencyKey: 'test-key-123'
 			};
-			
+
 			expect(config.idempotent).toBe(true);
 			expect(config.idempotencyKey).toBe('test-key-123');
 		});
@@ -130,7 +130,7 @@ describe('EnhancedApiClient', () => {
 			const config = {
 				timeout: 5000
 			};
-			
+
 			expect(config.timeout).toBe(5000);
 		});
 
@@ -141,7 +141,7 @@ describe('EnhancedApiClient', () => {
 					windowMs: 60000
 				}
 			};
-			
+
 			expect(config.rateLimit?.maxRequests).toBe(100);
 			expect(config.rateLimit?.windowMs).toBe(60000);
 		});
@@ -153,7 +153,7 @@ describe('End-to-End Integration', () => {
 		const client = new EnhancedApiClient('http://localhost:8000/api', {
 			useCircuitBreaker: true
 		});
-		
+
 		expect(client).toBeDefined();
 	});
 
@@ -162,7 +162,7 @@ describe('End-to-End Integration', () => {
 			retry: true,
 			maxRetries: 3
 		});
-		
+
 		expect(client).toBeDefined();
 	});
 
@@ -170,7 +170,7 @@ describe('End-to-End Integration', () => {
 		const client = new EnhancedApiClient('http://localhost:8000/api', {
 			trace: true
 		});
-		
+
 		expect(client).toBeDefined();
 	});
 
@@ -184,7 +184,7 @@ describe('End-to-End Integration', () => {
 			trace: true,
 			timeout: 30000
 		});
-		
+
 		expect(client).toBeDefined();
 	});
 });

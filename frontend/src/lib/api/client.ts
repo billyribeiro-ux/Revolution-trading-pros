@@ -1,9 +1,9 @@
 /**
  * API Client Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. REQUEST OPTIMIZATION:
  *    - Request deduplication
  *    - Batch processing
@@ -11,7 +11,7 @@
  *    - Priority handling
  *    - Rate limiting
  *    - Concurrency control
- * 
+ *
  * 2. INTELLIGENT CACHING:
  *    - Multi-layer caching
  *    - Smart invalidation
@@ -19,7 +19,7 @@
  *    - Offline support
  *    - IndexedDB storage
  *    - Memory optimization
- * 
+ *
  * 3. ERROR HANDLING:
  *    - Exponential backoff
  *    - Circuit breaking
@@ -27,7 +27,7 @@
  *    - Fallback mechanisms
  *    - Error recovery
  *    - Graceful degradation
- * 
+ *
  * 4. REAL-TIME SYNC:
  *    - WebSocket integration
  *    - Server-sent events
@@ -35,7 +35,7 @@
  *    - Conflict resolution
  *    - Delta synchronization
  *    - Background sync
- * 
+ *
  * 5. MONITORING & ANALYTICS:
  *    - Performance metrics
  *    - Request tracking
@@ -43,7 +43,7 @@
  *    - Usage patterns
  *    - Health monitoring
  *    - SLA tracking
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -140,7 +140,7 @@ export interface CacheConfig {
 	strategy?: CacheStrategy;
 }
 
-export type CacheStrategy = 
+export type CacheStrategy =
 	| 'cache-first'
 	| 'network-first'
 	| 'cache-only'
@@ -212,7 +212,7 @@ export interface Membership {
 	trial_ends_at?: string | null;
 }
 
-export type MembershipStatus = 
+export type MembershipStatus =
 	| 'active'
 	| 'trial'
 	| 'expired'
@@ -280,13 +280,7 @@ export interface Product {
 	updated_at: string;
 }
 
-export type ProductType = 
-	| 'course'
-	| 'indicator'
-	| 'bundle'
-	| 'ebook'
-	| 'software'
-	| 'service';
+export type ProductType = 'course' | 'indicator' | 'bundle' | 'ebook' | 'software' | 'service';
 
 export interface Category {
 	id: number;
@@ -363,18 +357,18 @@ class EnterpriseApiClient {
 	private refreshToken: string | null = null;
 	private wsConnection?: WebSocket;
 	private sseConnection?: EventSource;
-	
+
 	// Request management
 	private requestQueue: RequestQueueItem[] = [];
 	private activeRequests = new Map<string, Promise<any>>();
 	private requestCache = new Map<string, { data: any; expiry: number }>();
 	private rateLimiter = new RateLimiter(RATE_LIMIT);
 	private circuitBreaker = new CircuitBreaker();
-	
+
 	// Batch processing
 	private batchQueue: Map<string, any[]> = new Map();
 	private batchTimer?: number;
-	
+
 	// Performance tracking
 	private metrics: PerformanceMetrics = {
 		totalRequests: 0,
@@ -385,7 +379,7 @@ class EnterpriseApiClient {
 		errorRate: 0,
 		requestsPerMinute: 0
 	};
-	
+
 	// Stores
 	public loading = writable(false);
 	public error = writable<ApiError | null>(null);
@@ -394,21 +388,17 @@ class EnterpriseApiClient {
 	public user = writable<User | null>(null);
 	public memberships = writable<Membership[]>([]);
 	public products = writable<Product[]>([]);
-	
+
 	// Derived stores
-	public isAuthenticated = derived(
-		this.user,
-		$user => $user !== null
+	public isAuthenticated = derived(this.user, ($user) => $user !== null);
+
+	public activeMembership = derived(this.memberships, ($memberships) =>
+		$memberships.find((m) => m.status === 'active')
 	);
-	
-	public activeMembership = derived(
-		this.memberships,
-		$memberships => $memberships.find(m => m.status === 'active')
-	);
-	
+
 	public hasActiveSubscription = derived(
 		this.activeMembership,
-		$membership => $membership !== undefined
+		($membership) => $membership !== undefined
 	);
 
 	private constructor() {
@@ -428,24 +418,24 @@ class EnterpriseApiClient {
 	private async initialize(): Promise<void> {
 		// Load tokens from storage
 		this.loadTokens();
-		
+
 		// Setup network monitoring
 		this.setupNetworkMonitoring();
-		
+
 		// Setup WebSocket connection
 		this.setupWebSocket();
-		
+
 		// Setup SSE for real-time updates
 		this.setupSSE();
-		
+
 		// Start request processor
 		this.startRequestProcessor();
-		
+
 		// Load user if authenticated
 		if (this.token) {
 			await this.loadUser();
 		}
-		
+
 		// Setup performance monitoring
 		this.startPerformanceMonitoring();
 
@@ -465,7 +455,7 @@ class EnterpriseApiClient {
 	setToken(token: string | null, refreshToken?: string | null): void {
 		this.token = token;
 		this.refreshToken = refreshToken || null;
-		
+
 		if (typeof window !== 'undefined') {
 			if (token) {
 				localStorage.setItem('rtp_auth_token', token);
@@ -477,7 +467,7 @@ class EnterpriseApiClient {
 				localStorage.removeItem('rtp_refresh_token');
 			}
 		}
-		
+
 		// Update WebSocket authentication
 		if (this.wsConnection && this.wsConnection.readyState === WebSocket.OPEN) {
 			this.authenticateWebSocket();
@@ -495,7 +485,7 @@ class EnterpriseApiClient {
 		// Generate request ID
 		const requestId = this.generateRequestId();
 		const cacheKey = config.cache?.key || this.getCacheKey(endpoint, config);
-		
+
 		// Check cache first
 		if (config.cache?.enabled !== false && config.method === 'GET') {
 			const cached = this.getFromCache(cacheKey);
@@ -504,14 +494,14 @@ class EnterpriseApiClient {
 				return cached;
 			}
 		}
-		
+
 		// Check for duplicate requests
 		const existingRequest = this.activeRequests.get(cacheKey);
 		if (existingRequest) {
 			console.debug(`[ApiClient] Deduplicating request: ${endpoint}`);
 			return existingRequest;
 		}
-		
+
 		// Check circuit breaker
 		if (this.circuitBreaker.isOpen()) {
 			throw {
@@ -520,31 +510,31 @@ class EnterpriseApiClient {
 				retryAfter: this.circuitBreaker.getTimeUntilReset()
 			} as ApiError;
 		}
-		
+
 		// Rate limiting
 		await this.rateLimiter.acquire();
-		
+
 		// Create request promise
 		const requestPromise = this.executeRequest<T>(endpoint, config, requestId);
-		
+
 		// Store active request
 		this.activeRequests.set(cacheKey, requestPromise);
-		
+
 		// Execute and clean up
 		try {
 			const result = await requestPromise;
 			this.activeRequests.delete(cacheKey);
-			
+
 			// Cache successful GET requests
 			if (config.method === 'GET' || !config.method) {
 				this.setCache(cacheKey, result, config.cache?.ttl);
 			}
-			
+
 			// Invalidate related caches
 			if (config.cache?.invalidate) {
 				this.invalidateCaches(config.cache.invalidate);
 			}
-			
+
 			return result;
 		} catch (error) {
 			this.activeRequests.delete(cacheKey);
@@ -559,87 +549,87 @@ class EnterpriseApiClient {
 	): Promise<T> {
 		const startTime = Date.now();
 		const url = this.buildUrl(endpoint, config.params);
-		
+
 		// Build headers
 		const headers: HeadersInit = {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json',
+			Accept: 'application/json',
 			'X-Request-ID': requestId,
 			...config.headers
 		};
-		
+
 		if (this.token) {
 			headers['Authorization'] = `Bearer ${this.token}`;
 		}
-		
+
 		// Configure request
 		const requestConfig: RequestInit = {
 			method: config.method || 'GET',
 			headers,
 			signal: this.createAbortSignal(config.timeout)
 		};
-		
+
 		if (config.body && ['POST', 'PUT', 'PATCH'].includes(requestConfig.method!)) {
 			requestConfig.body = JSON.stringify(config.body);
 		}
-		
+
 		// Retry logic
 		let lastError: any;
 		const maxAttempts = config.retry?.attempts || RETRY_ATTEMPTS;
-		
+
 		for (let attempt = 0; attempt < maxAttempts; attempt++) {
 			try {
 				this.loading.set(true);
 				this.error.set(null);
-				
+
 				const response = await fetch(url, requestConfig);
-				
+
 				// Handle response
 				if (!response.ok) {
 					const error = await this.handleErrorResponse(response, requestId);
-					
+
 					// Check if we should retry
 					if (this.shouldRetry(error, config.retry)) {
 						lastError = error;
 						await this.delay(this.getRetryDelay(attempt, config.retry));
 						continue;
 					}
-					
+
 					throw error;
 				}
-				
+
 				// Parse successful response
 				const data = await response.json();
-				
+
 				// Update metrics
 				this.updateMetrics({
 					responseTime: Date.now() - startTime,
 					success: true
 				});
-				
+
 				// Transform if needed
 				const result = config.transform ? config.transform(data) : data;
-				
+
 				// Record circuit breaker success
 				this.circuitBreaker.recordSuccess();
-				
+
 				return result;
 			} catch (error) {
 				lastError = error;
-				
+
 				// Check if network error
 				if (!navigator.onLine) {
 					this.online.set(false);
-					
+
 					// Queue for retry when online
 					if (config.method === 'GET') {
 						return this.getOfflineData(endpoint) as T;
 					}
 				}
-				
+
 				// Record circuit breaker failure
 				this.circuitBreaker.recordFailure();
-				
+
 				// Update metrics
 				this.updateMetrics({
 					responseTime: Date.now() - startTime,
@@ -649,19 +639,19 @@ class EnterpriseApiClient {
 				this.loading.set(false);
 			}
 		}
-		
+
 		throw lastError;
 	}
 
 	private async handleErrorResponse(response: Response, requestId: string): Promise<ApiError> {
 		let errorData: any = {};
-		
+
 		try {
 			errorData = await response.json();
 		} catch {
 			// Response might not be JSON
 		}
-		
+
 		const error: ApiError = {
 			message: errorData.message || this.getDefaultErrorMessage(response.status),
 			errors: errorData.errors,
@@ -670,7 +660,7 @@ class EnterpriseApiClient {
 			timestamp: new Date().toISOString(),
 			requestId
 		};
-		
+
 		// Handle specific status codes
 		switch (response.status) {
 			case 401:
@@ -690,7 +680,7 @@ class EnterpriseApiClient {
 				error.retryAfter = 30;
 				break;
 		}
-		
+
 		this.error.set(error);
 		return error;
 	}
@@ -739,14 +729,14 @@ class EnterpriseApiClient {
 			...credentials,
 			device_name: credentials.device_name || deviceInfo.name
 		});
-		
+
 		this.setToken(response.token, response.refresh_token);
 		this.user.set(response.user);
 		await this.loadUserData();
-		
+
 		// Setup real-time sync
 		this.setupWebSocket();
-		
+
 		return response;
 	}
 
@@ -759,7 +749,7 @@ class EnterpriseApiClient {
 			this.memberships.set([]);
 			this.products.set([]);
 			this.clearCache();
-			
+
 			// Close connections
 			this.wsConnection?.close();
 			this.sseConnection?.close();
@@ -770,12 +760,12 @@ class EnterpriseApiClient {
 		if (!this.refreshToken) {
 			throw new Error('No refresh token available');
 		}
-		
+
 		try {
 			const response = await this.post<AuthResponse>('/auth/refresh', {
 				refresh_token: this.refreshToken
 			});
-			
+
 			this.setToken(response.token, response.refresh_token);
 		} catch (error) {
 			this.handleUnauthenticated();
@@ -835,18 +825,26 @@ class EnterpriseApiClient {
 	}
 
 	async purchaseProduct(productId: number, paymentMethod?: string): Promise<any> {
-		return this.post('/products/purchase', {
-			product_id: productId,
-			payment_method: paymentMethod
-		}, {
-			cache: { invalidate: ['/me/products', '/me/memberships'] }
-		});
+		return this.post(
+			'/products/purchase',
+			{
+				product_id: productId,
+				payment_method: paymentMethod
+			},
+			{
+				cache: { invalidate: ['/me/products', '/me/memberships'] }
+			}
+		);
 	}
 
 	/**
 	 * Posts
 	 */
-	async getPosts(params?: { page?: number; category?: string; search?: string }): Promise<ApiResponse<Post[]>> {
+	async getPosts(params?: {
+		page?: number;
+		category?: string;
+		search?: string;
+	}): Promise<ApiResponse<Post[]>> {
 		return this.get<ApiResponse<Post[]>>('/posts', {
 			params,
 			cache: { ttl: 300000 }
@@ -878,76 +876,75 @@ class EnterpriseApiClient {
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('type', type);
-		
+
 		const response = await fetch(`${API_BASE_URL}/upload`, {
 			method: 'POST',
 			headers: {
-				'Authorization': `Bearer ${this.token}`
+				Authorization: `Bearer ${this.token}`
 			},
 			body: formData
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Upload failed');
 		}
-		
+
 		return response.json();
 	}
 
 	/**
 	 * Batch operations
 	 */
-	async batch<T>(operations: Array<{ endpoint: string; method?: string; data?: any }>): Promise<T[]> {
+	async batch<T>(
+		operations: Array<{ endpoint: string; method?: string; data?: any }>
+	): Promise<T[]> {
 		return this.post<T[]>('/batch', { operations });
 	}
 
 	/**
 	 * Download with progress
 	 */
-	async download(
-		endpoint: string,
-		onProgress?: (progress: number) => void
-	): Promise<Blob> {
+	async download(endpoint: string, onProgress?: (progress: number) => void): Promise<Blob> {
 		const response = await fetch(`${API_BASE_URL}${endpoint}`, {
 			headers: {
-				'Authorization': `Bearer ${this.token}`
+				Authorization: `Bearer ${this.token}`
 			}
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Download failed');
 		}
-		
+
 		const reader = response.body?.getReader();
 		const contentLength = +(response.headers.get('Content-Length') ?? '0');
-		
+
 		if (!reader) {
 			return response.blob();
 		}
-		
+
 		let receivedLength = 0;
 		const chunks: Uint8Array[] = [];
-		
+
 		while (true) {
 			const { done, value } = await reader.read();
-			
+
 			if (done) break;
-			
+
 			chunks.push(value);
 			receivedLength += value.length;
-			
+
 			if (onProgress && contentLength) {
 				onProgress((receivedLength / contentLength) * 100);
 			}
 		}
-		
+
 		const chunksAll = new Uint8Array(receivedLength);
 		let position = 0;
 		for (const chunk of chunks) {
 			chunksAll.set(chunk, position);
 			position += chunk.length;
 		}
-		
+
 		return new Blob([chunksAll]);
 	}
 
@@ -957,27 +954,27 @@ class EnterpriseApiClient {
 
 	private setupWebSocket(): void {
 		if (!this.token || this.wsConnection) return;
-		
+
 		try {
 			this.wsConnection = new WebSocket(`${WS_URL}/ws`);
-			
+
 			this.wsConnection.onopen = () => {
 				console.debug('[ApiClient] WebSocket connected');
 				this.authenticateWebSocket();
 			};
-			
+
 			this.wsConnection.onmessage = (event) => {
 				this.handleWebSocketMessage(event);
 			};
-			
+
 			this.wsConnection.onerror = (error) => {
 				console.error('[ApiClient] WebSocket error:', error);
 			};
-			
+
 			this.wsConnection.onclose = () => {
 				console.debug('[ApiClient] WebSocket disconnected');
 				this.wsConnection = undefined;
-				
+
 				// Reconnect after delay if authenticated
 				if (this.token) {
 					setTimeout(() => this.setupWebSocket(), 5000);
@@ -990,17 +987,19 @@ class EnterpriseApiClient {
 
 	private authenticateWebSocket(): void {
 		if (this.wsConnection && this.token) {
-			this.wsConnection.send(JSON.stringify({
-				type: 'auth',
-				token: this.token
-			}));
+			this.wsConnection.send(
+				JSON.stringify({
+					type: 'auth',
+					token: this.token
+				})
+			);
 		}
 	}
 
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			switch (message.type) {
 				case 'user_update':
 					this.user.set(message.data);
@@ -1024,8 +1023,8 @@ class EnterpriseApiClient {
 	}
 
 	private handleMembershipUpdate(membership: Membership): void {
-		this.memberships.update(memberships => {
-			const index = memberships.findIndex(m => m.id === membership.id);
+		this.memberships.update((memberships) => {
+			const index = memberships.findIndex((m) => m.id === membership.id);
 			if (index >= 0) {
 				memberships[index] = membership;
 			} else {
@@ -1036,8 +1035,8 @@ class EnterpriseApiClient {
 	}
 
 	private handleProductUpdate(product: Product): void {
-		this.products.update(products => {
-			const index = products.findIndex(p => p.id === product.id);
+		this.products.update((products) => {
+			const index = products.findIndex((p) => p.id === product.id);
 			if (index >= 0) {
 				products[index] = product;
 			} else {
@@ -1056,14 +1055,14 @@ class EnterpriseApiClient {
 
 	private setupSSE(): void {
 		if (!this.token) return;
-		
+
 		try {
 			this.sseConnection = new EventSource(`${API_BASE_URL}/sse?token=${this.token}`);
-			
+
 			this.sseConnection.onmessage = (event) => {
 				this.handleSSEMessage(event);
 			};
-			
+
 			this.sseConnection.onerror = (error) => {
 				console.error('[ApiClient] SSE error:', error);
 			};
@@ -1088,15 +1087,15 @@ class EnterpriseApiClient {
 
 	private buildUrl(endpoint: string, params?: Record<string, any>): string {
 		const url = `${API_BASE_URL}${endpoint}`;
-		
+
 		if (!params || Object.keys(params).length === 0) {
 			return url;
 		}
-		
+
 		const queryString = new URLSearchParams(
 			Object.entries(params).filter(([_, v]) => v != null)
 		).toString();
-		
+
 		return `${url}?${queryString}`;
 	}
 
@@ -1107,17 +1106,17 @@ class EnterpriseApiClient {
 
 	private getFromCache(key: string): any {
 		const cached = this.requestCache.get(key);
-		
+
 		if (cached && Date.now() < cached.expiry) {
 			console.debug(`[ApiClient] Cache hit: ${key}`);
 			return cached.data;
 		}
-		
+
 		// Check IndexedDB for persistent cache
 		if (typeof window !== 'undefined' && 'indexedDB' in window) {
 			// Implementation for IndexedDB cache
 		}
-		
+
 		return null;
 	}
 
@@ -1126,7 +1125,7 @@ class EnterpriseApiClient {
 			data,
 			expiry: Date.now() + ttl
 		});
-		
+
 		// Persist to IndexedDB if enabled
 		if (typeof window !== 'undefined' && 'indexedDB' in window) {
 			// Implementation for IndexedDB cache
@@ -1134,10 +1133,10 @@ class EnterpriseApiClient {
 	}
 
 	private invalidateCaches(patterns: string[]): void {
-		patterns.forEach(pattern => {
+		patterns.forEach((pattern) => {
 			// Convert pattern to regex
 			const regex = new RegExp(pattern);
-			
+
 			// Clear matching cache entries
 			for (const [key] of this.requestCache) {
 				if (regex.test(key)) {
@@ -1155,9 +1154,9 @@ class EnterpriseApiClient {
 
 	private createAbortSignal(timeout: number = REQUEST_TIMEOUT): AbortSignal {
 		const controller = new AbortController();
-		
+
 		setTimeout(() => controller.abort(), timeout);
-		
+
 		return controller.signal;
 	}
 
@@ -1166,28 +1165,28 @@ class EnterpriseApiClient {
 		if (error.status >= 400 && error.status < 500 && error.status !== 429) {
 			return false;
 		}
-		
+
 		// Custom retry condition
 		if (config?.condition) {
 			return config.condition(error);
 		}
-		
+
 		// Default: retry on network and server errors
 		return error.status === 0 || error.status >= 500;
 	}
 
 	private getRetryDelay(attempt: number, config?: RetryConfig): number {
 		const baseDelay = config?.delay || RETRY_DELAY;
-		
+
 		if (config?.backoff === 'exponential') {
 			return baseDelay * Math.pow(2, attempt);
 		}
-		
+
 		return baseDelay;
 	}
 
 	private delay(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms));
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	private generateRequestId(): string {
@@ -1205,7 +1204,7 @@ class EnterpriseApiClient {
 			502: 'Bad gateway',
 			503: 'Service unavailable'
 		};
-		
+
 		return messages[status] || 'An error occurred';
 	}
 
@@ -1213,11 +1212,11 @@ class EnterpriseApiClient {
 		if (typeof window === 'undefined') {
 			return { name: 'Server', type: 'server' };
 		}
-		
+
 		const userAgent = navigator.userAgent;
 		let name = 'Unknown Device';
 		let type = 'desktop';
-		
+
 		if (/iPhone|iPad|iPod/.test(userAgent)) {
 			name = 'iOS Device';
 			type = 'mobile';
@@ -1231,7 +1230,7 @@ class EnterpriseApiClient {
 		} else if (/Linux/.test(userAgent)) {
 			name = 'Linux PC';
 		}
-		
+
 		return { name, type };
 	}
 
@@ -1240,7 +1239,7 @@ class EnterpriseApiClient {
 		this.user.set(null);
 		this.memberships.set([]);
 		this.products.set([]);
-		
+
 		// Redirect to login
 		if (typeof window !== 'undefined') {
 			window.dispatchEvent(new CustomEvent('auth:required'));
@@ -1257,10 +1256,7 @@ class EnterpriseApiClient {
 
 	private async loadUserData(): Promise<void> {
 		try {
-			await Promise.all([
-				this.getMyMemberships(),
-				this.getMyProducts()
-			]);
+			await Promise.all([this.getMyMemberships(), this.getMyProducts()]);
 		} catch (error) {
 			console.error('[ApiClient] Failed to load user data:', error);
 		}
@@ -1271,18 +1267,18 @@ class EnterpriseApiClient {
 		if (typeof window !== 'undefined' && 'indexedDB' in window) {
 			// Implementation for offline data retrieval
 		}
-		
+
 		throw new Error('Offline data not available');
 	}
 
 	private setupNetworkMonitoring(): void {
 		if (typeof window === 'undefined') return;
-		
+
 		window.addEventListener('online', () => {
 			this.online.set(true);
 			this.processQueuedRequests();
 		});
-		
+
 		window.addEventListener('offline', () => {
 			this.online.set(false);
 		});
@@ -1312,10 +1308,10 @@ class EnterpriseApiClient {
 
 	private async processBatchRequests(): Promise<void> {
 		if (this.batchQueue.size === 0) return;
-		
+
 		const batches = Array.from(this.batchQueue.entries());
 		this.batchQueue.clear();
-		
+
 		for (const [endpoint, items] of batches) {
 			if (items.length >= BATCH_SIZE) {
 				await this.batch(items);
@@ -1330,26 +1326,26 @@ class EnterpriseApiClient {
 	}): void {
 		if (update.responseTime !== undefined) {
 			const total = this.metrics.totalRequests + 1;
-			this.metrics.averageResponseTime = 
-				(this.metrics.averageResponseTime * this.metrics.totalRequests + update.responseTime) / total;
+			this.metrics.averageResponseTime =
+				(this.metrics.averageResponseTime * this.metrics.totalRequests + update.responseTime) /
+				total;
 			this.metrics.totalRequests = total;
 		}
-		
+
 		if (update.success !== undefined) {
 			if (update.success) {
 				this.metrics.successfulRequests++;
 			} else {
 				this.metrics.failedRequests++;
 			}
-			this.metrics.errorRate = 
-				this.metrics.failedRequests / this.metrics.totalRequests;
+			this.metrics.errorRate = this.metrics.failedRequests / this.metrics.totalRequests;
 		}
-		
+
 		if (update.cached) {
 			const cacheHits = this.metrics.cacheHitRate * this.metrics.totalRequests;
 			this.metrics.cacheHitRate = (cacheHits + 1) / (this.metrics.totalRequests + 1);
 		}
-		
+
 		this.performance.set(this.metrics);
 	}
 
@@ -1357,9 +1353,7 @@ class EnterpriseApiClient {
 		// Update requests per minute
 		setInterval(() => {
 			const now = Date.now();
-			const recentRequests = this.requestQueue.filter(
-				r => now - r.timestamp < 60000
-			).length;
+			const recentRequests = this.requestQueue.filter((r) => now - r.timestamp < 60000).length;
 			this.metrics.requestsPerMinute = recentRequests;
 			this.performance.set(this.metrics);
 		}, 10000);
@@ -1385,13 +1379,13 @@ class RateLimiter {
 
 	async acquire(): Promise<void> {
 		this.refill();
-		
+
 		if (this.tokens <= 0) {
 			const waitTime = this.refillRate - (Date.now() - this.lastRefill);
-			await new Promise(resolve => setTimeout(resolve, waitTime));
+			await new Promise((resolve) => setTimeout(resolve, waitTime));
 			return this.acquire();
 		}
-		
+
 		this.tokens--;
 	}
 
@@ -1399,7 +1393,7 @@ class RateLimiter {
 		const now = Date.now();
 		const timePassed = now - this.lastRefill;
 		const tokensToAdd = Math.floor(timePassed / this.refillRate);
-		
+
 		if (tokensToAdd > 0) {
 			this.tokens = Math.min(this.tokens + tokensToAdd, this.maxTokens);
 			this.lastRefill = now;
@@ -1428,7 +1422,7 @@ class CircuitBreaker {
 	recordFailure(): void {
 		this.failures++;
 		this.lastFailureTime = Date.now();
-		
+
 		if (this.failures >= this.threshold) {
 			this.state = 'open';
 		}
@@ -1476,43 +1470,52 @@ export const hasActiveSubscription = apiClient.hasActiveSubscription;
 export const api = {
 	// HTTP methods
 	get: <T>(endpoint: string, config?: RequestConfig) => apiClient.get<T>(endpoint, config),
-	post: <T>(endpoint: string, data?: any, config?: RequestConfig) => apiClient.post<T>(endpoint, data, config),
-	put: <T>(endpoint: string, data?: any, config?: RequestConfig) => apiClient.put<T>(endpoint, data, config),
-	patch: <T>(endpoint: string, data?: any, config?: RequestConfig) => apiClient.patch<T>(endpoint, data, config),
-	delete: <T = void>(endpoint: string, config?: RequestConfig) => apiClient.delete<T>(endpoint, config),
-	
+	post: <T>(endpoint: string, data?: any, config?: RequestConfig) =>
+		apiClient.post<T>(endpoint, data, config),
+	put: <T>(endpoint: string, data?: any, config?: RequestConfig) =>
+		apiClient.put<T>(endpoint, data, config),
+	patch: <T>(endpoint: string, data?: any, config?: RequestConfig) =>
+		apiClient.patch<T>(endpoint, data, config),
+	delete: <T = void>(endpoint: string, config?: RequestConfig) =>
+		apiClient.delete<T>(endpoint, config),
+
 	// Auth methods
 	register: (data: RegisterData) => apiClient.register(data),
 	login: (credentials: LoginCredentials) => apiClient.login(credentials),
 	logout: () => apiClient.logout(),
 	refreshToken: () => apiClient.refreshAccessToken(),
-	
+
 	// User methods
 	getMe: () => apiClient.getMe(),
 	updateProfile: (data: Partial<User>) => apiClient.updateProfile(data),
 	getMyMemberships: () => apiClient.getMyMemberships(),
 	getMyProducts: () => apiClient.getMyProducts(),
-	
+
 	// Products
 	getIndicators: (params?: any) => apiClient.getIndicators(params),
 	getIndicator: (slug: string) => apiClient.getIndicator(slug),
-	purchaseProduct: (productId: number, paymentMethod?: string) => apiClient.purchaseProduct(productId, paymentMethod),
-	
+	purchaseProduct: (productId: number, paymentMethod?: string) =>
+		apiClient.purchaseProduct(productId, paymentMethod),
+
 	// Posts
 	getPosts: (params?: any) => apiClient.getPosts(params),
 	getPost: (slug: string) => apiClient.getPost(slug),
 	createPost: (data: Partial<Post>) => apiClient.createPost(data),
 	updatePost: (id: number, data: Partial<Post>) => apiClient.updatePost(id, data),
-	
+
 	// Files
-	uploadFile: (file: File, type: 'image' | 'document' | 'video') => apiClient.uploadFile(file, type),
-	download: (endpoint: string, onProgress?: (progress: number) => void) => apiClient.download(endpoint, onProgress),
-	
+	uploadFile: (file: File, type: 'image' | 'document' | 'video') =>
+		apiClient.uploadFile(file, type),
+	download: (endpoint: string, onProgress?: (progress: number) => void) =>
+		apiClient.download(endpoint, onProgress),
+
 	// Batch
-	batch: <T>(operations: Array<{ endpoint: string; method?: string; data?: any }>) => apiClient.batch<T>(operations),
-	
+	batch: <T>(operations: Array<{ endpoint: string; method?: string; data?: any }>) =>
+		apiClient.batch<T>(operations),
+
 	// Token management
-	setToken: (token: string | null, refreshToken?: string | null) => apiClient.setToken(token, refreshToken),
+	setToken: (token: string | null, refreshToken?: string | null) =>
+		apiClient.setToken(token, refreshToken),
 	getToken: () => apiClient.getToken()
 };
 

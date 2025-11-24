@@ -76,7 +76,13 @@
 					stroke-width="1"
 					stroke-dasharray="4"
 				/>
-				<text x="-10" y={yScale(tick)} text-anchor="end" dominant-baseline="middle" class="axis-label">
+				<text
+					x="-10"
+					y={yScale(tick)}
+					text-anchor="end"
+					dominant-baseline="middle"
+					class="axis-label"
+				>
 					{tick}%
 				</text>
 			{/each}
@@ -84,12 +90,7 @@
 			<!-- X-axis labels -->
 			{#each [0, 7, 14, 30, 60, 90] as day}
 				{#if day <= maxDay}
-					<text
-						x={xScale(day)}
-						y={chartHeight + 20}
-						text-anchor="middle"
-						class="axis-label"
-					>
+					<text x={xScale(day)} y={chartHeight + 20} text-anchor="middle" class="axis-label">
 						{formatDay(day)}
 					</text>
 				{/if}

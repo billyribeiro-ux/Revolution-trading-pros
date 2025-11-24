@@ -127,11 +127,7 @@
 
 	/* Typography defaults */
 	p {
-		font-family:
-			'Open Sans Pro',
-			'Open Sans',
-			system-ui,
-			sans-serif;
+		font-family: 'Open Sans Pro', 'Open Sans', system-ui, sans-serif;
 	}
 
 	/* Box sizing reset - More specific than universal selector */

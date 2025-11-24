@@ -117,7 +117,8 @@
 										<div class="user-name">{user.name || 'Unnamed User'}</div>
 										{#if user.first_name || user.last_name}
 											<div class="user-full-name">
-												{user.first_name} {user.last_name}
+												{user.first_name}
+												{user.last_name}
 											</div>
 										{/if}
 									</div>

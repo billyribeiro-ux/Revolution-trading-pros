@@ -116,7 +116,9 @@
 		matrix: Array<{ cohort: string; size: number; periods: number[] }>,
 		periodIndex: number
 	): number {
-		const values = matrix.filter((r) => r.periods[periodIndex] !== undefined).map((r) => r.periods[periodIndex]);
+		const values = matrix
+			.filter((r) => r.periods[periodIndex] !== undefined)
+			.map((r) => r.periods[periodIndex]);
 		if (values.length === 0) return 0;
 		return values.reduce((sum, v) => sum + v, 0) / values.length;
 	}
@@ -155,7 +157,9 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+			<div
+				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+			></div>
 		</div>
 	{:else if error}
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -201,7 +205,11 @@
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 					<div class="bg-white rounded-xl border border-gray-200 p-6">
 						<div class="text-sm text-gray-500 mb-1">
-							{selectedGranularity === 'weekly' ? 'Week 1' : selectedGranularity === 'monthly' ? 'Month 1' : 'Day 1'} Retention
+							{selectedGranularity === 'weekly'
+								? 'Week 1'
+								: selectedGranularity === 'monthly'
+									? 'Month 1'
+									: 'Day 1'} Retention
 						</div>
 						<div class="text-3xl font-bold text-gray-900">
 							{overallMetrics.avgWeek1.toFixed(1)}%
@@ -209,7 +217,11 @@
 					</div>
 					<div class="bg-white rounded-xl border border-gray-200 p-6">
 						<div class="text-sm text-gray-500 mb-1">
-							{selectedGranularity === 'weekly' ? 'Week 4' : selectedGranularity === 'monthly' ? 'Month 4' : 'Day 4'} Retention
+							{selectedGranularity === 'weekly'
+								? 'Week 4'
+								: selectedGranularity === 'monthly'
+									? 'Month 4'
+									: 'Day 4'} Retention
 						</div>
 						<div class="text-3xl font-bold text-gray-900">
 							{overallMetrics.avgWeek4.toFixed(1)}%
@@ -217,7 +229,11 @@
 					</div>
 					<div class="bg-white rounded-xl border border-gray-200 p-6">
 						<div class="text-sm text-gray-500 mb-1">
-							{selectedGranularity === 'weekly' ? 'Week 8' : selectedGranularity === 'monthly' ? 'Month 8' : 'Day 8'} Retention
+							{selectedGranularity === 'weekly'
+								? 'Week 8'
+								: selectedGranularity === 'monthly'
+									? 'Month 8'
+									: 'Day 8'} Retention
 						</div>
 						<div class="text-3xl font-bold text-gray-900">
 							{overallMetrics.avgWeek8.toFixed(1)}%
@@ -227,10 +243,7 @@
 			{/if}
 
 			<!-- Cohort Matrix -->
-			<CohortMatrix
-				data={selectedCohort.retention_matrix}
-				title={selectedCohort.name}
-			/>
+			<CohortMatrix data={selectedCohort.retention_matrix} title={selectedCohort.name} />
 
 			<!-- Cohort Info -->
 			<div class="mt-8 bg-white rounded-xl border border-gray-200 p-6">
@@ -238,7 +251,9 @@
 				<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
 					<div>
 						<div class="text-xs font-medium text-gray-400 uppercase mb-1">Type</div>
-						<div class="text-sm text-gray-900 capitalize">{selectedCohort.type.replace('_', ' ')}</div>
+						<div class="text-sm text-gray-900 capitalize">
+							{selectedCohort.type.replace('_', ' ')}
+						</div>
 					</div>
 					<div>
 						<div class="text-xs font-medium text-gray-400 uppercase mb-1">Granularity</div>
@@ -295,7 +310,9 @@
 				</div>
 
 				<div>
-					<label for="cohort-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<label for="cohort-description" class="block text-sm font-medium text-gray-700 mb-1"
+						>Description</label
+					>
 					<textarea
 						id="cohort-description"
 						bind:value={newCohort.description}
@@ -307,7 +324,9 @@
 
 				<div class="grid grid-cols-2 gap-4">
 					<div>
-						<label for="cohort-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+						<label for="cohort-type" class="block text-sm font-medium text-gray-700 mb-1"
+							>Type</label
+						>
 						<select
 							id="cohort-type"
 							bind:value={newCohort.type}
@@ -319,7 +338,9 @@
 						</select>
 					</div>
 					<div>
-						<label for="cohort-granularity" class="block text-sm font-medium text-gray-700 mb-1">Granularity</label>
+						<label for="cohort-granularity" class="block text-sm font-medium text-gray-700 mb-1"
+							>Granularity</label
+						>
 						<select
 							id="cohort-granularity"
 							bind:value={newCohort.granularity}
@@ -335,20 +356,24 @@
 				{#if newCohort.type === 'custom'}
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-						<label for="cohort-start-event" class="block text-sm font-medium text-gray-700 mb-1">Start Event</label>
-						<input
-							id="cohort-start-event"
-							type="text"
-							bind:value={newCohort.start_event}
-							placeholder="e.g., signup"
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-						/>
+							<label for="cohort-start-event" class="block text-sm font-medium text-gray-700 mb-1"
+								>Start Event</label
+							>
+							<input
+								id="cohort-start-event"
+								type="text"
+								bind:value={newCohort.start_event}
+								placeholder="e.g., signup"
+								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+							/>
 						</div>
 						<div>
-						<label for="cohort-return-event" class="block text-sm font-medium text-gray-700 mb-1">Return Event</label>
-						<input
-							id="cohort-return-event"
-							type="text"
+							<label for="cohort-return-event" class="block text-sm font-medium text-gray-700 mb-1"
+								>Return Event</label
+							>
+							<input
+								id="cohort-return-event"
+								type="text"
 								bind:value={newCohort.return_event}
 								placeholder="e.g., login"
 								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

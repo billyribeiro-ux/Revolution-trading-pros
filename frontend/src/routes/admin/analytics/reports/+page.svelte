@@ -179,12 +179,7 @@
 
 	<!-- Filters -->
 	<div class="flex items-center gap-2 mb-6">
-		{#each [
-			{ value: 'all', label: 'All Reports' },
-			{ value: 'active', label: 'Active' },
-			{ value: 'scheduled', label: 'Scheduled' },
-			{ value: 'draft', label: 'Drafts' }
-		] as filter}
+		{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter}
 			<button
 				on:click={() => (activeFilter = filter.value as typeof activeFilter)}
 				class="px-4 py-2 rounded-lg text-sm font-medium transition-all
@@ -199,7 +194,9 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+			<div
+				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+			></div>
 		</div>
 	{:else if error}
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -227,7 +224,9 @@
 		<!-- Reports Grid -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{#each filteredReports as report}
-				<div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+				<div
+					class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+				>
 					<div class="flex items-start justify-between mb-4">
 						<div class="flex items-center gap-3">
 							<span class="text-2xl">{typeIcons[report.type] || '📊'}</span>
@@ -402,7 +401,9 @@
 								</select>
 							</div>
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-1">Recipients (comma-separated)</label>
+								<label class="block text-sm font-medium text-gray-700 mb-1"
+									>Recipients (comma-separated)</label
+								>
 								<input
 									type="text"
 									bind:value={newReport.recipients}

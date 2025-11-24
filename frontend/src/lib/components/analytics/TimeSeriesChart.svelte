@@ -153,12 +153,7 @@
 			<!-- X-axis labels -->
 			{#each xLabels as item, i}
 				{@const index = data.indexOf(item)}
-				<text
-					x={scaleX(index)}
-					y={height - 8}
-					text-anchor="middle"
-					class="text-xs fill-gray-500"
-				>
+				<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="text-xs fill-gray-500">
 					{formatDate(item.date)}
 				</text>
 			{/each}
@@ -170,7 +165,14 @@
 
 			<!-- Line -->
 			{#if data.length > 1}
-				<path d={linePath} fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+				<path
+					d={linePath}
+					fill="none"
+					stroke={color}
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
 			{/if}
 
 			<!-- Points -->

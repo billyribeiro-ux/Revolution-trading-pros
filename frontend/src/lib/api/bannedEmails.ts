@@ -1,9 +1,9 @@
 /**
  * Banned Email Management Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. INTELLIGENT DETECTION:
  *    - Pattern recognition
  *    - Domain analysis
@@ -11,7 +11,7 @@
  *    - Disposable email detection
  *    - Similar email clustering
  *    - ML-based fraud scoring
- * 
+ *
  * 2. AUTOMATED ENFORCEMENT:
  *    - Real-time blocking
  *    - Cascade banning
@@ -19,7 +19,7 @@
  *    - Payment blocking
  *    - Account suspension
  *    - IP correlation
- * 
+ *
  * 3. COMPLIANCE & AUDIT:
  *    - GDPR compliance
  *    - Audit logging
@@ -27,7 +27,7 @@
  *    - Review workflows
  *    - Legal hold
  *    - Data retention
- * 
+ *
  * 4. ANALYTICS & INSIGHTS:
  *    - Fraud patterns
  *    - Ban effectiveness
@@ -35,7 +35,7 @@
  *    - Geographic analysis
  *    - Time series analysis
  *    - Risk scoring
- * 
+ *
  * 5. INTEGRATION:
  *    - Email providers
  *    - Payment gateways
@@ -43,7 +43,7 @@
  *    - Support tickets
  *    - Webhook events
  *    - API automation
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -55,9 +55,9 @@ import { writable, derived, get } from 'svelte/store';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE = browser ? (import.meta.env.VITE_API_URL || 'http://localhost:8000/api') : '';
-const WS_URL = browser ? (import.meta.env.VITE_WS_URL || 'ws://localhost:8000') : '';
-const ML_API = browser ? (import.meta.env.VITE_ML_API || 'http://localhost:8001/api') : '';
+const API_BASE = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
+const WS_URL = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
+const ML_API = browser ? import.meta.env.VITE_ML_API || 'http://localhost:8001/api' : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const SYNC_INTERVAL = 60000; // 1 minute
@@ -75,28 +75,28 @@ export interface EnhancedBannedEmail extends BannedEmail {
 	risk_score?: number;
 	risk_factors?: RiskFactor[];
 	fraud_probability?: number;
-	
+
 	// Related entities
 	related_emails?: string[];
 	ip_addresses?: string[];
 	device_fingerprints?: string[];
 	payment_methods?: string[];
-	
+
 	// Pattern detection
 	patterns?: DetectedPattern[];
 	domain_info?: DomainInfo;
 	alias_group?: string;
-	
+
 	// Actions taken
 	actions?: EnforcementAction[];
 	affected_services?: AffectedService[];
-	
+
 	// Compliance
 	appeal_status?: AppealStatus;
 	review_required?: boolean;
 	legal_hold?: boolean;
 	retention_expires?: string;
-	
+
 	// Analytics
 	violation_count?: number;
 	first_violation?: string;
@@ -132,7 +132,7 @@ export interface RiskFactor {
 	evidence?: any;
 }
 
-export type RiskFactorType = 
+export type RiskFactorType =
 	| 'disposable_email'
 	| 'suspicious_pattern'
 	| 'payment_fraud'
@@ -150,7 +150,7 @@ export interface DetectedPattern {
 	severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
-export type PatternType = 
+export type PatternType =
 	| 'sequential_numbers'
 	| 'random_characters'
 	| 'known_alias_pattern'
@@ -182,7 +182,7 @@ export interface EnforcementAction {
 	reversal_reason?: string;
 }
 
-export type ActionType = 
+export type ActionType =
 	| 'email_blocked'
 	| 'subscription_cancelled'
 	| 'payment_blocked'
@@ -320,7 +320,7 @@ class BannedEmailManagementService {
 	private cache = new Map<string, { data: any; expiry: number }>();
 	private syncInterval?: number;
 	private patternEngine?: PatternDetectionEngine;
-	
+
 	// Stores
 	public bannedEmails = writable<EnhancedBannedEmail[]>([]);
 	public stats = writable<BanAnalytics | null>(null);
@@ -329,26 +329,20 @@ class BannedEmailManagementService {
 	public recentActions = writable<EnforcementAction[]>([]);
 	public isLoading = writable(false);
 	public error = writable<string | null>(null);
-	
+
 	// Derived stores
-	public totalBanned = derived(
-		this.bannedEmails,
-		$emails => $emails.length
+	public totalBanned = derived(this.bannedEmails, ($emails) => $emails.length);
+
+	public highRiskEmails = derived(this.bannedEmails, ($emails) =>
+		$emails.filter((e) => (e.risk_score || 0) >= RISK_SCORE_THRESHOLD)
 	);
-	
-	public highRiskEmails = derived(
-		this.bannedEmails,
-		$emails => $emails.filter(e => (e.risk_score || 0) >= RISK_SCORE_THRESHOLD)
+
+	public pendingReviews = derived(this.reviewQueue, ($queue) =>
+		$queue.filter((r) => r.status === 'pending')
 	);
-	
-	public pendingReviews = derived(
-		this.reviewQueue,
-		$queue => $queue.filter(r => r.status === 'pending')
-	);
-	
-	public activeAppeals = derived(
-		this.bannedEmails,
-		$emails => $emails.filter(e => e.appeal_status?.status === 'pending')
+
+	public activeAppeals = derived(this.bannedEmails, ($emails) =>
+		$emails.filter((e) => e.appeal_status?.status === 'pending')
 	);
 
 	private constructor() {
@@ -370,13 +364,13 @@ class BannedEmailManagementService {
 
 		// Initialize pattern detection engine
 		this.patternEngine = new PatternDetectionEngine();
-		
+
 		// Setup WebSocket for real-time updates
 		this.setupWebSocket();
-		
+
 		// Start sync interval
 		this.startSync();
-		
+
 		// Load initial data
 		this.loadInitialData();
 
@@ -391,7 +385,7 @@ class BannedEmailManagementService {
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_URL}/banned-emails`);
-			
+
 			this.wsConnection.onopen = () => {
 				console.debug('[BannedEmailService] WebSocket connected');
 				this.authenticate();
@@ -417,17 +411,19 @@ class BannedEmailManagementService {
 	private authenticate(): void {
 		const token = this.getAuthToken();
 		if (token && this.wsConnection) {
-			this.wsConnection.send(JSON.stringify({
-				type: 'auth',
-				token
-			}));
+			this.wsConnection.send(
+				JSON.stringify({
+					type: 'auth',
+					token
+				})
+			);
 		}
 	}
 
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			switch (message.type) {
 				case 'email_banned':
 					this.handleEmailBanned(message.data);
@@ -451,21 +447,21 @@ class BannedEmailManagementService {
 	}
 
 	private handleEmailBanned(email: EnhancedBannedEmail): void {
-		this.bannedEmails.update(emails => [...emails, email]);
+		this.bannedEmails.update((emails) => [...emails, email]);
 		this.showNotification(`Email banned: ${email.email}`, 'warning');
 	}
 
 	private handleEmailUnbanned(data: { id: number }): void {
-		this.bannedEmails.update(emails => emails.filter(e => e.id !== data.id));
+		this.bannedEmails.update((emails) => emails.filter((e) => e.id !== data.id));
 	}
 
 	private handlePatternDetected(data: any): void {
 		console.warn('[BannedEmailService] Pattern detected:', data);
-		this.reviewQueue.update(queue => [...queue, data]);
+		this.reviewQueue.update((queue) => [...queue, data]);
 	}
 
 	private handleReviewRequired(review: ReviewQueue): void {
-		this.reviewQueue.update(queue => [...queue, review]);
+		this.reviewQueue.update((queue) => [...queue, review]);
 		this.showNotification('New email requires review', 'info');
 	}
 
@@ -490,10 +486,7 @@ class BannedEmailManagementService {
 
 	private async syncData(): Promise<void> {
 		try {
-			await Promise.all([
-				this.loadStats(),
-				this.checkPatterns()
-			]);
+			await Promise.all([this.loadStats(), this.checkPatterns()]);
 		} catch (error) {
 			console.error('[BannedEmailService] Sync failed:', error);
 		}
@@ -522,15 +515,13 @@ class BannedEmailManagementService {
 	/**
 	 * Get banned emails with filters
 	 */
-	async loadBannedEmails(
-		filters?: {
-			search?: string;
-			dateFrom?: string;
-			dateTo?: string;
-			reason?: string;
-			riskLevel?: string;
-		}
-	): Promise<EnhancedBannedEmail[]> {
+	async loadBannedEmails(filters?: {
+		search?: string;
+		dateFrom?: string;
+		dateTo?: string;
+		reason?: string;
+		riskLevel?: string;
+	}): Promise<EnhancedBannedEmail[]> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -552,10 +543,10 @@ class BannedEmailManagementService {
 
 			const data = await response.json();
 			const emails = data.banned_emails as EnhancedBannedEmail[];
-			
+
 			// Enhance with risk scores
 			const enhanced = await this.enhanceEmails(emails);
-			
+
 			this.bannedEmails.set(enhanced);
 			return enhanced;
 		} catch (error: any) {
@@ -590,19 +581,19 @@ class BannedEmailManagementService {
 			});
 
 			const result = await response.json();
-			
+
 			// Check for similar emails
 			const similar = await this.findSimilarEmails(email);
-			
+
 			// Calculate risk score
 			const riskScore = await this.calculateRiskScore(email);
-			
+
 			const enhanced = {
 				...result,
 				risk_score: riskScore,
 				similar_banned: similar
 			};
-			
+
 			this.setCache(cacheKey, enhanced);
 			return enhanced;
 		} catch (error) {
@@ -644,27 +635,27 @@ class BannedEmailManagementService {
 			}
 
 			const banned = await response.json();
-			
+
 			// Cascade actions if requested
 			if (request.cascade) {
 				await this.cascadeEnforcement(banned);
 			}
-			
+
 			// Notify services if requested
 			if (request.notify_services) {
 				await this.notifyServices(banned);
 			}
-			
+
 			// Update store
-			this.bannedEmails.update(emails => [...emails, banned]);
-			
+			this.bannedEmails.update((emails) => [...emails, banned]);
+
 			// Track event
 			this.trackEvent('email_banned', {
 				email: request.email,
 				reason: request.reason,
 				cascade: request.cascade
 			});
-			
+
 			return banned;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -713,7 +704,7 @@ class BannedEmailManagementService {
 
 			// Reload banned emails
 			await this.loadBannedEmails();
-			
+
 			return results;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -747,17 +738,17 @@ class BannedEmailManagementService {
 			}
 
 			const result = await response.json();
-			
+
 			// Update stores
-			this.bannedEmails.update(emails => [...emails, result.banned_email]);
-			
+			this.bannedEmails.update((emails) => [...emails, result.banned_email]);
+
 			// Track action
 			this.trackEvent('subscription_ban', {
 				subscription_id: request.subscription_id,
 				action: request.action,
 				cascade: request.cascade
 			});
-			
+
 			return result;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -787,8 +778,8 @@ class BannedEmailManagementService {
 			}
 
 			// Update store
-			this.bannedEmails.update(emails => emails.filter(e => e.id !== id));
-			
+			this.bannedEmails.update((emails) => emails.filter((e) => e.id !== id));
+
 			// Track event
 			this.trackEvent('email_unbanned', { id, reason });
 		} catch (error: any) {
@@ -821,7 +812,7 @@ class BannedEmailManagementService {
 		} catch (error) {
 			console.error('[BannedEmailService] Similar email check failed:', error);
 		}
-		
+
 		// Fallback to local pattern matching
 		return this.patternEngine?.findSimilar(email) || [];
 	}
@@ -844,7 +835,7 @@ class BannedEmailManagementService {
 		} catch (error) {
 			console.error('[BannedEmailService] Pattern detection failed:', error);
 		}
-		
+
 		// Fallback to local detection
 		return this.patternEngine?.detect(email) || [];
 	}
@@ -854,17 +845,17 @@ class BannedEmailManagementService {
 	 */
 	async checkDomain(email: string): Promise<DomainInfo> {
 		const domain = email.split('@')[1];
-		
+
 		try {
 			const response = await fetch(`${API_BASE}/domains/check/${domain}`);
-			
+
 			if (response.ok) {
 				return response.json();
 			}
 		} catch (error) {
 			console.error('[BannedEmailService] Domain check failed:', error);
 		}
-		
+
 		// Return default info
 		return {
 			domain,
@@ -895,32 +886,32 @@ class BannedEmailManagementService {
 		} catch (error) {
 			console.error('[BannedEmailService] Risk score calculation failed:', error);
 		}
-		
+
 		// Calculate local risk score
 		let score = 0;
-		
+
 		// Check patterns
 		const patterns = await this.detectPatterns(email);
 		score += patterns.length * 0.1;
-		
+
 		// Check domain
 		const domain = await this.checkDomain(email);
 		if (domain.is_disposable) score += 0.3;
 		if (domain.abuse_reports > 0) score += 0.2;
-		
+
 		// Check similarity to banned emails
 		const similar = await this.findSimilarEmails(email);
 		score += similar.length * 0.15;
-		
+
 		return Math.min(score, 1);
 	}
 
 	private async checkPatterns(): Promise<void> {
 		const emails = get(this.bannedEmails);
-		
+
 		// Analyze patterns in banned emails
-		const patterns = this.patternEngine?.analyzePatterns(emails.map(e => e.email));
-		
+		const patterns = this.patternEngine?.analyzePatterns(emails.map((e) => e.email));
+
 		if (patterns && patterns.length > 0) {
 			// Send patterns to server for ML training
 			await fetch(`${ML_API}/patterns/train`, {
@@ -949,7 +940,7 @@ class BannedEmailManagementService {
 		} catch (error) {
 			console.error('[BannedEmailService] Failed to load stats:', error);
 		}
-		
+
 		// Return empty stats
 		return {
 			total_banned: 0,
@@ -986,7 +977,7 @@ class BannedEmailManagementService {
 		if (response.ok) {
 			return response.json();
 		}
-		
+
 		throw new Error('Failed to load effectiveness report');
 	}
 
@@ -1008,7 +999,7 @@ class BannedEmailManagementService {
 		} catch (error) {
 			console.error('[BannedEmailService] Failed to load review queue:', error);
 		}
-		
+
 		return [];
 	}
 
@@ -1025,9 +1016,7 @@ class BannedEmailManagementService {
 		}
 
 		// Update review queue
-		this.reviewQueue.update(queue => 
-			queue.filter(r => r.id !== id)
-		);
+		this.reviewQueue.update((queue) => queue.filter((r) => r.id !== id));
 	}
 
 	async submitAppeal(emailId: number, reason: string, evidence?: string[]): Promise<void> {
@@ -1043,8 +1032,8 @@ class BannedEmailManagementService {
 		}
 
 		// Update banned email with appeal status
-		this.bannedEmails.update(emails => 
-			emails.map(e => {
+		this.bannedEmails.update((emails) =>
+			emails.map((e) => {
 				if (e.id === emailId) {
 					e.appeal_status = {
 						id: 'new',
@@ -1076,7 +1065,7 @@ class BannedEmailManagementService {
 		} catch (error) {
 			console.error('[BannedEmailService] Failed to load whitelist:', error);
 		}
-		
+
 		return [];
 	}
 
@@ -1101,32 +1090,34 @@ class BannedEmailManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	private async enhanceEmails(emails: BannedEmail[]): Promise<EnhancedBannedEmail[]> {
-		return Promise.all(emails.map(async email => {
-			const enhanced: EnhancedBannedEmail = { ...email };
-			
-			// Calculate risk score
-			enhanced.risk_score = await this.calculateRiskScore(email.email);
-			
-			// Detect patterns
-			enhanced.patterns = await this.detectPatterns(email.email);
-			
-			// Get domain info
-			enhanced.domain_info = await this.checkDomain(email.email);
-			
-			return enhanced;
-		}));
+		return Promise.all(
+			emails.map(async (email) => {
+				const enhanced: EnhancedBannedEmail = { ...email };
+
+				// Calculate risk score
+				enhanced.risk_score = await this.calculateRiskScore(email.email);
+
+				// Detect patterns
+				enhanced.patterns = await this.detectPatterns(email.email);
+
+				// Get domain info
+				enhanced.domain_info = await this.checkDomain(email.email);
+
+				return enhanced;
+			})
+		);
 	}
 
 	private async cascadeEnforcement(email: EnhancedBannedEmail): Promise<void> {
 		const actions: EnforcementAction[] = [];
-		
+
 		// Block all subscriptions
 		actions.push({
 			id: crypto.randomUUID(),
 			type: 'subscription_cancelled',
 			status: 'pending'
 		});
-		
+
 		// Block payment methods
 		if (email.payment_methods?.length) {
 			actions.push({
@@ -1135,7 +1126,7 @@ class BannedEmailManagementService {
 				status: 'pending'
 			});
 		}
-		
+
 		// Ban IP addresses
 		if (email.ip_addresses?.length) {
 			actions.push({
@@ -1144,14 +1135,17 @@ class BannedEmailManagementService {
 				status: 'pending'
 			});
 		}
-		
+
 		// Execute actions
 		for (const action of actions) {
 			await this.executeAction(action, email);
 		}
 	}
 
-	private async executeAction(action: EnforcementAction, email: EnhancedBannedEmail): Promise<void> {
+	private async executeAction(
+		action: EnforcementAction,
+		email: EnhancedBannedEmail
+	): Promise<void> {
 		try {
 			await fetch(`${API_BASE}/banned-emails/enforce`, {
 				method: 'POST',
@@ -1159,15 +1153,15 @@ class BannedEmailManagementService {
 				credentials: 'include',
 				body: JSON.stringify({ action, email_id: email.id })
 			});
-			
+
 			action.status = 'completed';
 		} catch (error) {
 			action.status = 'failed';
 			console.error('[BannedEmailService] Enforcement failed:', error);
 		}
-		
+
 		// Update recent actions
-		this.recentActions.update(actions => [...actions, action]);
+		this.recentActions.update((actions) => [...actions, action]);
 	}
 
 	private async notifyServices(email: EnhancedBannedEmail): Promise<void> {
@@ -1177,7 +1171,7 @@ class BannedEmailManagementService {
 			'/webhook/payment-block',
 			'/webhook/subscription-cancel'
 		];
-		
+
 		for (const webhook of webhooks) {
 			try {
 				await fetch(webhook, {
@@ -1219,7 +1213,10 @@ class BannedEmailManagementService {
 		});
 	}
 
-	private showNotification(message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info'): void {
+	private showNotification(
+		message: string,
+		type: 'info' | 'success' | 'warning' | 'error' = 'info'
+	): void {
 		console.log(`[${type.toUpperCase()}] ${message}`);
 	}
 
@@ -1236,7 +1233,7 @@ class BannedEmailManagementService {
 		if (this.wsConnection) {
 			this.wsConnection.close();
 		}
-		
+
 		if (this.syncInterval) {
 			clearInterval(this.syncInterval);
 		}
@@ -1257,7 +1254,7 @@ class PatternDetectionEngine {
 
 	detect(email: string): DetectedPattern[] {
 		const detected: DetectedPattern[] = [];
-		
+
 		for (const [type, regex] of this.patterns) {
 			if (regex.test(email)) {
 				detected.push({
@@ -1269,7 +1266,7 @@ class PatternDetectionEngine {
 				});
 			}
 		}
-		
+
 		return detected;
 	}
 
@@ -1277,12 +1274,8 @@ class PatternDetectionEngine {
 		// Simple similarity check - would be more sophisticated in production
 		const base = email.split('@')[0].replace(/[0-9]/g, '');
 		const domain = email.split('@')[1];
-		
-		return [
-			`${base}1@${domain}`,
-			`${base}2@${domain}`,
-			`${base}.test@${domain}`
-		];
+
+		return [`${base}1@${domain}`, `${base}2@${domain}`, `${base}.test@${domain}`];
 	}
 
 	analyzePatterns(emails: string[]): any[] {
@@ -1315,16 +1308,21 @@ export const getBannedEmails = (filters?: any) => bannedEmailService.loadBannedE
 export const checkEmailBanned = (email: string) => bannedEmailService.checkEmail(email);
 export const banEmail = (request: BanRequest) => bannedEmailService.banEmail(request);
 export const bulkBanEmails = (request: BulkBanRequest) => bannedEmailService.bulkBanEmails(request);
-export const banFromSubscription = (request: BanFromSubscriptionRequest) => bannedEmailService.banFromSubscription(request);
-export const unbanEmail = (id: number, reason?: string) => bannedEmailService.unbanEmail(id, reason);
+export const banFromSubscription = (request: BanFromSubscriptionRequest) =>
+	bannedEmailService.banFromSubscription(request);
+export const unbanEmail = (id: number, reason?: string) =>
+	bannedEmailService.unbanEmail(id, reason);
 export const findSimilarEmails = (email: string) => bannedEmailService.findSimilarEmails(email);
 export const detectPatterns = (email: string) => bannedEmailService.detectPatterns(email);
 export const checkDomain = (email: string) => bannedEmailService.checkDomain(email);
 export const calculateRiskScore = (email: string) => bannedEmailService.calculateRiskScore(email);
 export const getBannedEmailStats = () => bannedEmailService.loadStats();
 export const getEffectivenessReport = () => bannedEmailService.getEffectivenessReport();
-export const reviewEmail = (id: string, decision: 'approve' | 'reject', notes?: string) => bannedEmailService.reviewEmail(id, decision, notes);
-export const submitAppeal = (emailId: number, reason: string, evidence?: string[]) => bannedEmailService.submitAppeal(emailId, reason, evidence);
-export const addToWhitelist = (email: string, reason: string, expiresAt?: string) => bannedEmailService.addToWhitelist(email, reason, expiresAt);
+export const reviewEmail = (id: string, decision: 'approve' | 'reject', notes?: string) =>
+	bannedEmailService.reviewEmail(id, decision, notes);
+export const submitAppeal = (emailId: number, reason: string, evidence?: string[]) =>
+	bannedEmailService.submitAppeal(emailId, reason, evidence);
+export const addToWhitelist = (email: string, reason: string, expiresAt?: string) =>
+	bannedEmailService.addToWhitelist(email, reason, expiresAt);
 
 export default bannedEmailService;

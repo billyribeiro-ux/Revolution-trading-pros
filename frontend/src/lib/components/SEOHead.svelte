@@ -75,7 +75,8 @@
 	export let unavailable_after: string | null = null;
 
 	// Open Graph Props
-	export let ogType: 'website' | 'article' | 'product' | 'video' | 'music' | 'book' | 'profile' = 'website';
+	export let ogType: 'website' | 'article' | 'product' | 'video' | 'music' | 'book' | 'profile' =
+		'website';
 	export let ogImage: string | null = null;
 	export let ogImageAlt: string | null = null;
 	export let ogImageWidth: number = 1200;
@@ -87,7 +88,8 @@
 	export let ogSiteName: string | null = null;
 
 	// Twitter Card Props
-	export let twitterCard: 'summary' | 'summary_large_image' | 'app' | 'player' = 'summary_large_image';
+	export let twitterCard: 'summary' | 'summary_large_image' | 'app' | 'player' =
+		'summary_large_image';
 	export let twitterSite: string | null = null;
 	export let twitterCreator: string | null = null;
 	export let twitterImage: string | null = null;
@@ -104,7 +106,8 @@
 	// Product Props (for e-commerce)
 	export let productPrice: number | null = null;
 	export let productCurrency: string = 'USD';
-	export let productAvailability: 'in stock' | 'out of stock' | 'preorder' | 'discontinued' = 'in stock';
+	export let productAvailability: 'in stock' | 'out of stock' | 'preorder' | 'discontinued' =
+		'in stock';
 	export let productCondition: 'new' | 'used' | 'refurbished' = 'new';
 	export let productBrand: string | null = null;
 	export let productSKU: string | null = null;
@@ -136,7 +139,9 @@
 	// Site Configuration
 	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
 	const siteName = import.meta.env.VITE_SITE_NAME || 'Revolution Trading Pros';
-	const siteDescription = import.meta.env.VITE_SITE_DESCRIPTION || 'Master the markets with institutional-grade trading tools and education';
+	const siteDescription =
+		import.meta.env.VITE_SITE_DESCRIPTION ||
+		'Master the markets with institutional-grade trading tools and education';
 	const defaultImage = import.meta.env.VITE_DEFAULT_OG_IMAGE || '/og-image-default.png';
 	const twitterHandle = import.meta.env.VITE_TWITTER_HANDLE || '@RevTradingPros';
 	const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID || '';
@@ -149,16 +154,18 @@
 
 	// URL Construction
 	$: currentUrl = browser ? window.location.href : `${siteUrl}${$page.url.pathname}`;
-	$: fullCanonical = canonical ? 
-		(canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`) : 
-		currentUrl;
+	$: fullCanonical = canonical
+		? canonical.startsWith('http')
+			? canonical
+			: `${siteUrl}${canonical}`
+		: currentUrl;
 
 	// Title Construction
 	$: fullTitle = constructTitle(title, siteName);
 	$: titleLength = fullTitle.length;
 	$: titleOptimal = titleLength >= 30 && titleLength <= 60;
 
-	// Description Construction  
+	// Description Construction
 	$: fullDescription = description || siteDescription;
 	$: descriptionLength = fullDescription.length;
 	$: descriptionOptimal = descriptionLength >= 80 && descriptionLength <= 200;
@@ -177,9 +184,13 @@
 	// Schema Generation
 	$: generatedSchema = autoSchema ? generateSchema() : schema;
 	$: allSchemas = combineSchemas(generatedSchema);
+	$: schemaScripts = allSchemas.map(
+		(schemaItem) => `<script type="application/ld+json">${JSON.stringify(schemaItem)}<\/script>`
+	);
 
 	$: effectiveKeywords = keywords.length >= 3 ? keywords : generateDefaultKeywords();
-	$: effectiveBreadcrumbs = breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
+	$: effectiveBreadcrumbs =
+		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
 
 	// SEO Score
 	$: seoScore = calculateSEOScore();
@@ -209,29 +220,29 @@
 
 	function constructRobotsContent(): string {
 		const directives = [];
-		
+
 		if (noindex) directives.push('noindex');
 		else directives.push('index');
-		
+
 		if (nofollow) directives.push('nofollow');
 		else directives.push('follow');
-		
+
 		if (noimageindex) directives.push('noimageindex');
 		if (noarchive) directives.push('noarchive');
 		if (nosnippet) directives.push('nosnippet');
 		if (notranslate) directives.push('notranslate');
-		
+
 		// Advanced directives
 		if (!nosnippet) {
 			directives.push('max-snippet:-1');
 			directives.push('max-image-preview:large');
 			directives.push('max-video-preview:-1');
 		}
-		
+
 		if (unavailable_after) {
 			directives.push(`unavailable_after:${unavailable_after}`);
 		}
-		
+
 		return directives.join(', ') || 'index, follow';
 	}
 
@@ -261,9 +272,7 @@
 		let currentPath = '';
 		for (const segment of segments) {
 			currentPath += `/${segment}`;
-			const name = segment
-				.replace(/[-_]/g, ' ')
-				.replace(/\b\w/g, (c) => c.toUpperCase());
+			const name = segment.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 			crumbs.push({ name, url: currentPath });
 		}
 
@@ -272,38 +281,38 @@
 
 	function generateSchema(): any[] {
 		const schemas = [];
-		
+
 		// Website/Organization Schema
 		schemas.push({
 			'@context': 'https://schema.org',
 			'@type': 'WebSite',
 			'@id': `${siteUrl}/#website`,
-			'url': siteUrl,
-			'name': siteName,
-			'description': siteDescription,
-			'publisher': {
+			url: siteUrl,
+			name: siteName,
+			description: siteDescription,
+			publisher: {
 				'@type': 'Organization',
 				'@id': `${siteUrl}/#organization`,
-				'name': siteName,
-				'url': siteUrl,
-				'logo': {
+				name: siteName,
+				url: siteUrl,
+				logo: {
 					'@type': 'ImageObject',
-					'url': `${siteUrl}/logo.png`,
-					'width': 600,
-					'height': 60
+					url: `${siteUrl}/logo.png`,
+					width: 600,
+					height: 60
 				},
-				'sameAs': [
+				sameAs: [
 					twitterHandle ? `https://twitter.com/${twitterHandle.replace('@', '')}` : null,
 					'https://www.facebook.com/RevolutionTradingPros',
 					'https://www.linkedin.com/company/revolution-trading-pros',
 					'https://www.youtube.com/@RevolutionTradingPros'
 				].filter(Boolean)
 			},
-			'potentialAction': {
+			potentialAction: {
 				'@type': 'SearchAction',
-				'target': {
+				target: {
 					'@type': 'EntryPoint',
-					'urlTemplate': `${siteUrl}/search?q={search_term_string}`
+					urlTemplate: `${siteUrl}/search?q={search_term_string}`
 				},
 				'query-input': 'required name=search_term_string'
 			}
@@ -314,42 +323,47 @@
 			'@context': 'https://schema.org',
 			'@type': schemaType || 'WebPage',
 			'@id': `${fullCanonical}/#webpage`,
-			'url': fullCanonical,
-			'name': fullTitle,
-			'description': fullDescription,
-			'isPartOf': { '@id': `${siteUrl}/#website` },
-			'primaryImageOfPage': {
+			url: fullCanonical,
+			name: fullTitle,
+			description: fullDescription,
+			isPartOf: { '@id': `${siteUrl}/#website` },
+			primaryImageOfPage: {
 				'@type': 'ImageObject',
-				'url': fullOgImage,
-				'width': ogImageWidth,
-				'height': ogImageHeight
+				url: fullOgImage,
+				width: ogImageWidth,
+				height: ogImageHeight
 			},
-			'datePublished': publishedTime || new Date().toISOString(),
-			'dateModified': modifiedTime || new Date().toISOString(),
-			'author': author ? {
-				'@type': 'Person',
-				'name': author,
-				'url': `${siteUrl}/author/${author.toLowerCase().replace(/\s+/g, '-')}`
-			} : { '@id': `${siteUrl}/#organization` },
-			'inLanguage': language,
-			'potentialAction': [{
-				'@type': 'ReadAction',
-				'target': [fullCanonical]
-			}]
+			datePublished: publishedTime || new Date().toISOString(),
+			dateModified: modifiedTime || new Date().toISOString(),
+			author: author
+				? {
+						'@type': 'Person',
+						name: author,
+						url: `${siteUrl}/author/${author.toLowerCase().replace(/\s+/g, '-')}`
+					}
+				: { '@id': `${siteUrl}/#organization` },
+			inLanguage: language,
+			potentialAction: [
+				{
+					'@type': 'ReadAction',
+					target: [fullCanonical]
+				}
+			]
 		});
 
 		// BreadcrumbList Schema - with safety check
-		const crumbs = breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
+		const crumbs =
+			breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
 		if (crumbs && crumbs.length > 0) {
 			schemas.push({
 				'@context': 'https://schema.org',
 				'@type': 'BreadcrumbList',
 				'@id': `${fullCanonical}/#breadcrumb`,
-				'itemListElement': crumbs.map((crumb, index) => ({
+				itemListElement: crumbs.map((crumb, index) => ({
 					'@type': 'ListItem',
-					'position': index + 1,
-					'name': crumb.name,
-					'item': crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`
+					position: index + 1,
+					name: crumb.name,
+					item: crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`
 				}))
 			});
 		}
@@ -360,23 +374,25 @@
 				'@context': 'https://schema.org',
 				'@type': 'Article',
 				'@id': `${fullCanonical}/#article`,
-				'headline': title,
-				'description': fullDescription,
-				'image': fullOgImage,
-				'datePublished': publishedTime,
-				'dateModified': modifiedTime || publishedTime,
-				'author': author ? {
-					'@type': 'Person',
-					'name': author
-				} : { '@id': `${siteUrl}/#organization` },
-				'publisher': { '@id': `${siteUrl}/#organization` },
-				'mainEntityOfPage': { '@id': `${fullCanonical}/#webpage` },
-				'articleSection': section || 'Trading',
-				'keywords': keywords.join(', '),
-				'articleBody': fullDescription,
-				'wordCount': fullDescription.split(' ').length,
-				'commentCount': 0,
-				'inLanguage': language
+				headline: title,
+				description: fullDescription,
+				image: fullOgImage,
+				datePublished: publishedTime,
+				dateModified: modifiedTime || publishedTime,
+				author: author
+					? {
+							'@type': 'Person',
+							name: author
+						}
+					: { '@id': `${siteUrl}/#organization` },
+				publisher: { '@id': `${siteUrl}/#organization` },
+				mainEntityOfPage: { '@id': `${fullCanonical}/#webpage` },
+				articleSection: section || 'Trading',
+				keywords: keywords.join(', '),
+				articleBody: fullDescription,
+				wordCount: fullDescription.split(' ').length,
+				commentCount: 0,
+				inLanguage: language
 			});
 		}
 
@@ -386,28 +402,32 @@
 				'@context': 'https://schema.org',
 				'@type': 'Product',
 				'@id': `${fullCanonical}/#product`,
-				'name': title,
-				'description': fullDescription,
-				'image': fullOgImage,
-				'brand': productBrand ? {
-					'@type': 'Brand',
-					'name': productBrand
-				} : undefined,
-				'sku': productSKU,
-				'offers': {
+				name: title,
+				description: fullDescription,
+				image: fullOgImage,
+				brand: productBrand
+					? {
+							'@type': 'Brand',
+							name: productBrand
+						}
+					: undefined,
+				sku: productSKU,
+				offers: {
 					'@type': 'Offer',
-					'url': fullCanonical,
-					'priceCurrency': productCurrency,
-					'price': productPrice,
-					'availability': `https://schema.org/${productAvailability.replace(' ', '')}`,
-					'itemCondition': `https://schema.org/${productCondition}Condition`,
-					'seller': { '@id': `${siteUrl}/#organization` }
+					url: fullCanonical,
+					priceCurrency: productCurrency,
+					price: productPrice,
+					availability: `https://schema.org/${productAvailability.replace(' ', '')}`,
+					itemCondition: `https://schema.org/${productCondition}Condition`,
+					seller: { '@id': `${siteUrl}/#organization` }
 				},
-				'aggregateRating': productRating ? {
-					'@type': 'AggregateRating',
-					'ratingValue': productRating,
-					'reviewCount': productReviewCount || 1
-				} : undefined
+				aggregateRating: productRating
+					? {
+							'@type': 'AggregateRating',
+							ratingValue: productRating,
+							reviewCount: productReviewCount || 1
+						}
+					: undefined
 			});
 		}
 
@@ -417,17 +437,17 @@
 				'@context': 'https://schema.org',
 				'@type': 'Course',
 				'@id': `${fullCanonical}/#course`,
-				'name': title,
-				'description': fullDescription,
-				'provider': { '@id': `${siteUrl}/#organization` },
-				'url': fullCanonical,
-				'courseCode': productSKU,
-				'educationalLevel': 'Beginner to Advanced',
-				'inLanguage': language,
-				'hasCourseInstance': {
+				name: title,
+				description: fullDescription,
+				provider: { '@id': `${siteUrl}/#organization` },
+				url: fullCanonical,
+				courseCode: productSKU,
+				educationalLevel: 'Beginner to Advanced',
+				inLanguage: language,
+				hasCourseInstance: {
 					'@type': 'CourseInstance',
-					'courseMode': 'Online',
-					'courseWorkload': 'PT10H'
+					courseMode: 'Online',
+					courseWorkload: 'PT10H'
 				}
 			});
 		}
@@ -439,7 +459,7 @@
 				'@context': 'https://schema.org',
 				'@type': 'FAQPage',
 				'@id': `${fullCanonical}/#faq`,
-				'mainEntity': []
+				mainEntity: []
 			});
 		}
 
@@ -473,7 +493,7 @@
 			{ condition: allSchemas.length > 0, weight: 15 }
 		];
 
-		checks.forEach(check => {
+		checks.forEach((check) => {
 			if (check.condition) score += check.weight;
 		});
 
@@ -482,31 +502,31 @@
 
 	function getSEOWarnings(): string[] {
 		const warnings = [];
-		
+
 		if (!titleOptimal) {
 			warnings.push(`Title should be 30-60 characters (current: ${titleLength})`);
 		}
-		
+
 		if (!descriptionOptimal) {
 			warnings.push(`Description should be 80-200 characters (current: ${descriptionLength})`);
 		}
-		
+
 		if (!fullCanonical) {
 			warnings.push('Missing canonical URL');
 		}
-		
+
 		if (!fullOgImage) {
 			warnings.push('Missing Open Graph image');
 		}
-		
+
 		if (effectiveKeywords.length < 3) {
 			warnings.push('Add more keywords for better SEO');
 		}
-		
+
 		if (!effectiveBreadcrumbs.length) {
 			warnings.push('Add breadcrumbs for better navigation');
 		}
-		
+
 		return warnings;
 	}
 
@@ -521,7 +541,7 @@
 			if (import.meta.env.DEV && seoWarnings.length > 0 && seoScore < 60) {
 				console.group('🔍 SEO Warnings');
 				console.log(`SEO Score: ${seoScore}/100`);
-				seoWarnings.forEach(warning => console.warn(warning));
+				seoWarnings.forEach((warning) => console.warn(warning));
 				console.groupEnd();
 			}
 
@@ -544,34 +564,34 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Primary Meta Tags -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	<title>{fullTitle}</title>
 	<meta name="title" content={fullTitle} />
 	<meta name="description" content={fullDescription} />
 	{#if keywords.length > 0}
 		<meta name="keywords" content={keywords.join(', ')} />
 	{/if}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Robots & Crawling -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	<meta name="robots" content={robots || robotsContent} />
 	<meta name="googlebot" content={robots || robotsContent} />
 	<meta name="bingbot" content={robots || robotsContent} />
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Canonical & Alternate -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	<link rel="canonical" href={fullCanonical} />
-	<link rel="alternate" hreflang={hreflang} href={fullCanonical} />
+	<link rel="alternate" {hreflang} href={fullCanonical} />
 	<link rel="alternate" hreflang="x-default" href={fullCanonical} />
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Open Graph / Facebook -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	<meta property="og:type" content={ogType} />
 	<meta property="og:site_name" content={ogSiteName || siteName} />
 	<meta property="og:title" content={fullTitle} />
@@ -590,7 +610,7 @@
 	{#if facebookAppId}
 		<meta property="fb:app_id" content={facebookAppId} />
 	{/if}
-	
+
 	<!-- Article Meta Tags -->
 	{#if ogType === 'article'}
 		{#if publishedTime}
@@ -612,7 +632,7 @@
 			<meta property="article:tag" content={tag} />
 		{/each}
 	{/if}
-	
+
 	<!-- Product Meta Tags -->
 	{#if ogType === 'product' && productPrice}
 		<meta property="product:price:amount" content={String(productPrice)} />
@@ -623,7 +643,7 @@
 			<meta property="product:brand" content={productBrand} />
 		{/if}
 	{/if}
-	
+
 	<!-- Video Meta Tags -->
 	{#if ogVideo}
 		<meta property="og:video" content={ogVideo} />
@@ -632,18 +652,18 @@
 		<meta property="og:video:width" content="1280" />
 		<meta property="og:video:height" content="720" />
 	{/if}
-	
+
 	<!-- Audio Meta Tags -->
 	{#if ogAudio}
 		<meta property="og:audio" content={ogAudio} />
 		<meta property="og:audio:secure_url" content={ogAudio} />
 		<meta property="og:audio:type" content="audio/mpeg" />
 	{/if}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Twitter Card -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	<meta name="twitter:card" content={twitterCard} />
 	<meta name="twitter:site" content={twitterSite || twitterHandle} />
 	<meta name="twitter:creator" content={twitterCreator || twitterHandle} />
@@ -656,11 +676,11 @@
 		<meta name="twitter:player:width" content="1280" />
 		<meta name="twitter:player:height" content="720" />
 	{/if}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Additional Meta Tags -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	{#if author}
 		<meta name="author" content={author} />
 	{/if}
@@ -671,49 +691,49 @@
 	<meta name="color-scheme" content={colorScheme} />
 	<meta name="viewport" content={viewport} />
 	<meta name="format-detection" content="telephone=no" />
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Performance Hints -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	{#each preconnect as url}
 		<link rel="preconnect" href={url} crossorigin="anonymous" />
 	{/each}
-	
+
 	{#each dnsPrefetch as url}
 		<link rel="dns-prefetch" href={url} />
 	{/each}
-	
+
 	{#each preload as resource}
-		<link 
-			rel="preload" 
-			href={resource.href} 
+		<link
+			rel="preload"
+			href={resource.href}
 			as={resource.as}
-			{...(resource.type ? { type: resource.type } : {})}
+			{...resource.type ? { type: resource.type } : {}}
 			crossorigin="anonymous"
 		/>
 	{/each}
-	
+
 	{#each prefetch as url}
 		<link rel="prefetch" href={url} />
 	{/each}
-	
+
 	{#each modulePreload as url}
 		<link rel="modulepreload" href={url} />
 	{/each}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- JSON-LD Structured Data -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
-	{#each allSchemas as schemaItem}
-		{@html `<script type="application/ld+json">${JSON.stringify(schemaItem)}</script>`}
+
+	{#each schemaScripts as schemaScript}
+		{@html schemaScript}
 	{/each}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Google Tag Manager -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-	
+
 	{#if gtmId && browser}
 		{@html `
 			<script>

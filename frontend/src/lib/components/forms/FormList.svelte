@@ -38,7 +38,9 @@
 			} else {
 				const paginatedResponse = response as any;
 				forms = paginatedResponse.data || paginatedResponse.forms || [];
-				totalPages = Math.ceil((paginatedResponse.total || forms.length) / (paginatedResponse.perPage || 20));
+				totalPages = Math.ceil(
+					(paginatedResponse.total || forms.length) / (paginatedResponse.perPage || 20)
+				);
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load forms';

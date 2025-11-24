@@ -445,7 +445,6 @@
 		z-index: 1;
 	}
 
-
 	.buy-btn:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;

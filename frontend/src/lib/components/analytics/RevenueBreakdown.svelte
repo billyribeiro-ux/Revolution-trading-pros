@@ -59,7 +59,11 @@
 		<div class="metric-card primary">
 			<div class="metric-label">Monthly Recurring Revenue</div>
 			<div class="metric-value">{formatCurrency(data.mrr)}</div>
-			<div class="metric-change" class:positive={data.mrr_change > 0} class:negative={data.mrr_change < 0}>
+			<div
+				class="metric-change"
+				class:positive={data.mrr_change > 0}
+				class:negative={data.mrr_change < 0}
+			>
 				<svelte:component this={getTrendIcon(data.mrr_change)} size={16} />
 				{formatPercent(Math.abs(data.mrr_change))} vs last month
 			</div>
@@ -96,7 +100,13 @@
 				<div class="movement-value">-{formatCurrency(data.churn_mrr)}</div>
 			</div>
 
-			<div class="movement-item net {data.net_new_mrr > 0 ? 'positive' : data.net_new_mrr < 0 ? 'negative' : ''}">
+			<div
+				class="movement-item net {data.net_new_mrr > 0
+					? 'positive'
+					: data.net_new_mrr < 0
+						? 'negative'
+						: ''}"
+			>
 				<div class="movement-label">Net New MRR</div>
 				<div class="movement-value">
 					{data.net_new_mrr > 0 ? '+' : ''}{formatCurrency(data.net_new_mrr)}

@@ -9,7 +9,7 @@ export const currentSession = writable<BehaviorSession | null>(null);
 export const dashboardData = writable<BehaviorDashboardData | null>(null);
 export const isLoading = writable(false);
 
-export const sessionScore = derived(currentSession, $session => {
+export const sessionScore = derived(currentSession, ($session) => {
 	if (!$session) return null;
 	return {
 		engagement: $session.engagement_score,

@@ -6,7 +6,11 @@
 	 * channel performance across the customer journey.
 	 */
 	import { onMount } from 'svelte';
-	import { analyticsApi, type AttributionReport, type ChannelAttribution } from '$lib/api/analytics';
+	import {
+		analyticsApi,
+		type AttributionReport,
+		type ChannelAttribution
+	} from '$lib/api/analytics';
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	import TimeSeriesChart from '$lib/components/analytics/TimeSeriesChart.svelte';
@@ -22,7 +26,11 @@
 		{ value: 'last_touch', label: 'Last Touch', description: 'Credits the last interaction' },
 		{ value: 'linear', label: 'Linear', description: 'Equal credit to all touchpoints' },
 		{ value: 'time_decay', label: 'Time Decay', description: 'More credit to recent touchpoints' },
-		{ value: 'position_based', label: 'Position Based', description: '40% first, 40% last, 20% middle' }
+		{
+			value: 'position_based',
+			label: 'Position Based',
+			description: '40% first, 40% last, 20% middle'
+		}
 	];
 
 	async function loadAttribution() {
@@ -58,7 +66,8 @@
 
 	// Calculate totals
 	$: totalRevenue = report?.channels?.reduce((sum, c) => sum + c.attributed_revenue, 0) || 0;
-	$: totalConversions = report?.channels?.reduce((sum, c) => sum + c.attributed_conversions, 0) || 0;
+	$: totalConversions =
+		report?.channels?.reduce((sum, c) => sum + c.attributed_conversions, 0) || 0;
 	$: totalTouchpoints = report?.channels?.reduce((sum, c) => sum + c.touchpoints, 0) || 0;
 </script>
 
@@ -105,7 +114,9 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+			<div
+				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+			></div>
 		</div>
 	{:else if error}
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -204,7 +215,9 @@
 						<tfoot class="bg-gray-50 font-medium">
 							<tr>
 								<td class="py-3 px-4 text-gray-900">Total</td>
-								<td class="py-3 px-4 text-right text-gray-900">{totalTouchpoints.toLocaleString()}</td>
+								<td class="py-3 px-4 text-right text-gray-900"
+									>{totalTouchpoints.toLocaleString()}</td
+								>
 								<td class="py-3 px-4 text-right text-gray-900">{totalConversions.toFixed(1)}</td>
 								<td class="py-3 px-4 text-right text-gray-900">{formatCurrency(totalRevenue)}</td>
 								<td class="py-3 px-4 text-right text-gray-900">100%</td>
@@ -212,7 +225,9 @@
 									{totalConversions > 0 ? formatCurrency(totalRevenue / totalConversions) : '-'}
 								</td>
 								<td class="py-3 px-4 text-right text-gray-900">
-									{report.channels.reduce((sum, c) => sum + c.assisted_conversions, 0).toLocaleString()}
+									{report.channels
+										.reduce((sum, c) => sum + c.assisted_conversions, 0)
+										.toLocaleString()}
 								</td>
 							</tr>
 						</tfoot>
@@ -230,7 +245,9 @@
 								<span class="text-sm text-gray-400 w-6">{i + 1}.</span>
 								<div class="flex-1 flex items-center gap-2 flex-wrap">
 									{#each path.channels as channel, j}
-										<span class="px-2 py-1 bg-white border border-gray-200 rounded text-sm capitalize">
+										<span
+											class="px-2 py-1 bg-white border border-gray-200 rounded text-sm capitalize"
+										>
 											{channel}
 										</span>
 										{#if j < path.channels.length - 1}

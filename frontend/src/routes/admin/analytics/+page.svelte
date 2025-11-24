@@ -78,9 +78,7 @@
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
-					<p class="text-sm text-gray-500 mt-1">
-						Enterprise insights and performance metrics
-					</p>
+					<p class="text-sm text-gray-500 mt-1">Enterprise insights and performance metrics</p>
 				</div>
 				<div class="flex items-center gap-4">
 					<PeriodSelector value={selectedPeriod} on:change={handlePeriodChange} />
@@ -115,7 +113,9 @@
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		{#if loading}
 			<div class="flex items-center justify-center py-20">
-				<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+				<div
+					class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+				></div>
 			</div>
 		{:else if error}
 			<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -265,11 +265,7 @@
 					{#if dashboardData.funnels && dashboardData.funnels.length > 0}
 						<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 							{#each dashboardData.funnels as funnel}
-								<FunnelChart
-									steps={funnel.steps}
-									title={funnel.name}
-									showDropOff={true}
-								/>
+								<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
 							{/each}
 						</div>
 					{:else}
@@ -312,10 +308,7 @@
 
 					{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
 						{#each dashboardData.cohorts as cohort}
-							<CohortMatrix
-								data={cohort.retention_matrix}
-								title={cohort.name}
-							/>
+							<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
 						{/each}
 					{:else}
 						<div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
@@ -376,12 +369,24 @@
 									<tbody>
 										{#each dashboardData.attribution.channels as channel}
 											<tr class="border-b border-gray-100 hover:bg-gray-50">
-												<td class="py-3 px-4 font-medium text-gray-900 capitalize">{channel.channel}</td>
-												<td class="py-3 px-4 text-right text-gray-600">{channel.first_touch_share?.toFixed(1) || '-'}%</td>
-												<td class="py-3 px-4 text-right text-gray-600">{channel.last_touch_share?.toFixed(1) || '-'}%</td>
-												<td class="py-3 px-4 text-right text-gray-600">{channel.linear_share?.toFixed(1) || '-'}%</td>
-												<td class="py-3 px-4 text-right text-gray-600">{channel.time_decay_share?.toFixed(1) || '-'}%</td>
-												<td class="py-3 px-4 text-right text-gray-600">{channel.position_based_share?.toFixed(1) || '-'}%</td>
+												<td class="py-3 px-4 font-medium text-gray-900 capitalize"
+													>{channel.channel}</td
+												>
+												<td class="py-3 px-4 text-right text-gray-600"
+													>{channel.first_touch_share?.toFixed(1) || '-'}%</td
+												>
+												<td class="py-3 px-4 text-right text-gray-600"
+													>{channel.last_touch_share?.toFixed(1) || '-'}%</td
+												>
+												<td class="py-3 px-4 text-right text-gray-600"
+													>{channel.linear_share?.toFixed(1) || '-'}%</td
+												>
+												<td class="py-3 px-4 text-right text-gray-600"
+													>{channel.time_decay_share?.toFixed(1) || '-'}%</td
+												>
+												<td class="py-3 px-4 text-right text-gray-600"
+													>{channel.position_based_share?.toFixed(1) || '-'}%</td
+												>
 											</tr>
 										{/each}
 									</tbody>

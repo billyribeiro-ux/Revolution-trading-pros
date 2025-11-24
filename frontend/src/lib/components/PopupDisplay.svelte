@@ -351,7 +351,6 @@
 		return styles.join('; ');
 	}
 
-
 	// Reactive keyboard event listener
 	$: if (browser && show) {
 		window.addEventListener('keydown', handleKeydown);

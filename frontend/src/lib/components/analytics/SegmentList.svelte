@@ -69,9 +69,7 @@
 					<div class="flex items-center gap-2">
 						<span class="font-medium text-gray-900">{segment.name}</span>
 						{#if segment.is_system}
-							<span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
-								System
-							</span>
+							<span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded"> System </span>
 						{/if}
 						<span class="text-xs text-gray-400">
 							{typeLabels[segment.type] || segment.type}
@@ -96,7 +94,8 @@
 				<div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
 					<div
 						class="h-full rounded-full transition-all"
-						style="width: {Math.min(segment.percentage, 100)}%; background-color: {segment.color || '#6B7280'}"
+						style="width: {Math.min(segment.percentage, 100)}%; background-color: {segment.color ||
+							'#6B7280'}"
 					></div>
 				</div>
 			</button>

@@ -7,7 +7,14 @@
 -->
 
 <script lang="ts">
-	import { IconBrain, IconTrendingUp, IconTrendingDown, IconAlertTriangle, IconBulb, IconTarget } from '@tabler/icons-svelte';
+	import {
+		IconBrain,
+		IconTrendingUp,
+		IconTrendingDown,
+		IconAlertTriangle,
+		IconBulb,
+		IconTarget
+	} from '@tabler/icons-svelte';
 
 	export let insights: Array<{
 		id: string;
@@ -84,7 +91,11 @@
 										<span class="metric-value">{insight.value.toLocaleString()}</span>
 									{/if}
 									{#if insight.change !== undefined}
-										<span class="metric-change" class:positive={insight.change > 0} class:negative={insight.change < 0}>
+										<span
+											class="metric-change"
+											class:positive={insight.change > 0}
+											class:negative={insight.change < 0}
+										>
 											{insight.change > 0 ? '+' : ''}{insight.change}%
 										</span>
 									{/if}

@@ -38,12 +38,15 @@
 			const types = await getFieldTypes();
 			// Convert array to Record if needed
 			if (Array.isArray(types)) {
-				availableFieldTypes = types.reduce((acc, item) => {
-					if (typeof item === 'object' && 'type' in item && 'label' in item) {
-						acc[item.type] = item.label;
-					}
-					return acc;
-				}, {} as Record<string, string>);
+				availableFieldTypes = types.reduce(
+					(acc, item) => {
+						if (typeof item === 'object' && 'type' in item && 'label' in item) {
+							acc[item.type] = item.label;
+						}
+						return acc;
+					},
+					{} as Record<string, string>
+				);
 			} else {
 				availableFieldTypes = types;
 			}

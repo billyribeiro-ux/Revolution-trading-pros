@@ -19,7 +19,8 @@
 		IconBolt
 	} from '@tabler/icons-svelte';
 
-	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' = 'campaigns';
+	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
+		'campaigns';
 
 	onMount(() => {
 		loadData();
