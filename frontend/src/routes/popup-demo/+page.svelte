@@ -607,11 +607,12 @@
 		font-weight: 700;
 		background: linear-gradient(to right, #6366f1, #8b5cf6, #ec4899);
 		-webkit-background-clip: text;
+		background-clip: text;
 		-webkit-text-fill-color: transparent;
 		margin-bottom: 1rem;
 	}
 
-	.title-icon {
+	:global(.title-icon) {
 		color: #6366f1;
 		-webkit-text-fill-color: initial;
 	}

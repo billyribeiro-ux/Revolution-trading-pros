@@ -62,7 +62,7 @@ class SubscriptionServiceTest extends TestCase
 
         $this->service->cancel($subscription, immediate: true, reason: 'Test reason');
 
-        $this->assertEquals(SubscriptionStatus::Cancelled, $subscription->fresh()->status);
+        $this->assertEquals('cancelled', $subscription->fresh()->status);
         $this->assertStringContainsString('Test reason', $subscription->fresh()->notes);
     }
 
@@ -74,7 +74,7 @@ class SubscriptionServiceTest extends TestCase
 
         $this->service->pause($subscription, reason: 'Taking a break');
 
-        $this->assertEquals(SubscriptionStatus::OnHold, $subscription->fresh()->status);
+        $this->assertEquals('on-hold', $subscription->fresh()->status);
     }
 
     public function test_it_can_resume_subscription()
@@ -85,6 +85,6 @@ class SubscriptionServiceTest extends TestCase
 
         $this->service->resume($subscription);
 
-        $this->assertEquals(SubscriptionStatus::Active, $subscription->fresh()->status);
+        $this->assertEquals('active', $subscription->fresh()->status);
     }
 }

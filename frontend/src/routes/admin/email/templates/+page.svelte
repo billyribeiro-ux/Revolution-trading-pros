@@ -13,7 +13,7 @@
 		error = '';
 		try {
 			const response = await emailTemplatesApi.list();
-			templates = response.data || [];
+			templates = (response.data as unknown as EmailTemplate[]) || [];
 		} catch (e) {
 			if (e instanceof AdminApiError) {
 				if (e.status === 401) {

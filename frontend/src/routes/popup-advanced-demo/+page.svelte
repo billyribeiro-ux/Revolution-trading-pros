@@ -501,12 +501,13 @@
 		font-size: 3rem;
 		font-weight: 700;
 		background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		margin-bottom: 1rem;
 	}
 
-	.title-icon {
+	:global(.title-icon) {
 		color: #3b82f6;
 		-webkit-text-fill-color: initial;
 	}

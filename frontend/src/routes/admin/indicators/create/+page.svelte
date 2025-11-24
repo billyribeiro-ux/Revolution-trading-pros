@@ -173,7 +173,7 @@
 				</div>
 
 				<div class="form-group">
-					<label>Thumbnail Image</label>
+					<label for="thumbnail-upload">Thumbnail Image</label>
 					{#if indicator.thumbnail}
 						<div class="image-preview">
 							<img src={indicator.thumbnail} alt="Thumbnail" />
@@ -182,10 +182,11 @@
 							</button>
 						</div>
 					{/if}
-					<label class="upload-btn" class:uploading>
+					<label for="thumbnail-upload" class="upload-btn" class:uploading>
 						<IconPhoto size={20} />
 						{uploading ? 'Uploading...' : 'Upload Image'}
 						<input
+							id="thumbnail-upload"
 							type="file"
 							accept="image/*"
 							on:change={handleImageUpload}
@@ -274,6 +275,9 @@
 		padding: 2px;
 		background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
 		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
 			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
@@ -384,6 +388,7 @@
 		inset: 0;
 		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		-webkit-background-clip: text;
+		background-clip: text;
 		-webkit-text-fill-color: transparent;
 		filter: blur(8px);
 		opacity: 0.5;
@@ -440,10 +445,6 @@
 		z-index: 1;
 	}
 
-	.buy-btn span {
-		position: relative;
-		z-index: 1;
-	}
 
 	.buy-btn:disabled {
 		opacity: 0.6;

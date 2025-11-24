@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\EmailTemplateController;
+use App\Http\Controllers\Api\EmailTemplateBuilderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
@@ -173,6 +174,21 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::put('/email/templates/{id}', [EmailTemplateController::class, 'update']);
     Route::delete('/email/templates/{id}', [EmailTemplateController::class, 'destroy']);
     Route::post('/email/templates/{id}/preview', [EmailTemplateController::class, 'preview']);
+    
+    // Email Template Builder
+    Route::get('/email/builder/templates', [EmailTemplateBuilderController::class, 'index']);
+    Route::post('/email/builder/templates', [EmailTemplateBuilderController::class, 'store']);
+    Route::get('/email/builder/templates/{id}', [EmailTemplateBuilderController::class, 'show']);
+    Route::put('/email/builder/templates/{id}', [EmailTemplateBuilderController::class, 'update']);
+    Route::delete('/email/builder/templates/{id}', [EmailTemplateBuilderController::class, 'destroy']);
+    Route::post('/email/builder/templates/{id}/preview', [EmailTemplateBuilderController::class, 'preview']);
+    Route::post('/email/builder/templates/{id}/duplicate', [EmailTemplateBuilderController::class, 'duplicate']);
+    Route::post('/email/builder/templates/{id}/blocks', [EmailTemplateBuilderController::class, 'addBlock']);
+    Route::put('/email/builder/templates/{id}/blocks/{blockId}', [EmailTemplateBuilderController::class, 'updateBlock']);
+    Route::delete('/email/builder/templates/{id}/blocks/{blockId}', [EmailTemplateBuilderController::class, 'deleteBlock']);
+    Route::post('/email/builder/templates/{id}/blocks/reorder', [EmailTemplateBuilderController::class, 'reorderBlocks']);
+    Route::get('/email/builder/variables', [EmailTemplateBuilderController::class, 'getVariables']);
+    Route::get('/email/builder/layouts', [EmailTemplateBuilderController::class, 'getLayouts']);
 
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);
@@ -333,4 +349,109 @@ Route::get('/feed/rss', function (FeedService $feedService) {
 Route::get('/feed/atom', function (FeedService $feedService) {
     return response($feedService->generateAtom())
         ->header('Content-Type', 'application/atom+xml');
+});
+
+// ========================================
+// ENTERPRISE ANALYTICS ENGINE
+// ========================================
+use App\Http\Controllers\Api\AnalyticsController;
+
+// Public event tracking (client-side)
+Route::prefix('analytics')->group(function () {
+    Route::post('/track', [AnalyticsController::class, 'trackEvent']);
+    Route::post('/pageview', [AnalyticsController::class, 'trackPageView']);
+    Route::post('/batch', [AnalyticsController::class, 'trackBatch']);
+});
+
+// Protected analytics API (admin)
+Route::middleware(['auth:sanctum'])->prefix('admin/analytics')->group(function () {
+    // Dashboard & KPIs
+    Route::get('/dashboard', [AnalyticsController::class, 'getDashboard']);
+    Route::get('/kpis', [AnalyticsController::class, 'getKpiDefinitions']);
+    Route::get('/kpis/{kpiKey}', [AnalyticsController::class, 'getKpi']);
+
+    // Funnel Analytics
+    Route::get('/funnels', [AnalyticsController::class, 'getFunnels']);
+    Route::get('/funnels/{funnelKey}', [AnalyticsController::class, 'getFunnelAnalysis']);
+    Route::get('/funnels/{funnelKey}/dropoff', [AnalyticsController::class, 'getFunnelDropOff']);
+    Route::get('/funnels/{funnelKey}/segment', [AnalyticsController::class, 'getFunnelBySegment']);
+
+    // Cohort Analytics
+    Route::get('/cohorts', [AnalyticsController::class, 'getCohorts']);
+    Route::get('/cohorts/{cohortKey}/matrix', [AnalyticsController::class, 'getCohortMatrix']);
+    Route::get('/cohorts/{cohortKey}/curve', [AnalyticsController::class, 'getCohortCurve']);
+    Route::get('/cohorts/{cohortKey}/ltv', [AnalyticsController::class, 'getCohortLTV']);
+
+    // Attribution Analytics
+    Route::get('/attribution/channels', [AnalyticsController::class, 'getChannelAttribution']);
+    Route::get('/attribution/campaigns', [AnalyticsController::class, 'getCampaignAttribution']);
+    Route::get('/attribution/paths', [AnalyticsController::class, 'getConversionPaths']);
+    Route::get('/attribution/compare', [AnalyticsController::class, 'compareAttributionModels']);
+
+    // Forecasting
+    Route::get('/forecast/{kpiKey}', [AnalyticsController::class, 'getForecast']);
+    Route::get('/forecast/{kpiKey}/accuracy', [AnalyticsController::class, 'getForecastAccuracy']);
+
+    // Segments
+    Route::get('/segments', [AnalyticsController::class, 'getSegments']);
+    Route::get('/segments/{segmentKey}', [AnalyticsController::class, 'getSegment']);
+
+    // Event Explorer
+    Route::get('/events/timeseries', [AnalyticsController::class, 'getEventTimeSeries']);
+    Route::get('/events/breakdown', [AnalyticsController::class, 'getEventBreakdown']);
+    Route::get('/realtime', [AnalyticsController::class, 'getRealTimeMetrics']);
+});
+
+// ========================================
+// REVOLUTION BEHAVIOR L8 SYSTEM
+// ========================================
+use App\Http\Controllers\Admin\BehaviorController;
+
+// Public behavior tracking (client-side)
+Route::post('/behavior/events', [BehaviorController::class, 'ingestEvents']);
+
+// Protected behavior analytics API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/behavior')->group(function () {
+    Route::get('/dashboard', [BehaviorController::class, 'getDashboard']);
+    Route::get('/sessions/{sessionId}', [BehaviorController::class, 'getSession']);
+    Route::get('/friction-points', [BehaviorController::class, 'getFrictionPoints']);
+    Route::get('/intent-signals', [BehaviorController::class, 'getIntentSignals']);
+    Route::patch('/friction-points/{id}/resolve', [BehaviorController::class, 'resolveFrictionPoint']);
+});
+
+// ========================================
+// REVOLUTION CRM L8 SYSTEM
+// ========================================
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\DealController;
+use App\Http\Controllers\Admin\PipelineController;
+
+// Protected CRM API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/crm')->group(function () {
+    // Contacts
+    Route::get('/contacts', [ContactController::class, 'index']);
+    Route::post('/contacts', [ContactController::class, 'store']);
+    Route::get('/contacts/{id}', [ContactController::class, 'show']);
+    Route::put('/contacts/{id}', [ContactController::class, 'update']);
+    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
+    Route::get('/contacts/{id}/timeline', [ContactController::class, 'timeline']);
+    Route::post('/contacts/{id}/recalculate-score', [ContactController::class, 'recalculateScore']);
+    
+    // Deals
+    Route::get('/deals', [DealController::class, 'index']);
+    Route::post('/deals', [DealController::class, 'store']);
+    Route::get('/deals/{id}', [DealController::class, 'show']);
+    Route::put('/deals/{id}', [DealController::class, 'update']);
+    Route::patch('/deals/{id}/stage', [DealController::class, 'updateStage']);
+    Route::post('/deals/{id}/win', [DealController::class, 'win']);
+    Route::post('/deals/{id}/lose', [DealController::class, 'lose']);
+    Route::get('/deals/forecast', [DealController::class, 'forecast']);
+    
+    // Pipelines
+    Route::get('/pipelines', [PipelineController::class, 'index']);
+    Route::post('/pipelines', [PipelineController::class, 'store']);
+    Route::get('/pipelines/{id}', [PipelineController::class, 'show']);
+    Route::put('/pipelines/{id}', [PipelineController::class, 'update']);
+    Route::delete('/pipelines/{id}', [PipelineController::class, 'destroy']);
+    Route::post('/pipelines/{id}/stages', [PipelineController::class, 'addStage']);
 });

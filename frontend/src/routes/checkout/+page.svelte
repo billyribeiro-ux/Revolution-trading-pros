@@ -14,7 +14,7 @@
 	} from '@tabler/icons-svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	export const data: PageData = {} as PageData;
 
 	let isProcessing = false;
 	let headerRef: HTMLDivElement;

@@ -31,8 +31,15 @@
 
 		try {
 			const response = await getForms(currentPage, 20, statusFilter || undefined);
-			forms = response.forms;
-			totalPages = Math.ceil(response.total / response.perPage);
+			// Handle both array and paginated response formats
+			if (Array.isArray(response)) {
+				forms = response;
+				totalPages = 1;
+			} else {
+				const paginatedResponse = response as any;
+				forms = paginatedResponse.data || paginatedResponse.forms || [];
+				totalPages = Math.ceil((paginatedResponse.total || forms.length) / (paginatedResponse.perPage || 20));
+			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load forms';
 		} finally {

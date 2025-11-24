@@ -1614,10 +1614,8 @@ export const duplicatePopup = async (id: string) => {
 	const duplicate = { ...popup, id: undefined, name: `${popup.name} (Copy)` };
 	return createPopup(duplicate);
 };
-export const togglePopupStatus = async (id: string) => {
-	const popup = get(popups).find(p => p.id === id);
-	if (!popup) throw new Error('Popup not found');
-	return updatePopup(id, { isActive: !popup.isActive });
+export const togglePopupStatus = async (id: string, isActive: boolean) => {
+	return updatePopup(id, { isActive });
 };
 
 // Legacy API compatibility

@@ -234,6 +234,19 @@
 							<span>{typeof option === 'string' ? option : option.label}</span>
 						</label>
 					{/each}
+					{@const optionValue = typeof option === 'string' ? option : option.value}
+					{@const optionLabel = typeof option === 'string' ? option : option.label}
+					<label class="checkbox-label">
+						<input
+							type="checkbox"
+							value={optionValue}
+							checked={isChecked(optionValue)}
+							on:change={(e) => handleCheckboxChange(optionValue, e.currentTarget.checked)}
+							{...field.attributes || {}}
+						/>
+						<span>{optionLabel}</span>
+					</label>
+				{/each}
 				{/if}
 			</div>
 

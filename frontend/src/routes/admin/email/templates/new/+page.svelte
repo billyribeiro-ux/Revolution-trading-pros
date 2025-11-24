@@ -24,9 +24,6 @@
 		margin: 0 auto;
 		padding: 2rem;
 	}
-	.text-muted {
-		color: #94a3b8;
-	}
 	.alert-error {
 		background: rgba(239, 68, 68, 0.1);
 		color: #ef4444;

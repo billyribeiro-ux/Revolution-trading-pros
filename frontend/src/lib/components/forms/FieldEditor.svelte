@@ -39,7 +39,7 @@
 				.split('\n')
 				.map((s) => s.trim())
 				.filter(Boolean)
-				.map((text) => ({ label: text, value: text }));
+				.map((label, index) => ({ label, value: label.toLowerCase().replace(/\s+/g, '_') }));
 		} else {
 			fieldData.options = null;
 		}

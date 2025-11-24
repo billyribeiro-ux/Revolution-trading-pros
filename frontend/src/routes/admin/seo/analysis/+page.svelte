@@ -44,7 +44,7 @@
 
 		try {
 			analyzing = true;
-			const response = await seoApi.analyze(
+			analysis = await seoApi.analyze(
 				contentType,
 				parseInt(contentId),
 				focusKeyword || undefined
