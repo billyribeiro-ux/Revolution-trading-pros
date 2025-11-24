@@ -4,7 +4,8 @@
 - [x] Frontend Audit <!-- id: 1 -->
     - [x] Run SvelteKit `check` (TypeScript/Svelte analysis) <!-- id: 2 -->
     - [x] Run Linting (ESLint/Prettier) <!-- id: 3 -->
-    - [ ] Attempt Build to catch build-time errors <!-- id: 4 -->
+    - [x] Attempt Build to catch build-time errors <!-- id: 4 -->
+        - Fixed SSR error in SEOHead component (breadcrumbs safety check)
 - [x] Backend Audit <!-- id: 5 -->
     - [x] Run PHPStan (Static Analysis) <!-- id: 6 -->
     - [x] Run Pint (Code Style) <!-- id: 7 -->

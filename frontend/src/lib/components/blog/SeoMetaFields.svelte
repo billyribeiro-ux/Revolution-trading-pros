@@ -36,7 +36,7 @@
 			placeholder="Brief description for search results"
 			rows="3"
 			maxlength="170"
-		/>
+		></textarea>
 		<div class="hint">Recommended: 150-160 characters</div>
 	</div>
 

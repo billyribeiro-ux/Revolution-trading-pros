@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
-	import { formsApi, type Form, type FormEntry } from '$lib/api/forms';
+	import { formsApi, type Form, type FormSubmission } from '$lib/api/forms';
 	import { IconDownload, IconEye } from '@tabler/icons-svelte';
 
 	let forms: Form[] = [];
-	let entries: FormEntry[] = [];
+	let entries: FormSubmission[] = [];
 	let selectedFormId: number | null = null;
 	let loading = true;
 
@@ -17,7 +17,7 @@
 	async function loadForms() {
 		try {
 			const response = await formsApi.list();
-			forms = response.data || [];
+			forms = Array.isArray(response) ? response : (response as any).data || [];
 			if (forms.length > 0) {
 				selectedFormId = forms[0].id;
 				await loadEntries(forms[0].id);
@@ -33,7 +33,7 @@
 		try {
 			loading = true;
 			const response = await formsApi.getEntries(formId);
-			entries = response.data || [];
+			entries = response.submissions || [];
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to load entries' });
 		} finally {

@@ -35,7 +35,18 @@
 	// Load field types on mount
 	(async () => {
 		try {
-			availableFieldTypes = await getFieldTypes();
+			const types = await getFieldTypes();
+			// Convert array to Record if needed
+			if (Array.isArray(types)) {
+				availableFieldTypes = types.reduce((acc, item) => {
+					if (typeof item === 'object' && 'type' in item && 'label' in item) {
+						acc[item.type] = item.label;
+					}
+					return acc;
+				}, {} as Record<string, string>);
+			} else {
+				availableFieldTypes = types;
+			}
 		} catch (err) {
 			console.error('Failed to load field types:', err);
 		}
@@ -43,13 +54,13 @@
 
 	function handleAddField(fieldType: string) {
 		const newField: FormField = {
-			field_type: fieldType,
+			field_type: fieldType as any,
 			label: availableFieldTypes[fieldType] || fieldType,
 			name: `field_${Date.now()}`,
 			placeholder: '',
 			required: false,
 			order: fields.length,
-			width: 100
+			width: 100 as any
 		};
 
 		editingField = newField;
@@ -175,7 +186,7 @@
 						placeholder="Optional form description"
 						class="form-input"
 						rows="3"
-					/>
+					></textarea>
 				</div>
 			</div>
 

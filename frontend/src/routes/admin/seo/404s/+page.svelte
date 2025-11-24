@@ -23,7 +23,7 @@
 		try {
 			loading = true;
 			const response = await seoApi.list404s();
-			errors = response.data || [];
+			errors = Array.isArray(response) ? response : (response as any).data || [];
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to load 404 errors' });
 		} finally {

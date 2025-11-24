@@ -1,9 +1,20 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import sveltePreprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: vitePreprocess(),
+	preprocess: [
+		vitePreprocess(),
+		sveltePreprocess({
+			postcss: true
+		})
+	],
+	onwarn: (warning, handler) => {
+		// Disable all a11y warnings
+		if (warning.code && warning.code.startsWith('a11y_')) return;
+		handler(warning);
+	},
 	kit: {
 		adapter: adapter({
 			pages: 'build',

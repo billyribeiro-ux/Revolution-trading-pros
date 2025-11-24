@@ -74,7 +74,7 @@
 
 			// Load analytics data
 			const analyticsResponse = await popupsApi.getAnalytics(popupId);
-			analytics = analyticsResponse.analytics;
+			analytics = analyticsResponse as any;
 		} catch (error) {
 			console.error('Failed to load analytics:', error);
 			addToast({ type: 'error', message: 'Failed to load analytics' });

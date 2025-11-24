@@ -225,6 +225,29 @@
 	// Session Management
 	// ─────────────────────────────────────────────────────────────────────────────
 
+	async function checkSession(): Promise<void> {
+		if (!browser || !currentUser) return;
+
+		try {
+			// Check if token is still valid
+			const token = authStore.getToken();
+			if (!token) {
+				await handleSessionExpired();
+				return;
+			}
+
+			// Check session expiry if available
+			if (currentUser.session_expiry) {
+				const now = Date.now();
+				if (now >= currentUser.session_expiry) {
+					await handleSessionExpired();
+				}
+			}
+		} catch (error) {
+			console.error('[AdminToolbar] Session check failed:', error);
+		}
+	}
+
 	async function handleSessionExpired(): Promise<void> {
 		// Show notification to user
 		showNotification('Session expired. Please log in again.', 'warning');

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { user } from '$lib/stores/auth';
 	import {
 		IconUser,
 		IconMail,
@@ -210,7 +209,7 @@
 				Dashboard
 			</h1>
 			<p class="text-xl md:text-2xl text-slate-300">
-				Welcome back, <span class="text-indigo-400 font-semibold glow-text">{$user?.name}</span>
+				Welcome back, <span class="text-indigo-400 font-semibold glow-text">{data.user?.name}</span>
 			</p>
 		</div>
 
@@ -247,7 +246,7 @@
 							</div>
 							<div>
 								<p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Name</p>
-								<p class="text-white font-medium text-lg">{$user?.name}</p>
+								<p class="text-white font-medium text-lg">{data.user?.name}</p>
 							</div>
 						</div>
 
@@ -259,7 +258,7 @@
 							</div>
 							<div>
 								<p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Email</p>
-								<p class="text-white font-medium text-lg">{$user?.email}</p>
+								<p class="text-white font-medium text-lg">{data.user?.email}</p>
 							</div>
 						</div>
 
@@ -273,7 +272,7 @@
 								<p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">
 									Member Since
 								</p>
-								<p class="text-white font-medium text-lg">{formatDate($user?.created_at)}</p>
+								<p class="text-white font-medium text-lg">{formatDate(data.user?.created_at)}</p>
 							</div>
 						</div>
 					</div>
@@ -302,7 +301,7 @@
 						</div>
 					</div>
 
-					{#if $user?.email_verified_at}
+					{#if data.user?.email_verified_at}
 						<div
 							class="p-6 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/40 rounded-2xl shadow-lg shadow-emerald-500/10"
 						>
@@ -315,7 +314,7 @@
 								<p class="text-xl font-bold text-emerald-300">Email Verified</p>
 							</div>
 							<p class="text-sm text-emerald-400/80 ml-15">
-								Verified on {formatDate($user.email_verified_at)}
+								Verified on {formatDate(data.user?.email_verified_at)}
 							</p>
 						</div>
 					{:else}
@@ -621,7 +620,7 @@
 	}
 
 	/* Particle base styles */
-	.floating-particle {
+	:global(.floating-particle) {
 		will-change: transform, opacity;
 	}
 </style>

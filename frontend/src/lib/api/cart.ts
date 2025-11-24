@@ -530,9 +530,16 @@ class CheckoutCartService {
 	}
 
 	/**
-	 * WebSocket setup
+	 * WebSocket setup - DISABLED (backend doesn't support WebSocket yet)
+	 * TODO: Enable when backend WebSocket server is ready
 	 */
 	private setupWebSocket(): void {
+		// WebSocket disabled - backend doesn't have WebSocket server running
+		// Cart updates will use polling or manual refresh instead
+		console.debug('[CheckoutService] WebSocket disabled - using polling for cart updates');
+		return;
+		
+		/* Commented out until backend WebSocket is implemented
 		if (!browser) return;
 
 		try {
@@ -558,6 +565,7 @@ class CheckoutCartService {
 		} catch (error) {
 			console.error('[CheckoutService] Failed to setup WebSocket:', error);
 		}
+		*/
 	}
 
 	private authenticateWebSocket(): void {

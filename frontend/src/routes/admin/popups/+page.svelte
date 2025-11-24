@@ -495,10 +495,6 @@
 		text-align: center;
 	}
 
-	.empty-icon {
-		color: #475569;
-		margin-bottom: 1rem;
-	}
 
 	.empty-state h3 {
 		font-size: 1.5rem;

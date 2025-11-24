@@ -552,7 +552,7 @@
 		pointer-events: none;
 	}
 
-	.emerald-particle {
+	:global(.emerald-particle) {
 		position: absolute;
 		background: radial-gradient(
 			circle,
@@ -680,7 +680,7 @@
 		justify-content: center;
 	}
 
-	.sparkle-icon {
+	:global(.sparkle-icon) {
 		color: #6ee7b7;
 		filter: drop-shadow(0 0 24px rgba(16, 185, 129, 0.6));
 	}
@@ -726,7 +726,7 @@
 		}
 	}
 
-	.error-icon {
+	:global(.error-icon) {
 		color: #f87171;
 		flex-shrink: 0;
 		margin-top: 2px;
@@ -800,10 +800,8 @@
 		box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 	}
 
-	.enhanced-input:focus ~ .input-icon {
-		opacity: 1;
-		color: #34d399;
-	}
+	/* Note: Cannot use ~ selector here as .input-icon comes before .enhanced-input in DOM */
+	/* Icon opacity is controlled via JavaScript or parent hover states */
 
 	.enhanced-input:focus + .input-glow {
 		opacity: 1;
@@ -902,11 +900,11 @@
 		opacity: 0.7;
 	}
 
-	.arrow-icon {
+	:global(.arrow-icon) {
 		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	.submit-btn:hover:not(:disabled) .arrow-icon {
+	.submit-btn:hover:not(:disabled) :global(.arrow-icon) {
 		transform: translateX(5px);
 	}
 
@@ -989,7 +987,7 @@
 		margin-bottom: 2rem;
 	}
 
-	.success-check-icon {
+	:global(.success-check-icon) {
 		color: #34d399;
 		filter: drop-shadow(0 0 30px rgba(52, 211, 153, 0.6));
 		animation: iconBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -1045,7 +1043,7 @@
 		margin-bottom: 0;
 	}
 
-	.instruction-icon {
+	:global(.instruction-icon) {
 		color: #6ee7b7;
 		flex-shrink: 0;
 		margin-top: 2px;
