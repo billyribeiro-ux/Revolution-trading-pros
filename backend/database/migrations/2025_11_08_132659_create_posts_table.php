@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        if (!Schema::hasTable('posts')) {
+            Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
@@ -29,7 +30,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['status', 'published_at']);
-        });
+            });
+        }
     }
 
     public function down(): void

@@ -10,24 +10,40 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             // Content rendering
-            $table->longText('content_html')->nullable()->after('content_blocks');
+            if (!Schema::hasColumn('posts', 'content_html')) {
+                $table->longText('content_html')->nullable()->after('content_blocks');
+            }
             
             // Reading metrics
-            $table->integer('reading_time')->default(0)->after('word_count');
-            $table->bigInteger('unique_view_count')->unsigned()->default(0)->after('view_count');
+            if (!Schema::hasColumn('posts', 'reading_time')) {
+                $table->integer('reading_time')->default(0);
+            }
+            if (!Schema::hasColumn('posts', 'unique_view_count')) {
+                $table->bigInteger('unique_view_count')->unsigned()->default(0);
+            }
             
             // Analytics
-            $table->decimal('bounce_rate', 5, 2)->default(0)->after('avg_time_on_page');
+            if (!Schema::hasColumn('posts', 'bounce_rate')) {
+                $table->decimal('bounce_rate', 5, 2)->default(0);
+            }
             
             // Content flags
-            $table->boolean('is_evergreen')->default(false)->after('is_pinned');
+            if (!Schema::hasColumn('posts', 'is_evergreen')) {
+                $table->boolean('is_evergreen')->default(false);
+            }
             
             // Localization
-            $table->string('locale', 10)->default('en')->after('readability_score');
+            if (!Schema::hasColumn('posts', 'locale')) {
+                $table->string('locale', 10)->default('en');
+            }
             
             // Revisions
-            $table->json('content_warnings')->nullable()->after('custom_fields');
-            $table->integer('revision_count')->default(0)->after('version');
+            if (!Schema::hasColumn('posts', 'content_warnings')) {
+                $table->json('content_warnings')->nullable();
+            }
+            if (!Schema::hasColumn('posts', 'revision_count')) {
+                $table->integer('revision_count')->default(0);
+            }
         });
     }
 
