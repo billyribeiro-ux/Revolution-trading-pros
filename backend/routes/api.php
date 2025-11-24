@@ -402,3 +402,40 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/beh
     Route::get('/intent-signals', [BehaviorController::class, 'getIntentSignals']);
     Route::patch('/friction-points/{id}/resolve', [BehaviorController::class, 'resolveFrictionPoint']);
 });
+
+// ========================================
+// REVOLUTION CRM L8 SYSTEM
+// ========================================
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\DealController;
+use App\Http\Controllers\Admin\PipelineController;
+
+// Protected CRM API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/crm')->group(function () {
+    // Contacts
+    Route::get('/contacts', [ContactController::class, 'index']);
+    Route::post('/contacts', [ContactController::class, 'store']);
+    Route::get('/contacts/{id}', [ContactController::class, 'show']);
+    Route::put('/contacts/{id}', [ContactController::class, 'update']);
+    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
+    Route::get('/contacts/{id}/timeline', [ContactController::class, 'timeline']);
+    Route::post('/contacts/{id}/recalculate-score', [ContactController::class, 'recalculateScore']);
+    
+    // Deals
+    Route::get('/deals', [DealController::class, 'index']);
+    Route::post('/deals', [DealController::class, 'store']);
+    Route::get('/deals/{id}', [DealController::class, 'show']);
+    Route::put('/deals/{id}', [DealController::class, 'update']);
+    Route::patch('/deals/{id}/stage', [DealController::class, 'updateStage']);
+    Route::post('/deals/{id}/win', [DealController::class, 'win']);
+    Route::post('/deals/{id}/lose', [DealController::class, 'lose']);
+    Route::get('/deals/forecast', [DealController::class, 'forecast']);
+    
+    // Pipelines
+    Route::get('/pipelines', [PipelineController::class, 'index']);
+    Route::post('/pipelines', [PipelineController::class, 'store']);
+    Route::get('/pipelines/{id}', [PipelineController::class, 'show']);
+    Route::put('/pipelines/{id}', [PipelineController::class, 'update']);
+    Route::delete('/pipelines/{id}', [PipelineController::class, 'destroy']);
+    Route::post('/pipelines/{id}/stages', [PipelineController::class, 'addStage']);
+});
