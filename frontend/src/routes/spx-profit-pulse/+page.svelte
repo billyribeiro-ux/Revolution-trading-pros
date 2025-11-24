@@ -396,7 +396,7 @@
 
 	@keyframes float2 {
 		0%, 100% { transform: translateY(0) scale(1); }
-		50% { transform: translateY(50px) scale(0.9); }
+		50% { transform: traAnslateY(50px) scale(0.9); }
 	}
 
 	@media (max-width: 640px) {
