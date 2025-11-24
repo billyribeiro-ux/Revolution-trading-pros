@@ -1,0 +1,231 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner "Main navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - link "Revolution Trading Pros" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Revolution Trading Pros" [ref=e7]
+      - navigation [ref=e8]:
+        - button "Live Trading" [ref=e10] [cursor=pointer]:
+          - text: Live Trading
+          - img [ref=e11]
+        - button "Alerts" [ref=e13] [cursor=pointer]:
+          - text: Alerts
+          - img [ref=e14]
+        - link "Mentorship" [ref=e15] [cursor=pointer]:
+          - /url: /mentorship
+        - button "Store" [ref=e17] [cursor=pointer]:
+          - text: Store
+          - img [ref=e18]
+        - button "CRM" [ref=e20] [cursor=pointer]:
+          - text: CRM
+          - img [ref=e21]
+        - link "Behavior" [ref=e22] [cursor=pointer]:
+          - /url: /behavior
+        - link "Analytics" [ref=e23] [cursor=pointer]:
+          - /url: /analytics
+        - link "Media" [ref=e24] [cursor=pointer]:
+          - /url: /media
+        - link "Email" [ref=e25] [cursor=pointer]:
+          - /url: /email
+        - link "About" [ref=e26] [cursor=pointer]:
+          - /url: /about
+        - link "Blog" [ref=e27] [cursor=pointer]:
+          - /url: /blog
+      - link "Login" [ref=e29] [cursor=pointer]:
+        - /url: /login
+        - img [ref=e30]
+        - generic [ref=e31]: Login
+  - main [ref=e32]:
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - img [ref=e38]
+        - generic [ref=e41]: Grow Your Small Account
+      - heading "Small Accounts Trading Room" [level=1] [ref=e42]
+      - paragraph [ref=e43]: Build your trading account from $500 to $5,000+. Specialized strategies, position sizing, and risk management for small account growth.
+      - generic [ref=e44]:
+        - link "View Pricing" [ref=e45] [cursor=pointer]:
+          - /url: "#pricing"
+        - link "Learn More" [ref=e46] [cursor=pointer]:
+          - /url: "#features"
+    - generic [ref=e49]:
+      - generic [ref=e50]:
+        - generic [ref=e51]: $500
+        - generic [ref=e52]: Starting Capital
+      - generic [ref=e53]:
+        - generic [ref=e54]: 200+
+        - generic [ref=e55]: Success Stories
+      - generic [ref=e56]:
+        - generic [ref=e57]: 72%
+        - generic [ref=e58]: Win Rate
+      - generic [ref=e59]:
+        - generic [ref=e60]: 90 Days
+        - generic [ref=e61]: Avg Growth Period
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - heading "Built for Small Accounts" [level=2] [ref=e65]
+        - paragraph [ref=e66]: Everything you need to grow your account safely and consistently
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - img [ref=e70]
+          - heading "Smart Position Sizing" [level=3] [ref=e72]
+          - paragraph [ref=e73]: Learn exactly how much to risk per trade based on your account size. Never blow up your account again.
+        - generic [ref=e74]:
+          - img [ref=e76]
+          - heading "Account Growth Strategy" [level=3] [ref=e78]
+          - paragraph [ref=e79]: Step-by-step plan to grow from $500 to $5,000+ with realistic targets and milestones.
+        - generic [ref=e80]:
+          - img [ref=e82]
+          - heading "Low-Cost Strategies" [level=3] [ref=e84]
+          - paragraph [ref=e85]: Trades designed for small accounts. Focus on single contracts and spreads that don't require huge capital.
+        - generic [ref=e86]:
+          - img [ref=e88]
+          - heading "Education First" [level=3] [ref=e90]
+          - paragraph [ref=e91]: Learn the fundamentals of trading while growing your account. Weekly training sessions and resources.
+        - generic [ref=e92]:
+          - img [ref=e94]
+          - heading "Risk Protection" [level=3] [ref=e96]
+          - paragraph [ref=e97]: Strict risk management rules to protect your capital. Learn to preserve what you have while growing.
+        - generic [ref=e98]:
+          - img [ref=e100]
+          - heading "Supportive Community" [level=3] [ref=e102]
+          - paragraph [ref=e103]: Connect with other small account traders on the same journey. Share wins, losses, and learn together.
+    - generic [ref=e105]:
+      - generic [ref=e106]:
+        - heading "Your Account Growth Roadmap" [level=2] [ref=e107]
+        - paragraph [ref=e108]: A proven path from $500 to $5,000+
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - generic [ref=e113]: "1"
+          - generic [ref=e114]:
+            - heading "Foundation Phase ($500-$1,000)" [level=3] [ref=e115]
+            - paragraph [ref=e116]: Focus on consistency and learning. Master the basics with minimal risk while building your skills.
+            - list [ref=e117]:
+              - listitem [ref=e118]:
+                - img [ref=e119]
+                - text: Risk 1-2% per trade maximum
+              - listitem [ref=e121]:
+                - img [ref=e122]
+                - text: Focus on single contract trades
+              - listitem [ref=e124]:
+                - img [ref=e125]
+                - text: Daily education and practice
+        - generic [ref=e127]:
+          - generic [ref=e129]: "2"
+          - generic [ref=e130]:
+            - heading "Growth Phase ($1,000-$2,500)" [level=3] [ref=e131]
+            - paragraph [ref=e132]: Scale your trading as your account grows. Start introducing spreads and multi-contract positions.
+            - list [ref=e133]:
+              - listitem [ref=e134]:
+                - img [ref=e135]
+                - text: Introduce vertical spreads
+              - listitem [ref=e137]:
+                - img [ref=e138]
+                - text: Scale to 2-3 contracts per trade
+              - listitem [ref=e140]:
+                - img [ref=e141]
+                - text: Maintain 2% max risk per trade
+        - generic [ref=e143]:
+          - generic [ref=e145]: "3"
+          - generic [ref=e146]:
+            - heading "Acceleration Phase ($2,500-$5,000+)" [level=3] [ref=e147]
+            - paragraph [ref=e148]: Advanced strategies and larger positions. You're now an experienced trader with a solid foundation.
+            - list [ref=e149]:
+              - listitem [ref=e150]:
+                - img [ref=e151]
+                - text: Advanced spread strategies
+              - listitem [ref=e153]:
+                - img [ref=e154]
+                - text: Multiple positions and diversification
+              - listitem [ref=e156]:
+                - img [ref=e157]
+                - text: Transition to larger account strategies
+    - generic [ref=e160]:
+      - generic [ref=e161]:
+        - heading "Affordable Membership" [level=2] [ref=e162]
+        - paragraph [ref=e163]: Pricing designed for small account traders
+      - generic [ref=e165]:
+        - generic [ref=e166]: Best Value
+        - generic [ref=e167]:
+          - heading "Small Accounts Room" [level=3] [ref=e168]
+          - generic [ref=e169]: $97
+          - generic [ref=e170]: per month
+        - list [ref=e171]:
+          - listitem [ref=e172]:
+            - img [ref=e173]
+            - generic [ref=e175]: Daily trade alerts for small accounts
+          - listitem [ref=e176]:
+            - img [ref=e177]
+            - generic [ref=e179]: Position sizing calculator
+          - listitem [ref=e180]:
+            - img [ref=e181]
+            - generic [ref=e183]: Account growth roadmap
+          - listitem [ref=e184]:
+            - img [ref=e185]
+            - generic [ref=e187]: Weekly education sessions
+          - listitem [ref=e188]:
+            - img [ref=e189]
+            - generic [ref=e191]: Discord community access
+          - listitem [ref=e192]:
+            - img [ref=e193]
+            - generic [ref=e195]: Risk management templates
+          - listitem [ref=e196]:
+            - img [ref=e197]
+            - generic [ref=e199]: Trade journal templates
+        - button "Start Growing Your Account" [ref=e200] [cursor=pointer]
+        - paragraph [ref=e201]: 30-day money-back guarantee
+    - generic [ref=e203]:
+      - generic [ref=e204]:
+        - heading "Small Account Success Stories" [level=2] [ref=e205]
+        - paragraph [ref=e206]: Real traders who grew their accounts with us
+      - generic [ref=e207]:
+        - generic [ref=e208]:
+          - generic [ref=e209]: $500 → $3,200
+          - paragraph [ref=e210]: "\"Started with $500 and followed the roadmap exactly. In 4 months I've grown to over $3,000. The position sizing rules saved me from blowing up my account.\""
+          - generic [ref=e211]:
+            - generic [ref=e212]: AJ
+            - generic [ref=e213]:
+              - generic [ref=e214]: Alex J.
+              - generic [ref=e215]: 4 months in program
+        - generic [ref=e216]:
+          - generic [ref=e217]: $1,000 → $5,800
+          - paragraph [ref=e218]: "\"Best investment I've made. The education alone is worth 10x the membership fee. My account has grown steadily and I'm now trading with confidence.\""
+          - generic [ref=e219]:
+            - generic [ref=e220]: KW
+            - generic [ref=e221]:
+              - generic [ref=e222]: Kevin W.
+              - generic [ref=e223]: 6 months in program
+        - generic [ref=e224]:
+          - generic [ref=e225]: $750 → $4,100
+          - paragraph [ref=e226]: "\"Finally a trading room that understands small account challenges. The community is supportive and the strategies actually work for accounts under $5K.\""
+          - generic [ref=e227]:
+            - generic [ref=e228]: MN
+            - generic [ref=e229]:
+              - generic [ref=e230]: Maria N.
+              - generic [ref=e231]: 5 months in program
+    - generic [ref=e233]:
+      - heading "Common Questions" [level=2] [ref=e235]
+      - generic [ref=e236]:
+        - generic [ref=e237]:
+          - heading "What's the minimum account size?" [level=3] [ref=e238]
+          - paragraph [ref=e239]: We recommend starting with at least $500, but you can start with as little as $250. The key is proper position sizing and risk management.
+        - generic [ref=e240]:
+          - heading "How long until I reach $5,000?" [level=3] [ref=e241]
+          - paragraph [ref=e242]: Results vary, but most members who follow the roadmap see significant growth in 3-6 months. It depends on your starting capital, consistency, and market conditions.
+        - generic [ref=e243]:
+          - heading "Do I need options trading approval?" [level=3] [ref=e244]
+          - paragraph [ref=e245]: Yes, you'll need at least Level 1 options approval from your broker. We'll help you understand what's needed and guide you through the process.
+        - generic [ref=e246]:
+          - heading "Can I trade with a full-time job?" [level=3] [ref=e247]
+          - paragraph [ref=e248]: Absolutely! Many of our members have full-time jobs. We provide morning analysis and alerts that work with busy schedules.
+    - generic [ref=e250]:
+      - heading "Start Growing Your Account Today" [level=2] [ref=e251]
+      - paragraph [ref=e252]: Join hundreds of traders who have successfully grown their small accounts. Get started for just $97/month.
+      - generic [ref=e253]:
+        - link "Join Now - $97/Month" [ref=e254] [cursor=pointer]:
+          - /url: "#pricing"
+        - link "View Free Resources" [ref=e255] [cursor=pointer]:
+          - /url: /resources
+```
