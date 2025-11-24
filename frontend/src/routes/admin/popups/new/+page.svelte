@@ -176,11 +176,7 @@
 
 				<div class="space-y-4">
 					<div>
-						<label for="popup-name" class="block text-sm font-medium text-gray-700 mb-1">
-							Internal Name *
-						</label>
-						<Input
-							id="popup-name"
+						<Input id="popup-name" label="Internal Name *"
 							bind:value={formData.name}
 							placeholder="e.g., Exit Intent - Newsletter"
 							error={errors.name}
@@ -190,26 +186,16 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<label for="popup-type" class="block text-sm font-medium text-gray-700 mb-1">
-								Popup Type *
-							</label>
-							<Select id="popup-type" options={typeOptions} bind:value={formData.type} />
+							<Select id="popup-type" label="Popup Type *" options={typeOptions} bind:value={formData.type} />
 						</div>
 
 						<div>
-							<label for="popup-status" class="block text-sm font-medium text-gray-700 mb-1">
-								Status *
-							</label>
-							<Select id="popup-status" options={statusOptions} bind:value={formData.status} />
+							<Select id="popup-status" label="Status *" options={statusOptions} bind:value={formData.status} />
 						</div>
 					</div>
 
 					<div>
-						<label for="popup-priority" class="block text-sm font-medium text-gray-700 mb-1">
-							Priority (1-100)
-						</label>
-						<Input
-							id="popup-priority"
+						<Input id="popup-priority" label="Priority (1-100)"
 							type="number"
 							bind:value={formData.priority}
 							min="1"
@@ -226,11 +212,7 @@
 
 				<div class="space-y-4">
 					<div>
-						<label for="popup-title" class="block text-sm font-medium text-gray-700 mb-1">
-							Title *
-						</label>
-						<Input
-							id="popup-title"
+						<Input id="popup-title" label="Title *"
 							bind:value={formData.title}
 							placeholder="e.g., Wait! Don't Leave Yet"
 							error={errors.title}
@@ -258,21 +240,14 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<label for="popup-cta-text" class="block text-sm font-medium text-gray-700 mb-1">
-								Call-to-Action Text
-							</label>
-							<Input
-								id="popup-cta-text"
+							<Input id="popup-cta-text" label="Call-to-Action Text"
 								bind:value={formData.cta_text}
 								placeholder="e.g., Get Started"
 							/>
 						</div>
 
 						<div>
-							<label for="popup-cta-url" class="block text-sm font-medium text-gray-700 mb-1">
-								CTA URL
-							</label>
-							<Input id="popup-cta-url" bind:value={formData.cta_url} placeholder="/subscribe" />
+							<Input id="popup-cta-url" label="CTA URL" bind:value={formData.cta_url} placeholder="/subscribe" />
 						</div>
 					</div>
 
@@ -297,26 +272,21 @@
 				<div class="space-y-4">
 					{#if formData.type === 'timed'}
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">
-								Delay (milliseconds)
-							</label>
-							<Input type="number" bind:value={timedDelay} min="0" step="1000" />
+							<Input id="popup-delay-milliseconds-8" label="Delay (milliseconds)" type="number" bind:value={timedDelay} min="0" step="1000" />
 							<p class="text-xs text-gray-500 mt-1">
 								Show popup after {(timedDelay / 1000).toFixed(0)} seconds
 							</p>
 						</div>
 					{:else if formData.type === 'scroll'}
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1"> Scroll Depth (%) </label>
-							<Input type="number" bind:value={scrollDepth} min="0" max="100" />
+							<Input id="popup-scroll-depth-9" label="Scroll Depth (%)" type="number" bind:value={scrollDepth} min="0" max="100" />
 							<p class="text-xs text-gray-500 mt-1">
 								Show popup when user scrolls {scrollDepth}% down the page
 							</p>
 						</div>
 					{:else if formData.type === 'click_trigger'}
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1"> CSS Selector </label>
-							<Input bind:value={clickSelector} placeholder="[data-popup-trigger]" />
+							<Input id="popup-css-selector-10" label="CSS Selector" bind:value={clickSelector} placeholder="[data-popup-trigger]" />
 							<p class="text-xs text-gray-500 mt-1">
 								Show popup when elements matching this selector are clicked
 							</p>
@@ -346,29 +316,18 @@
 				<div class="space-y-4">
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<div>
-							<label for="popup-position" class="block text-sm font-medium text-gray-700 mb-1">
-								Position
-							</label>
-							<Select
-								id="popup-position"
+							<Select id="popup-position" label="Position"
 								options={positionOptions}
 								bind:value={formData.position}
 							/>
 						</div>
 
 						<div>
-							<label for="popup-size" class="block text-sm font-medium text-gray-700 mb-1">
-								Size
-							</label>
-							<Select id="popup-size" options={sizeOptions} bind:value={formData.size} />
+							<Select id="popup-size" label="Size" options={sizeOptions} bind:value={formData.size} />
 						</div>
 
 						<div>
-							<label for="popup-animation" class="block text-sm font-medium text-gray-700 mb-1">
-								Animation
-							</label>
-							<Select
-								id="popup-animation"
+							<Select id="popup-animation" label="Animation"
 								options={animationOptions}
 								bind:value={formData.animation}
 							/>
@@ -376,11 +335,7 @@
 					</div>
 
 					<div>
-						<label for="auto-close" class="block text-sm font-medium text-gray-700 mb-1">
-							Auto Close After (seconds)
-						</label>
-						<Input
-							id="auto-close"
+						<Input id="auto-close" label="Auto Close After (seconds)"
 							type="number"
 							bind:value={formData.auto_close_after}
 							min="0"
@@ -422,18 +377,14 @@
 
 				<div class="space-y-4">
 					<div>
-						<label for="show-frequency" class="block text-sm font-medium text-gray-700 mb-1">
-							Show Frequency
-						</label>
-						<Select
-							id="show-frequency"
+						<Select id="show-frequency" label="Show Frequency"
 							options={frequencyOptions}
 							bind:value={formData.frequency_rules.frequency}
 						/>
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-2"> Target Devices </label>
+						<span class="block text-sm font-medium text-gray-700 mb-2">Target Devices</span>
 						<div class="flex gap-4">
 							<label class="flex items-center gap-2">
 								<input
@@ -477,24 +428,15 @@
 						<h3 class="text-sm font-semibold text-gray-800 mb-3">Popup Colors</h3>
 						<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 							<div>
-								<label for="bg-color" class="block text-sm font-medium text-gray-700 mb-1">
-									Background Color
-								</label>
-								<Input id="bg-color" type="color" bind:value={formData.design.backgroundColor} />
+								<Input id="bg-color" label="Background Color" type="color" bind:value={formData.design.backgroundColor} />
 							</div>
 
 							<div>
-								<label for="title-color" class="block text-sm font-medium text-gray-700 mb-1">
-									Title Color
-								</label>
-								<Input id="title-color" type="color" bind:value={formData.design.titleColor} />
+								<Input id="title-color" label="Title Color" type="color" bind:value={formData.design.titleColor} />
 							</div>
 
 							<div>
-								<label for="text-color" class="block text-sm font-medium text-gray-700 mb-1">
-									Text Color
-								</label>
-								<Input id="text-color" type="color" bind:value={formData.design.textColor} />
+								<Input id="text-color" label="Text Color" type="color" bind:value={formData.design.textColor} />
 							</div>
 						</div>
 					</div>
@@ -504,29 +446,18 @@
 						<h3 class="text-sm font-semibold text-gray-800 mb-3">Button Styling</h3>
 						<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 							<div>
-								<label for="button-color" class="block text-sm font-medium text-gray-700 mb-1">
-									Button Color
-								</label>
-								<Input id="button-color" type="color" bind:value={formData.design.buttonColor} />
+								<Input id="button-color" label="Button Color" type="color" bind:value={formData.design.buttonColor} />
 							</div>
 
 							<div>
-								<label for="button-text-color" class="block text-sm font-medium text-gray-700 mb-1">
-									Button Text Color
-								</label>
-								<Input
-									id="button-text-color"
+								<Input id="button-text-color" label="Button Text Color"
 									type="color"
 									bind:value={formData.design.buttonTextColor}
 								/>
 							</div>
 
 							<div>
-								<label for="button-radius" class="block text-sm font-medium text-gray-700 mb-1">
-									Button Border Radius (px)
-								</label>
-								<Input
-									id="button-radius"
+								<Input id="button-radius" label="Button Border Radius (px)"
 									type="number"
 									bind:value={formData.design.buttonBorderRadius}
 									min="0"

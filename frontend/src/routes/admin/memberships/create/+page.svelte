@@ -308,6 +308,9 @@
 		-webkit-mask:
 			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
 		mask-composite: exclude;
 		animation: border-glow 4s ease infinite;
@@ -379,9 +382,9 @@
 		font-weight: 700;
 		background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
 		background-size: 200% 200%;
+		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		background-clip: text;
 		animation: gold-shimmer 3s ease infinite;
 		position: relative;
 	}
@@ -391,6 +394,7 @@
 		position: absolute;
 		inset: 0;
 		background: linear-gradient(135deg, #fbbf24, #f59e0b);
+		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		filter: blur(12px);

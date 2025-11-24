@@ -172,7 +172,7 @@
 		on:click={() => (showPreview = null)}
 		on:keydown={(e) => e.key === 'Escape' && (showPreview = null)}
 	>
-		<div class="modal" on:click|stopPropagation>
+		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
 			<div class="modal-header">
 				<h3><IconCode size={20} /> JSON-LD Preview</h3>
 				<div class="modal-actions">

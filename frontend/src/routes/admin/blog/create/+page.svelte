@@ -189,7 +189,7 @@
 			</div>
 
 			<div class="form-group">
-				<label for="excerpt">Excerpt</label>
+				<label for="blog-excerpt">Excerpt</label>
 				<textarea
 					id="excerpt"
 					bind:value={post.excerpt}
@@ -199,7 +199,7 @@
 			</div>
 
 			<div class="form-group">
-				<label>Content</label>
+				<label for="blog-content">Content</label>
 				<RichTextEditor bind:content on:change={handleContentChange} />
 			</div>
 

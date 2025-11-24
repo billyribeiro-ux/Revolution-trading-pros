@@ -26,13 +26,10 @@
 	async function loadPopups() {
 		loading = true;
 		try {
-			// TODO: Replace with actual API call when backend is ready
-			// popups = await getAllPopups();
-
-			// Mock data for now
-			popups = [];
+			popups = await getAllPopups();
 		} catch (error) {
 			console.error('Error loading popups:', error);
+			popups = [];
 		} finally {
 			loading = false;
 		}
