@@ -38,7 +38,8 @@
 			fieldData.options = optionsText
 				.split('\n')
 				.map((s) => s.trim())
-				.filter(Boolean);
+				.filter(Boolean)
+				.map((label, index) => ({ label, value: label.toLowerCase().replace(/\s+/g, '_') }));
 		} else {
 			fieldData.options = null;
 		}
@@ -66,6 +67,7 @@
 	function addConditionalRule() {
 		if (!fieldData.conditional_logic) {
 			fieldData.conditional_logic = {
+				enabled: true,
 				action: 'show',
 				logic: 'all',
 				rules: []
