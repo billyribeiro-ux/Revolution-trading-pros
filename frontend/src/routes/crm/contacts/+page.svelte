@@ -230,7 +230,7 @@
                         <div
                           class="h-full rounded-full bg-emerald-400"
                           style={`width: ${contact.lead_score}%`}
-                        />
+                        ></div>
                       </div>
                       <span class="text-xs text-slate-200">{contact.lead_score}</span>
                     </div>
