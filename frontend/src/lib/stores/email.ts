@@ -481,7 +481,7 @@ function createEmailStore() {
 				const response = await emailApi.getAutomations({
 					...params,
 					per_page: get({ subscribe }).pagination.per_page
-				}));
+				});
 				
 				update(state => ({
 					...state,
