@@ -273,18 +273,20 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-						<input
-							type="text"
-							bind:value={newFunnel.name}
+					<label for="funnel-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+					<input
+						id="funnel-name"
+						type="text"
+						bind:value={newFunnel.name}
 							placeholder="e.g., Purchase Funnel"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-						<textarea
-							bind:value={newFunnel.description}
+					<label for="funnel-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<textarea
+						id="funnel-description"
+						bind:value={newFunnel.description}
 							placeholder="Describe this funnel..."
 							rows={2}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -295,7 +297,7 @@
 				<!-- Steps -->
 				<div>
 					<div class="flex items-center justify-between mb-3">
-						<label class="text-sm font-medium text-gray-700">Funnel Steps</label>
+						<span class="text-sm font-medium text-gray-700">Funnel Steps</span>
 						<button
 							on:click={addStep}
 							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
