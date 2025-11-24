@@ -284,8 +284,9 @@
 
 			<div class="p-6 space-y-4">
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+					<label for="cohort-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
 					<input
+						id="cohort-name"
 						type="text"
 						bind:value={newCohort.name}
 						placeholder="e.g., Weekly Signup Retention"
@@ -294,8 +295,9 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+					<label for="cohort-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
 					<textarea
+						id="cohort-description"
 						bind:value={newCohort.description}
 						placeholder="Describe this cohort..."
 						rows={2}
@@ -305,8 +307,9 @@
 
 				<div class="grid grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+						<label for="cohort-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
 						<select
+							id="cohort-type"
 							bind:value={newCohort.type}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 						>
@@ -316,8 +319,9 @@
 						</select>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Granularity</label>
+						<label for="cohort-granularity" class="block text-sm font-medium text-gray-700 mb-1">Granularity</label>
 						<select
+							id="cohort-granularity"
 							bind:value={newCohort.granularity}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 						>
@@ -331,18 +335,20 @@
 				{#if newCohort.type === 'custom'}
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Start Event</label>
-							<input
-								type="text"
-								bind:value={newCohort.start_event}
-								placeholder="e.g., signup"
-								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-							/>
+						<label for="cohort-start-event" class="block text-sm font-medium text-gray-700 mb-1">Start Event</label>
+						<input
+							id="cohort-start-event"
+							type="text"
+							bind:value={newCohort.start_event}
+							placeholder="e.g., signup"
+							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+						/>
 						</div>
 						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">Return Event</label>
-							<input
-								type="text"
+						<label for="cohort-return-event" class="block text-sm font-medium text-gray-700 mb-1">Return Event</label>
+						<input
+							id="cohort-return-event"
+							type="text"
 								bind:value={newCohort.return_event}
 								placeholder="e.g., login"
 								class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

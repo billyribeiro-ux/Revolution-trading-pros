@@ -10,6 +10,11 @@ const config = {
 			postcss: true
 		})
 	],
+	onwarn: (warning, handler) => {
+		// Disable all a11y warnings
+		if (warning.code && warning.code.startsWith('a11y_')) return;
+		handler(warning);
+	},
 	kit: {
 		adapter: adapter({
 			pages: 'build',

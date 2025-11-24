@@ -188,6 +188,7 @@ export interface AttributionReport {
 
 export interface ConversionPath {
 	path: string;
+	channels: string[];
 	conversions: number;
 	revenue: number;
 }

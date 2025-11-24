@@ -190,7 +190,7 @@
 					class="form-input"
 					rows="5"
 					required
-				/>
+				></textarea>
 			</div>
 		{/if}
 

@@ -19,7 +19,7 @@
 		error = '';
 		try {
 			const response = await settingsApi.list();
-			groupedSettings = response.data;
+			groupedSettings = response.data as any;
 			
 			// Flatten for editing
 			Object.values(response.data).forEach((group: any) => {

@@ -2,14 +2,14 @@
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
-	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
+	import { seoApi, type EnhancedSeoAnalysis } from '$lib/api/seo';
 	import { formsApi, type Form } from '$lib/api/forms';
 	import { IconSearch, IconRefresh, IconChartBar } from '@tabler/icons-svelte';
 
 	let contentType = 'posts';
 	let contentId = '';
 	let focusKeyword = '';
-	let analysis: SeoAnalysis | null = null;
+	let analysis: EnhancedSeoAnalysis | null = null;
 	let loading = false;
 	let analyzing = false;
 
@@ -30,7 +30,7 @@
 	async function loadForms() {
 		try {
 			const response = await formsApi.list();
-			forms = response.data || [];
+			forms = Array.isArray(response) ? response : (response as any).data || [];
 		} catch (error) {
 			console.error('Failed to load forms:', error);
 		}
@@ -44,12 +44,11 @@
 
 		try {
 			analyzing = true;
-			const response = await seoApi.analyze(
+			analysis = await seoApi.analyze(
 				contentType,
 				parseInt(contentId),
 				focusKeyword || undefined
 			);
-			analysis = response.analysis;
 			addToast({ type: 'success', message: 'SEO analysis completed!' });
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to analyze content' });
@@ -63,8 +62,7 @@
 
 		try {
 			loading = true;
-			const response = await seoApi.getAnalysis(contentType, parseInt(contentId));
-			analysis = response.analysis;
+			analysis = await seoApi.getAnalysis(contentType, parseInt(contentId));
 		} catch (error) {
 			analysis = null;
 		} finally {

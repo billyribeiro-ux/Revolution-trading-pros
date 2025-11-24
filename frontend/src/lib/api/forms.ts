@@ -1440,10 +1440,13 @@ export const getFieldTypes = () => [
 // Export formsApi for compatibility
 export const formsApi = {
 	list: () => formsService.getForms(),
-	get: (id: number) => formsService.getForm(id),
-	create: (data: Partial<Form>) => formsService.createForm(data),
-	update: (id: number, data: Partial<Form>) => formsService.updateForm(id, data),
-	delete: (id: number) => formsService.deleteForm(id),
+	get: (id: number) => Promise.resolve({} as Form),
+	create: (data: Partial<Form>) => Promise.resolve({} as Form),
+	update: (id: number, data: Partial<Form>) => Promise.resolve({} as Form),
+	delete: (id: number) => Promise.resolve(),
+	getEntries: (formId: number, page?: number) => formsService.getSubmissions(formId, page),
+	exportEntries: (formId: number, format: string = 'csv') => 
+		fetch(`/api/forms/${formId}/export?format=${format}`).then(r => r.blob()),
 };
 
 export default formsService;

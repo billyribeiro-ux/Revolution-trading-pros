@@ -60,8 +60,8 @@
 					searchQuery: searchQuery || undefined
 				}),
 				getSubscriptionStats(),
-				getUpcomingRenewals(7),
-				getFailedPayments()
+				Promise.resolve(getUpcomingRenewals()),
+				Promise.resolve(getFailedPayments())
 			]);
 
 			subscriptions = subsResponse;

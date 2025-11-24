@@ -440,10 +440,6 @@
 		z-index: 1;
 	}
 
-	.buy-btn span {
-		position: relative;
-		z-index: 1;
-	}
 
 	.buy-btn:disabled {
 		opacity: 0.6;

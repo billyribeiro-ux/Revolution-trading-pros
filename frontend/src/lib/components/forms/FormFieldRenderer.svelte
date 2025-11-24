@@ -176,7 +176,7 @@
 				minlength={field.validation?.min_length}
 				maxlength={field.validation?.max_length}
 				{...field.attributes || {}}
-			/>
+			></textarea>
 
 			<!-- Select Dropdown -->
 		{:else if field.field_type === 'select'}

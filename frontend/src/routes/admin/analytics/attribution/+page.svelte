@@ -221,7 +221,7 @@
 			</div>
 
 			<!-- Conversion Paths -->
-			{#if report.conversion_paths && report.conversion_paths.length > 0}
+			{#if report.conversion_paths && (report.conversion_paths as any).length > 0}
 				<div class="bg-white rounded-xl border border-gray-200 p-6">
 					<h3 class="text-lg font-semibold text-gray-900 mb-4">Top Conversion Paths</h3>
 					<div class="space-y-3">

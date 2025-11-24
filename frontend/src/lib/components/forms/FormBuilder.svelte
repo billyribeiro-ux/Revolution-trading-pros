@@ -186,7 +186,7 @@
 						placeholder="Optional form description"
 						class="form-input"
 						rows="3"
-					/>
+					></textarea>
 				</div>
 			</div>
 
