@@ -39,8 +39,11 @@
 	// Calculate average retention per period
 	$: periodAverages = periodNumbers.map(period => {
 		const values = data
-			.filter(row => row.periods[period])
-			.map(row => row.periods[period].retention_rate);
+			.filter(row => row.periods && row.periods[period])
+			.map(row => {
+				const periodData = row.periods![period];
+				return typeof periodData === 'number' ? periodData : periodData.retention_rate;
+			});
 
 		if (values.length === 0) return null;
 		return values.reduce((a, b) => a + b, 0) / values.length;
@@ -82,9 +85,9 @@
 							{row.cohort_size.toLocaleString()}
 						</td>
 						{#each periodNumbers as period}
-							{@const periodData = row.periods[period]}
+							{@const periodData = row.periods ? row.periods[period] : null}
 							<td class="px-1 py-1">
-								{#if periodData}
+								{#if periodData && typeof periodData === 'object'}
 									{@const value = metricType === 'retention'
 										? periodData.retention_rate
 										: periodData.total_revenue}
@@ -114,7 +117,7 @@
 						Average
 					</td>
 					<td class="px-3 py-2 text-center text-gray-600">
-						{Math.round(data.reduce((sum, row) => sum + row.cohort_size, 0) / data.length).toLocaleString()}
+						{Math.round(data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length).toLocaleString()}
 					</td>
 					{#each periodAverages as avg, period}
 						<td class="px-1 py-1">
