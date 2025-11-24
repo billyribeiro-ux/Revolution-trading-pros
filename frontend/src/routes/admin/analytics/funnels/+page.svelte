@@ -180,7 +180,7 @@
 				<FunnelChart
 					steps={selectedFunnel.steps}
 					title={selectedFunnel.name}
-					showDropoff={true}
+					showDropOff={true}
 				/>
 
 				<!-- Step Details Table -->

@@ -268,7 +268,7 @@
 								<FunnelChart
 									steps={funnel.steps}
 									title={funnel.name}
-									showDropoff={true}
+									showDropOff={true}
 								/>
 							{/each}
 						</div>

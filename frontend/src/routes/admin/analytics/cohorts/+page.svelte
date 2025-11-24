@@ -54,7 +54,7 @@
 				period: selectedPeriod,
 				granularity: selectedGranularity
 			});
-			cohorts = response.cohorts || [];
+			cohorts = (response.cohorts || []) as any;
 			if (cohorts.length > 0 && !selectedCohort) {
 				selectedCohort = cohorts[0];
 			}
@@ -230,7 +230,6 @@
 			<CohortMatrix
 				data={selectedCohort.retention_matrix}
 				title={selectedCohort.name}
-				periodLabel={selectedGranularity === 'weekly' ? 'Week' : selectedGranularity === 'monthly' ? 'Month' : 'Day'}
 			/>
 
 			<!-- Cohort Info -->
