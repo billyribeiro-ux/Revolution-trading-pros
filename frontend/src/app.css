@@ -9,6 +9,32 @@
  */
 
 /* ═══════════════════════════════════════════════════════════════════════════
+ * Tailwind v4 Theme Configuration
+ * Custom colors for Revolution Trading Pros brand
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+	/* RTP Brand Colors */
+	--color-rtp-bg: #f3f3f3;
+	--color-rtp-surface: #ffffff;
+	--color-rtp-border: #d1d5db;
+	--color-rtp-text: #1f2937;
+	--color-rtp-muted: #6b7280;
+	--color-rtp-primary: #0078d4;
+	--color-rtp-primarySoft: #e5f1fb;
+	--color-rtp-emerald: #107c10;
+	--color-rtp-indigo: #5c2d91;
+	--color-rtp-blue: #2b88d8;
+
+	/* Chart Colors */
+	--color-chart-up: #34d399;
+	--color-chart-down: #ef4444;
+
+	/* Font Families */
+	--font-heading: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
  * CSS Custom Properties - Design System Tokens
  * Enterprise-grade design tokens for consistency and maintainability
  * ═══════════════════════════════════════════════════════════════════════════ */

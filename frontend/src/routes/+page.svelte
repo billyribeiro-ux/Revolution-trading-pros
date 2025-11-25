@@ -1,3 +1,16 @@
+<script lang="ts">
+	import Hero from '$lib/components/Hero.svelte';
+	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
+	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
+	import WhySection from '$lib/components/sections/WhySection.svelte';
+	import MentorshipSection from '$lib/components/sections/MentorshipSection.svelte';
+	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
+	import CTASection from '$lib/components/sections/CTASection.svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+</script>
+
 <svelte:head>
 	<title>Revolution Trading Pros | Live Trading Rooms, Alerts & Pro Tools</title>
 
@@ -53,3 +66,24 @@
 		}
 	</script>
 </svelte:head>
+
+<!-- Hero Section with animated chart background -->
+<Hero />
+
+<!-- Trading Rooms Section -->
+<TradingRoomsSection />
+
+<!-- Alert Services Section -->
+<AlertServicesSection />
+
+<!-- Why Choose Us Section -->
+<WhySection />
+
+<!-- Mentorship Section -->
+<MentorshipSection />
+
+<!-- Latest Blog Posts Section -->
+<LatestBlogsSection posts={data.posts} />
+
+<!-- Call to Action Section -->
+<CTASection />
