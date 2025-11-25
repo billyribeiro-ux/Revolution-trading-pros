@@ -55,19 +55,19 @@
 	const navItems: NavItem[] = [
 		{
 			id: 'live',
-			label: 'Live Trading',
+			label: 'Live Trading Rooms',
 			submenu: [
-				{ href: '/day-trading', label: 'Day Trading Room' },
-				{ href: '/swing-trading', label: 'Swing Trading Room' },
-				{ href: '/small-accounts', label: 'Small Accounts Room' }
+				{ href: '/live-trading-rooms/day-trading', label: 'Day Trading Room' },
+				{ href: '/live-trading-rooms/swing-trading', label: 'Swing Trading Room' },
+				{ href: '/live-trading-rooms/small-accounts', label: 'Small Accounts Room' }
 			]
 		},
 		{
 			id: 'alerts',
-			label: 'Alerts',
+			label: 'Alert Services',
 			submenu: [
-				{ href: '/spx-profit-pulse', label: 'SPX Profit Pulse' },
-				{ href: '/explosive-swings', label: 'Explosive Swings' }
+				{ href: '/alerts/spx-profit-pulse', label: 'SPX Profit Pulse' },
+				{ href: '/alerts/explosive-swings', label: 'Explosive Swings' }
 			]
 		},
 		{ id: 'mentorship', label: 'Mentorship', href: '/mentorship' },
@@ -79,8 +79,17 @@
 				{ href: '/indicators', label: 'Indicators' }
 			]
 		},
+		{ id: 'mission', label: 'Our Mission', href: '/our-mission' },
 		{ id: 'about', label: 'About', href: '/about' },
-		{ id: 'blog', label: 'Blog', href: '/blog' }
+		{ id: 'blog', label: 'Blogs', href: '/blog' },
+		{
+			id: 'resources',
+			label: 'Resources',
+			submenu: [
+				{ href: '/resources/etf-stocks-list', label: 'ETF Stocks List' },
+				{ href: '/resources/stock-indexes-list', label: 'Stock Indexes List' }
+			]
+		}
 	];
 
 	const userMenuItems: UserMenuItem[] = [
@@ -231,7 +240,8 @@
 							>
 								{item.label}
 								<IconChevronDown
-									size={14}
+									size={18}
+									stroke-width={3}
 									style="transform: rotate({activeDropdown === item.id ? 180 : 0}deg); transition: transform 0.2s;"
 								/>
 							</button>
@@ -296,12 +306,13 @@
 						{#if isUserMenuOpen}
 							<div class="nav-user-menu">
 								{#each userMenuItems as menuItem (menuItem.href)}
+									{@const Icon = menuItem.icon}
 									<a
 										href={menuItem.href}
 										class="nav-user-item"
 										onclick={() => (isUserMenuOpen = false)}
 									>
-										<svelte:component this={menuItem.icon} size={16} />
+										<Icon size={16} />
 										{menuItem.label}
 									</a>
 								{/each}
@@ -363,7 +374,8 @@
 						>
 							<span>{item.label}</span>
 							<IconChevronRight
-								size={18}
+								size={20}
+								stroke-width={3}
 								style="transform: rotate({activeMobileSubmenu === item.id ? 90 : 0}deg); transition: transform 0.2s;"
 							/>
 						</button>
@@ -517,12 +529,12 @@
 	.nav-link {
 		display: inline-flex;
 		align-items: center;
-		gap: 4px;
-		padding: 8px 14px;
+		gap: 6px;
+		padding: 10px 16px;
 		color: #e5e7eb;
 		font-family: 'Montserrat', system-ui, sans-serif;
-		font-weight: 600;
-		font-size: 0.875rem;
+		font-weight: 700;
+		font-size: 1rem;
 		text-decoration: none;
 		white-space: nowrap;
 		border: 1px solid transparent;

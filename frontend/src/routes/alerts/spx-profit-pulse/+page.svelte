@@ -146,7 +146,7 @@
 		name="keywords"
 		content="SPX 0DTE alerts, options trading signals, SPX signals, 0DTE trading strategy, same day expiration options"
 	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/alert-services/spx-profit-pulse" />
+	<link rel="canonical" href="https://revolutiontradingpros.com/alerts/spx-profit-pulse" />
 
 	<meta property="og:type" content="product" />
 	<meta property="og:title" content="SPX Profit Pulse | Real-Time 0DTE Alerts" />
@@ -156,7 +156,7 @@
 	/>
 	<meta
 		property="og:url"
-		content="https://revolutiontradingpros.com/alert-services/spx-profit-pulse"
+		content="https://revolutiontradingpros.com/alerts/spx-profit-pulse"
 	/>
 	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-spx-pulse.jpg" />
 

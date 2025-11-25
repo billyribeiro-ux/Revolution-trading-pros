@@ -73,7 +73,7 @@
 			priceCurrency: 'USD',
 			price: selectedPlan === 'monthly' ? '97' : '927',
 			availability: 'https://schema.org/InStock',
-			url: 'https://revolutiontradingpros.com/explosive-swings',
+			url: 'https://revolutiontradingpros.com/alerts/explosive-swings',
 			category: 'FinancialService'
 		}
 	};
@@ -122,7 +122,7 @@
 		property="og:description"
 		content="Don't stare at charts all day. Get high-probability swing trade alerts sent to your phone."
 	/>
-	<meta property="og:url" content="https://revolutiontradingpros.com/explosive-swings" />
+	<meta property="og:url" content="https://revolutiontradingpros.com/alerts/explosive-swings" />
 	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-swings.jpg" />
 
 	<meta name="twitter:card" content="summary_large_image" />

@@ -25,7 +25,7 @@
 			buttons: [
 				{
 					text: 'Claim Offer',
-					link: '/day-trading',
+					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
 					gradient: 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
@@ -96,7 +96,7 @@
 			buttons: [
 				{
 					text: 'Show Me The Offer',
-					link: '/explosive-swings',
+					link: '/alerts/explosive-swings',
 					action: 'custom',
 					style: 'primary',
 					gradient: 'bg-gradient-to-r from-red-500 to-orange-500'
@@ -241,7 +241,7 @@
 			buttons: [
 				{
 					text: 'View Deals',
-					link: '/day-trading',
+					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary'
 				}
@@ -321,7 +321,7 @@
 			buttons: [
 				{
 					text: 'Reserve My Spot',
-					link: '/day-trading',
+					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
 					gradient: 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500'

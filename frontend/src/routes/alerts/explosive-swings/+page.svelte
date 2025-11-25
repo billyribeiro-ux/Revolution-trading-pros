@@ -121,7 +121,7 @@
 					priceCurrency: 'USD',
 					price: billingInterval === 'monthly' ? '97' : '927',
 					availability: 'https://schema.org/InStock',
-					url: 'https://revolutiontradingpros.com/explosive-swings'
+					url: 'https://revolutiontradingpros.com/alerts/explosive-swings'
 				},
 				aggregateRating: {
 					'@type': 'AggregateRating',
@@ -154,7 +154,7 @@
 		name="keywords"
 		content="swing trading alerts, stock options alerts, swing trade signals, multi-day trading strategies, SPX swing trading"
 	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/explosive-swings" />
+	<link rel="canonical" href="https://revolutiontradingpros.com/alerts/explosive-swings" />
 
 	<meta property="og:type" content="product" />
 	<meta property="og:title" content="Explosive Swings Alerts | Catch Multi-Day Moves" />
@@ -162,7 +162,7 @@
 		property="og:description"
 		content="Don't stare at charts all day. Get high-probability swing trade alerts sent to your phone."
 	/>
-	<meta property="og:url" content="https://revolutiontradingpros.com/explosive-swings" />
+	<meta property="og:url" content="https://revolutiontradingpros.com/alerts/explosive-swings" />
 	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-swings.jpg" />
 
 	<meta name="twitter:card" content="summary_large_image" />

@@ -82,8 +82,8 @@
 			title: 'SPX Profit Pulse',
 			subtitle: 'Context-Rich Alerts',
 			description: 'Receive SPX alerts with entry context, invalidation, and sizing guidance (not lottery tickets).',
-			primaryCTA: { text: 'View Alerts', href: '/alert-services/spx-profit-pulse' },
-			secondaryCTA: { text: 'Learn More', href: '/alert-services' }
+			primaryCTA: { text: 'Get Alerts', href: '/alerts/spx-profit-pulse' },
+			secondaryCTA: { text: 'Learn More', href: '/alerts/explosive-swings' }
 		},
 		{
 			title: 'Trading Frameworks',
