@@ -26,13 +26,10 @@
 	async function loadPopups() {
 		loading = true;
 		try {
-			// TODO: Replace with actual API call when backend is ready
-			// popups = await getAllPopups();
-
-			// Mock data for now
-			popups = [];
+			popups = await getAllPopups();
 		} catch (error) {
 			console.error('Error loading popups:', error);
+			popups = [];
 		} finally {
 			loading = false;
 		}
@@ -50,7 +47,7 @@
 
 	async function handleToggleStatus(popup: Popup) {
 		try {
-			await togglePopupStatus(popup.id);
+			await togglePopupStatus(popup.id, !popup.isActive);
 			await loadPopups();
 		} catch (error) {
 			console.error('Error toggling popup status:', error);

@@ -267,7 +267,7 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="segment-name">Name</label>
 						<input
 							type="text"
 							bind:value={newSegment.name}
@@ -277,7 +277,7 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="segment-description">Description</label>
 						<textarea
 							bind:value={newSegment.description}
 							placeholder="Describe this segment..."
@@ -287,8 +287,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+						<label for="segment-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
 						<select
+							id="segment-type"
 							bind:value={newSegment.type}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 						>
@@ -302,7 +303,7 @@
 				<!-- Rules -->
 				<div>
 					<div class="flex items-center justify-between mb-3">
-						<label class="text-sm font-medium text-gray-700">Rules</label>
+						<span class="text-sm font-medium text-gray-700">Rules</span>
 						<button
 							on:click={addRule}
 							class="text-sm text-blue-600 hover:text-blue-700 font-medium"

@@ -309,27 +309,27 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="report-name">Name</label>
 						<input
 							type="text"
-							bind:value={newReport.name}
+							id="report-name" bind:value={newReport.name}
 							placeholder="e.g., Weekly Revenue Report"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="report-description">Description</label>
 						<textarea
-							bind:value={newReport.description}
+							id="report-description" bind:value={newReport.description}
 							placeholder="Describe this report..."
 							rows={2}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 						></textarea>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="report-type">Type</label>
 						<select
-							bind:value={newReport.type}
+							id="report-type" bind:value={newReport.type}
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 						>
 							<option value="dashboard">Dashboard</option>
@@ -342,7 +342,7 @@
 
 				<!-- Metrics -->
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Metrics</label>
+					<span class="block text-sm font-medium text-gray-700 mb-2" for="report-metrics">Metrics</span>
 					<div class="flex flex-wrap gap-2">
 						{#each availableMetrics as metric}
 							<button
@@ -360,7 +360,7 @@
 
 				<!-- Dimensions -->
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Dimensions</label>
+					<span class="block text-sm font-medium text-gray-700 mb-2" for="report-dimensions">Dimensions</span>
 					<div class="flex flex-wrap gap-2">
 						{#each availableDimensions as dimension}
 							<button
@@ -390,7 +390,7 @@
 					{#if newReport.schedule}
 						<div class="mt-4 space-y-4 pl-7">
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+								<label for="report-frequency" class="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
 								<select
 									bind:value={newReport.frequency}
 									class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -401,10 +401,9 @@
 								</select>
 							</div>
 							<div>
-								<label class="block text-sm font-medium text-gray-700 mb-1"
-									>Recipients (comma-separated)</label
-								>
+								<label for="report-recipients" class="block text-sm font-medium text-gray-700 mb-1">Recipients (comma-separated)</label>
 								<input
+									id="report-recipients"
 									type="text"
 									bind:value={newReport.recipients}
 									placeholder="email@example.com, another@example.com"

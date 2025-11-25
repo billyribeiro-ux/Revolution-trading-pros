@@ -472,13 +472,13 @@
 									</div>
 
 									<div class="form-group">
-										<label>Button Text</label>
-										<input type="text" bind:value={button.text} class="form-input" />
+										<label for={`btn-text-${index}`}>Button Text</label>
+										<input id={`btn-text-${index}`} type="text" bind:value={button.text} class="form-input" />
 									</div>
 
 									<div class="form-group">
-										<label>Style</label>
-										<select bind:value={button.style} class="form-input">
+										<label for={`btn-style-${index}`}>Style</label>
+										<select id={`btn-style-${index}`} bind:value={button.style} class="form-input">
 											<option value="primary">Primary</option>
 											<option value="secondary">Secondary</option>
 											<option value="outline">Outline</option>
@@ -487,8 +487,8 @@
 									</div>
 
 									<div class="form-group">
-										<label>Action</label>
-										<select bind:value={button.action} class="form-input">
+										<label for={`btn-action-${index}`}>Action</label>
+										<select id={`btn-action-${index}`} bind:value={button.action} class="form-input">
 											<option value="close">Close popup</option>
 											<option value="submit">Submit form</option>
 											<option value="custom">Custom (link)</option>
@@ -497,9 +497,9 @@
 
 									{#if button.action === 'custom'}
 										<div class="form-group">
-											<label>Link URL</label>
+											<label for={`btn-link-${index}`}>Link URL</label>
 											<input
-												type="text"
+												id={`btn-link-${index}`} type="text"
 												bind:value={button.link}
 												class="form-input"
 												placeholder="https://..."
@@ -545,13 +545,13 @@
 									</div>
 
 									<div class="form-group">
-										<label>Field Name</label>
-										<input type="text" bind:value={field.name} class="form-input" />
+										<label for={`field-name-${index}`}>Field Name</label>
+										<input id={`field-name-${index}`} type="text" bind:value={field.name} class="form-input" />
 									</div>
 
 									<div class="form-group">
-										<label>Field Type</label>
-										<select bind:value={field.type} class="form-input">
+										<label for={`field-type-${index}`}>Field Type</label>
+										<select id={`field-type-${index}`} bind:value={field.type} class="form-input">
 											<option value="text">Text</option>
 											<option value="email">Email</option>
 											<option value="tel">Phone</option>
@@ -561,8 +561,8 @@
 									</div>
 
 									<div class="form-group">
-										<label>Placeholder</label>
-										<input type="text" bind:value={field.placeholder} class="form-input" />
+										<label for={`field-placeholder-${index}`}>Placeholder</label>
+										<input id={`field-placeholder-${index}`} type="text" bind:value={field.placeholder} class="form-input" />
 									</div>
 
 									<div class="form-group">
@@ -574,8 +574,9 @@
 
 									{#if field.type === 'select'}
 										<div class="form-group">
-											<label>Options (one per line)</label>
+											<label for={`field-options-${index}`}>Options (one per line)</label>
 											<textarea
+												id={`field-options-${index}`}
 												bind:value={field.options}
 												class="form-textarea"
 												rows="4"
