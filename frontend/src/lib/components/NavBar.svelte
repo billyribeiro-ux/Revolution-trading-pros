@@ -2,12 +2,11 @@
 	/**
 	 * NavBar Component - Google L8+ Production Standard
 	 * ══════════════════════════════════════════════════════════════════════════════
-	 * SvelteKit 5 | Zero CLS | Static Logo | Proper Flex Containment
+	 * SvelteKit 5 | CSS Grid Layout | Zero CLS | Static Logo | No Overflow
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import type { ComponentType } from 'svelte';
 	import {
@@ -123,12 +122,7 @@
 	function toggleMobileMenu(): void {
 		isMobileMenuOpen = !isMobileMenuOpen;
 		activeMobileSubmenu = null;
-
-		if (isMobileMenuOpen) {
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.overflow = '';
-		}
+		document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
 	}
 
 	function closeMobileMenu(): void {
@@ -209,88 +203,92 @@
 	});
 </script>
 
-<header class="nav-header" class:scrolled={isScrolled}>
-	<div class="nav-container">
-		<!-- LOGO: FIXED dimensions, flex-shrink: 0, NEVER changes size -->
-		<a href="/" class="nav-logo" onclick={closeMobileMenu}>
-			<img
-				src="/revolution-trading-pros.png"
-				alt="Revolution Trading Pros"
-				width="200"
-				height="68"
-				class="nav-logo-img"
-			/>
-		</a>
+<header class="header" class:header--scrolled={isScrolled}>
+	<div class="header__container">
+		<!-- COLUMN 1: LOGO - Fixed width, immutable -->
+		<div class="header__logo">
+			<a href="/" class="logo" onclick={closeMobileMenu}>
+				<img
+					src="/revolution-trading-pros.png"
+					alt="Revolution Trading Pros"
+					width="200"
+					height="68"
+					class="logo__image"
+				/>
+			</a>
+		</div>
 
-		<!-- DESKTOP NAV: flex-grow, min-width: 0, overflow: hidden -->
+		<!-- COLUMN 2: NAV - Only on desktop, fills remaining space -->
 		{#if isDesktop}
-			<nav class="nav-desktop">
-				{#each navItems as item (item.id)}
-					{#if item.submenu}
-						<div class="nav-dropdown" data-dropdown={item.id}>
-							<button
-								type="button"
-								class="nav-link"
-								aria-expanded={activeDropdown === item.id}
-								aria-haspopup="true"
-								onclick={(e) => {
-									e.stopPropagation();
-									activeDropdown = activeDropdown === item.id ? null : item.id;
-								}}
+			<nav class="header__nav">
+				<div class="nav">
+					{#each navItems as item (item.id)}
+						{#if item.submenu}
+							<div class="nav__dropdown" data-dropdown={item.id}>
+								<button
+									type="button"
+									class="nav__link"
+									aria-expanded={activeDropdown === item.id}
+									aria-haspopup="true"
+									onclick={(e) => {
+										e.stopPropagation();
+										activeDropdown = activeDropdown === item.id ? null : item.id;
+									}}
+								>
+									<span>{item.label}</span>
+									<IconChevronDown
+										size={16}
+										stroke={2.5}
+										style="transform: rotate({activeDropdown === item.id ? 180 : 0}deg); transition: transform 0.2s;"
+									/>
+								</button>
+
+								{#if activeDropdown === item.id}
+									<div class="dropdown">
+										{#each item.submenu as sub (sub.href)}
+											<a
+												href={sub.href}
+												class="dropdown__item"
+												class:dropdown__item--active={$page.url.pathname === sub.href}
+												onclick={() => (activeDropdown = null)}
+											>
+												{sub.label}
+											</a>
+										{/each}
+									</div>
+								{/if}
+							</div>
+						{:else}
+							<a
+								href={item.href}
+								class="nav__link"
+								class:nav__link--active={$page.url.pathname === item.href}
 							>
 								{item.label}
-								<IconChevronDown
-									size={18}
-									stroke-width={3}
-									style="transform: rotate({activeDropdown === item.id ? 180 : 0}deg); transition: transform 0.2s;"
-								/>
-							</button>
-
-							{#if activeDropdown === item.id}
-								<div class="nav-dropdown-menu">
-									{#each item.submenu as sub (sub.href)}
-										<a
-											href={sub.href}
-											class="nav-dropdown-item"
-											class:active={$page.url.pathname === sub.href}
-											onclick={() => (activeDropdown = null)}
-										>
-											{sub.label}
-										</a>
-									{/each}
-								</div>
-							{/if}
-						</div>
-					{:else}
-						<a
-							href={item.href}
-							class="nav-link"
-							class:active={$page.url.pathname === item.href}
-						>
-							{item.label}
-						</a>
-					{/if}
-				{/each}
+							</a>
+						{/if}
+					{/each}
+				</div>
 			</nav>
 		{/if}
 
-		<!-- ACTIONS: flex-shrink: 0, fixed size -->
-		<div class="nav-actions">
+		<!-- COLUMN 3: ACTIONS - Auto width, fixed position -->
+		<div class="header__actions">
 			{#if $hasCartItems}
-				<a href="/cart" class="nav-cart" aria-label="Shopping cart">
+				<a href="/cart" class="cart-btn" aria-label="Shopping cart">
 					<IconShoppingCart size={22} />
 					{#if $cartItemCount > 0}
-						<span class="nav-cart-badge">{$cartItemCount}</span>
+						<span class="cart-btn__badge">{$cartItemCount}</span>
 					{/if}
 				</a>
 			{/if}
 
 			{#if isDesktop}
 				{#if $isAuthenticated}
-					<div class="nav-user" data-user-menu>
+					<div class="user-menu" data-user-menu>
 						<button
 							type="button"
-							class="nav-user-btn"
+							class="user-menu__trigger"
 							aria-expanded={isUserMenuOpen}
 							aria-haspopup="true"
 							onclick={(e) => {
@@ -299,32 +297,32 @@
 							}}
 						>
 							<IconUser size={18} />
-							<span class="nav-user-name">{$user?.name || 'Account'}</span>
+							<span class="user-menu__name">{$user?.name || 'Account'}</span>
 							<IconChevronDown size={12} />
 						</button>
 
 						{#if isUserMenuOpen}
-							<div class="nav-user-menu">
+							<div class="user-menu__dropdown">
 								{#each userMenuItems as menuItem (menuItem.href)}
 									{@const Icon = menuItem.icon}
 									<a
 										href={menuItem.href}
-										class="nav-user-item"
+										class="user-menu__item"
 										onclick={() => (isUserMenuOpen = false)}
 									>
 										<Icon size={16} />
-										{menuItem.label}
+										<span>{menuItem.label}</span>
 									</a>
 								{/each}
-								<button type="button" class="nav-user-item danger" onclick={handleLogout}>
+								<button type="button" class="user-menu__item user-menu__item--danger" onclick={handleLogout}>
 									<IconLogout size={16} />
-									Logout
+									<span>Logout</span>
 								</button>
 							</div>
 						{/if}
 					</div>
 				{:else}
-					<a href="/login" class="nav-login-btn">
+					<a href="/login" class="login-btn">
 						<IconUser size={18} />
 						<span>Login</span>
 					</a>
@@ -335,7 +333,7 @@
 				<button
 					type="button"
 					bind:this={hamburgerRef}
-					class="nav-hamburger"
+					class="hamburger"
 					aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
 					aria-expanded={isMobileMenuOpen}
 					onclick={toggleMobileMenu}
@@ -351,42 +349,42 @@
 	</div>
 </header>
 
-<!-- MOBILE MENU -->
+<!-- MOBILE PANEL -->
 {#if !isDesktop && isMobileMenuOpen}
-	<div class="mobile-backdrop" onclick={closeMobileMenu} aria-hidden="true"></div>
+	<div class="mobile-overlay" onclick={closeMobileMenu} aria-hidden="true"></div>
 
 	<nav class="mobile-panel" bind:this={mobileNavRef} aria-label="Mobile navigation">
-		<div class="mobile-header">
-			<button type="button" class="mobile-close" onclick={closeMobileMenu} aria-label="Close menu">
+		<div class="mobile-panel__header">
+			<button type="button" class="mobile-panel__close" onclick={closeMobileMenu} aria-label="Close menu">
 				<IconX size={24} />
 			</button>
 		</div>
 
-		<div class="mobile-content">
+		<div class="mobile-panel__body">
 			{#each navItems as item (item.id)}
 				{#if item.submenu}
-					<div class="mobile-group">
+					<div class="mobile-nav__group">
 						<button
 							type="button"
-							class="mobile-link"
+							class="mobile-nav__link"
 							aria-expanded={activeMobileSubmenu === item.id}
 							onclick={() => (activeMobileSubmenu = activeMobileSubmenu === item.id ? null : item.id)}
 						>
 							<span>{item.label}</span>
 							<IconChevronRight
-								size={20}
-								stroke-width={3}
+								size={18}
+								stroke={2.5}
 								style="transform: rotate({activeMobileSubmenu === item.id ? 90 : 0}deg); transition: transform 0.2s;"
 							/>
 						</button>
 
 						{#if activeMobileSubmenu === item.id}
-							<div class="mobile-submenu">
+							<div class="mobile-nav__submenu">
 								{#each item.submenu as sub (sub.href)}
 									<a
 										href={sub.href}
-										class="mobile-sublink"
-										class:active={$page.url.pathname === sub.href}
+										class="mobile-nav__sublink"
+										class:mobile-nav__sublink--active={$page.url.pathname === sub.href}
 										onclick={closeMobileMenu}
 									>
 										{sub.label}
@@ -398,8 +396,8 @@
 				{:else}
 					<a
 						href={item.href}
-						class="mobile-link"
-						class:active={$page.url.pathname === item.href}
+						class="mobile-nav__link"
+						class:mobile-nav__link--active={$page.url.pathname === item.href}
 						onclick={closeMobileMenu}
 					>
 						{item.label}
@@ -407,21 +405,21 @@
 				{/if}
 			{/each}
 
-			<div class="mobile-footer">
+			<div class="mobile-panel__footer">
 				{#if $isAuthenticated}
-					<div class="mobile-user-section">
-						<div class="mobile-user-name">{$user?.name}</div>
+					<div class="mobile-user">
+						<div class="mobile-user__name">{$user?.name}</div>
 						{#each userMenuItems as menuItem (menuItem.href)}
-							<a href={menuItem.href} class="mobile-sublink" onclick={closeMobileMenu}>
+							<a href={menuItem.href} class="mobile-nav__sublink" onclick={closeMobileMenu}>
 								{menuItem.label}
 							</a>
 						{/each}
-						<button type="button" class="mobile-sublink danger" onclick={handleLogout}>
+						<button type="button" class="mobile-nav__sublink mobile-nav__sublink--danger" onclick={handleLogout}>
 							Logout
 						</button>
 					</div>
 				{:else}
-					<a href="/login" class="nav-login-btn full-width" onclick={closeMobileMenu}>
+					<a href="/login" class="login-btn login-btn--full" onclick={closeMobileMenu}>
 						Login
 					</a>
 				{/if}
@@ -432,180 +430,215 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * HEADER - Fixed height, sticky, zero CLS
+	 * VARIABLES
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-header {
+	:root {
+		--header-height: 80px;
+		--header-height-mobile: 64px;
+		--logo-width: 200px;
+		--logo-width-mobile: 140px;
+		--logo-height: 68px;
+		--logo-height-mobile: 48px;
+		--color-bg: #05142b;
+		--color-text: #e5e7eb;
+		--color-text-muted: #94a3b8;
+		--color-accent: #facc15;
+		--color-danger: #f87171;
+		--color-border: rgba(148, 163, 253, 0.15);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * HEADER - Fixed height, sticky
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.header {
 		position: sticky;
 		top: 0;
 		left: 0;
 		right: 0;
 		z-index: 1000;
-		height: 80px;
+		height: var(--header-height);
 		background: rgba(5, 20, 43, 0.95);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid rgba(148, 163, 253, 0.15);
-		transition: background-color 0.2s ease, box-shadow 0.2s ease;
+		border-bottom: 1px solid var(--color-border);
+		transition: background-color 0.2s, box-shadow 0.2s;
 	}
 
-	.nav-header.scrolled {
+	.header--scrolled {
 		background: rgba(5, 20, 43, 0.99);
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 	}
 
 	@media (max-width: 768px) {
-		.nav-header {
-			height: 64px;
+		.header {
+			height: var(--header-height-mobile);
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CONTAINER - Three-column flex layout
-	 * Logo (fixed) | Nav (grows/shrinks) | Actions (fixed)
+	 * CONTAINER - CSS GRID for bulletproof layout
+	 * 3 columns: [logo: fixed] [nav: 1fr] [actions: auto]
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-container {
-		display: flex;
+	.header__container {
+		display: grid;
+		grid-template-columns: var(--logo-width) 1fr auto;
 		align-items: center;
 		height: 100%;
 		max-width: 1440px;
 		margin: 0 auto;
 		padding: 0 24px;
+		gap: 16px;
+	}
+
+	@media (max-width: 1024px) {
+		.header__container {
+			grid-template-columns: var(--logo-width-mobile) 1fr auto;
+		}
 	}
 
 	@media (max-width: 768px) {
-		.nav-container {
+		.header__container {
 			padding: 0 16px;
+			gap: 12px;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * LOGO - STATIC FIXED SIZE, NEVER SHRINKS, NEVER GROWS
-	 * This is the KEY fix - explicit width/height, flex: 0 0 auto
+	 * LOGO - Fixed dimensions, NEVER changes
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-logo {
-		flex: 0 0 200px; /* FIXED basis, no grow, no shrink */
-		width: 200px;
-		height: 68px;
-		display: flex;
-		align-items: center;
+	.header__logo {
+		width: var(--logo-width);
+		height: var(--logo-height);
+		overflow: hidden; /* Ensure nothing escapes */
 	}
 
-	.nav-logo-img {
-		width: 200px;
-		height: 68px;
+	.logo {
+		display: block;
+		width: var(--logo-width);
+		height: var(--logo-height);
+	}
+
+	.logo__image {
+		display: block;
+		width: var(--logo-width);
+		height: var(--logo-height);
 		object-fit: contain;
 		object-position: left center;
 	}
 
-	@media (max-width: 768px) {
-		.nav-logo {
-			flex: 0 0 140px;
-			width: 140px;
-			height: 48px;
+	@media (max-width: 1024px) {
+		.header__logo {
+			width: var(--logo-width-mobile);
+			height: var(--logo-height-mobile);
 		}
 
-		.nav-logo-img {
-			width: 140px;
-			height: 48px;
+		.logo {
+			width: var(--logo-width-mobile);
+			height: var(--logo-height-mobile);
+		}
+
+		.logo__image {
+			width: var(--logo-width-mobile);
+			height: var(--logo-height-mobile);
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * DESKTOP NAV - Grows to fill space, clips overflow, centered
-	 * min-width: 0 allows flex item to shrink below content size
-	 * overflow: hidden prevents content from escaping
+	 * NAV - Fills middle column, clips overflow
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-desktop {
-		flex: 1 1 0;      /* Grow and shrink equally */
-		min-width: 0;     /* CRITICAL: Allow shrinking below content */
+	.header__nav {
+		min-width: 0; /* Allow grid item to shrink */
+		overflow: hidden; /* Clip any overflow */
+	}
+
+	.nav {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 4px;
-		padding: 0 24px;
-		overflow: hidden; /* CRITICAL: Clip overflow */
+		gap: 2px;
+		overflow: hidden; /* Double protection */
 	}
 
-	.nav-link {
+	.nav__dropdown {
+		position: relative;
+	}
+
+	.nav__link {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		padding: 10px 16px;
-		color: #e5e7eb;
+		gap: 4px;
+		padding: 8px 12px;
+		color: var(--color-text);
 		font-family: 'Montserrat', system-ui, sans-serif;
 		font-weight: 700;
-		font-size: 1rem;
+		font-size: 0.9rem;
 		text-decoration: none;
 		white-space: nowrap;
+		background: transparent;
 		border: 1px solid transparent;
 		border-radius: 999px;
-		background: transparent;
 		cursor: pointer;
 		transition: color 0.15s, background-color 0.15s, border-color 0.15s;
 	}
 
-	.nav-link:hover,
-	.nav-link:focus-visible,
-	.nav-link.active {
-		color: #facc15;
+	.nav__link:hover,
+	.nav__link:focus-visible,
+	.nav__link--active {
+		color: var(--color-accent);
 		background: rgba(255, 255, 255, 0.05);
 		border-color: rgba(250, 204, 21, 0.2);
 	}
 
-	.nav-link:focus-visible {
-		outline: 2px solid #facc15;
+	.nav__link:focus-visible {
+		outline: 2px solid var(--color-accent);
 		outline-offset: 2px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * DROPDOWN
+	 * DROPDOWN MENU
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-dropdown {
-		position: relative;
-	}
-
-	.nav-dropdown-menu {
+	.dropdown {
 		position: absolute;
 		top: 100%;
 		left: 50%;
 		transform: translateX(-50%);
 		margin-top: 8px;
 		min-width: 200px;
-		background: #05142b;
-		border: 1px solid rgba(148, 163, 253, 0.2);
+		background: var(--color-bg);
+		border: 1px solid var(--color-border);
 		border-radius: 12px;
 		padding: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 		z-index: 100;
 	}
 
-	.nav-dropdown-item {
+	.dropdown__item {
 		display: block;
 		padding: 10px 14px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 		font-size: 0.9rem;
 		text-decoration: none;
 		border-radius: 8px;
 		transition: background-color 0.15s, color 0.15s;
 	}
 
-	.nav-dropdown-item:hover,
-	.nav-dropdown-item.active {
+	.dropdown__item:hover,
+	.dropdown__item--active {
 		background: rgba(250, 204, 21, 0.1);
-		color: #facc15;
+		color: var(--color-accent);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * ACTIONS - Fixed size, never shrinks
+	 * ACTIONS - Auto width column
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-actions {
-		flex: 0 0 auto; /* FIXED: No grow, no shrink */
+	.header__actions {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 	}
 
-	.nav-cart {
+	/* Cart Button */
+	.cart-btn {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -618,19 +651,19 @@
 		transition: background-color 0.15s;
 	}
 
-	.nav-cart:hover {
+	.cart-btn:hover {
 		background: rgba(139, 92, 246, 0.2);
 	}
 
-	.nav-cart-badge {
+	.cart-btn__badge {
 		position: absolute;
 		top: -4px;
 		right: -4px;
 		min-width: 18px;
 		height: 18px;
 		padding: 0 5px;
-		background: #facc15;
-		color: #05142b;
+		background: var(--color-accent);
+		color: var(--color-bg);
 		font-size: 0.7rem;
 		font-weight: 700;
 		line-height: 18px;
@@ -638,7 +671,8 @@
 		border-radius: 999px;
 	}
 
-	.nav-login-btn {
+	/* Login Button */
+	.login-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
@@ -652,31 +686,29 @@
 		transition: box-shadow 0.2s;
 	}
 
-	.nav-login-btn:hover {
+	.login-btn:hover {
 		box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
 	}
 
-	.nav-login-btn.full-width {
+	.login-btn--full {
 		width: 100%;
 		justify-content: center;
 		padding: 14px 20px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * USER MENU
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-user {
+	/* User Menu */
+	.user-menu {
 		position: relative;
 	}
 
-	.nav-user-btn {
+	.user-menu__trigger {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		padding: 8px 14px;
 		background: rgba(250, 204, 21, 0.1);
 		border: 1px solid rgba(250, 204, 21, 0.3);
-		color: #facc15;
+		color: var(--color-accent);
 		font-size: 0.9rem;
 		font-family: inherit;
 		border-radius: 8px;
@@ -684,39 +716,39 @@
 		transition: background-color 0.15s, border-color 0.15s;
 	}
 
-	.nav-user-btn:hover {
+	.user-menu__trigger:hover {
 		background: rgba(250, 204, 21, 0.15);
 		border-color: rgba(250, 204, 21, 0.5);
 	}
 
-	.nav-user-name {
+	.user-menu__name {
 		max-width: 100px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
-	.nav-user-menu {
+	.user-menu__dropdown {
 		position: absolute;
 		top: 100%;
 		right: 0;
 		margin-top: 8px;
 		width: 200px;
-		background: #05142b;
-		border: 1px solid rgba(148, 163, 253, 0.2);
+		background: var(--color-bg);
+		border: 1px solid var(--color-border);
 		border-radius: 12px;
 		padding: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 		z-index: 100;
 	}
 
-	.nav-user-item {
+	.user-menu__item {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 		width: 100%;
 		padding: 10px 12px;
-		color: #e2e8f0;
+		color: var(--color-text);
 		font-size: 0.9rem;
 		font-family: inherit;
 		text-decoration: none;
@@ -728,22 +760,20 @@
 		transition: background-color 0.15s;
 	}
 
-	.nav-user-item:hover {
+	.user-menu__item:hover {
 		background: rgba(255, 255, 255, 0.05);
 	}
 
-	.nav-user-item.danger {
-		color: #f87171;
+	.user-menu__item--danger {
+		color: var(--color-danger);
 	}
 
-	.nav-user-item.danger:hover {
+	.user-menu__item--danger:hover {
 		background: rgba(248, 113, 113, 0.1);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * HAMBURGER
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.nav-hamburger {
+	/* Hamburger */
+	.hamburger {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -757,14 +787,14 @@
 		transition: background-color 0.15s;
 	}
 
-	.nav-hamburger:hover {
+	.hamburger:hover {
 		background: rgba(255, 255, 255, 0.1);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * MOBILE MENU
+	 * MOBILE OVERLAY
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.mobile-backdrop {
+	.mobile-overlay {
 		position: fixed;
 		inset: 0;
 		z-index: 1001;
@@ -772,6 +802,9 @@
 		backdrop-filter: blur(4px);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * MOBILE PANEL
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.mobile-panel {
 		position: fixed;
 		top: 0;
@@ -779,8 +812,8 @@
 		bottom: 0;
 		z-index: 1002;
 		width: min(85vw, 360px);
-		background: #05142b;
-		border-left: 1px solid rgba(148, 163, 253, 0.15);
+		background: var(--color-bg);
+		border-left: 1px solid var(--color-border);
 		box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
 		display: flex;
 		flex-direction: column;
@@ -792,43 +825,50 @@
 		to { transform: translateX(0); }
 	}
 
-	.mobile-header {
+	.mobile-panel__header {
 		display: flex;
 		justify-content: flex-end;
 		padding: 16px;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.mobile-close {
+	.mobile-panel__close {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 40px;
 		height: 40px;
-		color: #e5e7eb;
+		color: var(--color-text);
 		background: transparent;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
 	}
 
-	.mobile-close:hover {
+	.mobile-panel__close:hover {
 		background: rgba(255, 255, 255, 0.1);
 	}
 
-	.mobile-content {
+	.mobile-panel__body {
 		flex: 1;
 		overflow-y: auto;
 		padding: 16px;
 	}
 
-	.mobile-link {
+	.mobile-panel__footer {
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	/* Mobile Nav Links */
+	.mobile-nav__link {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		width: 100%;
 		padding: 14px 0;
-		color: #e5e7eb;
+		color: var(--color-text);
 		font-size: 1.05rem;
 		font-weight: 600;
 		font-family: inherit;
@@ -840,21 +880,21 @@
 		text-align: left;
 	}
 
-	.mobile-link:hover,
-	.mobile-link.active {
-		color: #facc15;
+	.mobile-nav__link:hover,
+	.mobile-nav__link--active {
+		color: var(--color-accent);
 	}
 
-	.mobile-submenu {
+	.mobile-nav__submenu {
 		padding: 8px 0 8px 16px;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.mobile-sublink {
+	.mobile-nav__sublink {
 		display: block;
 		width: 100%;
 		padding: 10px 0;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 		font-size: 0.95rem;
 		font-family: inherit;
 		text-decoration: none;
@@ -864,43 +904,38 @@
 		cursor: pointer;
 	}
 
-	.mobile-sublink:hover,
-	.mobile-sublink.active {
-		color: #facc15;
+	.mobile-nav__sublink:hover,
+	.mobile-nav__sublink--active {
+		color: var(--color-accent);
 	}
 
-	.mobile-sublink.danger {
-		color: #f87171;
+	.mobile-nav__sublink--danger {
+		color: var(--color-danger);
 	}
 
-	.mobile-footer {
-		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.mobile-user-section {
+	/* Mobile User */
+	.mobile-user {
 		padding: 16px;
 		background: rgba(255, 255, 255, 0.03);
 		border-radius: 12px;
 	}
 
-	.mobile-user-name {
+	.mobile-user__name {
 		margin-bottom: 12px;
-		color: #facc15;
+		color: var(--color-accent);
 		font-weight: 600;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * GLOBAL SCROLL PADDING
+	 * GLOBAL
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	:global(html) {
-		scroll-padding-top: 80px;
+		scroll-padding-top: var(--header-height);
 	}
 
 	@media (max-width: 768px) {
 		:global(html) {
-			scroll-padding-top: 64px;
+			scroll-padding-top: var(--header-height-mobile);
 		}
 	}
 </style>
