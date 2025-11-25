@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\Error404Controller;
 use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\FormSubmissionController;
+use App\Http\Controllers\Api\HealthCheckController;
 use App\Http\Controllers\Api\IndicatorController;
 use App\Http\Controllers\Api\MeController;
 use App\Http\Controllers\Api\NewsletterController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\Api\TimerAnalyticsController;
 use App\Http\Controllers\Api\UserSubscriptionController as ApiUserSubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Api\Admin\MediaController;
+use App\Http\Middleware\RateLimitMedia;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Api\EmailTemplateBuilderController;
@@ -32,6 +35,15 @@ use App\Http\Controllers\Admin\UserSubscriptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MemberController;
 use Illuminate\Support\Facades\Route;
+
+// ========================================
+// HEALTH CHECK ENDPOINTS (Kubernetes Probes)
+// ========================================
+Route::prefix('health')->group(function () {
+    Route::get('/live', [HealthCheckController::class, 'liveness']);
+    Route::get('/ready', [HealthCheckController::class, 'readiness']);
+    Route::get('/optimization', [HealthCheckController::class, 'optimization']);
+});
 
 // Public routes
 Route::get('/time/now', [TimeController::class, 'now']);
@@ -313,6 +325,49 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::delete('/videos/{id}', [VideoController::class, 'destroy']);
     Route::get('/videos/{id}/analytics', [VideoController::class, 'analytics']);
     Route::get('/videos/{id}/heatmap', [VideoController::class, 'heatmap']);
+
+    // ========================================
+    // MEDIA & IMAGE OPTIMIZATION ENGINE
+    // Google Enterprise Grade with Rate Limiting
+    // ========================================
+
+    // Media Library (Read operations - higher limits)
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::get('/media/statistics', [MediaController::class, 'statistics']);
+    Route::get('/media/collections', [MediaController::class, 'collections']);
+    Route::get('/media/presets', [MediaController::class, 'presets']);
+    Route::get('/media/{id}', [MediaController::class, 'show']);
+    Route::get('/media/{id}/download', [MediaController::class, 'download'])
+        ->middleware(RateLimitMedia::class . ':download');
+
+    // Media Upload (Rate limited)
+    Route::post('/media/upload', [MediaController::class, 'upload'])
+        ->middleware(RateLimitMedia::class . ':upload');
+    Route::post('/media/bulk-upload', [MediaController::class, 'bulkUpload'])
+        ->middleware(RateLimitMedia::class . ':bulk_upload');
+    Route::post('/media/{id}/replace', [MediaController::class, 'replace'])
+        ->middleware(RateLimitMedia::class . ':upload');
+
+    // Media Update/Delete (Rate limited)
+    Route::put('/media/{id}', [MediaController::class, 'update']);
+    Route::delete('/media/{id}', [MediaController::class, 'destroy'])
+        ->middleware(RateLimitMedia::class . ':delete');
+    Route::post('/media/bulk-delete', [MediaController::class, 'bulkDestroy'])
+        ->middleware(RateLimitMedia::class . ':bulk_delete');
+
+    // Image Optimization (Rate limited)
+    Route::post('/media/{id}/optimize', [MediaController::class, 'optimize'])
+        ->middleware(RateLimitMedia::class . ':optimize');
+    Route::post('/media/bulk-optimize', [MediaController::class, 'bulkOptimize'])
+        ->middleware(RateLimitMedia::class . ':bulk_optimize');
+    Route::post('/media/optimize-all', [MediaController::class, 'optimizeAll'])
+        ->middleware(RateLimitMedia::class . ':bulk_optimize');
+    Route::post('/media/{id}/regenerate', [MediaController::class, 'regenerate'])
+        ->middleware(RateLimitMedia::class . ':optimize');
+
+    // Optimization Queue (No rate limiting - monitoring)
+    Route::get('/media/queue/status', [MediaController::class, 'queueStatus']);
+    Route::get('/media/jobs/{jobId}', [MediaController::class, 'jobStatus']);
 });
 
 // Form preview and submission (public)
