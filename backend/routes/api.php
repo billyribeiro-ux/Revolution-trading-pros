@@ -89,6 +89,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/me/mfa/verify', [AuthController::class, 'verifyMFA']);
     Route::post('/me/mfa/disable', [AuthController::class, 'disableMFA']);
 
+    // Session management (Microsoft-style single-session auth)
+    Route::get('/me/sessions', [AuthController::class, 'getSessions']);
+    Route::post('/me/sessions/logout-all', [AuthController::class, 'logoutAllDevices']);
+    Route::delete('/me/sessions/{sessionId}', [AuthController::class, 'revokeSession']);
+
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::post('/cart/checkout', [CartController::class, 'checkout']);

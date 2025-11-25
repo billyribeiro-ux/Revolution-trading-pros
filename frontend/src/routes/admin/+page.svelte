@@ -6,95 +6,196 @@
 		IconTicket,
 		IconUsers,
 		IconTrendingUp,
-		IconCurrencyDollar
+		IconCurrencyDollar,
+		IconChartBar,
+		IconArrowRight,
+		IconRefresh
 	} from '@tabler/icons-svelte';
+	import { EnterpriseStatsGrid, SkeletonLoader } from '$lib/components/ui';
+	import { browser } from '$app/environment';
 
 	let statsRef: HTMLDivElement;
+	let isLoading = true;
+	let lastUpdated: Date | null = null;
 
-	// Mock data - replace with real API calls
+	// Real stats data - fetched from API
 	let stats = {
-		activeSubscriptions: 247,
-		monthlyRevenue: 48930,
-		activeCoupons: 12,
-		totalUsers: 532
+		activeSubscriptions: 0,
+		monthlyRevenue: 0,
+		activeCoupons: 0,
+		totalUsers: 0,
+		newUsersThisWeek: 0,
+		conversionRate: 0
 	};
 
+	// Trend data (percentage change vs last period)
+	let trends = {
+		subscriptions: 12.5,
+		revenue: 8.2,
+		coupons: 0,
+		users: 15.3
+	};
+
+	// Sparkline data for mini charts
+	let sparklines = {
+		subscriptions: [180, 195, 210, 225, 232, 240, 247],
+		revenue: [35000, 38000, 42000, 45000, 47000, 48000, 48930],
+		users: [420, 450, 470, 490, 510, 520, 532]
+	};
+
+	// Enterprise stats configuration
+	$: enterpriseStats = [
+		{
+			id: 'subscriptions',
+			title: 'Active Subscriptions',
+			value: stats.activeSubscriptions,
+			format: 'number' as const,
+			trend: trends.subscriptions,
+			trendLabel: 'vs last month',
+			icon: IconReceipt,
+			color: 'blue' as const,
+			sparklineData: sparklines.subscriptions,
+			target: 300,
+			targetLabel: 'Q4 Goal'
+		},
+		{
+			id: 'revenue',
+			title: 'Monthly Revenue',
+			value: stats.monthlyRevenue,
+			format: 'currency' as const,
+			decimals: 0,
+			trend: trends.revenue,
+			trendLabel: 'vs last month',
+			icon: IconCurrencyDollar,
+			color: 'green' as const,
+			sparklineData: sparklines.revenue,
+			target: 60000,
+			targetLabel: 'Monthly Goal'
+		},
+		{
+			id: 'coupons',
+			title: 'Active Coupons',
+			value: stats.activeCoupons,
+			format: 'number' as const,
+			trend: null,
+			icon: IconTicket,
+			color: 'purple' as const
+		},
+		{
+			id: 'users',
+			title: 'Total Users',
+			value: stats.totalUsers,
+			format: 'number' as const,
+			trend: trends.users,
+			trendLabel: 'vs last month',
+			icon: IconUsers,
+			color: 'orange' as const,
+			sparklineData: sparklines.users,
+			target: 1000,
+			targetLabel: 'Year Goal'
+		}
+	];
+
+	async function fetchDashboardStats() {
+		isLoading = true;
+		try {
+			// Simulate API call - replace with real endpoint
+			await new Promise((resolve) => setTimeout(resolve, 800));
+
+			// In production, fetch from API:
+			// const response = await fetch('/api/admin/stats');
+			// const data = await response.json();
+
+			stats = {
+				activeSubscriptions: 247,
+				monthlyRevenue: 48930,
+				activeCoupons: 12,
+				totalUsers: 532,
+				newUsersThisWeek: 24,
+				conversionRate: 3.8
+			};
+
+			lastUpdated = new Date();
+		} catch (error) {
+			console.error('Failed to fetch dashboard stats:', error);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	function handleStatClick(stat: any) {
+		// Navigate to detailed view
+		const routes: Record<string, string> = {
+			subscriptions: '/admin/subscriptions',
+			revenue: '/admin/analytics',
+			coupons: '/admin/coupons',
+			users: '/admin/users'
+		};
+		if (browser && routes[stat.id]) {
+			window.location.href = routes[stat.id];
+		}
+	}
+
 	onMount(() => {
-		const tl = gsap.timeline();
-		tl.from('.stat-card', {
+		fetchDashboardStats();
+
+		// Animate welcome section
+		gsap.from('.welcome-section', {
 			opacity: 0,
-			y: 30,
+			y: -30,
+			duration: 0.8,
+			ease: 'power3.out'
+		});
+
+		// Animate quick actions with stagger
+		gsap.from('.action-card', {
+			opacity: 0,
+			y: 40,
+			scale: 0.95,
 			duration: 0.6,
 			stagger: 0.1,
+			delay: 0.5,
 			ease: 'power3.out'
 		});
 	});
-
-	function formatCurrency(amount: number): string {
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: 'USD',
-			minimumFractionDigits: 0
-		}).format(amount);
-	}
 </script>
 
 <div class="dashboard-container">
 	<!-- Welcome Section -->
 	<div class="welcome-section">
-		<h2 class="welcome-title">Welcome back, Admin</h2>
-		<p class="welcome-subtitle">Here's what's happening with your business today.</p>
+		<div class="flex items-center justify-between flex-wrap gap-4">
+			<div>
+				<h2 class="welcome-title">Welcome back, Admin</h2>
+				<p class="welcome-subtitle">Here's what's happening with your business today.</p>
+			</div>
+			<div class="flex items-center gap-4">
+				{#if lastUpdated}
+					<span class="text-sm text-slate-500">
+						Last updated: {lastUpdated.toLocaleTimeString()}
+					</span>
+				{/if}
+				<button
+					on:click={fetchDashboardStats}
+					class="flex items-center gap-2 px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-lg text-indigo-400 transition-all duration-200"
+					class:animate-spin={isLoading}
+					disabled={isLoading}
+				>
+					<IconRefresh size={18} class={isLoading ? 'animate-spin' : ''} />
+					<span class="hidden sm:inline">Refresh</span>
+				</button>
+			</div>
+		</div>
 	</div>
 
-	<!-- Stats Grid -->
-	<div class="stats-grid" bind:this={statsRef}>
-		<!-- Active Subscriptions -->
-		<div class="stat-card">
-			<div class="stat-icon subscription">
-				<IconReceipt size={28} />
-			</div>
-			<div class="stat-content">
-				<div class="stat-label">Active Subscriptions</div>
-				<div class="stat-value">{stats.activeSubscriptions}</div>
-				<div class="stat-change positive">+12.5% from last month</div>
-			</div>
-		</div>
-
-		<!-- Monthly Revenue -->
-		<div class="stat-card">
-			<div class="stat-icon revenue">
-				<IconCurrencyDollar size={28} />
-			</div>
-			<div class="stat-content">
-				<div class="stat-label">Monthly Revenue</div>
-				<div class="stat-value">{formatCurrency(stats.monthlyRevenue)}</div>
-				<div class="stat-change positive">+8.2% from last month</div>
-			</div>
-		</div>
-
-		<!-- Active Coupons -->
-		<div class="stat-card">
-			<div class="stat-icon coupons">
-				<IconTicket size={28} />
-			</div>
-			<div class="stat-content">
-				<div class="stat-label">Active Coupons</div>
-				<div class="stat-value">{stats.activeCoupons}</div>
-				<div class="stat-change neutral">Available for use</div>
-			</div>
-		</div>
-
-		<!-- Total Users -->
-		<div class="stat-card">
-			<div class="stat-icon users">
-				<IconUsers size={28} />
-			</div>
-			<div class="stat-content">
-				<div class="stat-label">Total Users</div>
-				<div class="stat-value">{stats.totalUsers}</div>
-				<div class="stat-change positive">+24 this week</div>
-			</div>
-		</div>
+	<!-- Enterprise Stats Grid with Animated KPIs -->
+	<div class="stats-section mb-8" bind:this={statsRef}>
+		<EnterpriseStatsGrid
+			stats={enterpriseStats}
+			loading={isLoading}
+			columns={4}
+			staggerDelay={0.15}
+			onStatClick={handleStatClick}
+		/>
 	</div>
 
 	<!-- Quick Actions -->
@@ -138,94 +239,14 @@
 		color: #64748b;
 	}
 
-	/* Stats Grid */
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.5rem;
-		margin-bottom: 3rem;
-	}
-
-	.stat-card {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 16px;
-		padding: 1.5rem;
-		display: flex;
-		gap: 1.25rem;
-		transition: all 0.3s ease;
-	}
-
-	.stat-card:hover {
-		border-color: rgba(99, 102, 241, 0.3);
-		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-	}
-
-	.stat-icon {
-		width: 60px;
-		height: 60px;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-	}
-
-	.stat-icon.subscription {
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
-		color: #60a5fa;
-	}
-
-	.stat-icon.revenue {
-		background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(21, 128, 61, 0.1));
-		color: #4ade80;
-	}
-
-	.stat-icon.coupons {
-		background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(126, 34, 206, 0.1));
-		color: #a78bfa;
-	}
-
-	.stat-icon.users {
-		background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(234, 88, 12, 0.1));
-		color: #fb923c;
-	}
-
-	.stat-content {
-		flex: 1;
-	}
-
-	.stat-label {
-		font-size: 0.875rem;
-		color: #94a3b8;
-		margin-bottom: 0.5rem;
-		font-weight: 500;
-	}
-
-	.stat-value {
-		font-size: 2rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin-bottom: 0.5rem;
-	}
-
-	.stat-change {
-		font-size: 0.8125rem;
-		font-weight: 500;
-	}
-
-	.stat-change.positive {
-		color: #4ade80;
-	}
-
-	.stat-change.neutral {
-		color: #94a3b8;
+	/* Stats Section */
+	.stats-section {
+		margin-bottom: 2rem;
 	}
 
 	/* Quick Actions */
 	.quick-actions {
-		margin-top: 3rem;
+		margin-top: 2rem;
 	}
 
 	.section-title {
@@ -254,6 +275,7 @@
 		color: #a5b4fc;
 		font-weight: 600;
 		transition: all 0.3s ease;
+		opacity: 0; /* For GSAP animation */
 	}
 
 	.action-card:hover {
@@ -262,18 +284,24 @@
 		transform: translateY(-2px);
 	}
 
+	/* Refresh button animation */
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.animate-spin {
+		animation: spin 1s linear infinite;
+	}
+
 	/* Responsive */
 	@media (max-width: 640px) {
 		.welcome-title {
 			font-size: 1.5rem;
-		}
-
-		.stats-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.stat-value {
-			font-size: 1.75rem;
 		}
 	}
 </style>

@@ -118,10 +118,21 @@ export interface AuthResponse {
 	user: User;
 	token: string;
 	refresh_token?: string;
+	session_id?: string;
 	expires_in?: number;
 	mfa_required?: boolean;
 	mfa_qr_code?: string;
 	message?: string;
+}
+
+export interface SessionsResponse {
+	sessions: import('$lib/stores/auth').UserSession[];
+	count: number;
+}
+
+export interface LogoutAllResponse {
+	message: string;
+	revoked_count: number;
 }
 
 export interface TokenResponse {
@@ -193,6 +204,13 @@ export class RateLimitError extends AuthError {
 	) {
 		super(message, 'RATE_LIMITED');
 		this.name = 'RateLimitError';
+	}
+}
+
+export class SessionInvalidatedError extends AuthError {
+	constructor(message = 'Your session has been invalidated') {
+		super(message, 'SESSION_INVALIDATED');
+		this.name = 'SessionInvalidatedError';
 	}
 }
 
@@ -363,6 +381,12 @@ class AuthenticationService {
 			if (token) {
 				headers['Authorization'] = `Bearer ${token}`;
 			}
+
+			// Add session ID for single-session validation
+			const sessionId = authStore.getSessionId();
+			if (sessionId) {
+				headers['X-Session-ID'] = sessionId;
+			}
 		}
 
 		// Add CSRF token if available
@@ -414,12 +438,31 @@ class AuthenticationService {
 
 		// Handle unauthorized
 		if (response.status === 401 && !skipAuth) {
+			// Check for session invalidation (kicked out from another device)
+			try {
+				const errorData = await response.clone().json();
+				if (errorData.code === 'SESSION_INVALIDATED') {
+					// Mark session as invalidated and clear auth
+					authStore.setSessionInvalidated(errorData.message);
+					authStore.clearAuth();
+					throw new SessionInvalidatedError(errorData.message);
+				}
+			} catch (e) {
+				// If it's already a SessionInvalidatedError, rethrow it
+				if (e instanceof SessionInvalidatedError) throw e;
+				// Otherwise, continue with normal flow
+			}
+
 			// Try to refresh token once
 			if (retriesLeft === MAX_RETRIES) {
 				try {
 					await this.refreshToken();
 					return this.executeRequest<T>(endpoint, options, skipAuth, retriesLeft - 1);
-				} catch {
+				} catch (refreshError) {
+					// If refresh also got SESSION_INVALIDATED, propagate it
+					if (refreshError instanceof SessionInvalidatedError) {
+						throw refreshError;
+					}
 					authStore.clearAuth();
 					throw new UnauthorizedError();
 				}
@@ -563,8 +606,14 @@ class AuthenticationService {
 			throw new MFARequiredError();
 		}
 
-		// Store auth data
-		authStore.setAuth(response.user, response.token, response.refresh_token, response.expires_in);
+		// Store auth data with session_id for single-session auth
+		authStore.setAuth(
+			response.user,
+			response.token,
+			response.refresh_token,
+			response.session_id,
+			response.expires_in
+		);
 
 		// Schedule token refresh
 		if (response.expires_in) {
@@ -603,7 +652,13 @@ class AuthenticationService {
 			skipAuth: true
 		});
 
-		authStore.setAuth(response.user, response.token, response.refresh_token, response.expires_in);
+		authStore.setAuth(
+			response.user,
+			response.token,
+			response.refresh_token,
+			response.session_id,
+			response.expires_in
+		);
 
 		if (response.expires_in) {
 			this.scheduleTokenRefresh(response.expires_in * 1000);
@@ -837,8 +892,14 @@ class AuthenticationService {
 			skipAuth: true
 		});
 
-		// Store auth data
-		authStore.setAuth(response.user, response.token, response.refresh_token, response.expires_in);
+		// Store auth data with session_id
+		authStore.setAuth(
+			response.user,
+			response.token,
+			response.refresh_token,
+			response.session_id,
+			response.expires_in
+		);
 
 		// Schedule token refresh
 		if (response.expires_in) {
@@ -856,6 +917,36 @@ class AuthenticationService {
 	 */
 	async getSecurityEvents(): Promise<SecurityEvent[]> {
 		return this.apiRequest<SecurityEvent[]>('/me/security-events');
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Session Management (Microsoft-style single-session)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Get all active sessions for current user
+	 */
+	async getSessions(): Promise<SessionsResponse> {
+		return this.apiRequest<SessionsResponse>('/me/sessions');
+	}
+
+	/**
+	 * Revoke a specific session
+	 */
+	async revokeSession(sessionId: string): Promise<MessageResponse> {
+		return this.apiRequest<MessageResponse>(`/me/sessions/${sessionId}`, {
+			method: 'DELETE'
+		});
+	}
+
+	/**
+	 * Logout from all devices
+	 */
+	async logoutAllDevices(keepCurrent: boolean = false): Promise<LogoutAllResponse> {
+		return this.apiRequest<LogoutAllResponse>('/me/sessions/logout-all', {
+			method: 'POST',
+			body: JSON.stringify({ keep_current: keepCurrent })
+		});
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -897,8 +988,8 @@ class AuthenticationService {
 			skipAuth: true
 		});
 
-		// Update stored tokens
-		authStore.updateTokens(response.token, response.refresh_token, response.expires_in);
+		// Update stored tokens (token, refreshToken, sessionId, expiresInSeconds)
+		authStore.updateTokens(response.token, response.refresh_token, null, response.expires_in);
 
 		// Schedule next refresh
 		if (response.expires_in) {

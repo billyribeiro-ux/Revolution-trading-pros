@@ -109,6 +109,12 @@ import IconMinimize from '@tabler/icons-svelte/icons/minimize';
 import IconTextCaption from '@tabler/icons-svelte/icons/text-caption';
 import IconPictureInPicture from '@tabler/icons-svelte/icons/picture-in-picture';
 import IconPictureInPictureOn from '@tabler/icons-svelte/icons/picture-in-picture-on';
+// Export/File icons
+import IconCsv from '@tabler/icons-svelte/icons/csv';
+import IconJson from '@tabler/icons-svelte/icons/json';
+import IconPdf from '@tabler/icons-svelte/icons/pdf';
+import IconFileExport from '@tabler/icons-svelte/icons/file-export';
+import IconFileSpreadsheet from '@tabler/icons-svelte/icons/file-spreadsheet';
 
 // Re-export all icons
 export {
@@ -212,7 +218,13 @@ export {
 	IconMinimize,
 	IconTextCaption,
 	IconPictureInPicture,
-	IconPictureInPictureOn
+	IconPictureInPictureOn,
+	// Export/File icons
+	IconCsv,
+	IconJson,
+	IconPdf,
+	IconFileExport,
+	IconFileSpreadsheet
 };
 
 import type { Component } from 'svelte';
