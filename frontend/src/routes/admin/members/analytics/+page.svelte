@@ -1,0 +1,985 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import {
+		IconArrowLeft,
+		IconChartBar,
+		IconChartLine,
+		IconTrendingUp,
+		IconTrendingDown,
+		IconUsers,
+		IconCurrencyDollar,
+		IconRefresh,
+		IconDownload,
+		IconCalendar,
+		IconFilter
+	} from '@tabler/icons-svelte';
+
+	// Analytics data
+	let loading = true;
+	let dateRange = '30d';
+
+	// Metrics
+	let metrics = {
+		totalMembers: 0,
+		memberGrowth: 0,
+		mrr: 0,
+		mrrGrowth: 0,
+		churnRate: 0,
+		churnChange: 0,
+		avgLtv: 0,
+		ltvGrowth: 0
+	};
+
+	// Chart data
+	let growthData: { month: string; members: number; new: number; churned: number }[] = [];
+	let cohortData: { cohort: string; m0: number; m1: number; m2: number; m3: number; m4: number; m5: number }[] = [];
+	let revenueData: { month: string; mrr: number; expansion: number; contraction: number; churn: number }[] = [];
+	let churnReasons: { reason: string; count: number; percentage: number }[] = [];
+	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] = [];
+
+	onMount(async () => {
+		await loadAnalytics();
+	});
+
+	async function loadAnalytics() {
+		loading = true;
+		// Simulate API call with mock data
+		await new Promise((resolve) => setTimeout(resolve, 800));
+
+		metrics = {
+			totalMembers: 12847,
+			memberGrowth: 12.5,
+			mrr: 89420,
+			mrrGrowth: 8.3,
+			churnRate: 2.4,
+			churnChange: -0.3,
+			avgLtv: 847,
+			ltvGrowth: 15.2
+		};
+
+		growthData = [
+			{ month: 'Jul', members: 10200, new: 420, churned: 180 },
+			{ month: 'Aug', members: 10650, new: 580, churned: 130 },
+			{ month: 'Sep', members: 11100, new: 620, churned: 170 },
+			{ month: 'Oct', members: 11780, new: 850, churned: 170 },
+			{ month: 'Nov', members: 12350, new: 720, churned: 150 },
+			{ month: 'Dec', members: 12847, new: 640, churned: 143 }
+		];
+
+		cohortData = [
+			{ cohort: 'Jul 2024', m0: 100, m1: 92, m2: 88, m3: 85, m4: 82, m5: 80 },
+			{ cohort: 'Aug 2024', m0: 100, m1: 94, m2: 89, m3: 86, m4: 84, m5: 0 },
+			{ cohort: 'Sep 2024', m0: 100, m1: 91, m2: 87, m3: 84, m4: 0, m5: 0 },
+			{ cohort: 'Oct 2024', m0: 100, m1: 93, m2: 89, m3: 0, m4: 0, m5: 0 },
+			{ cohort: 'Nov 2024', m0: 100, m1: 95, m2: 0, m3: 0, m4: 0, m5: 0 },
+			{ cohort: 'Dec 2024', m0: 100, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0 }
+		];
+
+		revenueData = [
+			{ month: 'Jul', mrr: 72000, expansion: 3200, contraction: 1100, churn: 2400 },
+			{ month: 'Aug', mrr: 76500, expansion: 4100, contraction: 900, churn: 2200 },
+			{ month: 'Sep', mrr: 80200, expansion: 3800, contraction: 1200, churn: 2100 },
+			{ month: 'Oct', mrr: 84100, expansion: 4500, contraction: 800, churn: 1900 },
+			{ month: 'Nov', mrr: 86800, expansion: 3200, contraction: 1000, churn: 2000 },
+			{ month: 'Dec', mrr: 89420, expansion: 3800, contraction: 900, churn: 1800 }
+		];
+
+		churnReasons = [
+			{ reason: 'Price too high', count: 42, percentage: 28 },
+			{ reason: 'Found alternative', count: 31, percentage: 21 },
+			{ reason: 'Not using enough', count: 27, percentage: 18 },
+			{ reason: 'Technical issues', count: 19, percentage: 13 },
+			{ reason: 'Missing features', count: 16, percentage: 11 },
+			{ reason: 'Other', count: 15, percentage: 10 }
+		];
+
+		segmentData = [
+			{ segment: 'Enterprise', count: 847, revenue: 42350, churnRate: 1.2 },
+			{ segment: 'Professional', count: 3420, revenue: 28140, churnRate: 2.1 },
+			{ segment: 'Starter', count: 5890, revenue: 14720, churnRate: 3.4 },
+			{ segment: 'Trial', count: 2690, revenue: 4210, churnRate: 8.2 }
+		];
+
+		loading = false;
+	}
+
+	function formatCurrency(amount: number): string {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(amount);
+	}
+
+	function formatNumber(num: number): string {
+		return new Intl.NumberFormat('en-US').format(num);
+	}
+
+	function getRetentionColor(value: number): string {
+		if (value === 0) return 'bg-slate-800/50';
+		if (value >= 90) return 'bg-emerald-500/60';
+		if (value >= 80) return 'bg-emerald-500/40';
+		if (value >= 70) return 'bg-yellow-500/40';
+		if (value >= 60) return 'bg-orange-500/40';
+		return 'bg-red-500/40';
+	}
+
+	function getMaxValue(data: number[]): number {
+		return Math.max(...data);
+	}
+</script>
+
+<svelte:head>
+	<title>Member Analytics | Revolution Trading Pros</title>
+</svelte:head>
+
+<div class="analytics-page">
+	<!-- Header -->
+	<div class="page-header">
+		<button class="back-btn" on:click={() => goto('/admin/members')}>
+			<IconArrowLeft size={20} />
+			Back to Members
+		</button>
+
+		<div class="header-content">
+			<div class="header-title">
+				<div class="title-icon">
+					<IconChartBar size={28} />
+				</div>
+				<div>
+					<h1>Member Analytics</h1>
+					<p class="subtitle">Comprehensive insights and metrics</p>
+				</div>
+			</div>
+
+			<div class="header-actions">
+				<div class="date-filter">
+					<IconCalendar size={18} />
+					<select bind:value={dateRange} on:change={loadAnalytics}>
+						<option value="7d">Last 7 days</option>
+						<option value="30d">Last 30 days</option>
+						<option value="90d">Last 90 days</option>
+						<option value="12m">Last 12 months</option>
+					</select>
+				</div>
+				<button class="btn-secondary" on:click={loadAnalytics}>
+					<IconRefresh size={18} />
+					Refresh
+				</button>
+				<button class="btn-primary">
+					<IconDownload size={18} />
+					Export Report
+				</button>
+			</div>
+		</div>
+	</div>
+
+	{#if loading}
+		<div class="loading-grid">
+			{#each [1, 2, 3, 4] as _}
+				<div class="skeleton skeleton-metric"></div>
+			{/each}
+		</div>
+		<div class="skeleton skeleton-chart"></div>
+	{:else}
+		<!-- Key Metrics -->
+		<div class="metrics-grid">
+			<div class="metric-card">
+				<div class="metric-header">
+					<div class="metric-icon purple">
+						<IconUsers size={24} />
+					</div>
+					<div class="metric-trend {metrics.memberGrowth >= 0 ? 'positive' : 'negative'}">
+						{#if metrics.memberGrowth >= 0}
+							<IconTrendingUp size={16} />
+						{:else}
+							<IconTrendingDown size={16} />
+						{/if}
+						{Math.abs(metrics.memberGrowth)}%
+					</div>
+				</div>
+				<div class="metric-value">{formatNumber(metrics.totalMembers)}</div>
+				<div class="metric-label">Total Members</div>
+			</div>
+
+			<div class="metric-card">
+				<div class="metric-header">
+					<div class="metric-icon emerald">
+						<IconCurrencyDollar size={24} />
+					</div>
+					<div class="metric-trend {metrics.mrrGrowth >= 0 ? 'positive' : 'negative'}">
+						{#if metrics.mrrGrowth >= 0}
+							<IconTrendingUp size={16} />
+						{:else}
+							<IconTrendingDown size={16} />
+						{/if}
+						{Math.abs(metrics.mrrGrowth)}%
+					</div>
+				</div>
+				<div class="metric-value">{formatCurrency(metrics.mrr)}</div>
+				<div class="metric-label">Monthly Recurring Revenue</div>
+			</div>
+
+			<div class="metric-card">
+				<div class="metric-header">
+					<div class="metric-icon {metrics.churnChange <= 0 ? 'emerald' : 'red'}">
+						<IconChartLine size={24} />
+					</div>
+					<div class="metric-trend {metrics.churnChange <= 0 ? 'positive' : 'negative'}">
+						{#if metrics.churnChange <= 0}
+							<IconTrendingDown size={16} />
+						{:else}
+							<IconTrendingUp size={16} />
+						{/if}
+						{Math.abs(metrics.churnChange)}%
+					</div>
+				</div>
+				<div class="metric-value">{metrics.churnRate}%</div>
+				<div class="metric-label">Churn Rate</div>
+			</div>
+
+			<div class="metric-card">
+				<div class="metric-header">
+					<div class="metric-icon blue">
+						<IconChartLine size={24} />
+					</div>
+					<div class="metric-trend {metrics.ltvGrowth >= 0 ? 'positive' : 'negative'}">
+						{#if metrics.ltvGrowth >= 0}
+							<IconTrendingUp size={16} />
+						{:else}
+							<IconTrendingDown size={16} />
+						{/if}
+						{Math.abs(metrics.ltvGrowth)}%
+					</div>
+				</div>
+				<div class="metric-value">{formatCurrency(metrics.avgLtv)}</div>
+				<div class="metric-label">Average LTV</div>
+			</div>
+		</div>
+
+		<!-- Charts Grid -->
+		<div class="charts-grid">
+			<!-- Member Growth Chart -->
+			<div class="chart-card">
+				<div class="chart-header">
+					<h3>Member Growth</h3>
+					<div class="chart-legend">
+						<span class="legend-item"><span class="legend-dot purple"></span> Total</span>
+						<span class="legend-item"><span class="legend-dot emerald"></span> New</span>
+						<span class="legend-item"><span class="legend-dot red"></span> Churned</span>
+					</div>
+				</div>
+				<div class="chart-body">
+					<div class="bar-chart">
+						{#each growthData as data}
+							<div class="bar-group">
+								<div class="bar-container">
+									<div
+										class="bar bar-members"
+										style="height: {(data.members / getMaxValue(growthData.map((d) => d.members))) * 100}%"
+									></div>
+								</div>
+								<div class="bar-mini-group">
+									<div
+										class="bar bar-new"
+										style="height: {(data.new / getMaxValue(growthData.map((d) => d.new))) * 60}px"
+									></div>
+									<div
+										class="bar bar-churned"
+										style="height: {(data.churned / getMaxValue(growthData.map((d) => d.churned))) * 60}px"
+									></div>
+								</div>
+								<span class="bar-label">{data.month}</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- MRR Trend Chart -->
+			<div class="chart-card">
+				<div class="chart-header">
+					<h3>Revenue Trend</h3>
+					<div class="chart-legend">
+						<span class="legend-item"><span class="legend-dot emerald"></span> MRR</span>
+					</div>
+				</div>
+				<div class="chart-body">
+					<div class="line-chart">
+						<svg viewBox="0 0 600 200" class="line-chart-svg">
+							<!-- Grid lines -->
+							{#each [0, 1, 2, 3, 4] as i}
+								<line
+									x1="0"
+									y1={i * 50}
+									x2="600"
+									y2={i * 50}
+									stroke="rgba(148, 163, 184, 0.1)"
+									stroke-dasharray="4"
+								/>
+							{/each}
+
+							<!-- Area fill -->
+							<path
+								d="M 0 200 {revenueData
+									.map((d, i) => {
+										const x = (i / (revenueData.length - 1)) * 600;
+										const y = 200 - (d.mrr / 100000) * 180;
+										return `L ${x} ${y}`;
+									})
+									.join(' ')} L 600 200 Z"
+								fill="url(#gradient)"
+								opacity="0.3"
+							/>
+
+							<!-- Line -->
+							<path
+								d="M {revenueData
+									.map((d, i) => {
+										const x = (i / (revenueData.length - 1)) * 600;
+										const y = 200 - (d.mrr / 100000) * 180;
+										return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+									})
+									.join(' ')}"
+								fill="none"
+								stroke="#34d399"
+								stroke-width="3"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+
+							<!-- Points -->
+							{#each revenueData as d, i}
+								<circle
+									cx={(i / (revenueData.length - 1)) * 600}
+									cy={200 - (d.mrr / 100000) * 180}
+									r="5"
+									fill="#34d399"
+								/>
+							{/each}
+
+							<!-- Gradient definition -->
+							<defs>
+								<linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+									<stop offset="0%" style="stop-color:#34d399;stop-opacity:0.4" />
+									<stop offset="100%" style="stop-color:#34d399;stop-opacity:0" />
+								</linearGradient>
+							</defs>
+						</svg>
+						<div class="line-chart-labels">
+							{#each revenueData as d}
+								<span>{d.month}</span>
+							{/each}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Cohort Analysis -->
+		<div class="chart-card full-width">
+			<div class="chart-header">
+				<h3>Retention Cohort Analysis</h3>
+				<p class="chart-subtitle">Monthly retention rates by signup cohort</p>
+			</div>
+			<div class="chart-body">
+				<div class="cohort-table">
+					<table>
+						<thead>
+							<tr>
+								<th>Cohort</th>
+								<th>Month 0</th>
+								<th>Month 1</th>
+								<th>Month 2</th>
+								<th>Month 3</th>
+								<th>Month 4</th>
+								<th>Month 5</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each cohortData as row}
+								<tr>
+									<td class="cohort-name">{row.cohort}</td>
+									<td class={getRetentionColor(row.m0)}>{row.m0}%</td>
+									<td class={getRetentionColor(row.m1)}>{row.m1 || '-'}%</td>
+									<td class={getRetentionColor(row.m2)}>{row.m2 || '-'}%</td>
+									<td class={getRetentionColor(row.m3)}>{row.m3 || '-'}%</td>
+									<td class={getRetentionColor(row.m4)}>{row.m4 || '-'}%</td>
+									<td class={getRetentionColor(row.m5)}>{row.m5 || '-'}%</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bottom Row -->
+		<div class="bottom-grid">
+			<!-- Churn Reasons -->
+			<div class="chart-card">
+				<div class="chart-header">
+					<h3>Churn Reasons</h3>
+				</div>
+				<div class="chart-body">
+					<div class="reasons-list">
+						{#each churnReasons as reason}
+							<div class="reason-item">
+								<div class="reason-info">
+									<span class="reason-name">{reason.reason}</span>
+									<span class="reason-count">{reason.count} members</span>
+								</div>
+								<div class="reason-bar-container">
+									<div class="reason-bar" style="width: {reason.percentage}%"></div>
+								</div>
+								<span class="reason-percentage">{reason.percentage}%</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- Segment Performance -->
+			<div class="chart-card">
+				<div class="chart-header">
+					<h3>Segment Performance</h3>
+				</div>
+				<div class="chart-body">
+					<div class="segment-table">
+						<table>
+							<thead>
+								<tr>
+									<th>Segment</th>
+									<th>Members</th>
+									<th>Revenue</th>
+									<th>Churn</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each segmentData as segment}
+									<tr>
+										<td class="segment-name">{segment.segment}</td>
+										<td>{formatNumber(segment.count)}</td>
+										<td class="revenue">{formatCurrency(segment.revenue)}</td>
+										<td class="churn-rate {segment.churnRate <= 2 ? 'low' : segment.churnRate <= 5 ? 'medium' : 'high'}">
+											{segment.churnRate}%
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.analytics-page {
+		padding: 2rem;
+		max-width: 1600px;
+		margin: 0 auto;
+	}
+
+	/* Header */
+	.back-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0;
+		color: #94a3b8;
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 0.875rem;
+		margin-bottom: 1rem;
+		transition: color 0.2s;
+	}
+
+	.back-btn:hover {
+		color: #a5b4fc;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+	}
+
+	.header-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.title-icon {
+		width: 56px;
+		height: 56px;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+	}
+
+	.header-title h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		margin: 0.25rem 0 0;
+	}
+
+	.header-actions {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+	}
+
+	.date-filter {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 10px;
+		color: #94a3b8;
+	}
+
+	.date-filter select {
+		background: none;
+		border: none;
+		color: #f1f5f9;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+
+	/* Buttons */
+	.btn-primary,
+	.btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.125rem;
+		border-radius: 10px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: none;
+		font-size: 0.875rem;
+	}
+
+	.btn-primary {
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+	}
+
+	.btn-secondary {
+		background: rgba(148, 163, 184, 0.1);
+		color: #94a3b8;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+	}
+
+	/* Loading */
+	.loading-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.skeleton {
+		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 16px;
+	}
+
+	.skeleton-metric {
+		height: 140px;
+	}
+
+	.skeleton-chart {
+		height: 400px;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
+	}
+
+	/* Metrics Grid */
+	.metrics-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.metric-card {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+		padding: 1.5rem;
+	}
+
+	.metric-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+	}
+
+	.metric-icon {
+		width: 48px;
+		height: 48px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.metric-icon.purple { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.metric-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+	.metric-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+	.metric-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+	.metric-trend {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+
+	.metric-trend.positive { color: #34d399; }
+	.metric-trend.negative { color: #f87171; }
+
+	.metric-value {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin-bottom: 0.25rem;
+	}
+
+	.metric-label {
+		font-size: 0.8125rem;
+		color: #64748b;
+	}
+
+	/* Charts Grid */
+	.charts-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.chart-card {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+		overflow: hidden;
+	}
+
+	.chart-card.full-width {
+		grid-column: 1 / -1;
+	}
+
+	.chart-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.chart-header h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.chart-subtitle {
+		font-size: 0.8125rem;
+		color: #64748b;
+		margin: 0.25rem 0 0;
+	}
+
+	.chart-legend {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.legend-item {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: 0.75rem;
+		color: #94a3b8;
+	}
+
+	.legend-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+	}
+
+	.legend-dot.purple { background: #818cf8; }
+	.legend-dot.emerald { background: #34d399; }
+	.legend-dot.red { background: #f87171; }
+
+	.chart-body {
+		padding: 1.5rem;
+	}
+
+	/* Bar Chart */
+	.bar-chart {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		height: 200px;
+		gap: 0.5rem;
+	}
+
+	.bar-group {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.bar-container {
+		width: 100%;
+		height: 140px;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+	}
+
+	.bar {
+		border-radius: 4px 4px 0 0;
+		transition: height 0.3s ease;
+	}
+
+	.bar-members {
+		width: 60%;
+		background: linear-gradient(180deg, #818cf8, #6366f1);
+	}
+
+	.bar-mini-group {
+		display: flex;
+		gap: 4px;
+		height: 60px;
+		align-items: flex-end;
+	}
+
+	.bar-new {
+		width: 16px;
+		background: #34d399;
+	}
+
+	.bar-churned {
+		width: 16px;
+		background: #f87171;
+	}
+
+	.bar-label {
+		font-size: 0.75rem;
+		color: #64748b;
+	}
+
+	/* Line Chart */
+	.line-chart {
+		height: 200px;
+	}
+
+	.line-chart-svg {
+		width: 100%;
+		height: 180px;
+	}
+
+	.line-chart-labels {
+		display: flex;
+		justify-content: space-between;
+		padding: 0.5rem 0;
+		font-size: 0.75rem;
+		color: #64748b;
+	}
+
+	/* Cohort Table */
+	.cohort-table {
+		overflow-x: auto;
+	}
+
+	.cohort-table table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.cohort-table th,
+	.cohort-table td {
+		padding: 0.875rem 1rem;
+		text-align: center;
+		font-size: 0.8125rem;
+	}
+
+	.cohort-table th {
+		color: #94a3b8;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-size: 0.6875rem;
+	}
+
+	.cohort-table td {
+		color: #f1f5f9;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.cohort-name {
+		text-align: left;
+		font-weight: 500;
+		color: #a5b4fc;
+	}
+
+	/* Bottom Grid */
+	.bottom-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+	}
+
+	/* Reasons List */
+	.reasons-list {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.reason-item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.reason-info {
+		width: 140px;
+		flex-shrink: 0;
+	}
+
+	.reason-name {
+		display: block;
+		font-size: 0.875rem;
+		color: #f1f5f9;
+	}
+
+	.reason-count {
+		font-size: 0.75rem;
+		color: #64748b;
+	}
+
+	.reason-bar-container {
+		flex: 1;
+		height: 8px;
+		background: rgba(148, 163, 184, 0.1);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.reason-bar {
+		height: 100%;
+		background: linear-gradient(90deg, #f87171, #ef4444);
+		border-radius: 4px;
+	}
+
+	.reason-percentage {
+		width: 40px;
+		text-align: right;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #f87171;
+	}
+
+	/* Segment Table */
+	.segment-table table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.segment-table th,
+	.segment-table td {
+		padding: 0.875rem 1rem;
+		text-align: left;
+		font-size: 0.875rem;
+	}
+
+	.segment-table th {
+		color: #94a3b8;
+		font-weight: 600;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.segment-table td {
+		color: #cbd5e1;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.segment-name {
+		font-weight: 500;
+		color: #f1f5f9;
+	}
+
+	.segment-table .revenue {
+		color: #34d399;
+		font-weight: 600;
+	}
+
+	.churn-rate.low { color: #34d399; }
+	.churn-rate.medium { color: #fbbf24; }
+	.churn-rate.high { color: #f87171; }
+
+	@media (max-width: 1200px) {
+		.metrics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.charts-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.bottom-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+
+		.header-actions {
+			flex-wrap: wrap;
+		}
+
+		.loading-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+</style>

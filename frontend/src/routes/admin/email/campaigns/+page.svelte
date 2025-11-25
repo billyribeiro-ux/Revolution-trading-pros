@@ -1,0 +1,1224 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { toastStore } from '$lib/stores/toast';
+	import {
+		IconMail,
+		IconPlus,
+		IconCalendar,
+		IconUsers,
+		IconChartBar,
+		IconSearch,
+		IconFilter,
+		IconRefresh,
+		IconSend,
+		IconClock,
+		IconCheck,
+		IconX,
+		IconEdit,
+		IconTrash,
+		IconEye,
+		IconCopy,
+		IconTrendingUp,
+		IconArrowLeft
+	} from '@tabler/icons-svelte';
+
+	// State
+	let loading = true;
+	let activeTab: 'all' | 'scheduled' | 'sent' | 'drafts' = 'all';
+
+	// Campaign data
+	let campaigns: Campaign[] = [];
+	let stats = {
+		totalSent: 0,
+		totalOpened: 0,
+		totalClicked: 0,
+		avgOpenRate: 0,
+		avgClickRate: 0
+	};
+
+	// Create modal
+	let showCreateModal = false;
+	let newCampaign = {
+		name: '',
+		subject: '',
+		subjectB: '',
+		useABTest: false,
+		abTestSplit: 50,
+		scheduledFor: '',
+		segmentId: '',
+		templateId: ''
+	};
+
+	interface Campaign {
+		id: number;
+		name: string;
+		subject: string;
+		status: 'draft' | 'scheduled' | 'sending' | 'sent';
+		type: 'broadcast' | 'automated' | 'ab_test';
+		segment: string;
+		recipients: number;
+		sent_at: string | null;
+		scheduled_for: string | null;
+		stats: {
+			sent: number;
+			opened: number;
+			clicked: number;
+			bounced: number;
+			unsubscribed: number;
+		};
+		ab_test?: {
+			variant_a: { subject: string; open_rate: number };
+			variant_b: { subject: string; open_rate: number };
+			winner: 'a' | 'b' | null;
+		};
+	}
+
+	// Segments for targeting
+	let segments = [
+		{ id: 'all', name: 'All Members', count: 12847 },
+		{ id: 'active', name: 'Active Subscribers', count: 8420 },
+		{ id: 'trial', name: 'Trial Users', count: 2690 },
+		{ id: 'churned', name: 'Churned (Win-back)', count: 1737 },
+		{ id: 'high_value', name: 'High Value (>$500 LTV)', count: 847 },
+		{ id: 'engaged', name: 'Highly Engaged', count: 3250 },
+		{ id: 'at_risk', name: 'At Risk of Churn', count: 620 }
+	];
+
+	// Templates
+	let templates = [
+		{ id: 'welcome', name: 'Welcome Email' },
+		{ id: 'newsletter', name: 'Weekly Newsletter' },
+		{ id: 'promo', name: 'Promotional Offer' },
+		{ id: 'winback', name: 'Win-back Campaign' },
+		{ id: 'custom', name: 'Custom Template' }
+	];
+
+	onMount(async () => {
+		await loadCampaigns();
+	});
+
+	async function loadCampaigns() {
+		loading = true;
+		// Simulate API call
+		await new Promise((r) => setTimeout(r, 600));
+
+		stats = {
+			totalSent: 45230,
+			totalOpened: 18540,
+			totalClicked: 4230,
+			avgOpenRate: 41.0,
+			avgClickRate: 9.4
+		};
+
+		campaigns = [
+			{
+				id: 1,
+				name: 'December Newsletter',
+				subject: 'Your Weekly Trading Insights',
+				status: 'sent',
+				type: 'broadcast',
+				segment: 'Active Subscribers',
+				recipients: 8420,
+				sent_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+				scheduled_for: null,
+				stats: { sent: 8420, opened: 3580, clicked: 890, bounced: 12, unsubscribed: 5 }
+			},
+			{
+				id: 2,
+				name: 'Win-back Campaign A/B',
+				subject: 'We miss you!',
+				status: 'sent',
+				type: 'ab_test',
+				segment: 'Churned',
+				recipients: 1500,
+				sent_at: new Date(Date.now() - 86400000 * 5).toISOString(),
+				scheduled_for: null,
+				stats: { sent: 1500, opened: 420, clicked: 85, bounced: 8, unsubscribed: 3 },
+				ab_test: {
+					variant_a: { subject: 'We miss you!', open_rate: 25.4 },
+					variant_b: { subject: 'Special offer inside', open_rate: 30.2 },
+					winner: 'b'
+				}
+			},
+			{
+				id: 3,
+				name: 'Holiday Promotion',
+				subject: '🎄 25% Off All Plans - Limited Time',
+				status: 'scheduled',
+				type: 'broadcast',
+				segment: 'All Members',
+				recipients: 12847,
+				sent_at: null,
+				scheduled_for: new Date(Date.now() + 86400000 * 2).toISOString(),
+				stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
+			},
+			{
+				id: 4,
+				name: 'Feature Announcement',
+				subject: '',
+				status: 'draft',
+				type: 'broadcast',
+				segment: '',
+				recipients: 0,
+				sent_at: null,
+				scheduled_for: null,
+				stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
+			}
+		];
+
+		loading = false;
+	}
+
+	function getFilteredCampaigns() {
+		if (activeTab === 'all') return campaigns;
+		if (activeTab === 'scheduled') return campaigns.filter((c) => c.status === 'scheduled');
+		if (activeTab === 'sent') return campaigns.filter((c) => c.status === 'sent');
+		if (activeTab === 'drafts') return campaigns.filter((c) => c.status === 'draft');
+		return campaigns;
+	}
+
+	function formatDate(dateStr: string | null): string {
+		if (!dateStr) return '-';
+		return new Date(dateStr).toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+	}
+
+	function formatNumber(num: number): string {
+		return num.toLocaleString();
+	}
+
+	function getStatusColor(status: string): string {
+		switch (status) {
+			case 'sent':
+				return 'bg-emerald-500/20 text-emerald-400';
+			case 'scheduled':
+				return 'bg-blue-500/20 text-blue-400';
+			case 'sending':
+				return 'bg-yellow-500/20 text-yellow-400';
+			default:
+				return 'bg-slate-500/20 text-slate-400';
+		}
+	}
+
+	function handleCreateCampaign() {
+		// Validation
+		if (!newCampaign.name || !newCampaign.subject) {
+			toastStore.error('Please fill in campaign name and subject');
+			return;
+		}
+		if (newCampaign.useABTest && !newCampaign.subjectB) {
+			toastStore.error('Please enter Subject B for A/B test');
+			return;
+		}
+
+		// Create campaign (mock)
+		const campaign: Campaign = {
+			id: campaigns.length + 1,
+			name: newCampaign.name,
+			subject: newCampaign.subject,
+			status: newCampaign.scheduledFor ? 'scheduled' : 'draft',
+			type: newCampaign.useABTest ? 'ab_test' : 'broadcast',
+			segment: segments.find((s) => s.id === newCampaign.segmentId)?.name || 'All Members',
+			recipients: segments.find((s) => s.id === newCampaign.segmentId)?.count || 0,
+			sent_at: null,
+			scheduled_for: newCampaign.scheduledFor || null,
+			stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
+		};
+
+		if (newCampaign.useABTest) {
+			campaign.ab_test = {
+				variant_a: { subject: newCampaign.subject, open_rate: 0 },
+				variant_b: { subject: newCampaign.subjectB, open_rate: 0 },
+				winner: null
+			};
+		}
+
+		campaigns = [campaign, ...campaigns];
+		showCreateModal = false;
+		toastStore.success('Campaign created successfully');
+
+		// Reset form
+		newCampaign = {
+			name: '',
+			subject: '',
+			subjectB: '',
+			useABTest: false,
+			abTestSplit: 50,
+			scheduledFor: '',
+			segmentId: '',
+			templateId: ''
+		};
+	}
+
+	function deleteCampaign(id: number) {
+		if (!confirm('Delete this campaign?')) return;
+		campaigns = campaigns.filter((c) => c.id !== id);
+		toastStore.success('Campaign deleted');
+	}
+
+	function duplicateCampaign(campaign: Campaign) {
+		const duplicate: Campaign = {
+			...campaign,
+			id: campaigns.length + 1,
+			name: `${campaign.name} (Copy)`,
+			status: 'draft',
+			sent_at: null,
+			scheduled_for: null,
+			stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
+		};
+		campaigns = [duplicate, ...campaigns];
+		toastStore.success('Campaign duplicated');
+	}
+</script>
+
+<svelte:head>
+	<title>Email Campaigns | Revolution Trading Pros</title>
+</svelte:head>
+
+<div class="campaigns-page">
+	<!-- Header -->
+	<div class="page-header">
+		<button class="back-btn" on:click={() => goto('/admin/email/templates')}>
+			<IconArrowLeft size={20} />
+			Back to Templates
+		</button>
+
+		<div class="header-content">
+			<div class="header-title">
+				<div class="title-icon">
+					<IconMail size={28} />
+				</div>
+				<div>
+					<h1>Email Campaigns</h1>
+					<p class="subtitle">Create, schedule, and analyze email campaigns</p>
+				</div>
+			</div>
+
+			<div class="header-actions">
+				<button class="btn-secondary" on:click={loadCampaigns}>
+					<IconRefresh size={18} />
+					Refresh
+				</button>
+				<button class="btn-primary" on:click={() => (showCreateModal = true)}>
+					<IconPlus size={18} />
+					New Campaign
+				</button>
+			</div>
+		</div>
+	</div>
+
+	{#if loading}
+		<div class="loading-grid">
+			{#each [1, 2, 3, 4] as _}
+				<div class="skeleton skeleton-metric"></div>
+			{/each}
+		</div>
+	{:else}
+		<!-- Stats Overview -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-icon purple">
+					<IconSend size={24} />
+				</div>
+				<div class="stat-content">
+					<div class="stat-value">{formatNumber(stats.totalSent)}</div>
+					<div class="stat-label">Total Emails Sent</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon emerald">
+					<IconEye size={24} />
+				</div>
+				<div class="stat-content">
+					<div class="stat-value">{formatNumber(stats.totalOpened)}</div>
+					<div class="stat-label">Total Opens</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconTrendingUp size={24} />
+				</div>
+				<div class="stat-content">
+					<div class="stat-value">{stats.avgOpenRate}%</div>
+					<div class="stat-label">Avg Open Rate</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon yellow">
+					<IconChartBar size={24} />
+				</div>
+				<div class="stat-content">
+					<div class="stat-value">{stats.avgClickRate}%</div>
+					<div class="stat-label">Avg Click Rate</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Tabs -->
+		<div class="tabs-container">
+			<div class="tabs">
+				<button class:active={activeTab === 'all'} on:click={() => (activeTab = 'all')}>
+					All ({campaigns.length})
+				</button>
+				<button class:active={activeTab === 'scheduled'} on:click={() => (activeTab = 'scheduled')}>
+					<IconClock size={16} />
+					Scheduled ({campaigns.filter((c) => c.status === 'scheduled').length})
+				</button>
+				<button class:active={activeTab === 'sent'} on:click={() => (activeTab = 'sent')}>
+					<IconCheck size={16} />
+					Sent ({campaigns.filter((c) => c.status === 'sent').length})
+				</button>
+				<button class:active={activeTab === 'drafts'} on:click={() => (activeTab = 'drafts')}>
+					<IconEdit size={16} />
+					Drafts ({campaigns.filter((c) => c.status === 'draft').length})
+				</button>
+			</div>
+		</div>
+
+		<!-- Campaigns List -->
+		<div class="campaigns-list">
+			{#each getFilteredCampaigns() as campaign}
+				<div class="campaign-card">
+					<div class="campaign-header">
+						<div class="campaign-info">
+							<div class="campaign-name-row">
+								<h3>{campaign.name}</h3>
+								{#if campaign.type === 'ab_test'}
+									<span class="badge ab-badge">A/B Test</span>
+								{/if}
+							</div>
+							<p class="campaign-subject">{campaign.subject || '(No subject)'}</p>
+						</div>
+						<span class="status-badge {getStatusColor(campaign.status)}">
+							{campaign.status}
+						</span>
+					</div>
+
+					<div class="campaign-meta">
+						<div class="meta-item">
+							<IconUsers size={16} />
+							<span>{campaign.segment}</span>
+							<span class="meta-count">({formatNumber(campaign.recipients)})</span>
+						</div>
+						{#if campaign.scheduled_for}
+							<div class="meta-item">
+								<IconCalendar size={16} />
+								<span>Scheduled: {formatDate(campaign.scheduled_for)}</span>
+							</div>
+						{/if}
+						{#if campaign.sent_at}
+							<div class="meta-item">
+								<IconClock size={16} />
+								<span>Sent: {formatDate(campaign.sent_at)}</span>
+							</div>
+						{/if}
+					</div>
+
+					{#if campaign.status === 'sent' && campaign.stats.sent > 0}
+						<div class="campaign-stats">
+							<div class="stat-item">
+								<span class="stat-label">Sent</span>
+								<span class="stat-value">{formatNumber(campaign.stats.sent)}</span>
+							</div>
+							<div class="stat-item">
+								<span class="stat-label">Opened</span>
+								<span class="stat-value highlight">
+									{formatNumber(campaign.stats.opened)}
+									<small>({((campaign.stats.opened / campaign.stats.sent) * 100).toFixed(1)}%)</small>
+								</span>
+							</div>
+							<div class="stat-item">
+								<span class="stat-label">Clicked</span>
+								<span class="stat-value highlight-blue">
+									{formatNumber(campaign.stats.clicked)}
+									<small>({((campaign.stats.clicked / campaign.stats.sent) * 100).toFixed(1)}%)</small>
+								</span>
+							</div>
+							<div class="stat-item">
+								<span class="stat-label">Bounced</span>
+								<span class="stat-value">{campaign.stats.bounced}</span>
+							</div>
+						</div>
+
+						{#if campaign.ab_test}
+							<div class="ab-test-results">
+								<span class="ab-label">A/B Test Results:</span>
+								<div class="ab-variants">
+									<div class="ab-variant" class:winner={campaign.ab_test.winner === 'a'}>
+										<span class="variant-label">A:</span>
+										<span class="variant-subject">{campaign.ab_test.variant_a.subject}</span>
+										<span class="variant-rate">{campaign.ab_test.variant_a.open_rate}%</span>
+									</div>
+									<div class="ab-variant" class:winner={campaign.ab_test.winner === 'b'}>
+										<span class="variant-label">B:</span>
+										<span class="variant-subject">{campaign.ab_test.variant_b.subject}</span>
+										<span class="variant-rate">{campaign.ab_test.variant_b.open_rate}%</span>
+									</div>
+								</div>
+							</div>
+						{/if}
+					{/if}
+
+					<div class="campaign-actions">
+						{#if campaign.status === 'draft'}
+							<button class="btn-primary small">
+								<IconEdit size={16} />
+								Edit
+							</button>
+							<button class="btn-secondary small" on:click={() => duplicateCampaign(campaign)}>
+								<IconCopy size={16} />
+								Duplicate
+							</button>
+							<button class="btn-danger small" on:click={() => deleteCampaign(campaign.id)}>
+								<IconTrash size={16} />
+							</button>
+						{:else if campaign.status === 'scheduled'}
+							<button class="btn-secondary small">
+								<IconEdit size={16} />
+								Edit
+							</button>
+							<button class="btn-secondary small">
+								<IconX size={16} />
+								Cancel
+							</button>
+						{:else}
+							<button class="btn-secondary small">
+								<IconChartBar size={16} />
+								View Report
+							</button>
+							<button class="btn-secondary small" on:click={() => duplicateCampaign(campaign)}>
+								<IconCopy size={16} />
+								Duplicate
+							</button>
+						{/if}
+					</div>
+				</div>
+			{/each}
+
+			{#if getFilteredCampaigns().length === 0}
+				<div class="empty-state">
+					<IconMail size={48} stroke={1} />
+					<h3>No campaigns found</h3>
+					<p>Create your first email campaign to get started</p>
+					<button class="btn-primary" on:click={() => (showCreateModal = true)}>
+						<IconPlus size={18} />
+						Create Campaign
+					</button>
+				</div>
+			{/if}
+		</div>
+	{/if}
+</div>
+
+<!-- Create Campaign Modal -->
+{#if showCreateModal}
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		on:click={() => (showCreateModal = false)}
+		on:keydown={(e) => e.key === 'Escape' && (showCreateModal = false)}
+	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div
+			class="modal-content large"
+			role="document"
+			on:click|stopPropagation
+			on:keydown|stopPropagation
+		>
+			<div class="modal-header">
+				<h2>Create New Campaign</h2>
+				<button class="close-btn" on:click={() => (showCreateModal = false)}>
+					<IconX size={20} />
+				</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="form-grid">
+					<div class="form-group full-width">
+						<label for="campaign-name">Campaign Name</label>
+						<input
+							id="campaign-name"
+							type="text"
+							bind:value={newCampaign.name}
+							placeholder="e.g., December Newsletter"
+						/>
+					</div>
+
+					<div class="form-group full-width">
+						<label for="campaign-subject">Subject Line</label>
+						<input
+							id="campaign-subject"
+							type="text"
+							bind:value={newCampaign.subject}
+							placeholder="e.g., Your Weekly Trading Insights"
+						/>
+					</div>
+
+					<div class="form-group full-width ab-toggle">
+						<label class="checkbox-label">
+							<input type="checkbox" bind:checked={newCampaign.useABTest} />
+							<span>Enable A/B Testing</span>
+						</label>
+					</div>
+
+					{#if newCampaign.useABTest}
+						<div class="form-group full-width">
+							<label for="campaign-subject-b">Subject Line B</label>
+							<input
+								id="campaign-subject-b"
+								type="text"
+								bind:value={newCampaign.subjectB}
+								placeholder="Alternative subject to test"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="ab-split">A/B Split (%)</label>
+							<input
+								id="ab-split"
+								type="range"
+								min="10"
+								max="90"
+								bind:value={newCampaign.abTestSplit}
+							/>
+							<span class="split-label">{newCampaign.abTestSplit}% / {100 - newCampaign.abTestSplit}%</span>
+						</div>
+					{/if}
+
+					<div class="form-group">
+						<label for="campaign-segment">Target Segment</label>
+						<select id="campaign-segment" bind:value={newCampaign.segmentId}>
+							<option value="">Select segment...</option>
+							{#each segments as segment}
+								<option value={segment.id}>{segment.name} ({formatNumber(segment.count)})</option>
+							{/each}
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="campaign-template">Email Template</label>
+						<select id="campaign-template" bind:value={newCampaign.templateId}>
+							<option value="">Select template...</option>
+							{#each templates as template}
+								<option value={template.id}>{template.name}</option>
+							{/each}
+						</select>
+					</div>
+
+					<div class="form-group full-width">
+						<label for="campaign-schedule">Schedule (optional)</label>
+						<input
+							id="campaign-schedule"
+							type="datetime-local"
+							bind:value={newCampaign.scheduledFor}
+						/>
+						<small>Leave empty to save as draft</small>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-secondary" on:click={() => (showCreateModal = false)}>Cancel</button>
+				<button class="btn-primary" on:click={handleCreateCampaign}>
+					{#if newCampaign.scheduledFor}
+						<IconCalendar size={18} />
+						Schedule Campaign
+					{:else}
+						<IconEdit size={18} />
+						Save as Draft
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.campaigns-page {
+		padding: 2rem;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	/* Header */
+	.back-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0;
+		color: #94a3b8;
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 0.875rem;
+		margin-bottom: 1rem;
+		transition: color 0.2s;
+	}
+
+	.back-btn:hover {
+		color: #a5b4fc;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+	}
+
+	.header-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.title-icon {
+		width: 56px;
+		height: 56px;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+	}
+
+	.header-title h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		margin: 0.25rem 0 0;
+	}
+
+	.header-actions {
+		display: flex;
+		gap: 0.75rem;
+	}
+
+	/* Stats */
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.stat-card {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.25rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+	}
+
+	.stat-icon {
+		width: 48px;
+		height: 48px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.stat-icon.purple { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+	.stat-icon.yellow { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+
+	.stat-content .stat-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #f1f5f9;
+	}
+
+	.stat-content .stat-label {
+		font-size: 0.8125rem;
+		color: #64748b;
+	}
+
+	/* Tabs */
+	.tabs-container {
+		margin-bottom: 1.5rem;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.tabs {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.tabs button {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: none;
+		border: none;
+		color: #64748b;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		border-bottom: 2px solid transparent;
+		margin-bottom: -1px;
+		transition: all 0.2s;
+	}
+
+	.tabs button:hover {
+		color: #a5b4fc;
+	}
+
+	.tabs button.active {
+		color: #a5b4fc;
+		border-bottom-color: #6366f1;
+	}
+
+	/* Campaign List */
+	.campaigns-list {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.campaign-card {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+		padding: 1.5rem;
+	}
+
+	.campaign-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+	}
+
+	.campaign-name-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.campaign-name-row h3 {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.campaign-subject {
+		color: #94a3b8;
+		font-size: 0.875rem;
+		margin: 0.25rem 0 0;
+	}
+
+	.badge {
+		padding: 0.25rem 0.5rem;
+		border-radius: 6px;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	.ab-badge {
+		background: rgba(251, 191, 36, 0.2);
+		color: #fbbf24;
+	}
+
+	.status-badge {
+		padding: 0.375rem 0.75rem;
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: capitalize;
+	}
+
+	.campaign-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.meta-item {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8125rem;
+		color: #94a3b8;
+	}
+
+	.meta-count {
+		color: #64748b;
+	}
+
+	.campaign-stats {
+		display: flex;
+		gap: 2rem;
+		padding: 1rem 0;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.campaign-stats .stat-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.campaign-stats .stat-label {
+		font-size: 0.6875rem;
+		color: #64748b;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.campaign-stats .stat-value {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #f1f5f9;
+	}
+
+	.campaign-stats .stat-value.highlight {
+		color: #34d399;
+	}
+
+	.campaign-stats .stat-value.highlight-blue {
+		color: #60a5fa;
+	}
+
+	.campaign-stats .stat-value small {
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: #64748b;
+	}
+
+	/* A/B Test Results */
+	.ab-test-results {
+		padding: 1rem;
+		background: rgba(15, 23, 42, 0.4);
+		border-radius: 10px;
+		margin-top: 1rem;
+	}
+
+	.ab-label {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #94a3b8;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		display: block;
+		margin-bottom: 0.75rem;
+	}
+
+	.ab-variants {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.ab-variant {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(148, 163, 184, 0.05);
+		border-radius: 6px;
+	}
+
+	.ab-variant.winner {
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.3);
+	}
+
+	.variant-label {
+		font-weight: 600;
+		color: #a5b4fc;
+	}
+
+	.variant-subject {
+		flex: 1;
+		color: #cbd5e1;
+		font-size: 0.875rem;
+	}
+
+	.variant-rate {
+		font-weight: 600;
+		color: #f1f5f9;
+	}
+
+	.ab-variant.winner .variant-rate {
+		color: #34d399;
+	}
+
+	/* Campaign Actions */
+	.campaign-actions {
+		display: flex;
+		gap: 0.5rem;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		margin-top: 1rem;
+	}
+
+	/* Buttons */
+	.btn-primary,
+	.btn-secondary,
+	.btn-danger {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		border-radius: 10px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: none;
+		font-size: 0.875rem;
+	}
+
+	.btn-primary {
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+	}
+
+	.btn-secondary {
+		background: rgba(148, 163, 184, 0.1);
+		color: #94a3b8;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+	}
+
+	.btn-danger {
+		background: rgba(239, 68, 68, 0.1);
+		color: #f87171;
+		border: 1px solid rgba(239, 68, 68, 0.2);
+	}
+
+	.btn-primary.small,
+	.btn-secondary.small,
+	.btn-danger.small {
+		padding: 0.5rem 0.875rem;
+		font-size: 0.8125rem;
+	}
+
+	/* Empty State */
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem 2rem;
+		color: #64748b;
+		text-align: center;
+		background: rgba(30, 41, 59, 0.3);
+		border-radius: 16px;
+		border: 2px dashed rgba(148, 163, 184, 0.2);
+	}
+
+	.empty-state h3 {
+		color: #f1f5f9;
+		margin: 1rem 0 0.5rem;
+	}
+
+	.empty-state p {
+		margin-bottom: 1.5rem;
+	}
+
+	/* Loading */
+	.loading-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.skeleton {
+		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 16px;
+	}
+
+	.skeleton-metric {
+		height: 100px;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
+	}
+
+	/* Modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.8);
+		backdrop-filter: blur(4px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 50;
+		padding: 2rem;
+	}
+
+	.modal-content {
+		background: #1e293b;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 20px;
+		width: 100%;
+		max-width: 600px;
+		max-height: 90vh;
+		overflow-y: auto;
+	}
+
+	.modal-content.large {
+		max-width: 700px;
+	}
+
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.5rem;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.modal-header h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.close-btn {
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(148, 163, 184, 0.1);
+		border: none;
+		border-radius: 8px;
+		color: #94a3b8;
+		cursor: pointer;
+	}
+
+	.modal-body {
+		padding: 1.5rem;
+	}
+
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		padding: 1.5rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	/* Form */
+	.form-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.form-group.full-width {
+		grid-column: 1 / -1;
+	}
+
+	.form-group label {
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: #94a3b8;
+	}
+
+	.form-group input,
+	.form-group select {
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 10px;
+		color: #f1f5f9;
+		font-size: 0.9375rem;
+	}
+
+	.form-group input:focus,
+	.form-group select:focus {
+		outline: none;
+		border-color: rgba(99, 102, 241, 0.5);
+	}
+
+	.form-group small {
+		color: #64748b;
+		font-size: 0.75rem;
+	}
+
+	.ab-toggle {
+		padding: 0.75rem 0;
+	}
+
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		cursor: pointer;
+	}
+
+	.checkbox-label input[type="checkbox"] {
+		width: 18px;
+		height: 18px;
+		accent-color: #6366f1;
+	}
+
+	.checkbox-label span {
+		color: #f1f5f9;
+		font-weight: 500;
+	}
+
+	.split-label {
+		display: block;
+		text-align: center;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		margin-top: 0.25rem;
+	}
+
+	input[type="range"] {
+		width: 100%;
+		accent-color: #6366f1;
+	}
+
+	@media (max-width: 768px) {
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+			align-items: flex-start;
+		}
+
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
