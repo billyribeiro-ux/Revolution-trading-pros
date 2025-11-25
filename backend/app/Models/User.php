@@ -65,6 +65,24 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the user's sessions.
+     */
+    public function sessions()
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
+    /**
+     * Get the user's active sessions.
+     */
+    public function activeSessions()
+    {
+        return $this->sessions()
+            ->where('is_active', true)
+            ->where('expires_at', '>', now());
+    }
+
+    /**
      * Get the user's subscriptions.
      */
     public function subscriptions()

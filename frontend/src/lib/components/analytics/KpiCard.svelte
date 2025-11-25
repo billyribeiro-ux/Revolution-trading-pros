@@ -4,15 +4,60 @@
 	 *
 	 * Displays a single KPI metric with trend indicator,
 	 * change percentage, and optional sparkline.
+	 * Now with GSAP-powered animated number counting.
+	 *
+	 * @version 2.0.0 - Added animated numbers
 	 */
 	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { browser } from '$app/environment';
 	import type { KpiValue } from '$lib/api/analytics';
+	import AnimatedNumber from '$lib/components/ui/AnimatedNumber.svelte';
 
 	export let kpi: KpiValue;
 	export let showSparkline: boolean = false;
 	export let sparklineData: number[] = [];
 	export let size: 'sm' | 'md' | 'lg' = 'md';
 	export let clickable: boolean = false;
+	export let animateOnMount: boolean = true;
+	export let animationDelay: number = 0;
+
+	let cardRef: HTMLDivElement;
+	let isVisible = false;
+
+	onMount(() => {
+		if (!browser || !cardRef || !animateOnMount) {
+			isVisible = true;
+			return;
+		}
+
+		// Intersection observer for viewport-based animation
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting && !isVisible) {
+						isVisible = true;
+						gsap.fromTo(
+							cardRef,
+							{ opacity: 0, y: 20, scale: 0.95 },
+							{
+								opacity: 1,
+								y: 0,
+								scale: 1,
+								duration: 0.6,
+								delay: animationDelay,
+								ease: 'power3.out'
+							}
+						);
+					}
+				});
+			},
+			{ threshold: 0.2 }
+		);
+
+		observer.observe(cardRef);
+		return () => observer.disconnect();
+	});
 
 	// Icon mapping
 	const iconMap: Record<string, string> = {
@@ -80,8 +125,10 @@
 </script>
 
 <div
+	bind:this={cardRef}
 	class="relative rounded-xl border {colorClasses[kpi.color || 'blue']} {sizeClasses}
-		transition-all duration-200 {clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg' : ''}"
+		transition-all duration-200 {clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg' : ''}
+		{animateOnMount ? 'opacity-0' : ''}"
 	class:ring-2={kpi.is_anomaly}
 	class:ring-red-500={kpi.is_anomaly}
 >

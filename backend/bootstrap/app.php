@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ValidateSession;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +27,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'session.validate' => ValidateSession::class,
+        ]);
+
+        // Append session validation to API middleware group
+        $middleware->appendToGroup('api', [
+            ValidateSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

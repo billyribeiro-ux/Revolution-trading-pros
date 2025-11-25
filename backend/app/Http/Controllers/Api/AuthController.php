@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\User;
+use App\Models\UserSession;
 use App\Models\SecurityEvent;
 use App\Services\MFAService;
+use App\Services\SessionService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Events\PasswordReset;
@@ -17,12 +20,30 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
 
+/**
+ * Revolution Trading Pros - AuthController
+ * Enterprise-grade authentication with single-session enforcement
+ *
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ * @level L8 Principal Engineer
+ */
 class AuthController extends Controller
 {
     /**
-     * Create access and refresh tokens for the given user.
+     * Session service instance
      */
-    protected function createAuthTokens(User $user): array
+    private SessionService $sessionService;
+
+    public function __construct(SessionService $sessionService)
+    {
+        $this->sessionService = $sessionService;
+    }
+
+    /**
+     * Create access and refresh tokens for the given user and session.
+     */
+    protected function createAuthTokens(User $user, UserSession $session): array
     {
         $accessExpiresIn = 60 * 60; // 1 hour in seconds
         $refreshExpiresIn = 60 * 60 * 24 * 30; // 30 days in seconds
@@ -39,10 +60,24 @@ class AuthController extends Controller
             now()->addSeconds($refreshExpiresIn)
         );
 
+        // Link tokens to session
+        PersonalAccessToken::where('id', $accessToken->accessToken->id)
+            ->update([
+                'user_session_id' => $session->id,
+                'token_type' => 'access',
+            ]);
+
+        PersonalAccessToken::where('id', $refreshToken->accessToken->id)
+            ->update([
+                'user_session_id' => $session->id,
+                'token_type' => 'refresh',
+            ]);
+
         return [
             'token' => $accessToken->plainTextToken,
             'refresh_token' => $refreshToken->plainTextToken,
             'expires_in' => $accessExpiresIn,
+            'session_id' => $session->session_id,
         ];
     }
 
@@ -62,12 +97,15 @@ class AuthController extends Controller
 
         event(new Registered($user));
 
-        $tokens = $this->createAuthTokens($user);
+        // Create session (no previous sessions to revoke for new user)
+        $session = $this->sessionService->createSession($user, $request, false);
+        $tokens = $this->createAuthTokens($user, $session);
 
         return response()->json([
             'user' => $user,
             'token' => $tokens['token'],
             'refresh_token' => $tokens['refresh_token'],
+            'session_id' => $tokens['session_id'],
             'expires_in' => $tokens['expires_in'],
             'message' => 'Registration successful. Please verify your email.',
         ], 201);
@@ -98,22 +136,109 @@ class AuthController extends Controller
             ]);
         }
 
-        $tokens = $this->createAuthTokens($user);
+        // Create new session (revokes all previous sessions - single-session enforcement)
+        $session = $this->sessionService->createSession($user, $request, true);
+        $tokens = $this->createAuthTokens($user, $session);
+
         $this->logSecurityEvent($user->id, 'login', $request);
 
         return response()->json([
             'user' => $user,
             'token' => $tokens['token'],
             'refresh_token' => $tokens['refresh_token'],
+            'session_id' => $tokens['session_id'],
             'expires_in' => $tokens['expires_in'],
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        $sessionId = $request->header('X-Session-ID');
+
+        // Revoke the session if provided
+        if ($sessionId) {
+            $this->sessionService->revokeSession($sessionId, 'manual');
+        }
+
+        // Also delete the current access token
+        $user->currentAccessToken()->delete();
+
+        AuditLog::logAuth('logout', $user, ['session_id' => $sessionId]);
 
         return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    /**
+     * Logout from all devices (revoke all sessions).
+     */
+    public function logoutAllDevices(Request $request)
+    {
+        $user = $request->user();
+        $currentSessionId = $request->header('X-Session-ID');
+
+        // Revoke all sessions except current (optional)
+        $keepCurrent = $request->input('keep_current', false);
+        $exceptSession = $keepCurrent ? $currentSessionId : null;
+
+        $count = $this->sessionService->revokeAllUserSessions($user, 'revoked_by_user', $exceptSession);
+
+        // If not keeping current, also delete current token
+        if (!$keepCurrent) {
+            $user->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'message' => "Logged out from {$count} device(s)",
+            'revoked_count' => $count,
+        ]);
+    }
+
+    /**
+     * Get active sessions for current user.
+     */
+    public function getSessions(Request $request)
+    {
+        $user = $request->user();
+        $currentSessionId = $request->header('X-Session-ID');
+
+        $sessions = $this->sessionService->getUserActiveSessions($user);
+
+        // Mark the current session
+        $sessions = array_map(function ($session) use ($currentSessionId) {
+            $session['is_current'] = $session['session_id'] === $currentSessionId;
+            return $session;
+        }, $sessions);
+
+        return response()->json([
+            'sessions' => $sessions,
+            'count' => count($sessions),
+        ]);
+    }
+
+    /**
+     * Revoke a specific session.
+     */
+    public function revokeSession(Request $request, string $sessionId)
+    {
+        $user = $request->user();
+
+        // Verify session belongs to user
+        $session = UserSession::where('session_id', $sessionId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$session) {
+            return response()->json([
+                'message' => 'Session not found',
+            ], 404);
+        }
+
+        $this->sessionService->revokeSession($sessionId, 'revoked_by_user');
+
+        return response()->json([
+            'message' => 'Session revoked successfully',
+        ]);
     }
 
     /**
@@ -143,12 +268,38 @@ class AuthController extends Controller
 
         $user = $tokenModel->tokenable;
 
-        // Rotate refresh token
-        $tokenModel->delete();
+        // Get the session associated with this token
+        $session = $tokenModel->user_session_id
+            ? UserSession::find($tokenModel->user_session_id)
+            : null;
 
-        $tokens = $this->createAuthTokens($user);
+        // If session exists, verify it's still valid
+        if ($session && !$session->isValid()) {
+            return response()->json([
+                'message' => 'Session has been invalidated. Please login again.',
+                'code' => 'SESSION_INVALIDATED',
+            ], 401);
+        }
 
-        return response()->json($tokens);
+        // Delete old tokens for this session
+        PersonalAccessToken::where('user_session_id', $tokenModel->user_session_id)->delete();
+
+        // Create new session if needed, or reuse existing
+        if (!$session) {
+            $session = $this->sessionService->createSession($user, $request, false);
+        } else {
+            // Extend session expiry
+            $this->sessionService->extendSession($session->session_id);
+        }
+
+        $tokens = $this->createAuthTokens($user, $session);
+
+        return response()->json([
+            'token' => $tokens['token'],
+            'refresh_token' => $tokens['refresh_token'],
+            'session_id' => $tokens['session_id'],
+            'expires_in' => $tokens['expires_in'],
+        ]);
     }
 
     public function verify(Request $request)
@@ -312,13 +463,17 @@ class AuthController extends Controller
             }
         }
 
-        $tokens = $this->createAuthTokens($user);
+        // Create new session (revokes all previous sessions - single-session enforcement)
+        $session = $this->sessionService->createSession($user, $request, true);
+        $tokens = $this->createAuthTokens($user, $session);
+
         $this->logSecurityEvent($user->id, 'mfa_login_success', $request);
 
         return response()->json([
             'user' => $user,
             'token' => $tokens['token'],
             'refresh_token' => $tokens['refresh_token'],
+            'session_id' => $tokens['session_id'],
             'expires_in' => $tokens['expires_in'],
         ]);
     }
