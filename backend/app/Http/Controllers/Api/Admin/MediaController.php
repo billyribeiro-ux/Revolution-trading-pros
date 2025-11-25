@@ -10,26 +10,59 @@ use App\Models\MediaVariant;
 use App\Models\ImageOptimizationJob;
 use App\Models\ImageOptimizationPreset;
 use App\Services\ImageOptimizationService;
+use App\Services\QueryCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * MediaController
  *
- * API endpoints for media management and image optimization.
+ * Google Enterprise Grade API endpoints with:
+ * - Redis query caching for read operations
+ * - Automatic cache invalidation on writes
+ * - Optimized pagination with caching
+ *
+ * @version 2.0.0
+ * @level L8 Principal Engineer
  */
 class MediaController extends Controller
 {
+    protected const CACHE_TTL = 300; // 5 minutes
+    protected const CACHE_TAG = 'media';
+
     public function __construct(
-        protected ImageOptimizationService $optimizationService
+        protected ImageOptimizationService $optimizationService,
+        protected QueryCacheService $cacheService
     ) {}
 
     /**
-     * List all media with filtering and pagination
+     * List all media with filtering, pagination, and Redis caching
      */
     public function index(Request $request): JsonResponse
+    {
+        // Generate cache key based on all filter parameters
+        $cacheKey = $this->generateListCacheKey($request);
+
+        // Try to get from cache first
+        $cachedResult = $this->cacheService->rememberValue(
+            $cacheKey,
+            function () use ($request) {
+                return $this->executeListQuery($request);
+            },
+            [self::CACHE_TAG, 'media_list'],
+            self::CACHE_TTL
+        );
+
+        return response()->json($cachedResult);
+    }
+
+    /**
+     * Execute the list query (extracted for caching)
+     */
+    protected function executeListQuery(Request $request): array
     {
         $query = Media::query()
             ->with(['uploader:id,name'])
@@ -72,7 +105,7 @@ class MediaController extends Controller
         $perPage = min($request->integer('per_page', 24), 100);
         $media = $query->paginate($perPage);
 
-        return response()->json([
+        return [
             'success' => true,
             'data' => $media->items(),
             'meta' => [
@@ -81,7 +114,36 @@ class MediaController extends Controller
                 'per_page' => $media->perPage(),
                 'total' => $media->total(),
             ],
-        ]);
+        ];
+    }
+
+    /**
+     * Generate unique cache key for list queries
+     */
+    protected function generateListCacheKey(Request $request): string
+    {
+        $params = [
+            'type' => $request->get('type'),
+            'images_only' => $request->boolean('images_only'),
+            'collection' => $request->get('collection'),
+            'needs_optimization' => $request->boolean('needs_optimization'),
+            'optimized' => $request->boolean('optimized'),
+            'search' => $request->get('search'),
+            'sort_by' => $request->get('sort_by', 'created_at'),
+            'sort_dir' => $request->get('sort_dir', 'desc'),
+            'per_page' => $request->integer('per_page', 24),
+            'page' => $request->integer('page', 1),
+        ];
+
+        return 'media_list:' . md5(json_encode($params));
+    }
+
+    /**
+     * Invalidate media cache after modifications
+     */
+    protected function invalidateMediaCache(): void
+    {
+        $this->cacheService->invalidateTags([self::CACHE_TAG, 'media_list']);
     }
 
     /**
@@ -117,6 +179,9 @@ class MediaController extends Controller
                     'priority' => $request->integer('priority', 5),
                 ]
             );
+
+            // Invalidate cache after upload
+            $this->invalidateMediaCache();
 
             return response()->json([
                 'success' => true,
@@ -233,6 +298,9 @@ class MediaController extends Controller
             'tags', 'collection', 'is_public', 'is_featured',
         ]));
 
+        // Invalidate cache after update
+        $this->invalidateMediaCache();
+
         return response()->json([
             'success' => true,
             'data' => $media->fresh()->toMediaArray(),
@@ -254,6 +322,9 @@ class MediaController extends Controller
         });
 
         $media->delete();
+
+        // Invalidate cache after delete
+        $this->invalidateMediaCache();
 
         return response()->json([
             'success' => true,
@@ -290,6 +361,9 @@ class MediaController extends Controller
                 $deleted++;
             }
         }
+
+        // Invalidate cache after bulk delete
+        $this->invalidateMediaCache();
 
         return response()->json([
             'success' => true,
