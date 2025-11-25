@@ -44,11 +44,11 @@
 					<div class="grid {gridCols} gap-4">
 						{#each categoryKpis as kpi (kpi.kpi_key)}
 							<div
-						role="button"
-						tabindex="0"
-						on:click={() => onKpiClick?.(kpi)}
-						on:keypress={() => onKpiClick?.(kpi)}
-					>
+								role="button"
+								tabindex="0"
+								on:click={() => onKpiClick?.(kpi)}
+								on:keypress={() => onKpiClick?.(kpi)}
+							>
 								<KpiCard {kpi} clickable={!!onKpiClick} />
 							</div>
 						{/each}

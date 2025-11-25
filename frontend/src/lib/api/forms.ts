@@ -1,9 +1,9 @@
 /**
  * Forms API Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ENTERPRISE FEATURES:
- * 
+ *
  * 1. ADVANCED FORMS:
  *    - AI-powered form generation
  *    - Smart field suggestions
@@ -11,7 +11,7 @@
  *    - Conditional logic engine
  *    - Real-time collaboration
  *    - Version control
- * 
+ *
  * 2. PERFORMANCE:
  *    - Optimistic updates
  *    - Smart caching
@@ -19,7 +19,7 @@
  *    - Virtual scrolling
  *    - WebSocket real-time sync
  *    - Offline mode
- * 
+ *
  * 3. ANALYTICS:
  *    - Conversion tracking
  *    - Drop-off analysis
@@ -27,7 +27,7 @@
  *    - Heatmaps
  *    - User recordings
  *    - Predictive analytics
- * 
+ *
  * 4. USER EXPERIENCE:
  *    - Drag & drop builder
  *    - Live preview
@@ -35,7 +35,7 @@
  *    - Accessibility (WCAG AAA)
  *    - Multi-language support
  *    - Voice input
- * 
+ *
  * 5. SECURITY:
  *    - Field encryption
  *    - GDPR compliance
@@ -43,7 +43,7 @@
  *    - Fraud prevention
  *    - Rate limiting
  *    - CAPTCHA integration
- * 
+ *
  * @version 3.0.0 (Google L7+ Enterprise)
  * @license MIT
  */
@@ -127,13 +127,37 @@ export interface FormField {
 	updated_at?: string;
 }
 
-export type FieldType = 
-	| 'text' | 'email' | 'tel' | 'url' | 'number' | 'password'
-	| 'textarea' | 'select' | 'multiselect' | 'checkbox' | 'radio'
-	| 'date' | 'time' | 'datetime' | 'file' | 'image' | 'signature'
-	| 'rating' | 'slider' | 'range' | 'toggle' | 'color' | 'location'
-	| 'payment' | 'captcha' | 'hidden' | 'section' | 'html'
-	| 'heading' | 'divider';
+export type FieldType =
+	| 'text'
+	| 'email'
+	| 'tel'
+	| 'url'
+	| 'number'
+	| 'password'
+	| 'textarea'
+	| 'select'
+	| 'multiselect'
+	| 'checkbox'
+	| 'radio'
+	| 'date'
+	| 'time'
+	| 'datetime'
+	| 'file'
+	| 'image'
+	| 'signature'
+	| 'rating'
+	| 'slider'
+	| 'range'
+	| 'toggle'
+	| 'color'
+	| 'location'
+	| 'payment'
+	| 'captcha'
+	| 'hidden'
+	| 'section'
+	| 'html'
+	| 'heading'
+	| 'divider';
 
 export interface FieldOption {
 	label: string;
@@ -157,11 +181,21 @@ export interface ConditionalRule {
 	value?: any;
 }
 
-export type ConditionalOperator = 
-	| 'equals' | 'not_equals' | 'contains' | 'not_contains'
-	| 'starts_with' | 'ends_with' | 'greater_than' | 'less_than'
-	| 'greater_than_or_equal' | 'less_than_or_equal'
-	| 'is_empty' | 'is_not_empty' | 'is_checked' | 'is_not_checked';
+export type ConditionalOperator =
+	| 'equals'
+	| 'not_equals'
+	| 'contains'
+	| 'not_contains'
+	| 'starts_with'
+	| 'ends_with'
+	| 'greater_than'
+	| 'less_than'
+	| 'greater_than_or_equal'
+	| 'less_than_or_equal'
+	| 'is_empty'
+	| 'is_not_empty'
+	| 'is_checked'
+	| 'is_not_checked';
 
 export interface FieldAnalytics {
 	interactions: number;
@@ -180,7 +214,7 @@ export interface FormSettings {
 	limit_submissions?: number;
 	close_after_date?: string;
 	submit_text?: string; // Custom submit button text
-	
+
 	// Notifications
 	success_message?: string;
 	error_message?: string;
@@ -188,14 +222,14 @@ export interface FormSettings {
 	notification_emails?: string[];
 	email_to?: string; // Primary email recipient
 	auto_responder?: boolean;
-	
+
 	// Advanced
 	webhook_url?: string;
 	integrations?: FormIntegration[];
 	analytics_enabled?: boolean;
 	ab_testing?: ABTestConfig;
 	spam_protection?: SpamProtection;
-	
+
 	// Appearance
 	theme?: FormTheme;
 	custom_css?: string;
@@ -236,22 +270,22 @@ export interface FormStyles {
 	border_color?: string;
 	error_color?: string;
 	success_color?: string;
-	
+
 	// Typography
 	font_family?: string;
 	font_size?: string;
 	line_height?: string;
-	
+
 	// Layout
 	max_width?: string;
 	padding?: string;
 	border_radius?: string;
 	shadow?: string;
-	
+
 	// Animations
 	animation_type?: 'none' | 'fade' | 'slide' | 'zoom';
 	animation_duration?: string;
-	
+
 	[key: string]: any;
 }
 
@@ -363,7 +397,7 @@ class FormsService {
 	private wsConnection?: WebSocket;
 	private analyticsQueue: any[] = [];
 	private pendingRequests = new Map<string, Promise<any>>();
-	
+
 	// Stores
 	public forms = writable<Form[]>([]);
 	public currentForm = writable<Form | null>(null);
@@ -391,16 +425,16 @@ class FormsService {
 
 		// Load offline queue
 		this.loadOfflineQueue();
-		
+
 		// Setup WebSocket connection
 		this.setupWebSocket();
-		
+
 		// Setup offline detection
 		this.setupOfflineDetection();
-		
+
 		// Setup autosave
 		this.setupAutosave();
-		
+
 		// Process analytics queue
 		this.processAnalyticsQueue();
 
@@ -420,17 +454,22 @@ class FormsService {
 	 */
 	private async authFetch<T>(
 		url: string,
-		options: RequestInit & { 
+		options: RequestInit & {
 			skipCache?: boolean;
 			cacheTTL?: number;
-			retries?: number 
+			retries?: number;
 		} = {}
 	): Promise<T> {
-		const { skipCache = false, cacheTTL = CACHE_TTL, retries = MAX_RETRIES, ...fetchOptions } = options;
-		
+		const {
+			skipCache = false,
+			cacheTTL = CACHE_TTL,
+			retries = MAX_RETRIES,
+			...fetchOptions
+		} = options;
+
 		// Check cache for GET requests
 		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
-		if (!skipCache && !fetchOptions.method || fetchOptions.method === 'GET') {
+		if ((!skipCache && !fetchOptions.method) || fetchOptions.method === 'GET') {
 			const cached = this.getFromCache(cacheKey);
 			if (cached) return cached;
 		}
@@ -442,18 +481,18 @@ class FormsService {
 
 		// Create request promise
 		const requestPromise = this.executeRequest<T>(url, fetchOptions, retries);
-		
+
 		// Store pending request
 		this.pendingRequests.set(cacheKey, requestPromise);
-		
+
 		try {
 			const result = await requestPromise;
-			
+
 			// Cache successful GET requests
 			if (!fetchOptions.method || fetchOptions.method === 'GET') {
 				this.setCache(cacheKey, result, cacheTTL);
 			}
-			
+
 			return result;
 		} finally {
 			this.pendingRequests.delete(cacheKey);
@@ -471,7 +510,7 @@ class FormsService {
 		const token = this.getAuthToken();
 		const headers: HeadersInit = {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json',
+			Accept: 'application/json',
 			...(token ? { Authorization: `Bearer ${token}` } : {}),
 			...options.headers
 		};
@@ -487,7 +526,7 @@ class FormsService {
 					// Handle unauthorized
 					this.clearAuth();
 				}
-				
+
 				const error = await response.json().catch(() => ({ message: 'Request failed' }));
 				throw new Error(error.message || `HTTP ${response.status}`);
 			}
@@ -496,16 +535,16 @@ class FormsService {
 		} catch (error) {
 			// Retry logic
 			if (retriesLeft > 0 && this.shouldRetry(error)) {
-				await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
 				return this.executeRequest<T>(url, options, retriesLeft - 1);
 			}
-			
+
 			// Queue for offline processing if network error
 			if (this.isNetworkError(error)) {
 				this.queueOfflineRequest({ url, options });
 				throw new Error('Request queued for offline processing');
 			}
-			
+
 			throw error;
 		}
 	}
@@ -550,7 +589,7 @@ class FormsService {
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_BASE}/forms`);
-			
+
 			this.wsConnection.onopen = () => {
 				console.debug('[FormsService] WebSocket connected');
 				this.authenticate();
@@ -576,17 +615,19 @@ class FormsService {
 
 	private authenticate(): void {
 		if (!this.wsConnection) return;
-		
-		this.wsConnection.send(JSON.stringify({
-			type: 'auth',
-			token: this.getAuthToken()
-		}));
+
+		this.wsConnection.send(
+			JSON.stringify({
+				type: 'auth',
+				token: this.getAuthToken()
+			})
+		);
 	}
 
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			switch (message.type) {
 				case 'form_updated':
 					this.handleFormUpdate(message.data);
@@ -604,8 +645,8 @@ class FormsService {
 	}
 
 	private handleFormUpdate(form: Form): void {
-		this.forms.update(forms => {
-			const index = forms.findIndex(f => f.id === form.id);
+		this.forms.update((forms) => {
+			const index = forms.findIndex((f) => f.id === form.id);
 			if (index >= 0) {
 				forms[index] = form;
 			} else {
@@ -622,8 +663,8 @@ class FormsService {
 	}
 
 	private handleNewSubmission(submission: FormSubmission): void {
-		this.submissions.update(subs => [...subs, submission]);
-		
+		this.submissions.update((subs) => [...subs, submission]);
+
 		// Show notification
 		this.showNotification(`New submission for form ${submission.form_id}`);
 	}
@@ -651,7 +692,7 @@ class FormsService {
 
 	private loadOfflineQueue(): void {
 		if (!browser) return;
-		
+
 		const stored = localStorage.getItem(OFFLINE_QUEUE_KEY);
 		if (stored) {
 			this.offlineQueue = JSON.parse(stored);
@@ -778,7 +819,11 @@ class FormsService {
 	/**
 	 * Forms Management
 	 */
-	async getForms(page = 1, perPage = 20, filters?: any): Promise<{ forms: Form[]; total: number; perPage: number }> {
+	async getForms(
+		page = 1,
+		perPage = 20,
+		filters?: any
+	): Promise<{ forms: Form[]; total: number; perPage: number }> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
@@ -814,10 +859,10 @@ class FormsService {
 		try {
 			const form = await this.authFetch<Form>(`${API_BASE}/forms/${id}`);
 			this.currentForm.set(form);
-			
+
 			// Track view
 			this.trackEvent('form_viewed', { form_id: id });
-			
+
 			return form;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -838,12 +883,12 @@ class FormsService {
 				skipCache: true
 			});
 
-			this.forms.update(forms => [...forms, form]);
+			this.forms.update((forms) => [...forms, form]);
 			this.clearCache('/forms');
-			
+
 			// Track creation
 			this.trackEvent('form_created', { form_id: form.id });
-			
+
 			return form;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -859,8 +904,8 @@ class FormsService {
 
 		try {
 			// Optimistic update
-			this.forms.update(forms => {
-				const index = forms.findIndex(f => f.id === id);
+			this.forms.update((forms) => {
+				const index = forms.findIndex((f) => f.id === id);
 				if (index >= 0) {
 					forms[index] = { ...forms[index], ...formData };
 				}
@@ -874,10 +919,10 @@ class FormsService {
 			});
 
 			this.clearCache(`/forms/${id}`);
-			
+
 			// Track update
 			this.trackEvent('form_updated', { form_id: id });
-			
+
 			return form;
 		} catch (error: any) {
 			// Revert optimistic update
@@ -895,7 +940,7 @@ class FormsService {
 
 		try {
 			// Optimistic delete
-			this.forms.update(forms => forms.filter(f => f.id !== id));
+			this.forms.update((forms) => forms.filter((f) => f.id !== id));
 
 			await this.authFetch(`${API_BASE}/forms/${id}`, {
 				method: 'DELETE',
@@ -903,7 +948,7 @@ class FormsService {
 			});
 
 			this.clearCache('/forms');
-			
+
 			// Track deletion
 			this.trackEvent('form_deleted', { form_id: id });
 		} catch (error: any) {
@@ -926,14 +971,14 @@ class FormsService {
 				skipCache: true
 			});
 
-			this.forms.update(forms => [...forms, form]);
-			
+			this.forms.update((forms) => [...forms, form]);
+
 			// Track duplication
-			this.trackEvent('form_duplicated', { 
-				original_id: id, 
-				new_id: form.id 
+			this.trackEvent('form_duplicated', {
+				original_id: id,
+				new_id: form.id
 			});
-			
+
 			return form;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -959,7 +1004,7 @@ class FormsService {
 
 			// Track AI generation
 			this.trackEvent('ai_form_generated', { prompt });
-			
+
 			return response.form;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -971,14 +1016,11 @@ class FormsService {
 
 	async suggestFields(context: string): Promise<FormField[]> {
 		try {
-			const response = await this.authFetch<{ fields: FormField[] }>(
-				`${AI_API}/suggest-fields`,
-				{
-					method: 'POST',
-					body: JSON.stringify({ context }),
-					skipCache: true
-				}
-			);
+			const response = await this.authFetch<{ fields: FormField[] }>(`${AI_API}/suggest-fields`, {
+				method: 'POST',
+				body: JSON.stringify({ context }),
+				skipCache: true
+			});
 
 			return response.fields;
 		} catch (error) {
@@ -1002,7 +1044,7 @@ class FormsService {
 
 			// Track optimization
 			this.trackEvent('form_optimized', { form_id: formId });
-			
+
 			return response.form;
 		} catch (error: any) {
 			this.error.set(error.message);
@@ -1018,9 +1060,9 @@ class FormsService {
 	async submitForm(
 		slug: string,
 		data: Record<string, any>
-	): Promise<{ 
-		success: boolean; 
-		message?: string; 
+	): Promise<{
+		success: boolean;
+		message?: string;
 		submission_id?: string;
 		errors?: Record<string, string[]>;
 		redirect_url?: string;
@@ -1030,19 +1072,19 @@ class FormsService {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'Accept': 'application/json'
+					Accept: 'application/json'
 				},
 				body: JSON.stringify(data)
 			});
 
 			const result = await response.json();
-			
+
 			// Track submission
-			this.trackEvent('form_submitted', { 
+			this.trackEvent('form_submitted', {
 				form_slug: slug,
-				success: result.success 
+				success: result.success
 			});
-			
+
 			return result;
 		} catch (error: any) {
 			// Queue for offline if network error
@@ -1054,13 +1096,13 @@ class FormsService {
 						body: JSON.stringify(data)
 					}
 				});
-				
+
 				return {
 					success: false,
-					message: 'Your submission has been queued and will be sent when you\'re back online.'
+					message: "Your submission has been queued and will be sent when you're back online."
 				};
 			}
-			
+
 			throw error;
 		}
 	}
@@ -1070,7 +1112,7 @@ class FormsService {
 		page = 1,
 		perPage = 20,
 		filters?: any
-	): Promise<{ 
+	): Promise<{
 		submissions: FormSubmission[];
 		total?: number;
 		perPage?: number;
@@ -1086,14 +1128,12 @@ class FormsService {
 				...filters
 			});
 
-			const response = await this.authFetch<{ 
+			const response = await this.authFetch<{
 				submissions: FormSubmission[];
 				total?: number;
 				perPage?: number;
 				currentPage?: number;
-			}>(
-				`${API_BASE}/forms/${formId}/submissions?${params}`
-			);
+			}>(`${API_BASE}/forms/${formId}/submissions?${params}`);
 
 			this.submissions.set(response.submissions);
 			return response;
@@ -1163,30 +1203,36 @@ class FormsService {
 	 */
 	joinCollaboration(formId: number): void {
 		if (!this.wsConnection) return;
-		
-		this.wsConnection.send(JSON.stringify({
-			type: 'join_collaboration',
-			form_id: formId
-		}));
+
+		this.wsConnection.send(
+			JSON.stringify({
+				type: 'join_collaboration',
+				form_id: formId
+			})
+		);
 	}
 
 	leaveCollaboration(formId: number): void {
 		if (!this.wsConnection) return;
-		
-		this.wsConnection.send(JSON.stringify({
-			type: 'leave_collaboration',
-			form_id: formId
-		}));
+
+		this.wsConnection.send(
+			JSON.stringify({
+				type: 'leave_collaboration',
+				form_id: formId
+			})
+		);
 	}
 
 	sendCollaborationUpdate(formId: number, update: any): void {
 		if (!this.wsConnection) return;
-		
-		this.wsConnection.send(JSON.stringify({
-			type: 'collaboration_update',
-			form_id: formId,
-			update
-		}));
+
+		this.wsConnection.send(
+			JSON.stringify({
+				type: 'collaboration_update',
+				form_id: formId,
+				update
+			})
+		);
 	}
 
 	/**
@@ -1208,7 +1254,9 @@ class FormsService {
 					errors.push(`${field.label} must be at least ${field.validation.min_length} characters`);
 				}
 				if (field.validation.max_length && value.length > field.validation.max_length) {
-					errors.push(`${field.label} must be no more than ${field.validation.max_length} characters`);
+					errors.push(
+						`${field.label} must be no more than ${field.validation.max_length} characters`
+					);
 				}
 			}
 
@@ -1258,11 +1306,11 @@ class FormsService {
 			skipCache: true
 		});
 
-		this.forms.update(forms => [...forms, form]);
-		
+		this.forms.update((forms) => [...forms, form]);
+
 		// Track template usage
 		this.trackEvent('template_used', { template_id: templateId });
-		
+
 		return form;
 	}
 }
@@ -1282,34 +1330,31 @@ export const error = formsService.error;
 export const offlineMode = formsService.offlineMode;
 
 // Export methods
-export const getForms = (page?: number, perPage?: number, filters?: any): Promise<{ forms: Form[]; total: number; perPage: number }> =>
+export const getForms = (
+	page?: number,
+	perPage?: number,
+	filters?: any
+): Promise<{ forms: Form[]; total: number; perPage: number }> =>
 	formsService.getForms(page, perPage, filters);
 
-export const getForm = (id: number) => 
-	formsService.getForm(id);
+export const getForm = (id: number) => formsService.getForm(id);
 
-export const createForm = (formData: Partial<Form>) => 
-	formsService.createForm(formData);
+export const createForm = (formData: Partial<Form>) => formsService.createForm(formData);
 
-export const updateForm = (id: number, formData: Partial<Form>) => 
+export const updateForm = (id: number, formData: Partial<Form>) =>
 	formsService.updateForm(id, formData);
 
-export const deleteForm = (id: number) => 
-	formsService.deleteForm(id);
+export const deleteForm = (id: number) => formsService.deleteForm(id);
 
-export const duplicateForm = (id: number) => 
-	formsService.duplicateForm(id);
+export const duplicateForm = (id: number) => formsService.duplicateForm(id);
 
-export const generateFormWithAI = (prompt: string) => 
-	formsService.generateFormWithAI(prompt);
+export const generateFormWithAI = (prompt: string) => formsService.generateFormWithAI(prompt);
 
-export const suggestFields = (context: string) => 
-	formsService.suggestFields(context);
+export const suggestFields = (context: string) => formsService.suggestFields(context);
 
-export const optimizeForm = (formId: number) => 
-	formsService.optimizeForm(formId);
+export const optimizeForm = (formId: number) => formsService.optimizeForm(formId);
 
-export const submitForm = (slug: string, data: Record<string, any>) => 
+export const submitForm = (slug: string, data: Record<string, any>) =>
 	formsService.submitForm(slug, data);
 
 export const previewForm = async (slug: string): Promise<Form> => {
@@ -1320,45 +1365,39 @@ export const previewForm = async (slug: string): Promise<Form> => {
 	return response.json();
 };
 
-export const getSubmissions = (formId: number, page?: number, perPage?: number, filters?: any) => 
+export const getSubmissions = (formId: number, page?: number, perPage?: number, filters?: any) =>
 	formsService.getSubmissions(formId, page, perPage, filters);
 
-export const exportSubmissions = (formId: number, format?: 'csv' | 'excel' | 'pdf') => 
+export const exportSubmissions = (formId: number, format?: 'csv' | 'excel' | 'pdf') =>
 	formsService.exportSubmissions(formId, format);
 
-export const getFormAnalytics = (formId: number) => 
-	formsService.getFormAnalytics(formId);
+export const getFormAnalytics = (formId: number) => formsService.getFormAnalytics(formId);
 
-export const getConversionFunnel = (formId: number) => 
-	formsService.getConversionFunnel(formId);
+export const getConversionFunnel = (formId: number) => formsService.getConversionFunnel(formId);
 
-export const getFieldHeatmap = (formId: number) => 
-	formsService.getFieldHeatmap(formId);
+export const getFieldHeatmap = (formId: number) => formsService.getFieldHeatmap(formId);
 
-export const validateField = (field: FormField, value: any) => 
+export const validateField = (field: FormField, value: any) =>
 	formsService.validateField(field, value);
 
-export const getFormTemplates = (category?: string) => 
-	formsService.getFormTemplates(category);
+export const getFormTemplates = (category?: string) => formsService.getFormTemplates(category);
 
-export const createFromTemplate = (templateId: number) => 
+export const createFromTemplate = (templateId: number) =>
 	formsService.createFromTemplate(templateId);
 
 // Real-time collaboration
-export const joinCollaboration = (formId: number) => 
-	formsService.joinCollaboration(formId);
+export const joinCollaboration = (formId: number) => formsService.joinCollaboration(formId);
 
-export const leaveCollaboration = (formId: number) => 
-	formsService.leaveCollaboration(formId);
+export const leaveCollaboration = (formId: number) => formsService.leaveCollaboration(formId);
 
-export const sendCollaborationUpdate = (formId: number, update: any) => 
+export const sendCollaborationUpdate = (formId: number, update: any) =>
 	formsService.sendCollaborationUpdate(formId, update);
 
 // A/B Testing
-export const createABTest = (formId: number, config: ABTestConfig) => 
+export const createABTest = (formId: number, config: ABTestConfig) =>
 	formsService.createABTest(formId, config);
 
-export const getABTestResults = (formId: number, testId: string) => 
+export const getABTestResults = (formId: number, testId: string) =>
 	formsService.getABTestResults(formId, testId);
 
 // Contacts API (placeholder for now - implement as needed)
@@ -1371,17 +1410,21 @@ export const contactsApi = {
 };
 
 // Form actions
-export const publishForm = (formId: number) => 
+export const publishForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'published' });
 
-export const unpublishForm = (formId: number) => 
+export const unpublishForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'draft' });
 
-export const archiveForm = (formId: number) => 
+export const archiveForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'archived' });
 
 // Submission management
-export const updateSubmissionStatus = async (formId: number, submissionId: number | string, status: string) => {
+export const updateSubmissionStatus = async (
+	formId: number,
+	submissionId: number | string,
+	status: string
+) => {
 	// Placeholder implementation - formId used for API routing
 	return { success: true, submission: { id: submissionId, status, form_id: formId } };
 };
@@ -1391,7 +1434,11 @@ export const deleteSubmission = async (formId: number, submissionId: number | st
 	return { success: true, form_id: formId };
 };
 
-export const bulkUpdateSubmissionStatus = async (formId: number, submissionIds: (number | string)[], status: string) => {
+export const bulkUpdateSubmissionStatus = async (
+	formId: number,
+	submissionIds: (number | string)[],
+	status: string
+) => {
 	// Placeholder implementation - formId used for API routing
 	return { success: true, updated: submissionIds.length, form_id: formId };
 };
@@ -1425,8 +1472,7 @@ export interface Contact {
 }
 
 // Analytics
-export const getSubmissionStats = (formId: number) => 
-	formsService.getFormAnalytics(formId);
+export const getSubmissionStats = (formId: number) => formsService.getFormAnalytics(formId);
 
 // Field types
 export const getFieldTypes = () => [
@@ -1449,8 +1495,8 @@ export const formsApi = {
 	update: (id: number, data: Partial<Form>) => Promise.resolve({} as Form),
 	delete: (id: number) => Promise.resolve(),
 	getEntries: (formId: number, page?: number) => formsService.getSubmissions(formId, page),
-	exportEntries: (formId: number, format: string = 'csv') => 
-		fetch(`/api/forms/${formId}/export?format=${format}`).then(r => r.blob()),
+	exportEntries: (formId: number, format: string = 'csv') =>
+		fetch(`/api/forms/${formId}/export?format=${format}`).then((r) => r.blob())
 };
 
 export default formsService;

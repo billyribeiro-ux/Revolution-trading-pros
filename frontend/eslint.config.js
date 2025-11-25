@@ -36,7 +36,10 @@ export default ts.config(
 	{
 		rules: {
 			// Enabled as warnings - use underscore prefix (_varName) for intentionally unused vars
-			'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{ argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+			],
 			// Enabled as warning - gradually replace 'any' with proper types
 			'@typescript-eslint/no-explicit-any': 'warn',
 			'svelte/no-at-html-tags': 'off',

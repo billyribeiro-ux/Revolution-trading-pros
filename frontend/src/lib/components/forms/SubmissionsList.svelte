@@ -73,7 +73,11 @@
 		if (selectedSubmissions.size === 0) return;
 
 		try {
-			await bulkUpdateSubmissionStatus(formId, Array.from(selectedSubmissions).map(Number), newStatus);
+			await bulkUpdateSubmissionStatus(
+				formId,
+				Array.from(selectedSubmissions).map(Number),
+				newStatus
+			);
 			selectedSubmissions.clear();
 			await loadData();
 		} catch (err) {

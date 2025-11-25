@@ -392,7 +392,14 @@
 		on:click={() => (showLinkDialog = false)}
 		on:keydown={(e) => e.key === 'Escape' && (showLinkDialog = false)}
 	>
-		<div class="dialog" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
+		<div
+			class="dialog"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			on:click|stopPropagation
+			on:keydown|stopPropagation
+		>
 			<h3>Insert Link</h3>
 			<input type="url" bind:value={linkUrl} placeholder="https://example.com" />
 			<div class="dialog-actions">
@@ -414,7 +421,14 @@
 		on:click={() => (showImageDialog = false)}
 		on:keydown={(e) => e.key === 'Escape' && (showImageDialog = false)}
 	>
-		<div class="dialog" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
+		<div
+			class="dialog"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			on:click|stopPropagation
+			on:keydown|stopPropagation
+		>
 			<h3>Insert Image</h3>
 			<input type="url" bind:value={imageUrl} placeholder="https://example.com/image.jpg" />
 			<div class="dialog-actions">
