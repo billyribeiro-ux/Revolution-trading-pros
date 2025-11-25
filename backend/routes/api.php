@@ -196,6 +196,14 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/email/builder/variables', [EmailTemplateBuilderController::class, 'getVariables']);
     Route::get('/email/builder/layouts', [EmailTemplateBuilderController::class, 'getLayouts']);
 
+    // Image Optimization
+    Route::get('/media/optimize/stats', [ImageOptimizationController::class, 'stats']);
+    Route::get('/media/optimize/unoptimized', [ImageOptimizationController::class, 'unoptimized']);
+    Route::post('/media/optimize/{id}', [ImageOptimizationController::class, 'optimize']);
+    Route::post('/media/optimize/batch', [ImageOptimizationController::class, 'batchOptimize']);
+    Route::post('/media/optimize/all', [ImageOptimizationController::class, 'optimizeAll']);
+    Route::post('/media/{id}/blur-hash', [ImageOptimizationController::class, 'generateBlurHash']);
+
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);
     Route::post('/coupons', [CouponController::class, 'store']);
