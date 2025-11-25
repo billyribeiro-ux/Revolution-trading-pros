@@ -23,7 +23,6 @@ use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
-use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Api\EmailTemplateBuilderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -195,14 +194,6 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/email/builder/templates/{id}/blocks/reorder', [EmailTemplateBuilderController::class, 'reorderBlocks']);
     Route::get('/email/builder/variables', [EmailTemplateBuilderController::class, 'getVariables']);
     Route::get('/email/builder/layouts', [EmailTemplateBuilderController::class, 'getLayouts']);
-
-    // Image Optimization
-    Route::get('/media/optimize/stats', [ImageOptimizationController::class, 'stats']);
-    Route::get('/media/optimize/unoptimized', [ImageOptimizationController::class, 'unoptimized']);
-    Route::post('/media/optimize/{id}', [ImageOptimizationController::class, 'optimize']);
-    Route::post('/media/optimize/batch', [ImageOptimizationController::class, 'batchOptimize']);
-    Route::post('/media/optimize/all', [ImageOptimizationController::class, 'optimizeAll']);
-    Route::post('/media/{id}/blur-hash', [ImageOptimizationController::class, 'generateBlurHash']);
 
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);

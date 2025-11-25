@@ -45,11 +45,6 @@ use App\Services\SEOAnalyzer;
 class PostResource extends JsonResource
 {
     /**
-     * Additional data to merge with the resource
-     */
-    protected array $additional = [];
-
-    /**
      * Cache TTL in seconds (10 minutes for published, 1 minute for drafts)
      */
     protected const CACHE_TTL_PUBLISHED = 600;
