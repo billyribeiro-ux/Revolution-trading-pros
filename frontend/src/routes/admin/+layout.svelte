@@ -19,7 +19,11 @@
 		IconMail,
 		IconChartBar,
 		IconSend,
-		IconFilter
+		IconFilter,
+		IconDatabase,
+		IconBriefcase,
+		IconActivity,
+		IconEye
 	} from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -39,13 +43,16 @@
 	const menuItems = [
 		{ icon: IconDashboard, label: 'Overview', href: '/admin' },
 		{ icon: IconUserCircle, label: 'Members', href: '/admin/members' },
-		{ icon: IconChartBar, label: 'Analytics', href: '/admin/members/analytics' },
+		{ icon: IconChartBar, label: 'Analytics', href: '/admin/analytics' },
 		{ icon: IconFilter, label: 'Segments', href: '/admin/members/segments' },
 		{ icon: IconReceipt, label: 'Subscriptions', href: '/admin/subscriptions' },
 		{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' },
 		{ icon: IconBellRinging, label: 'Popups', href: '/admin/popups' },
 		{ icon: IconForms, label: 'Forms', href: '/admin/forms' },
 		{ icon: IconNews, label: 'Blog', href: '/admin/blog' },
+		{ icon: IconDatabase, label: 'Headless CMS', href: '/admin/cms' },
+		{ icon: IconBriefcase, label: 'CRM', href: '/admin/crm' },
+		{ icon: IconEye, label: 'Behavior Tracking', href: '/admin/behavior' },
 		{ icon: IconSend, label: 'Campaigns', href: '/admin/email/campaigns' },
 		{ icon: IconMail, label: 'Email Templates', href: '/admin/email/templates' },
 		{ icon: IconMail, label: 'Email Settings', href: '/admin/email/smtp' },

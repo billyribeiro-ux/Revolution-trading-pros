@@ -42,7 +42,22 @@ const config = {
 			},
 			handleUnseenRoutes: 'ignore',
 			// Concurrent prerendering for faster builds
-			concurrency: 4
+			concurrency: 8, // Increased from 4 for faster builds
+			crawl: true, // Auto-discover linked pages
+			entries: ['*', '/sitemap.xml', '/robots.txt']
+		},
+		// Inline small CSS files for faster initial render
+		inlineStyleThreshold: 1024,
+		// Content Security Policy for better security
+		csp: {
+			mode: 'auto',
+			directives: {
+				'default-src': ['self'],
+				'script-src': ['self', 'unsafe-inline'],
+				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
+				'font-src': ['self', 'fonts.gstatic.com'],
+				'img-src': ['self', 'data:', 'https:']
+			}
 		},
 		// Alias for cleaner imports
 		alias: {
@@ -55,7 +70,11 @@ const config = {
 	// Compile-time optimizations
 	compilerOptions: {
 		// Enable CSS optimization
-		css: 'injected'
+		css: 'injected',
+		// Enable hydration optimization
+		hydratable: true,
+		// Enable immutable optimization (assumes data is immutable)
+		immutable: true
 	}
 };
 
