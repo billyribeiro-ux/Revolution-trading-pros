@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserSubscriptionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\MemberController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -197,7 +198,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::put('/coupons/{id}', [CouponController::class, 'update']);
     Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
 
-    // Users
+    // Users (Admin staff)
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/stats', [UserController::class, 'stats']);
     Route::get('/users/{id}', [UserController::class, 'show']);
@@ -206,6 +207,18 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     Route::post('/users/{id}/ban', [UserController::class, 'ban']);
     Route::post('/users/{id}/unban', [UserController::class, 'unban']);
+
+    // Members Management (All registered users/customers)
+    Route::get('/members', [MemberController::class, 'index']);
+    Route::get('/members/stats', [MemberController::class, 'stats']);
+    Route::get('/members/services', [MemberController::class, 'services']);
+    Route::get('/members/churned', [MemberController::class, 'churned']);
+    Route::get('/members/export', [MemberController::class, 'export']);
+    Route::get('/members/email-templates', [MemberController::class, 'emailTemplates']);
+    Route::get('/members/service/{productId}', [MemberController::class, 'byService']);
+    Route::get('/members/{id}', [MemberController::class, 'show']);
+    Route::post('/members/{id}/send-email', [MemberController::class, 'sendEmail']);
+    Route::post('/members/bulk-email', [MemberController::class, 'bulkEmail']);
 
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);

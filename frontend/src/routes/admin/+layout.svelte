@@ -7,6 +7,7 @@
 		IconReceipt,
 		IconTicket,
 		IconUsers,
+		IconUserCircle,
 		IconSettings,
 		IconLogout,
 		IconMenu2,
@@ -33,6 +34,7 @@
 
 	const menuItems = [
 		{ icon: IconDashboard, label: 'Overview', href: '/admin' },
+		{ icon: IconUserCircle, label: 'Members', href: '/admin/members' },
 		{ icon: IconReceipt, label: 'Subscriptions', href: '/admin/subscriptions' },
 		{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' },
 		{ icon: IconBellRinging, label: 'Popups', href: '/admin/popups' },
@@ -41,7 +43,7 @@
 		{ icon: IconMail, label: 'Email Templates', href: '/admin/email/templates' },
 		{ icon: IconMail, label: 'Email Settings', href: '/admin/email/smtp' },
 		{ icon: IconSeo, label: 'SEO', href: '/admin/seo' },
-		{ icon: IconUsers, label: 'Users', href: '/admin/users' },
+		{ icon: IconUsers, label: 'Admin Users', href: '/admin/users' },
 		{ icon: IconSettings, label: 'Settings', href: '/admin/settings' }
 	];
 </script>
