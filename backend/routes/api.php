@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\TimerAnalyticsController;
 use App\Http\Controllers\Api\UserSubscriptionController as ApiUserSubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Api\Admin\MediaController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\EmailTemplateController;
@@ -314,6 +315,34 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::delete('/videos/{id}', [VideoController::class, 'destroy']);
     Route::get('/videos/{id}/analytics', [VideoController::class, 'analytics']);
     Route::get('/videos/{id}/heatmap', [VideoController::class, 'heatmap']);
+
+    // ========================================
+    // MEDIA & IMAGE OPTIMIZATION ENGINE
+    // ========================================
+
+    // Media Library
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::post('/media/upload', [MediaController::class, 'upload']);
+    Route::post('/media/bulk-upload', [MediaController::class, 'bulkUpload']);
+    Route::get('/media/statistics', [MediaController::class, 'statistics']);
+    Route::get('/media/collections', [MediaController::class, 'collections']);
+    Route::get('/media/presets', [MediaController::class, 'presets']);
+    Route::get('/media/{id}', [MediaController::class, 'show']);
+    Route::put('/media/{id}', [MediaController::class, 'update']);
+    Route::delete('/media/{id}', [MediaController::class, 'destroy']);
+    Route::post('/media/bulk-delete', [MediaController::class, 'bulkDestroy']);
+    Route::get('/media/{id}/download', [MediaController::class, 'download']);
+    Route::post('/media/{id}/replace', [MediaController::class, 'replace']);
+
+    // Image Optimization
+    Route::post('/media/{id}/optimize', [MediaController::class, 'optimize']);
+    Route::post('/media/bulk-optimize', [MediaController::class, 'bulkOptimize']);
+    Route::post('/media/optimize-all', [MediaController::class, 'optimizeAll']);
+    Route::post('/media/{id}/regenerate', [MediaController::class, 'regenerate']);
+
+    // Optimization Queue
+    Route::get('/media/queue/status', [MediaController::class, 'queueStatus']);
+    Route::get('/media/jobs/{jobId}', [MediaController::class, 'jobStatus']);
 });
 
 // Form preview and submission (public)

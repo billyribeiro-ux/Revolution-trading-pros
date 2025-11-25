@@ -28,6 +28,8 @@ export interface MediaFile {
 	title: string;
 	alt_text: string;
 	description?: string;
+	caption?: string;
+	collection?: string;
 	file_type: 'image' | 'video' | 'audio' | 'document' | 'other';
 	mime_type: string;
 	file_size: number;
@@ -42,13 +44,17 @@ export interface MediaFile {
 	tags: string[];
 	metadata: MediaMetadata;
 	ai_metadata?: AIMetadata;
+	exif?: Record<string, unknown>;
 	versions: MediaVersion[];
+	variants?: MediaVariant[];
 	usage_count: number;
 	is_optimized: boolean;
 	has_webp: boolean;
+	processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
 	created_by: number;
 	created_at: string;
 	updated_at: string;
+	uploaded_at?: string;
 }
 
 export interface MediaMetadata {
@@ -115,6 +121,109 @@ export interface MediaUsage {
 	entity_title?: string;
 	url?: string;
 	created_at: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Image Optimization Types (Imagify-like features)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface MediaVariant {
+	type: string;
+	size: string | null;
+	width: number;
+	height: number;
+	url: string;
+	format: string;
+	file_size: number;
+	is_retina: boolean;
+	savings_percent: number | null;
+	lqip: string | null;
+	blurhash: string | null;
+}
+
+export interface OptimizationPreset {
+	id: number;
+	name: string;
+	slug: string;
+	description: string | null;
+	quality: {
+		webp: number;
+		avif: number;
+		jpeg: number;
+		png: number;
+	};
+	compression_mode: 'lossless' | 'lossy' | 'auto';
+	convert_to_webp: boolean;
+	convert_to_avif: boolean;
+	generate_retina: boolean;
+	responsive_sizes: Record<string, number>;
+	is_default: boolean;
+}
+
+export interface OptimizationJob {
+	id: number;
+	media_id: number;
+	status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+	progress: number;
+	current_operation: string | null;
+	attempts: number;
+	max_attempts: number;
+	original_size: number | null;
+	optimized_size: number | null;
+	savings_percent: number | null;
+	savings_bytes: number;
+	processing_time: string;
+	error: string | null;
+	started_at: string | null;
+	completed_at: string | null;
+}
+
+export interface OptimizationStatistics {
+	total_images: number;
+	optimized_images: number;
+	pending_optimization: number;
+	total_storage: number;
+	total_variants: number;
+	total_savings_bytes: number;
+	total_files: number;
+	total_size: number;
+	total_videos: number;
+	total_documents: number;
+	total_downloads: number;
+	total_views: number;
+	needs_optimization: number;
+	unused_files: number;
+	storage_by_type: Record<string, { count: number; size: number; human_size: string }>;
+	job_stats: {
+		pending: number;
+		processing: number;
+		completed: number;
+		failed: number;
+		total_savings_bytes: number;
+		avg_processing_time_ms: number;
+	};
+}
+
+export interface QueueStatus {
+	pending: number;
+	processing: number;
+	completed: number;
+	failed: number;
+	total_savings_bytes: number;
+	avg_processing_time_ms: number;
+}
+
+export interface UploadOptions {
+	folder_id?: string;
+	title?: string;
+	alt_text?: string;
+	tags?: string[];
+	optimize?: boolean;
+	generate_webp?: boolean;
+	collection?: string;
+	preset?: string;
+	process_immediately?: boolean;
+	priority?: number;
 }
 
 export interface UploadProgress {
@@ -425,8 +534,11 @@ class MediaApiClient {
 		return this.request('POST', `/admin/media/files/${id}/thumbnails`, { sizes });
 	}
 
-	async bulkOptimize(ids: string[]): Promise<BulkActionResult> {
-		return this.request('POST', '/admin/media/bulk/optimize', { ids });
+	async bulkOptimize(
+		ids: string[],
+		options: { preset?: string; priority?: number } = {}
+	): Promise<BulkActionResult> {
+		return this.request('POST', '/admin/media/bulk/optimize', { ids, ...options });
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -535,8 +647,170 @@ class MediaApiClient {
 	async findDuplicates(): Promise<{ duplicates: Array<{ hash: string; files: MediaFile[] }> }> {
 		return this.request('GET', '/admin/media/duplicates');
 	}
+
+	// ═══════════════════════════════════════════════════════════════════════
+	// Image Optimization (Imagify-like features)
+	// ═══════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Optimize a single image
+	 */
+	async optimizeImage(
+		id: string,
+		options: { preset?: string; immediate?: boolean; priority?: number } = {}
+	): Promise<{ success: boolean; data: MediaFile | OptimizationJob; message: string }> {
+		return this.request('POST', `/admin/media/files/${id}/optimize`, options);
+	}
+
+	/**
+	 * Optimize all unoptimized images
+	 */
+	async optimizeAll(
+		options: { limit?: number; preset?: string; priority?: number } = {}
+	): Promise<{ success: boolean; total_pending: number; jobs_queued: number; message: string }> {
+		return this.request('POST', '/admin/media/optimize-all', options);
+	}
+
+	/**
+	 * Regenerate variants for a media item
+	 */
+	async regenerateVariants(
+		id: string,
+		preset?: string
+	): Promise<{ success: boolean; data: MediaFile; message: string }> {
+		return this.request('POST', `/admin/media/files/${id}/regenerate`, { preset });
+	}
+
+	/**
+	 * Get optimization job status
+	 */
+	async getOptimizationJob(jobId: number): Promise<{ success: boolean; data: OptimizationJob }> {
+		return this.request('GET', `/admin/media/jobs/${jobId}`);
+	}
+
+	/**
+	 * Get optimization queue status
+	 */
+	async getQueueStatus(): Promise<{ success: boolean; data: QueueStatus }> {
+		return this.request('GET', '/admin/media/queue/status');
+	}
+
+	/**
+	 * Get optimization statistics
+	 */
+	async getOptimizationStatistics(): Promise<{ success: boolean; data: OptimizationStatistics }> {
+		return this.request('GET', '/admin/media/statistics');
+	}
+
+	/**
+	 * Get available optimization presets
+	 */
+	async getOptimizationPresets(): Promise<{ success: boolean; data: OptimizationPreset[] }> {
+		return this.request('GET', '/admin/media/presets');
+	}
+
+	/**
+	 * Get media variants
+	 */
+	async getVariants(id: string): Promise<{ success: boolean; data: MediaVariant[] }> {
+		return this.request('GET', `/admin/media/files/${id}/variants`);
+	}
+
+	/**
+	 * Upload method (alias for uploadFile for compatibility)
+	 */
+	async upload(
+		file: File,
+		options: UploadOptions = {}
+	): Promise<{ success: boolean; data: MediaFile }> {
+		const result = await this.uploadFile(file, options);
+		return { success: result.success, data: result.file };
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════
+	// Method Aliases (for cherry-picked component compatibility)
+	// ═══════════════════════════════════════════════════════════════════════
+
+	/**
+	 * List media files (alias for getFiles)
+	 */
+	async list(params: {
+		page?: number;
+		per_page?: number;
+		search?: string;
+		type?: string;
+		collection?: string;
+		optimized?: boolean;
+		needs_optimization?: boolean;
+		sort_by?: string;
+		sort_dir?: 'asc' | 'desc';
+	} = {}): Promise<{ data: MediaFile[]; meta: { current_page: number; last_page: number; total: number } }> {
+		const result = await this.getFiles({
+			page: params.page,
+			per_page: params.per_page,
+			search: params.search,
+			file_type: params.type,
+			sort: params.sort_by,
+			order: params.sort_dir
+		});
+		return {
+			data: result.files,
+			meta: {
+				current_page: result.pagination.page,
+				last_page: result.pagination.total_pages,
+				total: result.pagination.total
+			}
+		};
+	}
+
+	/**
+	 * Delete media file (alias for deleteFile)
+	 */
+	async delete(id: string): Promise<{ success: boolean }> {
+		return this.deleteFile(id);
+	}
+
+	/**
+	 * Optimize single media file (alias for optimizeImage)
+	 */
+	async optimize(
+		id: string,
+		options: { preset?: string } = {}
+	): Promise<{ success: boolean; data: MediaFile }> {
+		const result = await this.optimizeImage(id, options);
+		return { success: result.success, data: result.data as MediaFile };
+	}
+
+	/**
+	 * Update media file (alias for updateFile)
+	 */
+	async update(
+		id: string,
+		data: Partial<Pick<MediaFile, 'title' | 'alt_text' | 'description' | 'tags' | 'caption' | 'collection'>>
+	): Promise<{ success: boolean; data: MediaFile }> {
+		const result = await this.updateFile(id, data);
+		return { success: result.success, data: result.file };
+	}
+
+	/**
+	 * Get statistics (alias for getOptimizationStatistics)
+	 */
+	async getStatistics(): Promise<{ success: boolean; data: OptimizationStatistics }> {
+		return this.getOptimizationStatistics();
+	}
+
+	/**
+	 * Get presets (alias for getOptimizationPresets)
+	 */
+	async getPresets(): Promise<{ success: boolean; data: OptimizationPreset[] }> {
+		return this.getOptimizationPresets();
+	}
 }
 
 // Export singleton instance
 export const mediaApi = new MediaApiClient();
 export default mediaApi;
+
+// Type aliases for compatibility with cherry-picked components
+export type MediaItem = MediaFile;
+export type MediaStatistics = OptimizationStatistics;
