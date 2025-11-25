@@ -267,7 +267,9 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1" for="segment-name">Name</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="segment-name"
+							>Name</label
+						>
 						<input
 							type="text"
 							bind:value={newSegment.name}
@@ -277,7 +279,9 @@
 					</div>
 
 					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1" for="segment-description">Description</label>
+						<label class="block text-sm font-medium text-gray-700 mb-1" for="segment-description"
+							>Description</label
+						>
 						<textarea
 							bind:value={newSegment.description}
 							placeholder="Describe this segment..."
@@ -287,7 +291,9 @@
 					</div>
 
 					<div>
-						<label for="segment-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+						<label for="segment-type" class="block text-sm font-medium text-gray-700 mb-1"
+							>Type</label
+						>
 						<select
 							id="segment-type"
 							bind:value={newSegment.type}

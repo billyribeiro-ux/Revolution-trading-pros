@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Post } from '$lib/api/posts';
+  import type { Post } from '$lib/api/client';
 
   export let posts: Post[] = [];
   export let loading = false;
@@ -23,9 +23,9 @@
       {#each posts as post}
         <article class="group rounded-lg border p-4 transition hover:shadow-lg">
           <a href="/blog/{post.slug}" class="block">
-            {#if post.featured_image_url}
+            {#if post.featured_image}
               <img 
-                src={post.featured_image_url} 
+                src={post.featured_image} 
                 alt={post.title}
                 class="w-full h-48 object-cover rounded-lg mb-4 transition-transform group-hover:scale-105"
               />

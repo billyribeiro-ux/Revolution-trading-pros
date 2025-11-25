@@ -473,7 +473,12 @@
 
 									<div class="form-group">
 										<label for={`btn-text-${index}`}>Button Text</label>
-										<input id={`btn-text-${index}`} type="text" bind:value={button.text} class="form-input" />
+										<input
+											id={`btn-text-${index}`}
+											type="text"
+											bind:value={button.text}
+											class="form-input"
+										/>
 									</div>
 
 									<div class="form-group">
@@ -488,7 +493,11 @@
 
 									<div class="form-group">
 										<label for={`btn-action-${index}`}>Action</label>
-										<select id={`btn-action-${index}`} bind:value={button.action} class="form-input">
+										<select
+											id={`btn-action-${index}`}
+											bind:value={button.action}
+											class="form-input"
+										>
 											<option value="close">Close popup</option>
 											<option value="submit">Submit form</option>
 											<option value="custom">Custom (link)</option>
@@ -499,7 +508,8 @@
 										<div class="form-group">
 											<label for={`btn-link-${index}`}>Link URL</label>
 											<input
-												id={`btn-link-${index}`} type="text"
+												id={`btn-link-${index}`}
+												type="text"
 												bind:value={button.link}
 												class="form-input"
 												placeholder="https://..."
@@ -546,7 +556,12 @@
 
 									<div class="form-group">
 										<label for={`field-name-${index}`}>Field Name</label>
-										<input id={`field-name-${index}`} type="text" bind:value={field.name} class="form-input" />
+										<input
+											id={`field-name-${index}`}
+											type="text"
+											bind:value={field.name}
+											class="form-input"
+										/>
 									</div>
 
 									<div class="form-group">
@@ -562,7 +577,12 @@
 
 									<div class="form-group">
 										<label for={`field-placeholder-${index}`}>Placeholder</label>
-										<input id={`field-placeholder-${index}`} type="text" bind:value={field.placeholder} class="form-input" />
+										<input
+											id={`field-placeholder-${index}`}
+											type="text"
+											bind:value={field.placeholder}
+											class="form-input"
+										/>
 									</div>
 
 									<div class="form-group">

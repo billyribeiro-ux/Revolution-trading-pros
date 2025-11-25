@@ -258,7 +258,8 @@
 						id="preview-name"
 						type="text"
 						placeholder="Enter your name"
-						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
+						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors
+							.text}; font-family: {selectedTheme.fonts.body}"
 					/>
 				</div>
 				<div class="preview-field-wrapper">
@@ -272,7 +273,8 @@
 						id="preview-email"
 						type="email"
 						placeholder="you@example.com"
-						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
+						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors
+							.text}; font-family: {selectedTheme.fonts.body}"
 					/>
 				</div>
 				<button

@@ -2,7 +2,13 @@
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
-	import { getForms, getSubmissions, exportSubmissions, type Form, type FormEntry } from '$lib/api/forms';
+	import {
+		getForms,
+		getSubmissions,
+		exportSubmissions,
+		type Form,
+		type FormEntry
+	} from '$lib/api/forms';
 	import { IconDownload, IconEye } from '@tabler/icons-svelte';
 
 	let forms: Form[] = [];
