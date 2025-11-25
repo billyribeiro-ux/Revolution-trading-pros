@@ -46,7 +46,7 @@ test.describe('Comprehensive E2E Tests', () => {
 	});
 
 	test.describe('Alert Services Pages', () => {
-		const services = ['/alert-services/spx-profit-pulse', '/alert-services/explosive-swings'];
+		const services = ['/alerts/spx-profit-pulse', '/alerts/explosive-swings'];
 
 		for (const service of services) {
 			test(`${service} should load and display pricing`, async ({ page }) => {

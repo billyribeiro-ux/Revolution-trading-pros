@@ -20,7 +20,6 @@
 		IconChartBar,
 		IconSend,
 		IconFilter,
-		IconDatabase,
 		IconBriefcase,
 		IconActivity,
 		IconEye
@@ -50,7 +49,7 @@
 		{ icon: IconBellRinging, label: 'Popups', href: '/admin/popups' },
 		{ icon: IconForms, label: 'Forms', href: '/admin/forms' },
 		{ icon: IconNews, label: 'Blog', href: '/admin/blog' },
-		{ icon: IconDatabase, label: 'Headless CMS', href: '/admin/cms' },
+		{ icon: IconBriefcase, label: 'Headless CMS', href: '/admin/cms' },
 		{ icon: IconBriefcase, label: 'CRM', href: '/admin/crm' },
 		{ icon: IconEye, label: 'Behavior Tracking', href: '/admin/behavior' },
 		{ icon: IconSend, label: 'Campaigns', href: '/admin/email/campaigns' },
