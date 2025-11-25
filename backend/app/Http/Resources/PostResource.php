@@ -61,186 +61,57 @@ class PostResource extends JsonResource
     protected static ?SEOAnalyzer $seoAnalyzer = null;
 
     /**
-     * Transform the resource into an array
+     * Transform the resource into an array.
      *
      * @param Request $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
-        $cacheKey = $this->getCacheKey($request);
-        $cacheTTL = $this->isPublished() ? self::CACHE_TTL_PUBLISHED : self::CACHE_TTL_DRAFT;
-        
-        // Cache expensive computed fields
-        $computedData = Cache::remember($cacheKey, $cacheTTL, function () use ($request) {
-            return $this->getComputedFields($request);
-        });
-
-        return array_merge([
-            // Core identifiers
+        return [
             'id' => $this->id,
-            'uuid' => $this->uuid ?? Str::uuid()->toString(),
             'title' => $this->title,
             'slug' => $this->slug,
-            'url' => $this->getUrl(),
-            
-            // Content structure
-            'content' => $this->when(
-                $request->input('include_content', true),
-                fn() => $this->getContentStructure($request)
+            'excerpt' => $this->excerpt,
+            'content_html' => $this->when(
+                $request->input('include_content', false),
+                $this->content_html
             ),
-            
-            // Media assets
-            'media' => $this->getMediaStructure(),
-            
-            // Publication status
-            'status' => [
-                'value' => $this->status,
-                'label' => $this->getStatusLabel(),
-                'color' => $this->getStatusColor(),
-                'is_published' => $this->isPublished(),
-                'is_draft' => $this->isDraft(),
-                'is_scheduled' => $this->isScheduled(),
-                'is_archived' => $this->isArchived(),
+            'featured_image' => $this->featured_image,
+            'status' => $this->status,
+            'published_at' => $this->published_at?->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
+            'author' => [
+                'id' => $this->author_id,
+                'name' => $this->author?->name,
             ],
-            
-            // Timestamps with enhanced formatting
-            'dates' => $this->getDateStructure(),
-            
-            // Analytics and metrics
-            'analytics' => [
-                'view_count' => $this->view_count ?? 0,
-                'unique_views' => $computedData['unique_views'],
-                'avg_time_on_page' => $computedData['avg_time_on_page'],
-                'bounce_rate' => $computedData['bounce_rate'],
-                'share_count' => $computedData['share_count'],
-                'engagement_score' => $computedData['engagement_score'],
-                'trending_score' => $computedData['trending_score'],
-            ],
-            
-            // Content metrics
-            'metrics' => [
+            'meta' => [
                 'reading_time' => $this->reading_time,
-                'word_count' => $computedData['word_count'],
-                'character_count' => $computedData['character_count'],
-                'paragraph_count' => $computedData['paragraph_count'],
-                'image_count' => $computedData['image_count'],
-                'video_count' => $computedData['video_count'],
-                'link_count' => $computedData['link_count'],
-                'code_block_count' => $computedData['code_block_count'],
+                'view_count' => $this->view_count ?? 0,
+                'word_count' => $this->word_count,
             ],
-            
-            // SEO data with scoring
-            'seo' => $this->getSEOStructure($computedData),
-            
-            // Taxonomies
-            'taxonomies' => [
-                'categories' => CategoryResource::collection(
-                    $this->whenLoaded('categories', fn() => $this->categories, fn() => $this->categories ?? [])
-                ),
-                'tags' => TagResource::collection(
-                    $this->whenLoaded('tags', fn() => $this->tags, fn() => $this->tags ?? [])
-                ),
-                'topics' => $this->when(
-                    $this->relationLoaded('topics'),
-                    fn() => TopicResource::collection($this->topics)
-                ),
+            'seo' => [
+                'meta_title' => $this->meta_title,
+                'meta_description' => $this->meta_description,
             ],
-            
-            // Author information
-            'author' => $this->getAuthorStructure(),
-            
-            // Related content
-            'related' => $this->when(
-                $request->input('include_related', false),
-                fn() => $this->getRelatedContent()
-            ),
-            
-            // User interactions
-            'interactions' => $this->getUserInteractions($request),
-            
-            // Comments system
-            'comments' => $this->getCommentsStructure($request),
-            
-            // Content blocks with enhanced processing
-            'blocks' => $this->when(
-                $request->input('include_blocks', true),
-                fn() => $this->getProcessedContentBlocks()
-            ),
-            
-            // Version control
-            'versioning' => $this->when(
-                $request->user()?->can('view-revisions', $this->resource),
-                fn() => $this->getVersioningInfo()
-            ),
-            
-            // Social sharing
-            'social' => $this->getSocialStructure(),
-            
-            // Permissions
-            'permissions' => $this->getPermissions($request),
-            
-            // AI-generated insights
-            'insights' => $this->when(
-                $request->input('include_insights', false),
-                fn() => $computedData['ai_insights']
-            ),
-            
-            // Content quality scores
-            'quality' => $this->when(
-                $request->user()?->can('view-quality-metrics', $this->resource),
-                fn() => $computedData['quality_scores']
-            ),
-            
-            // Monetization data
-            'monetization' => $this->when(
-                $this->has_monetization && $request->user()?->can('view-monetization', $this->resource),
-                fn() => $this->getMonetizationData()
-            ),
-            
-            // Custom fields
-            'custom_fields' => $this->when(
-                $this->custom_fields && !empty($this->custom_fields),
-                $this->custom_fields
-            ),
-            
-            // Metadata
-            'meta' => $this->getMetadata($request),
-            
-        ], $this->additional);
+        ];
     }
 
     /**
-     * Get computed fields with caching
+     * Get computed/calculated fields for the post.
      *
      * @param Request $request
      * @return array<string, mixed>
      */
     protected function getComputedFields(Request $request): array
     {
-        $content = $this->getPlainTextContent();
+        $content = strip_tags($this->content_html ?? '');
         
         return [
-            'word_count' => str_word_count($content),
-            'character_count' => strlen($content),
-            'paragraph_count' => $this->countParagraphs(),
-            'image_count' => $this->countImages(),
-            'video_count' => $this->countVideos(),
-            'link_count' => $this->countLinks(),
-            'code_block_count' => $this->countCodeBlocks(),
-            'unique_views' => $this->calculateUniqueViews(),
-            'avg_time_on_page' => $this->calculateAverageTimeOnPage(),
-            'bounce_rate' => $this->calculateBounceRate(),
-            'share_count' => $this->calculateShareCount(),
-            'engagement_score' => $this->calculateEngagementScore(),
-            'trending_score' => $this->calculateTrendingScore(),
-            'seo_score' => $this->calculateSEOScore(),
-            'readability_score' => $this->calculateReadabilityScore(),
-            'ai_insights' => $this->generateAIInsights(),
-            'quality_scores' => $this->calculateQualityScores(),
-            'keyword_density' => $this->calculateKeywordDensity(),
-            'internal_links' => $this->analyzeInternalLinks(),
-            'external_links' => $this->analyzeExternalLinks(),
+            'word_count' => $this->word_count ?? str_word_count($content),
+            'reading_time' => $this->reading_time ?? ceil(str_word_count($content) / 200),
+            'view_count' => $this->view_count ?? 0,
         ];
     }
 
