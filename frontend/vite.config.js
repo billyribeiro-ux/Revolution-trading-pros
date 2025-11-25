@@ -28,24 +28,19 @@ export default defineConfig({
 	build: {
 		// Optimize chunk size
 		chunkSizeWarningLimit: 1000,
-		// Enable minification
-		minify: 'terser',
-		terserOptions: {
-			compress: {
-				drop_console: true, // Remove console.logs in production
-				drop_debugger: true,
-				pure_funcs: ['console.log', 'console.debug']
-			}
-		},
+		// Enable minification with esbuild (faster than terser)
+		minify: 'esbuild',
 		// Optimize chunk splitting
 		rollupOptions: {
 			output: {
-				manualChunks: {
-					// Vendor chunks for better caching
-					'vendor-svelte': ['svelte', 'svelte/store'],
-					'vendor-gsap': ['gsap'],
-					'vendor-charts': ['lightweight-charts'],
-					'vendor-three': ['three', '@threlte/core', '@threlte/extras']
+				manualChunks: (id) => {
+					// Only apply manual chunks to client-side builds
+					if (id.includes('node_modules')) {
+						if (id.includes('svelte')) return 'vendor-svelte';
+						if (id.includes('lightweight-charts')) return 'vendor-charts';
+						if (id.includes('three') || id.includes('@threlte')) return 'vendor-three';
+						return 'vendor';
+					}
 				}
 			}
 		},
