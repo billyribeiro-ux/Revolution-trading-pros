@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
 	let billingInterval: 'monthly' | 'annual' = 'monthly';
@@ -140,41 +141,33 @@
 		]
 	};
 
-	const jsonLdString = JSON.stringify(schemaOrg);
-	const jsonLdScript = `<script type="application/ld+json">${jsonLdString}<\/script>`;
+	// Schema for SEOHead
+	const combinedSchema = schemaOrg['@graph'];
 </script>
 
-<svelte:head>
-	<title>Explosive Swings Alerts | Multi-Day Swing Trading | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Get explosive swing trading alerts for multi-day opportunities. Expert analysis, precise entries/exits, and proven strategies for active swing traders."
-	/>
-	<meta
-		name="keywords"
-		content="swing trading alerts, stock options alerts, swing trade signals, multi-day trading strategies, SPX swing trading"
-	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/alerts/explosive-swings" />
-
-	<meta property="og:type" content="product" />
-	<meta property="og:title" content="Explosive Swings Alerts | Catch Multi-Day Moves" />
-	<meta
-		property="og:description"
-		content="Don't stare at charts all day. Get high-probability swing trade alerts sent to your phone."
-	/>
-	<meta property="og:url" content="https://revolutiontradingpros.com/alerts/explosive-swings" />
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-swings.jpg" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Explosive Swings Trading Alerts" />
-	<meta
-		name="twitter:description"
-		content="Precision swing trading alerts. 82% win rate. 3-7 day hold times."
-	/>
-	<meta name="twitter:image" content="https://revolutiontradingpros.com/images/og-swings.jpg" />
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Explosive Swings Alerts | Multi-Day Swing Trading"
+	description="Get explosive swing trading alerts for multi-day opportunities. Expert analysis, precise entries/exits, and proven strategies. 82% win rate. 3-7 day hold times. Perfect for traders with day jobs."
+	canonical="/alerts/explosive-swings"
+	ogType="product"
+	ogImage="/images/og-swings.jpg"
+	ogImageAlt="Explosive Swings Trading Alerts - Multi-Day Opportunities"
+	keywords={[
+		'swing trading alerts',
+		'stock options alerts',
+		'swing trade signals',
+		'multi-day trading strategies',
+		'SPX swing trading',
+		'swing trading service',
+		'options swing trading',
+		'trading signals'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="97"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"

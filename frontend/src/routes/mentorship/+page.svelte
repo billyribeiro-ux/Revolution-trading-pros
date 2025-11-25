@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { gsap } from 'gsap'; // Leveraging your library
+	import SEOHead from '$lib/components/SEOHead.svelte';
 	// Note: If you have ScrollTrigger, uncomment lines below.
 	// For safety/paste-ability, I am using a lightweight IntersectionObserver to trigger GSAP animations.
 
@@ -116,10 +117,22 @@
 	];
 </script>
 
-<svelte:head>
-	<title>Institutional Strategy Audit | Revolution Trading Pros</title>
-	<meta name="robots" content="noindex, nofollow" />
-</svelte:head>
+<SEOHead
+	title="Institutional Strategy Audit | $25,000 Consultation"
+	description="A high-velocity, forensic deconstruction of your trading business. Designed strictly for Portfolio Managers and Proprietary Traders deploying 7-8 figure capital."
+	canonical="/mentorship"
+	ogType="website"
+	noIndex={true}
+	noFollow={true}
+	keywords={[
+		'institutional trading audit',
+		'trading consultation',
+		'portfolio manager consulting',
+		'proprietary trading',
+		'trading mentorship',
+		'high-net-worth trading'
+	]}
+/>
 
 <div
 	class="min-h-screen bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black overflow-x-hidden"

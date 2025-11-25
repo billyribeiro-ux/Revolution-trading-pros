@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- FAQ Logic ---
 	let openFaq: number | null = null;
@@ -132,44 +133,33 @@
 		]
 	};
 
-	const jsonLd = JSON.stringify({ '@graph': [productSchema, faqSchema] });
-	const jsonLdScript = `<script type="application/ld+json">${jsonLd}<\/script>`;
+	// Combine schemas for SEOHead
+	const combinedSchema = [productSchema, faqSchema];
 </script>
 
-<svelte:head>
-	<title>SPX Profit Pulse | #1 0DTE Options Alerts | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Trade SPX 0DTE options with confidence. Get real-time SMS alerts, precise entries/exits, and professional risk management. Join 1,000+ traders."
-	/>
-	<meta
-		name="keywords"
-		content="SPX 0DTE alerts, options trading signals, SPX signals, 0DTE trading strategy, same day expiration options"
-	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/alerts/spx-profit-pulse" />
-
-	<meta property="og:type" content="product" />
-	<meta property="og:title" content="SPX Profit Pulse | Real-Time 0DTE Alerts" />
-	<meta
-		property="og:description"
-		content="Instant SMS alerts for high-probability SPX setups. 78% win rate."
-	/>
-	<meta
-		property="og:url"
-		content="https://revolutiontradingpros.com/alerts/spx-profit-pulse"
-	/>
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-spx-pulse.jpg" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="SPX Profit Pulse Alerts" />
-	<meta
-		name="twitter:description"
-		content="Instant SMS alerts for high-probability SPX setups. 78% win rate."
-	/>
-	<meta name="twitter:image" content="https://revolutiontradingpros.com/images/og-spx-pulse.jpg" />
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="SPX Profit Pulse | #1 0DTE Options Alerts"
+	description="Trade SPX 0DTE options with confidence. Get real-time SMS alerts, precise entries/exits, and professional risk management. Join 1,000+ profitable traders. 78% win rate."
+	canonical="/alerts/spx-profit-pulse"
+	ogType="product"
+	ogImage="/images/og-spx-pulse.jpg"
+	ogImageAlt="SPX Profit Pulse - Real-Time 0DTE Options Alerts"
+	keywords={[
+		'SPX 0DTE alerts',
+		'options trading signals',
+		'SPX signals',
+		'0DTE trading strategy',
+		'same day expiration options',
+		'SPX options alerts',
+		'day trading alerts',
+		'options trading service'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="97"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"

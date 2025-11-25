@@ -2,6 +2,27 @@
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Schema for small accounts trading room
+	const productSchema = {
+		'@context': 'https://schema.org',
+		'@type': 'Product',
+		name: 'Small Accounts Day Trading Room',
+		description:
+			'Live trading room designed for small account traders. Learn professional strategies optimized for accounts under $25k.',
+		brand: {
+			'@type': 'Organization',
+			name: 'Revolution Trading Pros'
+		},
+		offers: {
+			'@type': 'AggregateOffer',
+			priceCurrency: 'USD',
+			lowPrice: '97',
+			highPrice: '197',
+			offerCount: '3'
+		}
+	};
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = 'quarterly';
@@ -110,47 +131,32 @@
 			}
 		]
 	};
-	const jsonLdString = JSON.stringify(schemaOrg);
-	const jsonLdScript = `<script type="application/ld+json">${jsonLdString}<\/script>`;
+	// Schema for SEOHead
+	const combinedSchema = schemaOrg['@graph'];
 </script>
 
-<svelte:head>
-	<title>Live Day Trading Room | SPX 0DTE Alerts & Mentorship | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Trade live with professionals. Our SPX 0DTE Day Trading Room offers real-time screen sharing, precise entry/exit alerts, and institutional order flow analysis."
-	/>
-	<meta
-		name="keywords"
-		content="live trading room, SPX 0DTE strategy, day trading alerts, options trading community, stock market mentorship"
-	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/live-trading-rooms/day-trading" />
-
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="Live SPX Day Trading Room" />
-	<meta
-		property="og:description"
-		content="Watch us trade live. Real-time alerts, screen sharing, and professional risk management."
-	/>
-	<meta
-		property="og:url"
-		content="https://revolutiontradingpros.com/live-trading-rooms/day-trading"
-	/>
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/day-trading-og.jpg" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Live SPX Day Trading Room" />
-	<meta
-		name="twitter:description"
-		content="Stop trading alone. Join the Revolution Trading Pros live room today."
-	/>
-	<meta
-		name="twitter:image"
-		content="https://revolutiontradingpros.com/images/day-trading-og.jpg"
-	/>
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Small Accounts Day Trading Room | PDT-Free Strategies"
+	description="Trade live with professionals. Our Small Accounts Day Trading Room offers real-time screen sharing, precise entry/exit alerts, and strategies optimized for accounts under $25k."
+	canonical="/live-trading-rooms/small-accounts"
+	ogType="product"
+	ogImage="/images/day-trading-og.jpg"
+	ogImageAlt="Small Accounts Day Trading Room - PDT-Free Strategies"
+	keywords={[
+		'small account trading',
+		'PDT-free trading',
+		'day trading under 25k',
+		'small account strategies',
+		'live trading room',
+		'SPX 0DTE strategy',
+		'options trading community'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="97"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"

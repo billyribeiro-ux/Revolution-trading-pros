@@ -2,6 +2,7 @@
 	import { authStore } from '$lib/stores/auth';
 	import { registerAndLogin } from '$lib/api/auth';
 	import { goto } from '$app/navigation';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	let name = '';
 	let email = '';
@@ -53,10 +54,13 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Sign Up - Revolution Trading Pros</title>
-	<meta name="description" content="Create your Revolution Trading Pros account" />
-</svelte:head>
+<SEOHead
+	title="Sign Up - Create Your Trading Account"
+	description="Join Revolution Trading Pros. Create your free account to access live trading rooms, professional alerts, courses, and our trading community."
+	canonical="/signup"
+	ogType="website"
+	keywords={['trading signup', 'create trading account', 'join revolution trading pros', 'trading membership']}
+/>
 
 <div class="min-h-[calc(100vh-120px)] flex items-center justify-center bg-rtp-bg px-4 py-12">
 	<div class="w-full max-w-md">

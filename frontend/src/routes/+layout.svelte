@@ -5,13 +5,11 @@
 	import PopupModal from '$lib/components/PopupModal.svelte';
 </script>
 
-<svelte:head>
-	<title>Revolution Trading Pros | Live Trading Rooms, Alerts & Pro Tools</title>
-	<meta
-		name="description"
-		content="Professional trading education and tools. Live trading rooms, SPX alerts, courses, and indicators built for disciplined traders."
-	/>
-</svelte:head>
+<!--
+	SEO Note: Page-specific SEO is handled by individual +page.svelte files using SEOHead component.
+	Global meta tags are set in app.html for fallback only.
+	Each page must define its own title, description, canonical, and structured data.
+-->
 
 <div class="min-h-screen bg-rtp-bg text-rtp-text">
 	<!-- Admin Toolbar (only shows for logged-in admins) -->

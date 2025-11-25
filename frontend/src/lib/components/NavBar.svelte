@@ -573,13 +573,13 @@
 							onclick={() => (activeMobileSubmenu = activeMobileSubmenu === item.id ? null : item.id)}
 						>
 							<span>{item.label}</span>
-							<IconChevronRight
-								size={18}
-								stroke={2.5}
+							<span
 								class="mobile-nav__chevron"
 								class:mobile-nav__chevron--open={activeMobileSubmenu === item.id}
 								aria-hidden="true"
-							/>
+							>
+								<IconChevronRight size={18} stroke={2.5} />
+							</span>
 						</button>
 
 						<div

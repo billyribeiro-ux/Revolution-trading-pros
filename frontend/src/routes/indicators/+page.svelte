@@ -15,6 +15,7 @@
 		IconWaveSine,
 		IconChartBar
 	} from '@tabler/icons-svelte';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	interface Indicator {
 		id: string;
@@ -122,6 +123,60 @@
 			? indicators
 			: indicators.filter((ind) => ind.category === selectedCategory);
 
+	// Indicators structured data for rich snippets
+	const indicatorsSchema = [
+		{
+			'@context': 'https://schema.org',
+			'@type': 'ItemList',
+			'@id': 'https://revolutiontradingpros.com/indicators/#indicatorlist',
+			name: 'Professional Trading Indicators',
+			description: 'Technical analysis indicators used by professional traders',
+			numberOfItems: indicators.length,
+			itemListElement: indicators.map((indicator, index) => ({
+				'@type': 'ListItem',
+				position: index + 1,
+				item: {
+					'@type': 'SoftwareApplication',
+					name: indicator.name,
+					description: indicator.description,
+					url: `https://revolutiontradingpros.com/indicators/${indicator.slug}`,
+					applicationCategory: 'FinanceApplication',
+					operatingSystem: 'Web Browser',
+					offers: {
+						'@type': 'Offer',
+						price: '0',
+						priceCurrency: 'USD'
+					}
+				}
+			}))
+		},
+		{
+			'@context': 'https://schema.org',
+			'@type': 'HowTo',
+			'@id': 'https://revolutiontradingpros.com/indicators/#howto',
+			name: 'How to Use Technical Trading Indicators',
+			description:
+				'Learn to use professional-grade technical indicators to identify high-probability setups, confirm trends, and time your entries with precision.',
+			step: [
+				{
+					'@type': 'HowToStep',
+					name: 'Identify Trends',
+					text: 'Use trend-following indicators like Moving Averages and MACD to spot market direction.'
+				},
+				{
+					'@type': 'HowToStep',
+					name: 'Measure Momentum',
+					text: 'Use momentum oscillators like RSI and Stochastic to gauge strength of moves.'
+				},
+				{
+					'@type': 'HowToStep',
+					name: 'Time Entries',
+					text: 'Combine multiple indicators to confirm setups and optimize entry timing.'
+				}
+			]
+		}
+	];
+
 	onMount(() => {
 		if (!browser) return;
 
@@ -161,25 +216,27 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Professional Trading Indicators | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master technical indicators used by professional traders. RSI, MACD, Moving Averages, Bollinger Bands, and more."
-	/>
-	<meta property="og:title" content="Professional Trading Indicators | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master technical indicators used by professional traders. RSI, MACD, Moving Averages, Bollinger Bands, and more."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Professional Trading Indicators | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master technical indicators used by professional traders. RSI, MACD, Moving Averages, Bollinger Bands, and more."
-	/>
-</svelte:head>
+<SEOHead
+	title="Professional Trading Indicators"
+	description="Master technical indicators used by professional traders. RSI, MACD, Moving Averages, Bollinger Bands, VWAP, and more. Free guides and proven strategies."
+	canonical="/indicators"
+	ogType="website"
+	ogImage="/og-image.webp"
+	ogImageAlt="Revolution Trading Pros Technical Indicators"
+	keywords={[
+		'trading indicators',
+		'technical indicators',
+		'RSI indicator',
+		'MACD indicator',
+		'moving averages',
+		'bollinger bands',
+		'VWAP',
+		'momentum indicators',
+		'trend indicators',
+		'technical analysis'
+	]}
+	schema={indicatorsSchema}
+/>
 
 <div class="indicators-page">
 	<!-- Hero Section -->

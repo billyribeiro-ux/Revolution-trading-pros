@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- ICONS (Inline SVG for Zero-Dependency & Performance) ---
 	const Icons = {
@@ -274,25 +275,27 @@
 	];
 </script>
 
-<svelte:head>
-	<title>Our Mission | The Institutional Bridge | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Dismantling the retail trader stereotype. We bridge the gap between gambling and institutional risk management through data, discipline, and transparency."
-	/>
-	<meta
-		name="keywords"
-		content="trading mission, institutional trading, retail trading education, auction market theory, risk management, trading psychology, order flow"
-	/>
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://revolutiontradingpros.com/mission" />
-	<meta property="og:title" content="Our Mission | Revolution Trading Pros" />
-	<meta
-		property="og:description"
-		content="We don't sell dreams. We build careers. Join the 1% of traders who treat this as a business."
-	/>
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Our Mission | The Institutional Bridge"
+	description="Dismantling the retail trader stereotype. We bridge the gap between gambling and institutional risk management through data, discipline, and transparency. Join the 1% of traders who treat this as a business."
+	canonical="/our-mission"
+	ogType="website"
+	ogImage="/og-image.webp"
+	ogImageAlt="Revolution Trading Pros Mission - Building Trading Careers"
+	keywords={[
+		'trading mission',
+		'institutional trading',
+		'retail trading education',
+		'auction market theory',
+		'risk management',
+		'trading psychology',
+		'order flow',
+		'trading career',
+		'professional trading'
+	]}
+	schema={jsonLd['@graph']}
+	author="Billy Ribeiro"
+/>
 
 <div
 	class="min-h-screen bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white overflow-x-hidden"

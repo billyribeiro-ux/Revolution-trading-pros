@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'annual' = 'monthly';
@@ -101,39 +102,32 @@
 		]
 	};
 
-	const jsonLd = JSON.stringify({ '@graph': [productSchema, faqSchema] });
-	const jsonLdScript = `<script type="application/ld+json">${jsonLd}<\/script>`;
+	// Schema for SEOHead
+	const combinedSchema = [productSchema, faqSchema];
 </script>
 
-<svelte:head>
-	<title>Explosive Swings Alerts | Multi-Day Swing Trading | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Get explosive swing trading alerts for multi-day opportunities. Expert analysis, precise entries/exits, and proven strategies for swing traders."
-	/>
-	<meta
-		name="keywords"
-		content="swing trading alerts, stock options alerts, swing trade signals, multi-day trading strategies"
-	/>
-
-	<meta property="og:type" content="product" />
-	<meta property="og:title" content="Explosive Swings Alerts | Catch Multi-Day Moves" />
-	<meta
-		property="og:description"
-		content="Don't stare at charts all day. Get high-probability swing trade alerts sent to your phone."
-	/>
-	<meta property="og:url" content="https://revolutiontradingpros.com/alerts/explosive-swings" />
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-swings.jpg" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Explosive Swings Trading Alerts" />
-	<meta
-		name="twitter:description"
-		content="Precision swing trading alerts. 82% win rate. 3-7 day hold times."
-	/>
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Swing Trading Room | Multi-Day Trading Opportunities"
+	description="Join our swing trading room for multi-day opportunities. Expert analysis, precise entries/exits, and proven strategies. Perfect for traders who can't watch markets all day. 82% win rate."
+	canonical="/live-trading-rooms/swing-trading"
+	ogType="product"
+	ogImage="/images/og-swings.jpg"
+	ogImageAlt="Swing Trading Room - Multi-Day Trading Opportunities"
+	keywords={[
+		'swing trading room',
+		'swing trading alerts',
+		'multi-day trading',
+		'stock options alerts',
+		'swing trade signals',
+		'options swing trading',
+		'trading room'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="97"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-emerald selection:text-white"

@@ -1,10 +1,75 @@
-<svelte:head>
-	<title>Trading Resources | Free Education & Tools | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Free trading resources, guides, and tools. Start your trading education with our comprehensive resource library."
-	/>
-</svelte:head>
+<script lang="ts">
+	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Resources page structured data
+	const resourcesSchema = [
+		{
+			'@context': 'https://schema.org',
+			'@type': 'CollectionPage',
+			'@id': 'https://revolutiontradingpros.com/resources/#collection',
+			name: 'Free Trading Resources',
+			description: 'Free trading resources, guides, calculators, and educational tools for traders.',
+			url: 'https://revolutiontradingpros.com/resources',
+			mainEntity: {
+				'@type': 'ItemList',
+				itemListElement: [
+					{
+						'@type': 'ListItem',
+						position: 1,
+						name: 'Beginner Trading Guides',
+						description: 'Complete guides for new traders including account setup and basics.'
+					},
+					{
+						'@type': 'ListItem',
+						position: 2,
+						name: 'Free Trading Tools',
+						description: 'Position size calculator, risk/reward calculator, and trading journal templates.'
+					},
+					{
+						'@type': 'ListItem',
+						position: 3,
+						name: 'Video Tutorials',
+						description: 'Platform setup, chart reading, and live trade walkthroughs.'
+					},
+					{
+						'@type': 'ListItem',
+						position: 4,
+						name: 'Market Analysis',
+						description: 'Weekly recaps, economic calendar, and key levels to watch.'
+					},
+					{
+						'@type': 'ListItem',
+						position: 5,
+						name: 'Trading Psychology',
+						description: 'Managing emotions, developing discipline, and building confidence.'
+					}
+				]
+			}
+		}
+	];
+</script>
+
+<SEOHead
+	title="Free Trading Resources & Education Tools"
+	description="Free trading resources, guides, calculators, and tools. Start your trading education with our comprehensive resource library. Position size calculators, trading journal templates, and more."
+	canonical="/resources"
+	ogType="website"
+	ogImage="/og-image.webp"
+	ogImageAlt="Revolution Trading Pros Free Trading Resources"
+	keywords={[
+		'free trading resources',
+		'trading guides',
+		'trading calculators',
+		'position size calculator',
+		'trading journal',
+		'trading education',
+		'beginner trading',
+		'trading tools',
+		'market analysis',
+		'trading psychology'
+	]}
+	schema={resourcesSchema}
+/>
 
 <!-- Hero -->
 <section

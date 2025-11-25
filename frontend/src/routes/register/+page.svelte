@@ -16,6 +16,7 @@
 	import { browser } from '$app/environment';
 	import gsap from 'gsap';
 	import confetti from 'canvas-confetti';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	let name = '';
 	let email = '';
@@ -231,9 +232,13 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Register | Revolution Trading Pros</title>
-</svelte:head>
+<SEOHead
+	title="Register - Join Revolution Trading Pros"
+	description="Create your Revolution Trading Pros account. Get started with live trading rooms, professional alerts, and expert-led courses."
+	canonical="/register"
+	ogType="website"
+	keywords={['register trading account', 'join revolution trading pros', 'create trading account']}
+/>
 
 <div class="register-page">
 	<!-- Animated gradient background -->
