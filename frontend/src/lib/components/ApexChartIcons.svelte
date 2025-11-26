@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let type: string = 'line';
+    // External reference for component type identification
+    export const type = 'apex-chart-icon';
     export let size: number = 48;
 </script>
 

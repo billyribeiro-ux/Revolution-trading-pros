@@ -1,13 +1,11 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
-    import { 
-        IconActivity, 
-        IconTrendingUp, 
-        IconBuildingBank, 
-        IconArrowUpRight,
-        IconTerminal2
-    } from '@tabler/icons-svelte';
+    import IconActivity from '@tabler/icons-svelte/icons/activity';
+    import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+    import IconBuilding from '@tabler/icons-svelte/icons/building';
+    import IconArrowUpRight from '@tabler/icons-svelte/icons/arrow-up-right';
+    import IconTerminal from '@tabler/icons-svelte/icons/terminal';
 
     // --- Data Configuration ---
     const products = [
@@ -46,7 +44,7 @@
             description: 'Strict discipline protocol for emerging capital. Focus on risk-adjusted returns and drawdown control.',
             features: ['Risk Protocol', 'Capital Preservation', 'Scaling Logic'],
             href: '/live-trading-rooms/small-accounts',
-            icon: IconBuildingBank,
+            icon: IconBuilding,
             accent: 'indigo',
             cta: 'Start Building'
         }
@@ -92,7 +90,7 @@
         
         <div class="max-w-3xl mx-auto text-center mb-20">
             {#if isVisible}
-                <div in:heavySlide class="inline-flex items-center justify-center gap-2 mb-6">
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center justify-center gap-2 mb-6">
                     <span class="relative flex h-2 w-2">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
