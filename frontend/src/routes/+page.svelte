@@ -15,6 +15,7 @@
 	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
 	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
 	import CTASection from '$lib/components/sections/CTASection.svelte';
+	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
 
@@ -149,4 +150,8 @@
 
 <LazySection rootMargin="300px">
 	<CTASection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<SocialMediaSection />
 </LazySection>
