@@ -1,15 +1,13 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
-    import { 
-        IconBolt, 
-        IconTrendingUp, 
-        IconActivity, 
-        IconTarget,
-        IconArrowUpRight,
-        IconBroadcast,
-        IconClock
-    } from '@tabler/icons-svelte';
+    import IconBolt from '@tabler/icons-svelte/icons/bolt';
+    import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+    import IconActivity from '@tabler/icons-svelte/icons/activity';
+    import IconTarget from '@tabler/icons-svelte/icons/target';
+    import IconArrowUpRight from '@tabler/icons-svelte/icons/arrow-up-right';
+    import IconAntenna from '@tabler/icons-svelte/icons/antenna';
+    import IconClock from '@tabler/icons-svelte/icons/clock';
 
     // --- Data Configuration ---
     const signals = [
@@ -99,7 +97,7 @@
         
         <div class="max-w-3xl mx-auto text-center mb-20">
             {#if isVisible}
-                <div in:heavySlide class="inline-flex items-center justify-center gap-2 mb-6">
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center justify-center gap-2 mb-6">
                     <span class="relative flex h-2 w-2">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
@@ -223,7 +221,7 @@
                                 class="group/btn relative w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-md text-sm font-medium text-zinc-300 transition-all duration-300 hover:text-white hover:border-{item.accent}-500/50 hover:bg-{item.accent}-500/10"
                             >
                                 <span class="flex items-center gap-2">
-                                    <IconBroadcast size={16} class="text-{item.accent}-500" />
+                                    <IconAntenna size={16} class="text-{item.accent}-500" />
                                     <span>Subscribe to Feed</span>
                                 </span>
                                 <IconArrowUpRight size={16} class="text-zinc-500 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:text-white" />

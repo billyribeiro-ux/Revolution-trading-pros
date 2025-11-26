@@ -149,7 +149,7 @@
         
         <section class="max-w-[1600px] mx-auto mb-32">
             {#if isVisible}
-                <div in:heavySlide class="flex flex-col lg:flex-row gap-16 lg:items-end border-b border-white/10 pb-16">
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="flex flex-col lg:flex-row gap-16 lg:items-end border-b border-white/10 pb-16">
                     <div class="lg:w-2/3">
                         <div class="inline-flex items-center gap-3 px-3 py-1 border border-white/10 bg-white/5 text-slate-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8">
                             <span class="w-2 h-2 bg-amber-600 rounded-sm"></span>

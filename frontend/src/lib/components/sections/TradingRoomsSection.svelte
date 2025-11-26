@@ -192,7 +192,7 @@
                             </h3>
                             
                             <div class="flex items-center gap-2 mb-6 text-xs font-mono text-{item.accent}-400/80">
-                                <IconTerminal2 size={12} />
+                                <IconTerminal size={12} />
                                 <span>{item.metric}</span>
                             </div>
 
