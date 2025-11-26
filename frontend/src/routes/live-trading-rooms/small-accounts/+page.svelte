@@ -153,9 +153,9 @@
 	]}
 	schema={combinedSchema}
 	schemaType="Product"
-	productPrice="97"
+	productPrice={97}
 	productCurrency="USD"
-	productAvailability="InStock"
+	productAvailability="in stock"
 />
 
 <main

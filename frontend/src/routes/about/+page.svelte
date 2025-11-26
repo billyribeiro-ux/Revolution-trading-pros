@@ -1,747 +1,308 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import {
-		IconUsers,
-		IconTrendingUp,
-		IconShieldCheck,
-		IconRocket,
-		IconAward,
-		IconTarget
-	} from '@tabler/icons-svelte';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+    import { onMount } from 'svelte';
+    import { cubicOut } from 'svelte/easing';
+    import { browser } from '$app/environment';
+    import IconBuildingBank from '@tabler/icons-svelte/icons/building-bank';
+    import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+    import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
+    import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
+    import IconChartDots from '@tabler/icons-svelte/icons/chart-dots';
+    import IconScale from '@tabler/icons-svelte/icons/scale';
+    import IconBriefcase from '@tabler/icons-svelte/icons/briefcase';
+    import IconId from '@tabler/icons-svelte/icons/id';
+    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+    import SEOHead from '$lib/components/SEOHead.svelte';
 
-	let isVisible = false;
-	let heroRef: HTMLElement;
+    // --- Animation Logic ---
+    let containerRef: HTMLElement;
+    let isVisible = false;
+    let mouse = { x: 0, y: 0 };
 
-	// About page structured data
-	const aboutSchema = [
-		{
-			'@context': 'https://schema.org',
-			'@type': 'AboutPage',
-			'@id': 'https://revolutiontradingpros.com/about/#aboutpage',
-			name: 'About Revolution Trading Pros',
-			description:
-				'Learn about Revolution Trading Pros, our expert team, and our commitment to transforming traders through professional education and institutional-grade tools.',
-			url: 'https://revolutiontradingpros.com/about',
-			mainEntity: {
-				'@type': 'Organization',
-				'@id': 'https://revolutiontradingpros.com/#organization',
-				name: 'Revolution Trading Pros',
-				foundingDate: '2018',
-				description:
-					'Professional trading education platform offering live trading rooms, alerts, courses, and indicators.',
-				numberOfEmployees: {
-					'@type': 'QuantitativeValue',
-					value: '15'
-				},
-				member: [
-					{
-						'@type': 'Person',
-						name: 'Michael Rodriguez',
-						jobTitle: 'Founder & Lead Trader',
-						description:
-							'15+ years of institutional trading experience. Former Goldman Sachs derivatives trader.'
-					},
-					{
-						'@type': 'Person',
-						name: 'Sarah Chen',
-						jobTitle: 'Chief Strategy Officer',
-						description:
-							'Quantitative analyst with expertise in algorithmic trading. PhD in Financial Engineering from MIT.'
-					},
-					{
-						'@type': 'Person',
-						name: 'David Thompson',
-						jobTitle: 'Head of Education',
-						description: 'Certified Financial Technician with 12 years teaching professional traders.'
-					},
-					{
-						'@type': 'Person',
-						name: 'Jessica Martinez',
-						jobTitle: 'Risk Management Director',
-						description:
-							'Former JP Morgan risk analyst. Specializes in portfolio optimization and risk assessment.'
-					}
-				]
-			}
-		}
-	];
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef) return;
+        const rect = containerRef.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    };
 
-	// Team members
-	const team = [
-		{
-			name: 'Michael Rodriguez',
-			role: 'Founder & Lead Trader',
-			image: '/images/team/placeholder-1.jpg',
-			bio: '15+ years of institutional trading experience. Former Goldman Sachs derivatives trader specializing in SPX options.'
-		},
-		{
-			name: 'Sarah Chen',
-			role: 'Chief Strategy Officer',
-			image: '/images/team/placeholder-2.jpg',
-			bio: 'Quantitative analyst with expertise in algorithmic trading systems. PhD in Financial Engineering from MIT.'
-		},
-		{
-			name: 'David Thompson',
-			role: 'Head of Education',
-			image: '/images/team/placeholder-3.jpg',
-			bio: 'Certified Financial Technician with 12 years teaching professional traders. Author of "Market Mastery Frameworks".'
-		},
-		{
-			name: 'Jessica Martinez',
-			role: 'Risk Management Director',
-			image: '/images/team/placeholder-4.jpg',
-			bio: 'Former JP Morgan risk analyst. Specializes in portfolio optimization and institutional risk assessment.'
-		}
-	];
+    onMount(() => {
+        if (!browser) return;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (containerRef) observer.observe(containerRef);
+    });
 
-	// Company stats
-	const stats = [
-		{ value: '10,000+', label: 'Active Members', icon: IconUsers },
-		{ value: '85%', label: 'Win Rate', icon: IconTrendingUp },
-		{ value: '$50M+', label: 'Member Profits', icon: IconAward },
-		{ value: '24/7', label: 'Support', icon: IconShieldCheck }
-	];
+    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+        return {
+            delay,
+            duration,
+            css: (t: number) => {
+                const eased = cubicOut(t);
+                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+            }
+        };
+    }
 
-	// Core values
-	const values = [
-		{
-			icon: IconTarget,
-			title: 'Precision',
-			description:
-				'Every trade setup is backed by institutional-grade analysis and rigorous risk management protocols.'
-		},
-		{
-			icon: IconShieldCheck,
-			title: 'Transparency',
-			description:
-				'Real-time trade execution, verified track records, and honest communication with our community.'
-		},
-		{
-			icon: IconRocket,
-			title: 'Innovation',
-			description:
-				'Cutting-edge trading technology, proprietary indicators, and advanced market analysis tools.'
-		}
-	];
+    // --- Data ---
+    const stats = [
+        { value: '10,000+', label: 'Active Terminals', icon: IconUsersGroup },
+        { value: '85%', label: 'Win Probability', icon: IconTrendingUp },
+        { value: '$50M+', label: 'Capital Deployed', icon: IconBuildingBank },
+        { value: '24/5', label: 'Desk Coverage', icon: IconShieldLock }
+    ];
 
-	onMount(() => {
-		if (!browser) return;
+    const principles = [
+        {
+            icon: IconScale,
+            title: 'Asymmetric Risk',
+            id: 'PRIN-01',
+            description: 'We do not engage in 1:1 setups. Every position must offer a mathematical expectancy of 3R or greater based on historical variance.'
+        },
+        {
+            icon: IconShieldLock,
+            title: 'Variance Control',
+            id: 'PRIN-02',
+            description: 'Capital preservation is the mandate. We utilize institutional hedging and strict position sizing to flatten equity curve volatility.'
+        },
+        {
+            icon: IconChartDots,
+            title: 'Quantitative Edge',
+            id: 'PRIN-03',
+            description: 'Opinions are irrelevant. We trade order flow, dark pool liquidity, and gamma exposure levels derived from raw market data.'
+        }
+    ];
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						isVisible = true;
-					}
-				});
-			},
-			{ threshold: 0.1 }
-		);
+    const team = [
+        {
+            name: 'Michael Rodriguez',
+            role: 'Head of Trading',
+            id: 'DESK-LEAD',
+            specialties: ['Derivatives', 'Macro Flow'],
+            bio: '15+ years institutional experience. Former Goldman Sachs derivatives trader specializing in SPX volatility structures.'
+        },
+        {
+            name: 'Sarah Chen',
+            role: 'Chief Strategist',
+            id: 'QUANT-01',
+            specialties: ['Algo Systems', 'HFT Logic'],
+            bio: 'PhD in Financial Engineering (MIT). Builds the proprietary algorithms that power our signal detection engine.'
+        },
+        {
+            name: 'David Thompson',
+            role: 'Education Director',
+            id: 'EDU-LEAD',
+            specialties: ['Technical Analysis', 'Market Profile'],
+            bio: 'Certified Financial Technician (CFTe). 12 years experience bridging the gap between retail theory and institutional reality.'
+        },
+        {
+            name: 'Jessica Martinez',
+            role: 'Risk Manager',
+            id: 'RISK-DIR',
+            specialties: ['Portfolio Ops', 'Compliance'],
+            bio: 'Former JP Morgan Risk Analyst. Ensures all desk strategies adhere to strict drawdown and VaR limits.'
+        }
+    ];
 
-		if (heroRef) {
-			observer.observe(heroRef);
-		}
-
-		return () => observer.disconnect();
-	});
+    // Preserving Schema from original code
+    const aboutSchema = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'AboutPage',
+            name: 'Firm Profile | Revolution Trading Pros',
+            description: 'Institutional trading education and proprietary data tools.',
+            mainEntity: {
+                '@type': 'Organization',
+                name: 'Revolution Trading Pros',
+                foundingDate: '2018'
+            }
+        }
+    ];
 </script>
 
 <SEOHead
-	title="About Us - Our Expert Trading Team"
-	description="Learn about Revolution Trading Pros, our expert team of former institutional traders, and our commitment to transforming traders through professional education and institutional-grade tools. Established 2018."
-	canonical="/about"
-	ogType="website"
-	ogImage="/og-image.webp"
-	ogImageAlt="Revolution Trading Pros Expert Team"
-	keywords={[
-		'about revolution trading pros',
-		'trading team',
-		'professional traders',
-		'trading education company',
-		'institutional trading experience',
-		'trading mentors',
-		'financial technician',
-		'trading experts'
-	]}
-	schema={aboutSchema}
-	author="Revolution Trading Pros"
+    title="Firm Profile | Revolution Trading Pros"
+    description="Revolution Trading Pros bridges the gap between retail capital and institutional edge. Established 2018."
+    canonical="/about"
+    schema={aboutSchema}
 />
 
-<div class="about-page">
-	<!-- Hero Section -->
-	<section class="hero-section" bind:this={heroRef}>
-		<div class="hero-container">
-			<div class="hero-content" class:visible={isVisible}>
-				<div class="badge">
-					<IconAward size={20} />
-					<span>ESTABLISHED 2018</span>
-				</div>
-				<h1 class="hero-title">
-					Transforming Traders Through
-					<span class="gradient-text">Professional Excellence</span>
-				</h1>
-				<p class="hero-subtitle">
-					We're not just another trading service. We're a community of disciplined professionals
-					committed to mastering the markets with institutional-grade strategies, cutting-edge
-					technology, and uncompromising standards.
-				</p>
-			</div>
-		</div>
-	</section>
+<div 
+    bind:this={containerRef}
+    on:mousemove={handleMouseMove}
+    class="relative bg-[#020202] min-h-screen text-slate-400 font-sans selection:bg-amber-900 selection:text-white"
+>
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+        <div class="absolute inset-0 opacity-20"
+             style="background: radial-gradient(1000px circle at var(--x) var(--y), rgba(255,255,255,0.05), transparent 60%);">
+        </div>
+    </div>
 
-	<!-- Stats Section -->
-	<section class="stats-section">
-		<div class="stats-container">
-			{#each stats as stat}
-				<div class="stat-card">
-					<svelte:component this={stat.icon} size={40} class="stat-icon" />
-					<div class="stat-value">{stat.value}</div>
-					<div class="stat-label">{stat.label}</div>
-				</div>
-			{/each}
-		</div>
-	</section>
+    <main class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
+        
+        <section class="max-w-[1600px] mx-auto mb-32">
+            {#if isVisible}
+                <div in:heavySlide class="flex flex-col lg:flex-row gap-16 lg:items-end border-b border-white/10 pb-16">
+                    <div class="lg:w-2/3">
+                        <div class="inline-flex items-center gap-3 px-3 py-1 border border-white/10 bg-white/5 text-slate-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8">
+                            <span class="w-2 h-2 bg-amber-600 rounded-sm"></span>
+                            Est. 2018
+                        </div>
+                        
+                        <h1 class="text-6xl lg:text-8xl font-serif text-white tracking-tight leading-[0.9] mb-8">
+                            Strategic <br />
+                            <span class="text-slate-700">Mandate.</span>
+                        </h1>
+                        
+                        <p class="text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-6">
+                            We are not a "community." We are a performance-driven trading environment. 
+                            Our mission is to arm retail capital with the infrastructure, data, and discipline of an institutional desk.
+                        </p>
+                    </div>
 
-	<!-- Story Section -->
-	<section class="story-section">
-		<div class="story-container">
-			<div class="section-header">
-				<h2 class="section-title">Our Story</h2>
-			</div>
-			<div class="story-content">
-				<div class="story-text">
-					<p>
-						Revolution Trading Pros was founded in 2018 by a team of former institutional traders
-						who saw a glaring gap in the retail trading education space. While retail traders were
-						being sold dreams and quick-fix systems, professional traders operated with discipline,
-						structure, and proven methodologies.
-					</p>
-					<p>
-						We built Revolution Trading Pros to bridge that gap—to bring institutional-level trading
-						education, tools, and community to serious retail traders who demand more than hype and
-						empty promises.
-					</p>
-					<p>
-						Today, we serve over 10,000 active members globally, providing live trading rooms,
-						proprietary indicators, structured education programs, and a community of like-minded
-						professionals who take trading seriously.
-					</p>
-				</div>
-				<div class="story-image">
-					<div class="image-placeholder">
-						<IconRocket size={120} class="placeholder-icon" />
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+                    <div class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10">
+                        {#each stats as stat}
+                            <div class="bg-[#050505] p-6 group hover:bg-[#080808] transition-colors">
+                                <div class="text-amber-600 mb-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                                    <svelte:component this={stat.icon} size={20} />
+                                </div>
+                                <div class="text-2xl font-serif text-white mb-1">{stat.value}</div>
+                                <div class="text-[10px] font-mono uppercase text-slate-500 tracking-widest">{stat.label}</div>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+        </section>
 
-	<!-- Values Section -->
-	<section class="values-section">
-		<div class="values-container">
-			<div class="section-header">
-				<h2 class="section-title">Our Core Values</h2>
-				<p class="section-subtitle">
-					The principles that guide every decision we make and every service we provide.
-				</p>
-			</div>
-			<div class="values-grid">
-				{#each values as value}
-					<div class="value-card">
-						<div class="value-icon-wrapper">
-							<svelte:component this={value.icon} size={36} class="value-icon" />
-						</div>
-						<h3 class="value-title">{value.title}</h3>
-						<p class="value-description">{value.description}</p>
-					</div>
-				{/each}
-			</div>
-		</div>
-	</section>
+        <section class="max-w-[1400px] mx-auto mb-32 grid lg:grid-cols-2 gap-24 items-center">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 200 }} class="order-2 lg:order-1 relative">
+                    <svg class="w-full h-full text-slate-800" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 280 L50 250 L100 260 L150 180 L200 200 L250 100 L300 120 L350 50 L400 20" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+                        <path d="M0 280 L50 250 L100 260 L150 180 L200 200 L250 100 L300 120 L350 50 L400 20 V 300 H 0 Z" fill="url(#grad)" opacity="0.2" />
+                        <defs>
+                            <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#d97706" />
+                                <stop offset="100%" stop-color="transparent" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="absolute top-10 left-10 bg-[#080808] border border-white/10 p-6 shadow-2xl max-w-xs">
+                        <div class="text-[10px] font-mono text-emerald-500 mb-2">MARKET GAP IDENTIFIED</div>
+                        <p class="text-sm text-slate-300 font-light">
+                            "Retail traders are being sold dreams while institutions are sold data. We built the bridge."
+                        </p>
+                    </div>
+                </div>
 
-	<!-- Team Section -->
-	<section class="team-section">
-		<div class="team-container">
-			<div class="section-header">
-				<h2 class="section-title">Meet Our Expert Team</h2>
-				<p class="section-subtitle">
-					Seasoned professionals with decades of combined trading and education experience.
-				</p>
-			</div>
-			<div class="team-grid">
-				{#each team as member}
-					<div class="team-card">
-						<div class="team-image">
-							<div class="image-placeholder-team">
-								<IconUsers size={80} />
-							</div>
-						</div>
-						<div class="team-info">
-							<h3 class="team-name">{member.name}</h3>
-							<div class="team-role">{member.role}</div>
-							<p class="team-bio">{member.bio}</p>
-						</div>
-					</div>
-				{/each}
-			</div>
-		</div>
-	</section>
+                <div in:heavySlide={{ delay: 300 }} class="order-1 lg:order-2">
+                    <h2 class="text-4xl font-serif text-white mb-8">The Institutional Gap.</h2>
+                    <div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
+                        <p>
+                            Revolution Trading Pros was founded in 2018 by former proprietary traders who identified a critical failure in the market: <strong class="text-white font-medium">Information Asymmetry.</strong>
+                        </p>
+                        <p>
+                            While retail traders relied on lagging indicators and "guru" alerts, professional desks operated with Order Flow, Vanna, and Dark Pool data. The playing field wasn't just uneven; it was broken.
+                        </p>
+                        <p>
+                            We built this firm to democratize edge. We do not sell signals. We install a professional operating system into your trading business.
+                        </p>
+                    </div>
+                </div>
+            {/if}
+        </section>
 
-	<!-- CTA Section -->
-	<section class="cta-section">
-		<div class="cta-container">
-			<h2 class="cta-title">Ready to Join Our Community?</h2>
-			<p class="cta-subtitle">
-				Experience the difference of professional trading education and institutional-grade tools.
-			</p>
-			<div class="cta-buttons">
-				<a href="/signup" class="cta-primary">
-					<span>Start Free Trial</span>
-					<IconRocket size={20} />
-				</a>
-				<a href="/our-mission" class="cta-secondary">
-					<span>Our Mission</span>
-					<IconTarget size={20} />
-				</a>
-			</div>
-		</div>
-	</section>
+        <section class="max-w-[1600px] mx-auto mb-32">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 400 }} class="border-t border-white/10 pt-16">
+                    <div class="flex justify-between items-end mb-12">
+                        <h2 class="text-3xl font-serif text-white">Operating Principles</h2>
+                        <span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest hidden sm:block">Firm Protocol v4.0</span>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        {#each principles as prin}
+                            <div class="group bg-[#050505] border border-white/10 p-8 hover:border-amber-600/50 transition-colors duration-500">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div class="p-3 bg-white/5 text-amber-600 group-hover:bg-amber-600 group-hover:text-black transition-colors duration-300">
+                                        <svelte:component this={prin.icon} size={24} stroke={1.5} />
+                                    </div>
+                                    <span class="text-[10px] font-mono text-slate-600 group-hover:text-amber-600 transition-colors">{prin.id}</span>
+                                </div>
+                                <h3 class="text-xl font-medium text-white mb-4">{prin.title}</h3>
+                                <p class="text-sm text-slate-400 leading-relaxed font-light">
+                                    {prin.description}
+                                </p>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+        </section>
+
+        <section class="max-w-[1600px] mx-auto">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 500 }} class="border-t border-white/10 pt-16">
+                    <div class="flex justify-between items-end mb-12">
+                        <h2 class="text-3xl font-serif text-white">Desk Personnel</h2>
+                        <span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest hidden sm:block">Active Roster</span>
+                    </div>
+
+                    <div class="grid gap-px bg-white/10 border border-white/10">
+                        {#each team as member}
+                            <div class="group bg-[#050505] p-8 md:p-10 grid md:grid-cols-12 gap-8 items-center hover:bg-[#080808] transition-colors duration-300">
+                                <div class="md:col-span-2 flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-white/5 flex items-center justify-center text-slate-500 border border-white/5 group-hover:border-white/20">
+                                        <IconId size={24} />
+                                    </div>
+                                    <div class="md:hidden text-lg font-serif text-white">{member.name}</div>
+                                </div>
+                                
+                                <div class="hidden md:block md:col-span-3">
+                                    <div class="text-xl font-serif text-white">{member.name}</div>
+                                    <div class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">{member.role}</div>
+                                </div>
+
+                                <div class="md:col-span-5">
+                                    <div class="md:hidden text-[10px] font-mono text-amber-600 uppercase tracking-widest mb-2">{member.role}</div>
+                                    <p class="text-sm text-slate-400 leading-relaxed font-light">{member.bio}</p>
+                                </div>
+
+                                <div class="md:col-span-2 flex flex-col items-end gap-2">
+                                    {#each member.specialties as spec}
+                                        <span class="px-2 py-1 bg-white/5 border border-white/5 text-[10px] text-slate-400 font-mono uppercase rounded">
+                                            {spec}
+                                        </span>
+                                    {/each}
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                        <span class="text-[10px] font-mono text-emerald-500 uppercase">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+        </section>
+
+        <section class="mt-32 border-t border-white/10 pt-20 text-center">
+            <h2 class="text-3xl md:text-5xl font-serif text-white mb-8">Initialize Protocol.</h2>
+            <div class="flex justify-center gap-6">
+                <a href="/signup" class="group flex items-center gap-2 px-8 py-4 bg-amber-700 hover:bg-amber-600 text-white font-bold text-sm uppercase tracking-widest transition-all">
+                    <span>Access Terminal</span>
+                    <IconArrowRight size={16} class="group-hover:translate-x-1 transition-transform" />
+                </a>
+            </div>
+        </section>
+
+    </main>
 </div>
-
-<style>
-	.about-page {
-		min-height: 100vh;
-		background: linear-gradient(135deg, #050e1f 0%, #0a1628 50%, #0f1e33 100%);
-	}
-
-	/* Hero Section */
-	.hero-section {
-		padding: 10rem 1.5rem 6rem;
-		position: relative;
-		overflow: hidden;
-	}
-
-	.hero-section::before {
-		content: '';
-		position: absolute;
-		top: -50%;
-		right: -20%;
-		width: 600px;
-		height: 600px;
-		background: radial-gradient(circle, rgba(46, 142, 255, 0.15) 0%, transparent 70%);
-		border-radius: 50%;
-		pointer-events: none;
-	}
-
-	.hero-container {
-		max-width: 900px;
-		margin: 0 auto;
-		position: relative;
-		z-index: 1;
-	}
-
-	.hero-content {
-		text-align: center;
-		opacity: 0;
-		transform: translateY(30px);
-		transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-	}
-
-	.hero-content.visible {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	.badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background: rgba(46, 142, 255, 0.1);
-		border: 1px solid rgba(46, 142, 255, 0.3);
-		border-radius: 999px;
-		color: #2e8eff;
-		font-weight: 700;
-		font-size: 0.85rem;
-		letter-spacing: 0.1em;
-		margin-bottom: 2rem;
-	}
-
-	.hero-title {
-		font-size: clamp(2.5rem, 5vw, 4.5rem);
-		font-weight: 900;
-		color: #ffffff;
-		margin: 0 0 1.5rem 0;
-		line-height: 1.2;
-	}
-
-	.gradient-text {
-		display: block;
-		background: linear-gradient(135deg, #2e8eff, #60a5fa);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.hero-subtitle {
-		font-size: 1.25rem;
-		color: #cbd5e1;
-		line-height: 1.8;
-		margin: 0;
-	}
-
-	/* Stats Section */
-	.stats-section {
-		padding: 4rem 1.5rem;
-		background: rgba(15, 23, 42, 0.4);
-		border-top: 1px solid rgba(46, 142, 255, 0.2);
-		border-bottom: 1px solid rgba(46, 142, 255, 0.2);
-	}
-
-	.stats-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 2rem;
-	}
-
-	.stat-card {
-		text-align: center;
-		padding: 2rem 1rem;
-		background: rgba(46, 142, 255, 0.05);
-		border: 1px solid rgba(46, 142, 255, 0.2);
-		border-radius: 16px;
-		transition: all 0.3s ease;
-	}
-
-	.stat-card:hover {
-		background: rgba(46, 142, 255, 0.1);
-		border-color: rgba(46, 142, 255, 0.4);
-		transform: translateY(-4px);
-	}
-
-	:global(.stat-icon) {
-		color: #2e8eff;
-		margin-bottom: 1rem;
-	}
-
-	.stat-value {
-		font-size: 2.5rem;
-		font-weight: 900;
-		color: #ffffff;
-		margin-bottom: 0.5rem;
-	}
-
-	.stat-label {
-		font-size: 1rem;
-		color: #94a3b8;
-		font-weight: 600;
-	}
-
-	/* Story Section */
-	.story-section {
-		padding: 6rem 1.5rem;
-	}
-
-	.story-container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.section-header {
-		text-align: center;
-		margin-bottom: 4rem;
-	}
-
-	.section-title {
-		font-size: clamp(2rem, 4vw, 3.5rem);
-		font-weight: 800;
-		color: #ffffff;
-		margin: 0 0 1rem 0;
-		background: linear-gradient(135deg, #2e8eff, #60a5fa);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.section-subtitle {
-		font-size: 1.25rem;
-		color: #cbd5e1;
-		margin: 0;
-	}
-
-	.story-content {
-		display: grid;
-		grid-template-columns: 1.2fr 1fr;
-		gap: 4rem;
-		align-items: center;
-	}
-
-	.story-text p {
-		font-size: 1.1rem;
-		color: #cbd5e1;
-		line-height: 1.8;
-		margin-bottom: 1.5rem;
-	}
-
-	.story-image {
-		position: relative;
-	}
-
-	.image-placeholder {
-		aspect-ratio: 1;
-		background: linear-gradient(135deg, rgba(46, 142, 255, 0.1), rgba(46, 142, 255, 0.05));
-		border: 2px solid rgba(46, 142, 255, 0.3);
-		border-radius: 24px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	:global(.placeholder-icon) {
-		color: #2e8eff;
-		opacity: 0.5;
-	}
-
-	/* Values Section */
-	.values-section {
-		padding: 6rem 1.5rem;
-		background: rgba(15, 23, 42, 0.3);
-	}
-
-	.values-container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.values-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 2rem;
-	}
-
-	.value-card {
-		padding: 2.5rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(46, 142, 255, 0.2);
-		border-radius: 20px;
-		transition: all 0.3s ease;
-	}
-
-	.value-card:hover {
-		border-color: rgba(46, 142, 255, 0.5);
-		transform: translateY(-8px);
-		box-shadow: 0 20px 60px rgba(46, 142, 255, 0.2);
-	}
-
-	.value-icon-wrapper {
-		width: 70px;
-		height: 70px;
-		background: linear-gradient(135deg, rgba(46, 142, 255, 0.2), rgba(46, 142, 255, 0.05));
-		border-radius: 16px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 1.5rem;
-	}
-
-	:global(.value-icon) {
-		color: #2e8eff;
-	}
-
-	.value-title {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: #ffffff;
-		margin: 0 0 1rem 0;
-	}
-
-	.value-description {
-		font-size: 1rem;
-		color: #cbd5e1;
-		line-height: 1.7;
-		margin: 0;
-	}
-
-	/* Team Section */
-	.team-section {
-		padding: 6rem 1.5rem;
-	}
-
-	.team-container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.team-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 2.5rem;
-	}
-
-	.team-card {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(46, 142, 255, 0.2);
-		border-radius: 20px;
-		padding: 2rem;
-		transition: all 0.3s ease;
-	}
-
-	.team-card:hover {
-		border-color: rgba(46, 142, 255, 0.5);
-		transform: translateY(-4px);
-	}
-
-	.team-image {
-		margin-bottom: 1.5rem;
-	}
-
-	.image-placeholder-team {
-		aspect-ratio: 1;
-		max-width: 200px;
-		margin: 0 auto;
-		background: linear-gradient(135deg, rgba(46, 142, 255, 0.1), rgba(46, 142, 255, 0.05));
-		border: 2px solid rgba(46, 142, 255, 0.3);
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.team-name {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: #ffffff;
-		margin: 0 0 0.5rem 0;
-	}
-
-	.team-role {
-		font-size: 1rem;
-		color: #2e8eff;
-		font-weight: 600;
-		margin-bottom: 1rem;
-	}
-
-	.team-bio {
-		font-size: 0.95rem;
-		color: #cbd5e1;
-		line-height: 1.7;
-		margin: 0;
-	}
-
-	/* CTA Section */
-	.cta-section {
-		padding: 6rem 1.5rem;
-		background: linear-gradient(135deg, rgba(46, 142, 255, 0.1), transparent);
-	}
-
-	.cta-container {
-		max-width: 800px;
-		margin: 0 auto;
-		text-align: center;
-	}
-
-	.cta-title {
-		font-size: clamp(2rem, 4vw, 3rem);
-		font-weight: 800;
-		color: #ffffff;
-		margin: 0 0 1rem 0;
-	}
-
-	.cta-subtitle {
-		font-size: 1.25rem;
-		color: #cbd5e1;
-		margin: 0 0 2.5rem 0;
-	}
-
-	.cta-buttons {
-		display: flex;
-		gap: 1.5rem;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	.cta-primary,
-	.cta-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem 2.5rem;
-		font-size: 1.1rem;
-		font-weight: 700;
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.3s ease;
-	}
-
-	.cta-primary {
-		background:
-			linear-gradient(to bottom right, #2e8eff 0%, rgba(46, 142, 255, 0) 30%),
-			rgba(46, 142, 255, 0.3);
-		color: #ffffff;
-		border: 1px solid rgba(46, 142, 255, 0.5);
-	}
-
-	.cta-primary:hover {
-		background:
-			linear-gradient(to bottom right, #2e8eff 0%, rgba(46, 142, 255, 0.3) 30%),
-			rgba(46, 142, 255, 0.5);
-		transform: translateY(-2px);
-		box-shadow: 0 10px 40px rgba(46, 142, 255, 0.4);
-	}
-
-	.cta-secondary {
-		background: rgba(15, 23, 42, 0.6);
-		color: #ffffff;
-		border: 1px solid rgba(46, 142, 255, 0.3);
-	}
-
-	.cta-secondary:hover {
-		background: rgba(15, 23, 42, 0.8);
-		border-color: rgba(46, 142, 255, 0.5);
-		transform: translateY(-2px);
-	}
-
-	/* Responsive */
-	@media (max-width: 1024px) {
-		.stats-container {
-			grid-template-columns: repeat(2, 1fr);
-		}
-
-		.values-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.team-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.hero-section {
-			padding: 8rem 1rem 4rem;
-		}
-
-		.stats-container {
-			grid-template-columns: 1fr;
-		}
-
-		.story-content {
-			grid-template-columns: 1fr;
-			gap: 2rem;
-		}
-
-		.cta-buttons {
-			flex-direction: column;
-		}
-
-		.cta-primary,
-		.cta-secondary {
-			width: 100%;
-			justify-content: center;
-		}
-	}
-</style>
