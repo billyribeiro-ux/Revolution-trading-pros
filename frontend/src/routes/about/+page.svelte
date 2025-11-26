@@ -136,6 +136,8 @@
 <div 
     bind:this={containerRef}
     on:mousemove={handleMouseMove}
+    role="main"
+    aria-label="About Revolution Trading Pros"
     class="relative bg-[#020202] min-h-screen text-slate-400 font-sans selection:bg-amber-900 selection:text-white"
 >
     <div class="fixed inset-0 pointer-events-none">

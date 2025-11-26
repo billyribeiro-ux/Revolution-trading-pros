@@ -87,6 +87,8 @@
 <section 
     bind:this={containerRef}
     on:mousemove={handleMouseMove}
+    role="group"
+    aria-label="Alert Services"
     class="relative py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
     <div class="absolute inset-0 pointer-events-none">
