@@ -1,8 +1,23 @@
 @import 'tailwindcss';
 
+@theme {
+	--color-rtp-*: initial;
+	--color-rtp-bg: oklch(0.15 0.02 250);
+	--color-rtp-surface: oklch(0.25 0.02 250);
+	--color-rtp-border: oklch(0.35 0.02 250);
+	--color-rtp-text: oklch(0.98 0.01 250);
+	--color-rtp-muted: oklch(0.65 0.02 250);
+	--color-rtp-primary: oklch(0.60 0.20 250);
+	--color-rtp-primarySoft: oklch(0.30 0.15 250);
+	--color-rtp-emerald: oklch(0.65 0.20 160);
+	--color-rtp-indigo: oklch(0.65 0.20 270);
+	--color-rtp-blue: oklch(0.65 0.20 240);
+}
+
 /**
  * Revolution Trading Pros - Global Styles
- * Enterprise-grade CSS with performance optimizations
+ * ONLY design tokens, resets, and utilities
+ * Component-specific styles MUST be in component <style> tags
  *
  * @version 2.0.0
  * @author Revolution Trading Pros
@@ -16,22 +31,6 @@
 	:root {
 		/* Color Scheme */
 		color-scheme: light dark;
-
-		/* RTP Brand Colors - Microsoft-inspired palette */
-		--color-rtp-bg: 243 243 243;
-		--color-rtp-surface: 255 255 255;
-		--color-rtp-border: 209 213 219;
-		--color-rtp-text: 31 41 55;
-		--color-rtp-muted: 107 114 128;
-		--color-rtp-primary: 0 120 212;
-		--color-rtp-primarySoft: 229 241 251;
-		--color-rtp-emerald: 16 124 16;
-		--color-rtp-indigo: 92 45 145;
-		--color-rtp-blue: 43 136 216;
-
-		/* Chart Colors */
-		--color-chart-up: 52 211 153;
-		--color-chart-down: 239 68 68;
 
 		/* Transition Tokens - Consistent animation timing */
 		--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -108,8 +107,6 @@
 
 	/* Base body styles */
 	body {
-		background-color: rgb(243 243 243);
-		color: rgb(31 41 55);
 		font-family:
 			'Open Sans Pro',
 			'Open Sans',

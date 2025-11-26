@@ -1,337 +1,267 @@
 <script lang="ts">
-	import { IconBellRinging } from '@tabler/icons-svelte';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+    import { onMount } from 'svelte';
+    import { cubicOut } from 'svelte/easing';
+    import { 
+        IconBolt, 
+        IconTrendingUp, 
+        IconActivity, 
+        IconTarget,
+        IconArrowUpRight,
+        IconBroadcast,
+        IconClock
+    } from '@tabler/icons-svelte';
 
-	const alertServices = [
-		{
-			title: 'SPX Profit Pulse',
-			description:
-				'Context-rich SPX 0DTE alerts with complete trade structure. Entry levels, invalidation points, size guidance, and risk parameters—never lottery tickets.',
-			features: [
-				'Full trade context',
-				'Risk-defined setups',
-				'Real-time updates',
-				'Performance tracking'
-			],
-			href: '/alert-services/spx-profit-pulse',
-			price: 'From $97/mo',
-			gradient: 'from-amber-400 via-yellow-500 to-orange-500'
-		},
-		{
-			title: 'Explosive Swings',
-			description:
-				'High-probability swing setups in stocks and ETFs. Multi-day holds with institutional edge and clear risk management.',
-			features: [
-				'Multi-day setups',
-				'Stock & ETF focus',
-				'Position management',
-				'Entry/exit guidance'
-			],
-			href: '/alert-services/explosive-swings',
-			price: 'From $127/mo',
-			gradient: 'from-orange-400 via-amber-500 to-yellow-500'
-		}
-	];
+    // --- Data Configuration ---
+    const signals = [
+        {
+            id: 'spx',
+            type: 'intraday',
+            badge: '0DTE STRUCTURE',
+            title: 'SPX Profit Pulse',
+            price: '$97/mo',
+            description: 'Context-rich intraday alerts. We isolate high-probability inflection points on the S&P 500 with defined invalidation levels.',
+            metrics: [
+                { label: 'Avg Duration', value: '45m' },
+                { label: 'Risk/Reward', value: '1:3' },
+                { label: 'Frequency', value: 'High' }
+            ],
+            href: '/alert-services/spx-profit-pulse',
+            icon: IconBolt,
+            accent: 'amber', // Tailwind color
+            chartColor: '#fbbf24' // Hex for SVG
+        },
+        {
+            id: 'swing',
+            type: 'swing',
+            badge: 'MULTI-DAY FLOW',
+            title: 'Explosive Swings',
+            price: '$127/mo',
+            description: 'Institutional accumulation setups in high-beta equities. We track dark pool positioning to catch breakouts before the crowd.',
+            metrics: [
+                { label: 'Hold Time', value: '2-5d' },
+                { label: 'Risk/Reward', value: '1:5' },
+                { label: 'Volatility', value: 'Med' }
+            ],
+            href: '/alert-services/explosive-swings',
+            icon: IconTrendingUp,
+            accent: 'orange',
+            chartColor: '#fb923c' 
+        }
+    ];
 
-	let sectionRef: HTMLElement;
-	let isVisible = false;
+    // --- Interaction Logic ---
+    let containerRef: HTMLElement;
+    let mouse = { x: 0, y: 0 };
+    let isVisible = false;
 
-	onMount(() => {
-		if (!browser) return;
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef) return;
+        const rect = containerRef.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    };
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						isVisible = true;
-					}
-				});
-			},
-			{ threshold: 0.1 }
-		);
+    onMount(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (containerRef) observer.observe(containerRef);
+    });
 
-		if (sectionRef) {
-			observer.observe(sectionRef);
-		}
-
-		return () => observer.disconnect();
-	});
+    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+        return {
+            delay,
+            duration,
+            css: (t: number) => {
+                const eased = cubicOut(t);
+                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+            }
+        };
+    }
 </script>
 
-<section
-	bind:this={sectionRef}
-	class="alert-services-section relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
+<section 
+    bind:this={containerRef}
+    on:mousemove={handleMouseMove}
+    class="relative py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
-	<!-- Dark background with warmth -->
-	<div
-		class="absolute inset-0 bg-gradient-to-br from-slate-950 via-orange-950/20 to-slate-950"
-	></div>
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30"></div>
+    </div>
 
-	<!-- Animated particles -->
-	<div class="absolute inset-0">
-		<div class="particle particle-1"></div>
-		<div class="particle particle-2"></div>
-		<div class="particle particle-3"></div>
-	</div>
+    <div class="relative max-w-7xl mx-auto z-10">
+        
+        <div class="max-w-3xl mx-auto text-center mb-20">
+            {#if isVisible}
+                <div in:heavySlide class="inline-flex items-center justify-center gap-2 mb-6">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                    <span class="text-xs font-mono uppercase tracking-widest text-amber-500/80">Signal Feed Active</span>
+                </div>
+                
+                <h2 in:heavySlide={{ delay: 100 }} class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6">
+                    Market Intelligence
+                </h2>
+                
+                <p in:heavySlide={{ delay: 200 }} class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto">
+                    Algorithmic detection verified by human traders. 
+                    Receive fully contextualized trade plans with entry, stop, and target parameters.
+                </p>
+            {/if}
+        </div>
 
-	<div class="relative max-w-7xl mx-auto z-10">
-		<div class="text-center max-w-3xl mx-auto mb-20">
-			<div
-				class="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full"
-			>
-				<IconBellRinging size={16} class="text-amber-400 animate-ring" />
-				<span class="text-sm font-semibold text-amber-300">PREMIUM OFFERINGS</span>
-			</div>
-			<h2
-				class="text-4xl sm:text-5xl font-heading font-bold mb-6 bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent"
-			>
-				Alert Services
-			</h2>
-			<p class="text-lg text-slate-300 leading-relaxed">
-				Receive fully contextualized trade alerts with complete risk parameters. No lottery tickets,
-				no spam—just professional setups with clear structure.
-			</p>
-		</div>
+        <div 
+            class="group/grid grid md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+            style="--x: {mouse.x}px; --y: {mouse.y}px;"
+        >
+            {#each signals as item, i}
+                {#if isVisible}
+                    <div 
+                        in:heavySlide={{ delay: 300 + (i * 150) }}
+                        class="relative group/card bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors duration-500"
+                    >
+                        <div class="absolute inset-0 z-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500"
+                             style="background: radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.04), transparent 40%); pointer-events: none;">
+                        </div>
 
-		<div class="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
-			{#each alertServices as alert, i}
-				<div
-					class="alert-card group relative"
-					class:animate-slide-in-left={isVisible && i === 0}
-					class:animate-slide-in-right={isVisible && i === 1}
-				>
-					<!-- Glowing border effect -->
-					<div
-						class="absolute -inset-0.5 bg-gradient-to-r {alert.gradient} rounded-3xl opacity-20 group-hover:opacity-40 blur-lg transition-opacity duration-500"
-					></div>
+                        <div class="relative h-48 w-full bg-zinc-900/30 border-b border-zinc-800 overflow-hidden">
+                            <div class="absolute inset-0 bg-[size:20px_20px] bg-grid-zinc-800/50"></div>
+                            
+                            <div class="absolute inset-0 flex items-center justify-center p-8">
+                                {#if item.type === 'intraday'}
+                                    <svg class="w-full h-full overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="grad-spx" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1" />
+                                                <stop offset="100%" stop-color={item.chartColor} stop-opacity="1" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path 
+                                            d="M0,50 L20,45 L40,55 L60,30 L80,60 L100,40 L120,50 L140,20 L160,40 L180,30 L200,80 L220,60 L240,70 L260,20 L300,10" 
+                                            fill="none" 
+                                            stroke="url(#grad-spx)" 
+                                            stroke-width="2" 
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]"
+                                        />
+                                        <circle cx="300" cy="10" r="3" fill={item.chartColor} class="animate-pulse">
+                                            <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
+                                            <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+                                        </circle>
+                                        <rect x="240" y="15" width="60" height="60" fill={item.chartColor} fill-opacity="0.05" stroke={item.chartColor} stroke-opacity="0.2" stroke-dasharray="4 2" />
+                                        <text x="245" y="85" font-family="monospace" font-size="8" fill={item.chartColor} opacity="0.8">ENTRY ZONE</text>
+                                    </svg>
+                                {:else}
+                                    <svg class="w-full h-full overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="grad-swing" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1" />
+                                                <stop offset="100%" stop-color={item.chartColor} stop-opacity="1" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path 
+                                            d="M0,20 Q50,20 70,50 Q100,90 150,90 Q200,90 230,50 L250,60 L280,30 L300,5" 
+                                            fill="none" 
+                                            stroke="url(#grad-swing)" 
+                                            stroke-width="2" 
+                                            stroke-linecap="round"
+                                            class="drop-shadow-[0_0_10px_rgba(251,146,60,0.5)]"
+                                        />
+                                        <line x1="200" y1="50" x2="300" y2="50" stroke="white" stroke-opacity="0.1" stroke-dasharray="4" />
+                                        <circle cx="280" cy="30" r="3" fill={item.chartColor} />
+                                        <text x="220" y="40" font-family="monospace" font-size="8" fill="white" opacity="0.5">BREAKOUT LEVEL</text>
+                                    </svg>
+                                {/if}
+                            </div>
+                        </div>
 
-					<div
-						class="relative bg-slate-900/90 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-10 transform hover:scale-105 transition-all duration-500"
-					>
-						<!-- Premium badge -->
-						<div class="flex items-start justify-between mb-6">
-							<div class="relative">
-								<!-- Pulsing bell icon -->
-								<div
-									class="absolute inset-0 bg-gradient-to-r {alert.gradient} blur-xl opacity-50 animate-pulse-slow"
-								></div>
-								<div
-									class="relative w-16 h-16 rounded-2xl bg-gradient-to-br {alert.gradient} p-0.5 transform group-hover:rotate-12 group-hover:scale-110 transition-transform duration-500"
-								>
-									<div
-										class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center"
-									>
-										<IconBellRinging size={32} class="text-white animate-ring-hover" />
-									</div>
-								</div>
-							</div>
+                        <div class="relative z-10 p-8">
+                            
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 rounded bg-zinc-900 border border-zinc-800 text-{item.accent}-500">
+                                        <svelte:component this={item.icon} size={20} />
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-medium text-white">{item.title}</h3>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-{item.accent}-500 animate-pulse"></span>
+                                            <span class="text-[10px] font-mono uppercase tracking-wider text-{item.accent}-500/80">{item.badge}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-medium text-white">{item.price}</div>
+                                    <div class="text-xs text-zinc-500">per month</div>
+                                </div>
+                            </div>
 
-							<!-- Price badge with shine -->
-							<div
-								class="relative px-4 py-2 bg-gradient-to-r {alert.gradient} rounded-full overflow-hidden group/badge"
-							>
-								<div
-									class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover/badge:translate-x-full transition-transform duration-1000"
-								></div>
-								<span class="relative text-sm font-bold text-slate-900">
-									{alert.price}
-								</span>
-							</div>
-						</div>
+                            <p class="text-sm text-zinc-400 leading-relaxed mb-8 h-12">
+                                {item.description}
+                            </p>
 
-						<h3
-							class="text-3xl font-heading font-bold mb-4 text-white group-hover:text-amber-300 transition-colors duration-300"
-						>
-							{alert.title}
-						</h3>
-						<p
-							class="text-slate-400 mb-8 leading-relaxed group-hover:text-slate-300 transition-colors duration-300"
-						>
-							{alert.description}
-						</p>
+                            <div class="grid grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden mb-8">
+                                {#each item.metrics as metric}
+                                    <div class="bg-zinc-900/50 p-3 text-center group-hover/card:bg-zinc-900 transition-colors">
+                                        <div class="text-[10px] uppercase text-zinc-500 font-mono mb-1">{metric.label}</div>
+                                        <div class="text-sm font-medium text-zinc-300">{metric.value}</div>
+                                    </div>
+                                {/each}
+                            </div>
 
-						<!-- Features with golden checkmarks -->
-						<ul class="space-y-4 mb-10">
-							{#each alert.features as feature, j}
-								<li
-									class="flex items-start gap-3 text-sm text-slate-300 transform group-hover:translate-x-2 transition-transform duration-300"
-									style="transition-delay: {j * 75}ms"
-								>
-									<div class="flex-shrink-0 mt-0.5">
-										<div
-											class="w-6 h-6 rounded-lg bg-gradient-to-br {alert.gradient} flex items-center justify-center shadow-lg shadow-amber-500/50"
-										>
-											<svg
-												class="w-3.5 h-3.5 text-slate-900 font-bold"
-												fill="currentColor"
-												viewBox="0 0 20 20"
-											>
-												<path
-													fill-rule="evenodd"
-													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-													clip-rule="evenodd"
-												/>
-											</svg>
-										</div>
-									</div>
-									<span class="leading-relaxed">{feature}</span>
-								</li>
-							{/each}
-						</ul>
+                            <a 
+                                href={item.href} 
+                                class="group/btn relative w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-md text-sm font-medium text-zinc-300 transition-all duration-300 hover:text-white hover:border-{item.accent}-500/50 hover:bg-{item.accent}-500/10"
+                            >
+                                <span class="flex items-center gap-2">
+                                    <IconBroadcast size={16} class="text-{item.accent}-500" />
+                                    <span>Subscribe to Feed</span>
+                                </span>
+                                <IconArrowUpRight size={16} class="text-zinc-500 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:text-white" />
+                            </a>
 
-						<!-- Premium CTA button -->
-						<a
-							href={alert.href}
-							class="block relative px-8 py-5 bg-gradient-to-r {alert.gradient} text-slate-900 text-center font-heading font-bold rounded-xl overflow-hidden group/cta shadow-xl shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/40 transition-all duration-300"
-						>
-							<span class="relative z-10 flex items-center justify-center gap-2">
-								<span>View Details</span>
-								<svg
-									class="w-5 h-5 transform group-hover/cta:translate-x-2 transition-transform duration-300"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M13 7l5 5m0 0l-5 5m5-5H6"
-									/>
-								</svg>
-							</span>
-							<div
-								class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover/cta:scale-x-100 transition-transform duration-500 origin-left"
-							></div>
-						</a>
-					</div>
-				</div>
-			{/each}
-		</div>
-	</div>
+                        </div>
+                    </div>
+                {/if}
+            {/each}
+        </div>
+
+        {#if isVisible}
+            <div in:heavySlide={{ delay: 600 }} class="mt-12 text-center border-t border-zinc-900 pt-8">
+                <div class="inline-flex items-center gap-6 text-xs text-zinc-500 font-mono">
+                    <span class="flex items-center gap-2">
+                        <IconTarget size={14} />
+                        <span>STRICT INVALIDATION LEVELS</span>
+                    </span>
+                    <span class="hidden sm:inline w-px h-3 bg-zinc-800"></span>
+                    <span class="flex items-center gap-2">
+                        <IconClock size={14} />
+                        <span>REAL-TIME PUSH NOTIFICATIONS</span>
+                    </span>
+                    <span class="hidden sm:inline w-px h-3 bg-zinc-800"></span>
+                    <span class="flex items-center gap-2">
+                        <IconActivity size={14} />
+                        <span>FULL TRADE MANAGEMENT</span>
+                    </span>
+                </div>
+            </div>
+        {/if}
+    </div>
 </section>
 
 <style>
-	.alert-services-section {
-		position: relative;
-	}
-
-	/* Floating particles */
-	.particle {
-		position: absolute;
-		border-radius: 50%;
-		background: radial-gradient(circle, rgba(251, 191, 36, 0.15), transparent);
-		animation: float-particle 15s ease-in-out infinite;
-	}
-
-	.particle-1 {
-		width: 300px;
-		height: 300px;
-		top: 10%;
-		left: 10%;
-		animation-delay: 0s;
-	}
-
-	.particle-2 {
-		width: 200px;
-		height: 200px;
-		top: 60%;
-		right: 15%;
-		animation-delay: 5s;
-	}
-
-	.particle-3 {
-		width: 250px;
-		height: 250px;
-		bottom: 20%;
-		left: 50%;
-		animation-delay: 10s;
-	}
-
-	@keyframes float-particle {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-			opacity: 0.3;
-		}
-		50% {
-			transform: translate(30px, -30px) scale(1.1);
-			opacity: 0.5;
-		}
-	}
-
-	/* Bell ringing animation */
-	@keyframes ring {
-		0%,
-		100% {
-			transform: rotate(0deg);
-		}
-		10%,
-		30% {
-			transform: rotate(-10deg);
-		}
-		20%,
-		40% {
-			transform: rotate(10deg);
-		}
-	}
-
-	.animate-ring {
-		animation: ring 2s ease-in-out infinite;
-	}
-
-	.group:hover .animate-ring-hover {
-		animation: ring 0.5s ease-in-out;
-	}
-
-	/* Pulse animation */
-	@keyframes pulse-slow {
-		0%,
-		100% {
-			opacity: 0.3;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.6;
-			transform: scale(1.05);
-		}
-	}
-
-	.animate-pulse-slow {
-		animation: pulse-slow 3s ease-in-out infinite;
-	}
-
-	/* Slide animations */
-	@keyframes slide-in-left {
-		from {
-			opacity: 0;
-			transform: translateX(-100px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	@keyframes slide-in-right {
-		from {
-			opacity: 0;
-			transform: translateX(100px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	.animate-slide-in-left {
-		animation: slide-in-left 0.8s ease-out forwards;
-		opacity: 0;
-	}
-
-	.animate-slide-in-right {
-		animation: slide-in-right 0.8s ease-out forwards;
-		opacity: 0;
-	}
+    /* Utility for the grid lines inside the charts */
+    .bg-grid-zinc-800\/50 {
+        background-image: linear-gradient(to right, #27272a 1px, transparent 1px),
+                          linear-gradient(to bottom, #27272a 1px, transparent 1px);
+    }
 </style>

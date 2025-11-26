@@ -1,0 +1,282 @@
+/**
+ * Performance Monitoring - Google L11+ Web Vitals Tracking
+ * ══════════════════════════════════════════════════════════════════════════════
+ * Tracks Core Web Vitals: LCP, FID, CLS, TTFB, FCP
+ * Non-blocking, production-ready performance monitoring
+ * ══════════════════════════════════════════════════════════════════════════════
+ */
+
+export interface PerformanceMetric {
+	name: string;
+	value: number;
+	rating: 'good' | 'needs-improvement' | 'poor';
+	delta?: number;
+	id?: string;
+}
+
+/**
+ * Report performance metrics (can be sent to analytics)
+ */
+function reportMetric(metric: PerformanceMetric): void {
+	// Log to console in development
+	if (import.meta.env.DEV) {
+		console.log(`[Performance] ${metric.name}:`, {
+			value: Math.round(metric.value),
+			rating: metric.rating
+		});
+	}
+
+	// Send to analytics in production
+	if (import.meta.env.PROD && typeof window !== 'undefined') {
+		// Example: Send to Google Analytics
+		if ('gtag' in window) {
+			(window as any).gtag('event', metric.name, {
+				value: Math.round(metric.value),
+				metric_rating: metric.rating,
+				metric_delta: metric.delta ? Math.round(metric.delta) : undefined,
+				metric_id: metric.id
+			});
+		}
+
+		// Example: Send to custom analytics endpoint
+		navigator.sendBeacon?.('/api/analytics/performance', JSON.stringify(metric));
+	}
+}
+
+/**
+ * Get rating based on thresholds
+ */
+function getRating(value: number, thresholds: [number, number]): 'good' | 'needs-improvement' | 'poor' {
+	if (value <= thresholds[0]) return 'good';
+	if (value <= thresholds[1]) return 'needs-improvement';
+	return 'poor';
+}
+
+/**
+ * Largest Contentful Paint (LCP)
+ * Good: < 2.5s, Needs Improvement: < 4s, Poor: >= 4s
+ */
+export function measureLCP(): void {
+	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+
+	try {
+		const observer = new PerformanceObserver((list) => {
+			const entries = list.getEntries();
+			const lastEntry = entries[entries.length - 1] as any;
+
+			const metric: PerformanceMetric = {
+				name: 'LCP',
+				value: lastEntry.renderTime || lastEntry.loadTime,
+				rating: getRating(lastEntry.renderTime || lastEntry.loadTime, [2500, 4000]),
+				id: lastEntry.id
+			};
+
+			reportMetric(metric);
+		});
+
+		observer.observe({ type: 'largest-contentful-paint', buffered: true });
+	} catch (error) {
+		console.error('LCP measurement failed:', error);
+	}
+}
+
+/**
+ * First Input Delay (FID)
+ * Good: < 100ms, Needs Improvement: < 300ms, Poor: >= 300ms
+ */
+export function measureFID(): void {
+	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+
+	try {
+		const observer = new PerformanceObserver((list) => {
+			const entries = list.getEntries();
+			entries.forEach((entry: any) => {
+				const metric: PerformanceMetric = {
+					name: 'FID',
+					value: entry.processingStart - entry.startTime,
+					rating: getRating(entry.processingStart - entry.startTime, [100, 300])
+				};
+
+				reportMetric(metric);
+			});
+		});
+
+		observer.observe({ type: 'first-input', buffered: true });
+	} catch (error) {
+		console.error('FID measurement failed:', error);
+	}
+}
+
+/**
+ * Cumulative Layout Shift (CLS)
+ * Good: < 0.1, Needs Improvement: < 0.25, Poor: >= 0.25
+ */
+export function measureCLS(): void {
+	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+
+	try {
+		let clsValue = 0;
+		let clsEntries: any[] = [];
+
+		const observer = new PerformanceObserver((list) => {
+			const entries = list.getEntries();
+			entries.forEach((entry: any) => {
+				if (!entry.hadRecentInput) {
+					clsValue += entry.value;
+					clsEntries.push(entry);
+				}
+			});
+		});
+
+		observer.observe({ type: 'layout-shift', buffered: true });
+
+		// Report CLS on page hide
+		document.addEventListener('visibilitychange', () => {
+			if (document.visibilityState === 'hidden') {
+				const metric: PerformanceMetric = {
+					name: 'CLS',
+					value: clsValue,
+					rating: getRating(clsValue, [0.1, 0.25])
+				};
+
+				reportMetric(metric);
+				observer.disconnect();
+			}
+		});
+	} catch (error) {
+		console.error('CLS measurement failed:', error);
+	}
+}
+
+/**
+ * First Contentful Paint (FCP)
+ * Good: < 1.8s, Needs Improvement: < 3s, Poor: >= 3s
+ */
+export function measureFCP(): void {
+	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+
+	try {
+		const observer = new PerformanceObserver((list) => {
+			const entries = list.getEntries();
+			entries.forEach((entry) => {
+				const metric: PerformanceMetric = {
+					name: 'FCP',
+					value: entry.startTime,
+					rating: getRating(entry.startTime, [1800, 3000])
+				};
+
+				reportMetric(metric);
+			});
+		});
+
+		observer.observe({ type: 'paint', buffered: true });
+	} catch (error) {
+		console.error('FCP measurement failed:', error);
+	}
+}
+
+/**
+ * Time to First Byte (TTFB)
+ * Good: < 800ms, Needs Improvement: < 1800ms, Poor: >= 1800ms
+ */
+export function measureTTFB(): void {
+	if (typeof window === 'undefined' || !('performance' in window)) return;
+
+	try {
+		const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+		
+		if (navigationEntry) {
+			const ttfb = navigationEntry.responseStart - navigationEntry.requestStart;
+
+			const metric: PerformanceMetric = {
+				name: 'TTFB',
+				value: ttfb,
+				rating: getRating(ttfb, [800, 1800])
+			};
+
+			reportMetric(metric);
+		}
+	} catch (error) {
+		console.error('TTFB measurement failed:', error);
+	}
+}
+
+/**
+ * Initialize all performance monitoring
+ * Call this once on app mount
+ */
+export function initPerformanceMonitoring(): void {
+	if (typeof window === 'undefined') return;
+
+	// Wait for page load to avoid blocking
+	if (document.readyState === 'complete') {
+		startMonitoring();
+	} else {
+		window.addEventListener('load', startMonitoring);
+	}
+}
+
+function startMonitoring(): void {
+	// Measure all Core Web Vitals
+	measureLCP();
+	measureFID();
+	measureCLS();
+	measureFCP();
+	measureTTFB();
+
+	// Log bundle size in development
+	if (import.meta.env.DEV) {
+		logBundleSize();
+	}
+}
+
+/**
+ * Log bundle size for monitoring
+ */
+function logBundleSize(): void {
+	if (typeof window === 'undefined' || !('performance' in window)) return;
+
+	try {
+		const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+		let totalSize = 0;
+		let jsSize = 0;
+		let cssSize = 0;
+
+		resources.forEach((resource) => {
+			const size = resource.transferSize || 0;
+			totalSize += size;
+
+			if (resource.name.endsWith('.js')) {
+				jsSize += size;
+			} else if (resource.name.endsWith('.css')) {
+				cssSize += size;
+			}
+		});
+
+		console.log('[Performance] Bundle Size:', {
+			total: `${(totalSize / 1024).toFixed(2)} KB`,
+			js: `${(jsSize / 1024).toFixed(2)} KB`,
+			css: `${(cssSize / 1024).toFixed(2)} KB`
+		});
+	} catch (error) {
+		console.error('Bundle size logging failed:', error);
+	}
+}
+
+/**
+ * Measure custom performance marks
+ */
+export function measureCustomMetric(name: string, startMark: string, endMark: string): void {
+	if (typeof window === 'undefined' || !('performance' in window)) return;
+
+	try {
+		performance.measure(name, startMark, endMark);
+		const measure = performance.getEntriesByName(name)[0];
+
+		if (measure) {
+			console.log(`[Performance] ${name}:`, `${measure.duration.toFixed(2)}ms`);
+		}
+	} catch (error) {
+		console.error(`Custom metric measurement failed for ${name}:`, error);
+	}
+}

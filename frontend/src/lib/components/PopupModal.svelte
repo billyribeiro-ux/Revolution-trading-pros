@@ -114,7 +114,10 @@
 
 	$: currentPopup = $activePopup;
 	$: if (browser) updateDeviceType();
-	$: if (currentPopup && !isVisible) handlePopupTriggers(currentPopup);
+	// ENTERPRISE FIX: Only handle triggers if popup is active AND valid
+	$: if (browser && currentPopup && currentPopup.isActive && !isVisible) {
+		handlePopupTriggers(currentPopup);
+	}
 	$: if (isVisible) startEngagementTracking();
 	$: formValid = validateForm();
 	$: progressPercentage = calculateFormProgress();

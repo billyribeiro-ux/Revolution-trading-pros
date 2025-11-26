@@ -16,9 +16,8 @@
 	 * ✓ GPU-accelerated transforms only
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import { createChart, CandlestickSeries, CrosshairMode } from 'lightweight-charts';
 
 	// ============================================================================
 	// MODULE-LEVEL PRE-COMPUTATION (Executed at import time - ZERO runtime cost)
@@ -124,11 +123,14 @@
 	let isAnimating = $state(false);
 
 	// ============================================================================
-	// CHART INITIALIZATION - SYNCHRONOUS, ZERO DELAYS
+	// CHART INITIALIZATION - LAZY LOADED FOR PERFORMANCE
 	// ============================================================================
 
-	function initChart() {
+	async function initChart() {
 		if (!browser || !chartContainer || !heroSection) return;
+
+		// Lazy load chart library - CRITICAL FOR PERFORMANCE
+		const { createChart, CandlestickSeries, CrosshairMode } = await import('lightweight-charts');
 
 		const width = heroSection.clientWidth || window.innerWidth;
 		const height = heroSection.clientHeight || window.innerHeight;
@@ -379,19 +381,26 @@
 	onMount(async () => {
 		if (!browser) return;
 
-		// Load GSAP immediately - no waiting
-		const gsapModule = await import('gsap').catch(() => null);
-		gsap = gsapModule?.gsap || gsapModule?.default || null;
+		// CRITICAL: Show first slide IMMEDIATELY with CSS fallback
+		currentSlide = 0;
+		
+		// Non-blocking initialization - don't await anything
+		Promise.all([
+			// Load GSAP in background
+			import('gsap').then(gsapModule => {
+				gsap = gsapModule?.gsap || gsapModule?.default || null;
+				// Re-animate with GSAP once loaded
+				if (gsap) animateSlide(0);
+			}).catch(() => null),
+			
+			// Initialize chart in background
+			initChart()
+		]);
 
-		// Initialize everything in parallel - NO DELAYS
-		// 1. Start slide animation immediately
-		showSlide(0);
+		// Start slide interval immediately
 		slideInterval = setInterval(nextSlide, 7000);
 
-		// 2. Initialize chart synchronously
-		initChart();
-
-		// 3. Setup observers
+		// Setup observers immediately
 		if (typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
 			resizeObserver.observe(heroSection);
@@ -577,14 +586,27 @@
 	}
 
 	.slide--hidden {
-		display: none;
-		opacity: 0;
+		display: none !important;
 		pointer-events: none;
 	}
 
 	.slide--active {
-		display: block;
+		display: block !important;
 		pointer-events: auto;
+		opacity: 1 !important;
+		/* CSS fallback animation - instant visibility before GSAP loads */
+		animation: slideIn 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+	}
+	
+	@keyframes slideIn {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -597,6 +619,7 @@
 		line-height: 1.1;
 		color: white;
 		margin-block-end: 1rem;
+		opacity: 1;
 
 		/* GPU layer for animations */
 		transform: translateZ(0);
@@ -608,6 +631,7 @@
 		font-weight: 700;
 		color: white;
 		margin-block-end: 1.5rem;
+		opacity: 1;
 		transform: translateZ(0);
 	}
 
@@ -618,6 +642,7 @@
 		max-inline-size: 42rem;
 		margin-inline: auto;
 		margin-block-end: 2rem;
+		opacity: 1;
 		transform: translateZ(0);
 	}
 
@@ -629,6 +654,7 @@
 		flex-wrap: wrap;
 		gap: 1rem;
 		justify-content: center;
+		opacity: 1;
 	}
 
 	.cta {
@@ -645,6 +671,7 @@
 		text-decoration: none;
 		overflow: hidden;
 		cursor: pointer;
+		opacity: 1;
 
 		/* GPU-accelerated transitions only */
 		transform: translateY(0) translateZ(0);

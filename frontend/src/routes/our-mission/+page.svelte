@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
+	import Modal from '$lib/components/Modal.svelte';
 
 	// --- ICONS (Inline SVG for Zero-Dependency & Performance) ---
 	const Icons = {
@@ -147,6 +148,17 @@
 	const jsonLdString = JSON.stringify(jsonLd);
 	const jsonLdScript = `<script type="application/ld+json">${jsonLdString}<\/script>`;
 
+	// --- MODAL STATE ---
+	let openModal: string | null = null;
+
+	function openPillarModal(pillarTitle: string) {
+		openModal = pillarTitle;
+	}
+
+	function closeModal() {
+		openModal = null;
+	}
+
 	// --- CONTENT DATA ---
 	const pillars = [
 		{
@@ -155,7 +167,26 @@
 			desc: 'We operate in a glass house. We publish raw track records, including losses and commissions. In an industry of smoke and mirrors, truth is the only currency.',
 			color: 'text-emerald-400',
 			bg: 'bg-emerald-400/10',
-			border: 'border-emerald-400/20'
+			border: 'border-emerald-400/20',
+			modalContent: `
+				<h3 class="text-xl font-bold text-white mb-4">Our Commitment to Truth</h3>
+				<p class="mb-4">In an industry plagued by fake screenshots and cherry-picked results, we take a different approach. Every trade, every win, every loss—published in real-time.</p>
+				
+				<h4 class="text-lg font-bold text-emerald-400 mb-3 mt-6">What We Share:</h4>
+				<ul class="space-y-2 mb-4">
+					<li>✓ Complete trade history with timestamps</li>
+					<li>✓ Entry and exit prices with slippage</li>
+					<li>✓ Commission costs included</li>
+					<li>✓ Losing trades prominently displayed</li>
+					<li>✓ Monthly P&L breakdowns</li>
+				</ul>
+
+				<p class="mb-4">We believe transparency builds trust. When you see our losses alongside our wins, you understand the reality of trading—it's about process, not perfection.</p>
+
+				<div class="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+					<p class="text-sm text-emerald-300">Join our live trading rooms to see this transparency in action every single day.</p>
+				</div>
+			`
 		},
 		{
 			icon: Icons.Users,
@@ -163,7 +194,26 @@
 			desc: 'Trading is an isolation sport. We replace that with a hive-mind of disciplined professionals sharing real-time order flow, risk assessments, and sentiment. We win together.',
 			color: 'text-blue-400',
 			bg: 'bg-blue-400/10',
-			border: 'border-blue-400/20'
+			border: 'border-blue-400/20',
+			modalContent: `
+				<h3 class="text-xl font-bold text-white mb-4">The Power of the Hive-Mind</h3>
+				<p class="mb-4">Trading doesn't have to be lonely. Our community of disciplined professionals shares insights, validates setups, and holds each other accountable.</p>
+				
+				<h4 class="text-lg font-bold text-blue-400 mb-3 mt-6">Real-Time Collaboration:</h4>
+				<ul class="space-y-2 mb-4">
+					<li>✓ Live order flow analysis from multiple perspectives</li>
+					<li>✓ Instant feedback on trade ideas</li>
+					<li>✓ Shared risk assessments and position sizing</li>
+					<li>✓ Market sentiment tracking across instruments</li>
+					<li>✓ Post-trade reviews and learning sessions</li>
+				</ul>
+
+				<p class="mb-4">When 10 experienced traders are watching the same chart, you benefit from collective pattern recognition that no individual can match.</p>
+
+				<div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+					<p class="text-sm text-blue-300">Experience the hive-mind advantage in our live trading rooms—where isolation becomes collaboration.</p>
+				</div>
+			`
 		},
 		{
 			icon: Icons.Scale,
@@ -171,7 +221,26 @@
 			desc: 'We reject gambling. We teach the mathematics of "Edge"—thinking in Expected Value (EV), Standard Deviation, and R-Multiples. We do not predict; we react to probability.',
 			color: 'text-purple-400',
 			bg: 'bg-purple-400/10',
-			border: 'border-purple-400/20'
+			border: 'border-purple-400/20',
+			modalContent: `
+				<h3 class="text-xl font-bold text-white mb-4">Trading as a Math Game</h3>
+				<p class="mb-4">We don't predict the future. We calculate probabilities, manage risk, and let the math work over hundreds of trades.</p>
+				
+				<h4 class="text-lg font-bold text-purple-400 mb-3 mt-6">Core Concepts We Teach:</h4>
+				<ul class="space-y-2 mb-4">
+					<li>✓ <strong>Expected Value (EV):</strong> Understanding positive expectancy</li>
+					<li>✓ <strong>Standard Deviation:</strong> Measuring outcome variance</li>
+					<li>✓ <strong>R-Multiples:</strong> Risk-adjusted returns</li>
+					<li>✓ <strong>Kelly Criterion:</strong> Optimal position sizing</li>
+					<li>✓ <strong>Sharpe Ratio:</strong> Risk-adjusted performance</li>
+				</ul>
+
+				<p class="mb-4">Every trade is a probability distribution, not a prediction. We teach you to think in ranges, not certainties.</p>
+
+				<div class="mt-6 p-4 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+					<p class="text-sm text-purple-300">Master probabilistic thinking in our structured courses—where gambling becomes calculated risk-taking.</p>
+				</div>
+			`
 		}
 	];
 
@@ -671,32 +740,50 @@
 				</div>
 
 				<div class="grid md:grid-cols-3 gap-8">
-					{#each pillars as pillar, i}
-						<div use:reveal={{ delay: i * 150 }} class="group relative h-full">
+				{#each pillars as pillar, i}
+					<button
+						type="button"
+						use:reveal={{ delay: i * 150 }} 
+						class="group relative h-full block text-left w-full"
+						on:click={() => openPillarModal(pillar.title)}
+					>
+						<div
+							class="absolute inset-0 bg-[#0f172a] rounded-2xl transform transition-transform duration-300 group-hover:scale-[1.02]"
+						></div>
+						<div
+							class="relative h-full p-8 bg-[#0a0a0a] border border-white/10 rounded-2xl hover:border-white/20 transition-colors duration-300 flex flex-col cursor-pointer"
+						>
 							<div
-								class="absolute inset-0 bg-[#0f172a] rounded-2xl transform transition-transform duration-300 group-hover:scale-[1.02]"
-							></div>
-							<div
-								class="relative h-full p-8 bg-[#0a0a0a] border border-white/10 rounded-2xl hover:border-white/20 transition-colors duration-300 flex flex-col"
+								class={`w-14 h-14 ${pillar.bg} rounded-xl flex items-center justify-center ${pillar.color} mb-8 border ${pillar.border}`}
 							>
-								<div
-									class={`w-14 h-14 ${pillar.bg} rounded-xl flex items-center justify-center ${pillar.color} mb-8 border ${pillar.border}`}
-								>
-									{@html pillar.icon}
-								</div>
-								<h3 class="text-2xl font-bold text-white mb-4">{pillar.title}</h3>
-								<p class="text-slate-400 leading-relaxed flex-grow">
-									{pillar.desc}
-								</p>
-								<div
-									class="mt-8 pt-6 border-t border-white/5 flex items-center gap-2 text-sm font-bold text-white/60 group-hover:text-white transition-colors"
-								>
-									Learn More {@html Icons.ArrowRight}
-								</div>
+								{@html pillar.icon}
+							</div>
+							<h3 class="text-2xl font-bold text-white mb-4">{pillar.title}</h3>
+							<p class="text-slate-400 leading-relaxed flex-grow">
+								{pillar.desc}
+							</p>
+							<div
+								class="mt-8 pt-6 border-t border-white/5 flex items-center gap-2 text-sm font-bold text-white/60 group-hover:text-white transition-colors"
+							>
+								Learn More {@html Icons.ArrowRight}
 							</div>
 						</div>
-					{/each}
-				</div>
+					</button>
+				{/each}
+			</div>
+
+			<!-- Modals for each pillar -->
+			{#each pillars as pillar}
+				<Modal 
+					isOpen={openModal === pillar.title}
+					title={pillar.title}
+					onClose={closeModal}
+				>
+					<div class="prose prose-invert max-w-none">
+						{@html pillar.modalContent}
+					</div>
+				</Modal>
+			{/each}
 			</div>
 		</section>
 

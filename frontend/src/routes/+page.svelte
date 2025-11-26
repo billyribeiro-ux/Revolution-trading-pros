@@ -1,9 +1,18 @@
 <script lang="ts">
-	import Hero from '$lib/components/Hero.svelte';
+	/**
+	 * Homepage - Enterprise Performance Optimized
+	 * Zero blocking operations, instant render
+	 */
+	// Critical - Load immediately
+	import Hero from '$lib/components/sections/Hero.svelte';
+	import LazySection from '$lib/components/LazySection.svelte';
+	
+	// Below-the-fold - Lazy load
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
 	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
 	import WhySection from '$lib/components/sections/WhySection.svelte';
 	import MentorshipSection from '$lib/components/sections/MentorshipSection.svelte';
+	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
 	import LatestBlogsSection from '$lib/components/sections/LatestBlogsSection.svelte';
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import type { PageData } from './$types';
@@ -50,6 +59,10 @@
 	<!-- Viewport + Robots -->
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="robots" content="index, follow" />
+	
+	<!-- Critical Resource Preloading (L11+ Optimization) -->
+	<link rel="modulepreload" href="/src/lib/components/sections/Hero.svelte" />
+	<link rel="prefetch" href="/src/lib/components/sections/TradingRoomsSection.svelte" as="script" />
 
 	<!-- JSON-LD Schema -->
 	<script type="application/ld+json">
@@ -67,23 +80,34 @@
 	</script>
 </svelte:head>
 
-<!-- Hero Section with animated chart background -->
+<!-- Hero Section - Critical, loads immediately -->
 <Hero />
 
-<!-- Trading Rooms Section -->
-<TradingRoomsSection />
+<!-- Below-the-fold sections - Lazy loaded for performance -->
+<LazySection rootMargin="300px">
+	<TradingRoomsSection />
+</LazySection>
 
-<!-- Alert Services Section -->
-<AlertServicesSection />
+<LazySection rootMargin="300px">
+	<AlertServicesSection />
+</LazySection>
 
-<!-- Why Choose Us Section -->
-<WhySection />
+<LazySection rootMargin="300px">
+	<WhySection />
+</LazySection>
 
-<!-- Mentorship Section -->
-<MentorshipSection />
+<LazySection rootMargin="300px">
+	<MentorshipSection />
+</LazySection>
 
-<!-- Latest Blog Posts Section -->
-<LatestBlogsSection posts={data.posts} />
+<LazySection rootMargin="300px">
+	<TestimonialsSection />
+</LazySection>
 
-<!-- Call to Action Section -->
-<CTASection />
+<LazySection rootMargin="300px">
+	<LatestBlogsSection posts={data.posts} />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<CTASection />
+</LazySection>

@@ -1,289 +1,185 @@
 <script lang="ts">
-	import { IconSchool, IconSparkles } from '@tabler/icons-svelte';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+    import { onMount } from 'svelte';
+    import { cubicOut } from 'svelte/easing';
+    // Using the direct path imports as requested in your snippet
+    import IconSitemap from '@tabler/icons-svelte/icons/sitemap';
+    import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
+    import IconDatabase from '@tabler/icons-svelte/icons/database';
+    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+    import IconCheck from '@tabler/icons-svelte/icons/check';
 
-	let sectionRef: HTMLElement;
-	let isVisible = false;
+    const features = [
+        {
+            id: 'SYS-01',
+            title: 'Execution Framework',
+            subtitle: 'STRUCTURE',
+            description: 'We replace discretionary guessing with a repeatable, probabilistic execution model used by proprietary desks.',
+            icon: IconSitemap,
+            status: 'Operational',
+            type: 'grid'
+        },
+        {
+            id: 'SYS-02',
+            title: 'Variance Control',
+            subtitle: 'SURVIVAL',
+            description: 'Capital preservation is the mandate. Every alert includes hard invalidation points and fat-tail risk sizing logic.',
+            icon: IconShieldLock,
+            status: 'Active',
+            type: 'radar'
+        },
+        {
+            id: 'SYS-03',
+            title: 'Data Sovereignty',
+            subtitle: 'INTELLIGENCE',
+            description: 'Direct access to institutional flows. We track Dark Pool volume, GEX levels, and Vanna flows in real-time.',
+            icon: IconDatabase,
+            status: 'Live Feed',
+            type: 'circuit'
+        }
+    ];
 
-	onMount(() => {
-		if (!browser) return;
+    // --- Interaction Logic ---
+    let containerRef: HTMLElement;
+    let mouse = { x: 0, y: 0 };
+    let isVisible = false;
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						isVisible = true;
-					}
-				});
-			},
-			{ threshold: 0.1 }
-		);
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef) return;
+        const rect = containerRef.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    };
 
-		if (sectionRef) {
-			observer.observe(sectionRef);
-		}
+    onMount(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (containerRef) observer.observe(containerRef);
+    });
 
-		return () => observer.disconnect();
-	});
+    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+        return {
+            delay,
+            duration,
+            css: (t: number) => {
+                const eased = cubicOut(t);
+                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+            }
+        };
+    }
 </script>
 
-<section
-	bind:this={sectionRef}
-	class="mentorship-section relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
+<section 
+    bind:this={containerRef}
+    on:mousemove={handleMouseMove}
+    role="group"
+    aria-label="Core Infrastructure Features"
+    class="relative py-32 px-6 bg-[#050505] overflow-hidden border-b border-white/5"
 >
-	<!-- Luxury gradient background -->
-	<div class="absolute inset-0 bg-gradient-to-br from-emerald-950 via-slate-950 to-teal-950"></div>
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+    </div>
 
-	<!-- Animated spotlight -->
-	<div class="absolute inset-0 spotlight"></div>
+    <div class="relative max-w-[1600px] mx-auto z-10">
+        
+        <div class="max-w-3xl mb-24">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center gap-3 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                    System Architecture
+                </div>
+                
+                <h2 in:heavySlide={{ delay: 100 }} class="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight">
+                    Core <span class="text-slate-700">Infrastructure.</span>
+                </h2>
+                
+                <p in:heavySlide={{ delay: 200 }} class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-white/10 pl-6">
+                    We replaced marketing hype with financial engineering. Our ecosystem combines structured execution frameworks with institutional data tools.
+                </p>
+            {/if}
+        </div>
 
-	<!-- Floating golden particles -->
-	<div class="absolute inset-0">
-		<div class="gold-particle" style="top: 20%; left: 15%; animation-delay: 0s;"></div>
-		<div class="gold-particle" style="top: 60%; right: 20%; animation-delay: 2s;"></div>
-		<div class="gold-particle" style="bottom: 25%; left: 10%; animation-delay: 4s;"></div>
-		<div class="gold-particle" style="top: 40%; right: 10%; animation-delay: 6s;"></div>
-	</div>
+        <div 
+            class="group/grid grid md:grid-cols-3 gap-8"
+            style="--x: {mouse.x}px; --y: {mouse.y}px;"
+        >
+            {#each features as feature, i}
+                {#if isVisible}
+                    <div 
+                        in:heavySlide={{ delay: 300 + (i * 150) }}
+                        class="relative group/card bg-[#080808] border border-white/10 p-10 overflow-hidden hover:border-amber-900/50 transition-colors duration-500"
+                    >
+                        <div class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
+                             style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);">
+                        </div>
 
-	<div class="relative max-w-5xl mx-auto z-10">
-		<div class="text-center">
-			<!-- Elite badge -->
-			<div
-				class="inline-flex items-center gap-2 mb-6 px-6 py-3 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 rounded-full backdrop-blur-sm animate-fade-in"
-			>
-				<IconSparkles size={20} class="text-emerald-400 animate-sparkle" />
-				<span class="text-sm font-bold tracking-wider text-emerald-300">ELITE PROGRAM</span>
-				<IconSparkles size={20} class="text-emerald-400 animate-sparkle-delayed" />
-			</div>
+                        <div class="absolute top-0 right-0 w-40 h-40 opacity-[0.02] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-white">
+                            {#if feature.type === 'grid'}
+                                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+                                    <path d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90" />
+                                </svg>
+                            {:else if feature.type === 'radar'}
+                                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+                                    <circle cx="50" cy="50" r="20" />
+                                    <circle cx="50" cy="50" r="35" />
+                                    <circle cx="50" cy="50" r="45" opacity="0.5" />
+                                    <line x1="50" y1="50" x2="95" y2="50" />
+                                </svg>
+                            {:else}
+                                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.5">
+                                    <rect x="20" y="20" width="60" height="60" rx="4" />
+                                    <path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
+                                    <rect x="35" y="35" width="30" height="30" />
+                                </svg>
+                            {/if}
+                        </div>
 
-			<!-- Floating icon -->
-			<div class="relative inline-block mb-8" class:animate-icon-reveal={isVisible}>
-				<div
-					class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 blur-3xl opacity-50 animate-pulse-glow"
-				></div>
-				<div
-					class="relative w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400 p-1 transform hover:scale-110 hover:rotate-12 transition-all duration-500"
-				>
-					<div class="w-full h-full bg-slate-900 rounded-3xl flex items-center justify-center">
-						<IconSchool size={48} class="text-emerald-300" />
-					</div>
-				</div>
-			</div>
+                        <div class="flex justify-between items-start mb-12 relative z-10">
+                            <div class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 text-white group-hover/card:bg-amber-500 group-hover/card:text-black group-hover/card:border-amber-500 transition-all duration-300">
+                                <svelte:component this={feature.icon} size={24} stroke={1.5} />
+                            </div>
+                            <span class="font-mono text-[10px] text-slate-600 uppercase tracking-widest">
+                                {feature.id}
+                            </span>
+                        </div>
 
-			<h2
-				class="text-5xl sm:text-6xl font-heading font-bold mb-8 bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent"
-				class:animate-title-reveal={isVisible}
-			>
-				1-on-1 Mentorship
-			</h2>
+                        <div class="relative z-10">
+                            <div class="text-[10px] font-mono uppercase tracking-widest text-amber-600 mb-3">
+                                {feature.subtitle}
+                            </div>
+                            
+                            <h3 class="text-2xl font-serif text-white mb-6 group-hover/card:text-white transition-colors">
+                                {feature.title}
+                            </h3>
+                            
+                            <p class="text-sm text-slate-400 leading-relaxed font-light mb-12 h-16">
+                                {feature.description}
+                            </p>
 
-			<p
-				class="text-xl text-slate-300 mb-12 leading-relaxed max-w-3xl mx-auto"
-				class:animate-text-reveal={isVisible}
-			>
-				Work directly with experienced traders in private mentorship sessions. Custom curriculum,
-				personalized feedback, and accountability to accelerate your development.
-				<span class="block mt-4 text-emerald-400 font-semibold">Limited availability.</span>
-			</p>
-
-			<!-- Exclusive features grid -->
-			<div class="grid sm:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-				{#each [{ label: 'Private Sessions', icon: '👤' }, { label: 'Custom Curriculum', icon: '📚' }, { label: 'Direct Feedback', icon: '💬' }] as feature, i}
-					<div
-						class="relative bg-slate-900/40 backdrop-blur-xl border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transform hover:scale-105 transition-all duration-500"
-						class:animate-feature-reveal={isVisible}
-						style="animation-delay: {i * 150}ms"
-					>
-						<div class="text-4xl mb-3">{feature.icon}</div>
-						<div class="text-sm font-semibold text-emerald-300">{feature.label}</div>
-					</div>
-				{/each}
-			</div>
-
-			<!-- Premium CTA -->
-			<div class="relative inline-block">
-				<div
-					class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-				></div>
-				<a
-					href="/mentorship"
-					class="relative block px-12 py-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-lg font-heading font-bold rounded-2xl hover:shadow-2xl hover:shadow-emerald-500/50 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
-				>
-					<span class="relative z-10 flex items-center gap-3">
-						<IconSparkles size={24} class="animate-sparkle" />
-						<span>Apply for Mentorship</span>
-						<IconSparkles size={24} class="animate-sparkle-delayed" />
-					</span>
-					<div
-						class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"
-					></div>
-				</a>
-			</div>
-
-			<!-- Exclusivity note -->
-			<p class="mt-8 text-sm text-slate-500 italic">
-				Application required • Personalized review • Investment starting at $2,500/month
-			</p>
-		</div>
-	</div>
+                            <div class="flex items-center justify-between border-t border-white/10 pt-6">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest group-hover/card:text-white transition-colors">
+                                        {feature.status}
+                                    </span>
+                                </div>
+                                <div class="opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 -translate-x-2 group-hover/card:translate-x-0">
+                                    <IconArrowRight size={16} class="text-white" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            {/each}
+        </div>
+    </div>
 </section>
-
-<style>
-	.mentorship-section {
-		position: relative;
-	}
-
-	/* Animated spotlight effect */
-	.spotlight {
-		background: radial-gradient(
-			circle at 50% 50%,
-			rgba(16, 185, 129, 0.15) 0%,
-			rgba(20, 184, 166, 0.1) 25%,
-			transparent 60%
-		);
-		animation: spotlight-pulse 8s ease-in-out infinite;
-	}
-
-	@keyframes spotlight-pulse {
-		0%,
-		100% {
-			transform: scale(1);
-			opacity: 0.5;
-		}
-		50% {
-			transform: scale(1.2);
-			opacity: 0.8;
-		}
-	}
-
-	/* Golden floating particles */
-	.gold-particle {
-		position: absolute;
-		width: 8px;
-		height: 8px;
-		background: radial-gradient(circle, #10b981, transparent);
-		border-radius: 50%;
-		animation: float-gold 6s ease-in-out infinite;
-	}
-
-	@keyframes float-gold {
-		0%,
-		100% {
-			transform: translateY(0) scale(1);
-			opacity: 0.3;
-		}
-		50% {
-			transform: translateY(-40px) scale(1.5);
-			opacity: 1;
-		}
-	}
-
-	/* Sparkle animation */
-	@keyframes sparkle {
-		0%,
-		100% {
-			opacity: 1;
-			transform: scale(1) rotate(0deg);
-		}
-		50% {
-			opacity: 0.5;
-			transform: scale(1.2) rotate(180deg);
-		}
-	}
-
-	:global(.animate-sparkle) {
-		animation: sparkle 2s ease-in-out infinite;
-	}
-
-	:global(.animate-sparkle-delayed) {
-		animation: sparkle 2s ease-in-out infinite;
-		animation-delay: 1s;
-	}
-
-	/* Pulse glow */
-	@keyframes pulse-glow {
-		0%,
-		100% {
-			opacity: 0.3;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.6;
-			transform: scale(1.1);
-		}
-	}
-
-	.animate-pulse-glow {
-		animation: pulse-glow 3s ease-in-out infinite;
-	}
-
-	/* Reveal animations */
-	@keyframes icon-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(-30px) scale(0.8);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	@keyframes title-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes text-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes feature-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(30px) scale(0.9);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	.animate-fade-in {
-		animation: title-reveal 0.6s ease-out;
-	}
-
-	.animate-icon-reveal {
-		animation: icon-reveal 0.8s ease-out forwards;
-		opacity: 0;
-	}
-
-	.animate-title-reveal {
-		animation: title-reveal 0.8s ease-out 0.2s forwards;
-		opacity: 0;
-	}
-
-	.animate-text-reveal {
-		animation: text-reveal 0.8s ease-out 0.4s forwards;
-		opacity: 0;
-	}
-
-	.animate-feature-reveal {
-		animation: feature-reveal 0.6s ease-out forwards;
-		opacity: 0;
-	}
-</style>

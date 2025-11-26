@@ -14,9 +14,13 @@
 	let observer: IntersectionObserver;
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		node.classList.add('opacity-0', 'translate-y-8');
-
-		if (observer) {
+		// ENTERPRISE FIX: Show immediately, only hide if observer is ready
+		node.classList.add('opacity-100', 'translate-y-0');
+		
+		// Only add animation classes if observer exists (browser environment)
+		if (typeof window !== 'undefined' && observer) {
+			node.classList.remove('opacity-100', 'translate-y-0');
+			node.classList.add('opacity-0', 'translate-y-8');
 			node.dataset.delay = (params.delay || 0).toString();
 			observer.observe(node);
 		}
@@ -68,17 +72,17 @@
 			},
 			{
 				'@type': 'Service',
-				name: 'Live SPX Day Trading Room',
+				name: 'Small Accounts Trading Room',
 				serviceType: 'Financial Education',
 				description:
-					'Real-time 0DTE options trading mentorship, live screen sharing, and trade alerts.',
+					'Specialized trading room for accounts under $25K. Focus on capital preservation, realistic expectations, and scaling strategies.',
 				provider: { '@type': 'Organization', name: 'Revolution Trading Pros' }
 			},
 			{
 				'@type': 'Product',
-				name: 'Day Trading Room Membership',
+				name: 'Small Accounts Room Membership',
 				description:
-					'Access to live trading room, real-time SPX alerts, and daily market analysis.',
+					'Specialized trading education for accounts under $25K. Learn capital preservation, risk management, and scaling strategies.',
 				offers: {
 					'@type': 'AggregateOffer',
 					priceCurrency: 'USD',
@@ -92,18 +96,18 @@
 				mainEntity: [
 					{
 						'@type': 'Question',
-						name: 'Do I need a large account to day trade SPX?',
+						name: 'Can I trade with an account under $25K?',
 						acceptedAnswer: {
 							'@type': 'Answer',
-							text: 'No. SPX options offer significant leverage. However, we strictly recommend having at least $2,000 to manage risk properly.'
+							text: 'Yes! This room is specifically designed for small accounts. We focus on capital preservation, realistic expectations, and strategies that work with limited capital.'
 						}
 					},
 					{
 						'@type': 'Question',
-						name: 'What is 0DTE trading?',
+						name: 'How do you handle the PDT rule?',
 						acceptedAnswer: {
 							'@type': 'Answer',
-							text: "0DTE stands for '0 Days To Expiration.' We trade options that expire the same day to capitalize on rapid intraday moves."
+							text: "We teach strategies that work within PDT restrictions, including swing trades, cash account strategies, and how to maximize your 3 day trades per week."
 						}
 					}
 				]
@@ -115,38 +119,38 @@
 </script>
 
 <svelte:head>
-	<title>Live Day Trading Room | SPX 0DTE Alerts & Mentorship | Revolution Trading Pros</title>
+	<title>Small Accounts Trading Room | Under $25K Strategies | Revolution Trading Pros</title>
 	<meta
 		name="description"
-		content="Trade live with professionals. Our SPX 0DTE Day Trading Room offers real-time screen sharing, precise entry/exit alerts, and institutional order flow analysis."
+		content="Specialized trading room for accounts under $25K. Learn capital preservation, realistic expectations, and scaling strategies from experienced traders."
 	/>
 	<meta
 		name="keywords"
-		content="live trading room, SPX 0DTE strategy, day trading alerts, options trading community, stock market mentorship"
+		content="small account trading, under 25k trading, PDT rule strategies, capital preservation, trading with small account, realistic trading expectations"
 	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/live-trading-rooms/day-trading" />
+	<link rel="canonical" href="https://revolutiontradingpros.com/live-trading-rooms/small-accounts" />
 
 	<meta property="og:type" content="website" />
-	<meta property="og:title" content="Live SPX Day Trading Room" />
+	<meta property="og:title" content="Small Accounts Trading Room" />
 	<meta
 		property="og:description"
-		content="Watch us trade live. Real-time alerts, screen sharing, and professional risk management."
+		content="Specialized trading education for accounts under $25K. Learn to grow your account safely and systematically."
 	/>
 	<meta
 		property="og:url"
-		content="https://revolutiontradingpros.com/live-trading-rooms/day-trading"
+		content="https://revolutiontradingpros.com/live-trading-rooms/small-accounts"
 	/>
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/day-trading-og.jpg" />
+	<meta property="og:image" content="https://revolutiontradingpros.com/images/small-accounts-og.jpg" />
 
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Live SPX Day Trading Room" />
+	<meta name="twitter:title" content="Small Accounts Trading Room" />
 	<meta
 		name="twitter:description"
-		content="Stop trading alone. Join the Revolution Trading Pros live room today."
+		content="Learn to trade with a small account. Capital preservation and realistic growth strategies."
 	/>
 	<meta
 		name="twitter:image"
-		content="https://revolutiontradingpros.com/images/day-trading-og.jpg"
+		content="https://revolutiontradingpros.com/images/small-accounts-og.jpg"
 	/>
 
 	{@html jsonLdScript}
@@ -191,18 +195,17 @@
 					use:reveal={{ delay: 100 }}
 					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight"
 				>
-					Master <span
+					Grow Your <span
 						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary to-emerald-400"
-						>0DTE Options</span
-					> <br />in Real-Time.
+						>Small Account</span
+					> <br />The Right Way.
 				</h1>
 
 				<p
 					use:reveal={{ delay: 200 }}
 					class="text-xl text-rtp-muted mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
 				>
-					Don't just get alerts—watch the execution. Join our live voice & screen-share room where
-					we hunt high-probability setups on SPX every morning.
+					Specialized trading room for accounts under $25K. Learn capital preservation, realistic expectations, and proven strategies to scale your account systematically.
 				</p>
 
 				<div
@@ -213,13 +216,13 @@
 						href="#pricing"
 						class="bg-rtp-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg shadow-rtp-primary/25 hover:-translate-y-1"
 					>
-						Join the Live Room
+						Start Growing Your Account
 					</a>
 					<a
-						href="#daily-routine"
+						href="#features"
 						class="bg-rtp-surface border border-rtp-border text-rtp-text px-8 py-4 rounded-xl font-bold text-lg hover:bg-rtp-bg transition-all"
 					>
-						See Daily Routine
+						See What's Included
 					</a>
 				</div>
 

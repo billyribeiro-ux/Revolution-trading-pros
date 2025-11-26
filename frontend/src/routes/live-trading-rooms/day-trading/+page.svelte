@@ -14,9 +14,13 @@
 	let observer: IntersectionObserver;
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		node.classList.add('opacity-0', 'translate-y-8');
-
-		if (observer) {
+		// ENTERPRISE FIX: Show immediately, only hide if observer is ready
+		node.classList.add('opacity-100', 'translate-y-0');
+		
+		// Only add animation classes if observer exists (browser environment)
+		if (typeof window !== 'undefined' && observer) {
+			node.classList.remove('opacity-100', 'translate-y-0');
+			node.classList.add('opacity-0', 'translate-y-8');
 			node.dataset.delay = (params.delay || 0).toString();
 			observer.observe(node);
 		}
@@ -239,11 +243,17 @@
 					class="flex items-center justify-center lg:justify-start gap-4 text-sm text-rtp-muted pt-4"
 				>
 					<div class="flex -space-x-3">
-						<div class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gray-800"></div>
-						<div class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gray-700"></div>
-						<div class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gray-600"></div>
+						<div class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+							JD
+						</div>
+						<div class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold">
+							MK
+						</div>
+						<div class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+							SR
+						</div>
 						<div
-							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-rtp-surface flex items-center justify-center text-xs font-bold"
+							class="w-10 h-10 rounded-full border-2 border-rtp-bg bg-rtp-surface flex items-center justify-center text-xs font-bold text-white"
 						>
 							+500
 						</div>
@@ -644,7 +654,7 @@
 
 			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
 				<div
-					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border opacity-90 hover:opacity-100 transition-all"
+					class="bg-rtp-surface p-8 rounded-2xl border transition-all {selectedPlan === 'monthly' ? 'border-rtp-primary opacity-100 scale-105' : 'border-rtp-border opacity-70 hover:opacity-90'}"
 				>
 					<h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
 					<div class="flex items-baseline gap-1 mb-6">
@@ -667,7 +677,7 @@
 				</div>
 
 				<div
-					class="bg-rtp-bg p-10 rounded-3xl border-2 border-rtp-primary shadow-2xl shadow-rtp-primary/20 transform md:scale-110 relative z-10"
+					class="bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all {selectedPlan === 'quarterly' ? 'border-rtp-primary shadow-rtp-primary/20 md:scale-110 opacity-100' : 'border-rtp-border shadow-rtp-border/10 md:scale-100 opacity-70 hover:opacity-90'}"
 				>
 					<div
 						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
@@ -707,7 +717,7 @@
 				</div>
 
 				<div
-					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border opacity-90 hover:opacity-100 transition-all"
+					class="bg-rtp-surface p-8 rounded-2xl border transition-all {selectedPlan === 'annual' ? 'border-emerald-500 opacity-100 scale-105' : 'border-rtp-border opacity-70 hover:opacity-90'}"
 				>
 					<h3 class="text-xl font-bold text-white mb-4">Annual</h3>
 					<div class="flex items-baseline gap-1 mb-6">

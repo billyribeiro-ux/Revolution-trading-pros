@@ -1,242 +1,183 @@
 <script lang="ts">
-	import { IconUsers, IconShieldCheck, IconTrendingUp } from '@tabler/icons-svelte';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+    import { onMount } from 'svelte';
+    import { cubicOut } from 'svelte/easing';
+    import IconSitemap from '@tabler/icons-svelte/icons/sitemap';
+    import IconShield from '@tabler/icons-svelte/icons/shield';
+    import IconCpu from '@tabler/icons-svelte/icons/cpu';
+    import IconCheck from '@tabler/icons-svelte/icons/check';
+    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
 
-	const features = [
-		{
-			title: 'Structured Learning',
-			description:
-				'No random callouts. Learn proven frameworks in live rooms and comprehensive courses designed for real skill development.',
-			icon: IconUsers,
-			gradient: 'from-cyan-400 to-blue-500'
-		},
-		{
-			title: 'Risk-First Philosophy',
-			description:
-				'Every alert, every trade, every lesson emphasizes risk management and position sizing. We teach survival before growth.',
-			icon: IconShieldCheck,
-			gradient: 'from-emerald-400 to-teal-500'
-		},
-		{
-			title: 'Professional Tools',
-			description:
-				'Access institutional-grade indicators and analysis tools built by traders, for traders. No toy indicators here.',
-			icon: IconTrendingUp,
-			gradient: 'from-indigo-400 to-purple-500'
-		}
-	];
+    const features = [
+        {
+            title: 'Structured Curriculum',
+            subtitle: 'FRAMEWORK',
+            description: 'Move beyond random setups. We teach a repeatable, probabilistic execution model used by proprietary desks.',
+            icon: IconSitemap,
+            accent: 'cyan',
+            type: 'grid' // Triggers grid background
+        },
+        {
+            title: 'Risk Protocols',
+            subtitle: 'SURVIVAL',
+            description: 'Capital preservation is the primary objective. Every trade alert includes hard invalidation points and sizing logic.',
+            icon: IconShield,
+            accent: 'emerald',
+            type: 'radar' // Triggers radar background
+        },
+        {
+            title: 'Proprietary Analytics',
+            subtitle: 'INFRASTRUCTURE',
+            description: 'Access institutional-grade indicators that track dark pool volume, gamma exposure, and volatility flows.',
+            icon: IconCpu,
+            accent: 'indigo',
+            type: 'circuit' // Triggers circuit background
+        }
+    ];
 
-	let sectionRef: HTMLElement;
-	let isVisible = false;
+    // --- Interaction Logic ---
+    let containerRef: HTMLElement;
+    let mouse = { x: 0, y: 0 };
+    let isVisible = false;
 
-	onMount(() => {
-		if (!browser) return;
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef) return;
+        const rect = containerRef.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    };
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						isVisible = true;
-					}
-				});
-			},
-			{ threshold: 0.1 }
-		);
+    onMount(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (containerRef) observer.observe(containerRef);
+    });
 
-		if (sectionRef) {
-			observer.observe(sectionRef);
-		}
-
-		return () => observer.disconnect();
-	});
+    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+        return {
+            delay,
+            duration,
+            css: (t: number) => {
+                const eased = cubicOut(t);
+                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+            }
+        };
+    }
 </script>
 
-<section
-	bind:this={sectionRef}
-	class="why-section relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
+<section 
+    bind:this={containerRef}
+    on:mousemove={handleMouseMove}
+    role="group"
+    aria-label="Core Infrastructure Features"
+    class="relative py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
 >
-	<!-- Animated Background -->
-	<div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900"></div>
+    <!-- Technical Background -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:2rem_2rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
+    </div>
 
-	<!-- Floating Orbs -->
-	<div
-		class="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-float"
-	></div>
-	<div
-		class="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float-delayed"
-	></div>
+    <div class="relative max-w-7xl mx-auto z-10">
+        
+        <!-- Header -->
+        <div class="max-w-3xl mx-auto text-center mb-20">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center justify-center gap-2 mb-6">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-zinc-500"></span>
+                    </span>
+                    <span class="text-xs font-mono uppercase tracking-widest text-zinc-500">System Architecture</span>
+                </div>
+                
+                <h2 in:heavySlide={{ delay: 100 }} class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6">
+                    Core Infrastructure
+                </h2>
+                
+                <p in:heavySlide={{ delay: 200 }} class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto">
+                    We replaced hype with engineering. Our ecosystem combines structured education, strict risk controls, and professional data tools.
+                </p>
+            {/if}
+        </div>
 
-	<div class="relative max-w-7xl mx-auto z-10">
-		<div class="text-center max-w-3xl mx-auto mb-20">
-			<h2
-				class="text-4xl sm:text-5xl font-heading font-bold mb-6 bg-gradient-to-r from-cyan-300 via-blue-300 to-indigo-300 bg-clip-text text-transparent animate-fade-in"
-			>
-				Why Revolution Trading Pros?
-			</h2>
-			<p class="text-lg text-slate-300 leading-relaxed">
-				We built Revolution Trading Pros because the industry needed an alternative to hype-driven
-				education. Our ecosystem combines live trading rooms, precision alerts, structured courses,
-				and professional indicators—all aligned around one philosophy: <span
-					class="text-white font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"
-					>disciplined, risk-first execution</span
-				>.
-			</p>
-		</div>
+        <!-- 3-Column Grid -->
+        <div 
+            class="group/grid grid md:grid-cols-3 gap-8"
+            style="--x: {mouse.x}px; --y: {mouse.y}px;"
+        >
+            {#each features as feature, i}
+                {#if isVisible}
+                    <div 
+                        in:heavySlide={{ delay: 300 + (i * 150) }}
+                        class="relative group/card bg-zinc-950/50 border border-zinc-800 rounded-xl p-8 hover:bg-zinc-900/30 transition-all duration-500 overflow-hidden"
+                    >
+                        <!-- Spotlight Overlay -->
+                        <div class="absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-500 pointer-events-none"
+                             style="background: radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 40%);">
+                        </div>
 
-		<div class="grid md:grid-cols-3 gap-8">
-			{#each features as feature, i}
-				<div
-					class="feature-card group relative bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 hover:border-cyan-500/50 transition-all duration-500"
-					class:animate-slide-up={isVisible}
-					style="animation-delay: {i * 150}ms"
-				>
-					<!-- Glass effect overlay -->
-					<div
-						class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-					></div>
+                        <!-- Technical SVG Backgrounds -->
+                        <div class="absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-{feature.accent}-500">
+                            {#if feature.type === 'grid'}
+                                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+                                    <path d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90" />
+                                </svg>
+                            {:else if feature.type === 'radar'}
+                                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+                                    <circle cx="50" cy="50" r="20" />
+                                    <circle cx="50" cy="50" r="35" />
+                                    <circle cx="50" cy="50" r="45" opacity="0.5" />
+                                    <line x1="50" y1="50" x2="95" y2="50" />
+                                </svg>
+                            {:else}
+                                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
+                                    <rect x="20" y="20" width="60" height="60" rx="4" />
+                                    <path d="M50 20 V10 M50 90 V80 M20 50 H10 M90 50 H80" />
+                                    <rect x="35" y="35" width="30" height="30" />
+                                </svg>
+                            {/if}
+                        </div>
 
-					<!-- Animated gradient border on hover -->
-					<div
-						class="absolute inset-0 rounded-3xl bg-gradient-to-r {feature.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"
-					></div>
+                        <!-- Icon Container -->
+                        <div class="relative z-10 mb-8 inline-block">
+                            <div class="p-3 bg-zinc-900 border border-zinc-800 text-{feature.accent}-500 rounded-lg group-hover/card:border-{feature.accent}-500/30 group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1">
+                                <svelte:component this={feature.icon} size={28} stroke={1.5} />
+                            </div>
+                            <!-- Connecting Line -->
+                            <div class="absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 group-hover/card:bg-{feature.accent}-500/50 transition-colors"></div>
+                        </div>
 
-					<div class="relative z-10">
-						<!-- Floating Icon -->
-						<div
-							class="mb-6 transform group-hover:scale-110 group-hover:-translate-y-2 transition-transform duration-500"
-						>
-							<div class="w-16 h-16 rounded-2xl bg-gradient-to-br {feature.gradient} p-0.5">
-								<div
-									class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center"
-								>
-									<svelte:component
-										this={feature.icon}
-										size={32}
-										class="text-white animate-icon-float"
-									/>
-								</div>
-							</div>
-						</div>
+                        <!-- Content -->
+                        <div class="relative z-10 mt-4">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded">
+                                    {feature.subtitle}
+                                </span>
+                            </div>
+                            
+                            <h3 class="text-xl font-medium text-white mb-4 group-hover/card:text-{feature.accent}-400 transition-colors">
+                                {feature.title}
+                            </h3>
+                            
+                            <p class="text-sm text-zinc-400 leading-relaxed font-light mb-8">
+                                {feature.description}
+                            </p>
 
-						<h3
-							class="text-2xl font-heading font-bold mb-4 text-white group-hover:text-cyan-300 transition-colors duration-300"
-						>
-							{feature.title}
-						</h3>
-						<p
-							class="text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors duration-300"
-						>
-							{feature.description}
-						</p>
-					</div>
-
-					<!-- Bottom accent line -->
-					<div
-						class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r {feature.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl"
-					></div>
-				</div>
-			{/each}
-		</div>
-	</div>
+                            <!-- Micro Status Indicator -->
+                            <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-600 border-t border-zinc-900 pt-4 group-hover/card:text-zinc-500 transition-colors">
+                                <IconCheck size={12} class="text-{feature.accent}-500" />
+                                <span>MODULE ACTIVE</span>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            {/each}
+        </div>
+    </div>
 </section>
-
-<style>
-	.why-section {
-		position: relative;
-	}
-
-	/* Floating animations */
-	@keyframes float {
-		0%,
-		100% {
-			transform: translateY(0) scale(1);
-		}
-		50% {
-			transform: translateY(-20px) scale(1.05);
-		}
-	}
-
-	@keyframes float-delayed {
-		0%,
-		100% {
-			transform: translateY(0) scale(1);
-		}
-		50% {
-			transform: translateY(30px) scale(0.95);
-		}
-	}
-
-	.animate-float {
-		animation: float 8s ease-in-out infinite;
-	}
-
-	.animate-float-delayed {
-		animation: float-delayed 10s ease-in-out infinite;
-	}
-
-	/* Icon floating */
-	@keyframes icon-float {
-		0%,
-		100% {
-			transform: translateY(0);
-		}
-		50% {
-			transform: translateY(-8px);
-		}
-	}
-
-	.animate-icon-float {
-		animation: icon-float 3s ease-in-out infinite;
-	}
-
-	/* Fade in animation */
-	@keyframes fade-in {
-		from {
-			opacity: 0;
-			transform: translateY(-20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.animate-fade-in {
-		animation: fade-in 0.8s ease-out;
-	}
-
-	/* Slide up animation */
-	@keyframes slide-up {
-		from {
-			opacity: 0;
-			transform: translateY(40px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.animate-slide-up {
-		animation: slide-up 0.6s ease-out forwards;
-		opacity: 0;
-	}
-
-	/* Card glow effect */
-	.feature-card::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.5), transparent);
-		opacity: 0;
-		transition: opacity 0.5s;
-	}
-
-	.feature-card:hover::before {
-		opacity: 1;
-	}
-</style>
