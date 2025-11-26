@@ -1,377 +1,197 @@
 <script lang="ts">
-	import { IconArrowRight, IconClock, IconCalendar } from '@tabler/icons-svelte';
-	import type { Post } from '$lib/types/post';
+    import { onMount } from 'svelte';
+    import { cubicOut } from 'svelte/easing';
+    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+    import IconClock from '@tabler/icons-svelte/icons/clock';
+    import IconNews from '@tabler/icons-svelte/icons/news';
+    import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+    import type { Post } from '$lib/types/post';
 
-	// ─────────────────────────────────────────────────────────────────────────
-	// Props
-	// ─────────────────────────────────────────────────────────────────────────
-	export let posts: Post[] = [];
+    // ─────────────────────────────────────────────────────────────────────────
+    // Props & Logic
+    // ─────────────────────────────────────────────────────────────────────────
+    export let posts: Post[] = [];
 
-	/**
-	 * Format date to readable string
-	 */
-	function formatDate(dateString: string): string {
-		try {
-			const date = new Date(dateString);
-			return date.toLocaleDateString('en-US', {
-				month: 'short',
-				day: 'numeric',
-				year: 'numeric'
-			});
-		} catch {
-			return dateString;
-		}
-	}
+    // Separate the Lead Story (First Post) from the Wire (Rest of Posts)
+    $: leadPost = posts.length > 0 ? posts[0] : null;
+    $: wirePosts = posts.length > 1 ? posts.slice(1, 4) : [];
 
-	/**
-	 * Get default image if featured image is null
-	 */
-	function getImageUrl(imageUrl: string | null): string {
-		return imageUrl || '/images/blog-placeholder.jpg';
-	}
+    // --- Animation Logic ---
+    let containerRef: HTMLElement;
+    let isVisible = false;
+    let mouse = { x: 0, y: 0 };
 
-	/**
-	 * Get reading time from post
-	 */
-	function getReadingTime(post: Post): string {
-		// Try reading_time_text first (from appends), then reading_time
-		if ('reading_time_text' in post && post.reading_time_text) {
-			return post.reading_time_text as string;
-		}
-		if ('reading_time' in post && post.reading_time) {
-			return `${post.reading_time} min read`;
-		}
-		return '5 min read';
-	}
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef) return;
+        const rect = containerRef.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    };
+
+    onMount(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+        if (containerRef) observer.observe(containerRef);
+    });
+
+    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+        return {
+            delay,
+            duration,
+            css: (t: number) => {
+                const eased = cubicOut(t);
+                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+            }
+        };
+    }
+
+    // Helper: Format relative time for the "Wire" feel
+    function getRelativeTime(dateString: string): string {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+
+        if (diffInHours < 24) return `${diffInHours} HRS AGO`;
+        return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }).toUpperCase();
+    }
 </script>
 
-<section class="latest-blogs-section">
-	<div class="section-container">
-		<!-- Section Header -->
-		<div class="section-header">
-			<h2 class="section-title">Latest Blog Posts</h2>
-			<a href="/blog" class="see-all-button">
-				<span>See All Blogs</span>
-				<IconArrowRight size={20} />
-			</a>
-		</div>
+<section 
+    bind:this={containerRef}
+    on:mousemove={handleMouseMove}
+    class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
+    aria-label="Market Intelligence Wire"
+>
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        <div class="absolute inset-0 opacity-20"
+             style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.05), transparent 60%);">
+        </div>
+    </div>
 
-		<!-- Blog Posts Grid -->
-		{#if posts.length > 0}
-			<div class="blog-grid">
-				{#each posts as post}
-					<article class="blog-card">
-						<a href="/blog/{post.slug}" class="card-link">
-							<!-- Featured Image -->
-							<div class="card-image">
-								<img src={getImageUrl(post.featured_image)} alt={post.title} loading="lazy" />
-								<div class="image-overlay"></div>
-							</div>
+    <div class="relative max-w-[1600px] mx-auto z-10">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 border-b border-white/10 pb-8">
+            <div class="max-w-2xl">
+                {#if isVisible}
+                    <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-2 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.2em] uppercase rounded-sm">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            Live Wire
+                        </div>
+                    </div>
+                    <h2 in:heavySlide={{ delay: 100 }} class="text-4xl md:text-6xl font-serif text-white tracking-tight">
+                        Market <span class="text-slate-700">Intelligence.</span>
+                    </h2>
+                {/if}
+            </div>
+            <div class="max-w-xs text-right">
+                {#if isVisible}
+                    <a href="/blog" in:heavySlide={{ delay: 200 }} class="group inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-slate-500 hover:text-white transition-colors">
+                        <span>Archive Access</span>
+                        <IconArrowRight size={16} class="group-hover:translate-x-1 transition-transform" />
+                    </a>
+                {/if}
+            </div>
+        </div>
 
-							<!-- Card Content -->
-							<div class="card-content">
-								<!-- Metadata -->
-								<div class="card-meta">
-									<span class="meta-item">
-										<IconCalendar size={16} />
-										{formatDate(post.published_at)}
-									</span>
-									<span class="meta-item">
-										<IconClock size={16} />
-										{getReadingTime(post)}
-									</span>
-								</div>
+        {#if posts.length > 0}
+            <div class="grid lg:grid-cols-12 gap-12">
+                
+                {#if leadPost}
+                    <div class="lg:col-span-8 h-full">
+                        {#if isVisible}
+                            <a href="/blog/{leadPost.slug}" in:heavySlide={{ delay: 300 }} class="relative group block h-full bg-[#050505] border border-white/10 overflow-hidden hover:border-amber-600/50 transition-colors duration-500">
+                                <div class="relative h-[400px] overflow-hidden">
+                                    {#if leadPost.featured_image}
+                                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60" 
+                                             style="background-image: url('{leadPost.featured_image}')">
+                                        </div>
+                                    {:else}
+                                        <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-black to-slate-900 opacity-60"></div>
+                                    {/if}
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent"></div>
+                                    
+                                    <div class="absolute top-6 left-6 flex items-center gap-2">
+                                        <span class="px-3 py-1 bg-black/80 backdrop-blur border border-white/10 text-[10px] font-mono text-amber-500 uppercase tracking-widest">
+                                            Priority Brief
+                                        </span>
+                                    </div>
+                                </div>
 
-								<!-- Title -->
-								<h3 class="card-title">{post.title}</h3>
+                                <div class="relative -mt-32 p-8 md:p-12 z-10">
+                                    <div class="flex items-center gap-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4">
+                                        <span class="flex items-center gap-2">
+                                            <IconClock size={12} />
+                                            {getRelativeTime(leadPost.published_at)}
+                                        </span>
+                                        <span class="w-px h-3 bg-white/20"></span>
+                                        <span>{leadPost.author?.name || 'Desk Analyst'}</span>
+                                    </div>
+                                    
+                                    <h3 class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight group-hover:text-amber-500 transition-colors">
+                                        {leadPost.title}
+                                    </h3>
+                                    
+                                    <p class="text-base text-slate-400 font-light leading-relaxed max-w-2xl mb-8 border-l-2 border-white/10 pl-6 group-hover:border-amber-500/50 transition-colors">
+                                        {leadPost.excerpt || 'Market analysis briefing. Click to access full report.'}
+                                    </p>
 
-								<!-- Excerpt -->
-								<p class="card-excerpt">{post.excerpt || 'Read more to discover...'}</p>
+                                    <div class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white">
+                                        <span>Read Full Protocol</span>
+                                        <IconArrowRight size={14} class="group-hover:translate-x-2 transition-transform duration-300 text-amber-500" />
+                                    </div>
+                                </div>
+                            </a>
+                        {/if}
+                    </div>
+                {/if}
 
-								<!-- Author and Date -->
-								<div class="card-footer">
-									<div class="author-meta">
-										{#if post.author}
-											<div class="author-avatar-small">
-												{post.author.name.charAt(0).toUpperCase()}
-											</div>
-											<span class="author-name-small">{post.author.name}</span>
-										{/if}
-									</div>
-									<span class="publish-date">{formatDate(post.published_at)}</span>
-								</div>
+                <div class="lg:col-span-4 flex flex-col h-full border-l border-white/5 lg:pl-12">
+                    {#if isVisible}
+                        <div in:heavySlide={{ delay: 400 }} class="mb-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500">
+                            <IconNews size={14} />
+                            <span>Incoming Signals</span>
+                        </div>
+                        
+                        <div class="space-y-8">
+                            {#each wirePosts as post, i}
+                                <a href="/blog/{post.slug}" class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">
+                                            {getRelativeTime(post.published_at)}
+                                        </span>
+                                        <IconChartCandle size={14} class="text-slate-600 group-hover:text-amber-500 transition-colors" />
+                                    </div>
+                                    <h4 class="text-lg font-medium text-slate-300 group-hover:text-white transition-colors mb-2 leading-snug">
+                                        {post.title}
+                                    </h4>
+                                    <div class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+                                        {post.author?.name || 'Desk Analyst'}
+                                    </div>
+                                </a>
+                            {/each}
+                        </div>
+                    {/if}
+                </div>
 
-								<!-- Read More -->
-								<div class="read-more">
-									<span>Read More</span>
-									<IconArrowRight size={18} />
-								</div>
-							</div>
-						</a>
-					</article>
-				{/each}
-			</div>
-		{/if}
+            </div>
+        {:else}
+            <div class="py-24 text-center border border-dashed border-white/10 rounded-sm">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 text-slate-500 mb-4">
+                    <IconNews size={24} />
+                </div>
+                <h3 class="text-lg font-serif text-white mb-2">Wire Silent</h3>
+                <p class="text-sm font-mono text-slate-500 uppercase tracking-widest">No Intelligence Briefs Available</p>
+            </div>
+        {/if}
 
-		<!-- Empty State -->
-		{#if posts.length === 0}
-			<div class="empty-state">
-				<p>No blog posts available yet. Check back soon!</p>
-			</div>
-		{/if}
-	</div>
+    </div>
 </section>
-
-<style>
-	.latest-blogs-section {
-		position: relative;
-		padding: 6rem 1.5rem;
-		background: linear-gradient(135deg, #0a1628 0%, #050e1f 100%);
-	}
-
-	.section-container {
-		max-width: 1280px;
-		margin: 0 auto;
-	}
-
-	/* Section Header */
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 3rem;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
-
-	.section-title {
-		font-size: clamp(2rem, 4vw, 3rem);
-		font-weight: 800;
-		color: #ffffff;
-		margin: 0;
-		background: linear-gradient(135deg, #2e8eff, #60a5fa);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.see-all-button {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background:
-			linear-gradient(to bottom right, #2e8eff 0%, rgba(46, 142, 255, 0) 30%),
-			rgba(46, 142, 255, 0.2);
-		color: #ffffff;
-		font-weight: 600;
-		font-size: 1rem;
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.3s ease;
-		border: 1px solid rgba(46, 142, 255, 0.3);
-	}
-
-	.see-all-button:hover {
-		background:
-			linear-gradient(to bottom right, #2e8eff 0%, rgba(46, 142, 255, 0.3) 30%),
-			rgba(46, 142, 255, 0.4);
-		border-color: rgba(46, 142, 255, 0.5);
-		transform: translateY(-2px);
-		box-shadow: 0 0 20px rgba(46, 142, 255, 0.3);
-	}
-
-	/* Blog Grid - 3 per row */
-	.blog-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 2rem;
-	}
-
-	/* Blog Card */
-	.blog-card {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(46, 142, 255, 0.15);
-		border-radius: 16px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-		backdrop-filter: blur(10px);
-	}
-
-	.blog-card:hover {
-		border-color: rgba(46, 142, 255, 0.4);
-		transform: translateY(-4px);
-		box-shadow: 0 10px 40px rgba(46, 142, 255, 0.2);
-	}
-
-	.card-link {
-		text-decoration: none;
-		color: inherit;
-		display: block;
-	}
-
-	/* Card Image */
-	.card-image {
-		position: relative;
-		width: 100%;
-		height: 200px;
-		overflow: hidden;
-	}
-
-	.card-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 0.3s ease;
-	}
-
-	.blog-card:hover .card-image img {
-		transform: scale(1.05);
-	}
-
-	.image-overlay {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
-	}
-
-	/* Card Content */
-	.card-content {
-		padding: 1.5rem;
-	}
-
-	.card-meta {
-		display: flex;
-		gap: 1rem;
-		margin-bottom: 1rem;
-		flex-wrap: wrap;
-	}
-
-	.meta-item {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		font-size: 0.85rem;
-		color: #94a3b8;
-	}
-
-	.card-title {
-		font-size: 1.25rem;
-		font-weight: 700;
-		color: #ffffff;
-		margin: 0 0 0.75rem 0;
-		line-height: 1.4;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	.card-excerpt {
-		font-size: 0.95rem;
-		color: #cbd5e1;
-		line-height: 1.6;
-		margin: 0 0 1rem 0;
-		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	.card-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
-	}
-
-	.author-meta {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.author-avatar-small {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, #2e8eff, #60a5fa);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 0.875rem;
-		font-weight: 700;
-		color: white;
-	}
-
-	.author-name-small {
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: #94a3b8;
-	}
-
-	.publish-date {
-		font-size: 0.8rem;
-		color: #64748b;
-	}
-
-	.read-more {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: #2e8eff;
-		font-weight: 600;
-		font-size: 0.95rem;
-		transition: all 0.2s ease;
-	}
-
-	.blog-card:hover .read-more {
-		gap: 0.75rem;
-	}
-
-	/* Empty State */
-	.empty-state {
-		text-align: center;
-		padding: 4rem 2rem;
-		color: #94a3b8;
-		font-size: 1.1rem;
-	}
-
-	/* Tablet - 2 per row */
-	@media (max-width: 1024px) {
-		.blog-grid {
-			grid-template-columns: repeat(2, 1fr);
-			gap: 1.5rem;
-		}
-	}
-
-	/* Mobile - 1 per row */
-	@media (max-width: 768px) {
-		.latest-blogs-section {
-			padding: 4rem 1rem;
-		}
-
-		.section-header {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.see-all-button {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.blog-grid {
-			grid-template-columns: 1fr;
-			gap: 1.5rem;
-		}
-
-		.card-image {
-			height: 180px;
-		}
-	}
-</style>
