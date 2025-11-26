@@ -3,6 +3,9 @@
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
+	// --- Pricing State ---
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = 'quarterly';
+
 	// --- FAQ Logic ---
 	let openFaq: number | null = null;
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
@@ -13,11 +16,15 @@
 	const animatedElements = new Set<HTMLElement>();
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		node.classList.add('opacity-0', 'translate-y-8'); // Initial state
-
+		// ENTERPRISE FIX: Don't hide content by default - show immediately, animate later
+		// This prevents content from being invisible if observer fails or delays
+		node.classList.add('opacity-100', 'translate-y-0'); // Visible by default
+		
 		if (observer) {
+			// Reset for animation
+			node.classList.remove('opacity-100', 'translate-y-0');
+			node.classList.add('opacity-0', 'translate-y-8');
 			observer.observe(node);
-			// Store params on the node dataset for the observer to read
 			node.dataset.delay = (params.delay || 0).toString();
 		}
 
@@ -793,9 +800,45 @@
 				<p class="text-xl text-rtp-muted">Pay for the alerts with one good trade.</p>
 			</div>
 
+			<!-- Pricing Toggle -->
+			<div class="flex justify-center mb-16">
+				<div class="bg-rtp-bg p-1.5 rounded-xl border border-rtp-border inline-flex relative">
+					<button
+						on:click={() => (selectedPlan = 'monthly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'monthly'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Monthly</button
+					>
+					<button
+						on:click={() => (selectedPlan = 'quarterly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'quarterly'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Quarterly</button
+					>
+					<button
+						on:click={() => (selectedPlan = 'annual')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'annual'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Annual</button
+					>
+
+					<div
+						class="absolute top-1.5 bottom-1.5 bg-rtp-primary rounded-lg shadow-md transition-all duration-300 ease-out"
+						style="left: {selectedPlan === 'monthly'
+							? '0.375rem'
+							: selectedPlan === 'quarterly'
+								? 'calc(33.33% + 0.2rem)'
+								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+					></div>
+				</div>
+			</div>
+
 			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
 				<div
-					class="order-2 lg:order-1 bg-rtp-bg p-8 rounded-2xl border border-rtp-border hover:border-rtp-border/80 transition-all"
+					class="order-2 lg:order-1 bg-rtp-bg p-8 rounded-2xl border transition-all {selectedPlan === 'monthly' ? 'border-rtp-primary opacity-100 scale-105' : 'border-rtp-border opacity-70 hover:opacity-90'}"
 				>
 					<h3 class="text-xl font-bold text-rtp-text mb-2">Monthly</h3>
 					<div class="flex items-baseline gap-1 mb-6">
@@ -842,7 +885,7 @@
 				</div>
 
 				<div
-					class="order-1 lg:order-2 bg-rtp-bg p-10 rounded-3xl border-2 border-rtp-primary shadow-2xl shadow-rtp-primary/20 relative transform lg:scale-105 z-10"
+					class="order-1 lg:order-2 bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl relative transform z-10 transition-all {selectedPlan === 'quarterly' ? 'border-rtp-primary shadow-rtp-primary/20 lg:scale-110 opacity-100' : 'border-rtp-border shadow-rtp-border/10 lg:scale-100 opacity-70 hover:opacity-90'}"
 				>
 					<div
 						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
@@ -924,7 +967,7 @@
 				</div>
 
 				<div
-					class="order-3 bg-rtp-bg p-8 rounded-2xl border border-rtp-border hover:border-rtp-emerald/50 transition-all"
+					class="order-3 bg-rtp-bg p-8 rounded-2xl border transition-all {selectedPlan === 'annual' ? 'border-emerald-500 opacity-100 scale-105' : 'border-rtp-border opacity-70 hover:opacity-90'}"
 				>
 					<h3 class="text-xl font-bold text-rtp-text mb-2">Annual</h3>
 					<div class="flex items-baseline gap-1 mb-1">

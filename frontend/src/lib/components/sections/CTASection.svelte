@@ -1,377 +1,220 @@
 <script lang="ts">
-	import { IconRocket, IconArrowRight, IconStar } from '@tabler/icons-svelte';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+    import { onMount } from 'svelte';
+    import { cubicOut } from 'svelte/easing';
+    import IconLockSquare from '@tabler/icons-svelte/icons/lock-square';
+    import IconActivity from '@tabler/icons-svelte/icons/activity';
+    import IconServer from '@tabler/icons-svelte/icons/server';
+    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+    import IconCheck from '@tabler/icons-svelte/icons/check';
 
-	let sectionRef: HTMLElement;
-	let isVisible = false;
+    // --- Interaction Logic ---
+    let containerRef: HTMLElement;
+    let mouse = { x: 0, y: 0 };
+    let isVisible = false;
 
-	onMount(() => {
-		if (!browser) return;
+    // Mouse tracking for subtle lighting effects
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef) return;
+        const rect = containerRef.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    };
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						isVisible = true;
-					}
-				});
-			},
-			{ threshold: 0.1 }
-		);
+    onMount(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.15 }
+        );
+        if (containerRef) observer.observe(containerRef);
+    });
 
-		if (sectionRef) {
-			observer.observe(sectionRef);
-		}
+    // Heavy, expensive-feeling transition
+    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+        return {
+            delay,
+            duration,
+            css: (t: number) => {
+                const eased = cubicOut(t);
+                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+            }
+        };
+    }
 
-		return () => observer.disconnect();
-	});
+    // Mock data for the background "Depth of Market" animation
+    const marketDepth = Array(20).fill(0).map((_, i) => ({
+        price: (4200 + i * 0.25).toFixed(2),
+        size: Math.floor(Math.random() * 500)
+    }));
 </script>
 
-<section
-	bind:this={sectionRef}
-	class="cta-section relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
+<section 
+    bind:this={containerRef}
+    on:mousemove={handleMouseMove}
+    class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
+    aria-label="Account Creation Terminal"
 >
-	<!-- Vibrant gradient background -->
-	<div class="absolute inset-0 bg-gradient-to-br from-yellow-950 via-orange-950 to-red-950"></div>
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03] overflow-hidden flex justify-between px-10">
+        <div class="flex flex-col text-[10px] font-mono text-emerald-500 animate-scroll-up">
+            {#each [...marketDepth, ...marketDepth] as tick}
+                <div class="flex gap-8 my-1">
+                    <span>{tick.price}</span>
+                    <span class="opacity-50">{tick.size}</span>
+                </div>
+            {/each}
+        </div>
+        <div class="flex flex-col text-[10px] font-mono text-amber-600 animate-scroll-down text-right">
+            {#each [...marketDepth, ...marketDepth] as tick}
+                <div class="flex gap-8 my-1 justify-end">
+                    <span class="opacity-50">{tick.size}</span>
+                    <span>{tick.price}</span>
+                </div>
+            {/each}
+        </div>
+    </div>
 
-	<!-- Animated rays -->
-	<div class="absolute inset-0 rays"></div>
+    <div class="absolute inset-0 pointer-events-none opacity-30"
+         style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.03), transparent 60%);">
+    </div>
 
-	<!-- Energetic particles -->
-	<div class="absolute inset-0">
-		{#each Array(20) as _, i}
-			<div
-				class="energy-particle"
-				style="
-          left: {Math.random() * 100}%;
-          top: {Math.random() * 100}%;
-          animation-delay: {Math.random() * 5}s;
-          animation-duration: {3 + Math.random() * 4}s;
-        "
-			></div>
-		{/each}
-	</div>
+    <div class="relative max-w-4xl mx-auto z-10">
+        
+        <div class="text-center">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center justify-center gap-3 mb-10">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                        Market Status: <span class="text-emerald-500">Open</span>
+                    </span>
+                </div>
 
-	<div class="relative max-w-5xl mx-auto z-10">
-		<div class="text-center">
-			<!-- Urgency badge -->
-			<div
-				class="inline-flex items-center gap-2 mb-8 px-6 py-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/50 rounded-full backdrop-blur-sm animate-pulse-border"
-				class:animate-badge-reveal={isVisible}
-			>
-				<IconStar size={20} class="text-yellow-400 animate-spin-slow" />
-				<span class="text-sm font-bold tracking-widest text-yellow-300"
-					>JOIN THOUSANDS OF DISCIPLINED TRADERS</span
-				>
-				<IconStar size={20} class="text-yellow-400 animate-spin-slow-reverse" />
-			</div>
+                <h2 in:heavySlide={{ delay: 100 }} class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight leading-[0.95]">
+                    Professional <br />
+                    <span class="text-slate-700">Execution</span> Only.
+                </h2>
 
-			<!-- Main heading with dramatic reveal -->
-			<h2
-				class="text-5xl sm:text-6xl lg:text-7xl font-heading font-black mb-8"
-				class:animate-title-explode={isVisible}
-			>
-				<span
-					class="block bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300 bg-clip-text text-transparent"
-				>
-					Ready to Trade
-				</span>
-				<span
-					class="block bg-gradient-to-r from-orange-300 via-yellow-300 to-yellow-400 bg-clip-text text-transparent"
-				>
-					with Discipline?
-				</span>
-			</h2>
+                <p in:heavySlide={{ delay: 200 }} class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto mb-16">
+                    This is not a game. It is a business. Authenticate now to access institutional-grade alerts, live mentorship, and proprietary indicators.
+                </p>
 
-			<!-- Supporting text -->
-			<p
-				class="text-xl sm:text-2xl text-slate-200 mb-12 leading-relaxed max-w-3xl mx-auto font-semibold"
-				class:animate-text-fade-in={isVisible}
-			>
-				Join thousands of traders who've chosen the risk-first approach.
-				<span class="block mt-2 text-yellow-300">Start your journey today.</span>
-			</p>
+                <div in:heavySlide={{ delay: 300 }} class="relative max-w-xl mx-auto group perspective-1000">
+                    
+                    <div class="absolute -inset-1 bg-gradient-to-r from-amber-600/20 to-emerald-600/20 rounded opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700"></div>
 
-			<!-- Social proof badges -->
-			<div class="flex flex-wrap justify-center gap-6 mb-12">
-				{#each [{ icon: '👥', count: '5,000+', label: 'Active Members' }, { icon: '📊', count: '10,000+', label: 'Trades Analyzed' }, { icon: '⭐', count: '4.9/5', label: 'Member Rating' }] as stat, i}
-					<div
-						class="bg-slate-900/60 backdrop-blur-xl border border-yellow-500/30 rounded-2xl px-6 py-4 transform hover:scale-110 hover:border-yellow-500/60 transition-all duration-300"
-						class:animate-stat-pop={isVisible}
-						style="animation-delay: {i * 100}ms"
-					>
-						<div class="text-3xl mb-1">{stat.icon}</div>
-						<div class="text-2xl font-bold text-yellow-300">{stat.count}</div>
-						<div class="text-xs text-slate-400">{stat.label}</div>
-					</div>
-				{/each}
-			</div>
+                    <div class="relative bg-[#050505] border border-white/10 p-1 shadow-2xl">
+                        
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#0a0a0a] border-b border-white/5">
+                            <div class="flex items-center gap-2">
+                                <IconLockSquare size={14} class="text-amber-600" />
+                                <span class="text-[10px] font-mono uppercase text-slate-500 tracking-widest">Secure_Enclave_v4.2</span>
+                            </div>
+                            <div class="text-[10px] font-mono text-emerald-500">TLS 1.3 ENCRYPTED</div>
+                        </div>
 
-			<!-- MASSIVE CTA Button -->
-			<div class="relative inline-block" class:animate-cta-reveal={isVisible}>
-				<!-- Glowing aura -->
-				<div
-					class="absolute -inset-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-3xl blur-2xl opacity-60 animate-pulse-glow-intense"
-				></div>
+                        <div class="p-6 md:p-8 text-left">
+                            <div class="mb-6">
+                                <label for="email-access" class="block text-[10px] font-mono uppercase text-slate-500 tracking-widest mb-2">
+                                    Identity / Email
+                                </label>
+                                <div class="relative">
+                                    <input 
+                                        type="email" 
+                                        id="email-access" 
+                                        placeholder="trader@fund.com" 
+                                        class="w-full bg-[#020202] border border-white/10 text-white font-mono text-sm px-4 py-3 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-all placeholder:text-slate-700"
+                                    />
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-amber-600 animate-pulse pointer-events-none"></div>
+                                </div>
+                            </div>
 
-				<a
-					href="/signup"
-					class="relative block px-16 py-8 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-slate-900 text-2xl font-heading font-black rounded-2xl hover:shadow-[0_0_80px_rgba(251,191,36,0.8)] transform hover:scale-110 hover:-translate-y-2 transition-all duration-300 overflow-hidden group"
-				>
-					<span class="relative z-10 flex items-center justify-center gap-4">
-						<IconRocket size={32} class="animate-bounce-subtle" />
-						<span>Create Your Free Account</span>
-						<IconArrowRight
-							size={32}
-							class="transform group-hover:translate-x-3 transition-transform duration-300"
-						/>
-					</span>
+                            <a 
+                                href="/signup" 
+                                class="flex items-center justify-between w-full bg-amber-700 hover:bg-amber-600 text-white px-6 py-4 transition-all duration-200 group/btn shadow-[0_4px_20px_rgba(180,83,9,0.2)]"
+                            >
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-mono uppercase tracking-widest text-amber-200/80">Action</span>
+                                    <span class="text-lg font-bold tracking-wide">EXECUTE ORDER</span>
+                                </div>
+                                <IconArrowRight size={24} class="transform group-hover/btn:translate-x-1 transition-transform" />
+                            </a>
+                        </div>
+                        
+                        <div class="px-4 py-3 bg-[#0a0a0a] border-t border-white/5 flex justify-between items-center text-[10px] font-mono text-slate-600">
+                            <span>Cost Basis: $0.00</span>
+                            <span class="flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Route: DIRECT
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-					<!-- Shimmer effect -->
-					<div
-						class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-					></div>
-				</a>
-			</div>
+                <div in:heavySlide={{ delay: 400 }} class="mt-16 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1">
+                            <IconServer size={16} />
+                            <span class="text-[10px] font-mono uppercase tracking-widest">Network</span>
+                        </div>
+                        <div class="text-white font-serif text-lg">Global Edge</div>
+                    </div>
 
-			<!-- Risk-free guarantee -->
-			<p class="mt-10 text-sm text-slate-400">
-				<span class="inline-flex items-center gap-2">
-					<svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-						<path
-							fill-rule="evenodd"
-							d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-					<span>No credit card required</span>
-				</span>
-				<span class="mx-3">•</span>
-				<span class="inline-flex items-center gap-2">
-					<svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-						<path
-							fill-rule="evenodd"
-							d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-					<span>Cancel anytime</span>
-				</span>
-				<span class="mx-3">•</span>
-				<span class="inline-flex items-center gap-2">
-					<svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-						<path
-							fill-rule="evenodd"
-							d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-					<span>Instant access</span>
-				</span>
-			</p>
-		</div>
-	</div>
+                    <div class="text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1">
+                            <IconActivity size={16} />
+                            <span class="text-[10px] font-mono uppercase tracking-widest">Latency</span>
+                        </div>
+                        <div class="text-white font-serif text-lg">&lt; 20ms</div>
+                    </div>
+
+                    <div class="text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1">
+                            <IconLockSquare size={16} />
+                            <span class="text-[10px] font-mono uppercase tracking-widest">Security</span>
+                        </div>
+                        <div class="text-white font-serif text-lg">AES-256</div>
+                    </div>
+
+                    <div class="text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start gap-2 text-slate-500 mb-1">
+                            <IconCheck size={16} />
+                            <span class="text-[10px] font-mono uppercase tracking-widest">Commitment</span>
+                        </div>
+                        <div class="text-white font-serif text-lg">Cancel Anytime</div>
+                    </div>
+                </div>
+
+            {/if}
+        </div>
+    </div>
 </section>
 
 <style>
-	.cta-section {
-		position: relative;
-	}
+    /* 3D Perspective for the Ticket */
+    .perspective-1000 {
+        perspective: 1000px;
+    }
 
-	/* Animated rays */
-	.rays {
-		background: repeating-conic-gradient(
-			from 0deg,
-			transparent 0deg 2deg,
-			rgba(251, 191, 36, 0.05) 2deg 4deg
-		);
-		animation: rotate-rays 30s linear infinite;
-	}
+    /* Infinite Scroll Animation for the DOM data */
+    @keyframes scroll-up {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-50%); }
+    }
+    @keyframes scroll-down {
+        0% { transform: translateY(-50%); }
+        100% { transform: translateY(0); }
+    }
 
-	@keyframes rotate-rays {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	/* Energy particles */
-	.energy-particle {
-		position: absolute;
-		width: 4px;
-		height: 4px;
-		background: radial-gradient(circle, #fbbf24, transparent);
-		border-radius: 50%;
-		animation: float-energy 5s ease-in-out infinite;
-	}
-
-	@keyframes float-energy {
-		0%,
-		100% {
-			transform: translateY(0) scale(1);
-			opacity: 0;
-		}
-		50% {
-			transform: translateY(-100px) scale(1.5);
-			opacity: 1;
-		}
-	}
-
-	/* Pulse border */
-	@keyframes pulse-border {
-		0%,
-		100% {
-			box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
-		}
-		50% {
-			box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
-		}
-	}
-
-	.animate-pulse-border {
-		animation: pulse-border 2s ease-in-out infinite;
-	}
-
-	/* Intense glow pulse */
-	@keyframes pulse-glow-intense {
-		0%,
-		100% {
-			opacity: 0.4;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.8;
-			transform: scale(1.05);
-		}
-	}
-
-	.animate-pulse-glow-intense {
-		animation: pulse-glow-intense 2s ease-in-out infinite;
-	}
-
-	/* Spin animations */
-	@keyframes spin-slow {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes spin-slow-reverse {
-		from {
-			transform: rotate(360deg);
-		}
-		to {
-			transform: rotate(0deg);
-		}
-	}
-
-	:global(.animate-spin-slow) {
-		animation: spin-slow 8s linear infinite;
-	}
-
-	:global(.animate-spin-slow-reverse) {
-		animation: spin-slow-reverse 8s linear infinite;
-	}
-
-	/* Bounce subtle */
-	@keyframes bounce-subtle {
-		0%,
-		100% {
-			transform: translateY(0);
-		}
-		50% {
-			transform: translateY(-10px);
-		}
-	}
-
-	:global(.animate-bounce-subtle) {
-		animation: bounce-subtle 2s ease-in-out infinite;
-	}
-
-	/* Reveal animations */
-	@keyframes badge-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(-20px) scale(0.8);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	@keyframes title-explode {
-		from {
-			opacity: 0;
-			transform: scale(0.8);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-
-	@keyframes text-fade-in {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes stat-pop {
-		from {
-			opacity: 0;
-			transform: scale(0) rotate(-180deg);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1) rotate(0deg);
-		}
-	}
-
-	@keyframes cta-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(40px) scale(0.9);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	.animate-badge-reveal {
-		animation: badge-reveal 0.6s ease-out forwards;
-		opacity: 0;
-	}
-
-	.animate-title-explode {
-		animation: title-explode 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
-		opacity: 0;
-	}
-
-	.animate-text-fade-in {
-		animation: text-fade-in 0.8s ease-out 0.4s forwards;
-		opacity: 0;
-	}
-
-	.animate-stat-pop {
-		animation: stat-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-		opacity: 0;
-	}
-
-	.animate-cta-reveal {
-		animation: cta-reveal 0.8s ease-out 0.8s forwards;
-		opacity: 0;
-	}
+    .animate-scroll-up {
+        animation: scroll-up 20s linear infinite;
+    }
+    .animate-scroll-down {
+        animation: scroll-down 20s linear infinite;
+    }
 </style>

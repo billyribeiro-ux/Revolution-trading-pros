@@ -69,12 +69,10 @@ const config = {
 	},
 	// Compile-time optimizations
 	compilerOptions: {
-		// Enable CSS optimization
-		css: 'injected',
-		// Enable hydration optimization
-		hydratable: true,
-		// Enable immutable optimization (assumes data is immutable)
-		immutable: true
+		// CSS scoping - each component gets its own scoped styles
+		// This ensures complete design freedom per page/section
+		// Note: hydratable and immutable options removed in Svelte 5
+		// Components are always hydratable, and immutable has no effect in runes mode
 	}
 };
 
