@@ -715,17 +715,18 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	 * CONTAINER - CSS GRID (Google L8 Standard)
-	 * 3-column layout: [logo: FIXED] [nav: FLEXIBLE] [actions: AUTO]
+	 * 3-column layout: [logo: FIXED] [nav: FLEXIBLE] [actions: FIXED]
+	 * Logo and actions have fixed widths to prevent any movement
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.header__container {
 		display: grid;
-		grid-template-columns: var(--logo-width) 1fr auto;
+		grid-template-columns: var(--logo-width) 1fr minmax(200px, auto);
 		align-items: center;
 		height: 100%;
 		max-width: 1440px;
 		margin: 0 auto;
 		padding: 0 24px;
-		gap: 16px;
+		gap: 24px;
 	}
 
 	@media (max-width: 1024px) {
@@ -976,12 +977,15 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * ACTIONS - Right column utilities
+	 * ACTIONS - Right column utilities (FIXED WIDTH to prevent logo movement)
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.header__actions {
 		display: flex;
 		align-items: center;
+		justify-content: flex-end;
 		gap: 12px;
+		min-width: 200px; /* Prevent shrinking that causes logo movement */
+		flex-shrink: 0;
 	}
 
 	/* Action Button (Cart) */
