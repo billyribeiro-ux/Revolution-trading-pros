@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'annual' = 'monthly';
@@ -14,13 +15,9 @@
 	let observer: IntersectionObserver;
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		// ENTERPRISE FIX: Show immediately, only hide if observer is ready
-		node.classList.add('opacity-100', 'translate-y-0');
-		
-		// Only add animation classes if observer exists (browser environment)
-		if (typeof window !== 'undefined' && observer) {
-			node.classList.remove('opacity-100', 'translate-y-0');
-			node.classList.add('opacity-0', 'translate-y-8');
+		node.classList.add('opacity-0', 'translate-y-8');
+
+		if (observer) {
 			node.dataset.delay = (params.delay || 0).toString();
 			observer.observe(node);
 		}
@@ -65,9 +62,9 @@
 	const productSchema = {
 		'@context': 'https://schema.org',
 		'@type': 'Product',
-		name: 'Swing Trading Live Room',
+		name: 'Explosive Swings Trading Alerts',
 		description:
-			'Live swing trading room with real-time analysis, position management, and community support for multi-day trades.',
+			'Premium multi-day swing trading alerts service. Catch 3-7 day moves with precise entry and exit signals.',
 		brand: {
 			'@type': 'Organization',
 			name: 'Revolution Trading Pros'
@@ -77,7 +74,7 @@
 			priceCurrency: 'USD',
 			price: selectedPlan === 'monthly' ? '97' : '927',
 			availability: 'https://schema.org/InStock',
-			url: 'https://revolutiontradingpros.com/live-trading-rooms/swing-trading',
+			url: 'https://revolutiontradingpros.com/alerts/explosive-swings',
 			category: 'FinancialService'
 		}
 	};
@@ -105,39 +102,32 @@
 		]
 	};
 
-	const jsonLd = JSON.stringify({ '@graph': [productSchema, faqSchema] });
-	const jsonLdScript = `<script type="application/ld+json">${jsonLd}<\/script>`;
+	// Schema for SEOHead
+	const combinedSchema = [productSchema, faqSchema];
 </script>
 
-<svelte:head>
-	<title>Swing Trading Live Room | Multi-Day Position Trading | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Join our live swing trading room. Real-time analysis, position management, and community support for multi-day trades. Perfect for traders with day jobs."
-	/>
-	<meta
-		name="keywords"
-		content="swing trading room, live swing trading, multi-day trading, position trading community, swing trade education"
-	/>
-
-	<meta property="og:type" content="product" />
-	<meta property="og:title" content="Swing Trading Live Room | Multi-Day Positions" />
-	<meta
-		property="og:description"
-		content="Live swing trading room with real-time analysis and position management. Perfect for traders who can't watch charts all day."
-	/>
-	<meta property="og:url" content="https://revolutiontradingpros.com/live-trading-rooms/swing-trading" />
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-swing-room.jpg" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Swing Trading Live Room" />
-	<meta
-		name="twitter:description"
-		content="Live swing trading room with real-time analysis. Perfect for traders with day jobs."
-	/>
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Swing Trading Room | Multi-Day Trading Opportunities"
+	description="Join our swing trading room for multi-day opportunities. Expert analysis, precise entries/exits, and proven strategies. Perfect for traders who can't watch markets all day. 82% win rate."
+	canonical="/live-trading-rooms/swing-trading"
+	ogType="product"
+	ogImage="/images/og-swings.jpg"
+	ogImageAlt="Swing Trading Room - Multi-Day Trading Opportunities"
+	keywords={[
+		'swing trading room',
+		'swing trading alerts',
+		'multi-day trading',
+		'stock options alerts',
+		'swing trade signals',
+		'options swing trading',
+		'trading room'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="97"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-emerald selection:text-white"
@@ -170,7 +160,7 @@
 						<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
 					</span>
 					<span class="text-xs font-bold tracking-wider uppercase text-emerald-400"
-						>Live Room Active Now</span
+						>Swing Signals Active</span
 					>
 				</div>
 
@@ -178,10 +168,10 @@
 					use:reveal={{ delay: 100 }}
 					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
 				>
-					Swing Trade <br />
+					Catch the <br />
 					<span
 						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-emerald via-emerald-300 to-teal-200"
-						>With a Community.</span
+						>Big Moves.</span
 					>
 				</h1>
 
@@ -189,7 +179,8 @@
 					use:reveal={{ delay: 200 }}
 					class="text-xl text-rtp-muted mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
-					Join our live swing trading room. Real-time analysis, position management, and a supportive community. Perfect for traders who can't watch charts all day.
+					Stop staring at the 1-minute chart. Get high-precision multi-day swing alerts designed for
+					traders who want freedom, not a job.
 				</p>
 
 				<div
@@ -200,7 +191,7 @@
 						href="#pricing"
 						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-emerald rounded-xl hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-emerald offset-rtp-bg shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
 					>
-						Join the Live Room
+						Start Trading Swings
 						<svg
 							class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
 							fill="none"
@@ -215,10 +206,10 @@
 						>
 					</a>
 					<a
-						href="#features"
+						href="#process"
 						class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-rtp-text transition-all duration-200 bg-rtp-surface border border-rtp-border rounded-xl hover:bg-rtp-surface/80 hover:border-rtp-emerald/30"
 					>
-						See What's Included
+						See How It Works
 					</a>
 				</div>
 
@@ -236,10 +227,10 @@
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
-								d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
 							/></svg
 						>
-						<span>Live Community</span>
+						<span>Precise Entries</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<svg
@@ -251,10 +242,10 @@
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
-								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 							/></svg
 						>
-						<span>Real-Time Analysis</span>
+						<span>3-7 Day Holds</span>
 					</div>
 				</div>
 			</div>

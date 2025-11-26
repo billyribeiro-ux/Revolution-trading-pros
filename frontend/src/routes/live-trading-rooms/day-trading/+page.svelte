@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = 'quarterly';
@@ -130,29 +131,33 @@
 		]
 	};
 
-	const jsonLd = JSON.stringify({ '@graph': [productSchema, faqSchema] });
-	const jsonLdScript = `<script type="application/ld+json">${jsonLd}<\/script>`;
+	// Schema for SEOHead
+	const combinedSchema = [productSchema, faqSchema];
 </script>
 
-<svelte:head>
-	<title>Live Day Trading Room | Trade SPX 0DTE Live | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Never trade alone again. Join our live SPX day trading room for real-time voice commentary, screen sharing, and community support."
-	/>
-	<meta
-		name="keywords"
-		content="day trading room, live trading, spx 0dte, trading community, stock market live stream"
-	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/live-trading-rooms/day-trading" />
-
-	<meta property="og:type" content="product" />
-	<meta property="og:title" content="Live SPX Day Trading Room" />
-	<meta property="og:description" content="Watch us trade live. Voice, Screen Share, and Chat." />
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/og-live-room.jpg" />
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Live Day Trading Room | Trade SPX 0DTE Live"
+	description="Never trade alone again. Join our live SPX day trading room for real-time voice commentary, screen sharing, professional analysis, and community support. Trade with pros daily."
+	canonical="/live-trading-rooms/day-trading"
+	ogType="product"
+	ogImage="/images/og-live-room.jpg"
+	ogImageAlt="Live SPX Day Trading Room - Trade with Professional Traders"
+	keywords={[
+		'day trading room',
+		'live trading',
+		'spx 0dte',
+		'trading community',
+		'stock market live stream',
+		'live trading room',
+		'professional trading room',
+		'day trading community'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="197"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"

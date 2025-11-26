@@ -2,6 +2,27 @@
 	import { onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Schema for small accounts trading room
+	const productSchema = {
+		'@context': 'https://schema.org',
+		'@type': 'Product',
+		name: 'Small Accounts Day Trading Room',
+		description:
+			'Live trading room designed for small account traders. Learn professional strategies optimized for accounts under $25k.',
+		brand: {
+			'@type': 'Organization',
+			name: 'Revolution Trading Pros'
+		},
+		offers: {
+			'@type': 'AggregateOffer',
+			priceCurrency: 'USD',
+			lowPrice: '97',
+			highPrice: '197',
+			offerCount: '3'
+		}
+	};
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = 'quarterly';
@@ -14,13 +35,9 @@
 	let observer: IntersectionObserver;
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		// ENTERPRISE FIX: Show immediately, only hide if observer is ready
-		node.classList.add('opacity-100', 'translate-y-0');
-		
-		// Only add animation classes if observer exists (browser environment)
-		if (typeof window !== 'undefined' && observer) {
-			node.classList.remove('opacity-100', 'translate-y-0');
-			node.classList.add('opacity-0', 'translate-y-8');
+		node.classList.add('opacity-0', 'translate-y-8');
+
+		if (observer) {
 			node.dataset.delay = (params.delay || 0).toString();
 			observer.observe(node);
 		}
@@ -72,17 +89,17 @@
 			},
 			{
 				'@type': 'Service',
-				name: 'Small Accounts Trading Room',
+				name: 'Live SPX Day Trading Room',
 				serviceType: 'Financial Education',
 				description:
-					'Specialized trading room for accounts under $25K. Focus on capital preservation, realistic expectations, and scaling strategies.',
+					'Real-time 0DTE options trading mentorship, live screen sharing, and trade alerts.',
 				provider: { '@type': 'Organization', name: 'Revolution Trading Pros' }
 			},
 			{
 				'@type': 'Product',
-				name: 'Small Accounts Room Membership',
+				name: 'Day Trading Room Membership',
 				description:
-					'Specialized trading education for accounts under $25K. Learn capital preservation, risk management, and scaling strategies.',
+					'Access to live trading room, real-time SPX alerts, and daily market analysis.',
 				offers: {
 					'@type': 'AggregateOffer',
 					priceCurrency: 'USD',
@@ -96,65 +113,50 @@
 				mainEntity: [
 					{
 						'@type': 'Question',
-						name: 'Can I trade with an account under $25K?',
+						name: 'Do I need a large account to day trade SPX?',
 						acceptedAnswer: {
 							'@type': 'Answer',
-							text: 'Yes! This room is specifically designed for small accounts. We focus on capital preservation, realistic expectations, and strategies that work with limited capital.'
+							text: 'No. SPX options offer significant leverage. However, we strictly recommend having at least $2,000 to manage risk properly.'
 						}
 					},
 					{
 						'@type': 'Question',
-						name: 'How do you handle the PDT rule?',
+						name: 'What is 0DTE trading?',
 						acceptedAnswer: {
 							'@type': 'Answer',
-							text: "We teach strategies that work within PDT restrictions, including swing trades, cash account strategies, and how to maximize your 3 day trades per week."
+							text: "0DTE stands for '0 Days To Expiration.' We trade options that expire the same day to capitalize on rapid intraday moves."
 						}
 					}
 				]
 			}
 		]
 	};
-	const jsonLdString = JSON.stringify(schemaOrg);
-	const jsonLdScript = `<script type="application/ld+json">${jsonLdString}<\/script>`;
+	// Schema for SEOHead
+	const combinedSchema = schemaOrg['@graph'];
 </script>
 
-<svelte:head>
-	<title>Small Accounts Trading Room | Under $25K Strategies | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Specialized trading room for accounts under $25K. Learn capital preservation, realistic expectations, and scaling strategies from experienced traders."
-	/>
-	<meta
-		name="keywords"
-		content="small account trading, under 25k trading, PDT rule strategies, capital preservation, trading with small account, realistic trading expectations"
-	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/live-trading-rooms/small-accounts" />
-
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="Small Accounts Trading Room" />
-	<meta
-		property="og:description"
-		content="Specialized trading education for accounts under $25K. Learn to grow your account safely and systematically."
-	/>
-	<meta
-		property="og:url"
-		content="https://revolutiontradingpros.com/live-trading-rooms/small-accounts"
-	/>
-	<meta property="og:image" content="https://revolutiontradingpros.com/images/small-accounts-og.jpg" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Small Accounts Trading Room" />
-	<meta
-		name="twitter:description"
-		content="Learn to trade with a small account. Capital preservation and realistic growth strategies."
-	/>
-	<meta
-		name="twitter:image"
-		content="https://revolutiontradingpros.com/images/small-accounts-og.jpg"
-	/>
-
-	{@html jsonLdScript}
-</svelte:head>
+<SEOHead
+	title="Small Accounts Day Trading Room | PDT-Free Strategies"
+	description="Trade live with professionals. Our Small Accounts Day Trading Room offers real-time screen sharing, precise entry/exit alerts, and strategies optimized for accounts under $25k."
+	canonical="/live-trading-rooms/small-accounts"
+	ogType="product"
+	ogImage="/images/day-trading-og.jpg"
+	ogImageAlt="Small Accounts Day Trading Room - PDT-Free Strategies"
+	keywords={[
+		'small account trading',
+		'PDT-free trading',
+		'day trading under 25k',
+		'small account strategies',
+		'live trading room',
+		'SPX 0DTE strategy',
+		'options trading community'
+	]}
+	schema={combinedSchema}
+	schemaType="Product"
+	productPrice="97"
+	productCurrency="USD"
+	productAvailability="InStock"
+/>
 
 <main
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"
@@ -195,17 +197,18 @@
 					use:reveal={{ delay: 100 }}
 					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight"
 				>
-					Grow Your <span
+					Master <span
 						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary to-emerald-400"
-						>Small Account</span
-					> <br />The Right Way.
+						>0DTE Options</span
+					> <br />in Real-Time.
 				</h1>
 
 				<p
 					use:reveal={{ delay: 200 }}
 					class="text-xl text-rtp-muted mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
 				>
-					Specialized trading room for accounts under $25K. Learn capital preservation, realistic expectations, and proven strategies to scale your account systematically.
+					Don't just get alerts—watch the execution. Join our live voice & screen-share room where
+					we hunt high-probability setups on SPX every morning.
 				</p>
 
 				<div
@@ -216,13 +219,13 @@
 						href="#pricing"
 						class="bg-rtp-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg shadow-rtp-primary/25 hover:-translate-y-1"
 					>
-						Start Growing Your Account
+						Join the Live Room
 					</a>
 					<a
-						href="#features"
+						href="#daily-routine"
 						class="bg-rtp-surface border border-rtp-border text-rtp-text px-8 py-4 rounded-xl font-bold text-lg hover:bg-rtp-bg transition-all"
 					>
-						See What's Included
+						See Daily Routine
 					</a>
 				</div>
 

@@ -21,13 +21,13 @@
 	});
 </script>
 
+<!--
+	SEO Note: Page-specific SEO is handled by individual +page.svelte files using SEOHead component.
+	Global meta tags are set in app.html for fallback only.
+	Each page must define its own title, description, canonical, and structured data.
+-->
+
 <svelte:head>
-	<title>Revolution Trading Pros | Live Trading Rooms, Alerts & Pro Tools</title>
-	<meta
-		name="description"
-		content="Professional trading education and tools. Live trading rooms, SPX alerts, courses, and indicators built for disciplined traders."
-	/>
-	
 	<!-- Performance: Critical Resource Hints (L11+ Optimization) -->
 	<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 	<link rel="dns-prefetch" href="https://fonts.gstatic.com" />

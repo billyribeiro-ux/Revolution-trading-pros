@@ -12,6 +12,7 @@
 	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
 	import gsap from 'gsap';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- State ---
 	let email = '';
@@ -196,9 +197,13 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Login | Revolution Trading Pros</title>
-</svelte:head>
+<SEOHead
+	title="Login to Your Trading Account"
+	description="Access your Revolution Trading Pros account. Log in to your live trading rooms, alerts, and courses dashboard."
+	canonical="/login"
+	ogType="website"
+	keywords={['trading login', 'revolution trading pros login', 'member login']}
+/>
 
 <div class="login-page" bind:this={containerRef}>
 	<div class="gradient-bg"></div>

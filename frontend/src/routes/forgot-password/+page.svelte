@@ -2,6 +2,7 @@
 	import { forgotPassword } from '$lib/api/auth';
 	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	let email = '';
 	let errors: Record<string, string[]> = {};
@@ -39,9 +40,13 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Forgot Password | Revolution Trading Pros</title>
-</svelte:head>
+<SEOHead
+	title="Forgot Password - Reset Your Account"
+	description="Forgot your password? Reset your Revolution Trading Pros account password securely."
+	canonical="/forgot-password"
+	ogType="website"
+	noIndex={true}
+/>
 
 <div
 	class="forgot-password-page min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden relative"

@@ -9,9 +9,64 @@
 		IconAward,
 		IconTarget
 	} from '@tabler/icons-svelte';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	let isVisible = false;
 	let heroRef: HTMLElement;
+
+	// About page structured data
+	const aboutSchema = [
+		{
+			'@context': 'https://schema.org',
+			'@type': 'AboutPage',
+			'@id': 'https://revolutiontradingpros.com/about/#aboutpage',
+			name: 'About Revolution Trading Pros',
+			description:
+				'Learn about Revolution Trading Pros, our expert team, and our commitment to transforming traders through professional education and institutional-grade tools.',
+			url: 'https://revolutiontradingpros.com/about',
+			mainEntity: {
+				'@type': 'Organization',
+				'@id': 'https://revolutiontradingpros.com/#organization',
+				name: 'Revolution Trading Pros',
+				foundingDate: '2018',
+				description:
+					'Professional trading education platform offering live trading rooms, alerts, courses, and indicators.',
+				numberOfEmployees: {
+					'@type': 'QuantitativeValue',
+					value: '15'
+				},
+				member: [
+					{
+						'@type': 'Person',
+						name: 'Michael Rodriguez',
+						jobTitle: 'Founder & Lead Trader',
+						description:
+							'15+ years of institutional trading experience. Former Goldman Sachs derivatives trader.'
+					},
+					{
+						'@type': 'Person',
+						name: 'Sarah Chen',
+						jobTitle: 'Chief Strategy Officer',
+						description:
+							'Quantitative analyst with expertise in algorithmic trading. PhD in Financial Engineering from MIT.'
+					},
+					{
+						'@type': 'Person',
+						name: 'David Thompson',
+						jobTitle: 'Head of Education',
+						description: 'Certified Financial Technician with 12 years teaching professional traders.'
+					},
+					{
+						'@type': 'Person',
+						name: 'Jessica Martinez',
+						jobTitle: 'Risk Management Director',
+						description:
+							'Former JP Morgan risk analyst. Specializes in portfolio optimization and risk assessment.'
+					}
+				]
+			}
+		}
+	];
 
 	// Team members
 	const team = [
@@ -93,13 +148,26 @@
 	});
 </script>
 
-<svelte:head>
-	<title>About Us | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Learn about Revolution Trading Pros, our expert team, and our commitment to transforming traders through professional education and institutional-grade tools."
-	/>
-</svelte:head>
+<SEOHead
+	title="About Us - Our Expert Trading Team"
+	description="Learn about Revolution Trading Pros, our expert team of former institutional traders, and our commitment to transforming traders through professional education and institutional-grade tools. Established 2018."
+	canonical="/about"
+	ogType="website"
+	ogImage="/og-image.webp"
+	ogImageAlt="Revolution Trading Pros Expert Team"
+	keywords={[
+		'about revolution trading pros',
+		'trading team',
+		'professional traders',
+		'trading education company',
+		'institutional trading experience',
+		'trading mentors',
+		'financial technician',
+		'trading experts'
+	]}
+	schema={aboutSchema}
+	author="Revolution Trading Pros"
+/>
 
 <div class="about-page">
 	<!-- Hero Section -->

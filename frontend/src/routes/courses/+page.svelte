@@ -14,6 +14,7 @@
 		IconRocket,
 		IconStar
 	} from '@tabler/icons-svelte';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	interface Course {
 		id: string;
@@ -120,6 +121,46 @@
 	let heroVisible = false;
 	let cardsVisible: boolean[] = new Array(courses.length).fill(false);
 
+	// Course listing structured data for rich snippets
+	const coursesSchema = [
+		{
+			'@context': 'https://schema.org',
+			'@type': 'ItemList',
+			'@id': 'https://revolutiontradingpros.com/courses/#courselist',
+			name: 'Professional Trading Courses',
+			description: 'Comprehensive trading education courses from Revolution Trading Pros',
+			numberOfItems: courses.length,
+			itemListElement: courses.map((course, index) => ({
+				'@type': 'ListItem',
+				position: index + 1,
+				item: {
+					'@type': 'Course',
+					name: course.title,
+					description: course.description,
+					url: `https://revolutiontradingpros.com/courses/${course.slug}`,
+					provider: {
+						'@type': 'Organization',
+						name: 'Revolution Trading Pros',
+						url: 'https://revolutiontradingpros.com'
+					},
+					educationalLevel: course.level,
+					timeRequired: course.duration,
+					offers: {
+						'@type': 'Offer',
+						price: course.price.replace('$', ''),
+						priceCurrency: 'USD',
+						availability: 'https://schema.org/InStock'
+					},
+					aggregateRating: {
+						'@type': 'AggregateRating',
+						ratingValue: course.rating,
+						reviewCount: parseInt(course.students.replace(',', ''))
+					}
+				}
+			}))
+		}
+	];
+
 	onMount(() => {
 		if (!browser) return;
 
@@ -161,25 +202,27 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Professional Trading Courses | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Master trading with our professional courses. Day trading, swing trading, options, and risk management from industry experts."
-	/>
-	<meta property="og:title" content="Professional Trading Courses | Revolution Trading" />
-	<meta
-		property="og:description"
-		content="Master trading with our professional courses. Day trading, swing trading, options, and risk management from industry experts."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Professional Trading Courses | Revolution Trading" />
-	<meta
-		name="twitter:description"
-		content="Master trading with our professional courses. Day trading, swing trading, options, and risk management from industry experts."
-	/>
-</svelte:head>
+<SEOHead
+	title="Professional Trading Courses"
+	description="Master trading with our professional courses. Day trading, swing trading, options, and risk management from industry experts. 10,000+ students, 4.9 average rating."
+	canonical="/courses"
+	ogType="website"
+	ogImage="/og-image.webp"
+	ogImageAlt="Revolution Trading Pros Professional Trading Courses"
+	keywords={[
+		'trading courses',
+		'day trading course',
+		'swing trading course',
+		'options trading course',
+		'risk management course',
+		'trading education',
+		'learn to trade',
+		'professional trading',
+		'trading masterclass'
+	]}
+	schema={coursesSchema}
+	schemaType="Course"
+/>
 
 <div class="courses-page">
 	<!-- Hero Section -->

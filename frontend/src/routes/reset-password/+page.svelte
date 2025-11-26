@@ -4,6 +4,7 @@
 	import { resetPassword } from '$lib/api/auth';
 	import { IconLock, IconAlertCircle, IconCheck, IconShieldCheck } from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
+	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	let email = '';
 	let password = '';
@@ -52,9 +53,13 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Reset Password | Revolution Trading Pros</title>
-</svelte:head>
+<SEOHead
+	title="Reset Password - Secure Account Recovery"
+	description="Reset your Revolution Trading Pros account password securely. Create a new password for your trading account."
+	canonical="/reset-password"
+	ogType="website"
+	noIndex={true}
+/>
 
 <div
 	class="reset-password-page min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden relative"
