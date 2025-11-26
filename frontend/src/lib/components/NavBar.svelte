@@ -445,6 +445,11 @@
 			{/if}
 
 			{#if isDesktop}
+				<!-- Get Started CTA Button -->
+				<a href="/login" class="cta-btn">
+					Get Started
+				</a>
+
 				{#if $isAuthenticated}
 					<div class="user-menu" data-user-menu>
 						<button
@@ -1026,6 +1031,35 @@
 		0% { transform: scale(0.5); }
 		50% { transform: scale(1.2); }
 		100% { transform: scale(1); }
+	}
+
+	/* CTA Button (Yellow Get Started) */
+	.cta-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px 28px;
+		background: linear-gradient(135deg, #facc15, #eab308);
+		color: #0a101c;
+		font-weight: 700;
+		font-size: 0.95rem;
+		text-decoration: none;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+		transition: all var(--duration-normal) var(--ease-in-out);
+		letter-spacing: 0.02em;
+	}
+
+	.cta-btn:hover {
+		background: linear-gradient(135deg, #fde047, #facc15);
+		box-shadow: 0 6px 20px rgba(250, 204, 21, 0.5);
+		transform: translateY(-2px);
+	}
+
+	.cta-btn:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 8px rgba(250, 204, 21, 0.4);
 	}
 
 	/* Login Button */
