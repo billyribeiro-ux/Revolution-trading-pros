@@ -58,7 +58,7 @@
 					status: statusFilter === 'all' ? undefined : [statusFilter],
 					interval: intervalFilter === 'all' ? undefined : [intervalFilter],
 					searchQuery: searchQuery || undefined
-				}),
+				}, true), // isAdmin = true for admin page
 				getSubscriptionStats(),
 				getUpcomingRenewals(),
 				getFailedPayments()

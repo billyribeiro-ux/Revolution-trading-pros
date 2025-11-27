@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\Admin\MediaController;
 use App\Http\Middleware\RateLimitMedia;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
+use App\Http\Controllers\Admin\EmailCampaignController;
 use App\Http\Controllers\Api\EmailTemplateBuilderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -206,6 +207,21 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/email/builder/templates/{id}/blocks/reorder', [EmailTemplateBuilderController::class, 'reorderBlocks']);
     Route::get('/email/builder/variables', [EmailTemplateBuilderController::class, 'getVariables']);
     Route::get('/email/builder/layouts', [EmailTemplateBuilderController::class, 'getLayouts']);
+
+    // Email Campaigns
+    Route::get('/email/campaigns', [EmailCampaignController::class, 'index']);
+    Route::get('/email/campaigns/stats', [EmailCampaignController::class, 'stats']);
+    Route::post('/email/campaigns', [EmailCampaignController::class, 'store']);
+    Route::get('/email/campaigns/{id}', [EmailCampaignController::class, 'show']);
+    Route::put('/email/campaigns/{id}', [EmailCampaignController::class, 'update']);
+    Route::delete('/email/campaigns/{id}', [EmailCampaignController::class, 'destroy']);
+    Route::post('/email/campaigns/{id}/duplicate', [EmailCampaignController::class, 'duplicate']);
+    Route::post('/email/campaigns/{id}/send', [EmailCampaignController::class, 'send']);
+    Route::post('/email/campaigns/{id}/schedule', [EmailCampaignController::class, 'schedule']);
+    Route::post('/email/campaigns/{id}/cancel', [EmailCampaignController::class, 'cancel']);
+    Route::get('/email/campaigns/{id}/analytics', [EmailCampaignController::class, 'analytics']);
+    Route::get('/email/campaigns/{id}/preview', [EmailCampaignController::class, 'preview']);
+    Route::post('/email/campaigns/{id}/test', [EmailCampaignController::class, 'sendTest']);
 
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);

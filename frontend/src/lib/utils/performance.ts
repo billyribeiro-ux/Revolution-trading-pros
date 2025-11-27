@@ -60,7 +60,10 @@ export function measureLCP(): void {
 	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
 
 	try {
+		let reported = false;
 		const observer = new PerformanceObserver((list) => {
+			if (reported) return;
+			
 			const entries = list.getEntries();
 			const lastEntry = entries[entries.length - 1] as any;
 
@@ -75,6 +78,12 @@ export function measureLCP(): void {
 		});
 
 		observer.observe({ type: 'largest-contentful-paint', buffered: true });
+		
+		// Disconnect after page load settles
+		setTimeout(() => {
+			reported = true;
+			observer.disconnect();
+		}, 10000);
 	} catch (error) {
 		console.error('LCP measurement failed:', error);
 	}
@@ -88,17 +97,23 @@ export function measureFID(): void {
 	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
 
 	try {
+		let reported = false;
 		const observer = new PerformanceObserver((list) => {
+			if (reported) return;
+			reported = true;
+			
 			const entries = list.getEntries();
-			entries.forEach((entry: any) => {
-				const metric: PerformanceMetric = {
-					name: 'FID',
-					value: entry.processingStart - entry.startTime,
-					rating: getRating(entry.processingStart - entry.startTime, [100, 300])
-				};
+			const entry = entries[0] as any;
+			if (!entry) return;
+			
+			const metric: PerformanceMetric = {
+				name: 'FID',
+				value: entry.processingStart - entry.startTime,
+				rating: getRating(entry.processingStart - entry.startTime, [100, 300])
+			};
 
-				reportMetric(metric);
-			});
+			reportMetric(metric);
+			observer.disconnect();
 		});
 
 		observer.observe({ type: 'first-input', buffered: true });
@@ -116,33 +131,46 @@ export function measureCLS(): void {
 
 	try {
 		let clsValue = 0;
-		let clsEntries: any[] = [];
+		let reported = false;
 
 		const observer = new PerformanceObserver((list) => {
 			const entries = list.getEntries();
 			entries.forEach((entry: any) => {
 				if (!entry.hadRecentInput) {
 					clsValue += entry.value;
-					clsEntries.push(entry);
 				}
 			});
 		});
 
 		observer.observe({ type: 'layout-shift', buffered: true });
 
-		// Report CLS on page hide
-		document.addEventListener('visibilitychange', () => {
-			if (document.visibilityState === 'hidden') {
+		// Report CLS once after initial load settles (5 seconds)
+		setTimeout(() => {
+			if (!reported) {
+				reported = true;
 				const metric: PerformanceMetric = {
 					name: 'CLS',
 					value: clsValue,
 					rating: getRating(clsValue, [0.1, 0.25])
 				};
-
 				reportMetric(metric);
 				observer.disconnect();
 			}
-		});
+		}, 5000);
+
+		// Also report on page hide
+		document.addEventListener('visibilitychange', () => {
+			if (document.visibilityState === 'hidden' && !reported) {
+				reported = true;
+				const metric: PerformanceMetric = {
+					name: 'CLS',
+					value: clsValue,
+					rating: getRating(clsValue, [0.1, 0.25])
+				};
+				reportMetric(metric);
+				observer.disconnect();
+			}
+		}, { once: true });
 	} catch (error) {
 		console.error('CLS measurement failed:', error);
 	}
@@ -156,17 +184,24 @@ export function measureFCP(): void {
 	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
 
 	try {
+		let reported = false;
 		const observer = new PerformanceObserver((list) => {
+			if (reported) return;
+			
 			const entries = list.getEntries();
-			entries.forEach((entry) => {
-				const metric: PerformanceMetric = {
-					name: 'FCP',
-					value: entry.startTime,
-					rating: getRating(entry.startTime, [1800, 3000])
-				};
+			// Find the first-contentful-paint entry
+			const fcpEntry = entries.find(e => e.name === 'first-contentful-paint');
+			if (!fcpEntry) return;
+			
+			reported = true;
+			const metric: PerformanceMetric = {
+				name: 'FCP',
+				value: fcpEntry.startTime,
+				rating: getRating(fcpEntry.startTime, [1800, 3000])
+			};
 
-				reportMetric(metric);
-			});
+			reportMetric(metric);
+			observer.disconnect();
 		});
 
 		observer.observe({ type: 'paint', buffered: true });

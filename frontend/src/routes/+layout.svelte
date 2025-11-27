@@ -6,8 +6,12 @@
 	import PopupModal from '$lib/components/PopupModal.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
+
+	// Check if we're in admin area - hide main site chrome
+	$: isAdminArea = $page.url.pathname.startsWith('/admin');
 
 	// Initialize performance optimizations
 	onMount(() => {
@@ -47,18 +51,23 @@
 	<meta name="theme-color" content="#0a101c" />
 </svelte:head>
 
-<div class="min-h-screen bg-rtp-bg text-rtp-text">
-	<!-- Admin Toolbar (only shows for logged-in admins) -->
-	<AdminToolbar />
+{#if isAdminArea}
+	<!-- Admin Area: No main site chrome, just the admin layout -->
+	<slot />
+{:else}
+	<div class="min-h-screen bg-rtp-bg text-rtp-text">
+		<!-- Admin Toolbar (only shows for logged-in admins) -->
+		<AdminToolbar />
 
-	<NavBar />
+		<NavBar />
 
-	<main>
-		<slot />
-	</main>
+		<main>
+			<slot />
+		</main>
 
-	<Footer />
+		<Footer />
 
-	<!-- Global Popup Modal - Enterprise Grade: Only shows when explicitly triggered -->
-	<PopupModal />
-</div>
+		<!-- Global Popup Modal - Enterprise Grade: Only shows when explicitly triggered -->
+		<PopupModal />
+	</div>
+{/if}

@@ -113,7 +113,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	$: currentPopup = $activePopup;
-	$: if (browser) updateDeviceType();
+	// NOTE: updateDeviceType is called in onMount and resize handler, not reactively
 	// ENTERPRISE FIX: Only handle triggers if popup is active AND valid
 	$: if (browser && currentPopup && currentPopup.isActive && !isVisible) {
 		handlePopupTriggers(currentPopup);

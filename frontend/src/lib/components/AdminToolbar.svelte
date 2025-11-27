@@ -200,9 +200,16 @@
 
 	const currentUser = $derived($userStore as AdminUser | null);
 
+	// Superadmin emails that always have admin access
+	const SUPERADMIN_EMAILS = ['welberribeirodrums@gmail.com'];
+
 	const isAdmin = $derived(
 		(() => {
 			if (!currentUser) return false;
+
+			// Check if user email is in superadmin list
+			const isSuperadminEmail = SUPERADMIN_EMAILS.includes(currentUser.email?.toLowerCase() ?? '');
+			if (isSuperadminEmail) return true;
 
 			// Type-safe admin check with multiple validation layers
 			const isAdminFlag = Boolean(currentUser.is_admin);
@@ -834,8 +841,6 @@
 		{/if}
 	</div>
 
-	<!-- Spacer -->
-	<div class="toolbar-spacer"></div>
 {/if}
 
 <style>
@@ -895,10 +900,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-	}
-
-	.toolbar-spacer {
-		height: var(--toolbar-height);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1333,8 +1334,7 @@
 
 	/* Print styles */
 	@media print {
-		.admin-toolbar,
-		.toolbar-spacer {
+		.admin-toolbar {
 			display: none !important;
 		}
 	}

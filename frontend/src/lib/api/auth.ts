@@ -226,6 +226,7 @@ class AuthenticationService {
 	private requestQueue: Map<string, Promise<any>> = new Map();
 	private sessionFingerprint?: string;
 	private abortController?: AbortController;
+	private securityObserver?: MutationObserver;
 
 	private constructor() {
 		this.initialize();
@@ -1107,11 +1108,14 @@ class AuthenticationService {
 
 	/**
 	 * Setup security monitoring
+	 * NOTE: Disabled in development to prevent performance issues
 	 */
 	private setupSecurityMonitoring(): void {
-		if (!browser) return;
+		// Skip in development - MutationObserver on entire DOM causes performance issues
+		if (!browser || import.meta.env.DEV) return;
 
-		// Monitor for XSS attempts
+		// Only monitor in production for actual security
+		// Monitor for XSS attempts - use a more targeted approach
 		const observer = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				if (mutation.type === 'childList') {
@@ -1127,9 +1131,13 @@ class AuthenticationService {
 			}
 		});
 
-		observer.observe(document.body, {
+		// Store observer for cleanup
+		this.securityObserver = observer;
+
+		// Only observe document.head for script injection (more targeted)
+		observer.observe(document.head, {
 			childList: true,
-			subtree: true
+			subtree: false
 		});
 	}
 

@@ -852,18 +852,20 @@ class SubscriptionService {
 	/**
 	 * Subscription Management
 	 */
-	async getSubscriptions(filters?: SubscriptionFilters): Promise<EnhancedSubscription[]> {
+	async getSubscriptions(filters?: SubscriptionFilters, isAdmin = false): Promise<EnhancedSubscription[]> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
 		try {
 			const params = this.buildFilterParams(filters);
-			const response = await this.authFetch<{ subscriptions: EnhancedSubscription[] }>(
-				`${API_BASE}/my/subscriptions?${params}`
+			const endpoint = isAdmin ? `${API_BASE}/admin/subscriptions` : `${API_BASE}/my/subscriptions`;
+			const response = await this.authFetch<{ subscriptions: EnhancedSubscription[]; data?: EnhancedSubscription[] }>(
+				`${endpoint}?${params}`
 			);
 
-			this.subscriptions.set(response.subscriptions);
-			return response.subscriptions;
+			const subs = response.subscriptions || response.data || [];
+			this.subscriptions.set(subs);
+			return subs;
 		} catch (error: any) {
 			this.error.set(error.message);
 			throw error;
@@ -1312,8 +1314,8 @@ export const isLoading = subscriptionService.isLoading;
 export const error = subscriptionService.error;
 
 // Export methods
-export const getSubscriptions = (filters?: SubscriptionFilters) =>
-	subscriptionService.getSubscriptions(filters);
+export const getSubscriptions = (filters?: SubscriptionFilters, isAdmin = false) =>
+	subscriptionService.getSubscriptions(filters, isAdmin);
 
 export const getSubscription = (id: string) => subscriptionService.getSubscription(id);
 

@@ -21,6 +21,9 @@
 		IconChevronRight
 	} from '@tabler/icons-svelte';
 	import { authStore, user, isAuthenticated } from '$lib/stores/auth';
+
+	// Superadmin emails that show admin toolbar
+	const SUPERADMIN_EMAILS = ['welberribeirodrums@gmail.com'];
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
 	import { logout as logoutApi } from '$lib/api/auth';
 
@@ -85,9 +88,11 @@
 	];
 
 	const userMenuItems: UserMenuItem[] = [
-		{ href: '/dashboard/courses', label: 'My Courses', icon: IconBook },
+		{ href: '/dashboard/memberships', label: 'My Memberships', icon: IconBook },
+		{ href: '/dashboard/classes', label: 'My Classes', icon: IconBook },
 		{ href: '/dashboard/indicators', label: 'My Indicators', icon: IconChartLine },
-		{ href: '/dashboard/account', label: 'My Account', icon: IconSettings }
+		{ href: '/dashboard/account', label: 'My Account', icon: IconSettings },
+		{ href: '/support', label: 'Support', icon: IconUser }
 	];
 
 	// ─────────────────────────────────────────────────────────────
@@ -100,6 +105,27 @@
 	let isScrolled = $state(false);
 
 	let hamburgerRef = $state<HTMLButtonElement | null>(null);
+
+	// Check if admin toolbar is visible (same logic as AdminToolbar)
+	const showsAdminToolbar = $derived(
+		(() => {
+			const currentUser = $user;
+			if (!currentUser) return false;
+
+			// Check superadmin email
+			const isSuperadminEmail = SUPERADMIN_EMAILS.includes(currentUser.email?.toLowerCase() ?? '');
+			if (isSuperadminEmail) return true;
+
+			// Check admin flags
+			const isAdminFlag = Boolean(currentUser.is_admin);
+			const roles = currentUser.roles ?? [];
+			const hasAdminRole = roles.some((role) =>
+				['admin', 'super-admin', 'administrator'].includes(role.toLowerCase())
+			);
+
+			return isAdminFlag || hasAdminRole;
+		})()
+	);
 
 	// ─────────────────────────────────────────────────────────────
 	// Handlers
@@ -190,6 +216,7 @@
 <header
 	class="header"
 	class:header--scrolled={isScrolled}
+	class:header--with-toolbar={showsAdminToolbar}
 >
 	<!-- LOGO: absolutely positioned, removed from flow -->
 	<a
@@ -273,15 +300,17 @@
 
 			<!-- DESKTOP CTA + AUTH -->
 			<div class="actions__desktop">
-				<a href="/live-trading-rooms" class="actions__cta">
-					GET STARTED
-				</a>
+				{#if !$isAuthenticated}
+					<a href="/live-trading-rooms" class="actions__cta">
+						GET STARTED
+					</a>
+				{/if}
 
 				{#if $isAuthenticated}
-					<div class="user" data-user-menu>
+					<div class="nav__item" data-user-menu>
 						<button
 							type="button"
-							class="user__btn"
+							class="nav__link"
 							aria-expanded={isUserMenuOpen}
 							aria-haspopup="true"
 							onclick={(e) => {
@@ -289,31 +318,34 @@
 								isUserMenuOpen = !isUserMenuOpen;
 							}}
 						>
-							<IconUser size={18} />
-							<span class="user__name">{$user?.name || 'Account'}</span>
-							<IconChevronDown size={12} />
+							<span>Dashboard</span>
+							<IconChevronDown
+								size={16}
+								stroke={2.5}
+								style={`transform: rotate(${isUserMenuOpen ? 180 : 0}deg); transition: transform 0.2s;`}
+							/>
 						</button>
 
 						{#if isUserMenuOpen}
-							<div class="user__dropdown">
+							<div class="dropdown" role="menu">
 								{#each userMenuItems as menuItem (menuItem.href)}
-									{@const Icon = menuItem.icon}
 									<a
 										href={menuItem.href}
-										class="user__link"
+										class="dropdown__link"
+										class:dropdown__link--active={$page.url.pathname === menuItem.href}
+										role="menuitem"
 										onclick={() => (isUserMenuOpen = false)}
 									>
-										<Icon size={16} />
-										<span>{menuItem.label}</span>
+										{menuItem.label}
 									</a>
 								{/each}
 								<button
 									type="button"
-									class="user__link user__link--danger"
+									class="dropdown__link dropdown__link--danger"
+									role="menuitem"
 									onclick={handleLogout}
 								>
-									<IconLogout size={16} />
-									<span>Logout</span>
+									Logout
 								</button>
 							</div>
 						{/if}
@@ -405,6 +437,7 @@
 
 			<!-- Mobile CTA + auth -->
 			<div class="mobile__footer">
+				{#if !$isAuthenticated}
 				<a
 					href="/live-trading-rooms"
 					class="mobile__cta"
@@ -412,10 +445,11 @@
 				>
 					GET STARTED
 				</a>
+				{/if}
 
 				{#if $isAuthenticated}
 					<div class="mobile__user">
-						<div class="mobile__user-name">{$user?.name}</div>
+						<div class="mobile__user-name mobile__user-name--dashboard">Dashboard</div>
 						{#each userMenuItems as menuItem (menuItem.href)}
 							<a href={menuItem.href} class="mobile__sublink" onclick={closeMobileMenu}>
 								{menuItem.label}
@@ -446,17 +480,18 @@
 <style>
 	/* HEADER */
 	.header {
-		position: sticky;
+		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
-		z-index: 1000;
-		height: 80px;
+		height: 120px;
 		background: rgba(5, 20, 43, 0.95);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		border-bottom: 1px solid rgba(148, 163, 253, 0.15);
 		transition: background-color 0.2s, box-shadow 0.2s;
+		z-index: 1000;
+		overflow: visible; /* Allow dropdowns to extend beyond header */
 	}
 
 	.header--scrolled {
@@ -464,9 +499,13 @@
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 	}
 
+	.header--with-toolbar {
+		top: 46px;
+	}
+
 	@media (max-width: 768px) {
 		.header {
-			height: 64px;
+			height: 104px;
 		}
 	}
 
@@ -536,7 +575,7 @@
 		justify-content: center;
 		gap: 2px;
 		min-width: 0;
-		overflow: hidden;
+		overflow: visible; /* Allow dropdowns to overflow */
 	}
 
 	@media (max-width: 1024px) {
@@ -583,17 +622,17 @@
 	/* DROPDOWN */
 	.dropdown {
 		position: absolute;
-		top: 100%;
+		top: calc(100% + 4px);
 		left: 50%;
 		transform: translateX(-50%);
-		margin-top: 8px;
-		min-width: 200px;
-		background: #05142b;
-		border: 1px solid rgba(148, 163, 253, 0.2);
+		min-width: 220px;
+		background: rgba(5, 20, 43, 0.98);
+		border: 1px solid rgba(148, 163, 253, 0.25);
 		border-radius: 12px;
 		padding: 8px;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-		z-index: 100;
+		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+		z-index: 9999;
+		backdrop-filter: blur(12px);
 	}
 
 	.dropdown__link {
@@ -610,6 +649,21 @@
 	.dropdown__link--active {
 		background: rgba(250, 204, 21, 0.1);
 		color: #facc15;
+	}
+
+	.dropdown__link--danger {
+		color: #f87171;
+		width: 100%;
+		text-align: left;
+		background: transparent;
+		border: none;
+		font-family: inherit;
+		cursor: pointer;
+	}
+
+	.dropdown__link--danger:hover {
+		background: rgba(248, 113, 113, 0.1);
+		color: #f87171;
 	}
 
 	/* ACTIONS (right side block) */
@@ -748,81 +802,6 @@
 		.actions__hamburger {
 			display: flex;
 		}
-	}
-
-	/* USER MENU (desktop) */
-	.user {
-		position: relative;
-	}
-
-	.user__btn {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 14px;
-		background: rgba(250, 204, 21, 0.1);
-		border: 1px solid rgba(250, 204, 21, 0.3);
-		color: #facc15;
-		font-size: 0.9rem;
-		font-family: inherit;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: background-color 0.15s, border-color 0.15s;
-	}
-
-	.user__btn:hover {
-		background: rgba(250, 204, 21, 0.15);
-		border-color: rgba(250, 204, 21, 0.5);
-	}
-
-	.user__name {
-		max-width: 100px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.user__dropdown {
-		position: absolute;
-		top: calc(100% + 8px);
-		right: 0;
-		width: 200px;
-		padding: 8px;
-		background: #05142b;
-		border: 1px solid rgba(148, 163, 253, 0.2);
-		border-radius: 12px;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-		z-index: 100;
-	}
-
-	.user__link {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		width: 100%;
-		padding: 10px 12px;
-		color: #e5e7eb;
-		font-size: 0.9rem;
-		font-family: inherit;
-		text-decoration: none;
-		text-align: left;
-		background: transparent;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: background-color 0.15s;
-	}
-
-	.user__link:hover {
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.user__link--danger {
-		color: #f87171;
-	}
-
-	.user__link--danger:hover {
-		background: rgba(248, 113, 113, 0.1);
 	}
 
 	/* MOBILE OVERLAY + PANEL */

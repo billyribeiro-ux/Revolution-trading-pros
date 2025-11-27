@@ -15,12 +15,10 @@
 		IconPhoto,
 		IconTable,
 		IconCode,
-		IconH1,
-		IconH2,
-		IconH3,
 		IconQuote,
 		IconArrowBackUp,
-		IconArrowForwardUp
+		IconArrowForwardUp,
+		IconChevronDown
 	} from '@tabler/icons-svelte';
 
 	export let content: string = '';
@@ -35,6 +33,18 @@
 	let imageUrl = '';
 	let showColorPicker = false;
 	let textColor = '#000000';
+	let showHeadingDropdown = false;
+	let selectedHeading = 'Paragraph';
+
+	const headingOptions = [
+		{ label: 'Paragraph', value: 'p' },
+		{ label: 'Heading 1', value: 'h1' },
+		{ label: 'Heading 2', value: 'h2' },
+		{ label: 'Heading 3', value: 'h3' },
+		{ label: 'Heading 4', value: 'h4' },
+		{ label: 'Heading 5', value: 'h5' },
+		{ label: 'Heading 6', value: 'h6' }
+	];
 
 	const fonts = [
 		'Arial',
@@ -79,8 +89,11 @@
 		dispatch('change', content);
 	}
 
-	function insertHeading(level: number) {
-		execCommand('formatBlock', `h${level}`);
+	function insertHeading(value: string) {
+		execCommand('formatBlock', value);
+		const option = headingOptions.find(h => h.value === value);
+		selectedHeading = option?.label || 'Paragraph';
+		showHeadingDropdown = false;
 	}
 
 	function insertLink() {
@@ -197,17 +210,32 @@
 			</select>
 		</div>
 
-		<!-- Headings -->
+		<!-- Headings Dropdown -->
 		<div class="toolbar-group">
-			<button type="button" class="toolbar-btn" on:click={() => insertHeading(1)} title="Heading 1">
-				<IconH1 size={18} />
-			</button>
-			<button type="button" class="toolbar-btn" on:click={() => insertHeading(2)} title="Heading 2">
-				<IconH2 size={18} />
-			</button>
-			<button type="button" class="toolbar-btn" on:click={() => insertHeading(3)} title="Heading 3">
-				<IconH3 size={18} />
-			</button>
+			<div class="heading-dropdown-wrapper">
+				<button 
+					type="button" 
+					class="heading-dropdown-btn"
+					on:click={() => showHeadingDropdown = !showHeadingDropdown}
+				>
+					<span>{selectedHeading}</span>
+					<IconChevronDown size={16} />
+				</button>
+				{#if showHeadingDropdown}
+					<div class="heading-dropdown">
+						{#each headingOptions as option}
+							<button 
+								type="button"
+								class="heading-option"
+								class:active={selectedHeading === option.label}
+								on:click={() => insertHeading(option.value)}
+							>
+								{option.label}
+							</button>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		</div>
 
 		<!-- Text Formatting -->
@@ -516,6 +544,67 @@
 		min-width: 70px;
 	}
 
+	/* Heading Dropdown */
+	.heading-dropdown-wrapper {
+		position: relative;
+	}
+
+	.heading-dropdown-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 0.75rem;
+		border: 1px solid #e0e0e0;
+		border-radius: 4px;
+		font-size: 0.875rem;
+		background: white;
+		cursor: pointer;
+		min-width: 120px;
+		justify-content: space-between;
+		color: #1a1a1a;
+	}
+
+	.heading-dropdown-btn:hover {
+		background: #f8f9fa;
+	}
+
+	.heading-dropdown {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		margin-top: 0.25rem;
+		background: white;
+		border: 1px solid #e0e0e0;
+		border-radius: 6px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		z-index: 100;
+		min-width: 140px;
+		overflow: hidden;
+	}
+
+	.heading-option {
+		display: block;
+		width: 100%;
+		padding: 0.625rem 1rem;
+		border: none;
+		background: none;
+		text-align: left;
+		cursor: pointer;
+		font-size: 0.875rem;
+		color: #1a1a1a;
+		transition: background 0.15s;
+	}
+
+	.heading-option:hover {
+		background: #f0f0f0;
+	}
+
+	.heading-option.active {
+		background: #e0f2fe;
+		color: #0369a1;
+		font-weight: 500;
+	}
+
 	.color-picker-wrapper {
 		position: relative;
 	}
@@ -556,6 +645,8 @@
 		font-size: 1rem;
 		line-height: 1.6;
 		outline: none;
+		color: #1a1a1a;
+		background: white;
 	}
 
 	.editor-content:empty::before {
@@ -567,22 +658,47 @@
 		font-size: 2rem;
 		font-weight: 700;
 		margin: 1rem 0;
+		color: #1a1a1a;
 	}
 
 	.editor-content :global(h2) {
 		font-size: 1.5rem;
 		font-weight: 600;
 		margin: 0.875rem 0;
+		color: #1a1a1a;
 	}
 
 	.editor-content :global(h3) {
 		font-size: 1.25rem;
 		font-weight: 600;
 		margin: 0.75rem 0;
+		color: #1a1a1a;
+	}
+
+	.editor-content :global(h4) {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin: 0.75rem 0;
+		color: #1a1a1a;
+	}
+
+	.editor-content :global(h5) {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0.5rem 0;
+		color: #1a1a1a;
+	}
+
+	.editor-content :global(h6) {
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin: 0.5rem 0;
+		color: #1a1a1a;
 	}
 
 	.editor-content :global(p) {
 		margin: 0.5rem 0;
+		color: #1a1a1a;
 	}
 
 	.editor-content :global(blockquote) {

@@ -803,9 +803,14 @@ class PopupEngagementService {
 		this.error.set(null);
 
 		try {
-			const response = await fetch(`${API_BASE}/popups`, {
+			const token = browser ? localStorage.getItem('rtp_auth_token') : null;
+			const response = await fetch(`${API_BASE}/admin/popups`, {
 				method: 'GET',
-				credentials: 'include'
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				}
 			});
 
 			if (!response.ok) {
@@ -813,9 +818,10 @@ class PopupEngagementService {
 			}
 
 			const data = await response.json();
-			this.popups.set(data.popups);
+			const popupsList = data.popups || data.data || data || [];
+			this.popups.set(popupsList);
 
-			return data.popups;
+			return popupsList;
 		} catch (error: any) {
 			this.error.set(error.message);
 			throw error;

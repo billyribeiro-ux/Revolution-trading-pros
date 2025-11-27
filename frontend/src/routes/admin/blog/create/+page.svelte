@@ -11,6 +11,7 @@
 	} from '@tabler/icons-svelte';
 	import RichTextEditor from '$lib/components/blog/RichTextEditor.svelte';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
+	import { api } from '$lib/api/config';
 
 	let post = {
 		title: '',
@@ -25,6 +26,7 @@
 		allow_comments: true,
 		meta_title: '',
 		meta_description: '',
+		meta_keywords: [] as string[],
 		indexable: true,
 		canonical_url: '',
 		categories: [] as number[],
@@ -49,9 +51,8 @@
 
 	async function loadCategories() {
 		try {
-			const response = await fetch('/api/admin/categories');
-			const data = await response.json();
-			availableCategories = data.data || [];
+			const data = await api.get('/api/admin/categories');
+			availableCategories = data.data || data || [];
 		} catch (error) {
 			console.error('Failed to load categories:', error);
 		}
@@ -59,9 +60,8 @@
 
 	async function loadTags() {
 		try {
-			const response = await fetch('/api/admin/tags');
-			const data = await response.json();
-			availableTags = data.data || [];
+			const data = await api.get('/api/admin/tags');
+			availableTags = data.data || data || [];
 		} catch (error) {
 			console.error('Failed to load tags:', error);
 		}
@@ -84,18 +84,11 @@
 		if (!newTag.trim()) return;
 
 		try {
-			const response = await fetch('/api/admin/tags', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ name: newTag.trim() })
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				availableTags = [...availableTags, data.data];
-				post.tags = [...post.tags, data.data.id];
-				newTag = '';
-			}
+			const data = await api.post('/api/admin/tags', { name: newTag.trim() });
+			const newTagData = data.data || data;
+			availableTags = [...availableTags, newTagData];
+			post.tags = [...post.tags, newTagData.id];
+			newTag = '';
 		} catch (error) {
 			console.error('Failed to create tag:', error);
 		}
@@ -115,18 +108,8 @@
 						: post.published_at || null
 			};
 
-			const response = await fetch('/api/admin/posts', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(postData)
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				goto('/admin/blog');
-			} else {
-				alert('Failed to save post');
-			}
+			await api.post('/api/admin/posts', postData);
+			goto('/admin/blog');
 		} catch (error) {
 			console.error('Failed to save post:', error);
 			alert('Failed to save post');

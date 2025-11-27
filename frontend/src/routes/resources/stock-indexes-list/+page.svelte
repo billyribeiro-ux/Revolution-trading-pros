@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Stock Indexes List Page - Google L11 Enterprise Standard
+	 * Comprehensive stock index education and reference resource
+	 */
+	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { onMount } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -8,302 +13,929 @@
 		IconTrendingDown,
 		IconWorld,
 		IconRefresh,
-		IconClock
+		IconClock,
+		IconArrowRight,
+		IconQuestionMark,
+		IconExternalLink,
+		IconChartBar,
+		IconBuildingSkyscraper
 	} from '@tabler/icons-svelte';
 
-	// Stock Index Data - Institutional Grade
-	interface StockIndex {
-		symbol: string;
-		name: string;
-		value: number;
-		change: number;
-		changePercent: number;
-		high: number;
-		low: number;
-		region: string;
-		lastUpdate: string;
-	}
-
-	let indexes: StockIndex[] = [
+	// Major Stock Indexes with detailed info
+	const majorIndexes = [
 		{
 			symbol: 'SPX',
+			ticker: '$SPX',
 			name: 'S&P 500',
-			value: 4783.45,
-			change: 52.34,
-			changePercent: 1.11,
-			high: 4795.23,
-			low: 4745.67,
+			description: 'Tracks the 500 largest companies listed on major U.S. exchanges. Market capitalization-weighted, offering comprehensive representation of the U.S. stock market.',
+			etfs: ['SPY', 'VOO', 'IVV'],
 			region: 'US',
-			lastUpdate: '2 mins ago'
+			companies: 500,
+			type: 'Large-Cap'
 		},
 		{
 			symbol: 'DJI',
+			ticker: '$DJI',
 			name: 'Dow Jones Industrial Average',
-			value: 37863.12,
-			change: 234.56,
-			changePercent: 0.62,
-			high: 37912.45,
-			low: 37654.23,
+			description: 'Measures the top 30 U.S. large-cap stocks. One of the oldest and most widely followed indexes, representing blue-chip companies.',
+			etfs: ['DIA'],
 			region: 'US',
-			lastUpdate: '2 mins ago'
+			companies: 30,
+			type: 'Large-Cap'
 		},
 		{
-			symbol: 'IXIC',
+			symbol: 'COMPQ',
+			ticker: '$COMPQ',
 			name: 'NASDAQ Composite',
-			value: 14972.76,
-			change: 178.23,
-			changePercent: 1.21,
-			high: 15023.45,
-			low: 14856.34,
+			description: 'Includes all stocks listed on the NASDAQ exchange. Heavily weighted toward technology and growth companies.',
+			etfs: ['QQQ', 'ONEQ'],
 			region: 'US',
-			lastUpdate: '2 mins ago'
+			companies: 3000,
+			type: 'All-Cap'
+		},
+		{
+			symbol: 'NDX',
+			ticker: '$NDX',
+			name: 'NASDAQ 100',
+			description: 'Measures the top 100 largest non-financial companies listed on NASDAQ. Known for its tech-heavy composition.',
+			etfs: ['QQQ', 'QQQM'],
+			region: 'US',
+			companies: 100,
+			type: 'Large-Cap'
 		},
 		{
 			symbol: 'RUT',
+			ticker: '$RUT',
 			name: 'Russell 2000',
-			value: 2045.67,
-			change: -12.45,
-			changePercent: -0.61,
-			high: 2067.89,
-			low: 2034.12,
+			description: 'Tracks 2,000 small-cap U.S. companies. A benchmark for small-cap stock performance and economic health.',
+			etfs: ['IWM', 'VTWO'],
 			region: 'US',
-			lastUpdate: '3 mins ago'
+			companies: 2000,
+			type: 'Small-Cap'
 		},
 		{
 			symbol: 'VIX',
+			ticker: '$VIX',
 			name: 'CBOE Volatility Index',
-			value: 13.45,
-			change: -0.78,
-			changePercent: -5.48,
-			high: 14.56,
-			low: 13.12,
+			description: 'Measures market expectations of near-term volatility. Known as the "fear gauge" of the market.',
+			etfs: ['VXX', 'UVXY'],
 			region: 'US',
-			lastUpdate: '1 min ago'
+			companies: 0,
+			type: 'Volatility'
 		},
 		{
 			symbol: 'FTSE',
+			ticker: 'FTSE',
 			name: 'FTSE 100',
-			value: 7623.45,
-			change: 45.67,
-			changePercent: 0.60,
-			high: 7645.23,
-			low: 7589.12,
+			description: 'Tracks the 100 largest companies listed on the London Stock Exchange by market capitalization.',
+			etfs: ['ISF', 'VUKE'],
 			region: 'UK',
-			lastUpdate: '5 mins ago'
+			companies: 100,
+			type: 'Large-Cap'
 		},
 		{
 			symbol: 'DAX',
-			name: 'DAX Performance Index',
-			value: 16789.34,
-			change: 123.45,
-			changePercent: 0.74,
-			high: 16823.56,
-			low: 16654.23,
+			ticker: 'DAX',
+			name: 'DAX 40',
+			description: 'Germany\'s premier stock index, tracking the 40 largest and most liquid companies on the Frankfurt Stock Exchange.',
+			etfs: ['EWG', 'DAX'],
 			region: 'Germany',
-			lastUpdate: '5 mins ago'
+			companies: 40,
+			type: 'Large-Cap'
 		},
 		{
 			symbol: 'N225',
+			ticker: 'N225',
 			name: 'Nikkei 225',
-			value: 33456.78,
-			change: -234.56,
-			changePercent: -0.70,
-			high: 33678.90,
-			low: 33234.12,
+			description: 'Japan\'s leading stock index, tracking 225 large, publicly owned companies from a wide range of industries.',
+			etfs: ['EWJ', 'DXJ'],
 			region: 'Japan',
-			lastUpdate: '4 hours ago'
+			companies: 225,
+			type: 'Large-Cap'
 		},
 		{
 			symbol: 'HSI',
+			ticker: 'HSI',
 			name: 'Hang Seng Index',
-			value: 16234.56,
-			change: 89.23,
-			changePercent: 0.55,
-			high: 16289.45,
-			low: 16123.67,
+			description: 'Tracks the largest companies listed on the Hong Kong Stock Exchange, representing about 60% of total market cap.',
+			etfs: ['EWH', 'FXI'],
 			region: 'Hong Kong',
-			lastUpdate: '3 hours ago'
+			companies: 82,
+			type: 'Large-Cap'
+		}
+	];
+
+	// FAQ Data
+	const faqItems = [
+		{
+			question: 'What are the three major stock indexes?',
+			answer: '1. S&P 500: measures 500 large-caps in U.S. stock market\n2. Dow Jones 30: measures the top 30 U.S. large-cap stocks\n3. Nasdaq 100: measures the top 100 largest non-financial companies'
+		},
+		{
+			question: 'What is the difference between a stock and an index?',
+			answer: 'A stock allows investors partial ownership in a company. An index gives investors the option of investing in a basket of companies through products like ETFs, mutual funds, and derivatives.'
+		},
+		{
+			question: 'Can you invest directly in an index?',
+			answer: 'An index cannot be traded or invested in directly. Many different products, such as ETFs, mutual funds, and derivatives, are available to investors to gain exposure to index performance.'
+		},
+		{
+			question: 'What are the ticker symbols for major indexes?',
+			answer: '1. S&P 500 – SPX or $SPX\n2. Dow Jones Industrial Average (DJIA) – $DJI\n3. Nasdaq Composite – COMPQ or $COMPQ\n4. NYSE Composite – (DJ)\n5. Russell 2000 – RUT or $RUT'
+		},
+		{
+			question: 'What is the most widely cited US stock market index?',
+			answer: 'The most widely cited US stock market index is the S&P 500, which measures 500 large-cap stocks and is considered the best representation of the overall U.S. stock market.'
 		}
 	];
 
 	let selectedRegion = 'all';
-	let autoRefresh = true;
-	let lastRefreshTime = new Date();
+	let expandedFaq: number | null = null;
 
-	$: regions = ['all', ...new Set(indexes.map((i) => i.region))];
+	$: regions = ['all', ...new Set(majorIndexes.map((i) => i.region))];
 
-	$: filteredIndexes = indexes.filter((index) => {
+	$: filteredIndexes = majorIndexes.filter((index) => {
 		return selectedRegion === 'all' || index.region === selectedRegion;
 	});
 
-	// Simulate real-time updates
-	onMount(() => {
-		const interval = setInterval(() => {
-			if (autoRefresh) {
-				// Simulate small price changes
-				indexes = indexes.map((index) => ({
-					...index,
-					value: index.value + (Math.random() - 0.5) * 10,
-					change: index.change + (Math.random() - 0.5) * 2
-				}));
-				lastRefreshTime = new Date();
-			}
-		}, 5000);
-
-		return () => clearInterval(interval);
-	});
+	function toggleFaq(index: number) {
+		expandedFaq = expandedFaq === index ? null : index;
+	}
 </script>
 
-<svelte:head>
-	<title>Stock Indexes List | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Real-time stock market indexes from around the world. Track major indices with institutional-grade data and live updates."
-	/>
-</svelte:head>
+<SEOHead
+	title="Stock Indexes List"
+	description="The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on major U.S. exchanges. Learn about major stock indexes and how to trade them."
+	canonical="/resources/stock-indexes-list"
+	ogType="website"
+	keywords={['stock indexes', 'S&P 500', 'Dow Jones', 'NASDAQ', 'Russell 2000', 'market indexes', 'stock market']}
+/>
 
-<main class="min-h-screen bg-rtp-bg text-rtp-text">
+<main class="indexes-page">
 	<!-- Hero Section -->
-	<section class="relative overflow-hidden py-24 bg-gradient-to-br from-rtp-bg via-rtp-surface to-rtp-bg">
-		<div class="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-		<div
-			class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px]"
-		></div>
+	<section class="hero">
+		<div class="hero__bg">
+			<div class="hero__gradient"></div>
+			<div class="hero__grid"></div>
+		</div>
+		<div class="hero__content" in:fly={{ y: 30, duration: 600, easing: cubicOut }}>
+			<div class="hero__badge">
+				<IconChartBar size={20} />
+				<span>Market Reference</span>
+			</div>
+			<h1 class="hero__title">Stock Indexes List</h1>
+			<p class="hero__subtitle">
+				Your comprehensive guide to major stock market indexes. Understand how indexes work, 
+				track market performance, and discover the best ways to gain exposure.
+			</p>
+		</div>
+	</section>
 
-		<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-center" in:fly={{ y: 20, duration: 600, easing: cubicOut }}>
-				<div class="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full mb-6">
-					<div class="relative flex h-2 w-2">
-						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-						<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+	<!-- S&P 500 Feature Section -->
+	<section class="section" in:fade={{ delay: 200, duration: 400 }}>
+		<div class="container">
+			<div class="sp500-feature">
+				<div class="sp500-feature__content">
+					<div class="sp500-feature__badge">Featured Index</div>
+					<h2 class="sp500-feature__title">S&P 500 Index</h2>
+					<p class="sp500-feature__text">
+						The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on major U.S. exchanges, 
+						such as the NYSE and NASDAQ. This index is weighted based on the total market capitalization of each company's 
+						outstanding shares, which means it offers a comprehensive representation of the overall U.S. stock market, 
+						more so than other indexes like the Dow Jones Industrial Average (DJIA) or the Russell 2000.
+					</p>
+					<p class="sp500-feature__text">
+						Recognized globally as one of the most influential stock indexes, the S&P 500 is market capitalization-weighted. 
+						This indicates that companies with larger market values have a more significant impact on the index's overall 
+						performance compared to smaller companies. In essence, bigger companies exert more influence over the market's 
+						overall movement.
+					</p>
+					<p class="sp500-feature__text sp500-feature__text--highlight">
+						<strong>Pro Tip:</strong> Investors aiming for exposure to large-cap stocks (such as Apple or Microsoft) might find it 
+						beneficial to invest in ETFs like <span class="ticker">VOO</span> or <span class="ticker">IVV</span> rather than 
+						picking individual stocks for their portfolio.
+					</p>
+					<p class="sp500-feature__text">
+						To closely monitor market trends, <span class="ticker">$SPY</span> and <span class="ticker">$ES</span> (S&P 500 futures) 
+						are commonly used instruments. Having a chart of either SPY or SPY futures is crucial when trading stocks, as the 
+						majority of stocks tend to move in tandem with the broader market.
+					</p>
+					<div class="sp500-feature__etfs">
+						<span class="sp500-feature__etfs-label">Popular S&P 500 ETFs:</span>
+						<div class="sp500-feature__etfs-list">
+							<a href="https://www.tradingview.com/symbols/AMEX-SPY/" target="_blank" rel="noopener noreferrer" class="etf-chip">SPY</a>
+							<a href="https://www.tradingview.com/symbols/AMEX-VOO/" target="_blank" rel="noopener noreferrer" class="etf-chip">VOO</a>
+							<a href="https://www.tradingview.com/symbols/AMEX-IVV/" target="_blank" rel="noopener noreferrer" class="etf-chip">IVV</a>
+						</div>
 					</div>
-					<span class="text-sm font-semibold text-green-400">Live Market Data</span>
 				</div>
-				
-				<h1 class="text-6xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent">
-					Global Stock Indexes
-				</h1>
-				
-				<p class="text-xl text-rtp-muted max-w-3xl mx-auto leading-relaxed">
-					Monitor major stock market indexes from around the world with real-time data, advanced analytics, and institutional-grade insights.
+				<div class="sp500-feature__chart">
+					<div class="chart-placeholder">
+						<IconChartLine size={64} />
+						<span>SPY Chart</span>
+						<a 
+							href="https://www.tradingview.com/symbols/AMEX-SPY/" 
+							target="_blank" 
+							rel="noopener noreferrer"
+							class="chart-link"
+						>
+							View on TradingView
+							<IconExternalLink size={16} />
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- All Indexes Section -->
+	<section class="section section--dark">
+		<div class="container">
+			<div class="section__header">
+				<h2 class="section__title">Major Stock Indexes</h2>
+				<p class="section__description">
+					Explore the world's most important stock market indexes and learn how to track them.
 				</p>
 			</div>
-		</div>
-	</section>
 
-	<!-- Controls -->
-	<section class="sticky top-0 z-40 bg-rtp-surface/95 backdrop-blur-xl border-b border-rtp-border shadow-lg">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-			<div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-				<!-- Region Filter -->
-				<div class="flex items-center gap-4">
-					<IconWorld size={24} class="text-rtp-primary" />
-					<select
-						bind:value={selectedRegion}
-						class="px-4 py-3 bg-rtp-bg border border-rtp-border rounded-xl text-rtp-text focus:outline-none focus:ring-2 focus:ring-rtp-primary transition-all cursor-pointer"
-					>
-						{#each regions as region}
-							<option value={region}>{region === 'all' ? 'All Regions' : region}</option>
-						{/each}
-					</select>
-				</div>
-
-				<!-- Auto Refresh & Last Update -->
-				<div class="flex items-center gap-4">
-					<div class="flex items-center gap-2 text-sm text-rtp-muted">
-						<IconClock size={16} />
-						<span>Updated {lastRefreshTime.toLocaleTimeString()}</span>
-					</div>
-					
-					<button
-						on:click={() => (autoRefresh = !autoRefresh)}
-						class="flex items-center gap-2 px-4 py-3 rounded-xl transition-all {autoRefresh
-							? 'bg-green-500/10 border border-green-500/20 text-green-400'
-							: 'bg-rtp-bg border border-rtp-border text-rtp-muted'}"
-					>
-						<IconRefresh size={20} class={autoRefresh ? 'animate-spin' : ''} />
-						<span class="font-semibold">{autoRefresh ? 'Auto-Refresh ON' : 'Auto-Refresh OFF'}</span>
-					</button>
-				</div>
+			<!-- Region Filter -->
+			<div class="filter-bar">
+				<IconWorld size={20} />
+				<select bind:value={selectedRegion} class="filter-select">
+					{#each regions as region}
+						<option value={region}>{region === 'all' ? 'All Regions' : region}</option>
+					{/each}
+				</select>
 			</div>
-		</div>
-	</section>
 
-	<!-- Index Cards Grid -->
-	<section class="py-12">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{#each filteredIndexes as index (index.symbol)}
-					<div
-						class="group relative bg-rtp-surface border border-rtp-border rounded-2xl p-6 hover:border-rtp-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-rtp-primary/10"
-						in:scale={{ duration: 300, easing: cubicOut }}
-					>
-						<!-- Region Badge -->
-						<div class="absolute top-4 right-4">
-							<span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-rtp-bg border border-rtp-border text-rtp-muted">
-								{index.region}
-							</span>
+			<!-- Index Cards Grid -->
+			<div class="index-grid">
+				{#each filteredIndexes as index, i (index.symbol)}
+					<div class="index-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
+						<div class="index-card__header">
+							<div class="index-card__symbol">{index.symbol}</div>
+							<span class="index-card__region">{index.region}</span>
 						</div>
-
-						<!-- Symbol & Name -->
-						<div class="mb-6">
-							<h3 class="text-2xl font-bold text-rtp-primary mb-1">{index.symbol}</h3>
-							<p class="text-sm text-rtp-muted">{index.name}</p>
-						</div>
-
-						<!-- Current Value -->
-						<div class="mb-4">
-							<div class="text-4xl font-extrabold text-rtp-text mb-2">
-								{index.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+						<h3 class="index-card__name">{index.name}</h3>
+						<p class="index-card__ticker">Ticker: <span>{index.ticker}</span></p>
+						<p class="index-card__description">{index.description}</p>
+						<div class="index-card__meta">
+							<div class="index-card__meta-item">
+								<IconBuildingSkyscraper size={16} />
+								<span>{index.companies > 0 ? `${index.companies} Companies` : 'N/A'}</span>
 							</div>
-							
-							<!-- Change -->
-							<div class="flex items-center gap-2">
-								{#if index.change >= 0}
-									<IconTrendingUp size={20} class="text-green-400" />
-									<span class="text-lg font-semibold text-green-400">
-										+{index.change.toFixed(2)} (+{index.changePercent.toFixed(2)}%)
-									</span>
-								{:else}
-									<IconTrendingDown size={20} class="text-red-400" />
-									<span class="text-lg font-semibold text-red-400">
-										{index.change.toFixed(2)} ({index.changePercent.toFixed(2)}%)
-									</span>
-								{/if}
+							<div class="index-card__meta-item">
+								<IconChartBar size={16} />
+								<span>{index.type}</span>
 							</div>
 						</div>
-
-						<!-- High/Low -->
-						<div class="grid grid-cols-2 gap-4 pt-4 border-t border-rtp-border">
-							<div>
-								<p class="text-xs text-rtp-muted mb-1">High</p>
-								<p class="text-sm font-semibold text-rtp-text">{index.high.toFixed(2)}</p>
-							</div>
-							<div>
-								<p class="text-xs text-rtp-muted mb-1">Low</p>
-								<p class="text-sm font-semibold text-rtp-text">{index.low.toFixed(2)}</p>
-							</div>
-						</div>
-
-						<!-- Last Update -->
-						<div class="mt-4 pt-4 border-t border-rtp-border">
-							<div class="flex items-center gap-2 text-xs text-rtp-muted">
-								<IconClock size={14} />
-								<span>{index.lastUpdate}</span>
+						<div class="index-card__etfs">
+							<span class="index-card__etfs-label">Related ETFs:</span>
+							<div class="index-card__etfs-list">
+								{#each index.etfs as etf}
+									<a 
+										href="https://www.tradingview.com/symbols/AMEX-{etf}/" 
+										target="_blank" 
+										rel="noopener noreferrer"
+										class="etf-chip etf-chip--small"
+									>
+										{etf}
+									</a>
+								{/each}
 							</div>
 						</div>
-
-						<!-- Hover Effect -->
-						<div class="absolute inset-0 bg-gradient-to-br from-rtp-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none"></div>
 					</div>
 				{/each}
 			</div>
+		</div>
+	</section>
 
-			{#if filteredIndexes.length === 0}
-				<div class="py-16 text-center">
-					<p class="text-rtp-muted text-lg">No indexes found for the selected region.</p>
+	<!-- FAQ Section -->
+	<section class="section">
+		<div class="container">
+			<div class="section__header">
+				<h2 class="section__title">Frequently Asked Questions</h2>
+				<p class="section__description">
+					Common questions about stock indexes and how to invest in them.
+				</p>
+			</div>
+
+			<div class="faq-list">
+				{#each faqItems as faq, i}
+					<div class="faq-item" class:faq-item--expanded={expandedFaq === i}>
+						<button class="faq-item__question" onclick={() => toggleFaq(i)}>
+							<IconQuestionMark size={20} class="faq-item__icon" />
+							<span>{faq.question}</span>
+							<svg 
+								class="faq-item__chevron" 
+								width="20" 
+								height="20" 
+								viewBox="0 0 20 20" 
+								fill="currentColor"
+							>
+								<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+							</svg>
+						</button>
+						{#if expandedFaq === i}
+							<div class="faq-item__answer" in:fly={{ y: -10, duration: 200 }}>
+								{#each faq.answer.split('\n') as line}
+									<p>{line}</p>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Section -->
+	<section class="cta-section">
+		<div class="container">
+			<div class="cta-content">
+				<h2 class="cta-title">Ready to Start Trading?</h2>
+				<p class="cta-text">
+					Join Revolution Trading Pros and get access to live trading rooms, expert alerts, and professional education.
+				</p>
+				<div class="cta-buttons">
+					<a href="/live-trading-rooms" class="cta-btn cta-btn--primary">
+						Get Started
+						<IconArrowRight size={20} />
+					</a>
+					<a href="/resources/etf-stocks-list" class="cta-btn cta-btn--secondary">
+						View ETF Stock List
+					</a>
 				</div>
-			{/if}
+			</div>
 		</div>
 	</section>
 </main>
+
+<style>
+	.indexes-page {
+		min-height: 100vh;
+		background: var(--rtp-bg, #0a0f1a);
+		color: var(--rtp-text, #e5e7eb);
+	}
+
+	.container {
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 0 1.5rem;
+	}
+
+	/* Hero */
+	.hero {
+		position: relative;
+		padding: 10rem 1.5rem 6rem;
+		overflow: hidden;
+	}
+
+	.hero__bg {
+		position: absolute;
+		inset: 0;
+	}
+
+	.hero__gradient {
+		position: absolute;
+		top: -50%;
+		left: -20%;
+		width: 800px;
+		height: 800px;
+		background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+		border-radius: 50%;
+	}
+
+	.hero__grid {
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+		opacity: 0.5;
+	}
+
+	.hero__content {
+		position: relative;
+		max-width: 900px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.hero__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: rgba(59, 130, 246, 0.1);
+		border: 1px solid rgba(59, 130, 246, 0.2);
+		border-radius: 9999px;
+		color: #3b82f6;
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin-bottom: 1.5rem;
+	}
+
+	.hero__title {
+		font-size: clamp(2.5rem, 6vw, 4.5rem);
+		font-weight: 800;
+		background: linear-gradient(135deg, #fff 0%, #3b82f6 50%, #fff 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 1.5rem;
+		line-height: 1.1;
+	}
+
+	.hero__subtitle {
+		font-size: 1.25rem;
+		color: #94a3b8;
+		line-height: 1.7;
+		max-width: 700px;
+		margin: 0 auto;
+	}
+
+	/* Sections */
+	.section {
+		padding: 5rem 1.5rem;
+	}
+
+	.section--dark {
+		background: rgba(59, 130, 246, 0.02);
+		border-top: 1px solid rgba(59, 130, 246, 0.1);
+		border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+	}
+
+	.section__header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.section__title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: #fff;
+		margin-bottom: 1rem;
+	}
+
+	.section__description {
+		font-size: 1.125rem;
+		color: #94a3b8;
+		max-width: 800px;
+		margin: 0 auto;
+		line-height: 1.7;
+	}
+
+	/* S&P 500 Feature */
+	.sp500-feature {
+		display: grid;
+		grid-template-columns: 1fr 400px;
+		gap: 3rem;
+		align-items: start;
+	}
+
+	@media (max-width: 1024px) {
+		.sp500-feature {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.sp500-feature__badge {
+		display: inline-block;
+		padding: 0.375rem 1rem;
+		background: rgba(59, 130, 246, 0.1);
+		border: 1px solid rgba(59, 130, 246, 0.2);
+		border-radius: 9999px;
+		color: #3b82f6;
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 1rem;
+	}
+
+	.sp500-feature__title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: #fff;
+		margin-bottom: 1.5rem;
+	}
+
+	.sp500-feature__text {
+		font-size: 1rem;
+		color: #94a3b8;
+		line-height: 1.8;
+		margin-bottom: 1.25rem;
+	}
+
+	.sp500-feature__text--highlight {
+		background: rgba(59, 130, 246, 0.05);
+		border-left: 3px solid #3b82f6;
+		padding: 1rem 1.25rem;
+		border-radius: 0 8px 8px 0;
+	}
+
+	.ticker {
+		font-family: 'Monaco', 'Menlo', monospace;
+		background: rgba(59, 130, 246, 0.1);
+		padding: 0.125rem 0.5rem;
+		border-radius: 4px;
+		color: #3b82f6;
+		font-weight: 600;
+	}
+
+	.sp500-feature__etfs {
+		margin-top: 1.5rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.sp500-feature__etfs-label {
+		display: block;
+		font-size: 0.875rem;
+		color: #94a3b8;
+		margin-bottom: 0.75rem;
+	}
+
+	.sp500-feature__etfs-list {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.etf-chip {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.5rem 1rem;
+		background: rgba(59, 130, 246, 0.1);
+		border: 1px solid rgba(59, 130, 246, 0.2);
+		border-radius: 8px;
+		color: #3b82f6;
+		font-weight: 600;
+		font-size: 0.875rem;
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+
+	.etf-chip:hover {
+		background: rgba(59, 130, 246, 0.2);
+		border-color: rgba(59, 130, 246, 0.4);
+	}
+
+	.etf-chip--small {
+		padding: 0.25rem 0.625rem;
+		font-size: 0.75rem;
+	}
+
+	.sp500-feature__chart {
+		position: sticky;
+		top: 140px;
+	}
+
+	.chart-placeholder {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1rem;
+		padding: 3rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		color: #64748b;
+		min-height: 300px;
+	}
+
+	.chart-placeholder span {
+		font-weight: 600;
+		color: #94a3b8;
+	}
+
+	.chart-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: rgba(59, 130, 246, 0.1);
+		border: 1px solid rgba(59, 130, 246, 0.2);
+		border-radius: 9999px;
+		color: #3b82f6;
+		font-weight: 600;
+		font-size: 0.875rem;
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+
+	.chart-link:hover {
+		background: rgba(59, 130, 246, 0.2);
+	}
+
+	/* Filter Bar */
+	.filter-bar {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 2rem;
+		padding: 1rem 1.5rem;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1rem;
+		color: #3b82f6;
+	}
+
+	.filter-select {
+		padding: 0.5rem 1rem;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 8px;
+		color: #e5e7eb;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+
+	.filter-select:focus {
+		outline: none;
+		border-color: #3b82f6;
+	}
+
+	/* Index Grid */
+	.index-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.index-card {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.index-card:hover {
+		border-color: rgba(59, 130, 246, 0.3);
+		transform: translateY(-2px);
+		box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+	}
+
+	.index-card__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.75rem;
+	}
+
+	.index-card__symbol {
+		font-size: 1.5rem;
+		font-weight: 800;
+		color: #3b82f6;
+	}
+
+	.index-card__region {
+		font-size: 0.75rem;
+		padding: 0.25rem 0.75rem;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 9999px;
+		color: #94a3b8;
+	}
+
+	.index-card__name {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #fff;
+		margin-bottom: 0.25rem;
+	}
+
+	.index-card__ticker {
+		font-size: 0.8rem;
+		color: #64748b;
+		margin-bottom: 0.75rem;
+	}
+
+	.index-card__ticker span {
+		font-family: 'Monaco', 'Menlo', monospace;
+		color: #3b82f6;
+	}
+
+	.index-card__description {
+		font-size: 0.875rem;
+		color: #94a3b8;
+		line-height: 1.6;
+		margin-bottom: 1rem;
+	}
+
+	.index-card__meta {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.index-card__meta-item {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: 0.8rem;
+		color: #64748b;
+	}
+
+	.index-card__etfs {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.index-card__etfs-label {
+		font-size: 0.75rem;
+		color: #64748b;
+	}
+
+	.index-card__etfs-list {
+		display: flex;
+		gap: 0.375rem;
+		flex-wrap: wrap;
+	}
+
+	/* FAQ */
+	.faq-list {
+		max-width: 800px;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.faq-item {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1rem;
+		overflow: hidden;
+		transition: all 0.3s ease;
+	}
+
+	.faq-item--expanded {
+		border-color: rgba(59, 130, 246, 0.3);
+	}
+
+	.faq-item__question {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.25rem 1.5rem;
+		background: transparent;
+		border: none;
+		color: #fff;
+		font-size: 1rem;
+		font-weight: 600;
+		text-align: left;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.faq-item__question:hover {
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.faq-item__icon {
+		color: #3b82f6;
+		flex-shrink: 0;
+	}
+
+	.faq-item__question span {
+		flex: 1;
+	}
+
+	.faq-item__chevron {
+		color: #64748b;
+		transition: transform 0.3s ease;
+		flex-shrink: 0;
+	}
+
+	.faq-item--expanded .faq-item__chevron {
+		transform: rotate(180deg);
+	}
+
+	.faq-item__answer {
+		padding: 0 1.5rem 1.5rem 3.75rem;
+	}
+
+	.faq-item__answer p {
+		font-size: 0.9rem;
+		color: #94a3b8;
+		line-height: 1.7;
+		margin-bottom: 0.5rem;
+	}
+
+	.faq-item__answer p:last-child {
+		margin-bottom: 0;
+	}
+
+	/* CTA Section */
+	.cta-section {
+		padding: 5rem 1.5rem;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+	}
+
+	.cta-content {
+		max-width: 700px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.cta-title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: #fff;
+		margin-bottom: 1rem;
+	}
+
+	.cta-text {
+		font-size: 1.125rem;
+		color: #94a3b8;
+		margin-bottom: 2rem;
+		line-height: 1.7;
+	}
+
+	.cta-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		justify-content: center;
+	}
+
+	.cta-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem 2rem;
+		border-radius: 9999px;
+		font-weight: 600;
+		font-size: 1rem;
+		text-decoration: none;
+		transition: all 0.3s ease;
+	}
+
+	.cta-btn--primary {
+		background: linear-gradient(135deg, #3b82f6, #2563eb);
+		color: #fff;
+		box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+	}
+
+	.cta-btn--primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+	}
+
+	.cta-btn--secondary {
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		color: #e5e7eb;
+	}
+
+	.cta-btn--secondary:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.hero {
+			padding: 8rem 1rem 4rem;
+		}
+
+		.hero__title {
+			font-size: 2.5rem;
+		}
+
+		.section {
+			padding: 3rem 1rem;
+		}
+
+		.section__title {
+			font-size: 2rem;
+		}
+
+		.sp500-feature__title {
+			font-size: 2rem;
+		}
+
+		.index-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.cta-title {
+			font-size: 2rem;
+		}
+
+		.cta-buttons {
+			flex-direction: column;
+		}
+
+		.cta-btn {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+</style>

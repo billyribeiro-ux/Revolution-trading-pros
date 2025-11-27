@@ -1,344 +1,906 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { fade, fly, scale } from 'svelte/transition';
+	/**
+	 * ETF Stock List Page - Google L11 Enterprise Standard
+	 * Comprehensive ETF education and reference resource
+	 */
+	import SEOHead from '$lib/components/SEOHead.svelte';
+	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import {
-		IconSearch,
-		IconTrendingUp,
-		IconTrendingDown,
 		IconChartLine,
-		IconFilter,
-		IconDownload,
-		IconStar,
-		IconStarFilled
+		IconTrendingUp,
+		IconCoin,
+		IconWorld,
+		IconBuildingBank,
+		IconHeartbeat,
+		IconBolt,
+		IconCpu,
+		IconShoppingCart,
+		IconHome,
+		IconTools,
+		IconLeaf,
+		IconArrowRight,
+		IconCheck,
+		IconX,
+		IconExternalLink
 	} from '@tabler/icons-svelte';
 
-	// ETF Data - Institutional Grade
-	interface ETF {
-		symbol: string;
-		name: string;
-		price: number;
-		change: number;
-		changePercent: number;
-		volume: string;
-		marketCap: string;
-		sector: string;
-		favorite: boolean;
-	}
-
-	let etfs: ETF[] = [
+	// Featured ETFs with full descriptions
+	const featuredETFs = [
 		{
 			symbol: 'SPY',
-			name: 'SPDR S&P 500 ETF Trust',
-			price: 478.52,
-			change: 5.23,
-			changePercent: 1.1,
-			volume: '82.5M',
-			marketCap: '$445.2B',
-			sector: 'Broad Market',
-			favorite: false
+			name: 'SPDR S&P 500 ETF',
+			description: 'One of the oldest and most well-known ETFs, designed to track the performance of the S&P 500 index, which includes 500 of the largest U.S. companies.',
+			features: ['High liquidity', 'Broad market exposure', 'Long track record']
 		},
 		{
 			symbol: 'QQQ',
 			name: 'Invesco QQQ Trust',
-			price: 412.89,
-			change: 8.45,
-			changePercent: 2.09,
-			volume: '45.3M',
-			marketCap: '$198.7B',
-			sector: 'Technology',
-			favorite: false
-		},
-		{
-			symbol: 'IWM',
-			name: 'iShares Russell 2000 ETF',
-			price: 198.34,
-			change: -2.15,
-			changePercent: -1.07,
-			volume: '28.9M',
-			marketCap: '$67.4B',
-			sector: 'Small Cap',
-			favorite: false
-		},
-		{
-			symbol: 'DIA',
-			name: 'SPDR Dow Jones Industrial Average ETF',
-			price: 392.45,
-			change: 3.12,
-			changePercent: 0.8,
-			volume: '4.2M',
-			marketCap: '$31.8B',
-			sector: 'Broad Market',
-			favorite: false
+			description: 'Tracks the performance of the Nasdaq-100 Index, which includes 100 of the largest non-financial companies listed on the Nasdaq Stock Market.',
+			features: ['Technology focus', 'Innovation-driven companies', 'Strong historical performance']
 		},
 		{
 			symbol: 'VTI',
 			name: 'Vanguard Total Stock Market ETF',
-			price: 256.78,
-			change: 4.67,
-			changePercent: 1.85,
-			volume: '3.8M',
-			marketCap: '$1.5T',
-			sector: 'Broad Market',
-			favorite: false
+			description: 'Aims to track the performance of the CRSP US Total Market Index, providing exposure to the entire U.S. stock market, including small-, mid-, and large-cap stocks.',
+			features: ['Comprehensive coverage', 'Low expense ratio', 'High liquidity']
 		},
 		{
-			symbol: 'XLF',
-			name: 'Financial Select Sector SPDR Fund',
-			price: 41.23,
-			change: -0.45,
-			changePercent: -1.08,
-			volume: '52.1M',
-			marketCap: '$38.9B',
-			sector: 'Financial',
-			favorite: false
+			symbol: 'EEM',
+			name: 'iShares MSCI Emerging Markets ETF',
+			description: 'Seeks to track the performance of the MSCI Emerging Markets Index, offering exposure to companies in emerging markets such as China, Brazil, and India.',
+			features: ['High-growth potential', 'Diversified emerging markets', 'Geographic diversification']
 		},
 		{
-			symbol: 'XLE',
-			name: 'Energy Select Sector SPDR Fund',
-			price: 89.67,
-			change: 2.34,
-			changePercent: 2.68,
-			volume: '18.7M',
-			marketCap: '$12.3B',
-			sector: 'Energy',
-			favorite: false
+			symbol: 'IWM',
+			name: 'iShares Russell 2000 ETF',
+			description: 'Tracks the performance of the Russell 2000 Index, providing exposure to small-cap U.S. companies.',
+			features: ['Small-cap focus', 'Growth-oriented', 'Sector diversification']
 		},
 		{
-			symbol: 'XLK',
-			name: 'Technology Select Sector SPDR Fund',
-			price: 198.45,
-			change: 6.78,
-			changePercent: 3.54,
-			volume: '8.9M',
-			marketCap: '$52.1B',
-			sector: 'Technology',
-			favorite: false
+			symbol: 'VEA',
+			name: 'Vanguard FTSE Developed Markets ETF',
+			description: 'Aims to track the performance of the FTSE Developed All Cap ex US Index, offering exposure to developed markets outside of the U.S., including Europe, Japan, and Canada.',
+			features: ['International exposure', 'Low expense ratio', 'Developed markets']
+		},
+		{
+			symbol: 'AGG',
+			name: 'iShares Core U.S. Aggregate Bond ETF',
+			description: 'Seeks to track the performance of the Bloomberg Barclays U.S. Aggregate Bond Index, providing broad exposure to U.S. investment-grade bonds.',
+			features: ['Income generation', 'Fixed income diversification', 'Low expense ratio']
+		},
+		{
+			symbol: 'VIG',
+			name: 'Vanguard Dividend Appreciation ETF',
+			description: 'Focuses on U.S. companies that have a history of increasing dividends over time, tracking the performance of the NASDAQ US Dividend Achievers Select Index.',
+			features: ['Dividend income', 'Financially stable companies', 'Low expense ratio']
+		},
+		{
+			symbol: 'GLD',
+			name: 'SPDR Gold Shares',
+			description: 'Aims to track the performance of the price of gold bullion, providing a simple and cost-effective way to invest in gold.',
+			features: ['Inflation hedge', 'Physical gold backing', 'High liquidity']
+		},
+		{
+			symbol: 'ARKK',
+			name: 'ARK Innovation ETF',
+			description: 'Managed by ARK Invest, this actively managed ETF focuses on disruptive innovation across various sectors, including technology, healthcare, and industrials.',
+			features: ['High growth potential', 'Cutting-edge technologies', 'Actively managed']
+		},
+		{
+			symbol: 'EFA',
+			name: 'iShares MSCI EAFE ETF',
+			description: 'Aims to track the performance of the MSCI EAFE Index, which includes large- and mid-cap stocks across developed markets outside of the U.S. and Canada.',
+			features: ['International diversification', 'Established global companies', 'High liquidity']
+		},
+		{
+			symbol: 'SCHB',
+			name: 'Schwab U.S. Broad Market ETF',
+			description: 'Seeks to track the performance of the Dow Jones U.S. Broad Stock Market Index, providing exposure to the entire U.S. equity market.',
+			features: ['Comprehensive exposure', 'Low expense ratio', 'High liquidity']
 		}
 	];
 
-	let searchQuery = '';
-	let selectedSector = 'all';
-	let sortBy: 'symbol' | 'price' | 'change' | 'volume' = 'symbol';
-	let sortDirection: 'asc' | 'desc' = 'asc';
+	// Sector ETFs
+	const sectorETFs = [
+		{ sector: 'Technology', symbol: 'XLK', icon: IconCpu, color: 'from-blue-500 to-cyan-500', etfs: ['XLK', 'VGT', 'SMH', 'SOXX', 'PSI'] },
+		{ sector: 'Healthcare', symbol: 'XLV', icon: IconHeartbeat, color: 'from-pink-500 to-rose-500', etfs: ['XLV', 'VHT', 'IHF', 'IBB', 'XBI', 'BBH'] },
+		{ sector: 'Energy', symbol: 'XLE', icon: IconBolt, color: 'from-orange-500 to-amber-500', etfs: ['XLE', 'VDE', 'IYE', 'ICLN', 'TAN', 'PBW'] },
+		{ sector: 'Financial', symbol: 'XLF', icon: IconBuildingBank, color: 'from-green-500 to-emerald-500', etfs: ['XLF', 'VFH', 'IYF', 'KRE', 'KBE'] },
+		{ sector: 'Materials', symbol: 'XLB', icon: IconLeaf, color: 'from-teal-500 to-green-500', etfs: ['XLB', 'VAW', 'IYM', 'XME', 'PICK', 'GDX'] },
+		{ sector: 'Utilities', symbol: 'XLU', icon: IconHome, color: 'from-yellow-500 to-orange-500', etfs: ['XLU', 'VPU', 'IDU'] },
+		{ sector: 'Industrials', symbol: 'XLI', icon: IconTools, color: 'from-slate-500 to-gray-500', etfs: ['XLI', 'VIS', 'IYJ', 'ITA', 'XAR', 'PPA'] },
+		{ sector: 'Consumer Staples', symbol: 'XLP', icon: IconShoppingCart, color: 'from-purple-500 to-violet-500', etfs: ['XLP', 'VDC', 'KXI'] },
+		{ sector: 'Consumer Discretionary', symbol: 'XLY', icon: IconCoin, color: 'from-indigo-500 to-blue-500', etfs: ['XLY', 'VCR', 'IYC', 'ITB'] }
+	];
 
-	$: sectors = ['all', ...new Set(etfs.map((e) => e.sector))];
-
-	$: filteredETFs = etfs
-		.filter((etf) => {
-			const matchesSearch =
-				etf.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				etf.name.toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesSector = selectedSector === 'all' || etf.sector === selectedSector;
-			return matchesSearch && matchesSector;
-		})
-		.sort((a, b) => {
-			let comparison = 0;
-			switch (sortBy) {
-				case 'symbol':
-					comparison = a.symbol.localeCompare(b.symbol);
-					break;
-				case 'price':
-					comparison = a.price - b.price;
-					break;
-				case 'change':
-					comparison = a.changePercent - b.changePercent;
-					break;
-				case 'volume':
-					comparison = parseFloat(a.volume) - parseFloat(b.volume);
-					break;
-			}
-			return sortDirection === 'asc' ? comparison : -comparison;
-		});
-
-	function toggleFavorite(symbol: string) {
-		etfs = etfs.map((etf) => (etf.symbol === symbol ? { ...etf, favorite: !etf.favorite } : etf));
-	}
-
-	function toggleSort(column: typeof sortBy) {
-		if (sortBy === column) {
-			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-		} else {
-			sortBy = column;
-			sortDirection = 'asc';
+	// ETF Benefits
+	const etfBenefits = [
+		{
+			title: 'Diverse Holdings',
+			description: 'ETFs often track an index, such as the S&P 500, meaning they include a broad selection of stocks or other securities from that index. This inherent diversity helps spread risk across various assets.'
+		},
+		{
+			title: 'Tradable Like Stocks',
+			description: 'ETFs are bought and sold on stock exchanges throughout the trading day at market prices. This allows investors to trade ETFs just like individual stocks, with the flexibility to enter and exit positions as needed during market hours.'
+		},
+		{
+			title: 'Lower Costs',
+			description: 'Compared to mutual funds, ETFs typically have lower expense ratios. This is because most ETFs are passively managed, meaning they aim to replicate the performance of an index rather than actively selecting securities.'
+		},
+		{
+			title: 'Transparency',
+			description: 'ETFs disclose their holdings daily, providing investors with a clear and up-to-date view of the assets they are investing in. This level of transparency helps investors make informed decisions.'
+		},
+		{
+			title: 'Tax Efficiency',
+			description: 'ETFs are generally more tax-efficient than mutual funds. Due to their unique structure, ETFs can minimize capital gains distributions, which can result in lower tax liabilities for investors.'
 		}
-	}
+	];
+
+	// ETF Types
+	const etfTypes = [
+		{ type: 'Stock ETFs', description: 'Track a specific index of stocks, providing exposure to a wide range of companies within that index.' },
+		{ type: 'Bond ETFs', description: 'Hold a collection of bonds, offering exposure to various types of debt securities including government and corporate bonds.' },
+		{ type: 'Commodity ETFs', description: 'Invest in physical commodities such as gold, silver, oil, or agricultural products without having to physically purchase and store them.' },
+		{ type: 'Sector ETFs', description: 'Focus on specific sectors or industries, such as technology, healthcare, or energy, allowing targeted investment.' },
+		{ type: 'International ETFs', description: 'Provide exposure to markets outside of the investor\'s home country, helping to diversify geographically.' }
+	];
+
+	// ETF vs Mutual Fund comparison
+	const comparisonData = [
+		{ feature: 'Trading', etf: 'Traded throughout the day like stocks', mutualFund: 'Bought/sold at end of day at NAV price', etfBetter: true },
+		{ feature: 'Management', etf: 'Generally passive, tracking an index', mutualFund: 'Can be actively or passively managed', etfBetter: null },
+		{ feature: 'Expense Ratios', etf: 'Often lower due to passive nature', mutualFund: 'May be higher, especially if actively managed', etfBetter: true },
+		{ feature: 'Minimum Investment', etf: 'No minimum - buy as little as one share', mutualFund: 'Often have minimum requirements ($500-$3000+)', etfBetter: true },
+		{ feature: 'Tax Efficiency', etf: 'More tax-efficient structure', mutualFund: 'Less tax-efficient, more capital gains distributions', etfBetter: true },
+		{ feature: 'Flexibility', etf: 'Intraday trading, short selling, limit orders', mutualFund: 'End of day trading only', etfBetter: true },
+		{ feature: 'Best For', etf: 'Cost-conscious, active traders', mutualFund: 'Hands-off investors, professional management', etfBetter: null }
+	];
+
+	let activeSection = 'overview';
 </script>
 
-<svelte:head>
-	<title>ETF Stocks List | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Comprehensive list of ETF stocks for professional traders. Real-time data, advanced filtering, and institutional-grade analytics."
-	/>
-</svelte:head>
+<SEOHead
+	title="ETF Stock List"
+	description="Explore our complete ETF stock list with detailed information on ETFs and their underlying stocks. Perfect for traders and investors looking to diversify."
+	canonical="/resources/etf-stocks-list"
+	ogType="website"
+	keywords={['ETF list', 'exchange traded funds', 'SPY', 'QQQ', 'sector ETFs', 'ETF investing', 'stock market ETFs']}
+/>
 
-<main class="min-h-screen bg-rtp-bg text-rtp-text">
+<main class="etf-page">
 	<!-- Hero Section -->
-	<section class="relative overflow-hidden py-24 bg-gradient-to-br from-rtp-bg via-rtp-surface to-rtp-bg">
-		<div class="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-		<div
-			class="absolute top-0 right-0 w-[600px] h-[600px] bg-rtp-primary/10 rounded-full blur-[150px]"
-		></div>
+	<section class="hero">
+		<div class="hero__bg">
+			<div class="hero__gradient"></div>
+			<div class="hero__grid"></div>
+		</div>
+		<div class="hero__content" in:fly={{ y: 30, duration: 600, easing: cubicOut }}>
+			<div class="hero__badge">
+				<IconChartLine size={20} />
+				<span>Investment Resource</span>
+			</div>
+			<h1 class="hero__title">ETF Stock List</h1>
+			<p class="hero__subtitle">
+				Your comprehensive guide to Exchange-Traded Funds. Explore top ETFs, understand their benefits, 
+				and discover sector-specific opportunities for portfolio diversification.
+			</p>
+		</div>
+	</section>
 
-		<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-center" in:fly={{ y: 20, duration: 600, easing: cubicOut }}>
-				<div class="inline-flex items-center gap-2 px-4 py-2 bg-rtp-primary/10 border border-rtp-primary/20 rounded-full mb-6">
-					<IconChartLine size={20} class="text-rtp-primary" />
-					<span class="text-sm font-semibold text-rtp-primary">Live Market Data</span>
-				</div>
-				
-				<h1 class="text-6xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white via-rtp-primary to-white bg-clip-text text-transparent">
-					ETF Stocks List
-				</h1>
-				
-				<p class="text-xl text-rtp-muted max-w-3xl mx-auto leading-relaxed">
-					Track and analyze the most actively traded Exchange-Traded Funds with institutional-grade data and real-time market insights.
+	<!-- What is an ETF Section -->
+	<section class="section" in:fade={{ delay: 200, duration: 400 }}>
+		<div class="container">
+			<div class="section__header">
+				<h2 class="section__title">What Is an ETF?</h2>
+				<p class="section__description">
+					Exchange-Traded Funds (ETFs) are investment vehicles that trade on stock exchanges, much like individual stocks. 
+					These funds are designed to track the performance of a specific index, sector, commodity, or asset class, 
+					thereby offering investors a way to gain exposure to a broad range of underlying assets through a single investment.
 				</p>
 			</div>
-		</div>
-	</section>
 
-	<!-- Filters & Search -->
-	<section class="sticky top-0 z-40 bg-rtp-surface/95 backdrop-blur-xl border-b border-rtp-border shadow-lg">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-			<div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-				<!-- Search -->
-				<div class="relative flex-1 max-w-md w-full">
-					<IconSearch size={20} class="absolute left-4 top-1/2 -translate-y-1/2 text-rtp-muted" />
-					<input
-						type="text"
-						bind:value={searchQuery}
-						placeholder="Search ETFs by symbol or name..."
-						class="w-full pl-12 pr-4 py-3 bg-rtp-bg border border-rtp-border rounded-xl text-rtp-text placeholder-rtp-muted focus:outline-none focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all"
-					/>
-				</div>
-
-				<!-- Sector Filter -->
-				<div class="flex items-center gap-4">
-					<div class="flex items-center gap-2">
-						<IconFilter size={20} class="text-rtp-muted" />
-						<select
-							bind:value={selectedSector}
-							class="px-4 py-3 bg-rtp-bg border border-rtp-border rounded-xl text-rtp-text focus:outline-none focus:ring-2 focus:ring-rtp-primary transition-all cursor-pointer"
-						>
-							{#each sectors as sector}
-								<option value={sector}>{sector === 'all' ? 'All Sectors' : sector}</option>
-							{/each}
-						</select>
+			<!-- Benefits Grid -->
+			<div class="benefits-grid">
+				{#each etfBenefits as benefit, i}
+					<div class="benefit-card" in:fly={{ y: 20, delay: 100 * i, duration: 400 }}>
+						<div class="benefit-card__icon">
+							<IconCheck size={24} />
+						</div>
+						<h3 class="benefit-card__title">{benefit.title}</h3>
+						<p class="benefit-card__text">{benefit.description}</p>
 					</div>
+				{/each}
+			</div>
 
-					<button
-						class="flex items-center gap-2 px-4 py-3 bg-rtp-primary/10 border border-rtp-primary/20 rounded-xl text-rtp-primary hover:bg-rtp-primary/20 transition-all"
-					>
-						<IconDownload size={20} />
-						<span class="font-semibold">Export</span>
-					</button>
+			<!-- ETF Types -->
+			<div class="types-section">
+				<h3 class="types-title">Types of ETFs</h3>
+				<div class="types-grid">
+					{#each etfTypes as type, i}
+						<div class="type-card" in:fly={{ x: -20, delay: 100 * i, duration: 400 }}>
+							<h4 class="type-card__title">{type.type}</h4>
+							<p class="type-card__text">{type.description}</p>
+						</div>
+					{/each}
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- ETF Table -->
-	<section class="py-12">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="bg-rtp-surface border border-rtp-border rounded-2xl overflow-hidden shadow-2xl">
-				<!-- Table Header -->
-				<div class="overflow-x-auto">
-					<table class="w-full">
-						<thead class="bg-rtp-bg border-b border-rtp-border">
-							<tr>
-								<th class="px-6 py-4 text-left">
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Favorite</span>
-								</th>
-								<th class="px-6 py-4 text-left cursor-pointer hover:bg-rtp-surface/50 transition-colors" on:click={() => toggleSort('symbol')}>
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Symbol</span>
-								</th>
-								<th class="px-6 py-4 text-left">
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Name</span>
-								</th>
-								<th class="px-6 py-4 text-right cursor-pointer hover:bg-rtp-surface/50 transition-colors" on:click={() => toggleSort('price')}>
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Price</span>
-								</th>
-								<th class="px-6 py-4 text-right cursor-pointer hover:bg-rtp-surface/50 transition-colors" on:click={() => toggleSort('change')}>
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Change</span>
-								</th>
-								<th class="px-6 py-4 text-right cursor-pointer hover:bg-rtp-surface/50 transition-colors" on:click={() => toggleSort('volume')}>
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Volume</span>
-								</th>
-								<th class="px-6 py-4 text-right">
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Market Cap</span>
-								</th>
-								<th class="px-6 py-4 text-left">
-									<span class="text-xs font-bold text-rtp-muted uppercase tracking-wider">Sector</span>
-								</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-rtp-border">
-							{#each filteredETFs as etf (etf.symbol)}
-								<tr
-									class="hover:bg-rtp-bg/50 transition-colors group"
-									in:fade={{ duration: 200 }}
-								>
-									<td class="px-6 py-4">
-										<button
-											on:click={() => toggleFavorite(etf.symbol)}
-											class="text-rtp-muted hover:text-yellow-400 transition-colors"
-										>
-											{#if etf.favorite}
-												<IconStarFilled size={20} class="text-yellow-400" />
-											{:else}
-												<IconStar size={20} />
-											{/if}
-										</button>
-									</td>
-									<td class="px-6 py-4">
-										<span class="text-lg font-bold text-rtp-primary">{etf.symbol}</span>
-									</td>
-									<td class="px-6 py-4">
-										<span class="text-sm text-rtp-text">{etf.name}</span>
-									</td>
-									<td class="px-6 py-4 text-right">
-										<span class="text-lg font-semibold text-rtp-text">${etf.price.toFixed(2)}</span>
-									</td>
-									<td class="px-6 py-4 text-right">
-										<div class="flex items-center justify-end gap-2">
-											{#if etf.change >= 0}
-												<IconTrendingUp size={16} class="text-green-400" />
-												<span class="text-sm font-semibold text-green-400">
-													+${etf.change.toFixed(2)} (+{etf.changePercent.toFixed(2)}%)
-												</span>
-											{:else}
-												<IconTrendingDown size={16} class="text-red-400" />
-												<span class="text-sm font-semibold text-red-400">
-													${etf.change.toFixed(2)} ({etf.changePercent.toFixed(2)}%)
-												</span>
-											{/if}
-										</div>
-									</td>
-									<td class="px-6 py-4 text-right">
-										<span class="text-sm text-rtp-muted">{etf.volume}</span>
-									</td>
-									<td class="px-6 py-4 text-right">
-										<span class="text-sm text-rtp-muted">{etf.marketCap}</span>
-									</td>
-									<td class="px-6 py-4">
-										<span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-rtp-primary/10 text-rtp-primary border border-rtp-primary/20">
-											{etf.sector}
-										</span>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+	<!-- Featured ETFs Section -->
+	<section class="section section--dark">
+		<div class="container">
+			<div class="section__header">
+				<h2 class="section__title">Popular ETFs</h2>
+				<p class="section__description">
+					Explore the most widely traded and recognized ETFs in the market, each offering unique exposure and benefits.
+				</p>
+			</div>
 
-				{#if filteredETFs.length === 0}
-					<div class="py-16 text-center">
-						<p class="text-rtp-muted text-lg">No ETFs found matching your criteria.</p>
+			<div class="etf-grid">
+				{#each featuredETFs as etf, i}
+					<div class="etf-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
+						<div class="etf-card__header">
+							<span class="etf-card__symbol">{etf.symbol}</span>
+							<a 
+								href="https://www.tradingview.com/symbols/AMEX-{etf.symbol}/" 
+								target="_blank" 
+								rel="noopener noreferrer"
+								class="etf-card__chart-link"
+								aria-label="View {etf.symbol} chart on TradingView"
+							>
+								<IconExternalLink size={16} />
+							</a>
+						</div>
+						<h3 class="etf-card__name">{etf.name}</h3>
+						<p class="etf-card__description">{etf.description}</p>
+						<div class="etf-card__features">
+							{#each etf.features as feature}
+								<span class="etf-card__feature">{feature}</span>
+							{/each}
+						</div>
 					</div>
-				{/if}
+				{/each}
+			</div>
+		</div>
+	</section>
+
+	<!-- Sector ETFs Section -->
+	<section class="section">
+		<div class="container">
+			<div class="section__header">
+				<h2 class="section__title">ETFs By Sector</h2>
+				<p class="section__description">
+					Sector ETFs allow you to target specific segments of the economy. Click on any sector to explore available ETFs.
+				</p>
+			</div>
+
+			<div class="sector-grid">
+				{#each sectorETFs as sector, i}
+					{@const Icon = sector.icon}
+					<div class="sector-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
+						<div class="sector-card__icon bg-gradient-to-br {sector.color}">
+							<Icon size={28} />
+						</div>
+						<h3 class="sector-card__title">{sector.sector}</h3>
+						<div class="sector-card__etfs">
+							{#each sector.etfs as etf}
+								<a 
+									href="https://www.tradingview.com/symbols/AMEX-{etf}/" 
+									target="_blank" 
+									rel="noopener noreferrer"
+									class="sector-card__etf"
+								>
+									{etf}
+								</a>
+							{/each}
+						</div>
+					</div>
+				{/each}
+			</div>
+		</div>
+	</section>
+
+	<!-- ETFs vs Mutual Funds Section -->
+	<section class="section section--dark">
+		<div class="container">
+			<div class="section__header">
+				<h2 class="section__title">ETFs vs Mutual Funds</h2>
+				<p class="section__description">
+					Both ETFs and mutual funds are popular investment vehicles, but they have key differences that make them suitable for different types of investors.
+				</p>
+			</div>
+
+			<div class="comparison-table-wrapper">
+				<table class="comparison-table">
+					<thead>
+						<tr>
+							<th>Feature</th>
+							<th>ETFs</th>
+							<th>Mutual Funds</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each comparisonData as row}
+							<tr>
+								<td class="comparison-table__feature">{row.feature}</td>
+								<td class="comparison-table__cell" class:comparison-table__cell--better={row.etfBetter === true}>
+									{#if row.etfBetter === true}
+										<IconCheck size={16} class="comparison-table__icon comparison-table__icon--check" />
+									{/if}
+									{row.etf}
+								</td>
+								<td class="comparison-table__cell" class:comparison-table__cell--better={row.etfBetter === false}>
+									{#if row.etfBetter === false}
+										<IconCheck size={16} class="comparison-table__icon comparison-table__icon--check" />
+									{/if}
+									{row.mutualFund}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="comparison-summary">
+				<div class="comparison-summary__item">
+					<h4>ETFs are ideal for:</h4>
+					<p>Cost-conscious investors who want to trade throughout the day and seek tax efficiency.</p>
+				</div>
+				<div class="comparison-summary__item">
+					<h4>Mutual Funds are better for:</h4>
+					<p>Those looking for professional management and who are comfortable with end-of-day trading.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Section -->
+	<section class="cta-section">
+		<div class="container">
+			<div class="cta-content">
+				<h2 class="cta-title">Ready to Start Trading?</h2>
+				<p class="cta-text">
+					Join Revolution Trading Pros and get access to live trading rooms, expert alerts, and professional education.
+				</p>
+				<div class="cta-buttons">
+					<a href="/live-trading-rooms" class="cta-btn cta-btn--primary">
+						Get Started
+						<IconArrowRight size={20} />
+					</a>
+					<a href="/resources/stock-indexes-list" class="cta-btn cta-btn--secondary">
+						View Stock Indexes List
+					</a>
+				</div>
 			</div>
 		</div>
 	</section>
 </main>
+
+<style>
+	.etf-page {
+		min-height: 100vh;
+		background: var(--rtp-bg, #0a0f1a);
+		color: var(--rtp-text, #e5e7eb);
+	}
+
+	.container {
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 0 1.5rem;
+	}
+
+	/* Hero */
+	.hero {
+		position: relative;
+		padding: 10rem 1.5rem 6rem;
+		overflow: hidden;
+	}
+
+	.hero__bg {
+		position: absolute;
+		inset: 0;
+	}
+
+	.hero__gradient {
+		position: absolute;
+		top: -50%;
+		right: -20%;
+		width: 800px;
+		height: 800px;
+		background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+		border-radius: 50%;
+	}
+
+	.hero__grid {
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+		opacity: 0.5;
+	}
+
+	.hero__content {
+		position: relative;
+		max-width: 900px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.hero__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		border-radius: 9999px;
+		color: #10b981;
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin-bottom: 1.5rem;
+	}
+
+	.hero__title {
+		font-size: clamp(2.5rem, 6vw, 4.5rem);
+		font-weight: 800;
+		background: linear-gradient(135deg, #fff 0%, #10b981 50%, #fff 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 1.5rem;
+		line-height: 1.1;
+	}
+
+	.hero__subtitle {
+		font-size: 1.25rem;
+		color: #94a3b8;
+		line-height: 1.7;
+		max-width: 700px;
+		margin: 0 auto;
+	}
+
+	/* Sections */
+	.section {
+		padding: 5rem 1.5rem;
+	}
+
+	.section--dark {
+		background: rgba(16, 185, 129, 0.02);
+		border-top: 1px solid rgba(16, 185, 129, 0.1);
+		border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+	}
+
+	.section__header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.section__title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: #fff;
+		margin-bottom: 1rem;
+	}
+
+	.section__description {
+		font-size: 1.125rem;
+		color: #94a3b8;
+		max-width: 800px;
+		margin: 0 auto;
+		line-height: 1.7;
+	}
+
+	/* Benefits Grid */
+	.benefits-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 4rem;
+	}
+
+	.benefit-card {
+		background: rgba(16, 185, 129, 0.05);
+		border: 1px solid rgba(16, 185, 129, 0.1);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.benefit-card:hover {
+		border-color: rgba(16, 185, 129, 0.3);
+		transform: translateY(-2px);
+	}
+
+	.benefit-card__icon {
+		width: 48px;
+		height: 48px;
+		background: rgba(16, 185, 129, 0.1);
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #10b981;
+		margin-bottom: 1rem;
+	}
+
+	.benefit-card__title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #fff;
+		margin-bottom: 0.5rem;
+	}
+
+	.benefit-card__text {
+		font-size: 0.9rem;
+		color: #94a3b8;
+		line-height: 1.6;
+	}
+
+	/* Types Section */
+	.types-section {
+		margin-top: 3rem;
+	}
+
+	.types-title {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: #fff;
+		margin-bottom: 1.5rem;
+		text-align: center;
+	}
+
+	.types-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1rem;
+	}
+
+	.type-card {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		border-radius: 0.75rem;
+		padding: 1.25rem;
+		transition: all 0.3s ease;
+	}
+
+	.type-card:hover {
+		border-color: rgba(16, 185, 129, 0.2);
+	}
+
+	.type-card__title {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #10b981;
+		margin-bottom: 0.5rem;
+	}
+
+	.type-card__text {
+		font-size: 0.875rem;
+		color: #94a3b8;
+		line-height: 1.5;
+	}
+
+	/* ETF Grid */
+	.etf-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.etf-card {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.etf-card:hover {
+		border-color: rgba(16, 185, 129, 0.3);
+		transform: translateY(-2px);
+		box-shadow: 0 10px 40px rgba(16, 185, 129, 0.1);
+	}
+
+	.etf-card__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.75rem;
+	}
+
+	.etf-card__symbol {
+		font-size: 1.5rem;
+		font-weight: 800;
+		color: #10b981;
+	}
+
+	.etf-card__chart-link {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		background: rgba(16, 185, 129, 0.1);
+		border-radius: 8px;
+		color: #10b981;
+		transition: all 0.2s ease;
+	}
+
+	.etf-card__chart-link:hover {
+		background: rgba(16, 185, 129, 0.2);
+	}
+
+	.etf-card__name {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #fff;
+		margin-bottom: 0.75rem;
+	}
+
+	.etf-card__description {
+		font-size: 0.875rem;
+		color: #94a3b8;
+		line-height: 1.6;
+		margin-bottom: 1rem;
+	}
+
+	.etf-card__features {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.etf-card__feature {
+		font-size: 0.75rem;
+		padding: 0.25rem 0.75rem;
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		border-radius: 9999px;
+		color: #10b981;
+	}
+
+	/* Sector Grid */
+	.sector-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.sector-card {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.sector-card:hover {
+		border-color: rgba(255, 255, 255, 0.15);
+		transform: translateY(-2px);
+	}
+
+	.sector-card__icon {
+		width: 56px;
+		height: 56px;
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		margin-bottom: 1rem;
+	}
+
+	.sector-card__title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #fff;
+		margin-bottom: 1rem;
+	}
+
+	.sector-card__etfs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.sector-card__etf {
+		font-size: 0.8rem;
+		font-weight: 600;
+		padding: 0.375rem 0.75rem;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 6px;
+		color: #e5e7eb;
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+
+	.sector-card__etf:hover {
+		background: rgba(16, 185, 129, 0.1);
+		border-color: rgba(16, 185, 129, 0.3);
+		color: #10b981;
+	}
+
+	/* Comparison Table */
+	.comparison-table-wrapper {
+		overflow-x: auto;
+		margin-bottom: 2rem;
+	}
+
+	.comparison-table {
+		width: 100%;
+		border-collapse: collapse;
+		background: rgba(255, 255, 255, 0.02);
+		border-radius: 1rem;
+		overflow: hidden;
+	}
+
+	.comparison-table th {
+		padding: 1rem 1.5rem;
+		text-align: left;
+		font-weight: 600;
+		color: #fff;
+		background: rgba(16, 185, 129, 0.1);
+		border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+	}
+
+	.comparison-table td {
+		padding: 1rem 1.5rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		color: #94a3b8;
+		font-size: 0.9rem;
+	}
+
+	.comparison-table__feature {
+		font-weight: 600;
+		color: #fff;
+	}
+
+	.comparison-table__cell--better {
+		color: #10b981;
+	}
+
+	.comparison-table__icon {
+		display: inline-block;
+		margin-right: 0.5rem;
+		vertical-align: middle;
+	}
+
+	.comparison-table__icon--check {
+		color: #10b981;
+	}
+
+	/* Comparison Summary */
+	.comparison-summary {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.comparison-summary__item {
+		background: rgba(16, 185, 129, 0.05);
+		border: 1px solid rgba(16, 185, 129, 0.1);
+		border-radius: 1rem;
+		padding: 1.5rem;
+	}
+
+	.comparison-summary__item h4 {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #10b981;
+		margin-bottom: 0.5rem;
+	}
+
+	.comparison-summary__item p {
+		font-size: 0.9rem;
+		color: #94a3b8;
+		line-height: 1.6;
+	}
+
+	/* CTA Section */
+	.cta-section {
+		padding: 5rem 1.5rem;
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+	}
+
+	.cta-content {
+		max-width: 700px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.cta-title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: #fff;
+		margin-bottom: 1rem;
+	}
+
+	.cta-text {
+		font-size: 1.125rem;
+		color: #94a3b8;
+		margin-bottom: 2rem;
+		line-height: 1.7;
+	}
+
+	.cta-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		justify-content: center;
+	}
+
+	.cta-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem 2rem;
+		border-radius: 9999px;
+		font-weight: 600;
+		font-size: 1rem;
+		text-decoration: none;
+		transition: all 0.3s ease;
+	}
+
+	.cta-btn--primary {
+		background: linear-gradient(135deg, #10b981, #059669);
+		color: #fff;
+		box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+	}
+
+	.cta-btn--primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+	}
+
+	.cta-btn--secondary {
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		color: #e5e7eb;
+	}
+
+	.cta-btn--secondary:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.hero {
+			padding: 8rem 1rem 4rem;
+		}
+
+		.hero__title {
+			font-size: 2.5rem;
+		}
+
+		.section {
+			padding: 3rem 1rem;
+		}
+
+		.section__title {
+			font-size: 2rem;
+		}
+
+		.comparison-table th,
+		.comparison-table td {
+			padding: 0.75rem 1rem;
+			font-size: 0.8rem;
+		}
+
+		.cta-title {
+			font-size: 2rem;
+		}
+
+		.cta-buttons {
+			flex-direction: column;
+		}
+
+		.cta-btn {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+</style>

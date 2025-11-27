@@ -22,7 +22,11 @@
 		IconFilter,
 		IconBriefcase,
 		IconActivity,
-		IconEye
+		IconEye,
+		IconPhoto,
+		IconTag,
+		IconVideo,
+		IconShoppingCart
 	} from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -39,25 +43,92 @@
 		isSidebarOpen = !isSidebarOpen;
 	}
 
-	const menuItems = [
-		{ icon: IconDashboard, label: 'Overview', href: '/admin' },
-		{ icon: IconUserCircle, label: 'Members', href: '/admin/members' },
-		{ icon: IconChartBar, label: 'Analytics', href: '/admin/analytics' },
-		{ icon: IconFilter, label: 'Segments', href: '/admin/members/segments' },
-		{ icon: IconReceipt, label: 'Subscriptions', href: '/admin/subscriptions' },
-		{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' },
-		{ icon: IconBellRinging, label: 'Popups', href: '/admin/popups' },
-		{ icon: IconForms, label: 'Forms', href: '/admin/forms' },
-		{ icon: IconNews, label: 'Blog', href: '/admin/blog' },
-		{ icon: IconBriefcase, label: 'Headless CMS', href: '/admin/cms' },
-		{ icon: IconBriefcase, label: 'CRM', href: '/admin/crm' },
-		{ icon: IconEye, label: 'Behavior Tracking', href: '/admin/behavior' },
-		{ icon: IconSend, label: 'Campaigns', href: '/admin/email/campaigns' },
-		{ icon: IconMail, label: 'Email Templates', href: '/admin/email/templates' },
-		{ icon: IconMail, label: 'Email Settings', href: '/admin/email/smtp' },
-		{ icon: IconSeo, label: 'SEO', href: '/admin/seo' },
-		{ icon: IconUsers, label: 'Admin Users', href: '/admin/users' },
-		{ icon: IconSettings, label: 'Settings', href: '/admin/settings' }
+	// Format page title from pathname
+	function formatPageTitle(pathname: string): string {
+		const segments = pathname.split('/').filter(Boolean);
+		if (segments.length <= 1) return 'Dashboard';
+		
+		const lastSegment = segments[segments.length - 1];
+		// Handle special cases
+		const titleMap: Record<string, string> = {
+			'blog': 'Blog Posts',
+			'categories': 'Categories',
+			'media': 'Media Library',
+			'members': 'Members',
+			'segments': 'Segments',
+			'subscriptions': 'Subscriptions',
+			'products': 'Products',
+			'coupons': 'Coupons',
+			'crm': 'CRM',
+			'campaigns': 'Email Campaigns',
+			'templates': 'Email Templates',
+			'smtp': 'Email Settings',
+			'seo': 'SEO Settings',
+			'analytics': 'Analytics',
+			'behavior': 'Behavior Tracking',
+			'users': 'Admin Users',
+			'settings': 'Settings',
+			'popups': 'Popups',
+			'forms': 'Forms',
+			'videos': 'Videos'
+		};
+		
+		return titleMap[lastSegment] || lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
+	}
+
+	// Organized menu with sections
+	const menuSections = [
+		{
+			title: null,
+			items: [
+				{ icon: IconDashboard, label: 'Overview', href: '/admin' }
+			]
+		},
+		{
+			title: 'Members',
+			items: [
+				{ icon: IconUserCircle, label: 'All Members', href: '/admin/members' },
+				{ icon: IconFilter, label: 'Segments', href: '/admin/members/segments' },
+				{ icon: IconReceipt, label: 'Subscriptions', href: '/admin/subscriptions' },
+				{ icon: IconShoppingCart, label: 'Products', href: '/admin/products' },
+				{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' }
+			]
+		},
+		{
+			title: 'Content',
+			items: [
+				{ icon: IconNews, label: 'Blog Posts', href: '/admin/blog' },
+				{ icon: IconTag, label: 'Categories', href: '/admin/blog/categories' },
+				{ icon: IconPhoto, label: 'Media Library', href: '/admin/media' },
+				{ icon: IconVideo, label: 'Videos', href: '/admin/videos' },
+				{ icon: IconBellRinging, label: 'Popups', href: '/admin/popups' },
+				{ icon: IconForms, label: 'Forms', href: '/admin/forms' }
+			]
+		},
+		{
+			title: 'Marketing',
+			items: [
+				{ icon: IconSend, label: 'Campaigns', href: '/admin/email/campaigns' },
+				{ icon: IconMail, label: 'Email Templates', href: '/admin/email/templates' },
+				{ icon: IconMail, label: 'Email Settings', href: '/admin/email/smtp' },
+				{ icon: IconSeo, label: 'SEO', href: '/admin/seo' }
+			]
+		},
+		{
+			title: 'Analytics',
+			items: [
+				{ icon: IconChartBar, label: 'Dashboard', href: '/admin/analytics' },
+				{ icon: IconEye, label: 'Behavior', href: '/admin/behavior' },
+				{ icon: IconBriefcase, label: 'CRM', href: '/admin/crm' }
+			]
+		},
+		{
+			title: 'System',
+			items: [
+				{ icon: IconUsers, label: 'Admin Users', href: '/admin/users' },
+				{ icon: IconSettings, label: 'Settings', href: '/admin/settings' }
+			]
+		}
 	];
 </script>
 
@@ -70,10 +141,9 @@
 	<aside class="admin-sidebar" class:open={isSidebarOpen}>
 		<!-- Logo Section -->
 		<div class="sidebar-header">
-			<div class="logo-container">
+			<a href="/admin" class="logo-container">
 				<img src="/revolution-trading-pros.png" alt="RTP" class="admin-logo" />
-				<span class="admin-badge">ADMIN</span>
-			</div>
+			</a>
 			<button class="close-btn" on:click={toggleSidebar}>
 				<IconX size={24} />
 			</button>
@@ -81,16 +151,21 @@
 
 		<!-- Navigation -->
 		<nav class="sidebar-nav">
-			{#each menuItems as item}
-				<a
-					href={item.href}
-					class="nav-item"
-					class:active={$page.url.pathname === item.href}
-					on:click={() => (isSidebarOpen = false)}
-				>
-					<svelte:component this={item.icon} size={20} />
-					<span>{item.label}</span>
-				</a>
+			{#each menuSections as section}
+				{#if section.title}
+					<div class="nav-section-title">{section.title}</div>
+				{/if}
+				{#each section.items as item}
+					<a
+						href={item.href}
+						class="nav-item"
+						class:active={$page.url.pathname === item.href}
+						on:click={() => (isSidebarOpen = false)}
+					>
+						<svelte:component this={item.icon} size={20} />
+						<span>{item.label}</span>
+					</a>
+				{/each}
 			{/each}
 		</nav>
 
@@ -120,10 +195,10 @@
 				<IconMenu2 size={24} />
 			</button>
 			<div class="header-title">
-				<h1>{$page.url.pathname.split('/').pop() || 'Dashboard'}</h1>
+				<h1>{formatPageTitle($page.url.pathname)}</h1>
 			</div>
 			<div class="header-actions">
-				<a href="/" class="view-site-btn">View Site</a>
+				<a href="/" class="view-site-btn" target="_blank">View Site</a>
 			</div>
 		</header>
 
@@ -158,7 +233,7 @@
 
 	/* Sidebar */
 	.admin-sidebar {
-		width: 280px;
+		width: 240px;
 		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
 		border-right: 1px solid rgba(99, 102, 241, 0.1);
 		display: flex;
@@ -166,6 +241,7 @@
 		position: fixed;
 		top: 0;
 		left: 0;
+		height: 100vh;
 		bottom: 0;
 		z-index: 40;
 		transition: transform 0.3s ease;
@@ -182,22 +258,12 @@
 	.logo-container {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		text-decoration: none;
 	}
 
 	.admin-logo {
-		height: 40px;
+		height: 36px;
 		width: auto;
-	}
-
-	.admin-badge {
-		padding: 0.25rem 0.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
-		font-size: 0.7rem;
-		font-weight: 700;
-		border-radius: 6px;
-		letter-spacing: 0.5px;
 	}
 
 	.close-btn {
@@ -219,19 +285,35 @@
 	/* Navigation */
 	.sidebar-nav {
 		flex: 1;
-		padding: 1rem;
+		padding: 0.5rem 1rem;
 		overflow-y: auto;
+	}
+
+	.nav-section-title {
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: #64748b;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		padding: 1rem 0.5rem 0.5rem;
+		margin-top: 0.5rem;
+	}
+
+	.nav-section-title:first-child {
+		margin-top: 0;
+		padding-top: 0.5rem;
 	}
 
 	.nav-item {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		padding: 0.875rem 1rem;
+		padding: 0.6rem 0.75rem;
 		color: #94a3b8;
 		text-decoration: none;
-		border-radius: 10px;
-		margin-bottom: 0.5rem;
+		border-radius: 8px;
+		font-size: 0.9rem;
+		margin-bottom: 0.25rem;
 		transition: all 0.2s;
 		font-weight: 500;
 	}
@@ -319,9 +401,10 @@
 	/* Main Content */
 	.admin-main {
 		flex: 1;
-		margin-left: 280px;
+		margin-left: 240px;
 		display: flex;
 		flex-direction: column;
+		min-height: 100vh;
 	}
 
 	.admin-header {

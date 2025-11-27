@@ -22,23 +22,30 @@
 		IconTrendingUp,
 		IconArrowLeft
 	} from '@tabler/icons-svelte';
+	import {
+		getCampaigns,
+		getCampaignStats,
+		createCampaign,
+		deleteCampaign as apiDeleteCampaign,
+		duplicateCampaign as apiDuplicateCampaign,
+		sendCampaign,
+		cancelCampaign,
+		type Campaign as APICampaign,
+		type CampaignStats
+	} from '$lib/api/campaigns';
 
 	// State
 	let loading = true;
+	let error = '';
 	let activeTab: 'all' | 'scheduled' | 'sent' | 'drafts' = 'all';
 
 	// Campaign data
-	let campaigns: Campaign[] = [];
-	let stats = {
-		totalSent: 0,
-		totalOpened: 0,
-		totalClicked: 0,
-		avgOpenRate: 0,
-		avgClickRate: 0
-	};
+	let campaigns: APICampaign[] = [];
+	let stats: CampaignStats | null = null;
 
 	// Create modal
 	let showCreateModal = false;
+	let creating = false;
 	let newCampaign = {
 		name: '',
 		subject: '',
@@ -50,124 +57,64 @@
 		templateId: ''
 	};
 
-	interface Campaign {
-		id: number;
-		name: string;
-		subject: string;
-		status: 'draft' | 'scheduled' | 'sending' | 'sent';
-		type: 'broadcast' | 'automated' | 'ab_test';
-		segment: string;
-		recipients: number;
-		sent_at: string | null;
-		scheduled_for: string | null;
-		stats: {
-			sent: number;
-			opened: number;
-			clicked: number;
-			bounced: number;
-			unsubscribed: number;
-		};
-		ab_test?: {
-			variant_a: { subject: string; open_rate: number };
-			variant_b: { subject: string; open_rate: number };
-			winner: 'a' | 'b' | null;
-		};
-	}
-
-	// Segments for targeting
+	// Segments for targeting (will be loaded from API in future)
 	let segments = [
-		{ id: 'all', name: 'All Members', count: 12847 },
-		{ id: 'active', name: 'Active Subscribers', count: 8420 },
-		{ id: 'trial', name: 'Trial Users', count: 2690 },
-		{ id: 'churned', name: 'Churned (Win-back)', count: 1737 },
-		{ id: 'high_value', name: 'High Value (>$500 LTV)', count: 847 },
-		{ id: 'engaged', name: 'Highly Engaged', count: 3250 },
-		{ id: 'at_risk', name: 'At Risk of Churn', count: 620 }
+		{ id: 1, name: 'All Members', count: 12847 },
+		{ id: 2, name: 'Active Subscribers', count: 8420 },
+		{ id: 3, name: 'Trial Users', count: 2690 },
+		{ id: 4, name: 'Churned (Win-back)', count: 1737 },
+		{ id: 5, name: 'High Value (>$500 LTV)', count: 847 },
+		{ id: 6, name: 'Highly Engaged', count: 3250 },
+		{ id: 7, name: 'At Risk of Churn', count: 620 }
 	];
 
-	// Templates
-	let templates = [
-		{ id: 'welcome', name: 'Welcome Email' },
-		{ id: 'newsletter', name: 'Weekly Newsletter' },
-		{ id: 'promo', name: 'Promotional Offer' },
-		{ id: 'winback', name: 'Win-back Campaign' },
-		{ id: 'custom', name: 'Custom Template' }
-	];
+	// Templates (will be loaded from API)
+	let templates: { id: number; name: string }[] = [];
 
 	onMount(async () => {
-		await loadCampaigns();
+		await Promise.all([loadCampaigns(), loadStats(), loadTemplates()]);
 	});
 
 	async function loadCampaigns() {
 		loading = true;
-		// Simulate API call
-		await new Promise((r) => setTimeout(r, 600));
+		error = '';
+		try {
+			const statusFilter = activeTab === 'all' ? undefined : 
+				activeTab === 'drafts' ? 'draft' : activeTab;
+			const response = await getCampaigns({ status: statusFilter });
+			campaigns = response.data;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to load campaigns';
+			console.error('Failed to load campaigns:', err);
+		} finally {
+			loading = false;
+		}
+	}
 
-		stats = {
-			totalSent: 45230,
-			totalOpened: 18540,
-			totalClicked: 4230,
-			avgOpenRate: 41.0,
-			avgClickRate: 9.4
-		};
+	async function loadStats() {
+		try {
+			stats = await getCampaignStats();
+		} catch (err) {
+			console.error('Failed to load stats:', err);
+		}
+	}
 
-		campaigns = [
-			{
-				id: 1,
-				name: 'December Newsletter',
-				subject: 'Your Weekly Trading Insights',
-				status: 'sent',
-				type: 'broadcast',
-				segment: 'Active Subscribers',
-				recipients: 8420,
-				sent_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-				scheduled_for: null,
-				stats: { sent: 8420, opened: 3580, clicked: 890, bounced: 12, unsubscribed: 5 }
-			},
-			{
-				id: 2,
-				name: 'Win-back Campaign A/B',
-				subject: 'We miss you!',
-				status: 'sent',
-				type: 'ab_test',
-				segment: 'Churned',
-				recipients: 1500,
-				sent_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-				scheduled_for: null,
-				stats: { sent: 1500, opened: 420, clicked: 85, bounced: 8, unsubscribed: 3 },
-				ab_test: {
-					variant_a: { subject: 'We miss you!', open_rate: 25.4 },
-					variant_b: { subject: 'Special offer inside', open_rate: 30.2 },
-					winner: 'b'
+	async function loadTemplates() {
+		try {
+			// Load templates from email templates API
+			const response = await fetch('/api/admin/email/templates', {
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('rtp_auth_token')}`,
+					'Content-Type': 'application/json'
 				}
-			},
-			{
-				id: 3,
-				name: 'Holiday Promotion',
-				subject: '🎄 25% Off All Plans - Limited Time',
-				status: 'scheduled',
-				type: 'broadcast',
-				segment: 'All Members',
-				recipients: 12847,
-				sent_at: null,
-				scheduled_for: new Date(Date.now() + 86400000 * 2).toISOString(),
-				stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
-			},
-			{
-				id: 4,
-				name: 'Feature Announcement',
-				subject: '',
-				status: 'draft',
-				type: 'broadcast',
-				segment: '',
-				recipients: 0,
-				sent_at: null,
-				scheduled_for: null,
-				stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
+			});
+			if (response.ok) {
+				const data = await response.json();
+				templates = (data.data || data || []).map((t: any) => ({ id: t.id, name: t.name }));
 			}
-		];
-
-		loading = false;
+		} catch (err) {
+			console.error('Failed to load templates:', err);
+		}
 	}
 
 	function getFilteredCampaigns() {
@@ -206,10 +153,14 @@
 		}
 	}
 
-	function handleCreateCampaign() {
+	async function handleCreateCampaign() {
 		// Validation
 		if (!newCampaign.name || !newCampaign.subject) {
 			toastStore.error('Please fill in campaign name and subject');
+			return;
+		}
+		if (!newCampaign.templateId) {
+			toastStore.error('Please select an email template');
 			return;
 		}
 		if (newCampaign.useABTest && !newCampaign.subjectB) {
@@ -217,63 +168,94 @@
 			return;
 		}
 
-		// Create campaign (mock)
-		const campaign: Campaign = {
-			id: campaigns.length + 1,
-			name: newCampaign.name,
-			subject: newCampaign.subject,
-			status: newCampaign.scheduledFor ? 'scheduled' : 'draft',
-			type: newCampaign.useABTest ? 'ab_test' : 'broadcast',
-			segment: segments.find((s) => s.id === newCampaign.segmentId)?.name || 'All Members',
-			recipients: segments.find((s) => s.id === newCampaign.segmentId)?.count || 0,
-			sent_at: null,
-			scheduled_for: newCampaign.scheduledFor || null,
-			stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
-		};
-
-		if (newCampaign.useABTest) {
-			campaign.ab_test = {
-				variant_a: { subject: newCampaign.subject, open_rate: 0 },
-				variant_b: { subject: newCampaign.subjectB, open_rate: 0 },
-				winner: null
+		creating = true;
+		try {
+			const campaignData = {
+				name: newCampaign.name,
+				subject: newCampaign.subject,
+				template_id: parseInt(newCampaign.templateId),
+				segment_id: newCampaign.segmentId ? parseInt(newCampaign.segmentId) : null,
+				scheduled_at: newCampaign.scheduledFor || null,
+				ab_test_config: newCampaign.useABTest ? {
+					enabled: true,
+					subject_b: newCampaign.subjectB,
+					split_percentage: newCampaign.abTestSplit
+				} : null
 			};
+
+			await createCampaign(campaignData);
+			showCreateModal = false;
+			toastStore.success('Campaign created successfully');
+			
+			// Reset form
+			newCampaign = {
+				name: '',
+				subject: '',
+				subjectB: '',
+				useABTest: false,
+				abTestSplit: 50,
+				scheduledFor: '',
+				segmentId: '',
+				templateId: ''
+			};
+
+			// Reload campaigns
+			await loadCampaigns();
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to create campaign');
+		} finally {
+			creating = false;
 		}
-
-		campaigns = [campaign, ...campaigns];
-		showCreateModal = false;
-		toastStore.success('Campaign created successfully');
-
-		// Reset form
-		newCampaign = {
-			name: '',
-			subject: '',
-			subjectB: '',
-			useABTest: false,
-			abTestSplit: 50,
-			scheduledFor: '',
-			segmentId: '',
-			templateId: ''
-		};
 	}
 
-	function deleteCampaign(id: number) {
+	async function handleDeleteCampaign(id: number) {
 		if (!confirm('Delete this campaign?')) return;
-		campaigns = campaigns.filter((c) => c.id !== id);
-		toastStore.success('Campaign deleted');
+		try {
+			await apiDeleteCampaign(id);
+			toastStore.success('Campaign deleted');
+			await loadCampaigns();
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to delete campaign');
+		}
 	}
 
-	function duplicateCampaign(campaign: Campaign) {
-		const duplicate: Campaign = {
-			...campaign,
-			id: campaigns.length + 1,
-			name: `${campaign.name} (Copy)`,
-			status: 'draft',
-			sent_at: null,
-			scheduled_for: null,
-			stats: { sent: 0, opened: 0, clicked: 0, bounced: 0, unsubscribed: 0 }
-		};
-		campaigns = [duplicate, ...campaigns];
-		toastStore.success('Campaign duplicated');
+	async function handleDuplicateCampaign(campaign: APICampaign) {
+		try {
+			await apiDuplicateCampaign(campaign.id);
+			toastStore.success('Campaign duplicated');
+			await loadCampaigns();
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to duplicate campaign');
+		}
+	}
+
+	async function handleSendCampaign(id: number) {
+		if (!confirm('Send this campaign now?')) return;
+		try {
+			await sendCampaign(id);
+			toastStore.success('Campaign is being sent');
+			await loadCampaigns();
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to send campaign');
+		}
+	}
+
+	async function handleCancelCampaign(id: number) {
+		if (!confirm('Cancel this scheduled campaign?')) return;
+		try {
+			await cancelCampaign(id);
+			toastStore.success('Campaign cancelled');
+			await loadCampaigns();
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to cancel campaign');
+		}
+	}
+
+	// Helper to get segment name
+	function getSegmentName(segmentId: number | null): string {
+		if (!segmentId) return 'All Members';
+		const segment = segments.find(s => s.id === segmentId);
+		return segment?.name || 'Unknown';
 	}
 </script>
 
@@ -319,6 +301,11 @@
 				<div class="skeleton skeleton-metric"></div>
 			{/each}
 		</div>
+	{:else if error}
+		<div class="error-state">
+			<p>{error}</p>
+			<button class="btn-primary" on:click={loadCampaigns}>Try Again</button>
+		</div>
 	{:else}
 		<!-- Stats Overview -->
 		<div class="stats-grid">
@@ -327,7 +314,7 @@
 					<IconSend size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{formatNumber(stats.totalSent)}</div>
+					<div class="stat-value">{formatNumber(stats?.total_sent || 0)}</div>
 					<div class="stat-label">Total Emails Sent</div>
 				</div>
 			</div>
@@ -336,7 +323,7 @@
 					<IconEye size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{formatNumber(stats.totalOpened)}</div>
+					<div class="stat-value">{formatNumber(stats?.total_opened || 0)}</div>
 					<div class="stat-label">Total Opens</div>
 				</div>
 			</div>
@@ -345,7 +332,7 @@
 					<IconTrendingUp size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{stats.avgOpenRate}%</div>
+					<div class="stat-value">{stats?.avg_open_rate || 0}%</div>
 					<div class="stat-label">Avg Open Rate</div>
 				</div>
 			</div>
@@ -354,7 +341,7 @@
 					<IconChartBar size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{stats.avgClickRate}%</div>
+					<div class="stat-value">{stats?.avg_click_rate || 0}%</div>
 					<div class="stat-label">Avg Click Rate</div>
 				</div>
 			</div>
@@ -389,7 +376,7 @@
 						<div class="campaign-info">
 							<div class="campaign-name-row">
 								<h3>{campaign.name}</h3>
-								{#if campaign.type === 'ab_test'}
+								{#if campaign.ab_test_config?.enabled}
 									<span class="badge ab-badge">A/B Test</span>
 								{/if}
 							</div>
@@ -403,13 +390,13 @@
 					<div class="campaign-meta">
 						<div class="meta-item">
 							<IconUsers size={16} />
-							<span>{campaign.segment}</span>
-							<span class="meta-count">({formatNumber(campaign.recipients)})</span>
+							<span>{getSegmentName(campaign.segment_id)}</span>
+							<span class="meta-count">({formatNumber(campaign.total_recipients)})</span>
 						</div>
-						{#if campaign.scheduled_for}
+						{#if campaign.scheduled_at}
 							<div class="meta-item">
 								<IconCalendar size={16} />
-								<span>Scheduled: {formatDate(campaign.scheduled_for)}</span>
+								<span>Scheduled: {formatDate(campaign.scheduled_at)}</span>
 							</div>
 						{/if}
 						{#if campaign.sent_at}
@@ -420,45 +407,45 @@
 						{/if}
 					</div>
 
-					{#if campaign.status === 'sent' && campaign.stats.sent > 0}
+					{#if campaign.status === 'sent' && campaign.sent_count > 0}
 						<div class="campaign-stats">
 							<div class="stat-item">
 								<span class="stat-label">Sent</span>
-								<span class="stat-value">{formatNumber(campaign.stats.sent)}</span>
+								<span class="stat-value">{formatNumber(campaign.sent_count)}</span>
 							</div>
 							<div class="stat-item">
 								<span class="stat-label">Opened</span>
 								<span class="stat-value highlight">
-									{formatNumber(campaign.stats.opened)}
-									<small>({((campaign.stats.opened / campaign.stats.sent) * 100).toFixed(1)}%)</small>
+									{formatNumber(campaign.opened_count)}
+									<small>({campaign.open_rate?.toFixed(1) || 0}%)</small>
 								</span>
 							</div>
 							<div class="stat-item">
 								<span class="stat-label">Clicked</span>
 								<span class="stat-value highlight-blue">
-									{formatNumber(campaign.stats.clicked)}
-									<small>({((campaign.stats.clicked / campaign.stats.sent) * 100).toFixed(1)}%)</small>
+									{formatNumber(campaign.clicked_count)}
+									<small>({campaign.click_rate?.toFixed(1) || 0}%)</small>
 								</span>
 							</div>
 							<div class="stat-item">
 								<span class="stat-label">Bounced</span>
-								<span class="stat-value">{campaign.stats.bounced}</span>
+								<span class="stat-value">{campaign.bounced_count}</span>
 							</div>
 						</div>
 
-						{#if campaign.ab_test}
+						{#if campaign.ab_test_config?.enabled && campaign.ab_test_config.variant_a}
 							<div class="ab-test-results">
 								<span class="ab-label">A/B Test Results:</span>
 								<div class="ab-variants">
-									<div class="ab-variant" class:winner={campaign.ab_test.winner === 'a'}>
+									<div class="ab-variant" class:winner={campaign.ab_test_config.winner === 'a'}>
 										<span class="variant-label">A:</span>
-										<span class="variant-subject">{campaign.ab_test.variant_a.subject}</span>
-										<span class="variant-rate">{campaign.ab_test.variant_a.open_rate}%</span>
+										<span class="variant-subject">{campaign.subject}</span>
+										<span class="variant-rate">{campaign.ab_test_config.variant_a?.open_rate || 0}%</span>
 									</div>
-									<div class="ab-variant" class:winner={campaign.ab_test.winner === 'b'}>
+									<div class="ab-variant" class:winner={campaign.ab_test_config.winner === 'b'}>
 										<span class="variant-label">B:</span>
-										<span class="variant-subject">{campaign.ab_test.variant_b.subject}</span>
-										<span class="variant-rate">{campaign.ab_test.variant_b.open_rate}%</span>
+										<span class="variant-subject">{campaign.ab_test_config.subject_b}</span>
+										<span class="variant-rate">{campaign.ab_test_config.variant_b?.open_rate || 0}%</span>
 									</div>
 								</div>
 							</div>
@@ -467,32 +454,32 @@
 
 					<div class="campaign-actions">
 						{#if campaign.status === 'draft'}
-							<button class="btn-primary small">
-								<IconEdit size={16} />
-								Edit
+							<button class="btn-primary small" on:click={() => handleSendCampaign(campaign.id)}>
+								<IconSend size={16} />
+								Send Now
 							</button>
-							<button class="btn-secondary small" on:click={() => duplicateCampaign(campaign)}>
+							<button class="btn-secondary small" on:click={() => handleDuplicateCampaign(campaign)}>
 								<IconCopy size={16} />
 								Duplicate
 							</button>
-							<button class="btn-danger small" on:click={() => deleteCampaign(campaign.id)}>
+							<button class="btn-danger small" on:click={() => handleDeleteCampaign(campaign.id)}>
 								<IconTrash size={16} />
 							</button>
 						{:else if campaign.status === 'scheduled'}
-							<button class="btn-secondary small">
-								<IconEdit size={16} />
-								Edit
-							</button>
-							<button class="btn-secondary small">
+							<button class="btn-secondary small" on:click={() => handleCancelCampaign(campaign.id)}>
 								<IconX size={16} />
 								Cancel
+							</button>
+							<button class="btn-secondary small" on:click={() => handleDuplicateCampaign(campaign)}>
+								<IconCopy size={16} />
+								Duplicate
 							</button>
 						{:else}
 							<button class="btn-secondary small">
 								<IconChartBar size={16} />
 								View Report
 							</button>
-							<button class="btn-secondary small" on:click={() => duplicateCampaign(campaign)}>
+							<button class="btn-secondary small" on:click={() => handleDuplicateCampaign(campaign)}>
 								<IconCopy size={16} />
 								Duplicate
 							</button>
@@ -1011,6 +998,21 @@
 	.btn-danger.small {
 		padding: 0.5rem 0.875rem;
 		font-size: 0.8125rem;
+	}
+
+	/* Error State */
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 3rem 2rem;
+		color: #f87171;
+		text-align: center;
+		background: rgba(239, 68, 68, 0.1);
+		border-radius: 16px;
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		gap: 1rem;
 	}
 
 	/* Empty State */

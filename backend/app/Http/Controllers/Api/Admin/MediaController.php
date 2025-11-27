@@ -248,8 +248,9 @@ class MediaController extends Controller
     /**
      * Get single media details
      */
-    public function show(int $id): JsonResponse
+    public function show(string|int $id): JsonResponse
     {
+        $id = (int) $id;
         $media = Media::with(['uploader:id,name'])->findOrFail($id);
 
         // Get variants
@@ -270,9 +271,9 @@ class MediaController extends Controller
     /**
      * Update media metadata
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, string|int $id): JsonResponse
     {
-        $media = Media::findOrFail($id);
+        $media = Media::findOrFail((int) $id);
 
         $validator = Validator::make($request->all(), [
             'alt_text' => 'nullable|string|max:500',
@@ -311,8 +312,9 @@ class MediaController extends Controller
     /**
      * Delete media
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(string|int $id): JsonResponse
     {
+        $id = (int) $id;
         $media = Media::findOrFail($id);
 
         // Delete all variants
@@ -374,9 +376,9 @@ class MediaController extends Controller
     /**
      * Optimize single media
      */
-    public function optimize(Request $request, int $id): JsonResponse
+    public function optimize(Request $request, string|int $id): JsonResponse
     {
-        $media = Media::findOrFail($id);
+        $media = Media::findOrFail((int) $id);
 
         if (!$media->isImage()) {
             return response()->json([
@@ -483,9 +485,9 @@ class MediaController extends Controller
     /**
      * Regenerate variants for media
      */
-    public function regenerate(Request $request, int $id): JsonResponse
+    public function regenerate(Request $request, string|int $id): JsonResponse
     {
-        $media = Media::findOrFail($id);
+        $media = Media::findOrFail((int) $id);
 
         if (!$media->isImage()) {
             return response()->json([
@@ -516,8 +518,9 @@ class MediaController extends Controller
     /**
      * Get optimization job status
      */
-    public function jobStatus(int $jobId): JsonResponse
+    public function jobStatus(string|int $jobId): JsonResponse
     {
+        $jobId = (int) $jobId;
         $job = ImageOptimizationJob::with(['media:id,filename,url'])->findOrFail($jobId);
 
         return response()->json([
@@ -589,9 +592,9 @@ class MediaController extends Controller
     /**
      * Replace media file
      */
-    public function replace(Request $request, int $id): JsonResponse
+    public function replace(Request $request, string|int $id): JsonResponse
     {
-        $media = Media::findOrFail($id);
+        $media = Media::findOrFail((int) $id);
 
         $validator = Validator::make($request->all(), [
             'file' => 'required|file|max:51200',
@@ -652,9 +655,9 @@ class MediaController extends Controller
     /**
      * Download original file
      */
-    public function download(int $id): mixed
+    public function download(string|int $id): mixed
     {
-        $media = Media::findOrFail($id);
+        $media = Media::findOrFail((int) $id);
         $media->recordDownload();
 
         return Storage::disk($media->disk)->download($media->path, $media->filename);
