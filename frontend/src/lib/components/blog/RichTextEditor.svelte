@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		IconBold,
 		IconItalic,
@@ -21,20 +21,23 @@
 		IconChevronDown
 	} from '@tabler/icons-svelte';
 
-	export let content: string = '';
-	export let placeholder: string = 'Start writing...';
+	interface Props {
+		content?: string;
+		placeholder?: string;
+		onchange?: (content: string) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { content = $bindable(''), placeholder = 'Start writing...', onchange }: Props = $props();
 
 	let editor: HTMLDivElement;
-	let showLinkDialog = false;
-	let linkUrl = '';
-	let showImageDialog = false;
-	let imageUrl = '';
-	let showColorPicker = false;
-	let textColor = '#000000';
-	let showHeadingDropdown = false;
-	let selectedHeading = 'Paragraph';
+	let showLinkDialog = $state(false);
+	let linkUrl = $state('');
+	let showImageDialog = $state(false);
+	let imageUrl = $state('');
+	let showColorPicker = $state(false);
+	let textColor = $state('#000000');
+	let showHeadingDropdown = $state(false);
+	let selectedHeading = $state('Paragraph');
 
 	const headingOptions = [
 		{ label: 'Paragraph', value: 'p' },
@@ -69,8 +72,8 @@
 		'48px'
 	];
 
-	let selectedFont = 'Arial';
-	let selectedFontSize = '16px';
+	let selectedFont = $state('Arial');
+	let selectedFontSize = $state('16px');
 
 	onMount(() => {
 		if (content) {
@@ -86,7 +89,7 @@
 
 	function updateContent() {
 		content = editor.innerHTML;
-		dispatch('change', content);
+		onchange?.(content);
 	}
 
 	function insertHeading(value: string) {
@@ -179,10 +182,10 @@
 	<div class="toolbar">
 		<!-- Undo/Redo -->
 		<div class="toolbar-group">
-			<button type="button" class="toolbar-btn" on:click={() => execCommand('undo')} title="Undo">
+			<button type="button" class="toolbar-btn" onclick={() => execCommand('undo')} title="Undo">
 				<IconArrowBackUp size={18} />
 			</button>
-			<button type="button" class="toolbar-btn" on:click={() => execCommand('redo')} title="Redo">
+			<button type="button" class="toolbar-btn" onclick={() => execCommand('redo')} title="Redo">
 				<IconArrowForwardUp size={18} />
 			</button>
 		</div>
@@ -192,7 +195,7 @@
 			<select
 				class="font-select"
 				bind:value={selectedFont}
-				on:change={() => changeFont(selectedFont)}
+				onchange={() => changeFont(selectedFont)}
 			>
 				{#each fonts as font}
 					<option value={font}>{font}</option>
@@ -202,7 +205,7 @@
 			<select
 				class="size-select"
 				bind:value={selectedFontSize}
-				on:change={() => changeFontSize(selectedFontSize)}
+				onchange={() => changeFontSize(selectedFontSize)}
 			>
 				{#each fontSizes as size}
 					<option value={size}>{size}</option>
@@ -216,7 +219,7 @@
 				<button 
 					type="button" 
 					class="heading-dropdown-btn"
-					on:click={() => showHeadingDropdown = !showHeadingDropdown}
+					onclick={() => showHeadingDropdown = !showHeadingDropdown}
 				>
 					<span>{selectedHeading}</span>
 					<IconChevronDown size={16} />
@@ -228,7 +231,7 @@
 								type="button"
 								class="heading-option"
 								class:active={selectedHeading === option.label}
-								on:click={() => insertHeading(option.value)}
+								onclick={() => insertHeading(option.value)}
 							>
 								{option.label}
 							</button>
@@ -240,13 +243,13 @@
 
 		<!-- Text Formatting -->
 		<div class="toolbar-group">
-			<button type="button" class="toolbar-btn" on:click={() => execCommand('bold')} title="Bold">
+			<button type="button" class="toolbar-btn" onclick={() => execCommand('bold')} title="Bold">
 				<IconBold size={18} />
 			</button>
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('italic')}
+				onclick={() => execCommand('italic')}
 				title="Italic"
 			>
 				<IconItalic size={18} />
@@ -254,7 +257,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('underline')}
+				onclick={() => execCommand('underline')}
 				title="Underline"
 			>
 				<IconUnderline size={18} />
@@ -262,7 +265,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('strikeThrough')}
+				onclick={() => execCommand('strikeThrough')}
 				title="Strikethrough"
 			>
 				<IconStrikethrough size={18} />
@@ -275,7 +278,7 @@
 				<button
 					type="button"
 					class="toolbar-btn color-btn"
-					on:click={() => (showColorPicker = !showColorPicker)}
+					onclick={() => (showColorPicker = !showColorPicker)}
 					title="Text Color"
 					style="background: {textColor}"
 				>
@@ -286,7 +289,7 @@
 						<input
 							type="color"
 							bind:value={textColor}
-							on:change={() => changeTextColor(textColor)}
+							onchange={() => changeTextColor(textColor)}
 						/>
 						<div class="preset-colors">
 							{#each ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF'] as color}
@@ -294,7 +297,7 @@
 									type="button"
 									class="color-preset"
 									style="background: {color}"
-									on:click={() => changeTextColor(color)}
+									onclick={() => changeTextColor(color)}
 									aria-label="Set text color to {color}"
 									title="Set text color to {color}"
 								></button>
@@ -310,7 +313,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('justifyLeft')}
+				onclick={() => execCommand('justifyLeft')}
 				title="Align Left"
 			>
 				<IconAlignLeft size={18} />
@@ -318,7 +321,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('justifyCenter')}
+				onclick={() => execCommand('justifyCenter')}
 				title="Align Center"
 			>
 				<IconAlignCenter size={18} />
@@ -326,7 +329,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('justifyRight')}
+				onclick={() => execCommand('justifyRight')}
 				title="Align Right"
 			>
 				<IconAlignRight size={18} />
@@ -334,7 +337,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('justifyFull')}
+				onclick={() => execCommand('justifyFull')}
 				title="Justify"
 			>
 				<IconAlignJustified size={18} />
@@ -346,7 +349,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('insertUnorderedList')}
+				onclick={() => execCommand('insertUnorderedList')}
 				title="Bullet List"
 			>
 				<IconList size={18} />
@@ -354,7 +357,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('insertOrderedList')}
+				onclick={() => execCommand('insertOrderedList')}
 				title="Numbered List"
 			>
 				<IconListNumbers size={18} />
@@ -362,7 +365,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('formatBlock', 'blockquote')}
+				onclick={() => execCommand('formatBlock', 'blockquote')}
 				title="Quote"
 			>
 				<IconQuote size={18} />
@@ -374,7 +377,7 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => (showLinkDialog = true)}
+				onclick={() => (showLinkDialog = true)}
 				title="Insert Link"
 			>
 				<IconLink size={18} />
@@ -382,18 +385,18 @@
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => (showImageDialog = true)}
+				onclick={() => (showImageDialog = true)}
 				title="Insert Image"
 			>
 				<IconPhoto size={18} />
 			</button>
-			<button type="button" class="toolbar-btn" on:click={insertTable} title="Insert Table">
+			<button type="button" class="toolbar-btn" onclick={insertTable} title="Insert Table">
 				<IconTable size={18} />
 			</button>
 			<button
 				type="button"
 				class="toolbar-btn"
-				on:click={() => execCommand('formatBlock', 'pre')}
+				onclick={() => execCommand('formatBlock', 'pre')}
 				title="Code Block"
 			>
 				<IconCode size={18} />
@@ -405,8 +408,8 @@
 		bind:this={editor}
 		class="editor-content"
 		contenteditable="true"
-		on:input={updateContent}
-		on:paste={handlePaste}
+		oninput={updateContent}
+		onpaste={handlePaste}
 		data-placeholder={placeholder}
 	></div>
 </div>
@@ -417,24 +420,24 @@
 		class="dialog-overlay"
 		role="button"
 		tabindex="0"
-		on:click={() => (showLinkDialog = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showLinkDialog = false)}
+		onclick={() => (showLinkDialog = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showLinkDialog = false)}
 	>
 		<div
 			class="dialog"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<h3>Insert Link</h3>
 			<input type="url" bind:value={linkUrl} placeholder="https://example.com" />
 			<div class="dialog-actions">
-				<button type="button" class="btn-cancel" on:click={() => (showLinkDialog = false)}
+				<button type="button" class="btn-cancel" onclick={() => (showLinkDialog = false)}
 					>Cancel</button
 				>
-				<button type="button" class="btn-insert" on:click={insertLink}>Insert</button>
+				<button type="button" class="btn-insert" onclick={insertLink}>Insert</button>
 			</div>
 		</div>
 	</div>
@@ -446,24 +449,24 @@
 		class="dialog-overlay"
 		role="button"
 		tabindex="0"
-		on:click={() => (showImageDialog = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showImageDialog = false)}
+		onclick={() => (showImageDialog = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showImageDialog = false)}
 	>
 		<div
 			class="dialog"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<h3>Insert Image</h3>
 			<input type="url" bind:value={imageUrl} placeholder="https://example.com/image.jpg" />
 			<div class="dialog-actions">
-				<button type="button" class="btn-cancel" on:click={() => (showImageDialog = false)}
+				<button type="button" class="btn-cancel" onclick={() => (showImageDialog = false)}
 					>Cancel</button
 				>
-				<button type="button" class="btn-insert" on:click={insertImage}>Insert</button>
+				<button type="button" class="btn-insert" onclick={insertImage}>Insert</button>
 			</div>
 		</div>
 	</div>
