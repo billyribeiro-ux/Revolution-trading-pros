@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
+use App\Services\Email\EmailTemplateRenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -12,8 +14,9 @@ use Illuminate\Support\Facades\URL;
 
 /**
  * Custom email verification notification with branded template.
+ * Supports admin-customizable templates with Blade fallback.
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
  */
 class VerifyEmailNotification extends Notification implements ShouldQueue
@@ -45,6 +48,30 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 
+        // Try to use admin-customizable database template
+        $template = EmailTemplate::where('slug', 'verify-email')
+            ->where('status', 'published')
+            ->first();
+
+        if ($template) {
+            try {
+                $renderService = app(EmailTemplateRenderService::class);
+                $rendered = $renderService->render($template, [
+                    'user_name' => $notifiable->name,
+                    'verification_url' => $verificationUrl,
+                    'app_url' => Config::get('app.url'),
+                ]);
+
+                return (new MailMessage)
+                    ->subject($rendered['subject'])
+                    ->html($rendered['html']);
+            } catch (\Exception $e) {
+                // Fall through to Blade template on error
+                report($e);
+            }
+        }
+
+        // Fallback to Blade template
         return (new MailMessage)
             ->subject('Verify Your Email - Revolution Trading Pros')
             ->view('emails.auth.verify-email', [
