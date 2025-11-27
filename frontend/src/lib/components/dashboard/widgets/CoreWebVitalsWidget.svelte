@@ -35,7 +35,7 @@
 		thresholds: { good: number; poor: number };
 	}
 
-	$: vitals: Vital[] = [
+	$: vitals = [
 		{
 			key: 'lcp',
 			name: 'LCP',

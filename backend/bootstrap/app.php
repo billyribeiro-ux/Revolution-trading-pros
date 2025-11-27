@@ -52,18 +52,23 @@ return Application::configure(basePath: dirname(__DIR__))
         // Custom exception handling with structured logging
         $exceptions->report(function (\Throwable $e) {
             // Log structured exception data for observability
-            if (app()->bound('log')) {
-                \Log::error('Application exception', [
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                    'trace' => $e->getTraceAsString(),
-                    'url' => request()?->fullUrl(),
-                    'method' => request()?->method(),
-                    'user_id' => auth()->id(),
-                    'ip' => request()?->ip(),
-                ]);
+            // Only log if the application is fully booted
+            try {
+                if (app()->hasBeenBootstrapped() && app()->bound('log')) {
+                    \Illuminate\Support\Facades\Log::error('Application exception', [
+                        'exception' => get_class($e),
+                        'message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                        'url' => request()?->fullUrl(),
+                        'method' => request()?->method(),
+                        'user_id' => auth()->id(),
+                        'ip' => request()?->ip(),
+                    ]);
+                }
+            } catch (\Throwable) {
+                // Silently fail if logging isn't available during bootstrap
             }
         });
     })->create();

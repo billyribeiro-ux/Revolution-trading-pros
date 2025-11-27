@@ -4,179 +4,75 @@
     import ChartJsIcons from '$lib/components/ChartJsIcons.svelte';
     import LightweightChartIcons from '$lib/components/LightweightChartIcons.svelte';
     import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-    
-    // FontAwesome Solid - 50 TRADING ICONS ONLY
+
+    // FontAwesome Solid - TRADING ICONS
     import {
-        // Charts & Analytics
         faChartLine, faChartArea, faChartBar, faChartPie, faChartColumn, faChartSimple, faChartGantt,
-        // Trending & Market Movement
         faArrowTrendUp, faArrowTrendDown, faArrowUp, faArrowDown, faArrowRight, faArrowLeft,
         faAnglesUp, faAnglesDown, faCircleUp, faCircleDown, faSquareArrowUpRight,
         faArrowsUpDown, faArrowsLeftRight, faArrowRotateRight, faRotate, faSync,
-        // Money & Finance
         faMoneyBillTrendUp, faMoneyBill, faMoneyBill1, faMoneyBills, faWallet,
         faCoins, faSackDollar, faHandHoldingDollar, faDollarSign, faMoneyCheck,
         faCreditCard, faReceipt, faCashRegister, faPercent, faCalculator,
-        // Institutions & Markets
         faBuildingColumns, faLandmark, faBank, faUniversity, faBuilding,
-        // Performance & Success
         faTrophy, faMedal, faAward, faStar, faCrown, faGem,
-        // Speed & Metrics
         faGaugeHigh, faGauge, faStopwatch, faClock, faHourglass,
-        // Targeting & Analysis
         faBullseye, faCrosshairs, faCompass, faLocationDot, faMapLocationDot,
-        // Risk & Security
         faShieldHalved, faShield, faLock, faKey, faScaleBalanced,
-        // Monitoring & Research
         faEye, faMagnifyingGlass, faMagnifyingGlassChart, faMagnifyingGlassDollar,
-        // Intelligence & Strategy
         faBrain, faLightbulb, faFlask,
-        // Alerts & Notifications
         faBell, faBullhorn, faTriangleExclamation, faCircleExclamation, faCircleInfo, faCircleCheck,
-        // Tools & Settings
         faGear, faSliders, faWrench, faToolbox,
-        // Technical Infrastructure
         faDatabase, faServer, faMicrochip, faMemory, faNetworkWired, faSignal,
-        // Organization & Structure
         faLayerGroup, faCubes, faUser, faUsers
     } from '@fortawesome/free-solid-svg-icons';
-    
-    // Heroicons - 50 TRADING ICONS
+
+    // Heroicons - TRADING ICONS
     import {
-        // Charts & Analytics
         ChartBarIcon, ChartPieIcon, PresentationChartLineIcon, PresentationChartBarIcon, DocumentChartBarIcon,
-        // Market Movement
         ArrowTrendingUpIcon, ArrowTrendingDownIcon, ArrowUpIcon, ArrowDownIcon, ArrowRightIcon, ArrowLeftIcon,
         ArrowsUpDownIcon, ArrowsRightLeftIcon, ArrowPathIcon, ArrowPathRoundedSquareIcon,
-        // Money & Finance
         BanknotesIcon, CurrencyDollarIcon, CreditCardIcon, ReceiptPercentIcon, ReceiptRefundIcon,
-        // Buildings & Markets
         BuildingOffice2Icon, BuildingLibraryIcon, BuildingStorefrontIcon, HomeIcon, HomeModernIcon,
-        // Performance
         TrophyIcon, StarIcon, FireIcon, BoltIcon, SparklesIcon, RocketLaunchIcon,
-        // Time & Scheduling
         ClockIcon, CalendarIcon, CalendarDaysIcon,
-        // Location & Markets
         MapIcon, MapPinIcon, GlobeAltIcon, GlobeAmericasIcon,
-        // Security & Risk
         ShieldCheckIcon, ShieldExclamationIcon, LockClosedIcon, LockOpenIcon, KeyIcon, ScaleIcon,
-        // Monitoring & Analysis
         EyeIcon, EyeSlashIcon, MagnifyingGlassIcon, MagnifyingGlassCircleIcon, MagnifyingGlassPlusIcon, MagnifyingGlassMinusIcon,
-        // Intelligence
         LightBulbIcon, BeakerIcon, AcademicCapIcon,
-        // Alerts
         BellIcon, BellAlertIcon, BellSlashIcon, ExclamationCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, CheckCircleIcon,
-        // Settings & Tools
         Cog6ToothIcon, Cog8ToothIcon, AdjustmentsHorizontalIcon, AdjustmentsVerticalIcon, CalculatorIcon, WrenchScrewdriverIcon,
-        // Technical
-        CpuChipIcon, ServerIcon, CircleStackIcon, CommandLineIcon, SignalIcon, WifiIcon,
-        // Organization
-        Square3Stack3DOutline, Squares2X2Outline, FolderIcon, DocumentIcon, ClipboardDocumentListIcon,
-        // Users & Teams
+        CpuChipIcon, ServerIcon, CircleStackIcon, CommandLineIcon, WifiIcon,
+        Squares2x2Icon, Square3Stack3dIcon, FolderIcon, DocumentIcon, ClipboardDocumentListIcon,
         UserIcon, UsersIcon, UserGroupIcon, UserCircleIcon
     } from 'heroicons-svelte/24/outline';
-    
-    // Tabler Icons - 50 TRADING ICONS
-    import {
-        // Charts
-        IconChartLine, IconChartBar, IconChartCandle, IconChartDots, IconChartArcs, IconChartInfographic, IconChartHistogram,
-        // Market Movement
-        IconTrendingUp, IconTrendingDown, IconTrendingUp2, IconTrendingDown2, IconTrendingUp3, IconTrendingDown3,
-        IconArrowUp, IconArrowDown, IconArrowRight, IconArrowLeft, IconArrowUpRight, IconArrowDownRight,
-        IconArrowsUpDown, IconArrowsLeftRight, IconArrowsSort,
-        // Money & Finance
-        IconCurrencyDollar, IconCoin, IconCoins, IconCash, IconCashBanknote, IconPigMoney, IconMoneybag,
-        IconCreditCard, IconReceipt, IconReceiptTax, IconDiscount, IconPercentage,
-        // Buildings & Markets
-        IconBuildingBank, IconBuilding, IconBuildingSkyscraper, IconHome, IconHomeDollar,
-        // Performance
-        IconTrophy, IconMedal, IconAward, IconCertificate, IconBadge, IconStar, IconStarFilled, IconFlame, IconBolt, IconRocket,
-        // Speed & Metrics
-        IconGauge, IconSpeedboat, IconClock, IconHourglass, IconCalendar,
-        // Targeting & Analysis
-        IconTarget, IconTargetArrow, IconBullseye, IconFocus, IconFocusCentered, IconCompass, IconLocation, IconMapPin, IconMap,
-        // Security & Risk
-        IconShield, IconShieldCheck, IconShieldLock, IconLock, IconLockOpen, IconKey, IconScale,
-        // Monitoring
-        IconEye, IconEyeCheck, IconRadar, IconRadar2, IconScan, IconSearch, IconZoomIn, IconZoomOut, IconZoomCheck, IconZoomMoney,
-        // Intelligence
-        IconBrain, IconBulb, IconFlask,
-        // Alerts
-        IconBell, IconBellRinging, IconAlertTriangle, IconAlertCircle, IconInfoCircle, IconCircleCheck, IconCircleX,
-        // Settings & Tools
-        IconSettings, IconAdjustments, IconSliders, IconTool, IconCalculator,
-        // Technical
-        IconDatabase, IconServer, IconCpu, IconChip, IconNetwork, IconWifi, IconSignal, IconAntenna,
-        // Organization
-        IconLayersLinked, IconStack, IconBox, IconFolder, IconFile, IconClipboard, IconList, IconListCheck,
-        // Activity & Performance
-        IconActivity, IconActivityHeartbeat, IconDashboard, IconGraph, IconTimeline,
-        // Users & Teams
-        IconUser, IconUsers, IconUsersGroup
-    } from '@tabler/icons-svelte';
-    
-    // D3 Charts - 50 variations
+
+    // D3 Charts variations
     const d3Charts = [
-        // Line Charts (10)
         { type: 'line', name: 'Line Chart', color: '#3b82f6' },
         { type: 'line', name: 'Smooth Line', color: '#ef4444' },
         { type: 'line', name: 'Multi-Line', color: '#06b6d4' },
         { type: 'line', name: 'Step Chart', color: '#8b5cf6' },
         { type: 'line', name: 'Curved Line', color: '#10b981' },
-        { type: 'line', name: 'Dashed Line', color: '#f59e0b' },
-        { type: 'line', name: 'Dotted Line', color: '#ec4899' },
-        { type: 'line', name: 'Thick Line', color: '#a855f7' },
-        { type: 'line', name: 'Thin Line', color: '#14b8a6' },
-        { type: 'line', name: 'Gradient Line', color: '#f43f5e' },
-        // Area Charts (10)
         { type: 'area', name: 'Area Chart', color: '#8b5cf6' },
         { type: 'area', name: 'Gradient Area', color: '#f59e0b' },
         { type: 'area', name: 'Stream Graph', color: '#06b6d4' },
         { type: 'area', name: 'Stacked Area', color: '#10b981' },
         { type: 'area', name: 'Filled Area', color: '#ec4899' },
-        { type: 'area', name: 'Smooth Area', color: '#3b82f6' },
-        { type: 'area', name: 'Multi Area', color: '#ef4444' },
-        { type: 'area', name: 'Range Area', color: '#a855f7' },
-        { type: 'area', name: 'Band Area', color: '#14b8a6' },
-        { type: 'area', name: 'Horizon Area', color: '#eab308' },
-        // Candlestick Charts (5)
         { type: 'candle', name: 'Candlestick', color: '#10b981' },
         { type: 'candle', name: 'OHLC Chart', color: '#22c55e' },
         { type: 'candle', name: 'Hollow Candle', color: '#16a34a' },
-        { type: 'candle', name: 'Heikin Ashi', color: '#15803d' },
-        { type: 'candle', name: 'Renko Chart', color: '#166534' },
-        // Bar Charts (10)
         { type: 'bar', name: 'Bar Chart', color: '#f59e0b' },
         { type: 'bar', name: 'Grouped Bar', color: '#84cc16' },
         { type: 'bar', name: 'Stacked Bar', color: '#eab308' },
-        { type: 'bar', name: 'Horizontal Bar', color: '#fbbf24' },
-        { type: 'bar', name: 'Waterfall Bar', color: '#fcd34d' },
-        { type: 'bar', name: 'Rounded Bar', color: '#fde047' },
-        { type: 'bar', name: 'Gradient Bar', color: '#facc15' },
-        { type: 'bar', name: 'Clustered Bar', color: '#fef08a' },
-        { type: 'bar', name: 'Range Bar', color: '#fef9c3' },
-        { type: 'bar', name: 'Diverging Bar', color: '#fef3c7' },
-        // Pie/Donut Charts (5)
         { type: 'pie', name: 'Pie Chart', color: '#ec4899' },
         { type: 'pie', name: 'Donut Chart', color: '#f472b6' },
-        { type: 'pie', name: 'Semi Donut', color: '#f9a8d4' },
-        { type: 'pie', name: 'Exploded Pie', color: '#fbcfe8' },
-        { type: 'pie', name: 'Nested Pie', color: '#fce7f3' },
-        // Scatter/Bubble (5)
         { type: 'scatter', name: 'Scatter Plot', color: '#06b6d4' },
         { type: 'scatter', name: 'Bubble Chart', color: '#a855f7' },
-        { type: 'scatter', name: 'Sized Scatter', color: '#22d3ee' },
-        { type: 'scatter', name: 'Colored Scatter', color: '#67e8f9' },
-        { type: 'scatter', name: 'Connected Scatter', color: '#a5f3fc' },
-        // Heatmap (3)
         { type: 'heatmap', name: 'Heatmap', color: '#8b5cf6' },
-        { type: 'heatmap', name: 'Correlation Matrix', color: '#f43f5e' },
-        { type: 'heatmap', name: 'Calendar Heatmap', color: '#a78bfa' },
-        // Radar (2)
-        { type: 'radar', name: 'Radar Chart', color: '#10b981' },
-        { type: 'radar', name: 'Spider Chart', color: '#14b8a6' }
+        { type: 'radar', name: 'Radar Chart', color: '#10b981' }
     ] as const;
-    
+
     const fontAwesomeSolid = [
         { icon: faChartLine, name: 'Chart Line' }, { icon: faChartArea, name: 'Chart Area' },
         { icon: faChartBar, name: 'Chart Bar' }, { icon: faChartPie, name: 'Chart Pie' },
@@ -224,7 +120,7 @@
         { icon: faSignal, name: 'Signal' }, { icon: faLayerGroup, name: 'Layer Group' },
         { icon: faCubes, name: 'Cubes' }, { icon: faUser, name: 'User' }, { icon: faUsers, name: 'Users' }
     ];
-    
+
     const heroicons = [
         { icon: ChartBarIcon, name: 'Chart Bar' }, { icon: ChartPieIcon, name: 'Chart Pie' },
         { icon: PresentationChartLineIcon, name: 'Presentation Chart Line' }, { icon: PresentationChartBarIcon, name: 'Presentation Chart Bar' },
@@ -261,78 +157,15 @@
         { icon: CalculatorIcon, name: 'Calculator' }, { icon: WrenchScrewdriverIcon, name: 'Wrench Screwdriver' },
         { icon: CpuChipIcon, name: 'CPU Chip' }, { icon: ServerIcon, name: 'Server' },
         { icon: CircleStackIcon, name: 'Circle Stack' }, { icon: CommandLineIcon, name: 'Command Line' },
-        { icon: SignalIcon, name: 'Signal' }, { icon: WifiIcon, name: 'WiFi' },
-        { icon: Square3Stack3DOutline, name: 'Square Stack 3D' }, { icon: Squares2X2Outline, name: 'Squares 2x2' },
+        { icon: WifiIcon, name: 'WiFi' },
+        { icon: Square3Stack3dIcon, name: 'Square Stack 3D' }, { icon: Squares2x2Icon, name: 'Squares 2x2' },
         { icon: FolderIcon, name: 'Folder' }, { icon: DocumentIcon, name: 'Document' },
         { icon: ClipboardDocumentListIcon, name: 'Clipboard List' }, { icon: UserIcon, name: 'User' },
         { icon: UsersIcon, name: 'Users' }, { icon: UserGroupIcon, name: 'User Group' },
         { icon: UserCircleIcon, name: 'User Circle' }
     ];
-    
-    const tabler = [
-        { icon: IconChartLine, name: 'Chart Line' }, { icon: IconChartBar, name: 'Chart Bar' },
-        { icon: IconChartCandle, name: 'Chart Candle' }, { icon: IconChartDots, name: 'Chart Dots' },
-        { icon: IconChartArcs, name: 'Chart Arcs' }, { icon: IconChartInfographic, name: 'Chart Infographic' },
-        { icon: IconChartHistogram, name: 'Chart Histogram' }, { icon: IconTrendingUp, name: 'Trending Up' },
-        { icon: IconTrendingDown, name: 'Trending Down' }, { icon: IconTrendingUp2, name: 'Trending Up 2' },
-        { icon: IconTrendingDown2, name: 'Trending Down 2' }, { icon: IconTrendingUp3, name: 'Trending Up 3' },
-        { icon: IconTrendingDown3, name: 'Trending Down 3' }, { icon: IconArrowUp, name: 'Arrow Up' },
-        { icon: IconArrowDown, name: 'Arrow Down' }, { icon: IconArrowRight, name: 'Arrow Right' },
-        { icon: IconArrowLeft, name: 'Arrow Left' }, { icon: IconArrowUpRight, name: 'Arrow Up Right' },
-        { icon: IconArrowDownRight, name: 'Arrow Down Right' }, { icon: IconArrowsUpDown, name: 'Arrows UpDown' },
-        { icon: IconArrowsLeftRight, name: 'Arrows LeftRight' }, { icon: IconArrowsSort, name: 'Arrows Sort' },
-        { icon: IconCurrencyDollar, name: 'Currency Dollar' }, { icon: IconCoin, name: 'Coin' },
-        { icon: IconCoins, name: 'Coins' }, { icon: IconCash, name: 'Cash' },
-        { icon: IconCashBanknote, name: 'Cash Banknote' }, { icon: IconPigMoney, name: 'Pig Money' },
-        { icon: IconMoneybag, name: 'Moneybag' }, { icon: IconCreditCard, name: 'Credit Card' },
-        { icon: IconReceipt, name: 'Receipt' }, { icon: IconReceiptTax, name: 'Receipt Tax' },
-        { icon: IconDiscount, name: 'Discount' }, { icon: IconPercentage, name: 'Percentage' },
-        { icon: IconBuildingBank, name: 'Building Bank' }, { icon: IconBuilding, name: 'Building' },
-        { icon: IconBuildingSkyscraper, name: 'Building Skyscraper' }, { icon: IconHome, name: 'Home' },
-        { icon: IconHomeDollar, name: 'Home Dollar' }, { icon: IconTrophy, name: 'Trophy' },
-        { icon: IconMedal, name: 'Medal' }, { icon: IconAward, name: 'Award' },
-        { icon: IconCertificate, name: 'Certificate' }, { icon: IconBadge, name: 'Badge' },
-        { icon: IconStar, name: 'Star' }, { icon: IconStarFilled, name: 'Star Filled' },
-        { icon: IconFlame, name: 'Flame' }, { icon: IconBolt, name: 'Bolt' },
-        { icon: IconRocket, name: 'Rocket' }, { icon: IconGauge, name: 'Gauge' },
-        { icon: IconSpeedboat, name: 'Speedboat' }, { icon: IconClock, name: 'Clock' },
-        { icon: IconHourglass, name: 'Hourglass' }, { icon: IconCalendar, name: 'Calendar' },
-        { icon: IconTarget, name: 'Target' }, { icon: IconTargetArrow, name: 'Target Arrow' },
-        { icon: IconBullseye, name: 'Bullseye' }, { icon: IconFocus, name: 'Focus' },
-        { icon: IconFocusCentered, name: 'Focus Centered' }, { icon: IconCompass, name: 'Compass' },
-        { icon: IconLocation, name: 'Location' }, { icon: IconMapPin, name: 'Map Pin' },
-        { icon: IconMap, name: 'Map' }, { icon: IconShield, name: 'Shield' },
-        { icon: IconShieldCheck, name: 'Shield Check' }, { icon: IconShieldLock, name: 'Shield Lock' },
-        { icon: IconLock, name: 'Lock' }, { icon: IconLockOpen, name: 'Lock Open' },
-        { icon: IconKey, name: 'Key' }, { icon: IconScale, name: 'Scale' },
-        { icon: IconEye, name: 'Eye' }, { icon: IconEyeCheck, name: 'Eye Check' },
-        { icon: IconRadar, name: 'Radar' }, { icon: IconRadar2, name: 'Radar 2' },
-        { icon: IconScan, name: 'Scan' }, { icon: IconSearch, name: 'Search' },
-        { icon: IconZoomIn, name: 'Zoom In' }, { icon: IconZoomOut, name: 'Zoom Out' },
-        { icon: IconZoomCheck, name: 'Zoom Check' }, { icon: IconZoomMoney, name: 'Zoom Money' },
-        { icon: IconBrain, name: 'Brain' }, { icon: IconBulb, name: 'Bulb' },
-        { icon: IconFlask, name: 'Flask' }, { icon: IconBell, name: 'Bell' },
-        { icon: IconBellRinging, name: 'Bell Ringing' }, { icon: IconAlertTriangle, name: 'Alert Triangle' },
-        { icon: IconAlertCircle, name: 'Alert Circle' }, { icon: IconInfoCircle, name: 'Info Circle' },
-        { icon: IconCircleCheck, name: 'Circle Check' }, { icon: IconCircleX, name: 'Circle X' },
-        { icon: IconSettings, name: 'Settings' }, { icon: IconAdjustments, name: 'Adjustments' },
-        { icon: IconSliders, name: 'Sliders' }, { icon: IconTool, name: 'Tool' },
-        { icon: IconCalculator, name: 'Calculator' }, { icon: IconDatabase, name: 'Database' },
-        { icon: IconServer, name: 'Server' }, { icon: IconCpu, name: 'CPU' },
-        { icon: IconChip, name: 'Chip' }, { icon: IconNetwork, name: 'Network' },
-        { icon: IconWifi, name: 'WiFi' }, { icon: IconSignal, name: 'Signal' },
-        { icon: IconAntenna, name: 'Antenna' }, { icon: IconLayersLinked, name: 'Layers Linked' },
-        { icon: IconStack, name: 'Stack' }, { icon: IconBox, name: 'Box' },
-        { icon: IconFolder, name: 'Folder' }, { icon: IconFile, name: 'File' },
-        { icon: IconClipboard, name: 'Clipboard' }, { icon: IconList, name: 'List' },
-        { icon: IconListCheck, name: 'List Check' }, { icon: IconActivity, name: 'Activity' },
-        { icon: IconActivityHeartbeat, name: 'Activity Heartbeat' }, { icon: IconDashboard, name: 'Dashboard' },
-        { icon: IconGraph, name: 'Graph' }, { icon: IconTimeline, name: 'Timeline' },
-        { icon: IconUser, name: 'User' }, { icon: IconUsers, name: 'Users' },
-        { icon: IconUsersGroup, name: 'Users Group' }
-    ];
-    
-    // ApexCharts - 50 chart types
+
+    // ApexCharts types
     const apexCharts = [
         { type: 'line', name: 'Apex Line' }, { type: 'area', name: 'Apex Area' },
         { type: 'bar', name: 'Apex Bar' }, { type: 'pie', name: 'Apex Pie' },
@@ -341,99 +174,38 @@
         { type: 'heatmap', name: 'Apex Heatmap' }, { type: 'treemap', name: 'Apex Treemap' },
         { type: 'candlestick', name: 'Apex Candlestick' }, { type: 'boxPlot', name: 'Apex BoxPlot' },
         { type: 'radar', name: 'Apex Radar' }, { type: 'polarArea', name: 'Apex Polar' },
-        { type: 'rangeBar', name: 'Apex Range Bar' }, { type: 'line', name: 'Apex Sparkline' },
-        { type: 'area', name: 'Apex Gradient' }, { type: 'bar', name: 'Apex Stacked' },
-        { type: 'line', name: 'Apex Multi' }, { type: 'area', name: 'Apex Stream' },
-        { type: 'bar', name: 'Apex Grouped' }, { type: 'line', name: 'Apex Smooth' },
-        { type: 'area', name: 'Apex Filled' }, { type: 'bar', name: 'Apex Horizontal' },
-        { type: 'line', name: 'Apex Step' }, { type: 'area', name: 'Apex Range' },
-        { type: 'bar', name: 'Apex Waterfall' }, { type: 'line', name: 'Apex Dashed' },
-        { type: 'area', name: 'Apex Band' }, { type: 'bar', name: 'Apex Rounded' },
-        { type: 'line', name: 'Apex Curved' }, { type: 'area', name: 'Apex Stacked' },
-        { type: 'bar', name: 'Apex Clustered' }, { type: 'line', name: 'Apex Dotted' },
-        { type: 'area', name: 'Apex Multi Area' }, { type: 'bar', name: 'Apex Diverging' },
-        { type: 'line', name: 'Apex Thick' }, { type: 'area', name: 'Apex Horizon' },
-        { type: 'bar', name: 'Apex Range Bar' }, { type: 'line', name: 'Apex Thin' },
-        { type: 'area', name: 'Apex Smooth Area' }, { type: 'bar', name: 'Apex Gradient Bar' },
-        { type: 'line', name: 'Apex Multi Line' }, { type: 'area', name: 'Apex Filled Area' },
-        { type: 'bar', name: 'Apex Stacked Bar' }, { type: 'line', name: 'Apex Step Line' },
-        { type: 'area', name: 'Apex Range Area' }, { type: 'bar', name: 'Apex Waterfall Bar' },
-        { type: 'line', name: 'Apex Dashed Line' }, { type: 'area', name: 'Apex Band Area' }
+        { type: 'rangeBar', name: 'Apex Range Bar' }
     ];
-    
-    // Chart.js - 50 chart types
+
+    // Chart.js types
     const chartJsCharts = [
         { type: 'line', name: 'ChartJS Line' }, { type: 'bar', name: 'ChartJS Bar' },
         { type: 'pie', name: 'ChartJS Pie' }, { type: 'doughnut', name: 'ChartJS Doughnut' },
         { type: 'polarArea', name: 'ChartJS Polar' }, { type: 'radar', name: 'ChartJS Radar' },
-        { type: 'scatter', name: 'ChartJS Scatter' }, { type: 'bubble', name: 'ChartJS Bubble' },
-        { type: 'line', name: 'ChartJS Smooth' }, { type: 'bar', name: 'ChartJS Stacked' },
-        { type: 'line', name: 'ChartJS Multi' }, { type: 'bar', name: 'ChartJS Grouped' },
-        { type: 'line', name: 'ChartJS Step' }, { type: 'bar', name: 'ChartJS Horizontal' },
-        { type: 'line', name: 'ChartJS Curved' }, { type: 'bar', name: 'ChartJS Rounded' },
-        { type: 'line', name: 'ChartJS Dashed' }, { type: 'bar', name: 'ChartJS Gradient' },
-        { type: 'line', name: 'ChartJS Dotted' }, { type: 'bar', name: 'ChartJS Clustered' },
-        { type: 'line', name: 'ChartJS Thick' }, { type: 'bar', name: 'ChartJS Range' },
-        { type: 'line', name: 'ChartJS Thin' }, { type: 'bar', name: 'ChartJS Diverging' },
-        { type: 'line', name: 'ChartJS Gradient' }, { type: 'bar', name: 'ChartJS Waterfall' },
-        { type: 'line', name: 'ChartJS Multi Line' }, { type: 'bar', name: 'ChartJS Stacked Bar' },
-        { type: 'line', name: 'ChartJS Step Line' }, { type: 'bar', name: 'ChartJS Horizontal Bar' },
-        { type: 'line', name: 'ChartJS Curved Line' }, { type: 'bar', name: 'ChartJS Rounded Bar' },
-        { type: 'line', name: 'ChartJS Dashed Line' }, { type: 'bar', name: 'ChartJS Gradient Bar' },
-        { type: 'line', name: 'ChartJS Dotted Line' }, { type: 'bar', name: 'ChartJS Clustered Bar' },
-        { type: 'line', name: 'ChartJS Thick Line' }, { type: 'bar', name: 'ChartJS Range Bar' },
-        { type: 'line', name: 'ChartJS Thin Line' }, { type: 'bar', name: 'ChartJS Diverging Bar' },
-        { type: 'line', name: 'ChartJS Gradient Line' }, { type: 'bar', name: 'ChartJS Waterfall Bar' },
-        { type: 'line', name: 'ChartJS Sparkline' }, { type: 'bar', name: 'ChartJS Mini Bar' },
-        { type: 'line', name: 'ChartJS Area Line' }, { type: 'bar', name: 'ChartJS Column' },
-        { type: 'line', name: 'ChartJS Smooth Line' }, { type: 'bar', name: 'ChartJS Grouped Bar' }
+        { type: 'scatter', name: 'ChartJS Scatter' }, { type: 'bubble', name: 'ChartJS Bubble' }
     ];
-    
-    // Lightweight Charts - 50 chart types
+
+    // Lightweight Charts types
     const lightweightCharts = [
         { type: 'line', name: 'LW Line' }, { type: 'area', name: 'LW Area' },
         { type: 'candlestick', name: 'LW Candlestick' }, { type: 'bar', name: 'LW Bar' },
-        { type: 'histogram', name: 'LW Histogram' }, { type: 'line', name: 'LW Smooth' },
-        { type: 'area', name: 'LW Gradient' }, { type: 'candlestick', name: 'LW OHLC' },
-        { type: 'bar', name: 'LW Volume' }, { type: 'histogram', name: 'LW Volume Hist' },
-        { type: 'line', name: 'LW Multi Line' }, { type: 'area', name: 'LW Stacked' },
-        { type: 'candlestick', name: 'LW Hollow' }, { type: 'bar', name: 'LW Colored' },
-        { type: 'histogram', name: 'LW Colored Hist' }, { type: 'line', name: 'LW Step' },
-        { type: 'area', name: 'LW Filled' }, { type: 'candlestick', name: 'LW Heikin' },
-        { type: 'bar', name: 'LW Range' }, { type: 'histogram', name: 'LW Range Hist' },
-        { type: 'line', name: 'LW Curved' }, { type: 'area', name: 'LW Smooth Area' },
-        { type: 'candlestick', name: 'LW Renko' }, { type: 'bar', name: 'LW Grouped' },
-        { type: 'histogram', name: 'LW Grouped Hist' }, { type: 'line', name: 'LW Dashed' },
-        { type: 'area', name: 'LW Multi Area' }, { type: 'candlestick', name: 'LW Kagi' },
-        { type: 'bar', name: 'LW Stacked' }, { type: 'histogram', name: 'LW Stacked Hist' },
-        { type: 'line', name: 'LW Dotted' }, { type: 'area', name: 'LW Range Area' },
-        { type: 'candlestick', name: 'LW Line Break' }, { type: 'bar', name: 'LW Waterfall' },
-        { type: 'histogram', name: 'LW Waterfall Hist' }, { type: 'line', name: 'LW Thick' },
-        { type: 'area', name: 'LW Band' }, { type: 'candlestick', name: 'LW Point Figure' },
-        { type: 'bar', name: 'LW Diverging' }, { type: 'histogram', name: 'LW Diverging Hist' },
-        { type: 'line', name: 'LW Thin' }, { type: 'area', name: 'LW Horizon' },
-        { type: 'candlestick', name: 'LW Three Line' }, { type: 'bar', name: 'LW Rounded' },
-        { type: 'histogram', name: 'LW Rounded Hist' }, { type: 'line', name: 'LW Gradient' },
-        { type: 'area', name: 'LW Stream' }, { type: 'candlestick', name: 'LW Baseline' }
+        { type: 'histogram', name: 'LW Histogram' }
     ];
-    
-    const totalIcons = d3Charts.length + apexCharts.length + chartJsCharts.length + lightweightCharts.length + fontAwesomeSolid.length + heroicons.length + tabler.length;
+
+    const totalIcons = d3Charts.length + apexCharts.length + chartJsCharts.length + lightweightCharts.length + fontAwesomeSolid.length + heroicons.length;
 </script>
 
 <div class="min-h-screen bg-slate-950 text-white p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
         <div class="mb-12 text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                ULTIMATE TRADING ICON LIBRARY
+                TRADING ICON LIBRARY
             </h1>
             <p class="text-slate-400 text-lg md:text-xl mb-2">
                 {totalIcons} TRADING & DASHBOARD ICONS
             </p>
             <p class="text-slate-500 text-sm">
-                D3: {d3Charts.length} • Apex: {apexCharts.length} • ChartJS: {chartJsCharts.length} • LW: {lightweightCharts.length} • FA: {fontAwesomeSolid.length} • Hero: {heroicons.length} • Tabler: {tabler.length}
-            </p>
-            <p class="text-emerald-400 text-xs mt-2 font-bold">
-                ✓ ALL TRADING RELATED • NO SOCIAL MEDIA BS
+                D3: {d3Charts.length} • Apex: {apexCharts.length} • ChartJS: {chartJsCharts.length} • LW: {lightweightCharts.length} • FA: {fontAwesomeSolid.length} • Hero: {heroicons.length}
             </p>
         </div>
 
@@ -549,35 +321,15 @@
             </div>
         </div>
 
-        <!-- Tabler -->
-        <div class="mb-16">
-            <div class="flex items-center gap-4 mb-8">
-                <h2 class="text-3xl font-bold text-emerald-400">Tabler Trading</h2>
-                <span class="px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-sm font-bold text-emerald-300">{tabler.length}</span>
-            </div>
-            <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-                {#each tabler as item}
-                    <div class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-emerald-500/30 transition-all hover:-translate-y-1">
-                        <div class="flex flex-col items-center gap-2">
-                            <div class="text-slate-400 group-hover:text-emerald-400 transition-colors">
-                                <svelte:component this={item.icon} size={28} stroke={1.5} />
-                            </div>
-                            <span class="text-[9px] text-center text-slate-500 group-hover:text-slate-300 leading-tight">{item.name}</span>
-                        </div>
-                    </div>
-                {/each}
-            </div>
-        </div>
-
         <div class="text-center py-8 border-t border-slate-800">
             <p class="text-emerald-400 text-lg font-bold mb-2">
-                ✓ {totalIcons} TRADING & DASHBOARD ICONS
+                {totalIcons} TRADING & DASHBOARD ICONS
             </p>
             <p class="text-slate-500 text-sm mb-2">
                 Charts • Trends • Money • Markets • Performance • Analytics • Risk • Monitoring
             </p>
             <p class="text-slate-600 text-xs">
-                D3.js v7.9 • FontAwesome v7.1 • Heroicons v2.0 • Tabler v3.35
+                D3.js v7.9 • FontAwesome v7.1 • Heroicons v2.0
             </p>
         </div>
     </div>
