@@ -45,7 +45,7 @@
 	description="Forgot your password? Reset your Revolution Trading Pros account password securely."
 	canonical="/forgot-password"
 	ogType="website"
-	noIndex={true}
+	noindex={true}
 />
 
 <div

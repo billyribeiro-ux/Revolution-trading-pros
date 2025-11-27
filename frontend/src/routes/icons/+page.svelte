@@ -71,48 +71,41 @@
         // Technical
         CpuChipIcon, ServerIcon, CircleStackIcon, CommandLineIcon, SignalIcon, WifiIcon,
         // Organization
-        Square3Stack3DOutline, Squares2X2Outline, FolderIcon, DocumentIcon, ClipboardDocumentListIcon,
+        Square3Stack3dIcon, Squares2x2Icon, FolderIcon, DocumentIcon, ClipboardDocumentListIcon,
         // Users & Teams
         UserIcon, UsersIcon, UserGroupIcon, UserCircleIcon
     } from 'heroicons-svelte/24/outline';
     
-    // Tabler Icons - 50 TRADING ICONS
+    // Tabler Icons - TRADING ICONS (verified exports)
     import {
         // Charts
-        IconChartLine, IconChartBar, IconChartCandle, IconChartDots, IconChartArcs, IconChartInfographic, IconChartHistogram,
+        IconChartLine, IconChartBar, IconChartCandle, IconChartArea, IconChartPie, IconChartDonut, IconChartRadar,
         // Market Movement
         IconTrendingUp, IconTrendingDown, IconTrendingUp2, IconTrendingDown2, IconTrendingUp3, IconTrendingDown3,
         IconArrowUp, IconArrowDown, IconArrowRight, IconArrowLeft, IconArrowUpRight, IconArrowDownRight,
-        IconArrowsUpDown, IconArrowsLeftRight, IconArrowsSort,
         // Money & Finance
-        IconCurrencyDollar, IconCoin, IconCoins, IconCash, IconCashBanknote, IconPigMoney, IconMoneybag,
-        IconCreditCard, IconReceipt, IconReceiptTax, IconDiscount, IconPercentage,
+        IconCurrencyDollar, IconCurrencyEuro, IconCurrencyBitcoin, IconCurrencyEthereum,
+        IconCreditCard, IconReceipt, IconPercentage, IconCalculator,
         // Buildings & Markets
-        IconBuildingBank, IconBuilding, IconBuildingSkyscraper, IconHome, IconHomeDollar,
+        IconBuilding,
         // Performance
-        IconTrophy, IconMedal, IconAward, IconCertificate, IconBadge, IconStar, IconStarFilled, IconFlame, IconBolt, IconRocket,
-        // Speed & Metrics
-        IconGauge, IconSpeedboat, IconClock, IconHourglass, IconCalendar,
+        IconTrophy, IconStar, IconStarFilled, IconFlame, IconBolt, IconRocket,
+        // Time
+        IconClock, IconCalendar,
         // Targeting & Analysis
-        IconTarget, IconTargetArrow, IconBullseye, IconFocus, IconFocusCentered, IconCompass, IconLocation, IconMapPin, IconMap,
+        IconTarget, IconFilter,
         // Security & Risk
-        IconShield, IconShieldCheck, IconShieldLock, IconLock, IconLockOpen, IconKey, IconScale,
+        IconShield, IconShieldCheck, IconShieldLock, IconLock, IconKey,
         // Monitoring
-        IconEye, IconEyeCheck, IconRadar, IconRadar2, IconScan, IconSearch, IconZoomIn, IconZoomOut, IconZoomCheck, IconZoomMoney,
+        IconEye, IconSearch,
         // Intelligence
-        IconBrain, IconBulb, IconFlask,
+        IconBrain, IconBulb,
         // Alerts
-        IconBell, IconBellRinging, IconAlertTriangle, IconAlertCircle, IconInfoCircle, IconCircleCheck, IconCircleX,
+        IconBell, IconAlertTriangle, IconAlertCircle,
         // Settings & Tools
-        IconSettings, IconAdjustments, IconSliders, IconTool, IconCalculator,
-        // Technical
-        IconDatabase, IconServer, IconCpu, IconChip, IconNetwork, IconWifi, IconSignal, IconAntenna,
-        // Organization
-        IconLayersLinked, IconStack, IconBox, IconFolder, IconFile, IconClipboard, IconList, IconListCheck,
-        // Activity & Performance
-        IconActivity, IconActivityHeartbeat, IconDashboard, IconGraph, IconTimeline,
+        IconSettings, IconAdjustmentsHorizontal,
         // Users & Teams
-        IconUser, IconUsers, IconUsersGroup
+        IconUser, IconUsers
     } from '@tabler/icons-svelte';
     
     // D3 Charts - 50 variations
@@ -262,7 +255,7 @@
         { icon: CpuChipIcon, name: 'CPU Chip' }, { icon: ServerIcon, name: 'Server' },
         { icon: CircleStackIcon, name: 'Circle Stack' }, { icon: CommandLineIcon, name: 'Command Line' },
         { icon: SignalIcon, name: 'Signal' }, { icon: WifiIcon, name: 'WiFi' },
-        { icon: Square3Stack3DOutline, name: 'Square Stack 3D' }, { icon: Squares2X2Outline, name: 'Squares 2x2' },
+        { icon: Square3Stack3dIcon, name: 'Square Stack 3D' }, { icon: Squares2x2Icon, name: 'Squares 2x2' },
         { icon: FolderIcon, name: 'Folder' }, { icon: DocumentIcon, name: 'Document' },
         { icon: ClipboardDocumentListIcon, name: 'Clipboard List' }, { icon: UserIcon, name: 'User' },
         { icon: UsersIcon, name: 'Users' }, { icon: UserGroupIcon, name: 'User Group' },
@@ -271,65 +264,33 @@
     
     const tabler = [
         { icon: IconChartLine, name: 'Chart Line' }, { icon: IconChartBar, name: 'Chart Bar' },
-        { icon: IconChartCandle, name: 'Chart Candle' }, { icon: IconChartDots, name: 'Chart Dots' },
-        { icon: IconChartArcs, name: 'Chart Arcs' }, { icon: IconChartInfographic, name: 'Chart Infographic' },
-        { icon: IconChartHistogram, name: 'Chart Histogram' }, { icon: IconTrendingUp, name: 'Trending Up' },
+        { icon: IconChartCandle, name: 'Chart Candle' }, { icon: IconChartArea, name: 'Chart Area' },
+        { icon: IconChartPie, name: 'Chart Pie' }, { icon: IconChartDonut, name: 'Chart Donut' },
+        { icon: IconChartRadar, name: 'Chart Radar' }, { icon: IconTrendingUp, name: 'Trending Up' },
         { icon: IconTrendingDown, name: 'Trending Down' }, { icon: IconTrendingUp2, name: 'Trending Up 2' },
         { icon: IconTrendingDown2, name: 'Trending Down 2' }, { icon: IconTrendingUp3, name: 'Trending Up 3' },
         { icon: IconTrendingDown3, name: 'Trending Down 3' }, { icon: IconArrowUp, name: 'Arrow Up' },
         { icon: IconArrowDown, name: 'Arrow Down' }, { icon: IconArrowRight, name: 'Arrow Right' },
         { icon: IconArrowLeft, name: 'Arrow Left' }, { icon: IconArrowUpRight, name: 'Arrow Up Right' },
-        { icon: IconArrowDownRight, name: 'Arrow Down Right' }, { icon: IconArrowsUpDown, name: 'Arrows UpDown' },
-        { icon: IconArrowsLeftRight, name: 'Arrows LeftRight' }, { icon: IconArrowsSort, name: 'Arrows Sort' },
-        { icon: IconCurrencyDollar, name: 'Currency Dollar' }, { icon: IconCoin, name: 'Coin' },
-        { icon: IconCoins, name: 'Coins' }, { icon: IconCash, name: 'Cash' },
-        { icon: IconCashBanknote, name: 'Cash Banknote' }, { icon: IconPigMoney, name: 'Pig Money' },
-        { icon: IconMoneybag, name: 'Moneybag' }, { icon: IconCreditCard, name: 'Credit Card' },
-        { icon: IconReceipt, name: 'Receipt' }, { icon: IconReceiptTax, name: 'Receipt Tax' },
-        { icon: IconDiscount, name: 'Discount' }, { icon: IconPercentage, name: 'Percentage' },
-        { icon: IconBuildingBank, name: 'Building Bank' }, { icon: IconBuilding, name: 'Building' },
-        { icon: IconBuildingSkyscraper, name: 'Building Skyscraper' }, { icon: IconHome, name: 'Home' },
-        { icon: IconHomeDollar, name: 'Home Dollar' }, { icon: IconTrophy, name: 'Trophy' },
-        { icon: IconMedal, name: 'Medal' }, { icon: IconAward, name: 'Award' },
-        { icon: IconCertificate, name: 'Certificate' }, { icon: IconBadge, name: 'Badge' },
+        { icon: IconArrowDownRight, name: 'Arrow Down Right' },
+        { icon: IconCurrencyDollar, name: 'Currency Dollar' }, { icon: IconCurrencyEuro, name: 'Currency Euro' },
+        { icon: IconCurrencyBitcoin, name: 'Bitcoin' }, { icon: IconCurrencyEthereum, name: 'Ethereum' },
+        { icon: IconCreditCard, name: 'Credit Card' }, { icon: IconReceipt, name: 'Receipt' },
+        { icon: IconPercentage, name: 'Percentage' }, { icon: IconCalculator, name: 'Calculator' },
+        { icon: IconBuilding, name: 'Building' }, { icon: IconTrophy, name: 'Trophy' },
         { icon: IconStar, name: 'Star' }, { icon: IconStarFilled, name: 'Star Filled' },
         { icon: IconFlame, name: 'Flame' }, { icon: IconBolt, name: 'Bolt' },
-        { icon: IconRocket, name: 'Rocket' }, { icon: IconGauge, name: 'Gauge' },
-        { icon: IconSpeedboat, name: 'Speedboat' }, { icon: IconClock, name: 'Clock' },
-        { icon: IconHourglass, name: 'Hourglass' }, { icon: IconCalendar, name: 'Calendar' },
-        { icon: IconTarget, name: 'Target' }, { icon: IconTargetArrow, name: 'Target Arrow' },
-        { icon: IconBullseye, name: 'Bullseye' }, { icon: IconFocus, name: 'Focus' },
-        { icon: IconFocusCentered, name: 'Focus Centered' }, { icon: IconCompass, name: 'Compass' },
-        { icon: IconLocation, name: 'Location' }, { icon: IconMapPin, name: 'Map Pin' },
-        { icon: IconMap, name: 'Map' }, { icon: IconShield, name: 'Shield' },
+        { icon: IconRocket, name: 'Rocket' }, { icon: IconClock, name: 'Clock' },
+        { icon: IconCalendar, name: 'Calendar' }, { icon: IconTarget, name: 'Target' },
+        { icon: IconFilter, name: 'Filter' }, { icon: IconShield, name: 'Shield' },
         { icon: IconShieldCheck, name: 'Shield Check' }, { icon: IconShieldLock, name: 'Shield Lock' },
-        { icon: IconLock, name: 'Lock' }, { icon: IconLockOpen, name: 'Lock Open' },
-        { icon: IconKey, name: 'Key' }, { icon: IconScale, name: 'Scale' },
-        { icon: IconEye, name: 'Eye' }, { icon: IconEyeCheck, name: 'Eye Check' },
-        { icon: IconRadar, name: 'Radar' }, { icon: IconRadar2, name: 'Radar 2' },
-        { icon: IconScan, name: 'Scan' }, { icon: IconSearch, name: 'Search' },
-        { icon: IconZoomIn, name: 'Zoom In' }, { icon: IconZoomOut, name: 'Zoom Out' },
-        { icon: IconZoomCheck, name: 'Zoom Check' }, { icon: IconZoomMoney, name: 'Zoom Money' },
+        { icon: IconLock, name: 'Lock' }, { icon: IconKey, name: 'Key' },
+        { icon: IconEye, name: 'Eye' }, { icon: IconSearch, name: 'Search' },
         { icon: IconBrain, name: 'Brain' }, { icon: IconBulb, name: 'Bulb' },
-        { icon: IconFlask, name: 'Flask' }, { icon: IconBell, name: 'Bell' },
-        { icon: IconBellRinging, name: 'Bell Ringing' }, { icon: IconAlertTriangle, name: 'Alert Triangle' },
-        { icon: IconAlertCircle, name: 'Alert Circle' }, { icon: IconInfoCircle, name: 'Info Circle' },
-        { icon: IconCircleCheck, name: 'Circle Check' }, { icon: IconCircleX, name: 'Circle X' },
-        { icon: IconSettings, name: 'Settings' }, { icon: IconAdjustments, name: 'Adjustments' },
-        { icon: IconSliders, name: 'Sliders' }, { icon: IconTool, name: 'Tool' },
-        { icon: IconCalculator, name: 'Calculator' }, { icon: IconDatabase, name: 'Database' },
-        { icon: IconServer, name: 'Server' }, { icon: IconCpu, name: 'CPU' },
-        { icon: IconChip, name: 'Chip' }, { icon: IconNetwork, name: 'Network' },
-        { icon: IconWifi, name: 'WiFi' }, { icon: IconSignal, name: 'Signal' },
-        { icon: IconAntenna, name: 'Antenna' }, { icon: IconLayersLinked, name: 'Layers Linked' },
-        { icon: IconStack, name: 'Stack' }, { icon: IconBox, name: 'Box' },
-        { icon: IconFolder, name: 'Folder' }, { icon: IconFile, name: 'File' },
-        { icon: IconClipboard, name: 'Clipboard' }, { icon: IconList, name: 'List' },
-        { icon: IconListCheck, name: 'List Check' }, { icon: IconActivity, name: 'Activity' },
-        { icon: IconActivityHeartbeat, name: 'Activity Heartbeat' }, { icon: IconDashboard, name: 'Dashboard' },
-        { icon: IconGraph, name: 'Graph' }, { icon: IconTimeline, name: 'Timeline' },
-        { icon: IconUser, name: 'User' }, { icon: IconUsers, name: 'Users' },
-        { icon: IconUsersGroup, name: 'Users Group' }
+        { icon: IconBell, name: 'Bell' }, { icon: IconAlertTriangle, name: 'Alert Triangle' },
+        { icon: IconAlertCircle, name: 'Alert Circle' }, { icon: IconSettings, name: 'Settings' },
+        { icon: IconAdjustmentsHorizontal, name: 'Adjustments' }, { icon: IconUser, name: 'User' },
+        { icon: IconUsers, name: 'Users' }
     ];
     
     // ApexCharts - 50 chart types
