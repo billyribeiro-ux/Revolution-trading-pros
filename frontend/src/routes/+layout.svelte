@@ -1,8 +1,14 @@
-<script>
+<script lang="ts">
+	/**
+	 * Root Layout - Global shell for all routes
+	 * Handles performance monitoring, service worker, and route-based chrome
+	 * 
+	 * @version 2.0.0
+	 * @author Revolution Trading Pros
+	 */
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
-	import NavBar from '$lib/components/NavBar.svelte';
-	import Footer from '$lib/components/sections/Footer.svelte';
+	import { MarketingNav, MarketingFooter } from '$lib/components/layout';
 	import PopupModal from '$lib/components/PopupModal.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -10,8 +16,15 @@
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 
-	// Check if we're in admin area - hide main site chrome
-	$: isAdminArea = $page.url.pathname.startsWith('/admin');
+	// Route-based layout detection
+	$: pathname = $page.url.pathname;
+	$: isAdminArea = pathname.startsWith('/admin');
+	$: isTradingRoom = pathname.startsWith('/live-trading-rooms/') && pathname.split('/').length > 2;
+	$: isEmbedArea = pathname.startsWith('/embed');
+	$: isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/register');
+	
+	// Show marketing chrome only on public pages
+	$: showMarketingChrome = !isAdminArea && !isTradingRoom && !isEmbedArea;
 
 	// Initialize performance optimizations
 	onMount(() => {
@@ -51,21 +64,23 @@
 	<meta name="theme-color" content="#0a101c" />
 </svelte:head>
 
-{#if isAdminArea}
-	<!-- Admin Area: No main site chrome, just the admin layout -->
+{#if isAdminArea || isTradingRoom || isEmbedArea}
+	<!-- Admin/Trading/Embed: No marketing chrome, just the content -->
 	<slot />
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text">
 		<!-- Admin Toolbar (only shows for logged-in admins) -->
 		<AdminToolbar />
 
-		<NavBar />
+		<!-- Marketing Navigation -->
+		<MarketingNav />
 
 		<main>
 			<slot />
 		</main>
 
-		<Footer />
+		<!-- Marketing Footer -->
+		<MarketingFooter />
 
 		<!-- Global Popup Modal - Enterprise Grade: Only shows when explicitly triggered -->
 		<PopupModal />

@@ -509,6 +509,35 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/beh
 });
 
 // ========================================
+// REVOLUTION EXPERIMENTS & FEATURE FLAGS
+// ========================================
+use App\Http\Controllers\Api\ExperimentController;
+
+// Public experiment config (client-side)
+Route::prefix('experiments')->group(function () {
+    Route::get('/config', [ExperimentController::class, 'getConfig']);
+    Route::post('/exposure', [ExperimentController::class, 'trackExposure']);
+    Route::post('/conversion', [ExperimentController::class, 'trackConversion']);
+});
+
+// Protected experiments API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/experiments')->group(function () {
+    Route::get('/', [ExperimentController::class, 'index']);
+    Route::post('/', [ExperimentController::class, 'store']);
+    Route::get('/{id}', [ExperimentController::class, 'show']);
+    Route::put('/{id}', [ExperimentController::class, 'update']);
+    Route::delete('/{id}', [ExperimentController::class, 'destroy']);
+});
+
+// Protected feature flags API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/feature-flags')->group(function () {
+    Route::get('/', [ExperimentController::class, 'listFlags']);
+    Route::post('/', [ExperimentController::class, 'storeFlag']);
+    Route::put('/{id}', [ExperimentController::class, 'updateFlag']);
+    Route::delete('/{id}', [ExperimentController::class, 'destroyFlag']);
+});
+
+// ========================================
 // REVOLUTION CRM L8 SYSTEM
 // ========================================
 use App\Http\Controllers\Admin\ContactController;

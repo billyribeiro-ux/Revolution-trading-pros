@@ -1,17 +1,74 @@
 @import 'tailwindcss';
 
+/**
+ * Revolution Trading Pros - Design System Tokens
+ * Netflix E6 Level Architecture
+ * 
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ */
+
 @theme {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Brand Colors - Core palette
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 	--color-rtp-*: initial;
-	--color-rtp-bg: oklch(0.15 0.02 250);
-	--color-rtp-surface: oklch(0.25 0.02 250);
-	--color-rtp-border: oklch(0.35 0.02 250);
-	--color-rtp-text: oklch(0.98 0.01 250);
-	--color-rtp-muted: oklch(0.65 0.02 250);
+	
+	/* Primary Brand Colors */
 	--color-rtp-primary: oklch(0.60 0.20 250);
-	--color-rtp-primarySoft: oklch(0.30 0.15 250);
-	--color-rtp-emerald: oklch(0.65 0.20 160);
+	--color-rtp-primary-light: oklch(0.70 0.18 250);
+	--color-rtp-primary-dark: oklch(0.50 0.22 250);
+	--color-rtp-primary-soft: oklch(0.30 0.15 250);
+	
+	/* Secondary Colors */
 	--color-rtp-indigo: oklch(0.65 0.20 270);
+	--color-rtp-violet: oklch(0.60 0.22 285);
 	--color-rtp-blue: oklch(0.65 0.20 240);
+	
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Surface Colors - Backgrounds and containers
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-bg: oklch(0.12 0.02 250);
+	--color-rtp-bg-alt: oklch(0.10 0.02 250);
+	--color-rtp-surface: oklch(0.18 0.02 250);
+	--color-rtp-surface-elevated: oklch(0.22 0.02 250);
+	--color-rtp-surface-overlay: oklch(0.25 0.02 250);
+	
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Border Colors
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-border: oklch(0.30 0.02 250);
+	--color-rtp-border-light: oklch(0.25 0.02 250);
+	--color-rtp-border-focus: oklch(0.55 0.18 250);
+	
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Text Colors
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-text: oklch(0.96 0.01 250);
+	--color-rtp-text-secondary: oklch(0.80 0.02 250);
+	--color-rtp-muted: oklch(0.60 0.02 250);
+	--color-rtp-placeholder: oklch(0.50 0.02 250);
+	
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Semantic Colors - Feedback states
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-success: oklch(0.65 0.20 145);
+	--color-rtp-success-soft: oklch(0.30 0.12 145);
+	--color-rtp-warning: oklch(0.75 0.18 85);
+	--color-rtp-warning-soft: oklch(0.35 0.12 85);
+	--color-rtp-error: oklch(0.60 0.22 25);
+	--color-rtp-error-soft: oklch(0.30 0.15 25);
+	--color-rtp-info: oklch(0.65 0.18 240);
+	--color-rtp-info-soft: oklch(0.30 0.12 240);
+	
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Accent Colors - For charts, badges, highlights
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-emerald: oklch(0.65 0.20 160);
+	--color-rtp-amber: oklch(0.75 0.18 85);
+	--color-rtp-rose: oklch(0.65 0.20 15);
+	--color-rtp-cyan: oklch(0.70 0.15 200);
+	--color-rtp-purple: oklch(0.60 0.22 300);
 }
 
 /**
