@@ -51,13 +51,35 @@ Route::prefix('health')->group(function () {
 Route::get('/time/now', [TimeController::class, 'now']);
 Route::post('/timers/events', [TimerAnalyticsController::class, 'store']);
 Route::post('/telemetry/admin-toolbar', function() { return response()->json(['status' => 'ok']); });
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/login/mfa', [AuthController::class, 'loginWithMFA']);
-Route::post('/login/biometric', [AuthController::class, 'loginWithBiometric']);
-Route::post('/auth/refresh', [AuthController::class, 'refreshToken']);
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+// Authentication routes with rate limiting to prevent brute force attacks
+// Register: 5 attempts per minute per IP
+Route::post('/register', [AuthController::class, 'register'])
+    ->middleware('throttle:5,1');
+
+// Login: 5 attempts per minute per IP (strict rate limiting)
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:5,1');
+
+// MFA verification: 5 attempts per minute (one-time codes)
+Route::post('/login/mfa', [AuthController::class, 'loginWithMFA'])
+    ->middleware('throttle:5,1');
+
+// Biometric login: 10 attempts per minute
+Route::post('/login/biometric', [AuthController::class, 'loginWithBiometric'])
+    ->middleware('throttle:10,1');
+
+// Token refresh: 30 attempts per minute (higher since it's automated)
+Route::post('/auth/refresh', [AuthController::class, 'refreshToken'])
+    ->middleware('throttle:30,1');
+
+// Password reset: 3 attempts per minute (prevent email enumeration)
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
+    ->middleware('throttle:3,1');
+
+// Password reset submission: 5 attempts per minute
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+    ->middleware('throttle:5,1');
 
 // Public popup runtime routes
 Route::get('/popups/active', [PopupController::class, 'active']);
@@ -110,7 +132,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
-    
+    Route::post('/cart/calculate-tax', [CartController::class, 'calculateTax']);
+
     // SEO Routes
     Route::post('/seo/analyze', [SeoController::class, 'analyze']);
     Route::get('/seo/analyze/{contentType}/{contentId}', [SeoController::class, 'getAnalysis']);

@@ -61,6 +61,7 @@
 	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '@tabler/icons-svelte';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
+	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
@@ -1103,7 +1104,7 @@
 				<!-- Content -->
 				<div id="popup-content" class="popup-body">
 					{#if currentPopup.content.type === 'html'}
-						{@html currentPopup.content.data}
+						{@html sanitizePopupContent(currentPopup.content.data)}
 					{:else}
 						<div>{currentPopup.content.data}</div>
 					{/if}

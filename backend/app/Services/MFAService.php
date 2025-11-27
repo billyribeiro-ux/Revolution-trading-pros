@@ -3,15 +3,49 @@
 namespace App\Services;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class MFAService
 {
     /**
-     * Generate a random TOTP secret.
+     * Base32 alphabet for TOTP secrets (RFC 4648)
+     */
+    private const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+    /**
+     * Generate a random TOTP secret in valid base32 format.
+     * Generates a 160-bit (20 byte) secret encoded as 32 base32 characters.
      */
     public function generateSecret(): string
     {
-        return strtoupper(Str::random(32));
+        // Generate 20 random bytes (160 bits) - standard for TOTP
+        $randomBytes = random_bytes(20);
+
+        // Encode to base32 (RFC 4648)
+        return $this->base32Encode($randomBytes);
+    }
+
+    /**
+     * Encode binary data to base32.
+     */
+    private function base32Encode(string $data): string
+    {
+        $binary = '';
+        foreach (str_split($data) as $char) {
+            $binary .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+        }
+
+        $base32 = '';
+        $chunks = str_split($binary, 5);
+
+        foreach ($chunks as $chunk) {
+            // Pad last chunk if necessary
+            $chunk = str_pad($chunk, 5, '0', STR_PAD_RIGHT);
+            $index = bindec($chunk);
+            $base32 .= self::BASE32_ALPHABET[$index];
+        }
+
+        return $base32;
     }
 
     /**
@@ -37,14 +71,40 @@ class MFAService
 
     /**
      * Generate backup codes.
+     * Returns both plain codes (to show user once) and hashed codes (to store).
      */
     public function generateBackupCodes(int $count = 8): array
     {
-        $codes = [];
+        $plainCodes = [];
+        $hashedCodes = [];
+
         for ($i = 0; $i < $count; $i++) {
-            $codes[] = strtoupper(Str::random(4) . '-' . Str::random(4));
+            // Generate cryptographically secure code
+            $code = strtoupper(bin2hex(random_bytes(2)) . '-' . bin2hex(random_bytes(2)));
+            $plainCodes[] = $code;
+            $hashedCodes[] = Hash::make($code);
         }
-        return $codes;
+
+        return [
+            'plain' => $plainCodes,      // Show to user ONCE
+            'hashed' => $hashedCodes,    // Store in database
+        ];
+    }
+
+    /**
+     * Verify a backup code against stored hashed codes.
+     */
+    public function verifyBackupCode(string $code, array $hashedCodes): int|false
+    {
+        $code = strtoupper(trim($code));
+
+        foreach ($hashedCodes as $index => $hashedCode) {
+            if (Hash::check($code, $hashedCode)) {
+                return $index; // Return index so it can be removed after use
+            }
+        }
+
+        return false;
     }
 
     /**

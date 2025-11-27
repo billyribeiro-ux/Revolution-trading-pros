@@ -8,14 +8,21 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class PopupController extends Controller
 {
     /**
      * List all popups for the admin UI.
+     * Requires admin authentication (defense in depth - also enforced at route level).
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        // Defense in depth: verify admin access even though route middleware should handle this
+        if (!$request->user() || !$request->user()->hasAnyRole(['admin', 'super-admin'])) {
+            abort(403, 'Unauthorized access to popup management');
+        }
+
         $popups = Popup::query()
             ->orderByDesc('id')
             ->get()
@@ -28,9 +35,15 @@ class PopupController extends Controller
 
     /**
      * Create a new popup from the raw frontend config.
+     * Requires admin authentication.
      */
     public function store(Request $request): JsonResponse
     {
+        // Defense in depth: verify admin access
+        if (!$request->user() || !$request->user()->hasAnyRole(['admin', 'super-admin'])) {
+            abort(403, 'Unauthorized access to popup management');
+        }
+
         $data = $request->all();
 
         $popup = Popup::create([
@@ -55,9 +68,15 @@ class PopupController extends Controller
 
     /**
      * Update an existing popup.
+     * Requires admin authentication.
      */
     public function update(Request $request, Popup $popup): JsonResponse
     {
+        // Defense in depth: verify admin access
+        if (!$request->user() || !$request->user()->hasAnyRole(['admin', 'super-admin'])) {
+            abort(403, 'Unauthorized access to popup management');
+        }
+
         $data = $request->all();
 
         $popup->update([
@@ -82,9 +101,15 @@ class PopupController extends Controller
 
     /**
      * Delete a popup.
+     * Requires admin authentication.
      */
-    public function destroy(Popup $popup): JsonResponse
+    public function destroy(Request $request, Popup $popup): JsonResponse
     {
+        // Defense in depth: verify admin access
+        if (!$request->user() || !$request->user()->hasAnyRole(['admin', 'super-admin'])) {
+            abort(403, 'Unauthorized access to popup management');
+        }
+
         $popup->delete();
 
         return response()->json([
