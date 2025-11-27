@@ -571,10 +571,6 @@
 		transition: opacity 0.3s ease;
 	}
 
-	.item-thumbnail img.loaded {
-		opacity: 1;
-	}
-
 	.type-icon {
 		display: flex;
 		align-items: center;

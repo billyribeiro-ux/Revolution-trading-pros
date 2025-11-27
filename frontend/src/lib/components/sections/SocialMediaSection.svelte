@@ -48,16 +48,15 @@
 	<div class="social-container">
 		<p class="social-label">Connect with us</p>
 		
-		<div class="social-links" role="list">
+		<div class="social-links">
 			{#each socials as social (social.name)}
-				<a 
-					href={social.href} 
-					target="_blank" 
-					rel="noopener noreferrer" 
+				<a
+					href={social.href}
+					target="_blank"
+					rel="noopener noreferrer"
 					class="social-link"
 					style="--brand-color: {social.color}; --hover-bg: {social.hoverBg}"
 					aria-label="Follow us on {social.name}"
-					role="listitem"
 				>
 					<svg 
 						class="social-icon" 

@@ -22,7 +22,8 @@
 			low: number;
 		};
 	};
-	export let config: any = {};
+	// Config available for widget customization
+	export const config: Record<string, unknown> = {};
 
 	const totalBacklinks = tweened(0, { duration: 1500, easing: cubicOut });
 	const referringDomains = tweened(0, { duration: 1500, easing: cubicOut });
@@ -144,21 +145,21 @@
 			<span class="dofollow-badge">{data?.dofollow_ratio || 0}% DoFollow</span>
 		</div>
 		<div class="quality-bar">
-			<div class="quality-segment high" style="width: {data?.quality_breakdown?.high || 0}%" />
-			<div class="quality-segment medium" style="width: {data?.quality_breakdown?.medium || 0}%" />
-			<div class="quality-segment low" style="width: {data?.quality_breakdown?.low || 0}%" />
+			<div class="quality-segment high" style="width: {data?.quality_breakdown?.high || 0}%"></div>
+			<div class="quality-segment medium" style="width: {data?.quality_breakdown?.medium || 0}%"></div>
+			<div class="quality-segment low" style="width: {data?.quality_breakdown?.low || 0}%"></div>
 		</div>
 		<div class="quality-legend">
 			<div class="legend-item">
-				<span class="legend-dot high" />
+				<span class="legend-dot high"></span>
 				<span class="legend-text">High ({data?.quality_breakdown?.high || 0}%)</span>
 			</div>
 			<div class="legend-item">
-				<span class="legend-dot medium" />
+				<span class="legend-dot medium"></span>
 				<span class="legend-text">Medium ({data?.quality_breakdown?.medium || 0}%)</span>
 			</div>
 			<div class="legend-item">
-				<span class="legend-dot low" />
+				<span class="legend-dot low"></span>
 				<span class="legend-text">Low ({data?.quality_breakdown?.low || 0}%)</span>
 			</div>
 		</div>

@@ -60,12 +60,11 @@
 		on:mouseleave={handleMouseLeave}
 		use:tilt3d={{ intensity: interactive ? 6 : 0, scale: 1, glare: interactive }}
 		in:fly={{ y: 40, duration: 600, delay: animationDelay, easing: cubicOut }}
-		role="article"
 	>
 		<!-- Loading Overlay -->
 		{#if loading}
 			<div class="loading-overlay" in:scale={{ start: 0.9, duration: 300 }}>
-				<div class="loading-spinner" />
+				<div class="loading-spinner"></div>
 			</div>
 		{/if}
 
@@ -120,7 +119,7 @@
 		{/if}
 
 		<!-- Accent glow effect on hover -->
-		<div class="accent-glow" class:visible={isHovered} />
+		<div class="accent-glow" class:visible={isHovered}></div>
 	</article>
 {/if}
 

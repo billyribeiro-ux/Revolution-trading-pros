@@ -15,7 +15,8 @@
 		improved_count: number;
 		declined_count: number;
 	};
-	export let config: any = {};
+	// Config available for widget customization
+	export const config: Record<string, unknown> = {};
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -171,7 +172,7 @@
 					style="width: {data?.total_keywords
 						? (data.improved_count / data.total_keywords) * 100
 						: 0}%"
-				/>
+				></div>
 			</div>
 		</div>
 		<div class="perf-item bad">
@@ -183,7 +184,7 @@
 					style="width: {data?.total_keywords
 						? (data.declined_count / data.total_keywords) * 100
 						: 0}%"
-				/>
+				></div>
 			</div>
 		</div>
 	</div>

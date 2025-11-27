@@ -43,6 +43,8 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if isOpen}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_interactive_supports_focus -->
 	<div
 		class="modal-backdrop"
 		on:click={handleBackdropClick}

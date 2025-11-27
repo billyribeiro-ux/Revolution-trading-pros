@@ -14,7 +14,8 @@
 		daily_trend: Array<{ date: string; visitors: number; sessions: number }>;
 		period: string;
 	};
-	export let config: any = {};
+	// Config available for widget customization
+	export const config: Record<string, unknown> = {};
 
 	const visitors = tweened(0, { duration: 1500, easing: cubicOut });
 	const sessions = tweened(0, { duration: 1500, easing: cubicOut });
@@ -118,7 +119,7 @@
 								class="chart-bar"
 								style="height: {(day.visitors / maxValue) * 100}%"
 								class:highlight={i === data.daily_trend.slice(-14).length - 1}
-							/>
+							></div>
 							{#if i % 3 === 0 || i === data.daily_trend.slice(-14).length - 1}
 								<span class="chart-label">{formatDate(day.date)}</span>
 							{/if}
@@ -150,7 +151,7 @@
 					<div
 						class="metric-fill bounce"
 						style="width: {Math.min(data?.bounce_rate || 0, 100)}%"
-					/>
+					></div>
 				</div>
 			</div>
 

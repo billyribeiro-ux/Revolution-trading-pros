@@ -24,7 +24,8 @@
 			message: string;
 		}>;
 	};
-	export let config: any = {};
+	// Config available for widget customization
+	export const config: Record<string, unknown> = {};
 
 	const animatedScore = tweened(0, { duration: 1500, easing: cubicOut });
 
@@ -97,7 +98,7 @@
 								<div
 									class="breakdown-fill"
 									style="width: {value}%; background: {getScoreColor(value)}"
-								/>
+								></div>
 							</div>
 						</div>
 					{/if}

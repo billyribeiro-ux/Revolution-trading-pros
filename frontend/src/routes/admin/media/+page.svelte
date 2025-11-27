@@ -415,7 +415,7 @@
           bind:value={searchQuery}
           on:keydown={(e) => e.key === 'Enter' && applyFilters()}
         />
-        <button type="button" on:click={applyFilters}>
+        <button type="button" on:click={applyFilters} aria-label="Search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
@@ -548,6 +548,7 @@
         class="btn btn-icon"
         disabled={currentPage === 1}
         on:click={() => goToPage(currentPage - 1)}
+        aria-label="Previous page"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M15 18l-6-6 6-6" />
@@ -563,6 +564,7 @@
         class="btn btn-icon"
         disabled={currentPage === totalPages}
         on:click={() => goToPage(currentPage + 1)}
+        aria-label="Next page"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 18l6-6-6-6" />

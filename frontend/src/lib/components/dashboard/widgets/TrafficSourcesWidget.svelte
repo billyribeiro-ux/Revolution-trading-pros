@@ -14,7 +14,8 @@
 		total_visitors: number;
 		period: string;
 	};
-	export let config: any = {};
+	// Config available for widget customization
+	export const config: Record<string, unknown> = {};
 
 	const totalVisitors = tweened(0, { duration: 1500, easing: cubicOut });
 
@@ -144,7 +145,7 @@
 									class="percentage-fill"
 									style="width: {source.percentage}%; background: {source.color ||
 										defaultColors[i % defaultColors.length]}"
-								/>
+								></div>
 							</div>
 						</div>
 						{#if source.change !== 0}

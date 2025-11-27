@@ -262,7 +262,7 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="modal-overlay" on:click={() => showUploadModal = false} on:keydown={(e) => e.key === 'Escape' && (showUploadModal = false)}>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="modal" on:click|stopPropagation on:keydown|stopPropagation role="dialog" aria-modal="true">
+		<div class="modal" on:click|stopPropagation on:keydown|stopPropagation role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>Upload Video</h2>
 				<button class="modal-close" on:click={() => showUploadModal = false} type="button" aria-label="Close">&times;</button>

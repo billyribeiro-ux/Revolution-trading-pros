@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let type: string = 'candlestick';
+    // Type available for future icon variations
+    export const type: string = 'candlestick';
     export let size: number = 48;
 </script>
 

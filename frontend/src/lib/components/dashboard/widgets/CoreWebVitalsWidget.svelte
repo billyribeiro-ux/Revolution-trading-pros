@@ -17,7 +17,8 @@
 			poor_percent: number;
 		};
 	};
-	export let config: any = {};
+	// Config available for widget customization
+	export const config: Record<string, unknown> = {};
 
 	const overallScore = tweened(0, { duration: 1500, easing: cubicOut });
 
@@ -179,24 +180,24 @@
 				<div
 					class="origin-segment good"
 					style="width: {data?.origin_summary?.good_percent || 0}%"
-				/>
+				></div>
 				<div
 					class="origin-segment warning"
 					style="width: {data?.origin_summary?.needs_improvement_percent || 0}%"
-				/>
-				<div class="origin-segment poor" style="width: {data?.origin_summary?.poor_percent || 0}%" />
+				></div>
+				<div class="origin-segment poor" style="width: {data?.origin_summary?.poor_percent || 0}%"></div>
 			</div>
 			<div class="origin-legend">
 				<span class="legend-item">
-					<span class="legend-dot good" />
+					<span class="legend-dot good"></span>
 					{data?.origin_summary?.good_percent || 0}% Good
 				</span>
 				<span class="legend-item">
-					<span class="legend-dot warning" />
+					<span class="legend-dot warning"></span>
 					{data?.origin_summary?.needs_improvement_percent || 0}% Needs Work
 				</span>
 				<span class="legend-item">
-					<span class="legend-dot poor" />
+					<span class="legend-dot poor"></span>
 					{data?.origin_summary?.poor_percent || 0}% Poor
 				</span>
 			</div>
@@ -223,16 +224,16 @@
 							<div
 								class="marker good"
 								style="left: {(vital.thresholds.good / (vital.thresholds.poor * 1.5)) * 100}%"
-							/>
+							></div>
 							<div
 								class="marker poor"
 								style="left: {(vital.thresholds.poor / (vital.thresholds.poor * 1.5)) * 100}%"
-							/>
+							></div>
 						</div>
 						<div
 							class="progress-fill"
 							style="width: {getProgressWidth(vital)}%; background: {getRatingColor(vital.rating)}"
-						/>
+						></div>
 					</div>
 				</div>
 			</div>

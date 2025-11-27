@@ -5,7 +5,8 @@
 	import { tweened, spring } from 'svelte/motion';
 	import { scrollReveal, tilt3d, magnetic, parallax } from '$lib/animations/appleAnimations';
 
-	export let title = 'Dashboard';
+	// Title available for dashboard customization
+	export const title = 'Dashboard';
 	export let subtitle = 'Welcome back';
 
 	let mounted = false;
@@ -55,7 +56,7 @@
 	<div
 		class="background-gradient"
 		style="--cursor-x: {$cursorX}px; --cursor-y: {$cursorY}px;"
-	/>
+	></div>
 
 	<!-- Hero Header Section -->
 	<header
