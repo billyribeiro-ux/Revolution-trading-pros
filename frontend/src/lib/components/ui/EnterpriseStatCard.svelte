@@ -7,35 +7,55 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		title: string;
+		value: number;
+		format?: 'number' | 'currency' | 'percent' | 'compact';
+		decimals?: number;
+		prefix?: string;
+		suffix?: string;
+		trend?: number | null;
+		trendLabel?: string;
+		icon?: any;
+		color?: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red';
+		loading?: boolean;
+		delay?: number;
+		clickable?: boolean;
+		sparklineData?: number[];
+		target?: number | null;
+		targetLabel?: string;
+		onclick?: () => void;
+	}
 
-	// Props
-	export let title: string;
-	export let value: number;
-	export let format: 'number' | 'currency' | 'percent' | 'compact' = 'number';
-	export let decimals: number = 0;
-	export let prefix: string = '';
-	export let suffix: string = '';
-	export let trend: number | null = null; // Percentage change
-	export let trendLabel: string = 'vs last period';
-	export let icon: any = null;
-	export let color: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red' = 'blue';
-	export let loading: boolean = false;
-	export let delay: number = 0;
-	export let clickable: boolean = false;
-	export let sparklineData: number[] = [];
-	export let target: number | null = null;
-	export let targetLabel: string = 'Target';
+	let {
+		title,
+		value,
+		format = 'number',
+		decimals = 0,
+		prefix = '',
+		suffix = '',
+		trend = null,
+		trendLabel = 'vs last period',
+		icon = null,
+		color = 'blue',
+		loading = false,
+		delay = 0,
+		clickable = false,
+		sparklineData = [],
+		target = null,
+		targetLabel = 'Target',
+		onclick
+	}: Props = $props();
 
 	let cardRef: HTMLDivElement;
-	let isVisible = false;
-	let hasAnimated = false;
+	let isVisible = $state(false);
+	let hasAnimated = $state(false);
 
 	const colorConfig = {
 		blue: {
@@ -96,9 +116,9 @@
 		}
 	};
 
-	$: colors = colorConfig[color];
-	$: trendIsPositive = trend !== null && trend >= 0;
-	$: progressPercent = target ? Math.min((value / target) * 100, 100) : 0;
+	let colors = $derived(colorConfig[color]);
+	let trendIsPositive = $derived(trend !== null && trend >= 0);
+	let progressPercent = $derived(target ? Math.min((value / target) * 100, 100) : 0);
 
 	function generateSparklinePath(data: number[]): string {
 		if (data.length < 2) return '';
@@ -119,13 +139,13 @@
 
 	function handleClick() {
 		if (clickable) {
-			dispatch('click');
+			onclick?.();
 		}
 	}
 
 	function handleKeypress(e: KeyboardEvent) {
 		if (clickable && (e.key === 'Enter' || e.key === ' ')) {
-			dispatch('click');
+			onclick?.();
 		}
 	}
 
@@ -209,8 +229,8 @@
 		hover:{colors.glow}"
 	role={clickable ? 'button' : undefined}
 	tabindex={clickable ? 0 : undefined}
-	on:click={clickable ? handleClick : undefined}
-	on:keypress={clickable ? handleKeypress : undefined}
+	onclick={clickable ? handleClick : undefined}
+	onkeypress={clickable ? handleKeypress : undefined}
 >
 	{#if loading}
 		<SkeletonLoader variant="stat" />
@@ -218,10 +238,11 @@
 		<!-- Header with icon -->
 		<div class="flex items-start justify-between mb-4">
 			{#if icon}
+				{@const IconComponent = icon}
 				<div
 					class="stat-icon w-12 h-12 rounded-xl {colors.iconBg} flex items-center justify-center"
 				>
-					<svelte:component this={icon} size={24} class={colors.icon} />
+					<IconComponent size={24} class={colors.icon} />
 				</div>
 			{/if}
 

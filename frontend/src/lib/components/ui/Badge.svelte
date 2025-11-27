@@ -1,6 +1,17 @@
 <script lang="ts">
-	export let variant: 'default' | 'success' | 'warning' | 'danger' | 'info' = 'default';
-	export let size: 'sm' | 'md' = 'sm';
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
+		size?: 'sm' | 'md';
+		children?: Snippet;
+	}
+
+	let {
+		variant = 'default',
+		size = 'sm',
+		children
+	}: Props = $props();
 
 	const variants = {
 		default: 'bg-gray-100 text-gray-800',
@@ -17,5 +28,5 @@
 </script>
 
 <span class="inline-flex items-center rounded-full font-medium {variants[variant]} {sizes[size]}">
-	<slot />
+	{@render children?.()}
 </span>

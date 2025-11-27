@@ -5,9 +5,23 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	export let title: string;
-	export let description: string = '';
-	export let breadcrumbs: { label: string; href?: string }[] = [];
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		title: string;
+		description?: string;
+		breadcrumbs?: { label: string; href?: string }[];
+		actions?: Snippet;
+		children?: Snippet;
+	}
+
+	let {
+		title,
+		description = '',
+		breadcrumbs = [],
+		actions,
+		children
+	}: Props = $props();
 </script>
 
 <header class="page-header">
@@ -35,11 +49,11 @@
 		</div>
 		
 		<div class="header-actions">
-			<slot name="actions" />
+			{@render actions?.()}
 		</div>
 	</div>
 
-	<slot />
+	{@render children?.()}
 </header>
 
 <style>

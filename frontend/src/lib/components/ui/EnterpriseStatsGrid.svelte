@@ -28,18 +28,28 @@
 		clickable?: boolean;
 	}
 
-	export let stats: StatItem[] = [];
-	export let loading: boolean = false;
-	export let columns: 2 | 3 | 4 | 5 = 4;
-	export let staggerDelay: number = 0.1;
-	export let onStatClick: ((stat: StatItem) => void) | null = null;
+	interface Props {
+		stats?: StatItem[];
+		loading?: boolean;
+		columns?: 2 | 3 | 4 | 5;
+		staggerDelay?: number;
+		onStatClick?: ((stat: StatItem) => void) | null;
+	}
 
-	$: gridCols = {
+	let {
+		stats = [],
+		loading = false,
+		columns = 4,
+		staggerDelay = 0.1,
+		onStatClick = null
+	}: Props = $props();
+
+	let gridCols = $derived({
 		2: 'grid-cols-1 sm:grid-cols-2',
 		3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
 		4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
 		5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-	}[columns];
+	}[columns]);
 </script>
 
 <div class="grid {gridCols} gap-6">
@@ -65,7 +75,7 @@
 				targetLabel={stat.targetLabel ?? 'Target'}
 				clickable={stat.clickable ?? !!onStatClick}
 				delay={index * staggerDelay}
-				on:click={() => onStatClick?.(stat)}
+				onclick={() => onStatClick?.(stat)}
 			/>
 		{/each}
 	{/if}

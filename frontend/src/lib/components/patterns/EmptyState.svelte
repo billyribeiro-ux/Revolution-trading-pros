@@ -6,19 +6,30 @@
 	 * @author Revolution Trading Pros
 	 */
 	import { IconInbox } from '@tabler/icons-svelte';
-	import type { ComponentType } from 'svelte';
+	import type { ComponentType, Snippet } from 'svelte';
 
-	export let title = 'No data found';
-	export let description = '';
-	export let icon: ComponentType = IconInbox;
-	export let actionLabel = '';
-	export let size: 'sm' | 'md' | 'lg' = 'md';
+	interface Props {
+		title?: string;
+		description?: string;
+		icon?: ComponentType;
+		actionLabel?: string;
+		size?: 'sm' | 'md' | 'lg';
+		onaction?: () => void;
+		children?: Snippet;
+	}
 
-	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
+	let {
+		title = 'No data found',
+		description = '',
+		icon: Icon = IconInbox,
+		actionLabel = '',
+		size = 'md',
+		onaction,
+		children
+	}: Props = $props();
 
 	function handleAction() {
-		dispatch('action');
+		onaction?.();
 	}
 
 	const sizes = {
@@ -30,7 +41,7 @@
 
 <div class="empty-state size-{size}" style="padding: {sizes[size].padding}">
 	<div class="empty-icon">
-		<svelte:component this={icon} size={sizes[size].icon} />
+		<Icon size={sizes[size].icon} />
 	</div>
 	
 	<h3 class="empty-title">{title}</h3>
@@ -39,10 +50,10 @@
 		<p class="empty-description">{description}</p>
 	{/if}
 	
-	<slot />
+	{@render children?.()}
 	
 	{#if actionLabel}
-		<button class="empty-action" on:click={handleAction}>
+		<button class="empty-action" onclick={handleAction}>
 			{actionLabel}
 		</button>
 	{/if}

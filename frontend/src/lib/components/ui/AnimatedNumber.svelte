@@ -11,18 +11,33 @@
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 
-	export let value: number;
-	export let duration: number = 1.5;
-	export let format: 'number' | 'currency' | 'percent' | 'compact' = 'number';
-	export let decimals: number = 0;
-	export let prefix: string = '';
-	export let suffix: string = '';
-	export let locale: string = 'en-US';
-	export let currency: string = 'USD';
-	export let delay: number = 0;
-	export let easing: string = 'power2.out';
+	interface Props {
+		value: number;
+		duration?: number;
+		format?: 'number' | 'currency' | 'percent' | 'compact';
+		decimals?: number;
+		prefix?: string;
+		suffix?: string;
+		locale?: string;
+		currency?: string;
+		delay?: number;
+		easing?: string;
+	}
 
-	let displayValue = 0;
+	let {
+		value,
+		duration = 1.5,
+		format = 'number',
+		decimals = 0,
+		prefix = '',
+		suffix = '',
+		locale = 'en-US',
+		currency = 'USD',
+		delay = 0,
+		easing = 'power2.out'
+	}: Props = $props();
+
+	let displayValue = $state(0);
 	let element: HTMLSpanElement;
 	let tween: gsap.core.Tween | null = null;
 
@@ -100,9 +115,11 @@
 	});
 
 	// Reactively animate when value changes
-	$: if (browser && value !== undefined) {
-		animate(value);
-	}
+	$effect(() => {
+		if (browser && value !== undefined) {
+			animate(value);
+		}
+	});
 </script>
 
 <span

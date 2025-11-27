@@ -48,28 +48,30 @@
 	<div class="social-container">
 		<p class="social-label">Connect with us</p>
 		
-		<div class="social-links">
+		<ul class="social-links">
 			{#each socials as social (social.name)}
-				<a
-					href={social.href}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="social-link"
-					style="--brand-color: {social.color}; --hover-bg: {social.hoverBg}"
-					aria-label="Follow us on {social.name}"
-				>
-					<svg 
-						class="social-icon" 
-						viewBox="0 0 24 24" 
-						xmlns="http://www.w3.org/2000/svg"
-						aria-hidden="true"
+				<li>
+					<a 
+						href={social.href} 
+						target="_blank" 
+						rel="noopener noreferrer" 
+						class="social-link"
+						style="--brand-color: {social.color}; --hover-bg: {social.hoverBg}"
+						aria-label="Follow us on {social.name}"
 					>
-						<path d={social.icon}/>
-					</svg>
-					<span class="social-name">{social.name}</span>
-				</a>
+						<svg 
+							class="social-icon" 
+							viewBox="0 0 24 24" 
+							xmlns="http://www.w3.org/2000/svg"
+							aria-hidden="true"
+						>
+							<path d={social.icon}/>
+						</svg>
+						<span class="social-name">{social.name}</span>
+					</a>
+				</li>
 			{/each}
-		</div>
+		</ul>
 	</div>
 </section>
 
@@ -105,6 +107,9 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: 0.5rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	.social-link {

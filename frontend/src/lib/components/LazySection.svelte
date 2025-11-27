@@ -7,14 +7,22 @@
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import { browser } from '$app/environment';
 
-	// Props
-	export let rootMargin = '200px'; // Start loading 200px before entering viewport
-	export let threshold = 0.01;
+	interface Props {
+		rootMargin?: string;
+		threshold?: number;
+		children?: Snippet;
+	}
 
-	// State
-	let isVisible = false;
+	let {
+		rootMargin = '200px',
+		threshold = 0.01,
+		children
+	}: Props = $props();
+
+	let isVisible = $state(false);
 	let container: HTMLElement;
 
 	onMount(() => {
@@ -42,7 +50,7 @@
 
 <div bind:this={container} class="lazy-section">
 	{#if isVisible}
-		<slot />
+		{@render children?.()}
 	{:else}
 		<!-- Placeholder to maintain layout stability -->
 		<div class="lazy-placeholder" style="min-height: 400px;" aria-hidden="true"></div>

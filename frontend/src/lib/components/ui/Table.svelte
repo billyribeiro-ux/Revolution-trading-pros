@@ -1,7 +1,19 @@
 <script lang="ts">
-	export let headers: string[] = [];
-	export let striped: boolean = false;
-	export let hoverable: boolean = true;
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		headers?: string[];
+		striped?: boolean;
+		hoverable?: boolean;
+		children?: Snippet;
+	}
+
+	let {
+		headers = [],
+		striped = false,
+		hoverable = true,
+		children
+	}: Props = $props();
 </script>
 
 <div class="overflow-x-auto">
@@ -25,7 +37,7 @@
 				? '[&>tr:nth-child(even)]:bg-gray-50'
 				: ''} {hoverable ? 'hoverable' : ''}"
 		>
-			<slot />
+			{@render children?.()}
 		</tbody>
 	</table>
 </div>

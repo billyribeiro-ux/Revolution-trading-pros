@@ -1,8 +1,19 @@
 <script lang="ts">
-	export let padding: boolean = true;
-	export let hover: boolean = false;
-	let className: string = '';
-	export { className as class };
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		padding?: boolean;
+		hover?: boolean;
+		class?: string;
+		children?: Snippet;
+	}
+
+	let {
+		padding = true,
+		hover = false,
+		class: className = '',
+		children
+	}: Props = $props();
 </script>
 
 <div
@@ -11,5 +22,5 @@
     {hover ? 'hover:shadow-md transition-shadow duration-200' : ''}
     {className}"
 >
-	<slot />
+	{@render children?.()}
 </div>

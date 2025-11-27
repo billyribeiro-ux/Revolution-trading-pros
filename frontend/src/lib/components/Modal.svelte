@@ -4,11 +4,22 @@
 	 * Displays content in an overlay with backdrop
 	 */
 	import { onMount } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import { IconX } from '@tabler/icons-svelte';
 
-	export let isOpen = false;
-	export let title = '';
-	export let onClose: () => void = () => {};
+	interface Props {
+		isOpen?: boolean;
+		title?: string;
+		onClose?: () => void;
+		children?: Snippet;
+	}
+
+	let {
+		isOpen = false,
+		title = '',
+		onClose = () => {},
+		children
+	}: Props = $props();
 
 	let modalRef: HTMLDivElement;
 
@@ -27,9 +38,11 @@
 	}
 
 	// Prevent body scroll when modal is open
-	$: if (typeof document !== 'undefined') {
-		document.body.style.overflow = isOpen ? 'hidden' : '';
-	}
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			document.body.style.overflow = isOpen ? 'hidden' : '';
+		}
+	});
 
 	onMount(() => {
 		return () => {
@@ -40,17 +53,19 @@
 	});
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_interactive_supports_focus -->
 	<div
 		class="modal-backdrop"
-		on:click={handleBackdropClick}
+		onclick={handleBackdropClick}
+		onkeydown={(e) => e.key === 'Escape' && onClose()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="modal-title"
+		tabindex="-1"
 	>
 		<div bind:this={modalRef} class="modal-container">
 			<!-- Header -->
@@ -59,7 +74,7 @@
 				<button
 					type="button"
 					class="modal-close"
-					on:click={onClose}
+					onclick={onClose}
 					aria-label="Close modal"
 				>
 					<IconX size={24} stroke={2} />
@@ -68,7 +83,7 @@
 
 			<!-- Content -->
 			<div class="modal-content">
-				<slot />
+				{@render children?.()}
 			</div>
 		</div>
 	</div>

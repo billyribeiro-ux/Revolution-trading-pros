@@ -1,16 +1,29 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import type { Snippet } from 'svelte';
 
-	export let variant: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' = 'primary';
-	export let size: 'sm' | 'md' | 'lg' = 'md';
-	export let disabled: boolean = false;
-	export let loading: boolean = false;
-	export let type: 'button' | 'submit' = 'button';
-	export let fullWidth: boolean = false;
-	let className: string = '';
-	export { className as class };
+	interface Props {
+		variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
+		size?: 'sm' | 'md' | 'lg';
+		disabled?: boolean;
+		loading?: boolean;
+		type?: 'button' | 'submit';
+		fullWidth?: boolean;
+		class?: string;
+		onclick?: (e: MouseEvent) => void;
+		children?: Snippet;
+	}
 
-	const dispatch = createEventDispatcher();
+	let {
+		variant = 'primary',
+		size = 'md',
+		disabled = false,
+		loading = false,
+		type = 'button',
+		fullWidth = false,
+		class: className = '',
+		onclick,
+		children
+	}: Props = $props();
 
 	const variants = {
 		primary: 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-300',
@@ -34,7 +47,7 @@
     {variants[variant]} {sizes[size]} {fullWidth ? 'w-full' : ''}
     disabled:cursor-not-allowed disabled:opacity-60 {className}"
 	disabled={disabled || loading}
-	on:click={() => dispatch('click')}
+	{onclick}
 >
 	{#if loading}
 		<svg
@@ -52,5 +65,5 @@
 			></path>
 		</svg>
 	{/if}
-	<slot />
+	{@render children?.()}
 </button>

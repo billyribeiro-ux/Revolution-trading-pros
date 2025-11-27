@@ -6,26 +6,35 @@
 	 * @author Revolution Trading Pros
 	 */
 	import { IconAlertTriangle, IconRefresh } from '@tabler/icons-svelte';
-	import { createEventDispatcher } from 'svelte';
+	import type { Snippet } from 'svelte';
 
-	export let error: Error | null = null;
-	export let showDetails = false;
-	export let onRetry: (() => void) | null = null;
+	interface Props {
+		error?: Error | null;
+		showDetails?: boolean;
+		onRetry?: (() => void) | null;
+		onreport?: (detail: { error: Error | null }) => void;
+		children?: Snippet;
+	}
 
-	const dispatch = createEventDispatcher();
+	let {
+		error = $bindable(null),
+		showDetails = false,
+		onRetry = null,
+		onreport,
+		children
+	}: Props = $props();
 
 	function handleRetry() {
 		error = null;
 		if (onRetry) {
 			onRetry();
 		}
-		dispatch('retry');
 	}
 
 	function handleReport() {
 		// In production, this would send to error tracking service
 		console.error('Error reported:', error);
-		dispatch('report', { error });
+		onreport?.({ error });
 	}
 </script>
 
@@ -51,19 +60,19 @@
 			
 			<div class="error-actions">
 				{#if onRetry}
-					<button class="btn-primary" on:click={handleRetry}>
+					<button class="btn-primary" onclick={handleRetry}>
 						<IconRefresh size={18} />
 						Try Again
 					</button>
 				{/if}
-				<button class="btn-secondary" on:click={handleReport}>
+				<button class="btn-secondary" onclick={handleReport}>
 					Report Issue
 				</button>
 			</div>
 		</div>
 	</div>
 {:else}
-	<slot />
+	{@render children?.()}
 {/if}
 
 <style>

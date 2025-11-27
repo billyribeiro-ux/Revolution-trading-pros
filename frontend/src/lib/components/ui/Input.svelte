@@ -1,15 +1,37 @@
 <script lang="ts">
-	export let type: string = 'text';
-	export let value: any = '';
-	export let placeholder: string = '';
-	export let label: string = '';
-	export let error: string = '';
-	export let disabled: boolean = false;
-	export let required: boolean = false;
-	export let id: string = '';
-	export let min: string | number | undefined = undefined;
-	export let max: string | number | undefined = undefined;
-	export let step: string | number | undefined = undefined;
+	interface Props {
+		type?: string;
+		value?: any;
+		placeholder?: string;
+		label?: string;
+		error?: string;
+		disabled?: boolean;
+		required?: boolean;
+		id?: string;
+		min?: string | number;
+		max?: string | number;
+		step?: string | number;
+		oninput?: (e: Event) => void;
+		onchange?: (e: Event) => void;
+		onblur?: (e: FocusEvent) => void;
+	}
+
+	let {
+		type = 'text',
+		value = $bindable(''),
+		placeholder = '',
+		label = '',
+		error = '',
+		disabled = false,
+		required = false,
+		id = '',
+		min,
+		max,
+		step,
+		oninput,
+		onchange,
+		onblur
+	}: Props = $props();
 </script>
 
 <div class="w-full">
@@ -36,9 +58,9 @@
       {error ? 'border-red-500' : 'border-gray-300'}
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
       disabled:bg-gray-100 disabled:cursor-not-allowed"
-		on:input
-		on:change
-		on:blur
+		{oninput}
+		{onchange}
+		{onblur}
 	/>
 
 	{#if error}

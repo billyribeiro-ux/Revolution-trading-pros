@@ -5,7 +5,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { createEventDispatcher } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import {
 		IconSortAscending,
 		IconSortDescending,
@@ -22,23 +22,51 @@
 		align?: 'left' | 'center' | 'right';
 	}
 
-	export let columns: Column[] = [];
-	export let data: any[] = [];
-	export let loading = false;
-	export let sortKey = '';
-	export let sortDirection: 'asc' | 'desc' = 'asc';
-	export let page = 1;
-	export let pageSize = 10;
-	export let totalItems = 0;
-	export let showPagination = true;
-	export let emptyMessage = 'No data available';
-	export let stickyHeader = false;
+	interface Props {
+		columns?: Column[];
+		data?: any[];
+		loading?: boolean;
+		sortKey?: string;
+		sortDirection?: 'asc' | 'desc';
+		page?: number;
+		pageSize?: number;
+		totalItems?: number;
+		showPagination?: boolean;
+		emptyMessage?: string;
+		stickyHeader?: boolean;
+		onsort?: (detail: { key: string; direction: 'asc' | 'desc' }) => void;
+		onpage?: (detail: { page: number }) => void;
+		onrowclick?: (detail: { row: any; index: number }) => void;
+		headerActions?: Snippet;
+		empty?: Snippet;
+		cell?: Snippet<[{ row: any; column: Column; value: any }]>;
+		rowActions?: Snippet<[{ row: any; index: number }]>;
+	}
 
-	const dispatch = createEventDispatcher();
+	let {
+		columns = [],
+		data = [],
+		loading = false,
+		sortKey = $bindable(''),
+		sortDirection = $bindable<'asc' | 'desc'>('asc'),
+		page = $bindable(1),
+		pageSize = 10,
+		totalItems = 0,
+		showPagination = true,
+		emptyMessage = 'No data available',
+		stickyHeader = false,
+		onsort,
+		onpage,
+		onrowclick,
+		headerActions,
+		empty,
+		cell,
+		rowActions
+	}: Props = $props();
 
-	$: totalPages = Math.ceil(totalItems / pageSize);
-	$: startItem = (page - 1) * pageSize + 1;
-	$: endItem = Math.min(page * pageSize, totalItems);
+	let totalPages = $derived(Math.ceil(totalItems / pageSize));
+	let startItem = $derived((page - 1) * pageSize + 1);
+	let endItem = $derived(Math.min(page * pageSize, totalItems));
 
 	function handleSort(column: Column) {
 		if (!column.sortable) return;
@@ -50,17 +78,17 @@
 			sortDirection = 'asc';
 		}
 		
-		dispatch('sort', { key: sortKey, direction: sortDirection });
+		onsort?.({ key: sortKey, direction: sortDirection });
 	}
 
 	function handlePageChange(newPage: number) {
 		if (newPage < 1 || newPage > totalPages) return;
 		page = newPage;
-		dispatch('page', { page });
+		onpage?.({ page });
 	}
 
 	function handleRowClick(row: any, index: number) {
-		dispatch('rowClick', { row, index });
+		onrowclick?.({ row, index });
 	}
 </script>
 
@@ -75,7 +103,7 @@
 							class:sortable={column.sortable}
 							class:sorted={sortKey === column.key}
 							class="align-{column.align || 'left'}"
-							on:click={() => handleSort(column)}
+							onclick={() => handleSort(column)}
 						>
 							<div class="th-content">
 								<span>{column.label}</span>
@@ -95,7 +123,7 @@
 							</div>
 						</th>
 					{/each}
-					<slot name="header-actions" />
+					{@render headerActions?.()}
 				</tr>
 			</thead>
 			<tbody>
@@ -113,26 +141,30 @@
 					<tr>
 						<td colspan={columns.length} class="empty-cell">
 							<div class="empty-state">
-								<slot name="empty">
+								{#if empty}
+									{@render empty()}
+								{:else}
 									<p>{emptyMessage}</p>
-								</slot>
+								{/if}
 							</div>
 						</td>
 					</tr>
 				{:else}
 					{#each data as row, index}
 						<tr 
-							on:click={() => handleRowClick(row, index)}
-							class:clickable={$$slots['row-actions']}
+							onclick={() => handleRowClick(row, index)}
+							class:clickable={rowActions}
 						>
 							{#each columns as column}
 								<td class="align-{column.align || 'left'}">
-									<slot name="cell" {row} {column} value={row[column.key]}>
+									{#if cell}
+										{@render cell({ row, column, value: row[column.key] })}
+									{:else}
 										{row[column.key] ?? '-'}
-									</slot>
+									{/if}
 								</td>
 							{/each}
-							<slot name="row-actions" {row} {index} />
+							{@render rowActions?.({ row, index })}
 						</tr>
 					{/each}
 				{/if}
@@ -149,7 +181,7 @@
 				<button 
 					class="page-btn"
 					disabled={page === 1}
-					on:click={() => handlePageChange(page - 1)}
+					onclick={() => handlePageChange(page - 1)}
 				>
 					<IconArrowLeft size={18} />
 				</button>
@@ -160,7 +192,7 @@
 						<button 
 							class="page-btn"
 							class:active={pageNum === page}
-							on:click={() => handlePageChange(pageNum)}
+							onclick={() => handlePageChange(pageNum)}
 						>
 							{pageNum}
 						</button>
@@ -170,7 +202,7 @@
 				<button 
 					class="page-btn"
 					disabled={page === totalPages}
-					on:click={() => handlePageChange(page + 1)}
+					onclick={() => handlePageChange(page + 1)}
 				>
 					<IconArrowRight size={18} />
 				</button>

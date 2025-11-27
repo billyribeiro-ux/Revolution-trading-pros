@@ -7,22 +7,33 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { IconDownload, IconCsv, IconPdf, IconJson } from '$lib/icons';
 	import { exportToCSV, exportToPDF, exportToJSON, type ExportColumn, type ExportOptions } from '$lib/utils/export';
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		data?: Record<string, unknown>[];
+		columns?: ExportColumn[];
+		filename?: string;
+		title?: string;
+		subtitle?: string;
+		disabled?: boolean;
+		size?: 'sm' | 'md' | 'lg';
+		onexport?: (detail: { format: string; count: number }) => void;
+	}
 
-	export let data: Record<string, unknown>[] = [];
-	export let columns: ExportColumn[] = [];
-	export let filename: string = 'export';
-	export let title: string = '';
-	export let subtitle: string = '';
-	export let disabled: boolean = false;
-	export let size: 'sm' | 'md' | 'lg' = 'md';
+	let {
+		data = [],
+		columns = [],
+		filename = 'export',
+		title = '',
+		subtitle = '',
+		disabled = false,
+		size = 'md',
+		onexport
+	}: Props = $props();
 
-	let isOpen = false;
+	let isOpen = $state(false);
 	let buttonRef: HTMLButtonElement;
 
 	const sizeClasses = {
@@ -63,7 +74,7 @@
 				break;
 		}
 
-		dispatch('export', { format, count: data.length });
+		onexport?.({ format, count: data.length });
 		close();
 	}
 
@@ -74,12 +85,12 @@
 	}
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <div class="relative inline-block">
 	<button
 		bind:this={buttonRef}
-		on:click={toggle}
+		onclick={toggle}
 		class="flex items-center gap-2 {sizeClasses[size]} font-medium rounded-lg
 			bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50
 			text-slate-300 hover:text-white transition-all duration-200
@@ -110,7 +121,7 @@
 		>
 			<div class="py-1">
 				<button
-					on:click={() => handleExport('csv')}
+					onclick={() => handleExport('csv')}
 					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
 						hover:bg-slate-700/50 hover:text-white transition-colors"
 				>
@@ -119,7 +130,7 @@
 				</button>
 
 				<button
-					on:click={() => handleExport('pdf')}
+					onclick={() => handleExport('pdf')}
 					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
 						hover:bg-slate-700/50 hover:text-white transition-colors"
 				>
@@ -128,7 +139,7 @@
 				</button>
 
 				<button
-					on:click={() => handleExport('json')}
+					onclick={() => handleExport('json')}
 					class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300
 						hover:bg-slate-700/50 hover:text-white transition-colors"
 				>

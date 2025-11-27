@@ -8,17 +8,30 @@
 	import { IconTrendingUp, IconTrendingDown, IconMinus } from '@tabler/icons-svelte';
 	import type { ComponentType } from 'svelte';
 
-	export let title: string;
-	export let value: string | number;
-	export let subtitle: string = '';
-	export let trend: number | null = null;
-	export let trendLabel: string = '';
-	export let icon: ComponentType | null = null;
-	export let iconColor: 'primary' | 'success' | 'warning' | 'error' | 'info' = 'primary';
-	export let loading = false;
+	interface Props {
+		title: string;
+		value: string | number;
+		subtitle?: string;
+		trend?: number | null;
+		trendLabel?: string;
+		icon?: ComponentType | null;
+		iconColor?: 'primary' | 'success' | 'warning' | 'error' | 'info';
+		loading?: boolean;
+	}
 
-	$: trendDirection = trend === null ? 'neutral' : trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral';
-	$: formattedTrend = trend !== null ? `${trend > 0 ? '+' : ''}${trend}%` : '';
+	let {
+		title,
+		value,
+		subtitle = '',
+		trend = null,
+		trendLabel = '',
+		icon = null,
+		iconColor = 'primary',
+		loading = false
+	}: Props = $props();
+
+	let trendDirection = $derived(trend === null ? 'neutral' : trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral');
+	let formattedTrend = $derived(trend !== null ? `${trend > 0 ? '+' : ''}${trend}%` : '');
 
 	const iconColors = {
 		primary: 'bg-rtp-primary-soft text-rtp-primary',
@@ -31,8 +44,9 @@
 
 <div class="stat-card">
 	{#if icon}
+		{@const IconComponent = icon}
 		<div class="stat-icon {iconColors[iconColor]}">
-			<svelte:component this={icon} size={24} />
+			<IconComponent size={24} />
 		</div>
 	{/if}
 	

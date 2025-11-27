@@ -8,12 +8,23 @@
 	 * @level L8 Principal Engineer
 	 */
 
-	export let variant: 'text' | 'circular' | 'rectangular' | 'card' | 'stat' = 'text';
-	export let width: string = '100%';
-	export let height: string = 'auto';
-	export let lines: number = 1;
-	export let animated: boolean = true;
-	export let className: string = '';
+	interface Props {
+		variant?: 'text' | 'circular' | 'rectangular' | 'card' | 'stat';
+		width?: string;
+		height?: string;
+		lines?: number;
+		animated?: boolean;
+		class?: string;
+	}
+
+	let {
+		variant = 'text',
+		width = '100%',
+		height = 'auto',
+		lines = 1,
+		animated = true,
+		class: className = ''
+	}: Props = $props();
 </script>
 
 {#if variant === 'text'}

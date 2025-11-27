@@ -1,12 +1,27 @@
 <script lang="ts">
-	export let value: any = '';
-	export let options: { value: any; label: string }[] = [];
-	export let placeholder: string = 'Select...';
-	export let label: string = '';
-	export let error: string = '';
-	export let disabled: boolean = false;
-	export let required: boolean = false;
-	export let id: string = '';
+	interface Props {
+		value?: any;
+		options?: { value: any; label: string }[];
+		placeholder?: string;
+		label?: string;
+		error?: string;
+		disabled?: boolean;
+		required?: boolean;
+		id?: string;
+		onchange?: (e: Event) => void;
+	}
+
+	let {
+		value = $bindable(''),
+		options = [],
+		placeholder = 'Select...',
+		label = '',
+		error = '',
+		disabled = false,
+		required = false,
+		id = '',
+		onchange
+	}: Props = $props();
 </script>
 
 <div class="w-full">
@@ -28,7 +43,7 @@
       {error ? 'border-red-500' : 'border-gray-300'}
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
       disabled:bg-gray-100 disabled:cursor-not-allowed"
-		on:change
+		{onchange}
 	>
 		{#if placeholder}
 			<option value="" disabled selected>{placeholder}</option>

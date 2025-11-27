@@ -26,7 +26,7 @@
 		>
 			<svelte:component this={icons[toast.type]} size={20} />
 			<p class="flex-1 text-sm font-medium">{toast.message}</p>
-			<button on:click={() => removeToast(toast.id)} class="text-gray-500 hover:text-gray-700">
+			<button onclick={() => removeToast(toast.id)} class="text-gray-500 hover:text-gray-700">
 				<IconX size={16} />
 			</button>
 		</div>
