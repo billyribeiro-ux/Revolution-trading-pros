@@ -258,13 +258,14 @@ export interface BulkActionResult {
 
 class MediaApiClient {
 	private getAuthHeaders(): Record<string, string> {
-		const auth = get(authStore);
+		// Use secure getter from auth store
+		const token = authStore.getToken();
 		const headers: Record<string, string> = {
 			Accept: 'application/json'
 		};
 
-		if (auth.token) {
-			headers['Authorization'] = `Bearer ${auth.token}`;
+		if (token) {
+			headers['Authorization'] = `Bearer ${token}`;
 		}
 
 		return headers;
@@ -410,7 +411,8 @@ class MediaApiClient {
 	): Promise<{ success: boolean; file: MediaFile }> {
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
-			const auth = get(authStore);
+			// Use secure getter from auth store
+			const token = authStore.getToken();
 
 			xhr.upload.addEventListener('progress', (e) => {
 				if (e.lengthComputable) {
@@ -432,8 +434,8 @@ class MediaApiClient {
 			});
 
 			xhr.open('POST', `${API_BASE_URL}/admin/media/upload`);
-			if (auth.token) {
-				xhr.setRequestHeader('Authorization', `Bearer ${auth.token}`);
+			if (token) {
+				xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 			}
 
 			xhr.send(formData);

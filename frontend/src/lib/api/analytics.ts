@@ -327,14 +327,15 @@ export interface BreakdownData {
 
 class AnalyticsApiClient {
 	private getAuthHeaders(): Record<string, string> {
-		const auth = get(authStore);
+		// Use secure getter from auth store
+		const token = authStore.getToken();
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
 		};
 
-		if (auth.token) {
-			headers['Authorization'] = `Bearer ${auth.token}`;
+		if (token) {
+			headers['Authorization'] = `Bearer ${token}`;
 		}
 
 		return headers;

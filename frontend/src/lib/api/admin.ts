@@ -525,8 +525,8 @@ async function makeRequest<T = any>(
 		retries?: number;
 	} = {}
 ): Promise<ApiResponse<T>> {
-	const auth = get(authStore);
-	const token = auth.token;
+	// Use secure getter from auth store
+	const token = authStore.getToken();
 
 	if (!token) {
 		throw new AdminApiError('Not authenticated', 401);
@@ -803,11 +803,12 @@ export const couponsApi = {
 	},
 
 	async import(formData: FormData): Promise<ApiResponse<{ coupons: any[]; count: number }>> {
-		const auth = get(authStore);
+		// Use secure getter from auth store
+		const token = authStore.getToken();
 		const response = await fetch(`${API_BASE_URL}/admin/coupons/import`, {
 			method: 'POST',
 			headers: {
-				Authorization: `Bearer ${auth.token}`,
+				Authorization: `Bearer ${token}`,
 				'X-API-Version': API_VERSION
 			},
 			body: formData
@@ -1094,12 +1095,13 @@ export const formsApi = {
 	},
 
 	async exportSubmissions(formId: number, format: 'csv' | 'excel' = 'csv'): Promise<Blob> {
-		const auth = get(authStore);
+		// Use secure getter from auth store
+		const token = authStore.getToken();
 		const response = await fetch(
 			`${API_BASE_URL}/forms/${formId}/submissions/export?format=${format}`,
 			{
 				headers: {
-					Authorization: `Bearer ${auth.token}`
+					Authorization: `Bearer ${token}`
 				}
 			}
 		);

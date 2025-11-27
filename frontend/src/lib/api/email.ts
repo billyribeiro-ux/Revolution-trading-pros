@@ -247,8 +247,8 @@ class EmailAPI {
 		data?: any,
 		params?: Record<string, any>
 	): Promise<T> {
-		const auth = get(authStore);
-		const token = auth.token;
+		// Use secure getter from auth store
+		const token = authStore.getToken();
 
 		const url = new URL(`${API_BASE}${endpoint}`);
 		if (params) {
