@@ -28,6 +28,17 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Media Disk
+    |--------------------------------------------------------------------------
+    |
+    | This is the default disk used for media uploads (blog images, etc.)
+    |
+    */
+
+    'default_media_disk' => env('MEDIA_DISK', 'media'),
+
     'disks' => [
 
         'local' => [
@@ -42,6 +53,30 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Media Disk - Blog Posts, Pages, Products Images
+        |--------------------------------------------------------------------------
+        |
+        | Dedicated disk for all media uploads with organized folder structure:
+        | - /blog       - Blog post images and featured images
+        | - /pages      - Page content images
+        | - /products   - Product images
+        | - /avatars    - User avatars
+        | - /thumbnails - Auto-generated thumbnails
+        | - /optimized  - Optimized versions (WebP, etc.)
+        |
+        */
+
+        'media' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/media'),
+            'url' => env('APP_URL').'/storage/media',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

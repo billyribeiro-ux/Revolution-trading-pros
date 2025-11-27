@@ -66,18 +66,22 @@ class ImageOptimizationService
         ?string $preset = null,
         array $options = []
     ): Media {
-        $disk = config('filesystems.default_media_disk', 'public');
+        $disk = config('filesystems.default_media_disk', 'media');
         
-        // Generate unique filename
+        // Generate unique filename with sanitization
         $originalName = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
+        $extension = strtolower($file->getClientOriginalExtension());
         $filename = pathinfo($originalName, PATHINFO_FILENAME);
-        $uniqueFilename = $filename . '-' . uniqid() . '.' . $extension;
+        // Sanitize filename - remove special chars, keep alphanumeric and dashes
+        $sanitizedFilename = preg_replace('/[^a-zA-Z0-9\-_]/', '-', $filename);
+        $sanitizedFilename = preg_replace('/-+/', '-', $sanitizedFilename); // Remove multiple dashes
+        $uniqueFilename = $sanitizedFilename . '-' . uniqid() . '.' . $extension;
         
-        // Determine storage path
-        $collection = $collection ?: 'uploads';
+        // Determine storage path based on collection
+        // Collections: blog, pages, products, avatars, uploads
+        $collection = $collection ?: 'blog';
         $datePath = date('Y/m');
-        $storagePath = "media/{$collection}/{$datePath}";
+        $storagePath = "{$collection}/{$datePath}";
         
         // Store the file
         $path = $file->storeAs($storagePath, $uniqueFilename, $disk);
