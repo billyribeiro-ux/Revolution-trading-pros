@@ -104,7 +104,7 @@ class ImageOptimizationService
             }
         }
         
-        // Create media record
+        // Create media record with SEO fields (WordPress-style)
         $media = Media::create([
             'filename' => $uniqueFilename,
             'path' => $path,
@@ -117,8 +117,11 @@ class ImageOptimizationService
             'height' => $height,
             'aspect_ratio' => ($width && $height) ? round($width / $height, 4) : null,
             'collection' => $collection,
-            'alt_text' => $options['alt_text'] ?? null,
+            // SEO Fields (WordPress-style) - persisted for SEO
             'title' => $options['title'] ?? $filename,
+            'alt_text' => $options['alt_text'] ?? null,
+            'caption' => $options['caption'] ?? null,
+            'description' => $options['description'] ?? null,
             'uploaded_by' => auth()->id(),
             'source' => 'upload',
             'is_optimized' => false,

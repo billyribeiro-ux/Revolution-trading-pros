@@ -147,7 +147,9 @@ class MediaController extends Controller
     }
 
     /**
-     * Upload new media
+     * Upload new media with SEO fields (WordPress-style)
+     * 
+     * Supports: title, alt_text, caption, description for SEO
      */
     public function upload(Request $request): JsonResponse
     {
@@ -155,8 +157,11 @@ class MediaController extends Controller
             'file' => 'required|file|max:51200', // 50MB
             'collection' => 'nullable|string|max:100',
             'preset' => 'nullable|string|exists:image_optimization_presets,slug',
-            'alt_text' => 'nullable|string|max:500',
+            // SEO Fields (WordPress-style)
             'title' => 'nullable|string|max:255',
+            'alt_text' => 'nullable|string|max:500',
+            'caption' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:5000',
             'process_immediately' => 'nullable|boolean',
         ]);
 
@@ -173,8 +178,11 @@ class MediaController extends Controller
                 $request->get('collection'),
                 $request->get('preset'),
                 [
-                    'alt_text' => $request->get('alt_text'),
+                    // SEO fields
                     'title' => $request->get('title'),
+                    'alt_text' => $request->get('alt_text'),
+                    'caption' => $request->get('caption'),
+                    'description' => $request->get('description'),
                     'process_immediately' => $request->boolean('process_immediately'),
                     'priority' => $request->integer('priority', 5),
                 ]

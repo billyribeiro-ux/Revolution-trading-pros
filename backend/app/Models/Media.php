@@ -964,7 +964,7 @@ class Media extends Model
     }
 
     /**
-     * Export to array for API
+     * Export to array for API (includes WordPress-style SEO fields)
      */
     public function toMediaArray(): array
     {
@@ -977,13 +977,17 @@ class Media extends Model
             'mime_type' => $this->mime_type,
             'size' => $this->size,
             'human_size' => $this->human_readable_size,
-            'alt_text' => $this->alt_text,
+            // SEO Fields (WordPress-style)
             'title' => $this->title,
+            'alt_text' => $this->alt_text,
             'caption' => $this->caption,
+            'description' => $this->description,
+            // Dimensions
             'width' => $this->width,
             'height' => $this->height,
             'aspect_ratio' => $this->aspect_ratio,
             'duration' => $this->duration,
+            // Organization
             'tags' => $this->tags,
             'collection' => $this->collection,
             'is_featured' => $this->is_featured,
