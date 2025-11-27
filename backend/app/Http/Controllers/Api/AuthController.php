@@ -439,9 +439,11 @@ class AuthController extends Controller
 
         // Check backup code first
         if ($request->backup_code) {
-            $backupCodes = $user->mfa_backup_codes ?? [];
-            $codeIndex = array_search($request->backup_code, $backupCodes);
-            
+            $hashedBackupCodes = $user->mfa_backup_codes ?? [];
+
+            // SECURITY: Use proper hashed backup code verification
+            $codeIndex = $mfaService->verifyBackupCode($request->backup_code, $hashedBackupCodes);
+
             if ($codeIndex === false) {
                 $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_FAILED, $request);
                 throw ValidationException::withMessages([
@@ -450,8 +452,8 @@ class AuthController extends Controller
             }
 
             // Remove used backup code
-            unset($backupCodes[$codeIndex]);
-            $user->mfa_backup_codes = array_values($backupCodes);
+            unset($hashedBackupCodes[$codeIndex]);
+            $user->mfa_backup_codes = array_values($hashedBackupCodes);
             $user->save();
         } else {
             // Verify TOTP code
@@ -529,23 +531,25 @@ class AuthController extends Controller
         }
 
         $mfaService = new MFAService();
-        
+
         // Generate secret and backup codes
         $secret = $mfaService->generateSecret();
-        $backupCodes = $mfaService->generateBackupCodes();
+        $backupCodesResult = $mfaService->generateBackupCodes();
         $qrCode = $mfaService->generateQRCode($user->email, $secret);
 
         // Store in user model (not enabled yet until verified)
+        // SECURITY: Only store hashed backup codes
         $user->mfa_secret = $secret;
-        $user->mfa_backup_codes = $backupCodes;
+        $user->mfa_backup_codes = $backupCodesResult['hashed'];
         $user->save();
 
         $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_ENABLED, $request);
 
+        // SECURITY: Return plain codes ONLY ONCE - user must save them
         return response()->json([
             'qr_code' => $qrCode,
             'secret' => $secret,
-            'backup_codes' => $backupCodes,
+            'backup_codes' => $backupCodesResult['plain'],
         ]);
     }
 

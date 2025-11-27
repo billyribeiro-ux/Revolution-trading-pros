@@ -112,17 +112,14 @@ function createWebSocketStore() {
 	function connect() {
 		if (!browser) return;
 
-		// Get auth token for authenticated WebSocket
-		const token = get(authStore).token;
-		const sessionId = get(authStore).sessionId;
+		// Get session ID for WebSocket authentication
+		// SECURITY: Token is NOT sent in URL - uses cookie-based auth instead
+		const sessionId = authStore.getSessionId();
 
-		// Build WebSocket URL with auth
+		// Build WebSocket URL with session ID only (token via cookies)
 		let url = WS_URL;
-		const params = new URLSearchParams();
-		if (token) params.set('token', token);
-		if (sessionId) params.set('session_id', sessionId);
-		if (params.toString()) {
-			url += `?${params.toString()}`;
+		if (sessionId) {
+			url += `?session_id=${sessionId}`;
 		}
 
 		update((state) => ({ ...state, status: 'connecting' }));

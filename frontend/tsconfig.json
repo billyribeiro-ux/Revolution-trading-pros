@@ -7,8 +7,20 @@
 		"target": "ESNext",
 		"allowImportingTsExtensions": true,
 		"skipLibCheck": true,
+		// Incremental strict mode - enable gradually as code is fixed
+		// TODO: Enable full strict mode after fixing all type errors
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
-		"strict": false
+		"strict": false,
+		"strictNullChecks": false,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": false,
+		"noImplicitAny": false,
+		"noImplicitThis": true,
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": true,
+		"exactOptionalPropertyTypes": false,
+		"noUncheckedIndexedAccess": false
 	}
 }

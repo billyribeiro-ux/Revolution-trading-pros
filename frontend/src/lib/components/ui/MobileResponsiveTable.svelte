@@ -3,15 +3,26 @@
 	 * MobileResponsiveTable - Enterprise Mobile-First Data Table
 	 * Adapts between table and card view based on screen size
 	 *
-	 * @version 1.0.0
+	 * @version 1.1.0 - Security hardened
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
+	 * @security XSS protection via DOMPurify sanitization
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 	import ExportButton from './ExportButton.svelte';
 	import type { ExportColumn } from '$lib/utils/export';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
+
+	// Debounce utility for resize handler
+	function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {
+		let timeoutId: ReturnType<typeof setTimeout>;
+		return ((...args: Parameters<T>) => {
+			clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => fn(...args), delay);
+		}) as T;
+	}
 
 	interface Column {
 		key: string;
@@ -97,12 +108,20 @@
 		onrowClick?.(row);
 	}
 
+	/**
+	 * Get sanitized value for display - prevents XSS attacks
+	 * @security All output is sanitized through DOMPurify
+	 */
 	function getValue(row: Record<string, unknown>, column: Column): string {
 		const value = row[column.key];
+		let rawValue: string;
 		if (column.render) {
-			return column.render(value, row);
+			rawValue = column.render(value, row);
+		} else {
+			rawValue = String(value ?? '');
 		}
-		return String(value ?? '');
+		// SECURITY: Sanitize all HTML output to prevent XSS
+		return sanitizeHtml(rawValue, 'standard');
 	}
 
 	function getRowId(row: Record<string, unknown>): string | number {
@@ -119,10 +138,13 @@
 		}
 	}
 
+	// Debounced resize handler for performance
+	const debouncedCheckMobile = debounce(checkMobile, 100);
+
 	onMount(() => {
 		checkMobile();
-		window.addEventListener('resize', checkMobile);
-		return () => window.removeEventListener('resize', checkMobile);
+		window.addEventListener('resize', debouncedCheckMobile);
+		return () => window.removeEventListener('resize', debouncedCheckMobile);
 	});
 
 	// Generate export columns (adapt 2-param render to 1-param format)
@@ -173,11 +195,14 @@
 			{#each data as row, index (getRowId(row))}
 				<div
 					class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 space-y-3
-						transition-colors hover:bg-slate-800/70 cursor-pointer"
+						transition-all duration-150 hover:bg-slate-800/70 cursor-pointer
+						active:scale-[0.98] active:bg-slate-800/80"
 					onclick={() => handleRowClick(row)}
 					onkeypress={(e) => e.key === 'Enter' && handleRowClick(row)}
+					onkeydown={(e) => e.key === ' ' && (e.preventDefault(), handleRowClick(row))}
 					role="button"
 					tabindex="0"
+					aria-label={`Row ${index + 1}`}
 				>
 					{#if selectable}
 						<div class="flex items-center gap-3 pb-2 border-b border-slate-700/50">
