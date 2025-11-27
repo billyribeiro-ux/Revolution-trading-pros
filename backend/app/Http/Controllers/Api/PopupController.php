@@ -146,6 +146,7 @@ class PopupController extends Controller
 
     /**
      * Record a popup impression.
+     * Uses dedicated columns only (not config JSON) to prevent dual storage inconsistency.
      */
     public function impression(Request $request, Popup $popup): JsonResponse
     {
@@ -154,14 +155,9 @@ class PopupController extends Controller
             'timestamp' => ['nullable', 'date'],
         ]);
 
-        $popup->impressions++;
-        $popup->last_impression_at = now();
-
-        $config = $popup->config ?? [];
-        $config['impressions'] = ($config['impressions'] ?? 0) + 1;
-        $popup->config = $config;
-
-        $popup->save();
+        // Use dedicated columns only - avoid dual storage in config JSON
+        $popup->increment('impressions');
+        $popup->update(['last_impression_at' => now()]);
 
         Log::info('popup_impression', [
             'popup_id' => $popup->id,
@@ -176,6 +172,7 @@ class PopupController extends Controller
 
     /**
      * Record a popup conversion.
+     * Uses dedicated columns only (not config JSON) to prevent dual storage inconsistency.
      */
     public function conversion(Request $request, Popup $popup): JsonResponse
     {
@@ -188,14 +185,9 @@ class PopupController extends Controller
             'metadata' => ['nullable', 'array'],
         ]);
 
-        $popup->conversions++;
-        $popup->last_conversion_at = now();
-
-        $config = $popup->config ?? [];
-        $config['conversions'] = ($config['conversions'] ?? 0) + 1;
-        $popup->config = $config;
-
-        $popup->save();
+        // Use dedicated columns only - avoid dual storage in config JSON
+        $popup->increment('conversions');
+        $popup->update(['last_conversion_at' => now()]);
 
         Log::info('popup_conversion', [
             'popup_id' => $popup->id,
@@ -214,24 +206,36 @@ class PopupController extends Controller
 
     /**
      * Return basic analytics for a popup matching PopupAnalytics interface.
+     * Uses dedicated columns as source of truth - config JSON is for extended metadata only.
      */
     public function analytics(Popup $popup): JsonResponse
     {
         $config = $popup->config ?? [];
 
-        $impressions = (int) ($config['impressions'] ?? $popup->impressions ?? 0);
-        $conversions = (int) ($config['conversions'] ?? $popup->conversions ?? 0);
-        $uniqueImpressions = (int) ($config['uniqueImpressions'] ?? $impressions);
+        // Use dedicated columns as source of truth for core metrics
+        $impressions = (int) ($popup->impressions ?? 0);
+        $views = (int) ($popup->views ?? $impressions);
+        $conversions = (int) ($popup->conversions ?? 0);
+        $closes = (int) ($popup->closes ?? 0);
+        $formSubmissions = (int) ($popup->form_submissions ?? 0);
 
-        $conversionRate = $impressions > 0
-            ? round(($conversions / $impressions) * 100, 2)
+        $conversionRate = $views > 0
+            ? round(($conversions / $views) * 100, 2)
+            : 0.0;
+
+        $closeRate = $views > 0
+            ? round(($closes / $views) * 100, 2)
             : 0.0;
 
         $analytics = [
             'impressions' => $impressions,
-            'uniqueImpressions' => $uniqueImpressions,
+            'uniqueImpressions' => $views,
             'conversions' => $conversions,
             'conversionRate' => $conversionRate,
+            'closes' => $closes,
+            'closeRate' => $closeRate,
+            'formSubmissions' => $formSubmissions,
+            'avgTimeToConversion' => (float) ($popup->avg_time_to_conversion ?? 0),
             'revenue' => (float) Arr::get($config, 'analytics.revenue', 0),
             'engagement' => Arr::get($config, 'analytics.engagement', [
                 'clicks' => 0,
@@ -239,7 +243,7 @@ class PopupController extends Controller
                 'scrolls' => 0,
                 'videoPlays' => 0,
                 'formStarts' => 0,
-                'formCompletions' => 0,
+                'formCompletions' => $formSubmissions,
                 'shares' => 0,
             ]),
             'devices' => Arr::get($config, 'analytics.devices', [
@@ -248,6 +252,8 @@ class PopupController extends Controller
                 'tablet' => 0,
             ]),
             'sources' => Arr::get($config, 'analytics.sources', []),
+            'lastImpressionAt' => $popup->last_impression_at?->toIso8601String(),
+            'lastConversionAt' => $popup->last_conversion_at?->toIso8601String(),
         ];
 
         return response()->json($analytics);

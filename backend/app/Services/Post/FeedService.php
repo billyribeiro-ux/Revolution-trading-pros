@@ -334,7 +334,7 @@ class FeedService
         return Post::query()
             ->where('status', 'published')
             ->whereNotNull('published_at')
-            ->with(['author', 'media'])
+            ->with(['author', 'media', 'categories', 'tags'])
             ->orderByDesc('published_at')
             ->limit($limit)
             ->get();

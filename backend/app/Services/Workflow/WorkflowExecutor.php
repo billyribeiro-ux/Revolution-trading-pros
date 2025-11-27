@@ -177,9 +177,10 @@ class WorkflowExecutor
     {
         $conditionResult = $context['_condition_result'] ?? false;
 
-        // Get edges based on condition
+        // Get edges based on condition - eager load toNode to prevent N+1
         $edges = $node->outgoingEdges()
             ->where('condition_type', $conditionResult ? 'if_true' : 'if_false')
+            ->with(['toNode'])
             ->get();
 
         foreach ($edges as $edge) {
@@ -195,7 +196,7 @@ class WorkflowExecutor
      */
     private function executeParallel(WorkflowRun $run, WorkflowNode $node, array $context): array
     {
-        $edges = $node->outgoingEdges()->where('condition_type', 'parallel')->get();
+        $edges = $node->outgoingEdges()->where('condition_type', 'parallel')->with(['toNode'])->get();
 
         $results = [];
         foreach ($edges as $edge) {
@@ -212,7 +213,7 @@ class WorkflowExecutor
      */
     private function executeNextNodes(WorkflowRun $run, WorkflowNode $node, array $context): void
     {
-        $edges = $node->outgoingEdges()->where('condition_type', 'always')->get();
+        $edges = $node->outgoingEdges()->where('condition_type', 'always')->with(['toNode'])->get();
 
         foreach ($edges as $edge) {
             $nextNode = $edge->toNode;
