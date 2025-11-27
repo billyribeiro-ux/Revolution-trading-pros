@@ -1053,22 +1053,69 @@ class EnterpriseApiClient {
 		}
 	}
 
+	/**
+	 * Setup Server-Sent Events connection
+	 * @security Uses cookie-based auth - token NOT exposed in URL
+	 */
 	private setupSSE(): void {
 		if (!this.token) return;
 
 		try {
-			this.sseConnection = new EventSource(`${API_BASE_URL}/sse?token=${this.token}`);
+			// SECURITY: Use credentials for cookie-based auth instead of token in URL
+			// EventSource doesn't support custom headers, so we use withCredentials
+			// The server should validate the httpOnly session cookie
+			this.sseConnection = new EventSource(`${API_BASE_URL}/sse`, {
+				withCredentials: true // Uses httpOnly cookies for authentication
+			});
 
 			this.sseConnection.onmessage = (event) => {
 				this.handleSSEMessage(event);
 			};
 
 			this.sseConnection.onerror = (error) => {
-				console.error('[ApiClient] SSE error:', error);
+				if (import.meta.env.DEV) {
+					console.error('[ApiClient] SSE error:', error);
+				}
+				// Attempt reconnection with exponential backoff
+				this.sseConnection?.close();
+				this.sseConnection = undefined;
+				this.scheduleSSEReconnect();
+			};
+
+			this.sseConnection.onopen = () => {
+				this.sseReconnectAttempts = 0; // Reset on successful connection
+				if (import.meta.env.DEV) {
+					console.debug('[ApiClient] SSE connected');
+				}
 			};
 		} catch (error) {
-			console.error('[ApiClient] Failed to setup SSE:', error);
+			if (import.meta.env.DEV) {
+				console.error('[ApiClient] Failed to setup SSE:', error);
+			}
 		}
+	}
+
+	private sseReconnectAttempts = 0;
+	private readonly MAX_SSE_RECONNECT_ATTEMPTS = 5;
+
+	private scheduleSSEReconnect(): void {
+		if (this.sseReconnectAttempts >= this.MAX_SSE_RECONNECT_ATTEMPTS) {
+			if (import.meta.env.DEV) {
+				console.warn('[ApiClient] Max SSE reconnect attempts reached');
+			}
+			return;
+		}
+
+		// Exponential backoff with jitter
+		const baseDelay = 1000;
+		const delay = baseDelay * Math.pow(2, this.sseReconnectAttempts) + Math.random() * 1000;
+		this.sseReconnectAttempts++;
+
+		setTimeout(() => {
+			if (this.token) {
+				this.setupSSE();
+			}
+		}, delay);
 	}
 
 	private handleSSEMessage(event: MessageEvent): void {

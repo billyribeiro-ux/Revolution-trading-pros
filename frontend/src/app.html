@@ -13,19 +13,16 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		
-		<!-- Optimized font loading with display=swap for better performance -->
+		<!-- Font loading with preload for critical fonts -->
+		<link
+			rel="preload"
+			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
+			as="style"
+		/>
 		<link
 			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
 			rel="stylesheet"
-			media="print"
-			onload="this.media='all'"
 		/>
-		<noscript>
-			<link
-				href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
-				rel="stylesheet"
-			/>
-		</noscript>
 		
 		%sveltekit.head%
 	</head>

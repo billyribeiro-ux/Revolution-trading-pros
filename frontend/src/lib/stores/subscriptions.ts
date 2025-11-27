@@ -153,7 +153,7 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Update subscription status
+		// Update subscription status - Connected to enterprise API
 		updateStatus: async (
 			subscriptionId: string,
 			newStatus: SubscriptionStatus,
@@ -162,26 +162,16 @@ function createSubscriptionStore() {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service from $lib/api/subscriptions
+				const { updateSubscription } = await import('$lib/api/subscriptions');
+				const updated = await updateSubscription(subscriptionId, {
+					status: newStatus,
+					...(reason && { cancellationReason: reason, pauseReason: reason })
+				});
 
 				update((state) => ({
 					...state,
 					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									status: newStatus,
-									updatedAt: new Date().toISOString(),
-									...(newStatus === 'cancelled' && {
-										cancelledAt: new Date().toISOString(),
-										cancellationReason: reason
-									}),
-									...(newStatus === 'on-hold' && {
-										pausedAt: new Date().toISOString(),
-										pauseReason: reason
-									})
-								}
-							: sub
+						sub.id === subscriptionId ? { ...sub, ...updated } : sub
 					),
 					loading: false
 				}));
@@ -190,25 +180,18 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Pause subscription
+		// Pause subscription - Connected to enterprise API
 		pauseSubscription: async (subscriptionId: string, reason: string) => {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see pauseSubscription in $lib/api/subscriptions
+				const { pauseSubscription } = await import('$lib/api/subscriptions');
+				const updated = await pauseSubscription(subscriptionId, reason);
 
 				update((state) => ({
 					...state,
 					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									status: 'on-hold',
-									pausedAt: new Date().toISOString(),
-									pauseReason: reason,
-									updatedAt: new Date().toISOString()
-								}
-							: sub
+						sub.id === subscriptionId ? { ...sub, ...updated } : sub
 					),
 					loading: false
 				}));
@@ -217,25 +200,18 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Resume subscription
+		// Resume subscription - Connected to enterprise API
 		resumeSubscription: async (subscriptionId: string) => {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see resumeSubscription in $lib/api/subscriptions
+				const { resumeSubscription } = await import('$lib/api/subscriptions');
+				const updated = await resumeSubscription(subscriptionId);
 
 				update((state) => ({
 					...state,
 					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									status: 'active',
-									pausedAt: undefined,
-									pauseReason: undefined,
-									updatedAt: new Date().toISOString()
-								}
-							: sub
+						sub.id === subscriptionId ? { ...sub, ...updated } : sub
 					),
 					loading: false
 				}));
@@ -244,7 +220,7 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Cancel subscription
+		// Cancel subscription - Connected to enterprise API
 		cancelSubscription: async (
 			subscriptionId: string,
 			reason: string,
@@ -253,21 +229,13 @@ function createSubscriptionStore() {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see cancelSubscription in $lib/api/subscriptions
+				const { cancelSubscription } = await import('$lib/api/subscriptions');
+				const updated = await cancelSubscription(subscriptionId, reason, immediate);
 
 				update((state) => ({
 					...state,
 					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									status: immediate ? 'cancelled' : 'pending-cancel',
-									cancelledAt: immediate ? new Date().toISOString() : undefined,
-									cancellationReason: reason,
-									autoRenew: false,
-									updatedAt: new Date().toISOString()
-								}
-							: sub
+						sub.id === subscriptionId ? { ...sub, ...updated } : sub
 					),
 					loading: false
 				}));
@@ -276,26 +244,18 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Reactivate cancelled subscription
+		// Reactivate cancelled subscription - Connected to enterprise API
 		reactivateSubscription: async (subscriptionId: string) => {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see reactivateSubscription in $lib/api/subscriptions
+				const { reactivateSubscription } = await import('$lib/api/subscriptions');
+				const updated = await reactivateSubscription(subscriptionId);
 
 				update((state) => ({
 					...state,
 					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									status: 'active',
-									cancelledAt: undefined,
-									cancellationReason: undefined,
-									autoRenew: true,
-									updatedAt: new Date().toISOString()
-								}
-							: sub
+						sub.id === subscriptionId ? { ...sub, ...updated } : sub
 					),
 					loading: false
 				}));
@@ -308,20 +268,29 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Retry failed payment
+		// Retry failed payment - Connected to enterprise API
 		retryPayment: async (subscriptionId: string, paymentId: string) => {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see retryPayment in $lib/api/subscriptions
+				const { retryPayment } = await import('$lib/api/subscriptions');
+				await retryPayment(subscriptionId, paymentId);
 
-				update((state) => ({ ...state, loading: false }));
+				// Reload subscriptions to get updated payment status
+				const { getSubscriptions } = await import('$lib/api/subscriptions');
+				const subscriptions = await getSubscriptions();
+
+				update((state) => ({
+					...state,
+					subscriptions: subscriptions as Subscription[],
+					loading: false
+				}));
 			} catch (error) {
 				update((state) => ({ ...state, error: 'Failed to retry payment', loading: false }));
 			}
 		},
 
-		// Update payment method
+		// Update payment method - Connected to enterprise API
 		updatePaymentMethod: async (
 			subscriptionId: string,
 			paymentMethod: Subscription['paymentMethod']
@@ -329,14 +298,13 @@ function createSubscriptionStore() {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see updatePaymentMethod in $lib/api/subscriptions
+				const { updatePaymentMethod } = await import('$lib/api/subscriptions');
+				const updated = await updatePaymentMethod(subscriptionId, paymentMethod as any);
 
 				update((state) => ({
 					...state,
 					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? { ...sub, paymentMethod, updatedAt: new Date().toISOString() }
-							: sub
+						sub.id === subscriptionId ? { ...sub, ...updated } : sub
 					),
 					loading: false
 				}));
@@ -345,28 +313,21 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Process renewal
+		// Process renewal - Connected to enterprise API
 		processRenewal: async (subscriptionId: string) => {
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Uses enterprise API service - see processPayment in $lib/api/subscriptions
+				const { processPayment } = await import('$lib/api/subscriptions');
+				await processPayment(subscriptionId);
+
+				// Reload subscriptions to get updated renewal status
+				const { getSubscriptions } = await import('$lib/api/subscriptions');
+				const subscriptions = await getSubscriptions();
 
 				update((state) => ({
 					...state,
-					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									renewalCount: sub.renewalCount + 1,
-									lastPaymentDate: new Date().toISOString(),
-									nextPaymentDate: calculateNextPaymentDate(sub.interval),
-									successfulPayments: sub.successfulPayments + 1,
-									totalPaid: sub.totalPaid + sub.price,
-									updatedAt: new Date().toISOString()
-								}
-							: sub
-					),
+					subscriptions: subscriptions as Subscription[],
 					loading: false
 				}));
 			} catch (error) {
@@ -374,27 +335,19 @@ function createSubscriptionStore() {
 			}
 		},
 
-		// Record payment failure
-		recordPaymentFailure: async (subscriptionId: string, reason: string) => {
+		// Record payment failure - handled by API webhook
+		recordPaymentFailure: async (subscriptionId: string, _reason: string) => {
+			// Payment failures are tracked automatically by the enterprise API service via webhooks
+			// This method is here for backwards compatibility but now just reloads data
 			update((state) => ({ ...state, loading: true }));
 
 			try {
-				// Payment failures tracked automatically by enterprise API service
+				const { getSubscriptions } = await import('$lib/api/subscriptions');
+				const subscriptions = await getSubscriptions();
 
 				update((state) => ({
 					...state,
-					subscriptions: state.subscriptions.map((sub) =>
-						sub.id === subscriptionId
-							? {
-									...sub,
-									status: sub.failedPayments + 1 >= 3 ? 'on-hold' : 'active',
-									failedPayments: sub.failedPayments + 1,
-									pauseReason:
-										sub.failedPayments + 1 >= 3 ? 'Multiple payment failures' : undefined,
-									updatedAt: new Date().toISOString()
-								}
-							: sub
-					),
+					subscriptions: subscriptions as Subscription[],
 					loading: false
 				}));
 			} catch (error) {

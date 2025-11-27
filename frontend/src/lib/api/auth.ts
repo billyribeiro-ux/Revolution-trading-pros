@@ -405,24 +405,27 @@ class AuthenticationService {
 
 	/**
 	 * Get valid token (refresh if needed)
+	 * @security Uses secure memory-only token storage
 	 */
 	private async getValidToken(): Promise<string | null> {
+		// Use the secure getter from auth store
+		const token = authStore.getToken();
 		const auth = get(authStore);
 
-		if (!auth.token) return null;
+		if (!token) return null;
 
 		// Check if token needs refresh
 		if (this.isTokenExpiringSoon(auth.tokenExpiry)) {
 			try {
 				await this.refreshToken();
-				return get(authStore).token;
+				return authStore.getToken();
 			} catch (error) {
 				console.error('[AuthService] Token refresh failed:', error);
 				return null;
 			}
 		}
 
-		return auth.token;
+		return token;
 	}
 
 	/**
@@ -612,10 +615,10 @@ class AuthenticationService {
 		}
 
 		// Store auth data with session_id for single-session auth
+		// Note: refresh_token is now handled via httpOnly cookies for security
 		authStore.setAuth(
 			response.user,
 			response.token,
-			response.refresh_token,
 			response.session_id,
 			response.expires_in
 		);
@@ -657,10 +660,10 @@ class AuthenticationService {
 			skipAuth: true
 		});
 
+		// Note: refresh_token is now handled via httpOnly cookies for security
 		authStore.setAuth(
 			response.user,
 			response.token,
-			response.refresh_token,
 			response.session_id,
 			response.expires_in
 		);
@@ -898,10 +901,10 @@ class AuthenticationService {
 		});
 
 		// Store auth data with session_id
+		// Note: refresh_token is now handled via httpOnly cookies for security
 		authStore.setAuth(
 			response.user,
 			response.token,
-			response.refresh_token,
 			response.session_id,
 			response.expires_in
 		);
@@ -979,31 +982,41 @@ class AuthenticationService {
 
 	/**
 	 * Perform token refresh
+	 * @security Uses httpOnly cookies for refresh token (server-side)
 	 */
 	private async performTokenRefresh(): Promise<TokenResponse> {
-		const auth = get(authStore);
+		// Check if we have a session that could be refreshed
+		const sessionId = authStore.getSessionId();
 
-		if (!auth.refreshToken) {
-			throw new UnauthorizedError('No refresh token available');
+		if (!sessionId) {
+			throw new UnauthorizedError('No session available for refresh');
 		}
 
-		const response = await this.apiRequest<TokenResponse>('/auth/refresh', {
-			method: 'POST',
-			body: JSON.stringify({ refresh_token: auth.refreshToken }),
-			skipAuth: true
-		});
+		// Use the auth store's refreshToken method which handles httpOnly cookies
+		const success = await authStore.refreshToken();
 
-		// Update stored tokens (token, refreshToken, sessionId, expiresInSeconds)
-		authStore.updateTokens(response.token, response.refresh_token, null, response.expires_in);
+		if (!success) {
+			throw new UnauthorizedError('Token refresh failed');
+		}
+
+		// Get the updated token info
+		const token = authStore.getToken();
+		const auth = get(authStore);
 
 		// Schedule next refresh
-		if (response.expires_in) {
-			this.scheduleTokenRefresh(response.expires_in * 1000);
+		if (auth.tokenExpiry) {
+			const expiresIn = auth.tokenExpiry - Date.now();
+			if (expiresIn > 0) {
+				this.scheduleTokenRefresh(expiresIn);
+			}
 		}
 
 		console.debug('[AuthService] Token refreshed successfully');
 
-		return response;
+		return {
+			token: token || '',
+			expires_in: auth.tokenExpiry ? Math.floor((auth.tokenExpiry - Date.now()) / 1000) : 3600
+		};
 	}
 
 	/**
@@ -1015,8 +1028,9 @@ class AuthenticationService {
 			clearTimeout(this.tokenRefreshTimeout);
 		}
 
-		const auth = get(authStore);
-		if (!auth.token) return;
+		// Use secure getter
+		const token = authStore.getToken();
+		if (!token) return;
 
 		// Calculate refresh time (5 minutes before expiry)
 		const refreshTime = expiresIn ? expiresIn - TOKEN_REFRESH_THRESHOLD : TOKEN_REFRESH_THRESHOLD;
@@ -1089,8 +1103,9 @@ class AuthenticationService {
 	 * Check session validity
 	 */
 	private async checkSession(): Promise<void> {
-		const auth = get(authStore);
-		if (!auth.token) return;
+		// Use secure getter
+		const token = authStore.getToken();
+		if (!token) return;
 
 		try {
 			await this.apiRequest<{ valid: boolean }>('/auth/check');
