@@ -122,8 +122,8 @@
 	description="A high-velocity, forensic deconstruction of your trading business. Designed strictly for Portfolio Managers and Proprietary Traders deploying 7-8 figure capital."
 	canonical="/mentorship"
 	ogType="website"
-	noIndex={true}
-	noFollow={true}
+	noindex={true}
+	nofollow={true}
 	keywords={[
 		'institutional trading audit',
 		'trading consultation',

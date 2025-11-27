@@ -798,7 +798,7 @@
 		background: rgba(255, 255, 255, 0.02);
 	}
 
-	.faq-item__icon {
+	.faq-item__question :global(.faq-item__icon) {
 		color: #3b82f6;
 		flex-shrink: 0;
 	}

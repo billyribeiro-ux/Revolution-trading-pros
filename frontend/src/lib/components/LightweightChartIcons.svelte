@@ -1,6 +1,5 @@
 <script lang="ts">
-    // External reference for component type identification
-    export const type = 'lightweight-chart-icon';
+    export let type: string = 'candlestick';
     export let size: number = 48;
 </script>
 

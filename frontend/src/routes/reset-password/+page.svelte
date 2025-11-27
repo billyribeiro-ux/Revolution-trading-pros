@@ -58,7 +58,7 @@
 	description="Reset your Revolution Trading Pros account password securely. Create a new password for your trading account."
 	canonical="/reset-password"
 	ogType="website"
-	noIndex={true}
+	noindex={true}
 />
 
 <div
