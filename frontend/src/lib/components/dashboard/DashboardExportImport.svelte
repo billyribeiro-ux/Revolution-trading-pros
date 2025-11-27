@@ -1,19 +1,22 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { apiClient } from '$lib/api/client';
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		dashboardId: string;
+		onexported?: (data: { filename: string }) => void;
+		onimported?: (data: { dashboardId: string }) => void;
+	}
 
-	let isExporting = false;
-	let isImporting = false;
-	let exportFormat: 'json' | 'pdf' | 'csv' = 'json';
-	let includeData = true;
-	let importFile: File | null = null;
-	let overwrite = false;
-	let error: string | null = null;
-	let success: string | null = null;
+	let { dashboardId, onexported, onimported }: Props = $props();
 
-	export let dashboardId: string;
+	let isExporting = $state(false);
+	let isImporting = $state(false);
+	let exportFormat: 'json' | 'pdf' | 'csv' = $state('json');
+	let includeData = $state(true);
+	let importFile: File | null = $state(null);
+	let overwrite = $state(false);
+	let error: string | null = $state(null);
+	let success: string | null = $state(null);
 
 	async function handleExport() {
 		isExporting = true;
@@ -33,7 +36,7 @@
 			link.click();
 
 			success = 'Dashboard exported successfully!';
-			dispatch('exported', { filename: response.data.filename });
+			onexported?.({ filename: response.data.filename });
 		} catch (err: any) {
 			error = err.message || 'Failed to export dashboard';
 		} finally {
@@ -63,7 +66,7 @@
 			})) as { data: { dashboard_id: string } };
 
 			success = 'Dashboard imported successfully!';
-			dispatch('imported', { dashboardId: response.data.dashboard_id });
+			onimported?.({ dashboardId: response.data.dashboard_id });
 		} catch (err: any) {
 			error = err.message || 'Failed to import dashboard';
 		} finally {
@@ -98,7 +101,7 @@
 			</label>
 		</div>
 
-		<button class="btn-primary" on:click={handleExport} disabled={isExporting}>
+		<button class="btn-primary" onclick={handleExport} disabled={isExporting}>
 			{isExporting ? 'Exporting...' : 'Export Dashboard'}
 		</button>
 	</div>
@@ -111,7 +114,7 @@
 
 		<div class="form-group">
 			<label for="import-file">Select File</label>
-			<input id="import-file" type="file" accept=".json" on:change={handleFileSelect} />
+			<input id="import-file" type="file" accept=".json" onchange={handleFileSelect} />
 			{#if importFile}
 				<p class="file-info">{importFile.name} ({(importFile.size / 1024).toFixed(2)} KB)</p>
 			{/if}
@@ -124,7 +127,7 @@
 			</label>
 		</div>
 
-		<button class="btn-primary" on:click={handleImport} disabled={isImporting || !importFile}>
+		<button class="btn-primary" onclick={handleImport} disabled={isImporting || !importFile}>
 			{isImporting ? 'Importing...' : 'Import Dashboard'}
 		</button>
 	</div>

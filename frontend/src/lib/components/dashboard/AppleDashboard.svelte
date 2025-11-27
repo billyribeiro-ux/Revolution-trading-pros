@@ -5,13 +5,18 @@
 	import { tweened, spring } from 'svelte/motion';
 	import { scrollReveal, tilt3d, magnetic, parallax } from '$lib/animations/appleAnimations';
 
+	interface Props {
+		subtitle?: string;
+		children?: import('svelte').Snippet;
+	}
+
 	// Title available for dashboard customization
 	export const title = 'Dashboard';
-	export let subtitle = 'Welcome back';
+	let { subtitle = 'Welcome back', children }: Props = $props();
 
-	let mounted = false;
-	let scrollY = 0;
-	let innerHeight = 0;
+	let mounted = $state(false);
+	let scrollY = $state(0);
+	let innerHeight = $state(0);
 
 	// Animated values
 	const headerOpacity = tweened(0, { duration: 800, easing: cubicOut });
@@ -45,8 +50,8 @@
 		return 'Good evening';
 	}
 
-	$: parallaxOffset = Math.min(scrollY * 0.3, 100);
-	$: headerBlur = Math.min(scrollY / 10, 20);
+	let parallaxOffset = $derived(Math.min(scrollY * 0.3, 100));
+	let headerBlur = $derived(Math.min(scrollY / 10, 20));
 </script>
 
 <svelte:window bind:scrollY bind:innerHeight />
@@ -131,7 +136,7 @@
 
 	<!-- Main Dashboard Grid -->
 	<main class="dashboard-main">
-		<slot />
+		{@render children?.()}
 	</main>
 </div>
 

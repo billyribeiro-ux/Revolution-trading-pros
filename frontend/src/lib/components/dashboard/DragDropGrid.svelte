@@ -4,11 +4,15 @@
 	import DraggableWidget from './DraggableWidget.svelte';
 	import type { DashboardWidget } from '$lib/types/dashboard';
 
-	export let dashboardType: 'admin' | 'user' = 'user';
+	interface Props {
+		dashboardType?: 'admin' | 'user';
+	}
+
+	let { dashboardType = 'user' }: Props = $props();
 
 	let gridElement: HTMLDivElement;
-	let isDragging = false;
-	let draggedWidget: DashboardWidget | null = null;
+	let isDragging = $state(false);
+	let draggedWidget: DashboardWidget | null = $state(null);
 	let dropZones: Map<string, HTMLElement> = new Map();
 
 	onMount(async () => {
@@ -49,10 +53,10 @@
 		});
 	}
 
-	$: widgets = $dashboardStore.widgets;
-	$: gridColumns = $dashboardStore.currentDashboard?.grid_columns || 12;
-	$: gridGap = $dashboardStore.currentDashboard?.grid_gap || 16;
-	$: gridRowHeight = $dashboardStore.currentDashboard?.grid_row_height || 80;
+	let widgets = $derived($dashboardStore.widgets);
+	let gridColumns = $derived($dashboardStore.currentDashboard?.grid_columns || 12);
+	let gridGap = $derived($dashboardStore.currentDashboard?.grid_gap || 16);
+	let gridRowHeight = $derived($dashboardStore.currentDashboard?.grid_row_height || 80);
 </script>
 
 <div class="drag-drop-container">
@@ -64,7 +68,7 @@
 	{:else if $dashboardStore.error}
 		<div class="error-state">
 			<p class="error-message">{$dashboardStore.error}</p>
-			<button on:click={() => dashboardStore.clearError()}>Dismiss</button>
+			<button onclick={() => dashboardStore.clearError()}>Dismiss</button>
 		</div>
 	{:else}
 		<div
@@ -83,10 +87,10 @@
 						{widget}
 						{gridColumns}
 						{gridRowHeight}
-						on:dragstart={handleDragStart}
-						on:dragend={handleDragEnd}
-						on:drop={handleDrop}
-						on:resize={handleResize}
+						ondragstart={handleDragStart}
+						ondragend={handleDragEnd}
+						ondrop={handleDrop}
+						onresize={handleResize}
 					/>
 				{/if}
 			{/each}

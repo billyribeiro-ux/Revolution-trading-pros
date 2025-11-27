@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { DashboardWidget } from '$lib/types/dashboard';
 	import { dashboardStore } from '$lib/stores/dashboard';
 
@@ -10,20 +9,26 @@
 	import RecentActivityWidget from './widgets/RecentActivityWidget.svelte';
 	import GenericWidget from './widgets/GenericWidget.svelte';
 
-	export let widget: DashboardWidget;
-	export let gridColumns: number = 12;
-	export let gridRowHeight: number = 80;
+	interface Props {
+		widget: DashboardWidget;
+		gridColumns?: number;
+		gridRowHeight?: number;
+		ondragstart?: (data: { widget: DashboardWidget }) => void;
+		ondragend?: () => void;
+		ondrop?: (data: { widget: DashboardWidget; x: number; y: number }) => void;
+		onresize?: (data: { widget: DashboardWidget; width: number; height: number }) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { widget, gridColumns = 12, gridRowHeight = 80, ondragstart, ondragend, ondrop, onresize }: Props = $props();
 
-	let isRefreshing = false;
-	let isDragging = false;
-	let isResizing = false;
-	let resizeHandle: 'se' | 'e' | 's' | null = null;
-	let startX = 0;
-	let startY = 0;
-	let startWidth = 0;
-	let startHeight = 0;
+	let isRefreshing = $state(false);
+	let isDragging = $state(false);
+	let isResizing = $state(false);
+	let resizeHandle: 'se' | 'e' | 's' | null = $state(null);
+	let startX = $state(0);
+	let startY = $state(0);
+	let startWidth = $state(0);
+	let startHeight = $state(0);
 
 	async function handleRefresh() {
 		isRefreshing = true;
@@ -43,12 +48,12 @@
 			event.dataTransfer.effectAllowed = 'move';
 			event.dataTransfer.setData('text/plain', widget.id);
 		}
-		dispatch('dragstart', { widget });
+		ondragstart?.({ widget });
 	}
 
 	function handleDragEnd() {
 		isDragging = false;
-		dispatch('dragend');
+		ondragend?.();
 	}
 
 	function handleResizeStart(event: MouseEvent, handle: 'se' | 'e' | 's') {
@@ -96,7 +101,7 @@
 
 	function handleResizeEnd() {
 		if (isResizing) {
-			dispatch('resize', {
+			onresize?.({
 				widget,
 				width: widget.width,
 				height: widget.height
@@ -124,9 +129,9 @@
 		}
 	}
 
-	$: widgetComponent = getWidgetComponent(widget.widget_type);
-	$: gridColumn = `${widget.position_x + 1} / span ${widget.width}`;
-	$: gridRow = `${widget.position_y + 1} / span ${widget.height}`;
+	let WidgetComponent = $derived(getWidgetComponent(widget.widget_type));
+	let gridColumn = $derived(`${widget.position_x + 1} / span ${widget.width}`);
+	let gridRow = $derived(`${widget.position_y + 1} / span ${widget.height}`);
 </script>
 
 <div
@@ -141,8 +146,8 @@
 	role="button"
 	tabindex="0"
 	aria-label="Draggable widget: {widget.title}"
-	on:dragstart={handleDragStart}
-	on:dragend={handleDragEnd}
+	ondragstart={handleDragStart}
+	ondragend={handleDragEnd}
 >
 	<div class="widget-header">
 		<div class="drag-handle" title="Drag to move">
@@ -166,7 +171,7 @@
 		<div class="widget-actions">
 			<button
 				class="action-btn"
-				on:click={handleRefresh}
+				onclick={handleRefresh}
 				disabled={isRefreshing}
 				title="Refresh"
 				aria-label="Refresh widget"
@@ -185,7 +190,7 @@
 					/>
 				</svg>
 			</button>
-			<button class="action-btn" on:click={handleRemove} title="Remove" aria-label="Remove widget">
+			<button class="action-btn" onclick={handleRemove} title="Remove" aria-label="Remove widget">
 				<svg
 					width="16"
 					height="16"
@@ -201,7 +206,7 @@
 	</div>
 
 	<div class="widget-content">
-		<svelte:component this={widgetComponent} data={widget.data} config={widget.config} />
+		<WidgetComponent data={widget.data} config={widget.config} />
 	</div>
 
 	<!-- Resize handles -->
@@ -210,21 +215,21 @@
 		role="button"
 		tabindex="0"
 		aria-label="Resize widget horizontally"
-		on:mousedown={(e) => handleResizeStart(e, 'e')}
+		onmousedown={(e) => handleResizeStart(e, 'e')}
 	></div>
 	<div
 		class="resize-handle resize-s"
 		role="button"
 		tabindex="0"
 		aria-label="Resize widget vertically"
-		on:mousedown={(e) => handleResizeStart(e, 's')}
+		onmousedown={(e) => handleResizeStart(e, 's')}
 	></div>
 	<div
 		class="resize-handle resize-se"
 		role="button"
 		tabindex="0"
 		aria-label="Resize widget diagonally"
-		on:mousedown={(e) => handleResizeStart(e, 'se')}
+		onmousedown={(e) => handleResizeStart(e, 'se')}
 	></div>
 </div>
 
