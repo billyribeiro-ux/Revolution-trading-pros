@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -134,5 +135,42 @@ class User extends Authenticatable implements MustVerifyEmail
     public function integrationCredentials()
     {
         return $this->hasMany(IntegrationCredential::class);
+    }
+
+    /**
+     * Send the email verification notification.
+     * Overrides the default to use our branded template.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification());
+    }
+
+    /**
+     * Get the user's expired/cancelled memberships (past members).
+     */
+    public function expiredMemberships()
+    {
+        return $this->memberships()
+            ->whereIn('status', ['expired', 'cancelled'])
+            ->orWhere('expires_at', '<', now());
+    }
+
+    /**
+     * Check if user is a past member (had active membership that expired/cancelled).
+     */
+    public function isPastMember(): bool
+    {
+        return $this->expiredMemberships()->exists();
+    }
+
+    /**
+     * Get the user's last active membership.
+     */
+    public function lastMembership()
+    {
+        return $this->memberships()
+            ->orderBy('expires_at', 'desc')
+            ->first();
     }
 }

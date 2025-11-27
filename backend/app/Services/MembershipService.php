@@ -24,7 +24,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Collection;
+use App\Notifications\FeedbackSurveyNotification;
+use App\Notifications\WinBackNotification;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Stripe\Stripe;
 use Stripe\Subscription;
 
@@ -1239,7 +1243,433 @@ class MembershipService
         
         // Fire event
         event(new MembershipUpgraded($currentMembership, $newMembership));
-        
+
         return $newMembership;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Past Members & Win-Back Campaign Methods
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * Get all past members (expired/cancelled memberships).
+     *
+     * @param array $filters
+     * @param int $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getPastMembers(array $filters = [], int $perPage = 20): LengthAwarePaginator
+    {
+        $query = User::whereHas('memberships', function ($q) {
+            $q->where(function ($q2) {
+                $q2->whereIn('status', ['expired', 'cancelled'])
+                   ->orWhere('expires_at', '<', now());
+            });
+        })
+        ->whereDoesntHave('memberships', function ($q) {
+            $q->where('status', 'active')
+              ->where('expires_at', '>', now());
+        })
+        ->with(['memberships' => function ($q) {
+            $q->orderBy('expires_at', 'desc');
+        }, 'memberships.plan']);
+
+        // Apply filters
+        if (!empty($filters['plan_id'])) {
+            $query->whereHas('memberships', function ($q) use ($filters) {
+                $q->where('plan_id', $filters['plan_id']);
+            });
+        }
+
+        if (!empty($filters['expired_after'])) {
+            $query->whereHas('memberships', function ($q) use ($filters) {
+                $q->where('expires_at', '>=', $filters['expired_after']);
+            });
+        }
+
+        if (!empty($filters['expired_before'])) {
+            $query->whereHas('memberships', function ($q) use ($filters) {
+                $q->where('expires_at', '<=', $filters['expired_before']);
+            });
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if (!empty($filters['days_since_expired'])) {
+            $days = (int) $filters['days_since_expired'];
+            $query->whereHas('memberships', function ($q) use ($days) {
+                $q->whereBetween('expires_at', [
+                    now()->subDays($days + 30),
+                    now()->subDays($days)
+                ]);
+            });
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);
+    }
+
+    /**
+     * Get past members statistics.
+     *
+     * @return array
+     */
+    public function getPastMembersStats(): array
+    {
+        return Cache::remember('past_members_stats', self::CACHE_TTL, function () {
+            $totalPastMembers = User::whereHas('memberships', function ($q) {
+                $q->where(function ($q2) {
+                    $q2->whereIn('status', ['expired', 'cancelled'])
+                       ->orWhere('expires_at', '<', now());
+                });
+            })
+            ->whereDoesntHave('memberships', function ($q) {
+                $q->where('status', 'active')
+                  ->where('expires_at', '>', now());
+            })
+            ->count();
+
+            $expiredLast30Days = $this->getChurnedCount(30);
+            $expiredLast60Days = $this->getChurnedCount(60);
+            $expiredLast90Days = $this->getChurnedCount(90);
+
+            // Churn by plan
+            $churnByPlan = DB::table('user_memberships')
+                ->join('membership_plans', 'user_memberships.plan_id', '=', 'membership_plans.id')
+                ->where(function ($q) {
+                    $q->whereIn('user_memberships.status', ['expired', 'cancelled'])
+                      ->orWhere('user_memberships.expires_at', '<', now());
+                })
+                ->select('membership_plans.name as plan_name', DB::raw('count(*) as count'))
+                ->groupBy('membership_plans.name')
+                ->get()
+                ->pluck('count', 'plan_name')
+                ->toArray();
+
+            // Win-back success rate (reactivated in last 6 months)
+            $reactivatedCount = DB::table('user_memberships as m1')
+                ->join('user_memberships as m2', function ($join) {
+                    $join->on('m1.user_id', '=', 'm2.user_id')
+                         ->where('m2.status', '=', 'active')
+                         ->where('m2.created_at', '>', DB::raw('m1.expires_at'));
+                })
+                ->whereIn('m1.status', ['expired', 'cancelled'])
+                ->where('m2.created_at', '>=', now()->subMonths(6))
+                ->distinct('m1.user_id')
+                ->count('m1.user_id');
+
+            return [
+                'total_past_members' => $totalPastMembers,
+                'expired_last_30_days' => $expiredLast30Days,
+                'expired_last_60_days' => $expiredLast60Days,
+                'expired_last_90_days' => $expiredLast90Days,
+                'churn_by_plan' => $churnByPlan,
+                'reactivated_last_6_months' => $reactivatedCount,
+                'win_back_rate' => $totalPastMembers > 0
+                    ? round(($reactivatedCount / $totalPastMembers) * 100, 2)
+                    : 0,
+            ];
+        });
+    }
+
+    /**
+     * Get churned members count for a given time period.
+     *
+     * @param int $days
+     * @return int
+     */
+    private function getChurnedCount(int $days): int
+    {
+        return User::whereHas('memberships', function ($q) use ($days) {
+            $q->where(function ($q2) {
+                $q2->whereIn('status', ['expired', 'cancelled'])
+                   ->orWhere('expires_at', '<', now());
+            })
+            ->where('expires_at', '>=', now()->subDays($days));
+        })
+        ->whereDoesntHave('memberships', function ($q) {
+            $q->where('status', 'active')
+              ->where('expires_at', '>', now());
+        })
+        ->count();
+    }
+
+    /**
+     * Send win-back email to past members.
+     *
+     * @param User $user
+     * @param string|null $offerCode
+     * @param int|null $discountPercent
+     * @param int|null $discountMonths
+     * @param int $expiresInDays
+     * @return bool
+     */
+    public function sendWinBackEmail(
+        User $user,
+        ?string $offerCode = null,
+        ?int $discountPercent = null,
+        ?int $discountMonths = null,
+        int $expiresInDays = 7
+    ): bool {
+        try {
+            $lastMembership = $user->memberships()
+                ->with('plan')
+                ->orderBy('expires_at', 'desc')
+                ->first();
+
+            if (!$lastMembership || !$lastMembership->plan) {
+                Log::warning('Cannot send win-back email: No previous membership found', [
+                    'user_id' => $user->id,
+                ]);
+                return false;
+            }
+
+            // Create offer object if discount provided
+            $offer = null;
+            if ($discountPercent) {
+                $offer = (object) [
+                    'code' => $offerCode ?? 'COMEBACK' . strtoupper(Str::random(4)),
+                    'discount_percent' => $discountPercent,
+                    'discount_months' => $discountMonths ?? 3,
+                    'expires_in_days' => $expiresInDays,
+                ];
+            }
+
+            // Get a testimonial
+            $testimonial = $this->getRandomTestimonial();
+
+            // Get community size
+            $communitySize = Cache::remember('community_size', 3600, function () {
+                return User::whereHas('memberships', function ($q) {
+                    $q->where('status', 'active');
+                })->count();
+            });
+
+            $user->notify(new WinBackNotification(
+                $lastMembership,
+                $lastMembership->plan,
+                $offer,
+                $testimonial,
+                $communitySize
+            ));
+
+            Log::info('Win-back email sent', [
+                'user_id' => $user->id,
+                'offer_code' => $offer?->code,
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to send win-back email', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Send bulk win-back emails.
+     *
+     * @param array $userIds
+     * @param string|null $offerCode
+     * @param int|null $discountPercent
+     * @param int|null $discountMonths
+     * @param int $expiresInDays
+     * @return array
+     */
+    public function sendBulkWinBackEmails(
+        array $userIds,
+        ?string $offerCode = null,
+        ?int $discountPercent = null,
+        ?int $discountMonths = null,
+        int $expiresInDays = 7
+    ): array {
+        $results = [
+            'sent' => 0,
+            'failed' => 0,
+            'errors' => [],
+        ];
+
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            if (!$user) {
+                $results['failed']++;
+                $results['errors'][] = "User {$userId} not found";
+                continue;
+            }
+
+            $success = $this->sendWinBackEmail(
+                $user,
+                $offerCode,
+                $discountPercent,
+                $discountMonths,
+                $expiresInDays
+            );
+
+            if ($success) {
+                $results['sent']++;
+            } else {
+                $results['failed']++;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Send feedback survey to churned member.
+     *
+     * @param User $user
+     * @param object|null $incentive
+     * @return bool
+     */
+    public function sendFeedbackSurvey(User $user, ?object $incentive = null): bool
+    {
+        try {
+            $user->notify(new FeedbackSurveyNotification($incentive));
+
+            Log::info('Feedback survey sent', [
+                'user_id' => $user->id,
+                'has_incentive' => $incentive !== null,
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to send feedback survey', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Send bulk feedback surveys.
+     *
+     * @param array $userIds
+     * @param object|null $incentive
+     * @return array
+     */
+    public function sendBulkFeedbackSurveys(array $userIds, ?object $incentive = null): array
+    {
+        $results = [
+            'sent' => 0,
+            'failed' => 0,
+        ];
+
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            if (!$user) {
+                $results['failed']++;
+                continue;
+            }
+
+            if ($this->sendFeedbackSurvey($user, $incentive)) {
+                $results['sent']++;
+            } else {
+                $results['failed']++;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get a random testimonial for win-back emails.
+     *
+     * @return object|null
+     */
+    private function getRandomTestimonial(): ?object
+    {
+        // In production, fetch from database testimonials table
+        $testimonials = [
+            [
+                'content' => "Revolution Trading Pros completely transformed my approach to the markets. The strategies I learned helped me achieve consistent profitability.",
+                'author' => 'Michael T.',
+                'title' => 'Full-time Trader',
+            ],
+            [
+                'content' => "The community support is incredible. Having access to experienced traders who actually want to help you succeed is invaluable.",
+                'author' => 'Sarah K.',
+                'title' => 'Member since 2022',
+            ],
+            [
+                'content' => "The indicators alone paid for my membership in the first week. The education and live sessions are just bonuses at this point.",
+                'author' => 'David R.',
+                'title' => 'Swing Trader',
+            ],
+        ];
+
+        $random = $testimonials[array_rand($testimonials)];
+        return (object) $random;
+    }
+
+    /**
+     * Get membership lifecycle analytics with churn data.
+     *
+     * @return array
+     */
+    public function getLifecycleAnalytics(): array
+    {
+        return Cache::remember('membership_lifecycle_analytics', self::CACHE_TTL, function () {
+            // Average membership duration
+            $avgDuration = DB::table('user_memberships')
+                ->whereIn('status', ['expired', 'cancelled'])
+                ->selectRaw('AVG(DATEDIFF(expires_at, starts_at)) as avg_days')
+                ->value('avg_days') ?? 0;
+
+            // Cancellation reasons breakdown
+            $cancellationReasons = DB::table('user_memberships')
+                ->where('status', 'cancelled')
+                ->whereNotNull('cancellation_reason')
+                ->select('cancellation_reason', DB::raw('count(*) as count'))
+                ->groupBy('cancellation_reason')
+                ->pluck('count', 'cancellation_reason')
+                ->toArray();
+
+            // Monthly churn trend
+            $monthlyChurn = DB::table('user_memberships')
+                ->whereIn('status', ['expired', 'cancelled'])
+                ->where('expires_at', '>=', now()->subMonths(12))
+                ->selectRaw("DATE_FORMAT(expires_at, '%Y-%m') as month, count(*) as count")
+                ->groupBy('month')
+                ->orderBy('month')
+                ->pluck('count', 'month')
+                ->toArray();
+
+            // Retention by plan
+            $retentionByPlan = DB::table('membership_plans')
+                ->leftJoin('user_memberships', 'membership_plans.id', '=', 'user_memberships.plan_id')
+                ->select(
+                    'membership_plans.name',
+                    DB::raw('COUNT(CASE WHEN user_memberships.status = "active" THEN 1 END) as active'),
+                    DB::raw('COUNT(CASE WHEN user_memberships.status IN ("expired", "cancelled") THEN 1 END) as churned')
+                )
+                ->groupBy('membership_plans.id', 'membership_plans.name')
+                ->get()
+                ->map(function ($plan) {
+                    $total = $plan->active + $plan->churned;
+                    return [
+                        'name' => $plan->name,
+                        'active' => $plan->active,
+                        'churned' => $plan->churned,
+                        'retention_rate' => $total > 0 ? round(($plan->active / $total) * 100, 2) : 0,
+                    ];
+                })
+                ->toArray();
+
+            return [
+                'average_membership_duration_days' => round($avgDuration, 1),
+                'cancellation_reasons' => $cancellationReasons,
+                'monthly_churn_trend' => $monthlyChurn,
+                'retention_by_plan' => $retentionByPlan,
+            ];
+        });
     }
 }
