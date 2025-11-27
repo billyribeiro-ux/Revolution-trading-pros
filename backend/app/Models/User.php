@@ -111,4 +111,28 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return $query->exists();
     }
+
+    /**
+     * Get the user's WebAuthn credentials (passkeys)
+     */
+    public function webAuthnCredentials()
+    {
+        return $this->hasMany(WebAuthnCredential::class);
+    }
+
+    /**
+     * Check if user has WebAuthn credentials registered
+     */
+    public function hasWebAuthnCredentials(): bool
+    {
+        return $this->webAuthnCredentials()->exists();
+    }
+
+    /**
+     * Get the user's integration credentials
+     */
+    public function integrationCredentials()
+    {
+        return $this->hasMany(IntegrationCredential::class);
+    }
 }

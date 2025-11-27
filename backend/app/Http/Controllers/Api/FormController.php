@@ -7,44 +7,77 @@ use App\Models\Form;
 use App\Models\FormField;
 use App\Models\FormSubmission;
 use App\Models\FormSubmissionData;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * FormController - Enterprise-grade Form API Controller
  *
  * Handles all form CRUD operations with proper validation,
- * error handling, and transaction support.
+ * error handling, authorization, and transaction support.
+ *
+ * @version 2.0.0
+ * @security IDOR Prevention via Policies
  */
 class FormController extends Controller
 {
+    /**
+     * Allowed sortable columns (prevent SQL injection)
+     */
+    private const SORTABLE_COLUMNS = [
+        'created_at',
+        'updated_at',
+        'title',
+        'status',
+        'submissions_count',
+    ];
+
     /**
      * Display a listing of forms
      */
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', Form::class);
+
         $query = Form::query()
+            ->where('created_by', auth()->id()) // User can only see their own forms
             ->withCount('submissions')
             ->with('creator:id,name');
 
-        // Filter by status
+        // Filter by status (validate against allowed values)
         if ($request->has('status')) {
-            $query->where('status', $request->status);
+            $allowedStatuses = ['draft', 'active', 'inactive', 'archived'];
+            if (in_array($request->status, $allowedStatuses)) {
+                $query->where('status', $request->status);
+            }
         }
 
-        // Search by title
-        if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+        // Search by title (sanitized)
+        if ($request->has('search') && strlen($request->search) > 0) {
+            $search = trim($request->search);
+            if (strlen($search) <= 100) { // Limit search length
+                $query->where('title', 'like', '%' . $search . '%');
+            }
         }
 
-        // Sort
+        // Sort (whitelist validation)
         $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortOrder = strtolower($request->get('sort_order', 'desc'));
+
+        if (!in_array($sortBy, self::SORTABLE_COLUMNS)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
         $query->orderBy($sortBy, $sortOrder);
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min((int) $request->get('per_page', 15), 100); // Cap at 100
         $forms = $query->paginate($perPage);
 
         return response()->json([
@@ -119,10 +152,17 @@ class FormController extends Controller
                 ], 201);
             });
         } catch (\Exception $e) {
+            // Log the actual error for debugging
+            Log::error('Form creation failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Return sanitized error message (never expose internal details)
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create form',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to create form. Please try again later.',
             ], 500);
         }
     }
@@ -142,6 +182,9 @@ class FormController extends Controller
                 'message' => 'Form not found',
             ], 404);
         }
+
+        // Authorization check - prevent IDOR
+        $this->authorize('view', $form);
 
         return response()->json([
             'success' => true,
@@ -419,6 +462,31 @@ class FormController extends Controller
             ], 404);
         }
 
+        // Check submission limit
+        if ($form->submission_limit && $form->submission_count >= $form->submission_limit) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This form has reached its submission limit',
+            ], 403);
+        }
+
+        // Check if form has expired
+        if ($form->expires_at && $form->expires_at->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This form has expired',
+            ], 403);
+        }
+
+        // Enforce anti-spam settings
+        $antiSpamResult = $this->checkAntiSpam($request, $form);
+        if (!$antiSpamResult['passed']) {
+            return response()->json([
+                'success' => false,
+                'message' => $antiSpamResult['message'],
+            ], 422);
+        }
+
         // Build validation rules from fields
         $rules = [];
         foreach ($form->fields as $field) {
@@ -432,7 +500,7 @@ class FormController extends Controller
             // Add type-specific rules
             switch ($field->field_type) {
                 case 'email':
-                    $fieldRules[] = 'email';
+                    $fieldRules[] = 'email:rfc,dns';
                     break;
                 case 'url':
                     $fieldRules[] = 'url';
@@ -440,6 +508,27 @@ class FormController extends Controller
                 case 'number':
                     $fieldRules[] = 'numeric';
                     break;
+                case 'phone':
+                    $fieldRules[] = 'regex:/^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/';
+                    break;
+                case 'file':
+                    $fieldRules[] = 'file';
+                    $fieldRules[] = 'max:10240'; // 10MB max
+                    break;
+            }
+
+            // Add custom validation from field config
+            if (!empty($field->validation)) {
+                $customRules = $field->validation;
+                if (isset($customRules['min'])) {
+                    $fieldRules[] = 'min:' . $customRules['min'];
+                }
+                if (isset($customRules['max'])) {
+                    $fieldRules[] = 'max:' . $customRules['max'];
+                }
+                if (isset($customRules['pattern'])) {
+                    $fieldRules[] = 'regex:' . $customRules['pattern'];
+                }
             }
 
             $rules[$field->name] = $fieldRules;
@@ -465,6 +554,7 @@ class FormController extends Controller
                     'referrer' => $request->header('referer'),
                     'metadata' => [
                         'submitted_at' => now()->toIso8601String(),
+                        'form_load_time' => $request->input('_form_load_time'),
                     ],
                 ]);
 
@@ -487,18 +577,158 @@ class FormController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Form submitted successfully',
+                    'message' => $form->success_message ?? 'Form submitted successfully',
                     'data' => [
                         'submission_id' => $submission->submission_id,
+                        'redirect_url' => $form->redirect_url,
                     ],
                 ], 201);
             });
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to submit form',
-                'error' => $e->getMessage(),
+                'message' => $form->error_message ?? 'Failed to submit form',
+                'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
+        }
+    }
+
+    /**
+     * Check anti-spam settings for form submission
+     */
+    private function checkAntiSpam(Request $request, Form $form): array
+    {
+        $settings = $form->anti_spam_settings ?? [];
+
+        // 1. Honeypot check - if honeypot field is filled, it's a bot
+        if (!empty($settings['honeypot_enabled'])) {
+            $honeypotField = $settings['honeypot_field'] ?? '_website';
+            if ($request->filled($honeypotField)) {
+                \Log::warning('Form spam detected: honeypot filled', [
+                    'form_id' => $form->id,
+                    'ip' => $request->ip(),
+                ]);
+                return [
+                    'passed' => false,
+                    'message' => 'Submission rejected',
+                ];
+            }
+        }
+
+        // 2. Time-based check - forms submitted too quickly are likely bots
+        if (!empty($settings['min_submit_time'])) {
+            $loadTime = $request->input('_form_load_time');
+            $submitTime = now()->timestamp;
+
+            if ($loadTime && ($submitTime - $loadTime) < $settings['min_submit_time']) {
+                \Log::warning('Form spam detected: submitted too quickly', [
+                    'form_id' => $form->id,
+                    'ip' => $request->ip(),
+                    'time_diff' => $submitTime - $loadTime,
+                ]);
+                return [
+                    'passed' => false,
+                    'message' => 'Please take your time filling out the form',
+                ];
+            }
+        }
+
+        // 3. Rate limiting by IP - prevent submission flooding
+        if (!empty($settings['rate_limit'])) {
+            $limit = $settings['rate_limit'];
+            $period = $settings['rate_limit_period'] ?? 60; // default 60 seconds
+
+            $recentSubmissions = FormSubmission::where('form_id', $form->id)
+                ->where('ip_address', $request->ip())
+                ->where('created_at', '>=', now()->subSeconds($period))
+                ->count();
+
+            if ($recentSubmissions >= $limit) {
+                \Log::warning('Form spam detected: rate limit exceeded', [
+                    'form_id' => $form->id,
+                    'ip' => $request->ip(),
+                    'submissions' => $recentSubmissions,
+                ]);
+                return [
+                    'passed' => false,
+                    'message' => 'Too many submissions. Please try again later.',
+                ];
+            }
+        }
+
+        // 4. reCAPTCHA verification
+        if (!empty($settings['recaptcha_enabled']) && !empty($settings['recaptcha_secret'])) {
+            $recaptchaToken = $request->input('g-recaptcha-response') ?? $request->input('recaptcha_token');
+
+            if (empty($recaptchaToken)) {
+                return [
+                    'passed' => false,
+                    'message' => 'Please complete the CAPTCHA verification',
+                ];
+            }
+
+            $verified = $this->verifyRecaptcha($recaptchaToken, $settings['recaptcha_secret']);
+            if (!$verified) {
+                \Log::warning('Form spam detected: reCAPTCHA failed', [
+                    'form_id' => $form->id,
+                    'ip' => $request->ip(),
+                ]);
+                return [
+                    'passed' => false,
+                    'message' => 'CAPTCHA verification failed. Please try again.',
+                ];
+            }
+        }
+
+        // 5. Block known spam patterns in content
+        if (!empty($settings['block_spam_patterns'])) {
+            $spamPatterns = [
+                '/\[url=/',           // BBCode links
+                '/\<a\s+href/',       // HTML links
+                '/viagra|cialis|casino|lottery|winner|congratulations.*won/i',
+                '/click here.*free/i',
+                '/earn money.*fast/i',
+            ];
+
+            $content = implode(' ', $request->except(['_token', '_form_load_time', 'g-recaptcha-response']));
+
+            foreach ($spamPatterns as $pattern) {
+                if (preg_match($pattern, $content)) {
+                    \Log::warning('Form spam detected: spam pattern matched', [
+                        'form_id' => $form->id,
+                        'ip' => $request->ip(),
+                        'pattern' => $pattern,
+                    ]);
+                    return [
+                        'passed' => false,
+                        'message' => 'Your submission contains blocked content',
+                    ];
+                }
+            }
+        }
+
+        return ['passed' => true, 'message' => 'OK'];
+    }
+
+    /**
+     * Verify reCAPTCHA token with Google
+     */
+    private function verifyRecaptcha(string $token, string $secret): bool
+    {
+        try {
+            $response = \Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => $secret,
+                'response' => $token,
+            ]);
+
+            $result = $response->json();
+
+            return $result['success'] ?? false;
+        } catch (\Exception $e) {
+            \Log::error('reCAPTCHA verification failed', [
+                'error' => $e->getMessage(),
+            ]);
+            return false;
         }
     }
 }

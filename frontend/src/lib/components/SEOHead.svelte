@@ -761,7 +761,3 @@
 
 	<!-- GTM is loaded via app.html or hooks to avoid hydration mismatch -->
 </svelte:head>
-
-<style>
-	/* No styles needed - this is a head-only component */
-</style>

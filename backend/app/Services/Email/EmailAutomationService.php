@@ -31,6 +31,7 @@ class EmailAutomationService
     {
         $workflows = EmailAutomationWorkflow::where('trigger_event', $event)
             ->where('is_active', true)
+            ->with(['template'])
             ->orderBy('priority', 'desc')
             ->get();
 

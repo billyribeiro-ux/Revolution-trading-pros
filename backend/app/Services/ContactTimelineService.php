@@ -68,7 +68,10 @@ class ContactTimelineService
     {
         $events = collect();
 
-        foreach ($contact->deals as $deal) {
+        // Eager load deals with pipeline to prevent N+1 queries
+        $deals = $contact->deals()->with(['pipeline', 'stage'])->get();
+
+        foreach ($deals as $deal) {
             $events->push([
                 'id' => $deal->id,
                 'type' => 'deal_created',
