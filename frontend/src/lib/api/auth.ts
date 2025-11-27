@@ -228,6 +228,10 @@ class AuthenticationService {
 	private abortController?: AbortController;
 	private securityObserver?: MutationObserver;
 
+	// Event listener references for proper cleanup (memory leak prevention)
+	private visibilityChangeHandler?: () => void;
+	private onlineHandler?: () => void;
+
 	private constructor() {
 		this.initialize();
 	}
@@ -1037,25 +1041,48 @@ class AuthenticationService {
 	private startSessionMonitoring(): void {
 		if (!browser) return;
 
-		// Clear existing interval
-		if (this.sessionCheckInterval) {
-			clearInterval(this.sessionCheckInterval);
-		}
+		// Clear existing listeners to prevent memory leaks
+		this.stopSessionMonitoring();
 
 		// Check session periodically
 		this.sessionCheckInterval = window.setInterval(() => {
 			this.checkSession();
 		}, SESSION_CHECK_INTERVAL);
 
-		// Check on visibility change
-		document.addEventListener('visibilitychange', () => {
+		// Create and store handler references for cleanup
+		this.visibilityChangeHandler = (): void => {
 			if (!document.hidden) {
 				this.checkSession();
 			}
-		});
+		};
+		this.onlineHandler = (): void => {
+			this.checkSession();
+		};
 
-		// Check on online/offline
-		window.addEventListener('online', () => this.checkSession());
+		// Add event listeners with stored references
+		document.addEventListener('visibilitychange', this.visibilityChangeHandler);
+		window.addEventListener('online', this.onlineHandler);
+	}
+
+	/**
+	 * Stop session monitoring and cleanup listeners (memory leak prevention)
+	 */
+	private stopSessionMonitoring(): void {
+		// Clear interval
+		if (this.sessionCheckInterval) {
+			clearInterval(this.sessionCheckInterval);
+			this.sessionCheckInterval = undefined;
+		}
+
+		// Remove event listeners using stored references
+		if (this.visibilityChangeHandler) {
+			document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+			this.visibilityChangeHandler = undefined;
+		}
+		if (this.onlineHandler) {
+			window.removeEventListener('online', this.onlineHandler);
+			this.onlineHandler = undefined;
+		}
 	}
 
 	/**
@@ -1088,10 +1115,8 @@ class AuthenticationService {
 			this.tokenRefreshTimeout = undefined;
 		}
 
-		if (this.sessionCheckInterval) {
-			clearInterval(this.sessionCheckInterval);
-			this.sessionCheckInterval = undefined;
-		}
+		// Stop session monitoring and clean up event listeners
+		this.stopSessionMonitoring();
 
 		// Abort pending requests
 		this.abortController?.abort();

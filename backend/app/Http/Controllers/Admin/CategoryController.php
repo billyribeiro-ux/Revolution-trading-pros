@@ -11,6 +11,11 @@ use Illuminate\Validation\Rule;
 class CategoryController extends Controller
 {
     /**
+     * Allowed columns for sorting (SQL injection prevention)
+     */
+    private const ALLOWED_SORT_COLUMNS = ['order', 'name', 'slug', 'created_at', 'updated_at', 'id'];
+
+    /**
      * Display a listing of categories
      */
     public function index(Request $request)
@@ -37,14 +42,21 @@ class CategoryController extends Controller
             $query->where('parent_id', $request->parent_id);
         }
 
-        // Sort
+        // Sort with whitelist validation (SQL injection prevention)
         $sortBy = $request->get('sort_by', 'order');
         $sortDir = $request->get('sort_dir', 'asc');
-        
+
+        if (!in_array($sortBy, self::ALLOWED_SORT_COLUMNS, true) && $sortBy !== 'post_count') {
+            $sortBy = 'order';
+        }
+        if (!in_array(strtolower($sortDir), ['asc', 'desc'], true)) {
+            $sortDir = 'asc';
+        }
+
         if ($sortBy === 'post_count') {
             // For post_count, we need to sort by the computed attribute
             $categories = $query->get()->sortBy('post_count', SORT_REGULAR, $sortDir === 'desc');
-            
+
             return response()->json([
                 'data' => $categories->values(),
                 'total' => $categories->count()

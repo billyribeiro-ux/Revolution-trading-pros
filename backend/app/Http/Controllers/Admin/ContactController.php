@@ -12,6 +12,14 @@ use Illuminate\Support\Str;
 
 class ContactController extends Controller
 {
+    /**
+     * Allowed columns for sorting (SQL injection prevention)
+     */
+    private const ALLOWED_SORT_COLUMNS = [
+        'created_at', 'updated_at', 'first_name', 'last_name', 'email',
+        'status', 'lifecycle_stage', 'lead_score', 'id'
+    ];
+
     public function __construct(
         private LeadScoringService $leadScoringService,
         private HealthScoringService $healthScoringService,
@@ -45,9 +53,17 @@ class ContactController extends Controller
             });
         }
 
-        // Sorting
+        // Sorting with whitelist validation (SQL injection prevention)
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
+
+        if (!in_array($sortBy, self::ALLOWED_SORT_COLUMNS, true)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array(strtolower($sortOrder), ['asc', 'desc'], true)) {
+            $sortOrder = 'desc';
+        }
+
         $query->orderBy($sortBy, $sortOrder);
 
         return response()->json(

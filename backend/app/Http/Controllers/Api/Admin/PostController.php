@@ -11,6 +11,14 @@ use Illuminate\Validation\Rule;
 class PostController extends Controller
 {
     /**
+     * Allowed columns for sorting (SQL injection prevention)
+     */
+    private const ALLOWED_SORT_COLUMNS = [
+        'created_at', 'updated_at', 'published_at', 'title', 'status',
+        'view_count', 'comment_count', 'seo_score', 'id'
+    ];
+
+    /**
      * Display a listing of posts for admin.
      */
     public function index(Request $request)
@@ -44,9 +52,17 @@ class PostController extends Controller
             $query->where('created_at', '<=', $request->end_date);
         }
 
-        // Sorting
+        // Sorting with whitelist validation (SQL injection prevention)
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
+
+        if (!in_array($sortBy, self::ALLOWED_SORT_COLUMNS, true)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array(strtolower($sortOrder), ['asc', 'desc'], true)) {
+            $sortOrder = 'desc';
+        }
+
         $query->orderBy($sortBy, $sortOrder);
 
         // Pagination

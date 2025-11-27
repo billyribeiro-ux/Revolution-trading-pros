@@ -15,6 +15,12 @@ use Carbon\Carbon;
 class MemberController extends Controller
 {
     /**
+     * Allowed columns for sorting (SQL injection prevention)
+     */
+    private const ALLOWED_SORT_COLUMNS = [
+        'created_at', 'updated_at', 'name', 'email', 'first_name', 'last_name', 'id'
+    ];
+    /**
      * Display comprehensive list of all members with advanced filtering
      */
     public function index(Request $request)
@@ -93,14 +99,20 @@ class MemberController extends Controller
             }
         }
 
-        // Sorting
+        // Sorting with whitelist validation (SQL injection prevention)
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDir = $request->input('sort_dir', 'desc');
 
+        if (!in_array(strtolower($sortDir), ['asc', 'desc'], true)) {
+            $sortDir = 'desc';
+        }
+
         if ($sortBy === 'total_spent') {
             $query->orderBy(DB::raw('COALESCE(total_spent, 0)'), $sortDir);
-        } else {
+        } elseif (in_array($sortBy, self::ALLOWED_SORT_COLUMNS, true)) {
             $query->orderBy($sortBy, $sortDir);
+        } else {
+            $query->orderBy('created_at', $sortDir);
         }
 
         $members = $query->paginate($request->input('per_page', 25));
@@ -437,7 +449,7 @@ class MemberController extends Controller
     }
 
     /**
-     * Send email to single member
+     * Send email to single member (queued for async delivery)
      */
     public function sendEmail(Request $request, $id)
     {
@@ -450,15 +462,15 @@ class MemberController extends Controller
 
         $member = User::findOrFail($id);
 
-        // Send email (using Laravel's mail system)
+        // Queue email for async delivery (non-blocking)
         try {
-            Mail::send([], [], function ($message) use ($member, $validated) {
-                $message->to($member->email, $member->name)
-                    ->subject($validated['subject'])
-                    ->html($validated['body']);
-            });
+            Mail::to($member->email, $member->name)
+                ->queue(new \App\Mail\GenericEmail(
+                    $validated['subject'],
+                    $validated['body']
+                ));
 
-            // Log email sent
+            // Log email queued
             DB::table('email_logs')->insert([
                 'user_id' => $member->id,
                 'template_id' => $validated['template_id'] ?? null,
@@ -470,23 +482,23 @@ class MemberController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Email sent successfully',
+                'message' => 'Email queued for delivery',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send email: ' . $e->getMessage(),
+                'message' => 'Failed to queue email: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Send bulk email to multiple members
+     * Send bulk email to multiple members (batch queued for async delivery)
      */
     public function bulkEmail(Request $request)
     {
         $validated = $request->validate([
-            'member_ids' => 'required|array',
+            'member_ids' => 'required|array|max:500', // Limit bulk operations
             'member_ids.*' => 'exists:users,id',
             'template_id' => 'nullable|exists:email_templates,id',
             'subject' => 'required|string|max:255',
@@ -496,48 +508,51 @@ class MemberController extends Controller
         ]);
 
         $members = User::whereIn('id', $validated['member_ids'])->get();
-        $sent = 0;
-        $failed = 0;
+        $queued = 0;
+
+        // Prepare batch email logs for single insert
+        $emailLogs = [];
+        $now = now();
 
         foreach ($members as $member) {
-            try {
-                // Personalize body if requested
-                $body = $validated['body'];
-                if ($validated['personalize'] ?? false) {
-                    $body = str_replace(
-                        ['{{name}}', '{{first_name}}', '{{email}}'],
-                        [$member->name, $member->first_name ?? $member->name, $member->email],
-                        $body
-                    );
-                }
-
-                Mail::send([], [], function ($message) use ($member, $validated, $body) {
-                    $message->to($member->email, $member->name)
-                        ->subject($validated['subject'])
-                        ->html($body);
-                });
-
-                $sent++;
-
-                // Log email sent
-                DB::table('email_logs')->insert([
-                    'user_id' => $member->id,
-                    'template_id' => $validated['template_id'] ?? null,
-                    'subject' => $validated['subject'],
-                    'campaign_type' => $validated['campaign_type'] ?? 'general',
-                    'sent_at' => now(),
-                    'created_at' => now(),
-                ]);
-            } catch (\Exception $e) {
-                $failed++;
+            // Personalize body if requested
+            $body = $validated['body'];
+            if ($validated['personalize'] ?? false) {
+                $body = str_replace(
+                    ['{{name}}', '{{first_name}}', '{{email}}'],
+                    [$member->name, $member->first_name ?? $member->name, $member->email],
+                    $body
+                );
             }
+
+            // Queue email asynchronously (non-blocking)
+            Mail::to($member->email, $member->name)
+                ->later(now()->addSeconds($queued), new \App\Mail\GenericEmail(
+                    $validated['subject'],
+                    $body
+                ));
+
+            $emailLogs[] = [
+                'user_id' => $member->id,
+                'template_id' => $validated['template_id'] ?? null,
+                'subject' => $validated['subject'],
+                'campaign_type' => $validated['campaign_type'] ?? 'general',
+                'sent_at' => $now,
+                'created_at' => $now,
+            ];
+
+            $queued++;
+        }
+
+        // Batch insert email logs (single query instead of N queries)
+        if (!empty($emailLogs)) {
+            DB::table('email_logs')->insert($emailLogs);
         }
 
         return response()->json([
             'success' => true,
-            'message' => "Sent {$sent} emails successfully" . ($failed > 0 ? ", {$failed} failed" : ""),
-            'sent' => $sent,
-            'failed' => $failed,
+            'message' => "Queued {$queued} emails for delivery",
+            'queued' => $queued,
         ]);
     }
 
