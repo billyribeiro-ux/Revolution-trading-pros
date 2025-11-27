@@ -19,9 +19,9 @@
 		await dashboardStore.loadDashboard(dashboardType);
 	});
 
-	function handleDragStart(event: CustomEvent<{ widget: DashboardWidget }>) {
+	function handleDragStart(data: { widget: DashboardWidget }) {
 		isDragging = true;
-		draggedWidget = event.detail.widget;
+		draggedWidget = data.widget;
 	}
 
 	function handleDragEnd() {
@@ -29,8 +29,8 @@
 		draggedWidget = null;
 	}
 
-	async function handleDrop(event: CustomEvent<{ widget: DashboardWidget; x: number; y: number }>) {
-		const { widget, x, y } = event.detail;
+	async function handleDrop(data: { widget: DashboardWidget; x: number; y: number }) {
+		const { widget, x, y } = data;
 
 		await dashboardStore.updateWidgetLayout(widget.id, {
 			x,
@@ -41,9 +41,9 @@
 	}
 
 	async function handleResize(
-		event: CustomEvent<{ widget: DashboardWidget; width: number; height: number }>
+		data: { widget: DashboardWidget; width: number; height: number }
 	) {
-		const { widget, width, height } = event.detail;
+		const { widget, width, height } = data;
 
 		await dashboardStore.updateWidgetLayout(widget.id, {
 			x: widget.position_x,

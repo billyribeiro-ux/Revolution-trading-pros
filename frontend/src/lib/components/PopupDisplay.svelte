@@ -6,18 +6,22 @@
 	import { IconX } from '@tabler/icons-svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
-	export let pageUrl: string = '';
+	interface Props {
+		pageUrl?: string;
+	}
 
-	let popups: Popup[] = [];
-	let currentPopup: Popup | null = null;
-	let show = false;
-	let viewId: number | null = null;
-	let isClosing = false;
+	let { pageUrl = '' }: Props = $props();
+
+	let popups: Popup[] = $state([]);
+	let currentPopup: Popup | null = $state(null);
+	let show = $state(false);
+	let viewId: number | null = $state(null);
+	let isClosing = $state(false);
 
 	// Tracking
-	let scrollDepth = 0;
-	let timeOnPage = 0;
-	let exitIntentTriggered = false;
+	let scrollDepth = $state(0);
+	let timeOnPage = $state(0);
+	let exitIntentTriggered = $state(false);
 
 	// Timers
 	let timeInterval: any;
@@ -25,12 +29,12 @@
 
 	// Accessibility
 	let popupElement: HTMLElement;
-	let previousFocusedElement: HTMLElement | null = null;
+	let previousFocusedElement: HTMLElement | null = $state(null);
 
 	// Button ripple effect state
-	let rippleActive = false;
-	let rippleX = 0;
-	let rippleY = 0;
+	let rippleActive = $state(false);
+	let rippleX = $state(0);
+	let rippleY = $state(0);
 
 	onMount(async () => {
 		if (!browser) return;
@@ -353,19 +357,21 @@
 	}
 
 	// Reactive keyboard event listener
-	$: if (browser && show) {
-		window.addEventListener('keydown', handleKeydown);
-	} else if (browser) {
-		window.removeEventListener('keydown', handleKeydown);
-	}
+	$effect(() => {
+		if (browser && show) {
+			window.addEventListener('keydown', handleKeydown);
+		} else if (browser) {
+			window.removeEventListener('keydown', handleKeydown);
+		}
+	});
 </script>
 
 {#if show && currentPopup}
 	<div
 		class="popup-overlay {getPositionClasses(currentPopup.position)}"
 		class:closing={isClosing}
-		on:click={handleOverlayClick}
-		on:keydown={handleKeydown}
+		onclick={handleOverlayClick}
+		onkeydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="popup-title"
@@ -376,14 +382,14 @@
 		<div class="popup-backdrop" class:closing={isClosing}></div>
 
 		<!-- Popup Container -->
-		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			bind:this={popupElement}
 			class="popup-container {getSizeClass(currentPopup.size)} {getAnimationClass(
 				currentPopup.animation
 			)}"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="document"
 			style={currentPopup.design?.backgroundColor
 				? `background-color: ${currentPopup.design.backgroundColor}`
@@ -392,7 +398,7 @@
 			<!-- Close Button -->
 			{#if currentPopup.show_close_button}
 				<button
-					on:click={closePopup}
+					onclick={closePopup}
 					class="popup-close-button"
 					aria-label="Close popup"
 					title="Close (Esc)"
@@ -436,7 +442,7 @@
 				<!-- CTA Button with advanced effects -->
 				{#if currentPopup.cta_text}
 					<button
-						on:click={handleCTAClick}
+						onclick={handleCTAClick}
 						class="popup-cta-button"
 						style={getButtonStyles(currentPopup.design)}
 						aria-label={currentPopup.cta_text}
