@@ -1,23 +1,41 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { writable } from 'svelte/store';
-
-	const dispatch = createEventDispatcher();
-
-	export let filters = {
+	interface FilterState {
 		dateRange: {
-			from: '',
-			to: '',
-			preset: 'last_30_days'
-		},
-		widgetTypes: [] as string[],
+			from: string;
+			to: string;
+			preset: string;
+		};
+		widgetTypes: string[];
 		metrics: {
-			min: null as number | null,
-			max: null as number | null
-		},
-		status: [] as string[],
-		tags: [] as string[]
-	};
+			min: number | null;
+			max: number | null;
+		};
+		status: string[];
+		tags: string[];
+	}
+
+	interface Props {
+		filters?: FilterState;
+		onapply?: (filters: FilterState) => void;
+	}
+
+	let {
+		filters = $bindable({
+			dateRange: {
+				from: '',
+				to: '',
+				preset: 'last_30_days'
+			},
+			widgetTypes: [],
+			metrics: {
+				min: null,
+				max: null
+			},
+			status: [],
+			tags: []
+		}),
+		onapply
+	}: Props = $props();
 
 	const datePresets = [
 		{ value: 'today', label: 'Today' },
@@ -45,7 +63,7 @@
 
 	const statusOptions = ['active', 'inactive', 'warning', 'error'];
 
-	let showCustomDateRange = false;
+	let showCustomDateRange = $state(false);
 
 	function handlePresetChange() {
 		showCustomDateRange = filters.dateRange.preset === 'custom';
@@ -108,7 +126,7 @@
 	}
 
 	function applyFilters() {
-		dispatch('apply', filters);
+		onapply?.(filters);
 	}
 
 	function resetFilters() {
@@ -158,14 +176,14 @@
 <div class="advanced-filters">
 	<div class="filter-header">
 		<h3>Advanced Filters</h3>
-		<button class="btn-reset" on:click={resetFilters}>Reset All</button>
+		<button class="btn-reset" onclick={resetFilters}>Reset All</button>
 	</div>
 
 	<div class="filter-section">
 		<h4>Date Range</h4>
 		<div class="form-group">
 			<label for="date-preset">Preset</label>
-			<select id="date-preset" bind:value={filters.dateRange.preset} on:change={handlePresetChange}>
+			<select id="date-preset" bind:value={filters.dateRange.preset} onchange={handlePresetChange}>
 				{#each datePresets as preset}
 					<option value={preset.value}>{preset.label}</option>
 				{/each}
@@ -180,7 +198,7 @@
 						id="date-from"
 						type="date"
 						bind:value={filters.dateRange.from}
-						on:change={applyFilters}
+						onchange={applyFilters}
 					/>
 				</div>
 				<div class="form-group">
@@ -189,7 +207,7 @@
 						id="date-to"
 						type="date"
 						bind:value={filters.dateRange.to}
-						on:change={applyFilters}
+						onchange={applyFilters}
 					/>
 				</div>
 			</div>
@@ -204,7 +222,7 @@
 					<input
 						type="checkbox"
 						checked={filters.widgetTypes.includes(type)}
-						on:change={() => toggleWidgetType(type)}
+						onchange={() => toggleWidgetType(type)}
 					/>
 					<span>{type.replace(/_/g, ' ')}</span>
 				</label>
@@ -222,7 +240,7 @@
 					type="number"
 					placeholder="0"
 					bind:value={filters.metrics.min}
-					on:change={applyFilters}
+					onchange={applyFilters}
 				/>
 			</div>
 			<div class="form-group">
@@ -232,7 +250,7 @@
 					type="number"
 					placeholder="1000"
 					bind:value={filters.metrics.max}
-					on:change={applyFilters}
+					onchange={applyFilters}
 				/>
 			</div>
 		</div>
@@ -245,7 +263,7 @@
 				<button
 					class="status-pill"
 					class:active={filters.status.includes(status)}
-					on:click={() => toggleStatus(status)}
+					onclick={() => toggleStatus(status)}
 				>
 					{status}
 				</button>
@@ -254,7 +272,7 @@
 	</div>
 
 	<div class="filter-actions">
-		<button class="btn-apply" on:click={applyFilters}>Apply Filters</button>
+		<button class="btn-apply" onclick={applyFilters}>Apply Filters</button>
 	</div>
 </div>
 

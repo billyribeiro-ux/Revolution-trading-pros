@@ -7,32 +7,62 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 
-	const dispatch = createEventDispatcher();
+	interface ChartDataPoint {
+		time: string;
+		value: number;
+		open?: number;
+		high?: number;
+		low?: number;
+		close?: number;
+	}
 
-	export let type: 'line' | 'area' | 'bar' | 'candlestick' | 'histogram' = 'area';
-	export let data: { time: string; value: number; open?: number; high?: number; low?: number; close?: number }[] = [];
-	export let title: string = '';
-	export let subtitle: string = '';
-	export let height: number = 300;
-	export let loading: boolean = false;
-	export let showLegend: boolean = true;
-	export let showTooltip: boolean = true;
-	export let color: string = '#6366f1';
-	export let gradientTopColor: string = 'rgba(99, 102, 241, 0.4)';
-	export let gradientBottomColor: string = 'rgba(99, 102, 241, 0.0)';
-	export let timeVisible: boolean = true;
-	export let priceLineVisible: boolean = true;
-	export let animateOnMount: boolean = true;
+	interface Props {
+		type?: 'line' | 'area' | 'bar' | 'candlestick' | 'histogram';
+		data?: ChartDataPoint[];
+		title?: string;
+		subtitle?: string;
+		height?: number;
+		loading?: boolean;
+		showLegend?: boolean;
+		showTooltip?: boolean;
+		color?: string;
+		gradientTopColor?: string;
+		gradientBottomColor?: string;
+		timeVisible?: boolean;
+		priceLineVisible?: boolean;
+		animateOnMount?: boolean;
+		onhover?: (value: { time: string; value: number }) => void;
+		controls?: import('svelte').Snippet;
+	}
+
+	let {
+		type = 'area',
+		data = [],
+		title = '',
+		subtitle = '',
+		height = 300,
+		loading = false,
+		showLegend = true,
+		showTooltip = true,
+		color = '#6366f1',
+		gradientTopColor = 'rgba(99, 102, 241, 0.4)',
+		gradientBottomColor = 'rgba(99, 102, 241, 0.0)',
+		timeVisible = true,
+		priceLineVisible = true,
+		animateOnMount = true,
+		onhover,
+		controls
+	}: Props = $props();
 
 	let chartContainer: HTMLDivElement;
 	let chart: unknown;
 	let series: unknown;
-	let currentValue: { time: string; value: number } | null = null;
+	let currentValue: { time: string; value: number } | null = $state(null);
 
 	async function initChart() {
 		if (!browser || !chartContainer) return;
@@ -160,7 +190,7 @@
 							time: param.time,
 							value: value.value ?? value.close ?? 0
 						};
-						dispatch('hover', currentValue);
+						onhover?.(currentValue);
 					}
 				} else {
 					currentValue = null;
@@ -195,7 +225,8 @@
 	}
 
 	// Update data reactively
-	$: if (browser && series && data.length > 0) {
+	$effect(() => {
+		if (browser && series && data.length > 0) {
 		if (type === 'candlestick') {
 			(series as any).setData(
 				data.map((d) => ({
@@ -212,7 +243,8 @@
 		if (chart) {
 			(chart as any).timeScale().fitContent();
 		}
-	}
+		}
+	});
 
 	onMount(() => {
 		initChart();
@@ -268,7 +300,7 @@
 	{/if}
 
 	<!-- Chart Type Selector -->
-	<slot name="controls" />
+	{@render controls?.()}
 </div>
 
 <style>

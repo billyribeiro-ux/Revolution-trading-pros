@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { DashboardWidget } from '$lib/types/dashboard';
 	import { dashboardStore } from '$lib/stores/dashboard';
 
@@ -10,11 +9,16 @@
 	import RecentActivityWidget from './widgets/RecentActivityWidget.svelte';
 	import GenericWidget from './widgets/GenericWidget.svelte';
 
-	export let widget: DashboardWidget;
+	interface Props {
+		widget: DashboardWidget;
+		ondragstart?: () => void;
+		ondragend?: () => void;
+		onlayoutchange?: (e: { detail: any }) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { widget, ondragstart, ondragend, onlayoutchange }: Props = $props();
 
-	let isRefreshing = false;
+	let isRefreshing = $state(false);
 
 	async function handleRefresh() {
 		isRefreshing = true;
@@ -43,9 +47,9 @@
 		}
 	}
 
-	$: widgetComponent = getWidgetComponent(widget.widget_type);
-	$: gridColumn = `${widget.position_x + 1} / span ${widget.width}`;
-	$: gridRow = `${widget.position_y + 1} / span ${widget.height}`;
+	let WidgetComponent = $derived(getWidgetComponent(widget.widget_type));
+	let gridColumn = $derived(`${widget.position_x + 1} / span ${widget.width}`);
+	let gridRow = $derived(`${widget.position_y + 1} / span ${widget.height}`);
 </script>
 
 <div
@@ -59,13 +63,13 @@
 	tabindex="0"
 	aria-label="Widget card"
 	aria-roledescription="Widget card container"
-	on:dragstart
-	on:dragend
+	ondragstart={ondragstart}
+	ondragend={ondragend}
 >
 	<div class="widget-header">
 		<h3 class="widget-title">{widget.title}</h3>
 		<div class="widget-actions">
-			<button class="action-btn" on:click={handleRefresh} disabled={isRefreshing} title="Refresh">
+			<button class="action-btn" onclick={handleRefresh} disabled={isRefreshing} title="Refresh">
 				<svg
 					class:spin={isRefreshing}
 					width="16"
@@ -80,7 +84,7 @@
 					/>
 				</svg>
 			</button>
-			<button class="action-btn" on:click={handleRemove} title="Remove">
+			<button class="action-btn" onclick={handleRemove} title="Remove">
 				<svg
 					width="16"
 					height="16"
@@ -96,7 +100,7 @@
 	</div>
 
 	<div class="widget-content">
-		<svelte:component this={widgetComponent} data={widget.data} config={widget.config} />
+		<WidgetComponent data={widget.data} config={widget.config} />
 	</div>
 </div>
 

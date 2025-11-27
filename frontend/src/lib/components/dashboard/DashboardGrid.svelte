@@ -4,11 +4,15 @@
 	import WidgetCard from './WidgetCard.svelte';
 	import type { DashboardWidget } from '$lib/types/dashboard';
 
-	export let dashboardType: 'admin' | 'user' = 'user';
+	interface Props {
+		dashboardType?: 'admin' | 'user';
+	}
+
+	let { dashboardType = 'user' }: Props = $props();
 
 	let gridElement: HTMLDivElement;
-	let isDragging = false;
-	let draggedWidget: DashboardWidget | null = null;
+	let isDragging = $state(false);
+	let draggedWidget: DashboardWidget | null = $state(null);
 
 	onMount(async () => {
 		await dashboardStore.loadDashboard(dashboardType);
@@ -28,9 +32,9 @@
 		await dashboardStore.updateWidgetLayout(widget.id, newLayout);
 	}
 
-	$: widgets = $dashboardStore.widgets;
-	$: gridColumns = $dashboardStore.currentDashboard?.grid_columns || 12;
-	$: gridGap = $dashboardStore.currentDashboard?.grid_gap || 16;
+	let widgets = $derived($dashboardStore.widgets);
+	let gridColumns = $derived($dashboardStore.currentDashboard?.grid_columns || 12);
+	let gridGap = $derived($dashboardStore.currentDashboard?.grid_gap || 16);
 </script>
 
 <div class="dashboard-container">
@@ -42,7 +46,7 @@
 	{:else if $dashboardStore.error}
 		<div class="error-state">
 			<p class="error-message">{$dashboardStore.error}</p>
-			<button on:click={() => dashboardStore.clearError()}>Dismiss</button>
+			<button onclick={() => dashboardStore.clearError()}>Dismiss</button>
 		</div>
 	{:else}
 		<div
@@ -57,9 +61,9 @@
 				{#if widget.is_visible}
 					<WidgetCard
 						{widget}
-						on:dragstart={() => handleDragStart(widget)}
-						on:dragend={handleDragEnd}
-						on:layoutchange={(e) => handleLayoutChange(widget, e.detail)}
+						ondragstart={() => handleDragStart(widget)}
+						ondragend={handleDragEnd}
+						onlayoutchange={(e) => handleLayoutChange(widget, e.detail)}
 					/>
 				{/if}
 			{/each}
