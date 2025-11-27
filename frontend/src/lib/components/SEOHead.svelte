@@ -59,82 +59,128 @@
 	// Props & Configuration
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Basic SEO Props
-	export let title: string;
-	export let description: string;
-	export let canonical: string | null = null;
-	export let keywords: string[] = [];
-	export let author: string | null = null;
-	export let robots: string | null = null;
-	export let noindex: boolean = false;
-	export let nofollow: boolean = false;
-	export let noimageindex: boolean = false;
-	export let noarchive: boolean = false;
-	export let nosnippet: boolean = false;
-	export let notranslate: boolean = false;
-	export let unavailable_after: string | null = null;
+	// Props Interface
+	interface Props {
+		title: string;
+		description: string;
+		canonical?: string | null;
+		keywords?: string[];
+		author?: string | null;
+		robots?: string | null;
+		noindex?: boolean;
+		nofollow?: boolean;
+		noimageindex?: boolean;
+		noarchive?: boolean;
+		nosnippet?: boolean;
+		notranslate?: boolean;
+		unavailable_after?: string | null;
+		ogType?: 'website' | 'article' | 'product' | 'video' | 'music' | 'book' | 'profile';
+		ogImage?: string | null;
+		ogImageAlt?: string | null;
+		ogImageWidth?: number;
+		ogImageHeight?: number;
+		ogVideo?: string | null;
+		ogAudio?: string | null;
+		ogLocale?: string;
+		ogAlternateLocales?: string[];
+		ogSiteName?: string | null;
+		twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
+		twitterSite?: string | null;
+		twitterCreator?: string | null;
+		twitterImage?: string | null;
+		twitterImageAlt?: string | null;
+		twitterPlayer?: string | null;
+		publishedTime?: string | null;
+		modifiedTime?: string | null;
+		expirationTime?: string | null;
+		section?: string | null;
+		tags?: string[];
+		productPrice?: number | null;
+		productCurrency?: string;
+		productAvailability?: 'in stock' | 'out of stock' | 'preorder' | 'discontinued';
+		productCondition?: 'new' | 'used' | 'refurbished';
+		productBrand?: string | null;
+		productSKU?: string | null;
+		productRating?: number | null;
+		productReviewCount?: number | null;
+		schema?: any;
+		autoSchema?: boolean;
+		schemaType?: string | null;
+		breadcrumbs?: Array<{ name: string; url: string }>;
+		language?: string;
+		region?: string;
+		rating?: 'general' | 'mature' | 'restricted';
+		referrer?: string;
+		themeColor?: string;
+		colorScheme?: 'light' | 'dark' | 'auto';
+		viewport?: string;
+		preconnect?: string[];
+		dnsPrefetch?: string[];
+		preload?: Array<{ href: string; as: string; type?: string }>;
+		prefetch?: string[];
+		modulePreload?: string[];
+	}
 
-	// Open Graph Props
-	export let ogType: 'website' | 'article' | 'product' | 'video' | 'music' | 'book' | 'profile' =
-		'website';
-	export let ogImage: string | null = null;
-	export let ogImageAlt: string | null = null;
-	export let ogImageWidth: number = 1200;
-	export let ogImageHeight: number = 630;
-	export let ogVideo: string | null = null;
-	export let ogAudio: string | null = null;
-	export let ogLocale: string = 'en_US';
-	export let ogAlternateLocales: string[] = [];
-	export let ogSiteName: string | null = null;
-
-	// Twitter Card Props
-	export let twitterCard: 'summary' | 'summary_large_image' | 'app' | 'player' =
-		'summary_large_image';
-	export let twitterSite: string | null = null;
-	export let twitterCreator: string | null = null;
-	export let twitterImage: string | null = null;
-	export let twitterImageAlt: string | null = null;
-	export let twitterPlayer: string | null = null;
-
-	// Article Props (for blog posts)
-	export let publishedTime: string | null = null;
-	export let modifiedTime: string | null = null;
-	export let expirationTime: string | null = null;
-	export let section: string | null = null;
-	export let tags: string[] = [];
-
-	// Product Props (for e-commerce)
-	export let productPrice: number | null = null;
-	export let productCurrency: string = 'USD';
-	export let productAvailability: 'in stock' | 'out of stock' | 'preorder' | 'discontinued' =
-		'in stock';
-	export let productCondition: 'new' | 'used' | 'refurbished' = 'new';
-	export let productBrand: string | null = null;
-	export let productSKU: string | null = null;
-	export let productRating: number | null = null;
-	export let productReviewCount: number | null = null;
-
-	// Schema Props
-	export let schema: any = null;
-	export let autoSchema: boolean = true;
-	export let schemaType: string | null = null;
-	export let breadcrumbs: Array<{ name: string; url: string }> = [];
-
-	// Advanced SEO Props
-	export let language: string = 'en';
-	export let region: string = 'US';
-	export let rating: 'general' | 'mature' | 'restricted' = 'general';
-	export let referrer: string = 'no-referrer-when-downgrade';
-	export let themeColor: string = '#1a1a1a';
-	export let colorScheme: 'light' | 'dark' | 'auto' = 'auto';
-	export let viewport: string = 'width=device-width, initial-scale=1, maximum-scale=5';
-
-	// Performance Hints
-	export let preconnect: string[] = [];
-	export let dnsPrefetch: string[] = [];
-	export let preload: Array<{ href: string; as: string; type?: string }> = [];
-	export let prefetch: string[] = [];
-	export let modulePreload: string[] = [];
+	let {
+		title,
+		description,
+		canonical = null,
+		keywords = [],
+		author = null,
+		robots = null,
+		noindex = false,
+		nofollow = false,
+		noimageindex = false,
+		noarchive = false,
+		nosnippet = false,
+		notranslate = false,
+		unavailable_after = null,
+		ogType = 'website',
+		ogImage = null,
+		ogImageAlt = null,
+		ogImageWidth = 1200,
+		ogImageHeight = 630,
+		ogVideo = null,
+		ogAudio = null,
+		ogLocale = 'en_US',
+		ogAlternateLocales = [],
+		ogSiteName = null,
+		twitterCard = 'summary_large_image',
+		twitterSite = null,
+		twitterCreator = null,
+		twitterImage = null,
+		twitterImageAlt = null,
+		twitterPlayer = null,
+		publishedTime = null,
+		modifiedTime = null,
+		expirationTime = null,
+		section = null,
+		tags = [],
+		productPrice = null,
+		productCurrency = 'USD',
+		productAvailability = 'in stock',
+		productCondition = 'new',
+		productBrand = null,
+		productSKU = null,
+		productRating = null,
+		productReviewCount = null,
+		schema = null,
+		autoSchema = true,
+		schemaType = null,
+		breadcrumbs = [],
+		language = 'en',
+		region = 'US',
+		rating = 'general',
+		referrer = 'no-referrer-when-downgrade',
+		themeColor = '#1a1a1a',
+		colorScheme = 'auto',
+		viewport = 'width=device-width, initial-scale=1, maximum-scale=5',
+		preconnect = [],
+		dnsPrefetch = [],
+		preload = [],
+		prefetch = [],
+		modulePreload = []
+	}: Props = $props();
 
 	// Site Configuration
 	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
@@ -153,45 +199,45 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// URL Construction - use consistent server-side URL to avoid hydration mismatch
-	$: currentUrl = `${siteUrl}${$page.url.pathname}`;
-	$: fullCanonical = canonical
+	let currentUrl = $derived(`${siteUrl}${$page.url.pathname}`);
+	let fullCanonical = $derived(canonical
 		? canonical.startsWith('http')
 			? canonical
 			: `${siteUrl}${canonical}`
-		: currentUrl;
+		: currentUrl);
 
 	// Title Construction
-	$: fullTitle = constructTitle(title, siteName);
-	$: titleLength = fullTitle.length;
-	$: titleOptimal = titleLength >= 30 && titleLength <= 60;
+	let fullTitle = $derived(constructTitle(title, siteName));
+	let titleLength = $derived(fullTitle.length);
+	let titleOptimal = $derived(titleLength >= 30 && titleLength <= 60);
 
 	// Description Construction
-	$: fullDescription = description || siteDescription;
-	$: descriptionLength = fullDescription.length;
-	$: descriptionOptimal = descriptionLength >= 80 && descriptionLength <= 200;
+	let fullDescription = $derived(description || siteDescription);
+	let descriptionLength = $derived(fullDescription.length);
+	let descriptionOptimal = $derived(descriptionLength >= 80 && descriptionLength <= 200);
 
 	// Image URLs
-	$: fullOgImage = constructImageUrl(ogImage || twitterImage || defaultImage);
-	$: fullTwitterImage = constructImageUrl(twitterImage || ogImage || defaultImage);
+	let fullOgImage = $derived(constructImageUrl(ogImage || twitterImage || defaultImage));
+	let fullTwitterImage = $derived(constructImageUrl(twitterImage || ogImage || defaultImage));
 
 	// Robots Directives
-	$: robotsContent = constructRobotsContent();
+	let robotsContent = $derived(constructRobotsContent());
 
 	// Language & Region
-	$: hreflang = `${language}-${region}`;
-	$: locale = `${language}_${region.toUpperCase()}`;
+	let hreflang = $derived(`${language}-${region}`);
+	let locale = $derived(`${language}_${region.toUpperCase()}`);
 
 	// Schema Generation
-	$: generatedSchema = autoSchema ? generateSchema() : schema;
-	$: allSchemas = combineSchemas(generatedSchema);
+	let generatedSchema = $derived(autoSchema ? generateSchema() : schema);
+	let allSchemas = $derived(combineSchemas(generatedSchema));
 
-	$: effectiveKeywords = keywords.length >= 3 ? keywords : generateDefaultKeywords();
-	$: effectiveBreadcrumbs =
-		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
+	let effectiveKeywords = $derived(keywords.length >= 3 ? keywords : generateDefaultKeywords());
+	let effectiveBreadcrumbs = $derived(
+		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname));
 
 	// SEO Score
-	$: seoScore = calculateSEOScore();
-	$: seoWarnings = getSEOWarnings();
+	let seoScore = $derived(calculateSEOScore());
+	let seoWarnings = $derived(getSEOWarnings());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Helper Functions
