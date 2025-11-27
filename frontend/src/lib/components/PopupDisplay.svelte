@@ -4,6 +4,7 @@
 	import { popupsApi } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups';
 	import { IconX } from '@tabler/icons-svelte';
+	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	export let pageUrl: string = '';
 
@@ -420,7 +421,7 @@
 						class="popup-body"
 						style={currentPopup.design?.textColor ? `color: ${currentPopup.design.textColor}` : ''}
 					>
-						{@html currentPopup.content}
+						{@html sanitizePopupContent(currentPopup.content)}
 					</div>
 				{/if}
 

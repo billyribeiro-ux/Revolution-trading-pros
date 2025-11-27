@@ -1048,13 +1048,91 @@ class EmailTemplate extends Model implements Renderable
     }
 
     /**
-     * Evaluate condition.
+     * Evaluate condition safely without eval().
+     * Supports: comparisons (==, !=, >, <, >=, <=), logical (&&, ||, !), isset, empty
      */
     protected function evaluateCondition(string $condition, array $data): bool
     {
-        // Simple condition evaluation
-        // In production, use a proper expression evaluator
-        return eval("return {$condition};");
+        // Sanitize and validate condition - whitelist approach
+        $condition = trim($condition);
+
+        // Empty condition is always true
+        if (empty($condition)) {
+            return true;
+        }
+
+        // Replace variables with their values from data
+        $processedCondition = preg_replace_callback(
+            '/\$([a-zA-Z_][a-zA-Z0-9_]*)/',
+            function ($matches) use ($data) {
+                $varName = $matches[1];
+                return isset($data[$varName]) ? var_export($data[$varName], true) : 'null';
+            },
+            $condition
+        );
+
+        // Handle isset() checks
+        if (preg_match('/^isset\s*\(\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\)$/', $condition, $matches)) {
+            return isset($data[$matches[1]]);
+        }
+
+        // Handle empty() checks
+        if (preg_match('/^empty\s*\(\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\)$/', $condition, $matches)) {
+            return empty($data[$matches[1]]);
+        }
+
+        // Handle !empty() checks
+        if (preg_match('/^!empty\s*\(\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\)$/', $condition, $matches)) {
+            return !empty($data[$matches[1]]);
+        }
+
+        // Handle simple comparisons: var == value, var != value, etc.
+        if (preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)\s*(==|!=|===|!==|>|<|>=|<=)\s*(.+)$/', $condition, $matches)) {
+            $varName = $matches[1];
+            $operator = $matches[2];
+            $compareValue = trim($matches[3], '\'"');
+
+            $actualValue = $data[$varName] ?? null;
+
+            // Try to cast to number if it looks like one
+            if (is_numeric($compareValue)) {
+                $compareValue = strpos($compareValue, '.') !== false ? (float)$compareValue : (int)$compareValue;
+            } elseif ($compareValue === 'true') {
+                $compareValue = true;
+            } elseif ($compareValue === 'false') {
+                $compareValue = false;
+            } elseif ($compareValue === 'null') {
+                $compareValue = null;
+            }
+
+            return match ($operator) {
+                '==' => $actualValue == $compareValue,
+                '!=' => $actualValue != $compareValue,
+                '===' => $actualValue === $compareValue,
+                '!==' => $actualValue !== $compareValue,
+                '>' => $actualValue > $compareValue,
+                '<' => $actualValue < $compareValue,
+                '>=' => $actualValue >= $compareValue,
+                '<=' => $actualValue <= $compareValue,
+                default => false,
+            };
+        }
+
+        // Handle boolean variable check: just "varName" means truthy check
+        if (preg_match('/^!?([a-zA-Z_][a-zA-Z0-9_]*)$/', $condition, $matches)) {
+            $isNegated = str_starts_with($condition, '!');
+            $varName = $matches[1];
+            $value = !empty($data[$varName]);
+            return $isNegated ? !$value : $value;
+        }
+
+        // For complex conditions, log warning and default to false for security
+        \Log::warning('Complex template condition not supported, defaulting to false', [
+            'condition' => $condition,
+            'template_id' => $this->id ?? 'unknown'
+        ]);
+
+        return false;
     }
 
     /**

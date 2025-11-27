@@ -5,6 +5,7 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
+	import { sanitizeBlogContent } from '$lib/utils/sanitize';
 
 	interface Category {
 		id: number;
@@ -207,38 +208,38 @@
 			<div class="post-body">
 				<div class="content">
 					{#if post.content_blocks && post.content_blocks.length > 0}
-						<!-- Structured content blocks -->
+						<!-- Structured content blocks (sanitized for XSS protection) -->
 						{#each post.content_blocks as block}
 							{#if block.type === 'paragraph'}
-								<p>{@html block.data?.text || ''}</p>
+								<p>{@html sanitizeBlogContent(block.data?.text || '')}</p>
 							{:else if block.type === 'heading'}
 								{#if block.data?.level === 1}
-									<h1>{@html block.data?.text || ''}</h1>
+									<h1>{@html sanitizeBlogContent(block.data?.text || '')}</h1>
 								{:else if block.data?.level === 2}
-									<h2>{@html block.data?.text || ''}</h2>
+									<h2>{@html sanitizeBlogContent(block.data?.text || '')}</h2>
 								{:else if block.data?.level === 3}
-									<h3>{@html block.data?.text || ''}</h3>
+									<h3>{@html sanitizeBlogContent(block.data?.text || '')}</h3>
 								{:else if block.data?.level === 4}
-									<h4>{@html block.data?.text || ''}</h4>
+									<h4>{@html sanitizeBlogContent(block.data?.text || '')}</h4>
 								{:else}
-									<h5>{@html block.data?.text || ''}</h5>
+									<h5>{@html sanitizeBlogContent(block.data?.text || '')}</h5>
 								{/if}
 							{:else if block.type === 'list'}
 								{#if block.data?.style === 'ordered'}
 									<ol>
 										{#each block.data?.items || [] as item}
-											<li>{@html item}</li>
+											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ol>
 								{:else}
 									<ul>
 										{#each block.data?.items || [] as item}
-											<li>{@html item}</li>
+											<li>{@html sanitizeBlogContent(item)}</li>
 										{/each}
 									</ul>
 								{/if}
 							{:else if block.type === 'quote'}
-								<blockquote>{@html block.data?.text || ''}</blockquote>
+								<blockquote>{@html sanitizeBlogContent(block.data?.text || '')}</blockquote>
 							{:else if block.type === 'code'}
 								<pre><code>{block.data?.code || ''}</code></pre>
 							{:else if block.type === 'image'}
