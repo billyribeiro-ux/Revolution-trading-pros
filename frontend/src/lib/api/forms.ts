@@ -830,19 +830,46 @@ class FormsService {
 		try {
 			const params = new URLSearchParams({
 				page: page.toString(),
-				perPage: perPage.toString(),
-				...filters
+				per_page: perPage.toString()
 			});
+			
+			// Add status filter if provided
+			if (filters?.status) {
+				params.set('status', filters.status);
+			}
 
-			const response = await this.authFetch<{ forms: Form[]; total?: number; perPage?: number }>(
-				`${API_BASE}/forms?${params}`
-			);
+			const response = await this.authFetch<any>(`${API_BASE}/forms?${params}`);
 
-			this.forms.set(response.forms);
+			// Handle Laravel paginated response: { success: true, data: { data: [...], total: N, per_page: N } }
+			let forms: Form[] = [];
+			let total = 0;
+			let responsePerPage = perPage;
+
+			if (response?.data?.data) {
+				// Laravel paginated response
+				forms = response.data.data;
+				total = response.data.total || forms.length;
+				responsePerPage = response.data.per_page || perPage;
+			} else if (response?.data && Array.isArray(response.data)) {
+				// Direct array in data
+				forms = response.data;
+				total = forms.length;
+			} else if (response?.forms) {
+				// Legacy format
+				forms = response.forms;
+				total = response.total ?? forms.length;
+				responsePerPage = response.perPage ?? perPage;
+			} else if (Array.isArray(response)) {
+				// Direct array response
+				forms = response;
+				total = forms.length;
+			}
+
+			this.forms.set(forms);
 			return {
-				forms: response.forms,
-				total: response.total ?? response.forms.length,
-				perPage: response.perPage ?? perPage
+				forms,
+				total,
+				perPage: responsePerPage
 			};
 		} catch (error: any) {
 			this.error.set(error.message);

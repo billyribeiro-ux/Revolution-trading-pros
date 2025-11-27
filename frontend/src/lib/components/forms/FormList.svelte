@@ -30,20 +30,15 @@
 		error = '';
 
 		try {
-			const response = await getForms(currentPage, 20, statusFilter || undefined);
-			// Handle both array and paginated response formats
-			if (Array.isArray(response)) {
-				forms = response;
-				totalPages = 1;
-			} else {
-				const paginatedResponse = response as any;
-				forms = paginatedResponse.data || paginatedResponse.forms || [];
-				totalPages = Math.ceil(
-					(paginatedResponse.total || forms.length) / (paginatedResponse.perPage || 20)
-				);
-			}
+			const filters = statusFilter ? { status: statusFilter } : undefined;
+			const response = await getForms(currentPage, 20, filters);
+			
+			// Response is { forms: Form[], total: number, perPage: number }
+			forms = response?.forms || [];
+			totalPages = Math.ceil((response?.total || forms.length) / (response?.perPage || 20));
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load forms';
+			forms = [];
 		} finally {
 			loading = false;
 		}
