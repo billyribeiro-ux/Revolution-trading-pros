@@ -1,10 +1,10 @@
 <script lang="ts">
 	/**
-	 * NavBar Component - Google L8+ Principal Engineer Production Standard
-	 * SvelteKit 5 | CSS Grid Layout | Zero CLS | Static Logo | WCAG 2.1 AA
+	 * NavBar Component - Google L8+ Enterprise Standard
+	 * SvelteKit 5 | Absolute Logo & Actions | Zero CLS | CSS-Driven Breakpoints
 	 */
-	import { onMount, tick } from 'svelte';
-	import { browser } from '$app/environment';
+
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import type { ComponentType } from 'svelte';
@@ -43,7 +43,6 @@
 	}
 
 	const BREAKPOINT_DESKTOP = 1024;
-	const HOVER_INTENT_DELAY = 150;
 
 	const navItems: NavItem[] = [
 		{
@@ -91,99 +90,35 @@
 		{ href: '/dashboard/account', label: 'My Account', icon: IconSettings }
 	];
 
-	// ════════════════════════════════════════════════════════════════
-	// Svelte 5 Runes State
-	// ════════════════════════════════════════════════════════════════
+	// ─────────────────────────────────────────────────────────────
+	// State - Svelte 5 Runes
+	// ─────────────────────────────────────────────────────────────
 	let isMobileMenuOpen = $state(false);
 	let activeDropdown = $state<string | null>(null);
 	let activeMobileSubmenu = $state<string | null>(null);
 	let isUserMenuOpen = $state(false);
-	let windowWidth = $state(0); // mobile-first: SSR defaults to mobile
 	let isScrolled = $state(false);
-	let hoverIntentTimer = $state<ReturnType<typeof setTimeout> | null>(null);
-	let dropdownPositions = $state<Record<string, 'center' | 'left' | 'right'>>({});
 
-	let mobileNavRef = $state<HTMLElement | null>(null);
 	let hamburgerRef = $state<HTMLButtonElement | null>(null);
-	let headerRef = $state<HTMLElement | null>(null);
-	let firstMobileFocusable = $state<HTMLElement | null>(null);
-	let lastMobileFocusable = $state<HTMLElement | null>(null);
 
-	const isDesktop = $derived(browser && windowWidth >= BREAKPOINT_DESKTOP);
-
-	// ════════════════════════════════════════════════════════════════
-	// Helpers
-	// ════════════════════════════════════════════════════════════════
-	function calculateDropdownPosition(element: HTMLElement): 'center' | 'left' | 'right' {
-		const rect = element.getBoundingClientRect();
-		const centerX = rect.left + rect.width / 2;
-		const viewportWidth = window.innerWidth;
-		const dropdownWidth = 220;
-
-		if (centerX + dropdownWidth / 2 > viewportWidth - 20) {
-			return 'right';
-		}
-		if (centerX - dropdownWidth / 2 < 20) {
-			return 'left';
-		}
-		return 'center';
-	}
-
-	function handleDropdownEnter(itemId: string, event: MouseEvent): void {
-		if (hoverIntentTimer) clearTimeout(hoverIntentTimer);
-
-		const target = event.currentTarget as HTMLElement;
-		dropdownPositions[itemId] = calculateDropdownPosition(target);
-
-		hoverIntentTimer = setTimeout(() => {
-			activeDropdown = itemId;
-		}, HOVER_INTENT_DELAY);
-	}
-
-	function handleDropdownLeave(): void {
-		if (hoverIntentTimer) {
-			clearTimeout(hoverIntentTimer);
-			hoverIntentTimer = null;
-		}
-		setTimeout(() => {
-			activeDropdown = null;
-		}, 100);
-	}
-
-	function handleDropdownClick(itemId: string, event: MouseEvent): void {
-		event.stopPropagation();
-		const target = event.currentTarget as HTMLElement;
-		dropdownPositions[itemId] = calculateDropdownPosition(target);
-		activeDropdown = activeDropdown === itemId ? null : itemId;
-	}
-
-	function applyBodyLock(open: boolean) {
-		if (!browser) return;
-		document.body.classList.toggle('menu-open', open);
-	}
-
+	// ─────────────────────────────────────────────────────────────
+	// Handlers
+	// ─────────────────────────────────────────────────────────────
 	function toggleMobileMenu(): void {
 		isMobileMenuOpen = !isMobileMenuOpen;
 		activeMobileSubmenu = null;
-		if (browser) {
-			document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
-		}
-		applyBodyLock(isMobileMenuOpen);
 
-		if (isMobileMenuOpen) {
-			tick().then(() => {
-				firstMobileFocusable?.focus();
-			});
+		if (typeof document !== 'undefined') {
+			document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
 		}
 	}
 
 	function closeMobileMenu(): void {
 		isMobileMenuOpen = false;
 		activeMobileSubmenu = null;
-		if (browser) {
+
+		if (typeof document !== 'undefined') {
 			document.body.style.overflow = '';
-			document.body.classList.remove('menu-open');
-			hamburgerRef?.focus();
 		}
 	}
 
@@ -201,62 +136,10 @@
 		if (event.key === 'Escape') {
 			if (isMobileMenuOpen) {
 				closeMobileMenu();
+				hamburgerRef?.focus();
 			} else {
 				activeDropdown = null;
 				isUserMenuOpen = false;
-			}
-		}
-	}
-
-	// Focus trap for mobile panel
-	function handleMobileMenuKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Tab' && isMobileMenuOpen) {
-			const focusableElements = mobileNavRef?.querySelectorAll<HTMLElement>(
-				'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])'
-			);
-
-			if (!focusableElements || focusableElements.length === 0) return;
-
-			const firstElement = focusableElements[0];
-			const lastElement = focusableElements[focusableElements.length - 1];
-
-			if (event.shiftKey && document.activeElement === firstElement) {
-				event.preventDefault();
-				lastElement.focus();
-			} else if (!event.shiftKey && document.activeElement === lastElement) {
-				event.preventDefault();
-				firstElement.focus();
-			}
-		}
-	}
-
-	function handleDropdownKeydown(event: KeyboardEvent, items: SubMenuItem[]): void {
-		const currentIndex = items.findIndex(
-			(item) => document.activeElement instanceof HTMLElement && document.activeElement.getAttribute('href') === item.href
-		);
-
-		switch (event.key) {
-			case 'ArrowDown': {
-				event.preventDefault();
-				const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
-				(document.querySelector(`[href="${items[nextIndex].href}"]`) as HTMLElement)?.focus();
-				break;
-			}
-			case 'ArrowUp': {
-				event.preventDefault();
-				const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
-				(document.querySelector(`[href="${items[prevIndex].href}"]`) as HTMLElement)?.focus();
-				break;
-			}
-			case 'Home': {
-				event.preventDefault();
-				(document.querySelector(`[href="${items[0].href}"]`) as HTMLElement)?.focus();
-				break;
-			}
-			case 'End': {
-				event.preventDefault();
-				(document.querySelector(`[href="${items[items.length - 1].href}"]`) as HTMLElement)?.focus();
-				break;
 			}
 		}
 	}
@@ -272,321 +155,247 @@
 		await goto('/login');
 	}
 
-	// Close mobile menu automatically when resizing to desktop
-	$effect(() => {
-		if (isDesktop && isMobileMenuOpen) {
-			closeMobileMenu();
-		}
-	});
-
+	// ─────────────────────────────────────────────────────────────
+	// Lifecycle (browser-only)
+	// ─────────────────────────────────────────────────────────────
 	onMount(() => {
-		if (browser) {
-			windowWidth = window.innerWidth;
+		isScrolled = window.scrollY > 20;
+
+		const handleResize = () => {
+			// If user rotates device / resizes to desktop, auto-close mobile nav
+			if (window.innerWidth >= BREAKPOINT_DESKTOP && isMobileMenuOpen) {
+				closeMobileMenu();
+			}
+		};
+
+		const handleScroll = () => {
 			isScrolled = window.scrollY > 20;
+		};
 
-			const handleResize = () => {
-				windowWidth = window.innerWidth;
-			};
+		window.addEventListener('resize', handleResize, { passive: true });
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		document.addEventListener('click', handleDocumentClick);
+		document.addEventListener('keydown', handleKeydown);
 
-			const handleScroll = () => {
-				isScrolled = window.scrollY > 20;
-			};
-
-			window.addEventListener('resize', handleResize, { passive: true });
-			window.addEventListener('scroll', handleScroll, { passive: true });
-			document.addEventListener('click', handleDocumentClick);
-			document.addEventListener('keydown', handleKeydown);
-
-			return () => {
-				window.removeEventListener('resize', handleResize);
-				window.removeEventListener('scroll', handleScroll);
-				document.removeEventListener('click', handleDocumentClick);
-				document.removeEventListener('keydown', handleKeydown);
-				document.body.style.overflow = '';
-				document.body.classList.remove('menu-open');
-				if (hoverIntentTimer) clearTimeout(hoverIntentTimer);
-			};
-		}
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			window.removeEventListener('scroll', handleScroll);
+			document.removeEventListener('click', handleDocumentClick);
+			document.removeEventListener('keydown', handleKeydown);
+			document.body.style.overflow = '';
+		};
 	});
 </script>
 
 <header
 	class="header"
 	class:header--scrolled={isScrolled}
-	bind:this={headerRef}
 >
-	<div class="header__container">
-		<!-- LOGO - locked slot, never moves -->
-		<div class="header__logo">
-			<a
-				href="/"
-				class="logo"
-				onclick={closeMobileMenu}
-				aria-label="Revolution Trading Pros - Home"
-			>
-				<img
-					src="/revolution-trading-pros.png"
-					alt="Revolution Trading Pros"
-					width="200"
-					height="68"
-					class="logo__image"
-					fetchpriority="high"
-					decoding="async"
-				/>
-			</a>
-		</div>
+	<!-- LOGO: absolutely positioned, removed from flow -->
+	<a
+		href="/"
+		class="logo"
+		onclick={closeMobileMenu}
+		aria-label="Revolution Trading Pros home"
+	>
+		<img
+			src="/revolution-trading-pros.png"
+			alt="Revolution Trading Pros"
+			width="200"
+			height="68"
+			class="logo__img"
+		/>
+	</a>
 
+	<!-- CONTENT: centered nav; logo + actions are absolute -->
+	<div class="header__content">
 		<!-- DESKTOP NAV -->
-		{#if isDesktop}
-			<nav class="header__nav" aria-label="Main navigation">
-				<ul class="nav" role="menubar">
-					{#each navItems as item (item.id)}
-						{#if item.submenu}
-							<li
-								class="nav__item"
-								data-dropdown={item.id}
-								role="none"
-								onmouseenter={(e) => handleDropdownEnter(item.id, e)}
-								onmouseleave={handleDropdownLeave}
-							>
-								<button
-									type="button"
-									class="nav__link nav__link--dropdown"
-									class:nav__link--open={activeDropdown === item.id}
-									aria-expanded={activeDropdown === item.id}
-									aria-haspopup="menu"
-									aria-controls={`dropdown-${item.id}`}
-									onclick={(e) => handleDropdownClick(item.id, e)}
-								>
-									<span>{item.label}</span>
-									<IconChevronDown
-										size={14}
-										stroke={2.5}
-										class="nav__chevron"
-										aria-hidden="true"
-									/>
-								</button>
+		<nav class="nav" aria-label="Primary navigation">
+			{#each navItems as item (item.id)}
+				{#if item.submenu}
+					<div class="nav__item" data-dropdown={item.id}>
+						<button
+							type="button"
+							class="nav__link"
+							aria-expanded={activeDropdown === item.id}
+							aria-haspopup="true"
+							onclick={(e) => {
+								e.stopPropagation();
+								activeDropdown = activeDropdown === item.id ? null : item.id;
+							}}
+						>
+							<span>{item.label}</span>
+							<IconChevronDown
+								size={16}
+								stroke={2.5}
+								style={`transform: rotate(${activeDropdown === item.id ? 180 : 0}deg); transition: transform 0.2s;`}
+							/>
+						</button>
 
-								<div
-									id={`dropdown-${item.id}`}
-									class="dropdown"
-									class:dropdown--visible={activeDropdown === item.id}
-									class:dropdown--left={dropdownPositions[item.id] === 'left'}
-									class:dropdown--right={dropdownPositions[item.id] === 'right'}
-									role="menu"
-									tabindex="-1"
-									aria-labelledby={`nav-${item.id}`}
-									onkeydown={(e) => handleDropdownKeydown(e, item.submenu || [])}
-								>
-									{#each item.submenu as sub, index (sub.href)}
-										<a
-											href={sub.href}
-											class="dropdown__item"
-											class:dropdown__item--active={$page.url.pathname === sub.href}
-											role="menuitem"
-											tabindex={activeDropdown === item.id ? 0 : -1}
-											style={`--item-index: ${index}`}
-											onclick={() => (activeDropdown = null)}
-										>
-											{sub.label}
-										</a>
-									{/each}
-								</div>
-							</li>
-						{:else}
-							<li class="nav__item" role="none">
-								<a
-									href={item.href}
-									class="nav__link"
-									class:nav__link--active={$page.url.pathname === item.href}
-									role="menuitem"
-								>
-									{item.label}
-								</a>
-							</li>
+						{#if activeDropdown === item.id}
+							<div class="dropdown" role="menu">
+								{#each item.submenu as sub (sub.href)}
+									<a
+										href={sub.href}
+										class="dropdown__link"
+										class:dropdown__link--active={$page.url.pathname === sub.href}
+										role="menuitem"
+										onclick={() => (activeDropdown = null)}
+									>
+										{sub.label}
+									</a>
+								{/each}
+							</div>
 						{/if}
-					{/each}
-				</ul>
-			</nav>
-		{/if}
+					</div>
+				{:else}
+					<a
+						href={item.href}
+						class="nav__link"
+						class:nav__link--active={$page.url.pathname === item.href}
+					>
+						{item.label}
+					</a>
+				{/if}
+			{/each}
+		</nav>
 
-		<!-- ACTIONS: cart, user, hamburger -->
-		<div class="header__actions">
+		<!-- ACTIONS (right side, absolute on desktop) -->
+		<div class="actions">
 			{#if $hasCartItems}
-				<a
-					href="/cart"
-					class="action-btn action-btn--cart"
-					aria-label={`Shopping cart (${$cartItemCount} items)`}
-				>
-					<IconShoppingCart size={22} aria-hidden="true" />
+				<a href="/cart" class="actions__cart" aria-label="Shopping cart">
+					<IconShoppingCart size={22} />
 					{#if $cartItemCount > 0}
-						<span class="action-btn__badge" aria-hidden="true">{$cartItemCount}</span>
+						<span class="actions__badge">{$cartItemCount}</span>
 					{/if}
 				</a>
 			{/if}
 
-			{#if isDesktop}
+			<!-- DESKTOP CTA + AUTH -->
+			<div class="actions__desktop">
+				<a href="/live-trading-rooms" class="actions__cta">
+					GET STARTED
+				</a>
+
 				{#if $isAuthenticated}
-					<div class="user-menu" data-user-menu>
+					<div class="user" data-user-menu>
 						<button
 							type="button"
-							class="user-menu__trigger"
+							class="user__btn"
 							aria-expanded={isUserMenuOpen}
-							aria-haspopup="menu"
-							aria-controls="user-dropdown"
+							aria-haspopup="true"
 							onclick={(e) => {
 								e.stopPropagation();
 								isUserMenuOpen = !isUserMenuOpen;
 							}}
-							onkeydown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									e.preventDefault();
-									isUserMenuOpen = !isUserMenuOpen;
-								}
-							}}
 						>
-							<IconUser size={18} aria-hidden="true" />
-							<span class="user-menu__name">{$user?.name || 'Account'}</span>
-							<IconChevronDown size={12} aria-hidden="true" />
+							<IconUser size={18} />
+							<span class="user__name">{$user?.name || 'Account'}</span>
+							<IconChevronDown size={12} />
 						</button>
 
-						<div
-							id="user-dropdown"
-							class="user-menu__dropdown"
-							class:user-menu__dropdown--visible={isUserMenuOpen}
-							role="menu"
-							aria-label="User menu"
-						>
-							{#each userMenuItems as menuItem (menuItem.href)}
-								{@const Icon = menuItem.icon}
-								<a
-									href={menuItem.href}
-									class="user-menu__item"
-									role="menuitem"
-									tabindex={isUserMenuOpen ? 0 : -1}
-									onclick={() => (isUserMenuOpen = false)}
+						{#if isUserMenuOpen}
+							<div class="user__dropdown">
+								{#each userMenuItems as menuItem (menuItem.href)}
+									{@const Icon = menuItem.icon}
+									<a
+										href={menuItem.href}
+										class="user__link"
+										onclick={() => (isUserMenuOpen = false)}
+									>
+										<Icon size={16} />
+										<span>{menuItem.label}</span>
+									</a>
+								{/each}
+								<button
+									type="button"
+									class="user__link user__link--danger"
+									onclick={handleLogout}
 								>
-									<Icon size={16} aria-hidden="true" />
-									<span>{menuItem.label}</span>
-								</a>
-							{/each}
-							<button
-								type="button"
-								class="user-menu__item user-menu__item--danger"
-								role="menuitem"
-								tabindex={isUserMenuOpen ? 0 : -1}
-								onclick={handleLogout}
-							>
-								<IconLogout size={16} aria-hidden="true" />
-								<span>Logout</span>
-							</button>
-						</div>
+									<IconLogout size={16} />
+									<span>Logout</span>
+								</button>
+							</div>
+						{/if}
 					</div>
 				{:else}
-					<a href="/login" class="login-btn">
-						<IconUser size={18} aria-hidden="true" />
+					<a href="/login" class="actions__login">
+						<IconUser size={18} />
 						<span>Login</span>
 					</a>
 				{/if}
-			{/if}
+			</div>
 
-			{#if !isDesktop}
-				<button
-					type="button"
-					bind:this={hamburgerRef}
-					class="hamburger"
-					aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-					aria-expanded={isMobileMenuOpen}
-					aria-controls="mobile-nav"
-					onclick={toggleMobileMenu}
-				>
-					<span class="hamburger__icon" class:hamburger__icon--open={isMobileMenuOpen}>
-						{#if isMobileMenuOpen}
-							<IconX size={26} aria-hidden="true" />
-						{:else}
-							<IconMenu2 size={26} aria-hidden="true" />
-						{/if}
-					</span>
-				</button>
-			{/if}
+			<!-- MOBILE HAMBURGER -->
+			<button
+				type="button"
+				bind:this={hamburgerRef}
+				class="actions__hamburger"
+				aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+				aria-expanded={isMobileMenuOpen}
+				onclick={toggleMobileMenu}
+			>
+				{#if isMobileMenuOpen}
+					<IconX size={26} />
+				{:else}
+					<IconMenu2 size={26} />
+				{/if}
+			</button>
 		</div>
 	</div>
 </header>
 
-{#if !isDesktop && isMobileMenuOpen}
-	<!-- Backdrop -->
-	<div
-		class="mobile-overlay"
-		onclick={closeMobileMenu}
-		role="presentation"
-	></div>
+<!-- MOBILE PANEL -->
+{#if isMobileMenuOpen}
+	<div class="mobile-overlay" onclick={closeMobileMenu} aria-hidden="true"></div>
 
-	<!-- Mobile Panel -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<nav
-		id="mobile-nav"
-		class="mobile-panel"
-		bind:this={mobileNavRef}
-		aria-label="Mobile navigation"
-		onkeydown={handleMobileMenuKeydown}
-	>
-		<div class="mobile-panel__header">
-			<button
-				type="button"
-				class="mobile-panel__close"
-				onclick={closeMobileMenu}
-				aria-label="Close menu"
-				bind:this={firstMobileFocusable}
-			>
-				<IconX size={24} aria-hidden="true" />
+	<nav class="mobile" aria-label="Mobile navigation">
+		<div class="mobile__header">
+			<button type="button" class="mobile__close" onclick={closeMobileMenu} aria-label="Close menu">
+				<IconX size={24} />
 			</button>
 		</div>
 
-		<div class="mobile-panel__body">
-			{#each navItems as item, index (item.id)}
+		<div class="mobile__body">
+			{#each navItems as item (item.id)}
 				{#if item.submenu}
-					<div class="mobile-nav__group" style={`--item-index: ${index}`}>
+					<div class="mobile__group">
 						<button
 							type="button"
-							class="mobile-nav__link"
+							class="mobile__link"
 							aria-expanded={activeMobileSubmenu === item.id}
-							aria-controls={`mobile-submenu-${item.id}`}
 							onclick={() =>
 								(activeMobileSubmenu =
 									activeMobileSubmenu === item.id ? null : item.id)}
 						>
 							<span>{item.label}</span>
-							<span
-								class="mobile-nav__chevron"
-								class:mobile-nav__chevron--open={activeMobileSubmenu === item.id}
-							>
-								<IconChevronRight size={18} stroke={2.5} aria-hidden="true" />
-							</span>
+							<IconChevronRight
+								size={18}
+								stroke={2.5}
+								style={`transform: rotate(${activeMobileSubmenu === item.id ? 90 : 0}deg); transition: transform 0.2s;`}
+							/>
 						</button>
 
-						<div
-							id={`mobile-submenu-${item.id}`}
-							class="mobile-nav__submenu"
-							class:mobile-nav__submenu--open={activeMobileSubmenu === item.id}
-						>
-							{#each item.submenu as sub (sub.href)}
-								<a
-									href={sub.href}
-									class="mobile-nav__sublink"
-									class:mobile-nav__sublink--active={$page.url.pathname === sub.href}
-									onclick={closeMobileMenu}
-								>
-									{sub.label}
-								</a>
-							{/each}
-						</div>
+						{#if activeMobileSubmenu === item.id}
+							<div class="mobile__submenu">
+								{#each item.submenu as sub (sub.href)}
+									<a
+										href={sub.href}
+										class="mobile__sublink"
+										class:mobile__sublink--active={$page.url.pathname === sub.href}
+										onclick={closeMobileMenu}
+									>
+										{sub.label}
+									</a>
+								{/each}
+							</div>
+						{/if}
 					</div>
 				{:else}
 					<a
 						href={item.href}
-						class="mobile-nav__link"
-						class:mobile-nav__link--active={$page.url.pathname === item.href}
-						style={`--item-index: ${index}`}
+						class="mobile__link"
+						class:mobile__link--active={$page.url.pathname === item.href}
 						onclick={closeMobileMenu}
 					>
 						{item.label}
@@ -594,24 +403,28 @@
 				{/if}
 			{/each}
 
-			<div class="mobile-panel__footer" style={`--item-index: ${navItems.length}`}>
+			<!-- Mobile CTA + auth -->
+			<div class="mobile__footer">
+				<a
+					href="/live-trading-rooms"
+					class="mobile__cta"
+					onclick={closeMobileMenu}
+				>
+					GET STARTED
+				</a>
+
 				{#if $isAuthenticated}
-					<div class="mobile-user">
-						<div class="mobile-user__name">{$user?.name}</div>
+					<div class="mobile__user">
+						<div class="mobile__user-name">{$user?.name}</div>
 						{#each userMenuItems as menuItem (menuItem.href)}
-							<a
-								href={menuItem.href}
-								class="mobile-nav__sublink"
-								onclick={closeMobileMenu}
-							>
+							<a href={menuItem.href} class="mobile__sublink" onclick={closeMobileMenu}>
 								{menuItem.label}
 							</a>
 						{/each}
 						<button
 							type="button"
-							class="mobile-nav__sublink mobile-nav__sublink--danger"
+							class="mobile__sublink mobile__sublink--danger"
 							onclick={handleLogout}
-							bind:this={lastMobileFocusable}
 						>
 							Logout
 						</button>
@@ -619,9 +432,8 @@
 				{:else}
 					<a
 						href="/login"
-						class="login-btn login-btn--full"
+						class="actions__login actions__login--full"
 						onclick={closeMobileMenu}
-						bind:this={lastMobileFocusable}
 					>
 						Login
 					</a>
@@ -632,46 +444,19 @@
 {/if}
 
 <style>
-	:root {
-		--header-height: 80px;
-		--header-height-mobile: 64px;
-		--logo-width: 200px;
-		--logo-width-mobile: 140px;
-		--logo-height: 68px;
-		--logo-height-mobile: 48px;
-
-		--nav-bg: #05142b;
-		--nav-bg-alpha: rgba(5, 20, 43, 0.97);
-		--nav-text: #e5e7eb;
-		--nav-text-muted: #94a3b8;
-		--nav-accent: #facc15;
-		--nav-danger: #f87171;
-		--nav-border: rgba(148, 163, 253, 0.15);
-		--nav-hover-bg: rgba(255, 255, 255, 0.05);
-
-		--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-		--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-		--duration-fast: 150ms;
-		--duration-normal: 200ms;
-		--duration-slow: 300ms;
-	}
-
+	/* HEADER */
 	.header {
 		position: sticky;
 		top: 0;
 		left: 0;
 		right: 0;
 		z-index: 1000;
-		height: var(--header-height);
-		background: var(--nav-bg-alpha);
+		height: 80px;
+		background: rgba(5, 20, 43, 0.95);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--nav-border);
-		transition:
-			background-color var(--duration-normal) var(--ease-in-out),
-			box-shadow var(--duration-normal) var(--ease-in-out);
-		transform: translateZ(0);
-		will-change: background-color, box-shadow;
+		border-bottom: 1px solid rgba(148, 163, 253, 0.15);
+		transition: background-color 0.2s, box-shadow 0.2s;
 	}
 
 	.header--scrolled {
@@ -681,102 +466,83 @@
 
 	@media (max-width: 768px) {
 		.header {
-			height: var(--header-height-mobile);
+			height: 64px;
 		}
 	}
 
-	.header__container {
-		display: grid;
-		grid-template-columns: var(--logo-width) 1fr auto;
-		align-items: center;
-		height: 100%;
-		max-width: 1440px;
-		margin: 0 auto;
-		padding: 0 24px;
-		gap: 16px;
-	}
-
-	@media (max-width: 1024px) {
-		.header__container {
-			grid-template-columns: var(--logo-width-mobile) 1fr auto;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.header__container {
-			padding: 0 16px;
-			gap: 12px;
-		}
-	}
-
-	.header__logo {
-		width: var(--logo-width);
-		min-width: var(--logo-width);
-		max-width: var(--logo-width);
-		height: var(--logo-height);
-		min-height: var(--logo-height);
-		max-height: var(--logo-height);
-		flex-shrink: 0;
-		flex-grow: 0;
-		contain: layout style;
-		overflow: hidden;
-	}
-
+	/* LOGO - absolute, zero movement */
 	.logo {
-		display: block;
-		width: var(--logo-width);
-		height: var(--logo-height);
+		position: absolute;
+		left: 24px;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		width: 220px;
+		height: 68px;
 		text-decoration: none;
 	}
 
-	.logo__image {
+	.logo__img {
 		display: block;
-		width: var(--logo-width);
-		height: var(--logo-height);
-		min-width: var(--logo-width);
-		min-height: var(--logo-height);
+		width: 200px;
+		height: 68px;
 		object-fit: contain;
 		object-position: left center;
-		user-select: none;
-		-webkit-user-drag: none;
+		transform: none !important;
+		transition: none !important;
+	}
+
+	@media (max-width: 768px) {
+		.logo {
+			left: 16px;
+			width: 170px;
+			height: 48px;
+		}
+
+		.logo__img {
+			width: 140px;
+			height: 48px;
+		}
+	}
+
+	/* CONTENT: nav centered; padding reserves space for logo + actions */
+	.header__content {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		max-width: 1440px;
+		margin: 0 auto;
+		padding: 0 260px; /* roughly: left logo area + right actions area */
 	}
 
 	@media (max-width: 1024px) {
-		.header__logo {
-			width: var(--logo-width-mobile);
-			min-width: var(--logo-width-mobile);
-			max-width: var(--logo-width-mobile);
-			height: var(--logo-height-mobile);
-			min-height: var(--logo-height-mobile);
-			max-height: var(--logo-height-mobile);
-		}
-
-		.logo {
-			width: var(--logo-width-mobile);
-			height: var(--logo-height-mobile);
-		}
-
-		.logo__image {
-			width: var(--logo-width-mobile);
-			height: var(--logo-height-mobile);
-			min-width: var(--logo-width-mobile);
-			min-height: var(--logo-height-mobile);
+		.header__content {
+			justify-content: flex-end;
+			padding: 0 16px;
+			padding-left: 170px; /* room for logo only */
 		}
 	}
 
-	.header__nav {
-		min-width: 0;
-		overflow: hidden;
-	}
-
+	/* NAV (desktop only via CSS) */
 	.nav {
+		flex: 0 1 auto;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 2px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	@media (max-width: 1024px) {
+		.nav {
+			display: none;
+		}
 	}
 
 	.nav__item {
@@ -787,314 +553,181 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
-		padding: 10px 14px;
-		color: var(--nav-text);
+		padding: 8px 12px;
+		color: #e5e7eb;
 		font-family: 'Montserrat', system-ui, sans-serif;
-		font-weight: 600;
-		font-size: 0.875rem;
+		font-weight: 700;
+		font-size: 0.9rem;
 		text-decoration: none;
 		white-space: nowrap;
 		background: transparent;
 		border: 1px solid transparent;
-		border-radius: 6px;
+		border-radius: 999px;
 		cursor: pointer;
-		transition:
-			color var(--duration-fast) var(--ease-in-out),
-			background-color var(--duration-fast) var(--ease-in-out),
-			border-color var(--duration-fast) var(--ease-in-out);
+		transition: color 0.15s, background-color 0.15s, border-color 0.15s;
 	}
 
 	.nav__link:hover,
 	.nav__link:focus-visible,
-	.nav__link--active,
-	.nav__link--open {
-		color: var(--nav-accent);
-		background: var(--nav-hover-bg);
+	.nav__link--active {
+		color: #facc15;
+		background: rgba(255, 255, 255, 0.05);
 		border-color: rgba(250, 204, 21, 0.2);
 	}
 
 	.nav__link:focus-visible {
-		outline: 2px solid var(--nav-accent);
+		outline: 2px solid #facc15;
 		outline-offset: 2px;
 	}
 
-	.nav__link :global(.nav__chevron) {
-		transition: transform var(--duration-fast) var(--ease-in-out);
-	}
-
-	.nav__link--open :global(.nav__chevron) {
-		transform: rotate(180deg);
-	}
-
+	/* DROPDOWN */
 	.dropdown {
 		position: absolute;
-		top: calc(100% + 8px);
+		top: 100%;
 		left: 50%;
-		transform: translateX(-50%) translateY(-8px);
-		min-width: 220px;
-		padding: 8px;
-		background: var(--nav-bg);
-		border: 1px solid var(--nav-border);
+		transform: translateX(-50%);
+		margin-top: 8px;
+		min-width: 200px;
+		background: #05142b;
+		border: 1px solid rgba(148, 163, 253, 0.2);
 		border-radius: 12px;
-		box-shadow:
-			0 10px 40px rgba(0, 0, 0, 0.4),
-			0 0 0 1px rgba(255, 255, 255, 0.05);
+		padding: 8px;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 		z-index: 100;
-		opacity: 0;
-		visibility: hidden;
-		pointer-events: none;
-		transition:
-			opacity var(--duration-normal) var(--ease-out-expo),
-			transform var(--duration-normal) var(--ease-out-expo),
-			visibility var(--duration-normal);
 	}
 
-	.dropdown--visible {
-		opacity: 1;
-		visibility: visible;
-		pointer-events: auto;
-		transform: translateX(-50%) translateY(0);
-	}
-
-	.dropdown--left {
-		left: 0;
-		transform: translateX(0) translateY(-8px);
-	}
-
-	.dropdown--left.dropdown--visible {
-		transform: translateX(0) translateY(0);
-	}
-
-	.dropdown--right {
-		left: auto;
-		right: 0;
-		transform: translateX(0) translateY(-8px);
-	}
-
-	.dropdown--right.dropdown--visible {
-		transform: translateX(0) translateY(0);
-	}
-
-	.dropdown__item {
+	.dropdown__link {
 		display: block;
-		padding: 12px 16px;
-		color: var(--nav-text-muted);
+		padding: 10px 14px;
+		color: #94a3b8;
 		font-size: 0.9rem;
 		text-decoration: none;
 		border-radius: 8px;
-		transition:
-			background-color var(--duration-fast) var(--ease-in-out),
-			color var(--duration-fast) var(--ease-in-out);
-		animation: dropdownItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 30ms);
-		opacity: 0;
-		transform: translateY(-4px);
+		transition: background-color 0.15s, color 0.15s;
 	}
 
-	.dropdown--visible .dropdown__item {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	@keyframes dropdownItemIn {
-		from {
-			opacity: 0;
-			transform: translateY(-4px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.dropdown__item:hover,
-	.dropdown__item:focus-visible,
-	.dropdown__item--active {
+	.dropdown__link:hover,
+	.dropdown__link--active {
 		background: rgba(250, 204, 21, 0.1);
-		color: var(--nav-accent);
+		color: #facc15;
 	}
 
-	.dropdown__item:focus-visible {
-		outline: 2px solid var(--nav-accent);
-		outline-offset: -2px;
-	}
-
-	.header__actions {
+	/* ACTIONS (right side block) */
+	.actions {
+		position: absolute;
+		right: 24px;
+		top: 50%;
+		transform: translateY(-50%);
 		display: flex;
 		align-items: center;
 		gap: 12px;
+		flex-shrink: 0;
 	}
 
-	.action-btn {
+	@media (max-width: 1024px) {
+		.actions {
+			position: static;
+			right: auto;
+			top: auto;
+			transform: none;
+		}
+	}
+
+	.actions__cart {
 		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
+		width: 40px;
+		height: 40px;
 		color: #a78bfa;
 		background: rgba(139, 92, 246, 0.1);
-		border-radius: 10px;
-		text-decoration: none;
-		transition:
-			background-color var(--duration-fast) var(--ease-in-out),
-			transform var(--duration-fast) var(--ease-in-out);
+		border-radius: 8px;
+		transition: background-color 0.15s;
 	}
 
-	.action-btn:hover {
+	.actions__cart:hover {
 		background: rgba(139, 92, 246, 0.2);
-		transform: scale(1.05);
 	}
 
-	.action-btn:active {
-		transform: scale(0.98);
-	}
-
-	.action-btn__badge {
+	.actions__badge {
 		position: absolute;
 		top: -4px;
 		right: -4px;
-		min-width: 20px;
-		height: 20px;
-		padding: 0 6px;
-		background: var(--nav-accent);
-		color: var(--nav-bg);
+		min-width: 18px;
+		height: 18px;
+		padding: 0 5px;
+		background: #facc15;
+		color: #05142b;
 		font-size: 0.7rem;
 		font-weight: 700;
-		line-height: 20px;
+		line-height: 18px;
 		text-align: center;
 		border-radius: 999px;
-		animation: badgePop 200ms var(--ease-out-expo);
 	}
 
-	@keyframes badgePop {
-		0% { transform: scale(0.5); }
-		50% { transform: scale(1.2); }
-		100% { transform: scale(1); }
+	/* Desktop CTA + auth grouping */
+	.actions__desktop {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 	}
 
-	.login-btn {
+	@media (max-width: 1024px) {
+		.actions__desktop {
+			display: none;
+		}
+	}
+
+	.actions__cta {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 10px 22px;
+		border-radius: 999px;
+		background: linear-gradient(135deg, #facc15, #f97316);
+		color: #05142b;
+		font-weight: 700;
+		font-size: 0.88rem;
+		text-decoration: none;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		box-shadow: 0 0 18px rgba(250, 204, 21, 0.35);
+		transition: box-shadow 0.2s, transform 0.15s;
+	}
+
+	.actions__cta:hover {
+		box-shadow: 0 0 22px rgba(250, 204, 21, 0.55);
+		transform: translateY(-1px);
+	}
+
+	.actions__login {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		padding: 10px 20px;
+		padding: 10px 18px;
 		background: linear-gradient(135deg, #2563eb, #1d4ed8);
 		color: white;
 		font-weight: 600;
 		font-size: 0.9rem;
 		text-decoration: none;
 		border-radius: 10px;
-		transition:
-			box-shadow var(--duration-normal) var(--ease-in-out),
-			transform var(--duration-fast) var(--ease-in-out);
+		transition: box-shadow 0.2s;
 	}
 
-	.login-btn:hover {
-		box-shadow: 0 0 24px rgba(37, 99, 235, 0.5);
-		transform: translateY(-1px);
+	.actions__login:hover {
+		box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
 	}
 
-	.login-btn:active {
-		transform: translateY(0);
-	}
-
-	.login-btn--full {
+	.actions__login--full {
 		width: 100%;
 		justify-content: center;
 		padding: 14px 20px;
 	}
 
-	.user-menu {
-		position: relative;
-	}
-
-	.user-menu__trigger {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 14px;
-		background: rgba(250, 204, 21, 0.1);
-		border: 1px solid rgba(250, 204, 21, 0.3);
-		color: var(--nav-accent);
-		font-size: 0.9rem;
-		font-family: inherit;
-		border-radius: 8px;
-		cursor: pointer;
-		transition:
-			background-color var(--duration-fast) var(--ease-in-out),
-			border-color var(--duration-fast) var(--ease-in-out);
-	}
-
-	.user-menu__trigger:hover {
-		background: rgba(250, 204, 21, 0.15);
-		border-color: rgba(250, 204, 21, 0.5);
-	}
-
-	.user-menu__name {
-		max-width: 100px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.user-menu__dropdown {
-		position: absolute;
-		top: calc(100% + 8px);
-		right: 0;
-		width: 200px;
-		padding: 8px;
-		background: var(--nav-bg);
-		border: 1px solid var(--nav-border);
-		border-radius: 12px;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-		z-index: 100;
-		opacity: 0;
-		visibility: hidden;
-		transform: translateY(-8px);
-		transition:
-			opacity var(--duration-normal) var(--ease-out-expo),
-			transform var(--duration-normal) var(--ease-out-expo),
-			visibility var(--duration-normal);
-	}
-
-	.user-menu__dropdown--visible {
-		opacity: 1;
-		visibility: visible;
-		transform: translateY(0);
-	}
-
-	.user-menu__item {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		width: 100%;
-		padding: 10px 12px;
-		color: var(--nav-text);
-		font-size: 0.9rem;
-		font-family: inherit;
-		text-decoration: none;
-		text-align: left;
-		background: transparent;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out);
-	}
-
-	.user-menu__item:hover {
-		background: var(--nav-hover-bg);
-	}
-
-	.user-menu__item--danger {
-		color: var(--nav-danger);
-	}
-
-	.user-menu__item--danger:hover {
-		background: rgba(248, 113, 113, 0.1);
-	}
-
-	.hamburger {
-		display: flex;
+	/* Hamburger: mobile only */
+	.actions__hamburger {
+		display: none;
 		align-items: center;
 		justify-content: center;
 		width: 44px;
@@ -1104,125 +737,161 @@
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out);
+		transition: background-color 0.15s;
 	}
 
-	.hamburger:hover {
+	.actions__hamburger:hover {
 		background: rgba(255, 255, 255, 0.1);
 	}
 
-	.hamburger__icon {
+	@media (max-width: 1024px) {
+		.actions__hamburger {
+			display: flex;
+		}
+	}
+
+	/* USER MENU (desktop) */
+	.user {
+		position: relative;
+	}
+
+	.user__btn {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		transition: transform var(--duration-normal) var(--ease-out-expo);
+		gap: 8px;
+		padding: 8px 14px;
+		background: rgba(250, 204, 21, 0.1);
+		border: 1px solid rgba(250, 204, 21, 0.3);
+		color: #facc15;
+		font-size: 0.9rem;
+		font-family: inherit;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: background-color 0.15s, border-color 0.15s;
 	}
 
-	.hamburger__icon--open {
-		transform: rotate(90deg);
+	.user__btn:hover {
+		background: rgba(250, 204, 21, 0.15);
+		border-color: rgba(250, 204, 21, 0.5);
 	}
 
+	.user__name {
+		max-width: 100px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.user__dropdown {
+		position: absolute;
+		top: calc(100% + 8px);
+		right: 0;
+		width: 200px;
+		padding: 8px;
+		background: #05142b;
+		border: 1px solid rgba(148, 163, 253, 0.2);
+		border-radius: 12px;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+		z-index: 100;
+	}
+
+	.user__link {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+		padding: 10px 12px;
+		color: #e5e7eb;
+		font-size: 0.9rem;
+		font-family: inherit;
+		text-decoration: none;
+		text-align: left;
+		background: transparent;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: background-color 0.15s;
+	}
+
+	.user__link:hover {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.user__link--danger {
+		color: #f87171;
+	}
+
+	.user__link--danger:hover {
+		background: rgba(248, 113, 113, 0.1);
+	}
+
+	/* MOBILE OVERLAY + PANEL */
 	.mobile-overlay {
 		position: fixed;
 		inset: 0;
 		z-index: 1001;
 		background: rgba(0, 0, 0, 0.6);
 		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-		animation: fadeIn var(--duration-normal) var(--ease-out-expo);
 	}
 
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
-	}
-
-	.mobile-panel {
+	.mobile {
 		position: fixed;
 		top: 0;
 		right: 0;
 		bottom: 0;
 		z-index: 1002;
 		width: min(85vw, 360px);
-		background: var(--nav-bg);
-		border-left: 1px solid var(--nav-border);
+		background: #05142b;
+		border-left: 1px solid rgba(148, 163, 253, 0.15);
 		box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
 		display: flex;
 		flex-direction: column;
-		animation: slideInRight var(--duration-slow) var(--ease-out-expo);
 	}
 
-	@keyframes slideInRight {
-		from { transform: translateX(100%); }
-		to { transform: translateX(0); }
-	}
-
-	.mobile-panel__header {
+	.mobile__header {
 		display: flex;
 		justify-content: flex-end;
 		padding: 16px;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.mobile-panel__close {
+	.mobile__close {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 44px;
 		height: 44px;
-		color: var(--nav-text);
+		color: #e5e7eb;
 		background: transparent;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out);
+		transition: background-color 0.15s;
 	}
 
-	.mobile-panel__close:hover {
+	.mobile__close:hover {
 		background: rgba(255, 255, 255, 0.1);
 	}
 
-	.mobile-panel__body {
+	.mobile__body {
 		flex: 1;
 		overflow-y: auto;
 		padding: 16px;
 		-webkit-overflow-scrolling: touch;
 	}
 
-	.mobile-panel__footer {
-		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		animation: mobileItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 50ms);
-		opacity: 0;
+	.mobile__group {
+		margin-bottom: 4px;
 	}
 
-	@keyframes mobileItemIn {
-		from {
-			opacity: 0;
-			transform: translateX(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	.mobile-nav__group {
-		animation: mobileItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 50ms);
-		opacity: 0;
-	}
-
-	.mobile-nav__link {
+	.mobile__link {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		width: 100%;
-		padding: 16px 0;
-		color: var(--nav-text);
-		font-size: 1.05rem;
+		padding: 14px 0;
+		color: #e5e7eb;
+		font-size: 1rem;
 		font-weight: 600;
 		font-family: inherit;
 		text-decoration: none;
@@ -1231,45 +900,24 @@
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		cursor: pointer;
 		text-align: left;
-		transition: color var(--duration-fast) var(--ease-in-out);
-		animation: mobileItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 50ms);
-		opacity: 0;
+		transition: color 0.15s;
 	}
 
-	.mobile-nav__link:hover,
-	.mobile-nav__link--active {
-		color: var(--nav-accent);
+	.mobile__link:hover,
+	.mobile__link--active {
+		color: #facc15;
 	}
 
-	.mobile-nav__chevron {
-		transition: transform var(--duration-fast) var(--ease-in-out);
-	}
-
-	.mobile-nav__chevron--open {
-		transform: rotate(90deg);
-	}
-
-	.mobile-nav__submenu {
-		max-height: 0;
-		overflow: hidden;
+	.mobile__submenu {
 		padding-left: 16px;
-		transition:
-			max-height var(--duration-normal) var(--ease-in-out),
-			padding var(--duration-normal) var(--ease-in-out);
-	}
-
-	.mobile-nav__submenu--open {
-		max-height: 500px;
-		padding-top: 8px;
 		padding-bottom: 8px;
 	}
 
-	.mobile-nav__sublink {
+	.mobile__sublink {
 		display: block;
 		width: 100%;
-		padding: 12px 0;
-		color: var(--nav-text-muted);
+		padding: 10px 0;
+		color: #94a3b8;
 		font-size: 0.95rem;
 		font-family: inherit;
 		text-decoration: none;
@@ -1277,43 +925,60 @@
 		background: transparent;
 		border: none;
 		cursor: pointer;
-		transition: color var(--duration-fast) var(--ease-in-out);
+		transition: color 0.15s;
 	}
 
-	.mobile-nav__sublink:hover,
-	.mobile-nav__sublink--active {
-		color: var(--nav-accent);
+	.mobile__sublink:hover,
+	.mobile__sublink--active {
+		color: #facc15;
 	}
 
-	.mobile-nav__sublink--danger {
-		color: var(--nav-danger);
+	.mobile__sublink--danger {
+		color: #f87171;
 	}
 
-	.mobile-user {
+	.mobile__footer {
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.mobile__cta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		padding: 14px 20px;
+		margin-bottom: 16px;
+		border-radius: 999px;
+		background: linear-gradient(135deg, #facc15, #f97316);
+		color: #05142b;
+		font-weight: 700;
+		font-size: 0.9rem;
+		text-decoration: none;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.mobile__user {
 		padding: 16px;
 		background: rgba(255, 255, 255, 0.03);
 		border-radius: 12px;
 	}
 
-	.mobile-user__name {
+	.mobile__user-name {
 		margin-bottom: 12px;
-		color: var(--nav-accent);
+		color: #facc15;
 		font-weight: 600;
 	}
 
 	:global(html) {
-		scroll-padding-top: var(--header-height);
+		scroll-padding-top: 80px;
 	}
 
 	@media (max-width: 768px) {
 		:global(html) {
-			scroll-padding-top: var(--header-height-mobile);
+			scroll-padding-top: 64px;
 		}
-	}
-
-	:global(body.menu-open) {
-		overflow: hidden;
-		position: fixed;
-		width: 100%;
 	}
 </style>

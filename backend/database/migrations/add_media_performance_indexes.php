@@ -60,10 +60,10 @@ return new class extends Migration
         // Media variants table indexes
         Schema::table('media_variants', function (Blueprint $table) {
             $table->index('media_id', 'idx_variants_media_id');
-            $table->index('type', 'idx_variants_type');
+            $table->index('variant_type', 'idx_variants_type');
             $table->index('format', 'idx_variants_format');
             $table->index(
-                ['media_id', 'type'],
+                ['media_id', 'variant_type'],
                 'idx_variants_media_type'
             );
         });
