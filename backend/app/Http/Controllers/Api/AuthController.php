@@ -121,7 +121,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            $this->logSecurityEvent(null, 'login_failed', $request);
+            $this->logSecurityEvent(null, SecurityEvent::TYPE_LOGIN_FAILED, $request);
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -129,7 +129,7 @@ class AuthController extends Controller
 
         // Check if MFA is enabled
         if ($user->mfa_enabled) {
-            $this->logSecurityEvent($user->id, 'login_mfa_required', $request);
+            $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_VERIFIED, $request);
             return response()->json([
                 'user' => $user,
                 'mfa_required' => true,
@@ -140,7 +140,7 @@ class AuthController extends Controller
         $session = $this->sessionService->createSession($user, $request, true);
         $tokens = $this->createAuthTokens($user, $session);
 
-        $this->logSecurityEvent($user->id, 'login', $request);
+        $this->logSecurityEvent($user->id, SecurityEvent::TYPE_LOGIN_SUCCESS, $request);
 
         return response()->json([
             'user' => $user,
@@ -423,7 +423,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            $this->logSecurityEvent(null, 'mfa_login_failed', $request);
+            $this->logSecurityEvent(null, SecurityEvent::TYPE_MFA_FAILED, $request);
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -443,7 +443,7 @@ class AuthController extends Controller
             $codeIndex = array_search($request->backup_code, $backupCodes);
             
             if ($codeIndex === false) {
-                $this->logSecurityEvent($user->id, 'mfa_backup_code_failed', $request);
+                $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_FAILED, $request);
                 throw ValidationException::withMessages([
                     'backup_code' => ['Invalid backup code.'],
                 ]);
@@ -456,7 +456,7 @@ class AuthController extends Controller
         } else {
             // Verify TOTP code
             if (! $mfaService->verifyCode($user->mfa_secret, $request->mfa_code)) {
-                $this->logSecurityEvent($user->id, 'mfa_code_failed', $request);
+                $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_FAILED, $request);
                 throw ValidationException::withMessages([
                     'mfa_code' => ['Invalid MFA code.'],
                 ]);
@@ -467,7 +467,7 @@ class AuthController extends Controller
         $session = $this->sessionService->createSession($user, $request, true);
         $tokens = $this->createAuthTokens($user, $session);
 
-        $this->logSecurityEvent($user->id, 'mfa_login_success', $request);
+        $this->logSecurityEvent($user->id, SecurityEvent::TYPE_LOGIN_SUCCESS, $request);
 
         return response()->json([
             'user' => $user,
@@ -540,7 +540,7 @@ class AuthController extends Controller
         $user->mfa_backup_codes = $backupCodes;
         $user->save();
 
-        $this->logSecurityEvent($user->id, 'mfa_setup_initiated', $request);
+        $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_ENABLED, $request);
 
         return response()->json([
             'qr_code' => $qrCode,
@@ -585,7 +585,7 @@ class AuthController extends Controller
         $user->mfa_enabled_at = now();
         $user->save();
 
-        $this->logSecurityEvent($user->id, 'mfa_enabled', $request);
+        $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_ENABLED, $request);
 
         return response()->json([
             'message' => 'MFA enabled successfully.',
@@ -622,7 +622,7 @@ class AuthController extends Controller
         $user->mfa_enabled_at = null;
         $user->save();
 
-        $this->logSecurityEvent($user->id, 'mfa_disabled', $request);
+        $this->logSecurityEvent($user->id, SecurityEvent::TYPE_MFA_DISABLED, $request);
 
         return response()->json([
             'message' => 'MFA disabled successfully.',

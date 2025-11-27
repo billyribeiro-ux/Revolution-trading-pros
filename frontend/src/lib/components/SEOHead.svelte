@@ -152,8 +152,8 @@
 	// Computed Properties
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// URL Construction
-	$: currentUrl = browser ? window.location.href : `${siteUrl}${$page.url.pathname}`;
+	// URL Construction - use consistent server-side URL to avoid hydration mismatch
+	$: currentUrl = `${siteUrl}${$page.url.pathname}`;
 	$: fullCanonical = canonical
 		? canonical.startsWith('http')
 			? canonical
@@ -197,9 +197,27 @@
 	// Helper Functions
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	/**
+	 * Generate stable JSON-LD script to avoid hydration mismatches
+	 * Uses deterministic key ordering for consistent server/client output
+	 */
 	function generateJsonLdScript(schema: Record<string, unknown>): string {
+		const stableStringify = (obj: unknown): string => {
+			if (obj === null || typeof obj !== 'object') {
+				return JSON.stringify(obj);
+			}
+			if (Array.isArray(obj)) {
+				return '[' + obj.map(stableStringify).join(',') + ']';
+			}
+			const keys = Object.keys(obj as Record<string, unknown>).sort();
+			const pairs = keys
+				.filter(k => (obj as Record<string, unknown>)[k] !== undefined)
+				.map(k => `${JSON.stringify(k)}:${stableStringify((obj as Record<string, unknown>)[k])}`);
+			return '{' + pairs.join(',') + '}';
+		};
+		// Use concatenation to avoid Svelte parsing the script tag
 		const tag = 'script';
-		return `<${tag} type="application/ld+json">${JSON.stringify(schema)}</${tag}>`;
+		return `<${tag} type="application/ld+json">${stableStringify(schema)}</${tag}>`;
 	}
 
 	function generateGtmScript(id: string): string {
@@ -340,8 +358,8 @@
 				width: ogImageWidth,
 				height: ogImageHeight
 			},
-			datePublished: publishedTime || new Date().toISOString(),
-			dateModified: modifiedTime || new Date().toISOString(),
+			...(publishedTime ? { datePublished: publishedTime } : {}),
+			...(modifiedTime ? { dateModified: modifiedTime } : {}),
 			author: author
 				? {
 						'@type': 'Person',
@@ -741,9 +759,7 @@
 	<!-- Google Tag Manager -->
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
-	{#if gtmId && browser}
-		{@html generateGtmScript(gtmId)}
-	{/if}
+	<!-- GTM is loaded via app.html or hooks to avoid hydration mismatch -->
 </svelte:head>
 
 <style>

@@ -168,8 +168,9 @@ class UserSession extends Model
 
     /**
      * Update last activity timestamp.
+     * Override parent to update last_activity_at instead of updated_at
      */
-    public function touch(): bool
+    public function touch($attribute = null): bool
     {
         $this->last_activity_at = now();
         return $this->save();
