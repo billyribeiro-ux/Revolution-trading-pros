@@ -7,44 +7,77 @@ use App\Models\Form;
 use App\Models\FormField;
 use App\Models\FormSubmission;
 use App\Models\FormSubmissionData;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * FormController - Enterprise-grade Form API Controller
  *
  * Handles all form CRUD operations with proper validation,
- * error handling, and transaction support.
+ * error handling, authorization, and transaction support.
+ *
+ * @version 2.0.0
+ * @security IDOR Prevention via Policies
  */
 class FormController extends Controller
 {
+    /**
+     * Allowed sortable columns (prevent SQL injection)
+     */
+    private const SORTABLE_COLUMNS = [
+        'created_at',
+        'updated_at',
+        'title',
+        'status',
+        'submissions_count',
+    ];
+
     /**
      * Display a listing of forms
      */
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', Form::class);
+
         $query = Form::query()
+            ->where('created_by', auth()->id()) // User can only see their own forms
             ->withCount('submissions')
             ->with('creator:id,name');
 
-        // Filter by status
+        // Filter by status (validate against allowed values)
         if ($request->has('status')) {
-            $query->where('status', $request->status);
+            $allowedStatuses = ['draft', 'active', 'inactive', 'archived'];
+            if (in_array($request->status, $allowedStatuses)) {
+                $query->where('status', $request->status);
+            }
         }
 
-        // Search by title
-        if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+        // Search by title (sanitized)
+        if ($request->has('search') && strlen($request->search) > 0) {
+            $search = trim($request->search);
+            if (strlen($search) <= 100) { // Limit search length
+                $query->where('title', 'like', '%' . $search . '%');
+            }
         }
 
-        // Sort
+        // Sort (whitelist validation)
         $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortOrder = strtolower($request->get('sort_order', 'desc'));
+
+        if (!in_array($sortBy, self::SORTABLE_COLUMNS)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
         $query->orderBy($sortBy, $sortOrder);
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min((int) $request->get('per_page', 15), 100); // Cap at 100
         $forms = $query->paginate($perPage);
 
         return response()->json([
@@ -119,10 +152,17 @@ class FormController extends Controller
                 ], 201);
             });
         } catch (\Exception $e) {
+            // Log the actual error for debugging
+            Log::error('Form creation failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Return sanitized error message (never expose internal details)
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create form',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to create form. Please try again later.',
             ], 500);
         }
     }
@@ -142,6 +182,9 @@ class FormController extends Controller
                 'message' => 'Form not found',
             ], 404);
         }
+
+        // Authorization check - prevent IDOR
+        $this->authorize('view', $form);
 
         return response()->json([
             'success' => true,

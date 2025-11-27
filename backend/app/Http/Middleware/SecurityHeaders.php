@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * ====================================================================
  *
  * Implements comprehensive security headers following OWASP guidelines:
- * - Content Security Policy (CSP)
+ * - Content Security Policy (CSP) with nonce-based script loading
  * - XSS Protection
  * - Content Type Options
  * - Frame Options
@@ -21,23 +22,42 @@ use Symfony\Component\HttpFoundation\Response;
  * - Permissions Policy
  * - HSTS (for production)
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @security Critical
  */
 class SecurityHeaders
 {
     /**
+     * CSP nonce for this request
+     */
+    private string $nonce;
+
+    /**
      * Handle an incoming request.
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Generate cryptographically secure nonce for this request
+        $this->nonce = $this->generateNonce();
+
+        // Store nonce in request for views to access
+        $request->attributes->set('csp_nonce', $this->nonce);
+
+        // Also store in app container for global access
+        app()->instance('csp.nonce', $this->nonce);
+
         $response = $next($request);
 
-        // Content Security Policy - Strict but practical
-        $csp = $this->buildContentSecurityPolicy();
+        // Content Security Policy - Strict with nonce-based scripts
+        $csp = $this->buildContentSecurityPolicy($request);
         $response->headers->set('Content-Security-Policy', $csp);
 
-        // Prevent XSS attacks
+        // Also set Report-Only header in development for testing
+        if (config('app.env') !== 'production') {
+            $response->headers->set('Content-Security-Policy-Report-Only', $this->buildReportOnlyCSP());
+        }
+
+        // Prevent XSS attacks (deprecated but still useful for older browsers)
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
         // Prevent MIME type sniffing
@@ -67,35 +87,101 @@ class SecurityHeaders
             $response->headers->set('Expires', '0');
         }
 
-        // Cross-Origin policies
-        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
-        $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
-        $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
+        // Cross-Origin policies (relaxed for API endpoints that need CORS)
+        if (!$this->isApiEndpoint($request)) {
+            $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+            $response->headers->set('Cross-Origin-Resource-Policy', 'same-site');
+        }
 
         return $response;
     }
 
     /**
-     * Build Content Security Policy header
+     * Generate a cryptographically secure nonce
      */
-    private function buildContentSecurityPolicy(): string
+    private function generateNonce(): string
     {
+        return base64_encode(random_bytes(16));
+    }
+
+    /**
+     * Get the current CSP nonce
+     */
+    public function getNonce(): string
+    {
+        return $this->nonce;
+    }
+
+    /**
+     * Build Content Security Policy header with nonce-based scripts
+     */
+    private function buildContentSecurityPolicy(Request $request): string
+    {
+        $nonce = $this->nonce;
+
+        // Trusted domains for scripts
+        $trustedScriptDomains = [
+            'https://www.google.com',
+            'https://www.gstatic.com',
+            'https://js.stripe.com',
+            'https://www.googletagmanager.com',
+            'https://www.google-analytics.com',
+        ];
+
+        // Trusted domains for styles
+        $trustedStyleDomains = [
+            'https://fonts.googleapis.com',
+        ];
+
         $directives = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://js.stripe.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            // Use nonce for inline scripts, strict-dynamic for dynamically loaded scripts
+            "script-src 'self' 'nonce-{$nonce}' 'strict-dynamic' " . implode(' ', $trustedScriptDomains),
+            // Use nonce for inline styles
+            "style-src 'self' 'nonce-{$nonce}' " . implode(' ', $trustedStyleDomains),
             "font-src 'self' https://fonts.gstatic.com data:",
             "img-src 'self' data: https: blob:",
-            "connect-src 'self' https://api.stripe.com wss: https:",
+            "connect-src 'self' https://api.stripe.com https://www.google-analytics.com wss: https:",
             "frame-src 'self' https://www.google.com https://js.stripe.com https://player.vimeo.com https://www.youtube.com",
             "frame-ancestors 'self'",
             "form-action 'self'",
             "base-uri 'self'",
             "object-src 'none'",
+            "worker-src 'self' blob:",
+            "manifest-src 'self'",
             "upgrade-insecure-requests",
         ];
 
+        // Add report-uri for CSP violation reporting
+        if (config('app.env') === 'production' && config('security.csp_report_uri')) {
+            $directives[] = "report-uri " . config('security.csp_report_uri');
+        }
+
         return implode('; ', $directives);
+    }
+
+    /**
+     * Build Report-Only CSP for testing stricter policies
+     */
+    private function buildReportOnlyCSP(): string
+    {
+        $directives = [
+            "default-src 'self'",
+            "script-src 'self' 'nonce-{$this->nonce}'",
+            "style-src 'self' 'nonce-{$this->nonce}'",
+            "object-src 'none'",
+            "base-uri 'self'",
+        ];
+
+        return implode('; ', $directives);
+    }
+
+    /**
+     * Check if this is an API endpoint
+     */
+    private function isApiEndpoint(Request $request): bool
+    {
+        return str_starts_with($request->path(), 'api/');
     }
 
     /**
