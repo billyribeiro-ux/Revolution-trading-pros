@@ -27,6 +27,7 @@ use App\Http\Middleware\RateLimitMedia;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\EmailCampaignController;
+use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Api\EmailTemplateBuilderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;

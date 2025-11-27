@@ -58,6 +58,93 @@ class ImageOptimizationService
     }
     
     /**
+     * Upload and optionally optimize a file
+     */
+    public function upload(
+        \Illuminate\Http\UploadedFile $file,
+        ?string $collection = null,
+        ?string $preset = null,
+        array $options = []
+    ): Media {
+        $disk = config('filesystems.default_media_disk', 'public');
+        
+        // Generate unique filename
+        $originalName = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $filename = pathinfo($originalName, PATHINFO_FILENAME);
+        $uniqueFilename = $filename . '-' . uniqid() . '.' . $extension;
+        
+        // Determine storage path
+        $collection = $collection ?: 'uploads';
+        $datePath = date('Y/m');
+        $storagePath = "media/{$collection}/{$datePath}";
+        
+        // Store the file
+        $path = $file->storeAs($storagePath, $uniqueFilename, $disk);
+        
+        // Get file info
+        $mimeType = $file->getMimeType();
+        $size = $file->getSize();
+        $isImage = str_starts_with($mimeType, 'image/');
+        
+        // Get image dimensions if applicable
+        $width = null;
+        $height = null;
+        if ($isImage) {
+            try {
+                $image = $this->manager->read($file->getRealPath());
+                $width = $image->width();
+                $height = $image->height();
+            } catch (\Exception $e) {
+                Log::warning('Could not read image dimensions: ' . $e->getMessage());
+            }
+        }
+        
+        // Create media record
+        $media = Media::create([
+            'filename' => $uniqueFilename,
+            'path' => $path,
+            'disk' => $disk,
+            'url' => Storage::disk($disk)->url($path),
+            'mime_type' => $mimeType,
+            'type' => $isImage ? 'image' : $this->getMediaType($mimeType),
+            'size' => $size,
+            'width' => $width,
+            'height' => $height,
+            'aspect_ratio' => ($width && $height) ? round($width / $height, 4) : null,
+            'collection' => $collection,
+            'alt_text' => $options['alt_text'] ?? null,
+            'title' => $options['title'] ?? $filename,
+            'uploaded_by' => auth()->id(),
+            'source' => 'upload',
+            'is_optimized' => false,
+            'is_processed' => false,
+            'processing_status' => 'pending',
+            'metadata' => [
+                'original_filename' => $originalName,
+                'extension' => $extension,
+            ],
+        ]);
+        
+        // Auto-optimize images if preset provided or process_immediately is true
+        if ($isImage && ($preset || ($options['process_immediately'] ?? false))) {
+            try {
+                $this->optimize($media, [
+                    'preset' => $preset ?? self::PRESET_BALANCED,
+                    'webp' => true,
+                    'responsive' => true,
+                ]);
+                $media->update(['is_optimized' => true]);
+            } catch (\Exception $e) {
+                Log::error('Image optimization failed: ' . $e->getMessage());
+                // Continue without optimization - file is still uploaded
+            }
+        }
+        
+        return $media->fresh();
+    }
+    
+    /**
      * Optimize a single image
      */
     public function optimize(Media $media, array $options = []): array
@@ -388,5 +475,31 @@ class ImageOptimizationService
             ]);
             return null;
         }
+    }
+    
+    /**
+     * Get media type from MIME type
+     */
+    protected function getMediaType(string $mimeType): string
+    {
+        if (str_starts_with($mimeType, 'image/')) {
+            return 'image';
+        }
+        if (str_starts_with($mimeType, 'video/')) {
+            return 'video';
+        }
+        if (str_starts_with($mimeType, 'audio/')) {
+            return 'audio';
+        }
+        if (in_array($mimeType, [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])) {
+            return 'document';
+        }
+        return 'other';
     }
 }
