@@ -2,9 +2,13 @@
 	import { workflowCanvas } from '$lib/stores/workflow';
 	import type { WorkflowNode } from '$lib/types/workflow';
 
-	export let node: WorkflowNode;
+	interface Props {
+		node: WorkflowNode;
+	}
 
-	let config = { ...node.config };
+	let { node }: Props = $props();
+
+	let config = $state({ ...node.config });
 
 	function handleUpdate() {
 		workflowCanvas.updateNode(node.id, { config });
@@ -18,7 +22,7 @@
 <div class="node-properties">
 	<div class="properties-header">
 		<h3>Node Properties</h3>
-		<button class="close-btn" on:click={handleClose} aria-label="Close properties panel">
+		<button class="close-btn" onclick={handleClose} aria-label="Close properties panel">
 			<svg
 				width="20"
 				height="20"
@@ -39,7 +43,7 @@
 				id="node-title"
 				type="text"
 				bind:value={config.title}
-				on:blur={handleUpdate}
+				onblur={handleUpdate}
 				placeholder="Enter node title"
 			/>
 		</div>
@@ -49,7 +53,7 @@
 			<textarea
 				id="node-description"
 				bind:value={config.description}
-				on:blur={handleUpdate}
+				onblur={handleUpdate}
 				placeholder="Enter description"
 				rows="3"
 			></textarea>
@@ -58,7 +62,7 @@
 		{#if node.node_type === 'action'}
 			<div class="form-group">
 				<label for="action-type">Action Type</label>
-				<select id="action-type" bind:value={config.action_type} on:change={handleUpdate}>
+				<select id="action-type" bind:value={config.action_type} onchange={handleUpdate}>
 					<option value="">Select action...</option>
 					<option value="add_tag">Add Tag</option>
 					<option value="remove_tag">Remove Tag</option>
@@ -78,7 +82,7 @@
 					id="delay-seconds"
 					type="number"
 					bind:value={config.delay_seconds}
-					on:blur={handleUpdate}
+					onblur={handleUpdate}
 					min="0"
 				/>
 			</div>
@@ -87,7 +91,7 @@
 		{#if node.node_type === 'condition'}
 			<div class="form-group">
 				<label for="condition-logic">Condition Logic</label>
-				<select id="condition-logic" bind:value={config.logic} on:change={handleUpdate}>
+				<select id="condition-logic" bind:value={config.logic} onchange={handleUpdate}>
 					<option value="AND">AND (All must be true)</option>
 					<option value="OR">OR (Any must be true)</option>
 				</select>

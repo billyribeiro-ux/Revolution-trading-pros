@@ -1,19 +1,22 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { IconX, IconDeviceFloppy } from '@tabler/icons-svelte';
 
-	export let url404: string = '';
+	interface Props {
+		url404?: string;
+		oncreated?: () => void;
+		oncancel?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { url404 = '', oncreated, oncancel }: Props = $props();
 
-	let form = {
+	let form = $state({
 		destination_url: '',
 		redirect_type: '301',
 		notes: `Redirect created from 404: ${url404}`
-	};
+	});
 
-	let saving = false;
-	let error = '';
+	let saving = $state(false);
+	let error = $state('');
 
 	async function save() {
 		error = '';
@@ -35,7 +38,7 @@
 			});
 
 			if (response.ok) {
-				dispatch('created');
+				oncreated?.();
 			} else {
 				const data = await response.json();
 				error = data.message || 'Failed to create redirect';
@@ -48,7 +51,7 @@
 	}
 
 	function cancel() {
-		dispatch('cancel');
+		oncancel?.();
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -58,23 +61,23 @@
 	}
 </script>
 
-<div class="modal-overlay" on:click={cancel} on:keydown={handleKeydown} role="presentation">
+<div class="modal-overlay" onclick={cancel} onkeydown={handleKeydown} role="presentation">
 	<div
 		class="modal"
-		on:click|stopPropagation
-		on:keydown|stopPropagation
+		onclick={(e) => e.stopPropagation()}
+		onkeydown={(e) => e.stopPropagation()}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
 		<div class="modal-header">
 			<h2>Create Redirect from 404</h2>
-			<button class="close-btn" on:click={cancel} aria-label="Close modal">
+			<button class="close-btn" onclick={cancel} aria-label="Close modal">
 				<IconX size={24} />
 			</button>
 		</div>
 
-		<form on:submit|preventDefault={save}>
+		<form onsubmit={(e) => { e.preventDefault(); save(); }}>
 			<div class="modal-body">
 				{#if error}
 					<div class="error-message">{error}</div>
@@ -114,7 +117,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="btn-secondary" on:click={cancel}> Cancel </button>
+				<button type="button" class="btn-secondary" onclick={cancel}> Cancel </button>
 				<button type="submit" class="btn-primary" disabled={saving}>
 					<IconDeviceFloppy size={18} />
 					{saving ? 'Creating...' : 'Create Redirect'}

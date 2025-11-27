@@ -52,7 +52,7 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { spring } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -75,84 +75,130 @@
 	// Props
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Core Props
-	export let url: string;
-	export let poster: string | null = null;
-	export let title: string = 'Video player';
-	export const description: string | null = null;
+	interface Props {
+		// Core Props
+		url: string;
+		poster?: string | null;
+		title?: string;
+		description?: string | null;
+		// Playback Props
+		autoplay?: boolean;
+		muted?: boolean;
+		loop?: boolean;
+		controls?: boolean;
+		playsinline?: boolean;
+		preload?: 'none' | 'metadata' | 'auto';
+		startTime?: number;
+		endTime?: number | null;
+		defaultQuality?: 'auto' | '144p' | '240p' | '360p' | '480p' | '720p' | '1080p' | '1440p' | '2160p';
+		defaultSpeed?: number;
+		volume?: number;
+		// Display Props
+		aspectRatio?: '16:9' | '4:3' | '1:1' | '9:16' | '21:9' | 'custom';
+		customAspectRatio?: string;
+		width?: string | null;
+		maxWidth?: string;
+		height?: string | null;
+		borderRadius?: string;
+		shadow?: boolean;
+		lazyLoad?: boolean;
+		showThumbnail?: boolean;
+		thumbnailQuality?: 'default' | 'medium' | 'high' | 'standard' | 'maxres';
+		// UI Props
+		customControls?: boolean;
+		showPlayButton?: boolean;
+		showVolumeControl?: boolean;
+		showTimeDisplay?: boolean;
+		showProgressBar?: boolean;
+		showQualitySelector?: boolean;
+		showSpeedControl?: boolean;
+		showFullscreen?: boolean;
+		showPictureInPicture?: boolean;
+		showSubtitles?: boolean;
+		showShare?: boolean;
+		showDownload?: boolean;
+		controlsTimeout?: number;
+		// Analytics Props
+		trackAnalytics?: boolean;
+		analyticsId?: string | null;
+		trackingEvents?: string[];
+		// Interactive Props
+		chapters?: VideoChapter[];
+		overlays?: VideoOverlay[];
+		annotations?: VideoAnnotation[];
+		callToAction?: CallToAction | null;
+		subtitles?: SubtitleTrack[];
+		playlist?: VideoPlaylistItem[];
+		// Event Callbacks
+		onPlay?: () => void;
+		onPause?: () => void;
+		onEnded?: () => void;
+		onTimeUpdate?: (time: number, duration: number) => void;
+		onProgress?: (percent: number) => void;
+		onError?: (error: any) => void;
+		onReady?: () => void;
+		onQualityChange?: (quality: string) => void;
+		onVolumeChange?: (volume: number) => void;
+	}
 
-	// Playback Props
-	export let autoplay: boolean = false;
-	export let muted: boolean = false;
-	export let loop: boolean = false;
-	export let controls: boolean = true;
-	export let playsinline: boolean = true;
-	export let preload: 'none' | 'metadata' | 'auto' = 'metadata';
-	export let startTime: number = 0;
-	export let endTime: number | null = null;
-	export let defaultQuality:
-		| 'auto'
-		| '144p'
-		| '240p'
-		| '360p'
-		| '480p'
-		| '720p'
-		| '1080p'
-		| '1440p'
-		| '2160p' = 'auto';
-	export let defaultSpeed: number = 1.0;
-	export let volume: number = 1.0;
-
-	// Display Props
-	export let aspectRatio: '16:9' | '4:3' | '1:1' | '9:16' | '21:9' | 'custom' = '16:9';
-	export let customAspectRatio: string = '';
-	export let width: string | null = null;
-	export let maxWidth: string = '100%';
-	export let height: string | null = null;
-	export let borderRadius: string = '12px';
-	export let shadow: boolean = true;
-	export let lazyLoad: boolean = true;
-	export let showThumbnail: boolean = true;
-	export let thumbnailQuality: 'default' | 'medium' | 'high' | 'standard' | 'maxres' = 'high';
-
-	// UI Props
-	export let customControls: boolean = false;
-	export let showPlayButton: boolean = true;
-	export let showVolumeControl: boolean = true;
-	export let showTimeDisplay: boolean = true;
-	export let showProgressBar: boolean = true;
-	export let showQualitySelector: boolean = true;
-	export let showSpeedControl: boolean = true;
-	export let showFullscreen: boolean = true;
-	export let showPictureInPicture: boolean = true;
-	export let showSubtitles: boolean = true;
-	export const showShare: boolean = false;
-	export const showDownload: boolean = false;
-	export let controlsTimeout: number = 3000;
-
-	// Analytics Props
-	export let trackAnalytics: boolean = true;
-	export let analyticsId: string | null = null;
-	export let trackingEvents: string[] = ['play', 'pause', 'complete', 'progress'];
-
-	// Interactive Props
-	export let chapters: VideoChapter[] = [];
-	export let overlays: VideoOverlay[] = [];
-	export const annotations: VideoAnnotation[] = [];
-	export let callToAction: CallToAction | null = null;
-	export let subtitles: SubtitleTrack[] = [];
-	export let playlist: VideoPlaylistItem[] = [];
-
-	// Event Callbacks
-	export let onPlay: (() => void) | null = null;
-	export let onPause: (() => void) | null = null;
-	export let onEnded: (() => void) | null = null;
-	export let onTimeUpdate: ((time: number, duration: number) => void) | null = null;
-	export let onProgress: ((percent: number) => void) | null = null;
-	export let onError: ((error: any) => void) | null = null;
-	export let onReady: (() => void) | null = null;
-	export let onQualityChange: ((quality: string) => void) | null = null;
-	export let onVolumeChange: ((volume: number) => void) | null = null;
+	let {
+		url,
+		poster = null,
+		title = 'Video player',
+		description = null,
+		autoplay = false,
+		muted = false,
+		loop = false,
+		controls = true,
+		playsinline = true,
+		preload = 'metadata',
+		startTime = 0,
+		endTime = null,
+		defaultQuality = 'auto',
+		defaultSpeed = 1.0,
+		volume = 1.0,
+		aspectRatio = '16:9',
+		customAspectRatio = '',
+		width = null,
+		maxWidth = '100%',
+		height = null,
+		borderRadius = '12px',
+		shadow = true,
+		lazyLoad = true,
+		showThumbnail = true,
+		thumbnailQuality = 'high',
+		customControls = false,
+		showPlayButton = true,
+		showVolumeControl = true,
+		showTimeDisplay = true,
+		showProgressBar = true,
+		showQualitySelector = true,
+		showSpeedControl = true,
+		showFullscreen = true,
+		showPictureInPicture = true,
+		showSubtitles = true,
+		showShare = false,
+		showDownload = false,
+		controlsTimeout = 3000,
+		trackAnalytics = true,
+		analyticsId = null,
+		trackingEvents = ['play', 'pause', 'complete', 'progress'],
+		chapters = [],
+		overlays = [],
+		annotations = [],
+		callToAction = null,
+		subtitles = [],
+		playlist = [],
+		onPlay,
+		onPause,
+		onEnded,
+		onTimeUpdate,
+		onProgress,
+		onError,
+		onReady,
+		onQualityChange,
+		onVolumeChange
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions
@@ -242,54 +288,54 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let playerElement: HTMLElement;
-	let videoElement: HTMLVideoElement | null = null;
-	let iframeElement: HTMLIFrameElement | null = null;
-	let playerAPI: any = null;
+	let videoElement: HTMLVideoElement | null = $state(null);
+	let iframeElement: HTMLIFrameElement | null = $state(null);
+	let playerAPI: any = $state(null);
 
 	// Platform detection
-	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' = 'html5';
-	let embedUrl: string = '';
-	let videoId: string = '';
-	let thumbnailUrl: string = '';
+	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' = $state('html5');
+	let embedUrl: string = $state('');
+	let videoId: string = $state('');
+	let thumbnailUrl: string = $state('');
 
 	// Player state
-	let isReady: boolean = false;
-	let isPlaying: boolean = false;
-	let isPaused: boolean = false;
-	let isEnded: boolean = false;
-	let isBuffering: boolean = false;
-	let isFullscreen: boolean = false;
-	let isPictureInPicture: boolean = false;
-	let isMuted: boolean = muted;
-	let hasError: boolean = false;
-	let errorMessage: string = '';
+	let isReady: boolean = $state(false);
+	let isPlaying: boolean = $state(false);
+	let isPaused: boolean = $state(false);
+	let isEnded: boolean = $state(false);
+	let isBuffering: boolean = $state(false);
+	let isFullscreen: boolean = $state(false);
+	let isPictureInPicture: boolean = $state(false);
+	let isMuted: boolean = $state(muted);
+	let hasError: boolean = $state(false);
+	let errorMessage: string = $state('');
 
 	// Time tracking
-	let currentTime: number = 0;
-	let duration: number = 0;
-	let bufferedEnd: number = 0;
-	let playbackRate: number = defaultSpeed;
-	let currentVolume: number = volume;
+	let currentTime: number = $state(0);
+	let duration: number = $state(0);
+	let bufferedEnd: number = $state(0);
+	let playbackRate: number = $state(defaultSpeed);
+	let currentVolume: number = $state(volume);
 
 	// UI state
-	let showControls: boolean = true;
-	let showSettings: boolean = false;
-	let showQualityMenu: boolean = false;
-	let showSpeedMenu: boolean = false;
-	let showChapters: boolean = false;
-	let showPlaylistMenu: boolean = false;
-	let controlsTimer: number | null = null;
-	let isHovering: boolean = false;
-	let thumbnailLoaded: boolean = false;
-	let hasInteracted: boolean = false;
-	let showCallToAction: boolean = false;
+	let showControls: boolean = $state(true);
+	let showSettings: boolean = $state(false);
+	let showQualityMenu: boolean = $state(false);
+	let showSpeedMenu: boolean = $state(false);
+	let showChapters: boolean = $state(false);
+	let showPlaylistMenu: boolean = $state(false);
+	let controlsTimer: number | null = $state(null);
+	let isHovering: boolean = $state(false);
+	let thumbnailLoaded: boolean = $state(false);
+	let hasInteracted: boolean = $state(false);
+	let showCallToAction: boolean = $state(false);
 
 	// Quality options
-	let availableQualities: string[] = [];
-	let currentQuality: string = defaultQuality;
+	let availableQualities: string[] = $state([]);
+	let currentQuality: string = $state(defaultQuality);
 
 	// Analytics
-	let analytics: VideoAnalytics = {
+	let analytics: VideoAnalytics = $state({
 		id: analyticsId || generateId(),
 		url,
 		platform: 'html5',
@@ -300,22 +346,22 @@
 		quality: currentQuality,
 		bufferEvents: 0,
 		errors: 0
-	};
+	});
 
-	let watchStartTime: number = 0;
-	let totalWatchTime: number = 0;
-	let progressMilestones: Set<number> = new Set();
+	let watchStartTime: number = $state(0);
+	let totalWatchTime: number = $state(0);
+	let progressMilestones: Set<number> = $state(new Set());
 
 	// Animations
 	const playerScale = spring(1, { stiffness: 0.2, damping: 0.5 });
 
-	const dispatch = createEventDispatcher();
+	// Event dispatching handled via callback props
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Reactive Statements
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$: {
+	$effect(() => {
 		// Detect platform and generate embed URL
 		const result = detectPlatform(url);
 		platform = result.platform;
@@ -323,24 +369,26 @@
 		embedUrl = generateEmbedUrl(url, platform, videoId);
 		thumbnailUrl = generateThumbnailUrl(platform, videoId);
 		analytics.platform = platform;
-	}
+	});
 
-	$: progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
-	$: bufferedPercent = duration > 0 ? (bufferedEnd / duration) * 100 : 0;
-	$: timeDisplay = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+	let progressPercent = $derived(duration > 0 ? (currentTime / duration) * 100 : 0);
+	let bufferedPercent = $derived(duration > 0 ? (bufferedEnd / duration) * 100 : 0);
+	let timeDisplay = $derived(`${formatTime(currentTime)} / ${formatTime(duration)}`);
 
-	$: currentChapter = chapters.find(
+	let currentChapter = $derived(chapters.find(
 		(chapter) =>
 			currentTime >= chapter.startTime && (!chapter.endTime || currentTime < chapter.endTime)
-	);
+	));
 
-	$: activeOverlays = overlays.filter(
+	let activeOverlays = $derived(overlays.filter(
 		(overlay) => currentTime >= overlay.startTime && currentTime <= overlay.endTime
-	);
+	));
 
-	$: if (callToAction && shouldShowCTA()) {
-		showCallToAction = true;
-	}
+	$effect(() => {
+		if (callToAction && shouldShowCTA()) {
+			showCallToAction = true;
+		}
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -614,7 +662,7 @@
 	function handleReady() {
 		isReady = true;
 		if (onReady) onReady();
-		dispatch('ready');
+		// Event handled via onReady callback prop
 		trackEvent('ready');
 	}
 
@@ -627,8 +675,7 @@
 			watchStartTime = Date.now();
 		}
 
-		if (onPlay) onPlay();
-		dispatch('play');
+		onPlay?.();
 		trackEvent('play', { time: currentTime });
 
 		resetControlsTimer();
@@ -643,8 +690,7 @@
 			watchStartTime = 0;
 		}
 
-		if (onPause) onPause();
-		dispatch('pause');
+		onPause?.();
 		trackEvent('pause', { time: currentTime, watchTime: totalWatchTime });
 	}
 
@@ -656,8 +702,7 @@
 			play();
 		}
 
-		if (onEnded) onEnded();
-		dispatch('ended');
+		onEnded?.();
 		trackEvent('complete', { watchTime: totalWatchTime });
 
 		analytics.completionRate = 100;
@@ -688,10 +733,8 @@
 			}
 		});
 
-		if (onTimeUpdate) onTimeUpdate(time, dur);
-		if (onProgress) onProgress(progressPercent);
-
-		dispatch('timeupdate', { currentTime: time, duration: dur });
+		onTimeUpdate?.(time, dur);
+		onProgress?.(progressPercent);
 
 		// Update analytics
 		analytics.completionRate = Math.max(analytics.completionRate, progressPercent);
@@ -702,8 +745,7 @@
 		errorMessage = error.message || 'An error occurred while loading the video';
 		analytics.errors++;
 
-		if (onError) onError(error);
-		dispatch('error', error);
+		onError?.(error);
 		trackEvent('error', { error: errorMessage });
 	}
 
@@ -713,8 +755,7 @@
 		currentVolume = videoElement.volume;
 		isMuted = videoElement.muted;
 
-		if (onVolumeChange) onVolumeChange(currentVolume);
-		dispatch('volumechange', { volume: currentVolume, muted: isMuted });
+		onVolumeChange?.(currentVolume);
 	}
 
 	function handleLoadedMetadata() {
@@ -1117,7 +1158,7 @@
 			});
 		}
 
-		dispatch('analytics', analyticsEvent);
+		// Analytics event tracked internally
 	}
 
 	function cleanup() {
@@ -1164,9 +1205,9 @@
 	"
 	role="region"
 	aria-label="Video player"
-	on:mouseenter={() => (isHovering = true)}
-	on:mouseleave={() => (isHovering = false)}
-	on:mousemove={handleMouseMove}
+	onmouseenter={() => (isHovering = true)}
+	onmouseleave={() => (isHovering = false)}
+	onmousemove={handleMouseMove}
 >
 	<!-- Video Container -->
 	<div class="video-wrapper" style="padding-bottom: {getAspectRatioStyle()};">
@@ -1178,7 +1219,7 @@
 				{/if}
 				<button
 					class="play-overlay"
-					on:click={() => {
+					onclick={() => {
 						hasInteracted = true;
 						play();
 					}}
@@ -1194,7 +1235,7 @@
 			<div class="error-container">
 				<IconRefresh size={48} />
 				<p>{errorMessage}</p>
-				<button on:click={() => location.reload()}>Retry</button>
+				<button onclick={() => location.reload()}>Retry</button>
 			</div>
 		{/if}
 
@@ -1248,7 +1289,7 @@
 					right: {overlay.position.right || 'auto'};
 					{overlay.style || ''}
 				"
-				on:click={() => overlay.action?.()}
+				onclick={() => overlay.action?.()}
 				aria-label="Video overlay"
 			>
 				{#if overlay.type === 'html'}
@@ -1266,7 +1307,7 @@
 				{#if showProgressBar}
 					<button
 						class="progress-bar"
-						on:click={handleProgressClick}
+						onclick={handleProgressClick}
 						aria-label="Seek video"
 						role="slider"
 						aria-valuemin="0"
@@ -1286,7 +1327,7 @@
 						{#if showPlayButton}
 							<button
 								class="control-btn"
-								on:click={togglePlay}
+								onclick={togglePlay}
 								aria-label={isPlaying ? 'Pause' : 'Play'}
 							>
 								{#if isPlaying}
@@ -1302,7 +1343,7 @@
 							<div class="volume-control">
 								<button
 									class="control-btn"
-									on:click={toggleMute}
+									onclick={toggleMute}
 									aria-label={isMuted ? 'Unmute' : 'Mute'}
 								>
 									{#if isMuted}
@@ -1317,7 +1358,7 @@
 									max="1"
 									step="0.1"
 									value={currentVolume}
-									on:input={(e) => setVolume(parseFloat(e.currentTarget.value))}
+									oninput={(e) => setVolume(parseFloat(e.currentTarget.value))}
 									class="volume-slider"
 								/>
 							</div>
@@ -1341,7 +1382,7 @@
 						{#if showQualitySelector || showSpeedControl}
 							<button
 								class="control-btn"
-								on:click={() => (showSettings = !showSettings)}
+								onclick={() => (showSettings = !showSettings)}
 								aria-label="Settings"
 							>
 								<IconSettings size={24} />
@@ -1352,7 +1393,7 @@
 						{#if showPictureInPicture && platform === 'html5'}
 							<button
 								class="control-btn"
-								on:click={togglePictureInPicture}
+								onclick={togglePictureInPicture}
 								aria-label="Picture in Picture"
 							>
 								<IconPictureInPictureOn size={24} />
@@ -1363,7 +1404,7 @@
 						{#if showFullscreen}
 							<button
 								class="control-btn"
-								on:click={() => (isFullscreen ? exitFullscreen() : enterFullscreen())}
+								onclick={() => (isFullscreen ? exitFullscreen() : enterFullscreen())}
 								aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
 							>
 								{#if isFullscreen}
@@ -1386,7 +1427,7 @@
 									<button
 										class="settings-option"
 										class:active={currentQuality === quality}
-										on:click={() => {
+										onclick={() => {
 											setQuality(quality);
 											showSettings = false;
 										}}
@@ -1404,7 +1445,7 @@
 									<button
 										class="settings-option"
 										class:active={playbackRate === speed}
-										on:click={() => {
+										onclick={() => {
 											setPlaybackRate(speed);
 											showSettings = false;
 										}}

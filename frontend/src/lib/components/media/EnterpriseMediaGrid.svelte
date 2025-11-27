@@ -13,51 +13,51 @@
 	 * @version 2.0.0
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fade, scale } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import type { MediaFile } from '$lib/api/media';
 
-	const dispatch = createEventDispatcher<{
-		select: MediaFile;
-		preview: MediaFile;
-		delete: MediaFile;
-		optimize: MediaFile;
-		selectionChange: string[];
-	}>();
+	interface Props {
+		items?: MediaFile[];
+		selectedIds?: string[];
+		selectable?: boolean;
+		showStatus?: boolean;
+		columns?: number;
+		loading?: boolean;
+		virtualScrolling?: boolean;
+		itemHeight?: number;
+		onselect?: (item: MediaFile) => void;
+		onpreview?: (item: MediaFile) => void;
+		ondelete?: (item: MediaFile) => void;
+		onoptimize?: (item: MediaFile) => void;
+		onselectionchange?: (ids: string[]) => void;
+	}
 
-	// Props
-	export let items: MediaFile[] = [];
-	export let selectedIds: string[] = [];
-	export let selectable: boolean = true;
-	export let showStatus: boolean = true;
-	export let columns: number = 4;
-	export let loading: boolean = false;
-	export let virtualScrolling: boolean = true;
-	export let itemHeight: number = 280;
+	let { items = [], selectedIds = $bindable([]), selectable = true, showStatus = true, columns = 4, loading = false, virtualScrolling = true, itemHeight = 280, onselect, onpreview, ondelete, onoptimize, onselectionchange }: Props = $props();
 
 	// Internal state
 	let containerEl: HTMLDivElement;
-	let scrollTop = 0;
-	let containerHeight = 0;
-	let shiftKeyHeld = false;
-	let lastSelectedId: string | null = null;
-	let gsapInstance: any = null;
-	let optimisticDeletes = new Set<string>();
-	let optimisticOptimizing = new Set<string>();
+	let scrollTop = $state(0);
+	let containerHeight = $state(0);
+	let shiftKeyHeld = $state(false);
+	let lastSelectedId: string | null = $state(null);
+	let gsapInstance: any = $state(null);
+	let optimisticDeletes = $state(new Set<string>());
+	let optimisticOptimizing = $state(new Set<string>());
 
 	// Virtual scrolling calculations
-	$: visibleStart = virtualScrolling ? Math.floor(scrollTop / itemHeight) * columns : 0;
-	$: visibleEnd = virtualScrolling
+	let visibleStart = $derived(virtualScrolling ? Math.floor(scrollTop / itemHeight) * columns : 0);
+	let visibleEnd = $derived(virtualScrolling
 		? Math.min(items.length, visibleStart + Math.ceil(containerHeight / itemHeight + 2) * columns)
-		: items.length;
-	$: visibleItems = items.slice(visibleStart, visibleEnd);
-	$: totalHeight = Math.ceil(items.length / columns) * itemHeight;
-	$: paddingTop = virtualScrolling ? Math.floor(visibleStart / columns) * itemHeight : 0;
+		: items.length);
+	let visibleItems = $derived(items.slice(visibleStart, visibleEnd));
+	let totalHeight = $derived(Math.ceil(items.length / columns) * itemHeight);
+	let paddingTop = $derived(virtualScrolling ? Math.floor(visibleStart / columns) * itemHeight : 0);
 
 	// Filtered items (excluding optimistic deletes)
-	$: displayItems = visibleItems.filter((item) => !optimisticDeletes.has(item.id));
+	let displayItems = $derived(visibleItems.filter((item) => !optimisticDeletes.has(item.id)));
 
 	// Load GSAP dynamically
 	onMount(async () => {
@@ -111,7 +111,7 @@
 		}
 
 		lastSelectedId = item.id;
-		dispatch('selectionChange', selectedIds);
+		onselectionchange?.(selectedIds);
 	}
 
 	// Optimistic delete with animation
@@ -131,13 +131,13 @@
 					opacity: 0,
 					duration: 0.3,
 					ease: 'power2.in',
-					onComplete: () => dispatch('delete', item),
+					onComplete: () => ondelete?.(item),
 				});
 				return;
 			}
 		}
 
-		dispatch('delete', item);
+		ondelete?.(item);
 	}
 
 	// Rollback optimistic delete on error
@@ -154,7 +154,7 @@
 		optimisticOptimizing.add(item.id);
 		optimisticOptimizing = optimisticOptimizing;
 
-		dispatch('optimize', item);
+		onoptimize?.(item);
 	}
 
 	// Complete optimization (remove optimizing state)
@@ -176,7 +176,7 @@
 
 	function handlePreview(item: MediaFile, e: MouseEvent) {
 		e.stopPropagation();
-		dispatch('preview', item);
+		onpreview?.(item);
 	}
 
 	// Scroll handler for virtual scrolling
@@ -238,13 +238,13 @@
 	});
 </script>
 
-<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
+<svelte:window onkeydown={handleKeyDown} onkeyup={handleKeyUp} />
 
 <div
 	class="media-grid-container"
 	bind:this={containerEl}
 	bind:clientHeight={containerHeight}
-	on:scroll={handleScroll}
+	onscroll={handleScroll}
 	role="grid"
 	aria-label="Media library grid"
 >
@@ -291,8 +291,8 @@
 					class:selected={isSelected}
 					class:optimizing={isOptimizing}
 					data-media-id={item.id}
-					on:click={() => toggleSelection(item)}
-					on:keydown={(e) => e.key === 'Enter' && toggleSelection(item)}
+					onclick={() => toggleSelection(item)}
+					onkeydown={(e) => e.key === 'Enter' && toggleSelection(item)}
 					role="gridcell"
 					tabindex="0"
 					aria-selected={isSelected}
@@ -304,8 +304,8 @@
 							<input
 								type="checkbox"
 								checked={isSelected}
-								on:click|stopPropagation={() => toggleSelection(item)}
-								on:keydown|stopPropagation
+								onclick={(e) => { e.stopPropagation(); toggleSelection(item); }}
+								onkeydown={(e) => e.stopPropagation()}
 								aria-label="Select {item.filename}"
 							/>
 						</div>
@@ -325,7 +325,7 @@
 								alt={item.alt_text || item.filename}
 								loading="lazy"
 								decoding="async"
-								on:load={(e) => e.currentTarget.classList.add('loaded')}
+								onload={(e) => e.currentTarget.classList.add('loaded')}
 							/>
 						{:else if item.file_type === 'video'}
 							<div class="type-icon video">
@@ -407,7 +407,7 @@
 								class="action-btn"
 								title="Preview (P)"
 								aria-label="Preview {item.filename}"
-								on:click={(e) => handlePreview(item, e)}
+								onclick={(e) => handlePreview(item, e)}
 							>
 								<svg
 									width="20"
@@ -427,7 +427,7 @@
 									class="action-btn optimize"
 									title="Optimize (O)"
 									aria-label="Optimize {item.filename}"
-									on:click={(e) => handleOptimize(item, e)}
+									onclick={(e) => handleOptimize(item, e)}
 								>
 									<svg
 										width="20"
@@ -446,7 +446,7 @@
 								class="action-btn delete"
 								title="Delete (D)"
 								aria-label="Delete {item.filename}"
-								on:click={(e) => handleDelete(item, e)}
+								onclick={(e) => handleDelete(item, e)}
 							>
 								<svg
 									width="20"

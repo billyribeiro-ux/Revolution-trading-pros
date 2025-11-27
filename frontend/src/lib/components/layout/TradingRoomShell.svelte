@@ -21,16 +21,23 @@
 		IconChevronDown
 	} from '@tabler/icons-svelte';
 
-	export let roomName = 'Trading Room';
-	export let roomType: 'day-trading' | 'swing-trading' | 'small-accounts' = 'day-trading';
-	export let viewerCount = 0;
-	export let isLive = false;
+	interface Props {
+		roomName?: string;
+		roomType?: 'day-trading' | 'swing-trading' | 'small-accounts';
+		viewerCount?: number;
+		isLive?: boolean;
+		video?: import('svelte').Snippet;
+		chat?: import('svelte').Snippet;
+		alerts?: import('svelte').Snippet;
+	}
 
-	let isChatOpen = true;
-	let isAlertsOpen = true;
-	let isFullscreen = false;
-	let isMuted = false;
-	let sidePanelTab: 'chat' | 'alerts' = 'chat';
+	let { roomName = 'Trading Room', roomType = 'day-trading', viewerCount = 0, isLive = false, video, chat, alerts }: Props = $props();
+
+	let isChatOpen = $state(true);
+	let isAlertsOpen = $state(true);
+	let isFullscreen = $state(false);
+	let isMuted = $state(false);
+	let sidePanelTab: 'chat' | 'alerts' = $state('chat');
 
 	function toggleFullscreen() {
 		if (!document.fullscreenElement) {
@@ -83,21 +90,21 @@
 		</div>
 
 		<div class="header-right">
-			<button class="control-btn" on:click={toggleMute} title={isMuted ? 'Unmute' : 'Mute'}>
+			<button class="control-btn" onclick={toggleMute} title={isMuted ? 'Unmute' : 'Mute'}>
 				{#if isMuted}
 					<IconVolumeOff size={20} />
 				{:else}
 					<IconVolume size={20} />
 				{/if}
 			</button>
-			<button class="control-btn" on:click={toggleFullscreen} title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
+			<button class="control-btn" onclick={toggleFullscreen} title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
 				{#if isFullscreen}
 					<IconMinimize size={20} />
 				{:else}
 					<IconMaximize size={20} />
 				{/if}
 			</button>
-			<button class="control-btn desktop-only" on:click={toggleSidePanel} title="Toggle Panel">
+			<button class="control-btn desktop-only" onclick={toggleSidePanel} title="Toggle Panel">
 				<IconMail size={20} />
 			</button>
 		</div>
@@ -107,11 +114,13 @@
 	<div class="room-content">
 		<!-- Video Area -->
 		<main class="video-area">
-			<slot name="video">
+			{#if video}
+				{@render video()}
+			{:else}
 				<div class="video-placeholder">
 					<p>Video player will be rendered here</p>
 				</div>
-			</slot>
+			{/if}
 		</main>
 
 		<!-- Side Panel -->
@@ -122,7 +131,7 @@
 					<button 
 						class="panel-tab" 
 						class:active={sidePanelTab === 'chat'}
-						on:click={() => sidePanelTab = 'chat'}
+						onclick={() => sidePanelTab = 'chat'}
 					>
 						<IconMail size={16} />
 						Chat
@@ -130,7 +139,7 @@
 					<button 
 						class="panel-tab" 
 						class:active={sidePanelTab === 'alerts'}
-						on:click={() => sidePanelTab = 'alerts'}
+						onclick={() => sidePanelTab = 'alerts'}
 					>
 						<IconBell size={16} />
 						Alerts
@@ -140,19 +149,23 @@
 				<!-- Panel Content -->
 				<div class="panel-content">
 					{#if sidePanelTab === 'chat'}
-						<slot name="chat">
+						{#if chat}
+							{@render chat()}
+						{:else}
 							<div class="panel-placeholder">
 								<IconMail size={32} />
 								<p>Chat will be rendered here</p>
 							</div>
-						</slot>
+						{/if}
 					{:else}
-						<slot name="alerts">
+						{#if alerts}
+							{@render alerts()}
+						{:else}
 							<div class="panel-placeholder">
 								<IconBell size={32} />
 								<p>Alerts will be rendered here</p>
 							</div>
-						</slot>
+						{/if}
 					{/if}
 				</div>
 			</aside>
@@ -164,7 +177,7 @@
 		<button 
 			class="mobile-tab" 
 			class:active={sidePanelTab === 'chat'}
-			on:click={() => { sidePanelTab = 'chat'; isChatOpen = true; }}
+			onclick={() => { sidePanelTab = 'chat'; isChatOpen = true; }}
 		>
 			<IconMail size={20} />
 			<span>Chat</span>
@@ -172,7 +185,7 @@
 		<button 
 			class="mobile-tab" 
 			class:active={sidePanelTab === 'alerts'}
-			on:click={() => { sidePanelTab = 'alerts'; isChatOpen = true; }}
+			onclick={() => { sidePanelTab = 'alerts'; isChatOpen = true; }}
 		>
 			<IconBell size={20} />
 			<span>Alerts</span>

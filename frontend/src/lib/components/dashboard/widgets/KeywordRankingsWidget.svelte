@@ -1,22 +1,25 @@
 <script lang="ts">
-	export let data: {
-		keywords: Array<{
-			keyword: string;
-			position: number;
-			previous_position: number;
-			change: number;
-			trend: 'up' | 'down' | 'stable';
-			url: string;
-			search_volume: number;
-		}>;
-		total_keywords: number;
-		avg_position: number;
-		top_10_count: number;
-		improved_count: number;
-		declined_count: number;
-	};
-	// Config available for widget customization
-	export const config: Record<string, unknown> = {};
+	interface Props {
+		data: {
+			keywords: Array<{
+				keyword: string;
+				position: number;
+				previous_position: number;
+				change: number;
+				trend: 'up' | 'down' | 'stable';
+				url: string;
+				search_volume: number;
+			}>;
+			total_keywords: number;
+			avg_position: number;
+			top_10_count: number;
+			improved_count: number;
+			declined_count: number;
+		};
+		config?: Record<string, unknown>;
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

@@ -10,16 +10,20 @@
 	import type { MediaFolder } from '$lib/api/media';
 	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '@tabler/icons-svelte';
 
-	export let currentFolderId: string | null = null;
-	export let onFolderSelect: (folderId: string | null) => void = () => {};
-	export let onCreateFolder: () => void = () => {};
+	interface Props {
+		currentFolderId?: string | null;
+		onFolderSelect?: (folderId: string | null) => void;
+		onCreateFolder?: () => void;
+	}
 
-	let expandedFolders = new Set<string>();
+	let { currentFolderId = null, onFolderSelect = () => {}, onCreateFolder = () => {} }: Props = $props();
+
+	let expandedFolders = $state(new Set<string>());
 
 	type FolderNode = MediaFolder & { children: FolderNode[] };
 
 	// Build folder tree structure
-	$: folderTree = buildFolderTree($currentFolders);
+	let folderTree = $derived(buildFolderTree($currentFolders));
 
 	function buildFolderTree(folders: MediaFolder[]): FolderNode[] {
 		const tree: FolderNode[] = [];
@@ -72,7 +76,7 @@
 <div class="folder-tree">
 	<div class="folder-tree-header">
 		<h3 class="folder-tree-title">Folders</h3>
-		<button class="btn-add-folder" on:click={onCreateFolder} aria-label="Create folder">
+		<button class="btn-add-folder" onclick={onCreateFolder} aria-label="Create folder">
 			<IconPlus size={18} />
 		</button>
 	</div>
@@ -81,7 +85,7 @@
 	<button
 		class="folder-item"
 		class:active={currentFolderId === null}
-		on:click={() => selectFolder(null)}
+		onclick={() => selectFolder(null)}
 	>
 		<IconFolder size={20} class="folder-icon" />
 		<span class="folder-name">All Files</span>
@@ -96,7 +100,7 @@
 					{#if hasChildren}
 						<button
 							class="expand-btn"
-							on:click={() => toggleFolder(folder.id)}
+							onclick={() => toggleFolder(folder.id)}
 							aria-label={isExpanded ? 'Collapse' : 'Expand'}
 						>
 							{#if isExpanded}
@@ -113,7 +117,7 @@
 						class="folder-item"
 						class:active={isSelected}
 						style="padding-left: {level * 1.5 + 0.75}rem"
-						on:click={() => selectFolder(folder.id)}
+						onclick={() => selectFolder(folder.id)}
 					>
 						<IconFolder size={20} class="folder-icon" />
 						<span class="folder-name">{folder.name}</span>
@@ -128,7 +132,7 @@
 							{#if childData.hasChildren}
 								<button
 									class="expand-btn"
-									on:click={() => toggleFolder(child.id)}
+									onclick={() => toggleFolder(child.id)}
 									aria-label={childData.isExpanded ? 'Collapse' : 'Expand'}
 								>
 									{#if childData.isExpanded}
@@ -145,7 +149,7 @@
 								class="folder-item"
 								class:active={childData.isSelected}
 								style="padding-left: {childData.level * 1.5 + 0.75}rem"
-								on:click={() => selectFolder(child.id)}
+								onclick={() => selectFolder(child.id)}
 							>
 								<IconFolder size={20} class="folder-icon" />
 								<span class="folder-name">{child.name}</span>

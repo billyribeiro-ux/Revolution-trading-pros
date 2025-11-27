@@ -3,27 +3,30 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
-	export let data: {
-		total_backlinks: number;
-		referring_domains: number;
-		domain_rating: number;
-		new_backlinks_30d: number;
-		lost_backlinks_30d: number;
-		dofollow_ratio: number;
-		top_anchors: Array<{ text: string; count: number }>;
-		top_referring_domains: Array<{
-			domain: string;
-			dr: number;
-			backlinks: number;
-		}>;
-		quality_breakdown: {
-			high: number;
-			medium: number;
-			low: number;
+	interface Props {
+		data: {
+			total_backlinks: number;
+			referring_domains: number;
+			domain_rating: number;
+			new_backlinks_30d: number;
+			lost_backlinks_30d: number;
+			dofollow_ratio: number;
+			top_anchors: Array<{ text: string; count: number }>;
+			top_referring_domains: Array<{
+				domain: string;
+				dr: number;
+				backlinks: number;
+			}>;
+			quality_breakdown: {
+				high: number;
+				medium: number;
+				low: number;
+			};
 		};
-	};
-	// Config available for widget customization
-	export const config: Record<string, unknown> = {};
+		config?: Record<string, unknown>;
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	const totalBacklinks = tweened(0, { duration: 1500, easing: cubicOut });
 	const referringDomains = tweened(0, { duration: 1500, easing: cubicOut });

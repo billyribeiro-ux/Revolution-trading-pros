@@ -31,11 +31,12 @@
 		IconShoppingCart,
 		IconBellRinging
 	} from '@tabler/icons-svelte';
-	import { createEventDispatcher } from 'svelte';
+	interface Props {
+		isOpen?: boolean;
+		onclose?: () => void;
+	}
 
-	export let isOpen = false;
-
-	const dispatch = createEventDispatcher();
+	let { isOpen = false, onclose }: Props = $props();
 
 	const menuSections = [
 		{
@@ -92,10 +93,10 @@
 	];
 
 	function closeSidebar() {
-		dispatch('close');
+		onclose?.();
 	}
 
-	$: currentPath = $page.url.pathname;
+	let currentPath = $derived($page.url.pathname);
 </script>
 
 <aside class="admin-sidebar" class:open={isOpen}>
@@ -104,7 +105,7 @@
 		<a href="/admin" class="sidebar-logo">
 			<img src="/revolution-trading-pros.png" alt="RTP Admin" />
 		</a>
-		<button class="close-btn" on:click={closeSidebar}>
+		<button class="close-btn" onclick={closeSidebar}>
 			<IconX size={24} />
 		</button>
 	</div>
@@ -116,13 +117,14 @@
 				<div class="nav-section-title">{section.title}</div>
 			{/if}
 			{#each section.items as item}
+				{@const Icon = item.icon}
 				<a
 					href={item.href}
 					class="nav-item"
 					class:active={currentPath === item.href}
-					on:click={closeSidebar}
+					onclick={closeSidebar}
 				>
-					<svelte:component this={item.icon} size={20} />
+					<Icon size={20} />
 					<span>{item.label}</span>
 				</a>
 			{/each}
@@ -151,7 +153,7 @@
 {#if isOpen}
 	<button 
 		class="sidebar-overlay" 
-		on:click={closeSidebar}
+		onclick={closeSidebar}
 		aria-label="Close sidebar"
 	></button>
 {/if}

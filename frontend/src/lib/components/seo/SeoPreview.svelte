@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { IconSearch, IconBrandGoogle } from '@tabler/icons-svelte';
 
-	export let title: string = '';
-	export let description: string = '';
-	export let url: string = '';
+	interface Props {
+		title?: string;
+		description?: string;
+		url?: string;
+	}
 
-	$: displayUrl = url ? new URL(url).hostname + ' › ...' : 'example.com › page';
-	$: displayTitle = title || 'Untitled Page';
-	$: displayDescription = description || 'No description provided';
+	let { title = '', description = '', url = '' }: Props = $props();
+
+	let displayUrl = $derived(url ? new URL(url).hostname + ' › ...' : 'example.com › page');
+	let displayTitle = $derived(title || 'Untitled Page');
+	let displayDescription = $derived(description || 'No description provided');
 </script>
 
 <div class="seo-preview">

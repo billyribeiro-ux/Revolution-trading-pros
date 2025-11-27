@@ -1,20 +1,24 @@
 <script lang="ts">
 	import type { SystemHealthData } from '$lib/types/dashboard';
 
-	export let data: SystemHealthData | undefined;
-	export let config: {
-		show_all_services?: boolean;
-		services_filter?: string[];
-		refresh_rate?: number;
-		show_metrics?: boolean;
-	} = {};
+	interface Props {
+		data?: SystemHealthData;
+		config?: {
+			show_all_services?: boolean;
+			services_filter?: string[];
+			refresh_rate?: number;
+			show_metrics?: boolean;
+		};
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	// Apply config filters
-	$: filteredServices = config.services_filter
+	let filteredServices = $derived(config.services_filter
 		? Object.entries(data?.services || {}).filter(([name]) =>
 				config.services_filter?.includes(name)
 			)
-		: Object.entries(data?.services || {});
+		: Object.entries(data?.services || {}));
 
 	function getStatusColor(status: string): string {
 		switch (status) {

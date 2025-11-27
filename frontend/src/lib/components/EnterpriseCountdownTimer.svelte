@@ -7,57 +7,96 @@
 
 	// Minimal wrapper that wires CountdownTimer to backend time + analytics
 
-	export let timerId: string;
-	export let endDate: string | Date;
-	export let startDate: string | Date | null = null;
-	export let timezone: string | null = null;
-	// Allow parent to override serverTime; otherwise we fetch from backend
-	export let serverTime: Date | null = null;
+	interface Props {
+		timerId: string;
+		endDate: string | Date;
+		startDate?: string | Date | null;
+		timezone?: string | null;
+		serverTime?: Date | null;
+		format?: 'default' | 'digital' | 'circular' | 'flip' | 'minimal' | 'bar' | 'custom';
+		showDays?: boolean;
+		showHours?: boolean;
+		showMinutes?: boolean;
+		showSeconds?: boolean;
+		showMilliseconds?: boolean;
+		showLabels?: boolean;
+		showSeparators?: boolean;
+		compactMode?: boolean;
+		leadingZeros?: boolean;
+		timerColor?: string;
+		warningColor?: string;
+		dangerColor?: string;
+		backgroundColor?: string;
+		textColor?: string;
+		labelColor?: string;
+		size?: 'small' | 'medium' | 'large' | 'custom';
+		customSize?: string | null;
+		fontFamily?: string;
+		borderRadius?: string;
+		gap?: string;
+		padding?: string;
+		animated?: boolean;
+		animationType?: 'slide' | 'fade' | 'flip' | 'zoom' | 'none';
+		animationDuration?: number;
+		pulseOnUpdate?: boolean;
+		urgencyAnimation?: boolean;
+		particleEffects?: boolean;
+		warningThreshold?: number;
+		dangerThreshold?: number;
+		milestones?: number[];
+		updateInterval?: number;
+		pauseOnHover?: boolean;
+		pauseOnBlur?: boolean;
+		showProgressBar?: boolean;
+		showPercentage?: boolean;
+	}
 
-	// Pass-through props with same defaults as CountdownTimer
-	export let format: 'default' | 'digital' | 'circular' | 'flip' | 'minimal' | 'bar' | 'custom' =
-		'default';
-	export let showDays: boolean = true;
-	export let showHours: boolean = true;
-	export let showMinutes: boolean = true;
-	export let showSeconds: boolean = true;
-	export let showMilliseconds: boolean = false;
-	export let showLabels: boolean = true;
-	export let showSeparators: boolean = true;
-	export let compactMode: boolean = false;
-	export let leadingZeros: boolean = true;
-
-	export let timerColor: string = '#6366f1';
-	export let warningColor: string = '#f59e0b';
-	export let dangerColor: string = '#ef4444';
-	export let backgroundColor: string = 'rgba(99, 102, 241, 0.1)';
-	export let textColor: string = 'currentColor';
-	export let labelColor: string = '#94a3b8';
-	export let size: 'small' | 'medium' | 'large' | 'custom' = 'medium';
-	export let customSize: string | null = null;
-	export let fontFamily: string = 'inherit';
-	export let borderRadius: string = '12px';
-	export let gap: string = '1rem';
-	export let padding: string = '0.75rem 1rem';
-
-	export let animated: boolean = true;
-	export let animationType: 'slide' | 'fade' | 'flip' | 'zoom' | 'none' = 'slide';
-	export let animationDuration: number = 300;
-	export let pulseOnUpdate: boolean = false;
-	export let urgencyAnimation: boolean = true;
-	export let particleEffects: boolean = false;
-
-	export let warningThreshold: number = 60000;
-	export let dangerThreshold: number = 10000;
-	export let milestones: number[] = [];
-	export let updateInterval: number = 1000;
-	export let pauseOnHover: boolean = false;
-	export let pauseOnBlur: boolean = false;
-	export let showProgressBar: boolean = false;
-	export let showPercentage: boolean = false;
+	let {
+		timerId,
+		endDate,
+		startDate = null,
+		timezone = null,
+		serverTime = null,
+		format = 'default',
+		showDays = true,
+		showHours = true,
+		showMinutes = true,
+		showSeconds = true,
+		showMilliseconds = false,
+		showLabels = true,
+		showSeparators = true,
+		compactMode = false,
+		leadingZeros = true,
+		timerColor = '#6366f1',
+		warningColor = '#f59e0b',
+		dangerColor = '#ef4444',
+		backgroundColor = 'rgba(99, 102, 241, 0.1)',
+		textColor = 'currentColor',
+		labelColor = '#94a3b8',
+		size = 'medium',
+		customSize = null,
+		fontFamily = 'inherit',
+		borderRadius = '12px',
+		gap = '1rem',
+		padding = '0.75rem 1rem',
+		animated = true,
+		animationType = 'slide',
+		animationDuration = 300,
+		pulseOnUpdate = false,
+		urgencyAnimation = true,
+		particleEffects = false,
+		warningThreshold = 60000,
+		dangerThreshold = 10000,
+		milestones = [],
+		updateInterval = 1000,
+		pauseOnHover = false,
+		pauseOnBlur = false,
+		showProgressBar = false,
+		showPercentage = false
+	}: Props = $props();
 
 	// Internal resolved server time from backend
-	let resolvedServerTime: Date | null = null;
+	let resolvedServerTime: Date | null = $state(null);
 
 	onMount(async () => {
 		if (!serverTime) {
@@ -89,44 +128,36 @@
 		});
 	}
 
-	function handleStart(event: CustomEvent<any>) {
-		emitTimerEvent('start', event.detail);
+	function handleStart() {
+		emitTimerEvent('start', {});
 	}
 
-	function handlePause(event: CustomEvent<any>) {
-		emitTimerEvent('pause', event.detail);
+	function handlePause() {
+		emitTimerEvent('pause', {});
 	}
 
-	function handleResume(event: CustomEvent<any>) {
-		emitTimerEvent('resume', event.detail);
+	function handleResume() {
+		emitTimerEvent('resume', {});
 	}
 
-	function handleStop(event: CustomEvent<any>) {
-		emitTimerEvent('stop', event.detail);
+	function handleWarning() {
+		emitTimerEvent('warning', {});
 	}
 
-	function handleReset(event: CustomEvent<any>) {
-		emitTimerEvent('reset', event.detail);
+	function handleDanger() {
+		emitTimerEvent('danger', {});
 	}
 
-	function handleUpdate(event: CustomEvent<any>) {
-		emitTimerEvent('update', event.detail);
+	function handleMilestone(milestone: number) {
+		emitTimerEvent('milestone', { milestone });
 	}
 
-	function handleWarning(event: CustomEvent<any>) {
-		emitTimerEvent('warning', event.detail);
+	function handleExpire(data: any) {
+		emitTimerEvent('expire', data);
 	}
 
-	function handleDanger(event: CustomEvent<any>) {
-		emitTimerEvent('danger', event.detail);
-	}
-
-	function handleMilestone(event: CustomEvent<any>) {
-		emitTimerEvent('milestone', event.detail);
-	}
-
-	function handleExpire(event: CustomEvent<any>) {
-		emitTimerEvent('expire', event.detail);
+	function handleUpdate(timeData: any) {
+		emitTimerEvent('update', { timeData });
 	}
 </script>
 
@@ -171,14 +202,12 @@
 	{pauseOnBlur}
 	{showProgressBar}
 	{showPercentage}
-	on:start={handleStart}
-	on:pause={handlePause}
-	on:resume={handleResume}
-	on:stop={handleStop}
-	on:reset={handleReset}
-	on:update={handleUpdate}
-	on:warning={handleWarning}
-	on:danger={handleDanger}
-	on:milestone={handleMilestone}
-	on:expire={handleExpire}
+	onStart={handleStart}
+	onPause={handlePause}
+	onResume={handleResume}
+	onUpdate={handleUpdate}
+	onWarning={handleWarning}
+	onDanger={handleDanger}
+	onMilestone={handleMilestone}
+	onExpire={handleExpire}
 />

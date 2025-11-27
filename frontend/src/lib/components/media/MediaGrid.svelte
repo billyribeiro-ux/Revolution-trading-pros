@@ -5,28 +5,27 @@
    * Displays media items in a responsive grid with selection,
    * preview, and bulk actions support.
    */
-  import { createEventDispatcher } from 'svelte';
   import type { MediaItem } from '$lib/api/media';
 
-  const dispatch = createEventDispatcher<{
-    select: MediaItem;
-    preview: MediaItem;
-    delete: MediaItem;
-    optimize: MediaItem;
-    selectionChange: string[];
-  }>();
+  interface Props {
+    items?: MediaItem[];
+    selectedIds?: string[];
+    selectable?: boolean;
+    showStatus?: boolean;
+    columns?: number;
+    loading?: boolean;
+    onselect?: (item: MediaItem) => void;
+    onpreview?: (item: MediaItem) => void;
+    ondelete?: (item: MediaItem) => void;
+    onoptimize?: (item: MediaItem) => void;
+    onselectionchange?: (ids: string[]) => void;
+  }
 
-  // Props
-  export let items: MediaItem[] = [];
-  export let selectedIds: string[] = [];
-  export let selectable: boolean = true;
-  export let showStatus: boolean = true;
-  export let columns: number = 4;
-  export let loading: boolean = false;
+  let { items = [], selectedIds = $bindable([]), selectable = true, showStatus = true, columns = 4, loading = false, onselect, onpreview, ondelete, onoptimize, onselectionchange }: Props = $props();
 
   // State
-  let shiftKeyHeld = false;
-  let lastSelectedId: string | null = null;
+  let shiftKeyHeld = $state(false);
+  let lastSelectedId: string | null = $state(null);
 
   function handleKeyDown(e: KeyboardEvent) {
     if (e.key === 'Shift') shiftKeyHeld = true;
@@ -65,29 +64,29 @@
     }
 
     lastSelectedId = item.id;
-    dispatch('selectionChange', selectedIds);
+    onselectionchange?.(selectedIds);
   }
 
   function handleItemClick(item: MediaItem, e: MouseEvent) {
     if ((e.target as HTMLElement).closest('.item-actions')) {
       return; // Don't select when clicking actions
     }
-    dispatch('select', item);
+    onselect?.(item);
   }
 
   function handlePreview(item: MediaItem, e: MouseEvent) {
     e.stopPropagation();
-    dispatch('preview', item);
+    onpreview?.(item);
   }
 
   function handleDelete(item: MediaItem, e: MouseEvent) {
     e.stopPropagation();
-    dispatch('delete', item);
+    ondelete?.(item);
   }
 
   function handleOptimize(item: MediaItem, e: MouseEvent) {
     e.stopPropagation();
-    dispatch('optimize', item);
+    onoptimize?.(item);
   }
 
   function getStatusColor(status: string): string {
@@ -110,7 +109,7 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
+<svelte:window onkeydown={handleKeyDown} onkeyup={handleKeyUp} />
 
 <div class="media-grid" style="--columns: {columns}">
   {#if loading}
@@ -139,8 +138,8 @@
         class:selected={isSelected}
         role="button"
         tabindex="0"
-        on:click={(e) => handleItemClick(item, e)}
-        on:keydown={(e) => e.key === 'Enter' && dispatch('select', item)}
+        onclick={(e) => handleItemClick(item, e)}
+        onkeydown={(e) => e.key === 'Enter' && onselect?.(item)}
       >
         <!-- Selection checkbox -->
         {#if selectable}
@@ -148,8 +147,8 @@
             <input
               type="checkbox"
               checked={isSelected}
-              on:click|stopPropagation={() => toggleSelection(item)}
-              on:keydown|stopPropagation
+              onclick={(e) => { e.stopPropagation(); toggleSelection(item); }}
+              onkeydown={(e) => e.stopPropagation()}
             />
           </div>
         {/if}
@@ -209,20 +208,20 @@
 
           <!-- Actions overlay -->
           <div class="item-actions">
-            <button type="button" class="action-btn" title="Preview" on:click={(e) => handlePreview(item, e)}>
+            <button type="button" class="action-btn" title="Preview" onclick={(e) => handlePreview(item, e)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
             </button>
             {#if item.file_type === 'image' && !item.is_optimized}
-              <button type="button" class="action-btn optimize" title="Optimize" on:click={(e) => handleOptimize(item, e)}>
+              <button type="button" class="action-btn optimize" title="Optimize" onclick={(e) => handleOptimize(item, e)}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
               </button>
             {/if}
-            <button type="button" class="action-btn delete" title="Delete" on:click={(e) => handleDelete(item, e)}>
+            <button type="button" class="action-btn delete" title="Delete" onclick={(e) => handleDelete(item, e)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
               </svg>

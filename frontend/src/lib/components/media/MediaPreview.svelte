@@ -5,56 +5,57 @@
    * Full-screen media preview with metadata display,
    * variant comparison, and optimization controls.
    */
-  import { createEventDispatcher } from 'svelte';
   import type { MediaItem, MediaVariant } from '$lib/api/media';
 
-  const dispatch = createEventDispatcher<{
-    close: void;
-    optimize: MediaItem;
-    delete: MediaItem;
-    update: { id: string; data: Partial<MediaItem> };
-  }>();
+  interface Props {
+    item?: MediaItem | null;
+    isOpen?: boolean;
+    onclose?: () => void;
+    onoptimize?: (item: MediaItem) => void;
+    ondelete?: (item: MediaItem) => void;
+    onupdate?: (data: { id: string; data: Partial<MediaItem> }) => void;
+  }
 
-  // Props
-  export let item: MediaItem | null = null;
-  export let isOpen: boolean = false;
+  let { item = null, isOpen = $bindable(false), onclose, onoptimize, ondelete, onupdate }: Props = $props();
 
   // State
-  let activeTab: 'preview' | 'variants' | 'metadata' = 'preview';
-  let selectedVariant: MediaVariant | null = null;
-  let isEditing = false;
-  let editData = {
+  let activeTab: 'preview' | 'variants' | 'metadata' = $state('preview');
+  let selectedVariant: MediaVariant | null = $state(null);
+  let isEditing = $state(false);
+  let editData = $state({
     alt_text: '',
     title: '',
     caption: '',
-  };
+  });
 
-  $: if (item) {
-    editData = {
-      alt_text: item.alt_text || '',
-      title: item.title || '',
-      caption: item.caption || '',
-    };
-  }
+  $effect(() => {
+    if (item) {
+      editData = {
+        alt_text: item.alt_text || '',
+        title: item.title || '',
+        caption: item.caption || '',
+      };
+    }
+  });
 
   function handleClose() {
     isOpen = false;
-    dispatch('close');
+    onclose?.();
   }
 
   function handleOptimize() {
-    if (item) dispatch('optimize', item);
+    if (item) onoptimize?.(item);
   }
 
   function handleDelete() {
     if (item && confirm('Are you sure you want to delete this file?')) {
-      dispatch('delete', item);
+      ondelete?.(item);
     }
   }
 
   function handleSave() {
     if (item) {
-      dispatch('update', { id: item.id, data: editData });
+      onupdate?.({ id: item.id, data: editData });
       isEditing = false;
     }
   }
@@ -80,19 +81,19 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen && item}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_interactive_supports_focus -->
-  <div class="preview-overlay" on:click={handleClose} role="dialog" aria-modal="true">
+  <div class="preview-overlay" onclick={handleClose} role="dialog" aria-modal="true">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div class="preview-modal" on:click|stopPropagation role="document">
+    <div class="preview-modal" onclick={(e) => e.stopPropagation()} role="document">
       <!-- Header -->
       <div class="preview-header">
         <h2 class="preview-title">{item.filename}</h2>
-        <button type="button" class="close-btn" on:click={handleClose} aria-label="Close">
+        <button type="button" class="close-btn" onclick={handleClose} aria-label="Close">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
@@ -105,7 +106,7 @@
           type="button"
           class="tab-btn"
           class:active={activeTab === 'preview'}
-          on:click={() => (activeTab = 'preview')}
+          onclick={() => (activeTab = 'preview')}
         >
           Preview
         </button>
@@ -114,7 +115,7 @@
             type="button"
             class="tab-btn"
             class:active={activeTab === 'variants'}
-            on:click={() => (activeTab = 'variants')}
+            onclick={() => (activeTab = 'variants')}
           >
             Variants ({item.variants.length})
           </button>
@@ -123,7 +124,7 @@
           type="button"
           class="tab-btn"
           class:active={activeTab === 'metadata'}
-          on:click={() => (activeTab = 'metadata')}
+          onclick={() => (activeTab = 'metadata')}
         >
           Metadata
         </button>
@@ -162,7 +163,7 @@
                     {item.is_optimized ? 'Optimized' : 'Not Optimized'}
                   </span>
                   {#if !item.is_optimized && item.file_type === 'image'}
-                    <button type="button" class="btn-primary btn-sm" on:click={handleOptimize}>
+                    <button type="button" class="btn-primary btn-sm" onclick={handleOptimize}>
                       Optimize Now
                     </button>
                   {/if}
@@ -195,7 +196,7 @@
                 <div class="section-header">
                   <h3>Metadata</h3>
                   {#if !isEditing}
-                    <button type="button" class="btn-text" on:click={() => (isEditing = true)}>
+                    <button type="button" class="btn-text" onclick={() => (isEditing = true)}>
                       Edit
                     </button>
                   {/if}
@@ -216,10 +217,10 @@
                       <textarea bind:value={editData.caption} rows="2"></textarea>
                     </label>
                     <div class="edit-actions">
-                      <button type="button" class="btn-secondary btn-sm" on:click={() => (isEditing = false)}>
+                      <button type="button" class="btn-secondary btn-sm" onclick={() => (isEditing = false)}>
                         Cancel
                       </button>
-                      <button type="button" class="btn-primary btn-sm" on:click={handleSave}>
+                      <button type="button" class="btn-primary btn-sm" onclick={handleSave}>
                         Save
                       </button>
                     </div>
@@ -243,7 +244,7 @@
                   <a href={item.url} download={item.filename} class="btn-secondary btn-sm">
                     Download Original
                   </a>
-                  <button type="button" class="btn-danger btn-sm" on:click={handleDelete}>
+                  <button type="button" class="btn-danger btn-sm" onclick={handleDelete}>
                     Delete
                   </button>
                 </div>
@@ -257,13 +258,13 @@
               <div
                 class="variant-card"
                 class:selected={selectedVariant === variant}
-                on:click={() => {
+                onclick={() => {
                   selectedVariant = selectedVariant === variant ? null : variant;
                   activeTab = 'preview';
                 }}
                 role="button"
                 tabindex="0"
-                on:keydown={(e) => e.key === 'Enter' && (selectedVariant = variant)}
+                onkeydown={(e) => e.key === 'Enter' && (selectedVariant = variant)}
               >
                 <div class="variant-preview">
                   <img src={variant.url} alt="{variant.type} variant" loading="lazy" />

@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { FormField } from '$lib/api/forms';
 
-	export let field: FormField;
-	export let value: any = '';
-	export let error: string[] | undefined = undefined;
+	interface Props {
+		field: FormField;
+		value?: any;
+		error?: string[];
+		onchange?: (value: any) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { field, value = '', error, onchange }: Props = $props();
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -38,7 +40,7 @@
 			newValue = target.value;
 		}
 
-		dispatch('change', newValue);
+		onchange?.(newValue);
 	}
 
 	function handleCheckboxChange(optionValue: string, checked: boolean) {
@@ -47,7 +49,7 @@
 			? [...currentValues, optionValue]
 			: currentValues.filter((v: string) => v !== optionValue);
 
-		dispatch('change', newValue);
+		onchange?.(newValue);
 	}
 
 	function isChecked(optionValue: string): boolean {
@@ -92,7 +94,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -106,7 +108,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -120,7 +122,7 @@
 				value={value || ''}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				min={field.validation?.min}
 				max={field.validation?.max}
 				step={typeof field.validation?.step === 'number' ||
@@ -140,7 +142,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -154,7 +156,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -167,7 +169,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				rows={typeof field.attributes?.rows === 'number'
 					? field.attributes.rows
 					: typeof field.attributes?.rows === 'string'
@@ -186,7 +188,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:change={handleChange}
+				onchange={handleChange}
 				{...field.attributes || {}}
 			>
 				<option value="">-- Select --</option>
@@ -209,7 +211,7 @@
 								value={option}
 								checked={value === option}
 								required={field.required}
-								on:change={handleChange}
+								onchange={handleChange}
 								{...field.attributes || {}}
 							/>
 							<span>{option}</span>
@@ -230,7 +232,7 @@
 								type="checkbox"
 								value={optionValue}
 								checked={isChecked(optionValue)}
-								on:change={(e) => handleCheckboxChange(optionValue, e.currentTarget.checked)}
+								onchange={(e) => handleCheckboxChange(optionValue, e.currentTarget.checked)}
 								{...field.attributes || {}}
 							/>
 							<span>{optionLabel}</span>
@@ -247,7 +249,7 @@
 				name={field.name}
 				required={field.required}
 				class={getInputClasses()}
-				on:change={handleChange}
+				onchange={handleChange}
 				accept={typeof field.validation?.accept === 'string' ? field.validation.accept : undefined}
 				{...field.attributes || {}}
 			/>
@@ -264,7 +266,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				min={field.validation?.min}
 				max={field.validation?.max}
 				{...field.attributes || {}}
@@ -279,7 +281,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -292,7 +294,7 @@
 				{value}
 				required={field.required}
 				class={getInputClasses()}
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -306,7 +308,7 @@
 					value={value || field.validation?.min || 0}
 					required={field.required}
 					class="form-range"
-					on:input={handleChange}
+					oninput={handleChange}
 					min={field.validation?.min || 0}
 					max={field.validation?.max || 100}
 					step={typeof field.validation?.step === 'number' ||
@@ -327,7 +329,7 @@
 				{value}
 				required={field.required}
 				class="form-color"
-				on:input={handleChange}
+				oninput={handleChange}
 				{...field.attributes || {}}
 			/>
 
@@ -343,7 +345,7 @@
 						type="button"
 						class="star-button"
 						class:active={value > i}
-						on:click={() => dispatch('change', i + 1)}
+						onclick={() => onchange?.(i + 1)}
 						aria-label={`Rate ${i + 1} stars`}
 					>
 						★

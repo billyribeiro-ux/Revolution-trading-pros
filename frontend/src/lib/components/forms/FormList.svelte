@@ -10,16 +10,20 @@
 		duplicateForm
 	} from '$lib/api/forms';
 
-	export let onEdit: ((form: Form) => void) | undefined = undefined;
-	export let onViewSubmissions: ((form: Form) => void) | undefined = undefined;
-	export let onViewAnalytics: ((form: Form) => void) | undefined = undefined;
+	interface Props {
+		onEdit?: (form: Form) => void;
+		onViewSubmissions?: (form: Form) => void;
+		onViewAnalytics?: (form: Form) => void;
+	}
 
-	let forms: Form[] = [];
-	let loading = true;
-	let error = '';
-	let currentPage = 1;
-	let totalPages = 1;
-	let statusFilter: string = '';
+	let { onEdit, onViewSubmissions, onViewAnalytics }: Props = $props();
+
+	let forms: Form[] = $state([]);
+	let loading = $state(true);
+	let error = $state('');
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let statusFilter: string = $state('');
 
 	onMount(() => {
 		loadForms();
@@ -135,7 +139,7 @@
 	<div class="list-header">
 		<h2>Forms</h2>
 		<div class="header-actions">
-			<select class="filter-select" on:change={handleFilterChange} bind:value={statusFilter}>
+			<select class="filter-select" onchange={handleFilterChange} bind:value={statusFilter}>
 				<option value="">All Forms</option>
 				<option value="published">Published</option>
 				<option value="draft">Drafts</option>
@@ -188,7 +192,7 @@
 							<td>
 								<div class="action-buttons">
 									{#if onEdit}
-										<button class="btn-icon" on:click={() => onEdit && onEdit(form)} title="Edit">
+										<button class="btn-icon" onclick={() => onEdit?.(form)} title="Edit">
 											✏️
 										</button>
 									{/if}
@@ -196,7 +200,7 @@
 									{#if onViewSubmissions}
 										<button
 											class="btn-icon"
-											on:click={() => onViewSubmissions && onViewSubmissions(form)}
+											onclick={() => onViewSubmissions?.(form)}
 											title="View Submissions"
 										>
 											📊
@@ -206,7 +210,7 @@
 									{#if onViewAnalytics}
 										<button
 											class="btn-icon"
-											on:click={() => onViewAnalytics && onViewAnalytics(form)}
+											onclick={() => onViewAnalytics?.(form)}
 											title="View Analytics"
 										>
 											📈
@@ -215,25 +219,25 @@
 
 									<button
 										class="btn-icon"
-										on:click={() => handlePublish(form)}
+										onclick={() => handlePublish(form)}
 										title={form.status === 'published' ? 'Unpublish' : 'Publish'}
 									>
 										{form.status === 'published' ? '👁️' : '🚀'}
 									</button>
 
-									<button class="btn-icon" on:click={() => handleDuplicate(form)} title="Duplicate">
+									<button class="btn-icon" onclick={() => handleDuplicate(form)} title="Duplicate">
 										📋
 									</button>
 
 									{#if form.status !== 'archived'}
-										<button class="btn-icon" on:click={() => handleArchive(form)} title="Archive">
+										<button class="btn-icon" onclick={() => handleArchive(form)} title="Archive">
 											📦
 										</button>
 									{/if}
 
 									<button
 										class="btn-icon btn-danger"
-										on:click={() => handleDelete(form)}
+										onclick={() => handleDelete(form)}
 										title="Delete"
 									>
 										🗑️
@@ -251,7 +255,7 @@
 				<button
 					class="btn-page"
 					disabled={currentPage === 1}
-					on:click={() => handlePageChange(currentPage - 1)}
+					onclick={() => handlePageChange(currentPage - 1)}
 				>
 					Previous
 				</button>
@@ -263,7 +267,7 @@
 				<button
 					class="btn-page"
 					disabled={currentPage === totalPages}
-					on:click={() => handlePageChange(currentPage + 1)}
+					onclick={() => handlePageChange(currentPage + 1)}
 				>
 					Next
 				</button>

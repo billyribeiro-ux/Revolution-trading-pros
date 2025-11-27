@@ -3,38 +3,43 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	export let data: {
-		average_scores: {
-			overall: number;
-			title: number;
-			content: number;
-			readability: number;
-			technical: number;
+	interface Props {
+		data: {
+			average_scores: {
+				overall: number;
+				title: number;
+				content: number;
+				readability: number;
+				technical: number;
+			};
+			distribution: {
+				excellent: number;
+				good: number;
+				needs_improvement: number;
+				poor: number;
+			};
+			total_analyzed: number;
+			recommendations: Array<{
+				priority: string;
+				category: string;
+				message: string;
+			}>;
 		};
-		distribution: {
-			excellent: number;
-			good: number;
-			needs_improvement: number;
-			poor: number;
-		};
-		total_analyzed: number;
-		recommendations: Array<{
-			priority: string;
-			category: string;
-			message: string;
-		}>;
-	};
-	// Config available for widget customization
-	export const config: Record<string, unknown> = {};
+		config?: Record<string, unknown>;
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	const animatedScore = tweened(0, { duration: 1500, easing: cubicOut });
 
-	$: if (data?.average_scores?.overall) {
-		animatedScore.set(data.average_scores.overall);
-	}
+	$effect(() => {
+		if (data?.average_scores?.overall) {
+			animatedScore.set(data.average_scores.overall);
+		}
+	});
 
-	$: scoreColor = getScoreColor($animatedScore);
-	$: strokeDasharray = `${($animatedScore / 100) * 283} 283`;
+	let scoreColor = $derived(getScoreColor($animatedScore));
+	let strokeDasharray = $derived(`${($animatedScore / 100) * 283} 283`);
 
 	function getScoreColor(score: number): string {
 		if (score >= 80) return '#22c55e';

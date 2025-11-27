@@ -1,14 +1,18 @@
 <script lang="ts">
-	export let data: any;
-	export let config: {
-		display_mode?: 'json' | 'table' | 'list';
-		max_depth?: number;
-		show_empty?: boolean;
-		highlight_keys?: string[];
-	} = {};
+	interface Props {
+		data: any;
+		config?: {
+			display_mode?: 'json' | 'table' | 'list';
+			max_depth?: number;
+			show_empty?: boolean;
+			highlight_keys?: string[];
+		};
+	}
 
-	$: displayMode = config.display_mode || 'json';
-	$: showEmpty = config.show_empty !== false;
+	let { data, config = {} }: Props = $props();
+
+	let displayMode = $derived(config.display_mode || 'json');
+	let showEmpty = $derived(config.show_empty !== false);
 
 	function renderData(obj: any, depth: number = 0): any {
 		if (config.max_depth && depth >= config.max_depth) {

@@ -11,16 +11,20 @@
 		exportSubmissions
 	} from '$lib/api/forms';
 
-	export let formId: number;
+	interface Props {
+		formId: number;
+	}
 
-	let submissions: FormSubmission[] = [];
-	let stats: any = null;
-	let loading = true;
-	let error = '';
-	let currentPage = 1;
-	let totalPages = 1;
-	let statusFilter: string = '';
-	let selectedSubmissions: Set<string> = new Set();
+	let { formId }: Props = $props();
+
+	let submissions: FormSubmission[] = $state([]);
+	let stats: any = $state(null);
+	let loading = $state(true);
+	let error = $state('');
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let statusFilter: string = $state('');
+	let selectedSubmissions: Set<string> = $state(new Set());
 
 	onMount(() => {
 		loadData();
@@ -170,8 +174,8 @@
 		return data?.value || 'N/A';
 	}
 
-	$: hasSelections = selectedSubmissions.size > 0;
-	$: allSelected = submissions.length > 0 && selectedSubmissions.size === submissions.length;
+	let hasSelections = $derived(selectedSubmissions.size > 0);
+	let allSelected = $derived(submissions.length > 0 && selectedSubmissions.size === submissions.length);
 </script>
 
 <div class="submissions-container">
@@ -198,7 +202,7 @@
 
 	<div class="submissions-header">
 		<div class="header-left">
-			<select class="filter-select" on:change={handleFilterChange} bind:value={statusFilter}>
+			<select class="filter-select" onchange={handleFilterChange} bind:value={statusFilter}>
 				<option value="">All Submissions</option>
 				<option value="unread">Unread</option>
 				<option value="read">Read</option>
@@ -210,18 +214,18 @@
 			{#if hasSelections}
 				<div class="bulk-actions">
 					<span class="selection-count">{selectedSubmissions.size} selected</span>
-					<button class="btn-bulk" on:click={() => handleBulkStatusUpdate('read')}>Mark Read</button
+					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('read')}>Mark Read</button
 					>
-					<button class="btn-bulk" on:click={() => handleBulkStatusUpdate('starred')}>Star</button>
-					<button class="btn-bulk" on:click={() => handleBulkStatusUpdate('archived')}
+					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('starred')}>Star</button>
+					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('archived')}
 						>Archive</button
 					>
-					<button class="btn-bulk btn-danger" on:click={handleBulkDelete}>Delete</button>
+					<button class="btn-bulk btn-danger" onclick={handleBulkDelete}>Delete</button>
 				</div>
 			{/if}
 		</div>
 
-		<button class="btn-export" on:click={handleExport}> Export CSV </button>
+		<button class="btn-export" onclick={handleExport}> Export CSV </button>
 	</div>
 
 	{#if loading}
@@ -238,7 +242,7 @@
 				<thead>
 					<tr>
 						<th>
-							<input type="checkbox" checked={allSelected} on:change={toggleSelectAll} />
+							<input type="checkbox" checked={allSelected} onchange={toggleSelectAll} />
 						</th>
 						<th>Submission ID</th>
 						<th>Status</th>
@@ -254,7 +258,7 @@
 								<input
 									type="checkbox"
 									checked={selectedSubmissions.has(submission.submission_id)}
-									on:change={() => toggleSelection(submission.submission_id)}
+									onchange={() => toggleSelection(submission.submission_id)}
 								/>
 							</td>
 							<td class="submission-id">{submission.submission_id}</td>
@@ -284,7 +288,7 @@
 									<select
 										class="status-select"
 										value={submission.status}
-										on:change={(e) => handleStatusChange(submission, e.currentTarget.value as any)}
+										onchange={(e) => handleStatusChange(submission, e.currentTarget.value as any)}
 									>
 										<option value="unread">Unread</option>
 										<option value="read">Read</option>
@@ -294,7 +298,7 @@
 									</select>
 									<button
 										class="btn-icon btn-danger"
-										on:click={() => handleDelete(submission)}
+										onclick={() => handleDelete(submission)}
 										title="Delete"
 									>
 										🗑️
@@ -312,7 +316,7 @@
 				<button
 					class="btn-page"
 					disabled={currentPage === 1}
-					on:click={() => handlePageChange(currentPage - 1)}
+					onclick={() => handlePageChange(currentPage - 1)}
 				>
 					Previous
 				</button>
@@ -324,7 +328,7 @@
 				<button
 					class="btn-page"
 					disabled={currentPage === totalPages}
-					on:click={() => handlePageChange(currentPage + 1)}
+					onclick={() => handlePageChange(currentPage + 1)}
 				>
 					Next
 				</button>

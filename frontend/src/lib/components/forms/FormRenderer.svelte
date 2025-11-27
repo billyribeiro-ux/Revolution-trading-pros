@@ -4,16 +4,20 @@
 	import { submitForm } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
 
-	export let form: Form;
-	export let onSuccess: ((submissionId: string) => void) | undefined = undefined;
-	export let onError: ((error: string) => void) | undefined = undefined;
+	interface Props {
+		form: Form;
+		onSuccess?: (submissionId: string) => void;
+		onError?: (error: string) => void;
+	}
 
-	let formData: Record<string, any> = {};
-	let errors: Record<string, string[]> = {};
-	let isSubmitting = false;
-	let submitSuccess = false;
-	let submitMessage = '';
-	let visibleFields: Set<number> = new Set();
+	let { form, onSuccess, onError }: Props = $props();
+
+	let formData: Record<string, any> = $state({});
+	let errors: Record<string, string[]> = $state({});
+	let isSubmitting = $state(false);
+	let submitSuccess = $state(false);
+	let submitMessage = $state('');
+	let visibleFields: Set<number> = $state(new Set());
 
 	// Initialize form data with default values
 	onMount(() => {
@@ -200,7 +204,7 @@
 		</div>
 	{/if}
 
-	<form on:submit={handleSubmit} class="form-fields">
+	<form onsubmit={handleSubmit} class="form-fields">
 		<div class="fields-container">
 			{#if form.fields}
 				{#each form.fields.sort((a, b) => a.order - b.order) as field (field.id)}
@@ -210,7 +214,7 @@
 								{field}
 								value={formData[field.name]}
 								error={errors[field.name]}
-								on:change={(e) => handleFieldChange(field.name, e.detail)}
+								onchange={(val) => handleFieldChange(field.name, val)}
 							/>
 						</div>
 					{/if}

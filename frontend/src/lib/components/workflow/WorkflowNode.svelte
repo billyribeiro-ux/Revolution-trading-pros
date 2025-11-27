@@ -1,14 +1,20 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { WorkflowNode as Node } from '$lib/types/workflow';
 
-	export let node: Node;
-	export let selected = false;
+	interface Props {
+		node: Node;
+		selected?: boolean;
+		onselect?: () => void;
+		onmove?: (pos: { x: number; y: number }) => void;
+		ondelete?: () => void;
+		onstartConnection?: () => void;
+		onendConnection?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { node, selected = false, onselect, onmove, ondelete, onstartConnection, onendConnection }: Props = $props();
 
-	let isDragging = false;
-	let dragStart = { x: 0, y: 0 };
+	let isDragging = $state(false);
+	let dragStart = $state({ x: 0, y: 0 });
 
 	function handleMouseDown(e: MouseEvent) {
 		if (e.button === 0) {
@@ -17,14 +23,14 @@
 				x: e.clientX - node.position_x,
 				y: e.clientY - node.position_y
 			};
-			dispatch('select');
+			onselect?.();
 			e.stopPropagation();
 		}
 	}
 
 	function handleMouseMove(e: MouseEvent) {
 		if (isDragging) {
-			dispatch('move', {
+			onmove?.({
 				x: e.clientX - dragStart.x,
 				y: e.clientY - dragStart.y
 			});
@@ -63,10 +69,10 @@
 		return colors[type] || '#6b7280';
 	}
 
-	$: nodeColor = getNodeColor(node.node_type);
+	let nodeColor = $derived(getNodeColor(node.node_type));
 </script>
 
-<svelte:window on:mousemove={handleMouseMove} on:mouseup={handleMouseUp} />
+<svelte:window onmousemove={handleMouseMove} onmouseup={handleMouseUp} />
 
 <div
 	class="workflow-node"
@@ -77,7 +83,7 @@
     top: {node.position_y}px;
     border-color: {nodeColor};
   "
-	on:mousedown={handleMouseDown}
+	onmousedown={handleMouseDown}
 	role="button"
 	tabindex="0"
 >
@@ -98,7 +104,7 @@
 	<div class="node-actions">
 		<button
 			class="action-btn"
-			on:click|stopPropagation={() => dispatch('delete')}
+			onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
 			title="Delete node"
 		>
 			<svg
@@ -119,13 +125,13 @@
 	<!-- Connection points -->
 	<div
 		class="connection-point input"
-		on:mouseup={() => dispatch('endConnection')}
+		onmouseup={() => onendConnection?.()}
 		role="button"
 		tabindex="0"
 	></div>
 	<div
 		class="connection-point output"
-		on:mousedown|stopPropagation={() => dispatch('startConnection')}
+		onmousedown={(e) => { e.stopPropagation(); onstartConnection?.(); }}
 		role="button"
 		tabindex="0"
 	></div>

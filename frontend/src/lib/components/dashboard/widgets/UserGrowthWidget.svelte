@@ -1,21 +1,25 @@
 <script lang="ts">
-	export let data: any;
-	export let config: {
-		period?: string;
-		show_total?: boolean;
-		show_growth?: boolean;
-		highlight_threshold?: number;
-		format?: 'compact' | 'full';
-	} = {};
+	interface Props {
+		data: any;
+		config?: {
+			period?: string;
+			show_total?: boolean;
+			show_growth?: boolean;
+			highlight_threshold?: number;
+			format?: 'compact' | 'full';
+		};
+	}
 
-	$: currentUsers = data?.current_users || 0;
-	$: totalUsers = data?.total_users || 0;
-	$: growthPercentage = data?.growth_percentage || 0;
-	$: showTotal = config.show_total !== false;
-	$: showGrowth = config.show_growth !== false;
-	$: isHighGrowth = config.highlight_threshold
+	let { data, config = {} }: Props = $props();
+
+	let currentUsers = $derived(data?.current_users || 0);
+	let totalUsers = $derived(data?.total_users || 0);
+	let growthPercentage = $derived(data?.growth_percentage || 0);
+	let showTotal = $derived(config.show_total !== false);
+	let showGrowth = $derived(config.show_growth !== false);
+	let isHighGrowth = $derived(config.highlight_threshold
 		? growthPercentage >= config.highlight_threshold
-		: false;
+		: false);
 
 	function formatNumber(num: number): string {
 		if (config.format === 'compact' && num >= 1000) {

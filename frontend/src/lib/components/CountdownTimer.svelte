@@ -51,7 +51,7 @@
 -->
 
 <script lang="ts">
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { spring, tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
@@ -60,73 +60,120 @@
 	// Props
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Core Props
-	export let endDate: string | Date;
-	export let startDate: string | Date | null = null;
-	export let timezone: string | null = null;
-	export let serverTime: Date | null = null;
-	export let autoStart: boolean = true;
-	export let loop: boolean = false;
-	export let loopInterval: number = 0; // milliseconds between loops
+	// Props Interface
+	interface Props {
+		endDate: string | Date;
+		startDate?: string | Date | null;
+		timezone?: string | null;
+		serverTime?: Date | null;
+		autoStart?: boolean;
+		loop?: boolean;
+		loopInterval?: number;
+		format?: 'default' | 'digital' | 'circular' | 'flip' | 'minimal' | 'bar' | 'custom';
+		showDays?: boolean;
+		showHours?: boolean;
+		showMinutes?: boolean;
+		showSeconds?: boolean;
+		showMilliseconds?: boolean;
+		showLabels?: boolean;
+		showSeparators?: boolean;
+		compactMode?: boolean;
+		leadingZeros?: boolean;
+		timerColor?: string;
+		warningColor?: string;
+		dangerColor?: string;
+		backgroundColor?: string;
+		textColor?: string;
+		labelColor?: string;
+		size?: 'small' | 'medium' | 'large' | 'custom';
+		customSize?: string | null;
+		fontFamily?: string;
+		borderRadius?: string;
+		gap?: string;
+		padding?: string;
+		animated?: boolean;
+		animationType?: 'slide' | 'fade' | 'flip' | 'zoom' | 'none';
+		animationDuration?: number;
+		pulseOnUpdate?: boolean;
+		urgencyAnimation?: boolean;
+		particleEffects?: boolean;
+		warningThreshold?: number;
+		dangerThreshold?: number;
+		milestones?: number[];
+		updateInterval?: number;
+		pauseOnHover?: boolean;
+		pauseOnBlur?: boolean;
+		showProgressBar?: boolean;
+		showPercentage?: boolean;
+		onExpire?: (data: any) => void;
+		onUpdate?: (time: TimeData) => void;
+		onMilestone?: (milestone: number) => void;
+		onWarning?: () => void;
+		onDanger?: () => void;
+		onStart?: () => void;
+		onPause?: () => void;
+		onResume?: () => void;
+		customFormatter?: ((time: TimeData) => string) | null;
+		labelFormatter?: ((unit: string, value: number) => string) | null;
+		expired?: import('svelte').Snippet;
+	}
 
-	// Display Props
-	export let format: 'default' | 'digital' | 'circular' | 'flip' | 'minimal' | 'bar' | 'custom' =
-		'default';
-	export let showDays: boolean = true;
-	export let showHours: boolean = true;
-	export let showMinutes: boolean = true;
-	export let showSeconds: boolean = true;
-	export let showMilliseconds: boolean = false;
-	export let showLabels: boolean = true;
-	export let showSeparators: boolean = true;
-	export let compactMode: boolean = false;
-	export let leadingZeros: boolean = true;
-
-	// Style Props
-	export let timerColor: string = '#6366f1';
-	export let warningColor: string = '#f59e0b';
-	export let dangerColor: string = '#ef4444';
-	export let backgroundColor: string = 'rgba(99, 102, 241, 0.1)';
-	export let textColor: string = 'currentColor';
-	export let labelColor: string = '#94a3b8';
-	export let size: 'small' | 'medium' | 'large' | 'custom' = 'medium';
-	export let customSize: string | null = null;
-	export let fontFamily: string = 'inherit';
-	export let borderRadius: string = '12px';
-	export let gap: string = '1rem';
-	export let padding: string = '0.75rem 1rem';
-
-	// Animation Props
-	export let animated: boolean = true;
-	export let animationType: 'slide' | 'fade' | 'flip' | 'zoom' | 'none' = 'slide';
-	export let animationDuration: number = 300;
-	export let pulseOnUpdate: boolean = false;
-	export let urgencyAnimation: boolean = true;
-	export let particleEffects: boolean = false;
-
-	// Behavior Props
-	export let warningThreshold: number = 60000; // 1 minute in ms
-	export let dangerThreshold: number = 10000; // 10 seconds in ms
-	export let milestones: number[] = []; // Array of millisecond values
-	export let updateInterval: number = 1000; // How often to update
-	export let pauseOnHover: boolean = false;
-	export let pauseOnBlur: boolean = false;
-	export let showProgressBar: boolean = false;
-	export let showPercentage: boolean = false;
-
-	// Event Props
-	export let onExpire: ((data: any) => void) | undefined = undefined;
-	export let onUpdate: ((time: TimeData) => void) | undefined = undefined;
-	export let onMilestone: ((milestone: number) => void) | undefined = undefined;
-	export let onWarning: (() => void) | undefined = undefined;
-	export let onDanger: (() => void) | undefined = undefined;
-	export let onStart: (() => void) | undefined = undefined;
-	export let onPause: (() => void) | undefined = undefined;
-	export let onResume: (() => void) | undefined = undefined;
-
-	// Custom Formatters
-	export let customFormatter: ((time: TimeData) => string) | null = null;
-	export let labelFormatter: ((unit: string, value: number) => string) | null = null;
+	let {
+		endDate,
+		startDate = null,
+		timezone = null,
+		serverTime = null,
+		autoStart = true,
+		loop = false,
+		loopInterval = 0,
+		format = 'default',
+		showDays = true,
+		showHours = true,
+		showMinutes = true,
+		showSeconds = true,
+		showMilliseconds = false,
+		showLabels = true,
+		showSeparators = true,
+		compactMode = false,
+		leadingZeros = true,
+		timerColor = '#6366f1',
+		warningColor = '#f59e0b',
+		dangerColor = '#ef4444',
+		backgroundColor = 'rgba(99, 102, 241, 0.1)',
+		textColor = 'currentColor',
+		labelColor = '#94a3b8',
+		size = 'medium',
+		customSize = null,
+		fontFamily = 'inherit',
+		borderRadius = '12px',
+		gap = '1rem',
+		padding = '0.75rem 1rem',
+		animated = true,
+		animationType = 'slide',
+		animationDuration = 300,
+		pulseOnUpdate = false,
+		urgencyAnimation = true,
+		particleEffects = false,
+		warningThreshold = 60000,
+		dangerThreshold = 10000,
+		milestones = [],
+		updateInterval = 1000,
+		pauseOnHover = false,
+		pauseOnBlur = false,
+		showProgressBar = false,
+		showPercentage = false,
+		onExpire,
+		onUpdate,
+		onMilestone,
+		onWarning,
+		onDanger,
+		onStart,
+		onPause,
+		onResume,
+		customFormatter = null,
+		labelFormatter = null,
+		expired
+	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State
@@ -145,7 +192,7 @@
 		isExpired: boolean;
 	}
 
-	let timeData: TimeData = {
+	let timeData: TimeData = $state({
 		days: 0,
 		hours: 0,
 		minutes: 0,
@@ -156,19 +203,19 @@
 		isWarning: false,
 		isDanger: false,
 		isExpired: false
-	};
+	});
 
 	let interval: ReturnType<typeof setInterval> | null = null;
 	let rafId: number | null = null;
-	let isRunning: boolean = false;
-	let isPaused: boolean = false;
-	let hasStarted: boolean = false;
-	let timeOffset: number = 0; // Offset between client and server time
+	let isRunning: boolean = $state(false);
+	let isPaused: boolean = $state(false);
+	let hasStarted: boolean = $state(false);
+	let timeOffset: number = 0;
 	let totalDuration: number = 0;
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
 	let lastUpdateTime: number = 0;
-	let currentColor: string = timerColor;
+	let currentColor: string = $state(timerColor);
 	let previousValues: Partial<TimeData> = {};
 	let milestonesReached: Set<number> = new Set();
 
@@ -178,7 +225,7 @@
 	const pulseValue = spring(1, { stiffness: 0.5, damping: 0.3 });
 
 	// Digit flip tracking
-	let digitFlips: Record<string, boolean> = {};
+	let digitFlips: Record<string, boolean> = $state({});
 
 	// Typed time units for circular display
 	const timeUnits = {
@@ -189,8 +236,6 @@
 	} as const;
 
 	type TimeUnitKey = keyof typeof timeUnits;
-
-	const dispatch = createEventDispatcher();
 
 	// Size mappings
 	const sizeMap = {
@@ -203,17 +248,19 @@
 	// Reactive Statements
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$: currentSize = size === 'custom' && customSize ? customSize : sizeMap[size].fontSize;
-	$: currentLabelSize = size === 'custom' ? '0.75rem' : sizeMap[size].labelSize;
-	$: currentPadding = size === 'custom' ? padding : sizeMap[size].padding;
+	let currentSize = $derived(size === 'custom' && customSize ? customSize : sizeMap[size].fontSize);
+	let currentLabelSize = $derived(size === 'custom' ? '0.75rem' : sizeMap[size].labelSize);
+	let currentPadding = $derived(size === 'custom' ? padding : sizeMap[size].padding);
 
-	$: if (timeData.isWarning && !timeData.isDanger) currentColor = warningColor;
-	$: if (timeData.isDanger) currentColor = dangerColor;
-	$: if (!timeData.isWarning && !timeData.isDanger) currentColor = timerColor;
+	$effect(() => {
+		if (timeData.isWarning && !timeData.isDanger) currentColor = warningColor;
+		else if (timeData.isDanger) currentColor = dangerColor;
+		else currentColor = timerColor;
+	});
 
-	$: formattedTime = customFormatter ? customFormatter(timeData) : formatDefaultTime();
+	let formattedTime = $derived(customFormatter ? customFormatter(timeData) : formatDefaultTime());
 
-	$: {
+	$effect(() => {
 		// Update progress
 		progressValue.set(timeData.progress);
 
@@ -222,7 +269,7 @@
 			pulseValue.set(1.1);
 			setTimeout(() => pulseValue.set(1), 100);
 		}
-	}
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -280,7 +327,6 @@
 		}
 
 		if (onStart) onStart();
-		dispatch('start');
 	}
 
 	export function pause() {
@@ -292,7 +338,6 @@
 		stop();
 
 		if (onPause) onPause();
-		dispatch('pause');
 	}
 
 	export function resume() {
@@ -305,7 +350,6 @@
 		start();
 
 		if (onResume) onResume();
-		dispatch('resume');
 	}
 
 	export function reset() {
@@ -331,8 +375,6 @@
 		lastPauseTime = 0;
 		milestonesReached.clear();
 
-		dispatch('reset');
-
 		// Restart if auto start is enabled
 		if (autoStart) {
 			start();
@@ -351,21 +393,17 @@
 			cancelAnimationFrame(rafId);
 			rafId = null;
 		}
-
-		dispatch('stop');
 	}
 
 	export function addTime(milliseconds: number) {
 		const newEndDate = new Date(endDate).getTime() + milliseconds;
 		endDate = new Date(newEndDate);
 		updateCountdown();
-		dispatch('timeAdded', { milliseconds });
 	}
 
 	export function setEndDate(newEndDate: string | Date) {
 		endDate = newEndDate;
 		updateCountdown();
-		dispatch('endDateChanged', { endDate: newEndDate });
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -441,17 +479,14 @@
 		// Trigger warning/danger events
 		if (isWarning && !previousValues.isWarning && onWarning) {
 			onWarning();
-			dispatch('warning');
 		}
 
 		if (isDanger && !previousValues.isDanger && onDanger) {
 			onDanger();
-			dispatch('danger');
 		}
 
 		// Call update callback
 		if (onUpdate) onUpdate(timeData);
-		dispatch('update', timeData);
 
 		// Update last update time
 		lastUpdateTime = now;
@@ -496,7 +531,6 @@
 		if (onExpire) {
 			onExpire({ timeData, endDate });
 		}
-		dispatch('expire', { timeData, endDate });
 	}
 
 	function checkMilestones(distance: number) {
@@ -504,7 +538,6 @@
 			if (distance <= milestone && !milestonesReached.has(milestone)) {
 				milestonesReached.add(milestone);
 				if (onMilestone) onMilestone(milestone);
-				dispatch('milestone', { milestone, distance });
 			}
 		}
 	}
@@ -715,8 +748,8 @@
 		--font-family: {fontFamily};
 		transform: scale({$scaleValue * $pulseValue});
 	"
-	on:mouseenter={handleMouseEnter}
-	on:mouseleave={handleMouseLeave}
+	onmouseenter={handleMouseEnter}
+	onmouseleave={handleMouseLeave}
 	role="timer"
 	aria-label="Countdown timer"
 	aria-live="polite"
@@ -920,7 +953,7 @@
 		{/if}
 	{:else}
 		<div class="expired-message">
-			<slot name="expired">Timer Expired</slot>
+			{#if expired}{@render expired()}{:else}Timer Expired{/if}
 		</div>
 	{/if}
 </div>

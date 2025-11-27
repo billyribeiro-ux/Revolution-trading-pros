@@ -1,22 +1,25 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { IconX, IconDeviceFloppy } from '@tabler/icons-svelte';
 
-	export let redirect: any = null;
+	interface Props {
+		redirect?: any;
+		onsaved?: () => void;
+		oncancel?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { redirect = null, onsaved, oncancel }: Props = $props();
 
-	let form = {
+	let form = $state({
 		source_url: redirect?.source_url || '',
 		destination_url: redirect?.destination_url || '',
 		redirect_type: redirect?.redirect_type || '301',
 		is_regex: redirect?.is_regex || false,
 		is_active: redirect?.is_active !== undefined ? redirect.is_active : true,
 		notes: redirect?.notes || ''
-	};
+	});
 
-	let saving = false;
-	let error = '';
+	let saving = $state(false);
+	let error = $state('');
 
 	const redirectTypes = [
 		{
@@ -54,7 +57,7 @@
 			});
 
 			if (response.ok) {
-				dispatch('saved');
+				onsaved?.();
 			} else {
 				const data = await response.json();
 				error = data.message || 'Failed to save redirect';
@@ -67,7 +70,7 @@
 	}
 
 	function cancel() {
-		dispatch('cancel');
+		oncancel?.();
 	}
 </script>
 
@@ -75,24 +78,24 @@
 	class="modal-overlay"
 	role="button"
 	tabindex="0"
-	on:click={cancel}
-	on:keydown={(e) => e.key === 'Escape' && cancel()}
+	onclick={cancel}
+	onkeydown={(e) => e.key === 'Escape' && cancel()}
 >
 	<div
 		class="modal"
 		role="dialog"
 		tabindex="-1"
-		on:click|stopPropagation
-		on:keypress|stopPropagation
+		onclick={(e) => e.stopPropagation()}
+		onkeypress={(e) => e.stopPropagation()}
 	>
 		<div class="modal-header">
 			<h2>{redirect ? 'Edit Redirect' : 'Create Redirect'}</h2>
-			<button class="close-btn" on:click={cancel}>
+			<button class="close-btn" onclick={cancel}>
 				<IconX size={24} />
 			</button>
 		</div>
 
-		<form on:submit|preventDefault={save}>
+		<form onsubmit={(e) => { e.preventDefault(); save(); }}>
 			<div class="modal-body">
 				{#if error}
 					<div class="error-message">{error}</div>
@@ -168,7 +171,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="btn-secondary" on:click={cancel}> Cancel </button>
+				<button type="button" class="btn-secondary" onclick={cancel}> Cancel </button>
 				<button type="submit" class="btn-primary" disabled={saving}>
 					<IconDeviceFloppy size={18} />
 					{saving ? 'Saving...' : 'Save Redirect'}

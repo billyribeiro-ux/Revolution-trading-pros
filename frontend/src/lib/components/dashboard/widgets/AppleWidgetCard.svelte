@@ -5,18 +5,36 @@
 	import { spring } from 'svelte/motion';
 	import { tilt3d } from '$lib/animations/appleAnimations';
 
-	export let title = 'Widget';
-	export let subtitle = '';
-	export let icon: 'chart' | 'users' | 'revenue' | 'globe' | 'search' | 'analytics' | 'custom' =
-		'chart';
-	export let accentColor = '#0071e3';
-	export let size: 'small' | 'medium' | 'large' = 'medium';
-	export let loading = false;
-	export let interactive = true;
-	export let animationDelay = 0;
+	interface Props {
+		title?: string;
+		subtitle?: string;
+		icon?: 'chart' | 'users' | 'revenue' | 'globe' | 'search' | 'analytics' | 'custom';
+		accentColor?: string;
+		size?: 'small' | 'medium' | 'large';
+		loading?: boolean;
+		interactive?: boolean;
+		animationDelay?: number;
+		children?: import('svelte').Snippet;
+		footer?: import('svelte').Snippet;
+		'header-actions'?: import('svelte').Snippet;
+	}
 
-	let mounted = false;
-	let isHovered = false;
+	let {
+		title = 'Widget',
+		subtitle = '',
+		icon = 'chart',
+		accentColor = '#0071e3',
+		size = 'medium',
+		loading = false,
+		interactive = true,
+		animationDelay = 0,
+		children,
+		footer,
+		'header-actions': headerActions
+	}: Props = $props();
+
+	let mounted = $state(false);
+	let isHovered = $state(false);
 
 	const hoverScale = spring(1, { stiffness: 0.1, damping: 0.4 });
 
@@ -56,8 +74,8 @@
       --accent-glow: {accentColor}33;
       transform: scale({$hoverScale});
     "
-		on:mouseenter={handleMouseEnter}
-		on:mouseleave={handleMouseLeave}
+		onmouseenter={handleMouseEnter}
+		onmouseleave={handleMouseLeave}
 		use:tilt3d={{ intensity: interactive ? 6 : 0, scale: 1, glare: interactive }}
 		in:fly={{ y: 40, duration: 600, delay: animationDelay, easing: cubicOut }}
 	>
@@ -94,7 +112,9 @@
 			</div>
 
 			<div class="header-right">
-				<slot name="header-actions">
+				{#if headerActions}
+					{@render headerActions()}
+				{:else}
 					<button class="more-button" aria-label="More options">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<circle cx="12" cy="12" r="1" />
@@ -102,19 +122,19 @@
 							<circle cx="12" cy="19" r="1" />
 						</svg>
 					</button>
-				</slot>
+				{/if}
 			</div>
 		</header>
 
 		<!-- Content -->
 		<div class="widget-content">
-			<slot />
+			{@render children?.()}
 		</div>
 
 		<!-- Footer (optional) -->
-		{#if $$slots.footer}
+		{#if footer}
 			<footer class="widget-footer">
-				<slot name="footer" />
+				{@render footer()}
 			</footer>
 		{/if}
 

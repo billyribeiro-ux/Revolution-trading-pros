@@ -3,12 +3,16 @@
 	import type { Form } from '$lib/api/forms';
 	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';
 
-	export let form: Form;
+	interface Props {
+		form: Form;
+	}
 
-	let stats: any = null;
-	let loading = true;
-	let submissionTrend: any[] = [];
-	let fieldAnalytics: any[] = [];
+	let { form }: Props = $props();
+
+	let stats: any = $state(null);
+	let loading = $state(true);
+	let submissionTrend: any[] = $state([]);
+	let fieldAnalytics: any[] = $state([]);
 
 	onMount(async () => {
 		await loadAnalytics();
@@ -111,9 +115,9 @@
 		return '2m 34s';
 	}
 
-	$: conversionRate = getConversionRate();
-	$: readRate =
-		stats && stats.total_submissions > 0 ? (stats.read_count / stats.total_submissions) * 100 : 0;
+	let conversionRate = $derived(getConversionRate());
+	let readRate = $derived(
+		stats && stats.total_submissions > 0 ? (stats.read_count / stats.total_submissions) * 100 : 0);
 </script>
 
 <div class="analytics-container">

@@ -1,15 +1,18 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { getFieldTypes, createForm, updateForm } from '$lib/api/forms';
 	import FieldEditor from './FieldEditor.svelte';
 
-	export let form: Partial<Form> | null = null;
-	export let isEditing = false;
+	interface Props {
+		form?: Partial<Form> | null;
+		isEditing?: boolean;
+		onsave?: () => void;
+		oncancel?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { form = null, isEditing = false, onsave, oncancel }: Props = $props();
 
-	let formData: Partial<Form> = {
+	let formData: Partial<Form> = $state({
 		title: '',
 		description: '',
 		settings: {
@@ -22,16 +25,16 @@
 		status: 'draft',
 		fields: [],
 		...form
-	};
+	});
 
-	let fields: FormField[] = formData.fields || [];
-	let availableFieldTypes: { type: string; label: string; icon?: string }[] = [];
-	let fieldTypeMap: Record<string, string> = {};
-	let showFieldEditor = false;
-	let editingField: FormField | null = null;
-	let editingFieldIndex = -1;
-	let isSaving = false;
-	let saveError = '';
+	let fields: FormField[] = $state(formData.fields || []);
+	let availableFieldTypes: { type: string; label: string; icon?: string }[] = $state([]);
+	let fieldTypeMap: Record<string, string> = $state({});
+	let showFieldEditor = $state(false);
+	let editingField: FormField | null = $state(null);
+	let editingFieldIndex = $state(-1);
+	let isSaving = $state(false);
+	let saveError = $state('');
 
 	// Load field types on mount
 	(async () => {
@@ -107,8 +110,7 @@
 		updateFieldOrders();
 	}
 
-	function handleSaveField(event: CustomEvent<FormField>) {
-		const field = event.detail;
+	function handleSaveField(field: FormField) {
 
 		if (editingFieldIndex === -1) {
 			// Add new field
@@ -159,7 +161,7 @@
 				await createForm(dataToSave);
 			}
 
-			dispatch('save');
+			onsave?.();
 		} catch (err) {
 			saveError = err instanceof Error ? err.message : 'Failed to save form';
 		} finally {
@@ -168,7 +170,7 @@
 	}
 
 	function handleCancel() {
-		dispatch('cancel');
+		oncancel?.();
 	}
 </script>
 
@@ -281,7 +283,7 @@
 							<div class="field-actions">
 								<button
 									class="btn-icon"
-									on:click={() => handleMoveField(index, 'up')}
+									onclick={() => handleMoveField(index, 'up')}
 									disabled={index === 0}
 									title="Move up"
 								>
@@ -289,18 +291,18 @@
 								</button>
 								<button
 									class="btn-icon"
-									on:click={() => handleMoveField(index, 'down')}
+									onclick={() => handleMoveField(index, 'down')}
 									disabled={index === fields.length - 1}
 									title="Move down"
 								>
 									↓
 								</button>
-								<button class="btn-icon" on:click={() => handleEditField(index)} title="Edit">
+								<button class="btn-icon" onclick={() => handleEditField(index)} title="Edit">
 									✏️
 								</button>
 								<button
 									class="btn-icon btn-danger"
-									on:click={() => handleDeleteField(index)}
+									onclick={() => handleDeleteField(index)}
 									title="Delete"
 								>
 									🗑️
@@ -315,7 +317,7 @@
 				<h4>Add Field</h4>
 				<div class="field-types-grid">
 					{#each availableFieldTypes as { type, label }}
-						<button class="field-type-button" on:click={() => handleAddField(type)}>
+						<button class="field-type-button" onclick={() => handleAddField(type)}>
 							{label}
 						</button>
 					{/each}
@@ -328,8 +330,8 @@
 		{/if}
 
 		<div class="builder-actions">
-			<button class="btn btn-secondary" on:click={handleCancel}> Cancel </button>
-			<button class="btn btn-primary" on:click={handleSaveForm} disabled={isSaving}>
+			<button class="btn btn-secondary" onclick={handleCancel}> Cancel </button>
+			<button class="btn btn-primary" onclick={handleSaveForm} disabled={isSaving}>
 				{isSaving ? 'Saving...' : isEditing ? 'Update Form' : 'Create Form'}
 			</button>
 		</div>
@@ -337,8 +339,8 @@
 		<FieldEditor
 			field={editingField}
 			availableFields={fields.filter((_, i) => i !== editingFieldIndex)}
-			on:save={handleSaveField}
-			on:cancel={handleCancelFieldEdit}
+			onsave={handleSaveField}
+			oncancel={handleCancelFieldEdit}
 		/>
 	{/if}
 </div>

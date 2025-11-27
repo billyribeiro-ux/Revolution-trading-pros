@@ -7,7 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { gsap } from 'gsap';
 	import {
@@ -28,11 +28,14 @@
 		type NotificationType
 	} from '$lib/stores/notifications';
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+		onclick?: (notification: Notification) => void;
+	}
 
-	export let position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'top-right';
+	let { position = 'top-right', onclick }: Props = $props();
 
-	let isOpen = false;
+	let isOpen = $state(false);
 	let bellRef: HTMLButtonElement;
 	let panelRef: HTMLDivElement;
 
@@ -114,7 +117,7 @@
 			window.location.href = notification.action.href;
 		}
 
-		dispatch('click', notification);
+		onclick?.(notification);
 	}
 
 	onMount(() => {
@@ -128,19 +131,19 @@
 		document.removeEventListener('keydown', handleKeydown);
 	});
 
-	$: positionClasses = {
+	let positionClasses = $derived({
 		'top-right': 'right-0 top-full mt-2',
 		'top-left': 'left-0 top-full mt-2',
 		'bottom-right': 'right-0 bottom-full mb-2',
 		'bottom-left': 'left-0 bottom-full mb-2'
-	}[position];
+	}[position]);
 </script>
 
 <div class="relative">
 	<!-- Bell Button -->
 	<button
 		bind:this={bellRef}
-		on:click={toggle}
+		onclick={toggle}
 		class="relative p-2 rounded-lg hover:bg-slate-700/50 transition-colors duration-200"
 		aria-label="Notifications"
 		aria-expanded={isOpen}
@@ -174,14 +177,14 @@
 				<div class="flex items-center gap-2">
 					{#if $unreadCount > 0}
 						<button
-							on:click={() => notificationStore.markAllAsRead()}
+							onclick={() => notificationStore.markAllAsRead()}
 							class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
 						>
 							Mark all read
 						</button>
 					{/if}
 					<button
-						on:click={close}
+						onclick={close}
 						class="p-1 rounded hover:bg-slate-700/50 transition-colors"
 						aria-label="Close"
 					>
@@ -199,13 +202,14 @@
 					</div>
 				{:else}
 					{#each $notifications.filter((n) => !n.dismissed) as notification (notification.id)}
+						{@const NotifIcon = iconMap[notification.type]}
 						<div
 							transition:fade={{ duration: 150 }}
 							class="group relative px-4 py-3 border-b border-slate-700/30
 								hover:bg-slate-800/50 transition-colors cursor-pointer
 								{notification.read ? 'opacity-70' : ''}"
-							on:click={() => handleNotificationClick(notification)}
-							on:keypress={(e) => e.key === 'Enter' && handleNotificationClick(notification)}
+							onclick={() => handleNotificationClick(notification)}
+							onkeypress={(e) => e.key === 'Enter' && handleNotificationClick(notification)}
 							role="button"
 							tabindex="0"
 						>
@@ -221,7 +225,7 @@
 										notification.type
 									]} flex items-center justify-center"
 								>
-									<svelte:component this={iconMap[notification.type]} size={20} />
+									<NotifIcon size={20} />
 								</div>
 
 								<!-- Content -->
@@ -236,7 +240,7 @@
 
 									{#if notification.action}
 										<button
-											on:click|stopPropagation={() => handleNotificationClick(notification)}
+											onclick={(e) => { e.stopPropagation(); handleNotificationClick(notification); }}
 											class="mt-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium"
 										>
 											{notification.action.label}
@@ -246,7 +250,7 @@
 
 								<!-- Dismiss button -->
 								<button
-									on:click|stopPropagation={() => notificationStore.dismiss(notification.id)}
+									onclick={(e) => { e.stopPropagation(); notificationStore.dismiss(notification.id); }}
 									class="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100
 										hover:bg-slate-700/50 transition-all"
 									aria-label="Dismiss"
@@ -268,7 +272,7 @@
 			{#if $notifications.length > 0}
 				<div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/50">
 					<button
-						on:click={() => notificationStore.clear()}
+						onclick={() => notificationStore.clear()}
 						class="w-full text-sm text-slate-400 hover:text-white transition-colors py-1"
 					>
 						Clear all notifications

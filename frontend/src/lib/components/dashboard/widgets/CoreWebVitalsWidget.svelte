@@ -3,22 +3,25 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
-	export let data: {
-		lcp: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
-		fid: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
-		cls: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
-		ttfb: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
-		fcp: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
-		inp: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
-		overall_score: number;
-		origin_summary: {
-			good_percent: number;
-			needs_improvement_percent: number;
-			poor_percent: number;
+	interface Props {
+		data: {
+			lcp: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
+			fid: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
+			cls: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
+			ttfb: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
+			fcp: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
+			inp: { value: number; rating: 'good' | 'needs-improvement' | 'poor' };
+			overall_score: number;
+			origin_summary: {
+				good_percent: number;
+				needs_improvement_percent: number;
+				poor_percent: number;
+			};
 		};
-	};
-	// Config available for widget customization
-	export const config: Record<string, unknown> = {};
+		config?: Record<string, unknown>;
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	const overallScore = tweened(0, { duration: 1500, easing: cubicOut });
 
@@ -36,7 +39,7 @@
 		thresholds: { good: number; poor: number };
 	}
 
-	$: vitals = [
+	let vitals = $derived([
 		{
 			key: 'lcp',
 			name: 'LCP',
@@ -91,7 +94,7 @@
 			rating: data?.ttfb?.rating || 'poor',
 			thresholds: { good: 800, poor: 1800 }
 		}
-	];
+	]);
 
 	function getRatingColor(rating: string): string {
 		switch (rating) {

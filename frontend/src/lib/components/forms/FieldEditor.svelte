@@ -1,13 +1,16 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { FormField, ConditionalLogic, ConditionalRule } from '$lib/api/forms';
 
-	export let field: FormField | null;
-	export let availableFields: FormField[] = [];
+	interface Props {
+		field?: FormField | null;
+		availableFields?: FormField[];
+		onsave?: (data: FormField) => void;
+		oncancel?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { field = null, availableFields = [], onsave, oncancel }: Props = $props();
 
-	let fieldData: FormField = {
+	let fieldData: FormField = $state({
 		field_type: 'text',
 		label: '',
 		name: '',
@@ -22,10 +25,10 @@
 		order: 0,
 		width: 100,
 		...field
-	};
+	});
 
-	let showConditionalLogic = !!fieldData.conditional_logic;
-	let optionsText = fieldData.options ? fieldData.options.join('\n') : '';
+	let showConditionalLogic = $state(!!fieldData.conditional_logic);
+	let optionsText = $state(fieldData.options ? fieldData.options.join('\n') : '');
 
 	const needsOptions = ['select', 'radio', 'checkbox'].includes(fieldData.field_type);
 	const supportsValidation = !['heading', 'divider', 'html', 'hidden'].includes(
@@ -57,11 +60,11 @@
 				.replace(/^_+|_+$/g, '');
 		}
 
-		dispatch('save', fieldData);
+		onsave?.(fieldData);
 	}
 
 	function handleCancel() {
-		dispatch('cancel');
+		oncancel?.();
 	}
 
 	function addConditionalRule() {
@@ -97,9 +100,11 @@
 		}
 	}
 
-	$: if (showConditionalLogic && !fieldData.conditional_logic) {
-		addConditionalRule();
-	}
+	$effect(() => {
+		if (showConditionalLogic && !fieldData.conditional_logic) {
+			addConditionalRule();
+		}
+	});
 </script>
 
 <div class="field-editor">
@@ -346,7 +351,7 @@
 								<button
 									type="button"
 									class="btn-remove"
-									on:click={() => removeConditionalRule(index)}
+									onclick={() => removeConditionalRule(index)}
 									title="Remove rule"
 								>
 									✕
@@ -355,7 +360,7 @@
 						{/each}
 					</div>
 
-					<button type="button" class="btn-add-rule" on:click={addConditionalRule}>
+					<button type="button" class="btn-add-rule" onclick={addConditionalRule}>
 						+ Add Rule
 					</button>
 				</div>
@@ -364,8 +369,8 @@
 	</div>
 
 	<div class="editor-actions">
-		<button class="btn btn-secondary" on:click={handleCancel}> Cancel </button>
-		<button class="btn btn-primary" on:click={handleSave}> Save Field </button>
+		<button class="btn btn-secondary" onclick={handleCancel}> Cancel </button>
+		<button class="btn btn-primary" onclick={handleSave}> Save Field </button>
 	</div>
 </div>
 

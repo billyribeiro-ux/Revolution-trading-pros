@@ -10,16 +10,20 @@
     // ─────────────────────────────────────────────────────────────────────────
     // Props & Logic
     // ─────────────────────────────────────────────────────────────────────────
-    export let posts: Post[] = [];
+    interface Props {
+        posts?: Post[];
+    }
+
+    let { posts = [] }: Props = $props();
 
     // Separate the Lead Story (First Post) from the Wire (Rest of Posts)
-    $: leadPost = posts.length > 0 ? posts[0] : null;
-    $: wirePosts = posts.length > 1 ? posts.slice(1, 4) : [];
+    let leadPost = $derived(posts.length > 0 ? posts[0] : null);
+    let wirePosts = $derived(posts.length > 1 ? posts.slice(1, 4) : []);
 
     // --- Animation Logic ---
     let containerRef: HTMLElement;
-    let isVisible = false;
-    let mouse = { x: 0, y: 0 };
+    let isVisible = $state(false);
+    let mouse = $state({ x: 0, y: 0 });
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -65,7 +69,7 @@
 
 <section 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
     aria-label="Market Intelligence Wire"
 >

@@ -8,19 +8,25 @@
 		IconTrendingUp
 	} from '@tabler/icons-svelte';
 
-	export let content: string = '';
-	export let title: string = '';
-	export let description: string = '';
-	export let focusKeyword: string = '';
-	export let additionalKeywords: string[] = [];
-
-	let analysis: any = null;
-	let readability: any = null;
-	let loading = false;
-
-	$: if (content || title || description || focusKeyword) {
-		analyzeDebounced();
+	interface Props {
+		content?: string;
+		title?: string;
+		description?: string;
+		focusKeyword?: string;
+		additionalKeywords?: string[];
 	}
+
+	let { content = '', title = '', description = '', focusKeyword = '', additionalKeywords = [] }: Props = $props();
+
+	let analysis: any = $state(null);
+	let readability: any = $state(null);
+	let loading = $state(false);
+
+	$effect(() => {
+		if (content || title || description || focusKeyword) {
+			analyzeDebounced();
+		}
+	});
 
 	let debounceTimer: any;
 	function analyzeDebounced() {
@@ -113,7 +119,7 @@
 			{/if}
 		</div>
 
-		<button class="refresh-btn" on:click={analyze} disabled={loading}>
+		<button class="refresh-btn" onclick={analyze} disabled={loading}>
 			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 			{loading ? 'Analyzing...' : 'Refresh'}
 		</button>
@@ -140,9 +146,10 @@
 
 			<div class="results-list">
 				{#each analysis.results as result}
+					{@const StatusIcon = getStatusIcon(result.status)}
 					<div class="result-item {getStatusColor(result.status)}">
 						<div class="result-icon">
-							<svelte:component this={getStatusIcon(result.status)} size={20} />
+							<StatusIcon size={20} />
 						</div>
 						<div class="result-content">
 							<div class="result-test">{result.test.replace(/_/g, ' ')}</div>

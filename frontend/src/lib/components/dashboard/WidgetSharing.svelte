@@ -1,24 +1,26 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { apiClient } from '$lib/api/client';
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		widgetId: string;
+		onshared?: (data: { email: string }) => void;
+	}
 
-	export let widgetId: string;
+	let { widgetId, onshared }: Props = $props();
 
-	let isLoading = false;
-	let shareEmail = '';
-	let shareEmails: string[] = [];
-	let permissions = {
+	let isLoading = $state(false);
+	let shareEmail = $state('');
+	let shareEmails: string[] = $state([]);
+	let permissions = $state({
 		can_view: true,
 		can_edit: false,
 		can_delete: false
-	};
-	let shareLink: string | null = null;
-	let linkExpireDays: number | null = 7;
-	let sharedUsers: any[] = [];
-	let error: string | null = null;
-	let success: string | null = null;
+	});
+	let shareLink: string | null = $state(null);
+	let linkExpireDays: number | null = $state(7);
+	let sharedUsers: any[] = $state([]);
+	let error: string | null = $state(null);
+	let success: string | null = $state(null);
 
 	async function loadSharedUsers() {
 		try {
@@ -45,7 +47,7 @@
 			success = `Widget shared with ${shareEmail}`;
 			shareEmail = '';
 			await loadSharedUsers();
-			dispatch('shared', { email: shareEmail });
+			onshared?.({ email: shareEmail });
 		} catch (err: any) {
 			error = err.message || 'Failed to share widget';
 		} finally {
@@ -108,7 +110,7 @@
 					placeholder="user@example.com"
 					bind:value={shareEmail}
 				/>
-				<button class="btn-add" on:click={handleShareWithUser} disabled={isLoading || !shareEmail}>
+				<button class="btn-add" onclick={handleShareWithUser} disabled={isLoading || !shareEmail}>
 					Share
 				</button>
 			</div>
@@ -143,7 +145,7 @@
 							{#if user.can_edit}<span class="badge">Edit</span>{/if}
 							{#if user.can_delete}<span class="badge">Delete</span>{/if}
 						</div>
-						<button class="btn-revoke" on:click={() => handleRevokeShare(user.id)}> Revoke </button>
+						<button class="btn-revoke" onclick={() => handleRevokeShare(user.id)}> Revoke </button>
 					</div>
 				{/each}
 			</div>
@@ -161,14 +163,14 @@
 			<input id="expire-days" type="number" min="1" max="365" bind:value={linkExpireDays} />
 		</div>
 
-		<button class="btn-primary" on:click={handleGenerateLink} disabled={isLoading}>
+		<button class="btn-primary" onclick={handleGenerateLink} disabled={isLoading}>
 			{isLoading ? 'Generating...' : 'Generate Link'}
 		</button>
 
 		{#if shareLink}
 			<div class="share-link-result">
-				<input type="text" readonly value={shareLink} on:click={(e) => e.currentTarget.select()} />
-				<button class="btn-copy" on:click={copyLinkToClipboard}> Copy </button>
+				<input type="text" readonly value={shareLink} onclick={(e) => e.currentTarget.select()} />
+				<button class="btn-copy" onclick={copyLinkToClipboard}> Copy </button>
 			</div>
 		{/if}
 	</div>

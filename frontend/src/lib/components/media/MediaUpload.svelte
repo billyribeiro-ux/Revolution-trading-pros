@@ -5,34 +5,33 @@
    * Drag-and-drop file upload with progress tracking
    * and optimization queue integration.
    */
-  import { createEventDispatcher } from 'svelte';
   import { mediaApi, type MediaItem, type UploadOptions } from '$lib/api/media';
 
-  const dispatch = createEventDispatcher<{
-    upload: MediaItem;
-    error: { file: File; error: string };
-    complete: { uploaded: MediaItem[]; failed: { file: File; error: string }[] };
-  }>();
+  interface Props {
+    collection?: string;
+    preset?: string;
+    multiple?: boolean;
+    accept?: string;
+    maxFiles?: number;
+    maxSizeMB?: number;
+    processImmediately?: boolean;
+    onupload?: (item: MediaItem) => void;
+    onerror?: (data: { file: File; error: string }) => void;
+    oncomplete?: (data: { uploaded: MediaItem[]; failed: { file: File; error: string }[] }) => void;
+  }
 
-  // Props
-  export let collection: string | undefined = undefined;
-  export let preset: string | undefined = undefined;
-  export let multiple: boolean = true;
-  export let accept: string = 'image/*';
-  export let maxFiles: number = 20;
-  export let maxSizeMB: number = 50;
-  export let processImmediately: boolean = false;
+  let { collection, preset, multiple = true, accept = 'image/*', maxFiles = 20, maxSizeMB = 50, processImmediately = false, onupload, onerror, oncomplete }: Props = $props();
 
   // State
-  let isDragging = false;
-  let isUploading = false;
-  let uploadProgress: Map<string, number> = new Map();
-  let uploadQueue: File[] = [];
+  let isDragging = $state(false);
+  let isUploading = $state(false);
+  let uploadProgress: Map<string, number> = $state(new Map());
+  let uploadQueue: File[] = $state([]);
   let fileInput: HTMLInputElement;
 
-  $: totalProgress = uploadQueue.length > 0
+  let totalProgress = $derived(uploadQueue.length > 0
     ? Array.from(uploadProgress.values()).reduce((sum, p) => sum + p, 0) / uploadQueue.length
-    : 0;
+    : 0);
 
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
@@ -71,13 +70,13 @@
     const validFiles = files.filter((file) => {
       // Check file type
       if (accept !== '*' && !file.type.match(accept.replace('*', '.*'))) {
-        dispatch('error', { file, error: `Invalid file type: ${file.type}` });
+        onerror?.({ file, error: `Invalid file type: ${file.type}` });
         return false;
       }
 
       // Check file size
       if (file.size > maxSizeMB * 1024 * 1024) {
-        dispatch('error', { file, error: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB (max ${maxSizeMB}MB)` });
+        onerror?.({ file, error: `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB (max ${maxSizeMB}MB)` });
         return false;
       }
 
@@ -118,17 +117,17 @@
         uploadProgress = uploadProgress;
 
         uploaded.push(result.data);
-        dispatch('upload', result.data);
+        onupload?.(result.data);
       } catch (error: any) {
         const message = error?.response?.data?.message || error?.message || 'Upload failed';
         failed.push({ file, error: message });
-        dispatch('error', { file, error: message });
+        onerror?.({ file, error: message });
         uploadProgress.set(file.name, -1);
         uploadProgress = uploadProgress;
       }
     }
 
-    dispatch('complete', { uploaded, failed });
+    oncomplete?.({ uploaded, failed });
     isUploading = false;
     uploadQueue = [];
     uploadProgress = new Map();
@@ -150,7 +149,7 @@
   <input
     type="file"
     bind:this={fileInput}
-    on:change={handleFileSelect}
+    onchange={handleFileSelect}
     {accept}
     multiple={multiple}
     class="hidden"
@@ -163,12 +162,12 @@
     class:uploading={isUploading}
     role="button"
     tabindex="0"
-    on:click={openFilePicker}
-    on:keydown={(e) => e.key === 'Enter' && openFilePicker()}
-    on:dragenter={handleDragEnter}
-    on:dragleave={handleDragLeave}
-    on:dragover={handleDragOver}
-    on:drop={handleDrop}
+    onclick={openFilePicker}
+    onkeydown={(e) => e.key === 'Enter' && openFilePicker()}
+    ondragenter={handleDragEnter}
+    ondragleave={handleDragLeave}
+    ondragover={handleDragOver}
+    ondrop={handleDrop}
   >
     {#if isUploading}
       <!-- Upload progress -->

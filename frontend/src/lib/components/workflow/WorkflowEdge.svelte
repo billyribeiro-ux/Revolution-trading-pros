@@ -1,13 +1,17 @@
 <script lang="ts">
 	import type { WorkflowEdge as Edge, WorkflowNode } from '$lib/types/workflow';
 
-	export let edge: Edge;
-	export let nodes: WorkflowNode[];
+	interface Props {
+		edge: Edge;
+		nodes: WorkflowNode[];
+	}
 
-	$: fromNode = nodes.find((n) => n.id === edge.from_node_id);
-	$: toNode = nodes.find((n) => n.id === edge.to_node_id);
+	let { edge, nodes }: Props = $props();
 
-	$: path = fromNode && toNode ? calculatePath(fromNode, toNode) : '';
+	let fromNode = $derived(nodes.find((n) => n.id === edge.from_node_id));
+	let toNode = $derived(nodes.find((n) => n.id === edge.to_node_id));
+
+	let path = $derived(fromNode && toNode ? calculatePath(fromNode, toNode) : '');
 
 	function calculatePath(from: WorkflowNode, to: WorkflowNode): string {
 		const startX = from.position_x + 200; // Node width
@@ -30,7 +34,7 @@
 		return colors[conditionType] || '#6b7280';
 	}
 
-	$: edgeColor = getEdgeColor(edge.condition_type);
+	let edgeColor = $derived(getEdgeColor(edge.condition_type));
 </script>
 
 {#if fromNode && toNode}

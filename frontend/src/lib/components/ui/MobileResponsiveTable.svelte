@@ -7,7 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 	import ExportButton from './ExportButton.svelte';
@@ -23,22 +23,43 @@
 		width?: string;
 	}
 
-	const dispatch = createEventDispatcher();
+	interface Props {
+		columns?: Column[];
+		data?: Record<string, unknown>[];
+		loading?: boolean;
+		sortBy?: string;
+		sortDir?: 'asc' | 'desc';
+		selectable?: boolean;
+		selectedIds?: (string | number)[];
+		idKey?: string;
+		exportable?: boolean;
+		exportFilename?: string;
+		emptyMessage?: string;
+		mobileBreakpoint?: number;
+		onsort?: (data: { key: string; direction: 'asc' | 'desc' }) => void;
+		onselect?: (data: { selectedIds: (string | number)[] }) => void;
+		onrowClick?: (row: Record<string, unknown>) => void;
+	}
 
-	export let columns: Column[] = [];
-	export let data: Record<string, unknown>[] = [];
-	export let loading: boolean = false;
-	export let sortBy: string = '';
-	export let sortDir: 'asc' | 'desc' = 'asc';
-	export let selectable: boolean = false;
-	export let selectedIds: (string | number)[] = [];
-	export let idKey: string = 'id';
-	export let exportable: boolean = false;
-	export let exportFilename: string = 'export';
-	export let emptyMessage: string = 'No data available';
-	export let mobileBreakpoint: number = 768;
+	let {
+		columns = [],
+		data = [],
+		loading = false,
+		sortBy = $bindable(''),
+		sortDir = $bindable('asc'),
+		selectable = false,
+		selectedIds = $bindable([]),
+		idKey = 'id',
+		exportable = false,
+		exportFilename = 'export',
+		emptyMessage = 'No data available',
+		mobileBreakpoint = 768,
+		onsort,
+		onselect,
+		onrowClick
+	}: Props = $props();
 
-	let isMobile = false;
+	let isMobile = $state(false);
 	let tableRef: HTMLDivElement;
 
 	function handleSort(column: Column) {
@@ -51,7 +72,7 @@
 			sortDir = 'asc';
 		}
 
-		dispatch('sort', { key: sortBy, direction: sortDir });
+		onsort?.({ key: sortBy, direction: sortDir });
 	}
 
 	function toggleSelect(id: string | number) {
@@ -60,7 +81,7 @@
 		} else {
 			selectedIds = [...selectedIds, id];
 		}
-		dispatch('select', { selectedIds });
+		onselect?.({ selectedIds });
 	}
 
 	function toggleSelectAll() {
@@ -69,11 +90,11 @@
 		} else {
 			selectedIds = data.map((row) => row[idKey] as string | number);
 		}
-		dispatch('select', { selectedIds });
+		onselect?.({ selectedIds });
 	}
 
 	function handleRowClick(row: Record<string, unknown>) {
-		dispatch('rowClick', row);
+		onrowClick?.(row);
 	}
 
 	function getValue(row: Record<string, unknown>, column: Column): string {
@@ -105,14 +126,14 @@
 	});
 
 	// Generate export columns (adapt 2-param render to 1-param format)
-	$: exportColumns = columns.map((col): ExportColumn => ({
+	let exportColumns = $derived(columns.map((col): ExportColumn => ({
 		key: col.key,
 		label: col.label,
 		format: col.render ? (value: unknown) => col.render!(value, {}) : undefined
-	}));
+	})));
 
-	$: visibleColumns = isMobile ? columns.filter((c) => !c.mobileHidden) : columns;
-	$: isAllSelected = data.length > 0 && selectedIds.length === data.length;
+	let visibleColumns = $derived(isMobile ? columns.filter((c) => !c.mobileHidden) : columns);
+	let isAllSelected = $derived(data.length > 0 && selectedIds.length === data.length);
 </script>
 
 <div class="mobile-responsive-table" bind:this={tableRef}>
@@ -153,8 +174,8 @@
 				<div
 					class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 space-y-3
 						transition-colors hover:bg-slate-800/70 cursor-pointer"
-					on:click={() => handleRowClick(row)}
-					on:keypress={(e) => e.key === 'Enter' && handleRowClick(row)}
+					onclick={() => handleRowClick(row)}
+					onkeypress={(e) => e.key === 'Enter' && handleRowClick(row)}
 					role="button"
 					tabindex="0"
 				>
@@ -163,7 +184,7 @@
 							<input
 								type="checkbox"
 								checked={isRowSelected(row)}
-								on:click|stopPropagation={() => toggleSelect(getRowId(row))}
+								onclick={(e) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
 								class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 							/>
 							<span class="text-xs text-slate-500">#{index + 1}</span>
@@ -196,7 +217,7 @@
 								<input
 									type="checkbox"
 									checked={isAllSelected}
-									on:change={toggleSelectAll}
+									onchange={toggleSelectAll}
 									class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 								/>
 							</th>
@@ -206,7 +227,7 @@
 								class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider
 									{column.sortable ? 'cursor-pointer hover:text-white transition-colors' : ''}"
 								style={column.width ? `width: ${column.width}` : ''}
-								on:click={() => handleSort(column)}
+								onclick={() => handleSort(column)}
 							>
 								<div
 									class="flex items-center gap-2"
@@ -239,14 +260,14 @@
 					{#each data as row (getRowId(row))}
 						<tr
 							class="hover:bg-slate-800/30 transition-colors cursor-pointer {isRowSelected(row) ? 'bg-indigo-500/10' : ''}"
-							on:click={() => handleRowClick(row)}
+							onclick={() => handleRowClick(row)}
 						>
 							{#if selectable}
 								<td class="px-4 py-3">
 									<input
 										type="checkbox"
 										checked={isRowSelected(row)}
-										on:click|stopPropagation={() => toggleSelect(getRowId(row))}
+										onclick={(e) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
 										class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 									/>
 								</td>
@@ -275,9 +296,9 @@
 		>
 			<span class="font-medium">{selectedIds.length} selected</span>
 			<button
-				on:click={() => {
+				onclick={() => {
 					selectedIds = [];
-					dispatch('select', { selectedIds: [] });
+					onselect?.({ selectedIds: [] });
 				}}
 				class="text-sm underline hover:no-underline"
 			>

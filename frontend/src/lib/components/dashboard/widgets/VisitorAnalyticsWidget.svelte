@@ -3,31 +3,36 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	export let data: {
-		unique_visitors: number;
-		total_sessions: number;
-		total_pageviews: number;
-		avg_session_duration: number;
-		avg_pages_per_session: number;
-		visitor_growth: number;
-		bounce_rate: number;
-		daily_trend: Array<{ date: string; visitors: number; sessions: number }>;
-		period: string;
-	};
-	// Config available for widget customization
-	export const config: Record<string, unknown> = {};
+	interface Props {
+		data: {
+			unique_visitors: number;
+			total_sessions: number;
+			total_pageviews: number;
+			avg_session_duration: number;
+			avg_pages_per_session: number;
+			visitor_growth: number;
+			bounce_rate: number;
+			daily_trend: Array<{ date: string; visitors: number; sessions: number }>;
+			period: string;
+		};
+		config?: Record<string, unknown>;
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	const visitors = tweened(0, { duration: 1500, easing: cubicOut });
 	const sessions = tweened(0, { duration: 1500, easing: cubicOut });
 	const pageviews = tweened(0, { duration: 1500, easing: cubicOut });
 
-	$: if (data) {
-		visitors.set(data.unique_visitors || 0);
-		sessions.set(data.total_sessions || 0);
-		pageviews.set(data.total_pageviews || 0);
-	}
+	$effect(() => {
+		if (data) {
+			visitors.set(data.unique_visitors || 0);
+			sessions.set(data.total_sessions || 0);
+			pageviews.set(data.total_pageviews || 0);
+		}
+	});
 
-	$: maxValue = Math.max(...(data?.daily_trend?.map((d) => d.visitors) || [1]));
+	let maxValue = $derived(Math.max(...(data?.daily_trend?.map((d) => d.visitors) || [1])));
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

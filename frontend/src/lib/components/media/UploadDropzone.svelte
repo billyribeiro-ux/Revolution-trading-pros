@@ -9,12 +9,16 @@
 	import { uploadStore } from '$lib/stores/media';
 	import { IconUpload, IconX, IconCheck, IconAlertCircle } from '@tabler/icons-svelte';
 
-	export let folderId: string | null = null;
-	export let accept: string = 'image/*,video/*,application/pdf';
-	export let maxSize: number = 100 * 1024 * 1024; // 100MB
-	export let multiple: boolean = true;
+	interface Props {
+		folderId?: string | null;
+		accept?: string;
+		maxSize?: number;
+		multiple?: boolean;
+	}
 
-	let isDragging = false;
+	let { folderId = null, accept = 'image/*,video/*,application/pdf', maxSize = 100 * 1024 * 1024, multiple = true }: Props = $props();
+
+	let isDragging = $state(false);
 	let fileInput: HTMLInputElement;
 
 	function handleDragOver(e: DragEvent) {
@@ -73,13 +77,13 @@
 	<div
 		class="dropzone"
 		class:dragging={isDragging}
-		on:dragover={handleDragOver}
-		on:dragleave={handleDragLeave}
-		on:drop={handleDrop}
+		ondragover={handleDragOver}
+		ondragleave={handleDragLeave}
+		ondrop={handleDrop}
 		role="button"
 		tabindex="0"
-		on:click={() => fileInput.click()}
-		on:keydown={(e) => e.key === 'Enter' && fileInput.click()}
+		onclick={() => fileInput.click()}
+		onkeydown={(e) => e.key === 'Enter' && fileInput.click()}
 	>
 		<IconUpload size={48} class="upload-icon" />
 		<h3 class="upload-title">Drop files here or click to browse</h3>
@@ -91,7 +95,7 @@
 			type="file"
 			{accept}
 			{multiple}
-			on:change={handleFileSelect}
+			onchange={handleFileSelect}
 			class="hidden"
 		/>
 	</div>
@@ -134,7 +138,7 @@
 					{#if upload.status === 'error' || upload.status === 'complete'}
 						<button
 							class="remove-btn"
-							on:click={() => uploadStore.removeUpload(id)}
+							onclick={() => uploadStore.removeUpload(id)}
 							aria-label="Remove"
 						>
 							<IconX size={16} />

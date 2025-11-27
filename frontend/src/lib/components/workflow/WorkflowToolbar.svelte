@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { Workflow } from '$lib/types/workflow';
 
-	export let workflow: Workflow | null;
-	export let isSaving = false;
+	interface Props {
+		workflow?: Workflow | null;
+		isSaving?: boolean;
+		ontest?: () => void;
+		onsave?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { workflow = null, isSaving = false, ontest, onsave }: Props = $props();
 </script>
 
 <div class="workflow-toolbar">
@@ -19,7 +22,7 @@
 	</div>
 
 	<div class="toolbar-right">
-		<button class="btn-secondary" on:click={() => dispatch('test')} aria-label="Test workflow">
+		<button class="btn-secondary" onclick={() => ontest?.()} aria-label="Test workflow">
 			<svg
 				width="16"
 				height="16"
@@ -35,7 +38,7 @@
 
 		<button
 			class="btn-primary"
-			on:click={() => dispatch('save')}
+			onclick={() => onsave?.()}
 			disabled={isSaving}
 			aria-label="Save workflow"
 		>

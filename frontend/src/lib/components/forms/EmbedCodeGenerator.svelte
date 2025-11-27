@@ -1,10 +1,14 @@
 <script lang="ts">
 	import type { Form } from '$lib/api/forms';
 
-	export let form: Form;
+	interface Props {
+		form: Form;
+	}
 
-	let embedType: 'iframe' | 'script' | 'link' = 'iframe';
-	let copiedMessage = '';
+	let { form }: Props = $props();
+
+	let embedType: 'iframe' | 'script' | 'link' = $state('iframe');
+	let copiedMessage = $state('');
 
 	// Get base URL
 	const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
@@ -12,9 +16,9 @@
 	const directUrl = `${baseUrl}/forms/${form.slug}`;
 
 	// Generate embed codes
-	$: iframeCode = `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border: none; max-width: 800px;"></iframe>`;
+	let iframeCode = $derived(`<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border: none; max-width: 800px;"></iframe>`);
 
-	$: scriptCode = `<div id="form-${form.slug}"></div>
+	let scriptCode = $derived(`<div id="form-${form.slug}"></div>
 <script>
 (function() {
   const iframe = document.createElement('iframe');
@@ -34,11 +38,11 @@
     }
   });
 })();
-<\/script>`;
+<\/script>`);
 
-	$: directLinkCode = `<a href="${directUrl}" target="_blank">Fill out our form</a>`;
+	let directLinkCode = $derived(`<a href="${directUrl}" target="_blank">Fill out our form</a>`);
 
-	$: shortcode = `[revolution_form slug="${form.slug}"]`;
+	let shortcode = $derived(`[revolution_form slug="${form.slug}"]`);
 
 	function copyToClipboard(text: string, type: string) {
 		navigator.clipboard
@@ -76,7 +80,7 @@
 		<button
 			class="type-btn"
 			class:active={embedType === 'iframe'}
-			on:click={() => (embedType = 'iframe')}
+			onclick={() => (embedType = 'iframe')}
 		>
 			<span class="icon">🖼️</span>
 			<span class="label">iFrame Embed</span>
@@ -85,7 +89,7 @@
 		<button
 			class="type-btn"
 			class:active={embedType === 'script'}
-			on:click={() => (embedType = 'script')}
+			onclick={() => (embedType = 'script')}
 		>
 			<span class="icon">📜</span>
 			<span class="label">JavaScript Embed</span>
@@ -94,7 +98,7 @@
 		<button
 			class="type-btn"
 			class:active={embedType === 'link'}
-			on:click={() => (embedType = 'link')}
+			onclick={() => (embedType = 'link')}
 		>
 			<span class="icon">🔗</span>
 			<span class="label">Direct Link</span>
@@ -112,7 +116,7 @@
 					Direct Link HTML
 				{/if}
 			</h4>
-			<button class="copy-btn" on:click={() => copyToClipboard(getCode(), 'Code')}>
+			<button class="copy-btn" onclick={() => copyToClipboard(getCode(), 'Code')}>
 				📋 Copy Code
 			</button>
 		</div>
@@ -156,7 +160,7 @@
 		<h4>WordPress Shortcode</h4>
 		<div class="code-header">
 			<pre class="code-block inline"><code>{shortcode}</code></pre>
-			<button class="copy-btn" on:click={() => copyToClipboard(shortcode, 'Shortcode')}>
+			<button class="copy-btn" onclick={() => copyToClipboard(shortcode, 'Shortcode')}>
 				📋 Copy
 			</button>
 		</div>
@@ -168,12 +172,12 @@
 		<div class="url-row">
 			<span class="url-label">Embed URL:</span>
 			<code class="url-value">{embedUrl}</code>
-			<button class="copy-btn-small" on:click={() => copyToClipboard(embedUrl, 'URL')}>📋</button>
+			<button class="copy-btn-small" onclick={() => copyToClipboard(embedUrl, 'URL')}>📋</button>
 		</div>
 		<div class="url-row">
 			<span class="url-label">Direct URL:</span>
 			<code class="url-value">{directUrl}</code>
-			<button class="copy-btn-small" on:click={() => copyToClipboard(directUrl, 'URL')}>📋</button>
+			<button class="copy-btn-small" onclick={() => copyToClipboard(directUrl, 'URL')}>📋</button>
 		</div>
 	</div>
 

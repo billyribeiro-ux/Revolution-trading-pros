@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		IconFileText,
 		IconPhoto,
@@ -14,12 +14,15 @@
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
 
-	export let entity: any;
+	interface Props {
+		entity: any;
+		onsaved?: () => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let { entity, onsaved }: Props = $props();
 
-	let activeTab = 'general';
-	let meta: any = {
+	let activeTab = $state('general');
+	let meta: any = $state({
 		title: '',
 		description: '',
 		canonical_url: '',
@@ -39,11 +42,11 @@
 		noimageindex: false,
 		nosnippet: false,
 		breadcrumb_title: ''
-	};
+	});
 
-	let content = '';
-	let analyzing = false;
-	let saving = false;
+	let content = $state('');
+	let analyzing = $state(false);
+	let saving = $state(false);
 
 	const tabs = [
 		{ id: 'general', label: 'General', icon: IconFileText },
@@ -83,7 +86,7 @@
 			});
 
 			if (response.ok) {
-				dispatch('saved');
+				onsaved?.();
 			}
 		} catch (error) {
 			console.error('Failed to save SEO meta:', error);
@@ -108,11 +111,11 @@
 	<div class="editor-header">
 		<h2>{entity.title}</h2>
 		<div class="header-actions">
-			<button class="btn-secondary" on:click={loadMeta}>
+			<button class="btn-secondary" onclick={loadMeta}>
 				<IconRefresh size={18} />
 				Refresh
 			</button>
-			<button class="btn-primary" on:click={saveMeta} disabled={saving}>
+			<button class="btn-primary" onclick={saveMeta} disabled={saving}>
 				<IconDeviceFloppy size={18} />
 				{saving ? 'Saving...' : 'Save Changes'}
 			</button>
@@ -121,8 +124,9 @@
 
 	<div class="editor-tabs">
 		{#each tabs as tab}
-			<button class="tab" class:active={activeTab === tab.id} on:click={() => (activeTab = tab.id)}>
-				<svelte:component this={tab.icon} size={18} />
+			{@const TabIcon = tab.icon}
+			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
+				<TabIcon size={18} />
 				{tab.label}
 			</button>
 		{/each}
@@ -177,10 +181,10 @@
 						{#each meta.additional_keywords as keyword, i}
 							<span class="keyword-tag">
 								{keyword}
-								<button type="button" on:click={() => removeKeyword(i)}>×</button>
+								<button type="button" onclick={() => removeKeyword(i)}>×</button>
 							</span>
 						{/each}
-						<button type="button" class="add-keyword" on:click={addKeyword}>+ Add Keyword</button>
+						<button type="button" class="add-keyword" onclick={addKeyword}>+ Add Keyword</button>
 					</div>
 				</div>
 

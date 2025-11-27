@@ -5,14 +5,18 @@
 	import WorkflowEdge from './WorkflowEdge.svelte';
 	import type { NodeType } from '$lib/types/workflow';
 
-	export let workflowId: number;
+	interface Props {
+		workflowId: number;
+	}
+
+	let { workflowId }: Props = $props();
 
 	let canvasElement: HTMLDivElement;
-	let isPanning = false;
-	let startPan = { x: 0, y: 0 };
-	let isConnecting = false;
-	let connectionStart: number | null = null;
-	let mousePos = { x: 0, y: 0 };
+	let isPanning = $state(false);
+	let startPan = $state({ x: 0, y: 0 });
+	let isConnecting = $state(false);
+	let connectionStart: number | null = $state(null);
+	let mousePos = $state({ x: 0, y: 0 });
 
 	function handleCanvasMouseDown(e: MouseEvent) {
 		if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
@@ -123,17 +127,17 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	class="workflow-canvas"
 	bind:this={canvasElement}
-	on:mousedown={handleCanvasMouseDown}
-	on:mousemove={handleCanvasMouseMove}
-	on:mouseup={handleCanvasMouseUp}
-	on:wheel={handleWheel}
-	on:drop={handleNodeDrop}
-	on:dragover={handleDragOver}
+	onmousedown={handleCanvasMouseDown}
+	onmousemove={handleCanvasMouseMove}
+	onmouseup={handleCanvasMouseUp}
+	onwheel={handleWheel}
+	ondrop={handleNodeDrop}
+	ondragover={handleDragOver}
 	role="application"
 	tabindex="0"
 >
@@ -155,11 +159,11 @@
 			<WorkflowNode
 				{node}
 				selected={$workflowCanvas.selectedNode?.id === node.id}
-				on:select={() => workflowCanvas.selectNode(node)}
-				on:move={(e) => workflowCanvas.moveNode(node.id, e.detail)}
-				on:delete={() => workflowCanvas.deleteNode(node.id)}
-				on:startConnection={() => startConnection(node.id)}
-				on:endConnection={() => endConnection(node.id)}
+				onselect={() => workflowCanvas.selectNode(node)}
+				onmove={(pos) => workflowCanvas.moveNode(node.id, pos)}
+				ondelete={() => workflowCanvas.deleteNode(node.id)}
+				onstartConnection={() => startConnection(node.id)}
+				onendConnection={() => endConnection(node.id)}
 			/>
 		{/each}
 
@@ -185,7 +189,7 @@
 	<!-- Canvas controls -->
 	<div class="canvas-controls">
 		<button
-			on:click={() => workflowCanvas.setZoom($workflowCanvas.zoom + 0.1)}
+			onclick={() => workflowCanvas.setZoom($workflowCanvas.zoom + 0.1)}
 			aria-label="Zoom in"
 		>
 			<svg
@@ -200,7 +204,7 @@
 			</svg>
 		</button>
 		<button
-			on:click={() => workflowCanvas.setZoom($workflowCanvas.zoom - 0.1)}
+			onclick={() => workflowCanvas.setZoom($workflowCanvas.zoom - 0.1)}
 			aria-label="Zoom out"
 		>
 			<svg
@@ -214,7 +218,7 @@
 				<circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /><path d="M8 11h6" />
 			</svg>
 		</button>
-		<button on:click={() => workflowCanvas.setZoom(1)} aria-label="Reset zoom"> Reset </button>
+		<button onclick={() => workflowCanvas.setZoom(1)} aria-label="Reset zoom"> Reset </button>
 		<span class="zoom-level">{Math.round($workflowCanvas.zoom * 100)}%</span>
 	</div>
 </div>

@@ -2,11 +2,15 @@
 	import { onMount } from 'svelte';
 	import { workflowApi } from '$lib/api/workflow';
 
-	export let workflowId: number;
+	interface Props {
+		workflowId: number;
+	}
 
-	let insights: any = null;
-	let isLoading = true;
-	let activeTab: 'predictions' | 'suggestions' | 'anomalies' = 'predictions';
+	let { workflowId }: Props = $props();
+
+	let insights: any = $state(null);
+	let isLoading = $state(true);
+	let activeTab: 'predictions' | 'suggestions' | 'anomalies' = $state('predictions');
 
 	async function loadInsights() {
 		isLoading = true;
@@ -53,9 +57,11 @@
 	}
 
 	// Reactive statement: reload insights when workflowId changes
-	$: if (workflowId) {
-		loadInsights();
-	}
+	$effect(() => {
+		if (workflowId) {
+			loadInsights();
+		}
+	});
 </script>
 
 <div class="ai-insights">
@@ -74,21 +80,21 @@
 			<button
 				class="tab"
 				class:active={activeTab === 'predictions'}
-				on:click={() => (activeTab = 'predictions')}
+				onclick={() => (activeTab = 'predictions')}
 			>
 				Predictions
 			</button>
 			<button
 				class="tab"
 				class:active={activeTab === 'suggestions'}
-				on:click={() => (activeTab = 'suggestions')}
+				onclick={() => (activeTab = 'suggestions')}
 			>
 				Suggestions
 			</button>
 			<button
 				class="tab"
 				class:active={activeTab === 'anomalies'}
-				on:click={() => (activeTab = 'anomalies')}
+				onclick={() => (activeTab = 'anomalies')}
 			>
 				Anomalies
 			</button>

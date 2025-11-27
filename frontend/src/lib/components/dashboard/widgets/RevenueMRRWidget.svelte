@@ -1,19 +1,23 @@
 <script lang="ts">
-	export let data: any;
-	export let config: {
-		period?: string;
-		show_chart?: boolean;
-		currency?: string;
-		show_growth?: boolean;
-		format?: 'compact' | 'full';
-	} = {};
+	interface Props {
+		data: any;
+		config?: {
+			period?: string;
+			show_chart?: boolean;
+			currency?: string;
+			show_growth?: boolean;
+			format?: 'compact' | 'full';
+		};
+	}
 
-	$: currentMRR = data?.current_mrr || 0;
-	$: growthPercentage = data?.growth_percentage || 0;
-	$: isPositive = growthPercentage >= 0;
-	$: currency = config.currency || '$';
-	$: showChart = config.show_chart !== false;
-	$: showGrowth = config.show_growth !== false;
+	let { data, config = {} }: Props = $props();
+
+	let currentMRR = $derived(data?.current_mrr || 0);
+	let growthPercentage = $derived(data?.growth_percentage || 0);
+	let isPositive = $derived(growthPercentage >= 0);
+	let currency = $derived(config.currency || '$');
+	let showChart = $derived(config.show_chart !== false);
+	let showGrowth = $derived(config.show_growth !== false);
 
 	function formatNumber(num: number): string {
 		if (config.format === 'compact' && num >= 1000) {

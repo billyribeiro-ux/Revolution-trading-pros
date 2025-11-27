@@ -2,11 +2,15 @@
 	import { onMount } from 'svelte';
 	import type { WorkflowAnalytics } from '$lib/types/workflow';
 
-	export let workflowId: number;
+	interface Props {
+		workflowId: number;
+	}
 
-	let analytics: WorkflowAnalytics | null = null;
-	let isLoading = true;
-	let timeRange: '7d' | '30d' | '90d' = '30d';
+	let { workflowId }: Props = $props();
+
+	let analytics: WorkflowAnalytics | null = $state(null);
+	let isLoading = $state(true);
+	let timeRange: '7d' | '30d' | '90d' = $state('30d');
 
 	async function loadAnalytics() {
 		isLoading = true;
@@ -58,20 +62,22 @@
 		loadAnalytics();
 	});
 
-	$: if (timeRange) {
-		loadAnalytics();
-	}
+	$effect(() => {
+		if (timeRange) {
+			loadAnalytics();
+		}
+	});
 </script>
 
 <div class="workflow-analytics">
 	<div class="analytics-header">
 		<h2>Workflow Analytics</h2>
 		<div class="time-range-selector">
-			<button class:active={timeRange === '7d'} on:click={() => (timeRange = '7d')}>7 Days</button>
-			<button class:active={timeRange === '30d'} on:click={() => (timeRange = '30d')}
+			<button class:active={timeRange === '7d'} onclick={() => (timeRange = '7d')}>7 Days</button>
+			<button class:active={timeRange === '30d'} onclick={() => (timeRange = '30d')}
 				>30 Days</button
 			>
-			<button class:active={timeRange === '90d'} on:click={() => (timeRange = '90d')}
+			<button class:active={timeRange === '90d'} onclick={() => (timeRange = '90d')}
 				>90 Days</button
 			>
 		</div>

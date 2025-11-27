@@ -8,11 +8,15 @@
 	import { workflowApi } from '$lib/api/workflow';
 	import type { Workflow } from '$lib/types/workflow';
 
-	export let workflowId: number | null = null;
+	interface Props {
+		workflowId?: number | null;
+	}
 
-	let workflow: Workflow | null = null;
-	let isLoading = true;
-	let isSaving = false;
+	let { workflowId = null }: Props = $props();
+
+	let workflow: Workflow | null = $state(null);
+	let isLoading = $state(true);
+	let isSaving = $state(false);
 
 	async function loadWorkflow() {
 		if (!workflowId) {
@@ -93,7 +97,7 @@
 			<p>Loading workflow...</p>
 		</div>
 	{:else}
-		<WorkflowToolbar {workflow} {isSaving} on:save={saveWorkflow} on:test={testWorkflow} />
+		<WorkflowToolbar {workflow} {isSaving} onsave={saveWorkflow} ontest={testWorkflow} />
 
 		<div class="builder-content">
 			<NodePalette />

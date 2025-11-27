@@ -3,19 +3,22 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
-	export let data: {
-		sources: Array<{
-			name: string;
-			visitors: number;
-			percentage: number;
-			change: number;
-			color: string;
-		}>;
-		total_visitors: number;
-		period: string;
-	};
-	// Config available for widget customization
-	export const config: Record<string, unknown> = {};
+	interface Props {
+		data: {
+			sources: Array<{
+				name: string;
+				visitors: number;
+				percentage: number;
+				change: number;
+				color: string;
+			}>;
+			total_visitors: number;
+			period: string;
+		};
+		config?: Record<string, unknown>;
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	const totalVisitors = tweened(0, { duration: 1500, easing: cubicOut });
 
@@ -23,9 +26,9 @@
 		totalVisitors.set(data?.total_visitors || 0);
 	});
 
-	$: sortedSources = (data?.sources || []).sort((a, b) => b.percentage - a.percentage);
+	let sortedSources = $derived((data?.sources || []).sort((a, b) => b.percentage - a.percentage));
 
-	$: donutSegments = calculateDonutSegments(sortedSources);
+	let donutSegments = $derived(calculateDonutSegments(sortedSources));
 
 	function calculateDonutSegments(
 		sources: Array<{ name: string; percentage: number; color: string }>

@@ -8,13 +8,16 @@
   import { onMount } from 'svelte';
   import { mediaApi, type MediaStatistics } from '$lib/api/media';
 
-  // Props
-  export let compact: boolean = false;
+  interface Props {
+    compact?: boolean;
+  }
+
+  let { compact = false }: Props = $props();
 
   // State
-  let statistics: MediaStatistics | null = null;
-  let loading = true;
-  let error: string | null = null;
+  let statistics: MediaStatistics | null = $state(null);
+  let loading = $state(true);
+  let error: string | null = $state(null);
 
   onMount(async () => {
     await loadStatistics();
@@ -87,7 +90,7 @@
   {:else if error}
     <div class="error">
       <span>{error}</span>
-      <button type="button" on:click={loadStatistics}>Retry</button>
+      <button type="button" onclick={loadStatistics}>Retry</button>
     </div>
   {:else if statistics}
     <!-- Summary Cards -->

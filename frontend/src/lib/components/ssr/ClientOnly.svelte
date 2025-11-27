@@ -11,12 +11,25 @@
 	import { browser } from '$app/environment';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 
-	export let showSkeleton: boolean = true;
-	export let skeletonVariant: 'text' | 'circular' | 'rectangular' | 'card' | 'stat' = 'rectangular';
-	export let skeletonHeight: string = '200px';
-	export let skeletonWidth: string = '100%';
+	interface Props {
+		showSkeleton?: boolean;
+		skeletonVariant?: 'text' | 'circular' | 'rectangular' | 'card' | 'stat';
+		skeletonHeight?: string;
+		skeletonWidth?: string;
+		children?: import('svelte').Snippet;
+		fallback?: import('svelte').Snippet;
+	}
 
-	let mounted = false;
+	let {
+		showSkeleton = true,
+		skeletonVariant = 'rectangular',
+		skeletonHeight = '200px',
+		skeletonWidth = '100%',
+		children,
+		fallback
+	}: Props = $props();
+
+	let mounted = $state(false);
 
 	onMount(() => {
 		mounted = true;
@@ -24,7 +37,7 @@
 </script>
 
 {#if mounted || browser}
-	<slot />
+	{@render children?.()}
 {:else if showSkeleton}
 	<SkeletonLoader
 		variant={skeletonVariant}
@@ -32,7 +45,5 @@
 		width={skeletonWidth}
 	/>
 {:else}
-	<slot name="fallback">
-		<!-- Empty fallback by default -->
-	</slot>
+	{@render fallback?.()}
 {/if}

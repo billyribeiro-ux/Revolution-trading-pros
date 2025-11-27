@@ -1,18 +1,22 @@
 <script lang="ts">
 	import type { ActivityLog } from '$lib/types/dashboard';
 
-	export let data: { activities?: ActivityLog[]; total_count?: number };
-	export let config: {
-		limit?: number;
-		filter_actions?: string[];
-		filter_entity_types?: string[];
-		show_user?: boolean;
-		show_time?: boolean;
-		group_by_date?: boolean;
-	} = {};
+	interface Props {
+		data: { activities?: ActivityLog[]; total_count?: number };
+		config?: {
+			limit?: number;
+			filter_actions?: string[];
+			filter_entity_types?: string[];
+			show_user?: boolean;
+			show_time?: boolean;
+			group_by_date?: boolean;
+		};
+	}
+
+	let { data, config = {} }: Props = $props();
 
 	// Apply filters
-	$: filteredActivities = (data?.activities || [])
+	let filteredActivities = $derived((data?.activities || [])
 		.filter((activity) => {
 			if (config.filter_actions && !config.filter_actions.includes(activity.action)) {
 				return false;
@@ -25,10 +29,10 @@
 			}
 			return true;
 		})
-		.slice(0, config.limit || 20);
+		.slice(0, config.limit || 20));
 
-	$: showUser = config.show_user !== false;
-	$: showTime = config.show_time !== false;
+	let showUser = $derived(config.show_user !== false);
+	let showTime = $derived(config.show_time !== false);
 
 	function getActivityIcon(action: string): string {
 		switch (action) {

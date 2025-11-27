@@ -1,22 +1,22 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { FormTheme } from '$lib/data/formTemplates';
 	import { themes } from '$lib/data/formTemplates';
 
-	export let selectedTheme: FormTheme = themes[0];
+	interface Props {
+		selectedTheme?: FormTheme;
+		onchange?: (theme: FormTheme) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		change: FormTheme;
-	}>();
+	let { selectedTheme = $bindable(themes[0]), onchange }: Props = $props();
 
-	let isCustomizing = false;
-	let customTheme: FormTheme = { ...selectedTheme };
+	let isCustomizing = $state(false);
+	let customTheme: FormTheme = $state({ ...selectedTheme });
 
 	function selectTheme(theme: FormTheme) {
 		selectedTheme = theme;
 		customTheme = { ...theme };
 		isCustomizing = false;
-		dispatch('change', selectedTheme);
+		onchange?.(selectedTheme);
 	}
 
 	function enableCustomization() {
@@ -26,7 +26,7 @@
 
 	function applyCustomTheme() {
 		selectedTheme = { ...customTheme, id: 'custom', name: 'Custom Theme' };
-		dispatch('change', selectedTheme);
+		onchange?.(selectedTheme);
 	}
 
 	function handleColorChange(property: keyof FormTheme['colors'], value: string) {
@@ -58,7 +58,7 @@
 				<button
 					class="theme-card"
 					class:active={selectedTheme.id === theme.id && !isCustomizing}
-					on:click={() => selectTheme(theme)}
+					onclick={() => selectTheme(theme)}
 				>
 					<div
 						class="theme-preview"
@@ -77,7 +77,7 @@
 
 	<div class="custom-section">
 		{#if !isCustomizing}
-			<button class="btn-customize" on:click={enableCustomization}> 🎨 Customize Theme </button>
+			<button class="btn-customize" onclick={enableCustomization}> 🎨 Customize Theme </button>
 		{:else}
 			<div class="custom-controls">
 				<div class="control-section">
@@ -90,7 +90,7 @@
 									type="color"
 									id="primary-color"
 									value={customTheme.colors.primary}
-									on:input={(e) => handleColorChange('primary', e.currentTarget.value)}
+									oninput={(e) => handleColorChange('primary', e.currentTarget.value)}
 								/>
 								<span class="color-value">{customTheme.colors.primary}</span>
 							</div>
@@ -103,7 +103,7 @@
 									type="color"
 									id="secondary-color"
 									value={customTheme.colors.secondary}
-									on:input={(e) => handleColorChange('secondary', e.currentTarget.value)}
+									oninput={(e) => handleColorChange('secondary', e.currentTarget.value)}
 								/>
 								<span class="color-value">{customTheme.colors.secondary}</span>
 							</div>
@@ -116,7 +116,7 @@
 									type="color"
 									id="background-color"
 									value={customTheme.colors.background}
-									on:input={(e) => handleColorChange('background', e.currentTarget.value)}
+									oninput={(e) => handleColorChange('background', e.currentTarget.value)}
 								/>
 								<span class="color-value">{customTheme.colors.background}</span>
 							</div>
@@ -129,7 +129,7 @@
 									type="color"
 									id="text-color"
 									value={customTheme.colors.text}
-									on:input={(e) => handleColorChange('text', e.currentTarget.value)}
+									oninput={(e) => handleColorChange('text', e.currentTarget.value)}
 								/>
 								<span class="color-value">{customTheme.colors.text}</span>
 							</div>
@@ -142,7 +142,7 @@
 									type="color"
 									id="border-color"
 									value={customTheme.colors.border}
-									on:input={(e) => handleColorChange('border', e.currentTarget.value)}
+									oninput={(e) => handleColorChange('border', e.currentTarget.value)}
 								/>
 								<span class="color-value">{customTheme.colors.border}</span>
 							</div>
@@ -159,7 +159,7 @@
 								name="spacing"
 								value="compact"
 								checked={customTheme.spacing === 'compact'}
-								on:change={() => handleSpacingChange('compact')}
+								onchange={() => handleSpacingChange('compact')}
 							/>
 							<span>Compact</span>
 						</label>
@@ -169,7 +169,7 @@
 								name="spacing"
 								value="normal"
 								checked={customTheme.spacing === 'normal'}
-								on:change={() => handleSpacingChange('normal')}
+								onchange={() => handleSpacingChange('normal')}
 							/>
 							<span>Normal</span>
 						</label>
@@ -179,7 +179,7 @@
 								name="spacing"
 								value="spacious"
 								checked={customTheme.spacing === 'spacious'}
-								on:change={() => handleSpacingChange('spacious')}
+								onchange={() => handleSpacingChange('spacious')}
 							/>
 							<span>Spacious</span>
 						</label>
@@ -195,7 +195,7 @@
 								name="borderRadius"
 								value="none"
 								checked={customTheme.borderRadius === 'none'}
-								on:change={() => handleBorderRadiusChange('none')}
+								onchange={() => handleBorderRadiusChange('none')}
 							/>
 							<span>None</span>
 						</label>
@@ -205,7 +205,7 @@
 								name="borderRadius"
 								value="small"
 								checked={customTheme.borderRadius === 'small'}
-								on:change={() => handleBorderRadiusChange('small')}
+								onchange={() => handleBorderRadiusChange('small')}
 							/>
 							<span>Small</span>
 						</label>
@@ -215,7 +215,7 @@
 								name="borderRadius"
 								value="medium"
 								checked={customTheme.borderRadius === 'medium'}
-								on:change={() => handleBorderRadiusChange('medium')}
+								onchange={() => handleBorderRadiusChange('medium')}
 							/>
 							<span>Medium</span>
 						</label>
@@ -225,7 +225,7 @@
 								name="borderRadius"
 								value="large"
 								checked={customTheme.borderRadius === 'large'}
-								on:change={() => handleBorderRadiusChange('large')}
+								onchange={() => handleBorderRadiusChange('large')}
 							/>
 							<span>Large</span>
 						</label>
@@ -233,8 +233,8 @@
 				</div>
 
 				<div class="custom-actions">
-					<button class="btn-cancel" on:click={() => (isCustomizing = false)}>Cancel</button>
-					<button class="btn-apply" on:click={applyCustomTheme}>Apply Custom Theme</button>
+					<button class="btn-cancel" onclick={() => (isCustomizing = false)}>Cancel</button>
+					<button class="btn-apply" onclick={applyCustomTheme}>Apply Custom Theme</button>
 				</div>
 			</div>
 		{/if}
