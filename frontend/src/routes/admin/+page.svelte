@@ -20,7 +20,18 @@
 		IconAlertCircle,
 		IconShoppingCart,
 		IconVideo,
-		IconTag
+		IconTag,
+		IconEye,
+		IconClick,
+		IconClock,
+		IconArrowUpRight,
+		IconArrowDownRight,
+		IconWorld,
+		IconBrandGoogle,
+		IconLink,
+		IconAlertTriangle,
+		IconTrendingUp,
+		IconCalendar
 	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { api } from '$lib/api/config';
@@ -29,6 +40,7 @@
 	let isLoading = true;
 	let lastUpdated: Date | null = null;
 	let error: string | null = null;
+	let selectedPeriod = '30d';
 
 	// Real stats data - fetched from API
 	let stats = {
@@ -40,18 +52,49 @@
 		totalProducts: 0
 	};
 
+	// Analytics metrics (Google Analytics style)
+	let analytics = {
+		sessions: { value: 0, change: 0, trend: 'up' as 'up' | 'down' },
+		pageviews: { value: 0, change: 0, trend: 'up' as 'up' | 'down' },
+		avgSessionDuration: { value: '0s', change: 0, trend: 'up' as 'up' | 'down' },
+		totalUsers: { value: 0, change: 0, trend: 'up' as 'up' | 'down' },
+		bounceRate: { value: 0, change: 0, trend: 'down' as 'up' | 'down' },
+		newUsers: { value: 0, change: 0, trend: 'up' as 'up' | 'down' }
+	};
+
+	// SEO metrics (Rank Math style)
+	let seoMetrics = {
+		searchTraffic: { value: 0, change: 0 },
+		totalImpressions: { value: 0, change: 0 },
+		totalKeywords: { value: 0, change: 0 },
+		avgPosition: { value: 0, change: 0 },
+		error404Count: { value: 0, hits: 0 },
+		redirections: { count: 0, hits: 0 }
+	};
+
+	// Device breakdown
+	let deviceBreakdown = {
+		desktop: 65,
+		mobile: 30,
+		tablet: 5
+	};
+
+	// Top pages
+	let topPages: { path: string; views: number; change: number }[] = [];
+
 	async function fetchDashboardStats() {
 		isLoading = true;
 		error = null;
 		
 		try {
 			// Fetch real stats from multiple endpoints in parallel
-			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes] = await Promise.allSettled([
+			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
 				api.get('/api/admin/members/stats'),
 				api.get('/api/admin/subscriptions/plans/stats'),
 				api.get('/api/admin/coupons'),
 				api.get('/api/admin/posts/stats'),
-				api.get('/api/admin/products/stats')
+				api.get('/api/admin/products/stats'),
+				api.get(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
 			]);
 
 			// Extract data from responses - handle the member stats structure
@@ -87,6 +130,47 @@
 				stats.totalProducts = productsData?.total || productsData?.data?.total || 0;
 			}
 
+			// Parse analytics data
+			if (analyticsRes.status === 'fulfilled') {
+				const data = analyticsRes.value?.data || analyticsRes.value;
+				if (data?.kpis) {
+					analytics.sessions = { 
+						value: data.kpis.sessions?.value || 0, 
+						change: data.kpis.sessions?.change || 0,
+						trend: (data.kpis.sessions?.change || 0) >= 0 ? 'up' : 'down'
+					};
+					analytics.pageviews = { 
+						value: data.kpis.pageviews?.value || 0, 
+						change: data.kpis.pageviews?.change || 0,
+						trend: (data.kpis.pageviews?.change || 0) >= 0 ? 'up' : 'down'
+					};
+					analytics.totalUsers = { 
+						value: data.kpis.unique_visitors?.value || data.kpis.users?.value || 0, 
+						change: data.kpis.unique_visitors?.change || data.kpis.users?.change || 0,
+						trend: (data.kpis.unique_visitors?.change || 0) >= 0 ? 'up' : 'down'
+					};
+					analytics.newUsers = { 
+						value: data.kpis.new_users?.value || 0, 
+						change: data.kpis.new_users?.change || 0,
+						trend: (data.kpis.new_users?.change || 0) >= 0 ? 'up' : 'down'
+					};
+					analytics.bounceRate = { 
+						value: data.kpis.bounce_rate?.value || 0, 
+						change: data.kpis.bounce_rate?.change || 0,
+						trend: (data.kpis.bounce_rate?.change || 0) <= 0 ? 'up' : 'down'
+					};
+					const duration = data.kpis.avg_session_duration?.value || 0;
+					analytics.avgSessionDuration = { 
+						value: formatDuration(duration), 
+						change: data.kpis.avg_session_duration?.change || 0,
+						trend: (data.kpis.avg_session_duration?.change || 0) >= 0 ? 'up' : 'down'
+					};
+				}
+				if (data?.top_pages) {
+					topPages = data.top_pages.slice(0, 5);
+				}
+			}
+
 			lastUpdated = new Date();
 		} catch (err) {
 			console.error('Failed to fetch dashboard stats:', err);
@@ -96,39 +180,48 @@
 		}
 	}
 
+	function formatDuration(seconds: number): string {
+		if (seconds < 60) return `${Math.round(seconds)}s`;
+		const mins = Math.floor(seconds / 60);
+		const secs = Math.round(seconds % 60);
+		return `${mins}m ${secs}s`;
+	}
+
+	function formatNumber(num: number): string {
+		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+		if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+		return num.toLocaleString();
+	}
+
+	function changePeriod(period: string) {
+		selectedPeriod = period;
+		fetchDashboardStats();
+	}
+
 	onMount(() => {
 		fetchDashboardStats();
 	});
 </script>
 
 <div class="dashboard-container">
-	<!-- Welcome Section -->
-	<div class="welcome-section">
-		<div class="flex items-center justify-between flex-wrap gap-4">
-			<div>
-				<h2 class="welcome-title">Welcome back, Admin</h2>
-				<p class="welcome-subtitle">Here's what's happening with your business today.</p>
+	<!-- Header with Period Selector -->
+	<div class="dashboard-header">
+		<div class="header-left">
+			<h1 class="dashboard-title">Dashboard</h1>
+			<p class="dashboard-subtitle">Real-time analytics and performance metrics</p>
+		</div>
+		<div class="header-right">
+			<div class="period-selector">
+				<button class:active={selectedPeriod === '7d'} on:click={() => changePeriod('7d')}>7 Days</button>
+				<button class:active={selectedPeriod === '30d'} on:click={() => changePeriod('30d')}>30 Days</button>
+				<button class:active={selectedPeriod === '90d'} on:click={() => changePeriod('90d')}>90 Days</button>
 			</div>
-			<div class="flex items-center gap-4">
-				{#if lastUpdated}
-					<span class="text-sm text-slate-500">
-						Last updated: {lastUpdated.toLocaleTimeString()}
-					</span>
-				{/if}
-				<button
-					on:click={fetchDashboardStats}
-					class="flex items-center gap-2 px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-lg text-indigo-400 transition-all duration-200"
-					class:animate-spin={isLoading}
-					disabled={isLoading}
-				>
-					<IconRefresh size={18} class={isLoading ? 'animate-spin' : ''} />
-					<span class="hidden sm:inline">Refresh</span>
-				</button>
-			</div>
+			<button class="refresh-btn" on:click={fetchDashboardStats} disabled={isLoading}>
+				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+			</button>
 		</div>
 	</div>
 
-	<!-- Real Stats Grid -->
 	{#if error}
 		<div class="error-banner">
 			<IconAlertCircle size={20} />
@@ -136,35 +229,242 @@
 		</div>
 	{/if}
 
-	<div class="stats-grid" bind:this={statsRef}>
-		<a href="/admin/members" class="stat-card">
-			<div class="stat-icon members"><IconUserCircle size={24} /></div>
-			<div class="stat-content">
-				<span class="stat-value">{isLoading ? '...' : stats.totalMembers.toLocaleString()}</span>
-				<span class="stat-label">Total Members</span>
+	<!-- Main Analytics Panel -->
+	<div class="analytics-panel">
+		<div class="panel-header">
+			<div class="panel-title">
+				<IconChartBar size={22} />
+				<span>Site Analytics</span>
 			</div>
-		</a>
-		<a href="/admin/subscriptions" class="stat-card">
-			<div class="stat-icon subscriptions"><IconReceipt size={24} /></div>
-			<div class="stat-content">
-				<span class="stat-value">{isLoading ? '...' : stats.activeSubscriptions.toLocaleString()}</span>
-				<span class="stat-label">Active Subscriptions</span>
+			<span class="panel-period">Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} Days</span>
+		</div>
+
+		<div class="analytics-grid">
+			<!-- Sessions -->
+			<div class="metric-card large">
+				<div class="metric-header">
+					<span class="metric-label">Sessions</span>
+					<IconEye size={18} class="metric-icon" />
+				</div>
+				<div class="metric-value">{isLoading ? '...' : formatNumber(analytics.sessions.value)}</div>
+				<div class="metric-change" class:positive={analytics.sessions.trend === 'up'} class:negative={analytics.sessions.trend === 'down'}>
+					{#if analytics.sessions.trend === 'up'}
+						<IconArrowUpRight size={16} />
+					{:else}
+						<IconArrowDownRight size={16} />
+					{/if}
+					<span>{Math.abs(analytics.sessions.change)}%</span>
+					<span class="vs-text">vs. Previous Period</span>
+				</div>
 			</div>
-		</a>
-		<a href="/admin/coupons" class="stat-card">
-			<div class="stat-icon coupons"><IconTicket size={24} /></div>
-			<div class="stat-content">
-				<span class="stat-value">{isLoading ? '...' : stats.activeCoupons.toLocaleString()}</span>
-				<span class="stat-label">Active Coupons</span>
+
+			<!-- Pageviews -->
+			<div class="metric-card large">
+				<div class="metric-header">
+					<span class="metric-label">Pageviews</span>
+					<IconClick size={18} class="metric-icon" />
+				</div>
+				<div class="metric-value">{isLoading ? '...' : formatNumber(analytics.pageviews.value)}</div>
+				<div class="metric-change" class:positive={analytics.pageviews.trend === 'up'} class:negative={analytics.pageviews.trend === 'down'}>
+					{#if analytics.pageviews.trend === 'up'}
+						<IconArrowUpRight size={16} />
+					{:else}
+						<IconArrowDownRight size={16} />
+					{/if}
+					<span>{Math.abs(analytics.pageviews.change)}%</span>
+					<span class="vs-text">vs. Previous Period</span>
+				</div>
 			</div>
-		</a>
-		<a href="/admin/blog" class="stat-card">
-			<div class="stat-icon posts"><IconNews size={24} /></div>
-			<div class="stat-content">
-				<span class="stat-value">{isLoading ? '...' : stats.totalPosts.toLocaleString()}</span>
-				<span class="stat-label">Blog Posts</span>
+
+			<!-- Avg Session Duration -->
+			<div class="metric-card">
+				<div class="metric-header">
+					<span class="metric-label">Avg. Session Duration</span>
+					<IconClock size={18} class="metric-icon" />
+				</div>
+				<div class="metric-value">{isLoading ? '...' : analytics.avgSessionDuration.value}</div>
+				<div class="metric-change" class:positive={analytics.avgSessionDuration.trend === 'up'} class:negative={analytics.avgSessionDuration.trend === 'down'}>
+					{#if analytics.avgSessionDuration.trend === 'up'}
+						<IconArrowUpRight size={16} />
+					{:else}
+						<IconArrowDownRight size={16} />
+					{/if}
+					<span>{Math.abs(analytics.avgSessionDuration.change)}%</span>
+					<span class="vs-text">vs. Previous Period</span>
+				</div>
 			</div>
-		</a>
+
+			<!-- Total Users -->
+			<div class="metric-card">
+				<div class="metric-header">
+					<span class="metric-label">Total Users</span>
+					<IconUsers size={18} class="metric-icon" />
+				</div>
+				<div class="metric-value">{isLoading ? '...' : formatNumber(analytics.totalUsers.value)}</div>
+				<div class="metric-change" class:positive={analytics.totalUsers.trend === 'up'} class:negative={analytics.totalUsers.trend === 'down'}>
+					{#if analytics.totalUsers.trend === 'up'}
+						<IconArrowUpRight size={16} />
+					{:else}
+						<IconArrowDownRight size={16} />
+					{/if}
+					<span>{Math.abs(analytics.totalUsers.change)}%</span>
+					<span class="vs-text">vs. Previous Period</span>
+				</div>
+			</div>
+
+			<!-- Bounce Rate -->
+			<div class="metric-card">
+				<div class="metric-header">
+					<span class="metric-label">Bounce Rate</span>
+					<IconActivity size={18} class="metric-icon" />
+				</div>
+				<div class="metric-value">{isLoading ? '...' : analytics.bounceRate.value.toFixed(1)}%</div>
+				<div class="metric-change" class:positive={analytics.bounceRate.trend === 'up'} class:negative={analytics.bounceRate.trend === 'down'}>
+					{#if analytics.bounceRate.change <= 0}
+						<IconArrowDownRight size={16} />
+					{:else}
+						<IconArrowUpRight size={16} />
+					{/if}
+					<span>{Math.abs(analytics.bounceRate.change)}%</span>
+					<span class="vs-text">vs. Previous Period</span>
+				</div>
+			</div>
+
+			<!-- New Users -->
+			<div class="metric-card">
+				<div class="metric-header">
+					<span class="metric-label">New Users</span>
+					<IconUserCircle size={18} class="metric-icon" />
+				</div>
+				<div class="metric-value">{isLoading ? '...' : formatNumber(analytics.newUsers.value)}</div>
+				<div class="metric-change" class:positive={analytics.newUsers.trend === 'up'} class:negative={analytics.newUsers.trend === 'down'}>
+					{#if analytics.newUsers.trend === 'up'}
+						<IconArrowUpRight size={16} />
+					{:else}
+						<IconArrowDownRight size={16} />
+					{/if}
+					<span>{Math.abs(analytics.newUsers.change)}%</span>
+					<span class="vs-text">vs. Previous Period</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- SEO & Technical Panel -->
+	<div class="dual-panel-row">
+		<!-- SEO Overview -->
+		<div class="analytics-panel seo-panel">
+			<div class="panel-header">
+				<div class="panel-title">
+					<IconBrandGoogle size={22} />
+					<span>SEO Overview</span>
+				</div>
+				<a href="/admin/seo" class="panel-link">View Details</a>
+			</div>
+			<div class="seo-grid">
+				<div class="seo-metric">
+					<span class="seo-label">Search Traffic</span>
+					<div class="seo-value">{formatNumber(seoMetrics.searchTraffic.value)}</div>
+				</div>
+				<div class="seo-metric">
+					<span class="seo-label">Total Impressions</span>
+					<div class="seo-value">{formatNumber(seoMetrics.totalImpressions.value)}</div>
+				</div>
+				<div class="seo-metric">
+					<span class="seo-label">Total Keywords</span>
+					<div class="seo-value">{formatNumber(seoMetrics.totalKeywords.value)}</div>
+				</div>
+				<div class="seo-metric">
+					<span class="seo-label">Avg. Position</span>
+					<div class="seo-value">{seoMetrics.avgPosition.value.toFixed(1)}</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 404 & Redirects -->
+		<div class="analytics-panel monitor-panel">
+			<div class="panel-header">
+				<div class="panel-title">
+					<IconAlertTriangle size={22} />
+					<span>Site Health</span>
+				</div>
+			</div>
+			<div class="monitor-grid">
+				<div class="monitor-section">
+					<span class="monitor-title">404 Errors</span>
+					<div class="monitor-row">
+						<div class="monitor-item">
+							<span class="monitor-label">Log Count</span>
+							<span class="monitor-value error">{seoMetrics.error404Count.value}</span>
+						</div>
+						<div class="monitor-item">
+							<span class="monitor-label">URL Hits</span>
+							<span class="monitor-value">{seoMetrics.error404Count.hits}</span>
+						</div>
+					</div>
+				</div>
+				<div class="monitor-section">
+					<span class="monitor-title">Redirections</span>
+					<div class="monitor-row">
+						<div class="monitor-item">
+							<span class="monitor-label">Active</span>
+							<span class="monitor-value">{seoMetrics.redirections.count}</span>
+						</div>
+						<div class="monitor-item">
+							<span class="monitor-label">Hits</span>
+							<span class="monitor-value">{seoMetrics.redirections.hits}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Business Stats Row -->
+	<div class="business-stats-panel">
+		<div class="panel-header">
+			<div class="panel-title">
+				<IconTrendingUp size={22} />
+				<span>Business Overview</span>
+			</div>
+		</div>
+		<div class="business-grid" bind:this={statsRef}>
+			<a href="/admin/members" class="business-card">
+				<div class="business-icon members"><IconUserCircle size={28} /></div>
+				<div class="business-content">
+					<span class="business-value">{isLoading ? '...' : formatNumber(stats.totalMembers)}</span>
+					<span class="business-label">Total Members</span>
+				</div>
+			</a>
+			<a href="/admin/subscriptions" class="business-card">
+				<div class="business-icon subscriptions"><IconReceipt size={28} /></div>
+				<div class="business-content">
+					<span class="business-value">{isLoading ? '...' : formatNumber(stats.activeSubscriptions)}</span>
+					<span class="business-label">Active Subscriptions</span>
+				</div>
+			</a>
+			<a href="/admin/products" class="business-card">
+				<div class="business-icon products"><IconShoppingCart size={28} /></div>
+				<div class="business-content">
+					<span class="business-value">{isLoading ? '...' : formatNumber(stats.totalProducts)}</span>
+					<span class="business-label">Products</span>
+				</div>
+			</a>
+			<a href="/admin/blog" class="business-card">
+				<div class="business-icon posts"><IconNews size={28} /></div>
+				<div class="business-content">
+					<span class="business-value">{isLoading ? '...' : formatNumber(stats.totalPosts)}</span>
+					<span class="business-label">Blog Posts</span>
+				</div>
+			</a>
+			<a href="/admin/coupons" class="business-card">
+				<div class="business-icon coupons"><IconTicket size={28} /></div>
+				<div class="business-content">
+					<span class="business-value">{isLoading ? '...' : formatNumber(stats.activeCoupons)}</span>
+					<span class="business-label">Active Coupons</span>
+				</div>
+			</a>
+		</div>
 	</div>
 
 	<!-- CMS Functions Grid -->
@@ -338,83 +638,97 @@
 
 <style>
 	.dashboard-container {
-		max-width: 1400px;
+		max-width: 1600px;
 	}
 
-	.welcome-section {
+	/* Dashboard Header */
+	.dashboard-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
 		margin-bottom: 2rem;
-	}
-
-	.welcome-title {
-		font-size: 2rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin-bottom: 0.5rem;
-	}
-
-	.welcome-subtitle {
-		font-size: 1.125rem;
-		color: #64748b;
-	}
-
-	/* Stats Grid */
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		flex-wrap: wrap;
 		gap: 1rem;
-		margin-bottom: 2rem;
 	}
 
-	.stat-card {
+	.header-left {
+		flex: 1;
+	}
+
+	.dashboard-title {
+		font-size: 2rem;
+		font-weight: 800;
+		color: #f1f5f9;
+		margin: 0 0 0.25rem 0;
+	}
+
+	.dashboard-subtitle {
+		font-size: 1rem;
+		color: #64748b;
+		margin: 0;
+	}
+
+	.header-right {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		padding: 1.25rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+	}
+
+	.period-selector {
+		display: flex;
+		background: rgba(30, 41, 59, 0.6);
+		border-radius: 10px;
+		padding: 4px;
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.2s ease;
 	}
 
-	.stat-card:hover {
-		border-color: rgba(99, 102, 241, 0.4);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+	.period-selector button {
+		padding: 0.5rem 1rem;
+		background: transparent;
+		border: none;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 500;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.2s;
 	}
 
-	.stat-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
+	.period-selector button:hover {
+		color: #e2e8f0;
+	}
+
+	.period-selector button.active {
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+	}
+
+	.refresh-btn {
+		width: 40px;
+		height: 40px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex-shrink: 0;
-	}
-
-	.stat-icon.members { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-	.stat-icon.subscriptions { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
-	.stat-icon.coupons { background: rgba(250, 204, 21, 0.15); color: #facc15; }
-	.stat-icon.posts { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-
-	.stat-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.stat-value {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		line-height: 1;
-	}
-
-	.stat-label {
-		font-size: 0.85rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 10px;
 		color: #94a3b8;
-		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.refresh-btn:hover {
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+	}
+
+	.refresh-btn :global(.spinning) {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
 	}
 
 	.error-banner {
@@ -427,6 +741,310 @@
 		border-radius: 8px;
 		color: #f87171;
 		margin-bottom: 1.5rem;
+	}
+
+	/* Analytics Panel */
+	.analytics-panel {
+		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 16px;
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.panel-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+	}
+
+	.panel-title {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: #f1f5f9;
+	}
+
+	.panel-title :global(svg) {
+		color: #818cf8;
+	}
+
+	.panel-period {
+		font-size: 0.875rem;
+		color: #64748b;
+		background: rgba(99, 102, 241, 0.1);
+		padding: 0.375rem 0.75rem;
+		border-radius: 6px;
+	}
+
+	.panel-link {
+		font-size: 0.875rem;
+		color: #818cf8;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.panel-link:hover {
+		color: #a5b4fc;
+	}
+
+	/* Analytics Grid */
+	.analytics-grid {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 1rem;
+	}
+
+	@media (max-width: 1200px) {
+		.analytics-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.analytics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.metric-card {
+		background: rgba(15, 23, 42, 0.5);
+		border: 1px solid rgba(99, 102, 241, 0.1);
+		border-radius: 12px;
+		padding: 1.25rem;
+		transition: all 0.2s;
+	}
+
+	.metric-card:hover {
+		border-color: rgba(99, 102, 241, 0.3);
+		background: rgba(99, 102, 241, 0.05);
+	}
+
+	.metric-card.large {
+		grid-column: span 1;
+	}
+
+	.metric-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+
+	.metric-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: #94a3b8;
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+	}
+
+	.metric-icon {
+		color: #64748b;
+	}
+
+	.metric-value {
+		font-size: 2rem;
+		font-weight: 800;
+		color: #f1f5f9;
+		line-height: 1;
+		margin-bottom: 0.5rem;
+	}
+
+	.metric-change {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.8rem;
+		font-weight: 600;
+	}
+
+	.metric-change.positive {
+		color: #4ade80;
+	}
+
+	.metric-change.negative {
+		color: #f87171;
+	}
+
+	.vs-text {
+		color: #64748b;
+		font-weight: 400;
+		margin-left: 0.25rem;
+	}
+
+	/* Dual Panel Row */
+	.dual-panel-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	@media (max-width: 900px) {
+		.dual-panel-row {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* SEO Panel */
+	.seo-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1rem;
+	}
+
+	.seo-metric {
+		background: rgba(15, 23, 42, 0.5);
+		border: 1px solid rgba(99, 102, 241, 0.1);
+		border-radius: 10px;
+		padding: 1rem;
+	}
+
+	.seo-label {
+		font-size: 0.8rem;
+		color: #94a3b8;
+		display: block;
+		margin-bottom: 0.5rem;
+	}
+
+	.seo-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #f1f5f9;
+	}
+
+	/* Monitor Panel */
+	.monitor-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.monitor-section {
+		background: rgba(15, 23, 42, 0.5);
+		border: 1px solid rgba(99, 102, 241, 0.1);
+		border-radius: 10px;
+		padding: 1rem;
+	}
+
+	.monitor-title {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: #e2e8f0;
+		margin-bottom: 0.75rem;
+		display: block;
+	}
+
+	.monitor-row {
+		display: flex;
+		gap: 2rem;
+	}
+
+	.monitor-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.monitor-label {
+		font-size: 0.75rem;
+		color: #64748b;
+	}
+
+	.monitor-value {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: #f1f5f9;
+	}
+
+	.monitor-value.error {
+		color: #f87171;
+	}
+
+	/* Business Stats Panel */
+	.business-stats-panel {
+		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 16px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+	}
+
+	.business-grid {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 1rem;
+	}
+
+	@media (max-width: 1200px) {
+		.business-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.business-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.business-card {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.25rem;
+		background: rgba(15, 23, 42, 0.5);
+		border: 1px solid rgba(99, 102, 241, 0.1);
+		border-radius: 12px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.business-card:hover {
+		border-color: rgba(99, 102, 241, 0.3);
+		background: rgba(99, 102, 241, 0.1);
+		transform: translateY(-2px);
+	}
+
+	.business-icon {
+		width: 52px;
+		height: 52px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.business-icon.members { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.business-icon.subscriptions { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
+	.business-icon.products { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+	.business-icon.posts { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+	.business-icon.coupons { background: rgba(250, 204, 21, 0.15); color: #facc15; }
+
+	.business-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.business-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		line-height: 1;
+	}
+
+	.business-label {
+		font-size: 0.8rem;
+		color: #94a3b8;
+		font-weight: 500;
 	}
 
 	/* CMS Sections */
