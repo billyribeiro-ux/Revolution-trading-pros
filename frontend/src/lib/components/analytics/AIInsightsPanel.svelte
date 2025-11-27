@@ -16,7 +16,7 @@
 		IconTarget
 	} from '@tabler/icons-svelte';
 
-	export let insights: Array<{
+	interface Insight {
 		id: string;
 		type: 'anomaly' | 'prediction' | 'recommendation' | 'trend';
 		severity: 'critical' | 'warning' | 'info';
@@ -27,7 +27,13 @@
 		change?: number;
 		action?: string;
 		timestamp: string;
-	}> = [];
+	}
+
+	interface Props {
+		insights?: Insight[];
+	}
+
+	let { insights = [] }: Props = $props();
 
 	function getIcon(type: string) {
 		switch (type) {
@@ -70,9 +76,10 @@
 	<div class="insights-list">
 		{#if insights.length > 0}
 			{#each insights as insight}
+				{@const Icon = getIcon(insight.type)}
 				<div class="insight-card {getSeverityClass(insight.severity)}">
 					<div class="insight-icon">
-						<svelte:component this={getIcon(insight.type)} size={20} />
+						<Icon size={20} />
 					</div>
 
 					<div class="insight-content">

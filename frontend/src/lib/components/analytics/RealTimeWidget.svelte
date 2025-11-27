@@ -8,13 +8,17 @@
 	import { onMount } from 'svelte';
 	import { analyticsApi, type RealTimeMetrics } from '$lib/api/analytics';
 
-	export let refreshInterval = 30000; // 30 seconds
-	export let compact = false;
+	interface Props {
+		refreshInterval?: number;
+		compact?: boolean;
+	}
 
-	let metrics: RealTimeMetrics | null = null;
-	let loading = true;
-	let error: string | null = null;
-	let lastUpdated: Date | null = null;
+	let { refreshInterval = 30000, compact = false }: Props = $props();
+
+	let metrics: RealTimeMetrics | null = $state(null);
+	let loading = $state(true);
+	let error: string | null = $state(null);
+	let lastUpdated: Date | null = $state(null);
 	let interval: ReturnType<typeof setInterval>;
 
 	async function fetchMetrics() {

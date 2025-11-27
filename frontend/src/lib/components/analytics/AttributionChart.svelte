@@ -7,9 +7,13 @@
 	 */
 	import type { ChannelAttribution } from '$lib/api/analytics';
 
-	export let channels: ChannelAttribution[] = [];
-	export let title: string = 'Channel Attribution';
-	export let model: string = 'linear';
+	interface Props {
+		channels?: ChannelAttribution[];
+		title?: string;
+		model?: string;
+	}
+
+	let { channels = [], title = 'Channel Attribution', model = 'linear' }: Props = $props();
 
 	// Channel colors
 	const channelColors: Record<string, string> = {
@@ -23,8 +27,8 @@
 	};
 
 	// Total for percentage calculations
-	$: totalConversions = channels.reduce((sum, c) => sum + c.attributed_conversions, 0);
-	$: totalRevenue = channels.reduce((sum, c) => sum + c.attributed_revenue, 0);
+	let totalConversions = $derived(channels.reduce((sum, c) => sum + c.attributed_conversions, 0));
+	let totalRevenue = $derived(channels.reduce((sum, c) => sum + c.attributed_revenue, 0));
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return '$' + (num / 1000000).toFixed(1) + 'M';

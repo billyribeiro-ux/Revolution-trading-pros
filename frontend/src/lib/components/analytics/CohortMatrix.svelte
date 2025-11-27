@@ -7,10 +7,19 @@
 	 */
 	import type { CohortRow } from '$lib/api/analytics';
 
-	export let data: CohortRow[] = [];
-	export let title: string = 'Cohort Retention';
-	export let metricType: 'retention' | 'revenue' = 'retention';
-	export let maxPeriods: number = 12;
+	interface Props {
+		data?: CohortRow[];
+		title?: string;
+		metricType?: 'retention' | 'revenue';
+		maxPeriods?: number;
+	}
+
+	let {
+		data = [],
+		title = 'Cohort Retention',
+		metricType = 'retention',
+		maxPeriods = 12
+	}: Props = $props();
 
 	// Get retention color based on value
 	function getRetentionColor(value: number): string {
@@ -34,10 +43,10 @@
 	}
 
 	// Get available period numbers
-	$: periodNumbers = Array.from({ length: maxPeriods }, (_, i) => i);
+	let periodNumbers = $derived(Array.from({ length: maxPeriods }, (_, i) => i));
 
 	// Calculate average retention per period
-	$: periodAverages = periodNumbers.map((period) => {
+	let periodAverages = $derived(periodNumbers.map((period) => {
 		const values = data
 			.filter((row) => row.periods && row.periods[period])
 			.map((row) => {
@@ -47,7 +56,7 @@
 
 		if (values.length === 0) return null;
 		return values.reduce((a, b) => a + b, 0) / values.length;
-	});
+	}));
 </script>
 
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">

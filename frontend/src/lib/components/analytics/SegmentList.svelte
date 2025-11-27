@@ -6,8 +6,12 @@
 	 */
 	import type { Segment } from '$lib/api/analytics';
 
-	export let segments: Segment[] = [];
-	export let onSelect: ((segment: Segment) => void) | null = null;
+	interface Props {
+		segments?: Segment[];
+		onSelect?: ((segment: Segment) => void) | null;
+	}
+
+	let { segments = [], onSelect = null }: Props = $props();
 
 	// Segment type labels
 	const typeLabels: Record<string, string> = {
@@ -30,10 +34,10 @@
 	};
 
 	// Sort segments: system first, then by user count
-	$: sortedSegments = [...segments].sort((a, b) => {
+	let sortedSegments = $derived([...segments].sort((a, b) => {
 		if (a.is_system !== b.is_system) return a.is_system ? -1 : 1;
 		return b.user_count - a.user_count;
-	});
+	}));
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -53,7 +57,7 @@
 			<button
 				class="w-full p-4 hover:bg-gray-50 transition-colors text-left flex items-center gap-4
 					{onSelect ? 'cursor-pointer' : ''}"
-				on:click={() => onSelect?.(segment)}
+				onclick={() => onSelect?.(segment)}
 				disabled={!onSelect}
 			>
 				<!-- Icon -->

@@ -7,10 +7,19 @@
 	 */
 	import type { FunnelStep } from '$lib/api/analytics';
 
-	export let steps: FunnelStep[] = [];
-	export let title: string = 'Conversion Funnel';
-	export let showDropOff: boolean = true;
-	export let animated: boolean = true;
+	interface Props {
+		steps?: FunnelStep[];
+		title?: string;
+		showDropOff?: boolean;
+		animated?: boolean;
+	}
+
+	let {
+		steps = [],
+		title = 'Conversion Funnel',
+		showDropOff = true,
+		animated = true
+	}: Props = $props();
 
 	// Calculate width percentages based on conversion
 	function getStepWidth(step: FunnelStep, index: number): number {

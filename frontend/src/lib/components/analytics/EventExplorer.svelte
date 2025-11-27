@@ -10,15 +10,19 @@
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '@tabler/icons-svelte';
 
-	export let period: string = '7d';
+	interface Props {
+		period?: string;
+	}
 
-	let events: AnalyticsEvent[] = [];
-	let eventTypes: Array<{ name: string; count: number }> = [];
-	let loading = true;
-	let searchQuery = '';
-	let selectedEventType = '';
-	let currentPage = 1;
-	let totalPages = 1;
+	let { period = '7d' }: Props = $props();
+
+	let events: AnalyticsEvent[] = $state([]);
+	let eventTypes: Array<{ name: string; count: number }> = $state([]);
+	let loading = $state(true);
+	let searchQuery = $state('');
+	let selectedEventType = $state('');
+	let currentPage = $state(1);
+	let totalPages = $state(1);
 
 	async function loadEvents() {
 		loading = true;
@@ -63,7 +67,7 @@
 <div class="event-explorer">
 	<div class="explorer-header">
 		<h2 class="explorer-title">Event Explorer</h2>
-		<button class="btn-refresh" on:click={loadEvents}>
+		<button class="btn-refresh" onclick={loadEvents}>
 			<IconRefresh size={18} />
 			Refresh
 		</button>
@@ -76,13 +80,13 @@
 			<input
 				type="text"
 				bind:value={searchQuery}
-				on:keyup={(e) => e.key === 'Enter' && handleSearch()}
+				onkeyup={(e) => e.key === 'Enter' && handleSearch()}
 				placeholder="Search events..."
 				class="search-input"
 			/>
 		</div>
 
-		<select bind:value={selectedEventType} on:change={handleFilterChange} class="filter-select">
+		<select bind:value={selectedEventType} onchange={handleFilterChange} class="filter-select">
 			<option value="">All Event Types</option>
 			{#each eventTypes as type}
 				<option value={type.name}>{type.name} ({type.count})</option>
@@ -135,7 +139,7 @@
 				<button
 					class="page-btn"
 					disabled={currentPage === 1}
-					on:click={() => {
+					onclick={() => {
 						currentPage--;
 						loadEvents();
 					}}
@@ -146,7 +150,7 @@
 				<button
 					class="page-btn"
 					disabled={currentPage === totalPages}
-					on:click={() => {
+					onclick={() => {
 						currentPage++;
 						loadEvents();
 					}}

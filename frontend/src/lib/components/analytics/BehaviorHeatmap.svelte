@@ -10,15 +10,21 @@
 	import { onMount } from 'svelte';
 	import { IconClick, IconEye, IconChartBar } from '@tabler/icons-svelte';
 
-	export let data: Array<{
+	interface DataPoint {
 		x: number;
 		y: number;
 		intensity: number;
 		type: 'click' | 'hover' | 'scroll';
-	}> = [];
-	export let width = 800;
-	export let height = 600;
-	export let showLegend = true;
+	}
+
+	interface Props {
+		data?: DataPoint[];
+		width?: number;
+		height?: number;
+		showLegend?: boolean;
+	}
+
+	let { data = [], width = 800, height = 600, showLegend = true }: Props = $props();
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
@@ -64,9 +70,11 @@
 		});
 	}
 
-	$: if (ctx && data) {
-		renderHeatmap();
-	}
+	$effect(() => {
+		if (ctx && data) {
+			renderHeatmap();
+		}
+	});
 </script>
 
 <div class="heatmap-container">
