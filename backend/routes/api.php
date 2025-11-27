@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserSubscriptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Api\PastMembersController;
 use Illuminate\Support\Facades\Route;
 
 // ========================================
@@ -275,6 +276,15 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/members/{id}', [MemberController::class, 'show']);
     Route::post('/members/{id}/send-email', [MemberController::class, 'sendEmail']);
     Route::post('/members/bulk-email', [MemberController::class, 'bulkEmail']);
+
+    // Past Members & Win-Back Campaigns
+    Route::get('/past-members', [PastMembersController::class, 'index']);
+    Route::get('/past-members/stats', [PastMembersController::class, 'stats']);
+    Route::get('/past-members/analytics', [PastMembersController::class, 'analytics']);
+    Route::post('/past-members/{userId}/win-back', [PastMembersController::class, 'sendWinBack']);
+    Route::post('/past-members/bulk-win-back', [PastMembersController::class, 'sendBulkWinBack']);
+    Route::post('/past-members/{userId}/survey', [PastMembersController::class, 'sendSurvey']);
+    Route::post('/past-members/bulk-survey', [PastMembersController::class, 'sendBulkSurvey']);
 
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);
