@@ -14,16 +14,28 @@
 	import type { KpiValue } from '$lib/api/analytics';
 	import AnimatedNumber from '$lib/components/ui/AnimatedNumber.svelte';
 
-	export let kpi: KpiValue;
-	export let showSparkline: boolean = false;
-	export let sparklineData: number[] = [];
-	export let size: 'sm' | 'md' | 'lg' = 'md';
-	export let clickable: boolean = false;
-	export let animateOnMount: boolean = true;
-	export let animationDelay: number = 0;
+	interface Props {
+		kpi: KpiValue;
+		showSparkline?: boolean;
+		sparklineData?: number[];
+		size?: 'sm' | 'md' | 'lg';
+		clickable?: boolean;
+		animateOnMount?: boolean;
+		animationDelay?: number;
+	}
+
+	let {
+		kpi,
+		showSparkline = false,
+		sparklineData = [],
+		size = 'md',
+		clickable = false,
+		animateOnMount = true,
+		animationDelay = 0
+	}: Props = $props();
 
 	let cardRef: HTMLDivElement;
-	let isVisible = false;
+	let isVisible = $state(false);
 
 	onMount(() => {
 		if (!browser || !cardRef || !animateOnMount) {
@@ -87,22 +99,23 @@
 		gray: 'bg-gray-500/10 text-gray-600 border-gray-500/20'
 	};
 
-	$: trendClass =
-		kpi.trend === 'up' ? 'text-green-500' : kpi.trend === 'down' ? 'text-red-500' : 'text-gray-500';
+	let trendClass = $derived(
+		kpi.trend === 'up' ? 'text-green-500' : kpi.trend === 'down' ? 'text-red-500' : 'text-gray-500'
+	);
 
-	$: trendIcon = kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→';
+	let trendIcon = $derived(kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→');
 
-	$: sizeClasses = {
+	let sizeClasses = $derived({
 		sm: 'p-3',
 		md: 'p-4',
 		lg: 'p-6'
-	}[size];
+	}[size]);
 
-	$: valueSizeClasses = {
+	let valueSizeClasses = $derived({
 		sm: 'text-xl',
 		md: 'text-2xl',
 		lg: 'text-4xl'
-	}[size];
+	}[size]);
 
 	// Simple sparkline SVG
 	function generateSparklinePath(data: number[]): string {

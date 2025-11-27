@@ -8,27 +8,37 @@
 	import KpiCard from './KpiCard.svelte';
 	import type { KpiValue } from '$lib/api/analytics';
 
-	export let kpis: KpiValue[] = [];
-	export let showPrimaryOnly: boolean = false;
-	export let category: string | null = null;
-	export let columns: 2 | 3 | 4 | 5 = 4;
-	export let onKpiClick: ((kpi: KpiValue) => void) | null = null;
+	interface Props {
+		kpis?: KpiValue[];
+		showPrimaryOnly?: boolean;
+		category?: string | null;
+		columns?: 2 | 3 | 4 | 5;
+		onKpiClick?: ((kpi: KpiValue) => void) | null;
+	}
 
-	$: filteredKpis = kpis.filter((kpi) => {
+	let {
+		kpis = [],
+		showPrimaryOnly = false,
+		category = null,
+		columns = 4,
+		onKpiClick = null
+	}: Props = $props();
+
+	let filteredKpis = $derived(kpis.filter((kpi) => {
 		if (showPrimaryOnly && !kpi.is_primary) return false;
 		if (category && kpi.category !== category) return false;
 		return true;
-	});
+	}));
 
-	$: gridCols = {
+	let gridCols = $derived({
 		2: 'grid-cols-1 sm:grid-cols-2',
 		3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
 		4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
 		5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-	}[columns];
+	}[columns]);
 
 	// Group KPIs by category
-	$: categories = [...new Set(kpis.map((k) => k.category))];
+	let categories = $derived([...new Set(kpis.map((k) => k.category))]);
 </script>
 
 <div class="space-y-6">
@@ -46,8 +56,8 @@
 							<div
 								role="button"
 								tabindex="0"
-								on:click={() => onKpiClick?.(kpi)}
-								on:keypress={() => onKpiClick?.(kpi)}
+								onclick={(e) => { e.preventDefault(); onKpiClick?.(kpi); }}
+								onkeypress={(e) => { e.preventDefault(); onKpiClick?.(kpi); }}
 							>
 								<KpiCard {kpi} clickable={!!onKpiClick} />
 							</div>
@@ -63,8 +73,8 @@
 				<div
 					role="button"
 					tabindex="0"
-					on:click={() => onKpiClick?.(kpi)}
-					on:keypress={() => onKpiClick?.(kpi)}
+					onclick={() => onKpiClick?.(kpi)}
+					onkeypress={() => onKpiClick?.(kpi)}
 				>
 					<KpiCard {kpi} clickable={!!onKpiClick} />
 				</div>

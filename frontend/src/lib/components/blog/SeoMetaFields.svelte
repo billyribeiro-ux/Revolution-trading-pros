@@ -1,21 +1,27 @@
 <script lang="ts">
 	import { IconX, IconPlus } from '@tabler/icons-svelte';
 	
-	export let meta: any;
-	
-	let newKeyword = '';
-
-	// Initialize keywords array if not present
-	$: if (!meta.meta_keywords) {
-		meta.meta_keywords = [];
+	interface Props {
+		meta: any;
 	}
 
-	$: {
+	let { meta = $bindable() }: Props = $props();
+	
+	let newKeyword = $state('');
+
+	// Initialize keywords array if not present
+	$effect(() => {
+		if (!meta.meta_keywords) {
+			meta.meta_keywords = [];
+		}
+	});
+
+	$effect(() => {
 		// Auto-generate meta title from post title if not set
 		if (!meta.meta_title && meta.title) {
 			meta.meta_title = meta.title;
 		}
-	}
+	});
 
 	function addKeyword() {
 		if (newKeyword.trim() && !meta.meta_keywords.includes(newKeyword.trim())) {
@@ -75,7 +81,7 @@
 					{#each meta.meta_keywords as keyword}
 						<span class="keyword-tag">
 							{keyword}
-							<button type="button" class="remove-keyword" on:click={() => removeKeyword(keyword)}>
+							<button type="button" class="remove-keyword" onclick={() => removeKeyword(keyword)}>
 								<IconX size={14} />
 							</button>
 						</span>
@@ -88,9 +94,9 @@
 					type="text"
 					bind:value={newKeyword}
 					placeholder="Add a keyword..."
-					on:keydown={handleKeywordKeydown}
+					onkeydown={handleKeywordKeydown}
 				/>
-				<button type="button" class="add-keyword-btn" on:click={addKeyword}>
+				<button type="button" class="add-keyword-btn" onclick={addKeyword}>
 					<IconPlus size={16} />
 				</button>
 			</div>

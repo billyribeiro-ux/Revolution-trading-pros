@@ -2,9 +2,13 @@
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
     
-    export let type: 'line' | 'area' | 'candle' | 'bar' | 'pie' | 'scatter' | 'heatmap' | 'radar' = 'line';
-    export let size: number = 48;
-    export let color: string = '#3b82f6';
+    interface Props {
+        type?: 'line' | 'area' | 'candle' | 'bar' | 'pie' | 'scatter' | 'heatmap' | 'radar';
+        size?: number;
+        color?: string;
+    }
+    
+    let { type = 'line', size = 48, color = '#3b82f6' }: Props = $props();
     
     let svgElement: SVGSVGElement;
     

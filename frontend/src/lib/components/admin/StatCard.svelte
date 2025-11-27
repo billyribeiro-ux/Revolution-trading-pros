@@ -1,12 +1,24 @@
 <script lang="ts">
 	import { Card } from '$lib/components/ui';
+	import type { ComponentType } from 'svelte';
 
-	export let title: string;
-	export let value: string | number;
-	export let icon: any;
-	export let trend: string = '';
-	export let trendUp: boolean = true;
-	export let color: 'blue' | 'green' | 'purple' | 'orange' = 'blue';
+	interface Props {
+		title: string;
+		value: string | number;
+		icon: ComponentType;
+		trend?: string;
+		trendUp?: boolean;
+		color?: 'blue' | 'green' | 'purple' | 'orange';
+	}
+
+	let {
+		title,
+		value,
+		icon: Icon,
+		trend = '',
+		trendUp = true,
+		color = 'blue'
+	}: Props = $props();
 
 	const colors = {
 		blue: 'bg-blue-100 text-blue-600',
@@ -29,7 +41,7 @@
 			{/if}
 		</div>
 		<div class="p-3 rounded-lg {colors[color]}">
-			<svelte:component this={icon} size={24} />
+			<Icon size={24} />
 		</div>
 	</div>
 </Card>

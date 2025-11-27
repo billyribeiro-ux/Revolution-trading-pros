@@ -1,27 +1,32 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconX } from '@tabler/icons-svelte';
 
-	// Props
-	export let template: any = null; // if editing, contains existing data
-	export let isEdit: boolean = false;
+	interface Props {
+		template?: any;
+		isEdit?: boolean;
+		onsaved?: (detail: { id: number }) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let {
+		template = null,
+		isEdit = false,
+		onsaved
+	}: Props = $props();
 
 	// Form fields
-	let name = template?.name ?? '';
-	let slug = template?.slug ?? '';
-	let subject = template?.subject ?? '';
-	let email_type = template?.email_type ?? '';
-	let body_html = template?.body_html ?? '';
-	let body_text = template?.body_text ?? '';
-	let variables = template?.variables ? JSON.stringify(template.variables, null, 2) : '';
-	let is_active = template?.is_active ?? true;
+	let name = $state(template?.name ?? '');
+	let slug = $state(template?.slug ?? '');
+	let subject = $state(template?.subject ?? '');
+	let email_type = $state(template?.email_type ?? '');
+	let body_html = $state(template?.body_html ?? '');
+	let body_text = $state(template?.body_text ?? '');
+	let variables = $state(template?.variables ? JSON.stringify(template.variables, null, 2) : '');
+	let is_active = $state(template?.is_active ?? true);
 
-	let loading = false;
-	let error = '';
+	let loading = $state(false);
+	let error = $state('');
 
 	async function handleSubmit() {
 		loading = true;
@@ -39,10 +44,10 @@
 		try {
 			if (isEdit) {
 				await emailTemplatesApi.update((template as any).id, payload);
-				dispatch('saved', { id: (template as any).id });
+				onsaved?.({ id: (template as any).id });
 			} else {
 				const created = await emailTemplatesApi.create(payload);
-				dispatch('saved', { id: (created as any).id });
+				onsaved?.({ id: (created as any).id });
 			}
 			goto('/admin/email/templates');
 		} catch (e) {
@@ -70,7 +75,7 @@
 	{#if error}
 		<p class="alert alert-error">{error}</p>
 	{/if}
-	<form on:submit|preventDefault={handleSubmit}>
+	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 		<div class="grid">
 			<div class="field">
 				<label for="name">Name</label>
@@ -117,7 +122,7 @@
 			<button
 				type="button"
 				class="btn-secondary"
-				on:click={cancel}
+				onclick={cancel}
 				disabled={loading}
 				title="Cancel"><IconX size={18} /> Cancel</button
 			>

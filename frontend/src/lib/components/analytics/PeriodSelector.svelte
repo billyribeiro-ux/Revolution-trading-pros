@@ -4,12 +4,18 @@
 	 *
 	 * Quick period selection and custom date range picker.
 	 */
-	import { createEventDispatcher } from 'svelte';
 
-	export let value: string = '30d';
-	export let showCustom: boolean = true;
+	interface Props {
+		value?: string;
+		showCustom?: boolean;
+		onchange?: (value: string) => void;
+	}
 
-	const dispatch = createEventDispatcher<{ change: string }>();
+	let {
+		value = $bindable('30d'),
+		showCustom = true,
+		onchange
+	}: Props = $props();
 
 	const periods = [
 		{ value: '7d', label: '7 Days' },
@@ -21,7 +27,7 @@
 
 	function selectPeriod(period: string) {
 		value = period;
-		dispatch('change', period);
+		onchange?.(period);
 	}
 </script>
 
@@ -30,7 +36,7 @@
 		<button
 			class="px-3 py-1.5 text-sm font-medium rounded-md transition-all
 				{value === period.value ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
-			on:click={() => selectPeriod(period.value)}
+			onclick={() => selectPeriod(period.value)}
 		>
 			{period.label}
 		</button>

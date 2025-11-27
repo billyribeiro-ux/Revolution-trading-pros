@@ -1,7 +1,12 @@
 <script lang="ts">
     // Type available for future icon variations
-    export const type: string = 'line';
-    export let size: number = 48;
+    const type: string = 'line';
+    
+    interface Props {
+        size?: number;
+    }
+    
+    let { size = 48 }: Props = $props();
 </script>
 
 <svg width={size} height={size} viewBox="0 0 48 48" class="text-pink-400">

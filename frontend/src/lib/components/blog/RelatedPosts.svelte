@@ -1,8 +1,12 @@
 <script lang="ts">
   import type { Post } from '$lib/api/client';
 
-  export let posts: Post[] = [];
-  export let loading = false;
+  interface Props {
+    posts?: Post[];
+    loading?: boolean;
+  }
+
+  let { posts = [], loading = false }: Props = $props();
 </script>
 
 <section class="related-posts mt-12 border-t pt-8">
