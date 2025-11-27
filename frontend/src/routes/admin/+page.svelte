@@ -844,7 +844,7 @@
 		letter-spacing: 0.025em;
 	}
 
-	.metric-icon {
+	:global(.metric-icon) {
 		color: #64748b;
 	}
 
@@ -1133,24 +1133,4 @@
 		color: #64748b;
 	}
 
-	/* Refresh button animation */
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.animate-spin {
-		animation: spin 1s linear infinite;
-	}
-
-	/* Responsive */
-	@media (max-width: 640px) {
-		.welcome-title {
-			font-size: 1.5rem;
-		}
-	}
 </style>
