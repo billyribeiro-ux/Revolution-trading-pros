@@ -8,14 +8,20 @@
 <script lang="ts">
 	import { IconArrowRight, IconX, IconCheck } from '@tabler/icons-svelte';
 
-	export let journeyData: Array<{
+	interface JourneyStep {
 		step: string;
 		users: number;
 		conversion_rate: number;
 		avg_time: number;
 		drop_off: number;
 		top_actions: Array<{ action: string; count: number }>;
-	}> = [];
+	}
+
+	interface Props {
+		journeyData?: JourneyStep[];
+	}
+
+	let { journeyData = [] }: Props = $props();
 
 	function formatNumber(num: number): string {
 		return num.toLocaleString();

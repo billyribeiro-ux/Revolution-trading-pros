@@ -7,39 +7,54 @@
 	 */
 	import { onMount, onDestroy } from 'svelte';
 
-	export let data: Array<{
+	interface DataPoint {
 		date: string;
 		value: number;
 		label?: string;
-	}> = [];
-	export let title: string = '';
-	export let color: string = '#3B82F6';
-	export let fillOpacity: number = 0.1;
-	export let showArea: boolean = true;
-	export let showPoints: boolean = false;
-	export let height: number = 200;
-	export let formatValue: (val: number) => string = (v) => v.toLocaleString();
-	export let formatDate: (date: string) => string = (d) =>
-		new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+	}
+
+	interface Props {
+		data?: DataPoint[];
+		title?: string;
+		color?: string;
+		fillOpacity?: number;
+		showArea?: boolean;
+		showPoints?: boolean;
+		height?: number;
+		formatValue?: (val: number) => string;
+		formatDate?: (date: string) => string;
+	}
+
+	let {
+		data = [],
+		title = '',
+		color = '#3B82F6',
+		fillOpacity = 0.1,
+		showArea = true,
+		showPoints = false,
+		height = 200,
+		formatValue = (v) => v.toLocaleString(),
+		formatDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+	}: Props = $props();
 
 	let containerEl: HTMLDivElement;
-	let width = 600;
-	let hoveredIndex: number | null = null;
-	let tooltipX = 0;
-	let tooltipY = 0;
+	let width = $state(600);
+	let hoveredIndex: number | null = $state(null);
+	let tooltipX = $state(0);
+	let tooltipY = $state(0);
 
 	// Padding
 	const padding = { top: 20, right: 20, bottom: 30, left: 50 };
 
 	// Calculate chart dimensions
-	$: chartWidth = width - padding.left - padding.right;
-	$: chartHeight = height - padding.top - padding.bottom;
+	let chartWidth = $derived(width - padding.left - padding.right);
+	let chartHeight = $derived(height - padding.top - padding.bottom);
 
 	// Calculate scales
-	$: values = data.map((d) => d.value);
-	$: minValue = Math.min(...values, 0);
-	$: maxValue = Math.max(...values);
-	$: valueRange = maxValue - minValue || 1;
+	let values = $derived(data.map((d) => d.value));
+	let minValue = $derived(Math.min(...values, 0));
+	let maxValue = $derived(Math.max(...values));
+	let valueRange = $derived(maxValue - minValue || 1);
 
 	// Scale functions
 	function scaleX(index: number): number {
@@ -51,29 +66,29 @@
 	}
 
 	// Generate SVG path for line
-	$: linePath = data
+	let linePath = $derived(data
 		.map((d, i) => {
 			const x = scaleX(i);
 			const y = scaleY(d.value);
 			return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
 		})
-		.join(' ');
+		.join(' '));
 
 	// Generate SVG path for area
-	$: areaPath =
+	let areaPath = $derived(
 		linePath +
 		` L ${scaleX(data.length - 1)} ${padding.top + chartHeight}` +
 		` L ${padding.left} ${padding.top + chartHeight}` +
-		` Z`;
+		` Z`);
 
 	// Y-axis ticks
-	$: yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => ({
+	let yTicks = $derived([0, 0.25, 0.5, 0.75, 1].map((t) => ({
 		value: minValue + t * valueRange,
 		y: scaleY(minValue + t * valueRange)
-	}));
+	})));
 
 	// X-axis labels (show ~5 labels)
-	$: xLabels = data.filter((_, i) => i % Math.ceil(data.length / 5) === 0 || i === data.length - 1);
+	let xLabels = $derived(data.filter((_, i) => i % Math.ceil(data.length / 5) === 0 || i === data.length - 1));
 
 	// Handle resize
 	function handleResize() {
@@ -119,8 +134,8 @@
 	<div
 		bind:this={containerEl}
 		class="relative"
-		on:mousemove={handleMouseMove}
-		on:mouseleave={handleMouseLeave}
+		onmousemove={handleMouseMove}
+		onmouseleave={handleMouseLeave}
 		role="img"
 		aria-label="Time series chart"
 	>

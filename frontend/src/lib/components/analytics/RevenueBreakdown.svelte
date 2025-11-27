@@ -8,7 +8,7 @@
 <script lang="ts">
 	import { IconTrendingUp, IconTrendingDown, IconMinus } from '@tabler/icons-svelte';
 
-	export let data: {
+	interface RevenueData {
 		mrr: number;
 		mrr_change: number;
 		arr: number;
@@ -20,7 +20,13 @@
 		churn_rate: number;
 		ltv: number;
 		arpu: number;
-	};
+	}
+
+	interface Props {
+		data: RevenueData;
+	}
+
+	let { data }: Props = $props();
 
 	function formatCurrency(value: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -59,14 +65,17 @@
 		<div class="metric-card primary">
 			<div class="metric-label">Monthly Recurring Revenue</div>
 			<div class="metric-value">{formatCurrency(data.mrr)}</div>
+			{#if true}
+			{@const TrendIcon = getTrendIcon(data.mrr_change)}
 			<div
 				class="metric-change"
 				class:positive={data.mrr_change > 0}
 				class:negative={data.mrr_change < 0}
 			>
-				<svelte:component this={getTrendIcon(data.mrr_change)} size={16} />
+				<TrendIcon size={16} />
 				{formatPercent(Math.abs(data.mrr_change))} vs last month
 			</div>
+			{/if}
 		</div>
 
 		<div class="metric-card">

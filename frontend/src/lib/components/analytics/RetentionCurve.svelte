@@ -8,16 +8,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	export let cohorts: Array<{
+	interface Cohort {
 		name: string;
 		color: string;
 		data: Array<{ day: number; retention: number }>;
-	}> = [];
+	}
 
-	export let height = 300;
+	interface Props {
+		cohorts?: Cohort[];
+		height?: number;
+	}
+
+	let { cohorts = [], height = 300 }: Props = $props();
 
 	let containerEl: HTMLDivElement;
-	let width = 600;
+	let width = $state(600);
 
 	onMount(() => {
 		if (containerEl) {
@@ -25,10 +30,10 @@
 		}
 	});
 
-	$: padding = { top: 20, right: 20, bottom: 40, left: 50 };
-	$: chartWidth = width - padding.left - padding.right;
-	$: chartHeight = height - padding.top - padding.bottom;
-	$: maxDay = Math.max(...cohorts.flatMap((c) => c.data.map((d) => d.day)));
+	const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+	let chartWidth = $derived(width - padding.left - padding.right);
+	let chartHeight = $derived(height - padding.top - padding.bottom);
+	let maxDay = $derived(Math.max(...cohorts.flatMap((c) => c.data.map((d) => d.day))));
 
 	// Scale functions - computed from reactive values
 	function getXScale(day: number, maxDay: number, chartWidth: number): number {
