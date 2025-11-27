@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\EmailTemplate;
+use App\Services\Email\EmailTemplateRenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,8 +13,9 @@ use Illuminate\Support\Str;
 
 /**
  * Feedback survey notification for churned members.
+ * Supports admin-customizable templates with Blade fallback.
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
  */
 class FeedbackSurveyNotification extends Notification implements ShouldQueue
@@ -46,6 +49,30 @@ class FeedbackSurveyNotification extends Notification implements ShouldQueue
         $frontendUrl = Config::get('app.frontend_url', Config::get('app.url'));
         $surveyUrl = "{$frontendUrl}/feedback?token={$this->surveyToken}&user={$notifiable->id}";
 
+        // Try to use admin-customizable database template
+        $template = EmailTemplate::where('slug', 'feedback-survey')
+            ->where('status', 'published')
+            ->first();
+
+        if ($template) {
+            try {
+                $renderService = app(EmailTemplateRenderService::class);
+                $rendered = $renderService->render($template, [
+                    'user_name' => $notifiable->name,
+                    'survey_url' => $surveyUrl,
+                    'incentive_description' => $this->incentive?->description,
+                    'app_url' => Config::get('app.url'),
+                ]);
+
+                return (new MailMessage)
+                    ->subject($rendered['subject'])
+                    ->html($rendered['html']);
+            } catch (\Exception $e) {
+                report($e);
+            }
+        }
+
+        // Fallback to Blade template
         return (new MailMessage)
             ->subject("We Value Your Feedback - Revolution Trading Pros")
             ->view('emails.membership.feedback-survey', [
