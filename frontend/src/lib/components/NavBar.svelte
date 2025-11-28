@@ -129,6 +129,21 @@
 	// Derived
 	// ═══════════════════════════════════════════════════════════════════════════════
 	const isDesktop = $derived(windowWidth >= BREAKPOINT_DESKTOP);
+	const isTablet = $derived(windowWidth >= 768 && windowWidth < BREAKPOINT_DESKTOP);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// Active Route Detection (supports sub-routes)
+	// ═══════════════════════════════════════════════════════════════════════════════
+	function isRouteActive(item: NavItem): boolean {
+		const pathname = $page.url.pathname;
+		// Direct match
+		if (item.href && pathname === item.href) return true;
+		// Sub-route match (e.g., /blog/post-1 matches /blog)
+		if (item.href && pathname.startsWith(item.href + '/')) return true;
+		// Submenu item match
+		if (item.submenu?.some(sub => pathname === sub.href || pathname.startsWith(sub.href + '/'))) return true;
+		return false;
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Dropdown Position Detection (Edge-Aware)
@@ -396,6 +411,7 @@
 									class:dropdown--left={dropdownPositions[item.id] === 'left'}
 									class:dropdown--right={dropdownPositions[item.id] === 'right'}
 									role="menu"
+									tabindex="-1"
 									aria-labelledby={`nav-${item.id}`}
 									onkeydown={(e) => handleDropdownKeydown(e, item.submenu || [])}
 								>
@@ -419,7 +435,7 @@
 								<a
 									href={item.href}
 									class="nav__link"
-									class:nav__link--active={$page.url.pathname === item.href}
+									class:nav__link--active={isRouteActive(item)}
 									role="menuitem"
 								>
 									{item.label}
@@ -547,6 +563,7 @@
 	></div>
 
 	<!-- Panel -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<nav
 		id="mobile-nav"
 		class="mobile-panel"
@@ -655,13 +672,19 @@
 	 * CSS CUSTOM PROPERTIES - Google Design System Tokens
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	:root {
-		/* Layout Tokens - NEVER CHANGE THESE */
-		--header-height: 80px;
-		--header-height-mobile: 64px;
+		/* Layout Tokens - IMMUTABLE - Logo NEVER moves */
+		--header-height: 72px;
+		--header-height-tablet: 64px;
+		--header-height-mobile: 60px;
 		--logo-width: 200px;
-		--logo-width-mobile: 140px;
-		--logo-height: 68px;
-		--logo-height-mobile: 48px;
+		--logo-width-tablet: 170px;
+		--logo-width-mobile: 150px;
+		--logo-height: 50px;
+		--logo-height-tablet: 44px;
+		--logo-height-mobile: 40px;
+
+		/* Touch Target Minimum (Apple HIG) */
+		--touch-target-min: 44px;
 
 		/* Color Tokens */
 		--nav-bg: #05142b;
@@ -704,10 +727,18 @@
 
 	.header--scrolled {
 		background: rgba(5, 20, 43, 0.99);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 4px 20px rgba(0, 0, 0, 0.3);
 	}
 
-	@media (max-width: 768px) {
+	/* Tablet: 768-1023px */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		.header {
+			height: var(--header-height-tablet);
+		}
+	}
+
+	/* Mobile: <768px */
+	@media (max-width: 767px) {
 		.header {
 			height: var(--header-height-mobile);
 		}
@@ -728,16 +759,21 @@
 		gap: 16px;
 	}
 
-	@media (max-width: 1024px) {
+	/* Tablet: 768-1023px */
+	@media (min-width: 768px) and (max-width: 1023px) {
 		.header__container {
-			grid-template-columns: var(--logo-width-mobile) 1fr auto;
+			grid-template-columns: var(--logo-width-tablet) 1fr auto;
+			padding: 0 20px;
+			gap: 12px;
 		}
 	}
 
-	@media (max-width: 768px) {
+	/* Mobile: <768px */
+	@media (max-width: 767px) {
 		.header__container {
+			grid-template-columns: var(--logo-width-mobile) 1fr auto;
 			padding: 0 16px;
-			gap: 12px;
+			gap: 8px;
 		}
 	}
 
@@ -745,13 +781,16 @@
 	 * LOGO ZONE - BULLETPROOF POSITIONING (Zero CLS Guarantee)
 	 *
 	 * Engineering guarantees:
-	 * 1. contain: layout style - isolates from parent layout changes
-	 * 2. flex-shrink: 0 - NEVER compresses
-	 * 3. min-width/max-width - explicit bounds
-	 * 4. Explicit width/height on img - prevents reflow
+	 * 1. position: relative with explicit dimensions - NEVER shifts
+	 * 2. contain: strict - complete isolation from parent
+	 * 3. flex-shrink: 0 - NEVER compresses
+	 * 4. min-width/max-width - explicit bounds
+	 * 5. Explicit width/height on img - prevents reflow
+	 * 6. aspect-ratio fallback for older browsers
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.header__logo {
-		/* Lock dimensions - IMMUTABLE */
+		/* ABSOLUTE LOCK - These values NEVER change based on content */
+		position: relative;
 		width: var(--logo-width);
 		min-width: var(--logo-width);
 		max-width: var(--logo-width);
@@ -762,16 +801,22 @@
 		/* Prevent ANY shrinking or growth */
 		flex-shrink: 0;
 		flex-grow: 0;
+		flex-basis: var(--logo-width);
 
-		/* Layout containment - isolate from parent */
-		contain: layout style;
+		/* STRICT containment - complete isolation */
+		contain: strict;
 
 		/* Clip any overflow */
 		overflow: hidden;
+
+		/* Ensure it stays in place */
+		justify-self: start;
+		align-self: center;
 	}
 
 	.logo {
-		display: block;
+		display: flex;
+		align-items: center;
 		width: var(--logo-width);
 		height: var(--logo-height);
 		text-decoration: none;
@@ -783,14 +828,46 @@
 		height: var(--logo-height);
 		min-width: var(--logo-width);
 		min-height: var(--logo-height);
+		max-width: var(--logo-width);
+		max-height: var(--logo-height);
 		object-fit: contain;
 		object-position: left center;
 		/* Prevent text selection glow */
 		user-select: none;
 		-webkit-user-drag: none;
+		/* Prevent any layout shift */
+		aspect-ratio: 4 / 1;
 	}
 
-	@media (max-width: 1024px) {
+	/* Tablet: 768-1023px */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		.header__logo {
+			width: var(--logo-width-tablet);
+			min-width: var(--logo-width-tablet);
+			max-width: var(--logo-width-tablet);
+			height: var(--logo-height-tablet);
+			min-height: var(--logo-height-tablet);
+			max-height: var(--logo-height-tablet);
+			flex-basis: var(--logo-width-tablet);
+		}
+
+		.logo {
+			width: var(--logo-width-tablet);
+			height: var(--logo-height-tablet);
+		}
+
+		.logo__image {
+			width: var(--logo-width-tablet);
+			height: var(--logo-height-tablet);
+			min-width: var(--logo-width-tablet);
+			min-height: var(--logo-height-tablet);
+			max-width: var(--logo-width-tablet);
+			max-height: var(--logo-height-tablet);
+		}
+	}
+
+	/* Mobile: <768px */
+	@media (max-width: 767px) {
 		.header__logo {
 			width: var(--logo-width-mobile);
 			min-width: var(--logo-width-mobile);
@@ -798,6 +875,7 @@
 			height: var(--logo-height-mobile);
 			min-height: var(--logo-height-mobile);
 			max-height: var(--logo-height-mobile);
+			flex-basis: var(--logo-width-mobile);
 		}
 
 		.logo {
@@ -810,6 +888,8 @@
 			height: var(--logo-height-mobile);
 			min-width: var(--logo-width-mobile);
 			min-height: var(--logo-height-mobile);
+			max-width: var(--logo-width-mobile);
+			max-height: var(--logo-height-mobile);
 		}
 	}
 
@@ -839,7 +919,9 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
-		padding: 10px 14px;
+		/* Touch target: minimum 44px height (Apple HIG) */
+		min-height: var(--touch-target-min);
+		padding: 0 14px;
 		color: var(--nav-text);
 		font-family: 'Montserrat', system-ui, sans-serif;
 		font-weight: 600;
@@ -1102,7 +1184,9 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		padding: 8px 14px;
+		/* Touch target: minimum 44px height (Apple HIG) */
+		min-height: var(--touch-target-min);
+		padding: 0 14px;
 		background: rgba(250, 204, 21, 0.1);
 		border: 1px solid rgba(250, 204, 21, 0.3);
 		color: var(--nav-accent);
@@ -1411,7 +1495,15 @@
 		scroll-padding-top: var(--header-height);
 	}
 
-	@media (max-width: 768px) {
+	/* Tablet: 768-1023px */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		:global(html) {
+			scroll-padding-top: var(--header-height-tablet);
+		}
+	}
+
+	/* Mobile: <768px */
+	@media (max-width: 767px) {
 		:global(html) {
 			scroll-padding-top: var(--header-height-mobile);
 		}
