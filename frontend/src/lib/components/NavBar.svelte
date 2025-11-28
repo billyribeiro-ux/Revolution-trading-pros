@@ -619,8 +619,12 @@
 				{/if}
 			{/if}
 
-			<!-- Mobile/Tablet: Hamburger -->
+			<!-- Mobile/Tablet: Auth + Hamburger -->
 			{#if !isDesktop}
+				{#if !$isAuthenticated}
+					<a href="/login" class="login-btn">Login</a>
+					<a href="/get-started" class="cta-btn">Get Started</a>
+				{/if}
 				<button
 					type="button"
 					bind:this={hamburgerRef}
