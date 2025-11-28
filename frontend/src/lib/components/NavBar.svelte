@@ -148,6 +148,7 @@
 								{item.label}
 								<IconChevronDown size={14} />
 							</button>
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<div
 								class="dropdown"
 								class:open={activeDropdown === item.id}
@@ -232,7 +233,14 @@
 
 <!-- Mobile Menu -->
 {#if !isDesktop && mobileOpen}
-	<div class="mobile-overlay" onclick={closeMobile} role="button" tabindex="-1" aria-label="Close"></div>
+	<div
+		class="mobile-overlay"
+		onclick={closeMobile}
+		onkeydown={(e) => e.key === 'Escape' && closeMobile()}
+		role="button"
+		tabindex="-1"
+		aria-label="Close menu"
+	></div>
 	<nav class="mobile-panel">
 		<div class="mobile-header">
 			<button class="mobile-close" onclick={closeMobile} aria-label="Close">
