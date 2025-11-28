@@ -3,6 +3,7 @@
 	 * NavBar - Desktop Only (Clean Version)
 	 * SvelteKit 5 | Svelte 5 Runes | Zero CLS
 	 */
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import type { ComponentType } from 'svelte';
@@ -119,6 +120,22 @@
 		authStore.clearAuth();
 		await goto('/login');
 	}
+
+	// Close menus on click outside
+	function handleClickOutside(event: MouseEvent) {
+		const target = event.target as HTMLElement;
+		if (isUserMenuOpen && !target.closest('[data-user-menu]')) {
+			isUserMenuOpen = false;
+		}
+		if (activeDropdown && !target.closest('.nav-item')) {
+			activeDropdown = null;
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener('click', handleClickOutside);
+		return () => document.removeEventListener('click', handleClickOutside);
+	});
 </script>
 
 <header class="header">
