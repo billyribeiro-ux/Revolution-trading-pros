@@ -1,66 +1,27 @@
 <script lang="ts">
 	/**
-	 * NavBar Component - Google L8+ Principal Engineer Production Standard
-	 * ══════════════════════════════════════════════════════════════════════════════
-	 * SvelteKit 5 | CSS Grid Layout | Zero CLS | Static Logo | WCAG 2.1 AA
-	 *
-	 * Architecture Principles:
-	 * 1. Logo NEVER moves - absolute positioning with containment
-	 * 2. Hover-triggered dropdowns with 150ms intent delay (Google pattern)
-	 * 3. Focus trap for mobile panel
-	 * 4. Full keyboard navigation (Tab, Arrow keys, Escape)
-	 * 5. Edge-aware dropdown positioning
-	 * ══════════════════════════════════════════════════════════════════════════════
+	 * NavBar - Clean, Simple, Bulletproof
+	 * SvelteKit 5 | Static Logo | Zero CLS
 	 */
-	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import type { ComponentType } from 'svelte';
 	import {
 		IconMenu2,
 		IconX,
 		IconUser,
 		IconLogout,
 		IconShoppingCart,
+		IconChevronDown,
+		IconChevronRight,
 		IconBook,
 		IconChartLine,
-		IconSettings,
-		IconChevronDown,
-		IconChevronRight
+		IconSettings
 	} from '@tabler/icons-svelte';
-	import { authStore, user, isAuthenticated } from '$lib/stores/auth';
+	import { user, isAuthenticated } from '$lib/stores/auth';
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
 	import { logout as logoutApi } from '$lib/api/auth';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Types
-	// ═══════════════════════════════════════════════════════════════════════════════
-	interface SubMenuItem {
-		href: string;
-		label: string;
-	}
-
-	interface NavItem {
-		id: string;
-		label: string;
-		href?: string;
-		submenu?: SubMenuItem[];
-	}
-
-	interface UserMenuItem {
-		href: string;
-		label: string;
-		icon: ComponentType;
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Constants - Google Design System Values
-	// ═══════════════════════════════════════════════════════════════════════════════
-	const BREAKPOINT_DESKTOP = 1024;
-	const HOVER_INTENT_DELAY = 150; // Google's standard hover intent delay
-	const DROPDOWN_ANIMATION_MS = 200;
-
-	const navItems: NavItem[] = [
+	// Nav config
+	const navItems = [
 		{
 			id: 'live',
 			label: 'Live Trading Rooms',
@@ -100,566 +61,225 @@
 		}
 	];
 
-	const userMenuItems: UserMenuItem[] = [
+	const userMenuItems = [
 		{ href: '/dashboard/courses', label: 'My Courses', icon: IconBook },
 		{ href: '/dashboard/indicators', label: 'My Indicators', icon: IconChartLine },
 		{ href: '/dashboard/account', label: 'My Account', icon: IconSettings }
 	];
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// State - Svelte 5 Runes
-	// ═══════════════════════════════════════════════════════════════════════════════
-	let isMobileMenuOpen = $state(false);
+	// State
+	let mobileOpen = $state(false);
 	let activeDropdown = $state<string | null>(null);
-	let activeMobileSubmenu = $state<string | null>(null);
-	let isUserMenuOpen = $state(false);
-	let windowWidth = $state(BREAKPOINT_DESKTOP + 1);
-	let isScrolled = $state(false);
-	let hoverIntentTimer = $state<ReturnType<typeof setTimeout> | null>(null);
-	let dropdownPositions = $state<Record<string, 'center' | 'left' | 'right'>>({});
+	let mobileSubmenu = $state<string | null>(null);
+	let userMenuOpen = $state(false);
 
-	// DOM refs
-	let mobileNavRef = $state<HTMLElement | null>(null);
-	let hamburgerRef = $state<HTMLButtonElement | null>(null);
-	let headerRef = $state<HTMLElement | null>(null);
-	let firstMobileFocusable = $state<HTMLElement | null>(null);
-	let lastMobileFocusable = $state<HTMLElement | null>(null);
+	// Responsive
+	let innerWidth = $state(1024);
+	const isDesktop = $derived(innerWidth >= 1024);
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Derived
-	// ═══════════════════════════════════════════════════════════════════════════════
-	const isDesktop = $derived(windowWidth >= BREAKPOINT_DESKTOP);
-	const isTablet = $derived(windowWidth >= 768 && windowWidth < BREAKPOINT_DESKTOP);
+	// Handlers
+	function toggleMobile() {
+		mobileOpen = !mobileOpen;
+		if (mobileOpen) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+			mobileSubmenu = null;
+		}
+	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Active Route Detection (supports sub-routes)
-	// ═══════════════════════════════════════════════════════════════════════════════
-	function isRouteActive(item: NavItem): boolean {
-		const pathname = $page.url.pathname;
-		// Direct match
-		if (item.href && pathname === item.href) return true;
-		// Sub-route match (e.g., /blog/post-1 matches /blog)
-		if (item.href && pathname.startsWith(item.href + '/')) return true;
-		// Submenu item match
-		if (item.submenu?.some(sub => pathname === sub.href || pathname.startsWith(sub.href + '/'))) return true;
+	function closeMobile() {
+		mobileOpen = false;
+		document.body.style.overflow = '';
+		mobileSubmenu = null;
+	}
+
+	function handleLogout() {
+		logoutApi();
+		closeMobile();
+		userMenuOpen = false;
+	}
+
+	function isActive(item: typeof navItems[0]): boolean {
+		const path = $page.url.pathname;
+		if (item.href && (path === item.href || path.startsWith(item.href + '/'))) return true;
+		if (item.submenu?.some(s => path === s.href || path.startsWith(s.href + '/'))) return true;
 		return false;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Dropdown Position Detection (Edge-Aware)
-	// ═══════════════════════════════════════════════════════════════════════════════
-	function calculateDropdownPosition(element: HTMLElement): 'center' | 'left' | 'right' {
-		const rect = element.getBoundingClientRect();
-		const centerX = rect.left + rect.width / 2;
-		const viewportWidth = window.innerWidth;
-		const dropdownWidth = 220; // Approximate dropdown width
-
-		// Check if dropdown would overflow right edge
-		if (centerX + dropdownWidth / 2 > viewportWidth - 20) {
-			return 'right';
-		}
-		// Check if dropdown would overflow left edge
-		if (centerX - dropdownWidth / 2 < 20) {
-			return 'left';
-		}
-		return 'center';
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Handlers - Google-Style Hover Intent
-	// ═══════════════════════════════════════════════════════════════════════════════
-	function handleDropdownEnter(itemId: string, event: MouseEvent): void {
-		// Clear any existing timer
-		if (hoverIntentTimer) {
-			clearTimeout(hoverIntentTimer);
-		}
-
-		// Calculate position before showing
-		const target = event.currentTarget as HTMLElement;
-		dropdownPositions[itemId] = calculateDropdownPosition(target);
-
-		// Google-style hover intent delay
-		hoverIntentTimer = setTimeout(() => {
-			activeDropdown = itemId;
-		}, HOVER_INTENT_DELAY);
-	}
-
-	function handleDropdownLeave(): void {
-		if (hoverIntentTimer) {
-			clearTimeout(hoverIntentTimer);
-			hoverIntentTimer = null;
-		}
-		// Small delay before closing to allow moving to dropdown
-		setTimeout(() => {
-			// Only close if mouse isn't over the dropdown area
+	// Close dropdowns on outside click
+	function handleClickOutside(e: MouseEvent) {
+		const target = e.target as HTMLElement;
+		if (!target.closest('[data-dropdown]') && !target.closest('[data-user-menu]')) {
 			activeDropdown = null;
-		}, 100);
-	}
-
-	function handleDropdownClick(itemId: string, event: MouseEvent): void {
-		event.stopPropagation();
-		const target = event.currentTarget as HTMLElement;
-		dropdownPositions[itemId] = calculateDropdownPosition(target);
-		activeDropdown = activeDropdown === itemId ? null : itemId;
-	}
-
-	function toggleMobileMenu(): void {
-		isMobileMenuOpen = !isMobileMenuOpen;
-		activeMobileSubmenu = null;
-		document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
-
-		if (isMobileMenuOpen) {
-			// Focus first focusable element after menu opens
-			tick().then(() => {
-				firstMobileFocusable?.focus();
-			});
+			userMenuOpen = false;
 		}
 	}
-
-	function closeMobileMenu(): void {
-		isMobileMenuOpen = false;
-		activeMobileSubmenu = null;
-		document.body.style.overflow = '';
-		hamburgerRef?.focus();
-	}
-
-	function handleDocumentClick(event: MouseEvent): void {
-		const target = event.target as HTMLElement;
-		if (!target.closest('[data-dropdown]')) {
-			activeDropdown = null;
-		}
-		if (!target.closest('[data-user-menu]')) {
-			isUserMenuOpen = false;
-		}
-	}
-
-	function handleKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Escape') {
-			if (isMobileMenuOpen) {
-				closeMobileMenu();
-			} else {
-				activeDropdown = null;
-				isUserMenuOpen = false;
-			}
-		}
-	}
-
-	// Focus trap for mobile menu (WCAG 2.1 requirement)
-	function handleMobileMenuKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Tab' && isMobileMenuOpen) {
-			const focusableElements = mobileNavRef?.querySelectorAll<HTMLElement>(
-				'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])'
-			);
-
-			if (!focusableElements || focusableElements.length === 0) return;
-
-			const firstElement = focusableElements[0];
-			const lastElement = focusableElements[focusableElements.length - 1];
-
-			if (event.shiftKey && document.activeElement === firstElement) {
-				event.preventDefault();
-				lastElement.focus();
-			} else if (!event.shiftKey && document.activeElement === lastElement) {
-				event.preventDefault();
-				firstElement.focus();
-			}
-		}
-	}
-
-	// Keyboard navigation for dropdowns (Google standard)
-	function handleDropdownKeydown(event: KeyboardEvent, items: SubMenuItem[]): void {
-		const currentIndex = items.findIndex(
-			item => document.activeElement?.getAttribute('href') === item.href
-		);
-
-		switch (event.key) {
-			case 'ArrowDown':
-				event.preventDefault();
-				const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
-				(document.querySelector(`[href="${items[nextIndex].href}"]`) as HTMLElement)?.focus();
-				break;
-			case 'ArrowUp':
-				event.preventDefault();
-				const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
-				(document.querySelector(`[href="${items[prevIndex].href}"]`) as HTMLElement)?.focus();
-				break;
-			case 'Home':
-				event.preventDefault();
-				(document.querySelector(`[href="${items[0].href}"]`) as HTMLElement)?.focus();
-				break;
-			case 'End':
-				event.preventDefault();
-				(document.querySelector(`[href="${items[items.length - 1].href}"]`) as HTMLElement)?.focus();
-				break;
-		}
-	}
-
-	async function handleLogout(): Promise<void> {
-		closeMobileMenu();
-		try {
-			await logoutApi();
-		} catch (e) {
-			console.error('Logout error:', e);
-		}
-		authStore.clearAuth();
-		await goto('/login');
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Effects
-	// ═══════════════════════════════════════════════════════════════════════════════
-	$effect(() => {
-		if (isDesktop && isMobileMenuOpen) {
-			closeMobileMenu();
-		}
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Lifecycle
-	// ═══════════════════════════════════════════════════════════════════════════════
-	onMount(() => {
-		windowWidth = window.innerWidth;
-		isScrolled = window.scrollY > 20;
-
-		const handleResize = () => {
-			windowWidth = window.innerWidth;
-		};
-
-		const handleScroll = () => {
-			isScrolled = window.scrollY > 20;
-		};
-
-		window.addEventListener('resize', handleResize, { passive: true });
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		document.addEventListener('click', handleDocumentClick);
-		document.addEventListener('keydown', handleKeydown);
-
-		return () => {
-			window.removeEventListener('resize', handleResize);
-			window.removeEventListener('scroll', handleScroll);
-			document.removeEventListener('click', handleDocumentClick);
-			document.removeEventListener('keydown', handleKeydown);
-			document.body.style.overflow = '';
-			if (hoverIntentTimer) clearTimeout(hoverIntentTimer);
-		};
-	});
 </script>
 
-<header
-	class="header"
-	class:header--scrolled={isScrolled}
-	bind:this={headerRef}
->
-	<div class="header__container">
-		<!-- ═══════════════════════════════════════════════════════════════════════
-		     LOGO ZONE - ABSOLUTE LOCK (Google Principal Engineer Standard)
-		     This section is engineered to NEVER move under ANY circumstances.
-		     Uses: contain, flex-shrink:0, min-width, explicit dimensions
-		═══════════════════════════════════════════════════════════════════════ -->
-		<div class="header__logo">
-			<a href="/" class="logo" onclick={closeMobileMenu} aria-label="Revolution Trading Pros - Home">
-				<img
-					src="/revolution-trading-pros.png"
-					alt="Revolution Trading Pros"
-					width="200"
-					height="68"
-					class="logo__image"
-					fetchpriority="high"
-					decoding="async"
-				/>
-			</a>
-		</div>
+<svelte:window bind:innerWidth onclick={handleClickOutside} />
 
-		<!-- ═══════════════════════════════════════════════════════════════════════
-		     NAVIGATION ZONE - Desktop Only
-		     Hover-triggered dropdowns with 150ms intent delay (Google pattern)
-		═══════════════════════════════════════════════════════════════════════ -->
+<header class="header">
+	<div class="container">
+		<!-- Logo - FIXED SIZE, NEVER MOVES -->
+		<a href="/" class="logo">
+			<img
+				src="/revolution-trading-pros.png"
+				alt="Revolution Trading Pros"
+				width="200"
+				height="50"
+			/>
+		</a>
+
+		<!-- Desktop Nav -->
 		{#if isDesktop}
-			<nav class="header__nav" aria-label="Main navigation">
-				<ul class="nav" role="menubar">
-					{#each navItems as item (item.id)}
-						{#if item.submenu}
-							<li
-								class="nav__item"
-								data-dropdown={item.id}
-								role="none"
-								onmouseenter={(e) => handleDropdownEnter(item.id, e)}
-								onmouseleave={handleDropdownLeave}
+			<nav class="nav">
+				{#each navItems as item (item.id)}
+					{#if item.submenu}
+						<div class="nav-item" data-dropdown={item.id}>
+							<button
+								class="nav-link"
+								class:active={isActive(item)}
+								aria-expanded={activeDropdown === item.id}
+								onmouseenter={() => activeDropdown = item.id}
+								onmouseleave={() => activeDropdown = null}
+								onclick={() => activeDropdown = activeDropdown === item.id ? null : item.id}
 							>
-								<button
-									type="button"
-									class="nav__link nav__link--dropdown"
-									class:nav__link--open={activeDropdown === item.id}
-									aria-expanded={activeDropdown === item.id}
-									aria-haspopup="menu"
-									aria-controls={`dropdown-${item.id}`}
-									onclick={(e) => handleDropdownClick(item.id, e)}
-								>
-									<span>{item.label}</span>
-									<IconChevronDown
-										size={14}
-										stroke={2.5}
-										class="nav__chevron"
-										aria-hidden="true"
-									/>
-								</button>
-
-								<div
-									id={`dropdown-${item.id}`}
-									class="dropdown"
-									class:dropdown--visible={activeDropdown === item.id}
-									class:dropdown--left={dropdownPositions[item.id] === 'left'}
-									class:dropdown--right={dropdownPositions[item.id] === 'right'}
-									role="menu"
-									tabindex="-1"
-									aria-labelledby={`nav-${item.id}`}
-									onkeydown={(e) => handleDropdownKeydown(e, item.submenu || [])}
-								>
-									{#each item.submenu as sub, index (sub.href)}
-										<a
-											href={sub.href}
-											class="dropdown__item"
-											class:dropdown__item--active={$page.url.pathname === sub.href}
-											role="menuitem"
-											tabindex={activeDropdown === item.id ? 0 : -1}
-											style="--item-index: {index}"
-											onclick={() => (activeDropdown = null)}
-										>
-											{sub.label}
-										</a>
-									{/each}
-								</div>
-							</li>
-						{:else}
-							<li class="nav__item" role="none">
-								<a
-									href={item.href}
-									class="nav__link"
-									class:nav__link--active={isRouteActive(item)}
-									role="menuitem"
-								>
-									{item.label}
-								</a>
-							</li>
-						{/if}
-					{/each}
-				</ul>
+								{item.label}
+								<IconChevronDown size={14} />
+							</button>
+							<div
+								class="dropdown"
+								class:open={activeDropdown === item.id}
+								onmouseenter={() => activeDropdown = item.id}
+								onmouseleave={() => activeDropdown = null}
+							>
+								{#each item.submenu as sub (sub.href)}
+									<a href={sub.href} class="dropdown-item" onclick={() => activeDropdown = null}>
+										{sub.label}
+									</a>
+								{/each}
+							</div>
+						</div>
+					{:else}
+						<a href={item.href} class="nav-link" class:active={isActive(item)}>
+							{item.label}
+						</a>
+					{/if}
+				{/each}
 			</nav>
 		{/if}
 
-		<!-- ═══════════════════════════════════════════════════════════════════════
-		     ACTIONS ZONE - Cart, User Menu, Hamburger
-		═══════════════════════════════════════════════════════════════════════ -->
-		<div class="header__actions">
+		<!-- Actions -->
+		<div class="actions">
 			{#if $hasCartItems}
-				<a href="/cart" class="action-btn action-btn--cart" aria-label="Shopping cart ({$cartItemCount} items)">
-					<IconShoppingCart size={22} aria-hidden="true" />
+				<a href="/cart" class="cart-btn" aria-label="Cart ({$cartItemCount} items)">
+					<IconShoppingCart size={22} />
 					{#if $cartItemCount > 0}
-						<span class="action-btn__badge" aria-hidden="true">{$cartItemCount}</span>
+						<span class="badge">{$cartItemCount}</span>
 					{/if}
 				</a>
 			{/if}
 
 			{#if isDesktop}
-				<!-- Get Started CTA Button -->
-				<a href="/login" class="cta-btn">
-					Get Started
-				</a>
+				<a href="/login" class="cta-btn">Get Started</a>
 
 				{#if $isAuthenticated}
 					<div class="user-menu" data-user-menu>
 						<button
-							type="button"
-							class="user-menu__trigger"
-							aria-expanded={isUserMenuOpen}
-							aria-haspopup="menu"
-							aria-controls="user-dropdown"
-							onclick={(e) => {
-								e.stopPropagation();
-								isUserMenuOpen = !isUserMenuOpen;
-							}}
+							class="user-trigger"
+							aria-expanded={userMenuOpen}
+							onclick={() => userMenuOpen = !userMenuOpen}
 						>
-							<IconUser size={18} aria-hidden="true" />
-							<span class="user-menu__name">{$user?.name || 'Account'}</span>
-							<IconChevronDown size={12} aria-hidden="true" />
+							<IconUser size={18} />
+							<span class="user-name">{$user?.name || 'Account'}</span>
+							<IconChevronDown size={12} />
 						</button>
-
-						<div
-							id="user-dropdown"
-							class="user-menu__dropdown"
-							class:user-menu__dropdown--visible={isUserMenuOpen}
-							role="menu"
-							aria-label="User menu"
-						>
-							{#each userMenuItems as menuItem (menuItem.href)}
-								{@const Icon = menuItem.icon}
-								<a
-									href={menuItem.href}
-									class="user-menu__item"
-									role="menuitem"
-									tabindex={isUserMenuOpen ? 0 : -1}
-									onclick={() => (isUserMenuOpen = false)}
-								>
-									<Icon size={16} aria-hidden="true" />
-									<span>{menuItem.label}</span>
-								</a>
-							{/each}
-							<button
-								type="button"
-								class="user-menu__item user-menu__item--danger"
-								role="menuitem"
-								tabindex={isUserMenuOpen ? 0 : -1}
-								onclick={handleLogout}
-							>
-								<IconLogout size={16} aria-hidden="true" />
-								<span>Logout</span>
-							</button>
-						</div>
+						{#if userMenuOpen}
+							<div class="user-dropdown">
+								{#each userMenuItems as item (item.href)}
+									{@const Icon = item.icon}
+									<a href={item.href} class="user-item" onclick={() => userMenuOpen = false}>
+										<Icon size={16} />
+										{item.label}
+									</a>
+								{/each}
+								<button class="user-item danger" onclick={handleLogout}>
+									<IconLogout size={16} />
+									Logout
+								</button>
+							</div>
+						{/if}
 					</div>
 				{:else}
 					<a href="/login" class="login-btn">
-						<IconUser size={18} aria-hidden="true" />
-						<span>Login</span>
+						<IconUser size={18} />
+						Login
 					</a>
 				{/if}
-			{/if}
-
-			{#if !isDesktop}
-				<button
-					type="button"
-					bind:this={hamburgerRef}
-					class="hamburger"
-					aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-					aria-expanded={isMobileMenuOpen}
-					aria-controls="mobile-nav"
-					onclick={toggleMobileMenu}
-				>
-					<span class="hamburger__icon" class:hamburger__icon--open={isMobileMenuOpen}>
-						{#if isMobileMenuOpen}
-							<IconX size={26} aria-hidden="true" />
-						{:else}
-							<IconMenu2 size={26} aria-hidden="true" />
-						{/if}
-					</span>
+			{:else}
+				<button class="hamburger" aria-label="Menu" onclick={toggleMobile}>
+					{#if mobileOpen}
+						<IconX size={28} />
+					{:else}
+						<IconMenu2 size={28} />
+					{/if}
 				</button>
 			{/if}
 		</div>
 	</div>
 </header>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════════
-     MOBILE NAVIGATION PANEL
-     Features: Focus trap, slide animation, sequential item reveal
-═══════════════════════════════════════════════════════════════════════════════ -->
-{#if !isDesktop && isMobileMenuOpen}
-	<!-- Backdrop -->
-	<div
-		class="mobile-overlay"
-		onclick={closeMobileMenu}
-		onkeydown={(e) => e.key === 'Enter' && closeMobileMenu()}
-		role="button"
-		tabindex="-1"
-		aria-label="Close menu"
-	></div>
-
-	<!-- Panel -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<nav
-		id="mobile-nav"
-		class="mobile-panel"
-		bind:this={mobileNavRef}
-		aria-label="Mobile navigation"
-		onkeydown={handleMobileMenuKeydown}
-	>
-		<div class="mobile-panel__header">
-			<button
-				type="button"
-				class="mobile-panel__close"
-				onclick={closeMobileMenu}
-				aria-label="Close menu"
-				bind:this={firstMobileFocusable}
-			>
-				<IconX size={24} aria-hidden="true" />
+<!-- Mobile Menu -->
+{#if !isDesktop && mobileOpen}
+	<div class="mobile-overlay" onclick={closeMobile} role="button" tabindex="-1" aria-label="Close"></div>
+	<nav class="mobile-panel">
+		<div class="mobile-header">
+			<button class="mobile-close" onclick={closeMobile} aria-label="Close">
+				<IconX size={24} />
 			</button>
 		</div>
-
-		<div class="mobile-panel__body">
-			{#each navItems as item, index (item.id)}
+		<div class="mobile-body">
+			{#each navItems as item (item.id)}
 				{#if item.submenu}
-					<div class="mobile-nav__group" style="--item-index: {index}">
-						<button
-							type="button"
-							class="mobile-nav__link"
-							aria-expanded={activeMobileSubmenu === item.id}
-							aria-controls={`mobile-submenu-${item.id}`}
-							onclick={() => (activeMobileSubmenu = activeMobileSubmenu === item.id ? null : item.id)}
-						>
-							<span>{item.label}</span>
-							<span
-								class="mobile-nav__chevron"
-								class:mobile-nav__chevron--open={activeMobileSubmenu === item.id}
-								aria-hidden="true"
-							>
-								<IconChevronRight size={18} stroke={2.5} />
-							</span>
-						</button>
-
-						<div
-							id={`mobile-submenu-${item.id}`}
-							class="mobile-nav__submenu"
-							class:mobile-nav__submenu--open={activeMobileSubmenu === item.id}
-						>
+					<button
+						class="mobile-link"
+						onclick={() => mobileSubmenu = mobileSubmenu === item.id ? null : item.id}
+					>
+						{item.label}
+						<span class="chevron" class:open={mobileSubmenu === item.id}>
+							<IconChevronRight size={18} />
+						</span>
+					</button>
+					{#if mobileSubmenu === item.id}
+						<div class="mobile-submenu">
 							{#each item.submenu as sub (sub.href)}
-								<a
-									href={sub.href}
-									class="mobile-nav__sublink"
-									class:mobile-nav__sublink--active={$page.url.pathname === sub.href}
-									onclick={closeMobileMenu}
-								>
+								<a href={sub.href} class="mobile-sublink" onclick={closeMobile}>
 									{sub.label}
 								</a>
 							{/each}
 						</div>
-					</div>
+					{/if}
 				{:else}
-					<a
-						href={item.href}
-						class="mobile-nav__link"
-						class:mobile-nav__link--active={$page.url.pathname === item.href}
-						style="--item-index: {index}"
-						onclick={closeMobileMenu}
-					>
+					<a href={item.href} class="mobile-link" onclick={closeMobile}>
 						{item.label}
 					</a>
 				{/if}
 			{/each}
 
-			<div class="mobile-panel__footer" style="--item-index: {navItems.length}">
+			<div class="mobile-footer">
 				{#if $isAuthenticated}
-					<div class="mobile-user">
-						<div class="mobile-user__name">{$user?.name}</div>
-						{#each userMenuItems as menuItem (menuItem.href)}
-							<a href={menuItem.href} class="mobile-nav__sublink" onclick={closeMobileMenu}>
-								{menuItem.label}
-							</a>
-						{/each}
-						<button
-							type="button"
-							class="mobile-nav__sublink mobile-nav__sublink--danger"
-							onclick={handleLogout}
-							bind:this={lastMobileFocusable}
-						>
-							Logout
-						</button>
-					</div>
+					{#each userMenuItems as item (item.href)}
+						<a href={item.href} class="mobile-sublink" onclick={closeMobile}>
+							{item.label}
+						</a>
+					{/each}
+					<button class="mobile-sublink danger" onclick={handleLogout}>
+						Logout
+					</button>
 				{:else}
-					<a
-						href="/login"
-						class="login-btn login-btn--full"
-						onclick={closeMobileMenu}
-						bind:this={lastMobileFocusable}
-					>
-						Login
+					<a href="/login" class="mobile-cta" onclick={closeMobile}>
+						Get Started
 					</a>
 				{/if}
 			</div>
@@ -668,409 +288,141 @@
 {/if}
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CSS CUSTOM PROPERTIES - Google Design System Tokens
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	/* Variables */
 	:root {
-		/* Layout Tokens - IMMUTABLE - Logo NEVER moves */
-		--header-height: 72px;
-		--header-height-tablet: 64px;
-		--header-height-mobile: 60px;
-		--logo-width: 200px;
-		--logo-width-tablet: 170px;
-		--logo-width-mobile: 150px;
-		--logo-height: 50px;
-		--logo-height-tablet: 44px;
-		--logo-height-mobile: 40px;
-
-		/* Touch Target Minimum (Apple HIG) */
-		--touch-target-min: 44px;
-
-		/* Color Tokens */
+		--header-h: 112px;
+		--header-h-mobile: 80px;
+		--logo-w: 200px;
+		--logo-h: 50px;
 		--nav-bg: #05142b;
-		--nav-bg-alpha: rgba(5, 20, 43, 0.97);
 		--nav-text: #e5e7eb;
-		--nav-text-muted: #94a3b8;
+		--nav-muted: #94a3b8;
 		--nav-accent: #facc15;
-		--nav-danger: #f87171;
-		--nav-border: rgba(148, 163, 253, 0.15);
-		--nav-hover-bg: rgba(255, 255, 255, 0.05);
-
-		/* Animation Tokens - Google timing functions */
-		--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-		--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-		--duration-fast: 150ms;
-		--duration-normal: 200ms;
-		--duration-slow: 300ms;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * HEADER - Sticky, GPU-accelerated
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	/* Header */
 	.header {
 		position: sticky;
 		top: 0;
-		left: 0;
-		right: 0;
 		z-index: 1000;
-		height: var(--header-height);
-		background: var(--nav-bg-alpha);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--nav-border);
-		transition: background-color var(--duration-normal) var(--ease-in-out),
-					box-shadow var(--duration-normal) var(--ease-in-out);
-		/* GPU acceleration */
-		transform: translateZ(0);
-		will-change: background-color, box-shadow;
+		height: var(--header-h);
+		background: var(--nav-bg);
+		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 
-	.header--scrolled {
-		background: rgba(5, 20, 43, 0.99);
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 4px 20px rgba(0, 0, 0, 0.3);
+	@media (max-width: 1023px) {
+		.header { height: var(--header-h-mobile); }
 	}
 
-	/* Tablet: 768-1023px */
-	@media (min-width: 768px) and (max-width: 1023px) {
-		.header {
-			height: var(--header-height-tablet);
-		}
-	}
-
-	/* Mobile: <768px */
-	@media (max-width: 767px) {
-		.header {
-			height: var(--header-height-mobile);
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CONTAINER - CSS GRID (Google L8 Standard)
-	 * 3-column layout: [logo: FIXED] [nav: FLEXIBLE] [actions: AUTO]
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.header__container {
-		display: grid;
-		grid-template-columns: var(--logo-width) 1fr auto;
+	/* Container */
+	.container {
+		display: flex;
 		align-items: center;
+		justify-content: space-between;
 		height: 100%;
 		max-width: 1440px;
 		margin: 0 auto;
 		padding: 0 24px;
-		gap: 16px;
+		gap: 24px;
 	}
 
-	/* Tablet: 768-1023px - 2 column layout (logo + actions, no nav) */
-	@media (min-width: 768px) and (max-width: 1023px) {
-		.header__container {
-			grid-template-columns: var(--logo-width-tablet) 1fr;
-			padding: 0 20px;
-			gap: 12px;
-		}
-	}
-
-	/* Mobile: <768px - 2 column layout (logo + actions, no nav) */
 	@media (max-width: 767px) {
-		.header__container {
-			grid-template-columns: var(--logo-width-mobile) 1fr;
-			padding: 0 16px;
-			gap: 8px;
-		}
+		.container { padding: 0 16px; gap: 16px; }
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * LOGO ZONE - BULLETPROOF POSITIONING (Zero CLS Guarantee)
-	 *
-	 * Engineering guarantees:
-	 * 1. position: relative with explicit dimensions - NEVER shifts
-	 * 2. contain: strict - complete isolation from parent
-	 * 3. flex-shrink: 0 - NEVER compresses
-	 * 4. min-width/max-width - explicit bounds
-	 * 5. Explicit width/height on img - prevents reflow
-	 * 6. aspect-ratio fallback for older browsers
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.header__logo {
-		/* ABSOLUTE LOCK - These values NEVER change based on content */
-		position: relative;
-		width: var(--logo-width);
-		min-width: var(--logo-width);
-		max-width: var(--logo-width);
-		height: var(--logo-height);
-		min-height: var(--logo-height);
-		max-height: var(--logo-height);
-
-		/* Prevent ANY shrinking or growth */
-		flex-shrink: 0;
-		flex-grow: 0;
-		flex-basis: var(--logo-width);
-
-		/* STRICT containment - complete isolation */
-		contain: strict;
-
-		/* Clip any overflow */
-		overflow: hidden;
-
-		/* Ensure it stays in place */
-		justify-self: start;
-		align-self: center;
-	}
-
+	/* Logo - BULLETPROOF */
 	.logo {
-		display: flex;
-		align-items: center;
-		width: var(--logo-width);
-		height: var(--logo-height);
-		text-decoration: none;
+		flex-shrink: 0;
+		width: var(--logo-w);
+		height: var(--logo-h);
 	}
 
-	.logo__image {
+	.logo img {
 		display: block;
-		width: var(--logo-width);
-		height: var(--logo-height);
-		min-width: var(--logo-width);
-		min-height: var(--logo-height);
-		max-width: var(--logo-width);
-		max-height: var(--logo-height);
+		width: var(--logo-w);
+		height: var(--logo-h);
 		object-fit: contain;
 		object-position: left center;
-		/* Prevent text selection glow */
-		user-select: none;
-		-webkit-user-drag: none;
-		/* Prevent any layout shift */
-		aspect-ratio: 4 / 1;
 	}
 
-	/* Tablet: 768-1023px */
-	@media (min-width: 768px) and (max-width: 1023px) {
-		.header__logo {
-			width: var(--logo-width-tablet);
-			min-width: var(--logo-width-tablet);
-			max-width: var(--logo-width-tablet);
-			height: var(--logo-height-tablet);
-			min-height: var(--logo-height-tablet);
-			max-height: var(--logo-height-tablet);
-			flex-basis: var(--logo-width-tablet);
-		}
-
-		.logo {
-			width: var(--logo-width-tablet);
-			height: var(--logo-height-tablet);
-		}
-
-		.logo__image {
-			width: var(--logo-width-tablet);
-			height: var(--logo-height-tablet);
-			min-width: var(--logo-width-tablet);
-			min-height: var(--logo-height-tablet);
-			max-width: var(--logo-width-tablet);
-			max-height: var(--logo-height-tablet);
-		}
-	}
-
-	/* Mobile: <768px */
-	@media (max-width: 767px) {
-		.header__logo {
-			width: var(--logo-width-mobile);
-			min-width: var(--logo-width-mobile);
-			max-width: var(--logo-width-mobile);
-			height: var(--logo-height-mobile);
-			min-height: var(--logo-height-mobile);
-			max-height: var(--logo-height-mobile);
-			flex-basis: var(--logo-width-mobile);
-		}
-
-		.logo {
-			width: var(--logo-width-mobile);
-			height: var(--logo-height-mobile);
-		}
-
-		.logo__image {
-			width: var(--logo-width-mobile);
-			height: var(--logo-height-mobile);
-			min-width: var(--logo-width-mobile);
-			min-height: var(--logo-height-mobile);
-			max-width: var(--logo-width-mobile);
-			max-height: var(--logo-height-mobile);
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * NAVIGATION - Centered flex, overflow handling
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.header__nav {
-		min-width: 0; /* Allow grid shrinking */
-		overflow: hidden;
-	}
-
+	/* Desktop Nav */
 	.nav {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 2px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
+		gap: 4px;
 	}
 
-	.nav__item {
+	.nav-item {
 		position: relative;
 	}
 
-	.nav__link {
-		display: inline-flex;
+	.nav-link {
+		display: flex;
 		align-items: center;
 		gap: 4px;
-		/* Touch target: minimum 44px height (Apple HIG) */
-		min-height: var(--touch-target-min);
-		padding: 0 14px;
+		padding: 12px 14px;
 		color: var(--nav-text);
-		font-family: 'Montserrat', system-ui, sans-serif;
 		font-weight: 600;
 		font-size: 0.875rem;
 		text-decoration: none;
-		white-space: nowrap;
-		background: transparent;
-		border: 1px solid transparent;
+		background: none;
+		border: none;
 		border-radius: 6px;
 		cursor: pointer;
-		transition: color var(--duration-fast) var(--ease-in-out),
-					background-color var(--duration-fast) var(--ease-in-out),
-					border-color var(--duration-fast) var(--ease-in-out);
+		transition: color 0.15s, background 0.15s;
 	}
 
-	.nav__link:hover,
-	.nav__link:focus-visible,
-	.nav__link--active,
-	.nav__link--open {
+	.nav-link:hover, .nav-link.active {
 		color: var(--nav-accent);
-		background: var(--nav-hover-bg);
-		border-color: rgba(250, 204, 21, 0.2);
+		background: rgba(255,255,255,0.05);
 	}
 
-	.nav__link:focus-visible {
-		outline: 2px solid var(--nav-accent);
-		outline-offset: 2px;
-	}
-
-	/* Chevron rotation */
-	.nav__link :global(.nav__chevron) {
-		transition: transform var(--duration-fast) var(--ease-in-out);
-	}
-
-	.nav__link--open :global(.nav__chevron) {
-		transform: rotate(180deg);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * DROPDOWN - Animated, edge-aware positioning
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	/* Dropdown */
 	.dropdown {
 		position: absolute;
-		top: calc(100% + 8px);
+		top: 100%;
 		left: 50%;
-		transform: translateX(-50%) translateY(-8px);
-		min-width: 220px;
+		transform: translateX(-50%);
+		min-width: 200px;
 		padding: 8px;
 		background: var(--nav-bg);
-		border: 1px solid var(--nav-border);
+		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 12px;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4),
-					0 0 0 1px rgba(255, 255, 255, 0.05);
-		z-index: 100;
-
-		/* Animation - start hidden */
+		box-shadow: 0 10px 40px rgba(0,0,0,0.4);
 		opacity: 0;
 		visibility: hidden;
-		pointer-events: none;
-		transition: opacity var(--duration-normal) var(--ease-out-expo),
-					transform var(--duration-normal) var(--ease-out-expo),
-					visibility var(--duration-normal);
+		transition: opacity 0.2s, visibility 0.2s;
 	}
 
-	.dropdown--visible {
+	.dropdown.open {
 		opacity: 1;
 		visibility: visible;
-		pointer-events: auto;
-		transform: translateX(-50%) translateY(0);
 	}
 
-	/* Edge detection positioning */
-	.dropdown--left {
-		left: 0;
-		transform: translateX(0) translateY(-8px);
-	}
-
-	.dropdown--left.dropdown--visible {
-		transform: translateX(0) translateY(0);
-	}
-
-	.dropdown--right {
-		left: auto;
-		right: 0;
-		transform: translateX(0) translateY(-8px);
-	}
-
-	.dropdown--right.dropdown--visible {
-		transform: translateX(0) translateY(0);
-	}
-
-	.dropdown__item {
+	.dropdown-item {
 		display: block;
 		padding: 12px 16px;
-		color: var(--nav-text-muted);
+		color: var(--nav-muted);
 		font-size: 0.9rem;
 		text-decoration: none;
 		border-radius: 8px;
-		transition: background-color var(--duration-fast) var(--ease-in-out),
-					color var(--duration-fast) var(--ease-in-out);
-		/* Stagger animation */
-		animation: dropdownItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 30ms);
-		opacity: 0;
-		transform: translateY(-4px);
+		transition: background 0.15s, color 0.15s;
 	}
 
-	.dropdown--visible .dropdown__item {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	@keyframes dropdownItemIn {
-		from {
-			opacity: 0;
-			transform: translateY(-4px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.dropdown__item:hover,
-	.dropdown__item:focus-visible,
-	.dropdown__item--active {
-		background: rgba(250, 204, 21, 0.1);
+	.dropdown-item:hover {
+		background: rgba(250,204,21,0.1);
 		color: var(--nav-accent);
 	}
 
-	.dropdown__item:focus-visible {
-		outline: 2px solid var(--nav-accent);
-		outline-offset: -2px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * ACTIONS - Right column utilities
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.header__actions {
+	/* Actions */
+	.actions {
 		display: flex;
 		align-items: center;
-		justify-content: flex-end;
 		gap: 12px;
-		/* Ensure it's on the right */
 		margin-left: auto;
 	}
 
-	/* Action Button (Cart) */
-	.action-btn {
+	.cart-btn {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -1078,23 +430,12 @@
 		width: 44px;
 		height: 44px;
 		color: #a78bfa;
-		background: rgba(139, 92, 246, 0.1);
+		background: rgba(139,92,246,0.1);
 		border-radius: 10px;
 		text-decoration: none;
-		transition: background-color var(--duration-fast) var(--ease-in-out),
-					transform var(--duration-fast) var(--ease-in-out);
 	}
 
-	.action-btn:hover {
-		background: rgba(139, 92, 246, 0.2);
-		transform: scale(1.05);
-	}
-
-	.action-btn:active {
-		transform: scale(0.98);
-	}
-
-	.action-btn__badge {
+	.badge {
 		position: absolute;
 		top: -4px;
 		right: -4px;
@@ -1108,74 +449,35 @@
 		line-height: 20px;
 		text-align: center;
 		border-radius: 999px;
-		/* Pop animation on update */
-		animation: badgePop 200ms var(--ease-out-expo);
 	}
 
-	@keyframes badgePop {
-		0% { transform: scale(0.5); }
-		50% { transform: scale(1.2); }
-		100% { transform: scale(1); }
-	}
-
-	/* CTA Button (Yellow Get Started) */
 	.cta-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 12px 28px;
+		padding: 14px 28px;
 		background: linear-gradient(135deg, #facc15, #eab308);
 		color: #0a101c;
 		font-weight: 700;
 		font-size: 0.95rem;
 		text-decoration: none;
 		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
-		transition: all var(--duration-normal) var(--ease-in-out);
-		letter-spacing: 0.02em;
+		box-shadow: 0 4px 12px rgba(250,204,21,0.3);
+		transition: transform 0.2s, box-shadow 0.2s;
 	}
 
 	.cta-btn:hover {
-		background: linear-gradient(135deg, #fde047, #facc15);
-		box-shadow: 0 6px 20px rgba(250, 204, 21, 0.5);
 		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(250,204,21,0.5);
 	}
 
-	.cta-btn:active {
-		transform: translateY(0);
-		box-shadow: 0 2px 8px rgba(250, 204, 21, 0.4);
-	}
-
-	/* Login Button */
 	.login-btn {
-		display: inline-flex;
+		display: flex;
 		align-items: center;
 		gap: 8px;
-		padding: 10px 20px;
+		padding: 12px 20px;
 		background: linear-gradient(135deg, #2563eb, #1d4ed8);
 		color: white;
 		font-weight: 600;
-		font-size: 0.9rem;
 		text-decoration: none;
 		border-radius: 10px;
-		transition: box-shadow var(--duration-normal) var(--ease-in-out),
-					transform var(--duration-fast) var(--ease-in-out);
-	}
-
-	.login-btn:hover {
-		box-shadow: 0 0 24px rgba(37, 99, 235, 0.5);
-		transform: translateY(-1px);
-	}
-
-	.login-btn:active {
-		transform: translateY(0);
-	}
-
-	.login-btn--full {
-		width: 100%;
-		justify-content: center;
-		padding: 14px 20px;
 	}
 
 	/* User Menu */
@@ -1183,64 +485,39 @@
 		position: relative;
 	}
 
-	.user-menu__trigger {
+	.user-trigger {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		/* Touch target: minimum 44px height (Apple HIG) */
-		min-height: var(--touch-target-min);
-		padding: 0 14px;
-		background: rgba(250, 204, 21, 0.1);
-		border: 1px solid rgba(250, 204, 21, 0.3);
+		padding: 10px 14px;
+		background: rgba(250,204,21,0.1);
+		border: 1px solid rgba(250,204,21,0.3);
 		color: var(--nav-accent);
 		font-size: 0.9rem;
-		font-family: inherit;
 		border-radius: 8px;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out),
-					border-color var(--duration-fast) var(--ease-in-out);
 	}
 
-	.user-menu__trigger:hover {
-		background: rgba(250, 204, 21, 0.15);
-		border-color: rgba(250, 204, 21, 0.5);
-	}
-
-	.user-menu__name {
+	.user-name {
 		max-width: 100px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
-	.user-menu__dropdown {
+	.user-dropdown {
 		position: absolute;
 		top: calc(100% + 8px);
 		right: 0;
 		width: 200px;
 		padding: 8px;
 		background: var(--nav-bg);
-		border: 1px solid var(--nav-border);
+		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 12px;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-		z-index: 100;
-
-		/* Animation */
-		opacity: 0;
-		visibility: hidden;
-		transform: translateY(-8px);
-		transition: opacity var(--duration-normal) var(--ease-out-expo),
-					transform var(--duration-normal) var(--ease-out-expo),
-					visibility var(--duration-normal);
+		box-shadow: 0 10px 40px rgba(0,0,0,0.4);
 	}
 
-	.user-menu__dropdown--visible {
-		opacity: 1;
-		visibility: visible;
-		transform: translateY(0);
-	}
-
-	.user-menu__item {
+	.user-item {
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -1248,26 +525,25 @@
 		padding: 10px 12px;
 		color: var(--nav-text);
 		font-size: 0.9rem;
-		font-family: inherit;
 		text-decoration: none;
 		text-align: left;
-		background: transparent;
+		background: none;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out);
+		transition: background 0.15s;
 	}
 
-	.user-menu__item:hover {
-		background: var(--nav-hover-bg);
+	.user-item:hover {
+		background: rgba(255,255,255,0.05);
 	}
 
-	.user-menu__item--danger {
-		color: var(--nav-danger);
+	.user-item.danger {
+		color: #f87171;
 	}
 
-	.user-menu__item--danger:hover {
-		background: rgba(248, 113, 113, 0.1);
+	.user-item.danger:hover {
+		background: rgba(248,113,113,0.1);
 	}
 
 	/* Hamburger */
@@ -1275,52 +551,23 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
+		width: 48px;
+		height: 48px;
 		color: white;
-		background: transparent;
+		background: none;
 		border: none;
-		border-radius: 8px;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out);
 	}
 
-	.hamburger:hover {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	.hamburger__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: transform var(--duration-normal) var(--ease-out-expo);
-	}
-
-	.hamburger__icon--open {
-		transform: rotate(90deg);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * MOBILE OVERLAY
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	/* Mobile Overlay */
 	.mobile-overlay {
 		position: fixed;
 		inset: 0;
 		z-index: 1001;
-		background: rgba(0, 0, 0, 0.6);
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-		animation: fadeIn var(--duration-normal) var(--ease-out-expo);
+		background: rgba(0,0,0,0.6);
 	}
 
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * MOBILE PANEL - Slide-in with staggered content
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	/* Mobile Panel */
 	.mobile-panel {
 		position: fixed;
 		top: 0;
@@ -1329,81 +576,42 @@
 		z-index: 1002;
 		width: min(85vw, 360px);
 		background: var(--nav-bg);
-		border-left: 1px solid var(--nav-border);
-		box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
 		display: flex;
 		flex-direction: column;
-		animation: slideInRight var(--duration-slow) var(--ease-out-expo);
+		animation: slideIn 0.3s ease-out;
 	}
 
-	@keyframes slideInRight {
+	@keyframes slideIn {
 		from { transform: translateX(100%); }
 		to { transform: translateX(0); }
 	}
 
-	.mobile-panel__header {
+	.mobile-header {
 		display: flex;
 		justify-content: flex-end;
 		padding: 16px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 
-	.mobile-panel__close {
+	.mobile-close {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 44px;
 		height: 44px;
 		color: var(--nav-text);
-		background: transparent;
+		background: none;
 		border: none;
-		border-radius: 8px;
 		cursor: pointer;
-		transition: background-color var(--duration-fast) var(--ease-in-out);
 	}
 
-	.mobile-panel__close:hover {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	.mobile-panel__body {
+	.mobile-body {
 		flex: 1;
 		overflow-y: auto;
 		padding: 16px;
-		/* Smooth iOS scrolling */
-		-webkit-overflow-scrolling: touch;
 	}
 
-	.mobile-panel__footer {
-		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		/* Stagger animation */
-		animation: mobileItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 50ms);
-		opacity: 0;
-	}
-
-	@keyframes mobileItemIn {
-		from {
-			opacity: 0;
-			transform: translateX(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	/* Mobile Nav Links */
-	.mobile-nav__group {
-		/* Stagger animation */
-		animation: mobileItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 50ms);
-		opacity: 0;
-	}
-
-	.mobile-nav__link {
+	.mobile-link {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -1412,110 +620,73 @@
 		color: var(--nav-text);
 		font-size: 1.05rem;
 		font-weight: 600;
-		font-family: inherit;
 		text-decoration: none;
-		background: transparent;
+		background: none;
 		border: none;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		border-bottom: 1px solid rgba(255,255,255,0.1);
 		cursor: pointer;
 		text-align: left;
-		transition: color var(--duration-fast) var(--ease-in-out);
-		/* Stagger animation */
-		animation: mobileItemIn var(--duration-normal) var(--ease-out-expo) forwards;
-		animation-delay: calc(var(--item-index, 0) * 50ms);
-		opacity: 0;
 	}
 
-	.mobile-nav__link:hover,
-	.mobile-nav__link--active {
-		color: var(--nav-accent);
+	.chevron {
+		transition: transform 0.2s;
 	}
 
-	/* Chevron rotation */
-	.mobile-nav__link :global(.mobile-nav__chevron) {
-		transition: transform var(--duration-fast) var(--ease-in-out);
-	}
-
-	.mobile-nav__link :global(.mobile-nav__chevron--open) {
+	.chevron.open {
 		transform: rotate(90deg);
 	}
 
-	.mobile-nav__submenu {
-		max-height: 0;
-		overflow: hidden;
+	.mobile-submenu {
 		padding-left: 16px;
-		transition: max-height var(--duration-normal) var(--ease-in-out),
-					padding var(--duration-normal) var(--ease-in-out);
 	}
 
-	.mobile-nav__submenu--open {
-		max-height: 500px;
-		padding-top: 8px;
-		padding-bottom: 8px;
-	}
-
-	.mobile-nav__sublink {
+	.mobile-sublink {
 		display: block;
 		width: 100%;
 		padding: 12px 0;
-		color: var(--nav-text-muted);
+		color: var(--nav-muted);
 		font-size: 0.95rem;
-		font-family: inherit;
 		text-decoration: none;
 		text-align: left;
-		background: transparent;
+		background: none;
 		border: none;
 		cursor: pointer;
-		transition: color var(--duration-fast) var(--ease-in-out);
 	}
 
-	.mobile-nav__sublink:hover,
-	.mobile-nav__sublink--active {
+	.mobile-sublink:hover {
 		color: var(--nav-accent);
 	}
 
-	.mobile-nav__sublink--danger {
-		color: var(--nav-danger);
+	.mobile-sublink.danger {
+		color: #f87171;
 	}
 
-	/* Mobile User */
-	.mobile-user {
+	.mobile-footer {
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid rgba(255,255,255,0.1);
+	}
+
+	.mobile-cta {
+		display: block;
+		width: 100%;
 		padding: 16px;
-		background: rgba(255, 255, 255, 0.03);
+		background: linear-gradient(135deg, #facc15, #eab308);
+		color: #0a101c;
+		font-weight: 700;
+		text-align: center;
+		text-decoration: none;
 		border-radius: 12px;
 	}
 
-	.mobile-user__name {
-		margin-bottom: 12px;
-		color: var(--nav-accent);
-		font-weight: 600;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * GLOBAL STYLES
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	/* Scroll padding */
 	:global(html) {
-		scroll-padding-top: var(--header-height);
+		scroll-padding-top: var(--header-h);
 	}
 
-	/* Tablet: 768-1023px */
-	@media (min-width: 768px) and (max-width: 1023px) {
+	@media (max-width: 1023px) {
 		:global(html) {
-			scroll-padding-top: var(--header-height-tablet);
+			scroll-padding-top: var(--header-h-mobile);
 		}
-	}
-
-	/* Mobile: <768px */
-	@media (max-width: 767px) {
-		:global(html) {
-			scroll-padding-top: var(--header-height-mobile);
-		}
-	}
-
-	/* Prevent body scroll when mobile menu is open */
-	:global(body.menu-open) {
-		overflow: hidden;
-		position: fixed;
-		width: 100%;
 	}
 </style>
