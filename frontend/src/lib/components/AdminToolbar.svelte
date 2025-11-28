@@ -215,7 +215,7 @@
 			const isAdminFlag = Boolean(currentUser.is_admin);
 			const roles = currentUser.roles ?? [];
 			const hasAdminRole = roles.some((role) =>
-				['admin', 'super-admin', 'administrator'].includes(role.toLowerCase())
+				['admin', 'super-admin', 'super_admin', 'administrator'].includes(role.toLowerCase())
 			);
 
 			return isAdminFlag || hasAdminRole;
