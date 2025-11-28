@@ -143,7 +143,10 @@ class AuthController extends Controller
         $this->logSecurityEvent($user->id, SecurityEvent::TYPE_LOGIN_SUCCESS, $request);
 
         return response()->json([
-            'user' => $user,
+            'user' => array_merge($user->toArray(), [
+                'roles' => $user->getRoleNames()->toArray(),
+                'is_admin' => $user->hasRole(['admin', 'super_admin', 'super-admin']),
+            ]),
             'token' => $tokens['token'],
             'refresh_token' => $tokens['refresh_token'],
             'session_id' => $tokens['session_id'],

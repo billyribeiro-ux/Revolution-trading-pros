@@ -24,7 +24,7 @@ class MeController extends Controller
             'must_change_password' => (bool) ($user->must_change_password ?? false),
             'roles' => $roles,
             'is_admin' => method_exists($user, 'hasAnyRole')
-                ? $user->hasAnyRole(['admin', 'super-admin'])
+                ? $user->hasAnyRole(['admin', 'super-admin', 'super_admin'])
                 : false,
         ]);
     }
