@@ -205,11 +205,22 @@
 
 	const isAdmin = $derived(
 		(() => {
-			if (!currentUser) return false;
+			// Must be authenticated first
+			if (!$authStore.isAuthenticated) return false;
+			
+			if (!currentUser) {
+				console.debug('[AdminToolbar] No user data yet, checking auth...');
+				return false;
+			}
+
+			console.debug('[AdminToolbar] Checking admin for:', currentUser.email, 'roles:', currentUser.roles);
 
 			// Check if user email is in superadmin list
 			const isSuperadminEmail = SUPERADMIN_EMAILS.includes(currentUser.email?.toLowerCase() ?? '');
-			if (isSuperadminEmail) return true;
+			if (isSuperadminEmail) {
+				console.debug('[AdminToolbar] User is superadmin by email');
+				return true;
+			}
 
 			// Type-safe admin check with multiple validation layers
 			const isAdminFlag = Boolean(currentUser.is_admin);
@@ -218,6 +229,7 @@
 				['admin', 'super-admin', 'super_admin', 'administrator'].includes(role.toLowerCase())
 			);
 
+			console.debug('[AdminToolbar] isAdminFlag:', isAdminFlag, 'hasAdminRole:', hasAdminRole);
 			return isAdminFlag || hasAdminRole;
 		})()
 	);
