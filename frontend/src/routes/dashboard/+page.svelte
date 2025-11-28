@@ -1,626 +1,508 @@
 <script lang="ts">
-	import {
-		IconUser,
-		IconMail,
-		IconCalendar,
-		IconShieldCheck,
-		IconChartLine,
-		IconBell,
-		IconBook
-	} from '@tabler/icons-svelte';
+	/**
+	 * User Dashboard Page
+	 * Matches WordPress WooCommerce My Account dashboard structure
+	 * Shows user's active memberships organized by category
+	 */
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
+	import { IconUsers, IconBell } from '@tabler/icons-svelte';
+	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
+	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
+	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
-	let isVisible = false;
-	let dashboardRef: HTMLDivElement;
-	let particlesRef: HTMLDivElement;
-	let headerRef: HTMLDivElement;
-	let cardsRef: HTMLDivElement;
-	let actionsRef: HTMLDivElement;
+	let tradingRooms = $state<UserMembership[]>([]);
+	let alertServices = $state<UserMembership[]>([]);
+	let courses = $state<UserMembership[]>([]);
+	let indicators = $state<UserMembership[]>([]);
+	let allMemberships = $state<UserMembership[]>([]);
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
 
-	onMount(() => {
-		isVisible = true;
-
-		// Initialize GSAP animations
-		initAnimations();
-		createFloatingParticles();
-
-		return () => {
-			// Cleanup particles
-			if (particlesRef) {
-				particlesRef.innerHTML = '';
-			}
-		};
+	onMount(async () => {
+		try {
+			const memberships = await getUserMemberships();
+			tradingRooms = memberships.tradingRooms;
+			alertServices = memberships.alertServices;
+			courses = memberships.courses || [];
+			indicators = memberships.indicators || [];
+			allMemberships = memberships.memberships;
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to load memberships';
+			console.error('Error loading memberships:', e);
+		} finally {
+			isLoading = false;
+		}
 	});
 
-	function initAnimations() {
-		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-		// Animate header
-		tl.from(headerRef, {
-			opacity: 0,
-			y: -50,
-			duration: 1,
-			ease: 'back.out(1.7)'
-		})
-			// Animate cards with stagger
-			.from(
-				'.info-card',
-				{
-					opacity: 0,
-					y: 80,
-					scale: 0.9,
-					duration: 1,
-					stagger: 0.2,
-					ease: 'power4.out'
-				},
-				'-=0.6'
-			)
-			// Animate quick actions
-			.from(
-				actionsRef,
-				{
-					opacity: 0,
-					y: 60,
-					duration: 0.8
-				},
-				'-=0.4'
-			)
-			.from(
-				'.action-card',
-				{
-					opacity: 0,
-					scale: 0.8,
-					duration: 0.6,
-					stagger: 0.15,
-					ease: 'back.out(1.4)'
-				},
-				'-=0.4'
-			);
-
-		// Animate icons with pulse
-		gsap.to('.icon-pulse', {
-			scale: 1.1,
-			opacity: 0.8,
-			duration: 2,
-			repeat: -1,
-			yoyo: true,
-			ease: 'sine.inOut'
-		});
-
-		// Floating card effect on hover
-		const cards = document.querySelectorAll('.hover-lift');
-		cards.forEach((card) => {
-			card.addEventListener('mouseenter', () => {
-				gsap.to(card, {
-					y: -10,
-					duration: 0.3,
-					ease: 'power2.out'
-				});
-			});
-
-			card.addEventListener('mouseleave', () => {
-				gsap.to(card, {
-					y: 0,
-					duration: 0.3,
-					ease: 'power2.out'
-				});
-			});
-		});
-	}
-
-	function createFloatingParticles() {
-		if (!particlesRef) return;
-
-		// Create 50 particles with varying colors
-		const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'];
-
-		for (let i = 0; i < 50; i++) {
-			const particle = document.createElement('div');
-			particle.className = 'floating-particle';
-
-			const size = Math.random() * 5 + 2;
-			const color = colors[Math.floor(Math.random() * colors.length)];
-			const startX = Math.random() * 100;
-			const startY = Math.random() * 100;
-			const duration = Math.random() * 25 + 20;
-			const delay = Math.random() * 5;
-
-			particle.style.width = `${size}px`;
-			particle.style.height = `${size}px`;
-			particle.style.backgroundColor = color;
-			particle.style.left = `${startX}%`;
-			particle.style.top = `${startY}%`;
-			particle.style.borderRadius = '50%';
-			particle.style.position = 'absolute';
-			particle.style.pointerEvents = 'none';
-			particle.style.opacity = '0.6';
-			particle.style.filter = 'blur(1px)';
-
-			particlesRef.appendChild(particle);
-
-			// Animate particles
-			gsap.to(particle, {
-				y: -150,
-				x: `+=${Math.random() * 150 - 75}`,
-				opacity: 0,
-				duration: duration,
-				delay: delay,
-				repeat: -1,
-				ease: 'none'
-			});
-
-			// Add rotation
-			gsap.to(particle, {
-				rotation: 360,
-				duration: duration / 2,
-				delay: delay,
-				repeat: -1,
-				ease: 'none'
-			});
-		}
-	}
-
-	function formatDate(dateString: string | null | undefined): string {
-		if (!dateString) return 'Not verified';
-		return new Date(dateString).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		});
-	}
+	const hasMemberships = $derived(allMemberships.length > 0);
 </script>
 
 <svelte:head>
 	<title>Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<div
-	class="dashboard-page min-h-screen px-4 py-12 overflow-hidden relative"
-	bind:this={dashboardRef}
->
-	<!-- Animated gradient background -->
-	<div class="gradient-bg absolute inset-0"></div>
+<div class="woocommerce-account">
+	<div class="woocommerce">
+		<!-- Sidebar Navigation -->
+		<DashboardSidebar memberships={allMemberships} />
 
-	<!-- Grid overlay -->
-	<div class="grid-overlay absolute inset-0"></div>
-
-	<!-- Floating particles container -->
-	<div
-		class="particles-container absolute inset-0 pointer-events-none overflow-hidden"
-		bind:this={particlesRef}
-	></div>
-
-	<!-- Floating orbs -->
-	<div class="glow-orb glow-orb-1"></div>
-	<div class="glow-orb glow-orb-2"></div>
-	<div class="glow-orb glow-orb-3"></div>
-
-	<!-- Dashboard content -->
-	<div class="relative max-w-6xl mx-auto z-10">
-		<!-- Header -->
-		<div class="mb-12" bind:this={headerRef}>
-			<h1
-				class="text-5xl md:text-6xl font-heading font-bold mb-4 bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent"
-			>
-				Dashboard
-			</h1>
-			<p class="text-xl md:text-2xl text-slate-300">
-				Welcome back, <span class="text-indigo-400 font-semibold glow-text">{data.user?.name}</span>
-			</p>
-		</div>
-
-		<!-- User info cards grid -->
-		<div class="grid md:grid-cols-2 gap-6 mb-12" bind:this={cardsRef}>
-			<!-- Account info card -->
-			<div class="info-card card-wrapper hover-lift">
-				<div
-					class="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-30 blur-2xl"
-				></div>
-				<div
-					class="relative bg-slate-900/95 backdrop-blur-xl border border-indigo-500/30 rounded-3xl p-8 shadow-2xl"
-				>
-					<div class="flex items-center gap-4 mb-8">
-						<div
-							class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 p-0.5 icon-pulse shadow-lg shadow-indigo-500/50"
-						>
-							<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
-								<IconUser size={36} class="text-indigo-400" />
-							</div>
-						</div>
-						<div>
-							<h2 class="text-2xl font-heading font-bold text-white mb-1">Account Information</h2>
-							<p class="text-slate-400 text-sm">Your profile details</p>
-						</div>
+		<!-- Main Content Area -->
+		<div class="woocommerce-MyAccount-content">
+			<!-- Dashboard Header -->
+			<div class="wc-content-sction">
+				<div class="dashb_headr">
+					<div class="dashb_headr-left">
+						<h1 class="dashb_pg-titl">My Account</h1>
 					</div>
-
-					<div class="space-y-3">
-						<div
-							class="info-item flex items-center gap-3 p-4 bg-gradient-to-r from-slate-800/60 to-slate-800/40 rounded-xl border border-slate-700/50 hover:border-indigo-500/30 transition-all duration-300"
-						>
-							<div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-								<IconUser size={20} class="text-indigo-400" />
-							</div>
-							<div>
-								<p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Name</p>
-								<p class="text-white font-medium text-lg">{data.user?.name}</p>
-							</div>
-						</div>
-
-						<div
-							class="info-item flex items-center gap-3 p-4 bg-gradient-to-r from-slate-800/60 to-slate-800/40 rounded-xl border border-slate-700/50 hover:border-indigo-500/30 transition-all duration-300"
-						>
-							<div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-								<IconMail size={20} class="text-indigo-400" />
-							</div>
-							<div>
-								<p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Email</p>
-								<p class="text-white font-medium text-lg">{data.user?.email}</p>
-							</div>
-						</div>
-
-						<div
-							class="info-item flex items-center gap-3 p-4 bg-gradient-to-r from-slate-800/60 to-slate-800/40 rounded-xl border border-slate-700/50 hover:border-indigo-500/30 transition-all duration-300"
-						>
-							<div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-								<IconCalendar size={20} class="text-indigo-400" />
-							</div>
-							<div>
-								<p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">
-									Member Since
-								</p>
-								<p class="text-white font-medium text-lg">{formatDate(data.user?.created_at)}</p>
-							</div>
-						</div>
+					<div class="dashb_headr-right">
+						<a href="/live-trading-rooms" class="btn btn-xs btn-link start-here-btn">
+							Start Here
+						</a>
 					</div>
 				</div>
 			</div>
 
-			<!-- Email verification card -->
-			<div class="info-card card-wrapper hover-lift">
-				<div
-					class="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl opacity-30 blur-2xl"
-				></div>
-				<div
-					class="relative bg-slate-900/95 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-8 shadow-2xl"
-				>
-					<div class="flex items-center gap-4 mb-8">
-						<div
-							class="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-0.5 icon-pulse shadow-lg shadow-emerald-500/50"
-						>
-							<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
-								<IconShieldCheck size={36} class="text-emerald-400" />
-							</div>
-						</div>
-						<div>
-							<h2 class="text-2xl font-heading font-bold text-white mb-1">Verification Status</h2>
-							<p class="text-slate-400 text-sm">Email verification</p>
-						</div>
+			<!-- Dashboard Content -->
+			<div class="wc-accontent-inner">
+				{#if isLoading}
+					<!-- Loading State -->
+					<div class="et-pstfilter-loadr" style="display: block;"></div>
+				{:else if error}
+					<!-- Error State -->
+					<div class="error-state">
+						<p class="error-message">{error}</p>
+						<button class="btn btn-xs" onclick={() => location.reload()}>
+							Try Again
+						</button>
 					</div>
-
-					{#if data.user?.email_verified_at}
-						<div
-							class="p-6 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/40 rounded-2xl shadow-lg shadow-emerald-500/10"
-						>
-							<div class="flex items-center gap-3 mb-3">
-								<div
-									class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center"
-								>
-									<IconShieldCheck size={28} class="text-emerald-400" />
+				{:else if hasMemberships}
+					<!-- Memberships Grid - Matches WordPress cselt-row structure -->
+					<div class="cselt-row">
+						<!-- Trading Rooms Section -->
+						{#if tradingRooms.length > 0}
+							<h3 class="custom-head-0">Trading Rooms</h3>
+							{#each tradingRooms as room (room.id)}
+								<div class="col-sm4">
+									<MembershipCard
+										id={room.id}
+										name={room.name}
+										type={room.type}
+										slug={room.slug}
+										icon={room.icon}
+									/>
 								</div>
-								<p class="text-xl font-bold text-emerald-300">Email Verified</p>
-							</div>
-							<p class="text-sm text-emerald-400/80 ml-15">
-								Verified on {formatDate(data.user?.email_verified_at)}
-							</p>
-						</div>
-					{:else}
-						<div
-							class="p-6 bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/40 rounded-2xl shadow-lg shadow-amber-500/10"
-						>
-							<div class="flex items-center gap-3 mb-4">
-								<div
-									class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center"
-								>
-									<IconMail size={28} class="text-amber-400" />
+							{/each}
+							<hr class="custom-hr-0" />
+						{/if}
+
+						<!-- Alert Services Section -->
+						{#if alertServices.length > 0}
+							<h3 class="custom-head-1">Live Alerts</h3>
+							{#each alertServices as alert (alert.id)}
+								<div class="col-sm4">
+									<MembershipCard
+										id={alert.id}
+										name={alert.name}
+										type={alert.type}
+										slug={alert.slug}
+										icon={alert.icon}
+									/>
 								</div>
-								<p class="text-xl font-bold text-amber-300">Email Not Verified</p>
-							</div>
-							<p class="text-sm text-amber-400/80 mb-5">
-								Please check your email and click the verification link.
-							</p>
-							<button
-								class="w-full px-6 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105"
-							>
-								Resend Verification Email
-							</button>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</div>
+							{/each}
+							<hr class="custom-hr-1" />
+						{/if}
 
-		<!-- Quick actions -->
-		<div class="mb-12" bind:this={actionsRef}>
-			<h2
-				class="text-3xl font-heading font-bold text-white mb-8 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"
-			>
-				Quick Actions
-			</h2>
-			<div class="grid sm:grid-cols-3 gap-6">
-				<a
-					href="/trading-rooms"
-					class="action-card group relative p-8 bg-slate-900/80 backdrop-blur-xl border border-purple-500/30 rounded-2xl overflow-hidden transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20"
-				>
-					<div
-						class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-					></div>
-					<div class="relative z-10">
-						<div
-							class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-0.5 mb-5 shadow-lg shadow-purple-500/30"
-						>
-							<div class="w-full h-full bg-slate-900 rounded-xl flex items-center justify-center">
-								<IconChartLine size={28} class="text-purple-400" />
-							</div>
-						</div>
-						<h3
-							class="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors"
-						>
-							Trading Rooms
-						</h3>
-						<p class="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-							Join live trading sessions
-						</p>
-					</div>
-					<div
-						class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-					></div>
-				</a>
+						<!-- Courses Section -->
+						{#if courses.length > 0}
+							<h3 class="custom-head-2">Courses</h3>
+							{#each courses as course (course.id)}
+								<div class="col-sm4">
+									<MembershipCard
+										id={course.id}
+										name={course.name}
+										type={course.type}
+										slug={course.slug}
+										icon={course.icon}
+									/>
+								</div>
+							{/each}
+						{/if}
 
-				<a
-					href="/alert-services"
-					class="action-card group relative p-8 bg-slate-900/80 backdrop-blur-xl border border-amber-500/30 rounded-2xl overflow-hidden transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/20"
-				>
-					<div
-						class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-					></div>
-					<div class="relative z-10">
-						<div
-							class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 p-0.5 mb-5 shadow-lg shadow-amber-500/30"
-						>
-							<div class="w-full h-full bg-slate-900 rounded-xl flex items-center justify-center">
-								<IconBell size={28} class="text-amber-400" />
+						<!-- Indicators Section -->
+						{#if indicators.length > 0}
+							<h3 class="custom-head-3">My Indicators</h3>
+							<div id="my-indicators-cards">
+								{#each indicators as indicator (indicator.id)}
+									<div class="col-sm4">
+										<MembershipCard
+											id={indicator.id}
+											name={indicator.name}
+											type={indicator.type}
+											slug={indicator.slug}
+											icon={indicator.icon}
+										/>
+									</div>
+								{/each}
 							</div>
-						</div>
-						<h3
-							class="text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors"
-						>
-							Alert Services
-						</h3>
-						<p class="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-							Manage your subscriptions
-						</p>
+						{/if}
 					</div>
-					<div
-						class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-					></div>
-				</a>
-
-				<a
-					href="/courses"
-					class="action-card group relative p-8 bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 rounded-2xl overflow-hidden transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/20"
-				>
-					<div
-						class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-					></div>
-					<div class="relative z-10">
-						<div
-							class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 p-0.5 mb-5 shadow-lg shadow-cyan-500/30"
-						>
-							<div class="w-full h-full bg-slate-900 rounded-xl flex items-center justify-center">
-								<IconBook size={28} class="text-cyan-400" />
-							</div>
+				{:else}
+					<!-- Empty State -->
+					<div class="empty-state">
+						<div class="empty-icon">
+							<IconUsers size={48} />
 						</div>
-						<h3
-							class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors"
-						>
-							Courses
-						</h3>
-						<p class="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-							Continue your education
-						</p>
+						<h2>No Active Memberships</h2>
+						<p>You don't have any active memberships yet.</p>
+						<a href="/live-trading-rooms" class="btn btn-orange">
+							Explore Trading Rooms
+						</a>
 					</div>
-					<div
-						class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-					></div>
-				</a>
+				{/if}
 			</div>
 		</div>
 	</div>
 </div>
 
+<!-- Mobile Dashboard Toggle -->
+<div class="csdashboard__toggle">
+	<button type="button" class="dashboard__toggle-button">
+		<span class="dashboard__toggle-button-icon">
+			<span></span>
+			<span></span>
+			<span></span>
+		</span>
+		<span class="framework__toggle-button-label">Menu</span>
+	</button>
+</div>
+<div class="csdashboard__overlay"></div>
+
 <style>
-	/* Animated gradient background */
-	.gradient-bg {
-		background: linear-gradient(
-			135deg,
-			#0f172a 0%,
-			#1e1b4b 20%,
-			#312e81 40%,
-			#1e1b4b 60%,
-			#0f172a 80%,
-			#1e1b4b 100%
-		);
-		background-size: 400% 400%;
-		animation: gradientShift 25s ease infinite;
+	/* WooCommerce Account Structure */
+	.woocommerce-account .woocommerce {
+		display: flex;
+		margin: 0 auto;
+		width: 100%;
 	}
 
-	@keyframes gradientShift {
-		0%,
-		100% {
-			background-position: 0% 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
-	}
-
-	/* Grid overlay */
-	.grid-overlay {
-		background-image:
-			linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-		background-size: 50px 50px;
-		animation: gridMove 30s linear infinite;
-		pointer-events: none;
-	}
-
-	@keyframes gridMove {
-		0% {
-			transform: translate(0, 0);
-		}
-		100% {
-			transform: translate(50px, 50px);
-		}
-	}
-
-	/* Glowing orbs */
-	.glow-orb {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.4;
-		pointer-events: none;
-	}
-
-	.glow-orb-1 {
-		width: 600px;
-		height: 600px;
-		top: -100px;
-		left: -100px;
-		background: radial-gradient(circle, #6366f1, transparent 70%);
-		animation: float1 25s ease-in-out infinite;
-	}
-
-	.glow-orb-2 {
-		width: 500px;
-		height: 500px;
-		bottom: -100px;
-		right: -100px;
-		background: radial-gradient(circle, #8b5cf6, transparent 70%);
-		animation: float2 30s ease-in-out infinite;
-	}
-
-	.glow-orb-3 {
-		width: 450px;
-		height: 450px;
-		top: 50%;
-		left: 50%;
-		background: radial-gradient(circle, #ec4899, transparent 70%);
-		animation: float3 35s ease-in-out infinite;
-	}
-
-	@keyframes float1 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(100px, 50px) scale(1.1);
-		}
-		66% {
-			transform: translate(-50px, 100px) scale(0.9);
-		}
-	}
-
-	@keyframes float2 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(-100px, -50px) scale(1.1);
-		}
-		66% {
-			transform: translate(50px, -100px) scale(0.9);
-		}
-	}
-
-	@keyframes float3 {
-		0%,
-		100% {
-			transform: translate(-50%, -50%) scale(1);
-		}
-		50% {
-			transform: translate(-50%, -50%) scale(1.2);
-		}
-	}
-
-	/* Text glow effect */
-	.glow-text {
-		text-shadow:
-			0 0 20px rgba(99, 102, 241, 0.5),
-			0 0 40px rgba(99, 102, 241, 0.3);
-		animation: textGlow 3s ease-in-out infinite;
-	}
-
-	@keyframes textGlow {
-		0%,
-		100% {
-			text-shadow:
-				0 0 20px rgba(99, 102, 241, 0.5),
-				0 0 40px rgba(99, 102, 241, 0.3);
-		}
-		50% {
-			text-shadow:
-				0 0 30px rgba(99, 102, 241, 0.7),
-				0 0 60px rgba(99, 102, 241, 0.5);
-		}
-	}
-
-	/* Card wrapper */
-	.card-wrapper {
+	/* Main Content Area */
+	.woocommerce-MyAccount-content {
+		padding: 20px;
+		width: 100%;
+		background: #f4f4f4;
 		position: relative;
 	}
 
-	/* Info item hover effects */
-	.info-item {
-		transition: all 0.3s ease;
+	/* Content Section */
+	.wc-content-sction {
+		width: 100%;
+		margin: auto;
+		margin-top: 10px;
 	}
 
-	.info-item:hover {
-		transform: translateX(5px);
-		background: linear-gradient(to right, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+	/* Dashboard Header */
+	.dashb_headr {
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		max-width: 100%;
+		padding: 20px;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
 	}
 
-	/* Responsive adjustments */
-	@media (max-width: 640px) {
-		.glow-orb {
-			filter: blur(60px);
-			opacity: 0.3;
+	.dashb_headr-left,
+	.dashb_headr-right {
+		align-items: center;
+		display: flex;
+		flex-direction: row;
+	}
+
+	.dashb_headr-right {
+		flex-direction: row-reverse;
+		justify-content: flex-end;
+	}
+
+	.dashb_pg-titl {
+		color: #333;
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-size: 36px;
+		font-weight: 700;
+		margin: 0;
+	}
+
+	/* Start Here Button */
+	.start-here-btn {
+		font-size: 14px;
+		line-height: 18px;
+		padding: 8px 14px;
+		font-weight: 600;
+		color: #0984ae;
+		background: #f4f4f4;
+		border-color: transparent;
+		text-decoration: none;
+		border-radius: 5px;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.start-here-btn:hover {
+		color: #0984ae;
+		background: #e7e7e7;
+	}
+
+	/* Inner Content */
+	.wc-accontent-inner {
+		padding: 4% 2%;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 1px 2px rgb(0 0 0 / 15%);
+		position: relative;
+		margin-top: 20px;
+	}
+
+	/* Membership Grid - cselt-row */
+	.cselt-row {
+		display: flex;
+		flex-flow: row wrap;
+		align-items: flex-end;
+		column-gap: 30px;
+		row-gap: 40px;
+	}
+
+	.cselt-row .col-sm4 {
+		flex: 0 0 auto;
+		width: 100%;
+		max-width: 320px;
+	}
+
+	/* Section Headers */
+	.custom-head-0,
+	.custom-head-1,
+	.custom-head-2,
+	.custom-head-3 {
+		color: #333;
+		font-weight: 700;
+		font-size: 20px;
+		font-family: 'Open Sans', sans-serif;
+		width: 100%;
+	}
+
+	.custom-head-1,
+	.custom-head-2,
+	.custom-head-3 {
+		margin-top: 30px;
+	}
+
+	/* Section Dividers */
+	.custom-hr-0,
+	.custom-hr-1,
+	.custom-hr-2 {
+		border-top: 1px solid #dbdbdb;
+		width: 100%;
+		margin: 20px 0;
+	}
+
+	/* Loading State */
+	.et-pstfilter-loadr {
+		background: url('/img/et-postflt-loader.png') no-repeat center;
+		display: none;
+		width: 100%;
+		height: 200px;
+		position: relative;
+		z-index: 9999;
+		background-color: #fff;
+	}
+
+	/* Error State */
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 200px;
+		text-align: center;
+	}
+
+	.error-message {
+		color: #eb5757;
+		margin-bottom: 16px;
+	}
+
+	/* Empty State */
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		text-align: center;
+		color: #666;
+	}
+
+	.empty-icon {
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		background: #f4f4f4;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 24px;
+		color: #0984ae;
+	}
+
+	.empty-state h2 {
+		font-size: 1.5rem;
+		color: #333;
+		margin-bottom: 8px;
+	}
+
+	.empty-state p {
+		margin-bottom: 24px;
+		color: #666;
+	}
+
+	.btn-orange {
+		background: #f99e31;
+		border-color: #f99e31;
+		color: #fff;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		padding: 10px 20px;
+		border-radius: 5px;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.btn-orange:hover {
+		background: #f88b09;
+		border-color: #f88b09;
+	}
+
+	/* Mobile Dashboard Toggle */
+	.csdashboard__toggle {
+		background-color: #0d2532;
+		bottom: 0;
+		height: 50px;
+		left: 0;
+		line-height: 50px;
+		padding: 0;
+		position: fixed;
+		right: 0;
+		z-index: 100010;
+		display: none;
+	}
+
+	.dashboard__toggle-button {
+		appearance: none;
+		background: none;
+		color: #fff;
+		height: 50px;
+		overflow: hidden;
+		padding: 0 10px 0 50px;
+		position: relative;
+		border-radius: 10px;
+		border: 1px solid #fff;
+		cursor: pointer;
+	}
+
+	.dashboard__toggle-button-icon {
+		height: 50px;
+		left: 20px;
+		position: absolute;
+		top: 40%;
+		margin-top: -7px;
+		width: 50px;
+	}
+
+	.dashboard__toggle-button-icon span {
+		background-color: #fff;
+		border-radius: 0;
+		display: block;
+		height: 2px;
+		left: 0;
+		opacity: 1;
+		position: absolute;
+		transform: rotate(0);
+		transform-origin: left center;
+		transition: all 0.15s ease-in-out;
+		width: 20px;
+	}
+
+	.dashboard__toggle-button-icon span:first-child {
+		top: 0;
+	}
+
+	.dashboard__toggle-button-icon span:nth-child(2) {
+		top: 6px;
+	}
+
+	.dashboard__toggle-button-icon span:nth-child(3) {
+		top: 12px;
+	}
+
+	.framework__toggle-button-label {
+		font-size: 12px;
+		position: relative;
+		text-transform: uppercase;
+		top: 0;
+	}
+
+	/* Overlay */
+	.csdashboard__overlay {
+		background-color: rgba(0, 0, 0, 0.65);
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		position: fixed;
+		right: 0;
+		top: 0;
+		transition: all 0.3s ease-in-out;
+		visibility: hidden;
+		z-index: 100009;
+	}
+
+	/* Responsive */
+	@media screen and (max-width: 980px) {
+		.csdashboard__toggle {
+			display: block;
 		}
 
-		.glow-orb-1 {
-			width: 400px;
-			height: 400px;
-		}
-
-		.glow-orb-2 {
-			width: 350px;
-			height: 350px;
-		}
-
-		.glow-orb-3 {
-			width: 300px;
-			height: 300px;
+		.woocommerce-MyAccount-content {
+			width: 100%;
 		}
 	}
 
-	/* Particle base styles */
-	:global(.floating-particle) {
-		will-change: transform, opacity;
+	@media screen and (min-width: 577px) {
+		.dashb_headr-left,
+		.dashb_headr-right {
+			flex-direction: row;
+		}
+
+		.dashb_headr-right {
+			flex-direction: row-reverse;
+			justify-content: flex-end;
+		}
+	}
+
+	@media screen and (min-width: 468px) {
+		.cselt-row .col-sm4 {
+			width: 48%;
+		}
+	}
+
+	@media screen and (min-width: 768px) {
+		.cselt-row .col-sm4 {
+			width: 31%;
+		}
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashb_headr {
+			padding: 30px;
+		}
 	}
 </style>
