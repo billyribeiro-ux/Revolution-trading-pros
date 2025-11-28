@@ -18,6 +18,14 @@
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { authStore, user as userStore, isAdminUser } from '$lib/stores/auth';
 
+	// Consent System
+	import {
+		ConsentBanner,
+		ConsentPreferencesModal,
+		initializeConsent,
+		trackGA4PageView,
+	} from '$lib/consent';
+
 	// Route-based layout detection
 	$: pathname = $page.url.pathname;
 	$: isAdminArea = pathname.startsWith('/admin');
@@ -31,16 +39,33 @@
 	// Use centralized admin check from auth store
 	$: isAdmin = $isAdminUser;
 
-	// Initialize performance optimizations
+	// Initialize performance optimizations and consent system
 	onMount(() => {
 		if (browser) {
 			// Register service worker for offline support and caching
 			registerServiceWorker();
-			
+
 			// Initialize Core Web Vitals monitoring
 			initPerformanceMonitoring();
+
+			// Initialize consent management system
+			// This loads stored preferences, applies Google Consent Mode,
+			// and loads vendors (GA4, Meta Pixel) based on consent
+			const unsubscribeConsent = initializeConsent();
+
+			return () => {
+				unsubscribeConsent();
+			};
 		}
 	});
+
+	// Track page views on navigation (SPA)
+	$: if (browser && pathname) {
+		// Small delay to ensure page title has updated
+		setTimeout(() => {
+			trackGA4PageView(window.location.href);
+		}, 100);
+	}
 </script>
 
 <!--
@@ -89,6 +114,10 @@
 
 		<!-- Global Popup Modal - Enterprise Grade: Only shows when explicitly triggered -->
 		<PopupModal />
+
+		<!-- Consent Management UI -->
+		<ConsentBanner />
+		<ConsentPreferencesModal />
 	</div>
 {/if}
 
