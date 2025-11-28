@@ -396,7 +396,6 @@
 									class:dropdown--left={dropdownPositions[item.id] === 'left'}
 									class:dropdown--right={dropdownPositions[item.id] === 'right'}
 									role="menu"
-									tabindex="-1"
 									aria-labelledby={`nav-${item.id}`}
 									onkeydown={(e) => handleDropdownKeydown(e, item.submenu || [])}
 								>
@@ -446,6 +445,11 @@
 			{/if}
 
 			{#if isDesktop}
+				<!-- Get Started CTA Button -->
+				<a href="/login" class="cta-btn">
+					Get Started
+				</a>
+
 				{#if $isAuthenticated}
 					<div class="user-menu" data-user-menu>
 						<button
@@ -543,7 +547,6 @@
 	></div>
 
 	<!-- Panel -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<nav
 		id="mobile-nav"
 		class="mobile-panel"
@@ -578,12 +581,9 @@
 							<span
 								class="mobile-nav__chevron"
 								class:mobile-nav__chevron--open={activeMobileSubmenu === item.id}
+								aria-hidden="true"
 							>
-								<IconChevronRight
-									size={18}
-									stroke={2.5}
-									aria-hidden="true"
-								/>
+								<IconChevronRight size={18} stroke={2.5} />
 							</span>
 						</button>
 
@@ -1033,6 +1033,35 @@
 		100% { transform: scale(1); }
 	}
 
+	/* CTA Button (Yellow Get Started) */
+	.cta-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px 28px;
+		background: linear-gradient(135deg, #facc15, #eab308);
+		color: #0a101c;
+		font-weight: 700;
+		font-size: 0.95rem;
+		text-decoration: none;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+		transition: all var(--duration-normal) var(--ease-in-out);
+		letter-spacing: 0.02em;
+	}
+
+	.cta-btn:hover {
+		background: linear-gradient(135deg, #fde047, #facc15);
+		box-shadow: 0 6px 20px rgba(250, 204, 21, 0.5);
+		transform: translateY(-2px);
+	}
+
+	.cta-btn:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 8px rgba(250, 204, 21, 0.4);
+	}
+
 	/* Login Button */
 	.login-btn {
 		display: inline-flex;
@@ -1316,12 +1345,11 @@
 	}
 
 	/* Chevron rotation */
-	.mobile-nav__chevron {
-		display: inline-flex;
+	.mobile-nav__link :global(.mobile-nav__chevron) {
 		transition: transform var(--duration-fast) var(--ease-in-out);
 	}
 
-	.mobile-nav__chevron--open {
+	.mobile-nav__link :global(.mobile-nav__chevron--open) {
 		transform: rotate(90deg);
 	}
 
