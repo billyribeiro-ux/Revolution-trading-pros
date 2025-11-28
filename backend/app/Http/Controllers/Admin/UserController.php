@@ -15,12 +15,27 @@ class UserController extends Controller
      */
     public function index()
     {
-        $admins = User::role(['admin', 'super-admin'])
+        // Get superadmin emails from config
+        $superadminEmails = config('superadmin.emails', []);
+        
+        // Get users with admin/super-admin roles OR superadmin emails
+        $admins = User::where(function ($query) use ($superadminEmails) {
+            // Users with admin roles
+            $query->whereHas('roles', function ($q) {
+                $q->whereIn('name', ['admin', 'super-admin']);
+            });
+            
+            // OR users with superadmin emails
+            if (!empty($superadminEmails)) {
+                $query->orWhereIn('email', array_map('strtolower', $superadminEmails));
+            }
+        })
+            ->with('roles')
             ->orderBy('created_at', 'desc')
             ->paginate(request('per_page', 20));
 
         return response()->json([
-            'users' => $admins->items(),
+            'data' => $admins->items(),
             'total' => $admins->total(),
             'current_page' => $admins->currentPage(),
             'last_page' => $admins->lastPage(),
