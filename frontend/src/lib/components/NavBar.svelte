@@ -192,21 +192,9 @@
 					</a>
 				{/if}
 			{/each}
-		</nav>
 
-		<!-- ACTIONS -->
-		<div class="actions">
-			{#if $hasCartItems}
-				<a href="/cart" class="cart-btn" aria-label="Cart ({$cartItemCount} items)">
-					<IconShoppingCart size={22} />
-					{#if $cartItemCount > 0}
-						<span class="badge">{$cartItemCount}</span>
-					{/if}
-				</a>
-			{/if}
-
+			<!-- Dashboard dropdown (when logged in) - right after Resources -->
 			{#if $isAuthenticated}
-				<!-- Dashboard dropdown - same style as nav -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div
 					class="nav-item"
@@ -235,8 +223,21 @@
 						</div>
 					{/if}
 				</div>
-			{:else}
-				<!-- Login + Get Started -->
+			{/if}
+		</nav>
+
+		<!-- ACTIONS -->
+		<div class="actions">
+			{#if $hasCartItems}
+				<a href="/cart" class="cart-btn" aria-label="Cart ({$cartItemCount} items)">
+					<IconShoppingCart size={22} />
+					{#if $cartItemCount > 0}
+						<span class="badge">{$cartItemCount}</span>
+					{/if}
+				</a>
+			{/if}
+
+			{#if !$isAuthenticated}
 				<a href="/login" class="login-btn">Login</a>
 				<a href="/get-started" class="cta-btn">Get Started</a>
 			{/if}
