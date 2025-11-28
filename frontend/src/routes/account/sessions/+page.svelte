@@ -13,9 +13,9 @@
 	import { authStore, isAuthenticated, sessionInvalidated, type UserSession } from '$lib/stores/auth';
 	import authService from '$lib/api/auth';
 
-	// Redirect if not authenticated
-	$: if (browser && !$isAuthenticated && !$authStore.isLoading) {
-		goto('/login');
+	// Redirect if not authenticated - use replaceState to prevent history pollution
+	$: if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+		goto('/login?redirect=/account/sessions', { replaceState: true });
 	}
 
 	let sessions: UserSession[] = [];
@@ -59,7 +59,7 @@
 			// If we revoked current session, redirect to login
 			if (session?.is_current) {
 				authStore.clearAuth();
-				goto('/login?reason=session_revoked');
+				goto('/login?reason=session_revoked', { replaceState: true });
 			}
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to revoke session';
@@ -77,7 +77,7 @@
 		try {
 			await authService.logoutAllDevices(false);
 			authStore.clearAuth();
-			goto('/login?reason=logged_out_all');
+			goto('/login?reason=logged_out_all', { replaceState: true });
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to logout from all devices';
 			revokingAll = false;

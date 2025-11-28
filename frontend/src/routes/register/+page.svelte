@@ -10,7 +10,9 @@
 		IconSparkles,
 		IconArrowRight,
 		IconCircleCheck,
-		IconInbox
+		IconInbox,
+		IconEye,
+		IconEyeOff
 	} from '@tabler/icons-svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
@@ -22,6 +24,8 @@
 	let email = '';
 	let password = '';
 	let password_confirmation = '';
+	let showPassword = false;
+	let showConfirmPassword = false;
 	let errors: Record<string, string[]> = {};
 	let generalError = '';
 	let isLoading = false;
@@ -293,7 +297,7 @@
 				{/if}
 
 				<!-- Register form -->
-				<form on:submit={handleSubmit} class="register-form">
+				<form onsubmit={handleSubmit} class="register-form">
 					<!-- Name field -->
 					<div class="form-field">
 						<label for="name" class="field-label">Full Name</label>
@@ -351,14 +355,27 @@
 							</div>
 							<input
 								id="password"
-								type="password"
+								type={showPassword ? 'text' : 'password'}
 								bind:value={password}
 								required
-								class="enhanced-input"
+								class="enhanced-input has-toggle"
 								class:error={errors.password}
 								placeholder="••••••••"
 								autocomplete="new-password"
 							/>
+							<button
+								type="button"
+								class="password-toggle"
+								onclick={() => showPassword = !showPassword}
+								aria-label={showPassword ? 'Hide password' : 'Show password'}
+								tabindex={-1}
+							>
+								{#if showPassword}
+									<IconEyeOff size={20} />
+								{:else}
+									<IconEye size={20} />
+								{/if}
+							</button>
 							<div class="input-glow"></div>
 						</div>
 						{#if errors.password}
@@ -375,13 +392,26 @@
 							</div>
 							<input
 								id="password_confirmation"
-								type="password"
+								type={showConfirmPassword ? 'text' : 'password'}
 								bind:value={password_confirmation}
 								required
-								class="enhanced-input"
+								class="enhanced-input has-toggle"
 								placeholder="••••••••"
 								autocomplete="new-password"
 							/>
+							<button
+								type="button"
+								class="password-toggle"
+								onclick={() => showConfirmPassword = !showConfirmPassword}
+								aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+								tabindex={-1}
+							>
+								{#if showConfirmPassword}
+									<IconEyeOff size={20} />
+								{:else}
+									<IconEye size={20} />
+								{/if}
+							</button>
 							<div class="input-glow"></div>
 						</div>
 					</div>
@@ -800,6 +830,40 @@
 		font-weight: 500;
 		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		outline: none;
+	}
+
+	.enhanced-input.has-toggle {
+		padding-right: 3.5rem;
+	}
+
+	/* Password visibility toggle */
+	.password-toggle {
+		position: absolute;
+		right: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		color: #6ee7b7;
+		opacity: 0.6;
+		cursor: pointer;
+		padding: 0.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 6px;
+		transition: color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+		z-index: 2;
+	}
+
+	.password-toggle:hover {
+		opacity: 1;
+		background: rgba(16, 185, 129, 0.15);
+	}
+
+	.password-toggle:focus {
+		outline: none;
+		opacity: 1;
 	}
 
 	.enhanced-input::placeholder {

@@ -16,10 +16,10 @@
 		IconLock
 	} from '@tabler/icons-svelte';
 
-	// Redirect if not authenticated
+	// Redirect if not authenticated - use replaceState to prevent history pollution
 	onMount(() => {
-		if (!$isAuthenticated) {
-			goto('/login?redirect=/dashboard/courses');
+		if (!$isAuthenticated && !$authStore.isInitializing) {
+			goto('/login?redirect=/dashboard/courses', { replaceState: true });
 		}
 	});
 

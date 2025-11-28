@@ -146,8 +146,9 @@
 				window.scrollTo(0, elementPosition - offset);
 			}
 
-			// Update URL hash without jumping
-			history.pushState(null, '', `#${id}`);
+			// Update URL hash without jumping - use replaceState to prevent history pollution
+			// Google Enterprise Pattern: Hash navigation shouldn't add history entries
+			history.replaceState(null, '', `#${id}`);
 			activeId = id;
 		}
 	}
@@ -667,6 +668,7 @@
 		text-overflow: ellipsis;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 	}
 

@@ -16,6 +16,7 @@
 	import { page } from '$app/stores';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
+	import { authStore, user as userStore, isAdminUser } from '$lib/stores/auth';
 
 	// Route-based layout detection
 	$: pathname = $page.url.pathname;
@@ -26,6 +27,9 @@
 	
 	// Show marketing chrome only on public pages
 	$: showMarketingChrome = !isAdminArea && !isTradingRoom && !isEmbedArea;
+
+	// Use centralized admin check from auth store
+	$: isAdmin = $isAdminUser;
 
 	// Initialize performance optimizations
 	onMount(() => {
@@ -69,12 +73,12 @@
 	<!-- Admin/Trading/Embed: No marketing chrome, just the content -->
 	<slot />
 {:else}
-	<div class="min-h-screen bg-rtp-bg text-rtp-text">
+	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
 		<!-- Admin Toolbar (only shows for logged-in admins) -->
 		<AdminToolbar />
 
 		<!-- Navigation -->
-		<NavBar />
+		<NavBar {isAdmin} />
 
 		<main>
 			<slot />
@@ -87,3 +91,11 @@
 		<PopupModal />
 	</div>
 {/if}
+
+<style>
+	/* When admin toolbar is visible, add top padding to account for it */
+	.has-admin-toolbar {
+		--admin-toolbar-height: 46px;
+		padding-top: var(--admin-toolbar-height);
+	}
+</style>

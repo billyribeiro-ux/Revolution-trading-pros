@@ -1,6 +1,14 @@
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { 
+	isSuperadmin, 
+	isAdmin as checkIsAdmin, 
+	hasPermission as checkHasPermission,
+	getUserPermissions,
+	getHighestRole,
+	type PermissionType 
+} from '$lib/config/roles';
 
 /**
  * Revolution Trading Pros - Secure Authentication Store
@@ -30,6 +38,7 @@ export interface User {
 	created_at: string;
 	updated_at: string;
 	roles?: string[];
+	permissions?: string[];
 	is_admin?: boolean;
 }
 
@@ -221,11 +230,14 @@ function createAuthStore() {
 
 		/**
 		 * Update user data without changing token
+		 * Also sets isAuthenticated to true since we have valid user data
 		 */
 		setUser: (user: User): void => {
 			update((state) => ({
 				...state,
-				user
+				user,
+				isAuthenticated: true, // User data means we're authenticated
+				isInitializing: false  // Done initializing
 			}));
 		},
 
@@ -429,9 +441,10 @@ function createAuthStore() {
 				}
 			}
 
-			// Use SvelteKit navigation instead of hard redirect
+			// Use SvelteKit navigation with replaceState to prevent history pollution
+			// Google Enterprise Pattern: After logout, back button shouldn't return to protected pages
 			if (browser && redirectTo) {
-				await goto(redirectTo);
+				await goto(redirectTo, { replaceState: true });
 			}
 		}
 	};
@@ -452,9 +465,34 @@ export const sessionId = derived(authStore, ($auth) => $auth.sessionId);
 export const sessionInvalidated = derived(authStore, ($auth) => $auth.sessionInvalidated);
 export const invalidationReason = derived(authStore, ($auth) => $auth.invalidationReason);
 
+// Role-based derived stores
+export const isSuperAdmin = derived(authStore, ($auth) => isSuperadmin($auth.user));
+export const isAdminUser = derived(authStore, ($auth) => checkIsAdmin($auth.user));
+export const userRole = derived(authStore, ($auth) => getHighestRole($auth.user));
+export const userPermissions = derived(authStore, ($auth) => getUserPermissions($auth.user));
+
+/**
+ * Create a derived store that checks for a specific permission
+ */
+export function createPermissionStore(permission: PermissionType | string) {
+	return derived(authStore, ($auth) => checkHasPermission($auth.user, permission));
+}
+
 // Export function to get token (for use in API clients)
 export const getAuthToken = (): string | null => authStore.getToken();
 export const getSessionId = (): string | null => authStore.getSessionId();
+
+// Re-export role helpers for convenience
+export { 
+	isSuperadmin, 
+	isAdmin as checkIsAdmin, 
+	hasPermission, 
+	hasAnyPermission, 
+	hasAllPermissions,
+	SUPERADMIN_EMAILS,
+	ROLES,
+	PERMISSIONS
+} from '$lib/config/roles';
 
 // Re-export removeToast function if needed by Toast component
 export { removeToast } from '$lib/stores/toast';

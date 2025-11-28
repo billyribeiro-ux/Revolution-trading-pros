@@ -4,6 +4,8 @@ use App\Http\Middleware\ApiVersion;
 use App\Http\Middleware\ValidateSession;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SanitizeInput;
+use App\Http\Middleware\EnsureSuperadmin;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -39,6 +41,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'security.headers' => SecurityHeaders::class,
             'sanitize.input' => SanitizeInput::class,
             'api.version' => ApiVersion::class,
+            'superadmin' => EnsureSuperadmin::class,
+            'admin' => EnsureAdmin::class,
         ]);
 
         // API middleware group

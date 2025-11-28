@@ -20,10 +20,10 @@
 		IconCheck
 	} from '@tabler/icons-svelte';
 
-	// Redirect if not authenticated
+	// Redirect if not authenticated - use replaceState to prevent history pollution
 	onMount(() => {
-		if (!$isAuthenticated) {
-			goto('/login?redirect=/dashboard/account');
+		if (!$isAuthenticated && !$authStore.isInitializing) {
+			goto('/login?redirect=/dashboard/account', { replaceState: true });
 		}
 	});
 
@@ -57,7 +57,8 @@
 
 	function handleLogout() {
 		authStore.logout();
-		goto('/');
+		// Use replaceState so back button doesn't return to protected page
+		goto('/', { replaceState: true });
 	}
 </script>
 

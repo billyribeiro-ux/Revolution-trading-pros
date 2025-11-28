@@ -41,8 +41,9 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { authStore, user as userStore } from '$lib/stores/auth';
+	import { authStore, user as userStore, isSuperAdmin, isAdminUser } from '$lib/stores/auth';
 	import type { User } from '$lib/stores/auth';
+	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission, PERMISSIONS } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
 	import {
 		IconDashboard,
@@ -55,7 +56,8 @@
 		IconLogout,
 		IconEye,
 		IconAlertTriangle,
-		IconRefresh
+		IconRefresh,
+		IconCrown
 	} from '@tabler/icons-svelte';
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -195,14 +197,13 @@
 	];
 
 	// ─────────────────────────────────────────────────────────────────────────────
-	// Computed State (Reactive)
+	// Computed State (Reactive) - Using Centralized Role System
 	// ─────────────────────────────────────────────────────────────────────────────
 
 	const currentUser = $derived($userStore as AdminUser | null);
 
-	// Superadmin emails that always have admin access
-	const SUPERADMIN_EMAILS = ['welberribeirodrums@gmail.com'];
-
+	// Use centralized role checking from $lib/config/roles
+	const isSuperadminUser = $derived(isSuperadmin(currentUser));
 	const isAdmin = $derived(
 		(() => {
 			// Must be authenticated first
@@ -213,24 +214,10 @@
 				return false;
 			}
 
-			console.debug('[AdminToolbar] Checking admin for:', currentUser.email, 'roles:', currentUser.roles);
-
-			// Check if user email is in superadmin list
-			const isSuperadminEmail = SUPERADMIN_EMAILS.includes(currentUser.email?.toLowerCase() ?? '');
-			if (isSuperadminEmail) {
-				console.debug('[AdminToolbar] User is superadmin by email');
-				return true;
-			}
-
-			// Type-safe admin check with multiple validation layers
-			const isAdminFlag = Boolean(currentUser.is_admin);
-			const roles = currentUser.roles ?? [];
-			const hasAdminRole = roles.some((role) =>
-				['admin', 'super-admin', 'super_admin', 'administrator'].includes(role.toLowerCase())
-			);
-
-			console.debug('[AdminToolbar] isAdminFlag:', isAdminFlag, 'hasAdminRole:', hasAdminRole);
-			return isAdminFlag || hasAdminRole;
+			// Use centralized admin check
+			const result = checkIsAdmin(currentUser);
+			console.debug('[AdminToolbar] Admin check for:', currentUser.email, 'isSuperadmin:', isSuperadminUser, 'isAdmin:', result);
+			return result;
 		})()
 	);
 
@@ -251,32 +238,17 @@
 		})()
 	);
 
+	const roleLabel = $derived(isSuperadminUser ? 'Super Admin' : 'Admin');
+
 	const filteredQuickMenuItems = $derived(
 		quickMenuItems.filter((item) => {
-			// Filter based on user permissions if implemented
+			// Superadmin sees everything
+			if (isSuperadminUser) return true;
+			// Filter based on user permissions
 			if (!item.permission) return true;
-			return hasPermission(item.permission);
+			return hasPermission(currentUser, item.permission);
 		})
 	);
-
-	// ─────────────────────────────────────────────────────────────────────────────
-	// Permission System
-	// ─────────────────────────────────────────────────────────────────────────────
-
-	function hasPermission(permission: string): boolean {
-		if (!currentUser) return false;
-
-		// Super admin has all permissions
-		if (currentUser.roles?.includes('super-admin')) return true;
-
-		// Check specific permissions if implemented
-		if (currentUser.permissions) {
-			return currentUser.permissions.includes(permission);
-		}
-
-		// Default to true for regular admins
-		return isAdmin;
-	}
 
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Session Management
@@ -299,9 +271,9 @@
 		// Show notification to user
 		showNotification('Session expired. Please log in again.', 'warning');
 
-		// Clear auth and redirect
+		// Clear auth and redirect - use replaceState to prevent history pollution
 		authStore.clearAuth();
-		await goto('/login?redirect=/admin');
+		await goto('/login?redirect=/admin', { replaceState: true });
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -324,14 +296,14 @@
 			sessionStorage.clear();
 			localStorage.removeItem('admin_preferences');
 
-			// Redirect with success message
-			await goto('/?message=logged_out');
+			// Redirect with success message - use replaceState to prevent history pollution
+			await goto('/?message=logged_out', { replaceState: true });
 		} catch (error) {
 			console.error('[AdminToolbar] Logout failed:', error);
 
 			// Force logout even on error
 			authStore.clearAuth();
-			await goto('/');
+			await goto('/', { replaceState: true });
 		} finally {
 			isLoading = false;
 			const duration = performance.now() - startTime;
@@ -912,7 +884,7 @@
 		height: var(--toolbar-height);
 		background: linear-gradient(135deg, var(--toolbar-bg-start) 0%, var(--toolbar-bg-end) 100%);
 		border-bottom: 2px solid var(--toolbar-border);
-		z-index: 9999;
+		z-index: 10100; /* Must be higher than NavBar (10001) */
 		box-shadow: var(--toolbar-shadow);
 		contain: layout style paint;
 		will-change: transform;

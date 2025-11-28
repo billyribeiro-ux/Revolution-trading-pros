@@ -17,10 +17,10 @@
 		IconRefresh
 	} from '@tabler/icons-svelte';
 
-	// Redirect if not authenticated
+	// Redirect if not authenticated - use replaceState to prevent history pollution
 	onMount(() => {
-		if (!$isAuthenticated) {
-			goto('/login?redirect=/dashboard/indicators');
+		if (!$isAuthenticated && !$authStore.isInitializing) {
+			goto('/login?redirect=/dashboard/indicators', { replaceState: true });
 		}
 	});
 

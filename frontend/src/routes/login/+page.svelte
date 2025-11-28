@@ -6,7 +6,9 @@
 		IconMail,
 		IconAlertCircle,
 		IconLogin,
-		IconArrowRight
+		IconArrowRight,
+		IconEye,
+		IconEyeOff
 	} from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -17,6 +19,7 @@
 	// --- State ---
 	let email = '';
 	let password = '';
+	let showPassword = false;
 	let errors: Record<string, string[]> = {};
 	let generalError = '';
 	let isLoading = false;
@@ -160,7 +163,9 @@
 					onComplete: () => {
 						const urlParams = new URLSearchParams(window.location.search);
 						const redirect = urlParams.get('redirect') || '/';
-						goto(validateRedirectUrl(redirect));
+						// Use replaceState to prevent login page from staying in history
+						// Google Enterprise Pattern: After login, back button should go to page before login
+						goto(validateRedirectUrl(redirect), { replaceState: true });
 					}
 				});
 			}
@@ -252,7 +257,7 @@
 					</div>
 				{/if}
 
-				<form on:submit={handleSubmit} class="login-form">
+				<form onsubmit={handleSubmit} class="login-form">
 					<div class="form-field">
 						<label for="email" class="field-label">Email Address</label>
 						<div class="input-wrapper">
@@ -284,15 +289,28 @@
 							</div>
 							<input
 								id="password"
-								type="password"
+								type={showPassword ? 'text' : 'password'}
 								bind:value={password}
 								use:focusAnimation
 								required
-								class="enhanced-input"
+								class="enhanced-input has-toggle"
 								class:error={errors.password}
 								placeholder="••••••••"
 								autocomplete="current-password"
 							/>
+							<button
+								type="button"
+								class="password-toggle"
+								onclick={() => showPassword = !showPassword}
+								aria-label={showPassword ? 'Hide password' : 'Show password'}
+								tabindex={-1}
+							>
+								{#if showPassword}
+									<IconEyeOff size={20} />
+								{:else}
+									<IconEye size={20} />
+								{/if}
+							</button>
 						</div>
 						{#if errors.password}
 							<p class="field-error" transition:slide>{errors.password[0]}</p>
@@ -553,6 +571,39 @@
 		font-weight: 500;
 		transition: all 0.3s ease;
 		outline: none;
+	}
+
+	.enhanced-input.has-toggle {
+		padding-right: 3.5rem;
+	}
+
+	/* Password visibility toggle */
+	.password-toggle {
+		position: absolute;
+		right: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		color: #64748b;
+		cursor: pointer;
+		padding: 0.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 6px;
+		transition: color 0.2s ease, background 0.2s ease;
+		z-index: 2;
+	}
+
+	.password-toggle:hover {
+		color: #818cf8;
+		background: rgba(129, 140, 248, 0.1);
+	}
+
+	.password-toggle:focus {
+		outline: none;
+		color: #818cf8;
 	}
 
 	.enhanced-input::placeholder {

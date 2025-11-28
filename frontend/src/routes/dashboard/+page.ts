@@ -1,36 +1,44 @@
 import { browser } from '$app/environment';
-import { goto } from '$app/navigation';
+import { redirect } from '@sveltejs/kit';
 import { authStore } from '$lib/stores/auth';
 import { getUser } from '$lib/api/auth';
-import type { LoadEvent } from '@sveltejs/kit';
-
-type PageLoad = (event: LoadEvent) => Promise<Record<string, any>> | Record<string, any>;
+import type { PageLoad } from './$types';
 
 /**
- * Protected route loader
- * Ensures user is authenticated before accessing dashboard
+ * Protected route loader - Google Enterprise Pattern
+ * Uses SvelteKit's redirect() for proper history management
+ * 
+ * NOTE: Auth checks in load functions should be minimal.
+ * Full auth validation happens client-side to avoid SSR issues.
  */
-export const load: PageLoad = async () => {
+export const load: PageLoad = async ({ url }) => {
+	// Server-side: Skip auth check, let client handle it
 	if (!browser) {
-		return {};
+		return { requiresAuth: true };
 	}
 
+	// Client-side: Check for token
 	const token = authStore.getToken();
+	const sessionId = authStore.getSessionId();
 
-	if (!token) {
-		// No token - redirect to login
-		goto('/login');
-		return {};
+	// No token AND no session - definitely not logged in
+	if (!token && !sessionId) {
+		const returnUrl = encodeURIComponent(url.pathname + url.search);
+		throw redirect(302, `/login?redirect=${returnUrl}`);
+	}
+
+	// Has session but no token - might need refresh, let client handle
+	if (!token && sessionId) {
+		return { requiresAuth: true, needsRefresh: true };
 	}
 
 	try {
 		// Verify token is still valid by fetching user
 		const user = await getUser();
-		return { user };
+		return { user, requiresAuth: true };
 	} catch (error) {
-		// Token invalid - clear auth and redirect to login
-		authStore.clearAuth();
-		goto('/login');
-		return {};
+		// Token invalid - let client-side handle the redirect
+		// This prevents history pollution from load function redirects
+		return { requiresAuth: true, authError: true };
 	}
 };

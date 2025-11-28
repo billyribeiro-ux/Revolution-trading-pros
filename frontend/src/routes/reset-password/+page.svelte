@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { resetPassword } from '$lib/api/auth';
-	import { IconLock, IconAlertCircle, IconCheck, IconShieldCheck } from '@tabler/icons-svelte';
+	import { IconLock, IconAlertCircle, IconCheck, IconShieldCheck, IconEye, IconEyeOff } from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
@@ -10,6 +10,8 @@
 	let password = '';
 	let password_confirmation = '';
 	let token = '';
+	let showPassword = false;
+	let showConfirmPassword = false;
 	let errors: Record<string, string[]> = {};
 	let generalError = '';
 	let successMessage = '';
@@ -131,7 +133,7 @@
 			{/if}
 
 			<!-- Reset password form -->
-			<form on:submit={handleSubmit} class="space-y-5">
+			<form onsubmit={handleSubmit} class="space-y-5">
 				<!-- Email field (hidden, auto-filled from URL) -->
 				<input type="hidden" bind:value={email} />
 				<input type="hidden" bind:value={token} />
@@ -157,14 +159,27 @@
 						</div>
 						<input
 							id="password"
-							type="password"
+							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							required
 							minlength="8"
-							class="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
+							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
 							class:border-red-500={errors.password}
 							placeholder="••••••••"
 						/>
+						<button
+							type="button"
+							class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-400 transition-colors"
+							onclick={() => showPassword = !showPassword}
+							aria-label={showPassword ? 'Hide password' : 'Show password'}
+							tabindex={-1}
+						>
+							{#if showPassword}
+								<IconEyeOff size={20} />
+							{:else}
+								<IconEye size={20} />
+							{/if}
+						</button>
 					</div>
 					{#if errors.password}
 						<p class="mt-2 text-sm text-red-400">{errors.password[0]}</p>
@@ -187,12 +202,25 @@
 						</div>
 						<input
 							id="password_confirmation"
-							type="password"
+							type={showConfirmPassword ? 'text' : 'password'}
 							bind:value={password_confirmation}
 							required
-							class="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
+							class="w-full pl-12 pr-12 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all duration-300"
 							placeholder="••••••••"
 						/>
+						<button
+							type="button"
+							class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-400 transition-colors"
+							onclick={() => showConfirmPassword = !showConfirmPassword}
+							aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+							tabindex={-1}
+						>
+							{#if showConfirmPassword}
+								<IconEyeOff size={20} />
+							{:else}
+								<IconEye size={20} />
+							{/if}
+						</button>
 					</div>
 				</div>
 

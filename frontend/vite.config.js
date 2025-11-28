@@ -29,6 +29,14 @@ export default defineConfig({
 		// Optimize HMR
 		hmr: {
 			overlay: false
+		},
+		// Proxy API requests to Laravel backend
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8000',
+				changeOrigin: true,
+				secure: false
+			}
 		}
 	},
 	build: {

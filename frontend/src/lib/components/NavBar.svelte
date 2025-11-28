@@ -20,6 +20,12 @@
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
 	import { logout as logoutApi } from '$lib/api/auth';
 
+	// Props
+	interface Props {
+		isAdmin?: boolean;
+	}
+	let { isAdmin = false }: Props = $props();
+
 	// Types
 	interface SubMenuItem {
 		href: string;
@@ -250,10 +256,15 @@
 	.header {
 		position: sticky;
 		top: 0;
-		z-index: 10001;
+		z-index: 1000; /* Below admin toolbar (10100) */
 		height: 72px;
 		background: #151F31;
 		border-bottom: 1px solid rgba(255,255,255,0.1);
+	}
+
+	/* When admin toolbar is present, adjust sticky position */
+	:global(.has-admin-toolbar) .header {
+		top: 0; /* Stays at top of its container (which has padding-top) */
 	}
 
 	/* Container */

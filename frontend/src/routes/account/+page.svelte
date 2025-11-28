@@ -5,9 +5,9 @@
 	import { browser } from '$app/environment';
 	import apiClient, { type Membership, type Product } from '$lib/api/client';
 
-	// Only redirect on client-side
-	$: if (browser && !$isAuthenticated && !$authStore.isLoading) {
-		goto('/login');
+	// Only redirect on client-side - use replaceState to prevent history pollution
+	$: if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+		goto('/login?redirect=/account', { replaceState: true });
 	}
 
 	let memberships: Membership[] = [];
@@ -37,7 +37,8 @@
 
 	async function handleLogout() {
 		await authStore.logout();
-		goto('/');
+		// Use replaceState so back button doesn't return to protected page
+		goto('/', { replaceState: true });
 	}
 </script>
 
