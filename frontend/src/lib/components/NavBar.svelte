@@ -198,15 +198,15 @@
 			{/if}
 
 			{#if $isAuthenticated}
-				<!-- User Menu -->
+				<!-- Dashboard Menu -->
 				<div class="user-menu" data-user-menu>
 					<button
-						class="user-trigger"
+						class="dashboard-trigger"
 						aria-expanded={isUserMenuOpen}
 						onclick={(e) => { e.stopPropagation(); isUserMenuOpen = !isUserMenuOpen; }}
 					>
 						<IconUser size={18} />
-						<span>{$user?.name || 'Account'}</span>
+						<span>Dashboard</span>
 						<IconChevronDown size={12} />
 					</button>
 					{#if isUserMenuOpen}
@@ -218,6 +218,7 @@
 									{item.label}
 								</a>
 							{/each}
+							<div class="dropdown-divider"></div>
 							<button class="user-item danger" onclick={handleLogout}>
 								<IconLogout size={16} />
 								Logout
@@ -413,17 +414,31 @@
 		position: relative;
 	}
 
-	.user-trigger {
+	.dashboard-trigger {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		padding: 10px 14px;
-		background: rgba(250,204,21,0.1);
-		border: 1px solid rgba(250,204,21,0.3);
-		color: #facc15;
+		height: 44px;
+		padding: 0 16px;
+		background: linear-gradient(135deg, #facc15, #eab308);
+		border: none;
+		color: #0a101c;
 		font-size: 14px;
+		font-weight: 600;
 		border-radius: 10px;
 		cursor: pointer;
+		transition: transform 0.15s, box-shadow 0.15s;
+	}
+
+	.dashboard-trigger:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(250,204,21,0.3);
+	}
+
+	.dropdown-divider {
+		height: 1px;
+		margin: 8px 0;
+		background: rgba(255,255,255,0.1);
 	}
 
 	.user-dropdown {
