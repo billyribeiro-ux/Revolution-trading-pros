@@ -609,9 +609,12 @@
 					</div>
 				{:else}
 					<!-- Login Button -->
-					<a href="/login" class="login-btn">
-						<IconUser size={18} aria-hidden="true" />
+					<a href="/login" class="login-btn login-btn--outline">
 						<span>Login</span>
+					</a>
+					<!-- Get Started CTA -->
+					<a href="/get-started" class="cta-btn">
+						<span>Get Started</span>
 					</a>
 				{/if}
 			{/if}
@@ -756,12 +759,18 @@
 					</div>
 				{:else}
 					<a
-						href="/login"
-						class="login-btn login-btn--full"
+						href="/get-started"
+						class="mobile-cta"
 						onclick={closeMobileMenu}
 					>
-						<IconUser size={18} aria-hidden="true" />
-						<span>Login</span>
+						Get Started
+					</a>
+					<a
+						href="/login"
+						class="mobile-login"
+						onclick={closeMobileMenu}
+					>
+						Login
 					</a>
 				{/if}
 			</div>
@@ -790,8 +799,8 @@
 		--dropdown-width: 240px;
 
 		/* Colors - Premium Dark Theme */
-		--nav-bg: rgba(10, 10, 12, 0.95);
-		--nav-bg-scrolled: rgba(10, 10, 12, 0.98);
+		--nav-bg: #151F31;
+		--nav-bg-scrolled: #151F31;
 		--nav-border: rgba(255, 255, 255, 0.06);
 		--nav-border-scrolled: rgba(255, 255, 255, 0.1);
 
@@ -799,9 +808,9 @@
 		--text-secondary: rgba(255, 255, 255, 0.65);
 		--text-muted: rgba(255, 255, 255, 0.45);
 
-		--accent-primary: #00d4aa;
-		--accent-primary-hover: #00e6b8;
-		--accent-glow: rgba(0, 212, 170, 0.15);
+		--accent-primary: #facc15;
+		--accent-primary-hover: #fde047;
+		--accent-glow: rgba(250, 204, 21, 0.15);
 
 		--danger: #ff4757;
 		--danger-hover: #ff5a68;
@@ -877,9 +886,8 @@
 	}
 
 	.logo__image {
-		width: auto;
-		height: 48px;
-		max-width: 100%;
+		width: 200px;
+		height: 50px;
 		object-fit: contain;
 		object-position: left center;
 	}
@@ -1108,46 +1116,75 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Login Button
+	   Login Button (Outline Style)
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 	.login-btn {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 8px;
 		min-height: var(--touch-target-min);
 		padding: 0 20px;
 		font-size: 14px;
 		font-weight: 600;
-		color: #000;
-		background: var(--accent-primary);
-		border: none;
+		color: var(--text-primary);
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 10px;
 		text-decoration: none;
 		cursor: pointer;
 		transition:
 			background var(--transition-fast),
-			transform var(--transition-fast);
+			border-color var(--transition-fast);
 	}
 
 	.login-btn:hover {
-		background: var(--accent-primary-hover);
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.3);
 	}
 
 	.login-btn:focus-visible {
 		outline: 2px solid var(--accent-primary);
+		outline-offset: 2px;
+	}
+
+	
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   Get Started CTA Button (Yellow)
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+	.cta-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		min-height: var(--touch-target-min);
+		padding: 0 24px;
+		font-size: 14px;
+		font-weight: 700;
+		color: #0a101c;
+		background: linear-gradient(135deg, #facc15, #eab308);
+		border: none;
+		border-radius: 10px;
+		text-decoration: none;
+		cursor: pointer;
+		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+		transition:
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast);
+	}
+
+	.cta-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(250, 204, 21, 0.4);
+	}
+
+	.cta-btn:focus-visible {
+		outline: 2px solid #facc15;
 		outline-offset: 3px;
 	}
 
-	.login-btn:active {
-		transform: scale(0.98);
-	}
-
-	.login-btn--full {
-		width: 100%;
-		justify-content: center;
-		min-height: 48px;
-		font-size: 15px;
-		border-radius: 12px;
+	.cta-btn:active {
+		transform: translateY(0) scale(0.98);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -1548,6 +1585,38 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
+	   Mobile CTA & Login Buttons
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+	.mobile-cta {
+		display: block;
+		width: 100%;
+		padding: 16px;
+		margin-bottom: 12px;
+		font-size: 15px;
+		font-weight: 700;
+		text-align: center;
+		text-decoration: none;
+		color: #0a101c;
+		background: linear-gradient(135deg, #facc15, #eab308);
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+	}
+
+	.mobile-login {
+		display: block;
+		width: 100%;
+		padding: 14px;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
+		text-decoration: none;
+		color: var(--text-primary);
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 12px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Tablet Responsive (768px - 1023px)
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1023px) {
@@ -1567,7 +1636,8 @@
 		}
 
 		.logo__image {
-			height: 44px;
+			width: 180px;
+			height: 45px;
 		}
 	}
 
@@ -1591,6 +1661,7 @@
 		}
 
 		.logo__image {
+			width: 160px;
 			height: 40px;
 		}
 
