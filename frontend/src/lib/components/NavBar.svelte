@@ -222,7 +222,7 @@
 	.header {
 		position: sticky;
 		top: 0;
-		z-index: 1000;
+		z-index: 10001;
 		height: 72px;
 		background: #151F31;
 		border-bottom: 1px solid rgba(255,255,255,0.1);
