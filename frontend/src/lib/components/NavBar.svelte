@@ -681,7 +681,7 @@
 			{#each navItems as item, index (item.id)}
 				{#if item.submenu}
 					<!-- Expandable Group -->
-					<div class="mobile-nav__group" style="--item-index: {index}">
+					<div class="mobile-nav__group">
 						<button
 							type="button"
 							class="mobile-nav__link mobile-nav__link--parent"
@@ -724,7 +724,6 @@
 						class="mobile-nav__link"
 						class:mobile-nav__link--active={currentPath === item.href}
 						aria-current={currentPath === item.href ? 'page' : undefined}
-						style="--item-index: {index}"
 						onclick={closeMobileMenu}
 					>
 						{item.label}
@@ -733,7 +732,7 @@
 			{/each}
 
 			<!-- Footer / Auth Section -->
-			<div class="mobile-panel__footer" style="--item-index: {navItems.length}">
+			<div class="mobile-panel__footer">
 				{#if $isAuthenticated}
 					<div class="mobile-user">
 						<div class="mobile-user__name">
@@ -1422,26 +1421,27 @@
 
 	.mobile-panel__body {
 		flex: 1;
-		padding: 16px 20px;
+		padding: 20px;
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: 2px;
+		overflow-y: auto;
 	}
 
 	.mobile-panel__footer {
-		padding: 20px 0;
+		padding: 20px;
 		margin-top: auto;
 		border-top: 1px solid var(--nav-border);
-		animation: mobileItemIn var(--transition-smooth) backwards;
-		animation-delay: calc(var(--item-index) * 40ms);
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Mobile Navigation Links
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 	.mobile-nav__group {
-		animation: mobileItemIn var(--transition-smooth) backwards;
-		animation-delay: calc(var(--item-index) * 40ms);
+		margin-bottom: 2px;
 	}
 
 	.mobile-nav__link {
@@ -1449,21 +1449,19 @@
 		align-items: center;
 		justify-content: space-between;
 		width: 100%;
-		min-height: var(--touch-target-min);
-		padding: 12px 16px;
-		font-size: 15px;
+		min-height: 48px;
+		padding: 14px 16px;
+		font-size: 16px;
 		font-weight: 500;
-		color: var(--text-secondary);
+		color: var(--text-primary);
 		text-decoration: none;
 		background: transparent;
 		border: none;
-		border-radius: 10px;
+		border-radius: 8px;
 		cursor: pointer;
 		transition:
 			color var(--transition-fast),
 			background var(--transition-fast);
-		animation: mobileItemIn var(--transition-smooth) backwards;
-		animation-delay: calc(var(--item-index) * 40ms);
 	}
 
 	.mobile-nav__link:hover,
@@ -1496,28 +1494,24 @@
 	}
 
 	.mobile-nav__submenu {
-		display: grid;
-		grid-template-rows: 0fr;
-		transition: grid-template-rows var(--transition-smooth);
+		max-height: 0;
 		overflow: hidden;
+		transition: max-height var(--transition-smooth);
+		padding-left: 16px;
 	}
 
 	.mobile-nav__submenu--open {
-		grid-template-rows: 1fr;
-	}
-
-	.mobile-nav__submenu > :first-child {
-		min-height: 0;
+		max-height: 500px;
 	}
 
 	.mobile-nav__sublink {
 		display: block;
 		width: 100%;
 		min-height: var(--touch-target-min);
-		padding: 12px 16px 12px 32px;
+		padding: 12px 16px;
 		font-size: 14px;
 		font-weight: 450;
-		color: var(--text-muted);
+		color: var(--text-secondary);
 		text-decoration: none;
 		text-align: left;
 		background: transparent;
@@ -1554,17 +1548,6 @@
 		background: rgba(255, 71, 87, 0.1);
 	}
 
-	@keyframes mobileItemIn {
-		from {
-			opacity: 0;
-			transform: translateX(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Mobile User Section
 	   ═══════════════════════════════════════════════════════════════════════════════ */
@@ -1588,32 +1571,40 @@
 	   Mobile CTA & Login Buttons
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 	.mobile-cta {
-		display: block;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 100%;
-		padding: 16px;
-		margin-bottom: 12px;
-		font-size: 15px;
+		height: 52px;
+		font-size: 16px;
 		font-weight: 700;
 		text-align: center;
 		text-decoration: none;
 		color: #0a101c;
 		background: linear-gradient(135deg, #facc15, #eab308);
 		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+		box-shadow: 0 4px 16px rgba(250, 204, 21, 0.35);
 	}
 
 	.mobile-login {
-		display: block;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 100%;
-		padding: 14px;
-		font-size: 14px;
+		height: 48px;
+		font-size: 15px;
 		font-weight: 600;
 		text-align: center;
 		text-decoration: none;
 		color: var(--text-primary);
 		background: transparent;
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.25);
 		border-radius: 12px;
+	}
+
+	.mobile-login:hover {
+		background: rgba(255, 255, 255, 0.05);
+		border-color: rgba(255, 255, 255, 0.35);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
