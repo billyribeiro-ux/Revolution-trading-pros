@@ -3,6 +3,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
+	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
@@ -206,6 +208,24 @@
 			{/if}
 
 			<div class="post-body">
+				<!-- Table of Contents -->
+				{#if post.content_blocks && post.content_blocks.length > 0}
+					<TableOfContents
+						contentBlocks={post.content_blocks}
+						title="In This Article"
+						minHeadings={2}
+						maxDepth={4}
+						showNumbers={true}
+						collapsible={true}
+						defaultExpanded={true}
+						sticky={false}
+						showProgress={true}
+						smoothScroll={true}
+						highlightActive={true}
+						position="inline"
+					/>
+				{/if}
+
 				<div class="content">
 					{#if post.content_blocks && post.content_blocks.length > 0}
 						<!-- Structured content blocks (sanitized for XSS protection) -->
@@ -288,6 +308,15 @@
 				</button>
 			</div>
 		</article>
+
+		<!-- Floating Table of Contents Widget -->
+		{#if post.content_blocks && post.content_blocks.length > 0}
+			<FloatingTocWidget
+				contentBlocks={post.content_blocks}
+				showAfterScroll={400}
+				title="Contents"
+			/>
+		{/if}
 	{/if}
 </div>
 
