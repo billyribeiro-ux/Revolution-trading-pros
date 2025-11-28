@@ -619,7 +619,7 @@
 				{/if}
 			{/if}
 
-			<!-- Mobile Hamburger -->
+			<!-- Mobile/Tablet: Hamburger -->
 			{#if !isDesktop}
 				<button
 					type="button"
