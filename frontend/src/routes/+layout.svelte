@@ -8,7 +8,8 @@
 	 */
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
-	import { MarketingNav, MarketingFooter } from '$lib/components/layout';
+	import NavBar from '$lib/components/NavBar.svelte';
+	import { MarketingFooter } from '$lib/components/layout';
 	import PopupModal from '$lib/components/PopupModal.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -72,8 +73,8 @@
 		<!-- Admin Toolbar (only shows for logged-in admins) -->
 		<AdminToolbar />
 
-		<!-- Marketing Navigation -->
-		<MarketingNav />
+		<!-- Navigation -->
+		<NavBar />
 
 		<main>
 			<slot />
