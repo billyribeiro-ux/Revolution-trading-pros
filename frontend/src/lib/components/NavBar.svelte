@@ -731,49 +731,6 @@
 				{/if}
 			{/each}
 		</div>
-
-		<!-- Footer / Auth Section - OUTSIDE body, pinned to bottom -->
-		<div class="mobile-panel__footer">
-			{#if $isAuthenticated}
-				<div class="mobile-user">
-					<div class="mobile-user__name">
-						<IconUser size={18} aria-hidden="true" />
-						<span>{$user?.name}</span>
-					</div>
-					{#each userMenuItems as menuItem (menuItem.href)}
-						<a
-							href={menuItem.href}
-							class="mobile-nav__sublink"
-							onclick={closeMobileMenu}
-						>
-							{menuItem.label}
-						</a>
-					{/each}
-					<button
-						type="button"
-						class="mobile-nav__sublink mobile-nav__sublink--danger"
-						onclick={handleLogout}
-					>
-						Logout
-					</button>
-				</div>
-			{:else}
-				<a
-					href="/get-started"
-					class="mobile-cta"
-					onclick={closeMobileMenu}
-				>
-					Get Started
-				</a>
-				<a
-					href="/login"
-					class="mobile-login"
-					onclick={closeMobileMenu}
-				>
-					Login
-				</a>
-			{/if}
-		</div>
 	</nav>
 {/if}
 
