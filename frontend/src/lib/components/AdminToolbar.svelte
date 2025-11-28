@@ -606,12 +606,30 @@
 		console.debug('[AdminToolbar] Mounting...');
 
 		try {
-			// Load user if needed
-			const token = authStore.getToken();
-			if (token && !$userStore) {
+			// Try to restore session if we have a session ID but no token
+			const sessionId = authStore.getSessionId();
+			let token = authStore.getToken();
+			
+			if (sessionId && !token) {
+				console.debug('[AdminToolbar] Session exists, attempting token refresh...');
 				isLoading = true;
 				try {
+					const refreshed = await authStore.refreshToken();
+					if (refreshed) {
+						token = authStore.getToken();
+						console.debug('[AdminToolbar] Token refreshed successfully');
+					}
+				} catch (error) {
+					console.debug('[AdminToolbar] Token refresh failed:', error);
+				}
+			}
+
+			// Load user if we have a token but no user data
+			if (token && !$userStore) {
+				console.debug('[AdminToolbar] Loading user data...');
+				try {
 					await getUser();
+					console.debug('[AdminToolbar] User loaded:', $userStore?.email);
 				} catch (error) {
 					console.error('[AdminToolbar] Failed to load user:', error);
 					errorState.hasError = true;
@@ -620,6 +638,8 @@
 				} finally {
 					isLoading = false;
 				}
+			} else {
+				isLoading = false;
 			}
 
 			// Start session monitoring
