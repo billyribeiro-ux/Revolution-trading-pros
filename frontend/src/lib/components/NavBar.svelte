@@ -39,6 +39,14 @@
 		icon: ComponentType;
 	}
 
+	// Dashboard menu items (shown when authenticated)
+	const dashboardItems: SubMenuItem[] = [
+		{ href: '/dashboard', label: 'Dashboard Home' },
+		{ href: '/dashboard/courses', label: 'My Courses' },
+		{ href: '/dashboard/indicators', label: 'My Indicators' },
+		{ href: '/dashboard/account', label: 'My Account' }
+	];
+
 	// Navigation Config
 	const navItems: NavItem[] = [
 		{
@@ -198,29 +206,30 @@
 			{/if}
 
 			{#if $isAuthenticated}
-				<!-- Dashboard Menu -->
-				<div class="user-menu" data-user-menu>
+				<!-- Dashboard dropdown - same style as nav -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div
+					class="nav-item"
+					onmouseenter={() => handleDropdownEnter('dashboard')}
+					onmouseleave={handleDropdownLeave}
+				>
 					<button
-						class="dashboard-trigger"
-						aria-expanded={isUserMenuOpen}
-						onclick={(e) => { e.stopPropagation(); isUserMenuOpen = !isUserMenuOpen; }}
+						class="nav-link"
+						class:active={currentPath.startsWith('/dashboard')}
+						aria-expanded={activeDropdown === 'dashboard'}
 					>
-						<IconUser size={18} />
-						<span>Dashboard</span>
-						<IconChevronDown size={12} />
+						Dashboard
+						<IconChevronDown size={14} />
 					</button>
-					{#if isUserMenuOpen}
-						<div class="user-dropdown">
-							{#each userMenuItems as item (item.href)}
-								{@const Icon = item.icon}
-								<a href={item.href} class="user-item" onclick={() => isUserMenuOpen = false}>
-									<Icon size={16} />
+					{#if activeDropdown === 'dashboard'}
+						<div class="dropdown">
+							{#each dashboardItems as item (item.href)}
+								<a href={item.href} class="dropdown-item" onclick={() => activeDropdown = null}>
 									{item.label}
 								</a>
 							{/each}
 							<div class="dropdown-divider"></div>
-							<button class="user-item danger" onclick={handleLogout}>
-								<IconLogout size={16} />
+							<button class="dropdown-item logout" onclick={handleLogout}>
 								Logout
 							</button>
 						</div>
@@ -332,6 +341,24 @@
 		color: #facc15;
 	}
 
+	.dropdown-item.logout {
+		width: 100%;
+		color: #f87171;
+		border: none;
+		cursor: pointer;
+	}
+
+	.dropdown-item.logout:hover {
+		background: rgba(248,113,113,0.1);
+		color: #f87171;
+	}
+
+	.dropdown-divider {
+		height: 1px;
+		margin: 8px 0;
+		background: rgba(255,255,255,0.1);
+	}
+
 	/* Actions */
 	.actions {
 		display: flex;
@@ -409,76 +436,4 @@
 		box-shadow: 0 6px 20px rgba(250,204,21,0.4);
 	}
 
-	/* User Menu */
-	.user-menu {
-		position: relative;
-	}
-
-	.dashboard-trigger {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		height: 44px;
-		padding: 0 16px;
-		background: linear-gradient(135deg, #facc15, #eab308);
-		border: none;
-		color: #0a101c;
-		font-size: 14px;
-		font-weight: 600;
-		border-radius: 10px;
-		cursor: pointer;
-		transition: transform 0.15s, box-shadow 0.15s;
-	}
-
-	.dashboard-trigger:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(250,204,21,0.3);
-	}
-
-	.dropdown-divider {
-		height: 1px;
-		margin: 8px 0;
-		background: rgba(255,255,255,0.1);
-	}
-
-	.user-dropdown {
-		position: absolute;
-		top: calc(100% + 8px);
-		right: 0;
-		min-width: 200px;
-		padding: 8px;
-		background: #151F31;
-		border: 1px solid rgba(255,255,255,0.1);
-		border-radius: 12px;
-		box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-	}
-
-	.user-item {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		width: 100%;
-		padding: 10px 12px;
-		color: rgba(255,255,255,0.8);
-		font-size: 14px;
-		text-decoration: none;
-		text-align: left;
-		background: none;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: background 0.15s;
-	}
-
-	.user-item:hover {
-		background: rgba(255,255,255,0.05);
-	}
-
-	.user-item.danger {
-		color: #f87171;
-	}
-
-	.user-item.danger:hover {
-		background: rgba(248,113,113,0.1);
-	}
-</style>
+	</style>
