@@ -1372,8 +1372,7 @@
 		display: flex;
 		flex-direction: column;
 		animation: panelSlideIn var(--transition-smooth) forwards;
-		overflow-y: auto;
-		overscroll-behavior: contain;
+		overflow: hidden;
 	}
 
 	@keyframes panelSlideIn {
@@ -1429,8 +1428,9 @@
 	}
 
 	.mobile-panel__footer {
+		flex-shrink: 0;
 		padding: 20px;
-		margin-top: auto;
+		background: var(--nav-bg-scrolled);
 		border-top: 1px solid var(--nav-border);
 		display: flex;
 		flex-direction: column;
