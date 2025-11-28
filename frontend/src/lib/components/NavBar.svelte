@@ -396,6 +396,7 @@
 									class:dropdown--left={dropdownPositions[item.id] === 'left'}
 									class:dropdown--right={dropdownPositions[item.id] === 'right'}
 									role="menu"
+									tabindex="-1"
 									aria-labelledby={`nav-${item.id}`}
 									onkeydown={(e) => handleDropdownKeydown(e, item.submenu || [])}
 								>
@@ -542,6 +543,7 @@
 	></div>
 
 	<!-- Panel -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<nav
 		id="mobile-nav"
 		class="mobile-panel"
@@ -573,13 +575,16 @@
 							onclick={() => (activeMobileSubmenu = activeMobileSubmenu === item.id ? null : item.id)}
 						>
 							<span>{item.label}</span>
-							<IconChevronRight
-								size={18}
-								stroke={2.5}
+							<span
 								class="mobile-nav__chevron"
 								class:mobile-nav__chevron--open={activeMobileSubmenu === item.id}
-								aria-hidden="true"
-							/>
+							>
+								<IconChevronRight
+									size={18}
+									stroke={2.5}
+									aria-hidden="true"
+								/>
+							</span>
 						</button>
 
 						<div
@@ -1311,11 +1316,12 @@
 	}
 
 	/* Chevron rotation */
-	.mobile-nav__link :global(.mobile-nav__chevron) {
+	.mobile-nav__chevron {
+		display: inline-flex;
 		transition: transform var(--duration-fast) var(--ease-in-out);
 	}
 
-	.mobile-nav__link :global(.mobile-nav__chevron--open) {
+	.mobile-nav__chevron--open {
 		transform: rotate(90deg);
 	}
 
