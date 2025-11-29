@@ -150,6 +150,8 @@ export interface ConsentState {
 	consentMethod?: 'banner' | 'modal' | 'api' | 'implicit';
 	/** Privacy signals detected at consent time */
 	privacySignals?: PrivacySignals;
+	/** Policy version when consent was given */
+	policyVersion?: string;
 }
 
 /**

@@ -240,7 +240,136 @@ export {
 	ConsentBanner,
 	ConsentPreferencesModal,
 	ConsentSettingsButton,
+	ContentPlaceholder,
 } from './components';
+
+// =============================================================================
+// I18N (INTERNATIONALIZATION)
+// =============================================================================
+
+export {
+	t,
+	currentLanguage,
+	initializeI18n,
+	setLanguage,
+	getLanguage,
+	getSupportedLanguages,
+	getTranslation,
+	addTranslations,
+	detectBrowserLanguage,
+} from './i18n';
+
+export type { SupportedLanguage, ConsentTranslations } from './i18n';
+
+// =============================================================================
+// CONSENT RECEIPT
+// =============================================================================
+
+export {
+	generateConsentReceipt,
+	exportReceiptAsJSON,
+	downloadReceiptAsJSON,
+	generateReceiptHTML,
+	downloadReceiptAsHTML,
+	printReceipt,
+	verifyReceiptChecksum,
+} from './consent-receipt';
+
+export type { ConsentReceipt } from './consent-receipt';
+
+// =============================================================================
+// SCRIPT BLOCKER
+// =============================================================================
+
+export {
+	getScriptCategory,
+	shouldBlockScript,
+	startScriptBlocking,
+	releaseBlockedScripts,
+	getBlockedScripts,
+	isScriptBlockingActive,
+	generateBlockingScript,
+	generateNoscriptMessage,
+} from './script-blocker';
+
+// =============================================================================
+// VERSIONING
+// =============================================================================
+
+export {
+	CURRENT_POLICY_VERSION,
+	POLICY_VERSIONS,
+	checkVersionCompatibility,
+	policyUpdateAvailable,
+	checkForPolicyUpdates,
+	acknowledgePolicyUpdate,
+	getCurrentPolicyVersion,
+	getChangelog,
+	formatVersionDate,
+	getVersionInfo,
+} from './versioning';
+
+export type { PolicyVersion, VersionCompareResult, VersionChangeType } from './versioning';
+
+// =============================================================================
+// BACKEND SYNC
+// =============================================================================
+
+export {
+	configureBackendSync,
+	getSyncConfig,
+	buildSyncPayload,
+	syncConsentToBackend,
+	debouncedSync,
+	fetchConsentFromBackend,
+	deleteConsentFromBackend,
+	exportConsentFromBackend,
+} from './backend-sync';
+
+export type { BackendSyncConfig, ConsentSyncPayload, ConsentSyncResponse } from './backend-sync';
+
+// =============================================================================
+// A/B TESTING
+// =============================================================================
+
+export {
+	DEFAULT_VARIANTS,
+	currentVariant,
+	initializeABTest,
+	recordImpression,
+	recordDecision,
+	getABTestAnalytics,
+	getBestVariant,
+	clearABTestData,
+	exportABTestData,
+	getVariantStyles,
+} from './ab-testing';
+
+export type {
+	BannerLayout,
+	BannerTone,
+	ButtonStyle,
+	ColorScheme,
+	BannerVariant,
+	ABTestResult,
+	ABTestAnalytics,
+} from './ab-testing';
+
+// =============================================================================
+// CROSS-DOMAIN
+// =============================================================================
+
+export {
+	configureCrossDomain,
+	getCrossDomainConfig,
+	initializeCrossDomain,
+	requestConsentFromParent,
+	encodeConsentParam,
+	generateConsentUrl,
+	syncFromDomainCookie,
+} from './cross-domain';
+
+export type { CrossDomainConfig } from './cross-domain';
 
 // =============================================================================
 // INITIALIZATION

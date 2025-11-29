@@ -11,23 +11,33 @@ A production-grade, enterprise-level consent management system that surpasses Wo
 - **Consent Expiry** - Automatic consent expiration with re-prompting
 - **GDPR Audit Trail** - Complete audit log of all consent interactions
 - **TCF 2.2 Signals** - IAB Transparency & Consent Framework support
+- **Consent Receipts** - Downloadable JSON/HTML proof of consent
+- **Policy Versioning** - Re-prompt users when privacy policy changes
+- **Script Blocking** - Block third-party scripts until consent is given
 
 ### Analytics & Insights
 - **Consent Analytics** - Track accept/reject rates, time to decision
 - **Cookie Scanner** - Automatic detection and categorization of cookies
 - **Vendor Transparency** - Shows which vendors use each cookie category
+- **A/B Testing** - Test different banner designs to optimize consent rates
+- **Admin Dashboard** - Visual analytics at `/admin/consent`
 
 ### Developer Experience
 - **TypeScript Native** - Full type safety throughout
 - **Event Hooks** - Subscribe to consent changes programmatically
 - **Behavior Tracker Integration** - Consent-aware behavior analytics
 - **GDPR Data Export** - One-click export all consent data
+- **Backend Sync API** - REST API for centralized consent management
+- **Cross-Domain Sharing** - Share consent across subdomains
 
 ### User Experience
 - **Floating Settings Button** - Persistent access to cookie preferences
 - **Accessible UI** - WCAG 2.1 AA compliant
 - **Smooth Animations** - Respects `prefers-reduced-motion`
 - **Mobile Optimized** - Responsive design for all devices
+- **Multi-language (i18n)** - 7 EU languages built-in (EN, DE, FR, ES, IT, NL, PT)
+- **Cookie Policy Page** - Auto-generated at `/cookie-policy`
+- **Content Placeholders** - Beautiful placeholders for blocked embeds
 
 ## Quick Start
 
@@ -65,14 +75,27 @@ src/lib/consent/
 ├── analytics.ts             # Consent interaction analytics
 ├── cookie-scanner.ts        # Cookie detection & categorization
 ├── behavior-integration.ts  # Behavior tracker integration
+├── i18n.ts                  # Multi-language translations
+├── consent-receipt.ts       # Consent proof/receipt generation
+├── script-blocker.ts        # Third-party script blocking
+├── versioning.ts            # Policy version tracking
+├── backend-sync.ts          # Backend API sync
+├── ab-testing.ts            # A/B testing for banner designs
+├── cross-domain.ts          # Cross-domain consent sharing
 ├── components/
 │   ├── ConsentBanner.svelte
 │   ├── ConsentPreferencesModal.svelte
-│   └── ConsentSettingsButton.svelte
+│   ├── ConsentSettingsButton.svelte
+│   └── ContentPlaceholder.svelte
 └── vendors/
     ├── index.ts             # Vendor registry
     ├── ga4.ts               # Google Analytics 4
     └── meta-pixel.ts        # Meta (Facebook) Pixel
+
+src/routes/
+├── cookie-policy/+page.svelte    # Cookie policy page
+├── admin/consent/+page.svelte    # Admin analytics dashboard
+└── api/consent/sync/+server.ts   # Backend sync API
 ```
 
 ## Privacy Signal Detection
@@ -311,21 +334,137 @@ All modules log with prefixes:
 - `[MetaPixel]` - Meta Pixel
 - `[BehaviorIntegration]` - Behavior tracker
 
+## Multi-language Support (i18n)
+
+```typescript
+import { setLanguage, t, getSupportedLanguages } from '$lib/consent';
+
+// Set language manually
+setLanguage('de'); // German
+
+// Get current translations
+console.log($t.bannerTitle); // "Wir schätzen Ihre Privatsphäre"
+
+// Supported languages: en, de, fr, es, it, nl, pt (+ 20 more)
+```
+
+## Consent Receipts
+
+```typescript
+import { generateConsentReceipt, downloadReceiptAsJSON, printReceipt } from '$lib/consent';
+
+// Generate a receipt
+const receipt = generateConsentReceipt($consentStore);
+
+// Download as JSON
+downloadReceiptAsJSON(receipt);
+
+// Print/PDF
+printReceipt(receipt);
+```
+
+## Content Placeholders
+
+```svelte
+<script>
+  import { ContentPlaceholder } from '$lib/consent';
+</script>
+
+<!-- YouTube video placeholder until marketing cookies accepted -->
+<ContentPlaceholder type="youtube" thumbnailUrl="https://...">
+  <iframe src="https://youtube.com/embed/..." />
+</ContentPlaceholder>
+
+<!-- Google Maps placeholder -->
+<ContentPlaceholder type="google-maps" requiredCategory="analytics">
+  <iframe src="https://maps.google.com/..." />
+</ContentPlaceholder>
+```
+
+## A/B Testing
+
+```typescript
+import { initializeABTest, recordDecision, getABTestAnalytics } from '$lib/consent';
+
+// Initialize with custom variants
+initializeABTest([
+  { id: 'control', layout: 'bottom-bar', weight: 50 },
+  { id: 'modal', layout: 'modal', weight: 50 },
+]);
+
+// Record user decision
+recordDecision('accept_all');
+
+// Get analytics
+const analytics = getABTestAnalytics();
+// { variantId: 'control', impressions: 100, acceptRate: 0.72, ... }
+```
+
+## Backend Sync
+
+```typescript
+import { configureBackendSync, syncConsentToBackend } from '$lib/consent';
+
+// Configure sync endpoint
+configureBackendSync({
+  endpoint: '/api/consent/sync',
+  syncOnChange: true,
+});
+
+// Manual sync
+await syncConsentToBackend($consentStore, userId);
+```
+
+## Cross-Domain Sharing
+
+```typescript
+import { configureCrossDomain, initializeCrossDomain } from '$lib/consent';
+
+// Configure for subdomains
+configureCrossDomain({
+  cookieDomain: '.example.com',
+  allowedOrigins: ['https://app.example.com', 'https://shop.example.com'],
+});
+
+// Initialize
+initializeCrossDomain();
+```
+
+## Policy Versioning
+
+```typescript
+// In versioning.ts, update CURRENT_POLICY_VERSION when policy changes
+export const CURRENT_POLICY_VERSION: PolicyVersion = {
+  version: '1.1.0',
+  publishedAt: '2024-06-01T00:00:00Z',
+  changelog: ['Added TikTok Pixel tracking'],
+  requiresReconsent: true, // Will re-prompt users
+};
+```
+
 ## Comparison: This vs. WordPress Plugins
 
 | Feature | Cookiebot | GDPR Cookie Consent | This System |
 |---------|-----------|---------------------|-------------|
-| GPC Support | Partial | No | Full |
-| DNT Respect | No | No | Full |
-| Geo Detection | Paid | No | Included |
-| Audit Trail | Paid | No | Included |
-| Cookie Scanner | Paid | Paid | Included |
-| Analytics | Paid | No | Included |
-| Consent Expiry | Basic | Basic | Smart |
-| SvelteKit Native | No | No | Yes |
-| TypeScript | No | No | Full |
-| Bundle Size | 50KB+ | 30KB+ | ~15KB |
-| Price | $$$$ | $$ | Free |
+| GPC Support | Partial | No | **Full** |
+| DNT Respect | No | No | **Full** |
+| Geo Detection | Paid | No | **Included** |
+| Audit Trail | Paid | No | **Included** |
+| Cookie Scanner | Paid | Paid | **Included** |
+| Analytics | Paid | No | **Included** |
+| Consent Expiry | Basic | Basic | **Smart** |
+| A/B Testing | No | No | **Included** |
+| Multi-language | Paid | Partial | **7 Languages** |
+| Cookie Policy Page | Manual | Manual | **Auto-generated** |
+| Content Placeholders | No | No | **Included** |
+| Consent Receipts | Paid | No | **Included** |
+| Backend Sync | Enterprise | No | **Included** |
+| Cross-Domain | Enterprise | No | **Included** |
+| Admin Dashboard | Paid | No | **Included** |
+| SvelteKit Native | No | No | **Yes** |
+| TypeScript | No | No | **Full** |
+| Bundle Size | 50KB+ | 30KB+ | **~20KB** |
+| Price | $$$$/yr | $$/yr | **Free** |
 
 ## License
 
