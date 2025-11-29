@@ -2,8 +2,10 @@
 	/**
 	 * Root Layout - Global shell for all routes
 	 * Handles performance monitoring, service worker, and route-based chrome
-	 * 
-	 * @version 2.0.0
+	 *
+	 * Updated to Svelte 5 runes syntax (November 2025)
+	 *
+	 * @version 3.0.0
 	 * @author Revolution Trading Pros
 	 */
 	import '../app.css';
@@ -27,18 +29,26 @@
 		trackGA4PageView,
 	} from '$lib/consent';
 
-	// Route-based layout detection
-	$: pathname = $page.url.pathname;
-	$: isAdminArea = pathname.startsWith('/admin');
-	$: isTradingRoom = pathname.startsWith('/live-trading-rooms/') && pathname.split('/').length > 2;
-	$: isEmbedArea = pathname.startsWith('/embed');
-	$: isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/register');
-	
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Svelte 5 Runes - Route-based layout detection
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Derived state from page store
+	let pathname = $derived($page.url.pathname);
+	let isAdminArea = $derived(pathname.startsWith('/admin'));
+	let isTradingRoom = $derived(pathname.startsWith('/live-trading-rooms/') && pathname.split('/').length > 2);
+	let isEmbedArea = $derived(pathname.startsWith('/embed'));
+	let isAuthPage = $derived(pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/register'));
+
 	// Show marketing chrome only on public pages
-	$: showMarketingChrome = !isAdminArea && !isTradingRoom && !isEmbedArea;
+	let showMarketingChrome = $derived(!isAdminArea && !isTradingRoom && !isEmbedArea);
 
 	// Use centralized admin check from auth store
-	$: isAdmin = $isAdminUser;
+	let isAdmin = $derived($isAdminUser);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Lifecycle & Effects
+	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Initialize performance optimizations and consent system
 	onMount(() => {
@@ -60,13 +70,15 @@
 		}
 	});
 
-	// Track page views on navigation (SPA)
-	$: if (browser && pathname) {
-		// Small delay to ensure page title has updated
-		setTimeout(() => {
-			trackGA4PageView(window.location.href);
-		}, 100);
-	}
+	// Track page views on navigation (SPA) - Svelte 5 effect
+	$effect(() => {
+		if (browser && pathname) {
+			// Small delay to ensure page title has updated
+			setTimeout(() => {
+				trackGA4PageView(window.location.href);
+			}, 100);
+		}
+	});
 </script>
 
 <!--

@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Consent Banner Component
+	 * Consent Banner Component - Svelte 5 Runes
 	 *
 	 * Displays a GDPR/CCPA-compliant cookie consent banner.
 	 * Shows only when the user hasn't made a consent choice yet.
@@ -12,6 +12,7 @@
 	 * - Respects reduced motion preferences
 	 * - Template system support for customizable designs
 	 *
+	 * @version 2.0.0 - November 2025 (Svelte 5 Runes)
 	 * @component
 	 */
 
@@ -25,23 +26,14 @@
 	import { activeTemplate, isPreviewMode } from '../templates/store';
 	import BannerRenderer from '../templates/BannerRenderer.svelte';
 
-	/**
-	 * Position of the banner on the screen (legacy mode only).
-	 */
-	export let position: 'bottom' | 'top' = 'bottom';
+	// Svelte 5 props interface
+	interface Props {
+		position?: 'bottom' | 'top';
+		useTemplates?: boolean;
+		class?: string;
+	}
 
-	/**
-	 * Enable template-based rendering.
-	 * When true, uses the BannerRenderer with the active template.
-	 * When false, uses the legacy hardcoded design.
-	 */
-	export let useTemplates: boolean = true;
-
-	/**
-	 * Custom class for styling (legacy mode only).
-	 */
-	let className = '';
-	export { className as class };
+	let { position = 'bottom', useTemplates = true, class: className = '' }: Props = $props();
 
 	// Handle accept all
 	function handleAcceptAll(): void {
@@ -58,15 +50,16 @@
 		openPreferencesModal();
 	}
 
-	// Check for reduced motion preference
-	$: prefersReducedMotion = browser
-		? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		: false;
+	// Svelte 5 derived runes
+	let prefersReducedMotion = $derived(
+		browser ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false
+	);
 
-	// Transition options
-	$: transitionOptions = prefersReducedMotion
-		? { duration: 0 }
-		: { y: position === 'bottom' ? 100 : -100, duration: 300 };
+	let transitionOptions = $derived(
+		prefersReducedMotion
+			? { duration: 0 }
+			: { y: position === 'bottom' ? 100 : -100, duration: 300 }
+	);
 </script>
 
 {#if useTemplates}

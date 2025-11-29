@@ -56,32 +56,36 @@
 
 	// --- INTERACTIVE RISK CALCULATOR LOGIC ---
 	// A comprehensive simulator showing the power of compounding vs ruin
-	let simAccount = 25000;
-	let simRisk = 2;
-	let simWinRate = 55;
-	let simRR = 2;
+	// Svelte 5 state runes
+	let simAccount = $state(25000);
+	let simRisk = $state(2);
+	let simWinRate = $state(55);
+	let simRR = $state(2);
 
-	$: riskAmount = Math.round(simAccount * (simRisk / 100));
-	$: winAmount = Math.round(riskAmount * simRR);
-	$: expectedValue = (simWinRate / 100) * winAmount - (1 - simWinRate / 100) * riskAmount;
-	$: tradesToDouble = Math.ceil(simAccount / expectedValue);
-	$: riskOfRuin =
+	// Svelte 5 derived runes
+	let riskAmount = $derived(Math.round(simAccount * (simRisk / 100)));
+	let winAmount = $derived(Math.round(riskAmount * simRR));
+	let expectedValue = $derived((simWinRate / 100) * winAmount - (1 - simWinRate / 100) * riskAmount);
+	let tradesToDouble = $derived(Math.ceil(simAccount / expectedValue));
+	let riskOfRuin = $derived(
 		simRisk > 5
 			? 'HIGH (Casino Mode)'
 			: simRisk > 2
 				? 'MODERATE (Aggressive)'
-				: 'LOW (Institutional)';
-	$: riskColor =
-		simRisk > 5 ? 'text-red-500' : simRisk > 2 ? 'text-orange-400' : 'text-emerald-400';
+				: 'LOW (Institutional)'
+	);
+	let riskColor = $derived(
+		simRisk > 5 ? 'text-red-500' : simRisk > 2 ? 'text-orange-400' : 'text-emerald-400'
+	);
 
-	// --- STATES ---
-	let openFaq: number | null = null;
+	// --- STATES (Svelte 5 runes) ---
+	let openFaq = $state<number | null>(null);
 	const toggleFaq = (idx: number) => (openFaq = openFaq === idx ? null : idx);
 
-	let openSyllabus: number | null = 0;
+	let openSyllabus = $state<number | null>(0);
 	const toggleSyllabus = (idx: number) => (openSyllabus = openSyllabus === idx ? null : idx);
 
-	let glossarySearch = '';
+	let glossarySearch = $state('');
 
 	// --- SEO SCHEMA (JSON-LD) ---
 	// Comprehensive Schema for Institutional Authority
@@ -251,8 +255,9 @@
 		}
 	];
 
-	$: filteredGlossary = glossary.filter((g) =>
-		g.term.toLowerCase().includes(glossarySearch.toLowerCase())
+	// Svelte 5 derived rune for filtered glossary
+	let filteredGlossary = $derived(
+		glossary.filter((g) => g.term.toLowerCase().includes(glossarySearch.toLowerCase()))
 	);
 
 	const axioms = [

@@ -134,15 +134,17 @@
 		cartStore.removeCoupon();
 	}
 
-	// Calculate discount amount
-	$: discountAmount = appliedCoupon
-		? appliedCoupon.type === 'percentage'
-			? ($cartTotal * appliedCoupon.discount) / 100
-			: appliedCoupon.discount
-		: 0;
+	// Svelte 5 derived runes - Calculate discount amount
+	let discountAmount = $derived(
+		appliedCoupon
+			? appliedCoupon.type === 'percentage'
+				? ($cartTotal * appliedCoupon.discount) / 100
+				: appliedCoupon.discount
+			: 0
+	);
 
 	// Calculate final total after discount
-	$: finalTotal = Math.max(0, $cartTotal - discountAmount);
+	let finalTotal = $derived(Math.max(0, $cartTotal - discountAmount));
 </script>
 
 <svelte:head>
