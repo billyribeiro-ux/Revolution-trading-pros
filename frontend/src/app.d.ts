@@ -98,16 +98,51 @@ declare module '@tabler/icons-svelte' {
 	export const IconBookmark: IconComponent;
 }
 
+/**
+ * Consent State interface for server-side access.
+ */
+interface ConsentState {
+	necessary: boolean;
+	analytics: boolean;
+	marketing: boolean;
+	preferences: boolean;
+	updatedAt: string;
+	hasInteracted: boolean;
+	version: number;
+}
+
+/**
+ * Meta Pixel (fbq) function type.
+ */
+interface Fbq {
+	(method: 'init', pixelId: string): void;
+	(method: 'track', eventName: string, params?: Record<string, unknown>): void;
+	(method: 'trackCustom', eventName: string, params?: Record<string, unknown>): void;
+	(method: 'consent', action: 'grant' | 'revoke'): void;
+	(method: 'dataProcessingOptions', options: string[], country?: number, state?: number): void;
+	callMethod?: (...args: unknown[]) => void;
+	queue: unknown[];
+	loaded: boolean;
+	version: string;
+	push: (...args: unknown[]) => void;
+}
+
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			/** User's consent state from cookie */
+			consent: ConsentState;
+			/** Whether the user has interacted with the consent banner */
+			hasConsentInteraction: boolean;
+		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
 	}
 
 	interface Window {
+		/** YouTube IFrame API */
 		YT?: {
 			Player: any;
 			PlayerState: {
@@ -121,6 +156,14 @@ declare global {
 			ready: (callback: () => void) => void;
 		};
 		onYouTubeIframeAPIReady?: () => void;
+
+		/** Google Tag (gtag.js) */
+		dataLayer?: unknown[];
+		gtag?: (...args: unknown[]) => void;
+
+		/** Meta Pixel (fbq) */
+		fbq?: Fbq;
+		_fbq?: Fbq;
 	}
 }
 
