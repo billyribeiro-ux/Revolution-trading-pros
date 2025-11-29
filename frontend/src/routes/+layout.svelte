@@ -22,6 +22,7 @@
 	import {
 		ConsentBanner,
 		ConsentPreferencesModal,
+		ConsentSettingsButton,
 		initializeConsent,
 		trackGA4PageView,
 	} from '$lib/consent';
@@ -118,6 +119,7 @@
 		<!-- Consent Management UI -->
 		<ConsentBanner />
 		<ConsentPreferencesModal />
+		<ConsentSettingsButton position="bottom-left" />
 	</div>
 {/if}
 

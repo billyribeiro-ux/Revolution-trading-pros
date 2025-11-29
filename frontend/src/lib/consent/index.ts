@@ -1,10 +1,16 @@
 /**
- * SvelteKit 5 Consent & Tracking System
+ * SvelteKit 5 Consent & Tracking System (Enhanced)
  *
- * A comprehensive, production-grade consent management system with:
+ * Production-grade, enterprise-level consent management with:
  * - Cookie + localStorage persistence
  * - Google Consent Mode v2 integration
- * - Vendor loading based on consent categories
+ * - GPC (Global Privacy Control) support
+ * - DNT (Do Not Track) respect
+ * - GDPR/CCPA compliance
+ * - Consent audit logging
+ * - Consent analytics
+ * - Cookie scanning
+ * - Behavior tracker integration
  * - GA4 and Meta Pixel pre-configured
  *
  * Quick Start:
@@ -15,7 +21,12 @@
  * 2. Import and use in your +layout.svelte:
  *    ```svelte
  *    <script>
- *      import { ConsentBanner, ConsentPreferencesModal, initializeConsent } from '$lib/consent';
+ *      import {
+ *        ConsentBanner,
+ *        ConsentPreferencesModal,
+ *        ConsentSettingsButton,
+ *        initializeConsent
+ *      } from '$lib/consent';
  *      import { onMount } from 'svelte';
  *
  *      onMount(() => {
@@ -25,28 +36,49 @@
  *
  *    <ConsentBanner />
  *    <ConsentPreferencesModal />
+ *    <ConsentSettingsButton />
  *    ```
  *
  * @module consent
- * @version 1.0.0
+ * @version 2.0.0
  */
 
-// Types
+// =============================================================================
+// TYPES
+// =============================================================================
+
 export type {
 	ConsentCategory,
 	ConsentState,
 	VendorConfig,
 	GoogleConsentParams,
 	ConsentStorageOptions,
+	PrivacySignals,
+	ConsentAuditEntry,
+	CookieInfo,
+	ConsentCategoryMeta,
+	ConsentChangeEvent,
+	ConsentAnalytics,
+	ConsentInteractionEvent,
+	TCFConsentData,
 } from './types';
 
 export {
 	DEFAULT_CONSENT_STATE,
 	DEFAULT_STORAGE_OPTIONS,
 	CONSENT_SCHEMA_VERSION,
+	DEFAULT_CONSENT_EXPIRY_DAYS,
+	CONSENT_CATEGORIES,
+	CATEGORY_METADATA,
+	TCF_PURPOSE_MAP,
+	CONSENT_EVENTS,
+	generateConsentId,
 } from './types';
 
-// Store
+// =============================================================================
+// STORE
+// =============================================================================
+
 export {
 	consentStore,
 	showConsentBanner,
@@ -56,9 +88,13 @@ export {
 	showPreferencesModal,
 	openPreferencesModal,
 	closePreferencesModal,
+	onConsentChange,
 } from './store';
 
-// Storage
+// =============================================================================
+// STORAGE
+// =============================================================================
+
 export {
 	loadConsent,
 	saveConsent,
@@ -66,7 +102,10 @@ export {
 	isStorageAvailable,
 } from './storage';
 
-// Google Consent Mode
+// =============================================================================
+// GOOGLE CONSENT MODE
+// =============================================================================
+
 export {
 	applyConsentMode,
 	updateConsent as updateGoogleConsent,
@@ -77,7 +116,10 @@ export {
 	isConsentModeInitialized,
 } from './google-consent-mode';
 
-// Vendor Loader
+// =============================================================================
+// VENDOR LOADER
+// =============================================================================
+
 export {
 	loadVendorsForConsent,
 	loadVendor,
@@ -88,7 +130,10 @@ export {
 	injectInlineScript,
 } from './vendor-loader';
 
-// Vendors
+// =============================================================================
+// VENDORS
+// =============================================================================
+
 export {
 	vendors,
 	getVendor,
@@ -110,32 +155,124 @@ export {
 	isMetaPixelReady,
 } from './vendors';
 
-// Components
-export { ConsentBanner, ConsentPreferencesModal } from './components';
+// =============================================================================
+// PRIVACY SIGNALS
+// =============================================================================
+
+export {
+	detectPrivacySignals,
+	isDNTEnabled,
+	isGPCEnabled,
+	detectRegion,
+	requiresStrictConsent,
+	hasPrivacyLaw,
+	getSignalBasedDefaults,
+	getConsentUIMode,
+	onPrivacySignalChange,
+} from './privacy-signals';
+
+// =============================================================================
+// AUDIT LOG
+// =============================================================================
+
+export {
+	getAuditLog,
+	addAuditEntry,
+	logConsentGiven,
+	logConsentUpdated,
+	logConsentRevoked,
+	logConsentExpired,
+	clearAuditLog,
+	exportAuditLog,
+	getAuditStats,
+	verifyAuditLogIntegrity,
+	syncAuditLogToServer,
+} from './audit-log';
+
+// =============================================================================
+// COOKIE SCANNER
+// =============================================================================
+
+export {
+	scanCookies,
+	getUnconsentedCookies,
+	watchCookies,
+	deleteCookie,
+	deleteCookiesByCategory,
+	getCookieSummary,
+} from './cookie-scanner';
+
+export type { ScannedCookie, CookieScanResult } from './cookie-scanner';
+
+// =============================================================================
+// CONSENT ANALYTICS
+// =============================================================================
+
+export {
+	getConsentAnalytics,
+	getInteractionEvents,
+	trackConsentInteraction,
+	getAnalyticsSummary,
+	exportAnalyticsData,
+	clearAnalytics,
+	syncAnalyticsToServer,
+} from './analytics';
+
+// =============================================================================
+// BEHAVIOR INTEGRATION
+// =============================================================================
+
+export {
+	initConsentAwareBehaviorTracking,
+	setBehaviorUserId,
+	trackBehaviorEvent,
+	isBehaviorTrackingEnabled,
+	getBehaviorTracker,
+	cleanupBehaviorIntegration,
+	flushBehaviorEvents,
+} from './behavior-integration';
+
+// =============================================================================
+// COMPONENTS
+// =============================================================================
+
+export {
+	ConsentBanner,
+	ConsentPreferencesModal,
+	ConsentSettingsButton,
+} from './components';
+
+// =============================================================================
+// INITIALIZATION
+// =============================================================================
 
 import { browser } from '$app/environment';
 import { consentStore } from './store';
 import { applyConsentMode } from './google-consent-mode';
 import { loadVendorsForConsent } from './vendor-loader';
 import { vendors } from './vendors';
+import { initConsentAwareBehaviorTracking, cleanupBehaviorIntegration } from './behavior-integration';
+import { trackConsentInteraction } from './analytics';
 import type { ConsentState } from './types';
 
 /**
- * Initialize the consent system.
+ * Initialize the complete consent system.
  * Call this once on client mount (in +layout.svelte onMount).
  *
  * This will:
- * 1. Load stored consent preferences
- * 2. Apply Google Consent Mode defaults
- * 3. Load vendors that have consent
- * 4. Subscribe to consent changes
+ * 1. Detect privacy signals (GPC, DNT, region)
+ * 2. Load stored consent preferences
+ * 3. Apply Google Consent Mode defaults
+ * 4. Load vendors that have consent
+ * 5. Initialize consent-aware behavior tracking
+ * 6. Subscribe to consent changes
  */
 export function initializeConsent(): () => void {
 	if (!browser) {
 		return () => {};
 	}
 
-	// Step 1: Initialize store from storage
+	// Step 1: Initialize store (includes privacy signal detection)
 	const initialConsent = consentStore.initialize();
 
 	// Step 2: Apply initial consent mode
@@ -144,27 +281,54 @@ export function initializeConsent(): () => void {
 	// Step 3: Load vendors that have consent
 	loadVendorsForConsent(initialConsent, vendors);
 
-	// Step 4: Subscribe to future changes
+	// Step 4: Initialize consent-aware behavior tracking
+	initConsentAwareBehaviorTracking();
+
+	// Step 5: Track banner shown if needed
+	if (!initialConsent.hasInteracted) {
+		trackConsentInteraction('banner_shown');
+	}
+
+	// Step 6: Subscribe to future changes
 	const unsubscribe = consentStore.subscribe((consent: ConsentState) => {
-		// This will be called on every update (including initialization)
-		// The vendor loader and consent mode functions are idempotent
 		applyConsentMode(consent);
 		loadVendorsForConsent(consent, vendors);
 	});
 
-	console.debug('[Consent] System initialized');
+	console.debug('[Consent] System initialized with enhanced features');
 
-	return unsubscribe;
+	// Return cleanup function
+	return () => {
+		unsubscribe();
+		cleanupBehaviorIntegration();
+	};
 }
 
 /**
  * Re-initialize consent after a page navigation (for SPAs).
- * Call this in your router's navigation handler if needed.
  */
 export function onPageNavigation(): void {
 	if (!browser) return;
-
-	// Vendors should track their own page views
-	// This is a hook for any additional navigation handling
 	console.debug('[Consent] Page navigation detected');
+}
+
+/**
+ * Export all consent data for GDPR data subject request.
+ */
+export function exportConsentData(): string {
+	const { exportAuditLog } = require('./audit-log');
+	const { exportAnalyticsData } = require('./analytics');
+	const { scanCookies } = require('./cookie-scanner');
+
+	return JSON.stringify(
+		{
+			exportDate: new Date().toISOString(),
+			currentConsent: consentStore.getState(),
+			auditLog: JSON.parse(exportAuditLog()),
+			analytics: JSON.parse(exportAnalyticsData()),
+			cookies: scanCookies(),
+		},
+		null,
+		2
+	);
 }

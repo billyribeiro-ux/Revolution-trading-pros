@@ -1,45 +1,88 @@
 /**
- * SvelteKit 5 Consent Store (Svelte 5 Runes)
+ * SvelteKit 5 Consent Store (Enhanced)
  *
- * Reactive store for managing consent state using Svelte 5's rune system.
- * Provides a clean API for reading and updating consent preferences.
+ * Reactive store for managing consent state with:
+ * - Privacy signal integration (GPC, DNT)
+ * - Audit logging
+ * - Consent analytics
+ * - Expiry management
  *
  * @module consent/store
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import type { ConsentState, ConsentCategory } from './types';
-import { DEFAULT_CONSENT_STATE } from './types';
+import type { ConsentState, ConsentCategory, PrivacySignals } from './types';
+import {
+	DEFAULT_CONSENT_STATE,
+	DEFAULT_CONSENT_EXPIRY_DAYS,
+	generateConsentId,
+	CONSENT_EVENTS,
+} from './types';
 import { loadConsent, saveConsent } from './storage';
+import { detectPrivacySignals, getSignalBasedDefaults } from './privacy-signals';
+import { logConsentGiven, logConsentUpdated } from './audit-log';
+import { trackConsentInteraction } from './analytics';
 
 /**
- * The main consent store - writable store with the current consent state.
+ * The main consent store.
  */
 function createConsentStore() {
-	// Initialize with defaults, will be hydrated from storage on mount
 	const { subscribe, set, update } = writable<ConsentState>({ ...DEFAULT_CONSENT_STATE });
 
 	let initialized = false;
+	let privacySignals: PrivacySignals | null = null;
 
 	return {
 		subscribe,
 
 		/**
 		 * Initialize the store from persistent storage.
-		 * Should be called once on client-side mount.
 		 */
 		initialize(): ConsentState {
 			if (!browser || initialized) {
 				return get({ subscribe });
 			}
 
-			const stored = loadConsent();
+			// Detect privacy signals
+			privacySignals = detectPrivacySignals();
+
+			// Load stored consent
+			let stored = loadConsent();
+
+			// Check if consent has expired
+			if (stored.expiresAt) {
+				const expiry = new Date(stored.expiresAt);
+				if (expiry < new Date()) {
+					console.debug('[ConsentStore] Consent expired, resetting');
+					stored = { ...DEFAULT_CONSENT_STATE };
+				}
+			}
+
+			// Apply privacy signal defaults if no interaction
+			if (!stored.hasInteracted && (privacySignals.gpc || privacySignals.dnt)) {
+				const defaults = getSignalBasedDefaults(privacySignals);
+				stored = {
+					...stored,
+					...defaults,
+					privacySignals,
+				};
+			}
+
 			set(stored);
 			initialized = true;
-			console.debug('[ConsentStore] Initialized with state:', stored);
+
+			console.debug('[ConsentStore] Initialized:', stored);
+
 			return stored;
+		},
+
+		/**
+		 * Get detected privacy signals.
+		 */
+		getPrivacySignals(): PrivacySignals | null {
+			return privacySignals;
 		},
 
 		/**
@@ -52,13 +95,31 @@ function createConsentStore() {
 			}
 
 			update((state) => {
+				const previousState = { ...state };
 				const newState: ConsentState = {
 					...state,
 					[category]: granted,
 					hasInteracted: true,
 					updatedAt: new Date().toISOString(),
+					consentId: state.consentId || generateConsentId(),
+					consentMethod: 'modal',
 				};
+
+				// Add expiry
+				const expiry = new Date();
+				expiry.setDate(expiry.getDate() + DEFAULT_CONSENT_EXPIRY_DAYS);
+				newState.expiresAt = expiry.toISOString();
+
 				saveConsent(newState);
+
+				// Log the change
+				if (granted !== previousState[category]) {
+					logConsentUpdated(newState, previousState, 'modal');
+				}
+
+				// Dispatch event
+				dispatchConsentEvent(previousState, newState);
+
 				return newState;
 			});
 		},
@@ -66,8 +127,9 @@ function createConsentStore() {
 		/**
 		 * Accept all consent categories.
 		 */
-		acceptAll(): void {
+		acceptAll(method: 'banner' | 'modal' = 'banner'): void {
 			update((state) => {
+				const previousState = { ...state };
 				const newState: ConsentState = {
 					...state,
 					necessary: true,
@@ -76,8 +138,35 @@ function createConsentStore() {
 					preferences: true,
 					hasInteracted: true,
 					updatedAt: new Date().toISOString(),
+					consentId: generateConsentId(),
+					consentMethod: method,
+					strictMode: privacySignals?.requiresStrictConsent || false,
+					countryCode: privacySignals?.region,
+					privacySignals: privacySignals || undefined,
 				};
+
+				// Add expiry
+				const expiry = new Date();
+				expiry.setDate(expiry.getDate() + DEFAULT_CONSENT_EXPIRY_DAYS);
+				newState.expiresAt = expiry.toISOString();
+
 				saveConsent(newState);
+
+				// Log and track
+				if (!previousState.hasInteracted) {
+					logConsentGiven(newState, method);
+				} else {
+					logConsentUpdated(newState, previousState, method);
+				}
+				trackConsentInteraction('accept_all', {
+					analytics: true,
+					marketing: true,
+					preferences: true,
+				});
+
+				// Dispatch event
+				dispatchConsentEvent(previousState, newState);
+
 				console.debug('[ConsentStore] Accepted all categories');
 				return newState;
 			});
@@ -86,8 +175,9 @@ function createConsentStore() {
 		/**
 		 * Reject all non-essential consent categories.
 		 */
-		rejectAll(): void {
+		rejectAll(method: 'banner' | 'modal' = 'banner'): void {
 			update((state) => {
+				const previousState = { ...state };
 				const newState: ConsentState = {
 					...state,
 					necessary: true,
@@ -96,8 +186,35 @@ function createConsentStore() {
 					preferences: false,
 					hasInteracted: true,
 					updatedAt: new Date().toISOString(),
+					consentId: generateConsentId(),
+					consentMethod: method,
+					strictMode: privacySignals?.requiresStrictConsent || false,
+					countryCode: privacySignals?.region,
+					privacySignals: privacySignals || undefined,
 				};
+
+				// Add expiry
+				const expiry = new Date();
+				expiry.setDate(expiry.getDate() + DEFAULT_CONSENT_EXPIRY_DAYS);
+				newState.expiresAt = expiry.toISOString();
+
 				saveConsent(newState);
+
+				// Log and track
+				if (!previousState.hasInteracted) {
+					logConsentGiven(newState, method);
+				} else {
+					logConsentUpdated(newState, previousState, method);
+				}
+				trackConsentInteraction('reject_all', {
+					analytics: false,
+					marketing: false,
+					preferences: false,
+				});
+
+				// Dispatch event
+				dispatchConsentEvent(previousState, newState);
+
 				console.debug('[ConsentStore] Rejected non-essential categories');
 				return newState;
 			});
@@ -106,31 +223,61 @@ function createConsentStore() {
 		/**
 		 * Update multiple categories at once.
 		 */
-		updateCategories(categories: Partial<Record<ConsentCategory, boolean>>): void {
+		updateCategories(
+			categories: Partial<Record<ConsentCategory, boolean>>,
+			method: 'banner' | 'modal' | 'api' = 'modal'
+		): void {
 			update((state) => {
+				const previousState = { ...state };
 				const newState: ConsentState = {
 					...state,
 					...categories,
-					necessary: true, // Always true
+					necessary: true,
 					hasInteracted: true,
 					updatedAt: new Date().toISOString(),
+					consentId: state.consentId || generateConsentId(),
+					consentMethod: method,
+					strictMode: privacySignals?.requiresStrictConsent || false,
+					countryCode: privacySignals?.region,
+					privacySignals: privacySignals || undefined,
 				};
+
+				// Add expiry
+				const expiry = new Date();
+				expiry.setDate(expiry.getDate() + DEFAULT_CONSENT_EXPIRY_DAYS);
+				newState.expiresAt = expiry.toISOString();
+
 				saveConsent(newState);
+
+				// Log and track
+				if (!previousState.hasInteracted) {
+					logConsentGiven(newState, method);
+				} else {
+					logConsentUpdated(newState, previousState, method);
+				}
+				trackConsentInteraction('save_preferences', categories as any);
+
+				// Dispatch event
+				dispatchConsentEvent(previousState, newState);
+
 				console.debug('[ConsentStore] Updated categories:', categories);
 				return newState;
 			});
 		},
 
 		/**
-		 * Reset consent to defaults (for testing or GDPR "right to be forgotten").
+		 * Reset consent to defaults.
 		 */
 		reset(): void {
 			const resetState: ConsentState = {
 				...DEFAULT_CONSENT_STATE,
 				updatedAt: new Date().toISOString(),
+				privacySignals: privacySignals || undefined,
 			};
+
 			set(resetState);
 			saveConsent(resetState);
+
 			console.debug('[ConsentStore] Reset to defaults');
 		},
 
@@ -156,7 +303,58 @@ function createConsentStore() {
 		getState(): ConsentState {
 			return get({ subscribe });
 		},
+
+		/**
+		 * Check if consent is about to expire (within 30 days).
+		 */
+		isExpiringSoon(): boolean {
+			const state = get({ subscribe });
+			if (!state.expiresAt) return false;
+
+			const expiry = new Date(state.expiresAt);
+			const thirtyDaysFromNow = new Date();
+			thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+
+			return expiry < thirtyDaysFromNow;
+		},
+
+		/**
+		 * Get days until consent expires.
+		 */
+		getDaysUntilExpiry(): number | null {
+			const state = get({ subscribe });
+			if (!state.expiresAt) return null;
+
+			const expiry = new Date(state.expiresAt);
+			const now = new Date();
+			const diff = expiry.getTime() - now.getTime();
+
+			return Math.ceil(diff / (1000 * 60 * 60 * 24));
+		},
 	};
+}
+
+/**
+ * Dispatch a custom consent change event.
+ */
+function dispatchConsentEvent(previous: ConsentState, current: ConsentState): void {
+	if (!browser) return;
+
+	const changed: ConsentCategory[] = [];
+	if (previous.analytics !== current.analytics) changed.push('analytics');
+	if (previous.marketing !== current.marketing) changed.push('marketing');
+	if (previous.preferences !== current.preferences) changed.push('preferences');
+
+	window.dispatchEvent(
+		new CustomEvent(CONSENT_EVENTS.CONSENT_UPDATED, {
+			detail: {
+				previous,
+				current,
+				changed,
+				source: 'user',
+			},
+		})
+	);
 }
 
 /**
@@ -194,6 +392,11 @@ export const showPreferencesModal = writable(false);
  */
 export function openPreferencesModal(): void {
 	showPreferencesModal.set(true);
+	trackConsentInteraction('modal_opened');
+
+	if (browser) {
+		window.dispatchEvent(new CustomEvent(CONSENT_EVENTS.CONSENT_MODAL_OPENED));
+	}
 }
 
 /**
@@ -201,4 +404,24 @@ export function openPreferencesModal(): void {
  */
 export function closePreferencesModal(): void {
 	showPreferencesModal.set(false);
+	trackConsentInteraction('modal_closed');
+
+	if (browser) {
+		window.dispatchEvent(new CustomEvent(CONSENT_EVENTS.CONSENT_MODAL_CLOSED));
+	}
+}
+
+/**
+ * Listen for consent changes.
+ */
+export function onConsentChange(
+	callback: (event: CustomEvent) => void
+): () => void {
+	if (!browser) return () => {};
+
+	window.addEventListener(CONSENT_EVENTS.CONSENT_UPDATED, callback as EventListener);
+
+	return () => {
+		window.removeEventListener(CONSENT_EVENTS.CONSENT_UPDATED, callback as EventListener);
+	};
 }

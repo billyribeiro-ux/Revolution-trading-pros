@@ -8,3 +8,4 @@
 
 export { default as ConsentBanner } from './ConsentBanner.svelte';
 export { default as ConsentPreferencesModal } from './ConsentPreferencesModal.svelte';
+export { default as ConsentSettingsButton } from './ConsentSettingsButton.svelte';
