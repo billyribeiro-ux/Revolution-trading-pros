@@ -1,110 +1,152 @@
 /**
- * SvelteKit Server Hooks
+ * SvelteKit Server Hooks - Security Headers & Performance
+ * Following Google November 2025 SEO and security best practices
  *
- * Handles server-side request processing, including:
- * - Consent cookie reading for SSR
- * - Security headers
- * - Request logging (development)
+ * Features:
+ * - Comprehensive security headers (OWASP recommended)
+ * - Performance headers for caching and compression
+ * - SEO-friendly headers
+ * - CORS configuration
  *
- * @see https://kit.svelte.dev/docs/hooks
- * @module hooks.server
- * @version 1.0.0
+ * @version 1.0.0 - November 2025 Standards
  */
 
 import type { Handle } from '@sveltejs/kit';
-import type { ConsentState } from '$lib/consent/types';
-import { CONSENT_SCHEMA_VERSION, DEFAULT_CONSENT_STATE } from '$lib/consent/types';
+import { sequence } from '@sveltejs/kit/hooks';
 
 /**
- * Cookie name for consent storage (must match client-side).
+ * Security Headers Handler
+ * Implements OWASP security headers for improved trust signals and security
  */
-const CONSENT_COOKIE_NAME = 'rtp_consent';
+const securityHeaders: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
 
-/**
- * Parse and validate consent from a cookie value.
- */
-function parseConsentCookie(cookieValue: string | undefined): ConsentState | null {
-	if (!cookieValue) return null;
+	// Clone headers to modify them
+	const headers = new Headers(response.headers);
 
-	try {
-		const decoded = decodeURIComponent(cookieValue);
-		const parsed = JSON.parse(decoded);
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Security Headers (OWASP Best Practices)
+	// ═══════════════════════════════════════════════════════════════════════════
 
-		// Validate structure
-		if (
-			typeof parsed !== 'object' ||
-			typeof parsed.necessary !== 'boolean' ||
-			typeof parsed.analytics !== 'boolean' ||
-			typeof parsed.marketing !== 'boolean' ||
-			typeof parsed.preferences !== 'boolean'
-		) {
-			return null;
-		}
+	// Prevent XSS attacks - strongest protection
+	headers.set('X-XSS-Protection', '1; mode=block');
 
-		// Return validated consent state
-		return {
-			necessary: true, // Always true
-			analytics: Boolean(parsed.analytics),
-			marketing: Boolean(parsed.marketing),
-			preferences: Boolean(parsed.preferences),
-			updatedAt: parsed.updatedAt || new Date().toISOString(),
-			hasInteracted: Boolean(parsed.hasInteracted),
-			version: parsed.version || CONSENT_SCHEMA_VERSION,
-		};
-	} catch {
-		return null;
-	}
-}
+	// Prevent MIME type sniffing
+	headers.set('X-Content-Type-Options', 'nosniff');
 
-/**
- * Main server hook handler.
- */
-export const handle: Handle = async ({ event, resolve }) => {
-	// Parse consent cookie for SSR
-	const cookieHeader = event.request.headers.get('cookie') || '';
-	const cookies = Object.fromEntries(
-		cookieHeader.split(';').map((cookie) => {
-			const [key, ...valueParts] = cookie.trim().split('=');
-			return [key, valueParts.join('=')];
-		})
+	// Prevent clickjacking
+	headers.set('X-Frame-Options', 'SAMEORIGIN');
+
+	// Referrer policy - balance between privacy and analytics
+	headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+	// Permissions Policy - disable unnecessary browser features
+	headers.set(
+		'Permissions-Policy',
+		'accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(self), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), xr-spatial-tracking=()'
 	);
 
-	const consentCookie = cookies[CONSENT_COOKIE_NAME];
-	const consent = parseConsentCookie(consentCookie);
+	// Strict Transport Security (HSTS) - force HTTPS
+	// max-age=31536000 = 1 year, includeSubDomains for all subdomains
+	headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
 
-	// Store consent in locals for access in load functions
-	event.locals.consent = consent || { ...DEFAULT_CONSENT_STATE };
-	event.locals.hasConsentInteraction = consent?.hasInteracted ?? false;
+	// Cross-Origin policies for security
+	headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+	headers.set('Cross-Origin-Resource-Policy', 'same-origin');
+	headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
 
-	// Resolve the request
+	// ═══════════════════════════════════════════════════════════════════════════
+	// SEO & Performance Headers
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Vary header for proper caching with Accept-Encoding
+	if (!headers.has('Vary')) {
+		headers.set('Vary', 'Accept-Encoding');
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// AI/Bot Control Headers (November 2025)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// X-Robots-Tag for fine-grained control (complements meta robots)
+	// This is particularly useful for non-HTML resources
+	const pathname = event.url.pathname;
+
+	// Don't add X-Robots-Tag for sitemap and robots.txt
+	if (!pathname.includes('sitemap') && !pathname.includes('robots')) {
+		// Allow indexing with full snippets for public pages
+		if (
+			pathname.startsWith('/blog') ||
+			pathname.startsWith('/courses') ||
+			pathname.startsWith('/indicators') ||
+			pathname.startsWith('/alerts') ||
+			pathname.startsWith('/live-trading-rooms') ||
+			pathname.startsWith('/resources') ||
+			pathname === '/' ||
+			pathname === '/about' ||
+			pathname === '/our-mission'
+		) {
+			headers.set('X-Robots-Tag', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+		}
+		// Prevent indexing for private areas
+		else if (
+			pathname.startsWith('/admin') ||
+			pathname.startsWith('/dashboard') ||
+			pathname.startsWith('/account') ||
+			pathname.startsWith('/cart') ||
+			pathname.startsWith('/checkout') ||
+			pathname.startsWith('/api')
+		) {
+			headers.set('X-Robots-Tag', 'noindex, nofollow');
+		}
+	}
+
+	return new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers
+	});
+};
+
+/**
+ * Performance & Caching Handler
+ * Implements optimal caching strategies for different resource types
+ */
+const performanceHandler: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event, {
-		// Transform the HTML to inject consent mode defaults
-		// This ensures Google Consent Mode is set before any scripts load
+		// Transform HTML for performance optimizations
 		transformPageChunk: ({ html }) => {
-			// Only inject if consent hasn't been given yet
-			// This sets restrictive defaults that will be updated client-side
-			const consentDefaults = consent || DEFAULT_CONSENT_STATE;
-
-			const consentModeScript = `
-<script>
-// Google Consent Mode v2 - Server-rendered defaults
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-  'ad_storage': '${consentDefaults.marketing ? 'granted' : 'denied'}',
-  'analytics_storage': '${consentDefaults.analytics ? 'granted' : 'denied'}',
-  'ad_user_data': '${consentDefaults.marketing ? 'granted' : 'denied'}',
-  'ad_personalization': '${consentDefaults.marketing ? 'granted' : 'denied'}',
-  'functionality_storage': '${consentDefaults.preferences ? 'granted' : 'denied'}',
-  'personalization_storage': '${consentDefaults.preferences ? 'granted' : 'denied'}',
-  'security_storage': 'granted'
-});
-</script>`;
-
-			// Inject the consent mode script at the very beginning of <head>
-			return html.replace('<head>', `<head>${consentModeScript}`);
-		},
+			// Minify HTML in production (remove extra whitespace)
+			if (import.meta.env.PROD) {
+				return html.replace(/\s+/g, ' ').replace(/>\s+</g, '><');
+			}
+			return html;
+		}
 	});
 
 	return response;
 };
+
+/**
+ * Request timing handler for monitoring
+ */
+const timingHandler: Handle = async ({ event, resolve }) => {
+	const start = performance.now();
+
+	const response = await resolve(event);
+
+	const duration = performance.now() - start;
+
+	// Add Server-Timing header for performance monitoring
+	const headers = new Headers(response.headers);
+	headers.set('Server-Timing', `total;dur=${duration.toFixed(2)}`);
+
+	return new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers
+	});
+};
+
+// Combine all handlers in sequence
+export const handle: Handle = sequence(timingHandler, securityHeaders, performanceHandler);
