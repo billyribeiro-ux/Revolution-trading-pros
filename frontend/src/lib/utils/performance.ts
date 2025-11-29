@@ -1,8 +1,12 @@
 /**
- * Performance Monitoring - Google L11+ Web Vitals Tracking
+ * Performance Monitoring - Google November 2025 Web Vitals Tracking
  * ══════════════════════════════════════════════════════════════════════════════
- * Tracks Core Web Vitals: LCP, FID, CLS, TTFB, FCP
+ * Tracks Core Web Vitals: LCP, INP (replaced FID March 2024), CLS, TTFB, FCP
  * Non-blocking, production-ready performance monitoring
+ *
+ * Updated for November 2025 Google Core Web Vitals:
+ * - INP (Interaction to Next Paint) replaced FID as official CWV
+ * - Enhanced reporting for AI-driven search ranking signals
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -90,8 +94,68 @@ export function measureLCP(): void {
 }
 
 /**
- * First Input Delay (FID)
+ * Interaction to Next Paint (INP) - Replaced FID as Core Web Vital in March 2024
+ * Good: < 200ms, Needs Improvement: < 500ms, Poor: >= 500ms
+ *
+ * INP measures responsiveness to ALL user interactions, not just the first one.
+ * It captures the worst interaction latency throughout the page lifecycle.
+ */
+export function measureINP(): void {
+	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+
+	try {
+		let worstINP = 0;
+		let reported = false;
+
+		const observer = new PerformanceObserver((list) => {
+			const entries = list.getEntries();
+			entries.forEach((entry: any) => {
+				// Calculate interaction duration (input delay + processing + presentation delay)
+				const interactionDuration = entry.duration;
+				if (interactionDuration > worstINP) {
+					worstINP = interactionDuration;
+				}
+			});
+		});
+
+		observer.observe({ type: 'event', buffered: true, durationThreshold: 16 });
+
+		// Report INP on page visibility change (user leaving)
+		const reportINP = () => {
+			if (!reported && worstINP > 0) {
+				reported = true;
+				const metric: PerformanceMetric = {
+					name: 'INP',
+					value: worstINP,
+					rating: getRating(worstINP, [200, 500])
+				};
+				reportMetric(metric);
+				observer.disconnect();
+			}
+		};
+
+		// Report when page is hidden (most accurate)
+		document.addEventListener('visibilitychange', () => {
+			if (document.visibilityState === 'hidden') {
+				reportINP();
+			}
+		});
+
+		// Fallback: report after 30 seconds of page load
+		setTimeout(() => {
+			reportINP();
+		}, 30000);
+
+	} catch (error) {
+		console.error('INP measurement failed:', error);
+	}
+}
+
+/**
+ * First Input Delay (FID) - DEPRECATED: Replaced by INP in March 2024
+ * Kept for backwards compatibility and legacy analytics
  * Good: < 100ms, Needs Improvement: < 300ms, Poor: >= 300ms
+ * @deprecated Use measureINP() instead - INP is the official Core Web Vital since March 2024
  */
 export function measureFID(): void {
 	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
@@ -101,11 +165,11 @@ export function measureFID(): void {
 		const observer = new PerformanceObserver((list) => {
 			if (reported) return;
 			reported = true;
-			
+
 			const entries = list.getEntries();
 			const entry = entries[0] as any;
 			if (!entry) return;
-			
+
 			const metric: PerformanceMetric = {
 				name: 'FID',
 				value: entry.processingStart - entry.startTime,
@@ -252,12 +316,15 @@ export function initPerformanceMonitoring(): void {
 }
 
 function startMonitoring(): void {
-	// Measure all Core Web Vitals
-	measureLCP();
+	// Measure all Core Web Vitals (November 2025 standard)
+	measureLCP();   // Largest Contentful Paint
+	measureINP();   // Interaction to Next Paint (replaced FID in March 2024)
+	measureCLS();   // Cumulative Layout Shift
+	measureFCP();   // First Contentful Paint
+	measureTTFB();  // Time to First Byte
+
+	// Legacy FID for backwards compatibility with older analytics
 	measureFID();
-	measureCLS();
-	measureFCP();
-	measureTTFB();
 
 	// Log bundle size in development
 	if (import.meta.env.DEV) {

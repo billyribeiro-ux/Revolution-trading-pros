@@ -1,32 +1,185 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr" prefix="og: https://ogp.me/ns#">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- Critical Resource Hints - November 2025 Performance Optimization -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
 		<!-- DNS Prefetch for faster resource loading -->
 		<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 		<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-		
+		<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
 		<!-- Preconnect for critical resources -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- PWA & Mobile Configuration -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
+		<!-- Favicon and App Icons -->
+		<link rel="icon" type="image/png" href="%sveltekit.assets%/favicon.png" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
+
+		<!-- Web App Manifest for PWA -->
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+
+		<!-- Theme and Display -->
+		<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+		<meta name="color-scheme" content="dark light" />
+
+		<!-- iOS Safari specific -->
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="RevTradingPros" />
+
+		<!-- Android Chrome specific -->
+		<meta name="mobile-web-app-capable" content="yes" />
+
+		<!-- Windows Tiles -->
+		<meta name="msapplication-TileColor" content="#1a1a1a" />
+		<meta name="msapplication-config" content="/browserconfig.xml" />
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- SEO Base Meta Tags - November 2025 Standards -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
+		<!-- Prevent telephone number detection -->
+		<meta name="format-detection" content="telephone=no" />
+
+		<!-- Default robots directive (overridden by SEOHead component) -->
+		<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+		<!-- Google specific -->
+		<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+		<meta name="google" content="notranslate" />
+		<meta name="google-site-verification" content="" />
+
+		<!-- Bing specific -->
+		<meta name="bingbot" content="index, follow" />
+		<meta name="msvalidate.01" content="" />
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- GEO Optimization for AI Search (November 2025) -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
+		<!-- Structured data hints for AI understanding -->
+		<meta name="subject" content="Professional Trading Education and Tools" />
+		<meta name="topic" content="Stock Trading, Day Trading, Swing Trading, Options Trading" />
+		<meta name="summary" content="Revolution Trading Pros offers institutional-grade trading education, live trading rooms, and professional trading tools." />
+		<meta name="classification" content="Finance, Education, Trading" />
+		<meta name="category" content="Financial Services" />
+		<meta name="coverage" content="Worldwide" />
+		<meta name="distribution" content="Global" />
+		<meta name="rating" content="General" />
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- Social & Sharing Defaults -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
+		<!-- Default Open Graph (overridden by SEOHead component) -->
+		<meta property="og:site_name" content="Revolution Trading Pros" />
+		<meta property="og:locale" content="en_US" />
+
+		<!-- Twitter defaults -->
+		<meta name="twitter:site" content="@RevTradingPros" />
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<!-- Pinterest -->
+		<meta name="pinterest" content="nopin" description="Sorry, pinning is not allowed." />
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- Performance & Critical CSS -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+
 		<!-- Font loading with preload for critical fonts -->
 		<link
 			rel="preload"
-			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap"
 			as="style"
 		/>
 		<link
-			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap"
 			rel="stylesheet"
 		/>
-		
+
+		<!-- Critical CSS for above-the-fold content (prevents FOUC) -->
+		<style>
+			/* Critical CSS - Prevents Flash of Unstyled Content */
+			html {
+				font-family: 'Inter', 'Open Sans', system-ui, -apple-system, sans-serif;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+				text-rendering: optimizeLegibility;
+				scroll-behavior: smooth;
+			}
+			body {
+				margin: 0;
+				padding: 0;
+				background-color: #0a0a0a;
+				color: #f5f5f5;
+				min-height: 100vh;
+				min-height: 100dvh;
+			}
+			/* Prevent layout shift from scrollbar */
+			html {
+				scrollbar-gutter: stable;
+			}
+			/* Loading state for hydration */
+			.loading-skeleton {
+				background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+				background-size: 200% 100%;
+				animation: skeleton-loading 1.5s infinite;
+			}
+			@keyframes skeleton-loading {
+				0% { background-position: 200% 0; }
+				100% { background-position: -200% 0; }
+			}
+		</style>
+
+		<!-- SvelteKit head injection point -->
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
+	<body data-sveltekit-preload-data="hover" data-sveltekit-preload-code="eager">
+		<!-- Skip to main content for accessibility -->
+		<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded">
+			Skip to main content
+		</a>
+
+		<!-- Main app container -->
+		<div id="app" style="display: contents">%sveltekit.body%</div>
+
+		<!-- Service Worker Registration -->
+		<script>
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', function() {
+					navigator.serviceWorker.register('/sw.js', { scope: '/' })
+						.then(function(registration) {
+							console.log('[SW] Registration successful:', registration.scope);
+						})
+						.catch(function(error) {
+							console.log('[SW] Registration failed:', error);
+						});
+				});
+			}
+		</script>
+
+		<!-- Noscript fallback for accessibility -->
+		<noscript>
+			<style>
+				.js-only { display: none !important; }
+				.no-js { display: block !important; }
+			</style>
+			<div style="padding: 20px; text-align: center; background: #1a1a1a; color: #f5f5f5;">
+				<h1>JavaScript Required</h1>
+				<p>Revolution Trading Pros requires JavaScript for the best experience. Please enable JavaScript in your browser settings.</p>
+			</div>
+		</noscript>
 	</body>
 </html>

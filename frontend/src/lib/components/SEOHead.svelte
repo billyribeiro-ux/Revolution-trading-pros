@@ -1,34 +1,37 @@
 <!--
 /**
- * SEOHead Component - Google L7+ Enterprise Implementation
+ * SEOHead Component - Google November 2025 Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
- * ENTERPRISE FEATURES:
- * 
+ *
+ * ENTERPRISE FEATURES (Updated November 2025):
+ *
  * 1. ADVANCED SEO:
  *    - Dynamic meta generation
- *    - AI-powered optimization
- *    - Multi-language support
+ *    - GEO (Generative Engine Optimization) for AI search
+ *    - Multi-language support with hreflang
  *    - Regional targeting
  *    - Mobile-first indexing
- *    - Core Web Vitals hints
- * 
- * 2. SCHEMA GENERATION:
+ *    - Core Web Vitals hints (LCP, INP, CLS)
+ *
+ * 2. SCHEMA GENERATION (November 2025):
  *    - Auto schema detection
  *    - Rich snippets
  *    - Knowledge graph
  *    - FAQ schema
  *    - Product schema
  *    - Course schema
- * 
+ *    - VideoObject schema
+ *    - HowTo schema
+ *    - Speakable schema (voice search optimization)
+ *
  * 3. SOCIAL OPTIMIZATION:
  *    - Multi-platform cards
  *    - Dynamic OG images
- *    - Twitter cards
+ *    - Twitter/X cards
  *    - LinkedIn optimization
  *    - Pinterest Rich Pins
  *    - WhatsApp preview
- * 
+ *
  * 4. PERFORMANCE:
  *    - Preconnect hints
  *    - DNS prefetch
@@ -36,16 +39,16 @@
  *    - Critical CSS
  *    - Lazy loading
  *    - Priority hints
- * 
+ *
  * 5. ANALYTICS:
  *    - SEO scoring
  *    - Keyword density
  *    - Readability score
  *    - Schema validation
  *    - SERP preview
- *    - Competitor analysis
- * 
- * @version 3.0.0 (Google L7+ Enterprise)
+ *    - AI citation tracking
+ *
+ * @version 4.0.0 (Google November 2025 + GEO)
  * @component
  */
 -->
@@ -119,6 +122,34 @@
 		preload?: Array<{ href: string; as: string; type?: string }>;
 		prefetch?: string[];
 		modulePreload?: string[];
+		// November 2025 - Enhanced Schema Support
+		speakable?: boolean;
+		speakableSelectors?: string[];
+		video?: {
+			name: string;
+			description: string;
+			thumbnailUrl: string;
+			uploadDate: string;
+			duration?: string;
+			contentUrl?: string;
+			embedUrl?: string;
+		} | null;
+		howTo?: {
+			name: string;
+			description: string;
+			totalTime?: string;
+			estimatedCost?: { currency: string; value: number };
+			steps: Array<{
+				name: string;
+				text: string;
+				image?: string;
+				url?: string;
+			}>;
+		} | null;
+		faqItems?: Array<{ question: string; answer: string }>;
+		// GEO (Generative Engine Optimization)
+		geoOptimized?: boolean;
+		aiCitationReady?: boolean;
 	}
 
 	let {
@@ -179,7 +210,16 @@
 		dnsPrefetch = [],
 		preload = [],
 		prefetch = [],
-		modulePreload = []
+		modulePreload = [],
+		// November 2025 - Enhanced Schema Support
+		speakable = true,
+		speakableSelectors = ['h1', 'h2', '.speakable', '[data-speakable]'],
+		video = null,
+		howTo = null,
+		faqItems = [],
+		// GEO (Generative Engine Optimization)
+		geoOptimized = true,
+		aiCitationReady = true
 	}: Props = $props();
 
 	// Site Configuration
@@ -523,14 +563,133 @@
 			});
 		}
 
-		// FAQ Schema
-		if (schemaType === 'FAQPage') {
-			// This would be populated with actual FAQ data
+		// FAQ Schema - Enhanced with actual FAQ items
+		if (schemaType === 'FAQPage' || faqItems.length > 0) {
 			schemas.push({
 				'@context': 'https://schema.org',
 				'@type': 'FAQPage',
 				'@id': `${fullCanonical}/#faq`,
-				mainEntity: []
+				mainEntity: faqItems.map((item) => ({
+					'@type': 'Question',
+					name: item.question,
+					acceptedAnswer: {
+						'@type': 'Answer',
+						text: item.answer
+					}
+				}))
+			});
+		}
+
+		// ═══════════════════════════════════════════════════════════════════════════
+		// November 2025 - Enhanced Schema Types
+		// ═══════════════════════════════════════════════════════════════════════════
+
+		// Speakable Schema (Voice Search Optimization)
+		if (speakable) {
+			schemas.push({
+				'@context': 'https://schema.org',
+				'@type': 'WebPage',
+				'@id': `${fullCanonical}/#speakable`,
+				speakable: {
+					'@type': 'SpeakableSpecification',
+					cssSelector: speakableSelectors
+				},
+				url: fullCanonical
+			});
+		}
+
+		// VideoObject Schema
+		if (video) {
+			schemas.push({
+				'@context': 'https://schema.org',
+				'@type': 'VideoObject',
+				'@id': `${fullCanonical}/#video`,
+				name: video.name,
+				description: video.description,
+				thumbnailUrl: video.thumbnailUrl.startsWith('http')
+					? video.thumbnailUrl
+					: `${siteUrl}${video.thumbnailUrl}`,
+				uploadDate: video.uploadDate,
+				...(video.duration && { duration: video.duration }),
+				...(video.contentUrl && { contentUrl: video.contentUrl }),
+				...(video.embedUrl && { embedUrl: video.embedUrl }),
+				publisher: { '@id': `${siteUrl}/#organization` }
+			});
+		}
+
+		// HowTo Schema (for tutorials and guides)
+		if (howTo) {
+			schemas.push({
+				'@context': 'https://schema.org',
+				'@type': 'HowTo',
+				'@id': `${fullCanonical}/#howto`,
+				name: howTo.name,
+				description: howTo.description,
+				...(howTo.totalTime && { totalTime: howTo.totalTime }),
+				...(howTo.estimatedCost && {
+					estimatedCost: {
+						'@type': 'MonetaryAmount',
+						currency: howTo.estimatedCost.currency,
+						value: howTo.estimatedCost.value
+					}
+				}),
+				step: howTo.steps.map((step, index) => ({
+					'@type': 'HowToStep',
+					position: index + 1,
+					name: step.name,
+					text: step.text,
+					...(step.image && {
+						image: step.image.startsWith('http') ? step.image : `${siteUrl}${step.image}`
+					}),
+					...(step.url && {
+						url: step.url.startsWith('http') ? step.url : `${siteUrl}${step.url}`
+					})
+				}))
+			});
+		}
+
+		// GEO Optimization Schema (for AI Search Engines)
+		if (geoOptimized) {
+			// Add EducationalOrganization schema for trading education context
+			schemas.push({
+				'@context': 'https://schema.org',
+				'@type': 'EducationalOrganization',
+				'@id': `${siteUrl}/#educational-org`,
+				name: siteName,
+				description: siteDescription,
+				url: siteUrl,
+				sameAs: [
+					twitterHandle ? `https://twitter.com/${twitterHandle.replace('@', '')}` : null,
+					'https://www.facebook.com/RevolutionTradingPros',
+					'https://www.linkedin.com/company/revolution-trading-pros',
+					'https://www.youtube.com/@RevolutionTradingPros'
+				].filter(Boolean),
+				areaServed: {
+					'@type': 'Country',
+					name: 'United States'
+				},
+				hasOfferCatalog: {
+					'@type': 'OfferCatalog',
+					name: 'Trading Education Programs',
+					itemListElement: [
+						{
+							'@type': 'Offer',
+							itemOffered: {
+								'@type': 'Course',
+								name: 'Day Trading Masterclass',
+								description: 'Professional day trading strategies and techniques'
+							}
+						},
+						{
+							'@type': 'Offer',
+							itemOffered: {
+								'@type': 'Course',
+								name: 'Swing Trading Pro',
+								description: 'Advanced swing trading methods for consistent profits'
+							}
+						}
+					]
+				}
 			});
 		}
 
