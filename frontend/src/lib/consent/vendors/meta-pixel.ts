@@ -21,8 +21,11 @@
  */
 
 import { browser } from '$app/environment';
-import { PUBLIC_META_PIXEL_ID } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
+
+// Use dynamic environment variable (optional at build time)
+const PUBLIC_META_PIXEL_ID = env.PUBLIC_META_PIXEL_ID || '';
 
 /**
  * Type definitions for Meta Pixel (fbq).

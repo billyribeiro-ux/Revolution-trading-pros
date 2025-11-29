@@ -17,8 +17,11 @@
  */
 
 import { browser } from '$app/environment';
-import { PUBLIC_GA4_MEASUREMENT_ID } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
+
+// Use dynamic environment variable (optional at build time)
+const PUBLIC_GA4_MEASUREMENT_ID = env.PUBLIC_GA4_MEASUREMENT_ID || '';
 import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
 import { consentStore } from '../store';

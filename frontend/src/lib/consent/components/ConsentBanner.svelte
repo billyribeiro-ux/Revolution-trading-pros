@@ -10,6 +10,7 @@
 	 * - Link to detailed preferences modal
 	 * - Accessible and keyboard-navigable
 	 * - Respects reduced motion preferences
+	 * - Template system support for customizable designs
 	 *
 	 * @component
 	 */
@@ -21,14 +22,23 @@
 		showConsentBanner,
 		openPreferencesModal,
 	} from '../store';
+	import { activeTemplate, isPreviewMode } from '../templates/store';
+	import BannerRenderer from '../templates/BannerRenderer.svelte';
 
 	/**
-	 * Position of the banner on the screen.
+	 * Position of the banner on the screen (legacy mode only).
 	 */
 	export let position: 'bottom' | 'top' = 'bottom';
 
 	/**
-	 * Custom class for styling.
+	 * Enable template-based rendering.
+	 * When true, uses the BannerRenderer with the active template.
+	 * When false, uses the legacy hardcoded design.
+	 */
+	export let useTemplates: boolean = true;
+
+	/**
+	 * Custom class for styling (legacy mode only).
 	 */
 	let className = '';
 	export { className as class };
@@ -59,53 +69,59 @@
 		: { y: position === 'bottom' ? 100 : -100, duration: 300 };
 </script>
 
-{#if $showConsentBanner}
-	<div
-		class="consent-banner {position} {className}"
-		role="dialog"
-		aria-modal="false"
-		aria-labelledby="consent-banner-title"
-		aria-describedby="consent-banner-description"
-		transition:fly={transitionOptions}
-	>
-		<div class="consent-banner-content">
-			<div class="consent-banner-text">
-				<h2 id="consent-banner-title" class="consent-banner-title">
-					We value your privacy
-				</h2>
-				<p id="consent-banner-description" class="consent-banner-description">
-					We use cookies and similar technologies to enhance your experience,
-					analyze site traffic, and for marketing purposes. You can choose to
-					accept all cookies, reject non-essential ones, or customize your
-					preferences.
-				</p>
-			</div>
+{#if useTemplates}
+	<!-- Template-based rendering -->
+	<BannerRenderer />
+{:else}
+	<!-- Legacy hardcoded banner -->
+	{#if $showConsentBanner}
+		<div
+			class="consent-banner {position} {className}"
+			role="dialog"
+			aria-modal="false"
+			aria-labelledby="consent-banner-title"
+			aria-describedby="consent-banner-description"
+			transition:fly={transitionOptions}
+		>
+			<div class="consent-banner-content">
+				<div class="consent-banner-text">
+					<h2 id="consent-banner-title" class="consent-banner-title">
+						We value your privacy
+					</h2>
+					<p id="consent-banner-description" class="consent-banner-description">
+						We use cookies and similar technologies to enhance your experience,
+						analyze site traffic, and for marketing purposes. You can choose to
+						accept all cookies, reject non-essential ones, or customize your
+						preferences.
+					</p>
+				</div>
 
-			<div class="consent-banner-actions">
-				<button
-					type="button"
-					class="consent-btn consent-btn-secondary"
-					on:click={handleManagePreferences}
-				>
-					Manage Preferences
-				</button>
-				<button
-					type="button"
-					class="consent-btn consent-btn-outline"
-					on:click={handleRejectAll}
-				>
-					Reject All
-				</button>
-				<button
-					type="button"
-					class="consent-btn consent-btn-primary"
-					on:click={handleAcceptAll}
-				>
-					Accept All
-				</button>
+				<div class="consent-banner-actions">
+					<button
+						type="button"
+						class="consent-btn consent-btn-secondary"
+						on:click={handleManagePreferences}
+					>
+						Manage Preferences
+					</button>
+					<button
+						type="button"
+						class="consent-btn consent-btn-outline"
+						on:click={handleRejectAll}
+					>
+						Reject All
+					</button>
+					<button
+						type="button"
+						class="consent-btn consent-btn-primary"
+						on:click={handleAcceptAll}
+					>
+						Accept All
+					</button>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 {/if}
 
 <style>

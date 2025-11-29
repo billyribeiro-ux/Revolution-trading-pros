@@ -372,6 +372,58 @@ export {
 export type { CrossDomainConfig } from './cross-domain';
 
 // =============================================================================
+// TEMPLATES
+// =============================================================================
+
+export {
+	// Types
+	type TemplatePosition,
+	type TemplateStyle,
+	type ButtonVariant,
+	type AnimationType,
+	type ColorScheme as TemplateColorScheme,
+	type Typography,
+	type Spacing,
+	type MobileConfig,
+	type TabletConfig,
+	type TemplateCopy,
+	type BannerTemplate,
+	type TemplateCustomization,
+	type ActiveTemplateConfig,
+	type TemplatePreview,
+	// Registry
+	BANNER_TEMPLATES,
+	getTemplate,
+	getTemplatesByCategory,
+	getTemplateCategories,
+	getTemplatePreviews,
+	DEFAULT_TEMPLATE_ID,
+	// Store
+	activeTemplate,
+	allTemplates,
+	previewTemplate,
+	isPreviewMode,
+	initializeTemplateStore,
+	setActiveTemplate,
+	updateCustomization,
+	clearCustomization,
+	saveAsCustomTemplate,
+	updateCustomTemplate,
+	deleteCustomTemplate,
+	enterPreviewMode,
+	exitPreviewMode,
+	applyPreview,
+	getActiveTemplateConfig,
+	getCurrentTemplate,
+	exportTemplateConfig,
+	importTemplateConfig,
+	// Components
+	BannerRenderer,
+	TemplatePreviewCard,
+	TemplateEditor,
+} from './templates';
+
+// =============================================================================
 // INITIALIZATION
 // =============================================================================
 
@@ -382,6 +434,7 @@ import { loadVendorsForConsent } from './vendor-loader';
 import { vendors } from './vendors';
 import { initConsentAwareBehaviorTracking, cleanupBehaviorIntegration } from './behavior-integration';
 import { trackConsentInteraction } from './analytics';
+import { initializeTemplateStore } from './templates';
 import type { ConsentState } from './types';
 
 /**
@@ -394,7 +447,8 @@ import type { ConsentState } from './types';
  * 3. Apply Google Consent Mode defaults
  * 4. Load vendors that have consent
  * 5. Initialize consent-aware behavior tracking
- * 6. Subscribe to consent changes
+ * 6. Initialize banner template system
+ * 7. Subscribe to consent changes
  */
 export function initializeConsent(): () => void {
 	if (!browser) {
@@ -413,18 +467,21 @@ export function initializeConsent(): () => void {
 	// Step 4: Initialize consent-aware behavior tracking
 	initConsentAwareBehaviorTracking();
 
-	// Step 5: Track banner shown if needed
+	// Step 5: Initialize banner template system
+	initializeTemplateStore();
+
+	// Step 6: Track banner shown if needed
 	if (!initialConsent.hasInteracted) {
 		trackConsentInteraction('banner_shown');
 	}
 
-	// Step 6: Subscribe to future changes
+	// Step 7: Subscribe to future changes
 	const unsubscribe = consentStore.subscribe((consent: ConsentState) => {
 		applyConsentMode(consent);
 		loadVendorsForConsent(consent, vendors);
 	});
 
-	console.debug('[Consent] System initialized with enhanced features');
+	console.debug('[Consent] System initialized with enhanced features and templates');
 
 	// Return cleanup function
 	return () => {
