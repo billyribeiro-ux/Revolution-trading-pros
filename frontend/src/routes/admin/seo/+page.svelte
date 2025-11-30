@@ -9,7 +9,12 @@
 		IconChartBar,
 		IconSettings,
 		IconSitemap,
-		IconBrandGoogle
+		IconBrandGoogle,
+		IconNews,
+		IconVideo,
+		IconPhoto,
+		IconMapPin,
+		IconMail
 	} from '@tabler/icons-svelte';
 
 	const sections = [
@@ -63,6 +68,46 @@
 			color: 'indigo'
 		},
 		{
+			title: 'News Sitemap',
+			description: 'Google News sitemap with 48-hour content window and stock tickers',
+			icon: IconNews,
+			href: '/admin/seo/news-sitemap',
+			color: 'rose',
+			isNew: true
+		},
+		{
+			title: 'Video Sitemap',
+			description: 'Video sitemap with YouTube, Vimeo, Dailymotion auto-detection',
+			icon: IconVideo,
+			href: '/admin/seo/video-sitemap',
+			color: 'crimson',
+			isNew: true
+		},
+		{
+			title: 'Image SEO',
+			description: 'Auto alt text, title generation, and case transformation',
+			icon: IconPhoto,
+			href: '/admin/seo/image-seo',
+			color: 'emerald',
+			isNew: true
+		},
+		{
+			title: 'Store Locator',
+			description: 'Multi-location SEO with LocalBusiness schema and KML export',
+			icon: IconMapPin,
+			href: '/admin/seo/store-locator',
+			color: 'amber',
+			isNew: true
+		},
+		{
+			title: 'SEO Reports',
+			description: 'Automated email reports with scheduling and white-label branding',
+			icon: IconMail,
+			href: '/admin/seo/reports',
+			color: 'sky',
+			isNew: true
+		},
+		{
 			title: 'Search Console',
 			description: 'Connect with Google Search Console for data integration',
 			icon: IconBrandGoogle,
@@ -94,6 +139,9 @@
 	<div class="sections-grid">
 		{#each sections as section}
 			<a href={section.href} class="section-card {section.color}">
+				{#if section.isNew}
+					<span class="new-badge">NEW</span>
+				{/if}
 				<div class="card-icon">
 					<svelte:component this={section.icon} size={32} />
 				</div>
@@ -207,6 +255,27 @@
 		transform: translateX(0);
 	}
 
+	/* NEW badge */
+	.new-badge {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		background: linear-gradient(135deg, #f97316, #ea580c);
+		color: white;
+		font-size: 0.65rem;
+		font-weight: 700;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		animation: pulse-badge 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse-badge {
+		0%, 100% { transform: scale(1); }
+		50% { transform: scale(1.05); }
+	}
+
 	/* Color variants */
 	.section-card.blue {
 		color: #3b82f6;
@@ -234,6 +303,21 @@
 	}
 	.section-card.gray {
 		color: #6b7280;
+	}
+	.section-card.rose {
+		color: #f43f5e;
+	}
+	.section-card.crimson {
+		color: #dc2626;
+	}
+	.section-card.emerald {
+		color: #059669;
+	}
+	.section-card.amber {
+		color: #d97706;
+	}
+	.section-card.sky {
+		color: #0284c7;
 	}
 
 	@media (max-width: 768px) {
