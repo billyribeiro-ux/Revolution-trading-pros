@@ -4,18 +4,20 @@
  * This module exports all configured vendor integrations.
  * Add new vendors here to include them in the consent system.
  *
- * To add a new vendor:
- * 1. Create a new file in this directory (e.g., tiktok.ts)
- * 2. Implement the VendorConfig interface
- * 3. Import and add to the vendors array below
+ * Synced with consent-magic-pro v5.1.0 feature set.
  *
  * @module consent/vendors
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import type { VendorConfig } from '../types';
 import { ga4Vendor } from './ga4';
 import { metaPixelVendor } from './meta-pixel';
+import { tiktokVendor } from './tiktok';
+import { twitterVendor } from './twitter';
+import { linkedinVendor } from './linkedin';
+import { pinterestVendor } from './pinterest';
+import { redditVendor } from './reddit';
 
 /**
  * All registered vendor configurations.
@@ -23,27 +25,23 @@ import { metaPixelVendor } from './meta-pixel';
  * Vendors are loaded in array order, but only when their
  * required consent categories are granted.
  *
- * To add a new vendor:
- * @example
- * ```typescript
- * import { tiktokVendor } from './tiktok';
- *
- * export const vendors: VendorConfig[] = [
- *   ga4Vendor,
- *   metaPixelVendor,
- *   tiktokVendor, // Add your new vendor here
- * ];
- * ```
+ * Environment variables required for each vendor:
+ * - GA4: PUBLIC_GA4_MEASUREMENT_ID
+ * - Meta Pixel: PUBLIC_META_PIXEL_ID
+ * - TikTok: PUBLIC_TIKTOK_PIXEL_ID
+ * - Twitter: PUBLIC_TWITTER_PIXEL_ID
+ * - LinkedIn: PUBLIC_LINKEDIN_PARTNER_ID
+ * - Pinterest: PUBLIC_PINTEREST_TAG_ID
+ * - Reddit: PUBLIC_REDDIT_PIXEL_ID
  */
 export const vendors: VendorConfig[] = [
 	ga4Vendor,
 	metaPixelVendor,
-	// Add future vendors here:
-	// tiktokVendor,
-	// linkedinVendor,
-	// pinterestVendor,
-	// snapchatVendor,
-	// redditVendor,
+	tiktokVendor,
+	twitterVendor,
+	linkedinVendor,
+	pinterestVendor,
+	redditVendor,
 ];
 
 /**
@@ -82,8 +80,15 @@ export function getVendorInfo(): Array<{
 // Re-export individual vendors for direct access
 export { ga4Vendor } from './ga4';
 export { metaPixelVendor } from './meta-pixel';
+export { tiktokVendor } from './tiktok';
+export { twitterVendor } from './twitter';
+export { linkedinVendor } from './linkedin';
+export { pinterestVendor } from './pinterest';
+export { redditVendor } from './reddit';
 
 // Re-export tracking functions for convenience
+
+// GA4
 export {
 	trackPageView as trackGA4PageView,
 	trackEvent as trackGA4Event,
@@ -92,6 +97,7 @@ export {
 	isGA4Ready,
 } from './ga4';
 
+// Meta Pixel
 export {
 	trackPixelEvent,
 	trackCustomPixelEvent,
@@ -99,3 +105,45 @@ export {
 	setLimitedDataUse,
 	isMetaPixelReady,
 } from './meta-pixel';
+
+// TikTok
+export {
+	trackTikTokEvent,
+	trackTikTokPageView,
+	identifyTikTokUser,
+	isTikTokReady,
+	TIKTOK_EVENTS,
+} from './tiktok';
+
+// Twitter/X
+export {
+	trackTwitterEvent,
+	trackTwitterPageView,
+	isTwitterReady,
+	TWITTER_EVENTS,
+} from './twitter';
+
+// LinkedIn
+export {
+	trackLinkedInConversion,
+	trackLinkedInPageView,
+	isLinkedInReady,
+} from './linkedin';
+
+// Pinterest
+export {
+	trackPinterestEvent,
+	trackPinterestPageView,
+	isPinterestReady,
+	PINTEREST_EVENTS,
+} from './pinterest';
+
+// Reddit
+export {
+	trackRedditEvent,
+	trackRedditPageView,
+	isRedditReady,
+	setRedditLimitedDataUse,
+	isRedditLDUEnabled,
+	REDDIT_EVENTS,
+} from './reddit';
