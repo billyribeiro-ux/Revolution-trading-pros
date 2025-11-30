@@ -1,20 +1,28 @@
 <script lang="ts">
+	/**
+	 * Signup Page - Svelte 5 Runes Implementation
+	 * @version 2.0.0 - November 2025
+	 */
 	import { authStore } from '$lib/stores/auth';
 	import { registerAndLogin } from '$lib/api/auth';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
-	let name = '';
-	let email = '';
-	let password = '';
-	let passwordConfirmation = '';
-	let isLoading = false;
-	let errorMessage = '';
-	let validationErrors: Record<string, string[]> = {};
+	// Svelte 5 state runes
+	let name = $state('');
+	let email = $state('');
+	let password = $state('');
+	let passwordConfirmation = $state('');
+	let isLoading = $state(false);
+	let errorMessage = $state('');
+	let validationErrors = $state<Record<string, string[]>>({});
 
-	$: if ($authStore.user) {
-		goto('/account');
-	}
+	// Redirect if already logged in - Svelte 5 effect
+	$effect(() => {
+		if ($authStore.user) {
+			goto('/account');
+		}
+	});
 
 	async function handleSignup(e: Event) {
 		e.preventDefault();

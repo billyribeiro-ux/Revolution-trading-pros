@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	/**
+	 * Blog Post Page - Svelte 5 Runes Implementation
+	 * @version 2.0.0 - November 2025
+	 */
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
@@ -29,17 +32,27 @@
 		author_image?: string | null;
 	}
 
-	let post: BlogPost | null = null;
-	let loading = true;
-	let error = '';
-	let slug = '';
+	// Svelte 5 state runes
+	let post = $state<BlogPost | null>(null);
+	let loading = $state(true);
+	let error = $state('');
 
-	async function loadPost() {
+	// Derived values from page store
+	let slug = $derived($page.params.slug);
+
+	// Load post when slug changes
+	$effect(() => {
+		if (slug) {
+			loadPost(slug);
+		}
+	});
+
+	async function loadPost(currentSlug: string) {
 		try {
 			loading = true;
 			error = '';
 
-			const response = await apiFetch<BlogPost>(API_ENDPOINTS.posts.single(slug));
+			const response = await apiFetch<BlogPost>(API_ENDPOINTS.posts.single(currentSlug));
 			post = response;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'An error occurred';
@@ -62,15 +75,8 @@
 		goto('/blog');
 	}
 
-	$: {
-		slug = $page.params.slug;
-		if (slug) {
-			loadPost();
-		}
-	}
-
-	// Generate article schema if not provided by backend
-	$: articleSchema =
+	// Derived SEO values - Svelte 5 runes
+	let articleSchema = $derived(
 		post &&
 		(post.schema_markup || {
 			'@context': 'https://schema.org',
@@ -96,10 +102,11 @@
 				'@type': 'WebPage',
 				'@id': `https://revolutiontradingpros.com/blog/${post.slug}`
 			}
-		});
+		})
+	);
 
-	$: seoTitle = post && (post.meta_title || post.title);
-	$: seoDescription = post && (post.meta_description || post.excerpt || '');
+	let seoTitle = $derived(post && (post.meta_title || post.title));
+	let seoDescription = $derived(post && (post.meta_description || post.excerpt || ''));
 </script>
 
 {#if post}

@@ -2,8 +2,10 @@
 	/**
 	 * Admin Layout - Dashboard shell for admin area
 	 * Uses extracted AdminSidebar component for cleaner architecture
-	 * 
-	 * @version 2.0.0
+	 *
+	 * Updated to Svelte 5 runes syntax (November 2025)
+	 *
+	 * @version 3.0.0
 	 * @author Revolution Trading Pros
 	 */
 	import { page } from '$app/stores';
@@ -14,12 +16,15 @@
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
 
-	let isSidebarOpen = false;
+	// Svelte 5 state rune
+	let isSidebarOpen = $state(false);
 
-	// Check if user is admin (you'll need to add role check)
-	$: if (browser && !$isAuthenticated) {
-		goto('/login?redirect=/admin');
-	}
+	// Check if user is admin - Svelte 5 effect
+	$effect(() => {
+		if (browser && !$isAuthenticated) {
+			goto('/login?redirect=/admin');
+		}
+	});
 
 	function toggleSidebar() {
 		isSidebarOpen = !isSidebarOpen;

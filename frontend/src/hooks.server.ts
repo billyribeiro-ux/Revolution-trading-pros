@@ -6,9 +6,10 @@
  * - Comprehensive security headers (OWASP recommended)
  * - Performance headers for caching and compression
  * - SEO-friendly headers
+ * - AI crawler control headers (November 2025)
  * - CORS configuration
  *
- * @version 1.0.0 - November 2025 Standards
+ * @version 2.0.0 - November 2025 Standards with AI Crawler Headers
  */
 
 import type { Handle } from '@sveltejs/kit';
@@ -100,6 +101,34 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 			headers.set('X-Robots-Tag', 'noindex, nofollow');
 		}
 	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// November 2025 AI Training Opt-Out Headers
+	// These headers inform AI crawlers that content should not be used for training
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Opt out of AI training for all major providers
+	// GPTBot, ChatGPT-User, Claude-Web, Google-Extended, CCBot, etc.
+	headers.set('X-AI-Training-Opt-Out', 'true');
+
+	// TDM (Text and Data Mining) Reservation Protocol - November 2025
+	// W3C standard for expressing TDM preferences
+	headers.set('TDM-Reservation', '1');
+
+	// Machine Learning Data Use header
+	headers.set('X-ML-Data-Use', 'disallow');
+
+	// Content licensing header - indicates content is copyrighted
+	headers.set('X-Content-License', 'All Rights Reserved - No AI Training Permitted');
+
+	// OpenAI specific header
+	headers.set('X-OpenAI-Block', 'true');
+
+	// Anthropic specific header
+	headers.set('X-Anthropic-Block', 'true');
+
+	// Google AI training opt-out
+	headers.set('X-Google-Extended', 'disallow');
 
 	return new Response(response.body, {
 		status: response.status,
