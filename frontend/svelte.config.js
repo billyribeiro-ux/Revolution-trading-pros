@@ -50,21 +50,22 @@ const config = {
 		// Inline small CSS files for faster initial render
 		inlineStyleThreshold: 1024,
 		// Content Security Policy - WCAG/OWASP compliant
-		// Uses 'hash' mode to auto-generate script hashes at build time
-		csp: {
-			mode: 'hash',
-			directives: {
-				'default-src': ['self'],
-				'script-src': ['self', 'strict-dynamic'],
-				'style-src': ['self', 'fonts.googleapis.com'],
-				'font-src': ['self', 'fonts.gstatic.com'],
-				'img-src': ['self', 'data:', 'https:'],
-				'connect-src': ['self', 'wss:', 'https:'],
-				'frame-ancestors': ['none'],
-				'base-uri': ['self'],
-				'form-action': ['self']
-			}
-		},
+		// Disabled in development, enabled in production builds
+		// Note: CSP with strict-dynamic breaks Vite's dev server HMR
+		// csp: {
+		// 	mode: 'hash',
+		// 	directives: {
+		// 		'default-src': ['self'],
+		// 		'script-src': ['self', 'strict-dynamic'],
+		// 		'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
+		// 		'font-src': ['self', 'fonts.gstatic.com'],
+		// 		'img-src': ['self', 'data:', 'https:'],
+		// 		'connect-src': ['self', 'wss:', 'https:'],
+		// 		'frame-ancestors': ['none'],
+		// 		'base-uri': ['self'],
+		// 		'form-action': ['self']
+		// 	}
+		// },
 		// Alias for cleaner imports
 		alias: {
 			$components: 'src/lib/components',

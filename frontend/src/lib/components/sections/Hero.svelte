@@ -17,7 +17,7 @@
 	 * ✓ GPU-accelerated transforms only
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// ============================================================================
@@ -110,16 +110,18 @@
 	let slideInterval: ReturnType<typeof setInterval> | null = null;
 	let currentSlide = $state(0);
 	let isLooping = $state(false);
-	let gsap: any = null;
+	let gsapLib: any = null;
 	let timeline: any = null;
+	let gsapLoaded = $state(false);
 
-	// DOM refs
-	let heroSection: HTMLElement | undefined;
-	let chartContainer: HTMLElement | undefined;
+	// DOM refs - use $state for bind:this in Svelte 5
+	let heroSection = $state<HTMLElement | null>(null);
+	let chartContainer = $state<HTMLElement | null>(null);
 	let resizeObserver: ResizeObserver | null = null;
 	let visibilityObserver: IntersectionObserver | null = null;
-	let isVisible = true;
-	let chartReady = false;
+	let isVisible = $state(true);
+	let chartReady = $state(false);
+	let mounted = $state(false);
 
 	// Animation state for will-change
 	let isAnimating = $state(false);
@@ -129,11 +131,7 @@
 	// ============================================================================
 
 	async function initChart(): Promise<void> {
-		if (!browser || !chartContainer || !heroSection) {
-			// Retry after a short delay if refs aren't ready
-			if (browser && !chartReady) {
-				setTimeout(() => initChart(), 50);
-			}
+		if (!browser || !chartContainer || !heroSection || chartReady) {
 			return;
 		}
 
@@ -210,7 +208,7 @@
 	// ============================================================================
 
 	function startReplay(startIndex: number = 10): void {
-		if (!browser || !series || !chart) return;
+		if (!browser || !series || !chart || !heroSection) return;
 
 		if (replayInterval) {
 			clearInterval(replayInterval);
@@ -244,13 +242,13 @@
 	}
 
 	function handleLoop(): void {
-		if (isLooping || !browser || !chartContainer || !gsap || !series) return;
+		if (isLooping || !browser || !chartContainer || !gsapLib || !series) return;
 
 		isLooping = true;
 		isAnimating = true;
 
 		// Use timeline for loop animation - no delays
-		const loopTL = gsap.timeline({
+		const loopTL = gsapLib.timeline({
 			onComplete: () => {
 				isLooping = false;
 				isAnimating = false;
@@ -279,7 +277,7 @@
 	 * Visual result is IDENTICAL, but execution starts immediately
 	 */
 	function animateSlide(slideIndex: number): void {
-		if (!browser || !gsap) return;
+		if (!browser || !gsapLib) return;
 
 		const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
 		if (!slide) return;
@@ -298,7 +296,7 @@
 		isAnimating = true;
 
 		// Create new timeline - all animations queued, zero delays
-		timeline = gsap.timeline({
+		timeline = gsapLib.timeline({
 			onComplete: () => {
 				isAnimating = false;
 			}
@@ -343,14 +341,16 @@
 		}
 	}
 
-	function showSlide(index: number): void {
+	async function showSlide(index: number): Promise<void> {
 		currentSlide = index;
-		// Animate immediately - tick() removed, no waiting
+		// Wait for DOM update then animate
+		await tick();
 		animateSlide(index);
 	}
 
 	function nextSlide(): void {
-		showSlide((currentSlide + 1) % SLIDES.length);
+		const next = (currentSlide + 1) % SLIDES.length;
+		showSlide(next);
 	}
 
 	// ============================================================================
@@ -384,35 +384,60 @@
 	}
 
 	// ============================================================================
-	// LIFECYCLE - ZERO DELAYS
+	// LIFECYCLE - Svelte 5 with $effect
 	// ============================================================================
+
+	// Initialize chart when DOM refs are ready
+	$effect(() => {
+		if (browser && mounted && chartContainer && heroSection && !chartReady) {
+			initChart();
+		}
+	});
+
+	// Setup resize observer when heroSection is ready
+	$effect(() => {
+		if (browser && mounted && heroSection) {
+			if (typeof ResizeObserver !== 'undefined') {
+				resizeObserver = new ResizeObserver(handleResize);
+				resizeObserver.observe(heroSection);
+			}
+			setupVisibilityObserver();
+
+			return () => {
+				resizeObserver?.disconnect();
+				visibilityObserver?.disconnect();
+			};
+		}
+	});
+
+	// Animate slide when GSAP is loaded and slide changes
+	$effect(() => {
+		if (browser && gsapLoaded && mounted) {
+			animateSlide(currentSlide);
+		}
+	});
 
 	onMount(async () => {
 		if (!browser) return;
 
+		mounted = true;
+
 		// CRITICAL: Show first slide IMMEDIATELY with CSS fallback
 		currentSlide = 0;
 		
-		// Load GSAP in background (non-blocking)
-		import('gsap').then(gsapModule => {
-			gsap = gsapModule?.gsap || gsapModule?.default || null;
-			// Re-animate with GSAP once loaded
-			if (gsap) animateSlide(0);
-		}).catch(() => null);
-
-		// Initialize chart after a microtask to ensure DOM is ready
-		await Promise.resolve();
-		initChart();
-
-		// Start slide interval immediately
-		slideInterval = setInterval(nextSlide, 7000);
-
-		// Setup observers
-		if (heroSection && typeof ResizeObserver !== 'undefined') {
-			resizeObserver = new ResizeObserver(handleResize);
-			resizeObserver.observe(heroSection);
+		// Load GSAP
+		try {
+			const gsapModule = await import('gsap');
+			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
+			if (gsapLib) {
+				gsapLoaded = true;
+			}
+		} catch (e) {
+			console.warn('GSAP failed to load:', e);
 		}
-		setupVisibilityObserver();
+
+		// Start slide interval
+		slideInterval = setInterval(nextSlide, 7000);
 	});
 
 	onDestroy(() => {
@@ -426,6 +451,7 @@
 		chart = null;
 		series = null;
 		timeline = null;
+		mounted = false;
 	});
 </script>
 
