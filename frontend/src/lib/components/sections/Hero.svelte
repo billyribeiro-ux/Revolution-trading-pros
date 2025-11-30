@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
 	/**
 	 * HeroSection Component - Google L8+ Principal Engineer Standard
+	 * Updated to Svelte 5 Runes Syntax (November 2025)
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 * ZERO DELAYS - Instant initialization with parallel execution
 	 * ══════════════════════════════════════════════════════════════════════════════
@@ -101,23 +102,24 @@
 	]);
 
 	// ============================================================================
-	// STATE
+	// STATE - Svelte 5 Runes
 	// ============================================================================
-	let chart = null;
-	let series = null;
-	let replayInterval = null;
-	let slideInterval = null;
+	let chart: ReturnType<typeof import('lightweight-charts').createChart> | null = null;
+	let series: any = null;
+	let replayInterval: ReturnType<typeof setInterval> | null = null;
+	let slideInterval: ReturnType<typeof setInterval> | null = null;
 	let currentSlide = $state(0);
-	let isLooping = false;
-	let gsap = null;
-	let timeline = null;
+	let isLooping = $state(false);
+	let gsap: any = null;
+	let timeline: any = null;
 
 	// DOM refs
-	let heroSection;
-	let chartContainer;
-	let resizeObserver = null;
-	let visibilityObserver = null;
+	let heroSection: HTMLElement | undefined;
+	let chartContainer: HTMLElement | undefined;
+	let resizeObserver: ResizeObserver | null = null;
+	let visibilityObserver: IntersectionObserver | null = null;
 	let isVisible = true;
+	let chartReady = false;
 
 	// Animation state for will-change
 	let isAnimating = $state(false);
@@ -126,11 +128,17 @@
 	// CHART INITIALIZATION - LAZY LOADED FOR PERFORMANCE
 	// ============================================================================
 
-	async function initChart() {
-		if (!browser || !chartContainer || !heroSection) return;
+	async function initChart(): Promise<void> {
+		if (!browser || !chartContainer || !heroSection) {
+			// Retry after a short delay if refs aren't ready
+			if (browser && !chartReady) {
+				setTimeout(() => initChart(), 50);
+			}
+			return;
+		}
 
 		// Lazy load chart library - CRITICAL FOR PERFORMANCE
-		const { createChart, CandlestickSeries, CrosshairMode } = await import('lightweight-charts');
+		const { createChart, CandlestickSeries, CrosshairMode, ColorType } = await import('lightweight-charts');
 
 		const width = heroSection.clientWidth || window.innerWidth;
 		const height = heroSection.clientHeight || window.innerHeight;
@@ -144,7 +152,7 @@
 
 		chart = createChart(chartContainer, {
 			layout: {
-				background: { type: 'solid', color: 'transparent' },
+				background: { type: ColorType.Solid, color: 'transparent' },
 				textColor: 'rgba(255, 255, 255, 0.1)'
 			},
 			grid: {
@@ -192,7 +200,8 @@
 			chart.timeScale().setVisibleLogicalRange({ from: 0, to: initialCount });
 		}
 
-		// Start replay immediately
+		// Mark chart as ready and start replay
+		chartReady = true;
 		startReplay(initialCount);
 	}
 
@@ -200,7 +209,7 @@
 	// REPLAY ANIMATION
 	// ============================================================================
 
-	function startReplay(startIndex = 10) {
+	function startReplay(startIndex: number = 10): void {
 		if (!browser || !series || !chart) return;
 
 		if (replayInterval) {
@@ -234,7 +243,7 @@
 		}, 700);
 	}
 
-	function handleLoop() {
+	function handleLoop(): void {
 		if (isLooping || !browser || !chartContainer || !gsap || !series) return;
 
 		isLooping = true;
@@ -269,7 +278,7 @@
 	 * L8+ Animation: Uses GSAP timeline sequencing instead of individual delays
 	 * Visual result is IDENTICAL, but execution starts immediately
 	 */
-	function animateSlide(slideIndex) {
+	function animateSlide(slideIndex: number): void {
 		if (!browser || !gsap) return;
 
 		const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
@@ -334,13 +343,13 @@
 		}
 	}
 
-	function showSlide(index) {
+	function showSlide(index: number): void {
 		currentSlide = index;
 		// Animate immediately - tick() removed, no waiting
 		animateSlide(index);
 	}
 
-	function nextSlide() {
+	function nextSlide(): void {
 		showSlide((currentSlide + 1) % SLIDES.length);
 	}
 
@@ -348,7 +357,7 @@
 	// RESIZE HANDLING
 	// ============================================================================
 
-	function handleResize() {
+	function handleResize(): void {
 		if (!browser || !chart || !heroSection) return;
 
 		chart.applyOptions({
@@ -361,7 +370,7 @@
 	// VISIBILITY OPTIMIZATION - Pause when off-screen
 	// ============================================================================
 
-	function setupVisibilityObserver() {
+	function setupVisibilityObserver(): void {
 		if (!browser || !heroSection) return;
 
 		visibilityObserver = new IntersectionObserver(
@@ -384,28 +393,25 @@
 		// CRITICAL: Show first slide IMMEDIATELY with CSS fallback
 		currentSlide = 0;
 		
-		// Non-blocking initialization - don't await anything
-		Promise.all([
-			// Load GSAP in background
-			import('gsap').then(gsapModule => {
-				gsap = gsapModule?.gsap || gsapModule?.default || null;
-				// Re-animate with GSAP once loaded
-				if (gsap) animateSlide(0);
-			}).catch(() => null),
-			
-			// Initialize chart in background
-			initChart()
-		]);
+		// Load GSAP in background (non-blocking)
+		import('gsap').then(gsapModule => {
+			gsap = gsapModule?.gsap || gsapModule?.default || null;
+			// Re-animate with GSAP once loaded
+			if (gsap) animateSlide(0);
+		}).catch(() => null);
+
+		// Initialize chart after a microtask to ensure DOM is ready
+		await Promise.resolve();
+		initChart();
 
 		// Start slide interval immediately
 		slideInterval = setInterval(nextSlide, 7000);
 
-		// Setup observers immediately
-		if (typeof ResizeObserver !== 'undefined') {
+		// Setup observers
+		if (heroSection && typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
 			resizeObserver.observe(heroSection);
 		}
-
 		setupVisibilityObserver();
 	});
 

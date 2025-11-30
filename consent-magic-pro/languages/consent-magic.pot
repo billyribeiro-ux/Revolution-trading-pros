@@ -1,0 +1,4020 @@
+# Copyright (C) 2025 Consent Magic
+# This file is distributed under the same license as the Consent Magic package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Consent Magic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: ConsentMagic <consentmagic@consentmagic.com>\n"
+"Last-Translator: ConsentMagic <consentmagic@consentmagic.com>\n"
+"POT-Creation-Date: 2025-10-28 06:15+0000\n"
+"Report-Msgid-Bugs-To: ConsentMagic <consentmagic@consentmagic.com>\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: consent-magic-pro.php:107
+msgid " has been deactivated. The minimum PHP version is %s. You have version %s."
+msgstr ""
+
+#: consent-magic-pro.php:197
+msgid "Important:"
+msgstr ""
+
+#: consent-magic-pro.php:197
+msgid "You can enable a dedicated Google Fonts category %sfrom here%s. The plugin will inform users about Google Fonts and give them an opt-out option. If they block Google Fonts, another font type is used. It works for \"Inform and Opt-out\" and \"Ask before tracking\" consent types. "
+msgstr ""
+
+#: consent-magic-pro.php:200
+msgid " %sWatch video%s "
+msgstr ""
+
+#: consent-magic-pro.php:202
+msgid "Dismiss:"
+msgstr ""
+
+#: consent-magic-pro.php:234
+msgid "Testing mode is enabled for ConsentMagic. Only users with these roles can see the consent messages: "
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPage.php:41, includes/CS_Admin.php:4184, includes/modules/scanner/CS_Scanner.php:33
+msgid "You do not have sufficient permission to perform this operation"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageGeolocation.php:37
+msgid "Geolocation"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageGeolocation.php:100, includes/modules/geoip2/CS_Geoip.php:99, includes/modules/geoip2/CS_Geoip.php:258
+msgid "License key or Account ID is empty."
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageIab.php:19
+msgid "IAB Settings"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageLicense.php:19, views/admin/license/html-edd-license.php:67, views/admin/license/html-woo-license.php:67
+msgid "License"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:216, includes/admin-pages/CS_AdminPageMain.php:199
+msgid "ConsentMagic PRO"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:213
+msgid "Edit design template"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:210
+msgid "New design template"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:206, includes/CS_Admin.php:2141
+msgid "New Script"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:204, includes/admin-pages/CS_AdminPageMain.php:184, includes/ConsentMagic.php:739, includes/functions/cs-general-functions.php:355, views/admin/main/admin-settings-rules-list-wrap.php:49
+msgid "Edit"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:197, views/admin/html-general.php:26
+msgid "Single-step design"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:195, views/admin/html-general.php:25
+msgid "Multi-step design"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:193, views/admin/html-general.php:24, views/admin/main/design/add-design-template-html.php:84, views/admin/main/design/edit-design-template-html.php:88
+msgid "Text"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:191, views/admin/html-general.php:23
+msgid "Privacy Policy"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:189, views/admin/html-general.php:22
+msgid "Scripts and Cookies"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageMain.php:186, includes/CS_Admin.php:2062
+msgid "New Rule"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageProofConsent.php:22
+msgid "Consent Proof"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageProofStatistics.php:18
+msgid "Statistics"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageSettings.php:38, views/admin/proofconsent/html-proofconsent.php:10
+msgid "Settings"
+msgstr ""
+
+#: includes/admin-pages/CS_AdminPageShortcodes.php:32
+msgid "Shortcodes & Filters"
+msgstr ""
+
+#: includes/ConsentMagic.php:482, includes/ConsentMagic.php:518, includes/CS_Admin.php:2056
+msgid "ConsentMagic"
+msgstr ""
+
+#: includes/ConsentMagic.php:483
+msgid "We only send the consent related data in the New Order email that you get. You can remove it by opening the ConsentMagic plugin's %s settings page %s"
+msgstr ""
+
+#: includes/ConsentMagic.php:487
+msgid "You can also send this privacy info to your clients. It can increase their confidence in your brand and build trust. Turin it on from the ConsentMagic %s settings page %s"
+msgstr ""
+
+#: includes/ConsentMagic.php:734, includes/functions/cs-general-functions.php:356, includes/functions/cs-render-script-categories.php:72, views/admin/main/admin-settings-rules-list-wrap.php:70
+msgid "Delete"
+msgstr ""
+
+#: includes/ConsentMagic.php:755, views/admin/buttons/admin-settings-save-button.php:14, views/admin/components/design-preview-buttons.php:15, views/admin/main/admin-settings-rules-list-wrap.php:59, views/admin/main/design/adjust-bar-single.php:15, views/admin/main/design/adjust-bar.php:15
+msgid "Preview"
+msgstr ""
+
+#: includes/ConsentMagic.php:763, views/admin/components/design-preview-buttons.php:22, views/admin/main/design/adjust-bar.php:21, views/admin/main/design/adjust-bar.php:48
+msgid "Small bar"
+msgstr ""
+
+#: includes/ConsentMagic.php:772, views/admin/components/design-preview-buttons.php:29, views/admin/main/design/adjust-bar.php:26, views/admin/main/design/adjust-bar.php:195
+msgid "Large bar"
+msgstr ""
+
+#: includes/ConsentMagic.php:781, views/admin/components/design-preview-buttons.php:36, views/admin/main/design/adjust-bar.php:31, views/admin/main/design/adjust-bar.php:342
+msgid "Small popup"
+msgstr ""
+
+#: includes/ConsentMagic.php:791, views/admin/components/design-preview-buttons.php:44, views/admin/main/design/adjust-bar-single.php:21, views/admin/main/design/adjust-bar.php:38, views/admin/main/design/adjust-bar.php:489
+msgid "Large popup"
+msgstr ""
+
+#: includes/ConsentMagic.php:1127
+msgid "Consent Magic Pro"
+msgstr ""
+
+#: includes/CS_Admin.php:434
+msgid "Name"
+msgstr ""
+
+#: includes/CS_Admin.php:435
+msgid "Domain"
+msgstr ""
+
+#: includes/CS_Admin.php:436, views/admin/iab/general-iab-html.php:17
+msgid "Purposes"
+msgstr ""
+
+#: includes/CS_Admin.php:437
+msgid "Expiry"
+msgstr ""
+
+#: includes/CS_Admin.php:438
+msgid "Type"
+msgstr ""
+
+#: includes/CS_Admin.php:439
+msgid "Cookie details"
+msgstr ""
+
+#: includes/CS_Admin.php:440, views/admin/order/html-edd-order-box.php:131, views/admin/order/html-edd-order-box.php:80, views/admin/order/html-order-box.php:131, views/admin/order/html-order-box.php:80, views/admin/order/html-order-meta-box.php:144, views/admin/order/html-order-meta-box.php:92
+msgid "No data"
+msgstr ""
+
+#: includes/CS_Admin.php:441
+msgid "Privacy policy"
+msgstr ""
+
+#: includes/CS_Admin.php:442
+msgid "Legitimate interest"
+msgstr ""
+
+#: includes/CS_Admin.php:443
+msgid "% day(s)"
+msgstr ""
+
+#: includes/CS_Admin.php:444
+msgid "Special purposes"
+msgstr ""
+
+#: includes/CS_Admin.php:445, views/admin/iab/general-iab-html.php:115
+msgid "Features"
+msgstr ""
+
+#: includes/CS_Admin.php:446
+msgid "Special features"
+msgstr ""
+
+#: includes/CS_Admin.php:447
+msgid "Data categories"
+msgstr ""
+
+#: includes/CS_Admin.php:448
+msgid "Cookie expiry may be refreshed"
+msgstr ""
+
+#: includes/CS_Admin.php:449
+msgid "Storage methods or accessing"
+msgstr ""
+
+#: includes/CS_Admin.php:450
+msgid "Cookies and others"
+msgstr ""
+
+#: includes/CS_Admin.php:451
+msgid "Other methods"
+msgstr ""
+
+#: includes/CS_Admin.php:452
+msgid "Consent preferences"
+msgstr ""
+
+#: includes/CS_Admin.php:453
+msgid "Show cookie details"
+msgstr ""
+
+#: includes/CS_Admin.php:454
+msgid "% year(s)"
+msgstr ""
+
+#: includes/CS_Admin.php:455
+msgid "% month(s)"
+msgstr ""
+
+#: includes/CS_Admin.php:456
+msgid "% hour(s)"
+msgstr ""
+
+#: includes/CS_Admin.php:457
+msgid "%minutes(s)"
+msgstr ""
+
+#: includes/CS_Admin.php:1262, includes/CS_Admin.php:1267, includes/modules/scanner/CS_Scanner_Module.php:461, views/admin/main/script-blocking/scanner-cookies-bar.php:30
+msgid "Once a week"
+msgstr ""
+
+#: includes/CS_Admin.php:1272, includes/modules/scanner/CS_Scanner_Module.php:457, views/admin/main/script-blocking/scanner-cookies-bar.php:31
+msgid "Once a month"
+msgstr ""
+
+#: includes/CS_Admin.php:1277
+msgid "Once time in half a year"
+msgstr ""
+
+#: includes/CS_Admin.php:1282
+msgid "Once a year"
+msgstr ""
+
+#: includes/CS_Admin.php:1376
+msgid "Disable ConsentMagic test mode"
+msgstr ""
+
+#: includes/CS_Admin.php:1389
+msgid "Delete test consent"
+msgstr ""
+
+#: includes/CS_Admin.php:1422, includes/modules/geoip2/CS_Geoip.php:142
+msgid "The MaxMind license key or Account ID is invalid."
+msgstr ""
+
+#: includes/CS_Admin.php:1417
+msgid "Geolocation is deactivated. Please, enable it."
+msgstr ""
+
+#: includes/CS_Admin.php:1453
+msgid "Geo Database updated successfully"
+msgstr ""
+
+#: includes/CS_Admin.php:1748, includes/CS_Admin.php:1927, includes/CS_Admin.php:2016
+msgid "There are no configured rules for single step design"
+msgstr ""
+
+#: includes/CS_Admin.php:2057
+msgid "Rules List"
+msgstr ""
+
+#: includes/CS_Admin.php:2058
+msgid "Rule"
+msgstr ""
+
+#: includes/CS_Admin.php:2059, includes/CS_Admin.php:2138, includes/CS_Admin.php:2184
+msgid "Add New"
+msgstr ""
+
+#: includes/CS_Admin.php:2060, views/admin/main/admin-settings-general.php:19
+msgid "Add New Rule"
+msgstr ""
+
+#: includes/CS_Admin.php:2061
+msgid "Edit Rule"
+msgstr ""
+
+#: includes/CS_Admin.php:2063
+msgid "View Rule"
+msgstr ""
+
+#: includes/CS_Admin.php:2064
+msgid "Search Rules"
+msgstr ""
+
+#: includes/CS_Admin.php:2065, includes/CS_Admin.php:2144, includes/CS_Admin.php:2190
+msgid "Nothing found"
+msgstr ""
+
+#: includes/CS_Admin.php:2066, includes/CS_Admin.php:2145, includes/CS_Admin.php:2191
+msgid "Nothing found in Trash"
+msgstr ""
+
+#: includes/CS_Admin.php:2102
+msgid "CS Templates"
+msgstr ""
+
+#: includes/CS_Admin.php:2135
+msgid "CS Scripts"
+msgstr ""
+
+#: includes/CS_Admin.php:2136
+msgid "Scripts List"
+msgstr ""
+
+#: includes/CS_Admin.php:2137
+msgid "Script"
+msgstr ""
+
+#: includes/CS_Admin.php:2139
+msgid "Add New Script"
+msgstr ""
+
+#: includes/CS_Admin.php:2140
+msgid "Edit Script"
+msgstr ""
+
+#: includes/CS_Admin.php:2142
+msgid "View Script"
+msgstr ""
+
+#: includes/CS_Admin.php:2143
+msgid "Search Scripts"
+msgstr ""
+
+#: includes/CS_Admin.php:2181
+msgid "CS Cookies"
+msgstr ""
+
+#: includes/CS_Admin.php:2182
+msgid "Cookies List"
+msgstr ""
+
+#: includes/CS_Admin.php:2183
+msgid "Cookie"
+msgstr ""
+
+#: includes/CS_Admin.php:2185
+msgid "Add New Cookie"
+msgstr ""
+
+#: includes/CS_Admin.php:2186
+msgid "Edit Cookie"
+msgstr ""
+
+#: includes/CS_Admin.php:2187
+msgid "New Cookie"
+msgstr ""
+
+#: includes/CS_Admin.php:2188
+msgid "View Cookie"
+msgstr ""
+
+#: includes/CS_Admin.php:2189
+msgid "Search Cookies"
+msgstr ""
+
+#: includes/CS_Admin.php:2232
+msgid "Rules Category"
+msgstr ""
+
+#: includes/CS_Admin.php:2256
+msgid "Scripts Category"
+msgstr ""
+
+#: includes/CS_Admin.php:3230
+msgid "Consent Magic - Geolocation not configured. Please visit the "
+msgstr ""
+
+#: includes/CS_Admin.php:3232
+msgid "Geolocation settings page"
+msgstr ""
+
+#: includes/CS_Admin.php:3233
+msgid " and configure geolocation."
+msgstr ""
+
+#: includes/CS_Admin.php:3250
+msgid "Your ConsentMagic geolocation data base needs a manual download: %sclick to proceed%s."
+msgstr ""
+
+#: includes/CS_Admin.php:3262
+msgid "Consent Magic - Usage cache: after updating the plugin settings, you need to clear the cache."
+msgstr ""
+
+#: includes/CS_Admin.php:3349
+msgid "An error occurred in the request"
+msgstr ""
+
+#: includes/CS_Admin.php:3341
+msgid "Additional languages not found"
+msgstr ""
+
+#: includes/CS_Admin.php:4156
+msgid "File not found"
+msgstr ""
+
+#: includes/CS_Admin.php:3775
+msgid "File is empty"
+msgstr ""
+
+#: includes/CS_Admin.php:3790
+msgid "Invalid file"
+msgstr ""
+
+#: includes/CS_Admin.php:4154
+msgid "Import completed"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:443
+msgid "Custom Script"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:428
+msgid "Pre-Defined Script"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:640, includes/functions/cs-general-functions.php:643
+msgid "bar"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:640, includes/functions/cs-general-functions.php:646
+msgid "small"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:643, includes/functions/cs-general-functions.php:649
+msgid "large"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:646, includes/functions/cs-general-functions.php:649
+msgid "popup"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:880
+msgid "ConsentMagic is configured to delete stored consent when it reaches %s entries. This email confirms consent was deleted on %s"
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:880
+msgid "Consent entries are attached to this email."
+msgstr ""
+
+#: includes/functions/cs-general-functions.php:880
+msgid "You can change these settings %shere%s"
+msgstr ""
+
+#: includes/functions/cs-language-functions.php:794
+msgid "Add New Language"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:17
+msgid "With the PRO version you can have multiple rules with Geo-Targeting, including pre-defined rules"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:21
+msgid "Upgrade"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:973
+msgid "Select GDPR countries"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:976
+msgid "Select non - GDPR countries"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1101
+msgid "Visitor"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1112, views/admin/proofconsent/cs-settings.php:23
+msgid "Just inform"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1113, views/admin/proofconsent/cs-settings.php:33
+msgid "Ask before tracking"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1114
+msgid "Inform and Opt-out"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1115, views/admin/main/admin-settings-text.php:205, views/admin/proofconsent/cs-settings.php:38
+msgid "IAB"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1125
+msgid "Andorra"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1129
+msgid "Afghanistan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1133
+msgid "Antigua and Barbuda"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1137
+msgid "Anguilla"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1141
+msgid "Albania"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1145
+msgid "Algeria"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1149
+msgid "Armenia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1153
+msgid "Angola"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1157
+msgid "Antarctica"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1161
+msgid "Argentina"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1165
+msgid "American Samoa"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1169
+msgid "Austria"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1173
+msgid "Australia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1177
+msgid "Aruba"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1181
+msgid "Åland Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1185
+msgid "Azerbaijan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1189
+msgid "Bosnia and Herzegovina"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1193
+msgid "Barbados"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1197
+msgid "Bangladesh"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1201
+msgid "Belgium"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1205
+msgid "Burkina Faso"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1209
+msgid "Bulgaria"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1213
+msgid "Bahrain"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1217
+msgid "Burundi"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1221
+msgid "Benin"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1225
+msgid "Saint Barthélemy"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1229
+msgid "Bermuda"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1233
+msgid "Brunei Darussalam"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1237
+msgid "Bolivia (Plurinational State of)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1241
+msgid "Bonaire, Sint Eustatius and Saba"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1245
+msgid "Brazil"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1249
+msgid "Bahamas"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1253
+msgid "Bhutan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1257
+msgid "Bouvet Island"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1261
+msgid "Botswana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1265
+msgid "Belarus"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1269
+msgid "Belize"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1273
+msgid "Canada"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1277
+msgid "Cocos (Keeling) Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1281
+msgid "Congo, Democratic Republic of the"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1285
+msgid "Central African Republic"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1289
+msgid "Congo"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1293
+msgid "Côte d'Ivoire"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1297
+msgid "Cook Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1301
+msgid "Chile"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1305
+msgid "Cameroon"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1309
+msgid "China"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1313
+msgid "Colombia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1317
+msgid "Costa Rica"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1321
+msgid "Cuba"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1325
+msgid "Cabo Verde"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1329
+msgid "Curaçao"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1333
+msgid "Christmas Island"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1337
+msgid "Cyprus"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1341
+msgid "Croatia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1345
+msgid "Cambodia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1349
+msgid "Comoros"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1353
+msgid "Chad"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1357
+msgid "Czechia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1361
+msgid "Cayman Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1365
+msgid "Djibouti"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1369
+msgid "Denmark"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1373
+msgid "Dominica"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1377
+msgid "Dominican Republic"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1381
+msgid "Ecuador"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1385
+msgid "Estonia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1389
+msgid "El Salvador"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1393
+msgid "Eswatini"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1397
+msgid "Egypt"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1401
+msgid "Eritrea"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1405
+msgid "Equatorial Guinea"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1409
+msgid "Ethiopia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1413
+msgid "Finland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1417
+msgid "Fiji"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1421
+msgid "Falkland Islands (Malvinas)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1425
+msgid "Faroe Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1429
+msgid "France"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1433
+msgid "French Guiana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1437
+msgid "French Polynesia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1441
+msgid "French Southern Territories"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1445
+msgid "Germany"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1449
+msgid "Gabon"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1453
+msgid "Grenada"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1457, includes/functions/cs-render-functions.php:2169
+msgid "Georgia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1461
+msgid "Guernsey"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1465
+msgid "Ghana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1469
+msgid "Gibraltar"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1473
+msgid "Greenland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1477
+msgid "Gambia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1481
+msgid "Guinea"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1485
+msgid "Guadeloupe"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1489
+msgid "Greece"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1493
+msgid "Guatemala"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1497
+msgid "Guam"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1501
+msgid "Guinea-Bissau"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1505
+msgid "Guyana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1509
+msgid "Hong Kong"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1513
+msgid "Holy See"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1517
+msgid "Heard Island and McDonald Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1521
+msgid "Honduras"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1525
+msgid "Haiti"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1529
+msgid "Hungary"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1533
+msgid "Indonesia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1537
+msgid "Ireland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1541
+msgid "Israel"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1545
+msgid "Isle of Man"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1549
+msgid "India"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1553
+msgid "British Indian Ocean Territory"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1557
+msgid "Iraq"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1561
+msgid "Iran (Islamic Republic of)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1565
+msgid "Iceland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1569
+msgid "Italy"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1573
+msgid "Jersey"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1577
+msgid "Jamaica"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1581
+msgid "Jordan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1585
+msgid "Japan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1589
+msgid "Kenya"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1593
+msgid "Kyrgyzstan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1597
+msgid "Kiribati"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1601
+msgid "Saint Kitts and Nevis"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1605
+msgid "Korea (Democratic People's Republic of)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1609
+msgid "Korea, Republic of"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1613
+msgid "Kuwait"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1617
+msgid "Kazakhstan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1621
+msgid "Lao People's Democratic Republic"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1625
+msgid "Lebanon"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1629
+msgid "Liechtenstein"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1633
+msgid "Liberia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1637
+msgid "Lesotho"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1641
+msgid "Lithuania"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1645
+msgid "Luxembourg"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1649
+msgid "Latvia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1653
+msgid "Libya"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1657
+msgid "Morocco"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1661
+msgid "Monaco"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1665
+msgid "Moldova, Republic of"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1669
+msgid "Montenegro"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1673
+msgid "Madagascar"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1677
+msgid "Marshall Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1681
+msgid "Mali"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1685
+msgid "Myanmar"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1689
+msgid "Mongolia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1693
+msgid "Macao"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1697
+msgid "Martinique"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1701
+msgid "Mauritania"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1705
+msgid "Montserrat"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1709
+msgid "Malta"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1713
+msgid "Mauritius"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1717
+msgid "Maldives"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1721
+msgid "Malawi"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1725
+msgid "Mexico"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1729
+msgid "Malaysia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1733
+msgid "Micronesia (Federated States of)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1737
+msgid "Mayotte"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1741
+msgid "Mozambique"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1745
+msgid "Namibia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1749
+msgid "New Caledonia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1753
+msgid "Niger"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1757
+msgid "Norfolk Island"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1761
+msgid "Nigeria"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1765
+msgid "Nicaragua"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1769
+msgid "Netherlands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1773
+msgid "Norway"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1777
+msgid "Nepal"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1781
+msgid "Nauru"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1785
+msgid "Niue"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1789
+msgid "New Zealand"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1793
+msgid "North Macedonia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1797
+msgid "Northern Mariana Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1801
+msgid "Oman"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1805
+msgid "Panama"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1809
+msgid "Peru"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1813
+msgid "Papua New Guinea"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1817
+msgid "Philippines"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1821
+msgid "Pakistan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1825
+msgid "Poland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1829
+msgid "Pitcairn"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1833
+msgid "Puerto Rico"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1837
+msgid "Palestine, State of"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1841
+msgid "Portugal"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1845
+msgid "Palau"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1849
+msgid "Paraguay"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1853
+msgid "Qatar"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1857
+msgid "Réunion"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1861
+msgid "Romania"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1865
+msgid "Russian Federation"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1869
+msgid "Rwanda"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1873
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1877
+msgid "Serbia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1881
+msgid "Saudi Arabia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1885
+msgid "Solomon Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1889
+msgid "Seychelles"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1893
+msgid "Sudan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1897
+msgid "Sweden"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1901
+msgid "Singapore"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1905
+msgid "Saint Helena, Ascension and Tristan da Cunha"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1909
+msgid "Slovenia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1913
+msgid "Svalbard and Jan Mayen"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1917
+msgid "Slovakia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1921
+msgid "Sierra Leone"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1925
+msgid "San Marino"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1929
+msgid "Senegal"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1933
+msgid "Somalia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1937
+msgid "Suriname"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1941
+msgid "South Sudan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1945
+msgid "Sao Tome and Principe"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1949
+msgid "South Georgia and the South Sandwich Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1953
+msgid "Saint Martin (French part)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1957
+msgid "Spain"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1961
+msgid "Switzerland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1965
+msgid "Saint Lucia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1969
+msgid "Sri Lanka"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1973
+msgid "Sint Maarten (Dutch part)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1977
+msgid "Syrian Arab Republic"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1981
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1985
+msgid "Samoa"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1989
+msgid "South Africa"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1993
+msgid "Turks and Caicos Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:1997
+msgid "Togo"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2001
+msgid "Thailand"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2005
+msgid "Tajikistan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2009
+msgid "Tokelau"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2013
+msgid "Timor-Leste"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2017
+msgid "Turkmenistan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2021
+msgid "Tunisia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2025
+msgid "Tonga"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2029
+msgid "Turkey"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2033
+msgid "Trinidad and Tobago"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2037
+msgid "Tuvalu"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2041
+msgid "Taiwan, Province of China"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2045
+msgid "Tanzania, United Republic of"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2049
+msgid "Ukraine"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2053
+msgid "Uganda"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2057
+msgid "United Arab Emirates"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2061
+msgid "United States Minor Outlying Islands"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2065
+msgid "United States of America"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2069
+msgid "Uruguay"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2073
+msgid "Uzbekistan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2077
+msgid "United Kingdom of Great Britain and Northern Ireland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2081
+msgid "Venezuela (Bolivarian Republic of)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2085
+msgid "Virgin Islands (British)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2089
+msgid "Virgin Islands (U.S.)"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2093
+msgid "Viet Nam"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2097
+msgid "Vanuatu"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2101
+msgid "Western Sahara"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2105
+msgid "Wallis and Futuna"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2109
+msgid "Yemen"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2113
+msgid "Zambia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2117
+msgid "Zimbabwe"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2129
+msgid "Alabama"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2133
+msgid "Alaska"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2137
+msgid "Arizona"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2141
+msgid "Arkansas"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2145
+msgid "California"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2149
+msgid "Colorado"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2153
+msgid "Connecticut"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2157
+msgid "Delaware"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2161
+msgid "District of Columbia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2165
+msgid "Florida"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2173
+msgid "Hawaii"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2177
+msgid "Idaho"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2181
+msgid "Illinois"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2185
+msgid "Indiana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2189
+msgid "Iowa"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2193
+msgid "Kansas"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2197
+msgid "Kentucky"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2201
+msgid "Louisiana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2205
+msgid "Maine"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2209
+msgid "Maryland"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2213
+msgid "Massachusetts"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2217
+msgid "Michigan"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2221
+msgid "Minnesota"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2225
+msgid "Mississippi"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2229
+msgid "Missouri"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2233
+msgid "Montana"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2237
+msgid "Nebraska"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2241
+msgid "Nevada"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2245
+msgid "New Hampshire"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2249
+msgid "New Jersey"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2253
+msgid "New Mexico"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2257
+msgid "New York"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2261
+msgid "North Carolina"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2265
+msgid "North Dakota"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2269
+msgid "Ohio"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2273
+msgid "Oklahoma"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2277
+msgid "Oregon"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2281
+msgid "Pennsylvania"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2285
+msgid "Rhode Island"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2289
+msgid "South Carolina"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2293
+msgid "South Dakota"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2297
+msgid "Tennessee"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2301
+msgid "Texas"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2305
+msgid "Utah"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2309
+msgid "Vermont"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2313
+msgid "Virginia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2317
+msgid "Washington"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2321
+msgid "West Virginia"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2325
+msgid "Wisconsin"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2329
+msgid "Wyoming"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2407, includes/functions/cs-render-functions.php:2383
+msgid "Select logo"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2413, includes/functions/cs-render-functions.php:2388
+msgid "500 kb max | JPEG, PNG"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2423, includes/functions/cs-render-functions.php:2399
+msgid "Remove image"
+msgstr ""
+
+#: includes/functions/cs-render-functions.php:2449, includes/functions/cs-render-functions.php:2475, includes/functions/cs-render-functions.php:2500
+msgid "Select language"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:17, views/admin/main/script-blocking/settings-bar.php:16
+msgid "None"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:34, views/admin/first-flow/html-first-flow-modal.php:15
+msgid "Arial"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:38, views/admin/first-flow/html-first-flow-modal.php:19
+msgid "Verdana"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:42, views/admin/first-flow/html-first-flow-modal.php:23
+msgid "Times New Roman"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:84, includes/functions/cs-render-script-categories.php:194, views/admin/main/admin-settings-text.php:93, views/admin/main/admin-settings-text.php:94, views/admin/main/admin-settings-text.php:141, views/admin/main/admin-settings-text.php:142, views/admin/main/primary-rules/add-new-primary-rule-html.php:461, views/admin/main/primary-rules/add-new-primary-rule-html.php:510, views/admin/main/primary-rules/edit-primary-rule-html.php:472, views/admin/main/primary-rules/edit-primary-rule-html.php:520, views/admin/main/script-blocking/settings-bar.php:64, views/admin/main/script-blocking/settings-bar.php:69
+msgid "Title"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:93, views/admin/main/script-blocking/settings-bar.php:76
+msgid "IAB Purpose (recommended)"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:108
+msgid "Warning: Deactivated IAB Purpose present in category mapping: "
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:118
+msgid "WP Consent API Category"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:135, includes/functions/cs-render-script-categories.php:205, includes/functions/cs-render-scripts.php:30, includes/modules/scanner/CS_Scanner_Module.php:750, views/admin/main/script-blocking/settings-bar.php:120
+msgid "Description"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:150
+msgid "Select the fallback font"
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:160
+msgid "Don't block Unassigned before consent is expressed for 'Ask before tracking' consent type."
+msgstr ""
+
+#: includes/functions/cs-render-script-categories.php:215, includes/functions/cs-text-functions.php:157, includes/functions/cs-text-functions.php:182, includes/functions/cs-text-functions.php:236, includes/functions/cs-text-functions.php:469
+msgid "Language"
+msgstr ""
+
+#: includes/functions/cs-shortcode.php:58, includes/functions/cs-shortcode.php:78, views/templates/multi/cs_options_popup_content.php:171, views/templates/single/cs_popup_content.php:166
+msgid "Advanced Matching"
+msgstr ""
+
+#: includes/functions/cs-shortcode.php:61, includes/functions/cs-shortcode.php:81, views/templates/multi/cs_options_popup_content.php:192, views/templates/single/cs_popup_content.php:187
+msgid "Server-side events"
+msgstr ""
+
+#: includes/functions/cs-shortcode.php:112, includes/functions/cs-shortcode.php:179, includes/functions/cs-shortcode.php:206, includes/functions/cs-shortcode.php:276, views/admin/main/script-blocking/scanner-cookies-bar.php:148
+msgid "Scripts"
+msgstr ""
+
+#: includes/functions/cs-shortcode.php:127, includes/functions/cs-shortcode.php:153, includes/functions/cs-shortcode.php:222, includes/functions/cs-shortcode.php:249, views/admin/main/script-blocking/scanner-cookies-bar.php:184
+msgid "Cookies"
+msgstr ""
+
+#: includes/modules/geoip2/CS_Geoip.php:222
+msgid "Consent Magic license is invalid."
+msgstr ""
+
+#: includes/modules/geoip2/CS_Geoip.php:189
+msgid "The MaxMind license key is invalid."
+msgstr ""
+
+#: includes/modules/geoip2/CS_Geoip.php:191, includes/modules/geoip2/CS_Geoip.php:195, includes/modules/geoip2/CS_Geoip.php:140
+msgid "Failed to download the MaxMind database."
+msgstr ""
+
+#: includes/modules/geoip2/CS_Geoip.php:226
+msgid "Error while downloading the MaxMind database."
+msgstr ""
+
+#: includes/modules/geoip2/CS_Geoip.php:244
+msgid "Database path is empty."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner.php:39
+msgid "Unable to handle your request."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner.php:547, includes/modules/scanner/CS_Scanner.php:549
+msgid "Scanning initiated successfully"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner.php:548
+msgid "It might take a few minutes to a few hours to complete the scanning of your website. This depends on the number of pages to scan and the website speed. Once the scanning is complete, we will notify you by email."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:104
+msgid "Scanned"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:105
+msgid "Scanning completed."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:106
+msgid "Scanning pages..."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:107
+msgid "Error"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:108
+msgid "Refreshing...."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:109
+msgid "Error !!! Please reload the page to see cookie list."
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:110
+msgid "Success"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:111
+msgid "Thank you"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:112
+msgid "Total URLs scanned"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:113
+msgid "Total Cookies found"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:114
+msgid "Could not fetch the URLs, please try again"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:401
+msgid "New auto-scan is completed"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:404
+msgid "Hi,"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:405
+msgid "ConsentMagic performed a new auto-scan on "
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:406
+msgid "Detected cookies "
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:407
+msgid "detected scripts "
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:408
+msgid "total scanned URLs "
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:411
+msgid "For more details about your scans, %s go to your website %s"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:658
+msgid "Unknown"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:746
+msgid "Sl.No:"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:747
+msgid "Cookie Name"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:748
+msgid "Duration"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:749
+msgid "Category"
+msgstr ""
+
+#: includes/modules/scanner/CS_Scanner_Module.php:767
+msgid "Your cookie list is empty"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:544
+msgid "Accept consent to view this"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1082, views/admin/main/script-blocking/pre-defined-scripts-bar.php:41
+msgid "Google Analytics"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1118
+msgid "Google Publisher Tag"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1174, views/admin/main/script-blocking/pre-defined-scripts-bar.php:49
+msgid "Google Adsense"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1181, views/admin/main/script-blocking/pre-defined-scripts-bar.php:53
+msgid "Google maps"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1207
+msgid "Google fonts"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1224
+msgid "Google captcha"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1233
+msgid "Google captcha Contact Form 7"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1241
+msgid "Facebook Pixel Code"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1291
+msgid "Smash Balloon Custom Facebook Feed"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1303, views/admin/main/script-blocking/pre-defined-scripts-bar.php:69
+msgid "TikTok Pixel"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1347
+msgid "Facebook for Woocommerce"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1356
+msgid "Facebook for Wordpress"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1363, views/admin/main/script-blocking/pre-defined-scripts-bar.php:73
+msgid "Twitter Pixel"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1371
+msgid "Twitter widget"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1386
+msgid "Custom Twitter Feeds"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1398
+msgid "Microsoft UET"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1408
+msgid "Linkedin widget/Analytics"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1431
+msgid "Pinterest widget"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1455
+msgid "Youtube embed"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1494
+msgid "Feeds for YouTube"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1506
+msgid "Vimeo embed"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1528, views/admin/main/script-blocking/pre-defined-scripts-bar.php:113
+msgid "Hubspot Analytics"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1535, views/admin/main/script-blocking/pre-defined-scripts-bar.php:117
+msgid "Matomo Analytics"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1557, views/admin/main/script-blocking/pre-defined-scripts-bar.php:121
+msgid "Addthis widget"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1564, views/admin/main/script-blocking/pre-defined-scripts-bar.php:125
+msgid "Sharethis widget"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1571, views/admin/main/script-blocking/pre-defined-scripts-bar.php:105
+msgid "Soundcloud embed"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1599, views/admin/main/script-blocking/pre-defined-scripts-bar.php:109
+msgid "Slideshare embed"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1612, views/admin/main/script-blocking/pre-defined-scripts-bar.php:93
+msgid "Instagram embed"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1628, views/admin/main/script-blocking/pre-defined-scripts-bar.php:129
+msgid "Hotjar"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1635
+msgid "Reddit Pixel"
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:1649
+msgid "Invalid index found in the thirdparties array. Index should be of type 'string'. Index found: %d."
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:2028
+msgid "Parts array is not valid for %s: head or body entry not found."
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:2043
+msgid "An error occured calling %s context head."
+msgstr ""
+
+#: includes/scripts/cs-script-blocker/CS_Script_Blocker.php:2066
+msgid "An error occured calling %s context body."
+msgstr ""
+
+#: license-edd.php:117, license-edd.php:112
+msgid "Error activation license"
+msgstr ""
+
+#: license-edd.php:101
+msgid "Your license is %s"
+msgstr ""
+
+#: license-edd.php:226
+msgid "An error occurred, please try again."
+msgstr ""
+
+#: views/admin/buttons/admin-create-new-template-button.php:12
+msgid "New template"
+msgstr ""
+
+#: views/admin/buttons/admin-first-flow-save-button.php:15
+msgid "Finish"
+msgstr ""
+
+#: views/admin/buttons/admin-lang-delete.php:12, views/admin/buttons/admin-page-delete.php:12
+msgid "Remove"
+msgstr ""
+
+#: views/admin/buttons/admin-next-step-button.php:17
+msgid "Go to step %d"
+msgstr ""
+
+#: views/admin/buttons/admin-previous-step-button.php:13
+msgid "Back to the previous step"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-export-settings-button.php:12
+msgid "Export settings"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-import-settings-button.php:16
+msgid "Import settings"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:24
+msgid "Recommended"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:56
+msgid "Restore defaults"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:58
+msgid "Save Changes"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:49
+msgid "Delete consent"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:51
+msgid "Export consent"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:46, views/admin/buttons/admin-settings-save-button.php:41, views/admin/buttons/admin-settings-save-button.php:37
+msgid "Back"
+msgstr ""
+
+#: views/admin/buttons/admin-settings-save-button.php:47, views/admin/buttons/admin-settings-save-button.php:42, views/admin/buttons/admin-settings-save-button.php:38
+msgid "Save"
+msgstr ""
+
+#: views/admin/components/modal-deactivation-db-clear.php:16
+msgid "Caution: if you enable this option, all the data will be deleted when the plugin is deactivated"
+msgstr ""
+
+#: views/admin/components/modal-deactivation-db-clear.php:20, views/admin/components/modal-delete-template.php:18, views/admin/components/modal-renew-consent.php:20, views/admin/components/modal-restart-setup.php:26, views/admin/components/modal-restore-translations.php:20, views/admin/main/script-blocking/settings-bar.php:139
+msgid "Cancel"
+msgstr ""
+
+#: views/admin/components/modal-deactivation-db-clear.php:24, views/admin/components/modal-restart-setup.php:30
+msgid "Confirm"
+msgstr ""
+
+#: views/admin/components/modal-delete-consent.php:15
+msgid "You are about to delete all stored consent!"
+msgstr ""
+
+#: views/admin/components/modal-delete-consent.php:18, views/templates/multi/cs-bar.php:143, views/templates/multi/cs-bar.php:264, views/templates/multi/cs_popup.php:144, views/templates/multi/cs_popup.php:283, views/templates/single/cs_popup_content.php:69, views/templates/single/cs_popup_content_iab.php:141
+msgid "Close"
+msgstr ""
+
+#: views/admin/components/modal-delete-consent.php:22
+msgid "Download consent CSV and Delete"
+msgstr ""
+
+#: views/admin/components/modal-delete-consent.php:27
+msgid "Just delete"
+msgstr ""
+
+#: views/admin/components/modal-delete-template.php:15
+msgid "Are you sure you want to restore design defaults?"
+msgstr ""
+
+#: views/admin/components/modal-delete-template.php:22, views/admin/main/script-blocking/settings-bar.php:143
+msgid "OK"
+msgstr ""
+
+#: views/admin/components/modal-renew-consent.php:16
+msgid "Are you sure you want to renew consent?"
+msgstr ""
+
+#: views/admin/components/modal-renew-consent.php:24
+msgid "Yes Renew Consent"
+msgstr ""
+
+#: views/admin/components/modal-restart-setup.php:20
+msgid "Are you sure to restart the setup flow, and reset all predefined settings to default? User settings and data will not be affected."
+msgstr ""
+
+#: views/admin/components/modal-restart-setup.php:18
+msgid "Warning!"
+msgstr ""
+
+#: views/admin/components/modal-restart-setup.php:18
+msgid "You enabled option \"Remove all data when deactivating the plugin\". With this option all settings and user data will reset to default. Are you sure you want to restart the setup flow?"
+msgstr ""
+
+#: views/admin/components/modal-restore-translations.php:16
+msgid "This will restore the default translations for all front-end text, and default categories. Custom text translations and extra categories translations will not be affected."
+msgstr ""
+
+#: views/admin/components/modal-restore-translations.php:24
+msgid "Delete and Restore"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:88, views/admin/first-flow/html-first-flow-edd.php:22, views/admin/first-flow/html-first-flow-woo.php:105, views/admin/first-flow/html-first-flow-woo.php:21
+msgid "Activate ConsentMagic's license"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:91, views/admin/first-flow/html-first-flow-woo.php:108
+msgid "Your license is now %sactivated%s, please continue to the next step."
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:94, views/admin/first-flow/html-first-flow-edd.php:37, views/admin/first-flow/html-first-flow-woo.php:111, views/admin/first-flow/html-first-flow-woo.php:37, views/admin/license/html-edd-license.php:51, views/admin/license/html-woo-license.php:51
+msgid "Plugin version:"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:100, views/admin/first-flow/html-first-flow-edd.php:43, views/admin/first-flow/html-first-flow-woo.php:117, views/admin/first-flow/html-first-flow-woo.php:43, views/admin/license/html-edd-license.php:57, views/admin/license/html-woo-license.php:57
+msgid "License name:"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:106, views/admin/first-flow/html-first-flow-edd.php:49, views/admin/first-flow/html-first-flow-woo.php:123, views/admin/first-flow/html-first-flow-woo.php:49, views/admin/license/html-edd-license.php:63, views/admin/license/html-woo-license.php:63
+msgid "License type:"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:110, views/admin/first-flow/html-first-flow-edd.php:53, views/admin/first-flow/html-first-flow-woo.php:127, views/admin/first-flow/html-first-flow-woo.php:53
+msgid " License"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:117, views/admin/first-flow/html-first-flow-woo.php:133
+msgid "Continue"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:26, views/admin/first-flow/html-first-flow-woo.php:25, views/admin/license/html-edd-license.php:123, views/admin/license/html-woo-license.php:140
+msgid "You have your license key in the order confirmation email, and you can get it from "
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:31, views/admin/first-flow/html-first-flow-woo.php:30, views/admin/license/html-edd-license.php:129, views/admin/license/html-woo-license.php:146
+msgid "your account"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:32, views/admin/first-flow/html-first-flow-woo.php:31, views/admin/license/html-edd-license.php:131, views/admin/license/html-woo-license.php:148
+msgid " on our website. We also sent you an email containing your login data."
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:60, views/admin/first-flow/html-first-flow-woo.php:68, views/admin/license/html-edd-license.php:47, views/admin/license/html-woo-license.php:47
+msgid "Your license key:"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:70, views/admin/first-flow/html-first-flow-woo.php:77, views/admin/license/html-edd-license.php:155, views/admin/license/html-woo-license.php:172
+msgid "Activation error"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-edd.php:79, views/admin/first-flow/html-first-flow-woo.php:97
+msgid "Activate license"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:30
+msgid "GDPR Rule"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:35
+msgid "Limited Data Use (LDU) Rule"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:40
+msgid "Rest of the world rule"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:45
+msgid "IAB rule"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:67
+msgid "Configure the default rules"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:76
+msgid "We recommend keeping the default rules active. You can edit them, turned them ON or OFF, or create new rules anytime you want."
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:119
+msgid "Select the top rule:"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:124
+msgid "The top rule will be the only rule active until you complete the geolocation settings. You can re-order rules at any time."
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:156
+msgid "Privacy policy page"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:161
+msgid "Select an existing page"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:183
+msgid "You can add additional pages later in the Privacy Policy settings."
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:207
+msgid "Script blocking"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:212
+msgid "We recommend keeping it active. When necessary, the plugin automatically blocks the most common scripts according to rules and user's preferences."
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:219, views/admin/main/admin-settings-general.php:63
+msgid "Enable Script Blocking"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:250
+msgid "Configure Google Fonts"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:258
+msgid ""
+"Inform your users about the use of Google Fonts and let them opt out of using them. When Google Fonts are rejected, they will be replaced by another font type. You can change these settings from the plugin's Scrips & Cookies > Categories.\n"
+"                                            This option works for rules using \"Inform and Opt-out\" and \"Ask before tracking\" consent types. "
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:265
+msgid "Select the fallback font: "
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-modal.php:274
+msgid "Enable Google Fonts blocking"
+msgstr ""
+
+#: views/admin/first-flow/html-first-flow-woo.php:83
+msgid "You have your Product ID in the order confirmation email, and you can get it from your account on our website:"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:21
+msgid "Geolocation settings"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:22
+msgid "Learn how to configure geolocation: "
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:22, views/admin/main/script-blocking/facebook-bar.php:26, views/admin/main/script-blocking/manual-scripts-bar.php:22, views/admin/main/script-blocking/scanner-cookies-bar.php:61
+msgid "watch video"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:29
+msgid "MaxMind Account ID"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:36
+msgid "License key"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:44
+msgid "Deactivated"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:40, views/admin/license/html-edd-license.php:48, views/admin/license/html-woo-license.php:48
+msgid "Activated"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:61
+msgid "After creating the license key, you need to wait up to 5 minutes before activating it."
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:68, views/admin/geolocation/general-geolocation-html.php:72
+msgid "Deactivate"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:69, views/admin/geolocation/general-geolocation-html.php:74
+msgid "Activate"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:85
+msgid "Enable geolocation"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:91
+msgid "Database file path"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:103
+msgid "How often to download the files options:"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:115
+msgid "Force update database"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:138
+msgid "Instruction for creating MaxMind license key"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:152
+msgid "MaxMind Geolocation Integration"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:155
+msgid "Create an account on MaxMind:"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:158
+msgid "Create an "
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:158
+msgid "MaxMind Geolocation account"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:159
+msgid "On the registration page, complete the form with your information. If you’re not sure what to choose as \"Industry\" and \"Intended use\" fields you can fill as \"eCommerce\" and \"Enforcing digital rights\" respectively."
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:160
+msgid "After submitting you’ll get an email with a link to set your password shortly. "
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:160
+msgid "Click on that link and choose a password."
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:172
+msgid "Generate your MaxMind license key:"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:175
+msgid "Go to: "
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:176
+msgid "Select the \"Manage License Keys\" tab in your user account dashboard."
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:177
+msgid "Select \"Generate new license key\"."
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:187
+msgid "You will be asked if you want to use the old license type. Select No"
+msgstr ""
+
+#: views/admin/geolocation/general-geolocation-html.php:196
+msgid "Copy the license key and paste it inside ConsentMagic settings."
+msgstr ""
+
+#: views/admin/html-general.php:20
+msgid "Main"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:66
+msgid "Special Purposes"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:164
+msgid "Special Features"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:213
+msgid "Vendors"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:222
+msgid "Show just the following vendors"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:240
+msgid "Search vendor"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:287
+msgid "Google Ad Tech Vendors"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:296
+msgid "Show just the following additional vendors"
+msgstr ""
+
+#: views/admin/iab/general-iab-html.php:314
+msgid "Search additional vendor"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:21, views/admin/license/html-woo-license.php:21
+msgid "Manage your ConsentMagic Pro license"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:31, views/admin/license/html-edd-license.php:102, views/admin/license/html-woo-license.php:31, views/admin/license/html-woo-license.php:119
+msgid "Deactivate License"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:73, views/admin/license/html-woo-license.php:98
+msgid "Your license key"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:140, views/admin/license/html-woo-license.php:157
+msgid "Activate License"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:94
+msgid "Reactivate License"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:148, views/admin/license/html-woo-license.php:165
+msgid "If your don't have key, you can take it from %s"
+msgstr ""
+
+#: views/admin/license/html-edd-license.php:148, views/admin/license/html-woo-license.php:165, views/admin/main/script-blocking/scanner-cookies-bar.php:83, views/admin/settings/general-settings-html.php:254
+msgid "here"
+msgstr ""
+
+#: views/admin/license/html-woo-license.php:73
+msgid "Your Product ID:"
+msgstr ""
+
+#: views/admin/main/admin-settings-design-single.php:18, views/admin/main/admin-settings-design.php:18
+msgid "Templates"
+msgstr ""
+
+#: views/admin/main/admin-settings-design-single.php:19, views/admin/main/admin-settings-design.php:19
+msgid "Adjust sizes"
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:15
+msgid "Rules"
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:25
+msgid "A visitor will be targeted by a single rule, based on location."
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:28
+msgid "Drag & Drop to configure rule's priority"
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:42
+msgid "Main settings"
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:51
+msgid "Enable consent"
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:54
+msgid "This option enables or disables the plugin entirely. When turned off, the plugin will not function, and no messages or actions will be applied."
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:66
+msgid "This sub-option controls script blocking according to the user’s preferences. It only works when ‘Enable Consent’ is turned on. If disabled, the plugin will display messages but will not block any scripts."
+msgstr ""
+
+#: views/admin/main/admin-settings-general.php:71
+msgid "View Settings"
+msgstr ""
+
+#: views/admin/main/admin-settings-policy-gen.php:23
+msgid "Select an existing pages"
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:41
+msgid "Configure geolocation to use multiple rules"
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:78
+msgid "Disabled"
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:92
+msgid "Target:"
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:137
+msgid "No Group was selected."
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:148, views/admin/main/primary-rules/add-new-primary-rule-html.php:56, views/admin/main/primary-rules/edit-primary-rule-html.php:66
+msgid "Show this rule when we can't retrieve the IP"
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:152, views/admin/main/primary-rules/add-new-primary-rule-html.php:61, views/admin/main/primary-rules/edit-primary-rule-html.php:71, views/admin/order/html-edd-order-box.php:52, views/admin/order/html-order-box.php:52
+msgid "Consent type:"
+msgstr ""
+
+#: views/admin/main/admin-settings-rules-list-wrap.php:157
+msgid "Design:"
+msgstr ""
+
+#: views/admin/main/admin-settings-script-blocking.php:20
+msgid "Scanner"
+msgstr ""
+
+#: views/admin/main/admin-settings-script-blocking.php:22
+msgid "Pre-defined Scripts"
+msgstr ""
+
+#: views/admin/main/admin-settings-script-blocking.php:24
+msgid "Custom Scripts"
+msgstr ""
+
+#: views/admin/main/admin-settings-script-blocking.php:25
+msgid "Categories"
+msgstr ""
+
+#: views/admin/main/admin-settings-script-blocking.php:26
+msgid "Facebook"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:15, views/admin/main/primary-rules/add-new-primary-rule-html.php:392, views/admin/main/primary-rules/edit-primary-rule-html.php:403
+msgid "Small bar or popup"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:16, views/admin/main/primary-rules/add-new-primary-rule-html.php:393, views/admin/main/primary-rules/edit-primary-rule-html.php:404
+msgid "This text is used when \"small bar\" or \"small popup\" are selected"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:27, views/admin/main/primary-rules/add-new-primary-rule-html.php:404, views/admin/main/primary-rules/edit-primary-rule-html.php:415
+msgid "Large bar or popup"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:28, views/admin/main/primary-rules/add-new-primary-rule-html.php:405, views/admin/main/primary-rules/edit-primary-rule-html.php:416
+msgid "This text is used when \"large bar\" or \"large popup\" are selected"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:39, views/admin/main/primary-rules/add-new-primary-rule-html.php:446, views/admin/main/primary-rules/edit-primary-rule-html.php:457
+msgid "Button's text"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:40, views/admin/main/primary-rules/add-new-primary-rule-html.php:447, views/admin/main/primary-rules/edit-primary-rule-html.php:458
+msgid "This text is used on buttons on all types of bars and popups"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:45, views/admin/main/admin-settings-text.php:46, views/admin/main/admin-settings-text.php:105, views/admin/main/admin-settings-text.php:106, views/admin/main/admin-settings-text.php:153, views/admin/main/admin-settings-text.php:154, views/admin/main/primary-rules/add-new-primary-rule-html.php:413, views/admin/main/primary-rules/add-new-primary-rule-html.php:473, views/admin/main/primary-rules/add-new-primary-rule-html.php:522, views/admin/main/primary-rules/edit-primary-rule-html.php:424, views/admin/main/primary-rules/edit-primary-rule-html.php:484, views/admin/main/primary-rules/edit-primary-rule-html.php:532
+msgid "Allow all"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:51, views/admin/main/admin-settings-text.php:52, views/admin/main/admin-settings-text.php:171, views/admin/main/admin-settings-text.php:172, views/admin/main/primary-rules/add-new-primary-rule-html.php:419, views/admin/main/primary-rules/add-new-primary-rule-html.php:540, views/admin/main/primary-rules/edit-primary-rule-html.php:430, views/admin/main/primary-rules/edit-primary-rule-html.php:550
+msgid "Custom button"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:57, views/admin/main/admin-settings-text.php:58, views/admin/main/admin-settings-text.php:111, views/admin/main/admin-settings-text.php:112, views/admin/main/admin-settings-text.php:159, views/admin/main/admin-settings-text.php:160, views/admin/main/primary-rules/add-new-primary-rule-html.php:425, views/admin/main/primary-rules/add-new-primary-rule-html.php:479, views/admin/main/primary-rules/add-new-primary-rule-html.php:528, views/admin/main/primary-rules/edit-primary-rule-html.php:436, views/admin/main/primary-rules/edit-primary-rule-html.php:490, views/admin/main/primary-rules/edit-primary-rule-html.php:538
+msgid "Disable all"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:63, views/admin/main/admin-settings-text.php:64, views/admin/main/primary-rules/add-new-primary-rule-html.php:431, views/admin/main/primary-rules/edit-primary-rule-html.php:442
+msgid "Customize"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:69, views/admin/main/admin-settings-text.php:70, views/admin/main/primary-rules/add-new-primary-rule-html.php:437, views/admin/main/primary-rules/edit-primary-rule-html.php:448
+msgid "Privacy & Cookies"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:75, views/admin/main/admin-settings-text.php:76, views/admin/main/primary-rules/add-new-primary-rule-html.php:153, views/admin/main/primary-rules/add-new-primary-rule-html.php:443, views/admin/main/primary-rules/edit-primary-rule-html.php:163, views/admin/main/primary-rules/edit-primary-rule-html.php:454
+msgid "Sticky"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:81, views/admin/main/primary-rules/add-new-primary-rule-html.php:494, views/admin/main/primary-rules/edit-primary-rule-html.php:505
+msgid "Options popups"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:82, views/admin/main/primary-rules/add-new-primary-rule-html.php:495, views/admin/main/primary-rules/edit-primary-rule-html.php:506
+msgid "Customize the content of the options popup"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:99, views/admin/main/admin-settings-text.php:100, views/admin/main/admin-settings-text.php:147, views/admin/main/admin-settings-text.php:148, views/admin/main/primary-rules/add-new-primary-rule-html.php:467, views/admin/main/primary-rules/add-new-primary-rule-html.php:516, views/admin/main/primary-rules/edit-primary-rule-html.php:478, views/admin/main/primary-rules/edit-primary-rule-html.php:526
+msgid "Subtitle"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:117, views/admin/main/admin-settings-text.php:118, views/admin/main/admin-settings-text.php:165, views/admin/main/admin-settings-text.php:166, views/admin/main/primary-rules/add-new-primary-rule-html.php:485, views/admin/main/primary-rules/add-new-primary-rule-html.php:534, views/admin/main/primary-rules/edit-primary-rule-html.php:496, views/admin/main/primary-rules/edit-primary-rule-html.php:544
+msgid "Confirm my choices"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:123, views/admin/main/admin-settings-text.php:124, views/admin/main/admin-settings-text.php:177, views/admin/main/admin-settings-text.php:178, views/admin/main/primary-rules/add-new-primary-rule-html.php:491, views/admin/main/primary-rules/add-new-primary-rule-html.php:546, views/admin/main/primary-rules/edit-primary-rule-html.php:502, views/admin/main/primary-rules/edit-primary-rule-html.php:556, views/admin/settings/general-settings-html.php:313
+msgid "Always ON"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:129, views/admin/main/primary-rules/add-new-primary-rule-html.php:549, views/admin/main/primary-rules/edit-primary-rule-html.php:559
+msgid "Single-step"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:130
+msgid "Customize the content of the Single-step"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:183
+msgid "Video consent message"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:184
+msgid "This text is used in video instead of video content"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:189, views/admin/main/admin-settings-text.php:190
+msgid "General text"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:195, views/admin/main/admin-settings-text.php:196
+msgid "Rule text"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:206
+msgid "This text is used in IAB consent content"
+msgstr ""
+
+#: views/admin/main/admin-settings-text.php:214
+msgid "Due to the strict requirements by IAB regarding the consent text show to users, is not possible to edit the text for the IAB rule."
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:44, views/admin/main/design/edit-design-template-html.php:46
+msgid "Name your template"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:50, views/admin/main/design/edit-design-template-html.php:54
+msgid "Background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:53, views/admin/main/design/edit-design-template-html.php:57
+msgid "Backend color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:58, views/admin/main/design/edit-design-template-html.php:62
+msgid "Border"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:63, views/admin/main/design/edit-design-template-html.php:67
+msgid "Border style"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:70, views/admin/main/design/edit-design-template-html.php:74
+msgid "Border weight"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:77, views/admin/main/design/edit-design-template-html.php:81
+msgid "Border color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:89, views/admin/main/design/edit-design-template-html.php:93
+msgid "Text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:96, views/admin/main/design/edit-design-template-html.php:100
+msgid "Link's color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:103, views/admin/main/design/edit-design-template-html.php:107
+msgid "Title's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:110, views/admin/main/design/edit-design-template-html.php:114
+msgid "Subtitle's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:118, views/admin/main/design/edit-design-template-html.php:122
+msgid "Buttons"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:123, views/admin/main/design/edit-design-template-html.php:127
+msgid "Accept all button's background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:130, views/admin/main/design/edit-design-template-html.php:134
+msgid "Accept all button's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:139, views/admin/main/design/edit-design-template-html.php:143
+msgid "Custom button button's background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:146, views/admin/main/design/edit-design-template-html.php:150
+msgid "Custom button button's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:155, views/admin/main/design/edit-design-template-html.php:159
+msgid "Deny all button's background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:162, views/admin/main/design/edit-design-template-html.php:166
+msgid "Deny all button's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:171, views/admin/main/design/edit-design-template-html.php:175
+msgid "Options button's background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:178, views/admin/main/design/edit-design-template-html.php:182
+msgid "Options button's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:187, views/admin/main/design/edit-design-template-html.php:191
+msgid "Confirm choices button's background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:194, views/admin/main/design/edit-design-template-html.php:198
+msgid "Confirm choices button's text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:203, views/admin/main/design/edit-design-template-html.php:207
+msgid "Sticky background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:210, views/admin/main/design/edit-design-template-html.php:214
+msgid "Sticky link color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:219, views/admin/main/design/edit-design-template-html.php:223
+msgid "Tab button background"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:226, views/admin/main/design/edit-design-template-html.php:230
+msgid "Tab button text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:233, views/admin/main/design/edit-design-template-html.php:237
+msgid "Logo"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:242, views/admin/main/design/edit-design-template-html.php:246
+msgid "Logo position"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:251, views/admin/main/design/edit-design-template-html.php:255
+msgid "Logo size"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:258, views/admin/main/design/edit-design-template-html.php:262
+msgid "Additional"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:263, views/admin/main/design/edit-design-template-html.php:267
+msgid "Category color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:270, views/admin/main/design/edit-design-template-html.php:274
+msgid "Active toggle color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:277, views/admin/main/design/edit-design-template-html.php:281
+msgid "Active toggle text color"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:284, views/admin/main/design/edit-design-template-html.php:288
+msgid "Background color for text"
+msgstr ""
+
+#: views/admin/main/design/add-design-template-html.php:291, views/admin/main/design/edit-design-template-html.php:295
+msgid "Shortcode text color"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:31, views/admin/main/design/adjust-bar.php:636
+msgid "Options popup"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:39, views/admin/main/design/adjust-bar-single.php:243, views/admin/main/design/adjust-bar.php:56, views/admin/main/design/adjust-bar.php:203, views/admin/main/design/adjust-bar.php:350, views/admin/main/design/adjust-bar.php:497, views/admin/main/design/adjust-bar.php:644, views/admin/main/design/adjust-bar.php:824
+msgid "Content Block"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:44, views/admin/main/design/adjust-bar-single.php:255, views/admin/main/design/adjust-bar.php:68, views/admin/main/design/adjust-bar.php:215, views/admin/main/design/adjust-bar.php:362, views/admin/main/design/adjust-bar.php:509, views/admin/main/design/adjust-bar.php:656, views/admin/main/design/adjust-bar.php:836
+msgid "Padding top"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:51, views/admin/main/design/adjust-bar-single.php:262, views/admin/main/design/adjust-bar.php:75, views/admin/main/design/adjust-bar.php:222, views/admin/main/design/adjust-bar.php:369, views/admin/main/design/adjust-bar.php:516, views/admin/main/design/adjust-bar.php:663, views/admin/main/design/adjust-bar.php:843
+msgid "Padding bottom"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:58, views/admin/main/design/adjust-bar-single.php:269, views/admin/main/design/adjust-bar.php:82, views/admin/main/design/adjust-bar.php:229, views/admin/main/design/adjust-bar.php:376, views/admin/main/design/adjust-bar.php:523, views/admin/main/design/adjust-bar.php:670, views/admin/main/design/adjust-bar.php:850
+msgid "Padding left"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:65, views/admin/main/design/adjust-bar-single.php:276, views/admin/main/design/adjust-bar.php:89, views/admin/main/design/adjust-bar.php:236, views/admin/main/design/adjust-bar.php:383, views/admin/main/design/adjust-bar.php:530, views/admin/main/design/adjust-bar.php:677, views/admin/main/design/adjust-bar.php:857
+msgid "Padding right"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:72, views/admin/main/design/adjust-bar-single.php:283, views/admin/main/design/adjust-bar.php:96, views/admin/main/design/adjust-bar.php:243, views/admin/main/design/adjust-bar.php:390, views/admin/main/design/adjust-bar.php:537, views/admin/main/design/adjust-bar.php:684, views/admin/main/design/adjust-bar.php:864
+msgid "Font"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:77, views/admin/main/design/adjust-bar-single.php:288, views/admin/main/design/adjust-bar.php:101, views/admin/main/design/adjust-bar.php:248, views/admin/main/design/adjust-bar.php:395, views/admin/main/design/adjust-bar.php:542, views/admin/main/design/adjust-bar.php:689, views/admin/main/design/adjust-bar.php:869
+msgid "Font size"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:84, views/admin/main/design/adjust-bar-single.php:295, views/admin/main/design/adjust-bar.php:108, views/admin/main/design/adjust-bar.php:255, views/admin/main/design/adjust-bar.php:402, views/admin/main/design/adjust-bar.php:549, views/admin/main/design/adjust-bar.php:696, views/admin/main/design/adjust-bar.php:876
+msgid "Font weight"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:93
+msgid "Second font size"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:100
+msgid "Second font weight"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:109, views/admin/main/design/adjust-bar.php:705
+msgid "Title's Font size"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:116, views/admin/main/design/adjust-bar.php:712
+msgid "Title's Font weight"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:125, views/admin/main/design/adjust-bar.php:721
+msgid "Subtitle's Font size"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:132, views/admin/main/design/adjust-bar.php:728
+msgid "Subtitle's Font weight"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:141
+msgid "Sub subtitle's Font size"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:148
+msgid "Sub subtitle's Font weight"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:155, views/admin/main/design/adjust-bar.php:115, views/admin/main/design/adjust-bar.php:262, views/admin/main/design/adjust-bar.php:409, views/admin/main/design/adjust-bar.php:556, views/admin/main/design/adjust-bar.php:736
+msgid "Button's"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:160, views/admin/main/design/adjust-bar.php:120, views/admin/main/design/adjust-bar.php:267, views/admin/main/design/adjust-bar.php:414, views/admin/main/design/adjust-bar.php:561, views/admin/main/design/adjust-bar.php:741
+msgid "Button's padding top"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:167, views/admin/main/design/adjust-bar.php:127, views/admin/main/design/adjust-bar.php:274, views/admin/main/design/adjust-bar.php:421, views/admin/main/design/adjust-bar.php:568, views/admin/main/design/adjust-bar.php:748
+msgid "Button's padding bottom"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:174, views/admin/main/design/adjust-bar.php:134, views/admin/main/design/adjust-bar.php:281, views/admin/main/design/adjust-bar.php:428, views/admin/main/design/adjust-bar.php:575, views/admin/main/design/adjust-bar.php:755
+msgid "Button's padding right"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:181, views/admin/main/design/adjust-bar.php:141, views/admin/main/design/adjust-bar.php:288, views/admin/main/design/adjust-bar.php:435, views/admin/main/design/adjust-bar.php:582, views/admin/main/design/adjust-bar.php:762
+msgid "Button's padding left"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:188, views/admin/main/design/adjust-bar.php:148, views/admin/main/design/adjust-bar.php:295, views/admin/main/design/adjust-bar.php:442, views/admin/main/design/adjust-bar.php:589, views/admin/main/design/adjust-bar.php:769
+msgid "Button's margin top"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:195, views/admin/main/design/adjust-bar.php:155, views/admin/main/design/adjust-bar.php:302, views/admin/main/design/adjust-bar.php:449, views/admin/main/design/adjust-bar.php:596, views/admin/main/design/adjust-bar.php:776
+msgid "Button's margin bottom"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:202, views/admin/main/design/adjust-bar.php:162, views/admin/main/design/adjust-bar.php:309, views/admin/main/design/adjust-bar.php:456, views/admin/main/design/adjust-bar.php:603, views/admin/main/design/adjust-bar.php:783
+msgid "Button's margin right"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:209, views/admin/main/design/adjust-bar.php:169, views/admin/main/design/adjust-bar.php:316, views/admin/main/design/adjust-bar.php:463, views/admin/main/design/adjust-bar.php:610, views/admin/main/design/adjust-bar.php:790
+msgid "Button's margin left"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:216, views/admin/main/design/adjust-bar.php:176, views/admin/main/design/adjust-bar.php:323, views/admin/main/design/adjust-bar.php:470, views/admin/main/design/adjust-bar.php:617, views/admin/main/design/adjust-bar.php:797
+msgid "Button's font size"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:223, views/admin/main/design/adjust-bar.php:183, views/admin/main/design/adjust-bar.php:330, views/admin/main/design/adjust-bar.php:477, views/admin/main/design/adjust-bar.php:624, views/admin/main/design/adjust-bar.php:804
+msgid "Button's font weight"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:235, views/admin/main/design/adjust-bar.php:816
+msgid "Sticky popup"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:248, views/admin/main/design/adjust-bar.php:61, views/admin/main/design/adjust-bar.php:208, views/admin/main/design/adjust-bar.php:355, views/admin/main/design/adjust-bar.php:502, views/admin/main/design/adjust-bar.php:649, views/admin/main/design/adjust-bar.php:829
+msgid "Minimum height"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:302, views/admin/main/design/adjust-bar.php:883
+msgid "Position"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:307, views/admin/main/design/adjust-bar.php:888
+msgid "Sticky popup desktop position"
+msgstr ""
+
+#: views/admin/main/design/adjust-bar-single.php:314, views/admin/main/design/adjust-bar.php:895
+msgid "Sticky vertical position"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:35
+msgid "Name your Rule"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:42, views/admin/main/primary-rules/edit-primary-rule-html.php:49
+msgid "Enable Rule"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:47, views/admin/main/primary-rules/edit-primary-rule-html.php:54
+msgid "Locations"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:81, views/admin/main/primary-rules/add-new-primary-rule-html.php:76, views/admin/main/primary-rules/edit-primary-rule-html.php:91, views/admin/main/primary-rules/edit-primary-rule-html.php:86
+msgid "For Meta, use the Limited Data Use (LDU) flag instead of blocking the browser and API events"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:86, views/admin/main/primary-rules/edit-primary-rule-html.php:96
+msgid "It works ONLY when the pixel and API events are configured with the PixelYourSite plugin."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:87, views/admin/main/primary-rules/add-new-primary-rule-html.php:99, views/admin/main/primary-rules/edit-primary-rule-html.php:97, views/admin/main/primary-rules/edit-primary-rule-html.php:109
+msgid "Details %shere%s."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:91, views/admin/main/primary-rules/edit-primary-rule-html.php:101
+msgid "This option needs PixelYourSite Professional version 11.2.1 or more, or PixelYourSite free version 10.1.0 or more."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:98, views/admin/main/primary-rules/edit-primary-rule-html.php:108
+msgid "For Google Tags, use Google Consent Mode instead of blocking the scripts"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:109, views/admin/main/primary-rules/add-new-primary-rule-html.php:106, views/admin/main/primary-rules/edit-primary-rule-html.php:119, views/admin/main/primary-rules/edit-primary-rule-html.php:116
+msgid "For Microsoft UET Tags, use Consent Mode instead of blocking the scripts"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:113, views/admin/main/primary-rules/edit-primary-rule-html.php:123
+msgid "It works ONLY when the Microsoft UET tag is configured with the PixelYourSite Bing add-on."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:114, views/admin/main/primary-rules/edit-primary-rule-html.php:124
+msgid "Details %shere%s"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:118, views/admin/main/primary-rules/edit-primary-rule-html.php:128
+msgid "This option needs PixelYourSite Professional version 11.3.0.3 or more, or PixelYourSite free version 10.2.0.3 or more and Bing add-on version 3.5.3.1 or more."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:130, views/admin/main/primary-rules/add-new-primary-rule-html.php:127, views/admin/main/primary-rules/edit-primary-rule-html.php:140, views/admin/main/primary-rules/edit-primary-rule-html.php:137
+msgid "For Reddit pixels, use the Limited Data Use (LDU) flag instead of blocking events."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:134, views/admin/main/primary-rules/edit-primary-rule-html.php:144
+msgid "It works ONLY when the Reddit tag is configured with the PixelYourSite Reddit add-on."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:138, views/admin/main/primary-rules/edit-primary-rule-html.php:148
+msgid "This option needs PixelYourSite Professional version 12.2.4 or more, or PixelYourSite free version 11.2.4 or more and Reddit add-on"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:145, views/admin/main/primary-rules/edit-primary-rule-html.php:155
+msgid "Enable ConsentMagic native script controls"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:154, views/admin/main/primary-rules/edit-primary-rule-html.php:164
+msgid "Show a small consent bar after consent is express."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:160, views/admin/main/primary-rules/edit-primary-rule-html.php:170
+msgid "Smart Sticky"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:163, views/admin/main/primary-rules/edit-primary-rule-html.php:173
+msgid "Show the Sticky message only for negative consent for any of the following categories:"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:186, views/admin/main/primary-rules/edit-primary-rule-html.php:197
+msgid "Smart Mobile Sticky"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:189, views/admin/main/primary-rules/edit-primary-rule-html.php:200
+msgid "Show the Sticky button only for negative consent for any of the following categories:"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:214, views/admin/main/primary-rules/edit-primary-rule-html.php:226
+msgid "Mobile side sticky button"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:217, views/admin/main/primary-rules/edit-primary-rule-html.php:229
+msgid "Place sticky button on the right side for mobile devices not to overlap the content."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:224, views/admin/main/primary-rules/edit-primary-rule-html.php:236
+msgid "Deny all button"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:231, views/admin/main/primary-rules/edit-primary-rule-html.php:243
+msgid "Hide close button"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:234, views/admin/main/primary-rules/edit-primary-rule-html.php:246
+msgid "It will hide the close button, forcing users to express positive or negative consent."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:240, views/admin/main/primary-rules/edit-primary-rule-html.php:252
+msgid "Don't show the consent prompt after click on the close button"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:243, views/admin/main/primary-rules/edit-primary-rule-html.php:255
+msgid "This action will equivalent with negative consent for all categories."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:249, views/admin/main/primary-rules/edit-primary-rule-html.php:261
+msgid "Add custom button"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:251, views/admin/main/primary-rules/edit-primary-rule-html.php:263
+msgid "The default text for the custom button is \"Minimum recommended\". You can edit it from the %s global text settings%s, or add a custom text for this rule."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:254, views/admin/main/primary-rules/edit-primary-rule-html.php:266
+msgid "The custom button will turn ON the following categories:"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:278, views/admin/main/primary-rules/edit-primary-rule-html.php:290
+msgid "Privacy link"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:287, views/admin/main/primary-rules/edit-primary-rule-html.php:298
+msgid "Block scroll"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:288, views/admin/main/primary-rules/edit-primary-rule-html.php:299
+msgid "Block scroll until the visitor interacts with the consent message."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:294, views/admin/main/primary-rules/edit-primary-rule-html.php:305, views/admin/proofconsent/render-proofconsent.php:27, views/admin/proofconsent/render-proofconsent.php:40, views/admin/statistics/cs-statistics.php:94, views/admin/statistics/cs-statistics.php:105, views/admin/statistics/cs-statistics.php:146, views/admin/statistics/cs-statistics.php:157
+msgid "Close on scroll"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:308, views/admin/main/primary-rules/add-new-primary-rule-html.php:304, views/admin/main/primary-rules/edit-primary-rule-html.php:319, views/admin/main/primary-rules/edit-primary-rule-html.php:315
+msgid "Refresh page after consent"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:309, views/admin/main/primary-rules/edit-primary-rule-html.php:320
+msgid "If enabled, the plugin will refresh the page when the user interacts with the consent message (accept, reject)."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:306, views/admin/main/primary-rules/edit-primary-rule-html.php:317
+msgid "Facebook for WooCommerce CAPI events control is ON, we need to refresh the page after the user interacts with the consent message."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:316, views/admin/main/primary-rules/edit-primary-rule-html.php:327
+msgid "Show the consent message until the visitor interacts with it"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:323, views/admin/main/primary-rules/edit-primary-rule-html.php:334
+msgid "Track Analytics cookies and scripts before consent is expressed"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:326, views/admin/main/primary-rules/edit-primary-rule-html.php:337
+msgid "\"Necessary\" cookies and scripts will work every time."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:327, views/admin/main/primary-rules/edit-primary-rule-html.php:338
+msgid "\"Marketing\" cookies and scripts will work only after consent is given."
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:330, views/admin/main/primary-rules/edit-primary-rule-html.php:341
+msgid "You have more options under"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:336, views/admin/main/primary-rules/edit-primary-rule-html.php:347
+msgid "Script Blocking"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:343, views/admin/main/primary-rules/edit-primary-rule-html.php:354
+msgid "Excluded from consent storing"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:348, views/admin/main/primary-rules/edit-primary-rule-html.php:359
+msgid "Content:"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:372, views/admin/main/primary-rules/edit-primary-rule-html.php:383
+msgid "Top bar: push content down"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:379, views/admin/main/primary-rules/edit-primary-rule-html.php:390
+msgid "Custom text"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:550, views/admin/main/primary-rules/edit-primary-rule-html.php:560
+msgid "Customize the content of the single-step"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:557, views/admin/main/primary-rules/edit-primary-rule-html.php:567
+msgid "You can change the default text from the"
+msgstr ""
+
+#: views/admin/main/primary-rules/add-new-primary-rule-html.php:563, views/admin/main/primary-rules/edit-primary-rule-html.php:573
+msgid "Text Section"
+msgstr ""
+
+#: views/admin/main/primary-rules/edit-primary-rule-html.php:39
+msgid "Edit Rule name"
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:12
+msgid "PixelYourSite"
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:20
+msgid "PixelYourSite plugin is not active. Please install and activate the PixelYourSite plugin to use this feature."
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:18
+msgid "Active - we detected that you use the PixelYourSite plugin."
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:24
+msgid "Learn how Facebook Conversion API and Advance Matching work:"
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:34, views/admin/main/script-blocking/facebook-bar.php:41
+msgid "Advanced Matching Consent in the Options Popup"
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:38
+msgid "If you enable this option, the user will have a dedicated Advanced Matching opt-in. This will control the Advanced Matching data sent by the PixelYourSite plugin. It has no effect on the Advanced Matching data automatically collected by the Facebook Pixel."
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:41, views/admin/main/script-blocking/facebook-bar.php:54
+msgid "Description (used in the Options pop-up)"
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:47, views/admin/main/script-blocking/facebook-bar.php:54
+msgid "Conversion API (CAPI) Consent in the Options Popup"
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:51
+msgid "If you enable this option, the user will see a dedicated Conversion API category in the Options Popup."
+msgstr ""
+
+#: views/admin/main/script-blocking/facebook-bar.php:58
+msgid "*The Facebook Pixel will always follow the consent given for its category. These options just add an extra layer of informed consent."
+msgstr ""
+
+#: views/admin/main/script-blocking/manual-scripts-bar.php:17
+msgid "Block manually added scripts"
+msgstr ""
+
+#: views/admin/main/script-blocking/manual-scripts-bar.php:20
+msgid "Learn how to add custom scripts:"
+msgstr ""
+
+#: views/admin/main/script-blocking/manual-scripts-bar.php:28
+msgid "Add script"
+msgstr ""
+
+#: views/admin/main/script-blocking/manual-scripts-bar.php:33
+msgid "Manually added scripts"
+msgstr ""
+
+#: views/admin/main/script-blocking/manual-scripts-bar.php:39, views/admin/main/script-blocking/manual-scripts-bar.php:53, views/admin/main/script-blocking/scanner-cookies-bar.php:168, views/admin/main/script-blocking/scanner-cookies-bar.php:175
+msgid "Script name"
+msgstr ""
+
+#: views/admin/main/script-blocking/manual-scripts-bar.php:40, views/admin/main/script-blocking/manual-scripts-bar.php:54, views/admin/main/script-blocking/scanner-cookies-bar.php:169, views/admin/main/script-blocking/scanner-cookies-bar.php:176, views/admin/main/scripts/add-script-html.php:39, views/admin/main/scripts/edit-script-html.php:41
+msgid "Script category"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:14
+msgid "Block pre-defined scripts"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:21
+msgid "Google ad_storage"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:25
+msgid "Google analytics_storage"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:29
+msgid "Google ad_user_data"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:33
+msgid "Google ad_personalization"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:37
+msgid "Google url_passthrough"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:45
+msgid "Google Ads Tag"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:57
+msgid "Google Fonts"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:61
+msgid "Google Captcha"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:65
+msgid "Facebook Pixel"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:77
+msgid "Twitter Tag"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:81
+msgid "Microsoft UET Tag"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:85
+msgid "Linkedin Tag"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:89
+msgid "Pinterest Tag"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:97
+msgid "Youtube Embedded"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:101
+msgid "Vimeo Embedded"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:133
+msgid "Reddit pixel"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:140
+msgid "PixelYourSite cookies"
+msgstr ""
+
+#: views/admin/main/script-blocking/pre-defined-scripts-bar.php:147
+msgid "Conversion Exporter cookies"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:11
+msgid "Scanner module is disabled. To continue using the scanner, turn on option "
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:11
+msgid "\"Scanner module\" in Settings"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:32
+msgid "Never"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:36
+msgid "Scan all pages"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:37
+msgid "Scan key pages"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:58
+msgid "The scan will detect pre-defined scripts, custom scripts and cookies. You can use shortcodes to display the results to your website visitors."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:59
+msgid "Learn how the scanner work:"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:77
+msgid "Scan Settings"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:81
+msgid "Newly detected cookies will go under the Unassigned category, and you can manually assign them to the correct category. You can manage categories from "
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:87
+msgid "You can change pre-defined scripts category from the "
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:90
+msgid "Pre-defined scripts page"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:94
+msgid "You can change custom scripts category from the "
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:97
+msgid "Custom scripts page"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:105
+msgid "Auto scan type"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:110
+msgid "Cookie scanner URL per request"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:115
+msgid "Auto scan"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:123
+msgid "When a new auto-scan is completed, email to this address:"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:135
+msgid "Run scan now"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:140
+msgid "You can run a scan now if you made any significant changes to your website."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:152
+msgid "The plugin will control pre-defined and custom scripts according to the rules' settings and customers' preferences."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:156
+msgid "These are the "
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:157
+msgid "pre-defined"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:158
+msgid " and "
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:159
+msgid "custom"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:160
+msgid " scripts we detected on your site:"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:185
+msgid "You can show the list with your cookies using the dedicated shortcodes."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:195, views/admin/main/script-blocking/scanner-cookies-bar.php:202
+msgid "Cookie name"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:196, views/admin/main/script-blocking/scanner-cookies-bar.php:203
+msgid "Cookie category"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:211, views/admin/shortcodes/general-shortcodes-html.php:15
+msgid "Shortcodes"
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:217, views/admin/shortcodes/general-shortcodes-html.php:83
+msgid "It will show all cookies and scripts detected by the last scan."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:221, views/admin/shortcodes/general-shortcodes-html.php:87
+msgid "It will show all cookies detected by the last scan."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:225, views/admin/shortcodes/general-shortcodes-html.php:91
+msgid "It will show all scripts detected by the last scan."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:229, views/admin/shortcodes/general-shortcodes-html.php:95
+msgid "It will show all cookies and scripts detected by the last scan and their descriptions."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:233, views/admin/shortcodes/general-shortcodes-html.php:99
+msgid "It will show all cookies detected by the last scan and their descriptions."
+msgstr ""
+
+#: views/admin/main/script-blocking/scanner-cookies-bar.php:237, views/admin/shortcodes/general-shortcodes-html.php:103
+msgid "It will show all scripts detected by the last scan and their descriptions."
+msgstr ""
+
+#: views/admin/main/script-blocking/settings-bar.php:41
+msgid "Cookie/Script Types"
+msgstr ""
+
+#: views/admin/main/script-blocking/settings-bar.php:57
+msgid "Add new type"
+msgstr ""
+
+#: views/admin/main/script-blocking/settings-bar.php:101
+msgid "WP Consent API"
+msgstr ""
+
+#: views/admin/main/script-blocking/settings-bar.php:136
+msgid "Existing consent will be invalidated, and your visitors will be asked for consent again."
+msgstr ""
+
+#: views/admin/main/scripts/add-script-html.php:33, views/admin/main/scripts/edit-script-html.php:33
+msgid "Name your script"
+msgstr ""
+
+#: views/admin/main/scripts/add-script-html.php:55, views/admin/main/scripts/edit-script-html.php:48
+msgid "Js Needle"
+msgstr ""
+
+#: views/admin/main/scripts/add-script-html.php:56, views/admin/main/scripts/edit-script-html.php:49
+msgid "Into this field you can add urls which are placed in Script Body or in Attribute scr. You also can add JS parameters, which are placed in Script Body."
+msgstr ""
+
+#: views/admin/main/scripts/add-script-html.php:60, views/admin/main/scripts/edit-script-html.php:53
+msgid "For example: GoogleAnalyticsObject, __gaTracker, window.ga=window.ga, www.google-analytics.com/analytics.js"
+msgstr ""
+
+#: views/admin/main/scripts/add-script-html.php:68, views/admin/main/scripts/edit-script-html.php:61
+msgid "Your script description"
+msgstr ""
+
+#: views/admin/order/html-edd-order-box.php:57, views/admin/order/html-order-box.php:57
+msgid "Rule's name:"
+msgstr ""
+
+#: views/admin/order/html-edd-order-box.php:62, views/admin/order/html-order-box.php:62
+msgid "Consent expressed:"
+msgstr ""
+
+#: views/admin/order/html-edd-order-box.php:72, views/admin/order/html-order-box.php:72, views/admin/order/html-order-meta-box.php:84
+msgid "Google consent mode expressed:"
+msgstr ""
+
+#: views/admin/order/html-edd-order-box.php:91, views/admin/order/html-order-box.php:91
+msgid "Consent by category:"
+msgstr ""
+
+#: views/admin/order/html-edd-order-box.php:112, views/admin/order/html-edd-order-box.php:101, views/admin/order/html-order-box.php:112, views/admin/order/html-order-box.php:101, views/admin/order/html-order-meta-box.php:125, views/admin/order/html-order-meta-box.php:114
+msgid "Yes"
+msgstr ""
+
+#: views/admin/order/html-edd-order-box.php:122, views/admin/order/html-order-box.php:122, views/admin/order/html-order-meta-box.php:135
+msgid "No"
+msgstr ""
+
+#: views/admin/order/html-order-meta-box.php:104
+msgid "Consent by category"
+msgstr ""
+
+#: views/admin/proofconsent/cs-records.php:17, views/admin/proofconsent/cs-records.php:26, views/admin/settings/general-settings-html.php:543, views/admin/settings/general-settings-html.php:550
+msgid "IP"
+msgstr ""
+
+#: views/admin/proofconsent/cs-records.php:18, views/admin/proofconsent/cs-records.php:27, views/admin/settings/general-settings-html.php:544, views/admin/settings/general-settings-html.php:551
+msgid "Time"
+msgstr ""
+
+#: views/admin/proofconsent/cs-records.php:19, views/admin/proofconsent/cs-records.php:28
+msgid "UUID"
+msgstr ""
+
+#: views/admin/proofconsent/cs-records.php:20, views/admin/proofconsent/cs-records.php:29
+msgid "Consent"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:14
+msgid "Enable Consent Proof Storing"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:19
+msgid "Store consent for these types of consent"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:28
+msgid "Inform and opt-out"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:41
+msgid "Each rule has the option to exclude it from consent storage."
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:46
+msgid "Store consent for "
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:50, views/admin/settings/general-settings-html.php:355
+msgid "days."
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:51
+msgid "Leave blank for unlimited."
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:58
+msgid "Automatically delete consent"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:64
+msgid "If there are more than"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:68
+msgid "entries."
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:68
+msgid "Maximum"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:68
+msgid "entries, to keep the database size under control."
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:73
+msgid "Send consent to email before deleting"
+msgstr ""
+
+#: views/admin/proofconsent/cs-settings.php:78
+msgid "Send consent to this email before deleting"
+msgstr ""
+
+#: views/admin/proofconsent/html-proofconsent.php:11
+msgid "Records"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:14, views/admin/statistics/cs-statistics.php:49, views/admin/statistics/cs-statistics.php:55
+msgid "Action"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:15, views/admin/statistics/cs-statistics.php:50, views/admin/statistics/cs-statistics.php:56
+msgid "Count"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:24, views/admin/settings/general-settings-html.php:94, views/admin/statistics/cs-statistics.php:91, views/admin/statistics/cs-statistics.php:102
+msgid "Consent type"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:25, views/admin/proofconsent/render-proofconsent.php:38, views/admin/statistics/cs-statistics.php:92, views/admin/statistics/cs-statistics.php:103, views/admin/statistics/cs-statistics.php:144, views/admin/statistics/cs-statistics.php:155
+msgid "Allow All"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:26, views/admin/proofconsent/render-proofconsent.php:39, views/admin/statistics/cs-statistics.php:93, views/admin/statistics/cs-statistics.php:104, views/admin/statistics/cs-statistics.php:145, views/admin/statistics/cs-statistics.php:156
+msgid "Disallow All"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:28, views/admin/proofconsent/render-proofconsent.php:41, views/admin/statistics/cs-statistics.php:95, views/admin/statistics/cs-statistics.php:106, views/admin/statistics/cs-statistics.php:147, views/admin/statistics/cs-statistics.php:158
+msgid "Confirm choices"
+msgstr ""
+
+#: views/admin/proofconsent/render-proofconsent.php:37, views/admin/statistics/cs-statistics.php:143, views/admin/statistics/cs-statistics.php:154
+msgid "Rule name"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:42
+msgid "Enable test mode"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:45
+msgid "Only Admin will see the consent dialog. You will have a button in the top bar to \"Delete the test consent\"."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:52
+msgid "Remove all data when deactivating the plugin"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:60
+msgid "Store Consent for WooCommerce orders"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:67
+msgid "Send consent data with the WooCommerce \"New Order\" email"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:75
+msgid "Send consent data with the WooCommerce \"Processing Order\" email"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:81
+msgid "Your privacy options text"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:100
+msgid "Rule's name"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:106
+msgid "Consent expressed"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:127
+msgid "Store Consent for Easy Digital Downloads orders"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:138
+msgid "Pixel YourSite First-Party Tracking"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:141
+msgid "PixelYourSite can track the traffic source, landing page, and UTMs and use the data for events parameters, WooCommerce, or Easy Digital Downloads first-party reports. You can configure the type of consent for this functionality."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:148
+msgid "Always track before consent is expressed"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:151
+msgid "PixelYourSite will track and use this data for \"Ask before tracking\" before any consent is expressed by the website visitor."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:157
+msgid "You need install and enable Pixel Your Site Plugin for these options. For more information visit site %s"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:164
+msgid "Facebook for WooCommerce - Control CAPI events"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:168
+msgid "If you enable this option, rules using \"Ask before tracking\" consent type will refresh the page after consent is expressed by the visitor."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:179
+msgid "Show the video but block personal data tracking when required by the rule and user consent"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:187
+msgid "Site uses cache"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:191
+msgid "Enable this option if the site uses caching plugins (in particular, page caching), as well as caching on the hosting side."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:194
+msgid "Usage note: after updating the plugin settings, you need to clear the cache."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:197
+msgid "Additionally, you can add these exceptions to \"Exclude JavaScript Files\" in minification and delay options:"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:216
+msgid "Note: These exceptions may vary slightly depending on the caching plugin. In most cases it won't be necessary to add them."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:225
+msgid "Subdomain tracking"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:228
+msgid "To enable the cross-domain option to work correctly, you must specify the top-level domain in the CM settings for all your sites."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:229
+msgid "For example, if your main site is <span class=\"text-gray-bg\">yoursite.com</span> and a subsite is <span class=\"text-gray-bg\">shop.yoursite.com</span>, you need to specify <span class=\"text-gray-bg\">yoursite.com</span> in the settings of both sites."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:246
+msgid "Enable support for WordPress Consent API"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:249
+msgid "This option will turn ON/OFF the integration - sending values to the API"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:254
+msgid "You need install and enable WP Consent API Plugin for this option. For more information click %s"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:265
+msgid "Translations"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:274
+msgid "The content will be displayed in the following language according to the WordPress language settings. If a multilingual plugin changes the language based on the user's location, the rule's content will also use that language when possible. You can edit or add translations on "
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:277
+msgid " Custom text and translations can be added to all rules except the IAB Rule."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:281
+msgid "Enable Translations"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:285
+msgid "Default language"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:292
+msgid "Select available languages to display"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:317, views/admin/settings/general-settings-html.php:328
+msgid "Default language always ON"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:335
+msgid "Restore the default text"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:345
+msgid "Cookies duration"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:351
+msgid "Ask for consent again after "
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:356
+msgid "Use 0 for indefinite."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:364
+msgid "Scanner module"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:383
+msgid "Enable scanner module"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:391
+msgid "Close on Scroll"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:397
+msgid "Close on Scroll duration "
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:409
+msgid "Branding"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:417
+msgid "Add a \"Verified by ConsentMagic\" link on the consent message"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:422
+msgid "Add a \"Verified by ConsentMagic\" link on the options popup"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:427
+msgid "Add a \"Verified by ConsentMagic\" link on single-step template"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:438
+msgid "Send important emails"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:443
+msgid "Emails"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:445
+msgid "Click to add email"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:454
+msgid "Permissions"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:461, views/admin/settings/general-settings-html.php:479
+msgid "Select user's role"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:463, views/admin/settings/general-settings-html.php:481
+msgid "Click to add role"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:465
+msgid "Administrators are always allowed."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:472
+msgid "Ignore these user roles"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:483
+msgid "Selected roles are ignored, and these users will not see any consent messages when browsing the website."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:490
+msgid "Ignore these user IP"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:498
+msgid "User IP"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:504
+msgid "Click to add IP"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:509
+msgid "Add new IP"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:521
+msgid "User's IP list"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:524, views/admin/statistics/cs-statistics.php:30, views/admin/statistics/cs-statistics.php:72, views/admin/statistics/cs-statistics.php:124
+msgid "Date range filters"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:534, views/admin/statistics/cs-statistics.php:40, views/admin/statistics/cs-statistics.php:82, views/admin/statistics/cs-statistics.php:134
+msgid "Search"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:558
+msgid "IP in this list are ignored, and these users will not see any consent messages when browsing the website."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:562
+msgid "Disable the plugin for known crawlers"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:572, views/admin/settings/general-settings-html.php:575
+msgid "Renew Consent"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:579
+msgid "This will \"invalidate\" all expressed consent, asking every visitor for consent again."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:588, views/admin/settings/general-settings-html.php:591
+msgid "Restart Setup Process"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:595
+msgid "This option will restart the setup flow, and reset all settings to default."
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:603
+msgid "Export/Import settings"
+msgstr ""
+
+#: views/admin/settings/general-settings-html.php:612
+msgid "Select the settings to export:"
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:19, views/admin/shortcodes/general-shortcodes-html.php:26, views/admin/shortcodes/general-shortcodes-html.php:59
+msgid "some text here"
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:42
+msgid "It will add a link that opens the options popup."
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:47
+msgid "For \"Just inform\", open the main consent message (no options popup is available for this consent type)"
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:48
+msgid "Hide it for \"Just inform\""
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:67
+msgid "It will add a link that opens the privacy page configured inside the plugin."
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:71
+msgid "It will display a list with cookies/scripts categories."
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:75
+msgid "Use this shortcode if you want to disable ConsentMagic on a particular page."
+msgstr ""
+
+#: views/admin/shortcodes/general-shortcodes-html.php:79
+msgid "Use this shortcode if you want to remove the sticky button on a particular page. It doesn't work with the IAB rule, the sticky button is required there."
+msgstr ""
+
+#: views/admin/statistics/cs-statistics.php:16
+msgid "Global stats"
+msgstr ""
+
+#: views/admin/statistics/cs-statistics.php:26
+msgid "Total messages shown:"
+msgstr ""
+
+#: views/admin/statistics/cs-statistics.php:68
+msgid "Stats by Consent Type"
+msgstr ""
+
+#: views/admin/statistics/cs-statistics.php:96, views/admin/statistics/cs-statistics.php:107, views/admin/statistics/cs-statistics.php:148, views/admin/statistics/cs-statistics.php:159
+msgid "Close consent"
+msgstr ""
+
+#: views/admin/statistics/cs-statistics.php:97, views/admin/statistics/cs-statistics.php:108, views/admin/statistics/cs-statistics.php:149, views/admin/statistics/cs-statistics.php:160
+msgid "Close Options Popup"
+msgstr ""
+
+#: views/admin/statistics/cs-statistics.php:120
+msgid "Stats by rule"
+msgstr ""
+
+#: views/templates/buttons/cs_bottom_buttons_single.php:88, views/templates/multi/cs-bar.php:230, views/templates/multi/cs_options_popup_content.php:341, views/templates/multi/cs_popup.php:248
+msgid "Verified by ConsentMagic"
+msgstr ""
+
+#: views/templates/multi/cs_options_popup_content.php:250, views/templates/single/cs_popup_content.php:245
+msgid "Facebook Advanced Matching"
+msgstr ""
+
+#: views/templates/multi/cs_options_popup_content.php:270, views/templates/single/cs_popup_content.php:265
+msgid "Facebook CAPI"
+msgstr ""
+
+#: views/templates/single/cs_popup_content_iab.php:219, views/templates/single/cs_popup_content_iab.php:853
+msgid "No Data"
+msgstr ""
+
+#: views/templates/single/cs_popup_content_iab.php:784
+msgid "Vendor list (not available in the admin panel)"
+msgstr ""
+
+#: views/templates/single/cs_popup_content_iab.php:842
+msgid "Additional Vendor list (not available in the admin panel)"
+msgstr ""
+
+#: wc-am-client.php:485, wc-am-client.php:508
+msgid "License not installed:"
+msgstr ""
+
+#: wc-am-client.php:485
+msgid "Activate the license for your %s %s: %sclick to activate%s."
+msgstr ""
+
+#: wc-am-client.php:508
+msgid "Your %s %s license is expired, please renew it. %sLogin to your account to renew.%s."
+msgstr ""
+
+#: wc-am-client.php:531
+msgid "Canceled:"
+msgstr ""
+
+#: wc-am-client.php:531
+msgid "Please replace %s %s license key with a valid one. %sClick to buy a new license.%s."
+msgstr ""

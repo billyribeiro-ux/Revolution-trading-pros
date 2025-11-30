@@ -16,16 +16,17 @@
 		IconX
 	} from '@tabler/icons-svelte';
 
-	let isVisible = false;
-	let headerRef: HTMLDivElement;
-	let cartItemsRef: HTMLDivElement;
-	let summaryRef: HTMLDivElement;
+	// Svelte 5 state runes
+	let isVisible = $state(false);
+	let headerRef: HTMLDivElement | undefined = $state();
+	let cartItemsRef: HTMLDivElement | undefined = $state();
+	let summaryRef: HTMLDivElement | undefined = $state();
 
 	// Coupon state
-	let couponCode = '';
-	let appliedCoupon: { code: string; discount: number; type: CouponType } | null = null;
-	let couponError = '';
-	let applyingCoupon = false;
+	let couponCode = $state('');
+	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
+	let couponError = $state('');
+	let applyingCoupon = $state(false);
 
 	onMount(() => {
 		isVisible = true;
@@ -271,7 +272,7 @@
 												{/if}
 											</div>
 											<button
-												on:click={() => removeItem(item.id, item.interval)}
+												onclick={() => removeItem(item.id, item.interval)}
 												class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-300"
 												aria-label="Remove item"
 											>
@@ -285,7 +286,7 @@
 												<span class="text-sm text-slate-400 font-semibold">Quantity:</span>
 												<div class="flex items-center gap-2">
 													<button
-														on:click={() =>
+														onclick={() =>
 															updateQuantity(item.id, item.quantity - 1, item.interval)}
 														class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-indigo-500/20 text-white rounded-lg transition-all duration-300"
 														disabled={item.quantity <= 1}
@@ -296,7 +297,7 @@
 														>{item.quantity}</span
 													>
 													<button
-														on:click={() =>
+														onclick={() =>
 															updateQuantity(item.id, item.quantity + 1, item.interval)}
 														class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-indigo-500/20 text-white rounded-lg transition-all duration-300"
 													>
@@ -361,7 +362,7 @@
 												</div>
 											</div>
 											<button
-												on:click={removeCouponCode}
+												onclick={removeCouponCode}
 												class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
 												aria-label="Remove coupon"
 											>
@@ -376,7 +377,7 @@
 													type="text"
 													id="coupon"
 													bind:value={couponCode}
-													on:keypress={(e) => e.key === 'Enter' && applyCouponCode()}
+													onkeypress={(e) => e.key === 'Enter' && applyCouponCode()}
 													placeholder="Enter code"
 													class="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-colors uppercase"
 													disabled={applyingCoupon}
@@ -390,7 +391,7 @@
 												{/if}
 											</div>
 											<button
-												on:click={applyCouponCode}
+												onclick={applyCouponCode}
 												disabled={applyingCoupon || !couponCode.trim()}
 												class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 											>
@@ -439,7 +440,7 @@
 								</div>
 
 								<button
-									on:click={handleCheckout}
+									onclick={handleCheckout}
 									class="w-full relative px-6 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/50 mb-4"
 								>
 									<span class="relative z-10 flex items-center justify-center gap-2">

@@ -19,6 +19,10 @@
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { authStore, user as userStore, isAdminUser } from '$lib/stores/auth';
+	import type { Snippet } from 'svelte';
+
+	// Svelte 5: Props with children snippet
+	let { children }: { children: Snippet } = $props();
 
 	// Consent System
 	import {
@@ -109,7 +113,7 @@
 
 {#if isAdminArea || isTradingRoom || isEmbedArea}
 	<!-- Admin/Trading/Embed: No marketing chrome, just the content -->
-	<slot />
+	{@render children()}
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
 		<!-- Admin Toolbar (only shows for logged-in admins) -->
@@ -119,7 +123,7 @@
 		<NavBar {isAdmin} />
 
 		<main>
-			<slot />
+			{@render children()}
 		</main>
 
 		<!-- Marketing Footer -->

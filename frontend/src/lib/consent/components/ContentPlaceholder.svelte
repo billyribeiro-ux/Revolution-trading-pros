@@ -5,21 +5,37 @@
 	 * Shows a placeholder for blocked content (YouTube, Google Maps, etc.)
 	 * until the user grants the required consent.
 	 *
+	 * Updated to Svelte 5 syntax (November 2025)
+	 *
 	 * @component
 	 */
 	import { consentStore, openPreferencesModal } from '../store';
 	import { t } from '../i18n';
 	import type { ConsentCategory } from '../types';
+	import type { Snippet } from 'svelte';
 
-	// Props
-	export let type: 'youtube' | 'vimeo' | 'google-maps' | 'twitter' | 'facebook' | 'instagram' | 'custom' = 'custom';
-	export let requiredCategory: ConsentCategory = 'marketing';
-	export let width: string = '100%';
-	export let height: string = '315px';
-	export let aspectRatio: string = '16/9';
-	export let thumbnailUrl: string = '';
-	export let title: string = '';
-	export let customIcon: string = '';
+	// Svelte 5: Props with $props()
+	let {
+		type = 'custom',
+		requiredCategory = 'marketing' as ConsentCategory,
+		width = '100%',
+		height = '315px',
+		aspectRatio = '16/9',
+		thumbnailUrl = '',
+		title = '',
+		customIcon = '',
+		children
+	}: {
+		type?: 'youtube' | 'vimeo' | 'google-maps' | 'twitter' | 'facebook' | 'instagram' | 'custom';
+		requiredCategory?: ConsentCategory;
+		width?: string;
+		height?: string;
+		aspectRatio?: string;
+		thumbnailUrl?: string;
+		title?: string;
+		customIcon?: string;
+		children?: Snippet;
+	} = $props();
 
 	// Type configurations
 	const typeConfigs: Record<string, { icon: string; name: string; category: ConsentCategory }> = {
@@ -32,11 +48,12 @@
 		custom: { icon: '🔒', name: 'External Content', category: 'marketing' },
 	};
 
-	$: config = typeConfigs[type] || typeConfigs.custom;
-	$: effectiveCategory = requiredCategory || config.category;
-	$: hasConsent = $consentStore[effectiveCategory];
-	$: displayIcon = customIcon || config.icon;
-	$: displayTitle = title || config.name;
+	// Svelte 5: Derived state
+	let config = $derived(typeConfigs[type] || typeConfigs.custom);
+	let effectiveCategory = $derived(requiredCategory || config.category);
+	let hasConsent = $derived($consentStore[effectiveCategory]);
+	let displayIcon = $derived(customIcon || config.icon);
+	let displayTitle = $derived(title || config.name);
 
 	function handleEnableCookies() {
 		openPreferencesModal();
@@ -44,8 +61,10 @@
 </script>
 
 {#if hasConsent}
-	<!-- Content is allowed, render the slot -->
-	<slot />
+	<!-- Content is allowed, render the children -->
+	{#if children}
+		{@render children()}
+	{/if}
 {:else}
 	<!-- Show placeholder -->
 	<div
@@ -66,7 +85,7 @@
 			<p class="description">
 				{displayTitle} {$t.contentBlockedDescription}
 			</p>
-			<button class="enable-btn" on:click={handleEnableCookies}>
+			<button class="enable-btn" onclick={handleEnableCookies}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="16"

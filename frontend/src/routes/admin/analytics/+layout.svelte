@@ -1,8 +1,13 @@
 <script lang="ts">
 	/**
 	 * Analytics Layout - Shared navigation for analytics section
+	 * Updated to Svelte 5 syntax (November 2025)
 	 */
 	import { page } from '$app/stores';
+	import type { Snippet } from 'svelte';
+
+	// Svelte 5: Props with children snippet
+	let { children }: { children: Snippet } = $props();
 
 	const navItems = [
 		{ href: '/admin/analytics', label: 'Dashboard', icon: '📊' },
@@ -14,7 +19,8 @@
 		{ href: '/admin/analytics/reports', label: 'Reports', icon: '📈' }
 	];
 
-	$: currentPath = $page.url.pathname;
+	// Svelte 5: Derived state
+	let currentPath = $derived($page.url.pathname);
 </script>
 
 <div class="min-h-screen bg-gray-50">
@@ -38,5 +44,5 @@
 		</div>
 	</div>
 
-	<slot />
+	{@render children()}
 </div>

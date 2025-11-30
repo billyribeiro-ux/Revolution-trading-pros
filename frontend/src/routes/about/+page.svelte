@@ -13,10 +13,10 @@
     import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
-    // --- Animation Logic ---
-    let containerRef: HTMLElement;
-    let isVisible = false;
-    let mouse = { x: 0, y: 0 };
+    // --- Animation Logic (Svelte 5 Runes) ---
+    let containerRef: HTMLElement | undefined = $state();
+    let isVisible = $state(false);
+    let mouse = $state({ x: 0, y: 0 });
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -135,7 +135,7 @@
 
 <div 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     role="main"
     aria-label="About Revolution Trading Pros"
     class="relative bg-[#020202] min-h-screen text-slate-400 font-sans selection:bg-amber-900 selection:text-white"
@@ -147,7 +147,7 @@
         </div>
     </div>
 
-    <main class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
+    <main id="main-content" class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
         
         <section class="max-w-[1600px] mx-auto mb-32">
             {#if isVisible}
@@ -171,9 +171,10 @@
 
                     <div class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10">
                         {#each stats as stat}
+                            {@const Icon = stat.icon}
                             <div class="bg-[#050505] p-6 group hover:bg-[#080808] transition-colors">
                                 <div class="text-amber-600 mb-2 opacity-50 group-hover:opacity-100 transition-opacity">
-                                    <svelte:component this={stat.icon} size={20} />
+                                    <Icon size={20} />
                                 </div>
                                 <div class="text-2xl font-serif text-white mb-1">{stat.value}</div>
                                 <div class="text-[10px] font-mono uppercase text-slate-500 tracking-widest">{stat.label}</div>
@@ -232,10 +233,11 @@
 
                     <div class="grid md:grid-cols-3 gap-8">
                         {#each principles as prin}
+                            {@const Icon = prin.icon}
                             <div class="group bg-[#050505] border border-white/10 p-8 hover:border-amber-600/50 transition-colors duration-500">
                                 <div class="flex justify-between items-start mb-6">
                                     <div class="p-3 bg-white/5 text-amber-600 group-hover:bg-amber-600 group-hover:text-black transition-colors duration-300">
-                                        <svelte:component this={prin.icon} size={24} stroke={1.5} />
+                                        <Icon size={24} stroke={1.5} />
                                     </div>
                                     <span class="text-[10px] font-mono text-slate-600 group-hover:text-amber-600 transition-colors">{prin.id}</span>
                                 </div>

@@ -15,6 +15,10 @@
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
+	import type { Snippet } from 'svelte';
+
+	// Svelte 5: Props with children snippet
+	let { children }: { children: Snippet } = $props();
 
 	// Svelte 5 state rune
 	let isSidebarOpen = $state(false);
@@ -74,13 +78,13 @@
 
 <div class="admin-layout">
 	<!-- Sidebar Component -->
-	<AdminSidebar isOpen={isSidebarOpen} on:close={closeSidebar} />
+	<AdminSidebar isOpen={isSidebarOpen} onclose={closeSidebar} />
 
 	<!-- Main Content -->
 	<div class="admin-main">
 		<!-- Top Bar -->
 		<header class="admin-header">
-			<button class="mobile-menu-btn" on:click={toggleSidebar}>
+			<button class="mobile-menu-btn" onclick={toggleSidebar}>
 				<IconMenu2 size={24} />
 			</button>
 			<div class="header-title">
@@ -93,7 +97,7 @@
 
 		<!-- Page Content -->
 		<main class="admin-content">
-			<slot />
+			{@render children()}
 		</main>
 	</div>
 </div>

@@ -40,6 +40,7 @@ const config = {
 				// Let other errors through
 				throw new Error(`${status} ${path}`);
 			},
+			handleMissingId: 'ignore', // Ignore missing anchor IDs (skip-to-content links)
 			handleUnseenRoutes: 'ignore',
 			// Concurrent prerendering for faster builds
 			concurrency: 8, // Increased from 4 for faster builds

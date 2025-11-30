@@ -97,7 +97,7 @@
 			{/if}
 
 			<!-- Signup Form -->
-			<form on:submit={handleSignup} class="space-y-6">
+			<form onsubmit={handleSignup} class="space-y-6">
 				<!-- Name -->
 				<div>
 					<label for="name" class="block text-sm font-semibold text-rtp-text mb-2">
