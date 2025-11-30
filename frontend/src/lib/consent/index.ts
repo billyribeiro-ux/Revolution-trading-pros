@@ -117,6 +117,46 @@ export {
 } from './google-consent-mode';
 
 // =============================================================================
+// BING/MICROSOFT CONSENT MODE
+// =============================================================================
+
+export {
+	applyBingConsentMode,
+	updateBingConsent,
+	setBingDefaultConsent,
+	mapConsentToBing,
+	grantAllBingConsent,
+	denyAllBingConsent,
+	isBingConsentModeInitialized,
+	getBingConsentModeConfig,
+} from './bing-consent-mode';
+
+export type { BingConsentParams } from './bing-consent-mode';
+
+// =============================================================================
+// URL PASSTHROUGH MODE
+// =============================================================================
+
+export {
+	captureUrlParameters,
+	getStoredParameters,
+	clearStoredParameters,
+	addPassthroughParams,
+	configureGoogleUrlPassthrough,
+	enableUrlPassthrough,
+	disableUrlPassthrough,
+	applyUrlPassthrough,
+	isUrlPassthroughEnabled,
+	decorateLinks,
+	generatePassthroughUrl,
+	getPassthroughConfig,
+	shouldEnablePassthrough,
+	DEFAULT_PASSTHROUGH_PARAMS,
+} from './url-passthrough';
+
+export type { UrlPassthroughConfig } from './url-passthrough';
+
+// =============================================================================
 // VENDOR LOADER
 // =============================================================================
 
@@ -139,8 +179,14 @@ export {
 	getVendor,
 	getVendorsByCategory,
 	getVendorInfo,
+	// Individual vendors
 	ga4Vendor,
 	metaPixelVendor,
+	tiktokVendor,
+	twitterVendor,
+	linkedinVendor,
+	pinterestVendor,
+	redditVendor,
 	// GA4 tracking functions
 	trackGA4PageView,
 	trackGA4Event,
@@ -153,6 +199,33 @@ export {
 	trackPixelPageView,
 	setLimitedDataUse,
 	isMetaPixelReady,
+	// TikTok tracking functions
+	trackTikTokEvent,
+	trackTikTokPageView,
+	identifyTikTokUser,
+	isTikTokReady,
+	TIKTOK_EVENTS,
+	// Twitter tracking functions
+	trackTwitterEvent,
+	trackTwitterPageView,
+	isTwitterReady,
+	TWITTER_EVENTS,
+	// LinkedIn tracking functions
+	trackLinkedInConversion,
+	trackLinkedInPageView,
+	isLinkedInReady,
+	// Pinterest tracking functions
+	trackPinterestEvent,
+	trackPinterestPageView,
+	isPinterestReady,
+	PINTEREST_EVENTS,
+	// Reddit tracking functions
+	trackRedditEvent,
+	trackRedditPageView,
+	isRedditReady,
+	setRedditLimitedDataUse,
+	isRedditLDUEnabled,
+	REDDIT_EVENTS,
 } from './vendors';
 
 // =============================================================================
@@ -290,6 +363,11 @@ export {
 	isScriptBlockingActive,
 	generateBlockingScript,
 	generateNoscriptMessage,
+	// Embedded content blocking
+	EMBEDDED_CONTENT_PATTERNS,
+	GOOGLE_FONTS_CONFIG,
+	getEmbeddedContentType,
+	shouldBlockEmbed,
 } from './script-blocker';
 
 // =============================================================================
@@ -430,6 +508,8 @@ export {
 import { browser } from '$app/environment';
 import { consentStore } from './store';
 import { applyConsentMode } from './google-consent-mode';
+import { applyBingConsentMode } from './bing-consent-mode';
+import { applyUrlPassthrough, captureUrlParameters } from './url-passthrough';
 import { loadVendorsForConsent } from './vendor-loader';
 import { vendors } from './vendors';
 import { initConsentAwareBehaviorTracking, cleanupBehaviorIntegration } from './behavior-integration';
@@ -441,14 +521,18 @@ import type { ConsentState } from './types';
  * Initialize the complete consent system.
  * Call this once on client mount (in +layout.svelte onMount).
  *
+ * Synced with consent-magic-pro v5.1.0 feature set.
+ *
  * This will:
  * 1. Detect privacy signals (GPC, DNT, region)
  * 2. Load stored consent preferences
- * 3. Apply Google Consent Mode defaults
- * 4. Load vendors that have consent
- * 5. Initialize consent-aware behavior tracking
- * 6. Initialize banner template system
- * 7. Subscribe to consent changes
+ * 3. Apply Google Consent Mode v2 defaults
+ * 4. Apply Bing/Microsoft Consent Mode defaults
+ * 5. Configure URL Passthrough for attribution
+ * 6. Load vendors that have consent
+ * 7. Initialize consent-aware behavior tracking
+ * 8. Initialize banner template system
+ * 9. Subscribe to consent changes
  */
 export function initializeConsent(): () => void {
 	if (!browser) {
@@ -458,30 +542,41 @@ export function initializeConsent(): () => void {
 	// Step 1: Initialize store (includes privacy signal detection)
 	const initialConsent = consentStore.initialize();
 
-	// Step 2: Apply initial consent mode
+	// Step 2: Capture URL parameters for attribution passthrough
+	captureUrlParameters();
+
+	// Step 3: Apply Google Consent Mode v2
 	applyConsentMode(initialConsent);
 
-	// Step 3: Load vendors that have consent
+	// Step 4: Apply Bing/Microsoft Consent Mode
+	applyBingConsentMode(initialConsent);
+
+	// Step 5: Apply URL Passthrough based on consent
+	applyUrlPassthrough(initialConsent);
+
+	// Step 6: Load vendors that have consent
 	loadVendorsForConsent(initialConsent, vendors);
 
-	// Step 4: Initialize consent-aware behavior tracking
+	// Step 7: Initialize consent-aware behavior tracking
 	initConsentAwareBehaviorTracking();
 
-	// Step 5: Initialize banner template system
+	// Step 8: Initialize banner template system
 	initializeTemplateStore();
 
-	// Step 6: Track banner shown if needed
+	// Step 9: Track banner shown if needed
 	if (!initialConsent.hasInteracted) {
 		trackConsentInteraction('banner_shown');
 	}
 
-	// Step 7: Subscribe to future changes
+	// Step 10: Subscribe to future changes
 	const unsubscribe = consentStore.subscribe((consent: ConsentState) => {
 		applyConsentMode(consent);
+		applyBingConsentMode(consent);
+		applyUrlPassthrough(consent);
 		loadVendorsForConsent(consent, vendors);
 	});
 
-	console.debug('[Consent] System initialized with enhanced features and templates');
+	console.debug('[Consent] System initialized with consent-magic-pro v5.1.0 features');
 
 	// Return cleanup function
 	return () => {

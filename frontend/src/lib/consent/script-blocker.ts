@@ -15,16 +15,19 @@ import { browser } from '$app/environment';
 import type { ConsentCategory, ConsentState } from './types';
 
 /**
- * Blocked script patterns by category
+ * Blocked script patterns by category.
+ * Synced with consent-magic-pro v5.1.0 vendor list.
  */
 const BLOCKED_SCRIPTS: Record<ConsentCategory, RegExp[]> = {
 	necessary: [], // Never blocked
 
 	analytics: [
+		// Google Analytics
 		/google-analytics\.com/i,
 		/googletagmanager\.com/i,
 		/analytics\.google\.com/i,
 		/gtag\/js/i,
+		// Other analytics
 		/plausible\.io/i,
 		/mixpanel\.com/i,
 		/segment\.com/i,
@@ -33,36 +36,153 @@ const BLOCKED_SCRIPTS: Record<ConsentCategory, RegExp[]> = {
 		/fullstory\.com/i,
 		/clarity\.ms/i,
 		/heap-analytics/i,
+		/matomo\./i,
+		/piwik\./i,
+		// Google Maps
+		/maps\.googleapis\.com/i,
+		/maps\.google\.com/i,
+		// Google AdSense
+		/googlesyndication\.com/i,
+		/pagead2\.googlesyndication/i,
+		// AddThis/ShareThis
+		/addthis\.com/i,
+		/sharethis\.com/i,
+		// Instagram embeds
+		/instagram\.com\/embed/i,
+		/cdninstagram\.com/i,
 	],
 
 	marketing: [
+		// Meta/Facebook
 		/facebook\.net/i,
 		/facebook\.com\/tr/i,
 		/fbevents\.js/i,
 		/connect\.facebook/i,
+		// Google Ads
 		/doubleclick\.net/i,
-		/googlesyndication\.com/i,
 		/googleadservices\.com/i,
+		/google\.com\/pagead/i,
+		/googleads\.g\.doubleclick/i,
+		// LinkedIn
 		/linkedin\.com\/insight/i,
-		/ads-twitter\.com/i,
-		/tiktok\.com\/i18n/i,
 		/snap\.licdn\.com/i,
+		// Twitter/X
+		/ads-twitter\.com/i,
+		/static\.ads-twitter\.com/i,
+		/analytics\.twitter\.com/i,
+		// TikTok
+		/tiktok\.com\/i18n/i,
+		/analytics\.tiktok\.com/i,
+		// Pinterest
 		/pinterest\.com\/js/i,
+		/pinimg\.com\/ct/i,
+		// Bing/Microsoft UET
 		/bing\.com\/bat/i,
+		/bat\.bing\.com/i,
+		// Reddit
+		/redditstatic\.com\/ads/i,
+		/events\.reddit\.com/i,
+		// Criteo
 		/criteo\.net/i,
+		/criteo\.com/i,
+		// Outbrain/Taboola
 		/outbrain\.com/i,
 		/taboola\.com/i,
+		// HubSpot
+		/hubspot\.com/i,
+		/hs-scripts\.com/i,
+		/hs-analytics\.net/i,
+		// Soundcloud
+		/soundcloud\.com\/player/i,
+		// Slideshare
+		/slideshare\.net/i,
 	],
 
 	preferences: [
+		// Chat widgets
 		/intercom\.com/i,
 		/crisp\.chat/i,
 		/zendesk\.com/i,
 		/drift\.com/i,
 		/livechatinc\.com/i,
 		/tawk\.to/i,
+		// YouTube embeds
+		/youtube\.com\/embed/i,
+		/youtube-nocookie\.com\/embed/i,
+		/ytimg\.com/i,
+		// Vimeo embeds
+		/player\.vimeo\.com/i,
+		/vimeo\.com\/video/i,
+		// Spotify embeds
+		/open\.spotify\.com\/embed/i,
+		// Google Fonts (optional - can be enabled/disabled)
+		/fonts\.googleapis\.com/i,
+		/fonts\.gstatic\.com/i,
 	],
 };
+
+/**
+ * Extended blocking patterns for embedded content.
+ * These map to the main categories but are tracked separately.
+ */
+export const EMBEDDED_CONTENT_PATTERNS: Record<string, { pattern: RegExp; category: ConsentCategory; name: string }[]> = {
+	youtube: [
+		{ pattern: /youtube\.com\/embed/i, category: 'preferences', name: 'YouTube' },
+		{ pattern: /youtube-nocookie\.com\/embed/i, category: 'preferences', name: 'YouTube (Privacy-Enhanced)' },
+	],
+	vimeo: [
+		{ pattern: /player\.vimeo\.com/i, category: 'preferences', name: 'Vimeo' },
+	],
+	google_maps: [
+		{ pattern: /google\.com\/maps\/embed/i, category: 'analytics', name: 'Google Maps' },
+		{ pattern: /maps\.googleapis\.com/i, category: 'analytics', name: 'Google Maps API' },
+	],
+	soundcloud: [
+		{ pattern: /soundcloud\.com\/player/i, category: 'marketing', name: 'SoundCloud' },
+	],
+	spotify: [
+		{ pattern: /open\.spotify\.com\/embed/i, category: 'preferences', name: 'Spotify' },
+	],
+	instagram: [
+		{ pattern: /instagram\.com\/embed/i, category: 'analytics', name: 'Instagram' },
+	],
+};
+
+/**
+ * Google Fonts blocking configuration.
+ * Can be used to completely block Google Fonts requests.
+ */
+export const GOOGLE_FONTS_CONFIG = {
+	patterns: [
+		/fonts\.googleapis\.com/i,
+		/fonts\.gstatic\.com/i,
+	],
+	category: 'preferences' as ConsentCategory,
+	description: 'Google Fonts are loaded from Google servers. Blocking prevents external font requests.',
+};
+
+/**
+ * Check if a URL is an embedded content type
+ */
+export function getEmbeddedContentType(url: string): { type: string; name: string; category: ConsentCategory } | null {
+	for (const [type, patterns] of Object.entries(EMBEDDED_CONTENT_PATTERNS)) {
+		for (const { pattern, name, category } of patterns) {
+			if (pattern.test(url)) {
+				return { type, name, category };
+			}
+		}
+	}
+	return null;
+}
+
+/**
+ * Check if a URL should be blocked as embedded content
+ */
+export function shouldBlockEmbed(url: string, consent: ConsentState): boolean {
+	const embedInfo = getEmbeddedContentType(url);
+	if (!embedInfo) return false;
+	return !consent[embedInfo.category];
+}
 
 /**
  * Queue of blocked scripts to be executed when consent is granted
