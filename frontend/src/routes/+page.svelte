@@ -19,7 +19,8 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	// Svelte 5 runes syntax for props
+	let { data }: { data: PageData } = $props();
 
 	// Homepage structured data for rich snippets
 	const homepageSchema = [
