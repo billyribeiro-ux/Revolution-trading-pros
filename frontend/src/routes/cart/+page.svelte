@@ -16,7 +16,7 @@
 		IconArrowLeft,
 		IconTicket,
 		IconX,
-		IconLoader2
+		IconLoader
 	} from '@tabler/icons-svelte';
 
 	// Svelte 5 state runes
@@ -501,7 +501,7 @@
 								>
 									<span class="relative z-10 flex items-center justify-center gap-2">
 										{#if isCheckingOut}
-											<IconLoader2 size={24} class="animate-spin" />
+											<IconLoader size={24} class="animate-spin" />
 											<span>Processing...</span>
 										{:else}
 											<IconCreditCard size={24} />

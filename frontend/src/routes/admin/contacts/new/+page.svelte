@@ -4,11 +4,11 @@
 	import { crmAPI } from '$lib/api/crm';
 
 	let formData = $state({
-		name: '',
+		first_name: '',
+		last_name: '',
 		email: '',
 		phone: '',
-		company: '',
-		notes: ''
+		job_title: ''
 	});
 	let isSubmitting = $state(false);
 	let errorMessage = $state<string | null>(null);
@@ -20,11 +20,11 @@
 
 		try {
 			await crmAPI.createContact({
-				name: formData.name,
+				first_name: formData.first_name,
+				last_name: formData.last_name,
 				email: formData.email,
 				phone: formData.phone || undefined,
-				company: formData.company || undefined,
-				notes: formData.notes || undefined
+				job_title: formData.job_title || undefined
 			});
 			goto('/admin/contacts');
 		} catch (error) {
@@ -55,9 +55,15 @@
 			</div>
 		{/if}
 
-		<div class="form-group">
-			<label for="name">Full Name *</label>
-			<input type="text" id="name" bind:value={formData.name} required />
+		<div class="form-row">
+			<div class="form-group">
+				<label for="first_name">First Name *</label>
+				<input type="text" id="first_name" bind:value={formData.first_name} required />
+			</div>
+			<div class="form-group">
+				<label for="last_name">Last Name *</label>
+				<input type="text" id="last_name" bind:value={formData.last_name} required />
+			</div>
 		</div>
 
 		<div class="form-group">
@@ -71,13 +77,8 @@
 		</div>
 
 		<div class="form-group">
-			<label for="company">Company</label>
-			<input type="text" id="company" bind:value={formData.company} />
-		</div>
-
-		<div class="form-group">
-			<label for="notes">Notes</label>
-			<textarea id="notes" bind:value={formData.notes} rows="4"></textarea>
+			<label for="job_title">Job Title</label>
+			<input type="text" id="job_title" bind:value={formData.job_title} />
 		</div>
 
 		<div class="form-actions">
@@ -125,6 +126,12 @@
 		padding: 2rem;
 	}
 
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+
 	.form-group {
 		margin-bottom: 1.5rem;
 	}
@@ -137,8 +144,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.form-group input,
-	.form-group textarea {
+	.form-group input {
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.8);
@@ -148,15 +154,9 @@
 		font-size: 0.95rem;
 	}
 
-	.form-group input:focus,
-	.form-group textarea:focus {
+	.form-group input:focus {
 		outline: none;
 		border-color: rgba(99, 102, 241, 0.5);
-	}
-
-	.form-group textarea {
-		resize: vertical;
-		min-height: 100px;
 	}
 
 	.form-actions {
