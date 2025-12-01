@@ -67,6 +67,7 @@ export function getVendorInfo(): Array<{
 	description: string;
 	requiredCategories: string[];
 	privacyPolicyUrl?: string;
+	dataLocations?: string[];
 }> {
 	return vendors.map((v) => ({
 		id: v.id,
@@ -74,6 +75,7 @@ export function getVendorInfo(): Array<{
 		description: v.description,
 		requiredCategories: [...v.requiredCategories],
 		privacyPolicyUrl: v.privacyPolicyUrl,
+		dataLocations: v.dataLocations ? [...v.dataLocations] : undefined,
 	}));
 }
 

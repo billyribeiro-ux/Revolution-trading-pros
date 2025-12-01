@@ -28,7 +28,7 @@
 
 	let cookieScan: CookieScanResult | null = null;
 	let auditStats: ReturnType<typeof getAuditStats> | null = null;
-	let vendorList: ReturnType<typeof getVendorInfo>[] = [];
+	let vendorList: ReturnType<typeof getVendorInfo> = [];
 	let versionInfo = getVersionInfo();
 
 	const languageNames: Record<SupportedLanguage, string> = {
@@ -69,9 +69,7 @@
 			auditStats = getAuditStats();
 
 			// Get vendor info
-			vendorList = vendors.map((v) => getVendorInfo(v.id)).filter(Boolean) as ReturnType<
-				typeof getVendorInfo
-			>[];
+			vendorList = getVendorInfo();
 		}
 	});
 
