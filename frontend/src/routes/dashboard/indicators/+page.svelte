@@ -3,11 +3,7 @@
 	 * Dashboard - My Indicators Page
 	 * Shows user's purchased indicators and access
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { fade, fly } from 'svelte/transition';
+	import { fly, fade } from 'svelte/transition';
 	import {
 		IconChartLine,
 		IconDownload,
@@ -17,14 +13,7 @@
 		IconRefresh
 	} from '@tabler/icons-svelte';
 
-	// Redirect if not authenticated - use replaceState to prevent history pollution
-	onMount(() => {
-		if (!$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/indicators', { replaceState: true });
-		}
-	});
-
-	// Mock purchased indicators data
+	// Mock purchased indicators data - will be fetched from API
 	const purchasedIndicators = [
 		{
 			id: 1,
@@ -59,170 +48,176 @@
 	];
 </script>
 
-<SEOHead
-	title="My Indicators"
-	description="Access your purchased trading indicators and tools."
-	noindex
-/>
+<!-- Dashboard Header -->
+<div class="wc-content-sction">
+	<div class="dashb_headr">
+		<div class="dashb_headr-left">
+			<h1 class="dashb_pg-titl">My Indicators</h1>
+		</div>
+		<div class="dashb_headr-right">
+			<a href="/indicators" class="btn btn-xs btn-link start-here-btn">
+				Browse All Indicators
+			</a>
+		</div>
+	</div>
+</div>
 
-{#if $isAuthenticated}
-	<main class="dashboard-page">
-		<div class="container">
-			<!-- Header -->
-			<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
-				<div class="page-header__content">
-					<h1 class="page-header__title">My Indicators</h1>
-					<p class="page-header__subtitle">Access and manage your trading indicators</p>
-				</div>
-				<a href="/indicators" class="browse-btn">
-					Browse All Indicators
-				</a>
-			</header>
-
-			<!-- Indicators Grid -->
-			<div class="indicators-grid">
-				{#each purchasedIndicators as indicator, i (indicator.id)}
-					<div 
-						class="indicator-card" 
-						class:indicator-card--expired={indicator.status === 'expired'}
-						in:fly={{ y: 20, delay: 100 * i, duration: 400 }}
-					>
-						<div class="indicator-card__header">
-							<div class="indicator-card__icon">
-								<IconChartLine size={28} />
-							</div>
-							<div class="indicator-card__status" class:active={indicator.status === 'active'}>
-								{#if indicator.status === 'active'}
-									<IconCheck size={14} />
-									Active
-								{:else}
-									<IconClock size={14} />
-									Expired
-								{/if}
-							</div>
+<!-- Indicators Content -->
+<div class="wc-accontent-inner">
+	{#if purchasedIndicators.length > 0}
+		<div class="indicators-grid">
+			{#each purchasedIndicators as indicator, i (indicator.id)}
+				<div
+					class="indicator-card"
+					class:indicator-card--expired={indicator.status === 'expired'}
+					in:fly={{ y: 20, delay: 100 * i, duration: 400 }}
+				>
+					<div class="indicator-card__header">
+						<div class="indicator-card__icon">
+							<IconChartLine size={28} />
 						</div>
-
-						<h3 class="indicator-card__title">{indicator.name}</h3>
-						<p class="indicator-card__description">{indicator.description}</p>
-
-						<div class="indicator-card__meta">
-							<div class="meta-row">
-								<span class="meta-label">Platform:</span>
-								<span class="meta-value">{indicator.platform}</span>
-							</div>
-							<div class="meta-row">
-								<span class="meta-label">Version:</span>
-								<span class="meta-value">v{indicator.version}</span>
-							</div>
-							<div class="meta-row">
-								<span class="meta-label">{indicator.status === 'active' ? 'Expires:' : 'Expired:'}</span>
-								<span class="meta-value">{indicator.expiresAt}</span>
-							</div>
-						</div>
-
-						<div class="indicator-card__actions">
+						<div class="indicator-card__status" class:active={indicator.status === 'active'}>
 							{#if indicator.status === 'active'}
-								<a href={indicator.downloadUrl} class="action-btn action-btn--primary">
-									<IconDownload size={18} />
-									Download
-								</a>
-								<a href="/docs/indicators" class="action-btn action-btn--secondary">
-									<IconExternalLink size={18} />
-									Documentation
-								</a>
+								<IconCheck size={14} />
+								Active
 							{:else}
-								<a href="/indicators/{indicator.id}" class="action-btn action-btn--renew">
-									<IconRefresh size={18} />
-									Renew License
-								</a>
+								<IconClock size={14} />
+								Expired
 							{/if}
 						</div>
 					</div>
-				{/each}
-			</div>
 
-			{#if purchasedIndicators.length === 0}
-				<div class="empty-state" in:fade>
-					<IconChartLine size={64} />
-					<h2>No Indicators Yet</h2>
-					<p>You haven't purchased any indicators yet. Browse our collection to enhance your trading!</p>
-					<a href="/indicators" class="empty-state__btn">Browse Indicators</a>
+					<h3 class="indicator-card__title">{indicator.name}</h3>
+					<p class="indicator-card__description">{indicator.description}</p>
+
+					<div class="indicator-card__meta">
+						<div class="meta-row">
+							<span class="meta-label">Platform:</span>
+							<span class="meta-value">{indicator.platform}</span>
+						</div>
+						<div class="meta-row">
+							<span class="meta-label">Version:</span>
+							<span class="meta-value">v{indicator.version}</span>
+						</div>
+						<div class="meta-row">
+							<span class="meta-label">{indicator.status === 'active' ? 'Expires:' : 'Expired:'}</span>
+							<span class="meta-value">{indicator.expiresAt}</span>
+						</div>
+					</div>
+
+					<div class="indicator-card__actions">
+						{#if indicator.status === 'active'}
+							<a href={indicator.downloadUrl} class="action-btn action-btn--primary">
+								<IconDownload size={18} />
+								Download
+							</a>
+							<a href="/docs/indicators" class="action-btn action-btn--secondary">
+								<IconExternalLink size={18} />
+								Documentation
+							</a>
+						{:else}
+							<a href="/indicators/{indicator.id}" class="action-btn action-btn--renew">
+								<IconRefresh size={18} />
+								Renew License
+							</a>
+						{/if}
+					</div>
 				</div>
-			{/if}
+			{/each}
 		</div>
-	</main>
-{:else}
-	<div class="loading-state">
-		<p>Redirecting to login...</p>
-	</div>
-{/if}
+	{:else}
+		<div class="empty-state" in:fade>
+			<IconChartLine size={64} />
+			<h2>No Indicators Yet</h2>
+			<p>You haven't purchased any indicators yet. Browse our collection to enhance your trading!</p>
+			<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
+		</div>
+	{/if}
+</div>
 
 <style>
-	.dashboard-page {
-		min-height: 100vh;
-		background: var(--rtp-bg, #0a0f1a);
-		color: var(--rtp-text, #e5e7eb);
-		padding: 8rem 1.5rem 4rem;
+	/* Content Section */
+	.wc-content-sction {
+		width: 100%;
+		margin: auto;
+		padding: 20px;
 	}
 
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.page-header {
+	/* Dashboard Header */
+	.dashb_headr {
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		max-width: 100%;
+		padding: 20px;
 		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 3rem;
-		gap: 2rem;
 		flex-wrap: wrap;
+		justify-content: space-between;
 	}
 
-	.page-header__title {
-		font-size: 2.5rem;
+	.dashb_headr-left,
+	.dashb_headr-right {
+		align-items: center;
+		display: flex;
+		flex-direction: row;
+	}
+
+	.dashb_pg-titl {
+		color: #333;
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-size: 36px;
 		font-weight: 700;
-		color: #fff;
-		margin-bottom: 0.5rem;
+		margin: 0;
 	}
 
-	.page-header__subtitle {
-		color: #94a3b8;
-		font-size: 1.1rem;
-	}
-
-	.browse-btn {
-		padding: 0.75rem 1.5rem;
-		background: rgba(139, 92, 246, 0.1);
-		border: 1px solid rgba(139, 92, 246, 0.2);
-		border-radius: 8px;
-		color: #a78bfa;
+	.start-here-btn {
+		font-size: 14px;
+		line-height: 18px;
+		padding: 8px 14px;
 		font-weight: 600;
+		color: #0984ae;
+		background: #f4f4f4;
+		border-color: transparent;
 		text-decoration: none;
-		transition: all 0.2s ease;
+		border-radius: 5px;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.browse-btn:hover {
-		background: rgba(139, 92, 246, 0.2);
+	.start-here-btn:hover {
+		color: #0984ae;
+		background: #e7e7e7;
 	}
 
+	/* Inner Content */
+	.wc-accontent-inner {
+		padding: 4% 2%;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 1px 2px rgb(0 0 0 / 15%);
+		position: relative;
+		margin: 20px;
+	}
+
+	/* Indicators Grid */
 	.indicators-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 		gap: 1.5rem;
 	}
 
+	/* Indicator Card */
 	.indicator-card {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 1rem;
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
 		padding: 1.5rem;
 		transition: all 0.3s ease;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
 	.indicator-card:hover {
-		border-color: rgba(139, 92, 246, 0.3);
+		border-color: #0984ae;
 		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	}
 
 	.indicator-card--expired {
@@ -239,12 +234,12 @@
 	.indicator-card__icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+		background: linear-gradient(135deg, #e0f2fe, #dbeafe);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #a78bfa;
+		color: #0984ae;
 	}
 
 	.indicator-card__status {
@@ -267,19 +262,19 @@
 	.indicator-card__title {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #fff;
+		color: #333;
 		margin-bottom: 0.5rem;
 	}
 
 	.indicator-card__description {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: #64748b;
 		margin-bottom: 1.25rem;
 		line-height: 1.5;
 	}
 
 	.indicator-card__meta {
-		background: rgba(255, 255, 255, 0.02);
+		background: #f8fafc;
 		border-radius: 8px;
 		padding: 1rem;
 		margin-bottom: 1.25rem;
@@ -293,7 +288,7 @@
 	}
 
 	.meta-row:not(:last-child) {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid #e5e7eb;
 	}
 
 	.meta-label {
@@ -301,7 +296,7 @@
 	}
 
 	.meta-value {
-		color: #e5e7eb;
+		color: #333;
 		font-weight: 500;
 	}
 
@@ -325,35 +320,35 @@
 	}
 
 	.action-btn--primary {
-		background: linear-gradient(135deg, #8b5cf6, #6366f1);
+		background: #0984ae;
 		color: #fff;
 	}
 
 	.action-btn--primary:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+		background: #076787;
 	}
 
 	.action-btn--secondary {
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		color: #e5e7eb;
+		background: #f4f4f4;
+		border: 1px solid #e5e7eb;
+		color: #333;
 	}
 
 	.action-btn--secondary:hover {
-		background: rgba(255, 255, 255, 0.1);
+		background: #e5e7eb;
 	}
 
 	.action-btn--renew {
-		background: rgba(250, 204, 21, 0.1);
-		border: 1px solid rgba(250, 204, 21, 0.2);
-		color: #facc15;
+		background: #fef3c7;
+		border: 1px solid #fcd34d;
+		color: #92400e;
 	}
 
 	.action-btn--renew:hover {
-		background: rgba(250, 204, 21, 0.2);
+		background: #fde68a;
 	}
 
+	/* Empty State */
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
@@ -362,7 +357,7 @@
 
 	.empty-state h2 {
 		font-size: 1.5rem;
-		color: #fff;
+		color: #333;
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -370,38 +365,21 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.empty-state__btn {
+	.btn-orange {
 		display: inline-flex;
 		padding: 0.75rem 2rem;
-		background: linear-gradient(135deg, #8b5cf6, #6366f1);
+		background: #f99e31;
 		border-radius: 8px;
 		color: #fff;
 		font-weight: 600;
 		text-decoration: none;
 	}
 
-	.loading-state {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--rtp-bg, #0a0f1a);
-		color: #94a3b8;
+	.btn-orange:hover {
+		background: #f88b09;
 	}
 
 	@media (max-width: 768px) {
-		.dashboard-page {
-			padding: 7rem 1rem 3rem;
-		}
-
-		.page-header {
-			flex-direction: column;
-		}
-
-		.page-header__title {
-			font-size: 2rem;
-		}
-
 		.indicators-grid {
 			grid-template-columns: 1fr;
 		}
