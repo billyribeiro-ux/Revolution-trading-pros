@@ -51,7 +51,8 @@
 		alignRight = rect.left + menuWidth > window.innerWidth - 20;
 	}
 
-	function handleTriggerClick() {
+	function handleTriggerClick(event: MouseEvent) {
+		event.stopPropagation(); // Prevent click from bubbling to document click handler
 		checkEdgePosition();
 		onToggle?.(id);
 	}
@@ -60,7 +61,9 @@
 		if (!isOpen) {
 			if (event.key === 'Enter' || event.key === ' ') {
 				event.preventDefault();
-				handleTriggerClick();
+				event.stopPropagation();
+				checkEdgePosition();
+				onToggle?.(id);
 			}
 			return;
 		}
@@ -88,7 +91,8 @@
 		}
 	}
 
-	function handleItemClick() {
+	function handleItemClick(event: MouseEvent) {
+		event.stopPropagation(); // Prevent bubbling to document click handler
 		onClose?.();
 		onNavigate?.();
 	}
