@@ -94,7 +94,7 @@
 		setLanguage(select.value as SupportedLanguage);
 	}
 
-	$: categoryColors: Record<string, string> = {
+	const categoryColors: Record<string, string> = {
 		necessary: 'bg-green-500/20 text-green-400 border-green-500/30',
 		analytics: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
 		marketing: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
