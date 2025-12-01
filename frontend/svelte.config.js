@@ -1,6 +1,5 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-vercel';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import sveltePreprocess from 'svelte-preprocess';
 
 /**
  * Revolution Trading Pros - SvelteKit Configuration
@@ -12,12 +11,7 @@ import sveltePreprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: [
-		vitePreprocess(),
-		sveltePreprocess({
-			postcss: true
-		})
-	],
+	preprocess: vitePreprocess(),
 	onwarn: (warning, handler) => {
 		// Allow accessibility warnings for WCAG compliance
 		// Only suppress non-critical warnings that don't affect accessibility
@@ -25,12 +19,7 @@ const config = {
 		handler(warning);
 	},
 	kit: {
-		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: 'index.html',
-			strict: false
-		}),
+		adapter: adapter(),
 		prerender: {
 			handleHttpError: ({ status, path }) => {
 				// Ignore 404 errors for unimplemented routes

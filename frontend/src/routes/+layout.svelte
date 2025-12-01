@@ -10,7 +10,7 @@
 	 */
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
-	import NavBar from '$lib/components/NavBar.svelte';
+	import { NavBar } from '$lib/components/nav';
 	import { MarketingFooter } from '$lib/components/layout';
 	import PopupModal from '$lib/components/PopupModal.svelte';
 	import { onMount } from 'svelte';
