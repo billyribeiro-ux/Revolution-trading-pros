@@ -1,20 +1,41 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	/**
+	 * Table of Contents Component - Svelte 5
+	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived, $effect)
+	 */
 	import { browser } from '$app/environment';
 
-	// Props
-	export let contentBlocks: any[] = [];
-	export let title: string = 'In This Article';
-	export let minHeadings: number = 2;
-	export let maxDepth: number = 4; // H2-H4
-	export let showNumbers: boolean = true;
-	export let collapsible: boolean = true;
-	export let defaultExpanded: boolean = true;
-	export let sticky: boolean = true;
-	export let showProgress: boolean = true;
-	export let smoothScroll: boolean = true;
-	export let highlightActive: boolean = true;
-	export let position: 'inline' | 'sidebar' | 'floating' = 'inline';
+	// Svelte 5: Props using $props() rune
+	interface Props {
+		contentBlocks?: any[];
+		title?: string;
+		minHeadings?: number;
+		maxDepth?: number;
+		showNumbers?: boolean;
+		collapsible?: boolean;
+		defaultExpanded?: boolean;
+		sticky?: boolean;
+		showProgress?: boolean;
+		smoothScroll?: boolean;
+		highlightActive?: boolean;
+		position?: 'inline' | 'sidebar' | 'floating';
+	}
+
+	let {
+		contentBlocks = [],
+		title = 'In This Article',
+		minHeadings = 2,
+		maxDepth = 4,
+		showNumbers = true,
+		collapsible = true,
+		defaultExpanded = true,
+		sticky = true,
+		showProgress = true,
+		smoothScroll = true,
+		highlightActive = true,
+		position = 'inline'
+	}: Props = $props();
 
 	interface TocItem {
 		id: string;
@@ -24,13 +45,14 @@
 		number?: string;
 	}
 
-	let tocItems: TocItem[] = [];
-	let flatItems: TocItem[] = [];
-	let isExpanded = defaultExpanded;
-	let activeId = '';
-	let readingProgress = 0;
-	let isFloatingMinimized = false;
-	let contentElement: HTMLElement | null = null;
+	// Svelte 5: Reactive state using $state() rune
+	let tocItems: TocItem[] = $state([]);
+	let flatItems: TocItem[] = $state([]);
+	let isExpanded = $state(defaultExpanded);
+	let activeId = $state('');
+	let readingProgress = $state(0);
+	let isFloatingMinimized = $state(false);
+	let contentElement: HTMLElement | null = $state(null);
 	let observer: IntersectionObserver | null = null;
 	let scrollListener: (() => void) | null = null;
 
@@ -225,36 +247,40 @@
 		isFloatingMinimized = !isFloatingMinimized;
 	}
 
-	// Initialize TOC
-	$: {
+	// Svelte 5: Derived value for shouldShow
+	let shouldShow = $derived(flatItems.length >= minHeadings);
+
+	// Svelte 5: Effect for extracting headings when contentBlocks change
+	$effect(() => {
 		flatItems = [];
 		tocItems = extractHeadings();
-	}
-
-	$: shouldShow = flatItems.length >= minHeadings;
-
-	onMount(() => {
-		if (shouldShow) {
-			// Small delay to ensure DOM is ready
-			setTimeout(() => {
-				injectHeadingIds();
-				setupObserver();
-				setupScrollListener();
-
-				// Check for hash in URL
-				if (window.location.hash) {
-					const id = window.location.hash.slice(1);
-					setTimeout(() => scrollToHeading(id), 100);
-				}
-			}, 100);
-		}
 	});
 
-	onDestroy(() => {
-		observer?.disconnect();
-		if (scrollListener) {
-			window.removeEventListener('scroll', scrollListener);
-		}
+	// Svelte 5: Effect for initialization and cleanup
+	$effect(() => {
+		if (!shouldShow || !browser) return;
+
+		// Small delay to ensure DOM is ready
+		const initTimeout = setTimeout(() => {
+			injectHeadingIds();
+			setupObserver();
+			setupScrollListener();
+
+			// Check for hash in URL
+			if (window.location.hash) {
+				const id = window.location.hash.slice(1);
+				setTimeout(() => scrollToHeading(id), 100);
+			}
+		}, 100);
+
+		// Svelte 5: Cleanup function returned from $effect
+		return () => {
+			clearTimeout(initTimeout);
+			observer?.disconnect();
+			if (scrollListener) {
+				window.removeEventListener('scroll', scrollListener);
+			}
+		};
 	});
 </script>
 

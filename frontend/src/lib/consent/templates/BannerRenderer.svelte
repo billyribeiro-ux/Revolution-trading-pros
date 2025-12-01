@@ -1,10 +1,11 @@
 <script lang="ts">
 	/**
-	 * Banner Renderer Component
+	 * Banner Renderer Component - Svelte 5
 	 *
 	 * Renders consent banner based on the active template configuration.
 	 * Supports all 20 template styles with responsive mobile/tablet layouts.
 	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 * @component
 	 */
 	import { onMount } from 'svelte';
@@ -15,18 +16,23 @@
 	import { recordImpression, recordDecision } from '../ab-testing';
 	import type { BannerTemplate } from './types';
 
-	// Props
-	export let forceShow = false;
+	// Svelte 5: Props using $props() rune
+	interface Props {
+		forceShow?: boolean;
+	}
 
-	// State
-	let visible = false;
-	let closing = false;
-	let isMobile = false;
-	let isTablet = false;
-	let drawerOpen = false;
+	let { forceShow = false }: Props = $props();
 
-	$: template = $activeTemplate;
-	$: shouldShow = forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible);
+	// Svelte 5: Reactive state using $state() rune
+	let visible = $state(false);
+	let closing = $state(false);
+	let isMobile = $state(false);
+	let isTablet = $state(false);
+	let drawerOpen = $state(false);
+
+	// Svelte 5: Derived values using $derived() rune
+	let template = $derived($activeTemplate);
+	let shouldShow = $derived(forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible));
 
 	// Detect device type
 	function updateDeviceType() {

@@ -12,8 +12,9 @@
 	let selectedTheme: FormTheme | null = null;
 	let showThemeCustomizer = false;
 
-	function handleTemplateSelect(event: CustomEvent<FormTemplate>) {
-		selectedTemplate = event.detail;
+	function handleTemplateSelect(template: FormTemplate) {
+		// Svelte 5: Callback props receive the value directly
+		selectedTemplate = template;
 		showTemplateSelector = false;
 		selectedTheme = selectedTemplate.theme;
 
@@ -83,7 +84,7 @@
 
 <div class="create-form-page">
 	{#if showTemplateSelector}
-		<FormTemplateSelector on:select={handleTemplateSelect} on:cancel={handleStartFromScratch} />
+		<FormTemplateSelector onSelect={handleTemplateSelect} onCancel={handleStartFromScratch} />
 	{:else}
 		<div class="page-header">
 			<div>

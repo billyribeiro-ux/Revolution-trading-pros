@@ -103,8 +103,8 @@
 		showEditor = true;
 	}
 
-	function handleSaveTemplate(event: CustomEvent<BannerTemplate>) {
-		const template = event.detail;
+	function handleSaveTemplate(template: BannerTemplate) {
+		// Svelte 5: Callback props receive the value directly (no CustomEvent wrapper)
 
 		if (isCreatingNew) {
 			const newId = saveAsCustomTemplate(template.name);
@@ -124,8 +124,9 @@
 		editingTemplate = null;
 	}
 
-	function handleEditorPreview(event: CustomEvent<BannerTemplate>) {
-		enterPreviewMode(event.detail);
+	function handleEditorPreview(template: BannerTemplate) {
+		// Svelte 5: Callback props receive the value directly
+		enterPreviewMode(template);
 	}
 
 	function handleExport() {
@@ -245,10 +246,10 @@
 				<TemplatePreviewCard
 					{template}
 					isActive={template.id === activeTemplateId}
-					on:select={() => handleSelectTemplate(template)}
-					on:preview={() => handlePreviewTemplate(template)}
-					on:edit={() => handleEditTemplate(template)}
-					on:delete={() => handleDeleteTemplate(template)}
+					onSelect={() => handleSelectTemplate(template)}
+					onPreview={() => handlePreviewTemplate(template)}
+					onEdit={() => handleEditTemplate(template)}
+					onDelete={() => handleDeleteTemplate(template)}
 				/>
 			{/each}
 		</div>
@@ -268,9 +269,9 @@
 		<TemplateEditor
 			template={editingTemplate}
 			isNew={isCreatingNew}
-			on:save={handleSaveTemplate}
-			on:cancel={handleCancelEdit}
-			on:preview={handleEditorPreview}
+			onSave={handleSaveTemplate}
+			onCancel={handleCancelEdit}
+			onPreview={handleEditorPreview}
 		/>
 	{/if}
 

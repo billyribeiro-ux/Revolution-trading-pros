@@ -1,15 +1,24 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	/**
+	 * Floating TOC Widget - Svelte 5
+	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $effect)
+	 */
 	import { browser } from '$app/environment';
 	import TableOfContents from './TableOfContents.svelte';
 
-	export let contentBlocks: any[] = [];
-	export let showAfterScroll: number = 300; // Show after scrolling this many pixels
-	export let title: string = 'Contents';
+	// Svelte 5: Props using $props() rune
+	interface Props {
+		contentBlocks?: any[];
+		showAfterScroll?: number;
+		title?: string;
+	}
 
-	let isVisible = false;
-	let isOpen = false;
-	let scrollListener: (() => void) | null = null;
+	let { contentBlocks = [], showAfterScroll = 300, title = 'Contents' }: Props = $props();
+
+	// Svelte 5: Reactive state using $state() rune
+	let isVisible = $state(false);
+	let isOpen = $state(false);
 
 	function handleScroll() {
 		if (!browser) return;
@@ -25,17 +34,16 @@
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 
-	onMount(() => {
+	// Svelte 5: Side effect with cleanup using $effect() rune
+	$effect(() => {
 		if (browser) {
-			scrollListener = handleScroll;
-			window.addEventListener('scroll', scrollListener, { passive: true });
+			window.addEventListener('scroll', handleScroll, { passive: true });
 			handleScroll(); // Check initial position
-		}
-	});
 
-	onDestroy(() => {
-		if (scrollListener && browser) {
-			window.removeEventListener('scroll', scrollListener);
+			// Cleanup function (returned from $effect)
+			return () => {
+				window.removeEventListener('scroll', handleScroll);
+			};
 		}
 	});
 </script>

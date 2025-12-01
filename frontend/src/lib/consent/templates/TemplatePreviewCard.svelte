@@ -1,22 +1,25 @@
 <script lang="ts">
 	/**
-	 * Template Preview Card Component
+	 * Template Preview Card Component - Svelte 5
 	 *
 	 * Shows a miniature preview of a banner template with actions.
+	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props)
 	 */
-	import { createEventDispatcher } from 'svelte';
 	import type { BannerTemplate } from './types';
 
-	export let template: BannerTemplate;
-	export let isActive = false;
-	export let showActions = true;
+	// Svelte 5: Props with callback events using $props() rune
+	interface Props {
+		template: BannerTemplate;
+		isActive?: boolean;
+		showActions?: boolean;
+		onSelect?: (template: BannerTemplate) => void;
+		onPreview?: (template: BannerTemplate) => void;
+		onEdit?: (template: BannerTemplate) => void;
+		onDelete?: (template: BannerTemplate) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		select: BannerTemplate;
-		preview: BannerTemplate;
-		edit: BannerTemplate;
-		delete: BannerTemplate;
-	}>();
+	let { template, isActive = false, showActions = true, onSelect, onPreview, onEdit, onDelete }: Props = $props();
 
 	// Generate mini preview styles
 	function getMiniPreviewStyles(): string {
@@ -51,8 +54,8 @@
 	class:active={isActive}
 	role="button"
 	tabindex="0"
-	onclick={() => dispatch('select', template)}
-	onkeypress={(e) => e.key === 'Enter' && dispatch('select', template)}
+	onclick={() => onSelect?.(template)}
+	onkeypress={(e) => e.key === 'Enter' && onSelect?.(template)}
 >
 	<!-- Mini Preview -->
 	<div class="preview-container">
@@ -119,7 +122,7 @@
 			<div class="card-actions">
 				<button
 					class="action-btn preview"
-					onclick={(e) => { e.stopPropagation(); dispatch('preview', template); }}
+					onclick={(e) => { e.stopPropagation(); onPreview?.(template); }}
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -130,7 +133,7 @@
 				{#if template.isEditable}
 					<button
 						class="action-btn edit"
-						onclick={(e) => { e.stopPropagation(); dispatch('edit', template); }}
+						onclick={(e) => { e.stopPropagation(); onEdit?.(template); }}
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
@@ -143,7 +146,7 @@
 						class="action-btn delete"
 						aria-label="Delete template"
 						title="Delete template"
-						onclick={(e) => { e.stopPropagation(); dispatch('delete', template); }}
+						onclick={(e) => { e.stopPropagation(); onDelete?.(template); }}
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
