@@ -99,7 +99,7 @@
 			<h1>SEO Analytics</h1>
 			<p>Track search performance and insights</p>
 		</div>
-		<button class="btn-secondary" on:click={loadData} disabled={loading}>
+		<button class="btn-secondary" onclick={loadData} disabled={loading}>
 			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 			Refresh
 		</button>
@@ -107,9 +107,9 @@
 
 	<div class="date-range-picker">
 		<IconCalendar size={20} />
-		<input type="date" bind:value={dateRange.start} on:change={loadData} />
+		<input type="date" bind:value={dateRange.start} onchange={loadData} />
 		<span>to</span>
-		<input type="date" bind:value={dateRange.end} on:change={loadData} />
+		<input type="date" bind:value={dateRange.end} onchange={loadData} />
 	</div>
 
 	{#if stats}

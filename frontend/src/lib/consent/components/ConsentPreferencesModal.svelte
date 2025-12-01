@@ -181,14 +181,14 @@
 		: false;
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if $showPreferencesModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="modal-backdrop {className}"
-		on:click={handleBackdropClick}
+		onclick={handleBackdropClick}
 		transition:fade={{ duration: prefersReducedMotion ? 0 : 200 }}
 	>
 		<div
@@ -207,7 +207,7 @@
 				<button
 					type="button"
 					class="modal-close"
-					on:click={handleCancel}
+					onclick={handleCancel}
 					aria-label="Close preferences"
 				>
 					<svg
@@ -265,7 +265,7 @@
 										role="switch"
 										aria-checked={isEnabled}
 										aria-label="Toggle {category.name}"
-										on:click={() => toggleCategory(category.id)}
+										onclick={() => toggleCategory(category.id)}
 									>
 										<span class="toggle-slider" />
 									</button>
@@ -288,14 +288,14 @@
 					<button
 						type="button"
 						class="consent-btn consent-btn-outline"
-						on:click={handleRejectAll}
+						onclick={handleRejectAll}
 					>
 						Reject All
 					</button>
 					<button
 						type="button"
 						class="consent-btn consent-btn-outline"
-						on:click={handleAcceptAll}
+						onclick={handleAcceptAll}
 					>
 						Accept All
 					</button>
@@ -304,14 +304,14 @@
 					<button
 						type="button"
 						class="consent-btn consent-btn-secondary"
-						on:click={handleCancel}
+						onclick={handleCancel}
 					>
 						Cancel
 					</button>
 					<button
 						type="button"
 						class="consent-btn consent-btn-primary"
-						on:click={handleSave}
+						onclick={handleSave}
 					>
 						Save Preferences
 					</button>

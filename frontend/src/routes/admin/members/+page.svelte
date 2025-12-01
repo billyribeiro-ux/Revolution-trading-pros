@@ -231,19 +231,19 @@
 				</div>
 			</div>
 			<div class="header-actions">
-				<button class="btn-secondary" on:click={() => (showImportModal = true)}>
+				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
 					<IconUpload size={18} />
 					Import
 				</button>
-				<button class="btn-secondary" on:click={handleExport} disabled={exporting}>
+				<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
 					<IconDownload size={18} />
 					{exporting ? 'Exporting...' : 'Export'}
 				</button>
-				<button class="btn-secondary" on:click={() => goto('/admin/members/churned')}>
+				<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
 					<IconAlertTriangle size={18} />
 					Win-Back
 				</button>
-				<button class="btn-primary" on:click={handleRefresh}>
+				<button class="btn-primary" onclick={handleRefresh}>
 					<IconRefresh size={18} />
 					Refresh
 				</button>
@@ -348,7 +348,7 @@
 						{stats.subscriptions.churned} churned
 					</div>
 				</div>
-				<button class="stat-action" on:click={() => goto('/admin/members/churned')}>
+				<button class="stat-action" onclick={() => goto('/admin/members/churned')}>
 					Recover <IconExternalLink size={14} />
 				</button>
 			</div>
@@ -363,7 +363,7 @@
 				{#each stats.top_services as service}
 					<button
 						class="service-card"
-						on:click={() => goto(`/admin/members/service/${service.id}`)}
+						onclick={() => goto(`/admin/members/service/${service.id}`)}
 					>
 						<div class="service-icon">
 							<IconChartBar size={20} />
@@ -387,24 +387,24 @@
 				type="text"
 				placeholder="Search members by name or email..."
 				bind:value={searchQuery}
-				on:keydown={(e) => e.key === 'Enter' && handleSearch()}
+				onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 			/>
 		</div>
 
 		<div class="toolbar-actions">
-			<button class="filter-toggle" class:active={showFilters} on:click={() => (showFilters = !showFilters)}>
+			<button class="filter-toggle" class:active={showFilters} onclick={() => (showFilters = !showFilters)}>
 				<IconFilter size={18} />
 				Filters
 			</button>
 
 			{#if selectedMembers.size > 0}
-				<button class="btn-email" on:click={() => (showEmailModal = true)}>
+				<button class="btn-email" onclick={() => (showEmailModal = true)}>
 					<IconMail size={18} />
 					Email ({selectedMembers.size})
 				</button>
 			{/if}
 
-			<button class="btn-export" on:click={() => goto('/admin/members/export')}>
+			<button class="btn-export" onclick={() => goto('/admin/members/export')}>
 				<IconDownload size={18} />
 				Export
 			</button>
@@ -416,7 +416,7 @@
 		<div class="filters-panel">
 			<div class="filter-group">
 				<label for="status-filter">Status</label>
-				<select id="status-filter" bind:value={statusFilter} on:change={() => handleStatusFilter(statusFilter)}>
+				<select id="status-filter" bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
 					<option value="">All Status</option>
 					<option value="active">Active</option>
 					<option value="trial">Trial</option>
@@ -427,7 +427,7 @@
 
 			<div class="filter-group">
 				<label for="service-filter">Service</label>
-				<select id="service-filter" bind:value={serviceFilter} on:change={() => handleServiceFilter(serviceFilter)}>
+				<select id="service-filter" bind:value={serviceFilter} onchange={() => handleServiceFilter(serviceFilter)}>
 					<option value="">All Services</option>
 					{#each services as service}
 						<option value={service.id}>{service.name}</option>
@@ -437,7 +437,7 @@
 
 			<div class="filter-group">
 				<label for="spending-filter">Spending Tier</label>
-				<select id="spending-filter" bind:value={spendingFilter} on:change={() => handleSpendingFilter(spendingFilter)}>
+				<select id="spending-filter" bind:value={spendingFilter} onchange={() => handleSpendingFilter(spendingFilter)}>
 					<option value="">All Tiers</option>
 					<option value="whale">Whale ($5000+)</option>
 					<option value="high">High ($1000-$4999)</option>
@@ -448,7 +448,7 @@
 
 			<button
 				class="clear-filters"
-				on:click={() => {
+				onclick={() => {
 					statusFilter = '';
 					serviceFilter = '';
 					spendingFilter = '';
@@ -482,7 +482,7 @@
 							<input
 								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
-								on:change={selectAllMembers}
+								onchange={selectAllMembers}
 							/>
 						</th>
 						<th>Member</th>
@@ -500,7 +500,7 @@
 								<input
 									type="checkbox"
 									checked={selectedMembers.has(member.id)}
-									on:change={() => toggleMemberSelection(member.id)}
+									onchange={() => toggleMemberSelection(member.id)}
 								/>
 							</td>
 							<td>
@@ -532,10 +532,10 @@
 							</td>
 							<td>
 								<div class="actions">
-									<button class="action-btn" title="View Details" on:click={() => membersStore.loadMember(member.id)}>
+									<button class="action-btn" title="View Details" onclick={() => membersStore.loadMember(member.id)}>
 										<IconExternalLink size={16} />
 									</button>
-									<button class="action-btn" title="Send Email" on:click={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
+									<button class="action-btn" title="Send Email" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
 										<IconMail size={16} />
 									</button>
 								</div>
@@ -555,7 +555,7 @@
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === 1}
-							on:click={() => membersStore.goToPage(pagination.current_page - 1)}
+							onclick={() => membersStore.goToPage(pagination.current_page - 1)}
 						>
 							<IconChevronLeft size={18} />
 						</button>
@@ -563,7 +563,7 @@
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
-							on:click={() => membersStore.goToPage(pagination.current_page + 1)}
+							onclick={() => membersStore.goToPage(pagination.current_page + 1)}
 						>
 							<IconChevronRight size={18} />
 						</button>
@@ -577,11 +577,11 @@
 <!-- Email Modal -->
 {#if showEmailModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" on:click={() => (showEmailModal = false)} on:keydown={(e) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
-		<div class="modal-content" on:click|stopPropagation on:keydown|stopPropagation role="document">
+	<div class="modal-overlay" onclick={() => (showEmailModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
-				<button class="close-btn" on:click={() => (showEmailModal = false)}>
+				<button class="close-btn" onclick={() => (showEmailModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -591,7 +591,7 @@
 					<span class="template-label">Quick Templates</span>
 					<div class="template-buttons">
 						{#each $emailStore.presetTemplates as template}
-							<button class="template-btn" on:click={() => applyTemplate(template)}>
+							<button class="template-btn" onclick={() => applyTemplate(template)}>
 								{template.name}
 							</button>
 						{/each}
@@ -610,8 +610,8 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showEmailModal = false)}>Cancel</button>
-				<button class="btn-primary" on:click={handleBulkEmail} disabled={!emailSubject || !emailBody}>
+				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={handleBulkEmail} disabled={!emailSubject || !emailBody}>
 					<IconSend size={18} />
 					Send Email
 				</button>
@@ -623,12 +623,12 @@
 <!-- Import Modal -->
 {#if showImportModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" on:click={() => (showImportModal = false)} on:keydown={(e) => e.key === 'Escape' && (showImportModal = false)} role="dialog" tabindex="-1" aria-modal="true">
+	<div class="modal-overlay" onclick={() => (showImportModal = false)} onkeydown={(e) => e.key === 'Escape' && (showImportModal = false)} role="dialog" tabindex="-1" aria-modal="true">
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal-content" on:click|stopPropagation on:keydown|stopPropagation role="document">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Import Members</h2>
-				<button class="close-btn" on:click={() => (showImportModal = false)}>
+				<button class="close-btn" onclick={() => (showImportModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -659,13 +659,13 @@
 						id="import-file"
 						type="file"
 						accept=".csv"
-						on:change={handleFileSelect}
+						onchange={handleFileSelect}
 						style="display: none"
 					/>
 				</div>
 
 				{#if importFile}
-					<button class="btn-secondary" style="margin-top: 1rem" on:click={() => (importFile = null)}>
+					<button class="btn-secondary" style="margin-top: 1rem" onclick={() => (importFile = null)}>
 						<IconX size={16} />
 						Remove File
 					</button>
@@ -673,8 +673,8 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showImportModal = false)}>Cancel</button>
-				<button class="btn-primary" on:click={handleImport} disabled={!importFile || importing}>
+				<button class="btn-secondary" onclick={() => (showImportModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={handleImport} disabled={!importFile || importing}>
 					<IconUpload size={18} />
 					{importing ? 'Importing...' : 'Import Members'}
 				</button>

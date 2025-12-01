@@ -31,7 +31,7 @@
 <div class="analytics-page">
 	<div class="page-header">
 		<div>
-			<button class="btn-back" on:click={() => goto('/admin/forms')}> ← Back to Forms </button>
+			<button class="btn-back" onclick={() => goto('/admin/forms')}> ← Back to Forms </button>
 			<h1>Form Analytics</h1>
 			{#if form}
 				<p class="page-description">{form.title}</p>
@@ -39,10 +39,10 @@
 		</div>
 		<div class="header-actions">
 			{#if form}
-				<button class="btn-action" on:click={() => goto(`/admin/forms/${formId}/edit`)}>
+				<button class="btn-action" onclick={() => goto(`/admin/forms/${formId}/edit`)}>
 					✏️ Edit Form
 				</button>
-				<button class="btn-action" on:click={() => goto(`/admin/forms/${formId}/submissions`)}>
+				<button class="btn-action" onclick={() => goto(`/admin/forms/${formId}/submissions`)}>
 					📊 View Submissions
 				</button>
 			{/if}

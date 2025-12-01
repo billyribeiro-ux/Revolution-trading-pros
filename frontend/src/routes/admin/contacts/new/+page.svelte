@@ -33,7 +33,7 @@
 		<h1>Add New Contact</h1>
 	</div>
 
-	<form class="contact-form" on:submit|preventDefault={handleSubmit}>
+	<form class="contact-form" onsubmit={handleSubmit}>
 		<div class="form-group">
 			<label for="name">Full Name *</label>
 			<input type="text" id="name" bind:value={formData.name} required />

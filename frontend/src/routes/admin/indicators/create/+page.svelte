@@ -132,7 +132,7 @@
 						id="name"
 						type="text"
 						bind:value={indicator.name}
-						on:blur={generateSlug}
+						onblur={generateSlug}
 						placeholder="e.g., Advanced RSI Indicator"
 					/>
 				</div>
@@ -177,7 +177,7 @@
 					{#if indicator.thumbnail}
 						<div class="image-preview">
 							<img src={indicator.thumbnail} alt="Thumbnail" />
-							<button type="button" class="remove-btn" on:click={() => (indicator.thumbnail = '')}>
+							<button type="button" class="remove-btn" onclick={() => (indicator.thumbnail = '')}>
 								<IconX size={16} />
 							</button>
 						</div>
@@ -189,7 +189,7 @@
 							id="thumbnail-upload"
 							type="file"
 							accept="image/*"
-							on:change={handleImageUpload}
+							onchange={handleImageUpload}
 							disabled={uploading}
 						/>
 					</label>
@@ -203,8 +203,8 @@
 				</div>
 
 				<div class="form-actions">
-					<button class="btn-secondary" on:click={() => goto('/admin/indicators')}> Cancel </button>
-					<button class="btn-primary" on:click={saveIndicator} disabled={saving}>
+					<button class="btn-secondary" onclick={() => goto('/admin/indicators')}> Cancel </button>
+					<button class="btn-primary" onclick={saveIndicator} disabled={saving}>
 						{saving ? 'Creating...' : 'Create Indicator'}
 					</button>
 				</div>

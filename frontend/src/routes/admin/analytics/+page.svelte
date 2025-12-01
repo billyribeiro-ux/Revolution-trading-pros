@@ -42,8 +42,8 @@
 		}
 	}
 
-	function handlePeriodChange(event: CustomEvent<string>) {
-		selectedPeriod = event.detail;
+	function handlePeriodChange(value: string) {
+		selectedPeriod = value;
 		loadDashboard();
 	}
 
@@ -81,7 +81,7 @@
 					<p class="text-sm text-gray-500 mt-1">Enterprise insights and performance metrics</p>
 				</div>
 				<div class="flex items-center gap-4">
-					<PeriodSelector value={selectedPeriod} on:change={handlePeriodChange} />
+					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 					<a
 						href="/admin/analytics/events"
 						class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
@@ -99,7 +99,7 @@
 							{activeTab === tab.id
 							? 'border-blue-600 text-blue-600'
 							: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-						on:click={() => (activeTab = tab.id)}
+						onclick={() => (activeTab = tab.id)}
 					>
 						<span class="mr-2">{tab.icon}</span>
 						{tab.label}
@@ -122,7 +122,7 @@
 				<p class="text-red-600">{error}</p>
 				<button
 					class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-					on:click={loadDashboard}
+					onclick={loadDashboard}
 				>
 					Retry
 				</button>

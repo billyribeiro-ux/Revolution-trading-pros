@@ -119,7 +119,7 @@
 					class="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
 					placeholder="Search by name, email, title"
 					bind:value={localSearch}
-					on:keydown={(e) => e.key === 'Enter' && loadContacts()}
+					onkeydown={(e) => e.key === 'Enter' && loadContacts()}
 				/>
 			</div>
 
@@ -145,7 +145,7 @@
 
 			<button
 				class="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-400 disabled:opacity-60"
-				on:click={loadContacts}
+				onclick={loadContacts}
 				disabled={$isLoading}
 			>
 				{$isLoading ? 'Loading…' : 'Apply filters'}
@@ -232,7 +232,7 @@
 							{#each $contacts as contact (contact.id)}
 								<tr
 									class="cursor-pointer border-t border-slate-800/60 hover:bg-slate-800/40"
-									on:click={() => openContact(contact)}
+									onclick={() => openContact(contact)}
 								>
 									<td class="px-4 py-3">
 										<div class="flex flex-col">

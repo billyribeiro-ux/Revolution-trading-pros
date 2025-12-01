@@ -31,7 +31,7 @@
 			</div>
 			<div class="toast-message">{toast.message}</div>
 			{#if toast.dismissible}
-				<button class="toast-close" on:click={() => toastStore.dismiss(toast.id)} aria-label="Dismiss">
+				<button class="toast-close" onclick={() => toastStore.dismiss(toast.id)} aria-label="Dismiss">
 					<IconX size={16} />
 				</button>
 			{/if}

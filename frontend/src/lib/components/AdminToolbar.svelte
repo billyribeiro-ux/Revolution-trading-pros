@@ -664,7 +664,7 @@
 </script>
 
 <!-- Global click handler -->
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <!-- Admin Toolbar -->
 {#if isAdmin}

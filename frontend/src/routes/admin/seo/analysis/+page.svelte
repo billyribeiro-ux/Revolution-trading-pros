@@ -122,7 +122,7 @@
 		</div>
 
 		<div class="mt-4">
-			<Button on:click={handleAnalyze} loading={analyzing} disabled={!contentId}>
+			<Button onclick={handleAnalyze} loading={analyzing} disabled={!contentId}>
 				<IconSearch size={20} />
 				Analyze SEO
 			</Button>

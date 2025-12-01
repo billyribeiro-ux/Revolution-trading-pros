@@ -54,8 +54,8 @@
 		}
 	}
 
-	function handlePeriodChange(event: CustomEvent<string>) {
-		selectedPeriod = event.detail;
+	function handlePeriodChange(value: string) {
+		selectedPeriod = value;
 		page = 1;
 		loadEvents();
 	}
@@ -104,11 +104,11 @@
 	<!-- Filters -->
 	<div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
 		<div class="flex flex-wrap items-center gap-4">
-			<PeriodSelector value={selectedPeriod} on:change={handlePeriodChange} />
+			<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 
 			<select
 				bind:value={selectedEventType}
-				on:change={handleEventTypeChange}
+				onchange={handleEventTypeChange}
 				class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 			>
 				<option value="">All Event Types</option>
@@ -122,7 +122,7 @@
 					<input
 						type="text"
 						bind:value={searchQuery}
-						on:keydown={(e) => e.key === 'Enter' && handleSearch()}
+						onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 						placeholder="Search events..."
 						class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 					/>
@@ -131,7 +131,7 @@
 			</div>
 
 			<button
-				on:click={handleSearch}
+				onclick={handleSearch}
 				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
 			>
 				Search
@@ -146,7 +146,7 @@
 			<div class="flex flex-wrap gap-2">
 				{#each eventTypes.slice(0, 12) as type}
 					<button
-						on:click={() => {
+						onclick={() => {
 							selectedEventType = type.name;
 							handleEventTypeChange();
 						}}
@@ -189,7 +189,7 @@
 			<div class="p-6 text-center text-red-600">
 				<p>{error}</p>
 				<button
-					on:click={loadEvents}
+					onclick={loadEvents}
 					class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 				>
 					Retry
@@ -260,7 +260,7 @@
 					</p>
 					<div class="flex items-center gap-2">
 						<button
-							on:click={() => {
+							onclick={() => {
 								page = Math.max(1, page - 1);
 								loadEvents();
 							}}
@@ -270,7 +270,7 @@
 							Previous
 						</button>
 						<button
-							on:click={() => {
+							onclick={() => {
 								page = Math.min(totalPages, page + 1);
 								loadEvents();
 							}}

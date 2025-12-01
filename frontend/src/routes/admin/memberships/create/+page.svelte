@@ -139,7 +139,7 @@
 						id="name"
 						type="text"
 						bind:value={membership.name}
-						on:blur={generateSlug}
+						onblur={generateSlug}
 						placeholder="e.g., Pro Membership"
 					/>
 				</div>
@@ -188,7 +188,7 @@
 				<div class="features-section">
 					<div class="section-header">
 						<h4>Features</h4>
-						<button type="button" class="add-feature-btn" on:click={addFeature}>
+						<button type="button" class="add-feature-btn" onclick={addFeature}>
 							<IconPlus size={16} />
 							Add Feature
 						</button>
@@ -214,7 +214,7 @@
 								<button
 									type="button"
 									class="remove-feature-btn"
-									on:click={() => removeFeature(index)}
+									onclick={() => removeFeature(index)}
 								>
 									<IconX size={16} />
 								</button>
@@ -231,10 +231,10 @@
 				</div>
 
 				<div class="form-actions">
-					<button class="btn-secondary" on:click={() => goto('/admin/memberships')}>
+					<button class="btn-secondary" onclick={() => goto('/admin/memberships')}>
 						Cancel
 					</button>
-					<button class="btn-primary" on:click={saveMembership} disabled={saving}>
+					<button class="btn-primary" onclick={saveMembership} disabled={saving}>
 						{saving ? 'Creating...' : 'Create Membership Plan'}
 					</button>
 				</div>

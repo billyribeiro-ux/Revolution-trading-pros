@@ -51,7 +51,7 @@
 <div class="templates-page">
 	<div class="page-header">
 		<h1>Email Templates</h1>
-		<button class="btn-primary" on:click={() => goto('/admin/email/templates/new')}
+		<button class="btn-primary" onclick={() => goto('/admin/email/templates/new')}
 			>New Template</button
 		>
 	</div>
@@ -85,17 +85,17 @@
 						<td class="actions">
 							<button
 								class="btn-secondary"
-								on:click={() => goto(`/admin/email/templates/preview/${(tmpl as any).id}`)}
+								onclick={() => goto(`/admin/email/templates/preview/${(tmpl as any).id}`)}
 								title="Preview"><IconEye size={18} /></button
 							>
 							<button
 								class="btn-secondary"
-								on:click={() => goto(`/admin/email/templates/edit/${(tmpl as any).id}`)}
+								onclick={() => goto(`/admin/email/templates/edit/${(tmpl as any).id}`)}
 								title="Edit"><IconEdit size={18} /></button
 							>
 							<button
 								class="btn-danger"
-								on:click={() => deleteTemplate((tmpl as any).id)}
+								onclick={() => deleteTemplate((tmpl as any).id)}
 								title="Delete"><IconTrash size={18} /></button
 							>
 						</td>

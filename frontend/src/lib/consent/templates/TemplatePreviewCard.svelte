@@ -51,8 +51,8 @@
 	class:active={isActive}
 	role="button"
 	tabindex="0"
-	on:click={() => dispatch('select', template)}
-	on:keypress={(e) => e.key === 'Enter' && dispatch('select', template)}
+	onclick={() => dispatch('select', template)}
+	onkeypress={(e) => e.key === 'Enter' && dispatch('select', template)}
 >
 	<!-- Mini Preview -->
 	<div class="preview-container">
@@ -119,7 +119,7 @@
 			<div class="card-actions">
 				<button
 					class="action-btn preview"
-					on:click|stopPropagation={() => dispatch('preview', template)}
+					onclick={(e) => { e.stopPropagation(); dispatch('preview', template); }}
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -130,7 +130,7 @@
 				{#if template.isEditable}
 					<button
 						class="action-btn edit"
-						on:click|stopPropagation={() => dispatch('edit', template)}
+						onclick={(e) => { e.stopPropagation(); dispatch('edit', template); }}
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
@@ -143,7 +143,7 @@
 						class="action-btn delete"
 						aria-label="Delete template"
 						title="Delete template"
-						on:click|stopPropagation={() => dispatch('delete', template)}
+						onclick={(e) => { e.stopPropagation(); dispatch('delete', template); }}
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>

@@ -403,7 +403,7 @@
 
 		<!-- Controls -->
 		<div class="demo-controls">
-			<button class="control-btn danger" on:click={clearHistory}>
+			<button class="control-btn danger" onclick={clearHistory}>
 				Clear History (Reset Frequency)
 			</button>
 			<a href="/admin/popups/create" class="control-btn primary"> Create Custom Popup </a>
@@ -463,7 +463,7 @@
 						</div>
 					</div>
 
-					<button class="test-btn" on:click={() => showPopup(popup)}> Test This Popup </button>
+					<button class="test-btn" onclick={() => showPopup(popup)}> Test This Popup </button>
 				</div>
 			{/each}
 		</div>

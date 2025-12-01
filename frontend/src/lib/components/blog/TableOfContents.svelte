@@ -279,7 +279,7 @@
 		<div class="toc-header">
 			<button
 				class="toc-title-button"
-				on:click={toggleExpanded}
+				onclick={toggleExpanded}
 				aria-expanded={isExpanded}
 				aria-controls="toc-list"
 			>
@@ -305,7 +305,7 @@
 			</button>
 
 			{#if position === 'floating'}
-				<button class="toc-minimize-btn" on:click={toggleMinimized} aria-label="Toggle TOC">
+				<button class="toc-minimize-btn" onclick={toggleMinimized} aria-label="Toggle TOC">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						{#if isFloatingMinimized}
 							<polyline points="15 3 21 3 21 9"></polyline>
@@ -331,7 +331,7 @@
 						<li class="toc-item" class:active={activeId === item.id}>
 							<button
 								class="toc-link"
-								on:click={() => scrollToHeading(item.id)}
+								onclick={() => scrollToHeading(item.id)}
 								aria-current={activeId === item.id ? 'location' : undefined}
 							>
 								{#if showNumbers && item.number}
@@ -346,7 +346,7 @@
 										<li class="toc-item toc-item-child" class:active={activeId === child.id}>
 											<button
 												class="toc-link"
-												on:click={() => scrollToHeading(child.id)}
+												onclick={() => scrollToHeading(child.id)}
 												aria-current={activeId === child.id ? 'location' : undefined}
 											>
 												{#if showNumbers && child.number}
@@ -364,7 +364,7 @@
 														>
 															<button
 																class="toc-link"
-																on:click={() => scrollToHeading(grandchild.id)}
+																onclick={() => scrollToHeading(grandchild.id)}
 																aria-current={activeId === grandchild.id ? 'location' : undefined}
 															>
 																{#if showNumbers && grandchild.number}

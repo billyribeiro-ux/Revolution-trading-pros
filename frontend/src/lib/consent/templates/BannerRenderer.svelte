@@ -255,7 +255,7 @@
 		<div
 			class="consent-backdrop"
 			style="background: {template.colors.backdrop || 'rgba(0,0,0,0.5)'}"
-			on:click={template.showCloseButton ? handleClose : undefined}
+			onclick={template.showCloseButton ? handleClose : undefined}
 			role="presentation"
 		></div>
 	{/if}
@@ -269,7 +269,7 @@
 	>
 		<!-- Close button -->
 		{#if template.showCloseButton}
-			<button class="close-btn" on:click={handleClose} aria-label="Close">
+			<button class="close-btn" onclick={handleClose} aria-label="Close">
 				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M18 6 6 18"/><path d="m6 6 12 12"/>
 				</svg>
@@ -319,7 +319,7 @@
 					<button
 						class="btn btn-{button.type}"
 						style={button.style}
-						on:click={button.onClick}
+						onclick={button.onClick}
 					>
 						{button.text}
 					</button>

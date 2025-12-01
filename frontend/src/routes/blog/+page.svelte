@@ -252,7 +252,7 @@
 			</svg>
 			<h3>Oops! Something went wrong</h3>
 			<p>{error}</p>
-			<button class="btn-retry" on:click={retryLoad}>
+			<button class="btn-retry" onclick={retryLoad}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="20"
@@ -280,8 +280,8 @@
 			{#each posts as post}
 				<div
 					class="post-card"
-					on:click={() => viewPost(post.slug)}
-					on:keydown={(e) => e.key === 'Enter' && viewPost(post.slug)}
+					onclick={() => viewPost(post.slug)}
+					onkeydown={(e) => e.key === 'Enter' && viewPost(post.slug)}
 					role="button"
 					tabindex="0"
 				>
@@ -349,7 +349,7 @@
 
 		{#if lastPage > 1}
 			<div class="pagination">
-				<button class="btn-pagination" on:click={prevPage} disabled={currentPage === 1}>
+				<button class="btn-pagination" onclick={prevPage} disabled={currentPage === 1}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"
@@ -368,7 +368,7 @@
 
 				<span class="page-info">Page {currentPage} of {lastPage}</span>
 
-				<button class="btn-pagination" on:click={nextPage} disabled={currentPage === lastPage}>
+				<button class="btn-pagination" onclick={nextPage} disabled={currentPage === lastPage}>
 					Next
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

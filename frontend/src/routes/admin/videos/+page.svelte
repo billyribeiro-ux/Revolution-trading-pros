@@ -114,10 +114,10 @@
 			<p class="page-description">Upload, manage, and organize your video content</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" on:click={loadVideos} disabled={isLoading}>
+			<button class="btn-refresh" onclick={loadVideos} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
-			<button class="btn-primary" on:click={() => showUploadModal = true}>
+			<button class="btn-primary" onclick={() => showUploadModal = true}>
 				<IconUpload size={18} />
 				Upload Video
 			</button>
@@ -187,14 +187,14 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button on:click={loadVideos}>Try Again</button>
+			<button onclick={loadVideos}>Try Again</button>
 		</div>
 	{:else if filteredVideos.length === 0}
 		<div class="empty-state">
 			<IconVideo size={64} />
 			<h3>No videos found</h3>
 			<p>Upload your first video to get started</p>
-			<button class="btn-primary" on:click={() => showUploadModal = true}>
+			<button class="btn-primary" onclick={() => showUploadModal = true}>
 				<IconUpload size={18} />
 				Upload Video
 			</button>
@@ -247,7 +247,7 @@
 						<button class="btn-icon" title="Share">
 							<IconShare size={16} />
 						</button>
-						<button class="btn-icon danger" title="Delete" on:click={() => deleteVideo(video.id)}>
+						<button class="btn-icon danger" title="Delete" onclick={() => deleteVideo(video.id)}>
 							<IconTrash size={16} />
 						</button>
 					</div>
@@ -260,12 +260,12 @@
 <!-- Upload Modal -->
 {#if showUploadModal}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-overlay" on:click={() => showUploadModal = false} on:keydown={(e) => e.key === 'Escape' && (showUploadModal = false)}>
+	<div class="modal-overlay" onclick={() => showUploadModal = false} onkeydown={(e) => e.key === 'Escape' && (showUploadModal = false)}>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="modal" on:click|stopPropagation on:keydown|stopPropagation role="dialog" aria-modal="true" tabindex="-1">
+		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>Upload Video</h2>
-				<button class="modal-close" on:click={() => showUploadModal = false} type="button" aria-label="Close">&times;</button>
+				<button class="modal-close" onclick={() => showUploadModal = false} type="button" aria-label="Close">&times;</button>
 			</div>
 			<div class="modal-body">
 				<div class="upload-zone">
@@ -283,7 +283,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => showUploadModal = false} type="button">Cancel</button>
+				<button class="btn-secondary" onclick={() => showUploadModal = false} type="button">Cancel</button>
 				<button class="btn-primary" type="button">Upload</button>
 			</div>
 		</div>

@@ -309,7 +309,7 @@
 			<IconAlertTriangle size={48} />
 			<h2>Failed to load member</h2>
 			<p>{error}</p>
-			<button class="btn-primary" on:click={loadMember}>
+			<button class="btn-primary" onclick={loadMember}>
 				<IconRefresh size={18} />
 				Retry
 			</button>
@@ -317,7 +317,7 @@
 	{:else if member}
 		<!-- Header -->
 		<div class="page-header">
-			<button class="back-btn" on:click={() => goto('/admin/members')}>
+			<button class="back-btn" onclick={() => goto('/admin/members')}>
 				<IconArrowLeft size={20} />
 				Back to Members
 			</button>
@@ -343,12 +343,12 @@
 							{#each tags as tag}
 								<span class="tag">
 									{tag}
-									<button class="tag-remove" on:click={() => removeTag(tag)}>
+									<button class="tag-remove" onclick={() => removeTag(tag)}>
 										<IconX size={12} />
 									</button>
 								</span>
 							{/each}
-							<button class="tag-add" on:click={() => (showTagModal = true)}>
+							<button class="tag-add" onclick={() => (showTagModal = true)}>
 								<IconPlus size={14} />
 								Add Tag
 							</button>
@@ -357,11 +357,11 @@
 				</div>
 
 				<div class="header-actions">
-					<button class="btn-secondary" on:click={() => (showNoteModal = true)}>
+					<button class="btn-secondary" onclick={() => (showNoteModal = true)}>
 						<IconFileText size={18} />
 						Add Note
 					</button>
-					<button class="btn-primary" on:click={() => (showEmailModal = true)}>
+					<button class="btn-primary" onclick={() => (showEmailModal = true)}>
 						<IconMail size={18} />
 						Send Email
 					</button>
@@ -414,26 +414,26 @@
 		<!-- Tabs -->
 		<div class="tabs-container">
 			<div class="tabs">
-				<button class:active={activeTab === 'overview'} on:click={() => (activeTab = 'overview')}>
+				<button class:active={activeTab === 'overview'} onclick={() => (activeTab = 'overview')}>
 					<IconActivity size={18} />
 					Overview
 				</button>
 				<button
 					class:active={activeTab === 'subscriptions'}
-					on:click={() => (activeTab = 'subscriptions')}
+					onclick={() => (activeTab = 'subscriptions')}
 				>
 					<IconCreditCard size={18} />
 					Subscriptions
 				</button>
-				<button class:active={activeTab === 'orders'} on:click={() => (activeTab = 'orders')}>
+				<button class:active={activeTab === 'orders'} onclick={() => (activeTab = 'orders')}>
 					<IconReceipt size={18} />
 					Orders
 				</button>
-				<button class:active={activeTab === 'emails'} on:click={() => (activeTab = 'emails')}>
+				<button class:active={activeTab === 'emails'} onclick={() => (activeTab = 'emails')}>
 					<IconMail size={18} />
 					Emails
 				</button>
-				<button class:active={activeTab === 'notes'} on:click={() => (activeTab = 'notes')}>
+				<button class:active={activeTab === 'notes'} onclick={() => (activeTab = 'notes')}>
 					<IconFileText size={18} />
 					Notes
 				</button>
@@ -448,7 +448,7 @@
 					<div class="panel timeline-panel">
 						<div class="panel-header">
 							<h3>Activity Timeline</h3>
-							<button class="btn-icon" on:click={loadMember}>
+							<button class="btn-icon" onclick={loadMember}>
 								<IconRefresh size={18} />
 							</button>
 						</div>
@@ -624,7 +624,7 @@
 				<div class="panel">
 					<div class="panel-header">
 						<h3>Email History</h3>
-						<button class="btn-primary small" on:click={() => (showEmailModal = true)}>
+						<button class="btn-primary small" onclick={() => (showEmailModal = true)}>
 							<IconSend size={16} />
 							Send Email
 						</button>
@@ -673,7 +673,7 @@
 				<div class="panel">
 					<div class="panel-header">
 						<h3>Internal Notes</h3>
-						<button class="btn-primary small" on:click={() => (showNoteModal = true)}>
+						<button class="btn-primary small" onclick={() => (showNoteModal = true)}>
 							<IconPlus size={16} />
 							Add Note
 						</button>
@@ -711,16 +711,16 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		on:click={() => (showEmailModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showEmailModal = false)}
+		onclick={() => (showEmailModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showEmailModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" on:click|stopPropagation on:keydown|stopPropagation role="document">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Send Email to {member?.name}</h2>
-				<button class="close-btn" on:click={() => (showEmailModal = false)}>
+				<button class="close-btn" onclick={() => (showEmailModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -745,10 +745,10 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showEmailModal = false)}>Cancel</button>
+				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
 				<button
 					class="btn-primary"
-					on:click={handleSendEmail}
+					onclick={handleSendEmail}
 					disabled={!emailSubject || !emailBody || emailSending}
 				>
 					<IconSend size={18} />
@@ -764,16 +764,16 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		on:click={() => (showNoteModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showNoteModal = false)}
+		onclick={() => (showNoteModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showNoteModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" on:click|stopPropagation on:keydown|stopPropagation role="document">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Add Note</h2>
-				<button class="close-btn" on:click={() => (showNoteModal = false)}>
+				<button class="close-btn" onclick={() => (showNoteModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -789,8 +789,8 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showNoteModal = false)}>Cancel</button>
-				<button class="btn-primary" on:click={addNote} disabled={!newNote.trim()}>
+				<button class="btn-secondary" onclick={() => (showNoteModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={addNote} disabled={!newNote.trim()}>
 					<IconPlus size={18} />
 					Add Note
 				</button>
@@ -804,16 +804,16 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		class="modal-overlay"
-		on:click={() => (showTagModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showTagModal = false)}
+		onclick={() => (showTagModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showTagModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" on:click|stopPropagation on:keydown|stopPropagation role="document">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Manage Tags</h2>
-				<button class="close-btn" on:click={() => (showTagModal = false)}>
+				<button class="close-btn" onclick={() => (showTagModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -825,7 +825,7 @@
 							<button
 								class="tag-option"
 								class:selected={tags.includes(tag)}
-								on:click={() => (tags.includes(tag) ? removeTag(tag) : addTag(tag))}
+								onclick={() => (tags.includes(tag) ? removeTag(tag) : addTag(tag))}
 							>
 								{#if tags.includes(tag)}
 									<IconCheck size={14} />
@@ -844,16 +844,16 @@
 							type="text"
 							bind:value={newTag}
 							placeholder="Enter custom tag..."
-							on:keydown={(e) => e.key === 'Enter' && addCustomTag()}
+							onkeydown={(e) => e.key === 'Enter' && addCustomTag()}
 						/>
-						<button class="btn-primary small" on:click={addCustomTag} disabled={!newTag.trim()}>
+						<button class="btn-primary small" onclick={addCustomTag} disabled={!newTag.trim()}>
 							Add
 						</button>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-primary" on:click={() => (showTagModal = false)}>Done</button>
+				<button class="btn-primary" onclick={() => (showTagModal = false)}>Done</button>
 			</div>
 		</div>
 	</div>

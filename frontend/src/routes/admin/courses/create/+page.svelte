@@ -1482,14 +1482,14 @@
 				</span>
 			{/if}
 
-			<button class="btn-ghost" on:click={saveDraft} disabled={!hasUnsavedChanges}>
+			<button class="btn-ghost" onclick={saveDraft} disabled={!hasUnsavedChanges}>
 				<IconDownload size={18} />
 				Save Draft
 			</button>
 
 			<button
 				class="btn-secondary"
-				on:click={() => window.open(`/preview/course/${course.slug || 'preview'}`, '_blank')}
+				onclick={() => window.open(`/preview/course/${course.slug || 'preview'}`, '_blank')}
 			>
 				<IconEye size={18} />
 				Preview
@@ -1497,7 +1497,7 @@
 
 			<button
 				class="btn-primary"
-				on:click={publishCourse}
+				onclick={publishCourse}
 				disabled={saving || completionStatus.percentage < 30}
 				title={completionStatus.percentage < 30
 					? 'Complete at least 30% to publish'
@@ -1522,7 +1522,7 @@
 				<button
 					class="nav-item"
 					class:active={activeTab === 'basic'}
-					on:click={() => (activeTab = 'basic')}
+					onclick={() => (activeTab = 'basic')}
 				>
 					<IconBook size={20} />
 					<span>Basic Info</span>
@@ -1534,7 +1534,7 @@
 				<button
 					class="nav-item"
 					class:active={activeTab === 'curriculum'}
-					on:click={() => (activeTab = 'curriculum')}
+					onclick={() => (activeTab = 'curriculum')}
 				>
 					<IconFileText size={20} />
 					<span>Curriculum</span>
@@ -1546,7 +1546,7 @@
 				<button
 					class="nav-item"
 					class:active={activeTab === 'pricing'}
-					on:click={() => (activeTab = 'pricing')}
+					onclick={() => (activeTab = 'pricing')}
 				>
 					<IconCurrencyDollar size={20} />
 					<span>Pricing</span>
@@ -1558,7 +1558,7 @@
 				<button
 					class="nav-item"
 					class:active={activeTab === 'media'}
-					on:click={() => (activeTab = 'media')}
+					onclick={() => (activeTab = 'media')}
 				>
 					<IconPhoto size={20} />
 					<span>Media</span>
@@ -1570,7 +1570,7 @@
 				<button
 					class="nav-item"
 					class:active={activeTab === 'seo'}
-					on:click={() => (activeTab = 'seo')}
+					onclick={() => (activeTab = 'seo')}
 				>
 					<IconTarget size={20} />
 					<span>SEO & Marketing</span>
@@ -1582,7 +1582,7 @@
 				<button
 					class="nav-item"
 					class:active={activeTab === 'advanced'}
-					on:click={() => (activeTab = 'advanced')}
+					onclick={() => (activeTab = 'advanced')}
 				>
 					<IconSettings size={20} />
 					<span>Advanced</span>
@@ -1596,23 +1596,23 @@
 					AI Assistant
 				</h3>
 				<div class="ai-actions">
-					<button on:click={() => generateWithAI('description')} disabled={generating}>
+					<button onclick={() => generateWithAI('description')} disabled={generating}>
 						<IconBulb size={16} />
 						Generate Description
 					</button>
-					<button on:click={() => generateWithAI('curriculum')} disabled={generating}>
+					<button onclick={() => generateWithAI('curriculum')} disabled={generating}>
 						<IconBook size={16} />
 						Build Curriculum
 					</button>
-					<button on:click={() => generateWithAI('outcomes')} disabled={generating}>
+					<button onclick={() => generateWithAI('outcomes')} disabled={generating}>
 						<IconTarget size={16} />
 						Create Outcomes
 					</button>
-					<button on:click={suggestPricing} disabled={analyzing}>
+					<button onclick={suggestPricing} disabled={analyzing}>
 						<IconChartBar size={16} />
 						Analyze Pricing
 					</button>
-					<button on:click={() => generateWithAI('seo')} disabled={generating}>
+					<button onclick={() => generateWithAI('seo')} disabled={generating}>
 						<IconTarget size={16} />
 						Optimize SEO
 					</button>
@@ -1666,7 +1666,7 @@
 								Course Title *
 								<button
 									class="ai-btn"
-									on:click={() => generateWithAI('title')}
+									onclick={() => generateWithAI('title')}
 									disabled={generating}
 								>
 									<IconSparkles size={14} />
@@ -1676,7 +1676,7 @@
 								id="name"
 								type="text"
 								bind:value={course.name}
-								on:blur={generateSlug}
+								onblur={generateSlug}
 								placeholder="e.g., Master Technical Analysis for Day Trading"
 								class="input-large"
 							/>
@@ -1727,7 +1727,7 @@
 								Full Description
 								<button
 									class="ai-btn"
-									on:click={() => generateWithAI('description')}
+									onclick={() => generateWithAI('description')}
 									disabled={generating}
 								>
 									<IconSparkles size={14} />
@@ -1786,7 +1786,7 @@
 							Learning Outcomes
 							<button
 								class="ai-btn"
-								on:click={() => generateWithAI('outcomes')}
+								onclick={() => generateWithAI('outcomes')}
 								disabled={generating}
 							>
 								<IconSparkles size={14} />
@@ -1803,12 +1803,12 @@
 										bind:value={course.outcomes[i]}
 										placeholder="Students will be able to..."
 									/>
-									<button on:click={() => removeOutcome(i)}>
+									<button onclick={() => removeOutcome(i)}>
 										<IconX size={16} />
 									</button>
 								</div>
 							{/each}
-							<button class="add-item" on:click={addOutcome}>
+							<button class="add-item" onclick={addOutcome}>
 								<IconPlus size={16} />
 								Add Outcome
 							</button>
@@ -1821,7 +1821,7 @@
 							Prerequisites
 							<button
 								class="ai-btn"
-								on:click={() => generateWithAI('prerequisites')}
+								onclick={() => generateWithAI('prerequisites')}
 								disabled={generating}
 							>
 								<IconSparkles size={14} />
@@ -1837,12 +1837,12 @@
 										bind:value={course.prerequisites[i]}
 										placeholder="Required knowledge or skills..."
 									/>
-									<button on:click={() => removePrerequisite(i)}>
+									<button onclick={() => removePrerequisite(i)}>
 										<IconX size={16} />
 									</button>
 								</div>
 							{/each}
-							<button class="add-item" on:click={addPrerequisite}>
+							<button class="add-item" onclick={addPrerequisite}>
 								<IconPlus size={16} />
 								Add Prerequisite
 							</button>
@@ -1855,7 +1855,7 @@
 							Target Audience
 							<button
 								class="ai-btn"
-								on:click={() => generateWithAI('target')}
+								onclick={() => generateWithAI('target')}
 								disabled={generating}
 							>
 								<IconSparkles size={14} />
@@ -1872,7 +1872,7 @@
 										placeholder="Who is this course for?"
 									/>
 									<button
-										on:click={() =>
+										onclick={() =>
 											(course.target_audience = course.target_audience.filter(
 												(_, idx) => idx !== i
 											))}
@@ -1883,7 +1883,7 @@
 							{/each}
 							<button
 								class="add-item"
-								on:click={() => (course.target_audience = [...course.target_audience, ''])}
+								onclick={() => (course.target_audience = [...course.target_audience, ''])}
 							>
 								<IconPlus size={16} />
 								Add Audience
@@ -1914,7 +1914,7 @@
 						</div>
 						<button
 							class="ai-btn-large"
-							on:click={() => generateWithAI('curriculum')}
+							onclick={() => generateWithAI('curriculum')}
 							disabled={generating}
 						>
 							<IconSparkles size={16} />
@@ -1930,10 +1930,10 @@
 								animate:flip={{ duration: 300 }}
 								draggable="true"
 								role="listitem"
-								on:dragstart={(e) => handleDragStart(e, module, 'module')}
-								on:dragover={handleDragOver}
-								on:drop={(e) => handleModuleDrop(e, moduleIndex)}
-								on:dragend={handleDragEnd}
+								ondragstart={(e) => handleDragStart(e, module, 'module')}
+								ondragover={handleDragOver}
+								ondrop={(e) => handleModuleDrop(e, moduleIndex)}
+								ondragend={handleDragEnd}
 								class:dragging={isDragging && draggedModule?.id === module.id}
 							>
 								<div class="module-header">
@@ -1949,7 +1949,7 @@
 										{module.lessons.length} lessons • {module.duration_minutes} min
 									</span>
 									<div class="module-actions">
-										<button class="expand-btn" on:click={() => toggleModuleExpansion(module.id)}>
+										<button class="expand-btn" onclick={() => toggleModuleExpansion(module.id)}>
 											<IconChevronDown
 												size={18}
 												style="transform: rotate({expandedModules.has(module.id)
@@ -1957,10 +1957,10 @@
 													: -90}deg); transition: transform 0.2s"
 											/>
 										</button>
-										<button on:click={() => duplicateModule(module.id)} title="Duplicate">
+										<button onclick={() => duplicateModule(module.id)} title="Duplicate">
 											<IconCopy size={16} />
 										</button>
-										<button on:click={() => removeModule(module.id)} title="Delete">
+										<button onclick={() => removeModule(module.id)} title="Delete">
 											<IconTrash size={16} />
 										</button>
 									</div>
@@ -1982,10 +1982,10 @@
 													animate:flip={{ duration: 200 }}
 													draggable="true"
 													role="listitem"
-													on:dragstart={(e) => handleDragStart(e, lesson, 'lesson')}
-													on:dragover={handleDragOver}
-													on:drop={(e) => handleLessonDrop(e, module.id, lessonIndex)}
-													on:dragend={handleDragEnd}
+													ondragstart={(e) => handleDragStart(e, lesson, 'lesson')}
+													ondragover={handleDragOver}
+													ondrop={(e) => handleLessonDrop(e, module.id, lessonIndex)}
+													ondragend={handleDragEnd}
 												>
 													<IconGripVertical size={16} class="lesson-drag" />
 													<span class="lesson-number">{lessonIndex + 1}</span>
@@ -2008,7 +2008,7 @@
 													<input
 														type="number"
 														bind:value={lesson.duration_minutes}
-														on:change={() => updateModuleDuration(module)}
+														onchange={() => updateModuleDuration(module)}
 														placeholder="Min"
 														class="lesson-duration"
 														min="0"
@@ -2018,13 +2018,13 @@
 														<IconEye size={14} />
 													</label>
 													<button
-														on:click={() => duplicateLesson(module.id, lesson.id)}
+														onclick={() => duplicateLesson(module.id, lesson.id)}
 														title="Duplicate"
 													>
 														<IconCopy size={14} />
 													</button>
 													<button
-														on:click={() => removeLesson(module.id, lesson.id)}
+														onclick={() => removeLesson(module.id, lesson.id)}
 														title="Delete"
 													>
 														<IconX size={16} />
@@ -2033,7 +2033,7 @@
 											{/each}
 										</div>
 
-										<button class="add-lesson" on:click={() => addLesson(module.id)}>
+										<button class="add-lesson" onclick={() => addLesson(module.id)}>
 											<IconPlus size={16} />
 											Add Lesson
 										</button>
@@ -2056,7 +2056,7 @@
 							</div>
 						{/each}
 
-						<button class="add-module" on:click={addModule}>
+						<button class="add-module" onclick={addModule}>
 							<IconPlus size={20} />
 							Add Module
 						</button>
@@ -2091,7 +2091,7 @@
 					<div class="form-card">
 						<h2>
 							Pricing Strategy
-							<button class="analyze-btn" on:click={suggestPricing} disabled={analyzing}>
+							<button class="analyze-btn" onclick={suggestPricing} disabled={analyzing}>
 								<IconChartBar size={16} />
 								AI Market Analysis
 							</button>
@@ -2261,13 +2261,13 @@
 										min="0"
 										class="bonus-value"
 									/>
-									<button on:click={() => removeBonus(bonus.id)}>
+									<button onclick={() => removeBonus(bonus.id)}>
 										<IconX size={16} />
 									</button>
 								</div>
 							{/each}
 
-							<button class="add-item" on:click={addBonus}>
+							<button class="add-item" onclick={addBonus}>
 								<IconPlus size={16} />
 								Add Bonus
 							</button>
@@ -2338,7 +2338,7 @@
 									<img src={course.thumbnail} alt="Thumbnail" />
 									<button
 										class="remove-btn"
-										on:click={() => {
+										onclick={() => {
 											course.thumbnail = '';
 											hasUnsavedChanges = true;
 										}}
@@ -2356,7 +2356,7 @@
 								<input
 									type="file"
 									accept="image/*"
-									on:change={(e) => handleImageUpload(e, 'thumbnail')}
+									onchange={(e) => handleImageUpload(e, 'thumbnail')}
 									disabled={uploading}
 								/>
 							</label>
@@ -2379,7 +2379,7 @@
 									{/if}
 									<button
 										class="remove-btn"
-										on:click={() => {
+										onclick={() => {
 											course.promo_video = '';
 											hasUnsavedChanges = true;
 										}}
@@ -2397,7 +2397,7 @@
 										<input
 											type="file"
 											accept="video/*"
-											on:change={handleVideoUpload}
+											onchange={handleVideoUpload}
 											disabled={uploading}
 										/>
 									</label>
@@ -2408,7 +2408,7 @@
 										<input
 											type="url"
 											placeholder="Paste YouTube, Vimeo, or Wistia URL..."
-											on:change={(e) => {
+											onchange={(e) => {
 												course.promo_video = e.target.value;
 												hasUnsavedChanges = true;
 											}}
@@ -2427,7 +2427,7 @@
 							{#each course.gallery as image, i}
 								<div class="gallery-item">
 									<img src={image} alt="Gallery {i + 1}" />
-									<button class="remove-btn" on:click={() => removeFromGallery(i)}>
+									<button class="remove-btn" onclick={() => removeFromGallery(i)}>
 										<IconX size={16} />
 									</button>
 								</div>
@@ -2439,7 +2439,7 @@
 								<input
 									type="file"
 									accept="image/*"
-									on:change={(e) => handleImageUpload(e, 'gallery')}
+									onchange={(e) => handleImageUpload(e, 'gallery')}
 									disabled={uploading || course.gallery.length >= 10}
 								/>
 							</label>
@@ -2457,7 +2457,7 @@
 					<div class="form-card">
 						<h2>
 							SEO Optimization
-							<button class="ai-btn" on:click={() => generateWithAI('seo')} disabled={generating}>
+							<button class="ai-btn" onclick={() => generateWithAI('seo')} disabled={generating}>
 								<IconSparkles size={14} />
 								AI Optimize
 							</button>
@@ -2493,7 +2493,7 @@
 								{#each course.keywords as keyword, i}
 									<span class="tag">
 										{keyword}
-										<button on:click={() => removeKeyword(i)}>
+										<button onclick={() => removeKeyword(i)}>
 											<IconX size={14} />
 										</button>
 									</span>
@@ -2502,7 +2502,7 @@
 									id="keywords-input"
 									type="text"
 									placeholder="Add keyword and press Enter..."
-									on:keydown={addKeyword}
+									onkeydown={addKeyword}
 								/>
 							</div>
 							<p class="help-text">Add 5-10 relevant keywords for better SEO</p>
@@ -2515,7 +2515,7 @@
 									<img src={course.og_image} alt="Social share preview" />
 									<button
 										class="remove-btn"
-										on:click={() => {
+										onclick={() => {
 											course.og_image = '';
 											hasUnsavedChanges = true;
 										}}
@@ -2530,7 +2530,7 @@
 								<input
 									type="file"
 									accept="image/*"
-									on:change={(e) => handleImageUpload(e, 'og')}
+									onchange={(e) => handleImageUpload(e, 'og')}
 									disabled={uploading}
 								/>
 							</label>
@@ -2740,7 +2740,7 @@
 										placeholder="Software, tools, or resources needed"
 									/>
 									<button
-										on:click={() =>
+										onclick={() =>
 											(course.tools_required = course.tools_required.filter((_, idx) => idx !== i))}
 									>
 										<IconX size={16} />
@@ -2749,7 +2749,7 @@
 							{/each}
 							<button
 								class="add-item"
-								on:click={() => (course.tools_required = [...course.tools_required, ''])}
+								onclick={() => (course.tools_required = [...course.tools_required, ''])}
 							>
 								<IconPlus size={16} />
 								Add Tool

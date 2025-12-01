@@ -266,7 +266,7 @@
 <div class="campaigns-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" on:click={() => goto('/admin/email/templates')}>
+		<button class="back-btn" onclick={() => goto('/admin/email/templates')}>
 			<IconArrowLeft size={20} />
 			Back to Templates
 		</button>
@@ -283,11 +283,11 @@
 			</div>
 
 			<div class="header-actions">
-				<button class="btn-secondary" on:click={loadCampaigns}>
+				<button class="btn-secondary" onclick={loadCampaigns}>
 					<IconRefresh size={18} />
 					Refresh
 				</button>
-				<button class="btn-primary" on:click={() => (showCreateModal = true)}>
+				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
 					<IconPlus size={18} />
 					New Campaign
 				</button>
@@ -304,7 +304,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn-primary" on:click={loadCampaigns}>Try Again</button>
+			<button class="btn-primary" onclick={loadCampaigns}>Try Again</button>
 		</div>
 	{:else}
 		<!-- Stats Overview -->
@@ -350,18 +350,18 @@
 		<!-- Tabs -->
 		<div class="tabs-container">
 			<div class="tabs">
-				<button class:active={activeTab === 'all'} on:click={() => (activeTab = 'all')}>
+				<button class:active={activeTab === 'all'} onclick={() => (activeTab = 'all')}>
 					All ({campaigns.length})
 				</button>
-				<button class:active={activeTab === 'scheduled'} on:click={() => (activeTab = 'scheduled')}>
+				<button class:active={activeTab === 'scheduled'} onclick={() => (activeTab = 'scheduled')}>
 					<IconClock size={16} />
 					Scheduled ({campaigns.filter((c) => c.status === 'scheduled').length})
 				</button>
-				<button class:active={activeTab === 'sent'} on:click={() => (activeTab = 'sent')}>
+				<button class:active={activeTab === 'sent'} onclick={() => (activeTab = 'sent')}>
 					<IconCheck size={16} />
 					Sent ({campaigns.filter((c) => c.status === 'sent').length})
 				</button>
-				<button class:active={activeTab === 'drafts'} on:click={() => (activeTab = 'drafts')}>
+				<button class:active={activeTab === 'drafts'} onclick={() => (activeTab = 'drafts')}>
 					<IconEdit size={16} />
 					Drafts ({campaigns.filter((c) => c.status === 'draft').length})
 				</button>
@@ -454,23 +454,23 @@
 
 					<div class="campaign-actions">
 						{#if campaign.status === 'draft'}
-							<button class="btn-primary small" on:click={() => handleSendCampaign(campaign.id)}>
+							<button class="btn-primary small" onclick={() => handleSendCampaign(campaign.id)}>
 								<IconSend size={16} />
 								Send Now
 							</button>
-							<button class="btn-secondary small" on:click={() => handleDuplicateCampaign(campaign)}>
+							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
 								<IconCopy size={16} />
 								Duplicate
 							</button>
-							<button class="btn-danger small" on:click={() => handleDeleteCampaign(campaign.id)}>
+							<button class="btn-danger small" onclick={() => handleDeleteCampaign(campaign.id)}>
 								<IconTrash size={16} />
 							</button>
 						{:else if campaign.status === 'scheduled'}
-							<button class="btn-secondary small" on:click={() => handleCancelCampaign(campaign.id)}>
+							<button class="btn-secondary small" onclick={() => handleCancelCampaign(campaign.id)}>
 								<IconX size={16} />
 								Cancel
 							</button>
-							<button class="btn-secondary small" on:click={() => handleDuplicateCampaign(campaign)}>
+							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
 								<IconCopy size={16} />
 								Duplicate
 							</button>
@@ -479,7 +479,7 @@
 								<IconChartBar size={16} />
 								View Report
 							</button>
-							<button class="btn-secondary small" on:click={() => handleDuplicateCampaign(campaign)}>
+							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
 								<IconCopy size={16} />
 								Duplicate
 							</button>
@@ -493,7 +493,7 @@
 					<IconMail size={48} stroke={1} />
 					<h3>No campaigns found</h3>
 					<p>Create your first email campaign to get started</p>
-					<button class="btn-primary" on:click={() => (showCreateModal = true)}>
+					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
 						<IconPlus size={18} />
 						Create Campaign
 					</button>
@@ -510,19 +510,19 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		on:click={() => (showCreateModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showCreateModal = false)}
+		onclick={() => (showCreateModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCreateModal = false)}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content large"
 			role="document"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Create New Campaign</h2>
-				<button class="close-btn" on:click={() => (showCreateModal = false)}>
+				<button class="close-btn" onclick={() => (showCreateModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -612,8 +612,8 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showCreateModal = false)}>Cancel</button>
-				<button class="btn-primary" on:click={handleCreateCampaign}>
+				<button class="btn-secondary" onclick={() => (showCreateModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={handleCreateCampaign}>
 					{#if newCampaign.scheduledFor}
 						<IconCalendar size={18} />
 						Schedule Campaign

@@ -656,7 +656,7 @@
 				<div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative">
 					<button
 						type="button"
-						on:click={() => (billingInterval = 'monthly')}
+						onclick={() => (billingInterval = 'monthly')}
 						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {billingInterval ===
 						'monthly'
 							? 'text-white'
@@ -666,7 +666,7 @@
 					</button>
 					<button
 						type="button"
-						on:click={() => (billingInterval = 'annual')}
+						onclick={() => (billingInterval = 'annual')}
 						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {billingInterval ===
 						'annual'
 							? 'text-white'
@@ -772,7 +772,7 @@
 						<button
 							type="button"
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-slate-200"
-							on:click={() => toggleFaq(i)}
+							onclick={() => toggleFaq(i)}
 							aria-expanded={openFaq === i}
 						>
 							{item.q}

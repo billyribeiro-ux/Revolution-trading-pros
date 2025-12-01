@@ -45,7 +45,7 @@
 			<h2>Choose a Template</h2>
 			<p class="header-description">Start with a pre-designed form or build from scratch</p>
 		</div>
-		<button class="btn-scratch" on:click={handleStartFromScratch}> ✨ Start from Scratch </button>
+		<button class="btn-scratch" onclick={handleStartFromScratch}> ✨ Start from Scratch </button>
 	</div>
 
 	<div class="search-filter">
@@ -62,7 +62,7 @@
 			<button
 				class="category-btn"
 				class:active={selectedCategory === category.id}
-				on:click={() => (selectedCategory = category.id)}
+				onclick={() => (selectedCategory = category.id)}
 			>
 				<span class="category-icon">{category.icon}</span>
 				<span>{category.label}</span>
@@ -81,8 +81,8 @@
 					class="template-card"
 					role="button"
 					tabindex="0"
-					on:click={() => handleSelect(template)}
-					on:keypress={(e) => e.key === 'Enter' && handleSelect(template)}
+					onclick={() => handleSelect(template)}
+					onkeypress={(e) => e.key === 'Enter' && handleSelect(template)}
 				>
 					<div class="template-icon">{template.icon}</div>
 					<div class="template-content">

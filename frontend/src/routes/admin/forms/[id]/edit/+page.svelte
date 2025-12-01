@@ -54,8 +54,8 @@
 		showEmbedCode = false;
 	}
 
-	function handleThemeChange(event: CustomEvent<FormTheme>) {
-		selectedTheme = event.detail;
+	function handleThemeChange(theme: FormTheme) {
+		selectedTheme = theme;
 		if (form) {
 			form = {
 				...form,
@@ -81,11 +81,11 @@
 			{/if}
 		</div>
 		<div class="header-actions">
-			<button class="btn-theme" on:click={toggleThemeCustomizer}>
+			<button class="btn-theme" onclick={toggleThemeCustomizer}>
 				{showThemeCustomizer ? '📝 Edit Form' : '🎨 Customize Theme'}
 			</button>
 			{#if form && form.status === 'published'}
-				<button class="btn-embed" on:click={toggleEmbedCode}>
+				<button class="btn-embed" onclick={toggleEmbedCode}>
 					{showEmbedCode ? '📝 Edit Form' : '🔗 Get Embed Code'}
 				</button>
 			{/if}
@@ -99,18 +99,18 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn-back" on:click={() => goto('/admin/forms')}> Back to Forms </button>
+			<button class="btn-back" onclick={() => goto('/admin/forms')}> Back to Forms </button>
 		</div>
 	{:else if form}
 		{#if showEmbedCode && form.status === 'published'}
 			<EmbedCodeGenerator {form} />
 		{:else if showThemeCustomizer && selectedTheme}
 			<div class="theme-section">
-				<ThemeCustomizer {selectedTheme} on:change={handleThemeChange} />
+				<ThemeCustomizer {selectedTheme} onchange={handleThemeChange} />
 			</div>
-			<FormBuilder {form} isEditing={true} on:save={handleSave} on:cancel={handleCancel} />
+			<FormBuilder {form} isEditing={true} onsave={handleSave} oncancel={handleCancel} />
 		{:else}
-			<FormBuilder {form} isEditing={true} on:save={handleSave} on:cancel={handleCancel} />
+			<FormBuilder {form} isEditing={true} onsave={handleSave} oncancel={handleCancel} />
 		{/if}
 	{/if}
 </div>

@@ -106,43 +106,43 @@
   }
 
   // Event handlers
-  function handleUpload(e: CustomEvent<MediaItem>) {
-    items = [e.detail, ...items];
+  function handleUpload(item: MediaItem) {
+    items = [item, ...items];
     totalItems++;
     loadStatistics();
     showSuccess('File uploaded successfully');
   }
 
-  function handleUploadComplete(e: CustomEvent<{ uploaded: MediaItem[]; failed: any[] }>) {
-    if (e.detail.failed.length > 0) {
-      error = `${e.detail.failed.length} file(s) failed to upload`;
+  function handleUploadComplete(data: { uploaded: MediaItem[]; failed: { file: File; error: string }[] }) {
+    if (data.failed.length > 0) {
+      error = `${data.failed.length} file(s) failed to upload`;
     }
-    if (e.detail.uploaded.length > 0) {
-      showSuccess(`${e.detail.uploaded.length} file(s) uploaded successfully`);
+    if (data.uploaded.length > 0) {
+      showSuccess(`${data.uploaded.length} file(s) uploaded successfully`);
     }
   }
 
-  function handleSelect(e: CustomEvent<MediaItem>) {
-    previewItem = e.detail;
+  function handleSelect(item: MediaItem) {
+    previewItem = item;
     isPreviewOpen = true;
   }
 
-  function handlePreview(e: CustomEvent<MediaItem>) {
-    previewItem = e.detail;
+  function handlePreview(item: MediaItem) {
+    previewItem = item;
     isPreviewOpen = true;
   }
 
-  async function handleDelete(e: CustomEvent<MediaItem>) {
-    if (!confirm(`Delete "${e.detail.filename}"?`)) return;
+  async function handleDelete(item: MediaItem) {
+    if (!confirm(`Delete "${item.filename}"?`)) return;
 
     try {
-      await mediaApi.delete(e.detail.id);
-      items = items.filter((i) => i.id !== e.detail.id);
-      selectedIds = selectedIds.filter((id) => id !== e.detail.id);
+      await mediaApi.delete(item.id);
+      items = items.filter((i) => i.id !== item.id);
+      selectedIds = selectedIds.filter((id) => id !== item.id);
       totalItems--;
       loadStatistics();
       showSuccess('File deleted');
-      if (previewItem?.id === e.detail.id) {
+      if (previewItem?.id === item.id) {
         isPreviewOpen = false;
         previewItem = null;
       }
@@ -151,37 +151,37 @@
     }
   }
 
-  async function handleOptimize(e: CustomEvent<MediaItem>) {
+  async function handleOptimize(item: MediaItem) {
     try {
-      const response = await mediaApi.optimize(e.detail.id, { preset: selectedPreset || undefined });
+      const response = await mediaApi.optimize(item.id, { preset: selectedPreset || undefined });
       if ('job_id' in response.data) {
         showSuccess('Optimization queued');
         // Update item status
-        const idx = items.findIndex((i) => i.id === e.detail.id);
+        const idx = items.findIndex((i) => i.id === item.id);
         if (idx !== -1) {
           items[idx] = { ...items[idx], processing_status: 'processing' };
           items = items;
         }
       } else {
-        items = items.map((i) => (i.id === e.detail.id ? response.data as MediaItem : i));
+        items = items.map((i) => (i.id === item.id ? response.data as MediaItem : i));
         showSuccess('Image optimized successfully');
       }
       loadStatistics();
-    } catch (e: any) {
-      error = e?.message || 'Failed to optimize image';
+    } catch (err: any) {
+      error = err?.message || 'Failed to optimize image';
     }
   }
 
-  async function handleUpdate(e: CustomEvent<{ id: string; data: Partial<MediaItem> }>) {
+  async function handleUpdate(data: { id: string; data: Partial<MediaItem> }) {
     try {
-      const response = await mediaApi.update(e.detail.id, e.detail.data);
-      items = items.map((i) => (i.id === e.detail.id ? response.data : i));
-      if (previewItem?.id === e.detail.id) {
+      const response = await mediaApi.update(data.id, data.data);
+      items = items.map((i) => (i.id === data.id ? response.data : i));
+      if (previewItem?.id === data.id) {
         previewItem = response.data;
       }
       showSuccess('Updated successfully');
-    } catch (e: any) {
-      error = e?.message || 'Failed to update';
+    } catch (err: any) {
+      error = err?.message || 'Failed to update';
     }
   }
 
@@ -301,10 +301,10 @@
       <p class="header-subtitle">Manage and optimize your images and files</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn btn-secondary" on:click={() => (showStats = !showStats)}>
+      <button type="button" class="btn btn-secondary" onclick={() => (showStats = !showStats)}>
         {showStats ? 'Hide Stats' : 'Show Stats'}
       </button>
-      <button type="button" class="btn btn-primary" on:click={() => (showUpload = !showUpload)}>
+      <button type="button" class="btn btn-primary" onclick={() => (showUpload = !showUpload)}>
         {showUpload ? 'Hide Upload' : 'Upload Files'}
       </button>
     </div>
@@ -314,7 +314,7 @@
   {#if error}
     <div class="alert alert-error">
       <span>{error}</span>
-      <button type="button" on:click={() => (error = null)}>&times;</button>
+      <button type="button" onclick={() => (error = null)}>&times;</button>
     </div>
   {/if}
   {#if successMessage}
@@ -398,8 +398,8 @@
       <MediaUpload
         collection={filterCollection || undefined}
         preset={selectedPreset || undefined}
-        on:upload={handleUpload}
-        on:complete={handleUploadComplete}
+        onupload={handleUpload}
+        oncomplete={handleUploadComplete}
       />
     </div>
   {/if}
@@ -413,9 +413,9 @@
           type="text"
           placeholder="Search files..."
           bind:value={searchQuery}
-          on:keydown={(e) => e.key === 'Enter' && applyFilters()}
+          onkeydown={(e) => e.key === 'Enter' && applyFilters()}
         />
-        <button type="button" on:click={applyFilters} aria-label="Search">
+        <button type="button" onclick={applyFilters} aria-label="Search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
@@ -424,28 +424,28 @@
       </div>
 
       <!-- Filters -->
-      <select bind:value={filterType} on:change={applyFilters}>
+      <select bind:value={filterType} onchange={applyFilters}>
         <option value="">All Types</option>
         <option value="image">Images</option>
         <option value="video">Videos</option>
         <option value="document">Documents</option>
       </select>
 
-      <select bind:value={filterCollection} on:change={applyFilters}>
+      <select bind:value={filterCollection} onchange={applyFilters}>
         <option value="">All Collections</option>
         {#each collections as collection}
           <option value={collection}>{collection}</option>
         {/each}
       </select>
 
-      <select bind:value={filterOptimized} on:change={applyFilters}>
+      <select bind:value={filterOptimized} onchange={applyFilters}>
         <option value="">All Status</option>
         <option value="optimized">Optimized</option>
         <option value="pending">Needs Optimization</option>
       </select>
 
       {#if searchQuery || filterType || filterCollection || filterOptimized}
-        <button type="button" class="btn btn-text" on:click={clearFilters}>
+        <button type="button" class="btn btn-text" onclick={clearFilters}>
           Clear Filters
         </button>
       {/if}
@@ -461,7 +461,7 @@
       </select>
 
       <!-- Sort -->
-      <select bind:value={sortBy} on:change={loadMedia}>
+      <select bind:value={sortBy} onchange={loadMedia}>
         <option value="created_at">Upload Date</option>
         <option value="filename">Name</option>
         <option value="size">Size</option>
@@ -470,7 +470,7 @@
       <button
         type="button"
         class="btn btn-icon"
-        on:click={() => {
+        onclick={() => {
           sortDir = sortDir === 'asc' ? 'desc' : 'asc';
           loadMedia();
         }}
@@ -493,18 +493,18 @@
   {#if selectedIds.length > 0}
     <div class="bulk-actions">
       <span class="selection-count">{selectedIds.length} selected</span>
-      <button type="button" class="btn btn-secondary btn-sm" on:click={selectAll}>
+      <button type="button" class="btn btn-secondary btn-sm" onclick={selectAll}>
         {selectedIds.length === items.length ? 'Deselect All' : 'Select All'}
       </button>
       <button
         type="button"
         class="btn btn-primary btn-sm"
-        on:click={handleBulkOptimize}
+        onclick={handleBulkOptimize}
         disabled={isOptimizing}
       >
         {isOptimizing ? 'Optimizing...' : 'Optimize Selected'}
       </button>
-      <button type="button" class="btn btn-danger btn-sm" on:click={handleBulkDelete}>
+      <button type="button" class="btn btn-danger btn-sm" onclick={handleBulkDelete}>
         Delete Selected
       </button>
     </div>
@@ -520,7 +520,7 @@
       <button
         type="button"
         class="btn btn-primary btn-sm"
-        on:click={handleOptimizeAll}
+        onclick={handleOptimizeAll}
         disabled={isOptimizing}
       >
         {isOptimizing ? 'Processing...' : 'Optimize All'}
@@ -533,11 +533,11 @@
     {items}
     {selectedIds}
     loading={isLoading}
-    on:select={handleSelect}
-    on:preview={handlePreview}
-    on:delete={handleDelete}
-    on:optimize={handleOptimize}
-    on:selectionChange={(e) => (selectedIds = e.detail)}
+    onselect={handleSelect}
+    onpreview={handlePreview}
+    ondelete={handleDelete}
+    onoptimize={handleOptimize}
+    onselectionchange={(ids) => (selectedIds = ids)}
   />
 
   <!-- Pagination -->
@@ -547,7 +547,7 @@
         type="button"
         class="btn btn-icon"
         disabled={currentPage === 1}
-        on:click={() => goToPage(currentPage - 1)}
+        onclick={() => goToPage(currentPage - 1)}
         aria-label="Previous page"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -563,7 +563,7 @@
         type="button"
         class="btn btn-icon"
         disabled={currentPage === totalPages}
-        on:click={() => goToPage(currentPage + 1)}
+        onclick={() => goToPage(currentPage + 1)}
         aria-label="Next page"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -578,13 +578,13 @@
 <MediaPreview
   item={previewItem}
   isOpen={isPreviewOpen}
-  on:close={() => {
+  onclose={() => {
     isPreviewOpen = false;
     previewItem = null;
   }}
-  on:optimize={handleOptimize}
-  on:delete={handleDelete}
-  on:update={handleUpdate}
+  onoptimize={handleOptimize}
+  ondelete={handleDelete}
+  onupdate={handleUpdate}
 />
 
 <style>

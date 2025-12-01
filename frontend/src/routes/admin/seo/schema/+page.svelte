@@ -116,14 +116,14 @@
 						<div class="actions">
 							<button
 								class="action-btn"
-								on:click={() => viewJsonLd(schema.id)}
+								onclick={() => viewJsonLd(schema.id)}
 								title="View JSON-LD"
 							>
 								<IconEye size={18} />
 							</button>
 							<button
 								class="action-btn danger"
-								on:click={() => deleteSchema(schema.id)}
+								onclick={() => deleteSchema(schema.id)}
 								title="Delete"
 							>
 								<IconTrash size={18} />
@@ -169,25 +169,25 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		on:click={() => (showPreview = null)}
-		on:keydown={(e) => e.key === 'Escape' && (showPreview = null)}
+		onclick={() => (showPreview = null)}
+		onkeydown={(e) => e.key === 'Escape' && (showPreview = null)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3><IconCode size={20} /> JSON-LD Preview</h3>
 				<div class="modal-actions">
-					<button class="btn-copy" on:click={copyJsonLd}>
+					<button class="btn-copy" onclick={copyJsonLd}>
 						<IconCopy size={18} />
 						Copy
 					</button>
-					<button class="close-btn" on:click={() => (showPreview = null)}>×</button>
+					<button class="close-btn" onclick={() => (showPreview = null)}>×</button>
 				</div>
 			</div>
 			<div class="modal-body">

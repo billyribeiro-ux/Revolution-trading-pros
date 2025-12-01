@@ -81,12 +81,12 @@
 		type="button"
 		class="consent-settings-btn {position} {className}"
 		class:expanded
-		on:click={handleClick}
-		on:mouseenter={handleMouseEnter}
-		on:mouseleave={handleMouseLeave}
-		on:focus={handleMouseEnter}
-		on:blur={handleMouseLeave}
-		on:keydown={handleKeyDown}
+		onclick={handleClick}
+		onmouseenter={handleMouseEnter}
+		onmouseleave={handleMouseLeave}
+		onfocus={handleMouseEnter}
+		onblur={handleMouseLeave}
+		onkeydown={handleKeyDown}
 		aria-label="Cookie settings"
 		title="Manage cookie preferences"
 		transition:fly={{ x: position.includes('left') ? -20 : 20, duration: prefersReducedMotion ? 0 : 300 }}

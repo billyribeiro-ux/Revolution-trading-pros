@@ -114,14 +114,14 @@
 	<div class="actions-section">
 		<h2>Actions</h2>
 		<div class="action-buttons">
-			<button class="action-btn primary" on:click={generateSitemap} disabled={generating}>
+			<button class="action-btn primary" onclick={generateSitemap} disabled={generating}>
 				<IconRefresh size={20} class={generating ? 'spinning' : ''} />
 				{generating ? 'Generating...' : 'Generate Sitemap'}
 			</button>
 
 			<button
 				class="action-btn"
-				on:click={submitToSearchEngines}
+				onclick={submitToSearchEngines}
 				disabled={submitting || !stats?.total_urls}
 			>
 				<IconUpload size={20} />
@@ -129,7 +129,7 @@
 			</button>
 
 			{#if sitemapContent}
-				<button class="action-btn" on:click={downloadSitemap}>
+				<button class="action-btn" onclick={downloadSitemap}>
 					<IconDownload size={20} />
 					Download XML
 				</button>
@@ -170,19 +170,19 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		on:click={() => (showSitemapXml = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showSitemapXml = false)}
+		onclick={() => (showSitemapXml = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showSitemapXml = false)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			tabindex="0"
-			on:click|stopPropagation
-			on:keydown={(e) => e.key === 'Escape' && (showSitemapXml = false)}
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key === 'Escape' && (showSitemapXml = false)}
 		>
 			<div class="modal-header">
 				<h3>Generated Sitemap</h3>
-				<button class="close-btn" on:click={() => (showSitemapXml = false)}>×</button>
+				<button class="close-btn" onclick={() => (showSitemapXml = false)}>×</button>
 			</div>
 			<div class="modal-body">
 				<pre><code>{sitemapContent}</code></pre>

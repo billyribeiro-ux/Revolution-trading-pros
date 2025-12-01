@@ -622,7 +622,7 @@
 				<div class="bg-rtp-bg p-1.5 rounded-xl border border-rtp-border inline-flex relative">
 					<button
 						type="button"
-						on:click={() => (selectedPlan = 'monthly')}
+						onclick={() => (selectedPlan = 'monthly')}
 						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {selectedPlan ===
 						'monthly'
 							? 'text-white'
@@ -632,7 +632,7 @@
 					</button>
 					<button
 						type="button"
-						on:click={() => (selectedPlan = 'annual')}
+						onclick={() => (selectedPlan = 'annual')}
 						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {selectedPlan ===
 						'annual'
 							? 'text-white'
@@ -870,7 +870,7 @@
 					<div class="border border-rtp-border rounded-xl bg-rtp-surface overflow-hidden">
 						<button
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-rtp-text"
-							on:click={() => toggleFaq(i)}
+							onclick={() => toggleFaq(i)}
 						>
 							{faq.name}
 							<svg

@@ -63,7 +63,7 @@
 						<button
 							class="entity-item"
 							class:active={selectedEntity?.id === entity.id}
-							on:click={() => (selectedEntity = entity)}
+							onclick={() => (selectedEntity = entity)}
 						>
 							<div class="entity-info">
 								<h4>{entity.title}</h4>

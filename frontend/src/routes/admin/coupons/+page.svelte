@@ -52,7 +52,7 @@
 <div class="admin-page">
 	<div class="page-header">
 		<h1>Coupons Management</h1>
-		<button class="btn-primary" on:click={() => goto('/admin/coupons/create')}>
+		<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
 			+ Create Coupon
 		</button>
 	</div>
@@ -84,12 +84,12 @@
 					<div class="coupon-actions">
 						<button
 							class="action-btn edit"
-							on:click={() => goto(`/admin/coupons/edit/${coupon.id}`)}
+							onclick={() => goto(`/admin/coupons/edit/${coupon.id}`)}
 						>
 							<IconEdit size={16} />
 							Edit
 						</button>
-						<button class="action-btn delete" on:click={() => deleteCoupon(coupon.id)}>
+						<button class="action-btn delete" onclick={() => deleteCoupon(coupon.id)}>
 							<IconTrash size={16} />
 							Delete
 						</button>

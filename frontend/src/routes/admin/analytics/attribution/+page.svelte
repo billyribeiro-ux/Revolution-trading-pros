@@ -45,8 +45,8 @@
 		}
 	}
 
-	function handlePeriodChange(event: CustomEvent<string>) {
-		selectedPeriod = event.detail;
+	function handlePeriodChange(value: string) {
+		selectedPeriod = value;
 		loadAttribution();
 	}
 
@@ -83,7 +83,7 @@
 			<p class="text-sm text-gray-500 mt-1">Multi-touch attribution across marketing channels</p>
 		</div>
 		<div class="flex items-center gap-4">
-			<PeriodSelector value={selectedPeriod} on:change={handlePeriodChange} />
+			<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 			<button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
 				Export Report
 			</button>
@@ -96,7 +96,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
 			{#each models as model}
 				<button
-					on:click={() => {
+					onclick={() => {
 						selectedModel = model.value;
 						handleModelChange();
 					}}
@@ -122,7 +122,7 @@
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
 			<p class="text-red-600">{error}</p>
 			<button
-				on:click={loadAttribution}
+				onclick={loadAttribution}
 				class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 			>
 				Retry

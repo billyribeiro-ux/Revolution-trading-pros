@@ -130,7 +130,7 @@
 	<div class="max-w-7xl mx-auto">
 		<!-- Header -->
 		<div class="mb-6">
-			<Button variant="ghost" on:click={() => goto('/admin/popups')} class="mb-4">
+			<Button variant="ghost" onclick={() => goto('/admin/popups')} class="mb-4">
 				<IconArrowLeft size={20} class="mr-2" />
 				Back to Popups
 			</Button>
@@ -149,7 +149,7 @@
 				</div>
 
 				<div class="flex gap-2">
-					<Button variant="outline" on:click={() => goto(`/admin/popups/${popupId}/edit`)}>
+					<Button variant="outline" onclick={() => goto(`/admin/popups/${popupId}/edit`)}>
 						Edit Popup
 					</Button>
 				</div>
@@ -559,6 +559,6 @@
 {:else}
 	<div class="text-center py-12">
 		<p class="text-gray-600">Failed to load analytics data</p>
-		<Button class="mt-4" on:click={() => goto('/admin/popups')}>Back to Popups</Button>
+		<Button class="mt-4" onclick={() => goto('/admin/popups')}>Back to Popups</Button>
 	</div>
 {/if}

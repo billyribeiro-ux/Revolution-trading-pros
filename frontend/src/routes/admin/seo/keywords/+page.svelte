@@ -121,7 +121,7 @@
 			<input type="text" bind:value={searchQuery} placeholder="Search keywords..." />
 		</div>
 
-		<button class="btn-secondary" on:click={loadKeywords}>
+		<button class="btn-secondary" onclick={loadKeywords}>
 			<IconRefresh size={18} />
 			Refresh
 		</button>
@@ -193,7 +193,7 @@
 								<div class="actions">
 									<button
 										class="action-btn danger"
-										on:click={() => deleteKeyword(keyword.id)}
+										onclick={() => deleteKeyword(keyword.id)}
 										title="Delete"
 									>
 										<IconTrash size={18} />

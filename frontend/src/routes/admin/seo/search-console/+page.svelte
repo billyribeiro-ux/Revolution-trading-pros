@@ -124,7 +124,7 @@
 					<IconPlugConnectedX size={48} />
 					<h3>Not Connected</h3>
 					<p>Connect to Google Search Console to import analytics data</p>
-					<button class="btn-primary" on:click={connect}>
+					<button class="btn-primary" onclick={connect}>
 						<IconBrandGoogle size={20} />
 						Connect with Google
 					</button>
@@ -137,12 +137,12 @@
 		<div class="actions-section">
 			<h2>Actions</h2>
 			<div class="action-buttons">
-				<button class="action-btn" on:click={importAnalytics} disabled={importing}>
+				<button class="action-btn" onclick={importAnalytics} disabled={importing}>
 					<IconDownload size={20} />
 					{importing ? 'Importing...' : 'Import Analytics Data'}
 				</button>
 
-				<button class="action-btn" on:click={updateKeywords}>
+				<button class="action-btn" onclick={updateKeywords}>
 					<IconRefresh size={20} />
 					Update Keyword Rankings
 				</button>

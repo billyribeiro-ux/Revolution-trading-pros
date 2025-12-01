@@ -95,7 +95,7 @@
 			<h1 class="text-3xl font-bold text-gray-900">Form Entries</h1>
 			<p class="text-gray-600 mt-1">View and manage form submissions</p>
 		</div>
-		<Button on:click={handleExport} disabled={!selectedFormId || entries.length === 0}>
+		<Button onclick={handleExport} disabled={!selectedFormId || entries.length === 0}>
 			<IconDownload size={20} />
 			Export CSV
 		</Button>
@@ -107,7 +107,7 @@
 			label="Select Form"
 			options={formOptions}
 			bind:value={selectedFormId}
-			on:change={handleFormChange}
+			onchange={handleFormChange}
 			placeholder="Choose a form..."
 		/>
 	</div>

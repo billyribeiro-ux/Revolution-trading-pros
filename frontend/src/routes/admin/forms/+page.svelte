@@ -30,7 +30,7 @@
 			<h1>Forms</h1>
 			<p class="page-description">Create and manage your forms</p>
 		</div>
-		<button class="btn-create" on:click={handleCreate}> + Create New Form </button>
+		<button class="btn-create" onclick={handleCreate}> + Create New Form </button>
 	</div>
 
 	<FormList

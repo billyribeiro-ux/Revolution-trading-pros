@@ -172,7 +172,7 @@
 <div class="churned-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" on:click={() => goto('/admin/members')}>
+		<button class="back-btn" onclick={() => goto('/admin/members')}>
 			<IconArrowLeft size={20} />
 			Back to Members
 		</button>
@@ -187,7 +187,7 @@
 					<p>Re-engage past members with targeted campaigns</p>
 				</div>
 			</div>
-			<button class="btn-refresh" on:click={() => churnedStore.loadChurnedMembers()}>
+			<button class="btn-refresh" onclick={() => churnedStore.loadChurnedMembers()}>
 				<IconRefresh size={18} />
 				Refresh
 			</button>
@@ -196,7 +196,7 @@
 
 	<!-- Campaign Actions -->
 	<div class="campaign-actions">
-		<button class="campaign-card free-trial" on:click={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('free_trial'); }}>
+		<button class="campaign-card free-trial" onclick={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('free_trial'); }}>
 			<div class="campaign-icon">
 				<IconGift size={28} />
 			</div>
@@ -207,7 +207,7 @@
 			<span class="campaign-tag">Popular</span>
 		</button>
 
-		<button class="campaign-card promo" on:click={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('promo'); }}>
+		<button class="campaign-card promo" onclick={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('promo'); }}>
 			<div class="campaign-icon">
 				<IconCurrencyDollar size={28} />
 			</div>
@@ -217,7 +217,7 @@
 			</div>
 		</button>
 
-		<button class="campaign-card winback" on:click={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('winback'); }}>
+		<button class="campaign-card winback" onclick={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('winback'); }}>
 			<div class="campaign-icon">
 				<IconMail size={28} />
 			</div>
@@ -278,14 +278,14 @@
 				type="text"
 				placeholder="Search churned members..."
 				bind:value={searchQuery}
-				on:keydown={(e) => e.key === 'Enter' && handleSearch()}
+				onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 			/>
 		</div>
 
 		<div class="filters">
 			<div class="filter-group">
 				<IconFilter size={16} />
-				<select bind:value={winbackPotential} on:change={() => handlePotentialFilter(winbackPotential)}>
+				<select bind:value={winbackPotential} onchange={() => handlePotentialFilter(winbackPotential)}>
 					<option value="">All Value</option>
 					<option value="high">High Value ($500+)</option>
 					<option value="medium">Medium ($100-$500)</option>
@@ -295,7 +295,7 @@
 
 			<div class="filter-group">
 				<IconCalendar size={16} />
-				<select bind:value={churnedWithinDays} on:change={() => handleDaysFilter(churnedWithinDays)}>
+				<select bind:value={churnedWithinDays} onchange={() => handleDaysFilter(churnedWithinDays)}>
 					<option value="">Any Time</option>
 					<option value="7">Last 7 days</option>
 					<option value="30">Last 30 days</option>
@@ -306,7 +306,7 @@
 		</div>
 
 		{#if selectedMembers.size > 0}
-			<button class="btn-email" on:click={() => (showEmailModal = true)}>
+			<button class="btn-email" onclick={() => (showEmailModal = true)}>
 				<IconMail size={18} />
 				Email Selected ({selectedMembers.size})
 			</button>
@@ -334,7 +334,7 @@
 							<input
 								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
-								on:change={selectAllMembers}
+								onchange={selectAllMembers}
 							/>
 						</th>
 						<th>Member</th>
@@ -353,7 +353,7 @@
 								<input
 									type="checkbox"
 									checked={selectedMembers.has(member.id)}
-									on:change={() => toggleMemberSelection(member.id)}
+									onchange={() => toggleMemberSelection(member.id)}
 								/>
 							</td>
 							<td>
@@ -391,13 +391,13 @@
 							</td>
 							<td>
 								<div class="actions">
-									<button class="action-btn winback" title="Start Win-Back" on:click={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; startCampaign('free_trial'); }}>
+									<button class="action-btn winback" title="Start Win-Back" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; startCampaign('free_trial'); }}>
 										<IconGift size={16} />
 									</button>
-									<button class="action-btn" title="Send Email" on:click={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
+									<button class="action-btn" title="Send Email" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
 										<IconMail size={16} />
 									</button>
-									<button class="action-btn" title="View Details" on:click={() => goto(`/admin/members/${member.id}`)}>
+									<button class="action-btn" title="View Details" onclick={() => goto(`/admin/members/${member.id}`)}>
 										<IconExternalLink size={16} />
 									</button>
 								</div>
@@ -417,7 +417,7 @@
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === 1}
-							on:click={() => churnedStore.goToPage(pagination.current_page - 1)}
+							onclick={() => churnedStore.goToPage(pagination.current_page - 1)}
 						>
 							<IconChevronLeft size={18} />
 						</button>
@@ -425,7 +425,7 @@
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
-							on:click={() => churnedStore.goToPage(pagination.current_page + 1)}
+							onclick={() => churnedStore.goToPage(pagination.current_page + 1)}
 						>
 							<IconChevronRight size={18} />
 						</button>
@@ -439,14 +439,14 @@
 <!-- Email Modal -->
 {#if showEmailModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" on:click={() => (showEmailModal = false)} on:keydown={(e) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
-		<div class="modal-content" on:click|stopPropagation on:keydown|stopPropagation role="document">
+	<div class="modal-overlay" onclick={() => (showEmailModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<div>
 					<h2>Win-Back Campaign</h2>
 					<p>Sending to {selectedMembers.size} member{selectedMembers.size > 1 ? 's' : ''}</p>
 				</div>
-				<button class="close-btn" on:click={() => (showEmailModal = false)}>
+				<button class="close-btn" onclick={() => (showEmailModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -455,15 +455,15 @@
 				<div class="campaign-type-selector">
 					<span class="selector-label">Campaign Type</span>
 					<div class="campaign-type-buttons">
-						<button class:active={campaignType === 'free_trial'} on:click={() => { campaignType = 'free_trial'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_30_free'); if (t) applyTemplate(t); }}>
+						<button class:active={campaignType === 'free_trial'} onclick={() => { campaignType = 'free_trial'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_30_free'); if (t) applyTemplate(t); }}>
 							<IconGift size={18} />
 							30 Days Free
 						</button>
-						<button class:active={campaignType === 'promo'} on:click={() => { campaignType = 'promo'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_discount'); if (t) applyTemplate(t); }}>
+						<button class:active={campaignType === 'promo'} onclick={() => { campaignType = 'promo'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_discount'); if (t) applyTemplate(t); }}>
 							<IconCurrencyDollar size={18} />
 							50% Off
 						</button>
-						<button class:active={campaignType === 'winback'} on:click={() => { campaignType = 'winback'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_missed'); if (t) applyTemplate(t); }}>
+						<button class:active={campaignType === 'winback'} onclick={() => { campaignType = 'winback'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_missed'); if (t) applyTemplate(t); }}>
 							<IconHeart size={18} />
 							We Miss You
 						</button>
@@ -483,8 +483,8 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showEmailModal = false)}>Cancel</button>
-				<button class="btn-primary" on:click={handleBulkEmail} disabled={!emailSubject || !emailBody}>
+				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={handleBulkEmail} disabled={!emailSubject || !emailBody}>
 					<IconSend size={18} />
 					Send Win-Back Email
 				</button>

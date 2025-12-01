@@ -90,11 +90,11 @@
 		</div>
 		<div class="header-actions">
 			<div class="period-selector">
-				<button class:active={selectedPeriod === '24h'} on:click={() => changePeriod('24h')}>24H</button>
-				<button class:active={selectedPeriod === '7d'} on:click={() => changePeriod('7d')}>7D</button>
-				<button class:active={selectedPeriod === '30d'} on:click={() => changePeriod('30d')}>30D</button>
+				<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}>24H</button>
+				<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}>7D</button>
+				<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}>30D</button>
 			</div>
-			<button class="btn-refresh" on:click={loadData} disabled={isLoading}>
+			<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 		</div>

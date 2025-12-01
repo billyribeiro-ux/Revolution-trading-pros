@@ -190,11 +190,11 @@ export function findVideosInContent(content: string): DetectedVideo[] {
 	// Common video URL patterns
 	const urlPattern =
 		/(https?:\/\/[^\s<>"]+(?:youtube|youtu\.be|vimeo|dailymotion|ted\.com|wistia)[^\s<>"]*)/gi;
-	const matches = content.match(urlPattern) || [];
+	const matches: string[] = content.match(urlPattern) || [];
 
 	// Also check for iframe embeds
 	const iframePattern = /<iframe[^>]+src=["']([^"']+)["'][^>]*>/gi;
-	let iframeMatch;
+	let iframeMatch: RegExpExecArray | null;
 	while ((iframeMatch = iframePattern.exec(content)) !== null) {
 		matches.push(iframeMatch[1]);
 	}

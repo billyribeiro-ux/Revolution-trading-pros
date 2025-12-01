@@ -65,8 +65,8 @@
 		}
 	}
 
-	function handlePeriodChange(event: CustomEvent<string>) {
-		selectedPeriod = event.detail;
+	function handlePeriodChange(value: string) {
+		selectedPeriod = value;
 		loadCohorts();
 	}
 
@@ -136,10 +136,10 @@
 			<p class="text-sm text-gray-500 mt-1">Analyze user retention patterns over time</p>
 		</div>
 		<div class="flex items-center gap-4">
-			<PeriodSelector value={selectedPeriod} on:change={handlePeriodChange} />
+			<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 			<select
 				bind:value={selectedGranularity}
-				on:change={handleGranularityChange}
+				onchange={handleGranularityChange}
 				class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
 			>
 				<option value="daily">Daily</option>
@@ -147,7 +147,7 @@
 				<option value="monthly">Monthly</option>
 			</select>
 			<button
-				on:click={() => (showCreateModal = true)}
+				onclick={() => (showCreateModal = true)}
 				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
 			>
 				Create Cohort
@@ -165,7 +165,7 @@
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
 			<p class="text-red-600">{error}</p>
 			<button
-				on:click={loadCohorts}
+				onclick={loadCohorts}
 				class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 			>
 				Retry
@@ -177,7 +177,7 @@
 			<h3 class="text-lg font-medium text-gray-900 mb-2">No Cohorts Yet</h3>
 			<p class="text-gray-500 mb-6">Create your first cohort to analyze user retention</p>
 			<button
-				on:click={() => (showCreateModal = true)}
+				onclick={() => (showCreateModal = true)}
 				class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
 			>
 				Create Your First Cohort
@@ -188,7 +188,7 @@
 		<div class="flex gap-2 mb-8 overflow-x-auto pb-2">
 			{#each cohorts as cohort}
 				<button
-					on:click={() => (selectedCohort = cohort)}
+					onclick={() => (selectedCohort = cohort)}
 					class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all
 						{selectedCohort?.key === cohort.key
 						? 'bg-blue-600 text-white'
@@ -289,7 +289,7 @@
 				<div class="flex items-center justify-between">
 					<h2 class="text-xl font-bold text-gray-900">Create Cohort</h2>
 					<button
-						on:click={() => (showCreateModal = false)}
+						onclick={() => (showCreateModal = false)}
 						class="text-gray-400 hover:text-gray-600 text-2xl"
 					>
 						✕
@@ -385,13 +385,13 @@
 
 			<div class="p-6 border-t border-gray-100 flex justify-end gap-3">
 				<button
-					on:click={() => (showCreateModal = false)}
+					onclick={() => (showCreateModal = false)}
 					class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
 				>
 					Cancel
 				</button>
 				<button
-					on:click={createCohort}
+					onclick={createCohort}
 					disabled={!newCohort.name}
 					class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
 				>

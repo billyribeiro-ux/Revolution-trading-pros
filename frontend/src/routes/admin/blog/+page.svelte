@@ -652,7 +652,7 @@
 		<div class="header-actions">
 			<button
 				class="btn-icon"
-				on:click={() => {
+				onclick={() => {
 					loadPosts();
 					loadStats();
 				}}
@@ -662,7 +662,7 @@
 			</button>
 			<button
 				class="btn-primary"
-				on:click={() => goto('/admin/blog/create')}
+				onclick={() => goto('/admin/blog/create')}
 				title="New Post (Ctrl+N)"
 			>
 				<IconPlus size={18} />
@@ -718,17 +718,17 @@
 			{#if showBulkActions}
 				<div class="bulk-actions" transition:slide={{ duration: 200 }}>
 					<span class="bulk-count">{selectedPosts.size} selected</span>
-					<button class="btn-secondary" on:click={() => bulkChangeStatus('published')}>
+					<button class="btn-secondary" onclick={() => bulkChangeStatus('published')}>
 						Publish
 					</button>
-					<button class="btn-secondary" on:click={() => bulkChangeStatus('draft')}> Draft </button>
-					<button class="btn-secondary danger" on:click={bulkDelete}>
+					<button class="btn-secondary" onclick={() => bulkChangeStatus('draft')}> Draft </button>
+					<button class="btn-secondary danger" onclick={bulkDelete}>
 						<IconTrash size={18} />
 						Delete
 					</button>
 					<button
 						class="btn-ghost"
-						on:click={() => {
+						onclick={() => {
 							selectedPosts.clear();
 							selectAll = false;
 						}}
@@ -775,7 +775,7 @@
 				</select>
 				<button
 					class="btn-icon"
-					on:click={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
+					onclick={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
 				>
 					{#if sortOrder === 'asc'}
 						<IconSortAscending size={18} />
@@ -789,14 +789,14 @@
 			<div class="view-toggle">
 				<button
 					class:active={viewMode === 'grid'}
-					on:click={() => (viewMode = 'grid')}
+					onclick={() => (viewMode = 'grid')}
 					title="Grid View"
 				>
 					<IconLayoutGrid size={18} />
 				</button>
 				<button
 					class:active={viewMode === 'list'}
-					on:click={() => (viewMode = 'list')}
+					onclick={() => (viewMode = 'list')}
 					title="List View"
 				>
 					<IconList size={18} />
@@ -805,14 +805,14 @@
 
 			<!-- Actions -->
 			<div class="action-buttons">
-				<button class="btn-secondary" on:click={() => (showExportModal = true)}>
+				<button class="btn-secondary" onclick={() => (showExportModal = true)}>
 					<IconDownload size={18} />
 					Export
 				</button>
 				<label class="btn-secondary">
 					<IconUpload size={18} />
 					Import
-					<input type="file" accept=".csv,.json" on:change={importPosts} hidden />
+					<input type="file" accept=".csv,.json" onchange={importPosts} hidden />
 				</label>
 				<a href="/admin/blog/categories" class="btn-secondary">
 					<IconFilter size={18} />
@@ -840,7 +840,7 @@
 					<IconEdit size={48} />
 					<h3>No posts found</h3>
 					<p>{searchQuery ? 'Try a different search' : 'Create your first blog post'}</p>
-					<button class="btn-primary" on:click={() => goto('/admin/blog/create')}>
+					<button class="btn-primary" onclick={() => goto('/admin/blog/create')}>
 						<IconPlus size={18} />
 						Create Post
 					</button>
@@ -849,7 +849,7 @@
 				<!-- Select All Card -->
 				<div class="select-all-card">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={selectAll} on:change={toggleSelectAll} />
+						<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
 						<span>Select All ({posts.length})</span>
 					</label>
 				</div>
@@ -865,7 +865,7 @@
 							<input
 								type="checkbox"
 								checked={selectedPosts.has(post.id)}
-								on:change={() => togglePostSelection(post.id)}
+								onchange={() => togglePostSelection(post.id)}
 							/>
 						</div>
 
@@ -873,7 +873,7 @@
 						<button
 							class="featured-toggle"
 							class:active={post.featured}
-							on:click={() => toggleFeatured(post)}
+							onclick={() => toggleFeatured(post)}
 						>
 							{#if post.featured}
 								<IconStarFilled size={20} />
@@ -979,20 +979,20 @@
 							<div class="post-actions">
 								<button
 									class="action-btn primary"
-									on:click={() => goto(`/admin/blog/edit/${post.id}`)}
+									onclick={() => goto(`/admin/blog/edit/${post.id}`)}
 									title="Edit"
 								>
 									<IconEdit size={18} />
 									Edit
 								</button>
 
-								<button class="action-btn" on:click={() => (previewPost = post)} title="Preview">
+								<button class="action-btn" onclick={() => (previewPost = post)} title="Preview">
 									<IconEye size={18} />
 								</button>
 
 								<button
 									class="action-btn"
-									on:click={() => toggleStatus(post)}
+									onclick={() => toggleStatus(post)}
 									title="Toggle Status"
 								>
 									{#if post.status === 'published'}
@@ -1004,18 +1004,18 @@
 
 								<!-- More Actions -->
 								<div class="action-dropdown">
-									<button class="action-btn" on:click={() => toggleActionMenu(post.id)}>
+									<button class="action-btn" onclick={() => toggleActionMenu(post.id)}>
 										<IconMenu2 size={18} />
 									</button>
 
 									{#if activeActionMenu === post.id}
 										<div class="action-menu" transition:scale={{ duration: 150 }}>
-											<button on:click={() => duplicatePost(post.id)}>
+											<button onclick={() => duplicatePost(post.id)}>
 												<IconCopy size={16} />
 												Duplicate
 											</button>
 											<button
-												on:click={() => {
+												onclick={() => {
 													schedulePost = post;
 													showScheduleModal = true;
 												}}
@@ -1023,16 +1023,16 @@
 												<IconClock size={16} />
 												Schedule
 											</button>
-											<button on:click={() => loadPostAnalytics(post)}>
+											<button onclick={() => loadPostAnalytics(post)}>
 												<IconChartBar size={16} />
 												Analytics
 											</button>
-											<button on:click={() => window.open(`/blog/${post.slug}`, '_blank')}>
+											<button onclick={() => window.open(`/blog/${post.slug}`, '_blank')}>
 												<IconExternalLink size={16} />
 												View Live
 											</button>
 											<hr />
-											<button class="danger" on:click={() => deletePost(post.id)}>
+											<button class="danger" onclick={() => deletePost(post.id)}>
 												<IconTrash size={16} />
 												Delete
 											</button>
@@ -1052,7 +1052,7 @@
 				<thead>
 					<tr>
 						<th>
-							<input type="checkbox" bind:checked={selectAll} on:change={toggleSelectAll} />
+							<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
 						</th>
 						<th>Title</th>
 						<th>Author</th>
@@ -1071,7 +1071,7 @@
 								<input
 									type="checkbox"
 									checked={selectedPosts.has(post.id)}
-									on:change={() => togglePostSelection(post.id)}
+									onchange={() => togglePostSelection(post.id)}
 								/>
 							</td>
 							<td>
@@ -1111,24 +1111,24 @@
 								<div class="table-actions">
 									<button
 										class="action-icon"
-										on:click={() => goto(`/admin/blog/edit/${post.id}`)}
+										onclick={() => goto(`/admin/blog/edit/${post.id}`)}
 										title="Edit"
 									>
 										<IconEdit size={16} />
 									</button>
-									<button class="action-icon" on:click={() => (previewPost = post)} title="Preview">
+									<button class="action-icon" onclick={() => (previewPost = post)} title="Preview">
 										<IconEye size={16} />
 									</button>
 									<button
 										class="action-icon"
-										on:click={() => duplicatePost(post.id)}
+										onclick={() => duplicatePost(post.id)}
 										title="Duplicate"
 									>
 										<IconCopy size={16} />
 									</button>
 									<button
 										class="action-icon danger"
-										on:click={() => deletePost(post.id)}
+										onclick={() => deletePost(post.id)}
 										title="Delete"
 									>
 										<IconTrash size={16} />
@@ -1148,20 +1148,20 @@
 			class="modal-overlay"
 			role="button"
 			tabindex="0"
-			on:click={() => (previewPost = null)}
-			on:keydown={(e) => e.key === 'Escape' && (previewPost = null)}
+			onclick={() => (previewPost = null)}
+			onkeydown={(e) => e.key === 'Escape' && (previewPost = null)}
 		>
 			<div
 				class="modal preview-modal"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
-				on:click|stopPropagation
-				on:keydown|stopPropagation
+				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
 			>
 				<div class="modal-header">
 					<h2>Preview: {previewPost.title}</h2>
-					<button class="btn-icon" on:click={() => (previewPost = null)}>
+					<button class="btn-icon" onclick={() => (previewPost = null)}>
 						<IconX size={20} />
 					</button>
 				</div>
@@ -1178,20 +1178,20 @@
 			class="modal-overlay"
 			role="button"
 			tabindex="0"
-			on:click={() => (showExportModal = false)}
-			on:keydown={(e) => e.key === 'Escape' && (showExportModal = false)}
+			onclick={() => (showExportModal = false)}
+			onkeydown={(e) => e.key === 'Escape' && (showExportModal = false)}
 		>
 			<div
 				class="modal"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
-				on:click|stopPropagation
-				on:keydown|stopPropagation
+				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
 			>
 				<div class="modal-header">
 					<h2>Export Posts</h2>
-					<button class="btn-icon" on:click={() => (showExportModal = false)}>
+					<button class="btn-icon" onclick={() => (showExportModal = false)}>
 						<IconX size={20} />
 					</button>
 				</div>
@@ -1217,8 +1217,8 @@
 					</p>
 				</div>
 				<div class="modal-actions">
-					<button class="btn-secondary" on:click={() => (showExportModal = false)}> Cancel </button>
-					<button class="btn-primary" on:click={exportPosts}>
+					<button class="btn-secondary" onclick={() => (showExportModal = false)}> Cancel </button>
+					<button class="btn-primary" onclick={exportPosts}>
 						<IconDownload size={18} />
 						Export
 					</button>
@@ -1233,20 +1233,20 @@
 			class="modal-overlay"
 			role="button"
 			tabindex="0"
-			on:click={() => (showAnalyticsModal = false)}
-			on:keydown={(e) => e.key === 'Escape' && (showAnalyticsModal = false)}
+			onclick={() => (showAnalyticsModal = false)}
+			onkeydown={(e) => e.key === 'Escape' && (showAnalyticsModal = false)}
 		>
 			<div
 				class="modal analytics-modal"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
-				on:click|stopPropagation
-				on:keydown|stopPropagation
+				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
 			>
 				<div class="modal-header">
 					<h2>Analytics: {analyticsPost.title}</h2>
-					<button class="btn-icon" on:click={() => (showAnalyticsModal = false)}>
+					<button class="btn-icon" onclick={() => (showAnalyticsModal = false)}>
 						<IconX size={20} />
 					</button>
 				</div>

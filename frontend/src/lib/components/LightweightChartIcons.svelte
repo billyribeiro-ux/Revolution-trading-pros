@@ -1,12 +1,10 @@
 <script lang="ts">
-    // Type available for future icon variations
-    const type: string = 'candlestick';
-    
     interface Props {
+        type?: string;
         size?: number;
     }
     
-    let { size = 48 }: Props = $props();
+    let { type = 'candlestick', size = 48 }: Props = $props();
 </script>
 
 <svg width={size} height={size} viewBox="0 0 48 48" class="text-teal-400">

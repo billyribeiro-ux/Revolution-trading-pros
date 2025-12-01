@@ -199,7 +199,7 @@
 				<h2>Newsletter Signup Test</h2>
 				<p>Test the newsletter subscription endpoint</p>
 
-				<form class="newsletter-form" on:submit={handleNewsletterSubmit}>
+				<form class="newsletter-form" onsubmit={handleNewsletterSubmit}>
 					<div class="form-group">
 						<input
 							type="email"
@@ -237,7 +237,7 @@
 				<h2>Contact Form Test</h2>
 				<p>Test form submission and validation</p>
 
-				<form class="contact-form" on:submit={handleContactSubmit}>
+				<form class="contact-form" onsubmit={handleContactSubmit}>
 					<div class="form-row">
 						<div class="form-group">
 							<label for="name">
@@ -363,26 +363,26 @@
 {#if showPopup}
 	<div
 		class="popup-overlay"
-		on:click={closePopup}
-		on:keydown={(e) => e.key === 'Escape' && closePopup()}
+		onclick={closePopup}
+		onkeydown={(e) => e.key === 'Escape' && closePopup()}
 		role="button"
 		tabindex="0"
 	>
 		<div
 			class="popup-content"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			tabindex="-1"
 		>
-			<button class="popup-close" on:click={closePopup} aria-label="Close">×</button>
+			<button class="popup-close" onclick={closePopup} aria-label="Close">×</button>
 
 			<div class="popup-header">
 				<h3>🎉 Special Offer!</h3>
 				<p>Subscribe to our newsletter and get exclusive trading insights</p>
 			</div>
 
-			<form class="popup-form" on:submit={handlePopupSubmit}>
+			<form class="popup-form" onsubmit={handlePopupSubmit}>
 				<input
 					type="email"
 					bind:value={popupEmail}

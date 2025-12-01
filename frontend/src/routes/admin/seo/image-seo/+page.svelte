@@ -3,7 +3,7 @@
 	import {
 		IconPhoto,
 		IconRefresh,
-		IconWand,
+		IconSparkles,
 		IconCheck,
 		IconAlertTriangle,
 		IconSettings
@@ -155,7 +155,7 @@
 				Scan Images
 			</button>
 			<button class="btn-primary" onclick={processAllImages} disabled={processing}>
-				<IconWand size={18} />
+				<IconSparkles size={18} />
 				{processing ? 'Processing...' : 'Optimize All'}
 			</button>
 		</div>

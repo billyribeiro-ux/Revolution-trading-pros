@@ -93,21 +93,21 @@
 					<button
 						type="button"
 						class="consent-btn consent-btn-secondary"
-						on:click={handleManagePreferences}
+						onclick={handleManagePreferences}
 					>
 						Manage Preferences
 					</button>
 					<button
 						type="button"
 						class="consent-btn consent-btn-outline"
-						on:click={handleRejectAll}
+						onclick={handleRejectAll}
 					>
 						Reject All
 					</button>
 					<button
 						type="button"
 						class="consent-btn consent-btn-primary"
-						on:click={handleAcceptAll}
+						onclick={handleAcceptAll}
 					>
 						Accept All
 					</button>

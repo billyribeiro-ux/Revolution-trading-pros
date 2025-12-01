@@ -36,7 +36,7 @@
 	{:else}
 		<h2 class="subject">{preview?.subject ?? ''}</h2>
 		<div class="body">{@html preview?.body_html ?? ''}</div>
-		<button class="btn-secondary" on:click={() => goto('/admin/email/templates')}
+		<button class="btn-secondary" onclick={() => goto('/admin/email/templates')}
 			>Back to List</button
 		>
 	{/if}

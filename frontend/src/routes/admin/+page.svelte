@@ -247,11 +247,11 @@
 		</div>
 		<div class="header-right">
 			<div class="period-selector">
-				<button class:active={selectedPeriod === '7d'} on:click={() => changePeriod('7d')}>7D</button>
-				<button class:active={selectedPeriod === '30d'} on:click={() => changePeriod('30d')}>30D</button>
-				<button class:active={selectedPeriod === '90d'} on:click={() => changePeriod('90d')}>90D</button>
+				<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}>7D</button>
+				<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}>30D</button>
+				<button class:active={selectedPeriod === '90d'} onclick={() => changePeriod('90d')}>90D</button>
 			</div>
-			<button class="refresh-btn" on:click={fetchDashboardStats} disabled={isLoading} class:loading={isLoading}>
+			<button class="refresh-btn" onclick={fetchDashboardStats} disabled={isLoading} class:loading={isLoading}>
 				<IconRefresh size={20} />
 			</button>
 		</div>

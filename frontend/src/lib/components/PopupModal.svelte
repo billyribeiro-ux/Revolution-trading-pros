@@ -994,8 +994,8 @@
 		role="button"
 		tabindex="-1"
 		aria-label="Close popup"
-		on:click={() => currentPopup?.closeOnOverlayClick && closePopup()}
-		on:keydown={(e) => e.key === 'Enter' && currentPopup?.closeOnOverlayClick && closePopup()}
+		onclick={() => currentPopup?.closeOnOverlayClick && closePopup()}
+		onkeydown={(e) => e.key === 'Enter' && currentPopup?.closeOnOverlayClick && closePopup()}
 		transition:fade={{ duration: 300 }}
 	></div>
 
@@ -1042,7 +1042,7 @@
 			{#if currentPopup.closeButton}
 				<button
 					class="popup-close-btn"
-					on:click={closePopup}
+					onclick={closePopup}
 					aria-label="Close popup"
 					transition:scale={{ delay: 300, duration: 200 }}
 				>
@@ -1112,7 +1112,7 @@
 
 				<!-- Form Fields -->
 				{#if currentPopup.formFields && currentPopup.formFields.length > 0}
-					<form class="popup-form" on:submit|preventDefault={handleFormSubmit}>
+					<form class="popup-form" onsubmit={handleFormSubmit}>
 						{#each currentPopup.formFields as field}
 							<div class="form-field">
 								{#if field.label}
@@ -1202,7 +1202,7 @@
 						{#each currentPopup.buttons as button}
 							<button
 								class="popup-btn {button.style} {button.customClass || ''}"
-								on:click={() => handleButtonClick(button)}
+								onclick={() => handleButtonClick(button)}
 								disabled={button.action === 'submit' && (!formValid || isSubmitting)}
 								aria-busy={button.action === 'submit' && isSubmitting}
 							>

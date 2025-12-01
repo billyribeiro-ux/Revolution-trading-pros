@@ -158,7 +158,7 @@
 		</select>
 
 		{#if selectedIds.length > 0}
-			<button class="btn-danger" on:click={() => deleteLogs(selectedIds)}>
+			<button class="btn-danger" onclick={() => deleteLogs(selectedIds)}>
 				<IconTrash size={18} />
 				Delete ({selectedIds.length})
 			</button>
@@ -193,7 +193,7 @@
 								<input
 									type="checkbox"
 									checked={selectedIds.includes(log.id)}
-									on:change={() => toggleSelection(log.id)}
+									onchange={() => toggleSelection(log.id)}
 								/>
 							</td>
 							<td>
@@ -226,18 +226,18 @@
 									{#if !log.is_resolved && !log.is_ignored}
 										<button
 											class="action-btn primary"
-											on:click={() => createRedirect(log)}
+											onclick={() => createRedirect(log)}
 											title="Create Redirect"
 										>
 											<IconArrowForward size={18} />
 										</button>
-										<button class="action-btn" on:click={() => ignore(log.id)} title="Ignore">
+										<button class="action-btn" onclick={() => ignore(log.id)} title="Ignore">
 											<IconEyeOff size={18} />
 										</button>
 									{/if}
 									<button
 										class="action-btn danger"
-										on:click={() => deleteLogs([log.id])}
+										onclick={() => deleteLogs([log.id])}
 										title="Delete"
 									>
 										<IconTrash size={18} />
@@ -255,8 +255,8 @@
 {#if showCreateRedirect && selected404}
 	<CreateRedirectModal
 		url404={selected404.url}
-		on:created={handleRedirectCreated}
-		on:cancel={() => {
+		oncreated={handleRedirectCreated}
+		oncancel={() => {
 			showCreateRedirect = false;
 			selected404 = null;
 		}}

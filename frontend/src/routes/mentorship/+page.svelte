@@ -423,7 +423,7 @@
 						<div class="border border-white/10 bg-[#020202]">
 							<button
 								class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-								on:click={() => toggleAccordion(0)}
+								onclick={() => toggleAccordion(0)}
 							>
 								<span class="font-bold text-white text-sm tracking-wide"
 									>CONFIDENTIALITY & DATA SOVEREIGNTY</span
@@ -450,7 +450,7 @@
 						<div class="border border-white/10 bg-[#020202]">
 							<button
 								class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-								on:click={() => toggleAccordion(1)}
+								onclick={() => toggleAccordion(1)}
 							>
 								<span class="font-bold text-white text-sm tracking-wide">CONFLICT OF INTEREST</span>
 								<span
@@ -475,7 +475,7 @@
 						<div class="border border-white/10 bg-[#020202]">
 							<button
 								class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-								on:click={() => toggleAccordion(2)}
+								onclick={() => toggleAccordion(2)}
 							>
 								<span class="font-bold text-white text-sm tracking-wide">LOGISTICS & EXPENSING</span
 								>

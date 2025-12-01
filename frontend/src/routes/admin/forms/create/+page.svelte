@@ -43,8 +43,8 @@
 		formData = undefined;
 	}
 
-	function handleThemeChange(event: CustomEvent<FormTheme>) {
-		selectedTheme = event.detail;
+	function handleThemeChange(theme: FormTheme) {
+		selectedTheme = theme;
 		if (formData) {
 			formData = {
 				...formData,
@@ -87,7 +87,7 @@
 	{:else}
 		<div class="page-header">
 			<div>
-				<button class="btn-back" on:click={handleCancel}>
+				<button class="btn-back" onclick={handleCancel}>
 					← Back {selectedTemplate ? 'to Templates' : ''}
 				</button>
 				<h1>Create New Form</h1>
@@ -100,7 +100,7 @@
 				</p>
 			</div>
 			{#if selectedTheme}
-				<button class="btn-theme" on:click={toggleThemeCustomizer}>
+				<button class="btn-theme" onclick={toggleThemeCustomizer}>
 					🎨 {showThemeCustomizer ? 'Hide' : 'Customize'} Theme
 				</button>
 			{/if}
@@ -108,11 +108,11 @@
 
 		{#if showThemeCustomizer && selectedTheme}
 			<div class="theme-section">
-				<ThemeCustomizer {selectedTheme} on:change={handleThemeChange} />
+				<ThemeCustomizer {selectedTheme} onchange={handleThemeChange} />
 			</div>
 		{/if}
 
-		<FormBuilder form={formData} on:save={handleSave} on:cancel={handleCancel} />
+		<FormBuilder form={formData} onsave={handleSave} oncancel={handleCancel} />
 	{/if}
 </div>
 

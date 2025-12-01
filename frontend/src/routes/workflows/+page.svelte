@@ -53,7 +53,7 @@
 			<h1>Workflows</h1>
 			<p class="subtitle">Automate your business processes</p>
 		</div>
-		<button class="btn-primary" on:click={createWorkflow}>
+		<button class="btn-primary" onclick={createWorkflow}>
 			<svg
 				width="20"
 				height="20"
@@ -70,13 +70,13 @@
 	</div>
 
 	<div class="filters">
-		<button class:active={filter === 'all'} on:click={() => (filter = 'all')}>
+		<button class:active={filter === 'all'} onclick={() => (filter = 'all')}>
 			All ({workflows.length})
 		</button>
-		<button class:active={filter === 'active'} on:click={() => (filter = 'active')}>
+		<button class:active={filter === 'active'} onclick={() => (filter = 'active')}>
 			Active ({workflows.filter((w) => w.status === 'active').length})
 		</button>
-		<button class:active={filter === 'paused'} on:click={() => (filter = 'paused')}>
+		<button class:active={filter === 'paused'} onclick={() => (filter = 'paused')}>
 			Paused ({workflows.filter((w) => w.status === 'paused').length})
 		</button>
 	</div>
@@ -97,7 +97,7 @@
 			</svg>
 			<h3>No workflows yet</h3>
 			<p>Create your first workflow to automate your processes</p>
-			<button class="btn-primary" on:click={createWorkflow}>Create Workflow</button>
+			<button class="btn-primary" onclick={createWorkflow}>Create Workflow</button>
 		</div>
 	{:else}
 		<div class="workflows-grid">
@@ -130,11 +130,11 @@
 					</div>
 
 					<div class="card-actions">
-						<button class="btn-secondary" on:click={() => editWorkflow(workflow.id)}> Edit </button>
+						<button class="btn-secondary" onclick={() => editWorkflow(workflow.id)}> Edit </button>
 						<button
 							class="btn-toggle"
 							class:active={workflow.status === 'active'}
-							on:click={() => toggleStatus(workflow)}
+							onclick={() => toggleStatus(workflow)}
 						>
 							{workflow.status === 'active' ? 'Pause' : 'Activate'}
 						</button>

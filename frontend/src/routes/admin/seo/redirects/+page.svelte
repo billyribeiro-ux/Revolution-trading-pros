@@ -135,7 +135,7 @@
 			<h1>Redirect Manager</h1>
 			<p>Manage 301/302 redirects with regex support</p>
 		</div>
-		<button class="btn-primary" on:click={createRedirect}>
+		<button class="btn-primary" onclick={createRedirect}>
 			<IconPlus size={18} />
 			Add Redirect
 		</button>
@@ -173,7 +173,7 @@
 				<button
 					class="filter-tab"
 					class:active={activeFilter === type}
-					on:click={() => (activeFilter = type)}
+					onclick={() => (activeFilter = type)}
 				>
 					{type === 'all' ? 'All' : type}
 				</button>
@@ -181,7 +181,7 @@
 		</div>
 
 		{#if selectedIds.length > 0}
-			<button class="btn-danger" on:click={bulkDelete}>
+			<button class="btn-danger" onclick={bulkDelete}>
 				<IconTrash size={18} />
 				Delete ({selectedIds.length})
 			</button>
@@ -195,7 +195,7 @@
 			<div class="empty-state">
 				<h3>No redirects found</h3>
 				<p>Create your first redirect to get started</p>
-				<button class="btn-primary" on:click={createRedirect}>
+				<button class="btn-primary" onclick={createRedirect}>
 					<IconPlus size={18} />
 					Add Redirect
 				</button>
@@ -220,7 +220,7 @@
 								<input
 									type="checkbox"
 									checked={selectedIds.includes(redirect.id)}
-									on:change={() => toggleSelection(redirect.id)}
+									onchange={() => toggleSelection(redirect.id)}
 								/>
 							</td>
 							<td>
@@ -242,7 +242,7 @@
 								<button
 									class="status-toggle"
 									class:active={redirect.is_active}
-									on:click={() => toggleRedirect(redirect)}
+									onclick={() => toggleRedirect(redirect)}
 								>
 									{#if redirect.is_active}
 										<IconToggleRight size={24} />
@@ -255,12 +255,12 @@
 							</td>
 							<td>
 								<div class="actions">
-									<button class="action-btn" on:click={() => editRedirect(redirect)} title="Edit">
+									<button class="action-btn" onclick={() => editRedirect(redirect)} title="Edit">
 										<IconEdit size={18} />
 									</button>
 									<button
 										class="action-btn danger"
-										on:click={() => deleteRedirect(redirect.id)}
+										onclick={() => deleteRedirect(redirect.id)}
 										title="Delete"
 									>
 										<IconTrash size={18} />
@@ -278,8 +278,8 @@
 {#if showEditor}
 	<RedirectEditor
 		redirect={editingRedirect}
-		on:saved={handleSaved}
-		on:cancel={() => (showEditor = false)}
+		onsaved={handleSaved}
+		oncancel={() => (showEditor = false)}
 	/>
 {/if}
 

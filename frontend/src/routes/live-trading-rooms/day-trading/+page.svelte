@@ -625,21 +625,21 @@
 			<div class="flex justify-center mb-16">
 				<div class="bg-rtp-surface p-1.5 rounded-xl border border-rtp-border inline-flex relative">
 					<button
-						on:click={() => (selectedPlan = 'monthly')}
+						onclick={() => (selectedPlan = 'monthly')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'monthly'
 							? 'text-white'
 							: 'text-rtp-muted hover:text-white'}">Monthly</button
 					>
 					<button
-						on:click={() => (selectedPlan = 'quarterly')}
+						onclick={() => (selectedPlan = 'quarterly')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'quarterly'
 							? 'text-white'
 							: 'text-rtp-muted hover:text-white'}">Quarterly</button
 					>
 					<button
-						on:click={() => (selectedPlan = 'annual')}
+						onclick={() => (selectedPlan = 'annual')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'annual'
 							? 'text-white'
@@ -762,7 +762,7 @@
 					<div class="border border-rtp-border rounded-xl bg-rtp-bg overflow-hidden">
 						<button
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-white"
-							on:click={() => toggleFaq(i)}
+							onclick={() => toggleFaq(i)}
 						>
 							{faq.name}
 							<svg

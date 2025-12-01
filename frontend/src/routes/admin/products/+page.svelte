@@ -101,7 +101,7 @@
 			<h1>Products Management</h1>
 			<p>Manage courses, indicators, and memberships</p>
 		</div>
-		<button class="btn-primary" on:click={() => goto('/admin/products/create')}>
+		<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
 			<IconPlus size={18} />
 			Add Product
 		</button>
@@ -113,7 +113,7 @@
 			<button
 				class="type-btn"
 				class:active={selectedType === type.value}
-				on:click={() => (selectedType = type.value)}
+				onclick={() => (selectedType = type.value)}
 			>
 				<svelte:component this={type.icon} size={20} />
 				{type.label}
@@ -135,7 +135,7 @@
 			<IconShoppingCart size={64} stroke={1} />
 			<h3>No products found</h3>
 			<p>Create your first {selectedType === 'all' ? 'product' : selectedType}</p>
-			<button class="btn-primary" on:click={() => goto('/admin/products/create')}>
+			<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
 				<IconPlus size={18} />
 				Add Product
 			</button>
@@ -169,14 +169,14 @@
 					<div class="product-actions">
 						<button
 							class="action-btn edit"
-							on:click={() => goto(`/admin/products/edit/${product.id}`)}
+							onclick={() => goto(`/admin/products/edit/${product.id}`)}
 							title="Edit"
 						>
 							<IconEdit size={16} />
 						</button>
 						<button
 							class="action-btn delete"
-							on:click={() => deleteProduct(product.id, product.name)}
+							onclick={() => deleteProduct(product.id, product.name)}
 							title="Delete"
 						>
 							<IconTrash size={16} />

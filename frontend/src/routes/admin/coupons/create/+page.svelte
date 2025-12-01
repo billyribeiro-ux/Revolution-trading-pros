@@ -1046,15 +1046,15 @@
 		</div>
 
 		<div class="header-actions">
-			<button class="btn-ghost" on:click={() => goto('/admin/coupons')}>
+			<button class="btn-ghost" onclick={() => goto('/admin/coupons')}>
 				<IconX size={18} />
 				Cancel
 			</button>
-			<button class="btn-secondary" on:click={testCoupon} disabled={testing || !formData.code}>
+			<button class="btn-secondary" onclick={testCoupon} disabled={testing || !formData.code}>
 				<IconTestPipe size={18} />
 				Test
 			</button>
-			<button class="btn-primary" on:click={handleSubmit} disabled={saving}>
+			<button class="btn-primary" onclick={handleSubmit} disabled={saving}>
 				{#if saving}
 					<IconRefresh size={18} class="spinning" />
 					Creating...
@@ -1080,14 +1080,14 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'basic'} on:click={() => (activeTab = 'basic')}>
+		<button class="tab" class:active={activeTab === 'basic'} onclick={() => (activeTab = 'basic')}>
 			<IconTag size={18} />
 			Basic
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'restrictions'}
-			on:click={() => (activeTab = 'restrictions')}
+			onclick={() => (activeTab = 'restrictions')}
 		>
 			<IconShield size={18} />
 			Restrictions
@@ -1095,7 +1095,7 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'advanced'}
-			on:click={() => (activeTab = 'advanced')}
+			onclick={() => (activeTab = 'advanced')}
 		>
 			<IconSettings size={18} />
 			Advanced
@@ -1103,7 +1103,7 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'distribution'}
-			on:click={() => (activeTab = 'distribution')}
+			onclick={() => (activeTab = 'distribution')}
 		>
 			<IconMail size={18} />
 			Distribution
@@ -1111,7 +1111,7 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'testing'}
-			on:click={() => (activeTab = 'testing')}
+			onclick={() => (activeTab = 'testing')}
 			class:tab-highlight={formData.ab_test_enabled}
 		>
 			<IconChartBar size={18} />
@@ -1123,7 +1123,7 @@
 	</div>
 
 	<!-- Form Content -->
-	<form on:submit|preventDefault={handleSubmit} class="coupon-form">
+	<form onsubmit={handleSubmit} class="coupon-form">
 		{#if activeTab === 'basic'}
 			<div class="tab-content" transition:fade={{ duration: 200 }}>
 				<!-- Code Section -->
@@ -1134,13 +1134,13 @@
 							<button
 								type="button"
 								class="btn-small"
-								on:click={generateCouponCode}
+								onclick={generateCouponCode}
 								disabled={generating}
 							>
 								<IconSparkles size={16} />
 								Generate
 							</button>
-							<button type="button" class="btn-small" on:click={generateBulkCodes}>
+							<button type="button" class="btn-small" onclick={generateBulkCodes}>
 								<IconCopy size={16} />
 								Bulk Generate
 							</button>
@@ -1161,7 +1161,7 @@
 								class="input input-large"
 								class:error={errors.some((e) => e.field === 'code')}
 								required
-								on:input={() => (formData.code = formData.code.toUpperCase())}
+								oninput={() => (formData.code = formData.code.toUpperCase())}
 							/>
 							{#if formData.code}
 								<div class="input-addon">
@@ -1231,7 +1231,7 @@
 						<div class="tiered-config">
 							<div class="tier-header">
 								<h3>Discount Tiers</h3>
-								<button type="button" class="btn-small" on:click={addTier}>
+								<button type="button" class="btn-small" onclick={addTier}>
 									<IconPlus size={16} />
 									Add Tier
 								</button>
@@ -1263,7 +1263,7 @@
 										bind:value={tier.discount_value}
 										class="input input-small"
 									/>
-									<button type="button" class="btn-icon" on:click={() => removeTier(index)}>
+									<button type="button" class="btn-icon" onclick={() => removeTier(index)}>
 										<IconX size={16} />
 									</button>
 								</div>
@@ -1443,7 +1443,7 @@
 						<button
 							type="button"
 							class="btn-small"
-							on:click={() => addProductRestriction('include')}
+							onclick={() => addProductRestriction('include')}
 						>
 							<IconPlus size={16} />
 							Add Rule
@@ -1466,7 +1466,7 @@
 							<button
 								type="button"
 								class="btn-icon"
-								on:click={() => removeProductRestriction(index)}
+								onclick={() => removeProductRestriction(index)}
 							>
 								<IconX size={16} />
 							</button>
@@ -1519,7 +1519,7 @@
 				<div class="form-section">
 					<div class="section-header">
 						<h2>Geographic Restrictions</h2>
-						<button type="button" class="btn-small" on:click={addGeographicRestriction}>
+						<button type="button" class="btn-small" onclick={addGeographicRestriction}>
 							<IconMapPin size={16} />
 							Add Location
 						</button>
@@ -1549,7 +1549,7 @@
 							<button
 								type="button"
 								class="btn-icon"
-								on:click={() => removeGeographicRestriction(index)}
+								onclick={() => removeGeographicRestriction(index)}
 							>
 								<IconX size={16} />
 							</button>
@@ -1773,7 +1773,7 @@
 							<div class="variants-section">
 								<div class="section-header">
 									<h3>Variants</h3>
-									<button type="button" class="btn-small" on:click={addABVariant}>
+									<button type="button" class="btn-small" onclick={addABVariant}>
 										<IconPlus size={16} />
 										Add Variant
 									</button>
@@ -1813,7 +1813,7 @@
 											<button
 												type="button"
 												class="btn-icon"
-												on:click={() => removeABVariant(variant.id)}
+												onclick={() => removeABVariant(variant.id)}
 											>
 												<IconX size={16} />
 											</button>
@@ -1821,7 +1821,7 @@
 									</div>
 								{/each}
 
-								<button type="button" class="btn-small" on:click={rebalanceVariantWeights}>
+								<button type="button" class="btn-small" onclick={rebalanceVariantWeights}>
 									<IconBolt size={16} />
 									Auto-Balance Weights
 								</button>

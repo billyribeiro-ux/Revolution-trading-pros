@@ -107,7 +107,7 @@
 				<select
 					class="rounded-lg border border-slate-800 bg-slate-900/80 px-2 py-1 text-xs"
 					bind:value={forecastPeriod}
-					on:change={loadForecast}
+					onchange={loadForecast}
 				>
 					<option value="this_month">This month</option>
 					<option value="next_month">Next month</option>
@@ -160,7 +160,7 @@
 							? 'border-sky-500 bg-sky-500/15 text-sky-200'
 							: 'border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-700'
 					}`}
-					on:click={() => selectPipeline(pipeline)}
+					onclick={() => selectPipeline(pipeline)}
 				>
 					{pipeline.name}
 				</button>
@@ -205,7 +205,7 @@
 									<button
 										type="button"
 										class="w-full cursor-pointer rounded-xl border border-slate-800/80 bg-slate-900/90 p-3 text-left hover:border-sky-500/70 focus:outline-none focus:ring-2 focus:ring-sky-500/60"
-										on:click={() => openDeal(deal)}
+										onclick={() => openDeal(deal)}
 									>
 										<p class="text-[13px] font-medium text-slate-100">{deal.name}</p>
 										<p class="mt-0.5 text-[11px] text-slate-400">

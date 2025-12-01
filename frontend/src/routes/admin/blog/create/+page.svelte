@@ -76,8 +76,8 @@
 		}
 	}
 
-	function handleContentChange(event: CustomEvent) {
-		content = event.detail;
+	function handleContentChange(newContent: string) {
+		content = newContent;
 	}
 
 	async function createTag() {
@@ -144,12 +144,12 @@
 			<h1>Create New Post</h1>
 		</div>
 		<div class="header-actions">
-			<button class="btn-secondary" on:click={() => goto('/admin/blog')}> Cancel </button>
-			<button class="btn-secondary" on:click={() => savePost('draft')} disabled={saving}>
+			<button class="btn-secondary" onclick={() => goto('/admin/blog')}> Cancel </button>
+			<button class="btn-secondary" onclick={() => savePost('draft')} disabled={saving}>
 				<IconDeviceFloppy size={18} />
 				Save Draft
 			</button>
-			<button class="btn-primary" on:click={() => savePost('published')} disabled={saving}>
+			<button class="btn-primary" onclick={() => savePost('published')} disabled={saving}>
 				<IconEye size={18} />
 				{saving ? 'Publishing...' : 'Publish'}
 			</button>
@@ -183,12 +183,12 @@
 
 			<div class="form-group">
 				<label for="blog-content">Content</label>
-				<RichTextEditor bind:content on:change={handleContentChange} />
+				<RichTextEditor bind:content onchange={handleContentChange} />
 			</div>
 
 			<!-- SEO Section -->
 			<div class="panel">
-				<button type="button" class="panel-header" on:click={() => (showSeoPanel = !showSeoPanel)}>
+				<button type="button" class="panel-header" onclick={() => (showSeoPanel = !showSeoPanel)}>
 					<h3>SEO Settings</h3>
 					<span>{showSeoPanel ? '−' : '+'}</span>
 				</button>
@@ -230,7 +230,7 @@
 				{#if post.featured_image}
 					<div class="featured-image-preview">
 						<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} />
-						<button type="button" class="remove-image" on:click={() => (post.featured_image = '')}>
+						<button type="button" class="remove-image" onclick={() => (post.featured_image = '')}>
 							<IconX size={16} />
 						</button>
 					</div>
@@ -256,7 +256,7 @@
 					</div>
 				{:else}
 					<label class="upload-box">
-						<input type="file" accept="image/*" on:change={handleFeaturedImageUpload} hidden />
+						<input type="file" accept="image/*" onchange={handleFeaturedImageUpload} hidden />
 						<IconPhoto size={48} />
 						<span>Click to upload featured image</span>
 					</label>
@@ -273,7 +273,7 @@
 								type="checkbox"
 								value={category.id}
 								checked={post.categories.includes(category.id)}
-								on:change={(e) => {
+								onchange={(e) => {
 									if (e.currentTarget.checked) {
 										post.categories = [...post.categories, category.id];
 									} else {
@@ -303,7 +303,7 @@
 								{tag.name}
 								<button
 									type="button"
-									on:click={() => (post.tags = post.tags.filter((id) => id !== tagId))}
+									onclick={() => (post.tags = post.tags.filter((id) => id !== tagId))}
 								>
 									<IconX size={14} />
 								</button>
@@ -317,9 +317,9 @@
 						type="text"
 						bind:value={newTag}
 						placeholder="Add new tag..."
-						on:keydown={(e) => e.key === 'Enter' && (e.preventDefault(), createTag())}
+						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), createTag())}
 					/>
-					<button type="button" class="btn-add-tag" on:click={createTag}>
+					<button type="button" class="btn-add-tag" onclick={createTag}>
 						<IconPlus size={16} />
 					</button>
 				</div>
@@ -331,7 +331,7 @@
 								<input
 									type="checkbox"
 									value={tag.id}
-									on:change={(e) => {
+									onchange={(e) => {
 										if (e.currentTarget.checked) {
 											post.tags = [...post.tags, tag.id];
 										}

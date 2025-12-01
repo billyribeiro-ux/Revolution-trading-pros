@@ -74,7 +74,7 @@
 			</div>
 
 			<div class="header-actions">
-				<PeriodSelector value={$selectedPeriod} on:change={(e) => handlePeriodChange(e.detail)} />
+				<PeriodSelector value={$selectedPeriod} onchange={handlePeriodChange} />
 			</div>
 		</div>
 	</div>
@@ -89,7 +89,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'overview'}
-			on:click={() => (selectedTab = 'overview')}
+			onclick={() => (selectedTab = 'overview')}
 		>
 			<IconChartBar size={20} />
 			Overview
@@ -97,7 +97,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'funnels'}
-			on:click={() => (selectedTab = 'funnels')}
+			onclick={() => (selectedTab = 'funnels')}
 		>
 			<IconTarget size={20} />
 			Funnels
@@ -105,7 +105,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'cohorts'}
-			on:click={() => (selectedTab = 'cohorts')}
+			onclick={() => (selectedTab = 'cohorts')}
 		>
 			<IconUsers size={20} />
 			Cohorts
@@ -113,7 +113,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'attribution'}
-			on:click={() => (selectedTab = 'attribution')}
+			onclick={() => (selectedTab = 'attribution')}
 		>
 			<IconTrendingUp size={20} />
 			Attribution
@@ -121,7 +121,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'behavior'}
-			on:click={() => (selectedTab = 'behavior')}
+			onclick={() => (selectedTab = 'behavior')}
 		>
 			<IconBolt size={20} />
 			Behavior
@@ -129,7 +129,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'revenue'}
-			on:click={() => selectedTab === 'revenue'}
+			onclick={() => selectedTab === 'revenue'}
 		>
 			<IconCurrencyDollar size={20} />
 			Revenue

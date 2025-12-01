@@ -67,7 +67,7 @@
 			<h1>Users Management</h1>
 			<p>Manage admin users and permissions</p>
 		</div>
-		<button class="btn-primary" on:click={() => goto('/admin/users/create')}>
+		<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
 			<IconPlus size={18} />
 			Add Admin User
 		</button>
@@ -81,14 +81,14 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn-secondary" on:click={loadUsers}>Try Again</button>
+			<button class="btn-secondary" onclick={loadUsers}>Try Again</button>
 		</div>
 	{:else if users.length === 0}
 		<div class="empty-state">
 			<IconUser size={64} stroke={1} />
 			<h3>No users found</h3>
 			<p>Add your first admin user to get started</p>
-			<button class="btn-primary" on:click={() => goto('/admin/users/create')}>
+			<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
 				<IconPlus size={18} />
 				Add Admin User
 			</button>
@@ -144,14 +144,14 @@
 								<div class="actions">
 									<button
 										class="action-btn edit"
-										on:click={() => goto(`/admin/users/edit/${user.id}`)}
+										onclick={() => goto(`/admin/users/edit/${user.id}`)}
 										title="Edit user"
 									>
 										<IconEdit size={16} />
 									</button>
 									<button
 										class="action-btn delete"
-										on:click={() => deleteUser(user.id)}
+										onclick={() => deleteUser(user.id)}
 										title="Delete user"
 									>
 										<IconTrash size={16} />

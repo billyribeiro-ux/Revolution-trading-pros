@@ -91,7 +91,7 @@
 	{/if}
 
 	<div class="settings-card">
-		<form on:submit|preventDefault={saveSettings}>
+		<form onsubmit={saveSettings}>
 			<div class="form-grid">
 				<!-- Host -->
 				<div class="form-group">
@@ -169,7 +169,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="button" on:click={testConnection} disabled={testing} class="btn-secondary">
+				<button type="button" onclick={testConnection} disabled={testing} class="btn-secondary">
 					{testing ? 'Testing...' : 'Test Connection'}
 				</button>
 				<button type="submit" disabled={loading} class="btn-primary">

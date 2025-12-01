@@ -179,7 +179,7 @@
 			{#if error}
 				<div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
 					{error}
-					<button class="ml-2 underline" on:click={loadSessions}>Retry</button>
+					<button class="ml-2 underline" onclick={loadSessions}>Retry</button>
 				</div>
 			{/if}
 
@@ -187,7 +187,7 @@
 			<div class="mb-6 flex flex-wrap gap-3">
 				<button
 					class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-					on:click={loadSessions}
+					onclick={loadSessions}
 					disabled={loading}
 				>
 					{#if loading}
@@ -216,14 +216,14 @@
 				</button>
 				<button
 					class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 transition-colors"
-					on:click={handleLogoutOtherDevices}
+					onclick={handleLogoutOtherDevices}
 					disabled={revokingAll || sessions.length <= 1}
 				>
 					{revokingAll ? 'Processing...' : 'Sign out other devices'}
 				</button>
 				<button
 					class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-					on:click={handleLogoutAllDevices}
+					onclick={handleLogoutAllDevices}
 					disabled={revokingAll}
 				>
 					{revokingAll ? 'Processing...' : 'Sign out all devices'}
@@ -334,7 +334,7 @@
 										class:bg-gray-100={session.is_current}
 										class:text-gray-700={session.is_current}
 										class:hover:bg-gray-200={session.is_current}
-										on:click={() => handleRevokeSession(session.session_id)}
+										onclick={() => handleRevokeSession(session.session_id)}
 										disabled={revoking === session.session_id}
 									>
 										{#if revoking === session.session_id}

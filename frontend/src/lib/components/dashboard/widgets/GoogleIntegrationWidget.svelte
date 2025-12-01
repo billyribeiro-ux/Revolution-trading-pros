@@ -229,8 +229,8 @@
 					in:fly={{ y: 20, duration: 500, delay: 100 + i * 80, easing: cubicOut }}
 					role="button"
 					tabindex="0"
-					on:click={() => handleConnect(integration)}
-					on:keypress={(e) => e.key === 'Enter' && handleConnect(integration)}
+					onclick={() => handleConnect(integration)}
+					onkeypress={(e) => e.key === 'Enter' && handleConnect(integration)}
 				>
 					<!-- Status Indicator -->
 					<div class="status-dot" class:connected={integration.connected}>
@@ -341,12 +341,12 @@
 {#if showConnectModal && selectedIntegration}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-overlay" on:click={() => (showConnectModal = false)} transition:fade>
+	<div class="modal-overlay" onclick={() => (showConnectModal = false)} transition:fade>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="modal-content"
-			on:click|stopPropagation
+			onclick={(e) => e.stopPropagation()}
 			in:scale={{ start: 0.9, duration: 300, easing: backOut }}
 		>
 			<h3>Disconnect {selectedIntegration.name}?</h3>
@@ -354,10 +354,10 @@
 				This will stop syncing data from {selectedIntegration.name}. Your historical data will be preserved.
 			</p>
 			<div class="modal-actions">
-				<button class="modal-button secondary" on:click={() => (showConnectModal = false)}>
+				<button class="modal-button secondary" onclick={() => (showConnectModal = false)}>
 					Cancel
 				</button>
-				<button class="modal-button danger" on:click={handleDisconnect}> Disconnect </button>
+				<button class="modal-button danger" onclick={handleDisconnect}> Disconnect </button>
 			</div>
 		</div>
 	</div>

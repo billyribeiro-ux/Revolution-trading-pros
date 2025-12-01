@@ -303,7 +303,7 @@
 					<button
 						class="filter-button"
 						class:active={selectedCategory === category}
-						on:click={() => (selectedCategory = category)}
+						onclick={() => (selectedCategory = category)}
 					>
 						{category}
 					</button>

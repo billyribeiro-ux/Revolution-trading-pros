@@ -101,11 +101,11 @@
 			<p>Configure SEO plugin settings and preferences</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-secondary" on:click={loadSettings} disabled={loading}>
+			<button class="btn-secondary" onclick={loadSettings} disabled={loading}>
 				<IconRefresh size={18} />
 				Reset
 			</button>
-			<button class="btn-primary" on:click={saveSettings} disabled={saving}>
+			<button class="btn-primary" onclick={saveSettings} disabled={saving}>
 				<IconDeviceFloppy size={18} />
 				{saving ? 'Saving...' : 'Save Changes'}
 			</button>
@@ -128,13 +128,13 @@
 									id={field.key}
 									type={field.type}
 									value={getSetting(group.key, field.key)}
-									on:input={(e) => setSetting(group.key, field.key, e.currentTarget.value)}
+									oninput={(e) => setSetting(group.key, field.key, e.currentTarget.value)}
 								/>
 							{:else if field.type === 'textarea'}
 								<textarea
 									id={field.key}
 									value={getSetting(group.key, field.key)}
-									on:input={(e) => setSetting(group.key, field.key, e.currentTarget.value)}
+									oninput={(e) => setSetting(group.key, field.key, e.currentTarget.value)}
 									rows="3"
 								></textarea>
 							{:else if field.type === 'checkbox'}
@@ -142,7 +142,7 @@
 									id={field.key}
 									type="checkbox"
 									checked={getSetting(group.key, field.key, false)}
-									on:change={(e) => setSetting(group.key, field.key, e.currentTarget.checked)}
+									onchange={(e) => setSetting(group.key, field.key, e.currentTarget.checked)}
 								/>
 							{/if}
 						</div>

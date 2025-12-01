@@ -371,7 +371,7 @@
 				<IconAlertCircle size={20} />
 			{/if}
 			<span>{toastMessage}</span>
-			<button on:click={() => (showToast = false)}>
+			<button onclick={() => (showToast = false)}>
 				<IconX size={16} />
 			</button>
 		</div>
@@ -383,7 +383,7 @@
 				<h1>Categories & Tags</h1>
 				<p>Organize your blog posts with categories and tags</p>
 			</div>
-			<button class="btn-secondary" on:click={loadData} disabled={loading}>
+			<button class="btn-secondary" onclick={loadData} disabled={loading}>
 				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 				Refresh
 			</button>
@@ -418,12 +418,12 @@
 				</div>
 				<div class="section-actions">
 					{#if selectedCategories.size > 0}
-						<button class="btn-danger-ghost" on:click={bulkDeleteCategories}>
+						<button class="btn-danger-ghost" onclick={bulkDeleteCategories}>
 							<IconTrash size={16} />
 							Delete ({selectedCategories.size})
 						</button>
 					{/if}
-					<button class="btn-primary" on:click={() => openCategoryModal()}>
+					<button class="btn-primary" onclick={() => openCategoryModal()}>
 						<IconPlus size={18} />
 						Add Category
 					</button>
@@ -439,7 +439,7 @@
 					<div class="empty-state">
 						<IconFolder size={48} />
 						<p>No categories found</p>
-						<button class="btn-primary" on:click={() => openCategoryModal()}>
+						<button class="btn-primary" onclick={() => openCategoryModal()}>
 							Create your first category
 						</button>
 					</div>
@@ -450,7 +450,7 @@
 								<input
 									type="checkbox"
 									checked={selectedCategories.has(category.id)}
-									on:change={(e) => {
+									onchange={(e) => {
 										if (e.currentTarget.checked) {
 											selectedCategories.add(category.id);
 										} else {
@@ -485,21 +485,21 @@
 							<div class="item-actions">
 								<button
 									class="action-btn"
-									on:click={() => openCategoryModal(category)}
+									onclick={() => openCategoryModal(category)}
 									title="Edit"
 								>
 									<IconEdit size={18} />
 								</button>
 								<button
 									class="action-btn"
-									on:click={() => navigator.clipboard.writeText(category.slug)}
+									onclick={() => navigator.clipboard.writeText(category.slug)}
 									title="Copy slug"
 								>
 									<IconCopy size={18} />
 								</button>
 								<button
 									class="action-btn danger"
-									on:click={() => deleteCategory(category.id)}
+									onclick={() => deleteCategory(category.id)}
 									title="Delete"
 								>
 									<IconTrash size={18} />
@@ -521,12 +521,12 @@
 				</div>
 				<div class="section-actions">
 					{#if selectedTags.size > 0}
-						<button class="btn-danger-ghost" on:click={bulkDeleteTags}>
+						<button class="btn-danger-ghost" onclick={bulkDeleteTags}>
 							<IconTrash size={16} />
 							Delete ({selectedTags.size})
 						</button>
 					{/if}
-					<button class="btn-primary" on:click={() => openTagModal()}>
+					<button class="btn-primary" onclick={() => openTagModal()}>
 						<IconPlus size={18} />
 						Add Tag
 					</button>
@@ -542,7 +542,7 @@
 					<div class="empty-state">
 						<IconTag size={48} />
 						<p>No tags found</p>
-						<button class="btn-primary" on:click={() => openTagModal()}>
+						<button class="btn-primary" onclick={() => openTagModal()}>
 							Create your first tag
 						</button>
 					</div>
@@ -553,7 +553,7 @@
 								<input
 									type="checkbox"
 									checked={selectedTags.has(tag.id)}
-									on:change={(e) => {
+									onchange={(e) => {
 										if (e.currentTarget.checked) {
 											selectedTags.add(tag.id);
 										} else {
@@ -583,17 +583,17 @@
 								</div>
 							</div>
 							<div class="item-actions">
-								<button class="action-btn" on:click={() => openTagModal(tag)} title="Edit">
+								<button class="action-btn" onclick={() => openTagModal(tag)} title="Edit">
 									<IconEdit size={18} />
 								</button>
 								<button
 									class="action-btn"
-									on:click={() => navigator.clipboard.writeText(tag.slug)}
+									onclick={() => navigator.clipboard.writeText(tag.slug)}
 									title="Copy slug"
 								>
 									<IconCopy size={18} />
 								</button>
-								<button class="action-btn danger" on:click={() => deleteTag(tag.id)} title="Delete">
+								<button class="action-btn danger" onclick={() => deleteTag(tag.id)} title="Delete">
 									<IconTrash size={18} />
 								</button>
 							</div>
@@ -611,20 +611,20 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		on:click={() => (showCategoryModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showCategoryModal = false)}
+		onclick={() => (showCategoryModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCategoryModal = false)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3>{editingCategory ? 'Edit' : 'Add'} Category</h3>
-				<button class="close-btn" on:click={() => (showCategoryModal = false)}>×</button>
+				<button class="close-btn" onclick={() => (showCategoryModal = false)}>×</button>
 			</div>
 
 			<div class="modal-body">
@@ -689,10 +689,10 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showCategoryModal = false)} disabled={saving}
+				<button class="btn-secondary" onclick={() => (showCategoryModal = false)} disabled={saving}
 					>Cancel</button
 				>
-				<button class="btn-primary" on:click={saveCategory} disabled={saving}>
+				<button class="btn-primary" onclick={saveCategory} disabled={saving}>
 					{#if saving}
 						Saving...
 					{:else}
@@ -710,20 +710,20 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		on:click={() => (showTagModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showTagModal = false)}
+		onclick={() => (showTagModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showTagModal = false)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3>{editingTag ? 'Edit' : 'Add'} Tag</h3>
-				<button class="close-btn" on:click={() => (showTagModal = false)}>×</button>
+				<button class="close-btn" onclick={() => (showTagModal = false)}>×</button>
 			</div>
 
 			<div class="modal-body">
@@ -778,10 +778,10 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showTagModal = false)} disabled={saving}
+				<button class="btn-secondary" onclick={() => (showTagModal = false)} disabled={saving}
 					>Cancel</button
 				>
-				<button class="btn-primary" on:click={saveTag} disabled={saving}>
+				<button class="btn-primary" onclick={saveTag} disabled={saving}>
 					{#if saving}
 						Saving...
 					{:else}

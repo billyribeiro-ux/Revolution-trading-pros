@@ -97,7 +97,7 @@
 			<p>Monitor consent metrics, audit logs, and A/B test performance</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn btn-secondary" on:click={loadData}>
+			<button class="btn btn-secondary" onclick={loadData}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
 					<path d="M3 3v5h5"/>
@@ -106,7 +106,7 @@
 				</svg>
 				Refresh
 			</button>
-			<button class="btn btn-primary" on:click={handleExportData}>
+			<button class="btn btn-primary" onclick={handleExportData}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
 					<polyline points="7 10 12 15 17 10"/>
@@ -122,28 +122,28 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'overview'}
-			on:click={() => (activeTab = 'overview')}
+			onclick={() => (activeTab = 'overview')}
 		>
 			Overview
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'audit'}
-			on:click={() => (activeTab = 'audit')}
+			onclick={() => (activeTab = 'audit')}
 		>
 			Audit Log
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'cookies'}
-			on:click={() => (activeTab = 'cookies')}
+			onclick={() => (activeTab = 'cookies')}
 		>
 			Cookies
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'ab-tests'}
-			on:click={() => (activeTab = 'ab-tests')}
+			onclick={() => (activeTab = 'ab-tests')}
 		>
 			A/B Tests
 		</button>
@@ -373,7 +373,7 @@
 			<section class="section">
 				<div class="section-header">
 					<h2>A/B Test Results</h2>
-					<button class="btn btn-secondary btn-sm" on:click={handleExportABData}>
+					<button class="btn btn-secondary btn-sm" onclick={handleExportABData}>
 						Export A/B Data
 					</button>
 				</div>

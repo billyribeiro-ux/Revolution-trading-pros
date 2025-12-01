@@ -98,7 +98,7 @@
 		</div>
 
 		<div class="header-actions">
-			<button class="btn-primary" on:click={() => (showUploadModal = !showUploadModal)}>
+			<button class="btn-primary" onclick={() => (showUploadModal = !showUploadModal)}>
 				<IconPhoto size={18} />
 				Upload Files
 			</button>
@@ -134,7 +134,7 @@
 						<input
 							type="text"
 							bind:value={searchQuery}
-							on:input={(e) => mediaStore.setSearchQuery(e.currentTarget.value)}
+							oninput={(e) => mediaStore.setSearchQuery(e.currentTarget.value)}
 							placeholder="Search files..."
 							class="search-input"
 						/>
@@ -143,7 +143,7 @@
 					<!-- Filter -->
 					<select
 						bind:value={selectedFileType}
-						on:change={(e) =>
+						onchange={(e) =>
 							mediaStore.setFilterType(
 								e.currentTarget.value === 'all' ? null : e.currentTarget.value
 							)}
@@ -162,7 +162,7 @@
 						<button
 							class="view-btn"
 							class:active={$viewMode === 'grid'}
-							on:click={() => mediaStore.setViewMode('grid')}
+							onclick={() => mediaStore.setViewMode('grid')}
 							aria-label="Grid view"
 						>
 							<IconTable size={20} />
@@ -170,7 +170,7 @@
 						<button
 							class="view-btn"
 							class:active={$viewMode === 'list'}
-							on:click={() => mediaStore.setViewMode('list')}
+							onclick={() => mediaStore.setViewMode('list')}
 							aria-label="List view"
 						>
 							<IconList size={20} />
@@ -181,11 +181,11 @@
 					{#if $selectedCount > 0}
 						<div class="bulk-actions">
 							<span class="selected-count">{$selectedCount} selected</span>
-							<button class="bulk-btn" on:click={handleBulkDelete}>
+							<button class="bulk-btn" onclick={handleBulkDelete}>
 								<IconTrash size={18} />
 								Delete
 							</button>
-							<button class="bulk-btn" on:click={() => mediaStore.deselectAll()}> Clear </button>
+							<button class="bulk-btn" onclick={() => mediaStore.deselectAll()}> Clear </button>
 						</div>
 					{/if}
 				</div>
@@ -204,10 +204,10 @@
 							<div
 								class="file-card"
 								class:selected={$mediaStore.selectedFiles.has(file.id)}
-								on:click={() => mediaStore.toggleFileSelection(file.id)}
+								onclick={() => mediaStore.toggleFileSelection(file.id)}
 								role="button"
 								tabindex="0"
-								on:keydown={(e) => e.key === 'Enter' && mediaStore.toggleFileSelection(file.id)}
+								onkeydown={(e) => e.key === 'Enter' && mediaStore.toggleFileSelection(file.id)}
 							>
 								{#if file.file_type === 'image'}
 									<div class="file-thumbnail">
@@ -259,13 +259,13 @@
 								{#each $currentFiles as file}
 									<tr
 										class:selected={$mediaStore.selectedFiles.has(file.id)}
-										on:click={() => mediaStore.toggleFileSelection(file.id)}
+										onclick={() => mediaStore.toggleFileSelection(file.id)}
 									>
 										<td>
 											<input
 												type="checkbox"
 												checked={$mediaStore.selectedFiles.has(file.id)}
-												on:change={() => mediaStore.toggleFileSelection(file.id)}
+												onchange={() => mediaStore.toggleFileSelection(file.id)}
 											/>
 										</td>
 										<td class="file-name-cell">
@@ -301,7 +301,7 @@
 						<button
 							class="page-btn"
 							disabled={$mediaStore.pagination.page === 1}
-							on:click={() => mediaStore.loadFiles($mediaStore.pagination.page - 1)}
+							onclick={() => mediaStore.loadFiles($mediaStore.pagination.page - 1)}
 						>
 							Previous
 						</button>
@@ -311,7 +311,7 @@
 						<button
 							class="page-btn"
 							disabled={$mediaStore.pagination.page === $mediaStore.pagination.total_pages}
-							on:click={() => mediaStore.loadFiles($mediaStore.pagination.page + 1)}
+							onclick={() => mediaStore.loadFiles($mediaStore.pagination.page + 1)}
 						>
 							Next
 						</button>
@@ -322,7 +322,7 @@
 					<IconPhoto size={64} class="text-gray-600" />
 					<h3 class="text-xl font-semibold text-gray-400 mt-4">No files yet</h3>
 					<p class="text-gray-500 mt-2">Upload your first file to get started</p>
-					<button class="btn-primary mt-4" on:click={() => (showUploadModal = true)}>
+					<button class="btn-primary mt-4" onclick={() => (showUploadModal = true)}>
 						<IconPhoto size={18} />
 						Upload Files
 					</button>

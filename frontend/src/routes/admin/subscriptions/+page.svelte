@@ -344,7 +344,7 @@
 						<div class="flex items-center justify-between text-sm">
 							<span class="text-slate-300">{payment.subscriptionId}</span>
 							<button
-								on:click={() => handleRetryPayment(payment.subscriptionId, payment.id)}
+								onclick={() => handleRetryPayment(payment.subscriptionId, payment.id)}
 								class="text-emerald-400 hover:text-emerald-300 font-medium"
 							>
 								Retry Payment
@@ -387,7 +387,7 @@
 						type="text"
 						id="search"
 						bind:value={searchQuery}
-						on:input={loadData}
+						oninput={loadData}
 						placeholder="Search subscriptions..."
 						class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
 					/>
@@ -398,7 +398,7 @@
 					<select
 						id="status"
 						bind:value={statusFilter}
-						on:change={loadData}
+						onchange={loadData}
 						class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500"
 					>
 						<option value="all">All Statuses</option>
@@ -418,7 +418,7 @@
 					<select
 						id="interval"
 						bind:value={intervalFilter}
-						on:change={loadData}
+						onchange={loadData}
 						class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-emerald-500"
 					>
 						<option value="all">All Intervals</option>
@@ -531,14 +531,14 @@
 										<div class="flex items-center gap-2">
 											{#if subscription.status === 'active'}
 												<button
-													on:click={() => handlePause(subscription)}
+													onclick={() => handlePause(subscription)}
 													class="text-orange-400 hover:text-orange-300 text-sm font-medium"
 													title="Pause"
 												>
 													Pause
 												</button>
 												<button
-													on:click={() => handleCancel(subscription)}
+													onclick={() => handleCancel(subscription)}
 													class="text-red-400 hover:text-red-300 text-sm font-medium"
 													title="Cancel"
 												>
@@ -546,14 +546,14 @@
 												</button>
 											{:else if subscription.status === 'on-hold'}
 												<button
-													on:click={() => handleResume(subscription)}
+													onclick={() => handleResume(subscription)}
 													class="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
 													title="Resume"
 												>
 													Resume
 												</button>
 												<button
-													on:click={() => handleCancel(subscription)}
+													onclick={() => handleCancel(subscription)}
 													class="text-red-400 hover:text-red-300 text-sm font-medium"
 													title="Cancel"
 												>
@@ -561,7 +561,7 @@
 												</button>
 											{:else if subscription.status === 'cancelled'}
 												<button
-													on:click={() => handleReactivate(subscription)}
+													onclick={() => handleReactivate(subscription)}
 													class="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
 													title="Reactivate"
 												>
@@ -604,7 +604,7 @@
 
 			<div class="flex gap-3">
 				<button
-					on:click={() => {
+					onclick={() => {
 						showPauseModal = false;
 						pauseReason = '';
 						selectedSubscription = null;
@@ -614,7 +614,7 @@
 					Cancel
 				</button>
 				<button
-					on:click={confirmPause}
+					onclick={confirmPause}
 					disabled={!pauseReason.trim()}
 					class="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				>
@@ -662,7 +662,7 @@
 
 			<div class="flex gap-3">
 				<button
-					on:click={() => {
+					onclick={() => {
 						showCancelModal = false;
 						cancelReason = '';
 						cancelImmediate = false;
@@ -673,7 +673,7 @@
 					Go Back
 				</button>
 				<button
-					on:click={confirmCancel}
+					onclick={confirmCancel}
 					disabled={!cancelReason.trim()}
 					class="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				>

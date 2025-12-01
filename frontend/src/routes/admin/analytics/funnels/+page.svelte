@@ -51,8 +51,8 @@
 		}
 	}
 
-	function handlePeriodChange(event: CustomEvent<string>) {
-		selectedPeriod = event.detail;
+	function handlePeriodChange(value: string) {
+		selectedPeriod = value;
 		loadFunnels();
 	}
 
@@ -109,9 +109,9 @@
 			<p class="text-sm text-gray-500 mt-1">Track and optimize user conversion journeys</p>
 		</div>
 		<div class="flex items-center gap-4">
-			<PeriodSelector value={selectedPeriod} on:change={handlePeriodChange} />
+			<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 			<button
-				on:click={() => (showCreateModal = true)}
+				onclick={() => (showCreateModal = true)}
 				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
 			>
 				Create Funnel
@@ -129,7 +129,7 @@
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
 			<p class="text-red-600">{error}</p>
 			<button
-				on:click={loadFunnels}
+				onclick={loadFunnels}
 				class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 			>
 				Retry
@@ -141,7 +141,7 @@
 			<h3 class="text-lg font-medium text-gray-900 mb-2">No Funnels Yet</h3>
 			<p class="text-gray-500 mb-6">Create your first funnel to track user conversion journeys</p>
 			<button
-				on:click={() => (showCreateModal = true)}
+				onclick={() => (showCreateModal = true)}
 				class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
 			>
 				Create Your First Funnel
@@ -152,7 +152,7 @@
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 			{#each funnels as funnel}
 				<button
-					on:click={() => (selectedFunnel = funnel)}
+					onclick={() => (selectedFunnel = funnel)}
 					class="text-left bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow
 						{selectedFunnel?.key === funnel.key ? 'ring-2 ring-blue-500' : ''}"
 				>
@@ -261,7 +261,7 @@
 				<div class="flex items-center justify-between">
 					<h2 class="text-xl font-bold text-gray-900">Create Funnel</h2>
 					<button
-						on:click={() => (showCreateModal = false)}
+						onclick={() => (showCreateModal = false)}
 						class="text-gray-400 hover:text-gray-600 text-2xl"
 					>
 						✕
@@ -303,7 +303,7 @@
 					<div class="flex items-center justify-between mb-3">
 						<span class="text-sm font-medium text-gray-700">Funnel Steps</span>
 						<button
-							on:click={addStep}
+							onclick={addStep}
 							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
 						>
 							+ Add Step
@@ -331,7 +331,7 @@
 								/>
 								{#if newFunnel.steps.length > 1}
 									<button
-										on:click={() => removeStep(index)}
+										onclick={() => removeStep(index)}
 										class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
 									>
 										🗑️
@@ -345,13 +345,13 @@
 
 			<div class="p-6 border-t border-gray-100 flex justify-end gap-3">
 				<button
-					on:click={() => (showCreateModal = false)}
+					onclick={() => (showCreateModal = false)}
 					class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
 				>
 					Cancel
 				</button>
 				<button
-					on:click={createFunnel}
+					onclick={createFunnel}
 					disabled={!newFunnel.name || newFunnel.steps.some((s) => !s.name || !s.event_name)}
 					class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
 				>

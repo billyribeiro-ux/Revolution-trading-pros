@@ -822,7 +822,7 @@
 							>
 								<button
 									class="w-full flex justify-between items-center p-6 text-left"
-									on:click={() => toggleSyllabus(i)}
+									onclick={() => toggleSyllabus(i)}
 								>
 									<div class="flex items-center gap-6">
 										<span
@@ -963,7 +963,7 @@
 					<div class="border border-white/10 rounded-lg bg-[#0a0a0a] overflow-hidden">
 						<button
 							class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-							on:click={() => toggleFaq(0)}
+							onclick={() => toggleFaq(0)}
 						>
 							<span class="font-bold text-white">Is this a "Get Rich Quick" scheme?</span>
 							<span
@@ -985,7 +985,7 @@
 					<div class="border border-white/10 rounded-lg bg-[#0a0a0a] overflow-hidden">
 						<button
 							class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-							on:click={() => toggleFaq(1)}
+							onclick={() => toggleFaq(1)}
 						>
 							<span class="font-bold text-white">Do I need a large account to start?</span>
 							<span
@@ -1008,7 +1008,7 @@
 					<div class="border border-white/10 rounded-lg bg-[#0a0a0a] overflow-hidden">
 						<button
 							class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
-							on:click={() => toggleFaq(2)}
+							onclick={() => toggleFaq(2)}
 						>
 							<span class="font-bold text-white">What trading style do you teach?</span>
 							<span

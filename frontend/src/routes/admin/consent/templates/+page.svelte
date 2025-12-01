@@ -181,7 +181,7 @@
 			<p>Choose from 20 pre-built templates or create your own</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn btn-secondary" on:click={handleExport}>
+			<button class="btn btn-secondary" onclick={handleExport}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
 					<polyline points="17 8 12 3 7 8"/>
@@ -189,7 +189,7 @@
 				</svg>
 				Export
 			</button>
-			<button class="btn btn-secondary" on:click={handleImport}>
+			<button class="btn btn-secondary" onclick={handleImport}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
 					<polyline points="7 10 12 15 17 10"/>
@@ -197,7 +197,7 @@
 				</svg>
 				Import
 			</button>
-			<button class="btn btn-primary" on:click={handleCreateNew}>
+			<button class="btn btn-primary" onclick={handleCreateNew}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M5 12h14"/>
 					<path d="M12 5v14"/>
@@ -225,7 +225,7 @@
 				<button
 					class="category-tab"
 					class:active={selectedCategory === category}
-					on:click={() => (selectedCategory = category)}
+					onclick={() => (selectedCategory = category)}
 				>
 					{category === 'all' ? 'All Templates' : category}
 					{#if category === 'all'}
@@ -256,7 +256,7 @@
 		{#if filteredTemplates.length === 0}
 			<div class="empty-state">
 				<p>No templates found matching your criteria.</p>
-				<button class="btn btn-secondary" on:click={() => { searchQuery = ''; selectedCategory = 'all'; }}>
+				<button class="btn btn-secondary" onclick={() => { searchQuery = ''; selectedCategory = 'all'; }}>
 					Clear Filters
 				</button>
 			</div>
@@ -278,10 +278,10 @@
 	{#if $isPreviewMode}
 		<div class="preview-controls">
 			<span>Preview Mode Active</span>
-			<button class="btn btn-secondary btn-sm" on:click={exitPreviewMode}>
+			<button class="btn btn-secondary btn-sm" onclick={exitPreviewMode}>
 				Cancel
 			</button>
-			<button class="btn btn-primary btn-sm" on:click={handleApplyPreview}>
+			<button class="btn btn-primary btn-sm" onclick={handleApplyPreview}>
 				Apply This Template
 			</button>
 		</div>
@@ -296,10 +296,10 @@
 			class="modal-backdrop"
 			role="button"
 			tabindex="0"
-			on:click={() => (showImportModal = false)}
-			on:keydown={(e) => e.key === 'Escape' && (showImportModal = false)}
+			onclick={() => (showImportModal = false)}
+			onkeydown={(e) => e.key === 'Escape' && (showImportModal = false)}
 		>
-			<div class="modal" role="dialog" aria-modal="true" on:click|stopPropagation on:keydown|stopPropagation>
+			<div class="modal" role="dialog" aria-modal="true" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 				<h3>Import Configuration</h3>
 				<p>Paste your exported JSON configuration:</p>
 				<textarea
@@ -309,10 +309,10 @@
 					rows="10"
 				></textarea>
 				<div class="modal-actions">
-					<button class="btn btn-secondary" on:click={() => (showImportModal = false)}>
+					<button class="btn btn-secondary" onclick={() => (showImportModal = false)}>
 						Cancel
 					</button>
-					<button class="btn btn-primary" on:click={confirmImport}>
+					<button class="btn btn-primary" onclick={confirmImport}>
 						Import
 					</button>
 				</div>

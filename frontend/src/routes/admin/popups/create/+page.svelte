@@ -94,11 +94,11 @@
 			</div>
 		</div>
 		<div class="header-actions">
-			<button class="btn-secondary" on:click={() => (showPreview = !showPreview)}>
+			<button class="btn-secondary" onclick={() => (showPreview = !showPreview)}>
 				<IconEye size={20} />
 				<span>{showPreview ? 'Hide' : 'Show'} Preview</span>
 			</button>
-			<button class="btn-primary" on:click={handleSave} disabled={saving}>
+			<button class="btn-primary" onclick={handleSave} disabled={saving}>
 				<IconDeviceFloppy size={20} />
 				<span>{saving ? 'Saving...' : 'Save Popup'}</span>
 			</button>
@@ -113,35 +113,35 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'content'}
-					on:click={() => (activeTab = 'content')}
+					onclick={() => (activeTab = 'content')}
 				>
 					Content
 				</button>
 				<button
 					class="tab"
 					class:active={activeTab === 'design'}
-					on:click={() => (activeTab = 'design')}
+					onclick={() => (activeTab = 'design')}
 				>
 					Design
 				</button>
 				<button
 					class="tab"
 					class:active={activeTab === 'display'}
-					on:click={() => (activeTab = 'display')}
+					onclick={() => (activeTab = 'display')}
 				>
 					Display Rules
 				</button>
 				<button
 					class="tab"
 					class:active={activeTab === 'buttons'}
-					on:click={() => (activeTab = 'buttons')}
+					onclick={() => (activeTab = 'buttons')}
 				>
 					Buttons
 				</button>
 				<button
 					class="tab"
 					class:active={activeTab === 'form'}
-					on:click={() => (activeTab = 'form')}
+					onclick={() => (activeTab = 'form')}
 				>
 					Form
 				</button>
@@ -460,7 +460,7 @@
 					<div class="form-section">
 						<div class="section-header">
 							<h3 class="section-title">Popup Buttons</h3>
-							<button class="btn-add" on:click={addButton}>+ Add Button</button>
+							<button class="btn-add" onclick={addButton}>+ Add Button</button>
 						</div>
 
 						{#if popup.buttons && popup.buttons.length > 0}
@@ -468,7 +468,7 @@
 								<div class="button-config">
 									<div class="button-header">
 										<h4>Button {index + 1}</h4>
-										<button class="btn-remove" on:click={() => removeButton(index)}>Remove</button>
+										<button class="btn-remove" onclick={() => removeButton(index)}>Remove</button>
 									</div>
 
 									<div class="form-group">
@@ -529,7 +529,7 @@
 					<div class="form-section">
 						<div class="section-header">
 							<h3 class="section-title">Form Fields</h3>
-							<button class="btn-add" on:click={addFormField}>+ Add Field</button>
+							<button class="btn-add" onclick={addFormField}>+ Add Field</button>
 						</div>
 
 						<div class="form-group">
@@ -549,7 +549,7 @@
 								<div class="button-config">
 									<div class="button-header">
 										<h4>Field {index + 1}</h4>
-										<button class="btn-remove" on:click={() => removeFormField(index)}
+										<button class="btn-remove" onclick={() => removeFormField(index)}
 											>Remove</button
 										>
 									</div>

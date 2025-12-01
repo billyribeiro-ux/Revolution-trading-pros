@@ -77,7 +77,7 @@
 			<h1>Settings</h1>
 			<p>Configure your site settings</p>
 		</div>
-		<button class="btn-primary" on:click={saveSettings} disabled={saving}>
+		<button class="btn-primary" onclick={saveSettings} disabled={saving}>
 			{#if saving}
 				Saving...
 			{:else}

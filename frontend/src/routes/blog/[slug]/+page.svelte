@@ -132,7 +132,7 @@
 		<div class="error">
 			<h2>Oops!</h2>
 			<p>{error}</p>
-			<button class="btn-back" on:click={goBack}>
+			<button class="btn-back" onclick={goBack}>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="20"
@@ -152,7 +152,7 @@
 	{:else if post}
 		<article class="blog-post">
 			<div class="post-header">
-				<button class="btn-back-header" on:click={goBack}>
+				<button class="btn-back-header" onclick={goBack}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"
@@ -297,7 +297,7 @@
 			</div>
 
 			<div class="post-footer">
-				<button class="btn-back-footer" on:click={goBack}>
+				<button class="btn-back-footer" onclick={goBack}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"

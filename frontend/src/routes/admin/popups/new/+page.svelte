@@ -168,7 +168,7 @@
 		<p class="text-gray-600 mt-1">Design and configure your popup</p>
 	</div>
 
-	<form on:submit|preventDefault={handleSubmit}>
+	<form onsubmit={handleSubmit}>
 		<div class="space-y-6">
 			<!-- Basic Information -->
 			<Card>
@@ -603,7 +603,7 @@
 
 			<!-- Actions -->
 			<div class="flex justify-end gap-3">
-				<Button type="button" variant="ghost" on:click={handleCancel} disabled={loading}>
+				<Button type="button" variant="ghost" onclick={handleCancel} disabled={loading}>
 					Cancel
 				</Button>
 				<Button type="submit" disabled={loading}>

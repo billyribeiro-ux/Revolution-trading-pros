@@ -56,28 +56,28 @@
 				<button
 					class="period-btn"
 					class:active={selectedPeriod === '24h'}
-					on:click={() => handlePeriodChange('24h')}
+					onclick={() => handlePeriodChange('24h')}
 				>
 					24h
 				</button>
 				<button
 					class="period-btn"
 					class:active={selectedPeriod === '7d'}
-					on:click={() => handlePeriodChange('7d')}
+					onclick={() => handlePeriodChange('7d')}
 				>
 					7d
 				</button>
 				<button
 					class="period-btn"
 					class:active={selectedPeriod === '30d'}
-					on:click={() => handlePeriodChange('30d')}
+					onclick={() => handlePeriodChange('30d')}
 				>
 					30d
 				</button>
 				<button
 					class="period-btn"
 					class:active={selectedPeriod === '90d'}
-					on:click={() => handlePeriodChange('90d')}
+					onclick={() => handlePeriodChange('90d')}
 				>
 					90d
 				</button>

@@ -275,7 +275,7 @@
 
 							<!-- Complete Purchase Button -->
 							<button
-								on:click={handleCheckout}
+								onclick={handleCheckout}
 								disabled={isProcessing}
 								class="w-full relative px-8 py-5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-heading font-bold text-lg rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
 							>

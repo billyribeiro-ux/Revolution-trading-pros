@@ -244,7 +244,7 @@
 			<p class="text-gray-600 mt-1">Update your popup configuration</p>
 		</div>
 
-		<form on:submit|preventDefault={handleSubmit}>
+		<form onsubmit={handleSubmit}>
 			<div class="space-y-6">
 				<!-- Basic Information -->
 				<Card>
@@ -710,7 +710,7 @@
 						</div>
 
 						<div class="mt-4">
-							<Button variant="outline" on:click={() => goto(`/admin/popups/${popupId}/analytics`)}>
+							<Button variant="outline" onclick={() => goto(`/admin/popups/${popupId}/analytics`)}>
 								View Full Analytics
 							</Button>
 						</div>
@@ -719,7 +719,7 @@
 
 				<!-- Actions -->
 				<div class="flex justify-end gap-3">
-					<Button type="button" variant="ghost" on:click={handleCancel} disabled={loading}>
+					<Button type="button" variant="ghost" onclick={handleCancel} disabled={loading}>
 						Cancel
 					</Button>
 					<Button type="submit" disabled={loading}>

@@ -605,7 +605,7 @@
 				>
 					{#each ['monthly', 'quarterly', 'annual'] as plan}
 						<button
-							on:click={() => (selectedPlan = plan as 'monthly' | 'quarterly' | 'annual')}
+							onclick={() => (selectedPlan = plan as 'monthly' | 'quarterly' | 'annual')}
 							class="relative px-6 py-2.5 rounded-lg text-sm font-bold capitalize transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-rtp-primary
                             {selectedPlan === plan
 								? 'text-white'
@@ -747,7 +747,7 @@
 					<div class="border border-rtp-border rounded-xl bg-rtp-bg overflow-hidden">
 						<button
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-rtp-text"
-							on:click={() => toggleFaq(i)}
+							onclick={() => toggleFaq(i)}
 						>
 							{faq.name}
 							<svg

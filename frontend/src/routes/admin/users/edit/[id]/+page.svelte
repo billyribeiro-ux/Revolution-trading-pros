@@ -121,7 +121,7 @@
 			<h1>Edit User</h1>
 			<p>Update user information and roles</p>
 		</div>
-		<button class="btn-secondary" on:click={() => goto('/admin/users')}>
+		<button class="btn-secondary" onclick={() => goto('/admin/users')}>
 			<IconX size={18} />
 			Cancel
 		</button>
@@ -147,7 +147,7 @@
 			<p>Loading user...</p>
 		</div>
 	{:else}
-		<form on:submit|preventDefault={handleSubmit} class="user-form">
+		<form onsubmit={handleSubmit} class="user-form">
 			<div class="form-section">
 				<h2>Basic Information</h2>
 
@@ -225,7 +225,7 @@
 						<input
 							type="checkbox"
 							checked={formData.roles.includes('admin')}
-							on:change={() => toggleRole('admin')}
+							onchange={() => toggleRole('admin')}
 						/>
 						<div class="role-card">
 							<div class="role-icon admin">
@@ -242,7 +242,7 @@
 						<input
 							type="checkbox"
 							checked={formData.roles.includes('super-admin')}
-							on:change={() => toggleRole('super-admin')}
+							onchange={() => toggleRole('super-admin')}
 						/>
 						<div class="role-card">
 							<div class="role-icon super-admin">
@@ -258,7 +258,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="button" class="btn-secondary" on:click={() => goto('/admin/users')}>
+				<button type="button" class="btn-secondary" onclick={() => goto('/admin/users')}>
 					Cancel
 				</button>
 				<button type="submit" class="btn-primary" disabled={saving}>

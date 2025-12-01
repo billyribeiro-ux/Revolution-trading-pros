@@ -353,7 +353,7 @@
 <div class="segments-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" on:click={() => goto('/admin/members')}>
+		<button class="back-btn" onclick={() => goto('/admin/members')}>
 			<IconArrowLeft size={20} />
 			Back to Members
 		</button>
@@ -370,7 +370,7 @@
 			</div>
 
 			<div class="header-actions">
-				<button class="btn-secondary" on:click={loadData}>
+				<button class="btn-secondary" onclick={loadData}>
 					<IconRefresh size={18} />
 					Refresh
 				</button>
@@ -381,15 +381,15 @@
 	<!-- Tabs -->
 	<div class="tabs-container">
 		<div class="tabs">
-			<button class:active={activeTab === 'segments'} on:click={() => (activeTab = 'segments')}>
+			<button class:active={activeTab === 'segments'} onclick={() => (activeTab = 'segments')}>
 				<IconFilter size={18} />
 				Smart Segments ({segments.length})
 			</button>
-			<button class:active={activeTab === 'tags'} on:click={() => (activeTab = 'tags')}>
+			<button class:active={activeTab === 'tags'} onclick={() => (activeTab = 'tags')}>
 				<IconTag size={18} />
 				Tags ({tags.length})
 			</button>
-			<button class:active={activeTab === 'saved'} on:click={() => (activeTab = 'saved')}>
+			<button class:active={activeTab === 'saved'} onclick={() => (activeTab = 'saved')}>
 				<IconSearch size={18} />
 				Saved Filters ({savedFilters.length})
 			</button>
@@ -397,12 +397,12 @@
 
 		<div class="tab-actions">
 			{#if activeTab === 'segments'}
-				<button class="btn-primary" on:click={() => (showCreateSegmentModal = true)}>
+				<button class="btn-primary" onclick={() => (showCreateSegmentModal = true)}>
 					<IconPlus size={18} />
 					New Segment
 				</button>
 			{:else if activeTab === 'tags'}
-				<button class="btn-primary" on:click={() => (showCreateTagModal = true)}>
+				<button class="btn-primary" onclick={() => (showCreateTagModal = true)}>
 					<IconPlus size={18} />
 					New Tag
 				</button>
@@ -450,7 +450,7 @@
 						<div class="segment-footer">
 							<span class="updated">Updated {formatDate(segment.lastUpdated)}</span>
 							<div class="segment-actions">
-								<button class="btn-icon" on:click={() => viewSegmentMembers(segment)} title="View members">
+								<button class="btn-icon" onclick={() => viewSegmentMembers(segment)} title="View members">
 									<IconUsers size={16} />
 								</button>
 								<button class="btn-icon" title="Send campaign">
@@ -460,7 +460,7 @@
 									<button class="btn-icon" title="Edit">
 										<IconEdit size={16} />
 									</button>
-									<button class="btn-icon danger" on:click={() => deleteSegment(segment.id)} title="Delete">
+									<button class="btn-icon danger" onclick={() => deleteSegment(segment.id)} title="Delete">
 										<IconTrash size={16} />
 									</button>
 								{/if}
@@ -487,14 +487,14 @@
 						</div>
 
 						<div class="tag-actions">
-							<button class="btn-secondary small" on:click={() => goto(`/admin/members?tag=${tag.id}`)}>
+							<button class="btn-secondary small" onclick={() => goto(`/admin/members?tag=${tag.id}`)}>
 								<IconUsers size={14} />
 								View Members
 							</button>
 							<button class="btn-icon" title="Edit">
 								<IconEdit size={16} />
 							</button>
-							<button class="btn-icon danger" on:click={() => deleteTag(tag.id)} title="Delete">
+							<button class="btn-icon danger" onclick={() => deleteTag(tag.id)} title="Delete">
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -525,13 +525,13 @@
 						</div>
 
 						<div class="filter-actions">
-							<button class="btn-primary small" on:click={() => applySavedFilter(filter)}>
+							<button class="btn-primary small" onclick={() => applySavedFilter(filter)}>
 								Apply Filter
 							</button>
 							<button class="btn-icon" title="Duplicate">
 								<IconCopy size={16} />
 							</button>
-							<button class="btn-icon danger" on:click={() => deleteSavedFilter(filter.id)} title="Delete">
+							<button class="btn-icon danger" onclick={() => deleteSavedFilter(filter.id)} title="Delete">
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -557,19 +557,19 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		on:click={() => (showCreateSegmentModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showCreateSegmentModal = false)}
+		onclick={() => (showCreateSegmentModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCreateSegmentModal = false)}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content large"
 			role="document"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Create Smart Segment</h2>
-				<button class="close-btn" on:click={() => (showCreateSegmentModal = false)}>
+				<button class="close-btn" onclick={() => (showCreateSegmentModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -621,13 +621,13 @@
 								placeholder="Value"
 							/>
 
-							<button class="btn-icon danger" on:click={() => removeCondition(index)}>
+							<button class="btn-icon danger" onclick={() => removeCondition(index)}>
 								<IconX size={16} />
 							</button>
 						</div>
 					{/each}
 
-					<button class="btn-secondary" on:click={addCondition}>
+					<button class="btn-secondary" onclick={addCondition}>
 						<IconPlus size={16} />
 						Add Condition
 					</button>
@@ -635,10 +635,10 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showCreateSegmentModal = false)}>
+				<button class="btn-secondary" onclick={() => (showCreateSegmentModal = false)}>
 					Cancel
 				</button>
-				<button class="btn-primary" on:click={handleCreateSegment}>
+				<button class="btn-primary" onclick={handleCreateSegment}>
 					<IconCheck size={18} />
 					Create Segment
 				</button>
@@ -654,19 +654,19 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		on:click={() => (showCreateTagModal = false)}
-		on:keydown={(e) => e.key === 'Escape' && (showCreateTagModal = false)}
+		onclick={() => (showCreateTagModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCreateTagModal = false)}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content"
 			role="document"
-			on:click|stopPropagation
-			on:keydown|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Create New Tag</h2>
-				<button class="close-btn" on:click={() => (showCreateTagModal = false)}>
+				<button class="close-btn" onclick={() => (showCreateTagModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -690,7 +690,7 @@
 								class="color-option"
 								class:selected={newTag.color === color}
 								style="background-color: {color}"
-								on:click={() => (newTag.color = color)}
+								onclick={() => (newTag.color = color)}
 								aria-label="Select color {color}"
 							></button>
 						{/each}
@@ -706,10 +706,10 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" on:click={() => (showCreateTagModal = false)}>
+				<button class="btn-secondary" onclick={() => (showCreateTagModal = false)}>
 					Cancel
 				</button>
-				<button class="btn-primary" on:click={handleCreateTag}>
+				<button class="btn-primary" onclick={handleCreateTag}>
 					<IconCheck size={18} />
 					Create Tag
 				</button>

@@ -61,11 +61,11 @@
 		</div>
 
 		<div class="header-actions">
-			<button class="btn-secondary" on:click={() => (selectedTab = 'templates')}>
+			<button class="btn-secondary" onclick={() => (selectedTab = 'templates')}>
 				<IconFileText size={18} />
 				Templates
 			</button>
-			<button class="btn-primary" on:click={() => (selectedTab = 'campaigns')}>
+			<button class="btn-primary" onclick={() => (selectedTab = 'campaigns')}>
 				<IconPlus size={18} />
 				New Campaign
 			</button>
@@ -126,7 +126,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'campaigns'}
-			on:click={() => (selectedTab = 'campaigns')}
+			onclick={() => (selectedTab = 'campaigns')}
 		>
 			<IconMail size={20} />
 			Campaigns
@@ -134,7 +134,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'sequences'}
-			on:click={() => (selectedTab = 'sequences')}
+			onclick={() => (selectedTab = 'sequences')}
 		>
 			<IconBolt size={20} />
 			Sequences
@@ -142,7 +142,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'automations'}
-			on:click={() => (selectedTab = 'automations')}
+			onclick={() => (selectedTab = 'automations')}
 		>
 			<IconRocket size={20} />
 			Automations
@@ -150,7 +150,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'templates'}
-			on:click={() => (selectedTab = 'templates')}
+			onclick={() => (selectedTab = 'templates')}
 		>
 			<IconFileText size={20} />
 			Templates
@@ -158,7 +158,7 @@
 		<button
 			class="tab"
 			class:active={selectedTab === 'analytics'}
-			on:click={() => (selectedTab = 'analytics')}
+			onclick={() => (selectedTab = 'analytics')}
 		>
 			<IconChartBar size={20} />
 			Analytics

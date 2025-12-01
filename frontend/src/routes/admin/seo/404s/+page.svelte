@@ -69,7 +69,7 @@
 			<h1 class="text-3xl font-bold text-gray-900">404 Error Monitor</h1>
 			<p class="text-gray-600 mt-1">Track and fix broken links on your site</p>
 		</div>
-		<Button variant="danger" on:click={() => handleBulkDelete(true)}>
+		<Button variant="danger" onclick={() => handleBulkDelete(true)}>
 			<IconTrash size={20} />
 			Delete Resolved
 		</Button>

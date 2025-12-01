@@ -138,7 +138,7 @@
 <div class="analytics-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" on:click={() => goto('/admin/members')}>
+		<button class="back-btn" onclick={() => goto('/admin/members')}>
 			<IconArrowLeft size={20} />
 			Back to Members
 		</button>
@@ -157,14 +157,14 @@
 			<div class="header-actions">
 				<div class="date-filter">
 					<IconCalendar size={18} />
-					<select bind:value={dateRange} on:change={loadAnalytics}>
+					<select bind:value={dateRange} onchange={loadAnalytics}>
 						<option value="7d">Last 7 days</option>
 						<option value="30d">Last 30 days</option>
 						<option value="90d">Last 90 days</option>
 						<option value="12m">Last 12 months</option>
 					</select>
 				</div>
-				<button class="btn-secondary" on:click={loadAnalytics}>
+				<button class="btn-secondary" onclick={loadAnalytics}>
 					<IconRefresh size={18} />
 					Refresh
 				</button>

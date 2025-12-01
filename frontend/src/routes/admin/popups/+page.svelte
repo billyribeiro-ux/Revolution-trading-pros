@@ -101,20 +101,20 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={selectedTab === 'all'} on:click={() => (selectedTab = 'all')}>
+		<button class="tab" class:active={selectedTab === 'all'} onclick={() => (selectedTab = 'all')}>
 			All Popups ({popups.length})
 		</button>
 		<button
 			class="tab"
 			class:active={selectedTab === 'active'}
-			on:click={() => (selectedTab = 'active')}
+			onclick={() => (selectedTab = 'active')}
 		>
 			Active ({popups.filter((p) => p.isActive).length})
 		</button>
 		<button
 			class="tab"
 			class:active={selectedTab === 'inactive'}
-			on:click={() => (selectedTab = 'inactive')}
+			onclick={() => (selectedTab = 'inactive')}
 		>
 			Inactive ({popups.filter((p) => !p.isActive).length})
 		</button>
@@ -147,7 +147,7 @@
 						</div>
 						<button
 							class="icon-btn"
-							on:click={() => handleToggleStatus(popup)}
+							onclick={() => handleToggleStatus(popup)}
 							title={popup.isActive ? 'Deactivate' : 'Activate'}
 						>
 							{#if popup.isActive}
@@ -203,7 +203,7 @@
 							<IconEdit size={16} />
 							<span>Edit</span>
 						</a>
-						<button class="action-btn" on:click={() => handleDuplicate(popup.id)}>
+						<button class="action-btn" onclick={() => handleDuplicate(popup.id)}>
 							<IconCopy size={16} />
 							<span>Duplicate</span>
 						</button>
@@ -211,7 +211,7 @@
 							<IconChartBar size={16} />
 							<span>Analytics</span>
 						</a>
-						<button class="action-btn danger" on:click={() => handleDelete(popup.id)}>
+						<button class="action-btn danger" onclick={() => handleDelete(popup.id)}>
 							<IconTrash size={16} />
 							<span>Delete</span>
 						</button>

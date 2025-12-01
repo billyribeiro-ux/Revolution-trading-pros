@@ -124,7 +124,7 @@
 			</p>
 		</div>
 		<button
-			on:click={() => (showCreateModal = true)}
+			onclick={() => (showCreateModal = true)}
 			class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
 		>
 			Create Segment
@@ -167,7 +167,7 @@
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
 			<p class="text-red-600">{error}</p>
 			<button
-				on:click={loadSegments}
+				onclick={loadSegments}
 				class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 			>
 				Retry
@@ -187,7 +187,7 @@
 						<div class="flex items-center justify-between mb-4">
 							<h3 class="text-lg font-semibold text-gray-900">{selectedSegment.name}</h3>
 							<button
-								on:click={() => (selectedSegment = null)}
+								onclick={() => (selectedSegment = null)}
 								class="text-gray-400 hover:text-gray-600"
 							>
 								✕
@@ -257,7 +257,7 @@
 			<div class="p-6 border-b border-gray-100">
 				<div class="flex items-center justify-between">
 					<h2 class="text-xl font-bold text-gray-900">Create Segment</h2>
-					<button on:click={closeModal} class="text-gray-400 hover:text-gray-600 text-2xl">
+					<button onclick={closeModal} class="text-gray-400 hover:text-gray-600 text-2xl">
 						✕
 					</button>
 				</div>
@@ -311,7 +311,7 @@
 					<div class="flex items-center justify-between mb-3">
 						<span class="text-sm font-medium text-gray-700">Rules</span>
 						<button
-							on:click={addRule}
+							onclick={addRule}
 							class="text-sm text-blue-600 hover:text-blue-700 font-medium"
 						>
 							+ Add Rule
@@ -352,7 +352,7 @@
 									/>
 
 									<button
-										on:click={() => removeRule(index)}
+										onclick={() => removeRule(index)}
 										class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
 									>
 										🗑️
@@ -366,13 +366,13 @@
 
 			<div class="p-6 border-t border-gray-100 flex justify-end gap-3">
 				<button
-					on:click={closeModal}
+					onclick={closeModal}
 					class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
 				>
 					Cancel
 				</button>
 				<button
-					on:click={createSegment}
+					onclick={createSegment}
 					disabled={!newSegment.name}
 					class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
 				>

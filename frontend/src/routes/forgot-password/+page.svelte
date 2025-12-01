@@ -115,7 +115,7 @@
 			{/if}
 
 			<!-- Forgot password form -->
-			<form on:submit={handleSubmit} class="space-y-6">
+			<form onsubmit={handleSubmit} class="space-y-6">
 				<!-- Email field -->
 				<div class="form-group">
 					<label for="email" class="block text-sm font-semibold text-slate-300 mb-2">

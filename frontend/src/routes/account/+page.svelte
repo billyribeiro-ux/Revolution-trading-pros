@@ -58,7 +58,7 @@
 						<p class="text-rtp-muted">Welcome back, {$authStore.user.name}!</p>
 					</div>
 					<button
-						on:click={handleLogout}
+						onclick={handleLogout}
 						class="px-6 py-2 border-2 border-rtp-primary text-rtp-primary rounded-lg font-semibold hover:bg-rtp-primary hover:text-white transition-all"
 					>
 						Sign Out

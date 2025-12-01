@@ -127,7 +127,7 @@
 			<p class="page-description">Manage contacts, deals, and customer relationships</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" on:click={loadData} disabled={isLoading}>
+			<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<button class="btn-primary">
@@ -179,15 +179,15 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'contacts'} on:click={() => activeTab = 'contacts'}>
+		<button class="tab" class:active={activeTab === 'contacts'} onclick={() => activeTab = 'contacts'}>
 			<IconUsers size={18} />
 			Contacts
 		</button>
-		<button class="tab" class:active={activeTab === 'deals'} on:click={() => activeTab = 'deals'}>
+		<button class="tab" class:active={activeTab === 'deals'} onclick={() => activeTab = 'deals'}>
 			<IconTrendingUp size={18} />
 			Deals
 		</button>
-		<button class="tab" class:active={activeTab === 'pipeline'} on:click={() => activeTab = 'pipeline'}>
+		<button class="tab" class:active={activeTab === 'pipeline'} onclick={() => activeTab = 'pipeline'}>
 			<IconChartBar size={18} />
 			Pipeline
 		</button>
@@ -217,7 +217,7 @@
 		{:else if error}
 			<div class="error-state">
 				<p>{error}</p>
-				<button on:click={loadData}>Try Again</button>
+				<button onclick={loadData}>Try Again</button>
 			</div>
 		{:else if filteredContacts.length === 0}
 			<div class="empty-state">

@@ -31,14 +31,14 @@
 <div class="submissions-page">
 	<div class="page-header">
 		<div>
-			<button class="btn-back" on:click={() => goto('/admin/forms')}> ← Back to Forms </button>
+			<button class="btn-back" onclick={() => goto('/admin/forms')}> ← Back to Forms </button>
 			<h1>Form Submissions</h1>
 			{#if form}
 				<p class="page-description">{form.title}</p>
 			{/if}
 		</div>
 		{#if form}
-			<button class="btn-edit" on:click={() => goto(`/admin/forms/${formId}/edit`)}>
+			<button class="btn-edit" onclick={() => goto(`/admin/forms/${formId}/edit`)}>
 				Edit Form
 			</button>
 		{/if}

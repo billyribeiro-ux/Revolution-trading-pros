@@ -127,10 +127,10 @@
 			<p class="header-subtitle">Customize every aspect of your consent banner</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn btn-ghost" on:click={handleReset}>Reset</button>
-			<button class="btn btn-secondary" on:click={handlePreview}>Preview</button>
-			<button class="btn btn-secondary" on:click={handleCancel}>Cancel</button>
-			<button class="btn btn-primary" on:click={handleSave}>
+			<button class="btn btn-ghost" onclick={handleReset}>Reset</button>
+			<button class="btn btn-secondary" onclick={handlePreview}>Preview</button>
+			<button class="btn btn-secondary" onclick={handleCancel}>Cancel</button>
+			<button class="btn btn-primary" onclick={handleSave}>
 				{isNew ? 'Create Template' : 'Save Changes'}
 			</button>
 		</div>
@@ -141,42 +141,42 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'layout'}
-			on:click={() => (activeTab = 'layout')}
+			onclick={() => (activeTab = 'layout')}
 		>
 			Layout
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'colors'}
-			on:click={() => (activeTab = 'colors')}
+			onclick={() => (activeTab = 'colors')}
 		>
 			Colors
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'typography'}
-			on:click={() => (activeTab = 'typography')}
+			onclick={() => (activeTab = 'typography')}
 		>
 			Typography
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'copy'}
-			on:click={() => (activeTab = 'copy')}
+			onclick={() => (activeTab = 'copy')}
 		>
 			Text & Copy
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'buttons'}
-			on:click={() => (activeTab = 'buttons')}
+			onclick={() => (activeTab = 'buttons')}
 		>
 			Buttons
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'advanced'}
-			on:click={() => (activeTab = 'advanced')}
+			onclick={() => (activeTab = 'advanced')}
 		>
 			Advanced
 		</button>
@@ -306,7 +306,7 @@
 							<button
 								class="preset-btn"
 								style="background: {preset.bg}; color: {preset.text}"
-								on:click={() => applyColorPreset(preset)}
+								onclick={() => applyColorPreset(preset)}
 							>
 								{preset.name}
 							</button>
@@ -751,7 +751,7 @@
 						<label class="form-label">Base on existing template</label>
 						<select
 							class="form-select"
-							on:change={(e) => copyFromTemplate(e.currentTarget.value)}
+							onchange={(e) => copyFromTemplate(e.currentTarget.value)}
 						>
 							<option value="">Select a template...</option>
 							{#each BANNER_TEMPLATES as t}

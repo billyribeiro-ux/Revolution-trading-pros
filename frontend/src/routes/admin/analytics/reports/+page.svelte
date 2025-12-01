@@ -170,7 +170,7 @@
 			<p class="text-sm text-gray-500 mt-1">Create and manage custom analytics reports</p>
 		</div>
 		<button
-			on:click={() => (showCreateModal = true)}
+			onclick={() => (showCreateModal = true)}
 			class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
 		>
 			Create Report
@@ -181,7 +181,7 @@
 	<div class="flex items-center gap-2 mb-6">
 		{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter}
 			<button
-				on:click={() => (activeFilter = filter.value as typeof activeFilter)}
+				onclick={() => (activeFilter = filter.value as typeof activeFilter)}
 				class="px-4 py-2 rounded-lg text-sm font-medium transition-all
 					{activeFilter === filter.value
 					? 'bg-gray-900 text-white'
@@ -202,7 +202,7 @@
 		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
 			<p class="text-red-600">{error}</p>
 			<button
-				on:click={loadReports}
+				onclick={loadReports}
 				class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 			>
 				Retry
@@ -214,7 +214,7 @@
 			<h3 class="text-lg font-medium text-gray-900 mb-2">No Reports Yet</h3>
 			<p class="text-gray-500 mb-6">Create your first custom report</p>
 			<button
-				on:click={() => (showCreateModal = true)}
+				onclick={() => (showCreateModal = true)}
 				class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
 			>
 				Create Your First Report
@@ -297,7 +297,7 @@
 				<div class="flex items-center justify-between">
 					<h2 class="text-xl font-bold text-gray-900">Create Report</h2>
 					<button
-						on:click={() => (showCreateModal = false)}
+						onclick={() => (showCreateModal = false)}
 						class="text-gray-400 hover:text-gray-600 text-2xl"
 					>
 						✕
@@ -357,7 +357,7 @@
 					<div class="flex flex-wrap gap-2">
 						{#each availableMetrics as metric}
 							<button
-								on:click={() => toggleMetric(metric.value)}
+								onclick={() => toggleMetric(metric.value)}
 								class="px-3 py-1.5 rounded-lg text-sm transition-all
 									{newReport.metrics.includes(metric.value)
 									? 'bg-blue-600 text-white'
@@ -377,7 +377,7 @@
 					<div class="flex flex-wrap gap-2">
 						{#each availableDimensions as dimension}
 							<button
-								on:click={() => toggleDimension(dimension.value)}
+								onclick={() => toggleDimension(dimension.value)}
 								class="px-3 py-1.5 rounded-lg text-sm transition-all
 									{newReport.dimensions.includes(dimension.value)
 									? 'bg-purple-600 text-white'
@@ -434,13 +434,13 @@
 
 			<div class="p-6 border-t border-gray-100 flex justify-end gap-3">
 				<button
-					on:click={() => (showCreateModal = false)}
+					onclick={() => (showCreateModal = false)}
 					class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
 				>
 					Cancel
 				</button>
 				<button
-					on:click={createReport}
+					onclick={createReport}
 					disabled={!newReport.name || newReport.metrics.length === 0}
 					class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
 				>
