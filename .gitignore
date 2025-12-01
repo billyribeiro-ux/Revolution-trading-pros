@@ -6,6 +6,7 @@ node_modules/
 frontend/build/
 frontend/.svelte-kit/
 frontend/dist/
+frontend/.vercel/
 
 # Environment files
 .env

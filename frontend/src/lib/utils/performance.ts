@@ -99,13 +99,16 @@ export function measureLCP(): void {
  *
  * INP measures responsiveness to ALL user interactions, not just the first one.
  * It captures the worst interaction latency throughout the page lifecycle.
+ *
+ * @returns Cleanup function to remove event listeners (prevents memory leaks in SPAs)
  */
-export function measureINP(): void {
+export function measureINP(): (() => void) | undefined {
 	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
 
 	try {
 		let worstINP = 0;
 		let reported = false;
+		let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
 		const observer = new PerformanceObserver((list) => {
 			const entries = list.getEntries();
@@ -134,17 +137,27 @@ export function measureINP(): void {
 			}
 		};
 
-		// Report when page is hidden (most accurate)
-		document.addEventListener('visibilitychange', () => {
+		// Named handler for cleanup (prevents memory leaks)
+		const visibilityHandler = () => {
 			if (document.visibilityState === 'hidden') {
 				reportINP();
 			}
-		});
+		};
+
+		// Report when page is hidden (most accurate)
+		document.addEventListener('visibilitychange', visibilityHandler);
 
 		// Fallback: report after 30 seconds of page load
-		setTimeout(() => {
+		timeoutId = setTimeout(() => {
 			reportINP();
 		}, 30000);
+
+		// Return cleanup function for SPA navigation
+		return () => {
+			document.removeEventListener('visibilitychange', visibilityHandler);
+			if (timeoutId) clearTimeout(timeoutId);
+			observer.disconnect();
+		};
 
 	} catch (error) {
 		console.error('INP measurement failed:', error);
@@ -189,13 +202,16 @@ export function measureFID(): void {
 /**
  * Cumulative Layout Shift (CLS)
  * Good: < 0.1, Needs Improvement: < 0.25, Poor: >= 0.25
+ *
+ * @returns Cleanup function to remove event listeners (prevents memory leaks in SPAs)
  */
-export function measureCLS(): void {
+export function measureCLS(): (() => void) | undefined {
 	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
 
 	try {
 		let clsValue = 0;
 		let reported = false;
+		let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
 		const observer = new PerformanceObserver((list) => {
 			const entries = list.getEntries();
@@ -208,8 +224,22 @@ export function measureCLS(): void {
 
 		observer.observe({ type: 'layout-shift', buffered: true });
 
+		// Named handler for proper cleanup (prevents memory leaks)
+		const visibilityHandler = () => {
+			if (document.visibilityState === 'hidden' && !reported) {
+				reported = true;
+				const metric: PerformanceMetric = {
+					name: 'CLS',
+					value: clsValue,
+					rating: getRating(clsValue, [0.1, 0.25])
+				};
+				reportMetric(metric);
+				observer.disconnect();
+			}
+		};
+
 		// Report CLS once after initial load settles (5 seconds)
-		setTimeout(() => {
+		timeoutId = setTimeout(() => {
 			if (!reported) {
 				reported = true;
 				const metric: PerformanceMetric = {
@@ -223,18 +253,14 @@ export function measureCLS(): void {
 		}, 5000);
 
 		// Also report on page hide
-		document.addEventListener('visibilitychange', () => {
-			if (document.visibilityState === 'hidden' && !reported) {
-				reported = true;
-				const metric: PerformanceMetric = {
-					name: 'CLS',
-					value: clsValue,
-					rating: getRating(clsValue, [0.1, 0.25])
-				};
-				reportMetric(metric);
-				observer.disconnect();
-			}
-		}, { once: true });
+		document.addEventListener('visibilitychange', visibilityHandler);
+
+		// Return cleanup function for SPA navigation
+		return () => {
+			document.removeEventListener('visibilitychange', visibilityHandler);
+			if (timeoutId) clearTimeout(timeoutId);
+			observer.disconnect();
+		};
 	} catch (error) {
 		console.error('CLS measurement failed:', error);
 	}
@@ -300,26 +326,48 @@ export function measureTTFB(): void {
 	}
 }
 
+// Store cleanup functions for SPA navigation
+let performanceCleanupFns: Array<() => void> = [];
+
 /**
  * Initialize all performance monitoring
  * Call this once on app mount
+ *
+ * @returns Cleanup function to remove all listeners (call on component destroy in SPAs)
  */
-export function initPerformanceMonitoring(): void {
-	if (typeof window === 'undefined') return;
+export function initPerformanceMonitoring(): () => void {
+	if (typeof window === 'undefined') return () => {};
 
 	// Wait for page load to avoid blocking
 	if (document.readyState === 'complete') {
 		startMonitoring();
 	} else {
-		window.addEventListener('load', startMonitoring);
+		const loadHandler = () => startMonitoring();
+		window.addEventListener('load', loadHandler, { once: true });
 	}
+
+	// Return master cleanup function
+	return () => {
+		performanceCleanupFns.forEach((cleanup) => cleanup());
+		performanceCleanupFns = [];
+	};
 }
 
 function startMonitoring(): void {
+	// Clear any previous cleanup functions (in case of re-initialization)
+	performanceCleanupFns.forEach((cleanup) => cleanup());
+	performanceCleanupFns = [];
+
 	// Measure all Core Web Vitals (November 2025 standard)
 	measureLCP();   // Largest Contentful Paint
-	measureINP();   // Interaction to Next Paint (replaced FID in March 2024)
-	measureCLS();   // Cumulative Layout Shift
+
+	// Collect cleanup functions from metrics that return them
+	const inpCleanup = measureINP();   // Interaction to Next Paint (replaced FID in March 2024)
+	if (inpCleanup) performanceCleanupFns.push(inpCleanup);
+
+	const clsCleanup = measureCLS();   // Cumulative Layout Shift
+	if (clsCleanup) performanceCleanupFns.push(clsCleanup);
+
 	measureFCP();   // First Contentful Paint
 	measureTTFB();  // Time to First Byte
 

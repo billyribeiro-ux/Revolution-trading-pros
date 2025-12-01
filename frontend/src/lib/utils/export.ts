@@ -10,6 +10,22 @@
 
 import { browser } from '$app/environment';
 
+/**
+ * Escape HTML entities to prevent XSS attacks in PDF export
+ * CRITICAL: Always use this when inserting user data into HTML
+ */
+function escapeHtml(str: string): string {
+	const htmlEscapes: Record<string, string> = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#x27;',
+		'/': '&#x2F;'
+	};
+	return str.replace(/[&<>"'/]/g, (char) => htmlEscapes[char]);
+}
+
 export interface ExportColumn {
 	key: string;
 	label: string;
@@ -84,8 +100,8 @@ export function exportToPDF(options: ExportOptions): void {
 		return;
 	}
 
-	// Build HTML table
-	const tableHeader = columns.map((col) => `<th>${col.label}</th>`).join('');
+	// Build HTML table with XSS protection
+	const tableHeader = columns.map((col) => `<th>${escapeHtml(col.label)}</th>`).join('');
 
 	const tableRows = data
 		.map((row) => {
@@ -93,18 +109,24 @@ export function exportToPDF(options: ExportOptions): void {
 				.map((col) => {
 					const value = row[col.key];
 					const formatted = col.format ? col.format(value) : String(value ?? '');
-					return `<td>${formatted}</td>`;
+					// SECURITY: Escape HTML to prevent XSS attacks
+					return `<td>${escapeHtml(formatted)}</td>`;
 				})
 				.join('');
 			return `<tr>${cells}</tr>`;
 		})
 		.join('');
 
+	// SECURITY: Escape all user-provided content
+	const safeFilename = escapeHtml(filename);
+	const safeTitle = title ? escapeHtml(title) : '';
+	const safeSubtitle = subtitle ? escapeHtml(subtitle) : '';
+
 	const html = `
 		<!DOCTYPE html>
 		<html>
 		<head>
-			<title>${filename}</title>
+			<title>${safeFilename}</title>
 			<style>
 				* {
 					margin: 0;
@@ -184,8 +206,8 @@ export function exportToPDF(options: ExportOptions): void {
 		<body>
 			<div class="header">
 				<div class="logo">Revolution Trading Pros</div>
-				${title ? `<h1>${title}</h1>` : ''}
-				${subtitle ? `<p class="subtitle">${subtitle}</p>` : ''}
+				${safeTitle ? `<h1>${safeTitle}</h1>` : ''}
+				${safeSubtitle ? `<p class="subtitle">${safeSubtitle}</p>` : ''}
 				${includeTimestamp ? `<p class="timestamp">Generated: ${new Date().toLocaleString()}</p>` : ''}
 			</div>
 
