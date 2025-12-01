@@ -368,8 +368,7 @@ class SessionService
     }
 
     /**
-     * Get location from IP address.
-     * TODO: Integrate with MaxMind GeoIP2 or similar service
+     * Get location from IP address using MaxMind GeoIP2 or IP-API fallback.
      */
     private function getLocationFromIP(string $ip): array
     {
@@ -383,13 +382,95 @@ class SessionService
             ];
         }
 
-        // TODO: Implement actual geolocation lookup
-        // For now, return empty to avoid external dependencies
+        // Try cache first
+        $cacheKey = 'geoip:' . md5($ip);
+        $cached = Cache::get($cacheKey);
+        if ($cached) {
+            return $cached;
+        }
+
+        $location = $this->lookupIPLocation($ip);
+
+        // Cache for 24 hours
+        Cache::put($cacheKey, $location, 86400);
+
+        return $location;
+    }
+
+    /**
+     * Perform IP geolocation lookup
+     */
+    private function lookupIPLocation(string $ip): array
+    {
+        // Try MaxMind GeoIP2 if available
+        $geoipPath = config('services.maxmind.database_path', storage_path('app/geoip/GeoLite2-City.mmdb'));
+
+        if (file_exists($geoipPath) && class_exists('\GeoIp2\Database\Reader')) {
+            try {
+                $reader = new \GeoIp2\Database\Reader($geoipPath);
+                $record = $reader->city($ip);
+
+                return [
+                    'country' => $record->country->name ?? $record->country->isoCode ?? null,
+                    'country_code' => $record->country->isoCode ?? null,
+                    'city' => $record->city->name ?? null,
+                    'region' => $record->mostSpecificSubdivision->name ?? null,
+                    'lat' => $record->location->latitude ?? null,
+                    'lng' => $record->location->longitude ?? null,
+                    'timezone' => $record->location->timeZone ?? null,
+                ];
+            } catch (\Exception $e) {
+                Log::warning('GeoIP2 lookup failed', [
+                    'ip' => $ip,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Fallback to IP-API (free tier, 45 req/min limit)
+        try {
+            $response = @file_get_contents(
+                "http://ip-api.com/json/{$ip}?fields=status,country,countryCode,regionName,city,lat,lon,timezone",
+                false,
+                stream_context_create([
+                    'http' => [
+                        'timeout' => 2,
+                        'ignore_errors' => true,
+                    ],
+                ])
+            );
+
+            if ($response) {
+                $data = json_decode($response, true);
+
+                if ($data && ($data['status'] ?? '') === 'success') {
+                    return [
+                        'country' => $data['country'] ?? null,
+                        'country_code' => $data['countryCode'] ?? null,
+                        'city' => $data['city'] ?? null,
+                        'region' => $data['regionName'] ?? null,
+                        'lat' => $data['lat'] ?? null,
+                        'lng' => $data['lon'] ?? null,
+                        'timezone' => $data['timezone'] ?? null,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::debug('IP-API lookup failed', [
+                'ip' => $ip,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // Return empty if all methods fail
         return [
             'country' => null,
+            'country_code' => null,
             'city' => null,
+            'region' => null,
             'lat' => null,
             'lng' => null,
+            'timezone' => null,
         ];
     }
 

@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Models\ImageOptimizationJob;
 use App\Models\Media;
 use App\Services\ImageOptimizationService;
+use App\Services\MetricsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -165,15 +166,27 @@ class ProcessImageOptimization implements ShouldQueue
                 'optimized_size' => $media->size,
             ]);
 
+            $savingsPercent = $job->original_size > 0
+                ? round((1 - $media->size / $job->original_size) * 100, 2)
+                : 0;
+            $bytesSaved = max(0, $job->original_size - $media->size);
+
             Log::info('Image optimization job completed', array_merge($logContext, [
                 'processing_time_ms' => round($processingTime, 2),
                 'original_size' => $job->original_size,
                 'optimized_size' => $media->size,
-                'savings_percent' => $job->original_size > 0
-                    ? round((1 - $media->size / $job->original_size) * 100, 2)
-                    : 0,
+                'savings_percent' => $savingsPercent,
                 'variants_count' => count($media->variants ?? []),
             ]));
+
+            // Emit success metrics for monitoring
+            MetricsService::increment('image_optimization.jobs.completed');
+            MetricsService::timing('image_optimization.processing_time', $processingTime);
+            MetricsService::histogram('image_optimization.bytes_saved', $bytesSaved);
+            MetricsService::histogram('image_optimization.savings_percent', $savingsPercent);
+            MetricsService::increment('image_optimization.total_bytes_saved', (int) $bytesSaved);
+            MetricsService::increment('image_optimization.total_images_processed');
+            MetricsService::gauge('image_optimization.last_success_timestamp', time());
 
         } catch (\Exception $e) {
             $processingTime = (microtime(true) - $startTime) * 1000;
@@ -215,8 +228,12 @@ class ProcessImageOptimization implements ShouldQueue
             'stack_trace' => $exception->getTraceAsString(),
         ]);
 
-        // TODO: Emit metric for monitoring/alerting
-        // MetricsService::increment('image_optimization.jobs.permanently_failed');
+        // Emit metrics for monitoring/alerting
+        MetricsService::increment('image_optimization.jobs.permanently_failed');
+        MetricsService::increment('image_optimization.jobs.failures_by_error', 1, [
+            'error_class' => get_class($exception),
+        ]);
+        MetricsService::gauge('image_optimization.jobs.last_failure_timestamp', time());
     }
 
     /**

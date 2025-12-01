@@ -215,12 +215,124 @@ class ExperimentController extends Controller
             }
         }
 
-        // Check targeting rules
+        // Check targeting rules if defined
         if ($flag->targeting_rules && is_array($flag->targeting_rules)) {
-            // TODO: Implement targeting rule evaluation
+            $user = $userId ? \App\Models\User::find($userId) : null;
+            $context = $this->buildEvaluationContext($user);
+
+            if (!$this->evaluateTargetingRules($flag->targeting_rules, $context)) {
+                return false;
+            }
         }
 
         return true;
+    }
+
+    /**
+     * Build evaluation context for targeting rules
+     */
+    private function buildEvaluationContext(?\App\Models\User $user): array
+    {
+        return [
+            'user' => $user ? [
+                'id' => $user->id,
+                'email' => $user->email,
+                'name' => $user->name,
+                'created_at' => $user->created_at?->toDateString(),
+                'email_verified' => $user->email_verified_at !== null,
+                'roles' => $user->roles ?? [],
+                'subscription_status' => $user->subscription_status ?? 'free',
+                'total_orders' => $user->orders_count ?? 0,
+            ] : null,
+            'environment' => app()->environment(),
+            'date' => now()->toDateString(),
+            'time' => now()->format('H:i'),
+            'day_of_week' => strtolower(now()->format('l')),
+            'is_weekend' => now()->isWeekend(),
+        ];
+    }
+
+    /**
+     * Evaluate targeting rules against context
+     *
+     * Rule format:
+     * [
+     *   'operator' => 'AND' | 'OR',
+     *   'conditions' => [
+     *     ['field' => 'user.email', 'operator' => 'ends_with', 'value' => '@company.com'],
+     *     ['field' => 'user.subscription_status', 'operator' => 'in', 'value' => ['premium', 'enterprise']],
+     *   ]
+     * ]
+     */
+    private function evaluateTargetingRules(array $rules, array $context): bool
+    {
+        // Default to AND if no operator specified
+        $operator = $rules['operator'] ?? 'AND';
+        $conditions = $rules['conditions'] ?? $rules;
+
+        if (empty($conditions)) {
+            return true;
+        }
+
+        // If conditions is a simple array of conditions
+        if (!isset($conditions[0]['field']) && !isset($rules['conditions'])) {
+            // This is a single condition object
+            return $this->evaluateSingleCondition($rules, $context);
+        }
+
+        $results = [];
+        foreach ($conditions as $condition) {
+            // Handle nested rule groups
+            if (isset($condition['operator']) && isset($condition['conditions'])) {
+                $results[] = $this->evaluateTargetingRules($condition, $context);
+            } else {
+                $results[] = $this->evaluateSingleCondition($condition, $context);
+            }
+        }
+
+        return $operator === 'AND'
+            ? !in_array(false, $results, true)
+            : in_array(true, $results, true);
+    }
+
+    /**
+     * Evaluate a single targeting condition
+     */
+    private function evaluateSingleCondition(array $condition, array $context): bool
+    {
+        $field = $condition['field'] ?? null;
+        $operator = $condition['operator'] ?? 'eq';
+        $value = $condition['value'] ?? null;
+
+        if (!$field) {
+            return true;
+        }
+
+        // Get field value from context using dot notation
+        $fieldValue = data_get($context, $field);
+
+        return match ($operator) {
+            'eq', 'equals' => $fieldValue == $value,
+            'neq', 'not_equals' => $fieldValue != $value,
+            'gt', 'greater_than' => $fieldValue > $value,
+            'gte', 'greater_than_or_equals' => $fieldValue >= $value,
+            'lt', 'less_than' => $fieldValue < $value,
+            'lte', 'less_than_or_equals' => $fieldValue <= $value,
+            'in' => in_array($fieldValue, (array) $value, false),
+            'not_in' => !in_array($fieldValue, (array) $value, false),
+            'contains' => is_string($fieldValue) && str_contains($fieldValue, $value),
+            'not_contains' => is_string($fieldValue) && !str_contains($fieldValue, $value),
+            'starts_with' => is_string($fieldValue) && str_starts_with($fieldValue, $value),
+            'ends_with' => is_string($fieldValue) && str_ends_with($fieldValue, $value),
+            'regex' => is_string($fieldValue) && preg_match($value, $fieldValue),
+            'is_null' => $fieldValue === null,
+            'is_not_null' => $fieldValue !== null,
+            'is_true' => $fieldValue === true || $fieldValue === 'true' || $fieldValue === 1,
+            'is_false' => $fieldValue === false || $fieldValue === 'false' || $fieldValue === 0,
+            'before' => $fieldValue && \Carbon\Carbon::parse($fieldValue)->isBefore(\Carbon\Carbon::parse($value)),
+            'after' => $fieldValue && \Carbon\Carbon::parse($fieldValue)->isAfter(\Carbon\Carbon::parse($value)),
+            default => $fieldValue == $value,
+        };
     }
 
     // =========================================================================

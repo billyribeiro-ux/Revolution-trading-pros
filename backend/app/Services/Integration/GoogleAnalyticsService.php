@@ -330,7 +330,8 @@ class GoogleAnalyticsService
         return $this->cache->get(
             $cacheKey,
             function () use ($userId, $propertyId, $days) {
-                $data = $this->runReport(
+                // Current period data
+                $currentData = $this->runReport(
                     $userId,
                     $propertyId,
                     ['activeUsers', 'sessions'],
@@ -340,7 +341,25 @@ class GoogleAnalyticsService
                     20
                 );
 
-                $totalVisitors = array_sum(array_column($data, 'activeUsers'));
+                // Previous period data for calculating change
+                $previousData = $this->runReport(
+                    $userId,
+                    $propertyId,
+                    ['activeUsers', 'sessions'],
+                    ['sessionDefaultChannelGroup'],
+                    (string)($days * 2) . 'daysAgo',
+                    (string)($days + 1) . 'daysAgo',
+                    20
+                );
+
+                // Index previous data by channel for quick lookup
+                $previousByChannel = [];
+                foreach ($previousData as $row) {
+                    $channel = $row['sessionDefaultChannelGroup'] ?? 'Other';
+                    $previousByChannel[$channel] = (int)($row['activeUsers'] ?? 0);
+                }
+
+                $totalVisitors = array_sum(array_column($currentData, 'activeUsers'));
 
                 $colors = [
                     'Organic Search' => '#22c55e',
@@ -355,20 +374,30 @@ class GoogleAnalyticsService
                     'Other' => '#6b7280',
                 ];
 
-                $sources = array_map(function ($row) use ($totalVisitors, $colors) {
+                $sources = array_map(function ($row) use ($totalVisitors, $colors, $previousByChannel) {
                     $channel = $row['sessionDefaultChannelGroup'] ?? 'Other';
                     $visitors = (int)($row['activeUsers'] ?? 0);
+                    $previousVisitors = $previousByChannel[$channel] ?? 0;
+
+                    // Calculate percentage change
+                    $change = 0;
+                    if ($previousVisitors > 0) {
+                        $change = round((($visitors - $previousVisitors) / $previousVisitors) * 100, 1);
+                    } elseif ($visitors > 0) {
+                        $change = 100; // 100% increase if there were no previous visitors
+                    }
 
                     return [
                         'name' => $channel,
                         'visitors' => $visitors,
+                        'previous_visitors' => $previousVisitors,
                         'percentage' => $totalVisitors > 0
                             ? round(($visitors / $totalVisitors) * 100, 1)
                             : 0,
-                        'change' => rand(-15, 25), // TODO: Calculate actual change
+                        'change' => $change,
                         'color' => $colors[$channel] ?? '#6b7280',
                     ];
-                }, $data);
+                }, $currentData);
 
                 return [
                     'sources' => $sources,

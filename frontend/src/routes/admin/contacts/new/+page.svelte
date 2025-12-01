@@ -1,22 +1,37 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { IconUserPlus, IconArrowLeft } from '@tabler/icons-svelte';
+	import { crmAPI } from '$lib/api/crm';
 
-	let formData = {
-		name: '',
+	let formData = $state({
+		first_name: '',
+		last_name: '',
 		email: '',
 		phone: '',
-		company: '',
-		notes: ''
-	};
-	let isSubmitting = false;
+		job_title: ''
+	});
+	let isSubmitting = $state(false);
+	let errorMessage = $state<string | null>(null);
 
-	async function handleSubmit() {
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
 		isSubmitting = true;
-		// TODO: Implement API call
-		setTimeout(() => {
+		errorMessage = null;
+
+		try {
+			await crmAPI.createContact({
+				first_name: formData.first_name,
+				last_name: formData.last_name,
+				email: formData.email,
+				phone: formData.phone || undefined,
+				job_title: formData.job_title || undefined
+			});
 			goto('/admin/contacts');
-		}, 500);
+		} catch (error) {
+			console.error('Failed to create contact:', error);
+			errorMessage = error instanceof Error ? error.message : 'Failed to create contact';
+			isSubmitting = false;
+		}
 	}
 </script>
 
@@ -34,9 +49,21 @@
 	</div>
 
 	<form class="contact-form" onsubmit={handleSubmit}>
-		<div class="form-group">
-			<label for="name">Full Name *</label>
-			<input type="text" id="name" bind:value={formData.name} required />
+		{#if errorMessage}
+			<div class="error-banner">
+				{errorMessage}
+			</div>
+		{/if}
+
+		<div class="form-row">
+			<div class="form-group">
+				<label for="first_name">First Name *</label>
+				<input type="text" id="first_name" bind:value={formData.first_name} required />
+			</div>
+			<div class="form-group">
+				<label for="last_name">Last Name *</label>
+				<input type="text" id="last_name" bind:value={formData.last_name} required />
+			</div>
 		</div>
 
 		<div class="form-group">
@@ -50,13 +77,8 @@
 		</div>
 
 		<div class="form-group">
-			<label for="company">Company</label>
-			<input type="text" id="company" bind:value={formData.company} />
-		</div>
-
-		<div class="form-group">
-			<label for="notes">Notes</label>
-			<textarea id="notes" bind:value={formData.notes} rows="4"></textarea>
+			<label for="job_title">Job Title</label>
+			<input type="text" id="job_title" bind:value={formData.job_title} />
 		</div>
 
 		<div class="form-actions">
@@ -104,6 +126,12 @@
 		padding: 2rem;
 	}
 
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+
 	.form-group {
 		margin-bottom: 1.5rem;
 	}
@@ -116,8 +144,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.form-group input,
-	.form-group textarea {
+	.form-group input {
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.8);
@@ -127,15 +154,9 @@
 		font-size: 0.95rem;
 	}
 
-	.form-group input:focus,
-	.form-group textarea:focus {
+	.form-group input:focus {
 		outline: none;
 		border-color: rgba(99, 102, 241, 0.5);
-	}
-
-	.form-group textarea {
-		resize: vertical;
-		min-height: 100px;
 	}
 
 	.form-actions {
@@ -185,5 +206,15 @@
 	.btn-secondary:hover {
 		background: rgba(99, 102, 241, 0.2);
 		color: #e2e8f0;
+	}
+
+	.error-banner {
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		color: #f87171;
+		padding: 0.75rem 1rem;
+		border-radius: 10px;
+		margin-bottom: 1.5rem;
+		font-size: 0.9rem;
 	}
 </style>
