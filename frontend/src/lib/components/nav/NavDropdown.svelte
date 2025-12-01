@@ -11,7 +11,6 @@
 	 * 
 	 * @version 1.0.0
 	 */
-	import { onMount } from 'svelte';
 	import { IconChevronDown } from '@tabler/icons-svelte';
 	import type { SubMenuItem } from './types';
 
@@ -47,12 +46,12 @@
 	function checkEdgePosition() {
 		if (!triggerRef) return;
 		const rect = triggerRef.getBoundingClientRect();
-		const menuWidth = 240; // min-width of dropdown
+		const menuWidth = 240;
 		alignRight = rect.left + menuWidth > window.innerWidth - 20;
 	}
 
 	function handleTriggerClick(event: MouseEvent) {
-		event.stopPropagation(); // Prevent click from bubbling to document click handler
+		event.stopPropagation();
 		checkEdgePosition();
 		onToggle?.(id);
 	}
@@ -85,14 +84,13 @@
 				menuItems[focusedIndex]?.focus();
 				break;
 			case 'Tab':
-				// Allow natural tab behavior but close menu
 				onClose?.();
 				break;
 		}
 	}
 
 	function handleItemClick(event: MouseEvent) {
-		event.stopPropagation(); // Prevent bubbling to document click handler
+		event.stopPropagation();
 		onClose?.();
 		onNavigate?.();
 	}
@@ -161,11 +159,12 @@
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		padding: 10px 14px;
+		padding: 10px 12px;
 		color: rgba(255, 255, 255, 0.75);
 		font-weight: 500;
 		font-size: 14px;
 		font-family: inherit;
+		white-space: nowrap;
 		background: transparent;
 		border: none;
 		border-radius: 8px;
@@ -243,5 +242,13 @@
 	.item-description {
 		font-size: 12px;
 		color: rgba(255, 255, 255, 0.5);
+	}
+
+	/* Responsive: smaller padding on laptop */
+	@media (max-width: 1279px) {
+		.nav-dropdown-trigger {
+			padding: 8px 8px;
+			font-size: 13px;
+		}
 	}
 </style>

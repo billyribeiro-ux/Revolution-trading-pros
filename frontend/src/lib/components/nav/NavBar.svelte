@@ -265,20 +265,23 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   NAVBAR SHELL
+	   NAVBAR - Fixed Height, Sticky, Zero CLS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar {
 		position: sticky;
 		top: 0;
+		left: 0;
+		right: 0;
 		z-index: 1000;
 		width: 100%;
 		height: 72px;
+		min-height: 72px;
+		max-height: 72px;
 		background: #151f31;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 		transition: background-color 0.2s ease, box-shadow 0.2s ease;
 	}
 
-	/* When admin toolbar is present */
 	:global(.has-admin-toolbar) .navbar {
 		top: 0;
 	}
@@ -289,108 +292,67 @@
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 	}
 
-	/* Tablet height */
-	@media (max-width: 1023px) {
-		.navbar {
-			height: 64px;
-		}
-	}
-
-	/* Mobile height */
-	@media (max-width: 767px) {
-		.navbar {
-			height: 60px;
-		}
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTAINER - Three Zone Layout
+	   CONTAINER - Three Zone Flex Layout
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar-container {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		width: 100%;
 		height: 100%;
 		max-width: 1440px;
 		margin: 0 auto;
 		padding: 0 32px;
-		gap: 24px;
-	}
-
-	@media (max-width: 1279px) {
-		.navbar-container {
-			padding: 0 24px;
-			gap: 16px;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.navbar-container {
-			padding: 0 16px;
-		}
+		box-sizing: border-box;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ZONE 1: LOGO (Static, Non-Moving)
+	   ZONE 1: LOGO - Absolutely Fixed Position, Never Moves
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar-logo {
-		flex-shrink: 0;
 		display: flex;
 		align-items: center;
-		width: 200px; /* Fixed width prevents CLS */
+		justify-content: flex-start;
+		width: 200px;
+		min-width: 200px;
+		max-width: 200px;
+		height: 50px;
+		flex-shrink: 0;
+		flex-grow: 0;
 	}
 
 	.navbar-logo img {
+		display: block;
 		width: 200px;
 		height: 50px;
+		min-width: 200px;
+		max-width: 200px;
 		object-fit: contain;
-	}
-
-	@media (max-width: 1023px) {
-		.navbar-logo {
-			width: 180px;
-		}
-		.navbar-logo img {
-			width: 180px;
-			height: 45px;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.navbar-logo {
-			width: 160px;
-		}
-		.navbar-logo img {
-			width: 160px;
-			height: 40px;
-		}
+		object-position: left center;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ZONE 2: PRIMARY NAVIGATION
+	   ZONE 2: PRIMARY NAVIGATION - Desktop Only
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar-nav {
 		display: flex;
 		align-items: center;
-		gap: 4px;
-		flex: 1;
-	}
-
-	/* Hide on tablet and below */
-	@media (max-width: 1023px) {
-		.navbar-nav {
-			display: none;
-		}
+		justify-content: flex-start;
+		gap: 2px;
+		flex: 1 1 auto;
+		margin: 0 16px;
 	}
 
 	.navbar-link {
 		display: flex;
 		align-items: center;
-		padding: 10px 14px;
+		padding: 10px 12px;
 		color: rgba(255, 255, 255, 0.75);
 		font-size: 14px;
 		font-weight: 500;
 		text-decoration: none;
+		white-space: nowrap;
 		border-radius: 8px;
 		transition: color 0.15s ease, background-color 0.15s ease;
 	}
@@ -406,25 +368,16 @@
 		box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5);
 	}
 
-	/* Reduce spacing on smaller desktops */
-	@media (max-width: 1279px) {
-		.navbar-nav {
-			gap: 2px;
-		}
-		.navbar-link {
-			padding: 10px 10px;
-			font-size: 13px;
-		}
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ZONE 3: ACTIONS
+	   ZONE 3: ACTIONS - Right Side
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar-actions {
 		display: flex;
 		align-items: center;
+		justify-content: flex-end;
 		gap: 12px;
 		flex-shrink: 0;
+		flex-grow: 0;
 	}
 
 	/* Cart Button */
@@ -479,6 +432,7 @@
 		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;
+		white-space: nowrap;
 		background: transparent;
 		border: 1px solid rgba(255, 255, 255, 0.25);
 		border-radius: 10px;
@@ -495,13 +449,6 @@
 		box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 	}
 
-	/* Hide login on tablet and below */
-	@media (max-width: 1023px) {
-		.navbar-login {
-			display: none;
-		}
-	}
-
 	/* CTA Button */
 	.navbar-cta {
 		display: flex;
@@ -513,6 +460,7 @@
 		font-size: 14px;
 		font-weight: 700;
 		text-decoration: none;
+		white-space: nowrap;
 		background: linear-gradient(135deg, #facc15, #eab308);
 		border-radius: 10px;
 		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
@@ -529,14 +477,7 @@
 		box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5), 0 4px 12px rgba(250, 204, 21, 0.3);
 	}
 
-	/* Hide CTA on mobile */
-	@media (max-width: 767px) {
-		.navbar-cta {
-			display: none;
-		}
-	}
-
-	/* Mobile Menu Toggle */
+	/* Mobile Menu Toggle - Hidden by default */
 	.navbar-mobile-toggle {
 		display: none;
 		align-items: center;
@@ -561,10 +502,157 @@
 		box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5);
 	}
 
-	/* Show mobile toggle on tablet and below */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE: LAPTOP (1024px - 1279px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 1279px) {
+		.navbar-container {
+			padding: 0 24px;
+		}
+
+		.navbar-nav {
+			gap: 0;
+			margin: 0 12px;
+		}
+
+		.navbar-link {
+			padding: 8px 8px;
+			font-size: 13px;
+		}
+
+		.navbar-actions {
+			gap: 8px;
+		}
+
+		.navbar-login {
+			padding: 0 16px;
+			font-size: 13px;
+		}
+
+		.navbar-cta {
+			padding: 0 18px;
+			font-size: 13px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE: TABLET (768px - 1023px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1023px) {
+		.navbar {
+			height: 64px;
+			min-height: 64px;
+			max-height: 64px;
+		}
+
+		.navbar-container {
+			padding: 0 20px;
+		}
+
+		/* Logo scales down but stays fixed left */
+		.navbar-logo {
+			width: 180px;
+			min-width: 180px;
+			max-width: 180px;
+			height: 45px;
+		}
+
+		.navbar-logo img {
+			width: 180px;
+			min-width: 180px;
+			max-width: 180px;
+			height: 45px;
+		}
+
+		/* Hide desktop nav */
+		.navbar-nav {
+			display: none !important;
+		}
+
+		/* Hide login button */
+		.navbar-login {
+			display: none !important;
+		}
+
+		/* Show hamburger */
 		.navbar-mobile-toggle {
-			display: flex;
+			display: flex !important;
+		}
+
+		.navbar-actions {
+			gap: 8px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE: MOBILE (< 768px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 767px) {
+		.navbar {
+			height: 60px;
+			min-height: 60px;
+			max-height: 60px;
+		}
+
+		.navbar-container {
+			padding: 0 16px;
+		}
+
+		/* Logo scales down more */
+		.navbar-logo {
+			width: 150px;
+			min-width: 150px;
+			max-width: 150px;
+			height: 38px;
+		}
+
+		.navbar-logo img {
+			width: 150px;
+			min-width: 150px;
+			max-width: 150px;
+			height: 38px;
+		}
+
+		/* Hide CTA on mobile */
+		.navbar-cta {
+			display: none !important;
+		}
+
+		.navbar-actions {
+			gap: 8px;
+		}
+
+		.navbar-cart {
+			width: 40px;
+			height: 40px;
+		}
+
+		.navbar-mobile-toggle {
+			width: 40px;
+			height: 40px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE: SMALL MOBILE (< 375px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 374px) {
+		.navbar-container {
+			padding: 0 12px;
+		}
+
+		.navbar-logo {
+			width: 130px;
+			min-width: 130px;
+			max-width: 130px;
+			height: 33px;
+		}
+
+		.navbar-logo img {
+			width: 130px;
+			min-width: 130px;
+			max-width: 130px;
+			height: 33px;
 		}
 	}
 </style>
