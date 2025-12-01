@@ -5,9 +5,45 @@ interface WebSocketMessage {
 	event: string;
 	widget_id?: string;
 	dashboard_id?: string;
+	user_id?: string;
+	cart_id?: string;
+	notification?: NotificationPayload;
 	data?: any;
 	changes?: any;
 	timestamp: string;
+}
+
+export interface NotificationPayload {
+	id: string;
+	type: 'info' | 'success' | 'warning' | 'error' | 'system';
+	priority: 'low' | 'normal' | 'high' | 'urgent';
+	title: string;
+	message: string;
+	action?: {
+		label: string;
+		href?: string;
+	};
+	metadata?: Record<string, unknown>;
+	timestamp: string;
+	read: boolean;
+	dismissed: boolean;
+}
+
+export interface CartUpdatePayload {
+	cart_id: string;
+	action: string;
+	product_id?: string;
+	items_count: number;
+	subtotal: number;
+	total: number;
+	items: Array<{
+		id: string;
+		product_id: string;
+		quantity: number;
+		price: number;
+		total: number;
+		reserved_until?: string;
+	}>;
 }
 
 class WebSocketService {
@@ -135,10 +171,67 @@ class WebSocketService {
 	}
 
 	/**
+	 * Subscribe to user notifications
+	 */
+	subscribeToNotifications(userId: string, callback: (notification: NotificationPayload) => void): () => void {
+		const channel = `user:${userId}:notifications`;
+
+		if (!this.subscriptions.has(channel)) {
+			this.subscriptions.set(channel, new Set());
+		}
+
+		this.subscriptions.get(channel)!.add(callback);
+
+		this.send({
+			action: 'subscribe',
+			channel: `private-user.${userId}`
+		});
+
+		return () => {
+			this.subscriptions.get(channel)?.delete(callback);
+			if (this.subscriptions.get(channel)?.size === 0) {
+				this.send({
+					action: 'unsubscribe',
+					channel: `private-user.${userId}`
+				});
+			}
+		};
+	}
+
+	/**
+	 * Subscribe to cart updates
+	 */
+	subscribeToCart(userId: string | null, sessionId: string, callback: (cart: CartUpdatePayload) => void): () => void {
+		const channel = userId ? `user:${userId}:cart` : `session:${sessionId}:cart`;
+		const wsChannel = userId ? `private-user.${userId}.cart` : `private-session.${sessionId}.cart`;
+
+		if (!this.subscriptions.has(channel)) {
+			this.subscriptions.set(channel, new Set());
+		}
+
+		this.subscriptions.get(channel)!.add(callback);
+
+		this.send({
+			action: 'subscribe',
+			channel: wsChannel
+		});
+
+		return () => {
+			this.subscriptions.get(channel)?.delete(callback);
+			if (this.subscriptions.get(channel)?.size === 0) {
+				this.send({
+					action: 'unsubscribe',
+					channel: wsChannel
+				});
+			}
+		};
+	}
+
+	/**
 	 * Handle incoming message
 	 */
 	private handleMessage(message: WebSocketMessage): void {
-		const { event, widget_id, dashboard_id, data, changes } = message;
+		const { event, widget_id, dashboard_id, user_id, cart_id, notification, data, changes } = message;
 
 		if (event === 'widget:update' && widget_id) {
 			const channel = `widget:${widget_id}`;
@@ -153,6 +246,25 @@ class WebSocketService {
 		if (event === 'widget:refresh' && widget_id) {
 			const channel = `widget:${widget_id}`;
 			this.subscriptions.get(channel)?.forEach((callback) => callback({ refresh: true }));
+		}
+
+		// Handle user notifications
+		if (event === 'notification' && user_id && notification) {
+			const channel = `user:${user_id}:notifications`;
+			this.subscriptions.get(channel)?.forEach((callback) => callback(notification));
+		}
+
+		// Handle cart updates
+		if (event === 'cart.updated' && data) {
+			// Try user channel first, then session channel
+			if (user_id) {
+				const userChannel = `user:${user_id}:cart`;
+				this.subscriptions.get(userChannel)?.forEach((callback) => callback(data));
+			}
+			if (data.session_id) {
+				const sessionChannel = `session:${data.session_id}:cart`;
+				this.subscriptions.get(sessionChannel)?.forEach((callback) => callback(data));
+			}
 		}
 
 		if (event === 'system:notification') {
