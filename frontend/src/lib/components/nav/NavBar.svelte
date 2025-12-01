@@ -671,7 +671,8 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar {
 		position: sticky;
-		top: 0;
+		/* Use CSS variable from parent for admin toolbar offset, default to 0 */
+		top: var(--admin-toolbar-height, 0);
 		z-index: var(--z-navbar);
 		width: 100%;
 		height: var(--nav-height-desktop);
