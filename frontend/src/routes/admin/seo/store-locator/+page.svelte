@@ -338,8 +338,15 @@
 </div>
 
 {#if showAddModal}
-	<div class="modal-overlay" onclick={() => (showAddModal = false)}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<div 
+		class="modal-overlay" 
+		onclick={() => (showAddModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)}
+		role="button"
+		tabindex="-1"
+		aria-label="Close modal"
+	>
+		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<h3>{editingLocation ? 'Edit Location' : 'Add New Location'}</h3>
 
 			<div class="form-grid">

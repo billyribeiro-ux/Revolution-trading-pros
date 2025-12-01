@@ -59,7 +59,7 @@
 		controls
 	}: Props = $props();
 
-	let chartContainer: HTMLDivElement;
+	let chartContainer: HTMLDivElement | null = $state(null);
 	let chart: unknown;
 	let series: unknown;
 	let currentValue: { time: string; value: number } | null = $state(null);

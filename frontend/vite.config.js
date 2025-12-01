@@ -96,7 +96,11 @@ export default defineConfig({
 	optimizeDeps: {
 		// Pre-bundle only critical dependencies
 		include: [
-			'svelte'
+			'svelte',
+			// svelte-email@0.0.4 has svelte field but no exports condition
+			// Include it here to avoid vite-plugin-svelte warning
+			// See: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition
+			'svelte-email'
 		],
 		// Exclude heavy dependencies - lazy load them
 		exclude: [

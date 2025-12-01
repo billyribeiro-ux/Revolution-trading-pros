@@ -267,7 +267,7 @@
 										aria-label="Toggle {category.name}"
 										onclick={() => toggleCategory(category.id)}
 									>
-										<span class="toggle-slider" />
+										<span class="toggle-slider"></span>
 									</button>
 								{/if}
 							</div>

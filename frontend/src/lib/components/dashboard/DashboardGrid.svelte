@@ -10,7 +10,7 @@
 
 	let { dashboardType = 'user' }: Props = $props();
 
-	let gridElement: HTMLDivElement;
+	let gridElement: HTMLDivElement | null = $state(null);
 	let isDragging = $state(false);
 	let draggedWidget: DashboardWidget | null = $state(null);
 

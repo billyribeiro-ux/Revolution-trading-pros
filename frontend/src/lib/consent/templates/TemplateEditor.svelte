@@ -190,22 +190,26 @@
 				<div class="form-section">
 					<h3>Basic Information</h3>
 					<div class="form-row">
-						<label class="form-label">Template Name</label>
-						<input
-							type="text"
-							class="form-input"
-							bind:value={editedTemplate.name}
-							placeholder="My Custom Template"
-						/>
+						<label class="form-label">
+							Template Name
+							<input
+								type="text"
+								class="form-input"
+								bind:value={editedTemplate.name}
+								placeholder="My Custom Template"
+							/>
+						</label>
 					</div>
 					<div class="form-row">
-						<label class="form-label">Description</label>
-						<textarea
-							class="form-input"
-							bind:value={editedTemplate.description}
-							placeholder="A brief description of this template..."
-							rows="2"
-						></textarea>
+						<label class="form-label">
+							Description
+							<textarea
+								class="form-input"
+								bind:value={editedTemplate.description}
+								placeholder="A brief description of this template..."
+								rows="2"
+							></textarea>
+						</label>
 					</div>
 				</div>
 
@@ -213,21 +217,25 @@
 					<h3>Position & Size</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Position</label>
-							<select class="form-select" bind:value={editedTemplate.position}>
-								{#each positionOptions as opt}
-									<option value={opt.value}>{opt.label}</option>
-								{/each}
-							</select>
+							<label class="form-label">
+								Position
+								<select class="form-select" bind:value={editedTemplate.position}>
+									{#each positionOptions as opt}
+										<option value={opt.value}>{opt.label}</option>
+									{/each}
+								</select>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Max Width</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.maxWidth}
-								placeholder="100%"
-							/>
+							<label class="form-label">
+								Max Width
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.maxWidth}
+									placeholder="100%"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -259,12 +267,14 @@
 
 					{#if editedTemplate.showIcon}
 						<div class="form-row" style="margin-top: 1rem;">
-							<label class="form-label">Icon Type</label>
-							<select class="form-select" bind:value={editedTemplate.iconType}>
-								{#each iconOptions as opt}
-									<option value={opt.value}>{opt.label}</option>
-								{/each}
-							</select>
+							<label class="form-label">
+								Icon Type
+								<select class="form-select" bind:value={editedTemplate.iconType}>
+									{#each iconOptions as opt}
+										<option value={opt.value}>{opt.label}</option>
+									{/each}
+								</select>
+							</label>
 						</div>
 					{/if}
 				</div>
@@ -273,23 +283,27 @@
 					<h3>Animation</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Animation Type</label>
-							<select class="form-select" bind:value={editedTemplate.animation}>
-								{#each animationOptions as opt}
-									<option value={opt.value}>{opt.label}</option>
-								{/each}
-							</select>
+							<label class="form-label">
+								Animation Type
+								<select class="form-select" bind:value={editedTemplate.animation}>
+									{#each animationOptions as opt}
+										<option value={opt.value}>{opt.label}</option>
+									{/each}
+								</select>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Duration (ms)</label>
-							<input
-								type="number"
-								class="form-input"
-								bind:value={editedTemplate.animationDuration}
-								min="0"
-								max="2000"
-								step="50"
-							/>
+							<label class="form-label">
+								Duration (ms)
+								<input
+									type="number"
+									class="form-input"
+									bind:value={editedTemplate.animationDuration}
+									min="0"
+									max="2000"
+									step="50"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -318,58 +332,69 @@
 					<h3>Background & Text</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Background</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.colors.background}
-								placeholder="#000000 or gradient"
-							/>
-						</div>
-						<div class="form-row">
-							<label class="form-label">Text Color</label>
-							<div class="color-input-wrapper">
-								<input
-									type="color"
-									class="color-picker"
-									bind:value={editedTemplate.colors.text}
-								/>
+							<label class="form-label">
+								Background
 								<input
 									type="text"
 									class="form-input"
-									bind:value={editedTemplate.colors.text}
+									bind:value={editedTemplate.colors.background}
+									placeholder="#000000 or gradient"
 								/>
-							</div>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Muted Text</label>
-							<div class="color-input-wrapper">
-								<input
-									type="color"
-									class="color-picker"
-									bind:value={editedTemplate.colors.textMuted}
-								/>
-								<input
-									type="text"
-									class="form-input"
-									bind:value={editedTemplate.colors.textMuted}
-								/>
-							</div>
+							<label class="form-label">
+								Text Color
+								<div class="color-input-wrapper">
+									<input
+										type="color"
+										class="color-picker"
+										bind:value={editedTemplate.colors.text}
+										aria-label="Text color picker"
+									/>
+									<input
+										type="text"
+										class="form-input"
+										bind:value={editedTemplate.colors.text}
+									/>
+								</div>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Accent Color</label>
-							<div class="color-input-wrapper">
-								<input
-									type="color"
-									class="color-picker"
-									bind:value={editedTemplate.colors.accent}
-								/>
-								<input
-									type="text"
-									class="form-input"
-									bind:value={editedTemplate.colors.accent}
-								/>
-							</div>
+							<label class="form-label">
+								Muted Text
+								<div class="color-input-wrapper">
+									<input
+										type="color"
+										class="color-picker"
+										bind:value={editedTemplate.colors.textMuted}
+										aria-label="Muted text color picker"
+									/>
+									<input
+										type="text"
+										class="form-input"
+										bind:value={editedTemplate.colors.textMuted}
+									/>
+								</div>
+							</label>
+						</div>
+						<div class="form-row">
+							<label class="form-label">
+								Accent Color
+								<div class="color-input-wrapper">
+									<input
+										type="color"
+										class="color-picker"
+										bind:value={editedTemplate.colors.accent}
+										aria-label="Accent color picker"
+									/>
+									<input
+										type="text"
+										class="form-input"
+										bind:value={editedTemplate.colors.accent}
+									/>
+								</div>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -378,50 +403,60 @@
 					<h3>Button Colors</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Accept Button BG</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.colors.acceptButton}
-							/>
-						</div>
-						<div class="form-row">
-							<label class="form-label">Accept Button Text</label>
-							<div class="color-input-wrapper">
-								<input
-									type="color"
-									class="color-picker"
-									bind:value={editedTemplate.colors.acceptButtonText}
-								/>
+							<label class="form-label">
+								Accept Button BG
 								<input
 									type="text"
 									class="form-input"
-									bind:value={editedTemplate.colors.acceptButtonText}
+									bind:value={editedTemplate.colors.acceptButton}
 								/>
-							</div>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Reject Button BG</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.colors.rejectButton}
-							/>
+							<label class="form-label">
+								Accept Button Text
+								<div class="color-input-wrapper">
+									<input
+										type="color"
+										class="color-picker"
+										bind:value={editedTemplate.colors.acceptButtonText}
+										aria-label="Accept button text color picker"
+									/>
+									<input
+										type="text"
+										class="form-input"
+										bind:value={editedTemplate.colors.acceptButtonText}
+									/>
+								</div>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Reject Button Text</label>
-							<div class="color-input-wrapper">
-								<input
-									type="color"
-									class="color-picker"
-									bind:value={editedTemplate.colors.rejectButtonText}
-								/>
+							<label class="form-label">
+								Reject Button BG
 								<input
 									type="text"
 									class="form-input"
-									bind:value={editedTemplate.colors.rejectButtonText}
+									bind:value={editedTemplate.colors.rejectButton}
 								/>
-							</div>
+							</label>
+						</div>
+						<div class="form-row">
+							<label class="form-label">
+								Reject Button Text
+								<div class="color-input-wrapper">
+									<input
+										type="color"
+										class="color-picker"
+										bind:value={editedTemplate.colors.rejectButtonText}
+										aria-label="Reject button text color picker"
+									/>
+									<input
+										type="text"
+										class="form-input"
+										bind:value={editedTemplate.colors.rejectButtonText}
+									/>
+								</div>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -434,22 +469,26 @@
 				<div class="form-section">
 					<h3>Font Settings</h3>
 					<div class="form-row">
-						<label class="form-label">Font Family</label>
-						<input
-							type="text"
-							class="form-input"
-							bind:value={editedTemplate.typography.fontFamily}
-							placeholder="system-ui, sans-serif"
-						/>
+						<label class="form-label">
+							Font Family
+							<input
+								type="text"
+								class="form-input"
+								bind:value={editedTemplate.typography.fontFamily}
+								placeholder="system-ui, sans-serif"
+							/>
+						</label>
 					</div>
 					<div class="form-row">
-						<label class="form-label">Line Height</label>
-						<input
-							type="text"
-							class="form-input"
-							bind:value={editedTemplate.typography.lineHeight}
-							placeholder="1.5"
-						/>
+						<label class="form-label">
+							Line Height
+							<input
+								type="text"
+								class="form-input"
+								bind:value={editedTemplate.typography.lineHeight}
+								placeholder="1.5"
+							/>
+						</label>
 					</div>
 				</div>
 
@@ -457,22 +496,26 @@
 					<h3>Title</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Size</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.typography.titleSize}
-								placeholder="1.125rem"
-							/>
+							<label class="form-label">
+								Title Size
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.typography.titleSize}
+									placeholder="1.125rem"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Weight</label>
-							<select class="form-select" bind:value={editedTemplate.typography.titleWeight}>
-								<option value="400">Normal (400)</option>
-								<option value="500">Medium (500)</option>
-								<option value="600">Semibold (600)</option>
-								<option value="700">Bold (700)</option>
-							</select>
+							<label class="form-label">
+								Title Weight
+								<select class="form-select" bind:value={editedTemplate.typography.titleWeight}>
+									<option value="400">Normal (400)</option>
+									<option value="500">Medium (500)</option>
+									<option value="600">Semibold (600)</option>
+									<option value="700">Bold (700)</option>
+								</select>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -480,13 +523,15 @@
 				<div class="form-section">
 					<h3>Description</h3>
 					<div class="form-row">
-						<label class="form-label">Size</label>
-						<input
-							type="text"
-							class="form-input"
-							bind:value={editedTemplate.typography.descriptionSize}
-							placeholder="0.875rem"
-						/>
+						<label class="form-label">
+							Description Size
+							<input
+								type="text"
+								class="form-input"
+								bind:value={editedTemplate.typography.descriptionSize}
+								placeholder="0.875rem"
+							/>
+						</label>
 					</div>
 				</div>
 
@@ -494,22 +539,26 @@
 					<h3>Buttons</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Size</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.typography.buttonSize}
-								placeholder="0.875rem"
-							/>
+							<label class="form-label">
+								Button Size
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.typography.buttonSize}
+									placeholder="0.875rem"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Weight</label>
-							<select class="form-select" bind:value={editedTemplate.typography.buttonWeight}>
-								<option value="400">Normal (400)</option>
-								<option value="500">Medium (500)</option>
-								<option value="600">Semibold (600)</option>
-								<option value="700">Bold (700)</option>
-							</select>
+							<label class="form-label">
+								Button Weight
+								<select class="form-select" bind:value={editedTemplate.typography.buttonWeight}>
+									<option value="400">Normal (400)</option>
+									<option value="500">Medium (500)</option>
+									<option value="600">Semibold (600)</option>
+									<option value="700">Bold (700)</option>
+								</select>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -522,22 +571,26 @@
 				<div class="form-section">
 					<h3>Banner Text</h3>
 					<div class="form-row">
-						<label class="form-label">Title</label>
-						<input
-							type="text"
-							class="form-input"
-							bind:value={editedTemplate.copy.title}
-							placeholder="We value your privacy"
-						/>
+						<label class="form-label">
+							Banner Title
+							<input
+								type="text"
+								class="form-input"
+								bind:value={editedTemplate.copy.title}
+								placeholder="We value your privacy"
+							/>
+						</label>
 					</div>
 					<div class="form-row">
-						<label class="form-label">Description</label>
-						<textarea
-							class="form-input"
-							bind:value={editedTemplate.copy.description}
-							rows="3"
-							placeholder="We use cookies to enhance your browsing experience..."
-						></textarea>
+						<label class="form-label">
+							Banner Description
+							<textarea
+								class="form-input"
+								bind:value={editedTemplate.copy.description}
+								rows="3"
+								placeholder="We use cookies to enhance your browsing experience..."
+							></textarea>
+						</label>
 					</div>
 				</div>
 
@@ -545,31 +598,37 @@
 					<h3>Button Labels</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Accept All</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.copy.acceptAll}
-								placeholder="Accept All"
-							/>
+							<label class="form-label">
+								Accept All Label
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.copy.acceptAll}
+									placeholder="Accept All"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Reject All</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.copy.rejectAll}
-								placeholder="Reject All"
-							/>
+							<label class="form-label">
+								Reject All Label
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.copy.rejectAll}
+									placeholder="Reject All"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Customize</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.copy.customize}
-								placeholder="Customize"
-							/>
+							<label class="form-label">
+								Customize Label
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.copy.customize}
+									placeholder="Customize"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -578,22 +637,26 @@
 					<h3>Links</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Privacy Policy Text</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.copy.privacyPolicy}
-								placeholder="Privacy Policy"
-							/>
+							<label class="form-label">
+								Privacy Policy Text
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.copy.privacyPolicy}
+									placeholder="Privacy Policy"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Cookie Policy Text</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.copy.cookiePolicy}
-								placeholder="Cookie Policy"
-							/>
+							<label class="form-label">
+								Cookie Policy Text
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.copy.cookiePolicy}
+									placeholder="Cookie Policy"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -606,12 +669,14 @@
 				<div class="form-section">
 					<h3>Button Style</h3>
 					<div class="form-row">
-						<label class="form-label">Variant</label>
-						<select class="form-select" bind:value={editedTemplate.buttonVariant}>
-							{#each buttonVariantOptions as opt}
-								<option value={opt.value}>{opt.label}</option>
-							{/each}
-						</select>
+						<label class="form-label">
+							Button Variant
+							<select class="form-select" bind:value={editedTemplate.buttonVariant}>
+								{#each buttonVariantOptions as opt}
+									<option value={opt.value}>{opt.label}</option>
+								{/each}
+							</select>
+						</label>
 					</div>
 				</div>
 
@@ -619,22 +684,26 @@
 					<h3>Button Spacing</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Padding</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.spacing.buttonPadding}
-								placeholder="0.75rem 1.5rem"
-							/>
+							<label class="form-label">
+								Button Padding
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.spacing.buttonPadding}
+									placeholder="0.75rem 1.5rem"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Border Radius</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.spacing.buttonBorderRadius}
-								placeholder="8px"
-							/>
+							<label class="form-label">
+								Button Border Radius
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.spacing.buttonBorderRadius}
+									placeholder="8px"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -670,40 +739,48 @@
 					<h3>Effects</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Box Shadow</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.boxShadow}
-								placeholder="0 4px 20px rgba(0,0,0,0.3)"
-							/>
+							<label class="form-label">
+								Box Shadow
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.boxShadow}
+									placeholder="0 4px 20px rgba(0,0,0,0.3)"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Border</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.border}
-								placeholder="1px solid rgba(255,255,255,0.1)"
-							/>
+							<label class="form-label">
+								Border
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.border}
+									placeholder="1px solid rgba(255,255,255,0.1)"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Backdrop Blur</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.backdropBlur}
-								placeholder="20px"
-							/>
+							<label class="form-label">
+								Backdrop Blur
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.backdropBlur}
+									placeholder="20px"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Border Radius</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.spacing.borderRadius}
-								placeholder="12px"
-							/>
+							<label class="form-label">
+								Container Border Radius
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.spacing.borderRadius}
+									placeholder="12px"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -712,22 +789,26 @@
 					<h3>Spacing</h3>
 					<div class="form-grid">
 						<div class="form-row">
-							<label class="form-label">Padding</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.spacing.padding}
-								placeholder="1.5rem"
-							/>
+							<label class="form-label">
+								Container Padding
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.spacing.padding}
+									placeholder="1.5rem"
+								/>
+							</label>
 						</div>
 						<div class="form-row">
-							<label class="form-label">Gap</label>
-							<input
-								type="text"
-								class="form-input"
-								bind:value={editedTemplate.spacing.gap}
-								placeholder="1rem"
-							/>
+							<label class="form-label">
+								Element Gap
+								<input
+									type="text"
+									class="form-input"
+									bind:value={editedTemplate.spacing.gap}
+									placeholder="1rem"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>
@@ -735,29 +816,33 @@
 				<div class="form-section">
 					<h3>Custom CSS</h3>
 					<div class="form-row">
-						<label class="form-label">Additional Styles</label>
-						<textarea
-							class="form-input code"
-							bind:value={editedTemplate.customCSS}
-							rows="6"
-							placeholder="/* Add custom CSS here */"
-						></textarea>
+						<label class="form-label">
+							Additional Styles
+							<textarea
+								class="form-input code"
+								bind:value={editedTemplate.customCSS}
+								rows="6"
+								placeholder="/* Add custom CSS here */"
+							></textarea>
+						</label>
 					</div>
 				</div>
 
 				<div class="form-section">
 					<h3>Copy From Template</h3>
 					<div class="form-row">
-						<label class="form-label">Base on existing template</label>
-						<select
-							class="form-select"
-							onchange={(e) => copyFromTemplate(e.currentTarget.value)}
-						>
-							<option value="">Select a template...</option>
-							{#each BANNER_TEMPLATES as t}
-								<option value={t.id}>{t.name}</option>
-							{/each}
-						</select>
+						<label class="form-label">
+							Base on existing template
+							<select
+								class="form-select"
+								onchange={(e) => copyFromTemplate(e.currentTarget.value)}
+							>
+								<option value="">Select a template...</option>
+								{#each BANNER_TEMPLATES as t}
+									<option value={t.id}>{t.name}</option>
+								{/each}
+							</select>
+						</label>
 					</div>
 				</div>
 			</div>

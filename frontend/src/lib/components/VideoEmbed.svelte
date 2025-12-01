@@ -334,18 +334,23 @@
 	let availableQualities: string[] = $state([]);
 	let currentQuality: string = $state(defaultQuality);
 
-	// Analytics
-	let analytics: VideoAnalytics = $state({
+	// Analytics - use $derived for quality to avoid stale closure
+	let analyticsBase = $state({
 		id: analyticsId || generateId(),
 		url,
-		platform: 'html5',
-		events: [],
+		platform: 'html5' as const,
+		events: [] as AnalyticsEvent[],
 		watchTime: 0,
 		completionRate: 0,
 		interactions: 0,
-		quality: currentQuality,
 		bufferEvents: 0,
 		errors: 0
+	});
+	
+	// Derive full analytics object with current quality
+	let analytics: VideoAnalytics = $derived({
+		...analyticsBase,
+		quality: currentQuality
 	});
 
 	let watchStartTime: number = $state(0);

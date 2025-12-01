@@ -298,8 +298,7 @@
 
 	/* Section Dividers */
 	.custom-hr-0,
-	.custom-hr-1,
-	.custom-hr-2 {
+	.custom-hr-1 {
 		border-top: 1px solid #dbdbdb;
 		width: 100%;
 		margin: 20px 0;

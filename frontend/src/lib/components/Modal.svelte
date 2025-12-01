@@ -21,7 +21,7 @@
 		children
 	}: Props = $props();
 
-	let modalRef: HTMLDivElement;
+	let modalRef: HTMLDivElement | null = $state(null);
 
 	// Close on Escape key
 	function handleKeydown(event: KeyboardEvent) {
@@ -56,18 +56,21 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_interactive_supports_focus -->
 	<div
 		class="modal-backdrop"
 		onclick={handleBackdropClick}
 		onkeydown={(e) => e.key === 'Escape' && onClose()}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="modal-title"
+		role="presentation"
 		tabindex="-1"
 	>
-		<div bind:this={modalRef} class="modal-container">
+		<div 
+			bind:this={modalRef} 
+			class="modal-container"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="modal-title"
+			tabindex="-1"
+		>
 			<!-- Header -->
 			<div class="modal-header">
 				<h2 id="modal-title" class="modal-title">{title}</h2>

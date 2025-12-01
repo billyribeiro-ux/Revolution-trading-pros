@@ -219,14 +219,14 @@
 	let canRemove = $derived(items.length > minItems);
 </script>
 
-<div class="repeater-field" class:repeater-field--error={error && error.length > 0}>
+<fieldset class="repeater-field" class:repeater-field--error={error && error.length > 0}>
 	<div class="repeater-field__header">
-		<label class="repeater-field__label">
+		<legend class="repeater-field__label">
 			{label}
 			{#if required}
 				<span class="repeater-field__required">*</span>
 			{/if}
-		</label>
+		</legend>
 		<span class="repeater-field__count">{items.length}/{maxItems}</span>
 	</div>
 
@@ -234,7 +234,7 @@
 		<p class="repeater-field__description">{description}</p>
 	{/if}
 
-	<div class="repeater-items">
+	<div class="repeater-items" role="list" aria-label="{label} items">
 		{#each items as item, index (item.id)}
 			<div
 				class="repeater-item"
@@ -244,6 +244,8 @@
 				animate:flip={{ duration: 200 }}
 				transition:slide={{ duration: 200 }}
 				draggable="true"
+				role="listitem"
+				aria-label="Item {index + 1} of {items.length}"
 				ondragstart={(e) => handleDragStart(e, index)}
 				ondragover={(e) => handleDragOver(e, index)}
 				ondragleave={handleDragLeave}
@@ -469,11 +471,14 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</fieldset>
 
 <style>
+	/* Reset fieldset default styles and add spacing */
 	.repeater-field {
-		margin-bottom: 1.5rem;
+		border: none;
+		padding: 0;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.repeater-field__header {

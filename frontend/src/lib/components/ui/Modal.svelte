@@ -55,9 +55,9 @@
 	};
 
 	// Store the element that triggered the modal
-	let triggerElement: HTMLElement | null = null;
-	let modalElement: HTMLDivElement | null = null;
-	let previouslyFocused: Element | null = null;
+	let triggerElement: HTMLElement | null = $state(null);
+	let modalElement: HTMLDivElement | null = $state(null);
+	let previouslyFocused: Element | null = $state(null);
 
 	// Focusable elements selector
 	const FOCUSABLE_SELECTOR =

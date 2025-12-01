@@ -28,7 +28,7 @@
 	let showTimeout: any;
 
 	// Accessibility
-	let popupElement: HTMLElement;
+	let popupElement: HTMLElement | null = $state(null);
 	let previousFocusedElement: HTMLElement | null = $state(null);
 
 	// Button ripple effect state
@@ -372,25 +372,25 @@
 		class:closing={isClosing}
 		onclick={handleOverlayClick}
 		onkeydown={handleKeydown}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="popup-title"
-		aria-describedby="popup-content"
+		role="presentation"
 		tabindex="-1"
 	>
 		<!-- Backdrop with smooth transition -->
-		<div class="popup-backdrop" class:closing={isClosing}></div>
+		<div class="popup-backdrop" class:closing={isClosing} aria-hidden="true"></div>
 
 		<!-- Popup Container -->
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			bind:this={popupElement}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="popup-title"
+			aria-describedby="popup-content"
+			tabindex="-1"
 			class="popup-container {getSizeClass(currentPopup.size)} {getAnimationClass(
 				currentPopup.animation
 			)}"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
-			role="document"
 			style={currentPopup.design?.backgroundColor
 				? `background-color: ${currentPopup.design.backgroundColor}`
 				: ''}

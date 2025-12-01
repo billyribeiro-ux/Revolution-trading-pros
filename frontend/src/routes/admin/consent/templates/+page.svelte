@@ -299,7 +299,7 @@
 			onclick={() => (showImportModal = false)}
 			onkeydown={(e) => e.key === 'Escape' && (showImportModal = false)}
 		>
-			<div class="modal" role="dialog" aria-modal="true" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+			<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 				<h3>Import Configuration</h3>
 				<p>Paste your exported JSON configuration:</p>
 				<textarea

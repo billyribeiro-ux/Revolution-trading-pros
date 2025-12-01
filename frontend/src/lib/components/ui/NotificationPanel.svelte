@@ -36,8 +36,8 @@
 	let { position = 'top-right', onclick }: Props = $props();
 
 	let isOpen = $state(false);
-	let bellRef: HTMLButtonElement;
-	let panelRef: HTMLDivElement;
+	let bellRef: HTMLButtonElement | null = $state(null);
+	let panelRef: HTMLDivElement | null = $state(null);
 
 	const iconMap: Record<NotificationType, typeof IconInfoCircle> = {
 		info: IconInfoCircle,
