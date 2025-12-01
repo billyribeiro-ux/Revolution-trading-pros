@@ -51,6 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import type { CartItem } from '$lib/stores/cart';
+import { websocketService, type CartUpdatePayload } from '$lib/services/websocket';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -508,42 +509,68 @@ class CheckoutCartService {
 	}
 
 	/**
-	 * WebSocket setup - DISABLED (backend doesn't support WebSocket yet)
-	 * TODO: Enable when backend WebSocket server is ready
+	 * WebSocket setup for real-time cart updates
+	 * Uses the centralized WebSocket service for cart synchronization
 	 */
 	private setupWebSocket(): void {
-		// WebSocket disabled - backend doesn't have WebSocket server running
-		// Cart updates will use polling or manual refresh instead
-		console.debug('[CheckoutService] WebSocket disabled - using polling for cart updates');
-		return;
-
-		/* Commented out until backend WebSocket is implemented
 		if (!browser) return;
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_URL}/cart`);
-			
-			this.wsConnection.onopen = () => {
-				console.debug('[CheckoutService] WebSocket connected');
-				this.authenticateWebSocket();
-			};
+			// Get user ID from auth token if available
+			const token = this.getAuthToken();
+			let userId: string | null = null;
 
-			this.wsConnection.onmessage = (event) => {
-				this.handleWebSocketMessage(event);
-			};
+			if (token) {
+				try {
+					// Decode JWT to get user ID (basic decode, not verification)
+					const payload = JSON.parse(atob(token.split('.')[1]));
+					userId = payload.sub || payload.user_id || null;
+				} catch {
+					// Token parsing failed, continue without user ID
+				}
+			}
 
-			this.wsConnection.onerror = (error) => {
-				console.error('[CheckoutService] WebSocket error:', error);
-			};
+			const sessionId = this.getSessionId();
 
-			this.wsConnection.onclose = () => {
-				console.debug('[CheckoutService] WebSocket disconnected');
-				setTimeout(() => this.setupWebSocket(), 5000);
-			};
+			// Subscribe to cart updates via WebSocket service
+			websocketService.subscribeToCart(userId, sessionId, (cartUpdate: CartUpdatePayload) => {
+				console.debug('[CheckoutService] Received cart update via WebSocket:', cartUpdate.action);
+
+				// Update local cart state based on WebSocket message
+				this.cart.update((cart) => {
+					// Update items from server
+					cart.items = cartUpdate.items.map((item) => ({
+						id: item.id,
+						name: '', // Will be filled from local state or fetched
+						price: item.price,
+						quantity: item.quantity,
+						...cart.items.find((i) => i.id === item.id)
+					})) as EnhancedCartItem[];
+
+					// Update totals
+					cart.subtotal = cartUpdate.subtotal;
+					cart.total = cartUpdate.total;
+					cart.updatedAt = new Date().toISOString();
+
+					return cart;
+				});
+
+				// Show notification for relevant actions
+				if (cartUpdate.action === 'item_added') {
+					this.showNotification('Item added to cart', 'success');
+				} else if (cartUpdate.action === 'item_removed') {
+					this.showNotification('Item removed from cart', 'info');
+				} else if (cartUpdate.action === 'stock_updated') {
+					this.showNotification('Stock availability updated', 'warning');
+				}
+			});
+
+			console.debug('[CheckoutService] WebSocket cart subscription active');
 		} catch (error) {
 			console.error('[CheckoutService] Failed to setup WebSocket:', error);
+			// Fallback to polling if WebSocket fails
+			console.debug('[CheckoutService] Falling back to polling for cart updates');
 		}
-		*/
 	}
 
 	private authenticateWebSocket(): void {
