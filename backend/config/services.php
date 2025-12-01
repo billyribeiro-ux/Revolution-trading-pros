@@ -35,4 +35,22 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Stripe Payment Gateway
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for Stripe payment processing. Supports both test and
+    | live modes. Matches Fluent Cart Pro payment gateway features.
+    |
+    */
+    'stripe' => [
+        'test_mode' => env('STRIPE_TEST_MODE', true),
+        'secret_key' => env('STRIPE_SECRET_KEY'),
+        'publishable_key' => env('STRIPE_PUBLISHABLE_KEY'),
+        'test_secret_key' => env('STRIPE_TEST_SECRET_KEY', env('STRIPE_SECRET_KEY')),
+        'test_publishable_key' => env('STRIPE_TEST_PUBLISHABLE_KEY', env('STRIPE_PUBLISHABLE_KEY')),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];

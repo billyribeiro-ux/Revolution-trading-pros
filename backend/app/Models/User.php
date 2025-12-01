@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'mfa_secret',
         'mfa_backup_codes',
         'mfa_enabled_at',
+        'stripe_customer_id',
     ];
 
     protected $hidden = [

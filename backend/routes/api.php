@@ -477,6 +477,30 @@ Route::get('/feed/atom', function (FeedService $feedService) {
 // ENTERPRISE ANALYTICS ENGINE
 // ========================================
 use App\Http\Controllers\Api\AnalyticsController;
+use App\Http\Controllers\Api\PaymentController;
+
+// ========================================
+// STRIPE PAYMENT GATEWAY
+// ========================================
+
+// Public payment config (no auth required)
+Route::get('/payments/config', [PaymentController::class, 'config']);
+
+// Stripe webhook (no auth - uses signature verification)
+Route::post('/payments/webhook', [PaymentController::class, 'webhook']);
+
+// Protected payment routes
+Route::middleware(['auth:sanctum'])->prefix('payments')->group(function () {
+    Route::post('/create-intent', [PaymentController::class, 'createPaymentIntent']);
+    Route::post('/create-checkout', [PaymentController::class, 'createCheckoutSession']);
+    Route::post('/confirm', [PaymentController::class, 'confirmPayment']);
+    Route::get('/order/{order:order_number}/status', [PaymentController::class, 'orderStatus']);
+});
+
+// Admin-only refund endpoint
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->group(function () {
+    Route::post('/payments/refund', [PaymentController::class, 'refund']);
+});
 
 // Public event tracking (client-side)
 Route::prefix('analytics')->group(function () {
