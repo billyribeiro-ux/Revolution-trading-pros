@@ -7,6 +7,7 @@ namespace App\Services\Email;
 use App\Models\EmailCampaign;
 use App\Models\EmailTemplate;
 use App\Models\User;
+use App\Models\Analytics\AnalyticsSegment;
 use App\Services\EmailService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -193,19 +194,89 @@ class EmailCampaignService
      */
     private function getRecipients(EmailCampaign $campaign): Collection
     {
-        $query = User::query();
+        $query = User::query()->where('is_active', true);
 
         // Apply segment filters if specified
         if ($campaign->segment_id) {
-            // TODO: Implement segment filtering
-            // For now, return all active users
-            $query->where('is_active', true);
-        } else {
-            // All active users
-            $query->where('is_active', true);
+            $segment = AnalyticsSegment::find($campaign->segment_id);
+
+            if ($segment) {
+                if ($segment->segment_type === AnalyticsSegment::TYPE_STATIC) {
+                    // Static segment: get users from membership table
+                    $segmentUserIds = $segment->users()->pluck('users.id');
+                    $query->whereIn('id', $segmentUserIds);
+                } else {
+                    // Dynamic segment: apply rules
+                    $query = $this->applySegmentRulesToQuery($query, $segment);
+                }
+
+                Log::info('[EmailCampaignService] Applied segment filter', [
+                    'campaign_id' => $campaign->id,
+                    'segment_id' => $segment->id,
+                    'segment_name' => $segment->name,
+                ]);
+            }
         }
 
         return $query->get();
+    }
+
+    /**
+     * Apply segment rules to a query builder
+     */
+    private function applySegmentRulesToQuery($query, AnalyticsSegment $segment)
+    {
+        $rules = $segment->rules ?? [];
+
+        if (empty($rules)) {
+            return $query;
+        }
+
+        $isAndOperator = $segment->rule_operator === AnalyticsSegment::OP_AND;
+
+        foreach ($rules as $index => $rule) {
+            $field = $rule['field'] ?? null;
+            $operator = $rule['operator'] ?? 'eq';
+            $value = $rule['value'] ?? null;
+
+            if (!$field) {
+                continue;
+            }
+
+            $callback = function ($q) use ($field, $operator, $value) {
+                $this->applyRuleCondition($q, $field, $operator, $value);
+            };
+
+            if ($isAndOperator || $index === 0) {
+                $query->where($callback);
+            } else {
+                $query->orWhere($callback);
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply a single rule condition to query
+     */
+    private function applyRuleCondition($query, string $field, string $operator, mixed $value): void
+    {
+        match ($operator) {
+            'eq' => $query->where($field, '=', $value),
+            'neq' => $query->where($field, '!=', $value),
+            'gt' => $query->where($field, '>', $value),
+            'gte' => $query->where($field, '>=', $value),
+            'lt' => $query->where($field, '<', $value),
+            'lte' => $query->where($field, '<=', $value),
+            'in' => $query->whereIn($field, (array) $value),
+            'not_in' => $query->whereNotIn($field, (array) $value),
+            'contains' => $query->where($field, 'LIKE', "%{$value}%"),
+            'starts_with' => $query->where($field, 'LIKE', "{$value}%"),
+            'is_null' => $query->whereNull($field),
+            'is_not_null' => $query->whereNotNull($field),
+            default => $query->where($field, '=', $value),
+        };
     }
 
     /**

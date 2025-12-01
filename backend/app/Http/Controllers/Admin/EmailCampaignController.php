@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EmailCampaign;
 use App\Models\EmailTemplate;
 use App\Models\User;
+use App\Models\Analytics\AnalyticsSegment;
 use App\Jobs\SendEmailCampaign;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -529,13 +530,84 @@ class EmailCampaignController extends Controller
      */
     private function getRecipientCount(?int $segmentId): int
     {
+        $query = User::whereNotNull('email_verified_at');
+
         if (!$segmentId) {
-            // All subscribers
-            return User::whereNotNull('email_verified_at')->count();
+            return $query->count();
         }
 
-        // TODO: Implement segment filtering
-        return User::whereNotNull('email_verified_at')->count();
+        $segment = AnalyticsSegment::find($segmentId);
+
+        if (!$segment) {
+            return $query->count();
+        }
+
+        if ($segment->segment_type === AnalyticsSegment::TYPE_STATIC) {
+            // Static segment: count users from membership table
+            $segmentUserIds = $segment->users()->pluck('users.id');
+            return $query->whereIn('id', $segmentUserIds)->count();
+        }
+
+        // Dynamic segment: apply rules and count
+        return $this->applySegmentRules($query, $segment)->count();
+    }
+
+    /**
+     * Apply segment rules to a query
+     */
+    private function applySegmentRules($query, AnalyticsSegment $segment)
+    {
+        $rules = $segment->rules ?? [];
+
+        if (empty($rules)) {
+            return $query;
+        }
+
+        $isAndOperator = $segment->rule_operator === AnalyticsSegment::OP_AND;
+
+        foreach ($rules as $index => $rule) {
+            $field = $rule['field'] ?? null;
+            $operator = $rule['operator'] ?? 'eq';
+            $value = $rule['value'] ?? null;
+
+            if (!$field) {
+                continue;
+            }
+
+            $callback = function ($q) use ($field, $operator, $value) {
+                $this->applyRuleCondition($q, $field, $operator, $value);
+            };
+
+            if ($isAndOperator || $index === 0) {
+                $query->where($callback);
+            } else {
+                $query->orWhere($callback);
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply a single rule condition
+     */
+    private function applyRuleCondition($query, string $field, string $operator, mixed $value): void
+    {
+        match ($operator) {
+            'eq' => $query->where($field, '=', $value),
+            'neq' => $query->where($field, '!=', $value),
+            'gt' => $query->where($field, '>', $value),
+            'gte' => $query->where($field, '>=', $value),
+            'lt' => $query->where($field, '<', $value),
+            'lte' => $query->where($field, '<=', $value),
+            'in' => $query->whereIn($field, (array) $value),
+            'not_in' => $query->whereNotIn($field, (array) $value),
+            'contains' => $query->where($field, 'LIKE', "%{$value}%"),
+            'starts_with' => $query->where($field, 'LIKE', "{$value}%"),
+            'is_null' => $query->whereNull($field),
+            'is_not_null' => $query->whereNotNull($field),
+            default => $query->where($field, '=', $value),
+        };
     }
 
     /**

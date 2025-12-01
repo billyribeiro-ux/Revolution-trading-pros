@@ -4,6 +4,8 @@
 	import { gsap } from 'gsap';
 	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
+	import { createOrder, createCheckoutSession } from '$lib/api/checkout';
+	import { isAuthenticated } from '$lib/stores/auth';
 	import {
 		IconTrash,
 		IconPlus,
@@ -13,7 +15,8 @@
 		IconShieldCheck,
 		IconArrowLeft,
 		IconTicket,
-		IconX
+		IconX,
+		IconLoader2
 	} from '@tabler/icons-svelte';
 
 	// Svelte 5 state runes
@@ -27,6 +30,10 @@
 	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
+
+	// Checkout state
+	let isCheckingOut = $state(false);
+	let checkoutError = $state('');
 
 	onMount(() => {
 		isVisible = true;
@@ -88,9 +95,57 @@
 	}
 
 	async function handleCheckout() {
-		// TODO: Implement checkout with Stripe
-		console.log('Proceeding to checkout...');
-		await goto('/checkout');
+		// Check if user is authenticated
+		if (!$isAuthenticated) {
+			// Redirect to login with return URL
+			await goto('/login?redirect=/cart');
+			return;
+		}
+
+		if ($cartStore.items.length === 0) {
+			checkoutError = 'Your cart is empty';
+			return;
+		}
+
+		isCheckingOut = true;
+		checkoutError = '';
+
+		try {
+			// Step 1: Create order from cart items
+			const order = await createOrder({
+				items: $cartStore.items.map((item) => ({
+					id: item.id,
+					name: item.name,
+					price: item.price,
+					quantity: item.quantity,
+					interval: item.interval
+				})),
+				couponCode: appliedCoupon?.code,
+				discountAmount: discountAmount
+			});
+
+			// Step 2: Create Stripe Checkout session
+			const session = await createCheckoutSession(
+				order.id,
+				`${window.location.origin}/checkout/success?order_id=${order.id}`,
+				`${window.location.origin}/cart`
+			);
+
+			// Step 3: Redirect to Stripe Checkout
+			if (session.url) {
+				// Clear cart before redirecting
+				cartStore.clearCart();
+				window.location.href = session.url;
+			} else {
+				throw new Error('No checkout URL received');
+			}
+		} catch (error) {
+			console.error('Checkout error:', error);
+			checkoutError =
+				error instanceof Error ? error.message : 'Failed to process checkout. Please try again.';
+		} finally {
+			isCheckingOut = false;
+		}
 	}
 
 	async function applyCouponCode() {
@@ -441,16 +496,26 @@
 
 								<button
 									onclick={handleCheckout}
-									class="w-full relative px-6 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/50 mb-4"
+									disabled={isCheckingOut || $cartStore.items.length === 0}
+									class="w-full relative px-6 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/50 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									<span class="relative z-10 flex items-center justify-center gap-2">
-										<IconCreditCard size={24} />
-										<span>Proceed to Checkout</span>
+										{#if isCheckingOut}
+											<IconLoader2 size={24} class="animate-spin" />
+											<span>Processing...</span>
+										{:else}
+											<IconCreditCard size={24} />
+											<span>Proceed to Checkout</span>
+										{/if}
 									</span>
 									<div
 										class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
 									></div>
 								</button>
+
+								{#if checkoutError}
+									<p class="text-red-400 text-sm text-center mb-4">{checkoutError}</p>
+								{/if}
 
 								<div class="flex items-center justify-center gap-2 text-emerald-400 text-sm">
 									<IconShieldCheck size={16} />

@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Models\EmailCampaign;
 use App\Models\EmailLog;
 use App\Models\User;
+use App\Models\Analytics\AnalyticsSegment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -92,10 +93,103 @@ class SendEmailCampaign implements ShouldQueue
         $query = User::whereNotNull('email_verified_at')
             ->whereNotNull('email');
 
-        // TODO: Implement segment filtering based on segment_id
-        // For now, return all verified users
+        // Apply segment filtering if segment_id is set
+        if ($campaign->segment_id) {
+            $segment = AnalyticsSegment::find($campaign->segment_id);
+
+            if ($segment) {
+                // For static segments, get users from the segment members table
+                if ($segment->segment_type === AnalyticsSegment::TYPE_STATIC) {
+                    $segmentUserIds = $segment->users()->pluck('users.id');
+                    $query->whereIn('id', $segmentUserIds);
+                } else {
+                    // For dynamic segments, apply rule-based filtering
+                    $query = $this->applySegmentRules($query, $segment);
+                }
+            }
+        }
 
         return $query->get();
+    }
+
+    /**
+     * Apply segment rules to the query
+     */
+    private function applySegmentRules($query, AnalyticsSegment $segment)
+    {
+        $rules = $segment->rules ?? [];
+
+        if (empty($rules)) {
+            return $query;
+        }
+
+        $isAndOperator = $segment->rule_operator === AnalyticsSegment::OP_AND;
+
+        if ($isAndOperator) {
+            // AND operator - all rules must match
+            foreach ($rules as $rule) {
+                $query = $this->applyRule($query, $rule);
+            }
+        } else {
+            // OR operator - any rule can match
+            $query->where(function ($q) use ($rules) {
+                foreach ($rules as $index => $rule) {
+                    if ($index === 0) {
+                        $q = $this->applyRule($q, $rule, false);
+                    } else {
+                        $q->orWhere(function ($subQ) use ($rule) {
+                            $this->applyRule($subQ, $rule, false);
+                        });
+                    }
+                }
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply a single rule to the query
+     */
+    private function applyRule($query, array $rule, bool $wrap = true)
+    {
+        $field = $rule['field'] ?? null;
+        $operator = $rule['operator'] ?? 'eq';
+        $value = $rule['value'] ?? null;
+
+        if (!$field) {
+            return $query;
+        }
+
+        // Map rule operators to SQL operators
+        $sqlOperator = match ($operator) {
+            'eq' => '=',
+            'neq' => '!=',
+            'gt' => '>',
+            'gte' => '>=',
+            'lt' => '<',
+            'lte' => '<=',
+            'contains' => 'LIKE',
+            'starts_with' => 'LIKE',
+            default => '=',
+        };
+
+        // Handle special operators
+        if ($operator === 'contains') {
+            $value = "%{$value}%";
+        } elseif ($operator === 'starts_with') {
+            $value = "{$value}%";
+        } elseif ($operator === 'in') {
+            return $query->whereIn($field, (array) $value);
+        } elseif ($operator === 'not_in') {
+            return $query->whereNotIn($field, (array) $value);
+        } elseif ($operator === 'is_null') {
+            return $query->whereNull($field);
+        } elseif ($operator === 'is_not_null') {
+            return $query->whereNotNull($field);
+        }
+
+        return $query->where($field, $sqlOperator, $value);
     }
 
     /**

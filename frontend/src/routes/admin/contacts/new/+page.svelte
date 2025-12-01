@@ -1,22 +1,37 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { IconUserPlus, IconArrowLeft } from '@tabler/icons-svelte';
+	import { crmAPI } from '$lib/api/crm';
 
-	let formData = {
+	let formData = $state({
 		name: '',
 		email: '',
 		phone: '',
 		company: '',
 		notes: ''
-	};
-	let isSubmitting = false;
+	});
+	let isSubmitting = $state(false);
+	let errorMessage = $state<string | null>(null);
 
-	async function handleSubmit() {
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
 		isSubmitting = true;
-		// TODO: Implement API call
-		setTimeout(() => {
+		errorMessage = null;
+
+		try {
+			await crmAPI.createContact({
+				name: formData.name,
+				email: formData.email,
+				phone: formData.phone || undefined,
+				company: formData.company || undefined,
+				notes: formData.notes || undefined
+			});
 			goto('/admin/contacts');
-		}, 500);
+		} catch (error) {
+			console.error('Failed to create contact:', error);
+			errorMessage = error instanceof Error ? error.message : 'Failed to create contact';
+			isSubmitting = false;
+		}
 	}
 </script>
 
@@ -34,6 +49,12 @@
 	</div>
 
 	<form class="contact-form" onsubmit={handleSubmit}>
+		{#if errorMessage}
+			<div class="error-banner">
+				{errorMessage}
+			</div>
+		{/if}
+
 		<div class="form-group">
 			<label for="name">Full Name *</label>
 			<input type="text" id="name" bind:value={formData.name} required />
@@ -185,5 +206,15 @@
 	.btn-secondary:hover {
 		background: rgba(99, 102, 241, 0.2);
 		color: #e2e8f0;
+	}
+
+	.error-banner {
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		color: #f87171;
+		padding: 0.75rem 1rem;
+		border-radius: 10px;
+		margin-bottom: 1.5rem;
+		font-size: 0.9rem;
 	}
 </style>
