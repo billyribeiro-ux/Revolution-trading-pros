@@ -42,7 +42,6 @@ export {
 // Layout Components
 // ═══════════════════════════════════════════════════════════════════════════
 export {
-	MarketingNav,
 	MarketingFooter,
 	AppSidebar,
 	AdminSidebar,

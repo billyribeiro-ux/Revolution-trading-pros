@@ -26,12 +26,7 @@ import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
 import { consentStore } from '../store';
 
-declare global {
-	interface Window {
-		dataLayer: unknown[];
-		gtag: (...args: unknown[]) => void;
-	}
-}
+// Window interface extended in src/app.d.ts
 
 /**
  * Track if GA4 has been initialized.

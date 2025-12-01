@@ -120,7 +120,7 @@
 		<AdminToolbar />
 
 		<!-- Navigation -->
-		<NavBar {isAdmin} />
+		<NavBar />
 
 		<main>
 			{@render children()}

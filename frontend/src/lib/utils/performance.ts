@@ -118,7 +118,7 @@ export function measureINP(): void {
 			});
 		});
 
-		observer.observe({ type: 'event', buffered: true, durationThreshold: 16 });
+		observer.observe({ type: 'event', buffered: true, durationThreshold: 16 } as PerformanceObserverInit);
 
 		// Report INP on page visibility change (user leaving)
 		const reportINP = () => {

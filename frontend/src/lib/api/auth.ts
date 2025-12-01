@@ -1015,6 +1015,7 @@ class AuthenticationService {
 
 		return {
 			token: token || '',
+			refresh_token: '',
 			expires_in: auth.tokenExpiry ? Math.floor((auth.tokenExpiry - Date.now()) / 1000) : 3600
 		};
 	}

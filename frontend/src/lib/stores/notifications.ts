@@ -11,7 +11,8 @@
 
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
-import { websocketStore } from './websocket';
+
+// WebSocket store removed - notifications work without real-time updates for now
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error' | 'system';
 export type NotificationPriority = 'low' | 'normal' | 'high' | 'urgent';
@@ -91,21 +92,12 @@ function createNotificationStore() {
 		}
 	}
 
-	// WebSocket listener
+	// WebSocket listener (disabled - websocket store removed)
 	let wsUnsubscribe: (() => void) | null = null;
 
 	function initWebSocket() {
-		if (wsUnsubscribe) return;
-
-		wsUnsubscribe = websocketStore.on<Notification>('notification', (data) => {
-			add({
-				...data,
-				id: data.id || generateId(),
-				timestamp: new Date(data.timestamp || Date.now()),
-				read: false,
-				dismissed: false
-			});
-		});
+		// WebSocket disabled - real-time notifications not available
+		// TODO: Re-enable when websocket store is implemented
 	}
 
 	function destroyWebSocket() {

@@ -65,7 +65,7 @@ export async function initConsentAwareBehaviorTracking(): Promise<void> {
 /**
  * Handle consent state changes.
  */
-async function handleConsentChange(consent: ConsentState): void {
+async function handleConsentChange(consent: ConsentState): Promise<void> {
 	if (!browser) return;
 
 	if (consent.analytics && !trackerEnabled) {

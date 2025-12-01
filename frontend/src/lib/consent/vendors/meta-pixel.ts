@@ -45,12 +45,7 @@ interface Fbq {
 	push: (...args: unknown[]) => void;
 }
 
-declare global {
-	interface Window {
-		fbq: Fbq;
-		_fbq: Fbq;
-	}
-}
+// Window interface extended in src/app.d.ts
 
 /**
  * Track if Meta Pixel has been initialized.
@@ -81,7 +76,7 @@ function initFbqStub(): void {
 	fbq.queue = [];
 	fbq.loaded = true;
 	fbq.version = '2.0';
-	fbq.push = fbq;
+	fbq.push = fbq as unknown as (...args: unknown[]) => void;
 
 	window.fbq = fbq;
 	window._fbq = fbq;
