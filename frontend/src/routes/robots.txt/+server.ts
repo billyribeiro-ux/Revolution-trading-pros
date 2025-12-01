@@ -295,9 +295,11 @@ User-agent: Gigabot
 Disallow: /
 
 # =============================================================================
-# Sitemap Location
+# Sitemap Locations
 # =============================================================================
 Sitemap: ${SITE_URL}/sitemap.xml
+Sitemap: ${SITE_URL}/news-sitemap.xml
+Sitemap: ${SITE_URL}/video-sitemap.xml
 
 # =============================================================================
 # Host Declaration (for search engines that support it)
