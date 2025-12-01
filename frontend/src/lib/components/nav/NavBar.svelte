@@ -980,131 +980,128 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS LAYERS (Cascade Management)
+	   DESIGN TOKENS
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	@layer tokens, base, components, utilities;
-
-	@layer tokens {
-		.navbar {
-			/* Layout Tokens */
-			--nav-height: 74px;
-			--nav-padding-inline: 1.5rem;
-			
-			/* Color Tokens */
-			--nav-primary: #0E6AC4;
-			--nav-primary-dark: #0a4d8a;
-			--nav-primary-light: rgba(14, 106, 196, 0.1);
-			--nav-primary-glow: rgba(14, 106, 196, 0.4);
-			
-			--nav-bg: rgba(10, 22, 40, 0.85);
-			--nav-bg-scrolled: rgba(10, 22, 40, 0.95);
-			--nav-border: rgba(255, 255, 255, 0.1);
-			
-			--nav-text: #ffffff;
-			--nav-text-secondary: rgba(255, 255, 255, 0.9);
-			--nav-text-muted: rgba(255, 255, 255, 0.5);
-			
-			/* Animation Tokens */
-			--nav-ease: cubic-bezier(0.4, 0, 0.2, 1);
-			--nav-duration-fast: 150ms;
-			--nav-duration-base: 200ms;
-			--nav-duration-slow: 300ms;
-			
-			/* Typography Tokens */
-			--nav-font: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-			--nav-radius: 0.5rem;
-			
-			/* Z-Index Scale */
-			--z-dropdown: 10;
-			--z-backdrop: 9998;
-			--z-panel: 9999;
-		}
+	.navbar {
+		/* Layout Tokens */
+		--nav-height: 74px;
+		--nav-padding-inline: 1.5rem;
+		
+		/* Color Tokens */
+		--nav-primary: #0E6AC4;
+		--nav-primary-dark: #0a4d8a;
+		--nav-primary-light: rgba(14, 106, 196, 0.1);
+		--nav-primary-glow: rgba(14, 106, 196, 0.4);
+		
+		--nav-bg: rgba(10, 22, 40, 0.85);
+		--nav-bg-scrolled: rgba(10, 22, 40, 0.95);
+		--nav-border: rgba(255, 255, 255, 0.1);
+		
+		--nav-text: #ffffff;
+		--nav-text-secondary: rgba(255, 255, 255, 0.9);
+		--nav-text-muted: rgba(255, 255, 255, 0.5);
+		
+		/* Animation Tokens */
+		--nav-ease: cubic-bezier(0.4, 0, 0.2, 1);
+		--nav-duration-fast: 150ms;
+		--nav-duration-base: 200ms;
+		--nav-duration-slow: 300ms;
+		
+		/* Typography Tokens */
+		--nav-font: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		--nav-radius: 0.5rem;
+		
+		/* Z-Index Scale */
+		--z-dropdown: 10;
+		--z-backdrop: 9998;
+		--z-panel: 9999;
 	}
 
-	@layer base {
-		/* Screen Reader Only */
-		.sr-announcer {
-			position: absolute;
-			width: 1px;
-			height: 1px;
-			padding: 0;
-			margin: -1px;
-			overflow: hidden;
-			clip: rect(0, 0, 0, 0);
-			white-space: nowrap;
-			border: 0;
-		}
-
-		/* Scroll Sentinel */
-		.scroll-sentinel {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 1px;
-			pointer-events: none;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BASE STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Screen Reader Only */
+	.sr-announcer {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
-	@layer components {
-		/* ═══════════════════════════════════════════════════════════════════════
-		   NAVBAR
-		   ═══════════════════════════════════════════════════════════════════════ */
-		.navbar {
-			position: relative;
-			z-index: 1000;
-			width: 100%;
-			height: var(--nav-height);
-			background-color: var(--nav-bg);
-			backdrop-filter: blur(20px) saturate(180%);
-			-webkit-backdrop-filter: blur(20px) saturate(180%);
-			border-block-end: 1px solid var(--nav-border);
-			transition:
-				background-color var(--nav-duration-slow) var(--nav-ease),
-				box-shadow var(--nav-duration-slow) var(--nav-ease);
-			contain: layout style;
-		}
+	/* Scroll Sentinel */
+	.scroll-sentinel {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		pointer-events: none;
+	}
 
-		.navbar.sticky {
-			position: sticky;
-			top: 0;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   NAVBAR COMPONENT STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.navbar {
+		position: relative;
+		z-index: 1000;
+		width: 100%;
+		height: var(--nav-height);
+		background-color: var(--nav-bg);
+		backdrop-filter: blur(20px) saturate(180%);
+		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		border-block-end: 1px solid var(--nav-border);
+		transition:
+			background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+		contain: layout style;
+	}
 
-		.navbar.scrolled {
-			background-color: var(--nav-bg-scrolled);
-			box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-		}
+	.navbar.sticky {
+		position: sticky;
+		top: 0;
+	}
 
-		.navbar.navigating {
-			pointer-events: none;
-		}
+	.navbar.scrolled {
+		background-color: var(--nav-bg-scrolled);
+		box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+	}
 
-		.navbar.reduced-motion,
-		.navbar.reduced-motion * {
-			transition-duration: 0.01ms !important;
-			animation-duration: 0.01ms !important;
-		}
+	.navbar.navigating {
+		pointer-events: none;
+	}
 
-		/* High Contrast Mode */
-		.navbar.high-contrast {
-			--nav-bg: rgba(0, 0, 0, 0.95);
-			--nav-border: rgba(255, 255, 255, 0.5);
-			border-block-end-width: 2px;
-		}
+	.navbar.reduced-motion,
+	.navbar.reduced-motion * {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
 
-		.navbar-container {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			height: 100%;
-			max-width: 100%;
-			margin: 0 auto;
-			padding-inline: var(--nav-padding-inline);
-		}
+	/* High Contrast Mode */
+	.navbar.high-contrast {
+		--nav-bg: rgba(0, 0, 0, 0.95);
+		--nav-border: rgba(255, 255, 255, 0.5);
+		border-block-end-width: 2px;
+	}
 
-		/* ═══════════════════════════════════════════════════════════════════════
-		   LOGO
-		   ═══════════════════════════════════════════════════════════════════════ */
+	.navbar-container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 100%;
+		max-width: 100%;
+		margin: 0 auto;
+		padding-inline: var(--nav-padding-inline);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOGO
+	   ═══════════════════════════════════════════════════════════════════════════ */
 		.logo {
 			display: flex;
 			align-items: center;
@@ -1155,20 +1152,20 @@
 			color: var(--nav-text);
 			font-size: 0.9375rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			text-decoration: none;
 			white-space: nowrap;
-			background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
-			background-color: var(--nav-primary-light);
+			background: linear-gradient(to bottom right, #0E6AC4 0%, transparent 30%);
+			background-color: rgba(14, 106, 196, 0.1);
 			border: 1px solid rgba(14, 106, 196, 0.2);
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			cursor: pointer;
 			transition:
-				background-color var(--nav-duration-base) var(--nav-ease),
-				box-shadow var(--nav-duration-base) var(--nav-ease),
-				border-color var(--nav-duration-base) var(--nav-ease),
-				transform var(--nav-duration-fast) var(--nav-ease);
+				background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		@media (min-width: 1280px) {
@@ -1192,7 +1189,7 @@
 		}
 
 		.nav-link:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1200,7 +1197,7 @@
 			padding: 0.125rem 0.375rem;
 			font-size: 0.6875rem;
 			font-weight: 700;
-			background: var(--nav-primary);
+			background: #0E6AC4;
 			border-radius: 9999px;
 		}
 
@@ -1220,19 +1217,19 @@
 			color: var(--nav-text);
 			font-size: 0.9375rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			white-space: nowrap;
-			background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
-			background-color: var(--nav-primary-light);
+			background: linear-gradient(to bottom right, #0E6AC4 0%, transparent 30%);
+			background-color: rgba(14, 106, 196, 0.1);
 			border: 1px solid rgba(14, 106, 196, 0.2);
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			cursor: pointer;
 			transition:
-				background-color var(--nav-duration-base) var(--nav-ease),
-				box-shadow var(--nav-duration-base) var(--nav-ease),
-				border-color var(--nav-duration-base) var(--nav-ease),
-				transform var(--nav-duration-fast) var(--nav-ease);
+				background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		@media (min-width: 1280px) {
@@ -1254,12 +1251,12 @@
 		}
 
 		.dropdown-trigger:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
 		.dropdown-trigger :global(.chevron) {
-			transition: transform var(--nav-duration-base) var(--nav-ease);
+			transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
 			flex-shrink: 0;
 		}
 
@@ -1285,7 +1282,7 @@
 			-webkit-backdrop-filter: blur(10px);
 			overflow: hidden;
 			z-index: var(--z-dropdown);
-			animation: dropdownIn var(--nav-duration-slow) var(--nav-ease) forwards;
+			animation: dropdownIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 		}
 
 		@keyframes dropdownIn {
@@ -1306,12 +1303,12 @@
 			color: var(--nav-text-secondary);
 			font-size: 0.9375rem;
 			font-weight: 600;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			text-decoration: none;
 			transition:
-				background-color var(--nav-duration-fast) var(--nav-ease),
-				color var(--nav-duration-fast) var(--nav-ease),
-				padding-inline-start var(--nav-duration-fast) var(--nav-ease);
+				background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+				color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+				padding-inline-start 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.dropdown-item::before {
@@ -1321,9 +1318,9 @@
 			top: 0;
 			height: 100%;
 			width: 3px;
-			background: linear-gradient(to bottom, var(--nav-primary), var(--nav-primary-dark));
+			background: linear-gradient(to bottom, #0E6AC4, #0a4d8a);
 			transform: scaleY(0);
-			transition: transform var(--nav-duration-fast) var(--nav-ease);
+			transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.dropdown-item:hover,
@@ -1346,7 +1343,7 @@
 		}
 
 		.dropdown-item:focus-visible {
-			outline: 2px solid var(--nav-primary);
+			outline: 2px solid #0E6AC4;
 			outline-offset: -2px;
 		}
 
@@ -1373,15 +1370,15 @@
 			justify-content: center;
 			width: 44px;
 			height: 44px;
-			color: var(--nav-primary);
-			background: var(--nav-primary-light);
+			color: #0E6AC4;
+			background: rgba(14, 106, 196, 0.1);
 			border: 1px solid rgba(14, 106, 196, 0.2);
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			text-decoration: none;
 			transition:
-				background-color var(--nav-duration-base) var(--nav-ease),
-				box-shadow var(--nav-duration-base) var(--nav-ease),
-				transform var(--nav-duration-fast) var(--nav-ease);
+				background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.cart-btn:hover,
@@ -1392,7 +1389,7 @@
 		}
 
 		.cart-btn:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1403,7 +1400,7 @@
 			min-width: 20px;
 			height: 20px;
 			padding: 0 6px;
-			background: var(--nav-primary);
+			background: #0E6AC4;
 			color: var(--nav-text);
 			font-size: 0.6875rem;
 			font-weight: 700;
@@ -1425,8 +1422,8 @@
 			border-radius: 50%;
 			cursor: pointer;
 			transition:
-				border-color var(--nav-duration-base) var(--nav-ease),
-				transform var(--nav-duration-fast) var(--nav-ease);
+				border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		@media (min-width: 1024px) {
@@ -1437,12 +1434,12 @@
 
 		.user-btn:hover,
 		.user-btn:focus-visible {
-			border-color: var(--nav-primary);
+			border-color: #0E6AC4;
 			transform: scale(1.05);
 		}
 
 		.user-btn:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1452,11 +1449,11 @@
 			justify-content: center;
 			width: 36px;
 			height: 36px;
-			background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-dark));
+			background: linear-gradient(135deg, #0E6AC4, #0a4d8a);
 			color: var(--nav-text);
 			font-size: 0.875rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			border-radius: 50%;
 		}
 
@@ -1468,18 +1465,18 @@
 			color: var(--nav-text);
 			font-size: 0.875rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			text-decoration: none;
-			background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
-			background-color: var(--nav-primary-light);
+			background: linear-gradient(to bottom right, #0E6AC4 0%, transparent 30%);
+			background-color: rgba(14, 106, 196, 0.1);
 			border: 1px solid rgba(14, 106, 196, 0.2);
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			transition:
-				background-color var(--nav-duration-base) var(--nav-ease),
-				box-shadow var(--nav-duration-base) var(--nav-ease),
-				border-color var(--nav-duration-base) var(--nav-ease),
-				transform var(--nav-duration-fast) var(--nav-ease);
+				background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		@media (min-width: 1024px) {
@@ -1497,7 +1494,7 @@
 		}
 
 		.login-btn:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1509,16 +1506,16 @@
 			color: var(--nav-text);
 			font-size: 0.875rem;
 			font-weight: 800;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			text-decoration: none;
-			background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
+			background: linear-gradient(135deg, #0E6AC4 0%, #0a4d8a 100%);
 			border: none;
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			box-shadow: 0 4px 15px rgba(14, 106, 196, 0.3);
 			transition:
-				box-shadow var(--nav-duration-base) var(--nav-ease),
-				transform var(--nav-duration-fast) var(--nav-ease);
+				box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		@media (min-width: 1024px) {
@@ -1547,9 +1544,9 @@
 			color: var(--nav-text);
 			background: transparent;
 			border: none;
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			cursor: pointer;
-			transition: background-color var(--nav-duration-fast) var(--nav-ease);
+			transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.hamburger:hover,
@@ -1558,7 +1555,7 @@
 		}
 
 		.hamburger:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1577,99 +1574,99 @@
 			background: rgba(0, 0, 0, 0.6);
 			backdrop-filter: blur(4px);
 			-webkit-backdrop-filter: blur(4px);
-			z-index: var(--z-backdrop);
-			animation: fadeIn var(--nav-duration-base) var(--nav-ease) forwards;
+			z-index: 9998;
+			animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 			border: none;
 		}
 
-		.mobile-backdrop.closing {
-			animation: fadeOut var(--nav-duration-base) var(--nav-ease) forwards;
-		}
+	.mobile-backdrop.closing {
+		animation: fadeOut 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	}
 
-		.mobile-backdrop.reduced-motion {
-			animation: none;
-			opacity: 1;
-		}
+	.mobile-backdrop.reduced-motion {
+		animation: none;
+		opacity: 1;
+	}
 
-		.mobile-backdrop.reduced-motion.closing {
-			opacity: 0;
-		}
+	.mobile-backdrop.reduced-motion.closing {
+		opacity: 0;
+	}
 
-		@keyframes fadeIn {
-			from { opacity: 0; }
-			to { opacity: 1; }
-		}
+	@keyframes fadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
 
-		@keyframes fadeOut {
-			from { opacity: 1; }
-			to { opacity: 0; }
-		}
+	@keyframes fadeOut {
+		from { opacity: 1; }
+		to { opacity: 0; }
+	}
 
-		.mobile-panel {
-			position: fixed;
-			top: 0;
-			inset-inline-end: 0;
-			width: min(85vw, 360px);
-			height: 100%;
-			height: 100dvh;
-			display: flex;
-			flex-direction: column;
-			background: #0a1628;
-			border-inline-start: 1px solid rgba(107, 114, 128, 0.3);
-			z-index: var(--z-panel);
-			animation: slideIn var(--nav-duration-slow) var(--nav-ease) forwards;
-			overflow: hidden;
-		}
+	.mobile-panel {
+		position: fixed;
+		top: 0;
+		inset-inline-end: 0;
+		width: min(85vw, 360px);
+		height: 100%;
+		height: 100dvh;
+		display: flex;
+		flex-direction: column;
+		background: #0a1628;
+		border-inline-start: 1px solid rgba(107, 114, 128, 0.3);
+		z-index: 9999;
+		animation: slideIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+		overflow: hidden;
+	}
 
-		.mobile-panel.closing {
-			animation: slideOut var(--nav-duration-base) var(--nav-ease) forwards;
-		}
+	.mobile-panel.closing {
+		animation: slideOut 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	}
 
-		.mobile-panel.reduced-motion {
-			animation: none;
-			transform: translateX(0);
-		}
+	.mobile-panel.reduced-motion {
+		animation: none;
+		transform: translateX(0);
+	}
 
-		.mobile-panel.reduced-motion.closing {
-			transform: translateX(100%);
-		}
+	.mobile-panel.reduced-motion.closing {
+		transform: translateX(100%);
+	}
 
-		.mobile-panel.rtl {
-			inset-inline-end: auto;
-			inset-inline-start: 0;
-		}
+	.mobile-panel.rtl {
+		inset-inline-end: auto;
+		inset-inline-start: 0;
+	}
 
-		.mobile-panel.rtl.reduced-motion.closing {
-			transform: translateX(-100%);
-		}
+	.mobile-panel.rtl.reduced-motion.closing {
+		transform: translateX(-100%);
+	}
 
-		@keyframes slideIn {
-			from { transform: translateX(100%); }
-			to { transform: translateX(0); }
-		}
+	@keyframes slideIn {
+		from { transform: translateX(100%); }
+		to { transform: translateX(0); }
+	}
 
-		@keyframes slideOut {
-			from { transform: translateX(0); }
-			to { transform: translateX(100%); }
-		}
+	@keyframes slideOut {
+		from { transform: translateX(0); }
+		to { transform: translateX(100%); }
+	}
 
-		.mobile-panel.rtl {
-			animation-name: slideInRTL;
-		}
+	.mobile-panel.rtl {
+		animation-name: slideInRTL;
+	}
 
-		.mobile-panel.rtl.closing {
-			animation-name: slideOutRTL;
-		}
+	.mobile-panel.rtl.closing {
+		animation-name: slideOutRTL;
+	}
 
-		@keyframes slideInRTL {
-			from { transform: translateX(-100%); }
-			to { transform: translateX(0); }
-		}
+	@keyframes slideInRTL {
+		from { transform: translateX(-100%); }
+		to { transform: translateX(0); }
+	}
 
-		@keyframes slideOutRTL {
-			from { transform: translateX(0); }
-			to { transform: translateX(-100%); }
-		}
+	@keyframes slideOutRTL {
+		from { transform: translateX(0); }
+		to { transform: translateX(-100%); }
+	}
 
 		.mobile-header {
 			display: flex;
@@ -1685,7 +1682,7 @@
 		.mobile-title {
 			font-size: 1.125rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			color: #ffffff;
 		}
 
@@ -1698,9 +1695,9 @@
 			color: #ffffff;
 			background: transparent;
 			border: none;
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			cursor: pointer;
-			transition: background-color var(--nav-duration-fast) var(--nav-ease);
+			transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-close:hover,
@@ -1709,7 +1706,7 @@
 		}
 
 		.mobile-close:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1728,7 +1725,7 @@
 			justify-content: center;
 			width: 44px;
 			height: 44px;
-			background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-dark));
+			background: linear-gradient(135deg, #0E6AC4, #0a4d8a);
 			color: #ffffff;
 			font-size: 1.125rem;
 			font-weight: 700;
@@ -1745,7 +1742,7 @@
 		.mobile-user-name {
 			font-size: 0.9375rem;
 			font-weight: 600;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			color: #ffffff;
 			white-space: nowrap;
 			overflow: hidden;
@@ -1785,15 +1782,15 @@
 			color: rgba(255, 255, 255, 0.9);
 			font-size: 1rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			text-decoration: none;
 			background: transparent;
 			border: none;
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			cursor: pointer;
 			text-align: start;
-			transition: background-color var(--nav-duration-fast) var(--nav-ease);
+			transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-nav-item:hover,
@@ -1802,16 +1799,16 @@
 		}
 
 		.mobile-nav-item:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: -2px;
 		}
 
 		.mobile-nav-item.active {
-			color: var(--nav-primary);
+			color: #0E6AC4;
 		}
 
 		.mobile-nav-item :global(.chevron) {
-			transition: transform var(--nav-duration-fast) var(--nav-ease);
+			transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 			flex-shrink: 0;
 		}
 
@@ -1834,32 +1831,32 @@
 			color: rgba(255, 255, 255, 0.8);
 			font-size: 0.9375rem;
 			font-weight: 600;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			text-decoration: none;
 			background: rgba(20, 34, 62, 0.4);
 			border-inline-start: 2px solid rgba(14, 106, 196, 0.3);
 			border-radius: 0.375rem;
 			transition:
-				background-color var(--nav-duration-fast) var(--nav-ease),
-				color var(--nav-duration-fast) var(--nav-ease),
-				border-color var(--nav-duration-fast) var(--nav-ease);
+				background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+				color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+				border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-submenu-item:hover,
 		.mobile-submenu-item:focus-visible {
 			background: rgba(14, 106, 196, 0.15);
 			color: #ffffff;
-			border-inline-start-color: var(--nav-primary);
+			border-inline-start-color: #0E6AC4;
 		}
 
 		.mobile-submenu-item:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: -2px;
 		}
 
 		.mobile-submenu-item.active {
-			color: var(--nav-primary);
-			border-inline-start-color: var(--nav-primary);
+			color: #0E6AC4;
+			border-inline-start-color: #0E6AC4;
 		}
 
 		.mobile-divider {
@@ -1884,15 +1881,15 @@
 			justify-content: center;
 			gap: 0.5rem;
 			height: 48px;
-			color: var(--nav-primary);
+			color: #0E6AC4;
 			font-size: 0.9375rem;
 			font-weight: 600;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			text-decoration: none;
-			background: var(--nav-primary-light);
+			background: rgba(14, 106, 196, 0.1);
 			border: 1px solid rgba(14, 106, 196, 0.2);
-			border-radius: var(--nav-radius);
-			transition: background-color var(--nav-duration-fast) var(--nav-ease);
+			border-radius: 0.5rem;
+			transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-cart:hover,
@@ -1901,7 +1898,7 @@
 		}
 
 		.mobile-cart:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1909,7 +1906,7 @@
 			min-width: 22px;
 			height: 22px;
 			padding: 0 6px;
-			background: var(--nav-primary);
+			background: #0E6AC4;
 			color: #ffffff;
 			font-size: 0.75rem;
 			font-weight: 700;
@@ -1926,14 +1923,14 @@
 			color: #ffffff;
 			font-size: 0.9375rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			text-decoration: none;
-			background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
-			background-color: var(--nav-primary-light);
+			background: linear-gradient(to bottom right, #0E6AC4 0%, transparent 30%);
+			background-color: rgba(14, 106, 196, 0.1);
 			border: 1px solid rgba(14, 106, 196, 0.2);
-			border-radius: var(--nav-radius);
-			transition: background-color var(--nav-duration-fast) var(--nav-ease);
+			border-radius: 0.5rem;
+			transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-login:hover,
@@ -1942,7 +1939,7 @@
 		}
 
 		.mobile-login:focus-visible {
-			outline: 3px solid var(--nav-primary);
+			outline: 3px solid #0E6AC4;
 			outline-offset: 2px;
 		}
 
@@ -1954,14 +1951,14 @@
 			color: #ffffff;
 			font-size: 0.9375rem;
 			font-weight: 800;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			letter-spacing: 0.02em;
 			text-decoration: none;
-			background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
-			border-radius: var(--nav-radius);
+			background: linear-gradient(135deg, #0E6AC4 0%, #0a4d8a 100%);
+			border-radius: 0.5rem;
 			transition:
-				transform var(--nav-duration-fast) var(--nav-ease),
-				box-shadow var(--nav-duration-fast) var(--nav-ease);
+				transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+				box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-cta:hover,
@@ -1983,12 +1980,12 @@
 			color: #f87171;
 			font-size: 0.9375rem;
 			font-weight: 700;
-			font-family: var(--nav-font);
+			font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			background: rgba(248, 113, 113, 0.1);
 			border: none;
-			border-radius: var(--nav-radius);
+			border-radius: 0.5rem;
 			cursor: pointer;
-			transition: background-color var(--nav-duration-fast) var(--nav-ease);
+			transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.mobile-logout:hover,
@@ -1997,16 +1994,14 @@
 		}
 
 		.mobile-logout:focus-visible {
-			outline: 3px solid #f87171;
-			outline-offset: 2px;
-		}
+		outline: 3px solid #f87171;
+		outline-offset: 2px;
 	}
 
-	@layer utilities {
-		/* ═══════════════════════════════════════════════════════════════════════
-		   RESPONSIVE
-		   ═══════════════════════════════════════════════════════════════════════ */
-		@media (max-width: 1023px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 1023px) {
 			.navbar {
 				--nav-height: 64px;
 				--nav-padding-inline: 1rem;
@@ -2102,15 +2097,14 @@
 			}
 
 			.nav-link:focus-visible,
-			.dropdown-trigger:focus-visible,
-			.dropdown-item:focus-visible,
-			.cart-btn:focus-visible,
-			.hamburger:focus-visible,
-			.mobile-close:focus-visible,
-			.mobile-nav-item:focus-visible,
-			.mobile-submenu-item:focus-visible {
-				outline-width: 4px;
-			}
+		.dropdown-trigger:focus-visible,
+		.dropdown-item:focus-visible,
+		.cart-btn:focus-visible,
+		.hamburger:focus-visible,
+		.mobile-close:focus-visible,
+		.mobile-nav-item:focus-visible,
+		.mobile-submenu-item:focus-visible {
+			outline-width: 4px;
 		}
 	}
 </style>
