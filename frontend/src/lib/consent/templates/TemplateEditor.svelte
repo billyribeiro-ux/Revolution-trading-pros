@@ -1,29 +1,33 @@
 <script lang="ts">
 	/**
-	 * Template Editor Component
+	 * Template Editor Component - Svelte 5
 	 *
 	 * Full-featured template editor with live preview, color pickers,
 	 * typography controls, and more.
+	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 */
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { BannerTemplate, TemplatePosition, ButtonVariant, AnimationType } from './types';
 	import { BANNER_TEMPLATES, getTemplate } from './registry';
 
-	export let template: BannerTemplate;
-	export let isNew = false;
+	// Svelte 5: Props using $props() rune
+	interface Props {
+		template: BannerTemplate;
+		isNew?: boolean;
+		onSave?: (template: BannerTemplate) => void;
+		onCancel?: () => void;
+		onPreview?: (template: BannerTemplate) => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		save: BannerTemplate;
-		cancel: void;
-		preview: BannerTemplate;
-	}>();
+	let { template, isNew = false, onSave, onCancel, onPreview }: Props = $props();
 
-	// Create a working copy
-	let editedTemplate: BannerTemplate = JSON.parse(JSON.stringify(template));
+	// Svelte 5: Reactive state using $state() rune
+	let editedTemplate: BannerTemplate = $state(JSON.parse(JSON.stringify(template)));
 
-	// Editor tabs
+	// Svelte 5: Editor tabs state
 	type EditorTab = 'layout' | 'colors' | 'typography' | 'copy' | 'buttons' | 'advanced';
-	let activeTab: EditorTab = 'layout';
+	let activeTab: EditorTab = $state('layout');
 
 	// Position options
 	const positionOptions: { value: TemplatePosition; label: string }[] = [
@@ -89,15 +93,15 @@
 	}
 
 	function handleSave() {
-		dispatch('save', editedTemplate);
+		onSave?.(editedTemplate);
 	}
 
 	function handleCancel() {
-		dispatch('cancel');
+		onCancel?.();
 	}
 
 	function handlePreview() {
-		dispatch('preview', editedTemplate);
+		onPreview?.(editedTemplate);
 	}
 
 	// Reset to original

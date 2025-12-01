@@ -1,10 +1,11 @@
 <script lang="ts">
 	/**
-	 * Floating Consent Settings Button
+	 * Floating Consent Settings Button - Svelte 5
 	 *
 	 * A persistent, accessible button that allows users to revisit
 	 * their cookie preferences at any time.
 	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $effect)
 	 * @component
 	 */
 
@@ -12,44 +13,42 @@
 	import { browser } from '$app/environment';
 	import { consentStore, showPreferencesModal, openPreferencesModal } from '../store';
 
-	/**
-	 * Position of the button.
-	 */
-	export let position: 'bottom-left' | 'bottom-right' = 'bottom-left';
+	// Svelte 5: Props using $props() rune
+	interface Props {
+		/** Position of the button */
+		position?: 'bottom-left' | 'bottom-right';
+		/** Show only after consent has been given */
+		showAfterConsent?: boolean;
+		/** Delay before showing the button (ms) */
+		showDelay?: number;
+		/** Custom class for styling */
+		class?: string;
+	}
 
-	/**
-	 * Show only after consent has been given.
-	 */
-	export let showAfterConsent: boolean = true;
+	let { position = 'bottom-left', showAfterConsent = true, showDelay = 1000, class: className = '' }: Props = $props();
 
-	/**
-	 * Delay before showing the button (ms).
-	 */
-	export let showDelay: number = 1000;
+	// Svelte 5: Reactive state using $state() rune
+	let visible = $state(false);
+	let expanded = $state(false);
 
-	/**
-	 * Custom class for styling.
-	 */
-	let className = '';
-	export { className as class };
+	// Svelte 5: Side effects using $effect() rune - visibility logic
+	$effect(() => {
+		if (browser && $consentStore.hasInteracted && showAfterConsent) {
+			const timeout = setTimeout(() => {
+				visible = true;
+			}, showDelay);
+			return () => clearTimeout(timeout);
+		}
+	});
 
-	// Local state
-	let visible = false;
-	let expanded = false;
-
-	// Determine visibility
-	$: if (browser && $consentStore.hasInteracted && showAfterConsent) {
-		setTimeout(() => {
+	// Svelte 5: Side effect for modal visibility
+	$effect(() => {
+		if ($showPreferencesModal) {
+			visible = false;
+		} else if (browser && $consentStore.hasInteracted && showAfterConsent) {
 			visible = true;
-		}, showDelay);
-	}
-
-	// Hide when modal is open
-	$: if ($showPreferencesModal) {
-		visible = false;
-	} else if (browser && $consentStore.hasInteracted && showAfterConsent) {
-		visible = true;
-	}
+		}
+	});
 
 	function handleClick() {
 		openPreferencesModal();
@@ -70,10 +69,10 @@
 		}
 	}
 
-	// Reduced motion check
-	$: prefersReducedMotion = browser
-		? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		: false;
+	// Svelte 5: Derived value for reduced motion preference
+	let prefersReducedMotion = $derived(
+		browser ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false
+	);
 </script>
 
 {#if visible}

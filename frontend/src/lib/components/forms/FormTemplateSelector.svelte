@@ -1,15 +1,23 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	/**
+	 * Form Template Selector - Svelte 5
+	 *
+	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
+	 */
 	import type { FormTemplate } from '$lib/data/formTemplates';
 	import { templates } from '$lib/data/formTemplates';
 
-	const dispatch = createEventDispatcher<{
-		select: FormTemplate;
-		cancel: void;
-	}>();
+	// Svelte 5: Props using $props() rune with callback events
+	interface Props {
+		onSelect?: (template: FormTemplate) => void;
+		onCancel?: () => void;
+	}
 
-	let selectedCategory: string = 'all';
-	let searchQuery = '';
+	let { onSelect, onCancel }: Props = $props();
+
+	// Svelte 5: Reactive state using $state() rune
+	let selectedCategory: string = $state('all');
+	let searchQuery = $state('');
 
 	const categories = [
 		{ id: 'all', label: 'All Templates', icon: '📋' },
@@ -21,21 +29,22 @@
 		{ id: 'application', label: 'Application', icon: '💼' }
 	];
 
-	$: filteredTemplates = templates.filter((template) => {
+	// Svelte 5: Derived value using $derived() rune
+	let filteredTemplates = $derived(templates.filter((template) => {
 		const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
 		const matchesSearch =
 			searchQuery === '' ||
 			template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			template.description.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesCategory && matchesSearch;
-	});
+	}));
 
 	function handleSelect(template: FormTemplate) {
-		dispatch('select', template);
+		onSelect?.(template);
 	}
 
 	function handleStartFromScratch() {
-		dispatch('cancel');
+		onCancel?.();
 	}
 </script>
 
