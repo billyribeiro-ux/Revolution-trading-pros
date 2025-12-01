@@ -3,27 +3,15 @@
 	 * Dashboard - My Courses Page
 	 * Shows user's enrolled courses and progress
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { fade, fly } from 'svelte/transition';
+	import { fly, fade } from 'svelte/transition';
 	import {
 		IconBook,
 		IconClock,
 		IconPlayerPlay,
-		IconCheck,
-		IconLock
+		IconCheck
 	} from '@tabler/icons-svelte';
 
-	// Redirect if not authenticated - use replaceState to prevent history pollution
-	onMount(() => {
-		if (!$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/courses', { replaceState: true });
-		}
-	});
-
-	// Mock enrolled courses data
+	// Mock enrolled courses data - will be fetched from API
 	const enrolledCourses = [
 		{
 			id: 1,
@@ -58,160 +46,166 @@
 	];
 </script>
 
-<SEOHead
-	title="My Courses"
-	description="Access your enrolled courses and track your learning progress."
-	noindex
-/>
-
-{#if $isAuthenticated}
-	<main class="dashboard-page">
-		<div class="container">
-			<!-- Header -->
-			<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
-				<div class="page-header__content">
-					<h1 class="page-header__title">My Courses</h1>
-					<p class="page-header__subtitle">Continue learning and track your progress</p>
-				</div>
-				<a href="/courses" class="browse-btn">
-					Browse All Courses
-				</a>
-			</header>
-
-			<!-- Courses Grid -->
-			<div class="courses-grid">
-				{#each enrolledCourses as course, i (course.id)}
-					<div class="course-card" in:fly={{ y: 20, delay: 100 * i, duration: 400 }}>
-						<div class="course-card__thumbnail">
-							<div class="course-card__placeholder">
-								<IconBook size={48} />
-							</div>
-							{#if course.progress === 100}
-								<div class="course-card__badge course-card__badge--complete">
-									<IconCheck size={14} />
-									Completed
-								</div>
-							{:else}
-								<div class="course-card__badge">
-									{course.progress}% Complete
-								</div>
-							{/if}
-						</div>
-						<div class="course-card__content">
-							<h3 class="course-card__title">{course.title}</h3>
-							<p class="course-card__description">{course.description}</p>
-							
-							<div class="course-card__progress">
-								<div class="progress-bar">
-									<div class="progress-bar__fill" style="width: {course.progress}%"></div>
-								</div>
-								<span class="progress-text">{course.completedLessons}/{course.totalLessons} lessons</span>
-							</div>
-
-							<div class="course-card__meta">
-								<span class="meta-item">
-									<IconClock size={14} />
-									{course.lastAccessed}
-								</span>
-							</div>
-
-							<a href="/courses/{course.id}" class="course-card__btn">
-								<IconPlayerPlay size={18} />
-								{course.progress === 100 ? 'Review Course' : 'Continue Learning'}
-							</a>
-						</div>
-					</div>
-				{/each}
-			</div>
-
-			{#if enrolledCourses.length === 0}
-				<div class="empty-state" in:fade>
-					<IconBook size={64} />
-					<h2>No Courses Yet</h2>
-					<p>You haven't enrolled in any courses yet. Browse our catalog to get started!</p>
-					<a href="/courses" class="empty-state__btn">Browse Courses</a>
-				</div>
-			{/if}
+<!-- Dashboard Header -->
+<div class="wc-content-sction">
+	<div class="dashb_headr">
+		<div class="dashb_headr-left">
+			<h1 class="dashb_pg-titl">My Courses</h1>
 		</div>
-	</main>
-{:else}
-	<div class="loading-state">
-		<p>Redirecting to login...</p>
+		<div class="dashb_headr-right">
+			<a href="/courses" class="btn btn-xs btn-link start-here-btn">
+				Browse All Courses
+			</a>
+		</div>
 	</div>
-{/if}
+</div>
+
+<!-- Courses Content -->
+<div class="wc-accontent-inner">
+	{#if enrolledCourses.length > 0}
+		<div class="courses-grid">
+			{#each enrolledCourses as course, i (course.id)}
+				<div class="course-card" in:fly={{ y: 20, delay: 100 * i, duration: 400 }}>
+					<div class="course-card__thumbnail">
+						<div class="course-card__placeholder">
+							<IconBook size={48} />
+						</div>
+						{#if course.progress === 100}
+							<div class="course-card__badge course-card__badge--complete">
+								<IconCheck size={14} />
+								Completed
+							</div>
+						{:else}
+							<div class="course-card__badge">
+								{course.progress}% Complete
+							</div>
+						{/if}
+					</div>
+					<div class="course-card__content">
+						<h3 class="course-card__title">{course.title}</h3>
+						<p class="course-card__description">{course.description}</p>
+
+						<div class="course-card__progress">
+							<div class="progress-bar">
+								<div class="progress-bar__fill" style="width: {course.progress}%"></div>
+							</div>
+							<span class="progress-text">{course.completedLessons}/{course.totalLessons} lessons</span>
+						</div>
+
+						<div class="course-card__meta">
+							<span class="meta-item">
+								<IconClock size={14} />
+								{course.lastAccessed}
+							</span>
+						</div>
+
+						<a href="/courses/{course.id}" class="course-card__btn">
+							<IconPlayerPlay size={18} />
+							{course.progress === 100 ? 'Review Course' : 'Continue Learning'}
+						</a>
+					</div>
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="empty-state" in:fade>
+			<IconBook size={64} />
+			<h2>No Courses Yet</h2>
+			<p>You haven't enrolled in any courses yet. Browse our catalog to get started!</p>
+			<a href="/courses" class="btn btn-orange">Browse Courses</a>
+		</div>
+	{/if}
+</div>
 
 <style>
-	.dashboard-page {
-		min-height: 100vh;
-		background: var(--rtp-bg, #0a0f1a);
-		color: var(--rtp-text, #e5e7eb);
-		padding: 8rem 1.5rem 4rem;
+	/* Content Section */
+	.wc-content-sction {
+		width: 100%;
+		margin: auto;
+		padding: 20px;
 	}
 
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.page-header {
+	/* Dashboard Header */
+	.dashb_headr {
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		max-width: 100%;
+		padding: 20px;
 		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 3rem;
-		gap: 2rem;
 		flex-wrap: wrap;
+		justify-content: space-between;
 	}
 
-	.page-header__title {
-		font-size: 2.5rem;
+	.dashb_headr-left,
+	.dashb_headr-right {
+		align-items: center;
+		display: flex;
+		flex-direction: row;
+	}
+
+	.dashb_pg-titl {
+		color: #333;
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-size: 36px;
 		font-weight: 700;
-		color: #fff;
-		margin-bottom: 0.5rem;
+		margin: 0;
 	}
 
-	.page-header__subtitle {
-		color: #94a3b8;
-		font-size: 1.1rem;
-	}
-
-	.browse-btn {
-		padding: 0.75rem 1.5rem;
-		background: rgba(250, 204, 21, 0.1);
-		border: 1px solid rgba(250, 204, 21, 0.2);
-		border-radius: 8px;
-		color: #facc15;
+	.start-here-btn {
+		font-size: 14px;
+		line-height: 18px;
+		padding: 8px 14px;
 		font-weight: 600;
+		color: #0984ae;
+		background: #f4f4f4;
+		border-color: transparent;
 		text-decoration: none;
-		transition: all 0.2s ease;
+		border-radius: 5px;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.browse-btn:hover {
-		background: rgba(250, 204, 21, 0.2);
+	.start-here-btn:hover {
+		color: #0984ae;
+		background: #e7e7e7;
 	}
 
+	/* Inner Content */
+	.wc-accontent-inner {
+		padding: 4% 2%;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 1px 2px rgb(0 0 0 / 15%);
+		position: relative;
+		margin: 20px;
+	}
+
+	/* Courses Grid */
 	.courses-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 1.5rem;
 	}
 
+	/* Course Card */
 	.course-card {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 1rem;
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
 		overflow: hidden;
 		transition: all 0.3s ease;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
 	.course-card:hover {
-		border-color: rgba(250, 204, 21, 0.3);
+		border-color: #0984ae;
 		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	}
 
 	.course-card__thumbnail {
 		position: relative;
 		height: 160px;
-		background: linear-gradient(135deg, rgba(250, 204, 21, 0.1), rgba(139, 92, 246, 0.1));
+		background: linear-gradient(135deg, #e0f2fe, #dbeafe);
 	}
 
 	.course-card__placeholder {
@@ -238,8 +232,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		background: rgba(16, 185, 129, 0.2);
-		color: #10b981;
+		background: rgba(16, 185, 129, 0.9);
+		color: #fff;
 	}
 
 	.course-card__content {
@@ -249,13 +243,13 @@
 	.course-card__title {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #fff;
+		color: #333;
 		margin-bottom: 0.5rem;
 	}
 
 	.course-card__description {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: #64748b;
 		margin-bottom: 1rem;
 		line-height: 1.5;
 	}
@@ -266,7 +260,7 @@
 
 	.progress-bar {
 		height: 6px;
-		background: rgba(255, 255, 255, 0.1);
+		background: #e5e7eb;
 		border-radius: 3px;
 		overflow: hidden;
 		margin-bottom: 0.5rem;
@@ -274,7 +268,7 @@
 
 	.progress-bar__fill {
 		height: 100%;
-		background: linear-gradient(90deg, #facc15, #f97316);
+		background: linear-gradient(90deg, #0984ae, #0ea5e9);
 		border-radius: 3px;
 		transition: width 0.3s ease;
 	}
@@ -305,19 +299,19 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.75rem;
-		background: linear-gradient(135deg, #facc15, #f97316);
+		background: #0984ae;
 		border-radius: 8px;
-		color: #0a0f1a;
+		color: #fff;
 		font-weight: 600;
 		text-decoration: none;
 		transition: all 0.2s ease;
 	}
 
 	.course-card__btn:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+		background: #076787;
 	}
 
+	/* Empty State */
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
@@ -326,7 +320,7 @@
 
 	.empty-state h2 {
 		font-size: 1.5rem;
-		color: #fff;
+		color: #333;
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -334,38 +328,21 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.empty-state__btn {
+	.btn-orange {
 		display: inline-flex;
 		padding: 0.75rem 2rem;
-		background: linear-gradient(135deg, #facc15, #f97316);
+		background: #f99e31;
 		border-radius: 8px;
-		color: #0a0f1a;
+		color: #fff;
 		font-weight: 600;
 		text-decoration: none;
 	}
 
-	.loading-state {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--rtp-bg, #0a0f1a);
-		color: #94a3b8;
+	.btn-orange:hover {
+		background: #f88b09;
 	}
 
 	@media (max-width: 768px) {
-		.dashboard-page {
-			padding: 7rem 1rem 3rem;
-		}
-
-		.page-header {
-			flex-direction: column;
-		}
-
-		.page-header__title {
-			font-size: 2rem;
-		}
-
 		.courses-grid {
 			grid-template-columns: 1fr;
 		}
