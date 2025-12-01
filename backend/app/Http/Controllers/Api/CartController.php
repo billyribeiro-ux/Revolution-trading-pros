@@ -7,6 +7,7 @@ use App\Models\MembershipPlan;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Coupon;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
+    public function __construct(
+        private readonly PaymentService $paymentService
+    ) {}
+
     /**
      * Tax rates by region (ISO 3166-1 alpha-2 country codes)
      * Digital products/services typically have different tax rules
@@ -200,14 +205,30 @@ class CartController extends Controller
                 'tax' => $tax,
             ]);
 
-            // TODO: Integrate payment provider (Stripe, PayPal, etc.)
-            // For now, return order for client to complete payment
+            // Create payment intent with Stripe
+            try {
+                $paymentIntent = $this->paymentService->createPaymentIntent($order);
 
-            return response()->json([
-                'order' => $order->load('items'),
-                'payment_required' => true,
-                'message' => 'Order created. Proceed with payment.',
-            ], 201);
+                return response()->json([
+                    'order' => $order->load('items'),
+                    'payment_required' => true,
+                    'payment' => $paymentIntent,
+                    'message' => 'Order created. Complete payment using the provided client secret.',
+                ], 201);
+            } catch (\Exception $e) {
+                Log::error('Failed to create payment intent', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                // Return order anyway - payment can be attempted later
+                return response()->json([
+                    'order' => $order->load('items'),
+                    'payment_required' => true,
+                    'payment_error' => 'Failed to initialize payment. Please try again.',
+                    'message' => 'Order created but payment initialization failed.',
+                ], 201);
+            }
         });
     }
 

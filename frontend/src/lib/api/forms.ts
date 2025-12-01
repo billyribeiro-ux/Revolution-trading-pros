@@ -157,7 +157,12 @@ export type FieldType =
 	| 'section'
 	| 'html'
 	| 'heading'
-	| 'divider';
+	| 'divider'
+	| 'step'
+	| 'page_break'
+	| 'quiz'
+	| 'repeater'
+	| 'consent';
 
 export interface FieldOption {
 	label: string;
