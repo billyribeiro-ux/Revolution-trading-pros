@@ -6,6 +6,7 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"allowImportingTsExtensions": true,
+		"allowArbitraryExtensions": true,
 		"skipLibCheck": true,
 		// Incremental strict mode - enable gradually as code is fixed
 		// TODO: Enable full strict mode after fixing all type errors
