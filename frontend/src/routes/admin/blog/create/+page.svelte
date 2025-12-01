@@ -7,20 +7,25 @@
 		IconPhoto,
 		IconX,
 		IconPlus,
-		IconCalendar
+		IconCalendar,
+		IconLoader
 	} from '@tabler/icons-svelte';
 	import RichTextEditor from '$lib/components/blog/RichTextEditor.svelte';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
+	import { mediaApi } from '$lib/api/media';
 
-	let post = {
+	let post = $state({
 		title: '',
 		slug: '',
 		excerpt: '',
-		content_blocks: [],
+		content_blocks: [] as any[],
 		featured_image: '',
 		featured_image_alt: '',
 		featured_image_title: '',
+		featured_image_caption: '',
+		featured_image_description: '',
+		featured_media_id: null as number | null,
 		status: 'draft',
 		published_at: '',
 		allow_comments: true,
@@ -31,17 +36,19 @@
 		canonical_url: '',
 		categories: [] as number[],
 		tags: [] as number[]
-	};
+	});
 
-	let content = '';
-	let categories: any[] = [];
-	let tags: any[] = [];
-	let availableCategories: any[] = [];
-	let availableTags: any[] = [];
-	let saving = false;
-	let showFeaturedImage = false;
-	let newTag = '';
-	let showSeoPanel = false;
+	let content = $state('');
+	let categories: any[] = $state([]);
+	let tags: any[] = $state([]);
+	let availableCategories: any[] = $state([]);
+	let availableTags: any[] = $state([]);
+	let saving = $state(false);
+	let showFeaturedImage = $state(false);
+	let newTag = $state('');
+	let showSeoPanel = $state(false);
+	let uploadingImage = $state(false);
+	let uploadError = $state('');
 
 	onMount(() => {
 		loadCategories();
@@ -118,20 +125,56 @@
 		}
 	}
 
-	function handleFeaturedImageUpload(event: Event) {
+	async function handleFeaturedImageUpload(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (input.files && input.files[0]) {
 			const file = input.files[0];
-			// Here you would upload to your server
-			// For now, create a local URL
-			post.featured_image = URL.createObjectURL(file);
-			showFeaturedImage = true;
+			uploadingImage = true;
+			uploadError = '';
+
+			try {
+				// Upload to server via mediaApi
+				const result = await mediaApi.uploadFile(file, {
+					title: post.featured_image_title || file.name.replace(/\.[^/.]+$/, ''),
+					alt_text: post.featured_image_alt || '',
+					optimize: true,
+					generate_webp: true
+				});
+
+				// Store the uploaded media details
+				post.featured_image = result.file.url;
+				post.featured_media_id = parseInt(result.file.id);
+
+				// Pre-fill title from filename if not set
+				if (!post.featured_image_title) {
+					post.featured_image_title = result.file.title || file.name.replace(/\.[^/.]+$/, '');
+				}
+
+				showFeaturedImage = true;
+			} catch (error: any) {
+				console.error('Failed to upload featured image:', error);
+				uploadError = error.message || 'Failed to upload image';
+			} finally {
+				uploadingImage = false;
+			}
 		}
 	}
 
-	$: if (post.title) {
-		generateSlug();
+	function removeFeaturedImage() {
+		post.featured_image = '';
+		post.featured_image_alt = '';
+		post.featured_image_title = '';
+		post.featured_image_caption = '';
+		post.featured_image_description = '';
+		post.featured_media_id = null;
+		showFeaturedImage = false;
 	}
+
+	$effect(() => {
+		if (post.title) {
+			generateSlug();
+		}
+	});
 </script>
 
 <svelte:head>
@@ -227,10 +270,15 @@
 			<div class="sidebar-panel">
 				<h3>Featured Image</h3>
 
-				{#if post.featured_image}
+				{#if uploadingImage}
+					<div class="upload-loading">
+						<IconLoader size={48} class="spin" />
+						<span>Uploading image...</span>
+					</div>
+				{:else if post.featured_image}
 					<div class="featured-image-preview">
 						<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} />
-						<button type="button" class="remove-image" onclick={() => (post.featured_image = '')}>
+						<button type="button" class="remove-image" onclick={removeFeaturedImage}>
 							<IconX size={16} />
 						</button>
 					</div>
@@ -241,7 +289,7 @@
 							id="img-title"
 							type="text"
 							bind:value={post.featured_image_title}
-							placeholder="Image title"
+							placeholder="Image title for SEO"
 						/>
 					</div>
 
@@ -254,12 +302,35 @@
 							placeholder="Describe the image for accessibility"
 						/>
 					</div>
+
+					<div class="form-group">
+						<label for="img-caption">Caption</label>
+						<input
+							id="img-caption"
+							type="text"
+							bind:value={post.featured_image_caption}
+							placeholder="Image caption displayed below image"
+						/>
+					</div>
+
+					<div class="form-group">
+						<label for="img-description">Description</label>
+						<textarea
+							id="img-description"
+							bind:value={post.featured_image_description}
+							placeholder="Detailed description of the image"
+							rows="3"
+						></textarea>
+					</div>
 				{:else}
-					<label class="upload-box">
-						<input type="file" accept="image/*" onchange={handleFeaturedImageUpload} hidden />
+					<label class="upload-box" class:disabled={uploadingImage}>
+						<input type="file" accept="image/*" onchange={handleFeaturedImageUpload} hidden disabled={uploadingImage} />
 						<IconPhoto size={48} />
 						<span>Click to upload featured image</span>
 					</label>
+					{#if uploadError}
+						<p class="upload-error">{uploadError}</p>
+					{/if}
 				{/if}
 			</div>
 
@@ -694,6 +765,61 @@
 
 	.btn-add-tag:hover {
 		background: #2563eb;
+	}
+
+	.upload-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 3rem 1rem;
+		color: #3b82f6;
+	}
+
+	.upload-loading span {
+		margin-top: 0.5rem;
+		font-size: 0.9rem;
+		color: #666;
+	}
+
+	.upload-loading :global(.spin) {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.upload-box.disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.upload-error {
+		color: #ef4444;
+		font-size: 0.85rem;
+		margin-top: 0.5rem;
+		text-align: center;
+	}
+
+	.sidebar-panel textarea {
+		width: 100%;
+		padding: 0.625rem;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		font-size: 0.9rem;
+		font-family: inherit;
+		resize: vertical;
+	}
+
+	.sidebar-panel textarea:focus {
+		outline: none;
+		border-color: #3b82f6;
 	}
 
 	@media (max-width: 1024px) {
