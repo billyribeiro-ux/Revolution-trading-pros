@@ -730,12 +730,12 @@ class AuthenticationService {
 			formData.append('avatar', data.avatar);
 		}
 
+		// NOTE: Do NOT set Content-Type header manually for FormData
+		// The browser MUST set it automatically with the boundary parameter
+		// Setting it manually breaks multipart form parsing on the server
 		const user = await this.apiRequest<User>('/me', {
 			method: 'PUT',
-			body: formData,
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			}
+			body: formData
 		});
 
 		authStore.setUser(user);

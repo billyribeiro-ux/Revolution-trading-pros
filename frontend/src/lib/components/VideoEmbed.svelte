@@ -338,7 +338,7 @@
 	let analyticsBase = $state({
 		id: analyticsId || generateId(),
 		url,
-		platform: 'html5' as const,
+		platform: 'html5' as 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5',
 		events: [] as AnalyticsEvent[],
 		watchTime: 0,
 		completionRate: 0,
@@ -360,6 +360,10 @@
 	// Animations
 	const playerScale = spring(1, { stiffness: 0.2, damping: 0.5 });
 
+	// Event handler references for cleanup (prevents memory leaks)
+	let handleEnterPiP: (() => void) | null = null;
+	let handleLeavePiP: (() => void) | null = null;
+
 	// Event dispatching handled via callback props
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -373,7 +377,8 @@
 		videoId = result.videoId;
 		embedUrl = generateEmbedUrl(url, platform, videoId);
 		thumbnailUrl = generateThumbnailUrl(platform, videoId);
-		analytics.platform = platform;
+		// Update the base state, not the derived analytics object
+		analyticsBase.platform = platform;
 	});
 
 	let progressPercent = $derived(duration > 0 ? (currentTime / duration) * 100 : 0);
@@ -710,7 +715,8 @@
 		onEnded?.();
 		trackEvent('complete', { watchTime: totalWatchTime });
 
-		analytics.completionRate = 100;
+		// Update base state, not derived analytics
+		analyticsBase.completionRate = 100;
 
 		// Show CTA if configured for end
 		if (callToAction?.showAt === 'end') {
@@ -741,14 +747,15 @@
 		onTimeUpdate?.(time, dur);
 		onProgress?.(progressPercent);
 
-		// Update analytics
-		analytics.completionRate = Math.max(analytics.completionRate, progressPercent);
+		// Update base state, not derived analytics
+		analyticsBase.completionRate = Math.max(analyticsBase.completionRate, progressPercent);
 	}
 
 	function handleError(error: any) {
 		hasError = true;
 		errorMessage = error.message || 'An error occurred while loading the video';
-		analytics.errors++;
+		// Update base state, not derived analytics
+		analyticsBase.errors++;
 
 		onError?.(error);
 		trackEvent('error', { error: errorMessage });
@@ -803,7 +810,8 @@
 				break;
 			case window.YT.PlayerState.BUFFERING:
 				isBuffering = true;
-				analytics.bufferEvents++;
+				// Update base state, not derived analytics
+				analyticsBase.bufferEvents++;
 				break;
 		}
 	}
@@ -850,7 +858,8 @@
 		} else {
 			play();
 		}
-		analytics.interactions++;
+		// Update base state, not derived analytics
+		analyticsBase.interactions++;
 	}
 
 	export function seek(time: number) {
@@ -1064,10 +1073,12 @@
 		document.addEventListener('fullscreenchange', handleFullscreenChange);
 		document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
-		// Picture-in-Picture
+		// Picture-in-Picture (store references for cleanup to prevent memory leaks)
 		if (videoElement) {
-			videoElement.addEventListener('enterpictureinpicture', () => (isPictureInPicture = true));
-			videoElement.addEventListener('leavepictureinpicture', () => (isPictureInPicture = false));
+			handleEnterPiP = () => (isPictureInPicture = true);
+			handleLeavePiP = () => (isPictureInPicture = false);
+			videoElement.addEventListener('enterpictureinpicture', handleEnterPiP);
+			videoElement.addEventListener('leavepictureinpicture', handleLeavePiP);
 		}
 
 		// Keyboard shortcuts
@@ -1177,11 +1188,22 @@
 		document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
 		document.removeEventListener('keydown', handleKeyboard);
 
+		// Remove PiP event listeners (prevents memory leaks)
+		if (videoElement) {
+			if (handleEnterPiP) {
+				videoElement.removeEventListener('enterpictureinpicture', handleEnterPiP);
+			}
+			if (handleLeavePiP) {
+				videoElement.removeEventListener('leavepictureinpicture', handleLeavePiP);
+			}
+		}
+
 		// Save analytics
 		if (watchStartTime > 0) {
 			totalWatchTime += Date.now() - watchStartTime;
 		}
-		analytics.watchTime = totalWatchTime;
+		// Update base state, not derived analytics
+		analyticsBase.watchTime = totalWatchTime;
 
 		// Cleanup player API
 		switch (platform) {
