@@ -1000,7 +1000,7 @@
 		--nav-duration-fast: 150ms;
 		--nav-duration-base: 200ms;
 		--nav-duration-slow: 300ms;
-		--nav-font: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		--nav-font: var(--font-heading, 'Montserrat', system-ui, sans-serif);
 		--nav-radius: 0.5rem;
 		--z-dropdown: 10;
 		--z-backdrop: 9998;
@@ -1637,7 +1637,7 @@
 	.mobile-title {
 		font-size: 1.125rem;
 		font-weight: 700;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		color: #ffffff;
 	}
 
@@ -1697,7 +1697,7 @@
 	.mobile-user-name {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		color: #ffffff;
 		white-space: nowrap;
 		overflow: hidden;
@@ -1737,7 +1737,7 @@
 		color: rgba(255, 255, 255, 0.9);
 		font-size: 1rem;
 		font-weight: 700;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
 		background: transparent;
@@ -1786,7 +1786,7 @@
 		color: rgba(255, 255, 255, 0.8);
 		font-size: 0.9375rem;
 		font-weight: 600;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		text-decoration: none;
 		background: rgba(20, 34, 62, 0.4);
 		border-inline-start: 2px solid rgba(14, 106, 196, 0.3);
@@ -1836,7 +1836,7 @@
 		color: #0E6AC4;
 		font-size: 0.9375rem;
 		font-weight: 600;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		text-decoration: none;
 		background: rgba(14, 106, 196, 0.1);
 		border: 1px solid rgba(14, 106, 196, 0.2);
@@ -1875,7 +1875,7 @@
 		color: #ffffff;
 		font-size: 0.9375rem;
 		font-weight: 700;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
 		background: linear-gradient(to bottom right, #0E6AC4 0%, transparent 30%);
@@ -1903,7 +1903,7 @@
 		color: #ffffff;
 		font-size: 0.9375rem;
 		font-weight: 800;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
 		background: linear-gradient(135deg, #0E6AC4 0%, #0a4d8a 100%);
@@ -1930,7 +1930,7 @@
 		color: #f87171;
 		font-size: 0.9375rem;
 		font-weight: 700;
-		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-family: var(--nav-font);
 		background: rgba(248, 113, 113, 0.1);
 		border: none;
 		border-radius: 0.5rem;

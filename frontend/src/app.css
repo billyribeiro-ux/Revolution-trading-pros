@@ -431,6 +431,7 @@
 @layer utilities {
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography Utilities - Financial UI
+	 * Montserrat for headings/nav/buttons, Open Sans for body
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Font Family Utilities */
@@ -446,40 +447,67 @@
 		font-family: var(--font-mono);
 	}
 
-	/* Navigation Typography */
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Navigation Typography (Montserrat)
+	 * Crisp, confident nav - not oversized
+	 * ───────────────────────────────────────────────────────────────────────────── */
+	
+	/* Top-level menu items - 15px, weight 600, pro dashboard look */
 	.nav-item {
 		font-family: var(--font-heading);
 		font-size: var(--font-size-nav);
 		font-weight: 600;
-		letter-spacing: 0.02em;
+		letter-spacing: var(--letter-spacing-nav);
 	}
 
+	/* Submenus / dropdown items - 14px, weight 500 */
 	.nav-subitem {
 		font-family: var(--font-heading);
 		font-size: var(--font-size-nav-sub);
 		font-weight: 500;
 	}
 
+	/* Utility bar (account, language, small links) - 13-14px, weight 500 */
 	.nav-utility {
 		font-family: var(--font-heading);
 		font-size: var(--font-size-utility);
 		font-weight: 500;
 	}
 
-	/* Button Typography */
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Button Typography (Montserrat)
+	 * CTAs like "Join Live Room", "Start Free Trial"
+	 * ───────────────────────────────────────────────────────────────────────────── */
+	
+	/* Standard buttons - 15px, weight 600 */
 	.btn-text {
 		font-family: var(--font-heading);
 		font-size: var(--font-size-btn);
 		font-weight: 600;
 	}
 
+	/* Primary CTAs - 16px, weight 600 */
 	.btn-text-lg {
 		font-family: var(--font-heading);
 		font-size: var(--font-size-btn-lg);
 		font-weight: 600;
 	}
 
-	/* Body Text Variants */
+	/* Primary CTA uppercase variant - use sparingly */
+	.btn-text-cta {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-btn-lg);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Body Text Variants (Open Sans)
+	 * Comfort and clarity for text + numbers
+	 * ───────────────────────────────────────────────────────────────────────────── */
+	
+	/* Body large - 18px, hero subheading, important explanations */
 	.text-lead {
 		font-family: var(--font-body);
 		font-size: var(--font-size-body-lg);
@@ -487,6 +515,7 @@
 		line-height: 1.7;
 	}
 
+	/* Meta / small text - 14px, labels, table captions, disclaimers */
 	.text-small {
 		font-family: var(--font-body);
 		font-size: var(--font-size-small);
@@ -494,6 +523,7 @@
 		line-height: 1.5;
 	}
 
+	/* Legal / risk disclosures - 13px, high contrast, generous line-height */
 	.text-disclaimer {
 		font-family: var(--font-body);
 		font-size: var(--font-size-xs);
@@ -501,25 +531,52 @@
 		line-height: 1.6;
 	}
 
-	/* Heading Weight Variants */
+	/* Legal text variant - never go smaller than 13px */
+	.text-legal {
+		font-family: var(--font-body);
+		font-size: var(--font-size-xs);
+		font-weight: 400;
+		line-height: 1.7;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Heading Weight Variants
+	 * ───────────────────────────────────────────────────────────────────────────── */
+	
+	/* For key H2 sections */
 	.heading-bold {
 		font-weight: 700;
 	}
 
+	/* For secondary H2 sections, H3, H4 */
 	.heading-semibold {
 		font-weight: 600;
 	}
 
+	/* For H5, H6, subtle labels */
 	.heading-medium {
 		font-weight: 500;
 	}
 
-	/* Eyebrow / Category Label */
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Eyebrow / Category Labels
+	 * ───────────────────────────────────────────────────────────────────────────── */
+	
+	/* Eyebrow above headings - 14-16px, uppercase, letter-spacing */
 	.text-eyebrow {
 		font-family: var(--font-heading);
 		font-size: var(--font-size-h6);
 		font-weight: 500;
-		letter-spacing: 0.08em;
+		letter-spacing: var(--letter-spacing-eyebrow);
+		text-transform: uppercase;
+	}
+
+	/* Larger eyebrow variant - 16px */
+	.text-eyebrow-lg {
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 500;
+		letter-spacing: var(--letter-spacing-eyebrow);
 		text-transform: uppercase;
 	}
 
