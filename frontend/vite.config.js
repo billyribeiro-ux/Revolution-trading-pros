@@ -4,6 +4,17 @@ import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
+	// Vitest configuration
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		environment: 'node',
+		globals: true,
+		setupFiles: ['src/lib/observability/__tests__/setup.ts'],
+		// Mock SvelteKit modules
+		alias: {
+			'$app/environment': new URL('./src/lib/observability/__tests__/mocks/app-environment.ts', import.meta.url).pathname,
+		},
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
