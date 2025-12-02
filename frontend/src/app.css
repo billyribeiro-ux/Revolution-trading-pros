@@ -18,29 +18,47 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Sizes (Financial Tone)
+	 * Montserrat for headings/UI, Open Sans for body
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	/* Headings - Desktop */
-	--font-size-h1: 2.5rem;      /* 40px */
-	--font-size-h2: 2rem;        /* 32px */
-	--font-size-h3: 1.5rem;      /* 24px */
-	--font-size-h4: 1.25rem;     /* 20px */
-	--font-size-h5: 1.125rem;    /* 18px */
-	--font-size-h6: 0.875rem;    /* 14px */
 	
-	/* Body Text */
-	--font-size-body: 1rem;      /* 16px */
-	--font-size-body-lg: 1.125rem; /* 18px */
-	--font-size-small: 0.875rem; /* 14px */
-	--font-size-xs: 0.8125rem;   /* 13px */
+	/* Headings - Desktop (Montserrat) */
+	--font-size-h1: 2.5rem;        /* 40px - Hero/page titles */
+	--font-size-h2: 2rem;          /* 32px - Major sections */
+	--font-size-h3: 1.5rem;        /* 24px - Subsections */
+	--font-size-h4: 1.25rem;       /* 20px - Card/feature titles */
+	--font-size-h5: 1.125rem;      /* 18px - Small section labels */
+	--font-size-h6: 0.875rem;      /* 14px - Eyebrow/category labels */
 	
-	/* Navigation */
-	--font-size-nav: 0.9375rem;  /* 15px */
-	--font-size-nav-sub: 0.875rem; /* 14px */
-	--font-size-utility: 0.8125rem; /* 13px */
+	/* Headings - Mobile */
+	--font-size-h1-mobile: 2rem;       /* 32px */
+	--font-size-h2-mobile: 1.75rem;    /* 28px */
+	--font-size-h3-mobile: 1.375rem;   /* 22px */
+	--font-size-h4-mobile: 1.125rem;   /* 18px */
+	--font-size-h5-mobile: 1rem;       /* 16px */
 	
-	/* Buttons */
-	--font-size-btn: 0.9375rem;  /* 15px */
-	--font-size-btn-lg: 1rem;    /* 16px */
+	/* Body Text (Open Sans) */
+	--font-size-body: 1rem;        /* 16px - Default body */
+	--font-size-body-lg: 1.125rem; /* 18px - Hero subheading, important text */
+	--font-size-small: 0.875rem;   /* 14px - Meta, labels, captions */
+	--font-size-xs: 0.8125rem;     /* 13px - Legal, disclaimers */
+	
+	/* Navigation (Montserrat) */
+	--font-size-nav: 0.9375rem;    /* 15px - Top-level menu */
+	--font-size-nav-sub: 0.875rem; /* 14px - Dropdown items */
+	--font-size-utility: 0.8125rem;/* 13px - Account, language links */
+	
+	/* Buttons (Montserrat) */
+	--font-size-btn: 0.9375rem;    /* 15px - Standard buttons */
+	--font-size-btn-lg: 1rem;      /* 16px - Primary CTAs */
+	
+	/* Line Heights */
+	--line-height-heading: 1.2;
+	--line-height-body: 1.65;
+	--line-height-tight: 1.4;
+	
+	/* Letter Spacing */
+	--letter-spacing-nav: 0.02em;
+	--letter-spacing-eyebrow: 0.08em;
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Brand Colors - Core palette
@@ -195,12 +213,12 @@
 		}
 	}
 
-	/* Base body styles */
+	/* Base body styles (Open Sans) */
 	body {
 		font-family: var(--font-body);
 		font-size: var(--font-size-body);
 		font-weight: 400;
-		line-height: 1.6;
+		line-height: var(--line-height-body);
 		/* Prevent horizontal scroll */
 		overflow-x: hidden;
 		/* Optimize paint performance */
@@ -209,83 +227,96 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Headings (Montserrat - Financial Tone)
+	 * Slightly smaller and tighter than typical marketing - authority over screaming
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	h1, h2, h3, h4, h5, h6 {
 		font-family: var(--font-heading);
 		margin: 0;
 	}
 
+	/* H1: Main page title / hero - 40px desktop */
 	h1 {
 		font-size: var(--font-size-h1);
 		font-weight: 700;
-		line-height: 1.2;
+		line-height: var(--line-height-heading);
 	}
 
+	/* H2: Major sections (Live Trading Rooms, Alerts) - 32px desktop */
 	h2 {
 		font-size: var(--font-size-h2);
-		font-weight: 600;
+		font-weight: 700; /* 700 for key sections, use .heading-semibold for secondary */
 		line-height: 1.25;
 	}
 
+	/* H3: Subsections, card group headings - 24px desktop */
 	h3 {
 		font-size: var(--font-size-h3);
 		font-weight: 600;
 		line-height: 1.3;
 	}
 
+	/* H4: Card titles, feature titles - 20px desktop */
 	h4 {
 		font-size: var(--font-size-h4);
 		font-weight: 600;
 		line-height: 1.35;
 	}
 
+	/* H5: Small section labels, overlines - 18px desktop */
 	h5 {
 		font-size: var(--font-size-h5);
-		font-weight: 500;
-		line-height: 1.4;
+		font-weight: 500; /* 500-600 range */
+		line-height: var(--line-height-tight);
 	}
 
+	/* H6: Eyebrow / category labels - 14-16px, uppercase with letter-spacing */
 	h6 {
 		font-size: var(--font-size-h6);
 		font-weight: 500;
-		letter-spacing: 0.08em;
+		letter-spacing: var(--letter-spacing-eyebrow);
 		text-transform: uppercase;
-		line-height: 1.4;
+		line-height: var(--line-height-tight);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Body Text (Open Sans)
+	 * Financial sites need comfort and clarity for text + numbers
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Default body text - 16px, line-height 1.6-1.7 for readability */
 	p {
 		font-family: var(--font-body);
 		font-size: var(--font-size-body);
 		font-weight: 400;
-		line-height: 1.6;
+		line-height: var(--line-height-body);
 	}
 
+	/* Emphasis in body - same size, weight 600, no screaming */
 	strong, b {
 		font-weight: 600;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Mobile Responsive Headings
+	 * H4/H5/H6 stay mostly the same or drop by 2px
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 639px) {
 		h1 {
-			font-size: 2rem;      /* 32px on mobile */
+			font-size: var(--font-size-h1-mobile); /* 32px */
 		}
 		h2 {
-			font-size: 1.75rem;   /* 28px on mobile */
+			font-size: var(--font-size-h2-mobile); /* 28px */
 		}
 		h3 {
-			font-size: 1.375rem;  /* 22px on mobile */
+			font-size: var(--font-size-h3-mobile); /* 22px */
 		}
 		h4 {
-			font-size: 1.125rem;  /* 18px on mobile */
+			font-size: var(--font-size-h4-mobile); /* 18px */
 		}
 		h5 {
-			font-size: 1rem;      /* 16px on mobile */
+			font-size: var(--font-size-h5-mobile); /* 16px */
 		}
+		/* H6 stays the same */
 	}
 
 	/* Box sizing reset - More specific than universal selector */
