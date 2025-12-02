@@ -630,3 +630,70 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/crm
     Route::delete('/pipelines/{id}', [PipelineController::class, 'destroy']);
     Route::post('/pipelines/{id}/stages', [PipelineController::class, 'addStage']);
 });
+
+// ========================================
+// SANITY-EQUIVALENT CONTENT LAKE API
+// ========================================
+use App\Http\Controllers\Api\ContentLakeController;
+
+// Public preview endpoint
+Route::get('/preview', [ContentLakeController::class, 'getByPreviewToken']);
+
+// Protected Content Lake API
+Route::middleware(['auth:sanctum'])->prefix('content-lake')->group(function () {
+    // GROQ Query API
+    Route::post('/query', [ContentLakeController::class, 'query']);
+
+    // Portable Text API
+    Route::post('/portable-text/render', [ContentLakeController::class, 'renderPortableText']);
+    Route::post('/portable-text/validate', [ContentLakeController::class, 'validatePortableText']);
+
+    // Document Perspective API
+    Route::get('/documents/{documentId}', [ContentLakeController::class, 'getDocument']);
+    Route::patch('/documents/{documentId}/draft', [ContentLakeController::class, 'updateDraft']);
+    Route::post('/documents/{documentId}/publish', [ContentLakeController::class, 'publishDocument']);
+    Route::post('/documents/{documentId}/unpublish', [ContentLakeController::class, 'unpublishDocument']);
+    Route::get('/documents/{documentId}/diff', [ContentLakeController::class, 'getDocumentDiff']);
+    Route::post('/documents/{documentId}/preview-token', [ContentLakeController::class, 'createPreviewToken']);
+
+    // Document History API
+    Route::get('/documents/{documentId}/history', [ContentLakeController::class, 'getHistory']);
+    Route::get('/documents/{documentId}/history/{revisionNumber}', [ContentLakeController::class, 'getRevision']);
+    Route::post('/documents/{documentId}/history/{revisionNumber}/restore', [ContentLakeController::class, 'restoreRevision']);
+    Route::post('/documents/{documentId}/history/compare', [ContentLakeController::class, 'compareRevisions']);
+});
+
+// Admin-only Content Lake API
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/content-lake')->group(function () {
+    // Webhooks API
+    Route::get('/webhooks', [ContentLakeController::class, 'listWebhooks']);
+    Route::post('/webhooks', [ContentLakeController::class, 'createWebhook']);
+    Route::put('/webhooks/{webhookId}', [ContentLakeController::class, 'updateWebhook']);
+    Route::delete('/webhooks/{webhookId}', [ContentLakeController::class, 'deleteWebhook']);
+    Route::post('/webhooks/{webhookId}/test', [ContentLakeController::class, 'testWebhook']);
+    Route::get('/webhooks/{webhookId}/deliveries', [ContentLakeController::class, 'getWebhookDeliveries']);
+
+    // Image Hotspot/Crop API
+    Route::post('/media/{mediaId}/hotspot', [ContentLakeController::class, 'setHotspot']);
+    Route::post('/media/{mediaId}/crop', [ContentLakeController::class, 'setCrop']);
+    Route::get('/media/{mediaId}/url', [ContentLakeController::class, 'getImageUrl']);
+    Route::post('/media/{mediaId}/placeholders', [ContentLakeController::class, 'generatePlaceholders']);
+
+    // Schema API
+    Route::get('/schemas', [ContentLakeController::class, 'listSchemas']);
+    Route::get('/schemas/{name}', [ContentLakeController::class, 'getSchema']);
+    Route::post('/schemas', [ContentLakeController::class, 'registerSchema']);
+    Route::post('/schemas/{name}/validate', [ContentLakeController::class, 'validateAgainstSchema']);
+    Route::get('/schemas/{name}/typescript', [ContentLakeController::class, 'generateTypeScript']);
+
+    // Release Bundles API
+    Route::get('/releases', [ContentLakeController::class, 'listReleases']);
+    Route::get('/releases/{bundleId}', [ContentLakeController::class, 'getRelease']);
+    Route::post('/releases', [ContentLakeController::class, 'createRelease']);
+    Route::post('/releases/{bundleId}/documents', [ContentLakeController::class, 'addDocumentToRelease']);
+    Route::delete('/releases/{bundleId}/documents/{documentId}', [ContentLakeController::class, 'removeDocumentFromRelease']);
+    Route::post('/releases/{bundleId}/schedule', [ContentLakeController::class, 'scheduleRelease']);
+    Route::post('/releases/{bundleId}/publish', [ContentLakeController::class, 'publishRelease']);
+    Route::post('/releases/{bundleId}/cancel', [ContentLakeController::class, 'cancelRelease']);
+    Route::delete('/releases/{bundleId}', [ContentLakeController::class, 'deleteRelease']);
+});
