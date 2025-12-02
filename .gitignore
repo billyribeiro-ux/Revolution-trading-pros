@@ -66,3 +66,72 @@ backend/composer.lock
 *.temp
 *.zip
 modified_subscription_files.zip
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECURITY - Critical files that must NEVER be committed
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Credential and secret files
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials.json
+service-account*.json
+secrets.yaml
+secrets.yml
+.secrets
+.credentials
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.ppk
+
+# API keys and tokens
+.api_keys
+api_keys.txt
+tokens.json
+oauth*.json
+
+# Backup files (may contain sensitive data)
+*.bak
+*.backup
+*.sql
+*.dump
+*_backup*
+*_bak*
+
+# AWS/Cloud credentials
+.aws/
+.azure/
+.gcloud/
+google-cloud-key*.json
+
+# Docker secrets
+docker-compose.override.yml
+.docker-secrets/
+
+# Terraform state (may contain secrets)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# PHPUnit coverage reports (may expose code paths)
+coverage/
+.phpunit.result.cache
+
+# Laravel-specific sensitive files
+backend/storage/oauth-*.key
+backend/.scribe/
+
+# Test configuration with real credentials
+phpunit.xml
+.phpunit.xml
+
+# IDE workspace settings (may contain paths/credentials)
+*.code-workspace

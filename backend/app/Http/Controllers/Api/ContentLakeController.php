@@ -5,6 +5,19 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ContentLake\AddDocumentToReleaseRequest;
+use App\Http\Requests\Api\ContentLake\CompareRevisionsRequest;
+use App\Http\Requests\Api\ContentLake\GroqQueryRequest;
+use App\Http\Requests\Api\ContentLake\ImageCropRequest;
+use App\Http\Requests\Api\ContentLake\ImageHotspotRequest;
+use App\Http\Requests\Api\ContentLake\PortableTextRequest;
+use App\Http\Requests\Api\ContentLake\PreviewTokenRequest;
+use App\Http\Requests\Api\ContentLake\ReleaseRequest;
+use App\Http\Requests\Api\ContentLake\ScheduleReleaseRequest;
+use App\Http\Requests\Api\ContentLake\SchemaRequest;
+use App\Http\Requests\Api\ContentLake\UpdateDraftRequest;
+use App\Http\Requests\Api\ContentLake\WebhookRequest;
+use App\Http\Traits\ApiResponse;
 use App\Services\ContentLake\DocumentHistoryService;
 use App\Services\ContentLake\DocumentPerspectiveService;
 use App\Services\ContentLake\GroqQueryService;
@@ -20,9 +33,14 @@ use Illuminate\Http\Request;
  * Content Lake Controller
  *
  * Unified API for all Sanity-equivalent CMS features.
+ * Enterprise-grade implementation with FormRequest validation and standardized responses.
+ *
+ * @level ICT11 Principal Engineer
  */
 class ContentLakeController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(
         private readonly GroqQueryService $groqService,
         private readonly PortableTextService $portableTextService,
@@ -41,27 +59,18 @@ class ContentLakeController extends Controller
     /**
      * Execute GROQ query
      */
-    public function query(Request $request): JsonResponse
+    public function query(GroqQueryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'query' => 'required|string|max:10000',
-            'params' => 'nullable|array',
-            'useCache' => 'nullable|boolean',
-        ]);
-
         try {
             $result = $this->groqService->query(
-                $validated['query'],
-                $validated['params'] ?? [],
-                $validated['useCache'] ?? true
+                $request->validated('query'),
+                $request->validated('params', []),
+                $request->validated('useCache', true)
             );
 
-            return response()->json($result->toArray());
+            return $this->successResponse($result->toArray());
         } catch (\Throwable $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'type' => 'QueryError',
-            ], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'QUERY_ERROR');
         }
     }
 
@@ -72,40 +81,32 @@ class ContentLakeController extends Controller
     /**
      * Render Portable Text to HTML
      */
-    public function renderPortableText(Request $request): JsonResponse
+    public function renderPortableText(PortableTextRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'blocks' => 'required|array',
-        ]);
-
         try {
-            $parsed = $this->portableTextService->parse($validated['blocks']);
+            $parsed = $this->portableTextService->parse($request->validated('blocks'));
             $html = $this->portableTextService->toHtml($parsed);
             $plainText = $this->portableTextService->toPlainText($parsed);
 
-            return response()->json([
+            return $this->successResponse([
                 'html' => $html,
                 'plainText' => $plainText,
                 'wordCount' => $this->portableTextService->wordCount($parsed),
                 'readingTime' => $this->portableTextService->readingTime($parsed),
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'RENDER_ERROR');
         }
     }
 
     /**
      * Validate Portable Text
      */
-    public function validatePortableText(Request $request): JsonResponse
+    public function validatePortableText(PortableTextRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'blocks' => 'required|array',
-        ]);
+        $result = $this->portableTextService->validate($request->validated('blocks'));
 
-        $result = $this->portableTextService->validate($validated['blocks']);
-
-        return response()->json($result->toArray());
+        return $this->successResponse($result->toArray());
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -121,31 +122,27 @@ class ContentLakeController extends Controller
 
         try {
             $document = $this->perspectiveService->getDocument($documentId, $perspective);
-            return response()->json(['data' => $document]);
+            return $this->successResponse($document);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
+            return $this->notFoundResponse('Document');
         }
     }
 
     /**
      * Update draft
      */
-    public function updateDraft(Request $request, string $documentId): JsonResponse
+    public function updateDraft(UpdateDraftRequest $request, string $documentId): JsonResponse
     {
-        $validated = $request->validate([
-            'content' => 'required|array',
-        ]);
-
         try {
             $document = $this->perspectiveService->updateDraft(
                 $documentId,
-                $validated['content'],
+                $request->validated('content'),
                 auth()->id()
             );
 
-            return response()->json(['data' => $document]);
+            return $this->successResponse($document, 'Draft updated successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'UPDATE_ERROR');
         }
     }
 
@@ -156,9 +153,9 @@ class ContentLakeController extends Controller
     {
         try {
             $document = $this->perspectiveService->publish($documentId, auth()->id());
-            return response()->json(['data' => $document]);
+            return $this->successResponse($document, 'Document published successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'PUBLISH_ERROR');
         }
     }
 
@@ -169,9 +166,9 @@ class ContentLakeController extends Controller
     {
         try {
             $document = $this->perspectiveService->unpublish($documentId, auth()->id());
-            return response()->json(['data' => $document]);
+            return $this->successResponse($document, 'Document unpublished successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'UNPUBLISH_ERROR');
         }
     }
 
@@ -182,34 +179,30 @@ class ContentLakeController extends Controller
     {
         try {
             $diff = $this->perspectiveService->getDiff($documentId);
-            return response()->json(['data' => $diff]);
+            return $this->successResponse($diff);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'DIFF_ERROR');
         }
     }
 
     /**
      * Create preview token
      */
-    public function createPreviewToken(Request $request, string $documentId): JsonResponse
+    public function createPreviewToken(PreviewTokenRequest $request, string $documentId): JsonResponse
     {
-        $validated = $request->validate([
-            'ttl' => 'nullable|integer|min:60|max:604800', // 1 minute to 7 days
-        ]);
-
         try {
             $token = $this->perspectiveService->createPreviewToken(
                 $documentId,
                 auth()->id(),
-                $validated['ttl'] ?? null
+                $request->validated('ttl')
             );
 
-            return response()->json([
+            return $this->successResponse([
                 'token' => $token,
                 'previewUrl' => url("/preview?token={$token}"),
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'TOKEN_ERROR');
         }
     }
 
@@ -221,16 +214,16 @@ class ContentLakeController extends Controller
         $token = $request->query('token');
 
         if (!$token) {
-            return response()->json(['error' => 'Token required'], 400);
+            return $this->errorResponse('Token required', 400, [], 'MISSING_TOKEN');
         }
 
         $document = $this->perspectiveService->getByPreviewToken($token);
 
         if (!$document) {
-            return response()->json(['error' => 'Invalid or expired token'], 404);
+            return $this->errorResponse('Invalid or expired token', 404, [], 'INVALID_TOKEN');
         }
 
-        return response()->json(['data' => $document]);
+        return $this->successResponse($document);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -242,12 +235,12 @@ class ContentLakeController extends Controller
      */
     public function getHistory(Request $request, string $documentId): JsonResponse
     {
-        $limit = $request->query('limit', 50);
-        $offset = $request->query('offset', 0);
+        $limit = min((int) $request->query('limit', 50), 100);
+        $offset = max((int) $request->query('offset', 0), 0);
 
-        $history = $this->historyService->getHistory($documentId, (int) $limit, (int) $offset);
+        $history = $this->historyService->getHistory($documentId, $limit, $offset);
 
-        return response()->json($history);
+        return $this->successResponse($history);
     }
 
     /**
@@ -258,10 +251,10 @@ class ContentLakeController extends Controller
         $revision = $this->historyService->getRevision($documentId, $revisionNumber);
 
         if (!$revision) {
-            return response()->json(['error' => 'Revision not found'], 404);
+            return $this->notFoundResponse('Revision');
         }
 
-        return response()->json(['data' => $revision]);
+        return $this->successResponse($revision);
     }
 
     /**
@@ -271,32 +264,27 @@ class ContentLakeController extends Controller
     {
         try {
             $revision = $this->historyService->restore($documentId, $revisionNumber, auth()->id());
-            return response()->json(['data' => $revision]);
+            return $this->successResponse($revision, 'Revision restored successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'RESTORE_ERROR');
         }
     }
 
     /**
      * Compare revisions
      */
-    public function compareRevisions(Request $request, string $documentId): JsonResponse
+    public function compareRevisions(CompareRevisionsRequest $request, string $documentId): JsonResponse
     {
-        $validated = $request->validate([
-            'from' => 'required|integer|min:1',
-            'to' => 'required|integer|min:1',
-        ]);
-
         try {
             $comparison = $this->historyService->compareRevisions(
                 $documentId,
-                $validated['from'],
-                $validated['to']
+                $request->validated('from'),
+                $request->validated('to')
             );
 
-            return response()->json(['data' => $comparison]);
+            return $this->successResponse($comparison);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'COMPARE_ERROR');
         }
     }
 
@@ -310,49 +298,34 @@ class ContentLakeController extends Controller
     public function listWebhooks(Request $request): JsonResponse
     {
         $options = $request->only(['page', 'perPage', 'is_active']);
-        return response()->json($this->webhookService->list($options));
+        return $this->successResponse($this->webhookService->list($options));
     }
 
     /**
      * Create webhook
      */
-    public function createWebhook(Request $request): JsonResponse
+    public function createWebhook(WebhookRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'url' => 'required|url|max:2048',
-            'events' => 'required|array|min:1',
-            'events.*' => 'string',
-            'filter' => 'nullable|array',
-            'projection' => 'nullable|array',
-            'headers' => 'nullable|array',
-            'is_active' => 'nullable|boolean',
-        ]);
-
         try {
-            $webhook = $this->webhookService->create($validated);
-            return response()->json(['data' => $webhook], 201);
+            $webhook = $this->webhookService->create($request->validated());
+            return $this->createdResponse($webhook, 'Webhook created successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'CREATE_ERROR');
         }
     }
 
     /**
      * Update webhook
      */
-    public function updateWebhook(Request $request, string $webhookId): JsonResponse
+    public function updateWebhook(WebhookRequest $request, string $webhookId): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'url' => 'nullable|url|max:2048',
-            'events' => 'nullable|array',
-            'filter' => 'nullable|array',
-            'is_active' => 'nullable|boolean',
-        ]);
+        $success = $this->webhookService->update($webhookId, $request->validated());
 
-        $success = $this->webhookService->update($webhookId, $validated);
+        if ($success) {
+            return $this->successResponse(null, 'Webhook updated successfully');
+        }
 
-        return response()->json(['success' => $success]);
+        return $this->notFoundResponse('Webhook');
     }
 
     /**
@@ -361,7 +334,12 @@ class ContentLakeController extends Controller
     public function deleteWebhook(string $webhookId): JsonResponse
     {
         $success = $this->webhookService->delete($webhookId);
-        return response()->json(['success' => $success]);
+
+        if ($success) {
+            return $this->noContentResponse();
+        }
+
+        return $this->notFoundResponse('Webhook');
     }
 
     /**
@@ -371,9 +349,9 @@ class ContentLakeController extends Controller
     {
         try {
             $result = $this->webhookService->test($webhookId);
-            return response()->json($result);
+            return $this->successResponse($result);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'TEST_ERROR');
         }
     }
 
@@ -383,7 +361,7 @@ class ContentLakeController extends Controller
     public function getWebhookDeliveries(Request $request, string $webhookId): JsonResponse
     {
         $options = $request->only(['page', 'perPage', 'status']);
-        return response()->json($this->webhookService->getDeliveries($webhookId, $options));
+        return $this->successResponse($this->webhookService->getDeliveries($webhookId, $options));
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -393,56 +371,41 @@ class ContentLakeController extends Controller
     /**
      * Set image hotspot
      */
-    public function setHotspot(Request $request, int $mediaId): JsonResponse
+    public function setHotspot(ImageHotspotRequest $request, int $mediaId): JsonResponse
     {
-        $validated = $request->validate([
-            'x' => 'required|numeric|min:0|max:1',
-            'y' => 'required|numeric|min:0|max:1',
-            'name' => 'nullable|string|max:100',
-        ]);
-
         try {
             $hotspot = $this->hotspotService->setHotspot(
                 $mediaId,
-                $validated['x'],
-                $validated['y'],
-                $validated['name'] ?? null
+                $request->validated('x'),
+                $request->validated('y'),
+                $request->validated('name')
             );
 
-            return response()->json(['data' => $hotspot]);
+            return $this->successResponse($hotspot);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'HOTSPOT_ERROR');
         }
     }
 
     /**
      * Set image crop
      */
-    public function setCrop(Request $request, int $mediaId): JsonResponse
+    public function setCrop(ImageCropRequest $request, int $mediaId): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'top' => 'required|numeric|min:0|max:1',
-            'left' => 'required|numeric|min:0|max:1',
-            'bottom' => 'required|numeric|min:0|max:1',
-            'right' => 'required|numeric|min:0|max:1',
-            'aspectRatio' => 'nullable|string',
-        ]);
-
         try {
             $crop = $this->hotspotService->setCrop(
                 $mediaId,
-                $validated['name'],
-                $validated['top'],
-                $validated['left'],
-                $validated['bottom'],
-                $validated['right'],
-                $validated['aspectRatio'] ?? null
+                $request->validated('name'),
+                $request->validated('top'),
+                $request->validated('left'),
+                $request->validated('bottom'),
+                $request->validated('right'),
+                $request->validated('aspectRatio')
             );
 
-            return response()->json(['data' => $crop]);
+            return $this->successResponse($crop);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'CROP_ERROR');
         }
     }
 
@@ -459,12 +422,12 @@ class ContentLakeController extends Controller
         try {
             $url = $this->hotspotService->buildUrl($mediaId, $options);
 
-            return response()->json([
+            return $this->successResponse([
                 'url' => $url,
                 'srcset' => $this->hotspotService->getSrcSet($mediaId, [320, 640, 1280], $options),
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'URL_ERROR');
         }
     }
 
@@ -477,12 +440,12 @@ class ContentLakeController extends Controller
             $lqip = $this->hotspotService->generateLqip($mediaId);
             $blurhash = $this->hotspotService->generateBlurHash($mediaId);
 
-            return response()->json([
+            return $this->successResponse([
                 'lqip' => $lqip,
                 'blurhash' => $blurhash,
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'PLACEHOLDER_ERROR');
         }
     }
 
@@ -496,7 +459,7 @@ class ContentLakeController extends Controller
     public function listSchemas(Request $request): JsonResponse
     {
         $options = $request->only(['type', 'system']);
-        return response()->json(['data' => $this->schemaService->list($options)]);
+        return $this->successResponse($this->schemaService->list($options));
     }
 
     /**
@@ -507,35 +470,22 @@ class ContentLakeController extends Controller
         $schema = $this->schemaService->get($name);
 
         if (!$schema) {
-            return response()->json(['error' => 'Schema not found'], 404);
+            return $this->notFoundResponse('Schema');
         }
 
-        return response()->json(['data' => $schema]);
+        return $this->successResponse($schema);
     }
 
     /**
      * Register schema
      */
-    public function registerSchema(Request $request): JsonResponse
+    public function registerSchema(SchemaRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'title' => 'nullable|string|max:255',
-            'fields' => 'required|array|min:1',
-            'fields.*.name' => 'required|string',
-            'fields.*.type' => 'required|string',
-            'fieldsets' => 'nullable|array',
-            'preview' => 'nullable|array',
-            'orderings' => 'nullable|array',
-            'validation' => 'nullable|array',
-            'initialValue' => 'nullable|array',
-        ]);
-
         try {
-            $schema = $this->schemaService->register($validated);
-            return response()->json(['data' => $schema], 201);
+            $schema = $this->schemaService->register($request->validated());
+            return $this->createdResponse($schema, 'Schema registered successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'SCHEMA_ERROR');
         }
     }
 
@@ -544,15 +494,15 @@ class ContentLakeController extends Controller
      */
     public function validateAgainstSchema(Request $request, string $schemaName): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'document' => 'required|array',
         ]);
 
         try {
-            $result = $this->schemaService->validate($schemaName, $validated['document']);
-            return response()->json($result);
+            $result = $this->schemaService->validate($schemaName, $request->input('document'));
+            return $this->successResponse($result);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'VALIDATE_ERROR');
         }
     }
 
@@ -563,9 +513,9 @@ class ContentLakeController extends Controller
     {
         try {
             $typescript = $this->schemaService->generateTypeScript($schemaName);
-            return response()->json(['typescript' => $typescript]);
+            return $this->successResponse(['typescript' => $typescript]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'TYPESCRIPT_ERROR');
         }
     }
 
@@ -579,7 +529,7 @@ class ContentLakeController extends Controller
     public function listReleases(Request $request): JsonResponse
     {
         $options = $request->only(['page', 'perPage', 'status', 'createdBy']);
-        return response()->json($this->releaseService->list($options));
+        return $this->successResponse($this->releaseService->list($options));
     }
 
     /**
@@ -590,54 +540,41 @@ class ContentLakeController extends Controller
         $release = $this->releaseService->get($bundleId);
 
         if (!$release) {
-            return response()->json(['error' => 'Release not found'], 404);
+            return $this->notFoundResponse('Release');
         }
 
-        return response()->json(['data' => $release]);
+        return $this->successResponse($release);
     }
 
     /**
      * Create release
      */
-    public function createRelease(Request $request): JsonResponse
+    public function createRelease(ReleaseRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'scheduled_at' => 'nullable|date|after:now',
-            'metadata' => 'nullable|array',
-        ]);
-
         try {
-            $release = $this->releaseService->create($validated);
-            return response()->json(['data' => $release], 201);
+            $release = $this->releaseService->create($request->validated());
+            return $this->createdResponse($release, 'Release created successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'CREATE_ERROR');
         }
     }
 
     /**
      * Add document to release
      */
-    public function addDocumentToRelease(Request $request, string $bundleId): JsonResponse
+    public function addDocumentToRelease(AddDocumentToReleaseRequest $request, string $bundleId): JsonResponse
     {
-        $validated = $request->validate([
-            'documentId' => 'required|string',
-            'documentType' => 'required|string',
-            'action' => 'nullable|in:create,update,delete',
-        ]);
-
         try {
             $this->releaseService->addDocument(
                 $bundleId,
-                $validated['documentId'],
-                $validated['documentType'],
-                $validated['action'] ?? 'update'
+                $request->validated('documentId'),
+                $request->validated('documentType'),
+                $request->validated('action', 'update')
             );
 
-            return response()->json(['success' => true]);
+            return $this->successResponse(null, 'Document added to release');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'ADD_DOCUMENT_ERROR');
         }
     }
 
@@ -647,23 +584,24 @@ class ContentLakeController extends Controller
     public function removeDocumentFromRelease(string $bundleId, string $documentId): JsonResponse
     {
         $success = $this->releaseService->removeDocument($bundleId, $documentId);
-        return response()->json(['success' => $success]);
+
+        if ($success) {
+            return $this->successResponse(null, 'Document removed from release');
+        }
+
+        return $this->notFoundResponse('Document in release');
     }
 
     /**
      * Schedule release
      */
-    public function scheduleRelease(Request $request, string $bundleId): JsonResponse
+    public function scheduleRelease(ScheduleReleaseRequest $request, string $bundleId): JsonResponse
     {
-        $validated = $request->validate([
-            'scheduled_at' => 'required|date|after:now',
-        ]);
-
         try {
-            $release = $this->releaseService->schedule($bundleId, $validated['scheduled_at']);
-            return response()->json(['data' => $release]);
+            $release = $this->releaseService->schedule($bundleId, $request->validated('scheduled_at'));
+            return $this->successResponse($release, 'Release scheduled successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'SCHEDULE_ERROR');
         }
     }
 
@@ -674,9 +612,9 @@ class ContentLakeController extends Controller
     {
         try {
             $release = $this->releaseService->publish($bundleId, auth()->id());
-            return response()->json(['data' => $release]);
+            return $this->successResponse($release, 'Release published successfully');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'PUBLISH_ERROR');
         }
     }
 
@@ -687,9 +625,9 @@ class ContentLakeController extends Controller
     {
         try {
             $release = $this->releaseService->cancel($bundleId);
-            return response()->json(['data' => $release]);
+            return $this->successResponse($release, 'Release cancelled');
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage(), 400, [], 'CANCEL_ERROR');
         }
     }
 
@@ -699,6 +637,11 @@ class ContentLakeController extends Controller
     public function deleteRelease(string $bundleId): JsonResponse
     {
         $success = $this->releaseService->delete($bundleId);
-        return response()->json(['success' => $success]);
+
+        if ($success) {
+            return $this->noContentResponse();
+        }
+
+        return $this->notFoundResponse('Release');
     }
 }

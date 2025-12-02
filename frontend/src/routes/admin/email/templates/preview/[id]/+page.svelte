@@ -3,6 +3,7 @@
 	import { apiFetch } from '$lib/api/config';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	let loading = true;
 	let error = '';
@@ -35,7 +36,7 @@
 		<p class="alert alert-error">{error}</p>
 	{:else}
 		<h2 class="subject">{preview?.subject ?? ''}</h2>
-		<div class="body">{@html preview?.body_html ?? ''}</div>
+		<div class="body">{@html sanitizeHtml(preview?.body_html ?? '', 'rich')}</div>
 		<button class="btn-secondary" onclick={() => goto('/admin/email/templates')}
 			>Back to List</button
 		>
