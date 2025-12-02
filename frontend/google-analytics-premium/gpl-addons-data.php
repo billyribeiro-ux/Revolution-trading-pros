@@ -1,0 +1,194 @@
+<?php
+/**
+ * MonsterInsights Pro - GPL Addon Data
+ *
+ * This file contains the complete list of MonsterInsights addons
+ * hosted on our own infrastructure (dl.gplvault.com).
+ *
+ * @package MonsterInsights
+ * @since 1.1
+ */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Returns the array of addon data for MonsterInsights Pro
+ *
+ * This data is used by the GPL bypass to populate the addons page
+ * without making external API calls to third-party services.
+ *
+ * @return array Array of addon objects
+ */
+return array(
+	array(
+		'title'         => 'MonsterInsights Ads',
+		'slug'          => 'ads',
+		'version'       => '1.9.0',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2016/09/ads-tracking-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'Track Google Ads conversions automatically.',
+		'id'            => 31099,
+		'categories'    => array( 'Plus' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/ads.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-ads.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights AMP',
+		'slug'          => 'amp',
+		'version'       => '1.7.1',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2017/06/amp-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'MonsterInsights Google AMP Addon enables accurate tracking of all mobile visitors to your AMP-enabled pages.',
+		'id'            => 101306,
+		'categories'    => array( 'Plus' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/amp.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-amp.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Conversations AI',
+		'slug'          => 'ai-insights',
+		'version'       => '1.0.2',
+		'image'         => false,
+		'icon'          => false,
+		'excerpt'       => 'Get automated insights about your website with the power of AI',
+		'id'            => 877722,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => null,
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-ai-insights.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Dimensions',
+		'slug'          => 'dimensions',
+		'version'       => '2.2.1',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2016/09/custom-dimensions-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'Track authors, categories, tags, searches, users, and more.',
+		'id'            => 31098,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/dimensions.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-dimensions.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights eCommerce',
+		'slug'          => 'ecommerce',
+		'version'       => '8.5.8',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2016/09/ecommerce-tracking-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'Sales tracking for your WooCommerce, Easy Digital Downloads, LifterLMS or MemberPress stores.',
+		'id'            => 31097,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/ecommerce.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/ga-ecommerce.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights EU Compliance',
+		'slug'          => 'eu-compliance',
+		'version'       => '2.3.3',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2018/05/eu-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'Improve compliance with GDPR and other privacy regulations.',
+		'id'            => 137300,
+		'categories'    => array( 'Basic' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/eu-compliance.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-eu-compliance.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Exceptions',
+		'slug'          => 'exceptions',
+		'version'       => '1.0.1',
+		'image'         => false,
+		'icon'          => false,
+		'excerpt'       => 'MonsterInsights Exceptions addon notifies you of any major website events such as traffic increases, new landing pages, or conversion rate changes.',
+		'id'            => 854045,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/exceptions.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-exceptions.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Forms',
+		'slug'          => 'forms',
+		'version'       => '2.3.4',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2017/06/forms-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'Enable tracking of your form views, submissions, and conversion rates.',
+		'id'            => 104930,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/forms.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-forms.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Media',
+		'slug'          => 'media',
+		'version'       => '1.1.3',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2021/12/media-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'The MonsterInsights Media addon makes it super simple to track YouTube and Vimeo embeds along with videos you upload into the Media Library.',
+		'id'            => 506765,
+		'categories'    => array( 'Plus' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/media.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-media.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Page Insights',
+		'slug'          => 'page-insights',
+		'version'       => '1.6.0',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2018/10/page-insights-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'See important metrics for individual posts / pages in your WordPress dashboard.',
+		'id'            => 166810,
+		'categories'    => array( 'Plus' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/page-insights.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-page-insights.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Performance',
+		'slug'          => 'performance',
+		'version'       => '1.8.1',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2016/09/performance-tracking-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'Adjust site speed and sample rate for Google Analytics.',
+		'id'            => 31100,
+		'categories'    => array( 'Plus' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/performance.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-performance.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights PPC Tracking',
+		'slug'          => 'ppc-tracking',
+		'version'       => '1.7.0',
+		'image'         => false,
+		'icon'          => false,
+		'excerpt'       => 'Easily track conversions and website events with Google Ads, Bing Ads, and Meta.',
+		'id'            => 696539,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/ppc-tracking.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-ppc-tracking.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights Site Notes Automations',
+		'slug'          => 'site-notes-important-events',
+		'version'       => '1.0.0',
+		'image'         => false,
+		'icon'          => false,
+		'excerpt'       => 'Automatically add key website events to Site Notes with our Site Notes Automations addon. Get access to an API so that you can create and update Site Notes as needed.',
+		'id'            => 864443,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/site-notes-important-events.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-site-notes-important-events.zip',
+	),
+	array(
+		'title'         => 'MonsterInsights User Journey',
+		'slug'          => 'user-journey',
+		'version'       => '1.1.8',
+		'image'         => 'https://www.monsterinsights.com/wp-content/uploads/2022/05/user-journey-addon-banner.png',
+		'icon'          => false,
+		'excerpt'       => 'See exactly which steps and for how long each customer took before making a purchase. ',
+		'id'            => 562165,
+		'categories'    => array( 'Pro' ),
+		'svg_icon_path' => 'https://www.monsterinsights.com/wp-content/themes/monsterinsightsv7/assets/addon-icons/user-journey.svg',
+		'url'           => 'https://dl.gplvault.com/file/gplvault/monster/monsterinsights-user-journey.zip',
+	),
+);
