@@ -70,6 +70,7 @@
 		IconShare,
 		IconBookmark
 	} from '$lib/icons';
+	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props
@@ -1320,7 +1321,7 @@
 				aria-label="Video overlay"
 			>
 				{#if overlay.type === 'html'}
-					{@html overlay.content}
+					{@html sanitizeVideoOverlay(overlay.content)}
 				{:else}
 					{overlay.content}
 				{/if}

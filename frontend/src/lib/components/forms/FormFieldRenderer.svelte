@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { FormField } from '$lib/api/forms';
+	import { sanitizeFormContent } from '$lib/utils/sanitize';
 
 	interface Props {
 		field: FormField;
@@ -70,7 +71,7 @@
 		<hr class="field-divider" />
 	{:else if field.field_type === 'html'}
 		<div class="field-html">
-			{@html field.placeholder || ''}
+			{@html sanitizeFormContent(field.placeholder || '')}
 		</div>
 	{:else}
 		<label class="field-label" for={`field-${field.name}`}>
