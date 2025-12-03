@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserSubscriptionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\NewsletterCategoryController;
 use App\Http\Controllers\Api\PastMembersController;
 use Illuminate\Support\Facades\Route;
 
@@ -98,6 +99,7 @@ Route::post('/email/verification-notification', [AuthController::class, 'sendVer
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe']);
 Route::get('/newsletter/confirm', [NewsletterController::class, 'confirm']);
 Route::get('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe']);
+Route::get('/newsletter/categories', [NewsletterCategoryController::class, 'forSelect']); // Public: for forms
 
 // Public content
 Route::get('/posts', [PostController::class, 'index']);
@@ -247,6 +249,18 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/email/campaigns/{id}/analytics', [EmailCampaignController::class, 'analytics']);
     Route::get('/email/campaigns/{id}/preview', [EmailCampaignController::class, 'preview']);
     Route::post('/email/campaigns/{id}/test', [EmailCampaignController::class, 'sendTest']);
+
+    // Newsletter Categories (Form-Newsletter Integration)
+    Route::get('/newsletter/categories', [NewsletterCategoryController::class, 'index']);
+    Route::post('/newsletter/categories', [NewsletterCategoryController::class, 'store']);
+    Route::get('/newsletter/categories/{id}', [NewsletterCategoryController::class, 'show']);
+    Route::put('/newsletter/categories/{id}', [NewsletterCategoryController::class, 'update']);
+    Route::delete('/newsletter/categories/{id}', [NewsletterCategoryController::class, 'destroy']);
+    Route::post('/newsletter/categories/reorder', [NewsletterCategoryController::class, 'reorder']);
+    Route::post('/newsletter/categories/seed-defaults', [NewsletterCategoryController::class, 'seedDefaults']);
+    Route::get('/newsletter/categories/{id}/analytics', [NewsletterCategoryController::class, 'analytics']);
+    Route::post('/newsletter/categories/refresh-counts', [NewsletterCategoryController::class, 'refreshCounts']);
+    Route::get('/newsletter/form-signups/analytics', [NewsletterCategoryController::class, 'formSignupAnalytics']);
 
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);
