@@ -32,6 +32,9 @@ export { default as GDPRField } from './GDPRField.svelte';
 // Form Actions
 export { default as SaveProgressButton } from './SaveProgressButton.svelte';
 
+// PDF Generation
+export { default as PdfDownload } from './PdfDownload.svelte';
+
 // Type definitions
 export interface PaymentItem {
 	id: string;
