@@ -1,7 +1,5 @@
 <?php
 
-//  TODO Go through this file and remove UA and dual tracking references/usages
-
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
