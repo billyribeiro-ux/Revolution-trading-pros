@@ -5,9 +5,9 @@
  */
 
 // Get API base URL from environment variable or use default
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-export const CDN_URL = import.meta.env.VITE_CDN_URL || 'http://localhost:8000/storage';
-export const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
+export const API_BASE_URL = import.meta.env['VITE_API_URL'] || 'http://localhost:8000';
+export const CDN_URL = import.meta.env['VITE_CDN_URL'] || 'http://localhost:8000/storage';
+export const WS_URL = import.meta.env['VITE_WS_URL'] || 'ws://localhost:8000';
 
 /**
  * API Version
@@ -181,9 +181,9 @@ export async function apiFetch<T>(
 	const token = typeof window !== 'undefined' ? localStorage.getItem('rtp_auth_token') : null;
 
 	// Merge headers
-	const headers: HeadersInit = {
+	const headers: Record<string, string> = {
 		...REQUEST_CONFIG.headers,
-		...options.headers
+		...(options.headers as Record<string, string> | undefined)
 	};
 
 	if (token) {
@@ -303,31 +303,31 @@ function getErrorMessage(status: number): string {
  */
 export const api = {
 	get: <T = any>(endpoint: string, params?: Record<string, any>) =>
-		apiFetch<T>(endpoint, { method: 'GET', params }),
+		apiFetch<T>(endpoint, params ? { method: 'GET', params } : { method: 'GET' }),
 
 	post: <T = any>(endpoint: string, data?: any, params?: Record<string, any>) =>
 		apiFetch<T>(endpoint, {
 			method: 'POST',
-			body: data ? JSON.stringify(data) : undefined,
-			params
+			...(data ? { body: JSON.stringify(data) } : {}),
+			...(params ? { params } : {})
 		}),
 
 	put: <T = any>(endpoint: string, data?: any, params?: Record<string, any>) =>
 		apiFetch<T>(endpoint, {
 			method: 'PUT',
-			body: data ? JSON.stringify(data) : undefined,
-			params
+			...(data ? { body: JSON.stringify(data) } : {}),
+			...(params ? { params } : {})
 		}),
 
 	patch: <T = any>(endpoint: string, data?: any, params?: Record<string, any>) =>
 		apiFetch<T>(endpoint, {
 			method: 'PATCH',
-			body: data ? JSON.stringify(data) : undefined,
-			params
+			...(data ? { body: JSON.stringify(data) } : {}),
+			...(params ? { params } : {})
 		}),
 
 	delete: <T = any>(endpoint: string, params?: Record<string, any>) =>
-		apiFetch<T>(endpoint, { method: 'DELETE', params })
+		apiFetch<T>(endpoint, params ? { method: 'DELETE', params } : { method: 'DELETE' })
 };
 
 /**

@@ -346,5 +346,5 @@ export function getHighestRole(user: { email?: string; roles?: string[] } | null
 		}
 	}
 	
-	return ROLE_HIERARCHY[highestIndex];
+	return ROLE_HIERARCHY[highestIndex] ?? ROLES.USER;
 }

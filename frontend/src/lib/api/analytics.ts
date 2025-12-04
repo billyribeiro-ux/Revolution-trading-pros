@@ -8,14 +8,13 @@
  * @version 1.0.0
  */
 
-import { get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || 'http://localhost:8000/api';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions

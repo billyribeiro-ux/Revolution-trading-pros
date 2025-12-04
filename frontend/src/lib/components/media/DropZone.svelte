@@ -218,6 +218,8 @@
 </div>
 
 <style>
+  @reference "tailwindcss";
+
   .dropzone {
     @apply border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8;
     @apply bg-gray-50 dark:bg-gray-800/50;

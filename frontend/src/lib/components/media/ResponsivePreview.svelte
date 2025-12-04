@@ -219,6 +219,8 @@
 </div>
 
 <style>
+  @reference "tailwindcss";
+
   .responsive-preview {
     @apply bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4;
   }

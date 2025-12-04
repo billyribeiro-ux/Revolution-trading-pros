@@ -43,7 +43,7 @@ import { browser } from '$app/environment';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env['VITE_API_URL'] || 'http://localhost:8000/api';
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
@@ -415,7 +415,7 @@ class AuthenticationService {
 		if (!token) return null;
 
 		// Check if token needs refresh
-		if (this.isTokenExpiringSoon(auth.tokenExpiry)) {
+		if (this.isTokenExpiringSoon(auth.tokenExpiry ?? undefined)) {
 			try {
 				await this.refreshToken();
 				return authStore.getToken();
@@ -511,7 +511,7 @@ class AuthenticationService {
 		return (
 			error.name === 'AbortError' ||
 			error.name === 'NetworkError' ||
-			(error instanceof AuthError && error.code?.startsWith('5'))
+			(error instanceof AuthError && Boolean(error.code?.startsWith('5')))
 		);
 	}
 
@@ -550,7 +550,7 @@ class AuthenticationService {
 		const cookies = document.cookie.split(';');
 		for (const cookie of cookies) {
 			const [name, value] = cookie.trim().split('=');
-			if (name === 'XSRF-TOKEN') {
+			if (name === 'XSRF-TOKEN' && value) {
 				return decodeURIComponent(value);
 			}
 		}
@@ -1084,19 +1084,19 @@ class AuthenticationService {
 	 */
 	private stopSessionMonitoring(): void {
 		// Clear interval
-		if (this.sessionCheckInterval) {
+		if (this.sessionCheckInterval !== undefined) {
 			clearInterval(this.sessionCheckInterval);
-			this.sessionCheckInterval = undefined;
+			delete this.sessionCheckInterval;
 		}
 
 		// Remove event listeners using stored references
 		if (this.visibilityChangeHandler) {
 			document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
-			this.visibilityChangeHandler = undefined;
+			delete this.visibilityChangeHandler;
 		}
 		if (this.onlineHandler) {
 			window.removeEventListener('online', this.onlineHandler);
-			this.onlineHandler = undefined;
+			delete this.onlineHandler;
 		}
 	}
 
@@ -1126,9 +1126,9 @@ class AuthenticationService {
 		authStore.clearAuth();
 
 		// Clear timeouts
-		if (this.tokenRefreshTimeout) {
+		if (this.tokenRefreshTimeout !== undefined) {
 			clearTimeout(this.tokenRefreshTimeout);
-			this.tokenRefreshTimeout = undefined;
+			delete this.tokenRefreshTimeout;
 		}
 
 		// Stop session monitoring and clean up event listeners
