@@ -12,7 +12,7 @@ class MonsterInsights_API_Reports extends MonsterInsights_API_Client {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->base_url = ''; // TODO: Plug in the correct URL
+		$this->base_url = apply_filters( 'monsterinsights_api_url_reports', 'https://api.monsterinsights.com/v2/reports' );
 		parent::__construct();
 	}
 } 

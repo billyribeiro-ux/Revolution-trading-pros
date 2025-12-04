@@ -383,8 +383,161 @@ return [
     */
 
     'supported_formats' => [
-        'input' => ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'svg'],
+        'input' => ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'svg', 'heic', 'heif'],
         'output' => ['webp', 'avif', 'jpeg', 'png'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | HEIC/HEIF Support (Apple Format)
+    |--------------------------------------------------------------------------
+    |
+    | Auto-convert iPhone HEIC images on upload.
+    |
+    */
+
+    'heic' => [
+        'enabled' => env('IMAGE_HEIC_ENABLED', true),
+        'auto_convert' => true,
+        'convert_to' => 'jpeg', // jpeg or webp
+        'quality' => 90,
+        'preserve_exif' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SVG Optimization
+    |--------------------------------------------------------------------------
+    |
+    | Settings for SVG minification and optimization.
+    |
+    */
+
+    'svg' => [
+        'enabled' => env('IMAGE_SVG_OPTIMIZATION_ENABLED', true),
+        'minify' => true,
+        'remove_comments' => true,
+        'remove_metadata' => true,
+        'remove_empty_attrs' => true,
+        'remove_hidden_elements' => true,
+        'convert_colors_to_hex' => true,
+        'remove_dimensions' => false, // Keep viewBox but remove width/height
+        'precision' => 3, // Decimal precision for paths
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Smart Crop (Face Detection)
+    |--------------------------------------------------------------------------
+    |
+    | Intelligent cropping that detects faces/subjects.
+    |
+    */
+
+    'smart_crop' => [
+        'enabled' => env('IMAGE_SMART_CROP_ENABLED', true),
+        'detect_faces' => true,
+        'detect_subjects' => true, // Objects of interest
+        'fallback_position' => 'center', // If no faces/subjects found
+        'face_padding' => 0.2, // 20% padding around detected faces
+        'min_face_size' => 20, // Minimum face size in pixels
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Animated Image Conversion
+    |--------------------------------------------------------------------------
+    |
+    | Convert animated GIFs to more efficient formats.
+    |
+    */
+
+    'animated' => [
+        'enabled' => env('IMAGE_ANIMATED_CONVERSION_ENABLED', true),
+        'gif_to_webp' => true,
+        'gif_to_avif' => false, // AVIF animation support is limited
+        'max_frames' => 500, // Skip conversion for very long animations
+        'preserve_loops' => true,
+        'optimize_frames' => true, // Remove duplicate frames
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | On-the-fly Transformations
+    |--------------------------------------------------------------------------
+    |
+    | URL-based image transformations (like Cloudinary/Imgix).
+    |
+    */
+
+    'on_the_fly' => [
+        'enabled' => env('IMAGE_ON_THE_FLY_ENABLED', true),
+        'cache_transformations' => true,
+        'cache_ttl' => 86400 * 30, // 30 days
+        'allowed_operations' => ['resize', 'crop', 'fit', 'rotate', 'flip', 'blur', 'grayscale', 'quality'],
+        'max_width' => 4096,
+        'max_height' => 4096,
+        'sign_urls' => env('IMAGE_SIGN_URLS', false), // HMAC signature for security
+        'signature_key' => env('IMAGE_SIGNATURE_KEY'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Duplicate Detection
+    |--------------------------------------------------------------------------
+    |
+    | Settings for finding and managing duplicate images.
+    |
+    */
+
+    'duplicates' => [
+        'enabled' => true,
+        'detection_method' => 'hash', // hash, perceptual, both
+        'hash_algorithm' => 'sha256',
+        'perceptual_threshold' => 0.95, // 95% similarity
+        'auto_deduplicate' => false, // Require manual confirmation
+        'keep_strategy' => 'oldest', // oldest, newest, largest, smallest
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cleanup Scheduler
+    |--------------------------------------------------------------------------
+    |
+    | Automatic cleanup of unused and orphaned images.
+    |
+    */
+
+    'cleanup_scheduler' => [
+        'enabled' => env('IMAGE_CLEANUP_ENABLED', true),
+        'schedule' => 'daily', // hourly, daily, weekly
+        'unused_after_days' => 30, // Mark unused after 30 days
+        'delete_unused_after_days' => 90, // Auto-delete after 90 days (if enabled)
+        'auto_delete_unused' => false, // Require manual confirmation by default
+        'notify_before_delete' => true,
+        'notification_days_before' => 7,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Real-time Progress (WebSocket)
+    |--------------------------------------------------------------------------
+    |
+    | WebSocket broadcasting for optimization progress.
+    |
+    */
+
+    'realtime' => [
+        'enabled' => env('IMAGE_REALTIME_ENABLED', true),
+        'broadcast_channel' => 'image-optimization',
+        'broadcast_driver' => env('BROADCAST_DRIVER', 'pusher'),
+        'events' => [
+            'job_started' => true,
+            'job_progress' => true,
+            'job_completed' => true,
+            'job_failed' => true,
+            'batch_progress' => true,
+        ],
     ],
 
     /*
