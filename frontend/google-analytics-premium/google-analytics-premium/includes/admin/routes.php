@@ -962,8 +962,7 @@ class MonsterInsights_Rest_Routes {
 			$auth->set_measurement_protocol_secret( $value );
 		}
 
-		// Send API request to Relay
-		// TODO: Remove when token automation API is ready
+		// Send API request to Relay to sync measurement protocol token
 		$api = new MonsterInsights_API_Request( 'auth/mp-token/', 'POST' );
 		$api->set_additional_data( array(
 			'mp_token' => $value,
