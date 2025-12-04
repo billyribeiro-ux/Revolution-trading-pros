@@ -43,6 +43,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\NewsletterCategoryController;
 use App\Http\Controllers\Api\PastMembersController;
+use App\Http\Controllers\Admin\PastMembersDashboardController;
+use App\Http\Controllers\Admin\AbandonedCartController;
 use Illuminate\Support\Facades\Route;
 
 // ========================================
@@ -358,7 +360,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/members/{id}/send-email', [MemberController::class, 'sendEmail']);
     Route::post('/members/bulk-email', [MemberController::class, 'bulkEmail']);
 
-    // Past Members & Win-Back Campaigns
+    // Past Members & Win-Back Campaigns (Legacy)
     Route::get('/past-members', [PastMembersController::class, 'index']);
     Route::get('/past-members/stats', [PastMembersController::class, 'stats']);
     Route::get('/past-members/analytics', [PastMembersController::class, 'analytics']);
@@ -366,6 +368,25 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/past-members/bulk-win-back', [PastMembersController::class, 'sendBulkWinBack']);
     Route::post('/past-members/{userId}/survey', [PastMembersController::class, 'sendSurvey']);
     Route::post('/past-members/bulk-survey', [PastMembersController::class, 'sendBulkSurvey']);
+
+    // Enhanced Past Members Dashboard (v2.0)
+    Route::get('/past-members-dashboard/overview', [PastMembersDashboardController::class, 'overview']);
+    Route::get('/past-members-dashboard/period/{period}', [PastMembersDashboardController::class, 'byTimePeriod']);
+    Route::get('/past-members-dashboard/services', [PastMembersDashboardController::class, 'services']);
+    Route::get('/past-members-dashboard/churn-reasons', [PastMembersDashboardController::class, 'churnReasons']);
+    Route::get('/past-members-dashboard/campaigns', [PastMembersDashboardController::class, 'campaignHistory']);
+    Route::post('/past-members-dashboard/bulk-winback', [PastMembersDashboardController::class, 'sendBulkWinBack']);
+    Route::post('/past-members-dashboard/bulk-survey', [PastMembersDashboardController::class, 'sendBulkSurvey']);
+
+    // Abandoned Cart Recovery
+    Route::get('/abandoned-carts/dashboard', [AbandonedCartController::class, 'dashboard']);
+    Route::get('/abandoned-carts', [AbandonedCartController::class, 'index']);
+    Route::get('/abandoned-carts/templates', [AbandonedCartController::class, 'templates']);
+    Route::get('/abandoned-carts/{id}', [AbandonedCartController::class, 'show']);
+    Route::post('/abandoned-carts/{id}/send-recovery', [AbandonedCartController::class, 'sendRecoveryEmail']);
+    Route::post('/abandoned-carts/{id}/mark-recovered', [AbandonedCartController::class, 'markRecovered']);
+    Route::post('/abandoned-carts/bulk-recovery', [AbandonedCartController::class, 'sendBulkRecovery']);
+    Route::get('/abandoned-carts/track/{code}', [AbandonedCartController::class, 'trackClick']);
 
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);
@@ -518,6 +539,9 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/media/queue/status', [MediaController::class, 'queueStatus']);
     Route::get('/media/jobs/{jobId}', [MediaController::class, 'jobStatus']);
 });
+
+// Abandoned Cart Reporting (public - for frontend tracking)
+Route::post('/cart/abandoned', [AbandonedCartController::class, 'reportAbandoned']);
 
 // Form preview and submission (public)
 Route::get('/forms/preview/{slug}', [FormController::class, 'preview']);
