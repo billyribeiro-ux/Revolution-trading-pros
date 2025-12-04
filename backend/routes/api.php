@@ -764,3 +764,59 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/con
     Route::post('/releases/{bundleId}/cancel', [ContentLakeController::class, 'cancelRelease']);
     Route::delete('/releases/{bundleId}', [ContentLakeController::class, 'deleteRelease']);
 });
+
+// ========================================
+// BING SEO & INDEXNOW - COMPETITIVE ADVANTAGE
+// ========================================
+use App\Http\Controllers\Api\BingSeoController;
+use App\Http\Controllers\Api\PerformanceController;
+
+// Public IndexNow key file (required for verification)
+Route::get('/{key}.txt', [BingSeoController::class, 'indexNowKeyFile'])
+    ->where('key', '[a-f0-9\-]{36}');
+
+// Protected Bing SEO API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/bing-seo')->group(function () {
+    // Configuration & Status
+    Route::get('/config', [BingSeoController::class, 'getConfiguration']);
+    Route::get('/checklist', [BingSeoController::class, 'getChecklist']);
+
+    // IndexNow URL Submission (instant indexing)
+    Route::post('/indexnow/submit', [BingSeoController::class, 'submitUrl']);
+    Route::post('/indexnow/batch', [BingSeoController::class, 'batchSubmitUrls']);
+
+    // Bing Webmaster API
+    Route::post('/webmaster/submit', [BingSeoController::class, 'submitToWebmaster']);
+    Route::post('/sitemap/submit', [BingSeoController::class, 'submitSitemap']);
+
+    // Analytics
+    Route::get('/stats', [BingSeoController::class, 'getSubmissionStats']);
+    Route::get('/performance', [BingSeoController::class, 'getSearchPerformance']);
+    Route::get('/crawl-stats', [BingSeoController::class, 'getCrawlStats']);
+
+    // Meta Tags & Schema
+    Route::get('/meta-tags', [BingSeoController::class, 'getMetaTags']);
+    Route::post('/schema', [BingSeoController::class, 'generateSchema']);
+});
+
+// ========================================
+// PERFORMANCE OPTIMIZATION ENGINE
+// ========================================
+
+// Protected Performance API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/performance')->group(function () {
+    // Dashboard & Metrics
+    Route::get('/dashboard', [PerformanceController::class, 'dashboard']);
+    Route::get('/server', [PerformanceController::class, 'serverMetrics']);
+    Route::get('/database', [PerformanceController::class, 'databaseMetrics']);
+    Route::get('/cache', [PerformanceController::class, 'cacheMetrics']);
+
+    // Optimization
+    Route::get('/recommendations', [PerformanceController::class, 'recommendations']);
+    Route::post('/warm-caches', [PerformanceController::class, 'warmCaches']);
+    Route::get('/core-web-vitals', [PerformanceController::class, 'coreWebVitals']);
+
+    // Query Analysis
+    Route::post('/queries/analyze', [PerformanceController::class, 'analyzeQueries']);
+    Route::get('/queries/results', [PerformanceController::class, 'queryResults']);
+});
