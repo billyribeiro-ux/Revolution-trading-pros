@@ -2,12 +2,108 @@
 
 ## Table of Contents
 
-1. [Architecture Overview](#architecture-overview)
-2. [Frontend Components](#frontend-components)
-3. [Backend System](#backend-system)
-4. [API Reference](#api-reference)
-5. [Data Flow](#data-flow)
-6. [Step-by-Step Guide: Creating & Adding Forms](#step-by-step-guide)
+1. [Quick Start - Shortcode Style](#quick-start---shortcode-style)
+2. [Architecture Overview](#architecture-overview)
+3. [Frontend Components](#frontend-components)
+4. [Backend System](#backend-system)
+5. [API Reference](#api-reference)
+6. [Data Flow](#data-flow)
+7. [Step-by-Step Guide: Creating & Adding Forms](#step-by-step-guide)
+
+---
+
+## Quick Start - Shortcode Style
+
+The easiest way to add a form to any Svelte page - **just one line**:
+
+```svelte
+<script>
+  import { Form } from '$lib/components/forms';
+</script>
+
+<Form slug="contact-form" />
+```
+
+That's it! The `Form` component handles everything: loading, error states, validation, and submission.
+
+### Available Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `slug` | `string` | *required* | The form's URL slug |
+| `hideTitle` | `boolean` | `false` | Hide the form title |
+| `hideDescription` | `boolean` | `false` | Hide the description |
+| `submitText` | `string` | Form setting | Custom submit button text |
+| `successMessage` | `string` | Form setting | Custom success message |
+| `theme` | `'default'` \| `'minimal'` \| `'bordered'` \| `'card'` | `'default'` | Visual theme |
+| `class` | `string` | `''` | Additional CSS classes |
+| `onSuccess` | `(id: string) => void` | - | Callback after submission |
+| `onError` | `(error: string) => void` | - | Callback on error |
+| `redirectUrl` | `string` | Form setting | Redirect after submit |
+| `showSkeleton` | `boolean` | `true` | Show loading skeleton |
+
+### Theme Examples
+
+```svelte
+<!-- Minimal - no padding/borders -->
+<Form slug="newsletter" theme="minimal" />
+
+<!-- Bordered - simple border -->
+<Form slug="contact" theme="bordered" />
+
+<!-- Card - elevated card style with shadow -->
+<Form slug="feedback" theme="card" />
+```
+
+### With Callbacks
+
+```svelte
+<script>
+  import { Form } from '$lib/components/forms';
+  import { goto } from '$app/navigation';
+
+  function handleSuccess(submissionId) {
+    console.log('Submitted:', submissionId);
+    // Optional: redirect, show toast, etc.
+  }
+</script>
+
+<Form
+  slug="contact-form"
+  theme="card"
+  hideTitle
+  submitText="Send Message"
+  onSuccess={handleSuccess}
+/>
+```
+
+### Complete Page Example
+
+```svelte
+<!-- src/routes/contact/+page.svelte -->
+<script>
+  import { Form } from '$lib/components/forms';
+</script>
+
+<div class="container">
+  <h1>Contact Us</h1>
+  <p>Fill out the form below and we'll get back to you.</p>
+
+  <Form
+    slug="contact-form"
+    theme="card"
+    onSuccess={() => alert('Thanks!')}
+  />
+</div>
+
+<style>
+  .container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+</style>
+```
 
 ---
 

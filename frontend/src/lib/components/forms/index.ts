@@ -4,6 +4,8 @@
  * Comprehensive form management system matching FluentForm Pro features:
  * - FormBuilder: Visual form builder with drag-and-drop
  * - FormRenderer: Standard single-page form display
+ * - FormEmbed: Simple shortcode-style form embedding (recommended)
+ * - Form: Alias for FormEmbed - easiest way to add forms
  * - MultiStepFormRenderer: Multi-step wizard forms with progress tracking
  * - FormFieldRenderer: Individual field rendering with validation
  * - FormAnalytics: Form submission analytics dashboard
@@ -15,10 +17,21 @@
  * - FieldEditor: Field configuration UI
  * - QuizField: Interactive quiz/scoring form field
  * - RepeaterField: Dynamic repeating field groups
+ *
+ * QUICKSTART - Adding a form to any page:
+ * ```svelte
+ * <script>
+ *   import { Form } from '$lib/components/forms';
+ * </script>
+ *
+ * <Form slug="contact-form" />
+ * ```
  */
 
 export { default as FormBuilder } from './FormBuilder.svelte';
 export { default as FormRenderer } from './FormRenderer.svelte';
+export { default as FormEmbed } from './FormEmbed.svelte';
+export { default as Form } from './FormEmbed.svelte'; // Shortcode-style alias
 export { default as MultiStepFormRenderer } from './MultiStepFormRenderer.svelte';
 export { default as FormFieldRenderer } from './FormFieldRenderer.svelte';
 export { default as FormAnalytics } from './FormAnalytics.svelte';
