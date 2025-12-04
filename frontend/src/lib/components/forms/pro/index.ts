@@ -3,7 +3,7 @@
  *
  * Advanced form field components ported from FluentForm Pro plugin.
  * Includes all features from FluentForms 6.1.10 (December 2025):
- * - Payment processing (Stripe, PayPal, Square, Razorpay, Mollie)
+ * - Payment processing (Stripe, PayPal, Square, Razorpay, Mollie, Authorize.net)
  * - Address fields with HTML5 geolocation (6.1.0 Pro)
  * - International phone numbers
  * - NPS surveys & Quiz/Survey scoring
@@ -13,7 +13,12 @@
  * - PDF Generation with templates
  * - Accordion/Tab Input Fields (6.1.5)
  * - Enhanced Checkbox with "Others" option (6.1.5)
+ * - Digital Signature Field (6.1.5)
  * - Form Reports with PDF export (6.1.0 Pro)
+ * - Inventory Management (6.1.8)
+ * - Admin Approval Workflow (6.1.8)
+ * - Double Opt-in Email Verification (6.1.8)
+ * - Gutenberg Block Styler (6.1.5)
  */
 
 // Payment Components
@@ -21,6 +26,7 @@ export { default as PaymentField } from './PaymentField.svelte';
 export { default as PaymentMethodSelector } from './PaymentMethodSelector.svelte';
 export { default as PaymentSummary } from './PaymentSummary.svelte';
 export { default as CouponField } from './CouponField.svelte';
+export { default as AuthorizeNetPayment } from './AuthorizeNetPayment.svelte';
 
 // Pro Input Fields
 export { default as AddressField } from './AddressField.svelte';
@@ -33,10 +39,17 @@ export { default as CalculatorField } from './CalculatorField.svelte';
 // FluentForms 6.1.5 (November 2025) New Fields
 export { default as AccordionTabField } from './AccordionTabField.svelte';
 export { default as EnhancedCheckbox } from './EnhancedCheckbox.svelte';
+export { default as SignatureField } from './SignatureField.svelte';
+export { default as FormStyler } from './FormStyler.svelte';
 
 // FluentForms 6.1.0 Pro (August 2025) Features
 export { default as GeolocationAddress } from './GeolocationAddress.svelte';
 export { default as FormReport } from './FormReport.svelte';
+
+// FluentForms 6.1.8 (December 2025) Features
+export { default as InventoryField } from './InventoryField.svelte';
+export { default as AdminApprovalStatus } from './AdminApprovalStatus.svelte';
+export { default as DoubleOptIn } from './DoubleOptIn.svelte';
 
 // Compliance Fields
 export { default as GDPRField } from './GDPRField.svelte';
@@ -146,4 +159,92 @@ export interface FieldReport {
 	field_type: string;
 	responses: number;
 	data: { value: string; count: number; percentage: number }[];
+}
+
+// FluentForms 6.1.8 (December 2025) Types
+export interface ProductOption {
+	id: string;
+	name: string;
+	price: number;
+	stock: number;
+	maxPerOrder?: number;
+	image?: string;
+	sku?: string;
+	lowStockThreshold?: number;
+}
+
+export interface ProductSelection {
+	productId: string;
+	quantity: number;
+	product: ProductOption;
+}
+
+export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'needs_revision' | 'on_hold';
+
+export interface ApprovalLog {
+	id: string;
+	status: ApprovalStatus;
+	note?: string;
+	admin_name: string;
+	admin_email?: string;
+	created_at: string;
+}
+
+export type OptInStatus = 'pending' | 'sent' | 'confirmed' | 'expired' | 'failed';
+
+export interface OptInData {
+	status: OptInStatus;
+	email: string;
+	sentAt?: string;
+	confirmedAt?: string;
+	expiresAt?: string;
+	attempts?: number;
+}
+
+export interface AuthorizeNetPaymentData {
+	opaqueData: {
+		dataDescriptor: string;
+		dataValue: string;
+	};
+	cardInfo: {
+		lastFour: string;
+		cardType: string;
+		expirationDate: string;
+	};
+}
+
+export interface FormStyleSettings {
+	containerBg?: string;
+	containerPadding?: string;
+	containerBorderRadius?: string;
+	containerBorderColor?: string;
+	containerBorderWidth?: string;
+	containerShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+	labelColor?: string;
+	labelFontSize?: string;
+	labelFontWeight?: string;
+	labelSpacing?: string;
+	inputBg?: string;
+	inputTextColor?: string;
+	inputBorderColor?: string;
+	inputBorderRadius?: string;
+	inputFocusBorderColor?: string;
+	inputPlaceholderColor?: string;
+	inputPadding?: string;
+	inputFontSize?: string;
+	buttonBg?: string;
+	buttonTextColor?: string;
+	buttonHoverBg?: string;
+	buttonBorderRadius?: string;
+	buttonPadding?: string;
+	buttonFontSize?: string;
+	buttonFontWeight?: string;
+	buttonWidth?: 'auto' | 'full';
+	errorColor?: string;
+	errorBgColor?: string;
+	successColor?: string;
+	successBgColor?: string;
+	fontFamily?: string;
+	fieldGap?: string;
+	sectionGap?: string;
 }
