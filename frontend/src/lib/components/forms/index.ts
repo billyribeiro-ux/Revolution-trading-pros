@@ -1,31 +1,48 @@
 /**
  * Form Components - Revolution Trading Pros
  *
- * Comprehensive form management system matching FluentForm Pro features:
- * - FormBuilder: Visual form builder with drag-and-drop
- * - FormRenderer: Standard single-page form display
- * - FormEmbed: Simple shortcode-style form embedding (recommended)
- * - Form: Alias for FormEmbed - easiest way to add forms
- * - MultiStepFormRenderer: Multi-step wizard forms with progress tracking
- * - FormFieldRenderer: Individual field rendering with validation
- * - FormAnalytics: Form submission analytics dashboard
- * - FormList: Forms directory and management
- * - SubmissionsList: Submission management
- * - ThemeCustomizer: Form styling and themes
- * - EmbedCodeGenerator: Embed code generation
- * - FormTemplateSelector: Template selection
- * - FieldEditor: Field configuration UI
- * - QuizField: Interactive quiz/scoring form field
- * - RepeaterField: Dynamic repeating field groups
+ * FluentForm Pro-style form embedding for SvelteKit.
  *
- * QUICKSTART - Adding a form to any page:
+ * ═══════════════════════════════════════════════════════════════════════════
+ * QUICKSTART - Adding a form to any page (FluentForm style):
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
  * ```svelte
  * <script>
  *   import { Form } from '$lib/components/forms';
  * </script>
  *
- * <Form slug="contact-form" />
+ * <!-- By ID (recommended - like FluentForm's [fluentform id="5"]) -->
+ * <Form id={5} />
+ *
+ * <!-- By slug (URL-friendly alternative) -->
+ * <Form slug="contact-us" />
+ *
+ * <!-- With options -->
+ * <Form id={5} theme="card" hideTitle cssClasses="my-custom-form" />
  * ```
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * AVAILABLE PROPS (matching FluentForm shortcode attributes):
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * | Prop              | Type                                    | FluentForm Equiv    |
+ * |-------------------|-----------------------------------------|---------------------|
+ * | id                | number                                  | id="5"              |
+ * | slug              | string                                  | (n/a)               |
+ * | theme             | 'default'|'minimal'|'bordered'|'card'   | theme="..."         |
+ * | cssClasses        | string                                  | css_classes="..."   |
+ * | type              | 'classic'|'conversational'              | type="..."          |
+ * | hideTitle         | boolean                                 | (custom)            |
+ * | hideDescription   | boolean                                 | (custom)            |
+ * | submitText        | string                                  | (custom)            |
+ * | successMessage    | string                                  | (custom)            |
+ * | permissionMessage | string                                  | permission_message  |
+ * | onSuccess         | (id: string) => void                    | (JS callback)       |
+ * | onError           | (error: string) => void                 | (JS callback)       |
+ * | redirectUrl       | string                                  | (custom)            |
+ *
+ * @see https://fluentforms.com/wordpress-form-shortcode/
  */
 
 export { default as FormBuilder } from './FormBuilder.svelte';
