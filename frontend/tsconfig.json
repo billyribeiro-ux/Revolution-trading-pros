@@ -8,20 +8,38 @@
 		"allowImportingTsExtensions": true,
 		"allowArbitraryExtensions": true,
 		"skipLibCheck": true,
-		// Incremental strict mode - enable gradually as code is fixed
-		// TODO: Enable full strict mode after fixing all type errors
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-		"strict": false,
-		"strictNullChecks": false,
+
+		// ═══════════════════════════════════════════════════════════════════════════
+		// ENTERPRISE STRICT MODE CONFIGURATION
+		// Level: ICT11 Principal Engineer
+		// ═══════════════════════════════════════════════════════════════════════════
+
+		// Core strict settings - ENABLED
+		"strict": true,
+		"strictNullChecks": true,
 		"strictFunctionTypes": true,
 		"strictBindCallApply": true,
-		"strictPropertyInitialization": false,
-		"noImplicitAny": false,
+		"strictPropertyInitialization": true,
+		"noImplicitAny": true,
 		"noImplicitThis": true,
-		"noImplicitReturns": false,
+
+		// Additional strict checks - ENABLED
+		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"exactOptionalPropertyTypes": false,
-		"noUncheckedIndexedAccess": false
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+
+		// Code quality - ENABLED
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		// Type safety enhancements
+		"useUnknownInCatchVariables": true,
+		"noPropertyAccessFromIndexSignature": true,
+
+		// Declaration and source maps
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true
 	}
 }

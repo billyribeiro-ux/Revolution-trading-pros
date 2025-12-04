@@ -9,6 +9,7 @@
 		type PopupButton,
 		type PopupContent
 	} from '$lib/stores/popups';
+	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	let activeTab: 'content' | 'design' | 'display' | 'buttons' | 'form' = 'content';
 	let showPreview = false;
@@ -637,7 +638,7 @@
 							<h2 class="preview-popup-title">{popup.title}</h2>
 						{/if}
 						<div class="preview-popup-content">
-							{@html popup.content?.data || ''}
+							{@html sanitizePopupContent(popup.content?.data || '')}
 						</div>
 					</div>
 				</div>

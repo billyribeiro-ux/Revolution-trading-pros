@@ -28,6 +28,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\EmailCampaignController;
 use App\Http\Controllers\Admin\EmailTemplateController;
+use App\Http\Controllers\Admin\EmailSubscriberController;
+use App\Http\Controllers\Admin\EmailMetricsController;
+use App\Http\Controllers\Admin\EmailDomainController;
+use App\Http\Controllers\Admin\EmailAuditLogController;
+use App\Http\Controllers\Admin\EmailWebhookController;
 use App\Http\Controllers\Api\EmailTemplateBuilderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -247,6 +252,68 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/email/campaigns/{id}/analytics', [EmailCampaignController::class, 'analytics']);
     Route::get('/email/campaigns/{id}/preview', [EmailCampaignController::class, 'preview']);
     Route::post('/email/campaigns/{id}/test', [EmailCampaignController::class, 'sendTest']);
+
+    // Email Subscribers (Audience Management)
+    Route::get('/email/subscribers', [EmailSubscriberController::class, 'index']);
+    Route::get('/email/subscribers/stats', [EmailSubscriberController::class, 'stats']);
+    Route::get('/email/subscribers/tags', [EmailSubscriberController::class, 'tags']);
+    Route::get('/email/subscribers/export', [EmailSubscriberController::class, 'export']);
+    Route::post('/email/subscribers', [EmailSubscriberController::class, 'store']);
+    Route::post('/email/subscribers/import', [EmailSubscriberController::class, 'import']);
+    Route::get('/email/subscribers/{id}', [EmailSubscriberController::class, 'show']);
+    Route::put('/email/subscribers/{id}', [EmailSubscriberController::class, 'update']);
+    Route::delete('/email/subscribers/{id}', [EmailSubscriberController::class, 'destroy']);
+    Route::post('/email/subscribers/{id}/tags', [EmailSubscriberController::class, 'addTags']);
+    Route::delete('/email/subscribers/{id}/tags', [EmailSubscriberController::class, 'removeTags']);
+    Route::post('/email/subscribers/{id}/verify', [EmailSubscriberController::class, 'verify']);
+    Route::post('/email/subscribers/{id}/resend-verification', [EmailSubscriberController::class, 'resendVerification']);
+
+    // Email Metrics (Analytics Dashboard)
+    Route::get('/email/metrics/dashboard', [EmailMetricsController::class, 'dashboard']);
+    Route::get('/email/metrics/overview', [EmailMetricsController::class, 'overview']);
+    Route::get('/email/metrics/campaigns', [EmailMetricsController::class, 'campaigns']);
+    Route::get('/email/metrics/subscribers', [EmailMetricsController::class, 'subscribers']);
+    Route::get('/email/metrics/engagement', [EmailMetricsController::class, 'engagement']);
+    Route::get('/email/metrics/deliverability', [EmailMetricsController::class, 'deliverability']);
+    Route::get('/email/metrics/realtime', [EmailMetricsController::class, 'realtime']);
+    Route::get('/email/metrics/compare', [EmailMetricsController::class, 'compare']);
+    Route::get('/email/metrics/export', [EmailMetricsController::class, 'export']);
+
+    // Email Domains
+    Route::get('/email/domains', [EmailDomainController::class, 'index']);
+    Route::get('/email/domains/stats', [EmailDomainController::class, 'stats']);
+    Route::post('/email/domains', [EmailDomainController::class, 'store']);
+    Route::get('/email/domains/{id}', [EmailDomainController::class, 'show']);
+    Route::delete('/email/domains/{id}', [EmailDomainController::class, 'destroy']);
+    Route::post('/email/domains/{id}/verify', [EmailDomainController::class, 'verify']);
+    Route::get('/email/domains/{id}/dns', [EmailDomainController::class, 'dnsRecords']);
+    Route::post('/email/domains/{id}/check-dns', [EmailDomainController::class, 'checkDns']);
+    Route::get('/email/domains/{id}/deliverability', [EmailDomainController::class, 'deliverability']);
+
+    // Email Audit Logs
+    Route::get('/email/logs', [EmailAuditLogController::class, 'index']);
+    Route::get('/email/logs/stats', [EmailAuditLogController::class, 'stats']);
+    Route::get('/email/logs/filters', [EmailAuditLogController::class, 'filterOptions']);
+    Route::get('/email/logs/export', [EmailAuditLogController::class, 'export']);
+    Route::get('/email/logs/security', [EmailAuditLogController::class, 'securityEvents']);
+    Route::get('/email/logs/timeline', [EmailAuditLogController::class, 'resourceTimeline']);
+    Route::get('/email/logs/user/{userId}', [EmailAuditLogController::class, 'userActivity']);
+    Route::get('/email/logs/{id}', [EmailAuditLogController::class, 'show']);
+    Route::post('/email/logs/cleanup', [EmailAuditLogController::class, 'cleanup']);
+
+    // Email Webhooks
+    Route::get('/email/webhooks', [EmailWebhookController::class, 'index']);
+    Route::get('/email/webhooks/stats', [EmailWebhookController::class, 'stats']);
+    Route::get('/email/webhooks/events', [EmailWebhookController::class, 'events']);
+    Route::post('/email/webhooks', [EmailWebhookController::class, 'store']);
+    Route::get('/email/webhooks/{id}', [EmailWebhookController::class, 'show']);
+    Route::put('/email/webhooks/{id}', [EmailWebhookController::class, 'update']);
+    Route::delete('/email/webhooks/{id}', [EmailWebhookController::class, 'destroy']);
+    Route::post('/email/webhooks/{id}/test', [EmailWebhookController::class, 'test']);
+    Route::post('/email/webhooks/{id}/toggle', [EmailWebhookController::class, 'toggle']);
+    Route::post('/email/webhooks/{id}/rotate-secret', [EmailWebhookController::class, 'rotateSecret']);
+    Route::get('/email/webhooks/{id}/deliveries', [EmailWebhookController::class, 'deliveries']);
+    Route::post('/email/webhooks/deliveries/{deliveryId}/retry', [EmailWebhookController::class, 'retryDelivery']);
 
     // Coupons
     Route::get('/coupons', [CouponController::class, 'index']);
@@ -629,4 +696,127 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/crm
     Route::put('/pipelines/{id}', [PipelineController::class, 'update']);
     Route::delete('/pipelines/{id}', [PipelineController::class, 'destroy']);
     Route::post('/pipelines/{id}/stages', [PipelineController::class, 'addStage']);
+});
+
+// ========================================
+// SANITY-EQUIVALENT CONTENT LAKE API
+// ========================================
+use App\Http\Controllers\Api\ContentLakeController;
+
+// Public preview endpoint
+Route::get('/preview', [ContentLakeController::class, 'getByPreviewToken']);
+
+// Protected Content Lake API
+Route::middleware(['auth:sanctum'])->prefix('content-lake')->group(function () {
+    // GROQ Query API
+    Route::post('/query', [ContentLakeController::class, 'query']);
+
+    // Portable Text API
+    Route::post('/portable-text/render', [ContentLakeController::class, 'renderPortableText']);
+    Route::post('/portable-text/validate', [ContentLakeController::class, 'validatePortableText']);
+
+    // Document Perspective API
+    Route::get('/documents/{documentId}', [ContentLakeController::class, 'getDocument']);
+    Route::patch('/documents/{documentId}/draft', [ContentLakeController::class, 'updateDraft']);
+    Route::post('/documents/{documentId}/publish', [ContentLakeController::class, 'publishDocument']);
+    Route::post('/documents/{documentId}/unpublish', [ContentLakeController::class, 'unpublishDocument']);
+    Route::get('/documents/{documentId}/diff', [ContentLakeController::class, 'getDocumentDiff']);
+    Route::post('/documents/{documentId}/preview-token', [ContentLakeController::class, 'createPreviewToken']);
+
+    // Document History API
+    Route::get('/documents/{documentId}/history', [ContentLakeController::class, 'getHistory']);
+    Route::get('/documents/{documentId}/history/{revisionNumber}', [ContentLakeController::class, 'getRevision']);
+    Route::post('/documents/{documentId}/history/{revisionNumber}/restore', [ContentLakeController::class, 'restoreRevision']);
+    Route::post('/documents/{documentId}/history/compare', [ContentLakeController::class, 'compareRevisions']);
+});
+
+// Admin-only Content Lake API
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/content-lake')->group(function () {
+    // Webhooks API
+    Route::get('/webhooks', [ContentLakeController::class, 'listWebhooks']);
+    Route::post('/webhooks', [ContentLakeController::class, 'createWebhook']);
+    Route::put('/webhooks/{webhookId}', [ContentLakeController::class, 'updateWebhook']);
+    Route::delete('/webhooks/{webhookId}', [ContentLakeController::class, 'deleteWebhook']);
+    Route::post('/webhooks/{webhookId}/test', [ContentLakeController::class, 'testWebhook']);
+    Route::get('/webhooks/{webhookId}/deliveries', [ContentLakeController::class, 'getWebhookDeliveries']);
+
+    // Image Hotspot/Crop API
+    Route::post('/media/{mediaId}/hotspot', [ContentLakeController::class, 'setHotspot']);
+    Route::post('/media/{mediaId}/crop', [ContentLakeController::class, 'setCrop']);
+    Route::get('/media/{mediaId}/url', [ContentLakeController::class, 'getImageUrl']);
+    Route::post('/media/{mediaId}/placeholders', [ContentLakeController::class, 'generatePlaceholders']);
+
+    // Schema API
+    Route::get('/schemas', [ContentLakeController::class, 'listSchemas']);
+    Route::get('/schemas/{name}', [ContentLakeController::class, 'getSchema']);
+    Route::post('/schemas', [ContentLakeController::class, 'registerSchema']);
+    Route::post('/schemas/{name}/validate', [ContentLakeController::class, 'validateAgainstSchema']);
+    Route::get('/schemas/{name}/typescript', [ContentLakeController::class, 'generateTypeScript']);
+
+    // Release Bundles API
+    Route::get('/releases', [ContentLakeController::class, 'listReleases']);
+    Route::get('/releases/{bundleId}', [ContentLakeController::class, 'getRelease']);
+    Route::post('/releases', [ContentLakeController::class, 'createRelease']);
+    Route::post('/releases/{bundleId}/documents', [ContentLakeController::class, 'addDocumentToRelease']);
+    Route::delete('/releases/{bundleId}/documents/{documentId}', [ContentLakeController::class, 'removeDocumentFromRelease']);
+    Route::post('/releases/{bundleId}/schedule', [ContentLakeController::class, 'scheduleRelease']);
+    Route::post('/releases/{bundleId}/publish', [ContentLakeController::class, 'publishRelease']);
+    Route::post('/releases/{bundleId}/cancel', [ContentLakeController::class, 'cancelRelease']);
+    Route::delete('/releases/{bundleId}', [ContentLakeController::class, 'deleteRelease']);
+});
+
+// ========================================
+// BING SEO & INDEXNOW - COMPETITIVE ADVANTAGE
+// ========================================
+use App\Http\Controllers\Api\BingSeoController;
+use App\Http\Controllers\Api\PerformanceController;
+
+// Public IndexNow key file (required for verification)
+Route::get('/{key}.txt', [BingSeoController::class, 'indexNowKeyFile'])
+    ->where('key', '[a-f0-9\-]{36}');
+
+// Protected Bing SEO API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/bing-seo')->group(function () {
+    // Configuration & Status
+    Route::get('/config', [BingSeoController::class, 'getConfiguration']);
+    Route::get('/checklist', [BingSeoController::class, 'getChecklist']);
+
+    // IndexNow URL Submission (instant indexing)
+    Route::post('/indexnow/submit', [BingSeoController::class, 'submitUrl']);
+    Route::post('/indexnow/batch', [BingSeoController::class, 'batchSubmitUrls']);
+
+    // Bing Webmaster API
+    Route::post('/webmaster/submit', [BingSeoController::class, 'submitToWebmaster']);
+    Route::post('/sitemap/submit', [BingSeoController::class, 'submitSitemap']);
+
+    // Analytics
+    Route::get('/stats', [BingSeoController::class, 'getSubmissionStats']);
+    Route::get('/performance', [BingSeoController::class, 'getSearchPerformance']);
+    Route::get('/crawl-stats', [BingSeoController::class, 'getCrawlStats']);
+
+    // Meta Tags & Schema
+    Route::get('/meta-tags', [BingSeoController::class, 'getMetaTags']);
+    Route::post('/schema', [BingSeoController::class, 'generateSchema']);
+});
+
+// ========================================
+// PERFORMANCE OPTIMIZATION ENGINE
+// ========================================
+
+// Protected Performance API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/performance')->group(function () {
+    // Dashboard & Metrics
+    Route::get('/dashboard', [PerformanceController::class, 'dashboard']);
+    Route::get('/server', [PerformanceController::class, 'serverMetrics']);
+    Route::get('/database', [PerformanceController::class, 'databaseMetrics']);
+    Route::get('/cache', [PerformanceController::class, 'cacheMetrics']);
+
+    // Optimization
+    Route::get('/recommendations', [PerformanceController::class, 'recommendations']);
+    Route::post('/warm-caches', [PerformanceController::class, 'warmCaches']);
+    Route::get('/core-web-vitals', [PerformanceController::class, 'coreWebVitals']);
+
+    // Query Analysis
+    Route::post('/queries/analyze', [PerformanceController::class, 'analyzeQueries']);
+    Route::get('/queries/results', [PerformanceController::class, 'queryResults']);
 });
