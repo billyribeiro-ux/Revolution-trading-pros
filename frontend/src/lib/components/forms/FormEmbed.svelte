@@ -1,50 +1,66 @@
 <script lang="ts">
 	/**
-	 * FormEmbed - Simple shortcode-style form embedding
+	 * Form Component - Enterprise Form Embedding
 	 *
-	 * Usage:
-	 *   <FormEmbed slug="contact-form" />
+	 * Multiple ways to reference forms (pick one):
+	 *
+	 * 1. RECOMMENDED: Using Form Registry (type-safe)
+	 *    import { FORMS } from '$lib/config/forms';
+	 *    <Form form={FORMS.CONTACT} />
+	 *
+	 * 2. By slug:
+	 *    <Form slug="contact-us" />
+	 *
+	 * 3. By ID:
+	 *    <Form id="contact" />
 	 *
 	 * With options:
-	 *   <FormEmbed
-	 *     slug="contact-form"
-	 *     theme="minimal"
-	 *     hideTitle
-	 *     onSuccess={(id) => console.log('Submitted:', id)}
-	 *   />
+	 *    <Form
+	 *      form={FORMS.CONTACT}
+	 *      theme="card"
+	 *      hideTitle
+	 *      onSuccess={(id) => console.log('Submitted:', id)}
+	 *    />
 	 */
 
 	import { onMount } from 'svelte';
-	import { previewForm, submitForm, type Form } from '$lib/api/forms';
+	import { previewForm, submitForm, type Form as FormType } from '$lib/api/forms';
+	import type { FormDefinition } from '$lib/config/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
 
 	interface Props {
-		/** The form slug (required) */
-		slug: string;
-		/** Optional: Hide the form title */
+		/** Form from registry - RECOMMENDED: import { FORMS } from '$lib/config/forms' */
+		form?: FormDefinition;
+		/** Form slug (alternative to form prop) */
+		slug?: string;
+		/** Form ID (alternative to form prop) */
+		id?: string;
+		/** Hide the form title */
 		hideTitle?: boolean;
-		/** Optional: Hide the form description */
+		/** Hide the form description */
 		hideDescription?: boolean;
-		/** Optional: Custom submit button text (overrides form setting) */
+		/** Custom submit button text (overrides form setting) */
 		submitText?: string;
-		/** Optional: Custom success message (overrides form setting) */
+		/** Custom success message (overrides form setting) */
 		successMessage?: string;
-		/** Optional: Theme variant */
+		/** Theme variant: 'default' | 'minimal' | 'bordered' | 'card' */
 		theme?: 'default' | 'minimal' | 'bordered' | 'card';
-		/** Optional: Custom CSS class */
+		/** Custom CSS class */
 		class?: string;
-		/** Optional: Callback on successful submission */
+		/** Callback on successful submission */
 		onSuccess?: (submissionId: string) => void;
-		/** Optional: Callback on error */
+		/** Callback on error */
 		onError?: (error: string) => void;
-		/** Optional: Redirect URL after submission (overrides form setting) */
+		/** Redirect URL after submission (overrides form setting) */
 		redirectUrl?: string;
-		/** Optional: Show loading skeleton */
+		/** Show loading skeleton while loading */
 		showSkeleton?: boolean;
 	}
 
 	let {
-		slug,
+		form: formConfig,
+		slug: slugProp,
+		id: idProp,
 		hideTitle = false,
 		hideDescription = false,
 		submitText,
@@ -57,7 +73,18 @@
 		showSkeleton = true
 	}: Props = $props();
 
-	let form: Form | null = $state(null);
+	// Resolve the form slug from props (priority: form > slug > id)
+	function getFormSlug(): string {
+		if (formConfig?.slug) return formConfig.slug;
+		if (slugProp) return slugProp;
+		if (idProp) return idProp; // ID can be used as slug fallback
+		throw new Error('Form component requires either form, slug, or id prop');
+	}
+
+	// Get the resolved slug
+	let resolvedSlug = $derived(getFormSlug());
+
+	let formInstance: FormType | null = $state(null);
 	let formData: Record<string, any> = $state({});
 	let errors: Record<string, string[]> = $state({});
 	let loading = $state(true);
@@ -68,10 +95,16 @@
 	let visibleFields: Set<number> = $state(new Set());
 
 	onMount(async () => {
+		await loadForm();
+	});
+
+	async function loadForm() {
+		loading = true;
+		loadError = '';
 		try {
-			form = await previewForm(slug);
-			if (form?.fields) {
-				form.fields.forEach((field) => {
+			formInstance = await previewForm(resolvedSlug);
+			if (formInstance?.fields) {
+				formInstance.fields.forEach((field) => {
 					if (field.default_value) {
 						formData[field.name] = field.default_value;
 					}
@@ -83,7 +116,7 @@
 		} finally {
 			loading = false;
 		}
-	});
+	}
 
 	function shouldDisplayField(field: any): boolean {
 		if (!field.conditional_logic?.enabled) return true;
@@ -123,9 +156,9 @@
 	}
 
 	function updateVisibleFields() {
-		if (!form?.fields) return;
+		if (!formInstance?.fields) return;
 		const newVisible = new Set<number>();
-		form.fields.forEach((field) => {
+		formInstance.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
 				newVisible.add(field.id);
 			}
@@ -144,21 +177,21 @@
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
-		if (isSubmitting || !form) return;
+		if (isSubmitting || !formInstance) return;
 
 		errors = {};
 		isSubmitting = true;
 
 		try {
-			const result = await submitForm(slug, formData);
+			const result = await submitForm(resolvedSlug, formData);
 
 			if (result.success) {
 				submitted = true;
-				submitMessage = successMessage || result.message || form.settings?.success_message || 'Thank you for your submission!';
+				submitMessage = successMessage || result.message || formInstance.settings?.success_message || 'Thank you for your submission!';
 
 				// Reset form
 				formData = {};
-				form.fields?.forEach((field) => {
+				formInstance.fields?.forEach((field) => {
 					if (field.default_value) {
 						formData[field.name] = field.default_value;
 					}
@@ -192,35 +225,9 @@
 		errors = {};
 	}
 
-	$effect(() => {
-		// Re-fetch if slug changes
-		if (slug && !loading) {
-			loading = true;
-			loadError = '';
-			previewForm(slug)
-				.then((f) => {
-					form = f;
-					formData = {};
-					if (f?.fields) {
-						f.fields.forEach((field) => {
-							if (field.default_value) {
-								formData[field.name] = field.default_value;
-							}
-						});
-						updateVisibleFields();
-					}
-				})
-				.catch((err) => {
-					loadError = err instanceof Error ? err.message : 'Form not found';
-				})
-				.finally(() => {
-					loading = false;
-				});
-		}
-	});
 </script>
 
-<div class="form-embed form-embed--{theme} {className}" data-form-slug={slug}>
+<div class="form-embed form-embed--{theme} {className}" data-form-slug={resolvedSlug}>
 	{#if loading}
 		{#if showSkeleton}
 			<div class="form-skeleton">
@@ -245,18 +252,18 @@
 			<p>{submitMessage}</p>
 			<button type="button" class="btn-reset" onclick={resetForm}>Submit Another Response</button>
 		</div>
-	{:else if form}
-		{#if !hideTitle && form.title}
-			<h3 class="form-title">{form.title}</h3>
+	{:else if formInstance}
+		{#if !hideTitle && formInstance.title}
+			<h3 class="form-title">{formInstance.title}</h3>
 		{/if}
 
-		{#if !hideDescription && form.description}
-			<p class="form-description">{form.description}</p>
+		{#if !hideDescription && formInstance.description}
+			<p class="form-description">{formInstance.description}</p>
 		{/if}
 
 		<form onsubmit={handleSubmit} class="form-fields">
-			{#if form.fields}
-				{#each form.fields.sort((a, b) => a.order - b.order) as field (field.id)}
+			{#if formInstance.fields}
+				{#each formInstance.fields.sort((a, b) => a.order - b.order) as field (field.id)}
 					{#if field.id && visibleFields.has(field.id)}
 						<div class="field-wrapper" style="--field-width: {field.width || 100}%">
 							<FormFieldRenderer
@@ -276,7 +283,7 @@
 						<span class="btn-spinner"></span>
 						Submitting...
 					{:else}
-						{submitText || form.settings?.submit_text || 'Submit'}
+						{submitText || formInstance.settings?.submit_text || 'Submit'}
 					{/if}
 				</button>
 			</div>
