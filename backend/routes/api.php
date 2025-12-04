@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\Error404Controller;
 use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\FormSubmissionController;
+use App\Http\Controllers\Api\FormPdfController;
 use App\Http\Controllers\Api\HealthCheckController;
 use App\Http\Controllers\Api\IndicatorController;
 use App\Http\Controllers\Api\MeController;
@@ -551,6 +552,23 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->group(function ()
     Route::post('/forms/{formId}/submissions/bulk-update-status', [FormSubmissionController::class, 'bulkUpdateStatus']);
     Route::post('/forms/{formId}/submissions/bulk-delete', [FormSubmissionController::class, 'bulkDelete']);
     Route::get('/forms/{formId}/submissions/export', [FormSubmissionController::class, 'export']);
+
+    // Form submission PDFs (FluentForm Pro PDF feature)
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdfs', [FormPdfController::class, 'index']);
+    Route::post('/forms/{formId}/submissions/{submissionId}/pdf', [FormPdfController::class, 'generate']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/{pdfId}/download', [FormPdfController::class, 'download']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/{pdfId}/preview', [FormPdfController::class, 'preview']);
+    Route::delete('/forms/{formId}/submissions/{submissionId}/pdf/{pdfId}', [FormPdfController::class, 'destroy']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/download-direct', [FormPdfController::class, 'downloadDirect']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/stream', [FormPdfController::class, 'streamDirect']);
+    Route::post('/forms/{formId}/submissions/{submissionId}/receipt', [FormPdfController::class, 'receipt']);
+
+    // Form PDF templates
+    Route::get('/forms/{formId}/pdf-templates', [FormPdfController::class, 'templates']);
+    Route::post('/forms/{formId}/pdf-templates', [FormPdfController::class, 'storeTemplate']);
+    Route::put('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'updateTemplate']);
+    Route::delete('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'destroyTemplate']);
+    Route::get('/forms/{formId}/pdf-templates/{templateId}/preview', [FormPdfController::class, 'previewTemplate']);
 });
 
 // Download routes
