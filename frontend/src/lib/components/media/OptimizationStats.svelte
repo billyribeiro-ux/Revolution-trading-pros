@@ -185,6 +185,8 @@
 {/if}
 
 <style>
+  @reference "tailwindcss";
+
   .stats-compact {
     @apply inline-flex items-center gap-2 text-sm;
   }

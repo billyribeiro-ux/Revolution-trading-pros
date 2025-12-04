@@ -118,6 +118,8 @@
 {/if}
 
 <style>
+  @reference "tailwindcss";
+
   /* Base skeleton styles */
   .skeleton-shimmer {
     @apply absolute inset-0;

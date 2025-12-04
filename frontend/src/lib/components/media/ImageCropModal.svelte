@@ -64,7 +64,7 @@
   // Container dimensions
   let containerWidth = 0;
   let containerHeight = 0;
-  let scale = 1;
+  let imageScale = 1;
 
   // Load image
   onMount(() => {
@@ -166,8 +166,8 @@
     if (!isDragging && !isResizing) return;
 
     const point = 'touches' in e ? e.touches[0] : e;
-    const deltaX = (point.clientX - startX) / scale;
-    const deltaY = (point.clientY - startY) / scale;
+    const deltaX = (point.clientX - startX) / imageScale;
+    const deltaY = (point.clientY - startY) / imageScale;
 
     if (isDragging) {
       moveCropArea(deltaX, deltaY);
@@ -311,7 +311,7 @@
   $: if (imageLoaded && containerWidth && containerHeight) {
     const scaleX = containerWidth / image.naturalWidth;
     const scaleY = containerHeight / image.naturalHeight;
-    scale = Math.min(scaleX, scaleY, 1) * zoom;
+    imageScale = Math.min(scaleX, scaleY, 1) * zoom;
   }
 </script>
 
@@ -399,7 +399,7 @@
       {#if imageLoaded}
         <div
           class="image-wrapper"
-          style="transform: scale({scale}); transform-origin: center;"
+          style="transform: scale({imageScale}); transform-origin: center;"
         >
           <img
             src={src}
@@ -471,6 +471,8 @@
 </div>
 
 <style>
+  @reference "tailwindcss";
+
   .crop-modal-overlay {
     @apply fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4;
   }
