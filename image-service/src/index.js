@@ -27,6 +27,11 @@ import { workerPool } from './lib/worker-pool.js';
 import { cache } from './lib/cache.js';
 import { storage } from './lib/storage.js';
 import { onDemand } from './lib/on-demand.js';
+import { aiService } from './lib/ai-service.js';
+import { maintenanceService } from './lib/maintenance.js';
+import { formatDetection } from './lib/format-detection.js';
+import { cdnRulesService, compressionProfiles } from './lib/cdn-rules.js';
+import { bulkImportService } from './lib/bulk-import.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -112,6 +117,33 @@ app.get('/health', async (req, res) => {
     },
   });
 });
+
+/**
+ * Service stats
+ */
+app.get('/stats', (req, res) => {
+  const uptime = process.uptime();
+  const workerStats = workerPool.getStats ? workerPool.getStats() : { poolSize: 0 };
+  const cacheStats = cache.getStats ? cache.getStats() : { redisConnected: false };
+
+  res.json({
+    success: true,
+    uptime,
+    uptimeFormatted: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
+    imagesProcessed: globalStats.imagesProcessed || 0,
+    variantsGenerated: globalStats.variantsGenerated || 0,
+    totalBytesProcessed: globalStats.totalBytesProcessed || 0,
+    workers: workerStats,
+    cache: cacheStats,
+  });
+});
+
+// Global stats tracking
+const globalStats = {
+  imagesProcessed: 0,
+  variantsGenerated: 0,
+  totalBytesProcessed: 0,
+};
 
 /**
  * Get Sharp capabilities
@@ -438,6 +470,136 @@ app.delete('/media/:id', async (req, res) => {
     await cache.invalidateMedia(id);
 
     res.json({ success: true, message: `Deleted all files for ${id}` });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AI-Powered Endpoints
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * AI service status
+ */
+app.get('/ai/status', (req, res) => {
+  res.json({
+    success: true,
+    ...aiService.getStatus(),
+  });
+});
+
+/**
+ * Generate alt text for image
+ */
+app.post('/ai/alt-text', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No image provided' });
+    }
+
+    const context = req.body.context || '';
+    const altText = await aiService.generateAltText(req.file.buffer, context);
+
+    res.json({
+      success: true,
+      altText,
+      provider: aiService.isEnabled() ? 'ai' : 'local',
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Full image analysis
+ */
+app.post('/ai/analyze', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No image provided' });
+    }
+
+    const useAI = req.body.useAI !== 'false';
+    const analysis = await aiService.analyzeImage(req.file.buffer, { useAI });
+
+    res.json({
+      success: true,
+      analysis,
+      provider: aiService.isEnabled() && useAI ? 'ai' : 'local',
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Smart crop with subject detection
+ */
+app.post('/ai/smart-crop', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No image provided' });
+    }
+
+    const { width, height, focalX, focalY } = req.body;
+    const targetWidth = parseInt(width) || 800;
+    const targetHeight = parseInt(height) || 600;
+
+    const focalPoint = focalX && focalY
+      ? { x: parseFloat(focalX), y: parseFloat(focalY) }
+      : null;
+
+    const result = await aiService.smartCrop(
+      req.file.buffer,
+      targetWidth,
+      targetHeight,
+      { focalPoint }
+    );
+
+    // Save the cropped image
+    const id = uuidv4();
+    const key = `media/cropped/${id}.webp`;
+
+    const webpBuffer = await sharp(result.buffer)
+      .webp({ quality: 85 })
+      .toBuffer();
+
+    await storage.upload(key, webpBuffer, 'image/webp');
+
+    res.json({
+      success: true,
+      url: storage.getPublicUrl(key),
+      key,
+      cropRegion: result.cropRegion,
+      focalPoint: result.focalPoint,
+      dimensions: { width: targetWidth, height: targetHeight },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Auto-tag image
+ */
+app.post('/ai/auto-tag', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No image provided' });
+    }
+
+    const existingTags = req.body.existingTags
+      ? JSON.parse(req.body.existingTags)
+      : [];
+
+    const tags = await aiService.autoTag(req.file.buffer, existingTags);
+
+    res.json({
+      success: true,
+      tags,
+      provider: aiService.isEnabled() ? 'ai' : 'local',
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -795,6 +957,404 @@ async function generateVariant(buffer, options) {
     size: outputBuffer.length,
   };
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Maintenance Endpoints
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get maintenance status
+ */
+app.get('/maintenance/status', (req, res) => {
+  res.json({
+    success: true,
+    ...maintenanceService.getStats(),
+  });
+});
+
+/**
+ * Run maintenance manually
+ */
+app.post('/maintenance/run', async (req, res) => {
+  try {
+    const stats = await maintenanceService.run();
+    res.json({ success: true, stats });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Run specific maintenance task
+ */
+app.post('/maintenance/task/:taskName', async (req, res) => {
+  try {
+    await maintenanceService.runTask(req.params.taskName);
+    res.json({ success: true, task: req.params.taskName });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Format Detection Endpoints
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Detect optimal format for request (GET)
+ */
+app.get('/format/detect', (req, res) => {
+  const result = formatDetection.getOptimalFormat(req, {
+    contentType: req.query.contentType || 'photo',
+    hasAlpha: req.query.hasAlpha === 'true',
+    isAnimated: req.query.isAnimated === 'true',
+  });
+
+  res.json({
+    success: true,
+    ...result,
+    headers: {
+      Vary: formatDetection.getVaryHeader(),
+      'Cache-Control': formatDetection.getCacheControlHeader(),
+    },
+  });
+});
+
+/**
+ * Detect optimal format for request (POST)
+ */
+app.post('/format/detect', (req, res) => {
+  const { acceptHeader, userAgent, contentType, hasAlpha, isAnimated } = req.body;
+
+  const mockReq = {
+    headers: {
+      accept: acceptHeader || req.headers.accept,
+      'user-agent': userAgent || req.headers['user-agent'],
+    },
+  };
+
+  const result = formatDetection.getOptimalFormat(mockReq, {
+    contentType: contentType || 'photo',
+    hasAlpha: hasAlpha === true,
+    isAnimated: isAnimated === true,
+  });
+
+  res.json({
+    success: true,
+    ...result,
+    headers: {
+      Vary: formatDetection.getVaryHeader(),
+      'Cache-Control': formatDetection.getCacheControlHeader(),
+    },
+  });
+});
+
+/**
+ * Get picture sources for responsive images (GET)
+ */
+app.get('/format/picture-sources', (req, res) => {
+  const { url, sizes } = req.query;
+  const sizeArray = sizes ? sizes.split(',').map(Number) : [320, 640, 1024, 1920];
+
+  const sources = formatDetection.getPictureSources(url || '/placeholder', sizeArray);
+
+  res.json({
+    success: true,
+    sources,
+    sizes: cdnRulesService.generateSizes(sizeArray),
+  });
+});
+
+/**
+ * Get picture sources for responsive images (POST)
+ */
+app.post('/format/picture-sources', (req, res) => {
+  const { url, sizes } = req.body;
+  const sizeArray = Array.isArray(sizes) ? sizes : [320, 640, 1024, 1920];
+
+  const sources = formatDetection.getPictureSources(url || '/placeholder', sizeArray);
+
+  res.json({
+    success: true,
+    sources,
+    sizes: cdnRulesService.generateSizes(sizeArray),
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CDN Rules & Compression Profiles
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * List all compression profiles
+ */
+app.get('/cdn/profiles', (req, res) => {
+  res.json({
+    success: true,
+    profiles: cdnRulesService.listProfiles(),
+  });
+});
+
+/**
+ * Get specific profile details
+ */
+app.get('/cdn/profiles/:name', (req, res) => {
+  const profile = compressionProfiles[req.params.name];
+  if (!profile) {
+    return res.status(404).json({ success: false, error: 'Profile not found' });
+  }
+  res.json({ success: true, profile });
+});
+
+/**
+ * Generate transformation URL
+ */
+app.post('/cdn/transform-url', (req, res) => {
+  try {
+    const { originalUrl, url: urlParam, width, height, format, quality, fit, profile } = req.body;
+    const targetUrl = originalUrl || urlParam;
+
+    if (!targetUrl) {
+      return res.status(400).json({ success: false, error: 'URL is required (use "url" or "originalUrl")' });
+    }
+
+    const validation = cdnRulesService.validateOptions({ width, height, quality, format });
+    if (!validation.valid) {
+      return res.status(400).json({ success: false, errors: validation.errors });
+    }
+
+    const transformedUrl = cdnRulesService.generateTransformUrl(targetUrl, {
+      width, height, format, quality, fit, profile,
+    });
+
+    res.json({
+      success: true,
+      url: transformedUrl,
+      cacheHeaders: cdnRulesService.getCacheHeaders(),
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Generate srcset for responsive images
+ */
+app.post('/cdn/srcset', (req, res) => {
+  try {
+    const { originalUrl, url: urlParam, profile, format, maxWidth } = req.body;
+    const targetUrl = originalUrl || urlParam;
+
+    if (!targetUrl) {
+      return res.status(400).json({ success: false, error: 'URL is required (use "url" or "originalUrl")' });
+    }
+
+    const srcset = cdnRulesService.generateSrcset(targetUrl, {
+      profile: profile || 'web',
+      format: format || 'auto',
+      maxWidth: maxWidth ? parseInt(maxWidth) : null,
+    });
+
+    res.json({
+      success: true,
+      srcset,
+      sizes: cdnRulesService.generateSizes(cdnRulesService.getBreakpoints(profile || 'web')),
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Get social media presets
+ */
+app.get('/cdn/social-presets', (req, res) => {
+  res.json({
+    success: true,
+    presets: cdnRulesService.getSocialPresets(),
+  });
+});
+
+/**
+ * Generate social media optimized URL
+ */
+app.post('/cdn/social-url', (req, res) => {
+  try {
+    const { originalUrl, url: urlParam, platform } = req.body;
+    const targetUrl = originalUrl || urlParam;
+
+    if (!targetUrl) {
+      return res.status(400).json({ success: false, error: 'URL is required (use "url" or "originalUrl")' });
+    }
+
+    if (!platform) {
+      return res.status(400).json({ success: false, error: 'Platform is required' });
+    }
+
+    const url = cdnRulesService.generateSocialUrl(targetUrl, platform);
+
+    res.json({
+      success: true,
+      url,
+      platform,
+      preset: cdnRulesService.getSocialPresets()[platform],
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Bulk Import Endpoints
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Create bulk import job from URLs
+ */
+app.post('/import/urls', async (req, res) => {
+  try {
+    const { urls, options } = req.body;
+
+    if (!urls || !Array.isArray(urls) || urls.length === 0) {
+      return res.status(400).json({ success: false, error: 'No URLs provided' });
+    }
+
+    const items = urls.map(url => typeof url === 'string' ? { url } : url);
+    const job = await bulkImportService.createJob('urls', items, options || {});
+
+    // Start the job asynchronously
+    bulkImportService.startJob(job.id).catch(console.error);
+
+    res.json({
+      success: true,
+      job: {
+        id: job.id,
+        status: job.status,
+        totalItems: job.totalItems,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Create bulk import job from text (newline-separated URLs)
+ */
+app.post('/import/urls-text', async (req, res) => {
+  try {
+    const { text, options } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ success: false, error: 'No text provided' });
+    }
+
+    const items = bulkImportService.parseUrlList(text);
+    if (items.length === 0) {
+      return res.status(400).json({ success: false, error: 'No valid URLs found in text' });
+    }
+
+    const job = await bulkImportService.createJob('urls', items, options || {});
+    bulkImportService.startJob(job.id).catch(console.error);
+
+    res.json({
+      success: true,
+      job: {
+        id: job.id,
+        status: job.status,
+        totalItems: job.totalItems,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Get import job status
+ */
+app.get('/import/jobs/:jobId', (req, res) => {
+  const job = bulkImportService.getJob(req.params.jobId);
+
+  if (!job) {
+    return res.status(404).json({ success: false, error: 'Job not found' });
+  }
+
+  res.json({
+    success: true,
+    job: {
+      id: job.id,
+      source: job.source,
+      status: job.status,
+      totalItems: job.totalItems,
+      processedItems: job.processedItems,
+      successCount: job.successCount,
+      failedCount: job.failedCount,
+      skippedCount: job.skippedCount,
+      progress: Math.round((job.processedItems / job.totalItems) * 100),
+      createdAt: job.createdAt,
+      startedAt: job.startedAt,
+      completedAt: job.completedAt,
+    },
+  });
+});
+
+/**
+ * Get all import jobs
+ */
+app.get('/import/jobs', (req, res) => {
+  const jobs = bulkImportService.getAllJobs().map(job => ({
+    id: job.id,
+    source: job.source,
+    status: job.status,
+    totalItems: job.totalItems,
+    processedItems: job.processedItems,
+    progress: Math.round((job.processedItems / job.totalItems) * 100),
+    createdAt: job.createdAt,
+  }));
+
+  res.json({
+    success: true,
+    jobs,
+    stats: bulkImportService.getStats(),
+  });
+});
+
+/**
+ * Cancel import job
+ */
+app.post('/import/jobs/:jobId/cancel', (req, res) => {
+  try {
+    const job = bulkImportService.cancelJob(req.params.jobId);
+    res.json({ success: true, job: { id: job.id, status: job.status } });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Resume import job
+ */
+app.post('/import/jobs/:jobId/resume', async (req, res) => {
+  try {
+    const job = await bulkImportService.resumeJob(req.params.jobId);
+    res.json({ success: true, job: { id: job.id, status: job.status } });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Delete import job
+ */
+app.delete('/import/jobs/:jobId', (req, res) => {
+  try {
+    bulkImportService.deleteJob(req.params.jobId);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Error Handling
