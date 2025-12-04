@@ -1,15 +1,19 @@
 /**
- * FluentForm Pro Components
+ * FluentForm Pro Components (December 2025)
  *
  * Advanced form field components ported from FluentForm Pro plugin.
- * These components provide enhanced functionality for forms including:
- * - Payment processing
- * - Address fields with autocomplete
+ * Includes all features from FluentForms 6.1.10 (December 2025):
+ * - Payment processing (Stripe, PayPal, Square, Razorpay, Mollie)
+ * - Address fields with HTML5 geolocation (6.1.0 Pro)
  * - International phone numbers
- * - NPS surveys
+ * - NPS surveys & Quiz/Survey scoring
  * - Calculators
  * - GDPR/Terms compliance
- * - Save & Resume functionality
+ * - Save & Resume with one-time links (6.1.0 Pro)
+ * - PDF Generation with templates
+ * - Accordion/Tab Input Fields (6.1.5)
+ * - Enhanced Checkbox with "Others" option (6.1.5)
+ * - Form Reports with PDF export (6.1.0 Pro)
  */
 
 // Payment Components
@@ -25,6 +29,14 @@ export { default as NPSField } from './NPSField.svelte';
 export { default as RangeSliderField } from './RangeSliderField.svelte';
 export { default as ToggleField } from './ToggleField.svelte';
 export { default as CalculatorField } from './CalculatorField.svelte';
+
+// FluentForms 6.1.5 (November 2025) New Fields
+export { default as AccordionTabField } from './AccordionTabField.svelte';
+export { default as EnhancedCheckbox } from './EnhancedCheckbox.svelte';
+
+// FluentForms 6.1.0 Pro (August 2025) Features
+export { default as GeolocationAddress } from './GeolocationAddress.svelte';
+export { default as FormReport } from './FormReport.svelte';
 
 // Compliance Fields
 export { default as GDPRField } from './GDPRField.svelte';
@@ -86,4 +98,52 @@ export interface DiscountInfo {
 export interface TaxInfo {
 	rate: number;
 	amount: number;
+}
+
+// FluentForms 6.1.5 (November 2025) Types
+export interface AccordionSection {
+	id: string;
+	title: string;
+	icon?: string;
+	content?: string;
+}
+
+export interface CheckboxOption {
+	value: string;
+	label: string;
+}
+
+// FluentForms 6.1.0 Pro (August 2025) Types
+export interface GeolocationAddressValue {
+	address_line_1: string;
+	address_line_2: string;
+	city: string;
+	state: string;
+	zip: string;
+	country: string;
+	latitude?: number;
+	longitude?: number;
+	formatted_address?: string;
+}
+
+export interface FormReportData {
+	form_id: number;
+	form_title: string;
+	total_submissions: number;
+	date_range: {
+		start: string;
+		end: string;
+	};
+	field_reports: FieldReport[];
+	conversion_rate?: number;
+	avg_completion_time?: string;
+	top_sources?: { source: string; count: number }[];
+}
+
+export interface FieldReport {
+	field_name: string;
+	field_label: string;
+	field_type: string;
+	responses: number;
+	data: { value: string; count: number; percentage: number }[];
 }
