@@ -373,6 +373,24 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/settings/{key}', [SettingsController::class, 'show']);
     Route::put('/settings/{key}', [SettingsController::class, 'updateSingle']);
 
+    // API Connections Management
+    Route::prefix('connections')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\ApiConnectionController::class, 'index']);
+        Route::get('/services', [\App\Http\Controllers\Api\ApiConnectionController::class, 'services']);
+        Route::get('/summary', [\App\Http\Controllers\Api\ApiConnectionController::class, 'summary']);
+        Route::get('/health', [\App\Http\Controllers\Api\ApiConnectionController::class, 'health']);
+        Route::get('/attention', [\App\Http\Controllers\Api\ApiConnectionController::class, 'needsAttention']);
+        Route::get('/category/{category}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'byCategory']);
+        Route::get('/{serviceKey}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'show']);
+        Route::get('/{serviceKey}/logs', [\App\Http\Controllers\Api\ApiConnectionController::class, 'logs']);
+        Route::post('/{serviceKey}/connect', [\App\Http\Controllers\Api\ApiConnectionController::class, 'connect']);
+        Route::post('/{serviceKey}/disconnect', [\App\Http\Controllers\Api\ApiConnectionController::class, 'disconnect']);
+        Route::post('/{serviceKey}/test', [\App\Http\Controllers\Api\ApiConnectionController::class, 'test']);
+        Route::post('/{serviceKey}/verify', [\App\Http\Controllers\Api\ApiConnectionController::class, 'verify']);
+        Route::post('/{serviceKey}/refresh', [\App\Http\Controllers\Api\ApiConnectionController::class, 'refreshToken']);
+        Route::patch('/{serviceKey}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'update']);
+    });
+
     // Subscription Plans
     Route::get('/subscriptions/plans', [SubscriptionPlanController::class, 'index']);
     Route::post('/subscriptions/plans', [SubscriptionPlanController::class, 'store']);
