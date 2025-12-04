@@ -45,6 +45,7 @@ class FormPdfTemplate extends Model
     protected $fillable = [
         'form_id',
         'name',
+        'description',
         'template_type',
         'active',
         'paper_size',
@@ -52,6 +53,7 @@ class FormPdfTemplate extends Model
         'header_html',
         'body_html',
         'footer_html',
+        'cover_letter_html',
         'field_settings',
         'style_settings',
         'conditional_logic',
@@ -60,6 +62,26 @@ class FormPdfTemplate extends Model
         'filename_pattern',
         'password',
         'flatten_form',
+        // FluentForm PDF Generator features
+        'logo_url',
+        'logo_position',
+        'watermark_text',
+        'watermark_image',
+        'watermark_opacity',
+        'show_page_numbers',
+        'show_form_title',
+        'show_submission_date',
+        'show_field_labels',
+        'text_direction',
+        'font_family',
+        'font_size',
+        'font_color',
+        'heading_color',
+        'accent_color',
+        'background_color',
+        'border_style',
+        'include_empty_fields',
+        'entry_view',
     ];
 
     protected $casts = [
@@ -71,6 +93,13 @@ class FormPdfTemplate extends Model
         'attach_to_email' => 'boolean',
         'attach_to_confirmation' => 'boolean',
         'flatten_form' => 'boolean',
+        'show_page_numbers' => 'boolean',
+        'show_form_title' => 'boolean',
+        'show_submission_date' => 'boolean',
+        'show_field_labels' => 'boolean',
+        'include_empty_fields' => 'boolean',
+        'watermark_opacity' => 'float',
+        'font_size' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -83,6 +112,22 @@ class FormPdfTemplate extends Model
         'attach_to_email' => false,
         'attach_to_confirmation' => false,
         'flatten_form' => false,
+        'show_page_numbers' => true,
+        'show_form_title' => true,
+        'show_submission_date' => true,
+        'show_field_labels' => true,
+        'include_empty_fields' => false,
+        'text_direction' => 'ltr',
+        'logo_position' => 'left',
+        'watermark_opacity' => 0.1,
+        'font_family' => 'DejaVu Sans',
+        'font_size' => 12,
+        'font_color' => '#111827',
+        'heading_color' => '#1e3a8a',
+        'accent_color' => '#3b82f6',
+        'background_color' => '#ffffff',
+        'border_style' => 'solid',
+        'entry_view' => 'list',
     ];
 
     // =========================================================================
@@ -106,11 +151,15 @@ class FormPdfTemplate extends Model
         self::TYPE_SUMMARY => 'Submission Summary',
     ];
 
-    // Paper Sizes
+    // Paper Sizes (FluentForms compatible)
     public const SIZE_LETTER = 'letter';
     public const SIZE_LEGAL = 'legal';
     public const SIZE_A4 = 'a4';
     public const SIZE_A5 = 'a5';
+    public const SIZE_A6 = 'a6';
+    public const SIZE_B5 = 'b5';
+    public const SIZE_EXECUTIVE = 'executive';
+    public const SIZE_FOLIO = 'folio';
     public const SIZE_CUSTOM = 'custom';
 
     public const PAPER_SIZES = [
@@ -118,11 +167,49 @@ class FormPdfTemplate extends Model
         self::SIZE_LEGAL => ['width' => 612, 'height' => 1008, 'label' => 'Legal (8.5" x 14")'],
         self::SIZE_A4 => ['width' => 595, 'height' => 842, 'label' => 'A4 (210mm x 297mm)'],
         self::SIZE_A5 => ['width' => 420, 'height' => 595, 'label' => 'A5 (148mm x 210mm)'],
+        self::SIZE_A6 => ['width' => 297, 'height' => 420, 'label' => 'A6 (105mm x 148mm)'],
+        self::SIZE_B5 => ['width' => 516, 'height' => 729, 'label' => 'B5 (176mm x 250mm)'],
+        self::SIZE_EXECUTIVE => ['width' => 522, 'height' => 756, 'label' => 'Executive (7.25" x 10.5")'],
+        self::SIZE_FOLIO => ['width' => 612, 'height' => 936, 'label' => 'Folio (8.5" x 13")'],
     ];
 
     // Orientations
     public const ORIENTATION_PORTRAIT = 'portrait';
     public const ORIENTATION_LANDSCAPE = 'landscape';
+
+    // Text Directions (RTL/LTR support)
+    public const DIRECTION_LTR = 'ltr';
+    public const DIRECTION_RTL = 'rtl';
+
+    // Logo Positions
+    public const LOGO_LEFT = 'left';
+    public const LOGO_CENTER = 'center';
+    public const LOGO_RIGHT = 'right';
+
+    // Entry View Modes
+    public const VIEW_LIST = 'list';
+    public const VIEW_TABLE = 'table';
+    public const VIEW_GRID = 'grid';
+
+    // Border Styles
+    public const BORDER_NONE = 'none';
+    public const BORDER_SOLID = 'solid';
+    public const BORDER_DASHED = 'dashed';
+    public const BORDER_DOTTED = 'dotted';
+
+    // Font Families (web-safe + system fonts)
+    public const FONT_FAMILIES = [
+        'DejaVu Sans' => 'DejaVu Sans (Default)',
+        'DejaVu Serif' => 'DejaVu Serif',
+        'Arial' => 'Arial',
+        'Helvetica' => 'Helvetica',
+        'Times New Roman' => 'Times New Roman',
+        'Georgia' => 'Georgia',
+        'Courier New' => 'Courier New',
+        'Verdana' => 'Verdana',
+        'Tahoma' => 'Tahoma',
+        'Trebuchet MS' => 'Trebuchet MS',
+    ];
 
     // =========================================================================
     // RELATIONSHIPS

@@ -285,22 +285,7 @@ class FormPdfController extends Controller
         $form = Form::findOrFail($formId);
         $this->authorize('update', $form);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'template_type' => 'required|in:' . implode(',', array_keys(FormPdfTemplate::TEMPLATE_TYPES)),
-            'paper_size' => 'nullable|in:' . implode(',', array_keys(FormPdfTemplate::PAPER_SIZES)),
-            'orientation' => 'nullable|in:portrait,landscape',
-            'header_html' => 'nullable|string',
-            'body_html' => 'nullable|string',
-            'footer_html' => 'nullable|string',
-            'style_settings' => 'nullable|array',
-            'field_settings' => 'nullable|array',
-            'conditional_logic' => 'nullable|array',
-            'attach_to_email' => 'nullable|boolean',
-            'password' => 'nullable|string|max:255',
-            'active' => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->getTemplateValidationRules());
 
         $template = FormPdfTemplate::create([
             'form_id' => $formId,
@@ -315,6 +300,55 @@ class FormPdfController extends Controller
     }
 
     /**
+     * Get template validation rules.
+     */
+    protected function getTemplateValidationRules(bool $isUpdate = false): array
+    {
+        $required = $isUpdate ? 'sometimes' : 'required';
+
+        return [
+            'name' => "{$required}|string|max:255",
+            'description' => 'nullable|string|max:1000',
+            'template_type' => "{$required}|in:" . implode(',', array_keys(FormPdfTemplate::TEMPLATE_TYPES)),
+            'paper_size' => 'nullable|in:' . implode(',', array_keys(FormPdfTemplate::PAPER_SIZES)),
+            'orientation' => 'nullable|in:portrait,landscape',
+            'header_html' => 'nullable|string',
+            'body_html' => 'nullable|string',
+            'footer_html' => 'nullable|string',
+            'cover_letter_html' => 'nullable|string',
+            'style_settings' => 'nullable|array',
+            'field_settings' => 'nullable|array',
+            'conditional_logic' => 'nullable|array',
+            'attach_to_email' => 'nullable|boolean',
+            'attach_to_confirmation' => 'nullable|boolean',
+            'filename_pattern' => 'nullable|string|max:255',
+            'password' => 'nullable|string|max:255',
+            'flatten_form' => 'nullable|boolean',
+            'active' => 'nullable|boolean',
+            // FluentForm PDF Generator features
+            'logo_url' => 'nullable|url|max:500',
+            'logo_position' => 'nullable|in:left,center,right',
+            'watermark_text' => 'nullable|string|max:255',
+            'watermark_image' => 'nullable|url|max:500',
+            'watermark_opacity' => 'nullable|numeric|min:0|max:1',
+            'show_page_numbers' => 'nullable|boolean',
+            'show_form_title' => 'nullable|boolean',
+            'show_submission_date' => 'nullable|boolean',
+            'show_field_labels' => 'nullable|boolean',
+            'include_empty_fields' => 'nullable|boolean',
+            'entry_view' => 'nullable|in:list,table,grid',
+            'text_direction' => 'nullable|in:ltr,rtl',
+            'font_family' => 'nullable|string|max:100',
+            'font_size' => 'nullable|integer|min:8|max:24',
+            'font_color' => 'nullable|string|max:20',
+            'heading_color' => 'nullable|string|max:20',
+            'accent_color' => 'nullable|string|max:20',
+            'background_color' => 'nullable|string|max:20',
+            'border_style' => 'nullable|in:none,solid,dashed,dotted',
+        ];
+    }
+
+    /**
      * Update a PDF template.
      */
     public function updateTemplate(Request $request, int $formId, int $templateId): JsonResponse
@@ -326,22 +360,7 @@ class FormPdfController extends Controller
             ->where('form_id', $formId)
             ->firstOrFail();
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'template_type' => 'sometimes|in:' . implode(',', array_keys(FormPdfTemplate::TEMPLATE_TYPES)),
-            'paper_size' => 'nullable|in:' . implode(',', array_keys(FormPdfTemplate::PAPER_SIZES)),
-            'orientation' => 'nullable|in:portrait,landscape',
-            'header_html' => 'nullable|string',
-            'body_html' => 'nullable|string',
-            'footer_html' => 'nullable|string',
-            'style_settings' => 'nullable|array',
-            'field_settings' => 'nullable|array',
-            'conditional_logic' => 'nullable|array',
-            'attach_to_email' => 'nullable|boolean',
-            'password' => 'nullable|string|max:255',
-            'active' => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->getTemplateValidationRules(true));
 
         $template->update($validated);
 
@@ -349,6 +368,69 @@ class FormPdfController extends Controller
             'success' => true,
             'message' => 'Template updated successfully',
             'template' => $template->fresh(),
+        ]);
+    }
+
+    /**
+     * Get PDF configuration options (paper sizes, fonts, etc.).
+     */
+    public function config(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'config' => [
+                'template_types' => FormPdfTemplate::TEMPLATE_TYPES,
+                'paper_sizes' => FormPdfTemplate::PAPER_SIZES,
+                'font_families' => FormPdfTemplate::FONT_FAMILIES,
+                'logo_positions' => [
+                    'left' => 'Left',
+                    'center' => 'Center',
+                    'right' => 'Right',
+                ],
+                'text_directions' => [
+                    'ltr' => 'Left to Right',
+                    'rtl' => 'Right to Left (Arabic, Hebrew)',
+                ],
+                'entry_views' => [
+                    'list' => 'List View',
+                    'table' => 'Table View',
+                    'grid' => 'Grid View (2 columns)',
+                ],
+                'border_styles' => [
+                    'none' => 'No Border',
+                    'solid' => 'Solid',
+                    'dashed' => 'Dashed',
+                    'dotted' => 'Dotted',
+                ],
+                'filename_variables' => [
+                    '{form_name}' => 'Form title',
+                    '{submission_id}' => 'Submission ID',
+                    '{date}' => 'Current date (Y-m-d)',
+                    '{datetime}' => 'Current datetime',
+                    '{user_name}' => 'User name',
+                    '{user_email}' => 'User email',
+                ],
+                'template_variables' => [
+                    '{{form_id}}' => 'Form ID',
+                    '{{form_title}}' => 'Form title',
+                    '{{form_description}}' => 'Form description',
+                    '{{submission_id}}' => 'Submission ID',
+                    '{{submission_date}}' => 'Submission date',
+                    '{{submission_time}}' => 'Submission time',
+                    '{{user_name}}' => 'User name',
+                    '{{user_email}}' => 'User email',
+                    '{{ip_address}}' => 'IP address',
+                    '{{current_date}}' => 'Current date',
+                    '{{year}}' => 'Current year',
+                    '{{#each fields}}...{{/each}}' => 'Loop through fields',
+                    '{{label}}' => 'Field label (in loop)',
+                    '{{value}}' => 'Field value (in loop)',
+                    '{{#if payment}}...{{/if}}' => 'Payment conditional',
+                    '{{payment.amount}}' => 'Payment amount',
+                    '{{payment.currency}}' => 'Payment currency',
+                    '{{payment.status}}' => 'Payment status',
+                ],
+            ],
         ]);
     }
 
