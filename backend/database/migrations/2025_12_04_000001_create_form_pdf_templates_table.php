@@ -20,6 +20,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('form_id')->constrained('forms')->onDelete('cascade');
             $table->string('name');
+            $table->text('description')->nullable();
             $table->string('template_type', 50)->default('custom')->index();
             $table->boolean('active')->default(true)->index();
 
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->text('header_html')->nullable();
             $table->text('body_html')->nullable();
             $table->text('footer_html')->nullable();
+            $table->text('cover_letter_html')->nullable(); // Cover letter page
 
             // Settings
             $table->json('field_settings')->nullable(); // Which fields to include/exclude
@@ -45,6 +47,34 @@ return new class extends Migration
             $table->string('filename_pattern')->nullable();
             $table->string('password')->nullable(); // PDF password protection
             $table->boolean('flatten_form')->default(false);
+
+            // FluentForm PDF Generator features
+            // Logo/Branding
+            $table->string('logo_url', 500)->nullable();
+            $table->string('logo_position', 20)->default('left'); // left, center, right
+
+            // Watermark settings
+            $table->string('watermark_text')->nullable();
+            $table->string('watermark_image', 500)->nullable();
+            $table->decimal('watermark_opacity', 3, 2)->default(0.10);
+
+            // Display options
+            $table->boolean('show_page_numbers')->default(true);
+            $table->boolean('show_form_title')->default(true);
+            $table->boolean('show_submission_date')->default(true);
+            $table->boolean('show_field_labels')->default(true);
+            $table->boolean('include_empty_fields')->default(false);
+            $table->string('entry_view', 20)->default('list'); // list, table, grid
+
+            // Text/Font settings (FluentForm compatible)
+            $table->string('text_direction', 5)->default('ltr'); // ltr, rtl
+            $table->string('font_family', 100)->default('DejaVu Sans');
+            $table->unsignedTinyInteger('font_size')->default(12);
+            $table->string('font_color', 20)->default('#111827');
+            $table->string('heading_color', 20)->default('#1e3a8a');
+            $table->string('accent_color', 20)->default('#3b82f6');
+            $table->string('background_color', 20)->default('#ffffff');
+            $table->string('border_style', 20)->default('solid'); // none, solid, dashed, dotted
 
             $table->timestamps();
             $table->softDeletes();

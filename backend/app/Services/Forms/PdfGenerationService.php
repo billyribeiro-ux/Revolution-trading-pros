@@ -304,6 +304,20 @@ class PdfGenerationService
     {
         $styles = $data['styles'];
 
+        // Get direction for RTL support
+        $direction = $template->text_direction ?? 'ltr';
+        $dirAttribute = $direction === 'rtl' ? 'dir="rtl"' : '';
+
+        // Get font settings
+        $fontFamily = $template->font_family ?? $styles['font_family'] ?? 'DejaVu Sans';
+        $fontSize = $template->font_size ?? $styles['font_size'] ?? 12;
+        $fontColor = $template->font_color ?? $styles['text_color'] ?? '#111827';
+        $headingColor = $template->heading_color ?? $styles['primary_color'] ?? '#1e3a8a';
+        $accentColor = $template->accent_color ?? $styles['secondary_color'] ?? '#3b82f6';
+        $backgroundColor = $template->background_color ?? $styles['background_color'] ?? '#ffffff';
+        $borderStyle = $template->border_style ?? 'solid';
+        $borderColor = $styles['border_color'] ?? '#e5e7eb';
+
         // Process template sections with variable replacement
         $header = $this->processTemplate(
             $template->header_html ?? FormPdfTemplate::getDefaultHeader(),
@@ -320,10 +334,28 @@ class PdfGenerationService
             $data
         );
 
+        // Process cover letter if present
+        $coverLetter = '';
+        if ($template->cover_letter_html) {
+            $coverLetter = $this->processTemplate($template->cover_letter_html, $data);
+            $coverLetter = <<<HTML
+<div class="cover-letter">
+    {$coverLetter}
+</div>
+<div class="page-break"></div>
+HTML;
+        }
+
+        // Generate logo HTML
+        $logoHtml = $this->generateLogoHtml($template);
+
+        // Generate watermark CSS
+        $watermarkCss = $this->generateWatermarkCss($template);
+
         // Build complete HTML document
         return <<<HTML
 <!DOCTYPE html>
-<html>
+<html lang="en" {$dirAttribute}>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -333,20 +365,23 @@ class PdfGenerationService
             margin: {$styles['margin_top']}mm {$styles['margin_right']}mm {$styles['margin_bottom']}mm {$styles['margin_left']}mm;
         }
         body {
-            font-family: {$styles['font_family']};
-            font-size: {$styles['font_size']}pt;
-            line-height: {$styles['line_height']};
-            color: {$styles['text_color']};
-            background-color: {$styles['background_color']};
+            font-family: {$fontFamily}, Arial, sans-serif;
+            font-size: {$fontSize}pt;
+            line-height: 1.5;
+            color: {$fontColor};
+            background-color: {$backgroundColor};
             margin: 0;
             padding: 0;
+            direction: {$direction};
         }
+        {$watermarkCss}
         .header {
             position: fixed;
             top: -{$styles['margin_top']}mm;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 80px;
+            padding: 10px 20px;
         }
         .footer {
             position: fixed;
@@ -356,11 +391,24 @@ class PdfGenerationService
             height: 50px;
         }
         .content {
-            margin-top: 40px;
+            margin-top: 60px;
             margin-bottom: 40px;
         }
         .page-break {
             page-break-after: always;
+        }
+        .cover-letter {
+            padding: 40px 20px;
+        }
+        .logo-container {
+            margin-bottom: 20px;
+        }
+        .logo-left { text-align: left; }
+        .logo-center { text-align: center; }
+        .logo-right { text-align: right; }
+        .logo-container img {
+            max-height: 60px;
+            max-width: 200px;
         }
         table {
             width: 100%;
@@ -368,26 +416,53 @@ class PdfGenerationService
         }
         th, td {
             padding: 8px 12px;
-            text-align: left;
-            border-bottom: 1px solid {$styles['border_color']};
+            text-align: {$direction === 'rtl' ? 'right' : 'left'};
+            border-bottom: 1px {$borderStyle} {$borderColor};
         }
         th {
             background-color: #f3f4f6;
             font-weight: 600;
+            color: {$headingColor};
         }
-        .field-row {
+        /* Entry View: List */
+        .entry-list .field-row {
             margin-bottom: 15px;
             padding-bottom: 15px;
-            border-bottom: 1px solid {$styles['border_color']};
+            border-bottom: 1px {$borderStyle} {$borderColor};
         }
-        .field-label {
+        .entry-list .field-label {
             font-weight: 600;
-            color: {$styles['secondary_color']};
+            color: {$accentColor};
             margin-bottom: 5px;
             display: block;
         }
-        .field-value {
-            color: {$styles['text_color']};
+        .entry-list .field-value {
+            color: {$fontColor};
+        }
+        /* Entry View: Table */
+        .entry-table {
+            border: 1px {$borderStyle} {$borderColor};
+        }
+        .entry-table td:first-child {
+            width: 35%;
+            font-weight: 600;
+            background-color: #f9fafb;
+            color: {$accentColor};
+        }
+        /* Entry View: Grid */
+        .entry-grid {
+            display: table;
+            width: 100%;
+        }
+        .entry-grid .grid-row {
+            display: table-row;
+        }
+        .entry-grid .grid-cell {
+            display: table-cell;
+            width: 50%;
+            padding: 10px;
+            vertical-align: top;
+            border-bottom: 1px {$borderStyle} {$borderColor};
         }
         .payment-box {
             background-color: #f0fdf4;
@@ -401,8 +476,11 @@ class PdfGenerationService
             font-weight: 700;
             color: #059669;
         }
+        h1, h2, h3, h4 {
+            color: {$headingColor};
+        }
         a {
-            color: {$styles['primary_color']};
+            color: {$accentColor};
             text-decoration: none;
         }
         .text-center { text-align: center; }
@@ -412,9 +490,13 @@ class PdfGenerationService
         .text-lg { font-size: 14pt; }
         .mb-4 { margin-bottom: 16px; }
         .mt-4 { margin-top: 16px; }
+        .accent { color: {$accentColor}; }
+        .heading-color { color: {$headingColor}; }
     </style>
 </head>
 <body>
+    {$logoHtml}
+
     <div class="header">
         {$header}
     </div>
@@ -423,12 +505,86 @@ class PdfGenerationService
         {$footer}
     </div>
 
+    {$coverLetter}
+
     <div class="content">
         {$body}
     </div>
 </body>
 </html>
 HTML;
+    }
+
+    /**
+     * Generate logo HTML based on template settings.
+     */
+    protected function generateLogoHtml(FormPdfTemplate $template): string
+    {
+        if (empty($template->logo_url)) {
+            return '';
+        }
+
+        $position = $template->logo_position ?? 'left';
+        $positionClass = "logo-{$position}";
+
+        return <<<HTML
+<div class="logo-container {$positionClass}">
+    <img src="{$template->logo_url}" alt="Logo" />
+</div>
+HTML;
+    }
+
+    /**
+     * Generate watermark CSS based on template settings.
+     */
+    protected function generateWatermarkCss(FormPdfTemplate $template): string
+    {
+        $watermarkText = $template->watermark_text;
+        $watermarkImage = $template->watermark_image;
+        $opacity = $template->watermark_opacity ?? 0.1;
+
+        if (empty($watermarkText) && empty($watermarkImage)) {
+            return '';
+        }
+
+        if ($watermarkImage) {
+            return <<<CSS
+body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background-image: url('{$watermarkImage}');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: {$opacity};
+    z-index: -1;
+    pointer-events: none;
+}
+CSS;
+        }
+
+        // Text watermark
+        return <<<CSS
+body::before {
+    content: '{$watermarkText}';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 72pt;
+    font-weight: bold;
+    color: #000000;
+    opacity: {$opacity};
+    z-index: -1;
+    pointer-events: none;
+    white-space: nowrap;
+}
+CSS;
     }
 
     /**

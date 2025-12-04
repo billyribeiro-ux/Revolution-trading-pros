@@ -564,6 +564,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->group(function ()
     Route::post('/forms/{formId}/submissions/{submissionId}/receipt', [FormPdfController::class, 'receipt']);
 
     // Form PDF templates
+    Route::get('/forms/pdf/config', [FormPdfController::class, 'config']); // Configuration options
     Route::get('/forms/{formId}/pdf-templates', [FormPdfController::class, 'templates']);
     Route::post('/forms/{formId}/pdf-templates', [FormPdfController::class, 'storeTemplate']);
     Route::put('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'updateTemplate']);
