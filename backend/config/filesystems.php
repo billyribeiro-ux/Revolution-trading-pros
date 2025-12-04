@@ -95,6 +95,36 @@ return [
             'report' => false,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Cloudflare R2 - High Performance Object Storage
+        |--------------------------------------------------------------------------
+        |
+        | S3-compatible storage with FREE egress bandwidth.
+        | - 10GB free storage
+        | - 10M free reads/month
+        | - ZERO bandwidth costs
+        | - Global CDN built-in
+        |
+        | Get credentials: https://dash.cloudflare.com > R2 > Manage API Tokens
+        |
+        */
+
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('R2_BUCKET', 'revolution-trading-media'),
+            'url' => env('R2_PUBLIC_URL'),
+            'endpoint' => env('R2_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'report' => false,
+            'visibility' => 'public',
+            'cache_control' => 'public, max-age=31536000, immutable',
+        ],
+
     ],
 
     /*

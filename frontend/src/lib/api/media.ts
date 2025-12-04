@@ -807,6 +807,247 @@ class MediaApiClient {
 	async getPresets(): Promise<{ success: boolean; data: OptimizationPreset[] }> {
 		return this.getOptimizationPresets();
 	}
+
+	// ═══════════════════════════════════════════════════════════════════════
+	// Sharp High-Performance Image Service
+	// ═══════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Check Sharp service health
+	 */
+	async checkSharpHealth(): Promise<{
+		sharp_service: { available: boolean; url: string };
+		capabilities: {
+			formats: string[];
+			inputFormats: string[];
+			outputFormats: string[];
+			responsiveSizes: Record<string, number>;
+			qualityPresets: string[];
+		};
+		storage: { disk: string; r2_configured: boolean };
+	}> {
+		return this.request('GET', '/sharp/health');
+	}
+
+	/**
+	 * Upload and process image via Sharp service (10x faster)
+	 */
+	async sharpUpload(
+		file: File,
+		options: {
+			collection?: string;
+			preset?: 'maximum' | 'balanced' | 'performance' | 'thumbnail';
+			alt_text?: string;
+			title?: string;
+			generate_webp?: boolean;
+			generate_avif?: boolean;
+			generate_responsive?: boolean;
+			generate_thumbnail?: boolean;
+			generate_blurhash?: boolean;
+			generate_retina?: boolean;
+		} = {},
+		onProgress?: (progress: number) => void
+	): Promise<{
+		success: boolean;
+		media: SharpMediaResult;
+		processing_time_ms: number;
+		variants_count: number;
+		stats?: { originalSize: number; optimizedSize: number; savingsPercent: number };
+	}> {
+		const formData = new FormData();
+		formData.append('image', file);
+
+		if (options.collection) formData.append('collection', options.collection);
+		if (options.preset) formData.append('preset', options.preset);
+		if (options.alt_text) formData.append('alt_text', options.alt_text);
+		if (options.title) formData.append('title', options.title);
+		if (options.generate_webp !== undefined) formData.append('generate_webp', String(options.generate_webp));
+		if (options.generate_avif !== undefined) formData.append('generate_avif', String(options.generate_avif));
+		if (options.generate_responsive !== undefined) formData.append('generate_responsive', String(options.generate_responsive));
+		if (options.generate_thumbnail !== undefined) formData.append('generate_thumbnail', String(options.generate_thumbnail));
+		if (options.generate_blurhash !== undefined) formData.append('generate_blurhash', String(options.generate_blurhash));
+		if (options.generate_retina !== undefined) formData.append('generate_retina', String(options.generate_retina));
+
+		if (onProgress) {
+			return this.sharpUploadWithProgress(formData, onProgress);
+		}
+
+		return this.request('POST', '/admin/sharp/upload', formData, undefined, true);
+	}
+
+	private sharpUploadWithProgress(
+		formData: FormData,
+		onProgress: (progress: number) => void
+	): Promise<{
+		success: boolean;
+		media: SharpMediaResult;
+		processing_time_ms: number;
+		variants_count: number;
+		stats?: { originalSize: number; optimizedSize: number; savingsPercent: number };
+	}> {
+		return new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			const token = authStore.getToken();
+
+			xhr.upload.addEventListener('progress', (e) => {
+				if (e.lengthComputable) {
+					const progress = (e.loaded / e.total) * 100;
+					onProgress(progress);
+				}
+			});
+
+			xhr.addEventListener('load', () => {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					resolve(JSON.parse(xhr.responseText));
+				} else {
+					reject(new Error(`Upload failed: ${xhr.status}`));
+				}
+			});
+
+			xhr.addEventListener('error', () => {
+				reject(new Error('Upload failed'));
+			});
+
+			xhr.open('POST', `${API_BASE_URL}/admin/sharp/upload`);
+			if (token) {
+				xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+			}
+
+			xhr.send(formData);
+		});
+	}
+
+	/**
+	 * Bulk upload via Sharp service
+	 */
+	async sharpBulkUpload(
+		files: File[],
+		options: {
+			collection?: string;
+			preset?: 'maximum' | 'balanced' | 'performance' | 'thumbnail';
+		} = {}
+	): Promise<{
+		success: boolean;
+		uploaded: Array<{ index: number; success: boolean; media: SharpMediaResult }>;
+		errors: Array<{ index: number; filename: string; error: string }>;
+		total: number;
+		successful: number;
+		failed: number;
+	}> {
+		const formData = new FormData();
+		files.forEach((file) => formData.append('images[]', file));
+
+		if (options.collection) formData.append('collection', options.collection);
+		if (options.preset) formData.append('preset', options.preset);
+
+		return this.request('POST', '/admin/sharp/bulk-upload', formData, undefined, true);
+	}
+
+	/**
+	 * Process image from URL via Sharp
+	 */
+	async sharpProcessUrl(
+		url: string,
+		options: {
+			collection?: string;
+			preset?: 'maximum' | 'balanced' | 'performance' | 'thumbnail';
+		} = {}
+	): Promise<{ success: boolean; media: SharpMediaResult }> {
+		return this.request('POST', '/admin/sharp/process-url', { url, ...options });
+	}
+
+	/**
+	 * Optimize existing media via Sharp
+	 */
+	async sharpOptimize(
+		id: string,
+		preset: 'maximum' | 'balanced' | 'performance' | 'thumbnail' = 'balanced'
+	): Promise<{
+		success: boolean;
+		media: SharpMediaResult;
+		stats?: { originalSize: number; optimizedSize: number; savingsPercent: number };
+	}> {
+		return this.request('POST', `/admin/sharp/optimize/${id}`, { preset });
+	}
+
+	/**
+	 * Get media with all Sharp variants
+	 */
+	async sharpGetMedia(id: string): Promise<{
+		success: boolean;
+		media: SharpMediaResult;
+		variants: SharpVariant[];
+		srcset: string;
+		picture_sources: Array<{ type: string; srcset: string }>;
+	}> {
+		return this.request('GET', `/admin/sharp/media/${id}`);
+	}
+
+	/**
+	 * Get Sharp statistics
+	 */
+	async getSharpStatistics(): Promise<{
+		success: boolean;
+		statistics: {
+			total_media: number;
+			total_images: number;
+			optimized_images: number;
+			optimization_rate: number;
+			total_variants: number;
+			total_storage_bytes: number;
+			total_storage_human: string;
+			total_bytes_saved: number;
+			total_savings_human: string;
+			sharp_service: { available: boolean; url: string };
+		};
+	}> {
+		return this.request('GET', '/admin/sharp/statistics');
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sharp-specific Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface SharpMediaResult {
+	id: number;
+	filename: string;
+	url: string;
+	cdn_url?: string;
+	thumbnail_url?: string;
+	width: number;
+	height: number;
+	size: number;
+	size_human: string;
+	mime_type: string;
+	type: string;
+	collection?: string;
+	alt_text?: string;
+	title?: string;
+	is_optimized: boolean;
+	blurhash?: string;
+	lqip?: string;
+	variants: Array<{
+		type: string;
+		sizeName: string;
+		url: string;
+		width: number;
+		height: number;
+		size: number;
+	}>;
+	created_at: string;
+}
+
+export interface SharpVariant {
+	id: number;
+	type: string;
+	size_name: string;
+	format: string;
+	width: number;
+	height: number;
+	url: string;
+	size: number;
+	is_retina: boolean;
 }
 
 // Export singleton instance

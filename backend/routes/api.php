@@ -814,6 +814,33 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/bin
 });
 
 // ========================================
+// SHARP IMAGE SERVICE (HIGH-PERFORMANCE)
+// ========================================
+use App\Http\Controllers\Api\SharpMediaController;
+
+// Public Sharp service health check
+Route::get('/sharp/health', [SharpMediaController::class, 'health']);
+
+// Protected Sharp Media API (admin)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/sharp')->group(function () {
+    // Upload & Processing
+    Route::post('/upload', [SharpMediaController::class, 'upload']);
+    Route::post('/bulk-upload', [SharpMediaController::class, 'bulkUpload']);
+    Route::post('/process-url', [SharpMediaController::class, 'processUrl']);
+
+    // Optimization
+    Route::post('/optimize/{id}', [SharpMediaController::class, 'optimize']);
+
+    // Media Management
+    Route::get('/media', [SharpMediaController::class, 'index']);
+    Route::get('/media/{id}', [SharpMediaController::class, 'show']);
+    Route::delete('/media/{id}', [SharpMediaController::class, 'destroy']);
+
+    // Statistics
+    Route::get('/statistics', [SharpMediaController::class, 'statistics']);
+});
+
+// ========================================
 // PERFORMANCE OPTIMIZATION ENGINE
 // ========================================
 

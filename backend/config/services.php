@@ -53,4 +53,25 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sharp Image Processing Service
+    |--------------------------------------------------------------------------
+    |
+    | High-performance Node.js image processing service using Sharp (libvips).
+    | 10-15x faster than PHP-based image processing.
+    |
+    | Features:
+    | - WebP/AVIF conversion
+    | - Responsive image generation
+    | - BlurHash placeholders
+    | - Cloudflare R2 integration
+    |
+    */
+    'sharp' => [
+        'enabled' => env('SHARP_SERVICE_ENABLED', true),
+        'url' => env('SHARP_SERVICE_URL', 'http://localhost:3001'),
+        'timeout' => env('SHARP_SERVICE_TIMEOUT', 60),
+    ],
+
 ];
