@@ -361,6 +361,103 @@
 				></canvas>
 				<button type="button" class="btn-clear-signature">Clear</button>
 			</div>
+
+			<!-- Newsletter Subscribe Checkbox -->
+		{:else if field.field_type === 'newsletter_subscribe'}
+			<div class="newsletter-subscribe-wrapper">
+				<label class="newsletter-checkbox-label">
+					<input
+						type="checkbox"
+						id={`field-${field.name}`}
+						name={field.name}
+						checked={value === true || value === '1' || value === 'yes' || value === 'on'}
+						onchange={(e) => onchange?.(e.currentTarget.checked)}
+						{...field.attributes || {}}
+					/>
+					<span class="newsletter-checkbox-text">
+						{field.options?.checkbox_label || 'Yes, I want to receive newsletters'}
+					</span>
+				</label>
+				{#if field.options?.show_privacy_link !== false}
+					<a
+						href={field.options?.privacy_url || '/privacy-policy'}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="privacy-link"
+					>
+						Privacy Policy
+					</a>
+				{/if}
+			</div>
+
+			<!-- Newsletter Categories Multi-Select -->
+		{:else if field.field_type === 'newsletter_categories'}
+			<div class="newsletter-categories-wrapper">
+				{#if field.options && Array.isArray(field.options)}
+					{#each field.options as option}
+						{@const optionValue = typeof option === 'string' ? option : option.value}
+						{@const optionLabel = typeof option === 'string' ? option : option.label}
+						{@const optionDescription = typeof option === 'object' ? option.description : ''}
+						{@const optionIcon = typeof option === 'object' ? option.icon : null}
+						{@const optionColor = typeof option === 'object' ? option.color : null}
+						<label class="category-card" style={optionColor ? `border-left-color: ${optionColor}` : ''}>
+							<input
+								type="checkbox"
+								value={optionValue}
+								checked={isChecked(optionValue)}
+								onchange={(e) => handleCheckboxChange(optionValue, e.currentTarget.checked)}
+							/>
+							<div class="category-content">
+								{#if optionIcon}
+									<span class="category-icon">{optionIcon}</span>
+								{/if}
+								<div class="category-text">
+									<span class="category-label">{optionLabel}</span>
+									{#if optionDescription}
+										<span class="category-description">{optionDescription}</span>
+									{/if}
+								</div>
+							</div>
+						</label>
+					{/each}
+				{/if}
+				{#if field.attributes?.min_selections || field.attributes?.max_selections}
+					<small class="category-hint">
+						{#if field.attributes.min_selections && field.attributes.max_selections}
+							Select between {field.attributes.min_selections} and {field.attributes.max_selections} topics
+						{:else if field.attributes.min_selections}
+							Select at least {field.attributes.min_selections} topic(s)
+						{:else if field.attributes.max_selections}
+							Select up to {field.attributes.max_selections} topics
+						{/if}
+					</small>
+				{/if}
+			</div>
+
+			<!-- Newsletter Frequency Select -->
+		{:else if field.field_type === 'newsletter_frequency'}
+			<select
+				id={`field-${field.name}`}
+				name={field.name}
+				value={value || field.default_value || 'weekly'}
+				required={field.required}
+				class={getInputClasses()}
+				onchange={handleChange}
+				{...field.attributes || {}}
+			>
+				{#if field.options && Array.isArray(field.options)}
+					{#each field.options as option}
+						{@const optionValue = typeof option === 'string' ? option : option.value}
+						{@const optionLabel = typeof option === 'string' ? option : option.label}
+						<option value={optionValue}>{optionLabel}</option>
+					{/each}
+				{:else}
+					<option value="daily">Daily Digest</option>
+					<option value="weekly">Weekly Summary</option>
+					<option value="biweekly">Bi-Weekly Updates</option>
+					<option value="monthly">Monthly Newsletter</option>
+				{/if}
+			</select>
 		{/if}
 
 		{#if error && error.length > 0}
@@ -543,5 +640,133 @@
 	.field-html {
 		font-size: 0.875rem;
 		color: #374151;
+	}
+
+	/* Newsletter Subscribe Styles */
+	.newsletter-subscribe-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.newsletter-checkbox-label {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		cursor: pointer;
+		padding: 0.75rem;
+		background-color: #f9fafb;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		transition: all 0.2s;
+	}
+
+	.newsletter-checkbox-label:hover {
+		background-color: #f3f4f6;
+		border-color: #d1d5db;
+	}
+
+	.newsletter-checkbox-label input {
+		margin-top: 0.125rem;
+		width: 1.125rem;
+		height: 1.125rem;
+		cursor: pointer;
+		accent-color: #2563eb;
+	}
+
+	.newsletter-checkbox-text {
+		font-size: 0.875rem;
+		color: #374151;
+		line-height: 1.5;
+	}
+
+	.privacy-link {
+		font-size: 0.75rem;
+		color: #6b7280;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.privacy-link:hover {
+		color: #2563eb;
+		text-decoration: underline;
+	}
+
+	/* Newsletter Categories Styles */
+	.newsletter-categories-wrapper {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 0.75rem;
+	}
+
+	.category-card {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		padding: 1rem;
+		background-color: #ffffff;
+		border: 1px solid #e5e7eb;
+		border-left-width: 3px;
+		border-left-color: #d1d5db;
+		border-radius: 0.5rem;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.category-card:hover {
+		border-color: #d1d5db;
+		background-color: #f9fafb;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	}
+
+	.category-card:has(input:checked) {
+		border-color: #2563eb;
+		border-left-color: currentColor;
+		background-color: #eff6ff;
+	}
+
+	.category-card input {
+		margin-top: 0.125rem;
+		width: 1rem;
+		height: 1rem;
+		cursor: pointer;
+		accent-color: #2563eb;
+	}
+
+	.category-content {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		flex: 1;
+	}
+
+	.category-icon {
+		font-size: 1.25rem;
+		line-height: 1;
+	}
+
+	.category-text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.category-label {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #111827;
+	}
+
+	.category-description {
+		font-size: 0.75rem;
+		color: #6b7280;
+		line-height: 1.4;
+	}
+
+	.category-hint {
+		grid-column: 1 / -1;
+		font-size: 0.75rem;
+		color: #6b7280;
+		margin-top: 0.25rem;
 	}
 </style>
