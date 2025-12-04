@@ -15,7 +15,6 @@
 		IconMail,
 		IconSend,
 		IconSearch,
-		IconFilter,
 		IconRefresh,
 		IconChevronLeft,
 		IconChevronRight,
@@ -128,14 +127,16 @@
 	async function handleSendBulkWinBack() {
 		sending = true;
 		try {
-			const result = await pastMembersApi.sendBulkWinBack({
+			const options: import('$lib/api/past-members-dashboard').BulkEmailOptions = {
 				period: selectedPeriod,
-				template: emailTemplate,
-				custom_subject: emailTemplate === 'custom' ? customSubject : undefined,
-				custom_body: emailTemplate === 'custom' ? customBody : undefined,
-				offer_code: offerCode || undefined,
-				discount_percent: emailTemplate === 'discount' ? discountPercent : undefined
-			});
+				template: emailTemplate
+			};
+			if (emailTemplate === 'custom' && customSubject) options.custom_subject = customSubject;
+			if (emailTemplate === 'custom' && customBody) options.custom_body = customBody;
+			if (offerCode) options.offer_code = offerCode;
+			if (emailTemplate === 'discount') options.discount_percent = discountPercent;
+
+			const result = await pastMembersApi.sendBulkWinBack(options);
 
 			toastStore.success(result.message);
 			showEmailModal = false;
@@ -376,7 +377,7 @@
 					type="text"
 					placeholder="Search by name or email..."
 					bind:value={searchQuery}
-					onkeydown={(e) => e.key === 'Enter' && handleSearch()}
+					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
 				/>
 			</div>
 
@@ -494,8 +495,8 @@
 
 <!-- Win-Back Email Modal -->
 {#if showEmailModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showEmailModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEmailModal = false)}>
-		<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showEmailModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}>
+		<div class="modal-content" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<div>
 					<h2>Win-Back Campaign</h2>
@@ -626,8 +627,8 @@
 
 <!-- Survey Modal -->
 {#if showSurveyModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showSurveyModal = false)} onkeydown={(e) => e.key === 'Escape' && (showSurveyModal = false)}>
-		<div class="modal-content survey-modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showSurveyModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSurveyModal = false)}>
+		<div class="modal-content survey-modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<div>
 					<h2>Send Feedback Survey</h2>

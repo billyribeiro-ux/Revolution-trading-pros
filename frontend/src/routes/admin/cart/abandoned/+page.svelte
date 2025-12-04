@@ -5,8 +5,7 @@
 		type AbandonedCart,
 		type DashboardStats,
 		type CartStatus,
-		STATUS_LABELS,
-		STATUS_COLORS
+		STATUS_LABELS
 	} from '$lib/api/abandoned-carts';
 	import {
 		IconArrowLeft,
@@ -20,7 +19,6 @@
 		IconChevronRight,
 		IconX,
 		IconCurrencyDollar,
-		IconTrendingUp,
 		IconCheck,
 		IconClock,
 		IconAlertCircle,
@@ -79,10 +77,11 @@
 
 	async function loadCarts(page: number = 1) {
 		try {
-			const result = await abandonedCartsApi.getAbandonedCarts(page, pagination.per_page, {
-				status: statusFilter || undefined,
-				search: searchQuery || undefined
-			});
+			const filters: { status?: CartStatus; search?: string } = {};
+			if (statusFilter) filters.status = statusFilter;
+			if (searchQuery) filters.search = searchQuery;
+
+			const result = await abandonedCartsApi.getAbandonedCarts(page, pagination.per_page, filters);
 			carts = result.data;
 			pagination = {
 				current_page: result.current_page,
@@ -127,13 +126,15 @@
 
 		sending = true;
 		try {
-			const result = await abandonedCartsApi.sendBulkRecovery(Array.from(selectedCarts), {
-				template: recoveryTemplate,
-				custom_subject: recoveryTemplate === 'custom' ? customSubject : undefined,
-				custom_body: recoveryTemplate === 'custom' ? customBody : undefined,
-				discount_code: recoveryTemplate === 'final_discount' ? discountCode : undefined,
-				discount_percent: recoveryTemplate === 'final_discount' ? discountPercent : undefined
-			});
+			const options: import('$lib/api/abandoned-carts').RecoveryEmailOptions = {
+				template: recoveryTemplate
+			};
+			if (recoveryTemplate === 'custom' && customSubject) options.custom_subject = customSubject;
+			if (recoveryTemplate === 'custom' && customBody) options.custom_body = customBody;
+			if (recoveryTemplate === 'final_discount' && discountCode) options.discount_code = discountCode;
+			if (recoveryTemplate === 'final_discount') options.discount_percent = discountPercent;
+
+			const result = await abandonedCartsApi.sendBulkRecovery(Array.from(selectedCarts), options);
 
 			toastStore.success(result.message);
 			showRecoveryModal = false;
@@ -432,7 +433,7 @@
 					type="text"
 					placeholder="Search by email..."
 					bind:value={searchQuery}
-					onkeydown={(e) => e.key === 'Enter' && handleSearch()}
+					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
 				/>
 			</div>
 
@@ -580,8 +581,8 @@
 
 <!-- Recovery Email Modal -->
 {#if showRecoveryModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showRecoveryModal = false)} onkeydown={(e) => e.key === 'Escape' && (showRecoveryModal = false)}>
-		<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showRecoveryModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showRecoveryModal = false)}>
+		<div class="modal-content" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<div>
 					<h2>Send Recovery Email</h2>
