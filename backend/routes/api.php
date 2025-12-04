@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\Error404Controller;
 use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\FormSubmissionController;
 use App\Http\Controllers\Api\FormPdfController;
+use App\Http\Controllers\Api\FormApprovalController;
+use App\Http\Controllers\Api\FormInventoryController;
 use App\Http\Controllers\Api\HealthCheckController;
 use App\Http\Controllers\Api\IndicatorController;
 use App\Http\Controllers\Api\MeController;
@@ -570,6 +572,32 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->group(function ()
     Route::put('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'updateTemplate']);
     Route::delete('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'destroyTemplate']);
     Route::get('/forms/{formId}/pdf-templates/{templateId}/preview', [FormPdfController::class, 'previewTemplate']);
+
+    // Form Approval Workflow (FluentForms 6.1.8 - December 2025)
+    Route::get('/forms/{formId}/approval/pending', [FormApprovalController::class, 'pending']);
+    Route::get('/forms/{formId}/approval/status/{status}', [FormApprovalController::class, 'byStatus']);
+    Route::get('/forms/{formId}/approval/stats', [FormApprovalController::class, 'stats']);
+    Route::match(['get', 'post'], '/forms/{formId}/approval/settings', [FormApprovalController::class, 'settings']);
+    Route::post('/submissions/{submissionId}/approve', [FormApprovalController::class, 'approve']);
+    Route::post('/submissions/{submissionId}/reject', [FormApprovalController::class, 'reject']);
+    Route::post('/submissions/{submissionId}/request-revision', [FormApprovalController::class, 'requestRevision']);
+    Route::post('/submissions/{submissionId}/hold', [FormApprovalController::class, 'hold']);
+    Route::post('/submissions/{submissionId}/reset-approval', [FormApprovalController::class, 'reset']);
+    Route::get('/submissions/{submissionId}/approval-history', [FormApprovalController::class, 'history']);
+    Route::post('/submissions/bulk-approve', [FormApprovalController::class, 'bulkApprove']);
+    Route::post('/submissions/bulk-reject', [FormApprovalController::class, 'bulkReject']);
+
+    // Form Inventory Management (FluentForms 6.1.8 - December 2025)
+    Route::get('/forms/fields/{fieldId}/inventory', [FormInventoryController::class, 'fieldInventory']);
+    Route::get('/forms/fields/{fieldId}/inventory/{productId}', [FormInventoryController::class, 'getStock']);
+    Route::put('/forms/fields/{fieldId}/inventory/{productId}', [FormInventoryController::class, 'updateStock']);
+    Route::post('/forms/inventory/reserve', [FormInventoryController::class, 'reserve']);
+    Route::post('/forms/inventory/release', [FormInventoryController::class, 'release']);
+    Route::post('/forms/inventory/check-availability', [FormInventoryController::class, 'checkAvailability']);
+    Route::post('/forms/inventory/validate-cart', [FormInventoryController::class, 'validateCart']);
+    Route::get('/forms/{formId}/inventory/low-stock', [FormInventoryController::class, 'lowStock']);
+    Route::get('/forms/{formId}/inventory/report', [FormInventoryController::class, 'report']);
+    Route::post('/forms/inventory/bulk-update', [FormInventoryController::class, 'bulkUpdate']);
 });
 
 // Download routes
