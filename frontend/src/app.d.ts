@@ -101,7 +101,7 @@ declare module '@tabler/icons-svelte' {
 /**
  * Consent State interface for server-side access.
  */
-interface ConsentState {
+export interface ConsentState {
 	necessary: boolean;
 	analytics: boolean;
 	marketing: boolean;

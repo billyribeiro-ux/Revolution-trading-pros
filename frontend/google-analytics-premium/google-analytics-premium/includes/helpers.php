@@ -1613,7 +1613,7 @@ function monsterinsights_detect_tracking_code_error( $body ) {
 
 	$limit += monsterinsights_count_addon_codes( $current_code );
 
-	// TODO: Need to re-evaluate this regularly when third party plugins start supporting v4
+	// Count third-party GA4 tracking codes (v4 is now the standard since UA deprecation)
 	$limit += monsterinsights_count_third_party_v4_codes( $body );
 
 	// Count all the codes from the page.

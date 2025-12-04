@@ -57,13 +57,13 @@ export function createScrollObserver(options: {
 
 	if (typeof window === 'undefined') return null;
 
-	return new IntersectionObserver(
+	const obs = new IntersectionObserver(
 		(entries) => {
 			entries.forEach((entry) => {
 				if (entry.isIntersecting) {
 					entry.target.classList.add('animate-in');
 					if (once) {
-						observer.unobserve(entry.target);
+						obs.unobserve(entry.target);
 					}
 				} else if (!once) {
 					entry.target.classList.remove('animate-in');
@@ -72,6 +72,7 @@ export function createScrollObserver(options: {
 		},
 		{ threshold, rootMargin }
 	);
+	return obs;
 }
 
 // Global observer instance

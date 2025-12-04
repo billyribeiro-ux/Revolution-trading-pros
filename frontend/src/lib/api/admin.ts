@@ -38,7 +38,6 @@
  * @license MIT
  */
 
-import { get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth';
 import type { User } from '$lib/stores/auth';
 
@@ -46,7 +45,7 @@ import type { User } from '$lib/stores/auth';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || 'http://localhost:8000/api';
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
@@ -378,6 +377,8 @@ export class ApiRateLimitError extends AdminApiError {
 class RequestManager {
 	private cache = new Map<string, { data: any; expiry: number }>();
 	private pendingRequests = new Map<string, Promise<any>>();
+	// Reserved for request queuing - will be used for batch operations
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	private requestQueue: Array<() => Promise<any>> = [];
 	private activeRequests = 0;
 	private circuitBreaker = {
@@ -1598,16 +1599,16 @@ export default {
 // Additional API exports for compatibility
 export const teamsApi = {
 	list: async () => ({ data: [] }),
-	get: async (id: number) => ({ data: null }),
-	create: async (data: any) => ({ data: null }),
-	update: async (id: number, data: any) => ({ data: null }),
-	delete: async (id: number) => ({ success: true })
+	get: async (_id: number) => ({ data: null }),
+	create: async (_data: any) => ({ data: null }),
+	update: async (_id: number, _data: any) => ({ data: null }),
+	delete: async (_id: number) => ({ success: true })
 };
 
 export const departmentsApi = {
 	list: async () => ({ data: [] }),
-	get: async (id: number) => ({ data: null }),
-	create: async (data: any) => ({ data: null }),
-	update: async (id: number, data: any) => ({ data: null }),
-	delete: async (id: number) => ({ success: true })
+	get: async (_id: number) => ({ data: null }),
+	create: async (_data: any) => ({ data: null }),
+	update: async (_id: number, _data: any) => ({ data: null }),
+	delete: async (_id: number) => ({ success: true })
 };

@@ -166,6 +166,47 @@ class FormField extends Model
     public const TYPE_DIVIDER = 'divider';
     public const TYPE_SPACER = 'spacer';
 
+    // =========================================================================
+    // FLUENT FORM PRO FIELD TYPES (v6.1.8)
+    // =========================================================================
+
+    // Pro Input Types
+    public const TYPE_PHONE_INTL = 'phone_intl';          // International phone with country codes
+    public const TYPE_RANGE_SLIDER = 'range_slider';      // Advanced range slider with multiple handles
+    public const TYPE_NPS = 'nps';                        // Net Promoter Score (0-10)
+    public const TYPE_CALCULATOR = 'calculator';          // Calculation/computed field
+    public const TYPE_ADDRESS = 'address';                // Address with autocomplete
+    public const TYPE_TOGGLE = 'toggle';                  // Toggle switch (on/off)
+    public const TYPE_GDPR = 'gdpr';                      // GDPR consent checkbox
+    public const TYPE_TERMS = 'terms';                    // Terms & Conditions acceptance
+    public const TYPE_COUPON = 'coupon';                  // Coupon code field
+    public const TYPE_RICH_TEXT_INPUT = 'rich_text_input'; // Rich text input (lightweight)
+
+    // Pro Selection Types
+    public const TYPE_CHAINED_SELECT = 'chained_select';  // Cascading/dependent dropdowns
+    public const TYPE_POST_SELECTION = 'post_selection';  // Select from posts/products
+    public const TYPE_DYNAMIC_FIELD = 'dynamic_field';    // Dynamic population field
+    public const TYPE_OTHER_OPTION = 'other_option';      // "Other" write-in option
+
+    // Pro Layout/Container Types
+    public const TYPE_FORM_STEP = 'form_step';            // Multi-step form marker
+    public const TYPE_REPEATER = 'repeater';              // Repeater container
+    public const TYPE_ACCORDION = 'accordion';            // Accordion/collapsible section
+    public const TYPE_SHORTCODE = 'shortcode';            // WordPress shortcode embed
+    public const TYPE_ACTION_HOOK = 'action_hook';        // Custom action hook
+
+    // Pro Interactive Types
+    public const TYPE_QUIZ = 'quiz';                      // Quiz question field
+    public const TYPE_SAVE_PROGRESS = 'save_progress';    // Save & resume button
+    public const TYPE_CHAT = 'chat';                      // Conversational chat field
+
+    // Pro Payment Types
+    public const TYPE_PAYMENT = 'payment';                // Payment amount field
+    public const TYPE_PAYMENT_METHOD = 'payment_method';  // Payment method selector
+    public const TYPE_SUBSCRIPTION = 'subscription';      // Subscription plan selector
+    public const TYPE_ITEM_QUANTITY = 'item_quantity';    // Product quantity selector
+    public const TYPE_PAYMENT_SUMMARY = 'payment_summary'; // Order summary display
+
     /**
      * Available field types.
      *
@@ -183,33 +224,70 @@ class FormField extends Model
         self::TYPE_COLOR,
         self::TYPE_RANGE,
         self::TYPE_HIDDEN,
-        
+
         // Selection Types
         self::TYPE_SELECT,
         self::TYPE_RADIO,
         self::TYPE_CHECKBOX,
         self::TYPE_MULTISELECT,
-        
+
         // Date/Time Types
         self::TYPE_DATE,
         self::TYPE_TIME,
         self::TYPE_DATETIME,
-        
+
         // File Types
         self::TYPE_FILE,
         self::TYPE_IMAGE,
-        
+
         // Advanced Types
         self::TYPE_RATING,
         self::TYPE_SIGNATURE,
         self::TYPE_WYSIWYG,
         self::TYPE_CODE,
-        
+
         // Layout Types
         self::TYPE_HEADING,
         self::TYPE_PARAGRAPH,
         self::TYPE_DIVIDER,
         self::TYPE_SPACER,
+
+        // FluentForm Pro Input Types
+        self::TYPE_PHONE_INTL,
+        self::TYPE_RANGE_SLIDER,
+        self::TYPE_NPS,
+        self::TYPE_CALCULATOR,
+        self::TYPE_ADDRESS,
+        self::TYPE_TOGGLE,
+        self::TYPE_GDPR,
+        self::TYPE_TERMS,
+        self::TYPE_COUPON,
+        self::TYPE_RICH_TEXT_INPUT,
+
+        // FluentForm Pro Selection Types
+        self::TYPE_CHAINED_SELECT,
+        self::TYPE_POST_SELECTION,
+        self::TYPE_DYNAMIC_FIELD,
+        self::TYPE_OTHER_OPTION,
+
+        // FluentForm Pro Layout/Container Types
+        self::TYPE_FORM_STEP,
+        self::TYPE_REPEATER,
+        self::TYPE_ACCORDION,
+        self::TYPE_SHORTCODE,
+        self::TYPE_ACTION_HOOK,
+
+        // FluentForm Pro Interactive Types
+        self::TYPE_QUIZ,
+        self::TYPE_SAVE_PROGRESS,
+        self::TYPE_CHAT,
+
+        // FluentForm Pro Payment Types
+        self::TYPE_PAYMENT,
+        self::TYPE_PAYMENT_METHOD,
+        self::TYPE_SUBSCRIPTION,
+        self::TYPE_ITEM_QUANTITY,
+        self::TYPE_PAYMENT_SUMMARY,
     ];
 
     /**
@@ -218,6 +296,7 @@ class FormField extends Model
      * @var array<string, string>
      */
     public const FIELD_TYPE_LABELS = [
+        // Basic Types
         self::TYPE_TEXT => 'Text Input',
         self::TYPE_EMAIL => 'Email Address',
         self::TYPE_PHONE => 'Phone Number',
@@ -245,6 +324,43 @@ class FormField extends Model
         self::TYPE_PARAGRAPH => 'Paragraph Text',
         self::TYPE_DIVIDER => 'Divider Line',
         self::TYPE_SPACER => 'Spacer',
+
+        // FluentForm Pro Input Types
+        self::TYPE_PHONE_INTL => 'International Phone',
+        self::TYPE_RANGE_SLIDER => 'Advanced Range Slider',
+        self::TYPE_NPS => 'Net Promoter Score (NPS)',
+        self::TYPE_CALCULATOR => 'Calculator Field',
+        self::TYPE_ADDRESS => 'Address Autocomplete',
+        self::TYPE_TOGGLE => 'Toggle Switch',
+        self::TYPE_GDPR => 'GDPR Consent',
+        self::TYPE_TERMS => 'Terms & Conditions',
+        self::TYPE_COUPON => 'Coupon Code',
+        self::TYPE_RICH_TEXT_INPUT => 'Rich Text Input',
+
+        // FluentForm Pro Selection Types
+        self::TYPE_CHAINED_SELECT => 'Chained/Cascading Select',
+        self::TYPE_POST_SELECTION => 'Post/Product Selection',
+        self::TYPE_DYNAMIC_FIELD => 'Dynamic Field',
+        self::TYPE_OTHER_OPTION => 'Other Option (Write-in)',
+
+        // FluentForm Pro Layout Types
+        self::TYPE_FORM_STEP => 'Form Step',
+        self::TYPE_REPEATER => 'Repeater Container',
+        self::TYPE_ACCORDION => 'Accordion Section',
+        self::TYPE_SHORTCODE => 'Shortcode Embed',
+        self::TYPE_ACTION_HOOK => 'Action Hook',
+
+        // FluentForm Pro Interactive Types
+        self::TYPE_QUIZ => 'Quiz Question',
+        self::TYPE_SAVE_PROGRESS => 'Save Progress Button',
+        self::TYPE_CHAT => 'Chat/Conversational Field',
+
+        // FluentForm Pro Payment Types
+        self::TYPE_PAYMENT => 'Payment Amount',
+        self::TYPE_PAYMENT_METHOD => 'Payment Method',
+        self::TYPE_SUBSCRIPTION => 'Subscription Plan',
+        self::TYPE_ITEM_QUANTITY => 'Item Quantity',
+        self::TYPE_PAYMENT_SUMMARY => 'Payment Summary',
     ];
 
     /**
@@ -257,6 +373,11 @@ class FormField extends Model
         self::TYPE_RADIO,
         self::TYPE_CHECKBOX,
         self::TYPE_MULTISELECT,
+        self::TYPE_CHAINED_SELECT,
+        self::TYPE_POST_SELECTION,
+        self::TYPE_QUIZ,
+        self::TYPE_SUBSCRIPTION,
+        self::TYPE_PAYMENT_METHOD,
     ];
 
     /**
@@ -269,6 +390,11 @@ class FormField extends Model
         self::TYPE_PARAGRAPH,
         self::TYPE_DIVIDER,
         self::TYPE_SPACER,
+        self::TYPE_FORM_STEP,
+        self::TYPE_ACCORDION,
+        self::TYPE_SHORTCODE,
+        self::TYPE_ACTION_HOOK,
+        self::TYPE_PAYMENT_SUMMARY,
     ];
 
     /**
@@ -280,6 +406,77 @@ class FormField extends Model
         self::TYPE_FILE,
         self::TYPE_IMAGE,
         self::TYPE_SIGNATURE,
+    ];
+
+    /**
+     * FluentForm Pro exclusive field types.
+     *
+     * @var array<int, string>
+     */
+    public const PRO_TYPES = [
+        self::TYPE_PHONE_INTL,
+        self::TYPE_RANGE_SLIDER,
+        self::TYPE_NPS,
+        self::TYPE_CALCULATOR,
+        self::TYPE_ADDRESS,
+        self::TYPE_TOGGLE,
+        self::TYPE_GDPR,
+        self::TYPE_TERMS,
+        self::TYPE_COUPON,
+        self::TYPE_RICH_TEXT_INPUT,
+        self::TYPE_CHAINED_SELECT,
+        self::TYPE_POST_SELECTION,
+        self::TYPE_DYNAMIC_FIELD,
+        self::TYPE_OTHER_OPTION,
+        self::TYPE_FORM_STEP,
+        self::TYPE_REPEATER,
+        self::TYPE_ACCORDION,
+        self::TYPE_SHORTCODE,
+        self::TYPE_ACTION_HOOK,
+        self::TYPE_QUIZ,
+        self::TYPE_SAVE_PROGRESS,
+        self::TYPE_CHAT,
+        self::TYPE_PAYMENT,
+        self::TYPE_PAYMENT_METHOD,
+        self::TYPE_SUBSCRIPTION,
+        self::TYPE_ITEM_QUANTITY,
+        self::TYPE_PAYMENT_SUMMARY,
+    ];
+
+    /**
+     * Payment-related field types.
+     *
+     * @var array<int, string>
+     */
+    public const PAYMENT_TYPES = [
+        self::TYPE_PAYMENT,
+        self::TYPE_PAYMENT_METHOD,
+        self::TYPE_SUBSCRIPTION,
+        self::TYPE_ITEM_QUANTITY,
+        self::TYPE_PAYMENT_SUMMARY,
+        self::TYPE_COUPON,
+    ];
+
+    /**
+     * Container field types (can hold child fields).
+     *
+     * @var array<int, string>
+     */
+    public const CONTAINER_TYPES = [
+        self::TYPE_REPEATER,
+        self::TYPE_ACCORDION,
+        self::TYPE_FORM_STEP,
+    ];
+
+    /**
+     * Quiz/Assessment field types.
+     *
+     * @var array<int, string>
+     */
+    public const QUIZ_TYPES = [
+        self::TYPE_QUIZ,
+        self::TYPE_NPS,
+        self::TYPE_RATING,
     ];
 
     // =========================================================================

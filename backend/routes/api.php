@@ -7,6 +7,9 @@ use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\Error404Controller;
 use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\FormSubmissionController;
+use App\Http\Controllers\Api\FormPdfController;
+use App\Http\Controllers\Api\FormApprovalController;
+use App\Http\Controllers\Api\FormInventoryController;
 use App\Http\Controllers\Api\HealthCheckController;
 use App\Http\Controllers\Api\IndicatorController;
 use App\Http\Controllers\Api\MeController;
@@ -43,6 +46,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\NewsletterCategoryController;
 use App\Http\Controllers\Api\PastMembersController;
+use App\Http\Controllers\Admin\PastMembersDashboardController;
+use App\Http\Controllers\Admin\AbandonedCartController;
 use Illuminate\Support\Facades\Route;
 
 // ========================================
@@ -358,7 +363,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/members/{id}/send-email', [MemberController::class, 'sendEmail']);
     Route::post('/members/bulk-email', [MemberController::class, 'bulkEmail']);
 
-    // Past Members & Win-Back Campaigns
+    // Past Members & Win-Back Campaigns (Legacy)
     Route::get('/past-members', [PastMembersController::class, 'index']);
     Route::get('/past-members/stats', [PastMembersController::class, 'stats']);
     Route::get('/past-members/analytics', [PastMembersController::class, 'analytics']);
@@ -367,11 +372,48 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/past-members/{userId}/survey', [PastMembersController::class, 'sendSurvey']);
     Route::post('/past-members/bulk-survey', [PastMembersController::class, 'sendBulkSurvey']);
 
+    // Enhanced Past Members Dashboard (v2.0)
+    Route::get('/past-members-dashboard/overview', [PastMembersDashboardController::class, 'overview']);
+    Route::get('/past-members-dashboard/period/{period}', [PastMembersDashboardController::class, 'byTimePeriod']);
+    Route::get('/past-members-dashboard/services', [PastMembersDashboardController::class, 'services']);
+    Route::get('/past-members-dashboard/churn-reasons', [PastMembersDashboardController::class, 'churnReasons']);
+    Route::get('/past-members-dashboard/campaigns', [PastMembersDashboardController::class, 'campaignHistory']);
+    Route::post('/past-members-dashboard/bulk-winback', [PastMembersDashboardController::class, 'sendBulkWinBack']);
+    Route::post('/past-members-dashboard/bulk-survey', [PastMembersDashboardController::class, 'sendBulkSurvey']);
+
+    // Abandoned Cart Recovery
+    Route::get('/abandoned-carts/dashboard', [AbandonedCartController::class, 'dashboard']);
+    Route::get('/abandoned-carts', [AbandonedCartController::class, 'index']);
+    Route::get('/abandoned-carts/templates', [AbandonedCartController::class, 'templates']);
+    Route::get('/abandoned-carts/{id}', [AbandonedCartController::class, 'show']);
+    Route::post('/abandoned-carts/{id}/send-recovery', [AbandonedCartController::class, 'sendRecoveryEmail']);
+    Route::post('/abandoned-carts/{id}/mark-recovered', [AbandonedCartController::class, 'markRecovered']);
+    Route::post('/abandoned-carts/bulk-recovery', [AbandonedCartController::class, 'sendBulkRecovery']);
+    Route::get('/abandoned-carts/track/{code}', [AbandonedCartController::class, 'trackClick']);
+
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);
     Route::put('/settings', [SettingsController::class, 'update']);
     Route::get('/settings/{key}', [SettingsController::class, 'show']);
     Route::put('/settings/{key}', [SettingsController::class, 'updateSingle']);
+
+    // API Connections Management
+    Route::prefix('connections')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\ApiConnectionController::class, 'index']);
+        Route::get('/services', [\App\Http\Controllers\Api\ApiConnectionController::class, 'services']);
+        Route::get('/summary', [\App\Http\Controllers\Api\ApiConnectionController::class, 'summary']);
+        Route::get('/health', [\App\Http\Controllers\Api\ApiConnectionController::class, 'health']);
+        Route::get('/attention', [\App\Http\Controllers\Api\ApiConnectionController::class, 'needsAttention']);
+        Route::get('/category/{category}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'byCategory']);
+        Route::get('/{serviceKey}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'show']);
+        Route::get('/{serviceKey}/logs', [\App\Http\Controllers\Api\ApiConnectionController::class, 'logs']);
+        Route::post('/{serviceKey}/connect', [\App\Http\Controllers\Api\ApiConnectionController::class, 'connect']);
+        Route::post('/{serviceKey}/disconnect', [\App\Http\Controllers\Api\ApiConnectionController::class, 'disconnect']);
+        Route::post('/{serviceKey}/test', [\App\Http\Controllers\Api\ApiConnectionController::class, 'test']);
+        Route::post('/{serviceKey}/verify', [\App\Http\Controllers\Api\ApiConnectionController::class, 'verify']);
+        Route::post('/{serviceKey}/refresh', [\App\Http\Controllers\Api\ApiConnectionController::class, 'refreshToken']);
+        Route::patch('/{serviceKey}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'update']);
+    });
 
     // Subscription Plans
     Route::get('/subscriptions/plans', [SubscriptionPlanController::class, 'index']);
@@ -501,6 +543,9 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/media/jobs/{jobId}', [MediaController::class, 'jobStatus']);
 });
 
+// Abandoned Cart Reporting (public - for frontend tracking)
+Route::post('/cart/abandoned', [AbandonedCartController::class, 'reportAbandoned']);
+
 // Form preview and submission (public)
 Route::get('/forms/preview/{slug}', [FormController::class, 'preview']);
 Route::post('/forms/{slug}/submit', [FormSubmissionController::class, 'submit']);
@@ -527,6 +572,50 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->group(function ()
     Route::post('/forms/{formId}/submissions/bulk-update-status', [FormSubmissionController::class, 'bulkUpdateStatus']);
     Route::post('/forms/{formId}/submissions/bulk-delete', [FormSubmissionController::class, 'bulkDelete']);
     Route::get('/forms/{formId}/submissions/export', [FormSubmissionController::class, 'export']);
+
+    // Form submission PDFs (FluentForm Pro PDF feature)
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdfs', [FormPdfController::class, 'index']);
+    Route::post('/forms/{formId}/submissions/{submissionId}/pdf', [FormPdfController::class, 'generate']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/{pdfId}/download', [FormPdfController::class, 'download']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/{pdfId}/preview', [FormPdfController::class, 'preview']);
+    Route::delete('/forms/{formId}/submissions/{submissionId}/pdf/{pdfId}', [FormPdfController::class, 'destroy']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/download-direct', [FormPdfController::class, 'downloadDirect']);
+    Route::get('/forms/{formId}/submissions/{submissionId}/pdf/stream', [FormPdfController::class, 'streamDirect']);
+    Route::post('/forms/{formId}/submissions/{submissionId}/receipt', [FormPdfController::class, 'receipt']);
+
+    // Form PDF templates
+    Route::get('/forms/pdf/config', [FormPdfController::class, 'config']); // Configuration options
+    Route::get('/forms/{formId}/pdf-templates', [FormPdfController::class, 'templates']);
+    Route::post('/forms/{formId}/pdf-templates', [FormPdfController::class, 'storeTemplate']);
+    Route::put('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'updateTemplate']);
+    Route::delete('/forms/{formId}/pdf-templates/{templateId}', [FormPdfController::class, 'destroyTemplate']);
+    Route::get('/forms/{formId}/pdf-templates/{templateId}/preview', [FormPdfController::class, 'previewTemplate']);
+
+    // Form Approval Workflow (FluentForms 6.1.8 - December 2025)
+    Route::get('/forms/{formId}/approval/pending', [FormApprovalController::class, 'pending']);
+    Route::get('/forms/{formId}/approval/status/{status}', [FormApprovalController::class, 'byStatus']);
+    Route::get('/forms/{formId}/approval/stats', [FormApprovalController::class, 'stats']);
+    Route::match(['get', 'post'], '/forms/{formId}/approval/settings', [FormApprovalController::class, 'settings']);
+    Route::post('/submissions/{submissionId}/approve', [FormApprovalController::class, 'approve']);
+    Route::post('/submissions/{submissionId}/reject', [FormApprovalController::class, 'reject']);
+    Route::post('/submissions/{submissionId}/request-revision', [FormApprovalController::class, 'requestRevision']);
+    Route::post('/submissions/{submissionId}/hold', [FormApprovalController::class, 'hold']);
+    Route::post('/submissions/{submissionId}/reset-approval', [FormApprovalController::class, 'reset']);
+    Route::get('/submissions/{submissionId}/approval-history', [FormApprovalController::class, 'history']);
+    Route::post('/submissions/bulk-approve', [FormApprovalController::class, 'bulkApprove']);
+    Route::post('/submissions/bulk-reject', [FormApprovalController::class, 'bulkReject']);
+
+    // Form Inventory Management (FluentForms 6.1.8 - December 2025)
+    Route::get('/forms/fields/{fieldId}/inventory', [FormInventoryController::class, 'fieldInventory']);
+    Route::get('/forms/fields/{fieldId}/inventory/{productId}', [FormInventoryController::class, 'getStock']);
+    Route::put('/forms/fields/{fieldId}/inventory/{productId}', [FormInventoryController::class, 'updateStock']);
+    Route::post('/forms/inventory/reserve', [FormInventoryController::class, 'reserve']);
+    Route::post('/forms/inventory/release', [FormInventoryController::class, 'release']);
+    Route::post('/forms/inventory/check-availability', [FormInventoryController::class, 'checkAvailability']);
+    Route::post('/forms/inventory/validate-cart', [FormInventoryController::class, 'validateCart']);
+    Route::get('/forms/{formId}/inventory/low-stock', [FormInventoryController::class, 'lowStock']);
+    Route::get('/forms/{formId}/inventory/report', [FormInventoryController::class, 'report']);
+    Route::post('/forms/inventory/bulk-update', [FormInventoryController::class, 'bulkUpdate']);
 });
 
 // Download routes

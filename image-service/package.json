@@ -1,7 +1,7 @@
 {
   "name": "revolution-image-service",
-  "version": "1.0.0",
-  "description": "High-performance image processing service using Sharp",
+  "version": "2.0.0",
+  "description": "High-performance image processing service with parallel processing, caching, and on-demand variants",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
@@ -12,11 +12,13 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
     "@aws-sdk/lib-storage": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0",
     "blurhash": "^2.0.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1",
+    "redis": "^4.7.0",
     "sharp": "^0.33.5",
     "uuid": "^10.0.0"
   },
