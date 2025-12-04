@@ -1,88 +1,88 @@
 <script lang="ts">
 	/**
-	 * Form Component - Enterprise Form Embedding
+	 * Form Component - FluentForm-Style Form Embedding
 	 *
-	 * Multiple ways to reference forms (pick one):
+	 * Usage (pick one method):
 	 *
-	 * 1. RECOMMENDED: Using Form Registry (type-safe)
-	 *    import { FORMS } from '$lib/config/forms';
-	 *    <Form form={FORMS.CONTACT} />
+	 * 1. BY ID (Recommended - FluentForm style):
+	 *    <Form id={5} />
 	 *
-	 * 2. By slug:
+	 * 2. BY SLUG (URL-friendly):
 	 *    <Form slug="contact-us" />
-	 *
-	 * 3. By ID:
-	 *    <Form id="contact" />
 	 *
 	 * With options:
 	 *    <Form
-	 *      form={FORMS.CONTACT}
+	 *      id={5}
 	 *      theme="card"
 	 *      hideTitle
+	 *      cssClasses="my-form"
 	 *      onSuccess={(id) => console.log('Submitted:', id)}
 	 *    />
+	 *
+	 * @see https://fluentforms.com/wordpress-form-shortcode/
 	 */
 
 	import { onMount } from 'svelte';
-	import { previewForm, submitForm, type Form as FormType } from '$lib/api/forms';
-	import type { FormDefinition } from '$lib/config/forms';
+	import { previewForm, getFormById, submitForm, type Form as FormType } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
 
 	interface Props {
-		/** Form from registry - RECOMMENDED: import { FORMS } from '$lib/config/forms' */
-		form?: FormDefinition;
-		/** Form slug (alternative to form prop) */
+		/** Form ID (numeric) - Primary method like FluentForm: <Form id={5} /> */
+		id?: number;
+		/** Form slug (string) - Alternative: <Form slug="contact-us" /> */
 		slug?: string;
-		/** Form ID (alternative to form prop) */
-		id?: string;
 		/** Hide the form title */
 		hideTitle?: boolean;
 		/** Hide the form description */
 		hideDescription?: boolean;
-		/** Custom submit button text (overrides form setting) */
+		/** Custom submit button text */
 		submitText?: string;
-		/** Custom success message (overrides form setting) */
+		/** Custom success message */
 		successMessage?: string;
-		/** Theme variant: 'default' | 'minimal' | 'bordered' | 'card' */
+		/** Theme: 'default' | 'minimal' | 'bordered' | 'card' */
 		theme?: 'default' | 'minimal' | 'bordered' | 'card';
-		/** Custom CSS class */
+		/** Additional CSS classes (FluentForm: css_classes) */
+		cssClasses?: string;
+		/** @deprecated Use cssClasses instead */
 		class?: string;
+		/** Form type: 'classic' | 'conversational' */
+		type?: 'classic' | 'conversational';
 		/** Callback on successful submission */
 		onSuccess?: (submissionId: string) => void;
 		/** Callback on error */
 		onError?: (error: string) => void;
-		/** Redirect URL after submission (overrides form setting) */
+		/** Redirect URL after submission */
 		redirectUrl?: string;
-		/** Show loading skeleton while loading */
+		/** Show loading skeleton */
 		showSkeleton?: boolean;
+		/** Permission message if form requires login */
+		permissionMessage?: string;
 	}
 
 	let {
-		form: formConfig,
-		slug: slugProp,
-		id: idProp,
+		id: formId,
+		slug: formSlug,
 		hideTitle = false,
 		hideDescription = false,
 		submitText,
 		successMessage,
 		theme = 'default',
-		class: className = '',
+		cssClasses = '',
+		class: classNameDeprecated = '',
+		type = 'classic',
 		onSuccess,
 		onError,
 		redirectUrl,
-		showSkeleton = true
+		showSkeleton = true,
+		permissionMessage = 'You do not have permission to view this form.'
 	}: Props = $props();
 
-	// Resolve the form slug from props (priority: form > slug > id)
-	function getFormSlug(): string {
-		if (formConfig?.slug) return formConfig.slug;
-		if (slugProp) return slugProp;
-		if (idProp) return idProp; // ID can be used as slug fallback
-		throw new Error('Form component requires either form, slug, or id prop');
-	}
+	// Combine cssClasses and deprecated class prop
+	let combinedClasses = $derived([cssClasses, classNameDeprecated].filter(Boolean).join(' '));
 
-	// Get the resolved slug
-	let resolvedSlug = $derived(getFormSlug());
+	// Determine which identifier to use
+	let useId = $derived(formId !== undefined);
+	let useSlug = $derived(formSlug !== undefined);
 
 	let formInstance: FormType | null = $state(null);
 	let formData: Record<string, any> = $state({});
@@ -99,10 +99,33 @@
 	});
 
 	async function loadForm() {
+		// Validate that either id or slug is provided
+		if (!useId && !useSlug) {
+			loadError = 'Form component requires either id or slug prop';
+			loading = false;
+			return;
+		}
+
 		loading = true;
 		loadError = '';
+
 		try {
-			formInstance = await previewForm(resolvedSlug);
+			// FluentForm-style: prefer ID, fallback to slug
+			if (useId && formId !== undefined) {
+				try {
+					formInstance = await getFormById(formId);
+				} catch {
+					// If getFormById fails (endpoint might not exist),
+					// the form might only be accessible by slug
+					loadError = `Form with ID ${formId} not found`;
+					loading = false;
+					return;
+				}
+			} else if (useSlug && formSlug) {
+				formInstance = await previewForm(formSlug);
+			}
+
+			// Initialize form data with default values
 			if (formInstance?.fields) {
 				formInstance.fields.forEach((field) => {
 					if (field.default_value) {
@@ -182,8 +205,11 @@
 		errors = {};
 		isSubmitting = true;
 
+		// Get the slug for submission (from loaded form or prop)
+		const submitSlug = formInstance.slug || formSlug || '';
+
 		try {
-			const result = await submitForm(resolvedSlug, formData);
+			const result = await submitForm(submitSlug, formData);
 
 			if (result.success) {
 				submitted = true;
@@ -227,7 +253,11 @@
 
 </script>
 
-<div class="form-embed form-embed--{theme} {className}" data-form-slug={resolvedSlug}>
+<div
+	class="form-embed form-embed--{theme} form-embed--{type} {combinedClasses}"
+	data-form-id={formId}
+	data-form-slug={formInstance?.slug || formSlug}
+>
 	{#if loading}
 		{#if showSkeleton}
 			<div class="form-skeleton">

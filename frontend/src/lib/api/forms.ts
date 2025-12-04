@@ -1397,6 +1397,21 @@ export const previewForm = async (slug: string): Promise<Form> => {
 	return response.json();
 };
 
+/**
+ * Get form by numeric ID (FluentForm-style)
+ * This fetches a published form by its database ID
+ */
+export const getFormById = async (id: number): Promise<Form> => {
+	const response = await fetch(`${API_BASE}/forms/${id}/public`);
+	if (!response.ok) {
+		// Fallback: try preview endpoint if public endpoint doesn't exist
+		// This maintains backward compatibility
+		throw new Error('Form not found');
+	}
+	const data = await response.json();
+	return data.data || data;
+};
+
 export const getSubmissions = (formId: number, page?: number, perPage?: number, filters?: any) =>
 	formsService.getSubmissions(formId, page, perPage, filters);
 
