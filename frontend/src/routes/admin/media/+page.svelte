@@ -1,24 +1,40 @@
 <script lang="ts">
   /**
-   * Media Library Admin Page
+   * Media Library - Apple HIG Quality Admin Interface
+   * ═══════════════════════════════════════════════════════════════════════════
    *
-   * Enterprise-grade media management with image optimization,
-   * bulk operations, and analytics dashboard.
+   * Enterprise-grade media management with:
+   * - AI-powered image analysis and alt text generation
+   * - Smart cropping with subject detection
+   * - Drag-and-drop uploads with progress tracking
+   * - Grid/List view with smooth transitions
+   * - Keyboard navigation and accessibility
+   * - Real-time optimization statistics
+   *
+   * @version 2.0.0
    */
-  import { onMount } from 'svelte';
-  import MediaUpload from '$lib/components/media/MediaUpload.svelte';
-  import MediaGrid from '$lib/components/media/MediaGrid.svelte';
-  import MediaPreview from '$lib/components/media/MediaPreview.svelte';
-  import { mediaApi, type MediaItem, type OptimizationStatistics, type OptimizationPreset } from '$lib/api/media';
+  import { onMount, onDestroy } from 'svelte';
+  import { fly, fade, scale, slide } from 'svelte/transition';
+  import { spring, tweened } from 'svelte/motion';
+  import { cubicOut, backOut } from 'svelte/easing';
+  import DropZone from '$lib/components/media/DropZone.svelte';
+  import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
+  import UploadProgress from '$lib/components/media/UploadProgress.svelte';
+  import OptimizationStats from '$lib/components/media/OptimizationStats.svelte';
+  import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
+  import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
+  import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
+  import { mediaApi, type MediaItem, type OptimizationStatistics } from '$lib/api/media';
 
+  // ═══════════════════════════════════════════════════════════════════════════
   // State
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Data
   let items: MediaItem[] = [];
-  let selectedIds: string[] = [];
-  let previewItem: MediaItem | null = null;
-  let isPreviewOpen = false;
+  let selectedIds: Set<string> = new Set();
+  let focusedId: string | null = null;
   let statistics: OptimizationStatistics | null = null;
-  let presets: OptimizationPreset[] = [];
-  let collections: string[] = [];
 
   // Pagination
   let currentPage = 1;
@@ -28,39 +44,69 @@
 
   // Filters
   let searchQuery = '';
-  let filterType = '';
-  let filterCollection = '';
-  let filterOptimized = '';
-  let sortBy = 'created_at';
+  let filterType: 'all' | 'image' | 'video' | 'document' = 'all';
+  let filterStatus: 'all' | 'optimized' | 'pending' | 'processing' = 'all';
+  let sortBy: 'created_at' | 'filename' | 'size' = 'created_at';
   let sortDir: 'asc' | 'desc' = 'desc';
 
   // UI State
+  let viewMode: 'grid' | 'list' = 'grid';
   let isLoading = true;
-  let isOptimizing = false;
-  let showUpload = false;
-  let showStats = true;
-  let selectedPreset = '';
-  let error: string | null = null;
-  let successMessage: string | null = null;
+  let isUploading = false;
+  let showUploadPanel = false;
+  let showDetailsPanel = false;
+  let showStatsPanel = true;
+  let showCropModal = false;
+  let showPreviewModal = false;
+  let detailItem: MediaItem | null = null;
+  let contextMenu: { x: number; y: number; item: MediaItem } | null = null;
 
-  // Load data on mount
+  // Upload tracking
+  let uploadQueue: Array<{
+    id: string;
+    file: File;
+    progress: number;
+    status: 'pending' | 'uploading' | 'processing' | 'complete' | 'error';
+    error?: string;
+    result?: MediaItem;
+  }> = [];
+
+  // AI features
+  let aiEnabled = false;
+  let isAnalyzing = false;
+  let aiStatus: { enabled: boolean; provider: string } | null = null;
+
+  // Animations
+  const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Lifecycle
+  // ═══════════════════════════════════════════════════════════════════════════
+
   onMount(async () => {
-    await Promise.all([loadMedia(), loadStatistics(), loadPresets(), loadCollections()]);
+    await Promise.all([loadMedia(), loadStatistics(), checkAIStatus()]);
+    document.addEventListener('keydown', handleKeydown);
+    document.addEventListener('click', handleClickOutside);
   });
+
+  onDestroy(() => {
+    document.removeEventListener('keydown', handleKeydown);
+    document.removeEventListener('click', handleClickOutside);
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Data Loading
+  // ═══════════════════════════════════════════════════════════════════════════
 
   async function loadMedia() {
     isLoading = true;
-    error = null;
-
     try {
       const response = await mediaApi.list({
         page: currentPage,
         per_page: perPage,
         search: searchQuery || undefined,
-        type: filterType || undefined,
-        collection: filterCollection || undefined,
-        optimized: filterOptimized === 'optimized' ? true : filterOptimized === 'pending' ? false : undefined,
-        needs_optimization: filterOptimized === 'pending' ? true : undefined,
+        type: filterType !== 'all' ? filterType : undefined,
+        optimized: filterStatus === 'optimized' ? true : filterStatus === 'pending' ? false : undefined,
         sort_by: sortBy,
         sort_dir: sortDir,
       });
@@ -70,7 +116,7 @@
       totalPages = response.meta.last_page;
       totalItems = response.meta.total;
     } catch (e: any) {
-      error = e?.message || 'Failed to load media';
+      showToast('Failed to load media', 'error');
     } finally {
       isLoading = false;
     }
@@ -80,56 +126,172 @@
     try {
       const response = await mediaApi.getStatistics();
       statistics = response.data;
+      if (statistics) {
+        const percent = statistics.total_images > 0
+          ? (statistics.optimized_images / statistics.total_images) * 100
+          : 0;
+        statsProgress.set(percent);
+      }
     } catch (e) {
       console.error('Failed to load statistics', e);
     }
   }
 
-  async function loadPresets() {
+  async function checkAIStatus() {
     try {
-      const response = await mediaApi.getPresets();
-      presets = response.data;
-      const defaultPreset = presets.find((p) => p.is_default);
-      if (defaultPreset) selectedPreset = defaultPreset.slug;
+      const response = await fetch('/api/media/ai/status');
+      if (response.ok) {
+        aiStatus = await response.json();
+        aiEnabled = aiStatus?.enabled || false;
+      }
     } catch (e) {
-      console.error('Failed to load presets', e);
+      aiEnabled = false;
     }
   }
 
-  async function loadCollections() {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Upload Handling
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function handleFilesSelected(event: CustomEvent<File[]>) {
+    const files = event.detail;
+    if (files.length === 0) return;
+
+    showUploadPanel = true;
+    isUploading = true;
+
+    files.forEach((file) => {
+      const id = crypto.randomUUID();
+      uploadQueue = [
+        ...uploadQueue,
+        { id, file, progress: 0, status: 'pending' },
+      ];
+      uploadFile(id, file);
+    });
+  }
+
+  async function uploadFile(id: string, file: File) {
+    const idx = uploadQueue.findIndex((u) => u.id === id);
+    if (idx === -1) return;
+
+    uploadQueue[idx].status = 'uploading';
+    uploadQueue = uploadQueue;
+
     try {
-      // Collections endpoint not yet implemented, use empty array
-      collections = [];
-    } catch (e) {
-      console.error('Failed to load collections', e);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const progress = Math.round((e.loaded / e.total) * 100);
+          uploadQueue[idx].progress = progress;
+          uploadQueue = uploadQueue;
+        }
+      };
+
+      const result = await new Promise<MediaItem>((resolve, reject) => {
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(JSON.parse(xhr.responseText).data);
+          } else {
+            reject(new Error(xhr.statusText));
+          }
+        };
+        xhr.onerror = () => reject(new Error('Upload failed'));
+        xhr.open('POST', '/api/media/upload');
+        xhr.send(formData);
+      });
+
+      uploadQueue[idx].status = 'complete';
+      uploadQueue[idx].result = result;
+      uploadQueue = uploadQueue;
+
+      // Add to items list
+      items = [result, ...items];
+      totalItems++;
+      loadStatistics();
+
+    } catch (e: any) {
+      uploadQueue[idx].status = 'error';
+      uploadQueue[idx].error = e.message || 'Upload failed';
+      uploadQueue = uploadQueue;
+    }
+
+    // Check if all uploads complete
+    const allDone = uploadQueue.every((u) => u.status === 'complete' || u.status === 'error');
+    if (allDone) {
+      isUploading = false;
+      const successCount = uploadQueue.filter((u) => u.status === 'complete').length;
+      const failCount = uploadQueue.filter((u) => u.status === 'error').length;
+
+      if (successCount > 0 && failCount === 0) {
+        showToast(`${successCount} file${successCount > 1 ? 's' : ''} uploaded`, 'success');
+      } else if (failCount > 0) {
+        showToast(`${failCount} file${failCount > 1 ? 's' : ''} failed to upload`, 'error');
+      }
     }
   }
 
-  // Event handlers
-  function handleUpload(item: MediaItem) {
-    items = [item, ...items];
-    totalItems++;
-    loadStatistics();
-    showSuccess('File uploaded successfully');
+  function clearUploadQueue() {
+    uploadQueue = [];
+    showUploadPanel = false;
   }
 
-  function handleUploadComplete(data: { uploaded: MediaItem[]; failed: { file: File; error: string }[] }) {
-    if (data.failed.length > 0) {
-      error = `${data.failed.length} file(s) failed to upload`;
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Item Actions
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function handleItemClick(item: MediaItem, event: MouseEvent) {
+    if (event.shiftKey && focusedId) {
+      // Range select
+      const start = items.findIndex((i) => i.id === focusedId);
+      const end = items.findIndex((i) => i.id === item.id);
+      const [from, to] = start < end ? [start, end] : [end, start];
+
+      for (let i = from; i <= to; i++) {
+        selectedIds.add(items[i].id);
+      }
+      selectedIds = selectedIds;
+    } else if (event.metaKey || event.ctrlKey) {
+      // Toggle select
+      if (selectedIds.has(item.id)) {
+        selectedIds.delete(item.id);
+      } else {
+        selectedIds.add(item.id);
+      }
+      selectedIds = selectedIds;
+    } else {
+      // Single select and show details
+      selectedIds = new Set([item.id]);
+      focusedId = item.id;
+      detailItem = item;
+      showDetailsPanel = true;
     }
-    if (data.uploaded.length > 0) {
-      showSuccess(`${data.uploaded.length} file(s) uploaded successfully`);
+  }
+
+  function handleItemDoubleClick(item: MediaItem) {
+    detailItem = item;
+    showPreviewModal = true;
+  }
+
+  function handleContextMenu(event: MouseEvent, item: MediaItem) {
+    event.preventDefault();
+    contextMenu = { x: event.clientX, y: event.clientY, item };
+  }
+
+  async function handleOptimize(item: MediaItem) {
+    try {
+      const response = await mediaApi.optimize(item.id);
+      const updatedItem = response.data as MediaItem;
+      items = items.map((i) => (i.id === item.id ? updatedItem : i));
+      if (detailItem?.id === item.id) detailItem = updatedItem;
+      showToast('Image optimized', 'success');
+      loadStatistics();
+    } catch (e: any) {
+      showToast(e.message || 'Optimization failed', 'error');
     }
-  }
-
-  function handleSelect(item: MediaItem) {
-    previewItem = item;
-    isPreviewOpen = true;
-  }
-
-  function handlePreview(item: MediaItem) {
-    previewItem = item;
-    isPreviewOpen = true;
   }
 
   async function handleDelete(item: MediaItem) {
@@ -138,148 +300,298 @@
     try {
       await mediaApi.delete(item.id);
       items = items.filter((i) => i.id !== item.id);
-      selectedIds = selectedIds.filter((id) => id !== item.id);
+      selectedIds.delete(item.id);
+      selectedIds = selectedIds;
       totalItems--;
-      loadStatistics();
-      showSuccess('File deleted');
-      if (previewItem?.id === item.id) {
-        isPreviewOpen = false;
-        previewItem = null;
+
+      if (detailItem?.id === item.id) {
+        detailItem = null;
+        showDetailsPanel = false;
       }
+
+      showToast('File deleted', 'success');
+      loadStatistics();
     } catch (e: any) {
-      error = e?.message || 'Failed to delete file';
+      showToast(e.message || 'Delete failed', 'error');
     }
   }
 
-  async function handleOptimize(item: MediaItem) {
-    try {
-      const response = await mediaApi.optimize(item.id, { preset: selectedPreset || undefined });
-      if ('job_id' in response.data) {
-        showSuccess('Optimization queued');
-        // Update item status
-        const idx = items.findIndex((i) => i.id === item.id);
-        if (idx !== -1) {
-          items[idx] = { ...items[idx], processing_status: 'processing' };
-          items = items;
-        }
-      } else {
-        items = items.map((i) => (i.id === item.id ? response.data as MediaItem : i));
-        showSuccess('Image optimized successfully');
-      }
-      loadStatistics();
-    } catch (err: any) {
-      error = err?.message || 'Failed to optimize image';
-    }
-  }
-
-  async function handleUpdate(data: { id: string; data: Partial<MediaItem> }) {
-    try {
-      const response = await mediaApi.update(data.id, data.data);
-      items = items.map((i) => (i.id === data.id ? response.data : i));
-      if (previewItem?.id === data.id) {
-        previewItem = response.data;
-      }
-      showSuccess('Updated successfully');
-    } catch (err: any) {
-      error = err?.message || 'Failed to update';
-    }
-  }
-
-  // Bulk operations
-  async function handleBulkDelete() {
-    if (selectedIds.length === 0) return;
-    if (!confirm(`Delete ${selectedIds.length} selected items?`)) return;
+  async function handleAIAnalyze(item: MediaItem) {
+    if (!aiEnabled) return;
+    isAnalyzing = true;
 
     try {
-      await mediaApi.bulkDelete(selectedIds);
-      items = items.filter((i) => !selectedIds.includes(i.id));
-      totalItems -= selectedIds.length;
-      selectedIds = [];
-      loadStatistics();
-      showSuccess('Items deleted');
-    } catch (e: any) {
-      error = e?.message || 'Failed to delete items';
-    }
-  }
-
-  async function handleBulkOptimize() {
-    if (selectedIds.length === 0) return;
-    isOptimizing = true;
-
-    try {
-      const response = await mediaApi.bulkOptimize(selectedIds, {
-        preset: selectedPreset || undefined,
+      const response = await fetch(`/api/media/ai/analyze/${item.id}`, {
+        method: 'POST',
       });
-      showSuccess(`${response.success} images queued for optimization`);
-      // Update items status
+
+      if (!response.ok) throw new Error('Analysis failed');
+
+      const result = await response.json();
+
+      // Update item with AI data
+      const updatedItem = {
+        ...item,
+        alt: result.altText || item.alt,
+        custom_properties: {
+          ...item.custom_properties,
+          ai_tags: result.tags,
+          ai_category: result.category,
+          focal_point: result.focalPoint,
+        },
+      };
+
+      items = items.map((i) => (i.id === item.id ? updatedItem : i));
+      if (detailItem?.id === item.id) detailItem = updatedItem;
+
+      showToast('AI analysis complete', 'success');
+    } catch (e: any) {
+      showToast(e.message || 'AI analysis failed', 'error');
+    } finally {
+      isAnalyzing = false;
+    }
+  }
+
+  async function handleGenerateAltText(item: MediaItem) {
+    if (!aiEnabled) return;
+    isAnalyzing = true;
+
+    try {
+      const response = await fetch(`/api/media/ai/alt-text/${item.id}`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) throw new Error('Failed to generate alt text');
+
+      const result = await response.json();
+
+      // Update item
+      await mediaApi.update(item.id, { alt: result.altText });
+      const updatedItem = { ...item, alt: result.altText };
+
+      items = items.map((i) => (i.id === item.id ? updatedItem : i));
+      if (detailItem?.id === item.id) detailItem = updatedItem;
+
+      showToast('Alt text generated', 'success');
+    } catch (e: any) {
+      showToast(e.message || 'Failed to generate alt text', 'error');
+    } finally {
+      isAnalyzing = false;
+    }
+  }
+
+  function handleCrop(item: MediaItem) {
+    detailItem = item;
+    showCropModal = true;
+  }
+
+  async function handleCropSave(event: CustomEvent<{ blob: Blob }>) {
+    if (!detailItem) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', event.detail.blob, detailItem.filename);
+
+      const response = await fetch(`/api/media/${detailItem.id}/replace`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Failed to save crop');
+
+      const result = await response.json();
+      items = items.map((i) => (i.id === detailItem!.id ? result.data : i));
+      detailItem = result.data;
+
+      showCropModal = false;
+      showToast('Image cropped and saved', 'success');
+      loadStatistics();
+    } catch (e: any) {
+      showToast(e.message || 'Failed to save crop', 'error');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Bulk Actions
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function selectAll() {
+    if (selectedIds.size === items.length) {
+      selectedIds = new Set();
+    } else {
+      selectedIds = new Set(items.map((i) => i.id));
+    }
+  }
+
+  async function bulkOptimize() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+
+    try {
+      const response = await mediaApi.bulkOptimize(ids);
+      showToast(`${response.success} images queued for optimization`, 'success');
+
       items = items.map((i) =>
-        selectedIds.includes(i.id) && i.file_type === 'image' && !i.is_optimized
+        selectedIds.has(i.id) && i.file_type === 'image'
           ? { ...i, processing_status: 'processing' as const }
           : i
       );
-      selectedIds = [];
+
+      selectedIds = new Set();
       loadStatistics();
     } catch (e: any) {
-      error = e?.message || 'Failed to queue optimizations';
-    } finally {
-      isOptimizing = false;
+      showToast(e.message || 'Bulk optimization failed', 'error');
     }
   }
 
-  async function handleOptimizeAll() {
-    if (!confirm('Optimize all unoptimized images? This may take a while.')) return;
-    isOptimizing = true;
+  async function bulkDelete() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    if (!confirm(`Delete ${ids.length} selected items?`)) return;
 
     try {
-      const response = await mediaApi.optimizeAll({
-        preset: selectedPreset || undefined,
-        limit: 100,
-      });
-      showSuccess(`${response.jobs_queued} optimization jobs queued (${response.total_pending} total pending)`);
-      loadMedia();
+      await mediaApi.bulkDelete(ids);
+      items = items.filter((i) => !selectedIds.has(i.id));
+      totalItems -= ids.length;
+      selectedIds = new Set();
+      showToast(`${ids.length} items deleted`, 'success');
       loadStatistics();
     } catch (e: any) {
-      error = e?.message || 'Failed to queue optimizations';
-    } finally {
-      isOptimizing = false;
+      showToast(e.message || 'Bulk delete failed', 'error');
     }
   }
 
-  function selectAll() {
-    if (selectedIds.length === items.length) {
-      selectedIds = [];
-    } else {
-      selectedIds = items.map((i) => i.id);
+  async function bulkDownload() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+
+    // Download each file
+    for (const id of ids) {
+      const item = items.find((i) => i.id === id);
+      if (item) {
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.download = item.filename;
+        a.click();
+      }
     }
   }
 
-  // Pagination
-  function goToPage(page: number) {
-    if (page < 1 || page > totalPages) return;
-    currentPage = page;
-    loadMedia();
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Keyboard Navigation
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      return;
+    }
+
+    const currentIndex = focusedId ? items.findIndex((i) => i.id === focusedId) : -1;
+
+    switch (event.key) {
+      case 'ArrowRight':
+        if (currentIndex < items.length - 1) {
+          focusedId = items[currentIndex + 1].id;
+          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+        }
+        event.preventDefault();
+        break;
+
+      case 'ArrowLeft':
+        if (currentIndex > 0) {
+          focusedId = items[currentIndex - 1].id;
+          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+        }
+        event.preventDefault();
+        break;
+
+      case 'ArrowDown':
+        const cols = viewMode === 'grid' ? 6 : 1;
+        if (currentIndex + cols < items.length) {
+          focusedId = items[currentIndex + cols].id;
+          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+        }
+        event.preventDefault();
+        break;
+
+      case 'ArrowUp':
+        const colsUp = viewMode === 'grid' ? 6 : 1;
+        if (currentIndex - colsUp >= 0) {
+          focusedId = items[currentIndex - colsUp].id;
+          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+        }
+        event.preventDefault();
+        break;
+
+      case 'Enter':
+        if (focusedId) {
+          const item = items.find((i) => i.id === focusedId);
+          if (item) {
+            detailItem = item;
+            showDetailsPanel = true;
+          }
+        }
+        event.preventDefault();
+        break;
+
+      case ' ':
+        if (focusedId) {
+          if (selectedIds.has(focusedId)) {
+            selectedIds.delete(focusedId);
+          } else {
+            selectedIds.add(focusedId);
+          }
+          selectedIds = selectedIds;
+        }
+        event.preventDefault();
+        break;
+
+      case 'a':
+        if (event.metaKey || event.ctrlKey) {
+          selectAll();
+          event.preventDefault();
+        }
+        break;
+
+      case 'Delete':
+      case 'Backspace':
+        if (selectedIds.size > 0) {
+          bulkDelete();
+          event.preventDefault();
+        }
+        break;
+
+      case 'Escape':
+        selectedIds = new Set();
+        contextMenu = null;
+        showDetailsPanel = false;
+        break;
+    }
   }
 
-  // Filters
-  function applyFilters() {
-    currentPage = 1;
-    loadMedia();
+  function handleClickOutside(event: MouseEvent) {
+    if (contextMenu) {
+      contextMenu = null;
+    }
   }
 
-  function clearFilters() {
-    searchQuery = '';
-    filterType = '';
-    filterCollection = '';
-    filterOptimized = '';
-    currentPage = 1;
-    loadMedia();
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Toast Notifications
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  let toasts: Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }> = [];
+
+  function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+    const id = crypto.randomUUID();
+    toasts = [...toasts, { id, message, type }];
+    setTimeout(() => {
+      toasts = toasts.filter((t) => t.id !== id);
+    }, 4000);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
   // Helpers
-  function showSuccess(message: string) {
-    successMessage = message;
-    setTimeout(() => (successMessage = null), 3000);
-  }
+  // ═══════════════════════════════════════════════════════════════════════════
 
   function formatBytes(bytes: number): string {
     if (bytes < 1024) return bytes + ' B';
@@ -287,640 +599,1954 @@
     if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(2) + ' MB';
     return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
   }
+
+  function formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+
+  function getFileIcon(type: string): string {
+    switch (type) {
+      case 'image': return '🖼️';
+      case 'video': return '🎬';
+      case 'document': return '📄';
+      default: return '📁';
+    }
+  }
 </script>
 
 <svelte:head>
   <title>Media Library | Admin</title>
 </svelte:head>
 
-<div class="media-page">
+<div class="media-library" class:details-open={showDetailsPanel}>
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
   <!-- Header -->
-  <div class="page-header">
-    <div class="header-main">
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-left">
       <h1>Media Library</h1>
-      <p class="header-subtitle">Manage and optimize your images and files</p>
+      <span class="item-count">{totalItems} items</span>
     </div>
-    <div class="header-actions">
-      <button type="button" class="btn btn-secondary" onclick={() => (showStats = !showStats)}>
-        {showStats ? 'Hide Stats' : 'Show Stats'}
-      </button>
-      <button type="button" class="btn btn-primary" onclick={() => (showUpload = !showUpload)}>
-        {showUpload ? 'Hide Upload' : 'Upload Files'}
-      </button>
-    </div>
-  </div>
 
-  <!-- Messages -->
-  {#if error}
-    <div class="alert alert-error">
-      <span>{error}</span>
-      <button type="button" onclick={() => (error = null)}>&times;</button>
-    </div>
-  {/if}
-  {#if successMessage}
-    <div class="alert alert-success">
-      <span>{successMessage}</span>
-    </div>
-  {/if}
-
-  <!-- Statistics -->
-  {#if showStats && statistics}
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon images">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <path d="M21 15l-5-5L5 21" />
-          </svg>
-        </div>
-        <div class="stat-content">
-          <span class="stat-value">{statistics.total_images}</span>
-          <span class="stat-label">Total Images</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon optimized">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-          </svg>
-        </div>
-        <div class="stat-content">
-          <span class="stat-value">{statistics.optimized_images}</span>
-          <span class="stat-label">Optimized</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon pending">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 6v6l4 2" />
-          </svg>
-        </div>
-        <div class="stat-content">
-          <span class="stat-value">{statistics.pending_optimization}</span>
-          <span class="stat-label">Pending</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon storage">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z" />
-            <path d="M8 7v10M12 7v10M16 7v10" />
-          </svg>
-        </div>
-        <div class="stat-content">
-          <span class="stat-value">{formatBytes(statistics.total_storage)}</span>
-          <span class="stat-label">Total Storage</span>
-        </div>
-      </div>
-
-      <div class="stat-card highlight">
-        <div class="stat-icon savings">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-          </svg>
-        </div>
-        <div class="stat-content">
-          <span class="stat-value">{formatBytes(statistics.total_savings_bytes)}</span>
-          <span class="stat-label">Total Savings</span>
-        </div>
-      </div>
-    </div>
-  {/if}
-
-  <!-- Upload area -->
-  {#if showUpload}
-    <div class="upload-section">
-      <MediaUpload
-        collection={filterCollection || undefined}
-        preset={selectedPreset || undefined}
-        onupload={handleUpload}
-        oncomplete={handleUploadComplete}
-      />
-    </div>
-  {/if}
-
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="toolbar-left">
+    <div class="header-center">
       <!-- Search -->
-      <div class="search-box">
+      <div class="search-field">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+        </svg>
         <input
           type="text"
-          placeholder="Search files..."
+          placeholder="Search media..."
           bind:value={searchQuery}
-          onkeydown={(e) => e.key === 'Enter' && applyFilters()}
+          on:keydown={(e) => e.key === 'Enter' && loadMedia()}
         />
-        <button type="button" onclick={applyFilters} aria-label="Search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
+        {#if searchQuery}
+          <button class="search-clear" on:click={() => { searchQuery = ''; loadMedia(); }}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        {/if}
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- View Toggle -->
+      <div class="view-toggle">
+        <button
+          class:active={viewMode === 'grid'}
+          on:click={() => (viewMode = 'grid')}
+          title="Grid view"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+        </button>
+        <button
+          class:active={viewMode === 'list'}
+          on:click={() => (viewMode = 'list')}
+          title="List view"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
           </svg>
         </button>
       </div>
 
+      <!-- Upload Button -->
+      <button class="btn-upload" on:click={() => (showUploadPanel = !showUploadPanel)}>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        Upload
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Statistics Panel -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  {#if showStatsPanel && statistics}
+    <div class="stats-panel" transition:slide={{ duration: 300 }}>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{statistics.total_images}</span>
+            <span class="stat-label">Total Images</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12l2 2 4-4"/>
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{statistics.optimized_images}</span>
+            <span class="stat-label">Optimized</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{statistics.pending_optimization}</span>
+            <span class="stat-label">Pending</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{formatBytes(statistics.total_storage)}</span>
+            <span class="stat-label">Storage Used</span>
+          </div>
+        </div>
+
+        <div class="stat-card highlight">
+          <div class="stat-icon emerald">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{formatBytes(statistics.total_savings_bytes)}</span>
+            <span class="stat-label">Total Savings</span>
+          </div>
+          <div class="stat-progress">
+            <div class="progress-bar" style="width: {$statsProgress}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="stats-toggle" on:click={() => (showStatsPanel = false)}>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+  {:else}
+    <button class="stats-show" on:click={() => (showStatsPanel = true)}>
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+      </svg>
+      Show Statistics
+    </button>
+  {/if}
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Upload Panel -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  {#if showUploadPanel}
+    <div class="upload-panel" transition:slide={{ duration: 300 }}>
+      <DropZone
+        accept="image/*,video/*,application/pdf"
+        maxSize={50 * 1024 * 1024}
+        multiple={true}
+        on:files={handleFilesSelected}
+      />
+
+      {#if uploadQueue.length > 0}
+        <div class="upload-queue">
+          {#each uploadQueue as upload (upload.id)}
+            <div class="upload-item" class:complete={upload.status === 'complete'} class:error={upload.status === 'error'}>
+              <div class="upload-icon">
+                {#if upload.status === 'complete'}
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="text-green">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                {:else if upload.status === 'error'}
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="text-red">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
+                {:else}
+                  <div class="upload-spinner"></div>
+                {/if}
+              </div>
+              <div class="upload-info">
+                <span class="upload-name">{upload.file.name}</span>
+                <span class="upload-size">{formatBytes(upload.file.size)}</span>
+              </div>
+              <div class="upload-progress-bar">
+                <div class="progress-fill" style="width: {upload.progress}%"></div>
+              </div>
+            </div>
+          {/each}
+        </div>
+
+        {#if !isUploading}
+          <button class="btn-secondary" on:click={clearUploadQueue}>
+            Clear Queue
+          </button>
+        {/if}
+      {/if}
+    </div>
+  {/if}
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Toolbar -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="toolbar">
+    <div class="toolbar-left">
       <!-- Filters -->
-      <select bind:value={filterType} onchange={applyFilters}>
-        <option value="">All Types</option>
+      <select bind:value={filterType} on:change={loadMedia}>
+        <option value="all">All Types</option>
         <option value="image">Images</option>
         <option value="video">Videos</option>
         <option value="document">Documents</option>
       </select>
 
-      <select bind:value={filterCollection} onchange={applyFilters}>
-        <option value="">All Collections</option>
-        {#each collections as collection}
-          <option value={collection}>{collection}</option>
-        {/each}
-      </select>
-
-      <select bind:value={filterOptimized} onchange={applyFilters}>
-        <option value="">All Status</option>
+      <select bind:value={filterStatus} on:change={loadMedia}>
+        <option value="all">All Status</option>
         <option value="optimized">Optimized</option>
         <option value="pending">Needs Optimization</option>
+        <option value="processing">Processing</option>
       </select>
 
-      {#if searchQuery || filterType || filterCollection || filterOptimized}
-        <button type="button" class="btn btn-text" onclick={clearFilters}>
-          Clear Filters
-        </button>
-      {/if}
-    </div>
-
-    <div class="toolbar-right">
-      <!-- Preset selector -->
-      <select bind:value={selectedPreset} class="preset-select">
-        <option value="">Default Preset</option>
-        {#each presets as preset}
-          <option value={preset.slug}>{preset.name}</option>
-        {/each}
-      </select>
-
-      <!-- Sort -->
-      <select bind:value={sortBy} onchange={loadMedia}>
-        <option value="created_at">Upload Date</option>
+      <select bind:value={sortBy} on:change={loadMedia}>
+        <option value="created_at">Date Added</option>
         <option value="filename">Name</option>
         <option value="size">Size</option>
       </select>
 
-      <button
-        type="button"
-        class="btn btn-icon"
-        onclick={() => {
-          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-          loadMedia();
-        }}
-        title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
-      >
+      <button class="btn-icon" on:click={() => { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; loadMedia(); }}>
         {#if sortDir === 'asc'}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 19V5M5 12l7-7 7 7" />
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
           </svg>
         {:else}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M19 12l-7 7-7-7" />
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
           </svg>
         {/if}
       </button>
     </div>
+
+    <div class="toolbar-right">
+      {#if selectedIds.size > 0}
+        <div class="bulk-actions" transition:scale={{ duration: 200 }}>
+          <span class="selection-count">{selectedIds.size} selected</span>
+          <button class="btn-secondary btn-sm" on:click={selectAll}>
+            {selectedIds.size === items.length ? 'Deselect All' : 'Select All'}
+          </button>
+          <button class="btn-primary btn-sm" on:click={bulkOptimize}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+            </svg>
+            Optimize
+          </button>
+          <button class="btn-secondary btn-sm" on:click={bulkDownload}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+            Download
+          </button>
+          <button class="btn-danger btn-sm" on:click={bulkDelete}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            Delete
+          </button>
+        </div>
+      {/if}
+    </div>
   </div>
 
-  <!-- Bulk actions -->
-  {#if selectedIds.length > 0}
-    <div class="bulk-actions">
-      <span class="selection-count">{selectedIds.length} selected</span>
-      <button type="button" class="btn btn-secondary btn-sm" onclick={selectAll}>
-        {selectedIds.length === items.length ? 'Deselect All' : 'Select All'}
-      </button>
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        onclick={handleBulkOptimize}
-        disabled={isOptimizing}
-      >
-        {isOptimizing ? 'Optimizing...' : 'Optimize Selected'}
-      </button>
-      <button type="button" class="btn btn-danger btn-sm" onclick={handleBulkDelete}>
-        Delete Selected
-      </button>
-    </div>
-  {/if}
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Main Content -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="content-area">
+    <main class="media-content">
+      {#if isLoading}
+        <MediaSkeleton variant={viewMode} count={perPage} />
+      {:else if items.length === 0}
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+          </svg>
+          <h3>No media files</h3>
+          <p>Upload files to get started</p>
+          <button class="btn-primary" on:click={() => (showUploadPanel = true)}>
+            Upload Files
+          </button>
+        </div>
+      {:else}
+        <div class="media-{viewMode}">
+          {#each items as item (item.id)}
+            <div
+              class="media-item"
+              class:selected={selectedIds.has(item.id)}
+              class:focused={focusedId === item.id}
+              on:click={(e) => handleItemClick(item, e)}
+              on:dblclick={() => handleItemDoubleClick(item)}
+              on:contextmenu={(e) => handleContextMenu(e, item)}
+              role="button"
+              tabindex="0"
+              transition:fade={{ duration: 200 }}
+            >
+              {#if viewMode === 'grid'}
+                <div class="item-thumbnail">
+                  {#if item.file_type === 'image'}
+                    <OptimizedImage
+                      src={item.thumbnail_url || item.url}
+                      alt={item.alt || item.filename}
+                      blurhash={item.custom_properties?.blurhash}
+                      aspectRatio={1}
+                    />
+                  {:else}
+                    <div class="file-icon">{getFileIcon(item.file_type)}</div>
+                  {/if}
 
-  <!-- Optimize all button -->
-  {#if statistics && statistics.pending_optimization > 0}
-    <div class="optimize-all-banner">
-      <span>
-        {statistics.pending_optimization} image{statistics.pending_optimization !== 1 ? 's' : ''} need
-        optimization
-      </span>
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        onclick={handleOptimizeAll}
-        disabled={isOptimizing}
-      >
-        {isOptimizing ? 'Processing...' : 'Optimize All'}
-      </button>
-    </div>
-  {/if}
+                  <!-- Status badges -->
+                  <div class="item-badges">
+                    {#if item.is_optimized}
+                      <span class="badge badge-green" title="Optimized">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                      </span>
+                    {/if}
+                    {#if item.processing_status === 'processing'}
+                      <span class="badge badge-orange" title="Processing">
+                        <div class="spinner-mini"></div>
+                      </span>
+                    {/if}
+                  </div>
 
-  <!-- Media grid -->
-  <MediaGrid
-    {items}
-    {selectedIds}
-    loading={isLoading}
-    onselect={handleSelect}
-    onpreview={handlePreview}
-    ondelete={handleDelete}
-    onoptimize={handleOptimize}
-    onselectionchange={(ids) => (selectedIds = ids)}
-  />
+                  <!-- Selection checkbox -->
+                  <div class="item-checkbox" class:visible={selectedIds.size > 0 || selectedIds.has(item.id)}>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(item.id)}
+                      on:click|stopPropagation={() => {
+                        if (selectedIds.has(item.id)) {
+                          selectedIds.delete(item.id);
+                        } else {
+                          selectedIds.add(item.id);
+                        }
+                        selectedIds = selectedIds;
+                      }}
+                    />
+                  </div>
+                </div>
 
-  <!-- Pagination -->
-  {#if totalPages > 1}
-    <div class="pagination">
-      <button
-        type="button"
-        class="btn btn-icon"
-        disabled={currentPage === 1}
-        onclick={() => goToPage(currentPage - 1)}
-        aria-label="Previous page"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6" />
+                <div class="item-info">
+                  <span class="item-name" title={item.filename}>{item.filename}</span>
+                  <span class="item-meta">{formatBytes(item.size)}</span>
+                </div>
+              {:else}
+                <!-- List view -->
+                <div class="item-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(item.id)}
+                    on:click|stopPropagation={() => {
+                      if (selectedIds.has(item.id)) {
+                        selectedIds.delete(item.id);
+                      } else {
+                        selectedIds.add(item.id);
+                      }
+                      selectedIds = selectedIds;
+                    }}
+                  />
+                </div>
+
+                <div class="item-thumbnail-small">
+                  {#if item.file_type === 'image'}
+                    <OptimizedImage
+                      src={item.thumbnail_url || item.url}
+                      alt={item.alt || item.filename}
+                      aspectRatio={1}
+                    />
+                  {:else}
+                    <div class="file-icon-small">{getFileIcon(item.file_type)}</div>
+                  {/if}
+                </div>
+
+                <div class="item-details">
+                  <span class="item-name">{item.filename}</span>
+                  <span class="item-path">{item.collection || 'default'}</span>
+                </div>
+
+                <div class="item-size">{formatBytes(item.size)}</div>
+
+                <div class="item-status">
+                  {#if item.is_optimized}
+                    <span class="status-badge green">Optimized</span>
+                  {:else if item.processing_status === 'processing'}
+                    <span class="status-badge orange">Processing</span>
+                  {:else}
+                    <span class="status-badge gray">Pending</span>
+                  {/if}
+                </div>
+
+                <div class="item-date">{formatDate(item.created_at)}</div>
+
+                <div class="item-actions">
+                  <button class="btn-icon-sm" on:click|stopPropagation={() => handleOptimize(item)} title="Optimize">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                  <button class="btn-icon-sm" on:click|stopPropagation={() => handleDelete(item)} title="Delete">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                </div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+      <!-- Pagination -->
+      {#if totalPages > 1}
+        <div class="pagination">
+          <button
+            class="btn-icon"
+            disabled={currentPage === 1}
+            on:click={() => { currentPage = 1; loadMedia(); }}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <button
+            class="btn-icon"
+            disabled={currentPage === 1}
+            on:click={() => { currentPage--; loadMedia(); }}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+
+          <span class="page-info">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <button
+            class="btn-icon"
+            disabled={currentPage === totalPages}
+            on:click={() => { currentPage++; loadMedia(); }}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <button
+            class="btn-icon"
+            disabled={currentPage === totalPages}
+            on:click={() => { currentPage = totalPages; loadMedia(); }}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+              <path fill-rule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+      {/if}
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- Details Panel -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    {#if showDetailsPanel && detailItem}
+      <aside class="details-panel" transition:fly={{ x: 320, duration: 300 }}>
+        <div class="details-header">
+          <h2>Details</h2>
+          <button class="btn-icon" on:click={() => (showDetailsPanel = false)}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="details-preview">
+          {#if detailItem.file_type === 'image'}
+            <OptimizedImage
+              src={detailItem.url}
+              alt={detailItem.alt || detailItem.filename}
+              blurhash={detailItem.custom_properties?.blurhash}
+            />
+          {:else}
+            <div class="file-preview-icon">{getFileIcon(detailItem.file_type)}</div>
+          {/if}
+        </div>
+
+        <div class="details-info">
+          <div class="detail-row">
+            <span class="detail-label">Filename</span>
+            <span class="detail-value">{detailItem.filename}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Size</span>
+            <span class="detail-value">{formatBytes(detailItem.size)}</span>
+          </div>
+          {#if detailItem.dimensions}
+            <div class="detail-row">
+              <span class="detail-label">Dimensions</span>
+              <span class="detail-value">{detailItem.dimensions.width} × {detailItem.dimensions.height}</span>
+            </div>
+          {/if}
+          <div class="detail-row">
+            <span class="detail-label">Type</span>
+            <span class="detail-value">{detailItem.mime_type}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Created</span>
+            <span class="detail-value">{formatDate(detailItem.created_at)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status</span>
+            <span class="detail-value">
+              {#if detailItem.is_optimized}
+                <span class="status-badge green">Optimized</span>
+              {:else if detailItem.processing_status === 'processing'}
+                <span class="status-badge orange">Processing</span>
+              {:else}
+                <span class="status-badge gray">Pending</span>
+              {/if}
+            </span>
+          </div>
+        </div>
+
+        <!-- Alt Text -->
+        <div class="details-section">
+          <div class="section-header">
+            <h3>Alt Text</h3>
+            {#if aiEnabled}
+              <button
+                class="btn-text btn-sm"
+                on:click={() => handleGenerateAltText(detailItem)}
+                disabled={isAnalyzing}
+              >
+                {#if isAnalyzing}
+                  <div class="spinner-mini"></div>
+                {:else}
+                  <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Generate with AI
+                {/if}
+              </button>
+            {/if}
+          </div>
+          <textarea
+            class="alt-input"
+            placeholder="Enter alt text for accessibility..."
+            value={detailItem.alt || ''}
+            on:blur={async (e) => {
+              const target = e.target as HTMLTextAreaElement;
+              if (target.value !== detailItem?.alt) {
+                await mediaApi.update(detailItem!.id, { alt: target.value });
+                detailItem = { ...detailItem!, alt: target.value };
+                showToast('Alt text saved', 'success');
+              }
+            }}
+          ></textarea>
+        </div>
+
+        <!-- AI Analysis -->
+        {#if aiEnabled}
+          <div class="details-section">
+            <div class="section-header">
+              <h3>AI Analysis</h3>
+              <button
+                class="btn-text btn-sm"
+                on:click={() => handleAIAnalyze(detailItem)}
+                disabled={isAnalyzing}
+              >
+                {#if isAnalyzing}
+                  <div class="spinner-mini"></div>
+                {:else}
+                  Analyze
+                {/if}
+              </button>
+            </div>
+
+            {#if detailItem.custom_properties?.ai_tags}
+              <div class="ai-tags">
+                {#each detailItem.custom_properties.ai_tags as tag}
+                  <span class="tag">{tag}</span>
+                {/each}
+              </div>
+            {:else}
+              <p class="ai-hint">Click "Analyze" to get AI-powered tags and insights</p>
+            {/if}
+          </div>
+        {/if}
+
+        <!-- Actions -->
+        <div class="details-actions">
+          {#if detailItem.file_type === 'image'}
+            <button class="btn-secondary" on:click={() => handleCrop(detailItem)}>
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"/>
+              </svg>
+              Crop
+            </button>
+            <button class="btn-secondary" on:click={() => (showPreviewModal = true)}>
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"/>
+              </svg>
+              Responsive Preview
+            </button>
+          {/if}
+          <button class="btn-primary" on:click={() => handleOptimize(detailItem)}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+            </svg>
+            Optimize
+          </button>
+          <button class="btn-danger" on:click={() => handleDelete(detailItem)}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </aside>
+    {/if}
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Context Menu -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  {#if contextMenu}
+    <div
+      class="context-menu"
+      style="left: {contextMenu.x}px; top: {contextMenu.y}px"
+      transition:scale={{ duration: 150, start: 0.9 }}
+    >
+      <button on:click={() => { handleItemDoubleClick(contextMenu!.item); contextMenu = null; }}>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
         </svg>
+        View
       </button>
-
-      <span class="page-info">
-        Page {currentPage} of {totalPages} ({totalItems} items)
-      </span>
-
-      <button
-        type="button"
-        class="btn btn-icon"
-        disabled={currentPage === totalPages}
-        onclick={() => goToPage(currentPage + 1)}
-        aria-label="Next page"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6" />
+      {#if contextMenu.item.file_type === 'image'}
+        <button on:click={() => { handleOptimize(contextMenu!.item); contextMenu = null; }}>
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+          </svg>
+          Optimize
+        </button>
+        <button on:click={() => { handleCrop(contextMenu!.item); contextMenu = null; }}>
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"/>
+          </svg>
+          Crop
+        </button>
+        {#if aiEnabled}
+          <button on:click={() => { handleAIAnalyze(contextMenu!.item); contextMenu = null; }}>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+              <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+            </svg>
+            AI Analyze
+          </button>
+        {/if}
+      {/if}
+      <hr />
+      <a href={contextMenu.item.url} download={contextMenu.item.filename}>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>
+        Download
+      </a>
+      <button on:click={() => { navigator.clipboard.writeText(contextMenu!.item.url); showToast('URL copied', 'success'); contextMenu = null; }}>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+          <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+        </svg>
+        Copy URL
+      </button>
+      <hr />
+      <button class="danger" on:click={() => { handleDelete(contextMenu!.item); contextMenu = null; }}>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        Delete
       </button>
     </div>
   {/if}
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Toast Notifications -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="toast-container">
+    {#each toasts as toast (toast.id)}
+      <div
+        class="toast toast-{toast.type}"
+        transition:fly={{ y: 20, duration: 300 }}
+      >
+        {#if toast.type === 'success'}
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+        {:else if toast.type === 'error'}
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        {:else}
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+          </svg>
+        {/if}
+        <span>{toast.message}</span>
+      </div>
+    {/each}
+  </div>
 </div>
 
-<!-- Preview modal -->
-<MediaPreview
-  item={previewItem}
-  isOpen={isPreviewOpen}
-  onclose={() => {
-    isPreviewOpen = false;
-    previewItem = null;
-  }}
-  onoptimize={handleOptimize}
-  ondelete={handleDelete}
-  onupdate={handleUpdate}
-/>
+<!-- Crop Modal -->
+{#if showCropModal && detailItem}
+  <ImageCropModal
+    src={detailItem.url}
+    on:save={handleCropSave}
+    on:close={() => (showCropModal = false)}
+  />
+{/if}
+
+<!-- Responsive Preview Modal -->
+{#if showPreviewModal && detailItem}
+  <div class="modal-overlay" on:click={() => (showPreviewModal = false)} transition:fade={{ duration: 200 }}>
+    <div class="modal-content" on:click|stopPropagation transition:scale={{ duration: 300, start: 0.95 }}>
+      <div class="modal-header">
+        <h2>Responsive Preview</h2>
+        <button class="btn-icon" on:click={() => (showPreviewModal = false)}>
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+      <ResponsivePreview
+        src={detailItem.url}
+        variants={detailItem.variants || {}}
+      />
+    </div>
+  </div>
+{/if}
 
 <style>
-  .media-page {
-    padding: 1.5rem;
-    max-width: 1600px;
-    margin: 0 auto;
-  }
-
-  .page-header {
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Base Layout - Apple-inspired clean design
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .media-library {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg-primary, #f5f5f7);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
   }
 
-  .page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary, #111827);
-    margin: 0;
-  }
-
-  .header-subtitle {
-    font-size: 0.875rem;
-    color: var(--text-muted, #6b7280);
-    margin: 0.25rem 0 0 0;
-  }
-
-  .header-actions {
-    display: flex;
-    gap: 0.75rem;
-  }
-
-  /* Alerts */
-  .alert {
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Header
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
-  .alert-error {
-    background: var(--error-bg, #fef2f2);
-    color: var(--error-color, #dc2626);
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
   }
 
-  .alert-success {
-    background: var(--success-bg, #d1fae5);
-    color: var(--success-color, #059669);
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0;
+    letter-spacing: -0.5px;
   }
 
-  .alert button {
+  .item-count {
+    font-size: 14px;
+    color: #86868b;
+  }
+
+  .header-center {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 24px;
+  }
+
+  .search-field {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 10px;
+    padding: 0 12px;
+    transition: all 0.2s;
+  }
+
+  .search-field:focus-within {
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0, 125, 250, 0.15);
+  }
+
+  .search-icon {
+    width: 16px;
+    height: 16px;
+    color: #86868b;
+  }
+
+  .search-field input {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .search-clear {
+    padding: 4px;
     background: none;
     border: none;
-    font-size: 1.25rem;
     cursor: pointer;
-    opacity: 0.7;
+    color: #86868b;
   }
 
-  /* Stats */
+  .search-clear svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .view-toggle {
+    display: flex;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    padding: 2px;
+  }
+
+  .view-toggle button {
+    padding: 6px 10px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .view-toggle button.active {
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .view-toggle button svg {
+    width: 18px;
+    height: 18px;
+    color: #1d1d1f;
+  }
+
+  .btn-upload {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-upload:hover {
+    background: #0077ed;
+  }
+
+  .btn-upload svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Statistics Panel
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .stats-panel {
+    padding: 16px 24px;
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 16px;
   }
 
   .stat-card {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--bg-primary, white);
-    border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 8px;
+    gap: 12px;
+    padding: 16px;
+    background: #f5f5f7;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
   }
 
   .stat-card.highlight {
-    background: linear-gradient(135deg, var(--success-bg, #d1fae5), var(--bg-primary, white));
-    border-color: var(--success-color, #10b981);
+    background: linear-gradient(135deg, #d1fae5, #f0fdf4);
   }
 
   .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .stat-icon.images {
-    background: var(--primary-bg, #dbeafe);
-    color: var(--primary-color, #3b82f6);
+  .stat-icon svg {
+    width: 20px;
+    height: 20px;
   }
 
-  .stat-icon.optimized {
-    background: var(--success-bg, #d1fae5);
-    color: var(--success-color, #10b981);
-  }
+  .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+  .stat-icon.green { background: #d1fae5; color: #059669; }
+  .stat-icon.orange { background: #fef3c7; color: #d97706; }
+  .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+  .stat-icon.emerald { background: #d1fae5; color: #10b981; }
 
-  .stat-icon.pending {
-    background: var(--warning-bg, #fef3c7);
-    color: var(--warning-color, #d97706);
-  }
-
-  .stat-icon.storage {
-    background: var(--purple-bg, #ede9fe);
-    color: var(--purple-color, #7c3aed);
-  }
-
-  .stat-icon.savings {
-    background: var(--success-bg, #d1fae5);
-    color: var(--success-color, #10b981);
-  }
-
-  .stat-content {
+  .stat-info {
     display: flex;
     flex-direction: column;
   }
 
   .stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary, #111827);
+    font-size: 20px;
+    font-weight: 600;
+    color: #1d1d1f;
   }
 
   .stat-label {
-    font-size: 0.75rem;
-    color: var(--text-muted, #6b7280);
+    font-size: 12px;
+    color: #86868b;
   }
 
-  /* Upload section */
-  .upload-section {
-    margin-bottom: 1.5rem;
+  .stat-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
   }
 
-  /* Toolbar */
+  .progress-bar {
+    height: 100%;
+    background: #10b981;
+    transition: width 1s ease-out;
+  }
+
+  .stats-toggle {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.04);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .stats-toggle svg {
+    width: 16px;
+    height: 16px;
+    color: #86868b;
+  }
+
+  .stats-show {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 24px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.04);
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #86868b;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .stats-show:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .stats-show svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Upload Panel
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .upload-panel {
+    padding: 16px 24px;
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .upload-queue {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .upload-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f5f5f7;
+    border-radius: 10px;
+  }
+
+  .upload-item.complete {
+    background: #d1fae5;
+  }
+
+  .upload-item.error {
+    background: #fef2f2;
+  }
+
+  .upload-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .upload-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .upload-icon .text-green { color: #059669; }
+  .upload-icon .text-red { color: #dc2626; }
+
+  .upload-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #0071e3;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .upload-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .upload-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1d1d1f;
+  }
+
+  .upload-size {
+    font-size: 12px;
+    color: #86868b;
+  }
+
+  .upload-progress-bar {
+    width: 100px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #0071e3;
+    transition: width 0.3s;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Toolbar
+     ═══════════════════════════════════════════════════════════════════════════ */
   .toolbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
 
   .toolbar-left,
   .toolbar-right {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: var(--bg-primary, white);
-    border: 1px solid var(--border-color, #d1d5db);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .search-box input {
-    padding: 0.5rem 0.75rem;
-    border: none;
-    outline: none;
-    font-size: 0.875rem;
-    width: 200px;
-  }
-
-  .search-box button {
-    padding: 0.5rem 0.75rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-muted, #6b7280);
+    gap: 8px;
   }
 
   .toolbar select {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border-color, #d1d5db);
-    border-radius: 8px;
-    font-size: 0.875rem;
-    background: var(--bg-primary, white);
-    cursor: pointer;
-  }
-
-  .preset-select {
-    min-width: 150px;
-  }
-
-  /* Bulk actions */
-  .bulk-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: var(--bg-secondary, #f3f4f6);
-    border-radius: 8px;
-    margin-bottom: 1rem;
-  }
-
-  .selection-count {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary, #111827);
-  }
-
-  /* Optimize all banner */
-  .optimize-all-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    background: var(--warning-bg, #fef3c7);
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-    color: var(--warning-dark, #92400e);
-  }
-
-  /* Pagination */
-  .pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 1.5rem 0;
-  }
-
-  .page-info {
-    font-size: 0.875rem;
-    color: var(--text-muted, #6b7280);
-  }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    padding: 8px 12px;
+    background: #f5f5f7;
     border: none;
-  }
-
-  .btn-sm {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
   }
 
   .btn-icon {
-    padding: 0.5rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f7;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-icon:hover {
+    background: #e8e8ed;
+  }
+
+  .btn-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-icon svg {
+    width: 18px;
+    height: 18px;
+    color: #1d1d1f;
+  }
+
+  .bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f5f5f7;
+    border-radius: 10px;
+  }
+
+  .selection-count {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1d1d1f;
+    padding-right: 8px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
   }
 
   .btn-primary {
-    background: var(--primary-color, #3b82f6);
+    background: #0071e3;
     color: white;
   }
 
   .btn-primary:hover {
-    background: var(--primary-dark, #2563eb);
-  }
-
-  .btn-primary:disabled {
-    background: var(--primary-light, #93c5fd);
-    cursor: not-allowed;
+    background: #0077ed;
   }
 
   .btn-secondary {
-    background: var(--bg-primary, white);
-    color: var(--text-primary, #374151);
-    border: 1px solid var(--border-color, #d1d5db);
+    background: #f5f5f7;
+    color: #1d1d1f;
   }
 
   .btn-secondary:hover {
-    background: var(--bg-hover, #f9fafb);
+    background: #e8e8ed;
   }
 
   .btn-danger {
-    background: var(--error-color, #ef4444);
+    background: #ff3b30;
     color: white;
   }
 
   .btn-danger:hover {
-    background: var(--error-dark, #dc2626);
+    background: #ff453a;
   }
 
   .btn-text {
-    background: none;
-    color: var(--primary-color, #3b82f6);
-    padding: 0.25rem 0.5rem;
+    background: transparent;
+    color: #0071e3;
+    padding: 4px 8px;
   }
 
   .btn-text:hover {
-    background: var(--bg-hover, #f3f4f6);
+    background: rgba(0, 113, 227, 0.1);
+  }
+
+  .btn-primary svg,
+  .btn-secondary svg,
+  .btn-danger svg,
+  .btn-text svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Content Area
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .content-area {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .media-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .media-library.details-open .media-content {
+    padding-right: 340px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: #86868b;
+  }
+
+  .empty-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-state p {
+    margin: 0 0 24px 0;
+  }
+
+  /* Grid View */
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .media-grid .media-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .media-grid .media-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .media-grid .media-item.selected {
+    box-shadow: 0 0 0 3px #0071e3;
+  }
+
+  .media-grid .media-item.focused {
+    box-shadow: 0 0 0 3px #0071e3, 0 0 0 6px rgba(0, 113, 227, 0.2);
+  }
+
+  .item-thumbnail {
+    position: relative;
+    aspect-ratio: 1;
+    background: #f5f5f7;
+    overflow: hidden;
+  }
+
+  .item-thumbnail :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 48px;
+  }
+
+  .item-badges {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+  }
+
+  .badge {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .badge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .badge-green {
+    background: rgba(209, 250, 229, 0.9);
+    color: #059669;
+  }
+
+  .badge-orange {
+    background: rgba(254, 243, 199, 0.9);
+    color: #d97706;
+  }
+
+  .spinner-mini {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(217, 119, 6, 0.3);
+    border-top-color: #d97706;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .item-checkbox {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .item-checkbox.visible,
+  .media-item:hover .item-checkbox {
+    opacity: 1;
+  }
+
+  .item-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .item-info {
+    padding: 12px;
+  }
+
+  .item-name {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1d1d1f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-meta {
+    font-size: 12px;
+    color: #86868b;
+  }
+
+  /* List View */
+  .media-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .media-list .media-item {
+    display: grid;
+    grid-template-columns: 24px 48px 1fr 100px 100px 120px 80px;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .media-list .media-item:hover {
+    background: #f5f5f7;
+  }
+
+  .media-list .media-item.selected {
+    background: rgba(0, 113, 227, 0.1);
+  }
+
+  .media-list .item-checkbox {
+    position: static;
+    opacity: 1;
+  }
+
+  .item-thumbnail-small {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f5f5f7;
+  }
+
+  .item-thumbnail-small :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .file-icon-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 24px;
+  }
+
+  .item-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .item-path {
+    font-size: 12px;
+    color: #86868b;
+  }
+
+  .item-size,
+  .item-date {
+    font-size: 13px;
+    color: #86868b;
+  }
+
+  .item-status {
+    display: flex;
+    align-items: center;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .status-badge.green {
+    background: #d1fae5;
+    color: #059669;
+  }
+
+  .status-badge.orange {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  .status-badge.gray {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .media-list .media-item:hover .item-actions {
+    opacity: 1;
+  }
+
+  .btn-icon-sm {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #86868b;
+  }
+
+  .btn-icon-sm:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #1d1d1f;
+  }
+
+  .btn-icon-sm svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Pagination
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 0;
+  }
+
+  .page-info {
+    padding: 0 16px;
+    font-size: 13px;
+    color: #86868b;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Details Panel
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .details-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 320px;
+    background: white;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+  }
+
+  .details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .details-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0;
+  }
+
+  .details-preview {
+    aspect-ratio: 16/9;
+    background: #f5f5f7;
+    overflow: hidden;
+  }
+
+  .details-preview :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .file-preview-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 64px;
+  }
+
+  .details-info {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+
+  .detail-label {
+    font-size: 13px;
+    color: #86868b;
+  }
+
+  .detail-value {
+    font-size: 13px;
+    color: #1d1d1f;
+    font-weight: 500;
+  }
+
+  .details-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-header h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0;
+  }
+
+  .alt-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    background: #f5f5f7;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .alt-input:focus {
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+  }
+
+  .ai-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    display: inline-flex;
+    padding: 4px 10px;
+    background: #f5f5f7;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #1d1d1f;
+  }
+
+  .ai-hint {
+    font-size: 12px;
+    color: #86868b;
+    margin: 0;
+  }
+
+  .details-actions {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .details-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Context Menu
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .context-menu {
+    position: fixed;
+    min-width: 180px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 6px;
+    z-index: 1000;
+  }
+
+  .context-menu button,
+  .context-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1d1d1f;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .context-menu button:hover,
+  .context-menu a:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .context-menu button.danger {
+    color: #ff3b30;
+  }
+
+  .context-menu button svg,
+  .context-menu a svg {
+    width: 16px;
+    height: 16px;
+    color: #86868b;
+  }
+
+  .context-menu button.danger svg {
+    color: #ff3b30;
+  }
+
+  .context-menu hr {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 6px 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Toast Notifications
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 1000;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(29, 29, 31, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 10px;
+    color: white;
+    font-size: 13px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .toast svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toast-success svg {
+    color: #34d399;
+  }
+
+  .toast-error svg {
+    color: #f87171;
+  }
+
+  .toast-info svg {
+    color: #60a5fa;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Modal
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 1200px;
+    max-height: 90vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Animations
+     ═══════════════════════════════════════════════════════════════════════════ */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Responsive
+     ═══════════════════════════════════════════════════════════════════════════ */
+  @media (max-width: 1024px) {
+    .media-library.details-open .media-content {
+      padding-right: 24px;
+    }
+
+    .details-panel {
+      width: 100%;
+      max-width: 400px;
+    }
   }
 
   @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: stretch;
+    .header {
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    .header-actions {
-      justify-content: flex-end;
+    .header-center {
+      order: 3;
+      flex-basis: 100%;
+      margin: 0;
+      max-width: none;
     }
 
     .toolbar {
-      flex-direction: column;
-      align-items: stretch;
+      flex-wrap: wrap;
     }
 
-    .toolbar-left,
-    .toolbar-right {
-      width: 100%;
+    .media-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     }
 
-    .search-box {
-      flex: 1;
+    .media-list .media-item {
+      grid-template-columns: 24px 40px 1fr auto;
     }
 
-    .search-box input {
-      width: 100%;
+    .media-list .item-status,
+    .media-list .item-date,
+    .media-list .item-size {
+      display: none;
     }
   }
 </style>
