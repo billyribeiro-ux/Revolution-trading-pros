@@ -17,6 +17,7 @@ return new class extends Migration
             $table->timestamp('verified_at')->nullable();
             $table->string('unsubscribe_token')->unique();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['status', 'verified_at']);
         });

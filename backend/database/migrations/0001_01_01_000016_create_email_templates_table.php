@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('email_type'); // welcome, order, subscription, newsletter, etc.
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('slug');
             $table->index('email_type');
