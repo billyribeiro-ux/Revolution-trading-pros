@@ -72,6 +72,13 @@ export { default as PostTitleField } from './PostTitleField.svelte';
 export { default as PostContentField } from './PostContentField.svelte';
 export { default as PostExcerptField } from './PostExcerptField.svelte';
 export { default as FeaturedImageField } from './FeaturedImageField.svelte';
+export { default as TaxonomyField } from './TaxonomyField.svelte';
+
+// Multi-Step Forms
+export { default as FormStepField } from './FormStepField.svelte';
+
+// Repeater/Dynamic Fields
+export { default as RepeaterField } from './RepeaterField.svelte';
 
 // Compliance Fields
 export { default as GDPRField } from './GDPRField.svelte';
@@ -396,4 +403,38 @@ export interface ColorValue {
 	hex: string;
 	rgb?: { r: number; g: number; b: number };
 	hsl?: { h: number; s: number; l: number };
+}
+
+// Repeater Field Types
+export interface RepeaterFieldConfig {
+	name: string;
+	type: 'text' | 'email' | 'tel' | 'number' | 'select' | 'textarea';
+	label?: string;
+	placeholder?: string;
+	required?: boolean;
+	options?: { value: string; label: string }[];
+	width?: 'full' | 'half' | 'third' | 'quarter';
+}
+
+export interface RepeaterRow {
+	id: string;
+	values: Record<string, string>;
+}
+
+// Form Step Types
+export interface StepConfig {
+	id: string;
+	title: string;
+	icon?: string;
+	description?: string;
+}
+
+// Taxonomy Field Types
+export interface TaxonomyTerm {
+	id: string | number;
+	name: string;
+	slug: string;
+	parent?: string | number;
+	count?: number;
+	children?: TaxonomyTerm[];
 }
