@@ -1351,4 +1351,51 @@ class EmailTemplate extends Model implements Renderable
                     ->toArray();
             });
     }
+
+    /**
+     * Render template to HTML.
+     *
+     * @param array $data Variables to use in rendering
+     * @return string Rendered HTML content
+     */
+    public function renderHtml(array $data = []): string
+    {
+        $content = $this->body_html ?? '';
+
+        // Replace variables in template
+        foreach ($data as $key => $value) {
+            if (is_string($value)) {
+                $content = str_replace('{{' . $key . '}}', $value, $content);
+                $content = str_replace('{{ ' . $key . ' }}', $value, $content);
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Render template to plain text.
+     *
+     * @param array $data Variables to use in rendering
+     * @return string Rendered plain text content
+     */
+    public function renderText(array $data = []): string
+    {
+        $content = $this->body_text ?? '';
+
+        // If no text version, strip HTML from HTML version
+        if (empty($content) && !empty($this->body_html)) {
+            $content = strip_tags($this->body_html);
+        }
+
+        // Replace variables in template
+        foreach ($data as $key => $value) {
+            if (is_string($value)) {
+                $content = str_replace('{{' . $key . '}}', $value, $content);
+                $content = str_replace('{{ ' . $key . ' }}', $value, $content);
+            }
+        }
+
+        return $content;
+    }
 }

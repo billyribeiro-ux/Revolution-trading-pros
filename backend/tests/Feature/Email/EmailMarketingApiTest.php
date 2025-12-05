@@ -34,6 +34,13 @@ class EmailMarketingApiTest extends TestCase
     {
         parent::setUp();
 
+        // Create admin role if using spatie/permissions
+        if (class_exists(\Spatie\Permission\Models\Role::class)) {
+            \Spatie\Permission\Models\Role::firstOrCreate(
+                ['name' => 'admin', 'guard_name' => 'web']
+            );
+        }
+
         // Create admin user
         $this->adminUser = User::factory()->create([
             'email' => 'admin@test.com',

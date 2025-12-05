@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('email_logs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('subscriber_id')->nullable();
             $table->string('email_type'); // welcome, order_confirmation, password_reset, etc.
+            $table->string('event_type')->default('sent'); // sent, opened, clicked, bounced
             $table->string('recipient');
             $table->string('subject');
             $table->text('body')->nullable();
@@ -23,8 +25,10 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('email_type');
+            $table->index('event_type');
             $table->index('status');
             $table->index('sent_at');
+            $table->index('subscriber_id');
         });
     }
 
