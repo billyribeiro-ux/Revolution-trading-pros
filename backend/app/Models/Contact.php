@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -7,10 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Cache;
+use App\Traits\Cacheable;
 
 class Contact extends Model
 {
-    use HasUuids;
+    use HasUuids, Cacheable;
+
+    // Cache configuration
+    protected static string $cachePrefix = 'contact';
+    protected static string $cacheTag = 'contacts';
+    protected static int $cacheTtl = 1800; // 30 minutes
+    protected static int $statsCacheTtl = 300; // 5 minutes
 
     protected $fillable = [
         'user_id', 'email', 'first_name', 'last_name', 'phone', 'mobile',

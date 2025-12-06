@@ -828,6 +828,143 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/crm
     Route::put('/pipelines/{id}', [PipelineController::class, 'update']);
     Route::delete('/pipelines/{id}', [PipelineController::class, 'destroy']);
     Route::post('/pipelines/{id}/stages', [PipelineController::class, 'addStage']);
+
+    // ========================================
+    // FLUENTCRM PRO - EMAIL SEQUENCES (Drip Campaigns)
+    // ========================================
+    Route::prefix('sequences')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\SequenceController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\SequenceController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\SequenceController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\SequenceController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\SequenceController::class, 'destroy']);
+        Route::post('/{id}/duplicate', [\App\Http\Controllers\Admin\SequenceController::class, 'duplicate']);
+
+        // Sequence Emails
+        Route::post('/{id}/emails', [\App\Http\Controllers\Admin\SequenceController::class, 'storeEmail']);
+        Route::get('/{id}/emails/{emailId}', [\App\Http\Controllers\Admin\SequenceController::class, 'showEmail']);
+        Route::put('/{id}/emails/{emailId}', [\App\Http\Controllers\Admin\SequenceController::class, 'updateEmail']);
+        Route::delete('/{id}/emails/{emailId}', [\App\Http\Controllers\Admin\SequenceController::class, 'destroyEmail']);
+        Route::post('/{id}/emails/duplicate', [\App\Http\Controllers\Admin\SequenceController::class, 'duplicateEmail']);
+
+        // Sequence Subscribers
+        Route::get('/{id}/subscribers', [\App\Http\Controllers\Admin\SequenceController::class, 'getSubscribers']);
+        Route::post('/{id}/subscribe', [\App\Http\Controllers\Admin\SequenceController::class, 'subscribe']);
+        Route::post('/{id}/unsubscribe', [\App\Http\Controllers\Admin\SequenceController::class, 'unsubscribe']);
+        Route::post('/{id}/reapply', [\App\Http\Controllers\Admin\SequenceController::class, 'reapply']);
+    });
+
+    // ========================================
+    // FLUENTCRM PRO - RECURRING CAMPAIGNS (Scheduled Newsletters)
+    // ========================================
+    Route::prefix('recurring-campaigns')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'destroy']);
+        Route::patch('/{id}/status', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'changeStatus']);
+        Route::post('/{id}/duplicate', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'duplicate']);
+        Route::put('/{id}/settings', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'updateSettings']);
+        Route::put('/{id}/labels', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'updateLabels']);
+        Route::put('/{id}/email', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'updateCampaignEmail']);
+
+        // Recurring Campaign Emails (sent instances)
+        Route::get('/{id}/emails', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'getEmails']);
+        Route::get('/{id}/emails/{emailId}', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'getEmail']);
+
+        // Bulk operations
+        Route::post('/bulk-delete', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'deleteBulk']);
+        Route::post('/bulk-action', [\App\Http\Controllers\Admin\RecurringCampaignController::class, 'handleBulkAction']);
+    });
+
+    // ========================================
+    // FLUENTCRM PRO - SMART LINKS (Action Links)
+    // ========================================
+    Route::prefix('smart-links')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\SmartLinkController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\SmartLinkController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\SmartLinkController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\SmartLinkController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\SmartLinkController::class, 'destroy']);
+        Route::post('/activate', [\App\Http\Controllers\Admin\SmartLinkController::class, 'activate']);
+        Route::get('/{id}/clicks', [\App\Http\Controllers\Admin\SmartLinkController::class, 'getClicks']);
+        Route::get('/{id}/analytics', [\App\Http\Controllers\Admin\SmartLinkController::class, 'getAnalytics']);
+    });
+
+    // ========================================
+    // FLUENTCRM PRO - AUTOMATION FUNNELS
+    // ========================================
+    Route::prefix('automations')->group(function () {
+        Route::get('/trigger-types', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'getTriggerTypes']);
+        Route::get('/action-types', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'getActionTypes']);
+
+        Route::get('/', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'destroy']);
+        Route::post('/{id}/duplicate', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'duplicate']);
+        Route::post('/{id}/activate', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'activate']);
+        Route::post('/{id}/pause', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'pause']);
+
+        // Funnel Actions
+        Route::post('/{id}/actions', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'storeAction']);
+        Route::put('/{id}/actions/{actionId}', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'updateAction']);
+        Route::delete('/{id}/actions/{actionId}', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'destroyAction']);
+        Route::post('/{id}/actions/reorder', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'reorderActions']);
+
+        // Funnel Subscribers
+        Route::get('/{id}/subscribers', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'getSubscribers']);
+        Route::post('/{id}/subscribers', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'enrollContact']);
+        Route::delete('/{id}/subscribers/{subscriberId}', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'removeSubscriber']);
+        Route::post('/{id}/subscribers/{subscriberId}/retry', [\App\Http\Controllers\Admin\AutomationFunnelController::class, 'retrySubscriber']);
+    });
+
+    // ========================================
+    // FLUENTCRM PRO - CONTACT LISTS
+    // ========================================
+    Route::prefix('lists')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ContactListController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\ContactListController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\ContactListController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\ContactListController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\ContactListController::class, 'destroy']);
+        Route::get('/{id}/contacts', [\App\Http\Controllers\Admin\ContactListController::class, 'getContacts']);
+        Route::post('/{id}/contacts', [\App\Http\Controllers\Admin\ContactListController::class, 'addContacts']);
+        Route::delete('/{id}/contacts', [\App\Http\Controllers\Admin\ContactListController::class, 'removeContacts']);
+    });
+
+    // ========================================
+    // FLUENTCRM PRO - CONTACT TAGS
+    // ========================================
+    Route::prefix('contact-tags')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ContactTagController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\ContactTagController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\ContactTagController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\ContactTagController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\ContactTagController::class, 'destroy']);
+        Route::get('/{id}/contacts', [\App\Http\Controllers\Admin\ContactTagController::class, 'getContacts']);
+        Route::post('/{id}/apply', [\App\Http\Controllers\Admin\ContactTagController::class, 'applyToContacts']);
+        Route::post('/{id}/remove', [\App\Http\Controllers\Admin\ContactTagController::class, 'removeFromContacts']);
+        Route::post('/bulk-apply', [\App\Http\Controllers\Admin\ContactTagController::class, 'bulkApply']);
+    });
+
+    // ========================================
+    // FLUENTCRM PRO - CRM COMPANIES (B2B)
+    // ========================================
+    Route::prefix('companies')->group(function () {
+        Route::get('/industries', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'getIndustries']);
+        Route::get('/sizes', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'getSizes']);
+
+        Route::get('/', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'show']);
+        Route::put('/{id}', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'update']);
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'destroy']);
+        Route::get('/{id}/contacts', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'getContacts']);
+        Route::get('/{id}/deals', [\App\Http\Controllers\Admin\CrmCompanyController::class, 'getDeals']);
+    });
 });
 
 // ========================================
