@@ -21,44 +21,6 @@ define('FLUENTFORMPRO_DIR_URL', plugin_dir_url(__FILE__));
 define('FLUENTFORMPRO_DIR_PATH', plugin_dir_path(__FILE__));
 define('FLUENTFORMPRO_DIR_FILE', __FILE__);
 
-add_filter('pre_http_request', function($preempt, $parsed_args, $url) {
-    if (strpos($url, 'api3.wpmanageninja.com') !== false) {
-        return array(
-            'headers' => array(),
-            'body' => json_encode(array(
-                'license' => 'valid',
-                'item_name' => 'Fluent Forms Pro Add On',
-                'expires' => 'lifetime',
-                'payment_id' => '12345',
-                'customer_name' => 'GPL',
-                'customer_email' => 'noreply@gmail.com',
-                'license_limit' => 0,
-                'site_count' => 1,
-                'activations_left' => 'unlimited'
-            )),
-            'response' => array('code' => 200, 'message' => 'OK'),
-            'cookies' => array(),
-            'filename' => null
-        );
-    }
-    return $preempt;
-}, 10, 3);
-
-update_option('_ff_fluentform_pro_license_key', '1415B451BE1A13C283BA771EA52D38BB');
-update_option('_ff_fluentform_pro_license_status', 'valid');
-update_option('_ff_fluentform_pro_license_status_checking', (object)array(
-    'license' => 'valid',
-    'item_name' => 'Fluent Forms Pro Add On',
-    'expires' => 'lifetime',
-    'payment_id' => '12345',
-    'customer_name' => 'GPL',
-    'customer_email' => 'noreply@gmail.com',
-    'license_limit' => 0,
-    'site_count' => 1,
-    'activations_left' => 'unlimited',
-    'next_timestamp' => time() + (365 * 24 * 60 * 60)
-));
-
 include FLUENTFORMPRO_DIR_PATH . 'autoload.php';
 
 if (!class_exists('FluentFormPro')) {

@@ -116,7 +116,7 @@ class StripeProcessor extends BaseProcessor
                 $checkoutArgs['line_items'][] = [
                     'amount'   => $price,
                     'currency' => $transaction->currency,
-                    'name'     => __(sprintf('Signup fee for %s', 'fluentformpro') . $subscription->plan_name,
+                    'name'     => sprintf(__('Signup fee for %s', 'fluentformpro'), $subscription->plan_name),
                     'quantity' => 1
                 ];
             }
