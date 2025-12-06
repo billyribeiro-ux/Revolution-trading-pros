@@ -61,6 +61,7 @@
 	const alertServices = $derived(membershipsData?.alertServices ?? []);
 	const courses = $derived(membershipsData?.courses ?? []);
 	const indicators = $derived(membershipsData?.indicators ?? []);
+	const weeklyWatchlist = $derived(membershipsData?.weeklyWatchlist ?? []);
 	const allMemberships = $derived(membershipsData?.memberships ?? []);
 	const stats = $derived(membershipsData?.stats);
 
@@ -351,7 +352,28 @@
 		{/if}
 
 		<!-- Weekly Watchlist Section (WordPress: special type with no Trading Room link) -->
-		<!-- This would be rendered separately if user has weekly watchlist -->
+		{#if weeklyWatchlist.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Weekly Watchlist</h2>
+				<div class="membership-cards row">
+					{#each weeklyWatchlist as ww (ww.id)}
+						<div class="col-sm-6 col-xl-4">
+							<MembershipCard
+								id={ww.id}
+								name={ww.name}
+								type="ww"
+								slug={ww.slug}
+								icon={ww.icon}
+								dashboardUrl="/dashboard/{ww.slug}"
+								status={ww.status}
+								daysUntilExpiry={ww.daysUntilExpiry}
+								onclick={() => handleMembershipClick(ww)}
+							/>
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
 	{:else}
 		<!-- Empty State -->
 		<div class="empty-state">
@@ -374,22 +396,8 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES
+	   DASHBOARD STYLES - Uses global --st-* variables from app.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	:root {
-		--primary-color: #0984ae;
-		--primary-hover: #076787;
-		--warning-color: #f59e0b;
-		--error-color: #ef4444;
-		--success-color: #10b981;
-		--text-color: #333;
-		--text-muted: #666;
-		--border-color: #dbdbdb;
-		--bg-light: #f4f4f4;
-		--card-shadow: 0 1px 2px rgb(0 0 0 / 15%);
-		--transition: all 0.15s ease-in-out;
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD HEADER (WordPress: .dashboard__header)
@@ -397,7 +405,7 @@
 
 	.dashboard__header {
 		background-color: #fff;
-		border-bottom: 1px solid var(--border-color);
+		border-bottom: 1px solid var(--st-border-color);
 		max-width: 100%;
 		padding: 20px 30px;
 		display: flex;
@@ -415,7 +423,7 @@
 	}
 
 	.dashboard__page-title {
-		color: var(--text-color);
+		color: var(--st-text-color);
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
@@ -434,19 +442,19 @@
 		align-items: center;
 		gap: 4px;
 		font-size: 14px;
-		color: var(--text-muted);
+		color: var(--st-text-muted);
 	}
 
 	.stat-item strong {
-		color: var(--text-color);
+		color: var(--st-text-color);
 	}
 
 	.stat-warning {
-		color: var(--warning-color);
+		color: var(--st-warning);
 	}
 
 	.stat-warning strong {
-		color: var(--warning-color);
+		color: var(--st-warning);
 	}
 
 	/* Trading Room Dropdown (WordPress Reference) */
@@ -458,20 +466,20 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: #f99e31;
+		background: var(--st-orange);
 		color: #fff;
 		font-weight: 700;
 		font-size: 14px;
 		padding: 12px 20px;
 		border-radius: 5px;
 		text-decoration: none;
-		transition: var(--transition);
+		transition: var(--st-transition);
 		border: none;
 		cursor: pointer;
 	}
 
 	.trading-room-btn:hover {
-		background: #f88b09;
+		background: var(--st-orange-hover);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -484,17 +492,17 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		border: 1px solid var(--border-color);
+		border: 1px solid var(--st-border-color);
 		border-radius: 8px;
 		background: #fff;
-		color: var(--text-muted);
+		color: var(--st-text-muted);
 		cursor: pointer;
-		transition: var(--transition);
+		transition: var(--st-transition);
 	}
 
 	.refresh-btn:hover:not(:disabled) {
-		border-color: var(--primary-color);
-		color: var(--primary-color);
+		border-color: var(--st-primary);
+		color: var(--st-primary);
 	}
 
 	.refresh-btn:disabled {
@@ -534,13 +542,13 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.section-title {
-		color: var(--text-color);
+		color: var(--st-text-color);
 		font-weight: 700;
 		font-size: 24px;
 		font-family: 'Open Sans Condensed', sans-serif;
 		margin: 0 0 20px 0;
 		padding-bottom: 10px;
-		border-bottom: 2px solid #0984ae;
+		border-bottom: 2px solid var(--st-primary);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -621,18 +629,18 @@
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 24px;
-		color: var(--error-color);
+		color: var(--st-error);
 	}
 
 	.error-message {
-		color: var(--text-color);
+		color: var(--st-text-color);
 		font-size: 16px;
 		margin-bottom: 24px;
 		max-width: 400px;
 	}
 
 	.btn-primary {
-		background: var(--primary-color);
+		background: var(--st-primary);
 		color: white;
 		border: none;
 		padding: 12px 24px;
@@ -640,11 +648,11 @@
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
-		transition: var(--transition);
+		transition: var(--st-transition);
 	}
 
 	.btn-primary:hover {
-		background: var(--primary-hover);
+		background: var(--st-primary-hover);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -658,50 +666,50 @@
 		justify-content: center;
 		min-height: 300px;
 		text-align: center;
-		color: var(--text-muted);
+		color: var(--st-text-muted);
 	}
 
 	.empty-icon {
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: var(--bg-light);
+		background: var(--st-bg-light);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 24px;
-		color: var(--primary-color);
+		color: var(--st-primary);
 	}
 
 	.empty-state h2 {
 		font-size: 1.5rem;
-		color: var(--text-color);
+		color: var(--st-text-color);
 		margin: 0 0 8px;
 	}
 
 	.empty-state p {
 		margin: 0 0 24px;
-		color: var(--text-muted);
+		color: var(--st-text-muted);
 	}
 
 	.btn-orange {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: #f99e31;
-		border-color: #f99e31;
+		background: var(--st-orange);
+		border-color: var(--st-orange);
 		color: #fff;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		padding: 12px 24px;
 		border-radius: 5px;
 		text-decoration: none;
-		transition: var(--transition);
+		transition: var(--st-transition);
 	}
 
 	.btn-orange:hover {
-		background: #f88b09;
-		border-color: #f88b09;
+		background: var(--st-orange-hover);
+		border-color: var(--st-orange-hover);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

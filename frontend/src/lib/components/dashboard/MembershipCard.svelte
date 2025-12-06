@@ -28,12 +28,16 @@
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// Card display types (for CSS modifiers)
 	type CardType = 'options' | 'foundation' | 'moxie' | 'ww' | 'trading-room' | 'alert' | 'course' | 'indicator';
+
+	// API types that need normalization
+	type ApiType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
 
 	interface Props {
 		id?: string;
 		name: string;
-		type?: CardType;
+		type?: CardType | ApiType | string;
 		slug: string;
 		icon?: string;
 		dashboardUrl?: string;
@@ -70,8 +74,37 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// Normalize API types to display types
+	const normalizedType = $derived.by((): CardType => {
+		const typeMap: Record<string, CardType> = {
+			// API types → Display types
+			'alert-service': 'alert',
+			'weekly-watchlist': 'ww',
+			// Slug-based mappings for specific services
+			'mastering-the-trade': 'options',
+			'simpler-showcase': 'options',
+			// Pass-through types
+			'trading-room': 'trading-room',
+			'options': 'options',
+			'foundation': 'foundation',
+			'moxie': 'moxie',
+			'ww': 'ww',
+			'alert': 'alert',
+			'course': 'course',
+			'indicator': 'indicator'
+		};
+
+		// First check if the slug has a specific type mapping
+		if (slug && typeMap[slug]) {
+			return typeMap[slug];
+		}
+
+		// Then check the type prop
+		return typeMap[type ?? ''] || (type as CardType) || 'options';
+	});
+
 	// Card modifier class (WordPress: membership-card--options, membership-card--moxie, etc.)
-	const cardModifier = $derived(`membership-card--${type}`);
+	const cardModifier = $derived(`membership-card--${normalizedType}`);
 
 	// Icon class based on slug
 	const iconClass = $derived.by(() => {
@@ -89,8 +122,8 @@
 		return iconMap[slug] || `st-icon-${slug}`;
 	});
 
-	// Icon size class
-	const iconSizeClass = $derived(type === 'ww' ? 'icon--md' : 'icon--lg');
+	// Icon size class (Weekly Watchlist uses smaller icon)
+	const iconSizeClass = $derived(normalizedType === 'ww' ? 'icon--md' : 'icon--lg');
 
 	// Dashboard URL
 	const finalDashboardUrl = $derived(dashboardUrl || `/dashboard/${slug}`);
@@ -98,12 +131,13 @@
 	// Room/Access URL
 	const finalRoomUrl = $derived(roomUrl || accessUrl || `/dashboard/${slug}/room`);
 
-	// Room label based on type
+	// Room label based on normalized type
 	const finalRoomLabel = $derived.by(() => {
 		if (roomLabel) return roomLabel;
-		switch (type) {
+		switch (normalizedType) {
 			case 'trading-room':
 			case 'options':
+			case 'foundation':
 			case 'moxie':
 				return 'Trading Room';
 			case 'alert':
@@ -119,8 +153,8 @@
 		}
 	});
 
-	// Show room link
-	const showRoomLink = $derived(type !== 'ww' && finalRoomLabel !== null);
+	// Show room link (Weekly Watchlist has no Trading Room link)
+	const showRoomLink = $derived(normalizedType !== 'ww' && finalRoomLabel !== null);
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════

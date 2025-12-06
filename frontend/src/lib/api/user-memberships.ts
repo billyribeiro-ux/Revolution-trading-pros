@@ -32,7 +32,7 @@ const CACHE_TTL = {
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator';
+export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
 export type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
 export type BillingInterval = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
 
@@ -59,6 +59,7 @@ export interface UserMembershipsResponse {
 	alertServices: UserMembership[];
 	courses: UserMembership[];
 	indicators: UserMembership[];
+	weeklyWatchlist: UserMembership[];
 	stats?: {
 		totalActive: number;
 		totalValue: number;
@@ -131,6 +132,7 @@ function categorizeMemberships(memberships: UserMembership[]): UserMembershipsRe
 	const alertServices = memberships.filter((m) => m.type === 'alert-service');
 	const courses = memberships.filter((m) => m.type === 'course');
 	const indicators = memberships.filter((m) => m.type === 'indicator');
+	const weeklyWatchlist = memberships.filter((m) => m.type === 'weekly-watchlist');
 
 	const activeMembers = memberships.filter((m) => m.status === 'active' || m.status === 'expiring');
 	const expiringMembers = memberships.filter((m) => m.status === 'expiring');
@@ -142,6 +144,7 @@ function categorizeMemberships(memberships: UserMembership[]): UserMembershipsRe
 		alertServices,
 		courses,
 		indicators,
+		weeklyWatchlist,
 		stats: {
 			totalActive: activeMembers.length,
 			totalValue,
@@ -186,7 +189,8 @@ function getAccessUrl(type: MembershipType, slug: string): string {
 		'trading-room': '/dashboard/trading-rooms',
 		'alert-service': '/dashboard/alerts',
 		course: '/dashboard/courses',
-		indicator: '/dashboard/indicators'
+		indicator: '/dashboard/indicators',
+		'weekly-watchlist': '/dashboard/weekly-watchlist'
 	};
 
 	return `${baseUrls[type]}/${slug}`;

@@ -61,6 +61,18 @@
 .st-icon-small-accounts::before { content: "\E99C"; font-size: 32px; line-height: 32px; }
 .st-icon-day-trading::before { content: "\E91D"; font-size: 32px; line-height: 32px; }
 
+/* Simpler Trading Membership Icons */
+.st-icon-mastering-the-trade::before { content: "\E933"; font-size: 32px; line-height: 32px; }
+.st-icon-simpler-showcase::before { content: "\E912"; font-size: 32px; line-height: 32px; }
+.st-icon-moxie::before { content: "\E918"; font-size: 32px; line-height: 32px; }
+.st-icon-trade-of-the-week::before { content: "\E924"; font-size: 32px; line-height: 32px; }
+.st-icon-options::before { content: "\E930"; font-size: 32px; line-height: 32px; }
+.st-icon-foundation::before { content: "\E931"; font-size: 32px; line-height: 32px; }
+.st-icon-weekly-watchlist::before { content: "\E924"; font-size: 32px; line-height: 32px; }
+.st-icon-course::before { content: "\E94D"; font-size: 32px; line-height: 32px; }
+.st-icon-indicator::before { content: "\E948"; font-size: 32px; line-height: 32px; }
+.st-icon-alert::before { content: "\E910"; font-size: 32px; line-height: 32px; }
+
 /* UI Icons */
 .st-icon-settings::before { content: "\E95A"; }
 .st-icon-logout::before { content: "\E94A"; }
