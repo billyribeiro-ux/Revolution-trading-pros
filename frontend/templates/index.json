@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "Revolution Trading Templates",
   "description": "Word document templates extracted to plain text for AI agent accessibility",
   "version": "1.0.0",
