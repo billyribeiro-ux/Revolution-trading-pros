@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Revolution Trading Templates",
+  "description": "Word document templates extracted to plain text for AI agent accessibility",
+  "version": "1.0.0",
+  "lastUpdated": "2024-12-06",
+  "files": [
+    {
+      "id": "simpler-main",
+      "filename": "SimplerMain.txt",
+      "originalFile": "../SimplerMain.dotx",
+      "type": "template",
+      "format": "text/plain",
+      "category": "wordpress",
+      "description": "Main WordPress/Beaver Builder template with JavaScript functionality for dashboard, accordions, trading room, and form handling",
+      "keywords": ["wordpress", "beaver-builder", "javascript", "dashboard", "trading-room", "accordion", "forms"]
+    },
+    {
+      "id": "simpler-small",
+      "filename": "SimplerSmall.txt",
+      "originalFile": "../SimplerSmall.docx",
+      "type": "course-embed",
+      "format": "text/plain",
+      "category": "education",
+      "description": "Articulate Storyline 360 course embed - Quickstart to Precision Trading",
+      "keywords": ["articulate", "storyline", "course", "education", "trading", "quickstart"]
+    },
+    {
+      "id": "simpler-thankyou",
+      "filename": "SimplerThankYou.txt",
+      "originalFile": "../SimplerThankYou.dotx",
+      "type": "template",
+      "format": "text/plain",
+      "category": "wordpress",
+      "description": "Thank you page template for post-signup or post-purchase flows",
+      "keywords": ["wordpress", "thank-you", "confirmation", "signup", "purchase"]
+    },
+    {
+      "id": "wordpress-theme",
+      "filename": "WordpressTheme.txt",
+      "originalFile": "../WordpressTheme.docx",
+      "type": "theme",
+      "format": "text/plain",
+      "category": "wordpress",
+      "description": "WordPress theme configuration, scripts, and styling for the trading platform",
+      "keywords": ["wordpress", "theme", "configuration", "scripts", "styling"]
+    }
+  ],
+  "metadata": {
+    "project": "Revolution Trading",
+    "platform": "SvelteKit",
+    "repository": "billyribeiro-ux/Revolution-trading-pros",
+    "extractedFrom": "Microsoft Word 2007+ documents (.docx/.dotx)"
+  }
+}
