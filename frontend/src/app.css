@@ -70,6 +70,26 @@
 	--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Simpler Trading Dashboard Colors (WordPress Reference)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--st-primary: #0984ae;
+	--st-primary-hover: #076787;
+	--st-orange: #f99e31;
+	--st-orange-hover: #f88b09;
+	--st-link-color: #1e73be;
+	--st-link-hover: #0e6ac4;
+	--st-text-color: #333;
+	--st-text-muted: #666;
+	--st-border-color: #dbdbdb;
+	--st-border-light: #ededed;
+	--st-bg-light: #f4f4f4;
+	--st-warning: #f59e0b;
+	--st-error: #ef4444;
+	--st-success: #10b981;
+	--st-card-shadow: 0 5px 30px rgb(0 0 0 / 10%);
+	--st-transition: all 0.15s ease-in-out;
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Sizes (Financial Tone)
 	 * Montserrat for headings/UI, Open Sans for body
 	 * ═══════════════════════════════════════════════════════════════════════════ */
