@@ -178,7 +178,7 @@
 	</section>
 
 	<!-- Tabs -->
-	<nav class="tabs" data-section="navigation" aria-label="CRM Navigation Tabs" role="tablist">
+	<div class="tabs" data-section="navigation" aria-label="CRM Navigation Tabs" role="tablist">
 		<button class="tab" class:active={activeTab === 'contacts'} onclick={() => activeTab = 'contacts'} role="tab" aria-selected={activeTab === 'contacts'} data-tab="contacts">
 			<IconUsers size={18} />
 			Contacts
@@ -191,7 +191,7 @@
 			<IconChartBar size={18} />
 			Pipeline
 		</button>
-	</nav>
+	</div>
 
 	<!-- Content -->
 	<section data-section="content" data-active-tab={activeTab} aria-label="CRM Content">
