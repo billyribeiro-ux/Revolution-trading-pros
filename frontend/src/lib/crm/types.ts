@@ -292,3 +292,574 @@ export interface DealFilters {
 	owner_id?: string;
 	per_page?: number;
 }
+
+// =====================================================
+// FLUENTCRM PRO - EMAIL SEQUENCES (Drip Campaigns)
+// =====================================================
+
+export type SequenceStatus = 'draft' | 'active' | 'paused' | 'completed';
+export type SequenceMailStatus = 'draft' | 'active' | 'paused';
+export type DelayUnit = 'minutes' | 'hours' | 'days' | 'weeks';
+export type TrackerStatus = 'active' | 'paused' | 'completed' | 'cancelled' | 'failed';
+
+export interface EmailSequence {
+	id: string;
+	title: string;
+	slug: string;
+	status: SequenceStatus;
+	description?: string;
+	design_template: string;
+	settings?: SequenceSettings;
+	subscriber_settings?: SubscriberSettings;
+	emails_count: number;
+	subscribers_count: number;
+	total_sent: number;
+	total_opened: number;
+	total_clicked: number;
+	total_revenue: number;
+	currency: string;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at?: string;
+	emails?: SequenceMail[];
+	creator?: User;
+}
+
+export interface SequenceMail {
+	id: string;
+	sequence_id: string;
+	title: string;
+	email_subject: string;
+	email_pre_header?: string;
+	email_body: string;
+	delay: number;
+	delay_unit: DelayUnit;
+	delay_value: number;
+	status: SequenceMailStatus;
+	settings?: MailerSettings;
+	position: number;
+	sent_count: number;
+	open_count: number;
+	click_count: number;
+	unsubscribe_count: number;
+	revenue: number;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	delay_for_humans?: string;
+	open_rate?: number;
+	click_rate?: number;
+}
+
+export interface SequenceTracker {
+	id: string;
+	contact_id: string;
+	sequence_id: string;
+	last_sequence_mail_id?: string;
+	next_sequence_mail_id?: string;
+	status: TrackerStatus;
+	started_at: string;
+	last_executed_at?: string;
+	next_execution_at?: string;
+	completed_at?: string;
+	notes?: TrackerNote[];
+	emails_sent: number;
+	emails_opened: number;
+	emails_clicked: number;
+	created_at: string;
+	updated_at: string;
+	contact?: Contact;
+	lastMail?: SequenceMail;
+	nextMail?: SequenceMail;
+	progress_percentage?: number;
+}
+
+export interface TrackerNote {
+	action: string;
+	data?: Record<string, any>;
+	at: string;
+}
+
+export interface SequenceSettings {
+	mailer_settings: MailerSettings;
+}
+
+export interface MailerSettings {
+	from_name: string;
+	from_email: string;
+	reply_to_name: string;
+	reply_to_email: string;
+	is_custom: boolean;
+}
+
+export interface SubscriberSettings {
+	subscribers?: SubscriberFilter[];
+	excluded_subscribers?: SubscriberFilter[];
+	sending_filter?: string;
+	dynamic_segment?: string;
+	advanced_filters?: SegmentCondition[];
+}
+
+export interface SubscriberFilter {
+	list: string;
+	tag: string;
+}
+
+export interface SequenceStats {
+	emails: number;
+	subscribers: number;
+	active_subscribers: number;
+	completed: number;
+	total_sent: number;
+	total_opened: number;
+	total_clicked: number;
+	open_rate: number;
+	click_rate: number;
+	revenue: {
+		amount: string;
+		currency: string;
+	};
+}
+
+// =====================================================
+// FLUENTCRM PRO - RECURRING CAMPAIGNS
+// =====================================================
+
+export type RecurringCampaignStatus = 'draft' | 'active' | 'paused';
+export type RecurringMailStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+export type SchedulingType = 'daily' | 'weekly' | 'monthly';
+
+export interface RecurringCampaign {
+	id: string;
+	title: string;
+	slug: string;
+	status: RecurringCampaignStatus;
+	email_subject?: string;
+	email_pre_header?: string;
+	email_body?: string;
+	design_template: string;
+	settings?: SequenceSettings;
+	scheduling_settings?: SchedulingSettings;
+	subscriber_settings?: SubscriberSettings;
+	template_config?: Record<string, any>;
+	labels?: string[];
+	total_campaigns_sent: number;
+	total_emails_sent: number;
+	total_revenue: number;
+	last_sent_at?: string;
+	next_scheduled_at?: string;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at?: string;
+	emails?: RecurringMail[];
+	creator?: User;
+}
+
+export interface SchedulingSettings {
+	type: SchedulingType;
+	day?: string; // 'mon', 'tue', etc. for weekly
+	day_of_month?: number; // for monthly
+	time: string; // 'HH:MM' format
+	timezone: string;
+	send_automatically: boolean;
+}
+
+export interface RecurringMail {
+	id: string;
+	recurring_campaign_id: string;
+	email_subject: string;
+	email_pre_header?: string;
+	email_body: string;
+	status: RecurringMailStatus;
+	recipients_count: number;
+	sent_count: number;
+	failed_count: number;
+	open_count: number;
+	click_count: number;
+	unsubscribe_count: number;
+	revenue: number;
+	scheduled_at?: string;
+	sent_at?: string;
+	created_at: string;
+	updated_at: string;
+	open_rate?: number;
+	click_rate?: number;
+}
+
+export interface RecurringCampaignStats {
+	total_campaigns_sent: number;
+	total_emails_sent: number;
+	total_revenue: number;
+	avg_open_rate: number;
+	avg_click_rate: number;
+	last_sent_at?: string;
+	next_scheduled_at?: string;
+	last_email_stats?: {
+		sent: number;
+		opened: number;
+		clicked: number;
+	};
+}
+
+// =====================================================
+// FLUENTCRM PRO - SMART LINKS
+// =====================================================
+
+export type SmartLinkActionType =
+	| 'add_tag'
+	| 'remove_tag'
+	| 'add_to_list'
+	| 'remove_from_list'
+	| 'update_field'
+	| 'add_to_sequence'
+	| 'remove_from_sequence'
+	| 'trigger_automation';
+
+export interface SmartLink {
+	id: string;
+	title: string;
+	short: string;
+	target_url?: string;
+	actions?: SmartLinkAction[];
+	notes?: string;
+	is_active: boolean;
+	click_count: number;
+	unique_clicks: number;
+	click_data?: Record<string, any>;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	short_url?: string;
+	creator?: User;
+}
+
+export interface SmartLinkAction {
+	type: SmartLinkActionType;
+	tag_id?: string;
+	list_id?: string;
+	sequence_id?: string;
+	funnel_id?: string;
+	field?: string;
+	value?: any;
+}
+
+export interface SmartLinkClick {
+	id: string;
+	smart_link_id: string;
+	contact_id?: string;
+	ip_address?: string;
+	user_agent?: string;
+	referrer?: string;
+	country?: string;
+	city?: string;
+	device?: string;
+	browser?: string;
+	os?: string;
+	utm_params?: Record<string, string>;
+	clicked_at: string;
+	contact?: Contact;
+}
+
+export interface SmartLinkStats {
+	total_clicks: number;
+	unique_clicks: number;
+	click_through_rate: number;
+	clicks_today: number;
+	clicks_this_week: number;
+	top_countries: Record<string, number>;
+}
+
+export interface SmartLinkAnalytics {
+	total_clicks: number;
+	unique_clicks: number;
+	clicks_by_day: Record<string, number>;
+	clicks_by_country: Record<string, number>;
+	clicks_by_device: Record<string, number>;
+	clicks_by_browser: Record<string, number>;
+}
+
+// =====================================================
+// FLUENTCRM PRO - AUTOMATION FUNNELS
+// =====================================================
+
+export type FunnelStatus = 'draft' | 'active' | 'paused';
+export type FunnelSubscriberStatus = 'active' | 'waiting' | 'completed' | 'cancelled' | 'failed';
+export type ConditionType = 'yes' | 'no' | 'none';
+
+export type TriggerType =
+	| 'contact_created'
+	| 'tag_applied'
+	| 'tag_removed'
+	| 'list_applied'
+	| 'list_removed'
+	| 'contact_status_changed'
+	| 'form_submitted'
+	| 'order_completed'
+	| 'order_refunded'
+	| 'subscription_started'
+	| 'subscription_cancelled'
+	| 'user_login'
+	| 'user_registered'
+	| 'birthday'
+	| 'sequence_completed'
+	| 'link_clicked'
+	| 'email_opened'
+	| 'custom_event';
+
+export type ActionType =
+	| 'send_email'
+	| 'send_campaign_email'
+	| 'wait'
+	| 'add_tag'
+	| 'remove_tag'
+	| 'add_to_list'
+	| 'remove_from_list'
+	| 'add_to_sequence'
+	| 'remove_from_sequence'
+	| 'update_contact'
+	| 'change_status'
+	| 'add_activity'
+	| 'http_request'
+	| 'create_user'
+	| 'change_user_role'
+	| 'remove_user_role'
+	| 'update_user_meta'
+	| 'condition'
+	| 'ab_test'
+	| 'goal'
+	| 'end_funnel'
+	| 'remove_from_funnel';
+
+export interface AutomationFunnel {
+	id: string;
+	title: string;
+	slug: string;
+	description?: string;
+	status: FunnelStatus;
+	trigger_type: TriggerType;
+	trigger_settings?: Record<string, any>;
+	conditions?: SegmentCondition[];
+	subscribers_count: number;
+	completed_count: number;
+	total_revenue: number;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at?: string;
+	actions?: FunnelAction[];
+	creator?: User;
+}
+
+export interface FunnelAction {
+	id: string;
+	funnel_id: string;
+	parent_id?: string;
+	action_type: ActionType;
+	title?: string;
+	settings?: Record<string, any>;
+	position: number;
+	condition_type: ConditionType;
+	delay_seconds: number;
+	execution_count: number;
+	created_at: string;
+	updated_at: string;
+	children?: FunnelAction[];
+}
+
+export interface FunnelSubscriber {
+	id: string;
+	funnel_id: string;
+	contact_id: string;
+	current_action_id?: string;
+	status: FunnelSubscriberStatus;
+	entered_at: string;
+	next_execution_at?: string;
+	completed_at?: string;
+	execution_log?: ExecutionLogEntry[];
+	actions_completed: number;
+	created_at: string;
+	updated_at: string;
+	contact?: Contact;
+	currentAction?: FunnelAction;
+	progress_percentage?: number;
+	duration_in_funnel?: string;
+}
+
+export interface ExecutionLogEntry {
+	action_id?: string;
+	action_type?: string;
+	result: Record<string, any>;
+	at: string;
+}
+
+export interface FunnelStats {
+	total_subscribers: number;
+	active_subscribers: number;
+	waiting_subscribers: number;
+	completed: number;
+	cancelled: number;
+	failed: number;
+	completion_rate: number;
+	total_revenue: number;
+}
+
+// =====================================================
+// FLUENTCRM PRO - CONTACT LISTS
+// =====================================================
+
+export type ListMemberStatus = 'subscribed' | 'unsubscribed' | 'pending';
+
+export interface ContactList {
+	id: string;
+	title: string;
+	slug: string;
+	description?: string;
+	is_public: boolean;
+	contacts_count: number;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	creator?: User;
+}
+
+export interface ListMember {
+	list_id: string;
+	contact_id: string;
+	status: ListMemberStatus;
+	subscribed_at: string;
+	unsubscribed_at?: string;
+}
+
+// =====================================================
+// FLUENTCRM PRO - CONTACT TAGS
+// =====================================================
+
+export interface ContactTag {
+	id: string;
+	title: string;
+	slug: string;
+	description?: string;
+	color: string;
+	contacts_count: number;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	creator?: User;
+}
+
+export interface TagPivot {
+	tag_id: string;
+	contact_id: string;
+	applied_at: string;
+	applied_by?: string;
+}
+
+// =====================================================
+// FLUENTCRM PRO - CRM COMPANIES (B2B)
+// =====================================================
+
+export type CompanySize = '1-10' | '11-50' | '51-200' | '201-500' | '501-1000' | '1001-5000' | '5001+';
+export type CompanyIndustry =
+	| 'technology'
+	| 'finance'
+	| 'healthcare'
+	| 'education'
+	| 'retail'
+	| 'manufacturing'
+	| 'real_estate'
+	| 'consulting'
+	| 'marketing'
+	| 'media'
+	| 'nonprofit'
+	| 'government'
+	| 'other';
+
+export interface CrmCompany {
+	id: string;
+	name: string;
+	slug: string;
+	website?: string;
+	industry?: CompanyIndustry;
+	size?: CompanySize;
+	annual_revenue?: number;
+	phone?: string;
+	email?: string;
+	description?: string;
+	address_line1?: string;
+	address_line2?: string;
+	city?: string;
+	state?: string;
+	postal_code?: string;
+	country?: string;
+	linkedin_url?: string;
+	twitter_handle?: string;
+	logo_url?: string;
+	custom_fields?: Record<string, any>;
+	owner_id?: string;
+	contacts_count: number;
+	deals_count: number;
+	total_deal_value: number;
+	created_at: string;
+	updated_at: string;
+	deleted_at?: string;
+	owner?: User;
+	contacts?: Contact[];
+	deals?: Deal[];
+}
+
+export interface CompanyStats {
+	contacts_count: number;
+	deals_count: number;
+	total_won_value: number;
+	open_pipeline_value: number;
+	win_rate: number;
+}
+
+// =====================================================
+// FLUENTCRM PRO - FILTERS
+// =====================================================
+
+export interface SequenceFilters {
+	status?: SequenceStatus;
+	search?: string;
+	sort_by?: string;
+	sort_order?: 'asc' | 'desc';
+	per_page?: number;
+}
+
+export interface RecurringCampaignFilters {
+	status?: RecurringCampaignStatus;
+	search?: string;
+	sort_by?: string;
+	sort_order?: 'asc' | 'desc';
+	per_page?: number;
+}
+
+export interface SmartLinkFilters {
+	search?: string;
+	is_active?: boolean;
+	sort_by?: string;
+	sort_order?: 'asc' | 'desc';
+	per_page?: number;
+}
+
+export interface FunnelFilters {
+	status?: FunnelStatus;
+	trigger_type?: TriggerType;
+	search?: string;
+	sort_by?: string;
+	sort_order?: 'asc' | 'desc';
+	per_page?: number;
+}
+
+export interface CompanyFilters {
+	search?: string;
+	industry?: CompanyIndustry;
+	size?: CompanySize;
+	owner_id?: string;
+	sort_by?: string;
+	sort_order?: 'asc' | 'desc';
+	per_page?: number;
+}
