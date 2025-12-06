@@ -43,6 +43,16 @@
       "category": "wordpress",
       "description": "WordPress theme configuration, scripts, and styling for the trading platform",
       "keywords": ["wordpress", "theme", "configuration", "scripts", "styling"]
+    },
+    {
+      "id": "simpler-cart",
+      "filename": "SimplerCart.txt",
+      "originalFile": "../SimplerCart.dotx",
+      "type": "template",
+      "format": "text/plain",
+      "category": "ecommerce",
+      "description": "WooCommerce checkout page template with Braintree/PayPal integration, dataLayer tracking, and cart functionality",
+      "keywords": ["woocommerce", "checkout", "cart", "braintree", "paypal", "ecommerce", "datalayer", "analytics"]
     }
   ],
   "metadata": {
