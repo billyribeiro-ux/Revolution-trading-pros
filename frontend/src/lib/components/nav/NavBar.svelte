@@ -361,25 +361,24 @@
 		if (mobileMenuState !== 'idle') return;
 
 		previousFocusRef = document.activeElement as HTMLElement;
-		mobileMenuState = 'opening';
-		
-		// ICT11+ Fix: Prevent layout shift by preserving scrollbar space
+
+		// ICT11+ Fix: Apply scroll lock BEFORE state change to prevent race condition
+		// This ensures scrollbar compensation happens synchronously before any DOM updates
 		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 		document.body.style.overflow = 'hidden';
 		document.body.style.paddingRight = `${scrollbarWidth}px`;
-		// Also apply to sticky navbar to prevent shift
-		if (navbarRef) {
-			navbarRef.style.paddingRight = `${scrollbarWidth}px`;
-		}
-		
-		// Set inert on background content
-		if (navbarRef) navbarRef.inert = true;
+
+		// Store scrollbar width on body for reference (not on navbar - that causes double compensation)
+		document.body.dataset.scrollbarWidth = String(scrollbarWidth);
+
+		// NOW change state after scroll lock is in place
+		mobileMenuState = 'opening';
 
 		dispatch('nav:mobile-open', {});
 		announce('Navigation menu opened');
 
 		await tick();
-		
+
 		mobileMenuState = 'open';
 		mobileCloseRef?.focus();
 	}
@@ -398,15 +397,11 @@
 		await new Promise(resolve => setTimeout(resolve, duration));
 
 		mobileMenuState = 'idle';
+
+		// Clean up scroll lock - only reset body styles (navbar doesn't need separate handling)
 		document.body.style.overflow = '';
 		document.body.style.paddingRight = '';
-		// Also reset navbar padding
-		if (navbarRef) {
-			navbarRef.style.paddingRight = '';
-		}
-		
-		// Remove inert from background
-		if (navbarRef) navbarRef.inert = false;
+		delete document.body.dataset.scrollbarWidth;
 
 		// Restore focus
 		requestAnimationFrame(() => {
@@ -619,7 +614,10 @@
 			document.removeEventListener('click', handleClickOutside);
 			document.removeEventListener('keydown', handleKeydown);
 			scrollObserver?.disconnect();
+			// Clean up all scroll lock styles
 			document.body.style.overflow = '';
+			document.body.style.paddingRight = '';
+			delete document.body.dataset.scrollbarWidth;
 		};
 	});
 </script>
