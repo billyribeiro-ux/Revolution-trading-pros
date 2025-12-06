@@ -166,6 +166,10 @@ class FormIntegration extends Model
     public const PROVIDER_SQUARE = 'square';
     public const PROVIDER_RAZORPAY = 'razorpay';
     public const PROVIDER_MOLLIE = 'mollie';
+    public const PROVIDER_PAYSTACK = 'paystack';
+    public const PROVIDER_PADDLE = 'paddle';
+    public const PROVIDER_AUTHORIZENET = 'authorizenet';
+    public const PROVIDER_OFFLINE = 'offline';
 
     // User/Auth Providers
     public const PROVIDER_USER_REGISTRATION = 'user_registration';
@@ -230,6 +234,10 @@ class FormIntegration extends Model
             self::PROVIDER_SQUARE => 'Square',
             self::PROVIDER_RAZORPAY => 'Razorpay',
             self::PROVIDER_MOLLIE => 'Mollie',
+            self::PROVIDER_PAYSTACK => 'Paystack',
+            self::PROVIDER_PADDLE => 'Paddle',
+            self::PROVIDER_AUTHORIZENET => 'Authorize.Net',
+            self::PROVIDER_OFFLINE => 'Offline Payment',
         ],
         self::TYPE_USER => [
             self::PROVIDER_USER_REGISTRATION => 'User Registration',
@@ -258,6 +266,12 @@ class FormIntegration extends Model
         self::PROVIDER_NOTION => ['api_key', 'database_id'],
         self::PROVIDER_STRIPE => ['secret_key', 'publishable_key', 'webhook_secret'],
         self::PROVIDER_PAYPAL => ['client_id', 'client_secret', 'mode'],
+        self::PROVIDER_SQUARE => ['access_token', 'application_id', 'location_id'],
+        self::PROVIDER_RAZORPAY => ['key_id', 'key_secret', 'webhook_secret'],
+        self::PROVIDER_MOLLIE => ['api_key', 'webhook_url'],
+        self::PROVIDER_PAYSTACK => ['public_key', 'secret_key', 'webhook_secret'],
+        self::PROVIDER_PADDLE => ['vendor_id', 'vendor_auth_code', 'public_key'],
+        self::PROVIDER_AUTHORIZENET => ['api_login_id', 'transaction_key', 'client_key'],
     ];
 
     // =========================================================================

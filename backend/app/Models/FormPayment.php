@@ -106,6 +106,9 @@ class FormPayment extends Model
     public const PROVIDER_SQUARE = 'square';
     public const PROVIDER_RAZORPAY = 'razorpay';
     public const PROVIDER_MOLLIE = 'mollie';
+    public const PROVIDER_PAYSTACK = 'paystack';
+    public const PROVIDER_PADDLE = 'paddle';
+    public const PROVIDER_AUTHORIZENET = 'authorizenet';
     public const PROVIDER_OFFLINE = 'offline';
 
     public const PROVIDERS = [
@@ -114,6 +117,9 @@ class FormPayment extends Model
         self::PROVIDER_SQUARE => 'Square',
         self::PROVIDER_RAZORPAY => 'Razorpay',
         self::PROVIDER_MOLLIE => 'Mollie',
+        self::PROVIDER_PAYSTACK => 'Paystack',
+        self::PROVIDER_PADDLE => 'Paddle',
+        self::PROVIDER_AUTHORIZENET => 'Authorize.Net',
         self::PROVIDER_OFFLINE => 'Offline Payment',
     ];
 
