@@ -37,8 +37,18 @@
 		disabled = false
 	}: Props = $props();
 
-	let openSections = $state<Set<string>>(new Set(defaultOpen ? [defaultOpen] : []));
-	let activeTab = $state(defaultOpen || sections[0]?.id || '');
+	let openSections = $state<Set<string>>(new Set());
+	let activeTab = $state('');
+
+	// Initialize with default values on mount
+	$effect(() => {
+		if (defaultOpen && openSections.size === 0) {
+			openSections = new Set([defaultOpen]);
+		}
+		if (!activeTab && (defaultOpen || sections[0]?.id)) {
+			activeTab = defaultOpen || sections[0]?.id || '';
+		}
+	});
 
 	function toggleSection(sectionId: string) {
 		if (disabled) return;
@@ -109,11 +119,9 @@
 					aria-labelledby="header-{section.id}"
 				>
 					<div class="content-inner">
-						<slot name={section.id}>
-							{#if section.content}
-								{@html section.content}
-							{/if}
-						</slot>
+						{#if section.content}
+							{@html section.content}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -153,11 +161,9 @@
 					role="tabpanel"
 					aria-labelledby="tab-{section.id}"
 				>
-					<slot name={section.id}>
-						{#if section.content}
-							{@html section.content}
-						{/if}
-					</slot>
+					{#if section.content}
+						{@html section.content}
+					{/if}
 				</div>
 			{/each}
 		</div>

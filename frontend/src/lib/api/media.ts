@@ -27,18 +27,24 @@ export interface MediaFile {
 	original_filename: string;
 	title: string;
 	alt_text: string;
+	/** @deprecated Use alt_text instead */
+	alt?: string;
 	description?: string;
 	caption?: string;
 	collection?: string;
 	file_type: 'image' | 'video' | 'audio' | 'document' | 'other';
 	mime_type: string;
 	file_size: number;
+	/** Alias for file_size */
+	size?: number;
 	file_path: string;
 	url: string;
 	cdn_url?: string;
 	thumbnail_url?: string;
 	width?: number;
 	height?: number;
+	/** Computed dimensions object */
+	dimensions?: { width: number; height: number };
 	duration?: number;
 	folder_id?: string;
 	tags: string[];
@@ -47,6 +53,8 @@ export interface MediaFile {
 	exif?: Record<string, unknown>;
 	versions: MediaVersion[];
 	variants?: MediaVariant[];
+	/** Custom properties for extensibility */
+	custom_properties?: Record<string, unknown>;
 	usage_count: number;
 	is_optimized: boolean;
 	has_webp: boolean;

@@ -8,7 +8,7 @@
 		IconRefresh,
 		IconCpu,
 		IconActivity,
-		IconCloudUpload,
+		IconUpload as IconCloudUpload,
 		IconBolt,
 		IconCheck,
 		IconAlertTriangle,

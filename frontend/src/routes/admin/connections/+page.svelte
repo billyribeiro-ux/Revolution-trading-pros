@@ -109,7 +109,7 @@
 		return result;
 	});
 
-	let categoryList = $derived(() => Object.entries(categories));
+	let categoryList = $derived(Object.entries(categories) as [string, Category][]);
 
 	// Fetch data
 	async function fetchConnections() {
@@ -454,10 +454,12 @@
 								</div>
 
 								<!-- Status Badge -->
-								{@const badge = getStatusBadge(service.status)}
-								<span class="px-2.5 py-1 rounded-full text-xs font-medium {badge.bg} {badge.text}">
-									{badge.label}
-								</span>
+								{#if true}
+									{@const badge = getStatusBadge(service.status)}
+									<span class="px-2.5 py-1 rounded-full text-xs font-medium {badge.bg} {badge.text}">
+										{badge.label}
+									</span>
+								{/if}
 							</div>
 
 							<!-- Description -->
@@ -512,9 +514,10 @@
 										href={service.docs_url}
 										target="_blank"
 										rel="noopener"
+										aria-label="View {service.name} documentation"
 										class="px-3 py-2.5 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl transition-all duration-300"
 									>
-										<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
 										</svg>
 									</a>
@@ -535,10 +538,12 @@
 		transition:fade={{ duration: 200 }}
 	>
 		<!-- Backdrop -->
-		<div
-			class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+		<button
+			type="button"
+			class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-default"
 			onclick={() => (showConnectModal = false)}
-		></div>
+			aria-label="Close modal"
+		></button>
 
 		<!-- Modal -->
 		<div
@@ -561,10 +566,12 @@
 					</div>
 				</div>
 				<button
+					type="button"
 					onclick={() => (showConnectModal = false)}
+					aria-label="Close modal"
 					class="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors"
 				>
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 					</svg>
 				</button>
@@ -574,8 +581,8 @@
 			<div class="p-6 space-y-5">
 				<!-- Environment Selector -->
 				{#if selectedService.environments && selectedService.environments.length > 1}
-					<div>
-						<label class="block text-sm font-medium text-gray-300 mb-2">Environment</label>
+					<fieldset>
+						<legend class="block text-sm font-medium text-gray-300 mb-2">Environment</legend>
 						<div class="flex gap-2">
 							{#each selectedService.environments as env}
 								<button
@@ -588,17 +595,18 @@
 								</button>
 							{/each}
 						</div>
-					</div>
+					</fieldset>
 				{/if}
 
 				<!-- Credential Fields -->
 				{#each selectedService.fields as field}
 					<div>
-						<label class="block text-sm font-medium text-gray-300 mb-2">
+						<label for="field-{field.key}" class="block text-sm font-medium text-gray-300 mb-2">
 							{field.label}
 							{#if field.required}<span class="text-red-400">*</span>{/if}
 						</label>
 						<input
+							id="field-{field.key}"
 							type={field.type === 'password' ? 'password' : 'text'}
 							placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
 							bind:value={credentialValues[field.key]}
@@ -674,10 +682,12 @@
 		transition:fade={{ duration: 200 }}
 	>
 		<!-- Backdrop -->
-		<div
-			class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+		<button
+			type="button"
+			class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-default"
 			onclick={() => (showDisconnectConfirm = false)}
-		></div>
+			aria-label="Close confirmation"
+		></button>
 
 		<!-- Modal -->
 		<div
@@ -732,6 +742,7 @@
 	.line-clamp-2 {
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

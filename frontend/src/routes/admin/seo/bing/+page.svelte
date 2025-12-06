@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast';
 	import {
-		IconBrandBing,
+		IconWorld as IconBrandBing,
 		IconRocket,
 		IconChartBar,
 		IconCheck,
