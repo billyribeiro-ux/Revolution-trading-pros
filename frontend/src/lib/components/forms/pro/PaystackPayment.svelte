@@ -132,11 +132,6 @@
 		return formatter.format(amount);
 	}
 
-	declare global {
-		interface Window {
-			PaystackPop: any;
-		}
-	}
 </script>
 
 <div class="paystack-payment" class:disabled class:has-error={error || paymentError}>

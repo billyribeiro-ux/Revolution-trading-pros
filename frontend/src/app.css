@@ -8,7 +8,8 @@
  * @author Revolution Trading Pros
  */
 
-@theme {
+/* Tailwind v4 @theme converted to :root for IDE compatibility */
+:root {
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Families
 	 * ═══════════════════════════════════════════════════════════════════════════ */
@@ -63,7 +64,6 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Brand Colors - Core palette
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	--color-rtp-*: initial;
 	
 	/* Primary Brand Colors */
 	--color-rtp-primary: oklch(0.60 0.20 250);

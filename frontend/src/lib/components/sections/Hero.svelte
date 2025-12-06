@@ -384,38 +384,8 @@
 	}
 
 	// ============================================================================
-	// LIFECYCLE - Svelte 5 with $effect
+	// LIFECYCLE - Use onMount only, no $effect for initialization
 	// ============================================================================
-
-	// Initialize chart when DOM refs are ready
-	$effect(() => {
-		if (browser && mounted && chartContainer && heroSection && !chartReady) {
-			initChart();
-		}
-	});
-
-	// Setup resize observer when heroSection is ready
-	$effect(() => {
-		if (browser && mounted && heroSection) {
-			if (typeof ResizeObserver !== 'undefined') {
-				resizeObserver = new ResizeObserver(handleResize);
-				resizeObserver.observe(heroSection);
-			}
-			setupVisibilityObserver();
-
-			return () => {
-				resizeObserver?.disconnect();
-				visibilityObserver?.disconnect();
-			};
-		}
-	});
-
-	// Animate slide when GSAP is loaded and slide changes
-	$effect(() => {
-		if (browser && gsapLoaded && mounted) {
-			animateSlide(currentSlide);
-		}
-	});
 
 	onMount(async () => {
 		if (!browser) return;
@@ -425,19 +395,42 @@
 		// CRITICAL: Show first slide IMMEDIATELY with CSS fallback
 		currentSlide = 0;
 		
+		// Setup resize observer
+		if (heroSection && typeof ResizeObserver !== 'undefined') {
+			resizeObserver = new ResizeObserver(handleResize);
+			resizeObserver.observe(heroSection);
+		}
+		
+		// Setup visibility observer
+		if (heroSection) {
+			setupVisibilityObserver();
+		}
+		
+		// Initialize chart (don't await - let it load in background)
+		if (chartContainer && heroSection) {
+			initChart();
+		}
+		
 		// Load GSAP
 		try {
 			const gsapModule = await import('gsap');
 			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
 			if (gsapLib) {
 				gsapLoaded = true;
+				// Animate first slide after GSAP loads
+				animateSlide(currentSlide);
 			}
 		} catch (e) {
 			console.warn('GSAP failed to load:', e);
 		}
 
 		// Start slide interval
-		slideInterval = setInterval(nextSlide, 7000);
+		slideInterval = setInterval(() => {
+			nextSlide();
+			if (gsapLoaded) {
+				animateSlide(currentSlide);
+			}
+		}, 7000);
 	});
 
 	onDestroy(() => {

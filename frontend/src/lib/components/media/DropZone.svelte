@@ -12,25 +12,37 @@
   @version 1.0.0
 -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import type { Snippet } from 'svelte';
 
-  // Props
-  export let accept: string = 'image/*';
-  export let multiple: boolean = true;
-  export let maxFiles: number = 10;
-  export let maxSize: number = 50 * 1024 * 1024; // 50MB
-  export let disabled: boolean = false;
-  export let className: string = '';
+  // Svelte 5 Props with callback pattern
+  interface Props {
+    accept?: string;
+    multiple?: boolean;
+    maxFiles?: number;
+    maxSize?: number;
+    disabled?: boolean;
+    className?: string;
+    children?: Snippet;
+    onfiles?: (files: File[]) => void;
+    onerror?: (error: { message: string; files?: File[] }) => void;
+  }
 
-  // State
-  let isDragOver = false;
-  let fileInput: HTMLInputElement;
-  let dragCounter = 0;
+  let {
+    accept = 'image/*',
+    multiple = true,
+    maxFiles = 10,
+    maxSize = 50 * 1024 * 1024, // 50MB
+    disabled = false,
+    className = '',
+    children,
+    onfiles,
+    onerror
+  }: Props = $props();
 
-  const dispatch = createEventDispatcher<{
-    files: File[];
-    error: { message: string; files?: File[] };
-  }>();
+  // Svelte 5 State
+  let isDragOver = $state(false);
+  let fileInput = $state<HTMLInputElement | null>(null);
+  let dragCounter = $state(0);
 
   // Validate files
   function validateFiles(files: File[]): { valid: File[]; errors: string[] } {
@@ -143,11 +155,11 @@
     const { valid, errors } = validateFiles(files);
 
     if (errors.length > 0) {
-      dispatch('error', { message: errors.join('\n'), files: valid });
+      onerror?.({ message: errors.join('\n'), files: valid });
     }
 
     if (valid.length > 0) {
-      dispatch('files', valid);
+      onfiles?.(valid);
     }
   }
 
@@ -165,12 +177,12 @@
   class:dropzone-disabled={disabled}
   role="button"
   tabindex={disabled ? -1 : 0}
-  on:click={openFileDialog}
-  on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
-  on:dragenter={handleDragEnter}
-  on:dragleave={handleDragLeave}
-  on:dragover={handleDragOver}
-  on:drop={handleDrop}
+  onclick={openFileDialog}
+  onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
+  ondragenter={handleDragEnter}
+  ondragleave={handleDragLeave}
+  ondragover={handleDragOver}
+  ondrop={handleDrop}
 >
   <input
     bind:this={fileInput}
@@ -178,7 +190,7 @@
     {accept}
     {multiple}
     {disabled}
-    on:change={handleFileInput}
+    onchange={handleFileInput}
     class="hidden"
   />
 
@@ -193,7 +205,9 @@
       </div>
     {:else}
       <!-- Default state -->
-      <slot>
+      {#if children}
+        {@render children()}
+      {:else}
         <div class="default-content">
           <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -212,47 +226,79 @@
             {/if}
           </div>
         </div>
-      </slot>
+      {/if}
     {/if}
   </div>
 </div>
 
 <style>
-  @reference "tailwindcss";
-
   .dropzone {
-    @apply border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8;
-    @apply bg-gray-50 dark:bg-gray-800/50;
-    @apply cursor-pointer transition-all duration-200;
-    @apply flex items-center justify-center min-h-[200px];
+    border: 2px dashed #d1d5db;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    background-color: #f9fafb;
+    cursor: pointer;
+    transition: all 200ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+
+  :global(.dark) .dropzone {
+    border-color: #4b5563;
+    background-color: rgba(31, 41, 55, 0.5);
   }
 
   .dropzone:hover:not(.dropzone-disabled) {
-    @apply border-blue-400 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-900/10;
+    border-color: #60a5fa;
+    background-color: rgba(239, 246, 255, 0.5);
+  }
+
+  :global(.dark) .dropzone:hover:not(.dropzone-disabled) {
+    border-color: #3b82f6;
+    background-color: rgba(30, 58, 138, 0.1);
   }
 
   .dropzone:focus:not(.dropzone-disabled) {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900;
+    outline: none;
+    box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px white;
+  }
+
+  :global(.dark) .dropzone:focus:not(.dropzone-disabled) {
+    box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #111827;
   }
 
   .dropzone-active {
-    @apply border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.02];
-    @apply border-solid;
+    border-color: #3b82f6;
+    border-style: solid;
+    background-color: #eff6ff;
+    transform: scale(1.02);
+  }
+
+  :global(.dark) .dropzone-active {
+    background-color: rgba(30, 58, 138, 0.2);
   }
 
   .dropzone-disabled {
-    @apply opacity-50 cursor-not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .dropzone-content {
-    @apply text-center;
+    text-align: center;
   }
 
   .drop-indicator {
-    @apply flex flex-col items-center justify-center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .default-content {
-    @apply flex flex-col items-center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 </style>

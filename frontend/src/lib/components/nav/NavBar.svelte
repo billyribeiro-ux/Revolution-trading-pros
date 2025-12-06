@@ -367,6 +367,10 @@
 		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 		document.body.style.overflow = 'hidden';
 		document.body.style.paddingRight = `${scrollbarWidth}px`;
+		// Also apply to sticky navbar to prevent shift
+		if (navbarRef) {
+			navbarRef.style.paddingRight = `${scrollbarWidth}px`;
+		}
 		
 		// Set inert on background content
 		if (navbarRef) navbarRef.inert = true;
@@ -396,6 +400,10 @@
 		mobileMenuState = 'idle';
 		document.body.style.overflow = '';
 		document.body.style.paddingRight = '';
+		// Also reset navbar padding
+		if (navbarRef) {
+			navbarRef.style.paddingRight = '';
+		}
 		
 		// Remove inert from background
 		if (navbarRef) navbarRef.inert = false;
@@ -1170,9 +1178,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		padding: 0.5rem 0.875rem;
+		height: 36px;
+		padding: 0 0.75rem;
 		color: var(--nav-text);
-		font-size: 0.8125rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
@@ -1188,8 +1197,9 @@
 
 	@media (min-width: 1280px) {
 		.nav-link {
-			padding: 0.625rem 1rem;
-			font-size: 0.875rem;
+			height: 38px;
+			padding: 0 0.875rem;
+			font-size: 0.8125rem;
 		}
 	}
 
@@ -1231,9 +1241,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		padding: 0.5rem 0.875rem;
+		height: 36px;
+		padding: 0 0.75rem;
 		color: var(--nav-text);
-		font-size: 0.8125rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
@@ -1248,9 +1259,10 @@
 
 	@media (min-width: 1280px) {
 		.dropdown-trigger {
-			gap: 0.375rem;
-			padding: 0.625rem 1rem;
-			font-size: 0.875rem;
+			gap: 0.25rem;
+			height: 38px;
+			padding: 0 0.875rem;
+			font-size: 0.8125rem;
 		}
 	}
 
@@ -1464,10 +1476,53 @@
 	.login-btn {
 		display: none;
 		align-items: center;
-		height: 44px;
-		padding-inline: 1.5rem;
+		height: 36px;
+		padding-inline: 1rem;
 		color: var(--nav-text);
-		font-size: 0.875rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		font-family: var(--nav-font);
+		letter-spacing: 0.02em;
+		text-decoration: none;
+		background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
+		border: none;
+		border-radius: var(--nav-radius);
+		transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1), background 200ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	@media (min-width: 1024px) {
+		.login-btn {
+			display: flex;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.login-btn {
+			height: 38px;
+			padding-inline: 1.125rem;
+			font-size: 0.8125rem;
+		}
+	}
+
+	.login-btn:hover,
+	.login-btn:focus-visible {
+		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%), var(--nav-primary-light);
+		box-shadow: 0 0 20px var(--nav-primary-glow);
+		transform: translateY(-2px);
+	}
+
+	.login-btn:focus-visible {
+		outline: 3px solid var(--nav-primary);
+		outline-offset: 2px;
+	}
+
+	.cta-btn {
+		display: none;
+		align-items: center;
+		height: 36px;
+		padding-inline: 1rem;
+		color: #ffffff;
+		font-size: 0.75rem;
 		font-weight: 700;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
@@ -1480,50 +1535,25 @@
 	}
 
 	@media (min-width: 1024px) {
-		.login-btn {
-			display: flex;
-		}
-	}
-
-	.login-btn:hover,
-	.login-btn:focus-visible {
-		background-color: rgba(14, 106, 196, 0.25);
-		box-shadow: 0 0 20px var(--nav-primary-glow);
-		border-color: rgba(14, 106, 196, 0.5);
-		transform: translateY(-2px);
-	}
-
-	.login-btn:focus-visible {
-		outline: 3px solid var(--nav-primary);
-		outline-offset: 2px;
-	}
-
-	.cta-btn {
-		display: none;
-		align-items: center;
-		height: 44px;
-		padding-inline: 1.5rem;
-		color: #ffffff;
-		font-size: 0.875rem;
-		font-weight: 800;
-		font-family: var(--nav-font);
-		letter-spacing: 0.02em;
-		text-decoration: none;
-		background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
-		border-radius: var(--nav-radius);
-		transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
-	}
-
-	@media (min-width: 1024px) {
 		.cta-btn {
 			display: flex;
 		}
 	}
 
+	@media (min-width: 1280px) {
+		.cta-btn {
+			height: 38px;
+			padding-inline: 1.125rem;
+			font-size: 0.8125rem;
+		}
+	}
+
 	.cta-btn:hover,
 	.cta-btn:focus-visible {
+		background-color: rgba(14, 106, 196, 0.25);
+		box-shadow: 0 0 20px var(--nav-primary-glow);
+		border-color: rgba(14, 106, 196, 0.5);
 		transform: translateY(-2px);
-		box-shadow: 0 4px 20px rgba(14, 106, 196, 0.5);
 	}
 
 	.cta-btn:focus-visible {

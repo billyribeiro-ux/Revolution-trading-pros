@@ -63,8 +63,9 @@
 	let cardComplete = $state(false);
 	let paymentRequestAvailable = $state(false);
 	let mounted = $state(false);
-	let cardElementRef: HTMLDivElement;
-	let paymentRequestRef: HTMLDivElement;
+	// Element refs - Svelte 5 handles bind:this automatically
+	let cardElementRef: HTMLDivElement | undefined = $state();
+	let paymentRequestRef: HTMLDivElement | undefined = $state();
 
 	$effect(() => {
 		if (typeof window !== 'undefined' && !mounted) {
@@ -227,16 +228,11 @@
 		}).format(amount);
 	}
 
-	declare global {
-		interface Window {
-			Stripe: any;
-		}
-	}
 </script>
 
 <div class="stripe-payment" class:disabled class:has-error={error || cardError}>
 	{#if label}
-		<label class="field-label">{label}</label>
+		<span class="field-label" id="stripe-label">{label}</span>
 	{/if}
 
 	{#if testMode}

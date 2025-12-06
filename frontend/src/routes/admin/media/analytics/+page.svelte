@@ -225,8 +225,8 @@
   <!-- Header -->
   <header class="header">
     <div class="header-left">
-      <a href="/admin/media" class="back-link">
-        <svg viewBox="0 0 20 20" fill="currentColor">
+      <a href="/admin/media" class="back-link" aria-label="Back to Media Library">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
         </svg>
       </a>
@@ -242,14 +242,14 @@
         {#each ['7d', '30d', '90d', '1y'] as range}
           <button
             class:active={timeRange === range}
-            on:click={() => handleTimeRangeChange(range)}
+            onclick={() => handleTimeRangeChange(range as '7d' | '30d' | '90d' | '1y')}
           >
             {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '1 Year'}
           </button>
         {/each}
       </div>
 
-      <button class="btn-export" on:click={() => {}}>
+      <button class="btn-export" onclick={() => {}}>
         <svg viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>

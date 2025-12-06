@@ -164,6 +164,14 @@ declare global {
 		/** Meta Pixel (fbq) */
 		fbq?: Fbq;
 		_fbq?: Fbq;
+
+		/** Payment Providers */
+		Stripe?: any;
+		Square?: any;
+		Paddle?: any;
+		paypal?: any;
+		Razorpay?: any;
+		PaystackPop?: any;
 	}
 }
 

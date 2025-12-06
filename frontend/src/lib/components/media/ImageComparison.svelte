@@ -144,8 +144,8 @@
 <div
   class="comparison-container"
   bind:this={container}
-  on:keydown={handleKeydown}
-  on:wheel={handleWheel}
+  onkeydown={handleKeydown}
+  onwheel={handleWheel}
   tabindex="0"
   role="application"
   aria-label="Image comparison tool"
@@ -154,7 +154,7 @@
   <div class="mode-selector">
     <button
       class:active={mode === 'slider'}
-      on:click={() => mode = 'slider'}
+      onclick={() => mode = 'slider'}
       title="Slider comparison"
     >
       <svg viewBox="0 0 20 20" fill="currentColor">
@@ -164,7 +164,7 @@
     </button>
     <button
       class:active={mode === 'side-by-side'}
-      on:click={() => mode = 'side-by-side'}
+      onclick={() => mode = 'side-by-side'}
       title="Side by side"
     >
       <svg viewBox="0 0 20 20" fill="currentColor">
@@ -173,7 +173,7 @@
     </button>
     <button
       class:active={mode === 'toggle'}
-      on:click={() => mode = 'toggle'}
+      onclick={() => mode = 'toggle'}
       title="Toggle view"
     >
       <svg viewBox="0 0 20 20" fill="currentColor">
@@ -184,19 +184,19 @@
 
   <!-- Zoom Controls -->
   <div class="zoom-controls">
-    <button on:click={() => zoomLevel = Math.max(1, zoomLevel - 0.5)} disabled={zoomLevel <= 1}>
+    <button onclick={() => zoomLevel = Math.max(1, zoomLevel - 0.5)} disabled={zoomLevel <= 1}>
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
       </svg>
     </button>
     <span>{Math.round(zoomLevel * 100)}%</span>
-    <button on:click={() => zoomLevel = Math.min(5, zoomLevel + 0.5)} disabled={zoomLevel >= 5}>
+    <button onclick={() => zoomLevel = Math.min(5, zoomLevel + 0.5)} disabled={zoomLevel >= 5}>
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
       </svg>
     </button>
     {#if zoomLevel > 1}
-      <button on:click={resetZoom} class="reset-btn">Reset</button>
+      <button onclick={resetZoom} class="reset-btn">Reset</button>
     {/if}
   </div>
 
@@ -210,7 +210,7 @@
   >
     {#if mode === 'slider'}
       <!-- Slider Mode -->
-      <div class="slider-wrapper" on:mousedown={handleMouseDown} on:touchstart={handleTouchStart} on:touchmove={handleTouchMove}>
+      <div class="slider-wrapper" onmousedown={handleMouseDown} ontouchstart={handleTouchStart} ontouchmove={handleTouchMove}>
         <!-- Optimized (Background) -->
         <div class="image-layer optimized">
           <img src={optimizedSrc} alt="Optimized version" draggable="false" />
@@ -251,7 +251,7 @@
 
     {:else}
       <!-- Toggle Mode -->
-      <div class="toggle-wrapper" on:click={() => showOriginal = !showOriginal}>
+      <div class="toggle-wrapper" onclick={() => showOriginal = !showOriginal}>
         <div class="image-layer" class:visible={!showOriginal}>
           <img src={optimizedSrc} alt="Optimized version" draggable="false" />
           <span class="image-label">Optimized</span>

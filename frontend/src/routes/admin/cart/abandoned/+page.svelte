@@ -690,7 +690,7 @@
 						<textarea
 							id="custom-body"
 							rows="8"
-							placeholder="Enter email body... Use {{name}}, {{cart_items}}, {{cart_total}} for personalization"
+							placeholder={'Enter email body... Use {{name}}, {{cart_items}}, {{cart_total}} for personalization'}
 							bind:value={customBody}
 						></textarea>
 					</div>

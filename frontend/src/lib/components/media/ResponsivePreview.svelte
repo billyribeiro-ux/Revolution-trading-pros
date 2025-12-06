@@ -130,10 +130,10 @@
         class="variant-card"
         class:selected={selectedSize === variant.sizeName}
         class:interactive={interactive}
-        on:click={() => handleSelect(variant.sizeName)}
-        on:mouseenter={(e) => handleMouseEnter(e, variant)}
-        on:mousemove={handleMouseMove}
-        on:mouseleave={handleMouseLeave}
+        onclick={() => handleSelect(variant.sizeName)}
+        onmouseenter={(e) => handleMouseEnter(e, variant)}
+        onmousemove={handleMouseMove}
+        onmouseleave={handleMouseLeave}
         transition:scale={{ duration: 200 }}
       >
         <!-- Thumbnail -->

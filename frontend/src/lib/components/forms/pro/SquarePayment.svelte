@@ -204,11 +204,6 @@
 		}).format(amount);
 	}
 
-	declare global {
-		interface Window {
-			Square: any;
-		}
-	}
 </script>
 
 <div class="square-payment" class:disabled class:has-error={error || cardError}>

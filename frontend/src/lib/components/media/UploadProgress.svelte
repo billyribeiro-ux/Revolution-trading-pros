@@ -123,7 +123,7 @@
         {/if}
         <button
           class="clear-btn"
-          on:click={() => dispatch('clear')}
+          onclick={() => dispatch('clear')}
           title="Clear all"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +199,7 @@
             {#if upload.status === 'uploading' || upload.status === 'pending'}
               <button
                 class="action-btn action-cancel"
-                on:click={() => dispatch('cancel', upload.id)}
+                onclick={() => dispatch('cancel', upload.id)}
                 title="Cancel"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +209,7 @@
             {:else if upload.status === 'error'}
               <button
                 class="action-btn action-retry"
-                on:click={() => dispatch('retry', upload.id)}
+                onclick={() => dispatch('retry', upload.id)}
                 title="Retry"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +219,7 @@
             {:else if upload.status === 'complete'}
               <button
                 class="action-btn action-remove"
-                on:click={() => dispatch('remove', upload.id)}
+                onclick={() => dispatch('remove', upload.id)}
                 title="Remove"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

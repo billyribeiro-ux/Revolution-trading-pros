@@ -188,8 +188,8 @@
         loading={priority ? 'eager' : loading}
         decoding={priority ? 'sync' : 'async'}
         fetchpriority={priority ? 'high' : 'auto'}
-        on:load={handleLoad}
-        on:error={handleError}
+        onload={handleLoad}
+        onerror={handleError}
         class="w-full h-full object-{objectFit} transition-opacity duration-500"
         class:opacity-0={!loaded}
         style="color: transparent;"

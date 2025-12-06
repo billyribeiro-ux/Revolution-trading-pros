@@ -636,7 +636,7 @@
 			// Track error
 			trackEvent('popup_form_error', {
 				popupId: currentPopup.id,
-				error: error.message
+				error: error instanceof Error ? error.message : 'Unknown error'
 			});
 		} finally {
 			isSubmitting = false;

@@ -145,11 +145,6 @@
 		}).format(amount);
 	}
 
-	declare global {
-		interface Window {
-			Razorpay: any;
-		}
-	}
 </script>
 
 <div class="razorpay-payment" class:disabled class:has-error={error || paymentError}>

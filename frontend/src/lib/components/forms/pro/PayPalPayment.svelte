@@ -156,11 +156,6 @@
 		}).format(amount);
 	}
 
-	declare global {
-		interface Window {
-			paypal: any;
-		}
-	}
 </script>
 
 <div class="paypal-payment" class:disabled class:has-error={error || paypalError}>

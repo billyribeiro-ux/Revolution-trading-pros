@@ -150,7 +150,7 @@
 
 	<!-- Step Content -->
 	<div class="step-content">
-		<slot name="step-{activeStep}" />
+		<!-- Svelte 5: Dynamic slot names not allowed, use default slot with step data -->
 		<slot {activeStep} {currentStepData} />
 	</div>
 

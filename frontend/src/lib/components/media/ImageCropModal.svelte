@@ -13,9 +13,12 @@
   @version 1.0.0
 -->
 <script lang="ts">
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { fade, scale } from 'svelte/transition';
+  import { untrack } from 'svelte';
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Types
+  // ═══════════════════════════════════════════════════════════════════════════
   interface CropArea {
     x: number;
     y: number;
@@ -23,62 +26,124 @@
     height: number;
   }
 
-  // Props
-  export let src: string;
-  export let aspectRatios: Record<string, number | null> = {
-    'Free': null,
-    '1:1': 1,
-    '16:9': 16 / 9,
-    '4:3': 4 / 3,
-    '3:2': 3 / 2,
-    '9:16': 9 / 16,
-  };
-  export let initialAspectRatio: string = 'Free';
-  export let minWidth: number = 50;
-  export let minHeight: number = 50;
-  export let className: string = '';
+  interface CropResult {
+    blob: Blob;
+    cropArea: CropArea;
+    aspectRatio: string;
+  }
 
-  const dispatch = createEventDispatcher<{
-    crop: { blob: Blob; cropArea: CropArea; aspectRatio: string };
-    cancel: void;
-  }>();
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Props - Svelte 5 $props() rune
+  // ═══════════════════════════════════════════════════════════════════════════
+  interface Props {
+    src: string;
+    aspectRatios?: Record<string, number | null>;
+    initialAspectRatio?: string;
+    minWidth?: number;
+    minHeight?: number;
+    className?: string;
+    oncrop?: (result: CropResult) => void;
+    oncancel?: () => void;
+  }
 
-  // State
-  let canvas: HTMLCanvasElement;
-  let image: HTMLImageElement;
-  let imageLoaded = false;
-  let selectedRatio = initialAspectRatio;
-  let rotation = 0;
-  let flipH = false;
-  let flipV = false;
-  let zoom = 1;
-  let isDragging = false;
-  let isResizing = false;
-  let resizeHandle = '';
-  let startX = 0;
-  let startY = 0;
+  let {
+    src,
+    aspectRatios = {
+      'Free': null,
+      '1:1': 1,
+      '16:9': 16 / 9,
+      '4:3': 4 / 3,
+      '3:2': 3 / 2,
+      '9:16': 9 / 16,
+    },
+    initialAspectRatio = 'Free',
+    minWidth = 50,
+    minHeight = 50,
+    className = '',
+    oncrop,
+    oncancel
+  }: Props = $props();
+
+  // Helper to dispatch events (for backward compatibility with on:event usage)
+  function dispatch(event: 'crop' | 'cancel', detail?: CropResult) {
+    if (event === 'crop' && detail) {
+      oncrop?.(detail);
+    } else if (event === 'cancel') {
+      oncancel?.();
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // State - Svelte 5 $state() rune
+  // ═══════════════════════════════════════════════════════════════════════════
+  let canvas: HTMLCanvasElement | undefined = $state();
+  let image: HTMLImageElement | undefined = $state();
+  let imageLoaded = $state(false);
+  // Intentionally capture initial value only - selectedRatio is user-controlled after mount
+  // svelte-ignore state_referenced_locally
+  let selectedRatio = $state(initialAspectRatio || 'Free');
+  let rotation = $state(0);
+  let flipH = $state(false);
+  let flipV = $state(false);
+  let zoom = $state(1);
+  let isDragging = $state(false);
+  let isResizing = $state(false);
+  let resizeHandle = $state('');
+  let startX = $state(0);
+  let startY = $state(0);
 
   // Crop area (in image coordinates)
-  let cropArea: CropArea = { x: 0, y: 0, width: 100, height: 100 };
+  let cropArea: CropArea = $state({ x: 0, y: 0, width: 100, height: 100 });
 
   // Container dimensions
-  let containerWidth = 0;
-  let containerHeight = 0;
-  let imageScale = 1;
+  let containerWidth = $state(0);
+  let containerHeight = $state(0);
+  let imageScale = $state(1);
 
-  // Load image
-  onMount(() => {
-    image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.onload = () => {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Lifecycle - Svelte 5 $effect() rune
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  // Load image once on mount - use untrack to prevent re-running
+  let hasLoadedImage = false;
+  
+  $effect(() => {
+    // Only load once
+    if (hasLoadedImage) return;
+    hasLoadedImage = true;
+    
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      image = img;
       imageLoaded = true;
-      initializeCropArea();
+      untrack(() => initializeCropArea());
     };
-    image.src = src;
+    img.src = src;
+  });
+
+  // Calculate display scale - derived from dependencies
+  $effect(() => {
+    // Read dependencies
+    const loaded = imageLoaded;
+    const cw = containerWidth;
+    const ch = containerHeight;
+    const img = image;
+    const z = zoom;
+    
+    if (loaded && cw && ch && img) {
+      const scaleX = cw / img.naturalWidth;
+      const scaleY = ch / img.naturalHeight;
+      // Use untrack to prevent infinite loop when setting imageScale
+      untrack(() => {
+        imageScale = Math.min(scaleX, scaleY, 1) * z;
+      });
+    }
   });
 
   // Initialize crop area based on aspect ratio
   function initializeCropArea() {
+    if (!image) return;
     const ratio = aspectRatios[selectedRatio];
     const imgW = image.naturalWidth;
     const imgH = image.naturalHeight;
@@ -307,28 +372,33 @@
     );
   }
 
-  // Calculate display scale
-  $: if (imageLoaded && containerWidth && containerHeight) {
-    const scaleX = containerWidth / image.naturalWidth;
-    const scaleY = containerHeight / image.naturalHeight;
-    imageScale = Math.min(scaleX, scaleY, 1) * zoom;
-  }
 </script>
 
 <svelte:window
-  on:mousemove={handleMouseMove}
-  on:mouseup={handleMouseUp}
-  on:touchmove={handleMouseMove}
-  on:touchend={handleMouseUp}
+  onmousemove={handleMouseMove}
+  onmouseup={handleMouseUp}
+  ontouchmove={handleMouseMove}
+  ontouchend={handleMouseUp}
 />
 
-<div class="crop-modal-overlay" transition:fade on:click={() => dispatch('cancel')}>
-  <div class="crop-modal {className}" transition:scale on:click|stopPropagation>
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
+<div 
+  class="crop-modal-overlay" 
+  transition:fade 
+  onclick={() => dispatch('cancel')}
+  onkeydown={(e) => e.key === 'Escape' && dispatch('cancel')}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="crop-modal-title"
+  tabindex="-1"
+>
+  <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
+  <div class="crop-modal {className}" transition:scale onclick={(e) => e.stopPropagation()} role="document">
     <!-- Header -->
     <div class="modal-header">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Crop & Edit Image</h2>
-      <button class="close-btn" on:click={() => dispatch('cancel')}>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <h2 id="crop-modal-title" class="text-lg font-semibold text-gray-900 dark:text-white">Crop & Edit Image</h2>
+      <button class="close-btn" onclick={() => dispatch('cancel')} aria-label="Close modal">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
@@ -344,7 +414,7 @@
             <button
               class="ratio-btn"
               class:active={selectedRatio === ratio}
-              on:click={() => handleRatioChange(ratio)}
+              onclick={() => handleRatioChange(ratio)}
             >
               {ratio}
             </button>
@@ -356,22 +426,22 @@
       <div class="toolbar-group">
         <span class="toolbar-label">Transform</span>
         <div class="transform-buttons">
-          <button class="transform-btn" on:click={() => handleRotate(-90)} title="Rotate left">
+          <button class="transform-btn" onclick={() => handleRotate(-90)} title="Rotate left">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
             </svg>
           </button>
-          <button class="transform-btn" on:click={() => handleRotate(90)} title="Rotate right">
+          <button class="transform-btn" onclick={() => handleRotate(90)} title="Rotate right">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
             </svg>
           </button>
-          <button class="transform-btn" class:active={flipH} on:click={handleFlipH} title="Flip horizontal">
+          <button class="transform-btn" class:active={flipH} onclick={handleFlipH} title="Flip horizontal">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M8 12h12M8 17h12M4 7v10" />
             </svg>
           </button>
-          <button class="transform-btn" class:active={flipV} on:click={handleFlipV} title="Flip vertical">
+          <button class="transform-btn" class:active={flipV} onclick={handleFlipV} title="Flip vertical">
             <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M8 12h12M8 17h12M4 7v10" />
             </svg>
@@ -383,9 +453,9 @@
       <div class="toolbar-group">
         <span class="toolbar-label">Zoom</span>
         <div class="zoom-controls">
-          <button class="zoom-btn" on:click={() => handleZoom(-0.1)}>-</button>
+          <button class="zoom-btn" onclick={() => handleZoom(-0.1)}>-</button>
           <span class="zoom-value">{Math.round(zoom * 100)}%</span>
-          <button class="zoom-btn" on:click={() => handleZoom(0.1)}>+</button>
+          <button class="zoom-btn" onclick={() => handleZoom(0.1)}>+</button>
         </div>
       </div>
     </div>
@@ -409,6 +479,7 @@
           />
 
           <!-- Crop overlay -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div
             class="crop-overlay"
             style="
@@ -417,39 +488,49 @@
               width: {cropArea.width}px;
               height: {cropArea.height}px;
             "
-            on:mousedown={handleMouseDown}
-            on:touchstart={handleMouseDown}
+            onmousedown={handleMouseDown}
+            ontouchstart={handleMouseDown}
+            role="application"
+            aria-label="Crop area - drag to move or resize"
           >
             <!-- Grid lines -->
-            <div class="grid-line grid-line-h1" />
-            <div class="grid-line grid-line-h2" />
-            <div class="grid-line grid-line-v1" />
-            <div class="grid-line grid-line-v2" />
+            <div class="grid-line grid-line-h1"></div>
+            <div class="grid-line grid-line-h2"></div>
+            <div class="grid-line grid-line-v1"></div>
+            <div class="grid-line grid-line-v2"></div>
 
-            <!-- Resize handles -->
-            <div class="resize-handle resize-nw" data-handle="nw" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-ne" data-handle="ne" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-sw" data-handle="sw" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-se" data-handle="se" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-n" data-handle="n" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-s" data-handle="s" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-w" data-handle="w" on:mousedown={handleMouseDown} />
-            <div class="resize-handle resize-e" data-handle="e" on:mousedown={handleMouseDown} />
+            <!-- Resize handles - svelte-ignore directives for interactive drag handles -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-nw" data-handle="nw" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-ne" data-handle="ne" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-sw" data-handle="sw" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-se" data-handle="se" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-n" data-handle="n" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-s" data-handle="s" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-w" data-handle="w" onmousedown={handleMouseDown}></div>
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="resize-handle resize-e" data-handle="e" onmousedown={handleMouseDown}></div>
           </div>
 
           <!-- Dark overlay outside crop area -->
-          <div class="dark-overlay" />
+          <div class="dark-overlay"></div>
         </div>
       {:else}
         <div class="loading-state">
-          <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+          <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
           <p class="text-gray-500 mt-2">Loading image...</p>
         </div>
       {/if}
     </div>
 
     <!-- Hidden canvas for export -->
-    <canvas bind:this={canvas} class="hidden" />
+    <canvas bind:this={canvas} class="hidden"></canvas>
 
     <!-- Footer -->
     <div class="modal-footer">
@@ -459,10 +540,10 @@
         </span>
       </div>
       <div class="footer-actions">
-        <button class="btn-cancel" on:click={() => dispatch('cancel')}>
+        <button class="btn-cancel" onclick={() => dispatch('cancel')}>
           Cancel
         </button>
-        <button class="btn-crop" on:click={handleCrop}>
+        <button class="btn-crop" onclick={handleCrop}>
           Apply Crop
         </button>
       </div>
@@ -471,157 +552,338 @@
 </div>
 
 <style>
-  @reference "tailwindcss";
-
   .crop-modal-overlay {
-    @apply fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
   }
 
   .crop-modal {
-    @apply bg-white dark:bg-gray-800 rounded-xl shadow-2xl;
-    @apply w-full max-w-4xl max-h-[90vh] flex flex-col;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 56rem;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.dark) .crop-modal {
+    background-color: #1f2937;
   }
 
   .modal-header {
-    @apply flex items-center justify-between px-6 py-4;
-    @apply border-b border-gray-200 dark:border-gray-700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  :global(.dark) .modal-header {
+    border-color: #374151;
   }
 
   .close-btn {
-    @apply p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300;
-    @apply hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors;
+    padding: 0.5rem;
+    color: #9ca3af;
+    border-radius: 0.5rem;
+    transition: all 150ms ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .close-btn:hover {
+    color: #4b5563;
+    background-color: #f3f4f6;
+  }
+
+  :global(.dark) .close-btn:hover {
+    color: #d1d5db;
+    background-color: #374151;
   }
 
   .toolbar {
-    @apply flex flex-wrap items-center gap-6 px-6 py-3;
-    @apply bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  :global(.dark) .toolbar {
+    background-color: rgba(17, 24, 39, 0.5);
+    border-color: #374151;
   }
 
   .toolbar-group {
-    @apply flex items-center gap-2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .toolbar-label {
-    @apply text-xs font-medium text-gray-500 dark:text-gray-400;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+  }
+
+  :global(.dark) .toolbar-label {
+    color: #9ca3af;
   }
 
   .ratio-buttons {
-    @apply flex gap-1;
+    display: flex;
+    gap: 0.25rem;
   }
 
   .ratio-btn {
-    @apply px-2 py-1 text-xs rounded;
-    @apply bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400;
-    @apply hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: #e5e7eb;
+    color: #4b5563;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  :global(.dark) .ratio-btn {
+    background-color: #374151;
+    color: #9ca3af;
+  }
+
+  .ratio-btn:hover {
+    background-color: #d1d5db;
+  }
+
+  :global(.dark) .ratio-btn:hover {
+    background-color: #4b5563;
   }
 
   .ratio-btn.active {
-    @apply bg-blue-500 text-white;
+    background-color: #3b82f6;
+    color: white;
   }
 
   .transform-buttons {
-    @apply flex gap-1;
+    display: flex;
+    gap: 0.25rem;
   }
 
   .transform-btn {
-    @apply p-1.5 rounded text-gray-500 dark:text-gray-400;
-    @apply hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
+    padding: 0.375rem;
+    border-radius: 0.25rem;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  :global(.dark) .transform-btn {
+    color: #9ca3af;
+  }
+
+  .transform-btn:hover {
+    background-color: #e5e7eb;
+  }
+
+  :global(.dark) .transform-btn:hover {
+    background-color: #374151;
   }
 
   .transform-btn.active {
-    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-500;
+    background-color: #dbeafe;
+    color: #3b82f6;
+  }
+
+  :global(.dark) .transform-btn.active {
+    background-color: rgba(30, 58, 138, 0.3);
   }
 
   .zoom-controls {
-    @apply flex items-center gap-2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .zoom-btn {
-    @apply w-6 h-6 rounded bg-gray-200 dark:bg-gray-700;
-    @apply text-gray-600 dark:text-gray-400 font-medium;
-    @apply hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.25rem;
+    background-color: #e5e7eb;
+    color: #4b5563;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  :global(.dark) .zoom-btn {
+    background-color: #374151;
+    color: #9ca3af;
+  }
+
+  .zoom-btn:hover {
+    background-color: #d1d5db;
+  }
+
+  :global(.dark) .zoom-btn:hover {
+    background-color: #4b5563;
   }
 
   .zoom-value {
-    @apply text-xs text-gray-500 w-12 text-center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    width: 3rem;
+    text-align: center;
   }
 
   .canvas-container {
-    @apply flex-1 min-h-[300px] bg-gray-900 overflow-hidden;
-    @apply flex items-center justify-center relative;
+    flex: 1;
+    min-height: 300px;
+    background-color: #111827;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
   }
 
   .image-wrapper {
-    @apply relative;
+    position: relative;
   }
 
   .crop-image {
-    @apply block;
+    display: block;
   }
 
   .crop-overlay {
-    @apply absolute border-2 border-white cursor-move;
+    position: absolute;
+    border: 2px solid white;
+    cursor: move;
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
   }
 
   .grid-line {
-    @apply absolute bg-white/30;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3);
   }
 
   .grid-line-h1, .grid-line-h2 {
-    @apply left-0 right-0 h-px;
+    left: 0;
+    right: 0;
+    height: 1px;
   }
 
   .grid-line-h1 { top: 33.33%; }
   .grid-line-h2 { top: 66.66%; }
 
   .grid-line-v1, .grid-line-v2 {
-    @apply top-0 bottom-0 w-px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
   }
 
   .grid-line-v1 { left: 33.33%; }
   .grid-line-v2 { left: 66.66%; }
 
   .resize-handle {
-    @apply absolute w-4 h-4 bg-white rounded-full border-2 border-blue-500;
-    @apply shadow-lg;
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    background-color: white;
+    border-radius: 9999px;
+    border: 2px solid #3b82f6;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 
-  .resize-nw { @apply -top-2 -left-2 cursor-nw-resize; }
-  .resize-ne { @apply -top-2 -right-2 cursor-ne-resize; }
-  .resize-sw { @apply -bottom-2 -left-2 cursor-sw-resize; }
-  .resize-se { @apply -bottom-2 -right-2 cursor-se-resize; }
-  .resize-n { @apply -top-2 left-1/2 -translate-x-1/2 cursor-n-resize; }
-  .resize-s { @apply -bottom-2 left-1/2 -translate-x-1/2 cursor-s-resize; }
-  .resize-w { @apply top-1/2 -left-2 -translate-y-1/2 cursor-w-resize; }
-  .resize-e { @apply top-1/2 -right-2 -translate-y-1/2 cursor-e-resize; }
+  .resize-nw { top: -0.5rem; left: -0.5rem; cursor: nw-resize; }
+  .resize-ne { top: -0.5rem; right: -0.5rem; cursor: ne-resize; }
+  .resize-sw { bottom: -0.5rem; left: -0.5rem; cursor: sw-resize; }
+  .resize-se { bottom: -0.5rem; right: -0.5rem; cursor: se-resize; }
+  .resize-n { top: -0.5rem; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+  .resize-s { bottom: -0.5rem; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+  .resize-w { top: 50%; left: -0.5rem; transform: translateY(-50%); cursor: w-resize; }
+  .resize-e { top: 50%; right: -0.5rem; transform: translateY(-50%); cursor: e-resize; }
 
   .loading-state {
-    @apply flex flex-col items-center justify-center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .modal-footer {
-    @apply flex items-center justify-between px-6 py-4;
-    @apply border-t border-gray-200 dark:border-gray-700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  :global(.dark) .modal-footer {
+    border-color: #374151;
   }
 
   .crop-info {
-    @apply text-sm text-gray-500;
+    font-size: 0.875rem;
+    color: #6b7280;
   }
 
   .footer-actions {
-    @apply flex gap-3;
+    display: flex;
+    gap: 0.75rem;
   }
 
   .btn-cancel {
-    @apply px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300;
-    @apply bg-gray-100 dark:bg-gray-700 rounded-lg;
-    @apply hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  :global(.dark) .btn-cancel {
+    color: #d1d5db;
+    background-color: #374151;
+  }
+
+  .btn-cancel:hover {
+    background-color: #e5e7eb;
+  }
+
+  :global(.dark) .btn-cancel:hover {
+    background-color: #4b5563;
   }
 
   .btn-crop {
-    @apply px-4 py-2 text-sm font-medium text-white;
-    @apply bg-blue-500 rounded-lg;
-    @apply hover:bg-blue-600 transition-colors;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    background-color: #3b82f6;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  .btn-crop:hover {
+    background-color: #2563eb;
   }
 </style>

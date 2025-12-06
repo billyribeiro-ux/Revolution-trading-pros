@@ -105,6 +105,12 @@ export interface FieldAttributes {
 	[key: string]: any;
 }
 
+export interface NewsletterFieldOptions {
+	checkbox_label?: string;
+	show_privacy_link?: boolean;
+	privacy_url?: string;
+}
+
 export interface FormField {
 	id?: number;
 	form_id?: number;
@@ -114,7 +120,8 @@ export interface FormField {
 	placeholder?: string;
 	help_text?: string;
 	default_value?: any;
-	options?: FieldOption[] | null;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	options?: any;
 	validation?: FieldValidation | null;
 	conditional_logic?: ConditionalLogic | null;
 	attributes?: FieldAttributes | null;
@@ -162,7 +169,10 @@ export type FieldType =
 	| 'page_break'
 	| 'quiz'
 	| 'repeater'
-	| 'consent';
+	| 'consent'
+	| 'newsletter_subscribe'
+	| 'newsletter_categories'
+	| 'newsletter_frequency';
 
 export interface FieldOption {
 	label: string;
@@ -171,6 +181,10 @@ export interface FieldOption {
 	selected?: boolean;
 	icon?: string;
 	color?: string;
+	description?: string;
+	checkbox_label?: string;
+	show_privacy_link?: boolean;
+	privacy_url?: string;
 }
 
 export interface ConditionalLogic {

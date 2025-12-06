@@ -168,11 +168,6 @@
 		}).format(amount);
 	}
 
-	declare global {
-		interface Window {
-			Paddle: any;
-		}
-	}
 </script>
 
 <div class="paddle-payment" class:disabled class:has-error={error || paymentError}>

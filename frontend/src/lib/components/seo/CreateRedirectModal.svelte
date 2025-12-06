@@ -9,10 +9,11 @@
 
 	let { url404 = '', oncreated, oncancel }: Props = $props();
 
+	// Intentionally capture initial value - form is user-controlled after mount
 	let form = $state({
 		destination_url: '',
 		redirect_type: '301',
-		notes: `Redirect created from 404: ${url404}`
+		notes: `Redirect created from 404: ${url404 || ''}`
 	});
 
 	let saving = $state(false);

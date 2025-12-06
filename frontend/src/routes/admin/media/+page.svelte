@@ -153,8 +153,7 @@
   // Upload Handling
   // ═══════════════════════════════════════════════════════════════════════════
 
-  function handleFilesSelected(event: CustomEvent<File[]>) {
-    const files = event.detail;
+  function handleFilesSelected(files: File[]) {
     if (files.length === 0) return;
 
     showUploadPanel = true;
@@ -366,8 +365,8 @@
       const result = await response.json();
 
       // Update item
-      await mediaApi.update(item.id, { alt: result.altText });
-      const updatedItem = { ...item, alt: result.altText };
+      await mediaApi.update(item.id, { alt_text: result.altText });
+      const updatedItem = { ...item, alt_text: result.altText };
 
       items = items.map((i) => (i.id === item.id ? updatedItem : i));
       if (detailItem?.id === item.id) detailItem = updatedItem;
@@ -385,12 +384,12 @@
     showCropModal = true;
   }
 
-  async function handleCropSave(event: CustomEvent<{ blob: Blob }>) {
+  async function handleCropSave(cropResult: { blob: Blob; cropArea: { x: number; y: number; width: number; height: number }; aspectRatio: string }) {
     if (!detailItem) return;
 
     try {
       const formData = new FormData();
-      formData.append('file', event.detail.blob, detailItem.filename);
+      formData.append('file', cropResult.blob, detailItem.filename);
 
       const response = await fetch(`/api/media/${detailItem.id}/replace`, {
         method: 'POST',
@@ -399,9 +398,9 @@
 
       if (!response.ok) throw new Error('Failed to save crop');
 
-      const result = await response.json();
-      items = items.map((i) => (i.id === detailItem!.id ? result.data : i));
-      detailItem = result.data;
+      const apiResult = await response.json();
+      items = items.map((i) => (i.id === detailItem!.id ? apiResult.data : i));
+      detailItem = apiResult.data;
 
       showCropModal = false;
       showToast('Image cropped and saved', 'success');
@@ -642,11 +641,11 @@
           type="text"
           placeholder="Search media..."
           bind:value={searchQuery}
-          on:keydown={(e) => e.key === 'Enter' && loadMedia()}
+          onkeydown={(e) => e.key === 'Enter' && loadMedia()}
         />
         {#if searchQuery}
-          <button class="search-clear" on:click={() => { searchQuery = ''; loadMedia(); }}>
-            <svg viewBox="0 0 20 20" fill="currentColor">
+          <button class="search-clear" onclick={() => { searchQuery = ''; loadMedia(); }} aria-label="Clear search">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
             </svg>
           </button>
@@ -659,7 +658,7 @@
       <div class="view-toggle">
         <button
           class:active={viewMode === 'grid'}
-          on:click={() => (viewMode = 'grid')}
+          onclick={() => (viewMode = 'grid')}
           title="Grid view"
         >
           <svg viewBox="0 0 20 20" fill="currentColor">
@@ -668,7 +667,7 @@
         </button>
         <button
           class:active={viewMode === 'list'}
-          on:click={() => (viewMode = 'list')}
+          onclick={() => (viewMode = 'list')}
           title="List view"
         >
           <svg viewBox="0 0 20 20" fill="currentColor">
@@ -678,7 +677,7 @@
       </div>
 
       <!-- Upload Button -->
-      <button class="btn-upload" on:click={() => (showUploadPanel = !showUploadPanel)}>
+      <button class="btn-upload" onclick={() => (showUploadPanel = !showUploadPanel)}>
         <svg viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
         </svg>
@@ -761,14 +760,14 @@
         </div>
       </div>
 
-      <button class="stats-toggle" on:click={() => (showStatsPanel = false)}>
-        <svg viewBox="0 0 20 20" fill="currentColor">
+      <button class="stats-toggle" onclick={() => (showStatsPanel = false)} aria-label="Hide statistics">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"/>
         </svg>
       </button>
     </div>
   {:else}
-    <button class="stats-show" on:click={() => (showStatsPanel = true)}>
+    <button class="stats-show" onclick={() => (showStatsPanel = true)}>
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
       </svg>
@@ -785,7 +784,7 @@
         accept="image/*,video/*,application/pdf"
         maxSize={50 * 1024 * 1024}
         multiple={true}
-        on:files={handleFilesSelected}
+        onfiles={handleFilesSelected}
       />
 
       {#if uploadQueue.length > 0}
@@ -817,7 +816,7 @@
         </div>
 
         {#if !isUploading}
-          <button class="btn-secondary" on:click={clearUploadQueue}>
+          <button class="btn-secondary" onclick={clearUploadQueue}>
             Clear Queue
           </button>
         {/if}
@@ -831,27 +830,27 @@
   <div class="toolbar">
     <div class="toolbar-left">
       <!-- Filters -->
-      <select bind:value={filterType} on:change={loadMedia}>
+      <select bind:value={filterType} onchange={loadMedia}>
         <option value="all">All Types</option>
         <option value="image">Images</option>
         <option value="video">Videos</option>
         <option value="document">Documents</option>
       </select>
 
-      <select bind:value={filterStatus} on:change={loadMedia}>
+      <select bind:value={filterStatus} onchange={loadMedia}>
         <option value="all">All Status</option>
         <option value="optimized">Optimized</option>
         <option value="pending">Needs Optimization</option>
         <option value="processing">Processing</option>
       </select>
 
-      <select bind:value={sortBy} on:change={loadMedia}>
+      <select bind:value={sortBy} onchange={loadMedia}>
         <option value="created_at">Date Added</option>
         <option value="filename">Name</option>
         <option value="size">Size</option>
       </select>
 
-      <button class="btn-icon" on:click={() => { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; loadMedia(); }}>
+      <button class="btn-icon" onclick={() => { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; loadMedia(); }}>
         {#if sortDir === 'asc'}
           <svg viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
@@ -868,22 +867,22 @@
       {#if selectedIds.size > 0}
         <div class="bulk-actions" transition:scale={{ duration: 200 }}>
           <span class="selection-count">{selectedIds.size} selected</span>
-          <button class="btn-secondary btn-sm" on:click={selectAll}>
+          <button class="btn-secondary btn-sm" onclick={selectAll}>
             {selectedIds.size === items.length ? 'Deselect All' : 'Select All'}
           </button>
-          <button class="btn-primary btn-sm" on:click={bulkOptimize}>
+          <button class="btn-primary btn-sm" onclick={bulkOptimize}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
             </svg>
             Optimize
           </button>
-          <button class="btn-secondary btn-sm" on:click={bulkDownload}>
+          <button class="btn-secondary btn-sm" onclick={bulkDownload}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
             Download
           </button>
-          <button class="btn-danger btn-sm" on:click={bulkDelete}>
+          <button class="btn-danger btn-sm" onclick={bulkDelete}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
             </svg>
@@ -900,7 +899,7 @@
   <div class="content-area">
     <main class="media-content">
       {#if isLoading}
-        <MediaSkeleton variant={viewMode} count={perPage} />
+        <MediaSkeleton type={viewMode as 'grid' | 'list'} count={perPage} />
       {:else if items.length === 0}
         <div class="empty-state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -908,22 +907,25 @@
           </svg>
           <h3>No media files</h3>
           <p>Upload files to get started</p>
-          <button class="btn-primary" on:click={() => (showUploadPanel = true)}>
+          <button class="btn-primary" onclick={() => (showUploadPanel = true)}>
             Upload Files
           </button>
         </div>
       {:else}
         <div class="media-{viewMode}">
           {#each items as item (item.id)}
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
               class="media-item"
               class:selected={selectedIds.has(item.id)}
               class:focused={focusedId === item.id}
-              on:click={(e) => handleItemClick(item, e)}
-              on:dblclick={() => handleItemDoubleClick(item)}
-              on:contextmenu={(e) => handleContextMenu(e, item)}
+              onclick={(e) => handleItemClick(item, e)}
+              ondblclick={() => handleItemDoubleClick(item)}
+              oncontextmenu={(e) => handleContextMenu(e, item)}
+              onkeydown={(e) => e.key === 'Enter' && handleItemDoubleClick(item)}
               role="button"
               tabindex="0"
+              aria-label={item.filename}
               transition:fade={{ duration: 200 }}
             >
               {#if viewMode === 'grid'}
@@ -931,9 +933,9 @@
                   {#if item.file_type === 'image'}
                     <OptimizedImage
                       src={item.thumbnail_url || item.url}
-                      alt={item.alt || item.filename}
-                      blurhash={item.custom_properties?.blurhash}
-                      aspectRatio={1}
+                      alt={item.alt_text || item.filename}
+                      blurhash={String(item.custom_properties?.blurhash || '')}
+                      aspectRatio="1"
                     />
                   {:else}
                     <div class="file-icon">{getFileIcon(item.file_type)}</div>
@@ -960,7 +962,8 @@
                     <input
                       type="checkbox"
                       checked={selectedIds.has(item.id)}
-                      on:click|stopPropagation={() => {
+                      onclick={(e) => {
+                        e.stopPropagation();
                         if (selectedIds.has(item.id)) {
                           selectedIds.delete(item.id);
                         } else {
@@ -982,7 +985,8 @@
                   <input
                     type="checkbox"
                     checked={selectedIds.has(item.id)}
-                    on:click|stopPropagation={() => {
+                    onclick={(e) => {
+                      e.stopPropagation();
                       if (selectedIds.has(item.id)) {
                         selectedIds.delete(item.id);
                       } else {
@@ -997,8 +1001,8 @@
                   {#if item.file_type === 'image'}
                     <OptimizedImage
                       src={item.thumbnail_url || item.url}
-                      alt={item.alt || item.filename}
-                      aspectRatio={1}
+                      alt={item.alt_text || item.filename}
+                      aspectRatio="1"
                     />
                   {:else}
                     <div class="file-icon-small">{getFileIcon(item.file_type)}</div>
@@ -1025,12 +1029,12 @@
                 <div class="item-date">{formatDate(item.created_at)}</div>
 
                 <div class="item-actions">
-                  <button class="btn-icon-sm" on:click|stopPropagation={() => handleOptimize(item)} title="Optimize">
+                  <button class="btn-icon-sm" onclick={(e) => { e.stopPropagation(); handleOptimize(item); }} title="Optimize">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
                     </svg>
                   </button>
-                  <button class="btn-icon-sm" on:click|stopPropagation={() => handleDelete(item)} title="Delete">
+                  <button class="btn-icon-sm" onclick={(e) => { e.stopPropagation(); handleDelete(item); }} title="Delete">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
@@ -1048,18 +1052,20 @@
           <button
             class="btn-icon"
             disabled={currentPage === 1}
-            on:click={() => { currentPage = 1; loadMedia(); }}
+            onclick={() => { currentPage = 1; loadMedia(); }}
+            aria-label="First page"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
             </svg>
           </button>
           <button
             class="btn-icon"
             disabled={currentPage === 1}
-            on:click={() => { currentPage--; loadMedia(); }}
+            onclick={() => { currentPage--; loadMedia(); }}
+            aria-label="Previous page"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
             </svg>
           </button>
@@ -1071,18 +1077,20 @@
           <button
             class="btn-icon"
             disabled={currentPage === totalPages}
-            on:click={() => { currentPage++; loadMedia(); }}
+            onclick={() => { currentPage++; loadMedia(); }}
+            aria-label="Next page"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
             </svg>
           </button>
           <button
             class="btn-icon"
             disabled={currentPage === totalPages}
-            on:click={() => { currentPage = totalPages; loadMedia(); }}
+            onclick={() => { currentPage = totalPages; loadMedia(); }}
+            aria-label="Last page"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
               <path fill-rule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
             </svg>
@@ -1098,8 +1106,8 @@
       <aside class="details-panel" transition:fly={{ x: 320, duration: 300 }}>
         <div class="details-header">
           <h2>Details</h2>
-          <button class="btn-icon" on:click={() => (showDetailsPanel = false)}>
-            <svg viewBox="0 0 20 20" fill="currentColor">
+          <button class="btn-icon" onclick={() => (showDetailsPanel = false)} aria-label="Close details panel">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
           </button>
@@ -1109,8 +1117,8 @@
           {#if detailItem.file_type === 'image'}
             <OptimizedImage
               src={detailItem.url}
-              alt={detailItem.alt || detailItem.filename}
-              blurhash={detailItem.custom_properties?.blurhash}
+              alt={detailItem.alt_text || detailItem.filename}
+              blurhash={String(detailItem.custom_properties?.blurhash || '')}
             />
           {:else}
             <div class="file-preview-icon">{getFileIcon(detailItem.file_type)}</div>
@@ -1161,7 +1169,7 @@
             {#if aiEnabled}
               <button
                 class="btn-text btn-sm"
-                on:click={() => handleGenerateAltText(detailItem)}
+                onclick={() => handleGenerateAltText(detailItem)}
                 disabled={isAnalyzing}
               >
                 {#if isAnalyzing}
@@ -1179,12 +1187,12 @@
           <textarea
             class="alt-input"
             placeholder="Enter alt text for accessibility..."
-            value={detailItem.alt || ''}
-            on:blur={async (e) => {
+            value={detailItem.alt_text || ''}
+            onblur={async (e) => {
               const target = e.target as HTMLTextAreaElement;
-              if (target.value !== detailItem?.alt) {
-                await mediaApi.update(detailItem!.id, { alt: target.value });
-                detailItem = { ...detailItem!, alt: target.value };
+              if (target.value !== detailItem?.alt_text) {
+                await mediaApi.update(detailItem!.id, { alt_text: target.value });
+                detailItem = { ...detailItem!, alt_text: target.value };
                 showToast('Alt text saved', 'success');
               }
             }}
@@ -1198,7 +1206,7 @@
               <h3>AI Analysis</h3>
               <button
                 class="btn-text btn-sm"
-                on:click={() => handleAIAnalyze(detailItem)}
+                onclick={() => handleAIAnalyze(detailItem)}
                 disabled={isAnalyzing}
               >
                 {#if isAnalyzing}
@@ -1209,10 +1217,10 @@
               </button>
             </div>
 
-            {#if detailItem.custom_properties?.ai_tags}
+            {#if detailItem.custom_properties?.ai_tags && Array.isArray(detailItem.custom_properties.ai_tags)}
               <div class="ai-tags">
                 {#each detailItem.custom_properties.ai_tags as tag}
-                  <span class="tag">{tag}</span>
+                  <span class="tag">{String(tag)}</span>
                 {/each}
               </div>
             {:else}
@@ -1224,26 +1232,26 @@
         <!-- Actions -->
         <div class="details-actions">
           {#if detailItem.file_type === 'image'}
-            <button class="btn-secondary" on:click={() => handleCrop(detailItem)}>
+            <button class="btn-secondary" onclick={() => handleCrop(detailItem)}>
               <svg viewBox="0 0 20 20" fill="currentColor">
                 <path d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"/>
               </svg>
               Crop
             </button>
-            <button class="btn-secondary" on:click={() => (showPreviewModal = true)}>
+            <button class="btn-secondary" onclick={() => (showPreviewModal = true)}>
               <svg viewBox="0 0 20 20" fill="currentColor">
                 <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"/>
               </svg>
               Responsive Preview
             </button>
           {/if}
-          <button class="btn-primary" on:click={() => handleOptimize(detailItem)}>
+          <button class="btn-primary" onclick={() => handleOptimize(detailItem)}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
             </svg>
             Optimize
           </button>
-          <button class="btn-danger" on:click={() => handleDelete(detailItem)}>
+          <button class="btn-danger" onclick={() => handleDelete(detailItem)}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
             </svg>
@@ -1263,7 +1271,7 @@
       style="left: {contextMenu.x}px; top: {contextMenu.y}px"
       transition:scale={{ duration: 150, start: 0.9 }}
     >
-      <button on:click={() => { handleItemDoubleClick(contextMenu!.item); contextMenu = null; }}>
+      <button onclick={() => { handleItemDoubleClick(contextMenu!.item); contextMenu = null; }}>
         <svg viewBox="0 0 20 20" fill="currentColor">
           <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
           <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
@@ -1271,20 +1279,20 @@
         View
       </button>
       {#if contextMenu.item.file_type === 'image'}
-        <button on:click={() => { handleOptimize(contextMenu!.item); contextMenu = null; }}>
+        <button onclick={() => { handleOptimize(contextMenu!.item); contextMenu = null; }}>
           <svg viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
           </svg>
           Optimize
         </button>
-        <button on:click={() => { handleCrop(contextMenu!.item); contextMenu = null; }}>
+        <button onclick={() => { handleCrop(contextMenu!.item); contextMenu = null; }}>
           <svg viewBox="0 0 20 20" fill="currentColor">
             <path d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"/>
           </svg>
           Crop
         </button>
         {#if aiEnabled}
-          <button on:click={() => { handleAIAnalyze(contextMenu!.item); contextMenu = null; }}>
+          <button onclick={() => { handleAIAnalyze(contextMenu!.item); contextMenu = null; }}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
               <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
@@ -1300,7 +1308,7 @@
         </svg>
         Download
       </a>
-      <button on:click={() => { navigator.clipboard.writeText(contextMenu!.item.url); showToast('URL copied', 'success'); contextMenu = null; }}>
+      <button onclick={() => { navigator.clipboard.writeText(contextMenu!.item.url); showToast('URL copied', 'success'); contextMenu = null; }}>
         <svg viewBox="0 0 20 20" fill="currentColor">
           <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
           <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
@@ -1308,7 +1316,7 @@
         Copy URL
       </button>
       <hr />
-      <button class="danger" on:click={() => { handleDelete(contextMenu!.item); contextMenu = null; }}>
+      <button class="danger" onclick={() => { handleDelete(contextMenu!.item); contextMenu = null; }}>
         <svg viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
         </svg>
@@ -1349,26 +1357,37 @@
 {#if showCropModal && detailItem}
   <ImageCropModal
     src={detailItem.url}
-    on:save={handleCropSave}
-    on:close={() => (showCropModal = false)}
+    oncrop={handleCropSave}
+    oncancel={() => (showCropModal = false)}
   />
 {/if}
 
 <!-- Responsive Preview Modal -->
 {#if showPreviewModal && detailItem}
-  <div class="modal-overlay" on:click={() => (showPreviewModal = false)} transition:fade={{ duration: 200 }}>
-    <div class="modal-content" on:click|stopPropagation transition:scale={{ duration: 300, start: 0.95 }}>
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+  <div 
+    class="modal-overlay" 
+    onclick={() => (showPreviewModal = false)} 
+    onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="preview-modal-title"
+    tabindex="-1"
+    transition:fade={{ duration: 200 }}
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <div class="modal-content" onclick={(e) => e.stopPropagation()} role="document" transition:scale={{ duration: 300, start: 0.95 }}>
       <div class="modal-header">
-        <h2>Responsive Preview</h2>
-        <button class="btn-icon" on:click={() => (showPreviewModal = false)}>
-          <svg viewBox="0 0 20 20" fill="currentColor">
+        <h2 id="preview-modal-title">Responsive Preview</h2>
+        <button class="btn-icon" onclick={() => (showPreviewModal = false)} aria-label="Close preview">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
           </svg>
         </button>
       </div>
       <ResponsivePreview
-        src={detailItem.url}
-        variants={detailItem.variants || {}}
+        originalUrl={detailItem.url}
+        variants={detailItem.variants as any || []}
       />
     </div>
   </div>
