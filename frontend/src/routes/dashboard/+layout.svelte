@@ -3,13 +3,16 @@
 	 * Dashboard Layout - Svelte 5 / SvelteKit Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Wraps all dashboard routes with:
-	 * - Sidebar navigation with mobile support
-	 * - Authentication guard
-	 * - User memberships loading with caching
-	 * - Svelte 5 runes
+	 * Exact match of WordPress Simpler Trading dashboard structure:
+	 * - .dashboard (root container)
+	 * - .dashboard__sidebar (aside - left navigation)
+	 * - .dashboard__main (main content area)
+	 * - .dashboard__header (page header with title + actions)
+	 * - .dashboard__content (content wrapper)
+	 * - .dashboard__overlay (mobile menu overlay)
+	 * - .dashboard__toggle (mobile toggle button)
 	 *
-	 * @version 3.0.0 (Svelte 5 / December 2025)
+	 * @version 4.0.0 (WordPress-exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
@@ -38,7 +41,6 @@
 	let memberships = $state<UserMembership[]>([]);
 	let isLoading = $state(true);
 	let isSidebarOpen = $state(false);
-	let isSidebarCollapsed = $state(false);
 	let error = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -55,20 +57,15 @@
 
 	// Authentication guard and data loading
 	$effect(() => {
-		// Skip during SSR
 		if (!browser) return;
-
-		// Wait for auth initialization
 		if ($authStore.isInitializing) return;
 
-		// Redirect to login if not authenticated
 		if (!$isAuthenticated) {
 			const redirectUrl = encodeURIComponent($page.url.pathname + $page.url.search);
 			goto(`/login?redirect=${redirectUrl}`, { replaceState: true });
 			return;
 		}
 
-		// Load memberships
 		loadMemberships();
 	});
 
@@ -79,7 +76,7 @@
 		}
 	});
 
-	// Handle body scroll lock
+	// Handle body scroll lock (WordPress: html--dashboard-menu-open)
 	$effect(() => {
 		if (!browser) return;
 
@@ -125,10 +122,6 @@
 	function closeSidebar(): void {
 		isSidebarOpen = false;
 	}
-
-	function handleSidebarCollapseToggle(): void {
-		isSidebarCollapsed = !isSidebarCollapsed;
-	}
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -141,66 +134,64 @@
 </svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE
+     TEMPLATE - WordPress Exact Structure
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if $isAuthenticated || $authStore.isInitializing}
-	<div class="woocommerce-account woocommerce-page logged-in">
-		<div class="woocommerce">
-			<!-- Sidebar Navigation -->
+	<!-- WordPress: .dashboard (root container) -->
+	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
+
+		<!-- WordPress: .dashboard__sidebar (aside) -->
+		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen}>
 			<DashboardSidebar
 				{memberships}
-				bind:isCollapsed={isSidebarCollapsed}
 				bind:isMobileOpen={isSidebarOpen}
-				onToggleCollapse={handleSidebarCollapseToggle}
 				onCloseMobile={closeSidebar}
 				{userAvatar}
 				{userName}
 			/>
+		</aside>
 
-			<!-- Main Content Area -->
-			<main
-				class="woocommerce-MyAccount-content"
-				class:sidebar-collapsed={isSidebarCollapsed}
-				role="main"
-				aria-label="Dashboard content"
-			>
-				{#if isLoading}
-					<div class="dashboard-loading" aria-busy="true" aria-label="Loading dashboard">
-						<div class="loading-spinner"></div>
-						<p>Loading your dashboard...</p>
-					</div>
-				{:else if error}
-					<div class="dashboard-error" role="alert">
-						<div class="error-icon">!</div>
-						<p class="error-message">{error}</p>
-						<button class="retry-btn" onclick={loadMemberships}>
-							Try Again
-						</button>
-					</div>
-				{:else}
-					{@render children()}
-				{/if}
-			</main>
-		</div>
+		<!-- WordPress: .dashboard__main -->
+		<main class="dashboard__main" role="main" aria-label="Dashboard content">
+			{#if isLoading}
+				<div class="dashboard-loading" aria-busy="true" aria-label="Loading dashboard">
+					<div class="loading-spinner"></div>
+					<p>Loading your dashboard...</p>
+				</div>
+			{:else if error}
+				<div class="dashboard-error" role="alert">
+					<div class="error-icon">!</div>
+					<p class="error-message">{error}</p>
+					<button class="retry-btn" onclick={loadMemberships}>
+						Try Again
+					</button>
+				</div>
+			{:else}
+				{@render children()}
+			{/if}
+		</main>
+
+		<!-- WordPress: .dashboard__overlay -->
+		{#if isSidebarOpen}
+			<button
+				class="dashboard__overlay"
+				onclick={closeSidebar}
+				aria-label="Close navigation"
+				tabindex="-1"
+				data-toggle-dashboard-menu
+			></button>
+		{/if}
+
+		<!-- WordPress: .dashboard__toggle (footer positioned) -->
+		<footer class="dashboard__toggle">
+			<MobileToggle
+				bind:isOpen={isSidebarOpen}
+				onToggle={toggleSidebar}
+				position="left"
+			/>
+		</footer>
 	</div>
-
-	<!-- Mobile Overlay (WordPress: .csdashboard__overlay) -->
-	{#if isSidebarOpen}
-		<button
-			class="csdashboard__overlay"
-			onclick={closeSidebar}
-			aria-label="Close navigation"
-			tabindex="-1"
-		></button>
-	{/if}
-
-	<!-- Mobile Toggle Button -->
-	<MobileToggle
-		bind:isOpen={isSidebarOpen}
-		onToggle={toggleSidebar}
-		position="left"
-	/>
 {:else}
 	<div class="dashboard-loading" aria-busy="true">
 		<div class="loading-spinner"></div>
@@ -209,52 +200,103 @@
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES
+     STYLES - WordPress Exact CSS
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES
+	   CSS CUSTOM PROPERTIES (WordPress Reference)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
 		--dashboard-bg: #f4f4f4;
-		--dashboard-content-min-height: calc(100vh - 80px);
+		--dashboard-sidebar-bg: #0f2d41;
+		--dashboard-sidebar-width: 280px;
+		--dashboard-header-height: 80px;
+		--dashboard-content-min-height: calc(100vh - var(--dashboard-header-height));
 		--dashboard-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		--loading-color: #0984ae;
 		--error-color: #ef4444;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN LAYOUT
+	   DASHBOARD ROOT (WordPress: .dashboard)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.woocommerce-account {
+	.dashboard {
+		display: flex;
+		flex-flow: row nowrap;
 		min-height: 100vh;
 		background: var(--dashboard-bg);
-	}
-
-	.woocommerce-account .woocommerce {
-		display: flex;
-		margin: 0 auto;
-		width: 100%;
+		position: relative;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN CONTENT
+	   DASHBOARD SIDEBAR (WordPress: .dashboard__sidebar)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.woocommerce-MyAccount-content {
-		flex: 1;
-		width: 100%;
+	.dashboard__sidebar {
+		flex: 0 0 var(--dashboard-sidebar-width);
+		width: var(--dashboard-sidebar-width);
+		background-color: var(--dashboard-sidebar-bg);
+		min-height: 100vh;
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		transition: var(--dashboard-transition);
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD MAIN (WordPress: .dashboard__main)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__main {
+		flex: 1 1 auto;
+		width: calc(100% - var(--dashboard-sidebar-width));
+		min-height: var(--dashboard-content-min-height);
 		background: var(--dashboard-bg);
 		position: relative;
-		min-height: var(--dashboard-content-min-height);
 		transition: var(--dashboard-transition);
 	}
 
-	.woocommerce-MyAccount-content.sidebar-collapsed {
-		/* Adjust content when sidebar is collapsed */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD OVERLAY (WordPress: .dashboard__overlay)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__overlay {
+		background-color: rgba(0, 0, 0, 0.65);
+		bottom: 0;
+		left: 0;
+		position: fixed;
+		right: 0;
+		top: 0;
+		z-index: 100009;
+		border: none;
+		cursor: pointer;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		transition: opacity 0.3s ease-in-out;
+		display: none;
+	}
+
+	.dashboard__overlay:focus {
+		outline: none;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD TOGGLE FOOTER (WordPress: .dashboard__toggle)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__toggle {
+		display: none;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 100008;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -347,18 +389,52 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE - MOBILE (WordPress Reference: max-width 980px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media screen and (max-width: 980px) {
-		.woocommerce-MyAccount-content {
+		.dashboard__sidebar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			width: 70%;
+			max-width: 280px;
+			transform: translateX(-100%);
+			opacity: 0;
+			visibility: hidden;
+			z-index: 100010;
+		}
+
+		.dashboard__sidebar.is-open {
+			transform: translateX(0);
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.dashboard__main {
 			width: 100%;
 			padding-bottom: 70px; /* Space for mobile toggle */
+		}
+
+		.dashboard__overlay {
+			display: block;
+		}
+
+		.dashboard__toggle {
+			display: block;
+		}
+	}
+
+	@media screen and (max-width: 480px) {
+		.dashboard__sidebar {
+			width: 85%;
+			max-width: none;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   GLOBAL STYLES
+	   GLOBAL STYLES (WordPress: html--dashboard-menu-open)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:global(.html--dashboard-menu-open) {
@@ -370,35 +446,13 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MOBILE OVERLAY (WordPress Reference: .csdashboard__overlay)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.csdashboard__overlay {
-		background-color: rgba(0, 0, 0, 0.65);
-		bottom: 0;
-		left: 0;
-		position: fixed;
-		right: 0;
-		top: 0;
-		z-index: 100009;
-		border: none;
-		cursor: pointer;
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-		transition: opacity 0.3s ease-in-out;
-	}
-
-	.csdashboard__overlay:focus {
-		outline: none;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
 	   REDUCED MOTION
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (prefers-reduced-motion: reduce) {
-		.woocommerce-MyAccount-content,
+		.dashboard__sidebar,
+		.dashboard__main,
+		.dashboard__overlay,
 		.loading-spinner {
 			transition: none;
 			animation: none;
