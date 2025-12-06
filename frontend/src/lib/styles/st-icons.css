@@ -40,24 +40,34 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ICON DEFINITIONS
+   ICON DEFINITIONS (WordPress Reference Character Codes)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.st-icon-home::before { content: "\e900"; }
-.st-icon-dashboard::before { content: "\e901"; }
-.st-icon-learning-center::before { content: "\e902"; }
-.st-icon-chatroom-archive::before { content: "\e903"; }
-.st-icon-forum::before { content: "\e904"; }
-.st-icon-explosive-swings::before { content: "\e905"; }
-.st-icon-swing-trading::before { content: "\e906"; }
-.st-icon-small-accounts::before { content: "\e907"; }
-.st-icon-day-trading::before { content: "\e908"; }
-.st-icon-settings::before { content: "\e909"; }
-.st-icon-logout::before { content: "\e90a"; }
-.st-icon-chart::before { content: "\e90b"; }
-.st-icon-candle-stick::before { content: "\e90c"; }
-.st-icon-handle-stick::before { content: "\e90d"; }
-.st-icon-spx-profit-pulse::before { content: "\e90e"; }
+/* Navigation Icons */
+.st-icon-home::before {
+	content: "\E925";
+	font-size: 32px;
+	line-height: 32px;
+	color: #8796A0;
+}
+.st-icon-dashboard::before { content: "\E956"; font-size: 24px; line-height: 24px; }
+.st-icon-learning-center::before { content: "\E94D"; font-size: 24px; line-height: 24px; }
+.st-icon-chatroom-archive::before { content: "\E942"; font-size: 24px; line-height: 24px; }
+.st-icon-forum::before { content: "\E949"; font-size: 24px; line-height: 24px; }
+
+/* Trading Room Icons */
+.st-icon-explosive-swings::before { content: "\E902"; font-size: 32px; line-height: 32px; }
+.st-icon-swing-trading::before { content: "\E915"; font-size: 32px; line-height: 32px; }
+.st-icon-small-accounts::before { content: "\E99C"; font-size: 32px; line-height: 32px; }
+.st-icon-day-trading::before { content: "\E91D"; font-size: 32px; line-height: 32px; }
+
+/* UI Icons */
+.st-icon-settings::before { content: "\E95A"; }
+.st-icon-logout::before { content: "\E94A"; }
+.st-icon-chart::before { content: "\E940"; }
+.st-icon-candle-stick::before { content: "\E93F"; }
+.st-icon-handle-stick::before { content: "\E948"; }
+.st-icon-spx-profit-pulse::before { content: "\E910"; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ICON SIZE VARIANTS

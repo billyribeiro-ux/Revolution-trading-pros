@@ -249,7 +249,7 @@
 		--card-border: #ededed;
 		--card-shadow: 0 5px 30px rgb(0 0 0 / 10%);
 		--card-shadow-hover: 0 10px 40px rgb(0 0 0 / 15%);
-		--card-radius: 8px;
+		--card-radius: 5px; /* WordPress reference: border-radius: 5px */
 		--icon-bg: #0984ae;
 		--icon-bg-hover: #076787;
 		--text-primary: #333;
