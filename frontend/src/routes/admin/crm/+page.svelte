@@ -119,9 +119,9 @@
 	<title>CRM - Admin Dashboard</title>
 </svelte:head>
 
-<div class="crm-page">
+<div class="crm-page" data-page="crm" data-module="customer-relationship-management" role="main" aria-label="CRM Dashboard">
 	<!-- Header -->
-	<div class="page-header">
+	<header class="page-header" data-section="header" aria-label="Page Header">
 		<div>
 			<h1>Customer Relationship Management</h1>
 			<p class="page-description">Manage contacts, deals, and customer relationships</p>
@@ -135,73 +135,74 @@
 				Add Contact
 			</button>
 		</div>
-	</div>
+	</header>
 
 	<!-- Stats Cards -->
-	<div class="stats-grid">
-		<div class="stat-card">
+	<section class="stats-grid" data-section="statistics" aria-label="CRM Statistics">
+		<div class="stat-card" data-stat="total-contacts" aria-label="Total Contacts">
 			<div class="stat-icon blue">
 				<IconUsers size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{stats.totalContacts.toLocaleString()}</span>
+				<span class="stat-value" data-value="{stats.totalContacts}">{stats.totalContacts.toLocaleString()}</span>
 				<span class="stat-label">Total Contacts</span>
 			</div>
 		</div>
-		<div class="stat-card">
+		<div class="stat-card" data-stat="new-this-month" aria-label="New Contacts This Month">
 			<div class="stat-icon green">
 				<IconUserPlus size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{stats.newThisMonth}</span>
+				<span class="stat-value" data-value="{stats.newThisMonth}">{stats.newThisMonth}</span>
 				<span class="stat-label">New This Month</span>
 			</div>
 		</div>
-		<div class="stat-card">
+		<div class="stat-card" data-stat="active-deals" aria-label="Active Deals">
 			<div class="stat-icon purple">
 				<IconTrendingUp size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{stats.activeDeals}</span>
+				<span class="stat-value" data-value="{stats.activeDeals}">{stats.activeDeals}</span>
 				<span class="stat-label">Active Deals</span>
 			</div>
 		</div>
-		<div class="stat-card">
+		<div class="stat-card" data-stat="pipeline-value" aria-label="Pipeline Value">
 			<div class="stat-icon amber">
 				<IconCurrencyDollar size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{formatCurrency(stats.dealValue)}</span>
+				<span class="stat-value" data-value="{stats.dealValue}" data-currency="USD">{formatCurrency(stats.dealValue)}</span>
 				<span class="stat-label">Pipeline Value</span>
 			</div>
 		</div>
-	</div>
+	</section>
 
 	<!-- Tabs -->
-	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'contacts'} onclick={() => activeTab = 'contacts'}>
+	<nav class="tabs" data-section="navigation" aria-label="CRM Navigation Tabs" role="tablist">
+		<button class="tab" class:active={activeTab === 'contacts'} onclick={() => activeTab = 'contacts'} role="tab" aria-selected={activeTab === 'contacts'} data-tab="contacts">
 			<IconUsers size={18} />
 			Contacts
 		</button>
-		<button class="tab" class:active={activeTab === 'deals'} onclick={() => activeTab = 'deals'}>
+		<button class="tab" class:active={activeTab === 'deals'} onclick={() => activeTab = 'deals'} role="tab" aria-selected={activeTab === 'deals'} data-tab="deals">
 			<IconTrendingUp size={18} />
 			Deals
 		</button>
-		<button class="tab" class:active={activeTab === 'pipeline'} onclick={() => activeTab = 'pipeline'}>
+		<button class="tab" class:active={activeTab === 'pipeline'} onclick={() => activeTab = 'pipeline'} role="tab" aria-selected={activeTab === 'pipeline'} data-tab="pipeline">
 			<IconChartBar size={18} />
 			Pipeline
 		</button>
-	</div>
+	</nav>
 
 	<!-- Content -->
+	<section data-section="content" data-active-tab={activeTab} aria-label="CRM Content">
 	{#if activeTab === 'contacts'}
 		<!-- Search & Filters -->
-		<div class="filters-bar">
+		<div class="filters-bar" data-component="filters" aria-label="Contact Filters">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input type="text" placeholder="Search contacts..." bind:value={searchQuery} />
+				<input type="text" placeholder="Search contacts..." bind:value={searchQuery} aria-label="Search contacts" data-filter="search" />
 			</div>
-			<select class="filter-select" bind:value={selectedStatus}>
+			<select class="filter-select" bind:value={selectedStatus} aria-label="Filter by status" data-filter="status">
 				{#each statusOptions as option}
 					<option value={option.value}>{option.label}</option>
 				{/each}
@@ -209,6 +210,7 @@
 		</div>
 
 		<!-- Contacts Table -->
+		<div data-component="contacts-table" data-state={isLoading ? 'loading' : error ? 'error' : filteredContacts.length === 0 ? 'empty' : 'loaded'} data-count={filteredContacts.length}>
 		{#if isLoading}
 			<div class="loading-state">
 				<div class="spinner"></div>
@@ -231,7 +233,7 @@
 			</div>
 		{:else}
 			<div class="table-container">
-				<table class="data-table">
+				<table class="data-table" data-entity="contacts" aria-label="Contacts List">
 					<thead>
 						<tr>
 							<th>Contact</th>
@@ -243,8 +245,8 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filteredContacts as contact}
-							<tr>
+						{#each filteredContacts as contact (contact.id || contact.email)}
+							<tr data-contact-id={contact.id} data-contact-email={contact.email} data-contact-status={contact.status || 'lead'}>
 								<td>
 									<div class="contact-cell">
 										<div class="contact-avatar">
@@ -283,6 +285,7 @@
 				</table>
 			</div>
 		{/if}
+		</div>
 	{:else if activeTab === 'deals'}
 		<div class="empty-state">
 			<IconTrendingUp size={48} />
@@ -291,9 +294,9 @@
 		</div>
 	{:else if activeTab === 'pipeline'}
 		<!-- Pipeline View -->
-		<div class="pipeline-view">
-			{#each pipelineStages as stage}
-				<div class="pipeline-column">
+		<div class="pipeline-view" data-component="pipeline" aria-label="Sales Pipeline">
+			{#each pipelineStages as stage (stage.id)}
+				<div class="pipeline-column" data-stage-id={stage.id} data-stage-name={stage.name}>
 					<div class="pipeline-header" style="border-color: {stage.color}">
 						<span class="pipeline-name">{stage.name}</span>
 						<span class="pipeline-count">0</span>
@@ -305,6 +308,7 @@
 			{/each}
 		</div>
 	{/if}
+	</section>
 </div>
 
 <style>
