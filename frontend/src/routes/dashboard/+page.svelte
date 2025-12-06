@@ -162,41 +162,42 @@
      TEMPLATE
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<!-- Dashboard Header -->
-<div class="wc-content-sction">
-	<div class="dashb_headr">
-		<div class="dashb_headr-left">
-			<h1 class="dashb_pg-titl">My Account</h1>
-			{#if stats}
-				<div class="dashb_stats">
-					<span class="stat-item">
-						<strong>{stats.totalActive}</strong> active
+<!-- WordPress: .dashboard__header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">Member Dashboard</h1>
+		{#if stats}
+			<div class="dashboard__stats">
+				<span class="stat-item">
+					<strong>{stats.totalActive}</strong> active memberships
+				</span>
+				{#if hasExpiringMemberships}
+					<span class="stat-item stat-warning">
+						<IconAlertTriangle size={14} />
+						<strong>{stats.expiringCount}</strong> expiring soon
 					</span>
-					{#if hasExpiringMemberships}
-						<span class="stat-item stat-warning">
-							<IconAlertTriangle size={14} />
-							<strong>{stats.expiringCount}</strong> expiring soon
-						</span>
-					{/if}
-				</div>
-			{/if}
-		</div>
-		<div class="dashb_headr-right">
-			<button
-				class="refresh-btn"
-				onclick={refreshMemberships}
-				disabled={isRefreshing}
-				aria-label="Refresh memberships"
-			>
-				<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
-			</button>
-			<a href="/live-trading-rooms" class="btn btn-xs btn-link start-here-btn">
-				Start Here
+				{/if}
+			</div>
+		{/if}
+	</div>
+	<div class="dashboard__header-right">
+		<button
+			class="refresh-btn"
+			onclick={refreshMemberships}
+			disabled={isRefreshing}
+			aria-label="Refresh memberships"
+		>
+			<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
+		</button>
+		<!-- WordPress: Trading Room Dropdown Button -->
+		<div class="trading-room-dropdown">
+			<a href="/live-trading-rooms" class="btn btn-orange trading-room-btn">
+				Trading Room
 				<IconArrowRight size={16} />
 			</a>
 		</div>
 	</div>
-</div>
+</header>
 
 <!-- Dashboard Content -->
 <div class="wc-accontent-inner">
@@ -356,24 +357,14 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTENT SECTION
+	   DASHBOARD HEADER (WordPress: .dashboard__header)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.wc-content-sction {
-		width: 100%;
-		margin: auto;
-		padding: 20px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashb_headr {
+	.dashboard__header {
 		background-color: #fff;
 		border-bottom: 1px solid var(--border-color);
 		max-width: 100%;
-		padding: 20px;
+		padding: 20px 30px;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
@@ -381,26 +372,23 @@
 		gap: 16px;
 	}
 
-	.dashb_headr-left,
-	.dashb_headr-right {
+	.dashboard__header-left,
+	.dashboard__header-right {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 	}
 
-	.dashb_headr-right {
-		flex-direction: row-reverse;
-	}
-
-	.dashb_pg-titl {
+	.dashboard__page-title {
 		color: var(--text-color);
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
 		margin: 0;
+		line-height: 1.2;
 	}
 
-	.dashb_stats {
+	.dashboard__stats {
 		display: flex;
 		gap: 16px;
 		margin-left: 16px;
@@ -424,6 +412,31 @@
 
 	.stat-warning strong {
 		color: var(--warning-color);
+	}
+
+	/* Trading Room Dropdown (WordPress Reference) */
+	.trading-room-dropdown {
+		position: relative;
+	}
+
+	.trading-room-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: #f99e31;
+		color: #fff;
+		font-weight: 700;
+		font-size: 14px;
+		padding: 12px 20px;
+		border-radius: 5px;
+		text-decoration: none;
+		transition: var(--transition);
+		border: none;
+		cursor: pointer;
+	}
+
+	.trading-room-btn:hover {
+		background: #f88b09;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -458,30 +471,6 @@
 		animation: spin 1s linear infinite;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   START HERE BUTTON
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.start-here-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 14px;
-		line-height: 18px;
-		padding: 8px 14px;
-		font-weight: 600;
-		color: var(--primary-color);
-		background: var(--bg-light);
-		border-color: transparent;
-		text-decoration: none;
-		border-radius: 5px;
-		transition: var(--transition);
-	}
-
-	.start-here-btn:hover {
-		color: var(--primary-color);
-		background: #e7e7e7;
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   INNER CONTENT
@@ -705,21 +694,26 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media screen and (max-width: 576px) {
-		.dashb_headr {
+		.dashboard__header {
 			padding: 16px;
 		}
 
-		.dashb_pg-titl {
+		.dashboard__page-title {
 			font-size: 28px;
 		}
 
-		.dashb_stats {
+		.dashboard__stats {
 			display: none;
 		}
 
 		.wc-accontent-inner {
 			margin: 12px;
 			padding: 16px;
+		}
+
+		.trading-room-btn {
+			padding: 10px 16px;
+			font-size: 13px;
 		}
 	}
 
