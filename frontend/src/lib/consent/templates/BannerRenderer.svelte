@@ -24,6 +24,7 @@
 	let { forceShow = false }: Props = $props();
 
 	// Svelte 5: Reactive state using $state() rune
+	let mounted = $state(false);
 	let visible = $state(false);
 	let closing = $state(false);
 	let isMobile = $state(false);
@@ -31,8 +32,9 @@
 	let drawerOpen = $state(false);
 
 	// Svelte 5: Derived values using $derived() rune
+	// ICT9+ Hydration-Safe: Only show after mount to prevent SSR/client mismatch
 	let template = $derived($activeTemplate);
-	let shouldShow = $derived(forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible));
+	let shouldShow = $derived(mounted && (forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible)));
 
 	// Detect device type
 	function updateDeviceType() {
@@ -42,6 +44,8 @@
 	}
 
 	onMount(() => {
+		// ICT9+ Hydration-Safe: Mark mounted first
+		mounted = true;
 		visible = true;
 		updateDeviceType();
 		window.addEventListener('resize', updateDeviceType);

@@ -1,6 +1,10 @@
 <script lang="ts">
 	/**
 	 * Root Layout - Restored with essential components
+	 * 
+	 * ICT9+ Hydration-Safe Pattern:
+	 * - Auth-dependent UI uses client-only state to prevent SSR/client mismatch
+	 * - Stores that differ between SSR and client are only read after mount
 	 */
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
@@ -24,14 +28,22 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	// Derived state from page
+	// Derived state from page (safe - page state is consistent SSR/client)
 	let pathname = $derived(page.url.pathname);
 	let isAdminArea = $derived(pathname.startsWith('/admin'));
 	let isTradingRoom = $derived(pathname.startsWith('/live-trading-rooms/') && pathname.split('/').length > 2);
 	let isEmbedArea = $derived(pathname.startsWith('/embed'));
-	let isAdmin = $derived($isAdminUser);
+	
+	// ICT9+ Hydration-Safe Pattern: 
+	// Auth state is ONLY read client-side to prevent SSR/client mismatch
+	// SSR always renders without admin toolbar, client adds it after hydration
+	let mounted = $state(false);
+	let isAdmin = $derived(mounted && $isAdminUser);
 
 	onMount(() => {
+		// Mark as mounted FIRST to enable client-only derived values
+		mounted = true;
+		
 		if (browser) {
 			registerServiceWorker();
 			initPerformanceMonitoring();
@@ -54,15 +66,21 @@
 	{@render children()}
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
-		<AdminToolbar />
+		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
+		{#if mounted}
+			<AdminToolbar />
+		{/if}
 		<NavBar />
 		<main>
 			{@render children()}
 		</main>
 		<MarketingFooter />
-		<ConsentBanner />
-		<ConsentPreferencesModal />
-		<ConsentSettingsButton position="bottom-left" />
+		<!-- ICT9+ Hydration-Safe: Only render consent components after client mount -->
+		{#if mounted}
+			<ConsentBanner />
+			<ConsentPreferencesModal />
+			<ConsentSettingsButton position="bottom-left" />
+		{/if}
 	</div>
 {/if}
 

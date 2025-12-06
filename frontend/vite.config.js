@@ -37,9 +37,15 @@ export default defineConfig({
 		port: 5174,
 		// Enable HTTP/2 for better performance
 		https: false,
-		// Optimize HMR
+		// Strict localhost binding for consistent HMR
+		host: 'localhost',
+		strictPort: true,
+		// ICT9+ HMR Configuration - explicit WebSocket settings
 		hmr: {
-			overlay: false
+			protocol: 'ws',
+			host: 'localhost',
+			port: 5174,
+			overlay: true // Enable overlay to see errors clearly
 		},
 		// Proxy API requests to Laravel backend
 		proxy: {

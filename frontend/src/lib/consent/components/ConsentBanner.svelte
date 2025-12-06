@@ -17,6 +17,7 @@
 	 */
 
 	import { fly, fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		consentStore,
@@ -34,6 +35,13 @@
 	}
 
 	let { position = 'bottom', useTemplates = true, class: className = '' }: Props = $props();
+
+	// ICT9+ Hydration-Safe: Only render after mount
+	let mounted = $state(false);
+	
+	onMount(() => {
+		mounted = true;
+	});
 
 	// Handle accept all
 	function handleAcceptAll(): void {

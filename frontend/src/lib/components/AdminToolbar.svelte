@@ -578,27 +578,15 @@
 		console.debug('[AdminToolbar] Mounting...');
 
 		try {
-			// Try to restore session if we have a session ID but no token
-			const sessionId = authStore.getSessionId();
-			let token = authStore.getToken();
-			
-			if (sessionId && !token) {
-				console.debug('[AdminToolbar] Session exists, attempting token refresh...');
-				isLoading = true;
-				try {
-					const refreshed = await authStore.refreshToken();
-					if (refreshed) {
-						token = authStore.getToken();
-						console.debug('[AdminToolbar] Token refreshed successfully');
-					}
-				} catch (error) {
-					console.debug('[AdminToolbar] Token refresh failed:', error);
-				}
-			}
+			// ICT9+ Pattern: Don't attempt token refresh in AdminToolbar
+			// Token refresh should be handled by a dedicated auth initialization service
+			// AdminToolbar only displays UI based on current auth state
+			const token = authStore.getToken();
 
-			// Load user if we have a token but no user data
+			// Only load user if we already have a valid token
 			if (token && !$userStore) {
 				console.debug('[AdminToolbar] Loading user data...');
+				isLoading = true;
 				try {
 					await getUser();
 					console.debug('[AdminToolbar] User loaded:', $userStore?.email);
@@ -606,7 +594,7 @@
 					console.error('[AdminToolbar] Failed to load user:', error);
 					errorState.hasError = true;
 					errorState.message = 'Failed to load user data';
-					authStore.clearAuth();
+					// Don't clear auth here - let the auth service handle it
 				} finally {
 					isLoading = false;
 				}

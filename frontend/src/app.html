@@ -155,9 +155,10 @@
 		<!-- Main app container -->
 		<div id="app" style="display: contents">%sveltekit.body%</div>
 
-		<!-- Service Worker Registration -->
+		<!-- Service Worker Registration (Production Only) -->
 		<script>
-			if ('serviceWorker' in navigator) {
+			// ICT9+ Pattern: Never register SW in development - it breaks Vite HMR WebSocket
+			if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.port) {
 				window.addEventListener('load', function() {
 					navigator.serviceWorker.register('/sw.js', { scope: '/' })
 						.then(function(registration) {
@@ -167,6 +168,16 @@
 							console.log('[SW] Registration failed:', error);
 						});
 				});
+			} else if (window.location.hostname === 'localhost' || window.location.port) {
+				// Unregister any existing SW in dev to prevent caching issues
+				if ('serviceWorker' in navigator) {
+					navigator.serviceWorker.getRegistrations().then(function(registrations) {
+						registrations.forEach(function(registration) {
+							registration.unregister();
+							console.log('[SW] Unregistered for dev mode');
+						});
+					});
+				}
 			}
 		</script>
 
