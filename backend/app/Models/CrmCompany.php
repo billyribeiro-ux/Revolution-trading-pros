@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * CRM Company Model (B2B account-based CRM)
@@ -42,6 +43,12 @@ use Illuminate\Database\Eloquent\Builder;
 class CrmCompany extends Model
 {
     use HasUuids, SoftDeletes;
+
+    // Cache configuration
+    private const CACHE_PREFIX = 'crm:company:';
+    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_STATS_TTL = 300; // 5 minutes for frequently changing stats
+    private const CACHE_TAG = 'crm_companies';
 
     protected $fillable = [
         'name',
@@ -110,6 +117,96 @@ class CrmCompany extends Model
         static::creating(function (self $company): void {
             $company->slug ??= str($company->name)->slug()->toString();
         });
+
+        // Cache invalidation on model events
+        static::saved(fn (self $company) => $company->clearCache());
+        static::deleted(fn (self $company) => $company->clearCache());
+    }
+
+    // =====================================================
+    // CACHE METHODS
+    // =====================================================
+
+    /**
+     * Find company by ID with caching
+     */
+    public static function findCached(string $id): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $id,
+            self::CACHE_TTL,
+            fn () => self::with(['owner', 'contacts'])->find($id)
+        );
+    }
+
+    /**
+     * Find company by slug with caching
+     */
+    public static function findBySlugCached(string $slug): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'slug:' . $slug,
+            self::CACHE_TTL,
+            fn () => self::where('slug', $slug)->first()
+        );
+    }
+
+    /**
+     * Get all companies with caching
+     */
+    public static function getAllCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'all',
+            self::CACHE_TTL,
+            fn () => self::orderBy('name')->get()
+        );
+    }
+
+    /**
+     * Get companies by industry with caching
+     */
+    public static function getByIndustryCached(string $industry): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'industry:' . $industry,
+            self::CACHE_TTL,
+            fn () => self::byIndustry($industry)->orderBy('name')->get()
+        );
+    }
+
+    /**
+     * Get company stats with short TTL caching
+     */
+    public function getStatsCached(): array
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $this->id . ':stats',
+            self::CACHE_STATS_TTL,
+            fn () => $this->getStats()
+        );
+    }
+
+    /**
+     * Clear all cache for this company
+     */
+    public function clearCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id . ':stats');
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'slug:' . $this->slug);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'all');
+        if ($this->industry) {
+            Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'industry:' . $this->industry);
+        }
+    }
+
+    /**
+     * Clear all company cache (static)
+     */
+    public static function clearAllCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->flush();
     }
 
     // Relationships

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 /**
@@ -38,6 +39,12 @@ use Carbon\Carbon;
 class RecurringCampaign extends Model
 {
     use HasUuids, SoftDeletes;
+
+    // Cache configuration
+    private const CACHE_PREFIX = 'crm:recurring:';
+    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_STATS_TTL = 300; // 5 minutes for frequently changing stats
+    private const CACHE_TAG = 'crm_recurring_campaigns';
 
     protected $fillable = [
         'title',
@@ -102,6 +109,81 @@ class RecurringCampaign extends Model
                 ],
             ];
         });
+
+        // Cache invalidation on model events
+        static::saved(fn (self $campaign) => $campaign->clearCache());
+        static::deleted(fn (self $campaign) => $campaign->clearCache());
+    }
+
+    // =====================================================
+    // CACHE METHODS
+    // =====================================================
+
+    /**
+     * Find recurring campaign by ID with caching
+     */
+    public static function findCached(string $id): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $id,
+            self::CACHE_TTL,
+            fn () => self::with(['emails', 'creator'])->find($id)
+        );
+    }
+
+    /**
+     * Get all active recurring campaigns with caching
+     */
+    public static function getActiveCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'active:all',
+            self::CACHE_TTL,
+            fn () => self::active()->with('emails')->get()
+        );
+    }
+
+    /**
+     * Get campaigns due for sending with short TTL caching
+     */
+    public static function getDueForSendingCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'due:all',
+            60, // 1 minute TTL for scheduling
+            fn () => self::dueForSending()->get()
+        );
+    }
+
+    /**
+     * Get campaign stats with short TTL caching
+     */
+    public function getStatsCached(): array
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $this->id . ':stats',
+            self::CACHE_STATS_TTL,
+            fn () => $this->getStats()
+        );
+    }
+
+    /**
+     * Clear all cache for this campaign
+     */
+    public function clearCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id . ':stats');
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'active:all');
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'due:all');
+    }
+
+    /**
+     * Clear all recurring campaign cache (static)
+     */
+    public static function clearAllCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->flush();
     }
 
     // Relationships

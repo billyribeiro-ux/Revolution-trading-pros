@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
@@ -37,6 +38,12 @@ class SmartLink extends Model
 {
     use HasUuids;
 
+    // Cache configuration
+    private const CACHE_PREFIX = 'crm:smartlink:';
+    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_STATS_TTL = 300; // 5 minutes for frequently changing stats
+    private const CACHE_TAG = 'crm_smartlinks';
+
     protected $fillable = [
         'title',
         'target_url',
@@ -64,6 +71,81 @@ class SmartLink extends Model
             $link->is_active ??= true;
             $link->actions ??= [];
         });
+
+        // Cache invalidation on model events
+        static::saved(fn (self $link) => $link->clearCache());
+        static::deleted(fn (self $link) => $link->clearCache());
+    }
+
+    // =====================================================
+    // CACHE METHODS
+    // =====================================================
+
+    /**
+     * Find smart link by ID with caching
+     */
+    public static function findCached(string $id): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $id,
+            self::CACHE_TTL,
+            fn () => self::with('creator')->find($id)
+        );
+    }
+
+    /**
+     * Find smart link by short code with caching (high traffic endpoint)
+     */
+    public static function findByShortCached(string $short): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'short:' . $short,
+            self::CACHE_TTL,
+            fn () => self::where('short', $short)->first()
+        );
+    }
+
+    /**
+     * Get all active smart links with caching
+     */
+    public static function getActiveCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'active:all',
+            self::CACHE_TTL,
+            fn () => self::active()->get()
+        );
+    }
+
+    /**
+     * Get smart link stats with short TTL caching
+     */
+    public function getStatsCached(): array
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $this->id . ':stats',
+            self::CACHE_STATS_TTL,
+            fn () => $this->getStats()
+        );
+    }
+
+    /**
+     * Clear all cache for this smart link
+     */
+    public function clearCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id . ':stats');
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'short:' . $this->short);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'active:all');
+    }
+
+    /**
+     * Clear all smart link cache (static)
+     */
+    public static function clearAllCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->flush();
     }
 
     // Relationships

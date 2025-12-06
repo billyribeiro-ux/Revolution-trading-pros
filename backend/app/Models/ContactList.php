@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Contact List Model (FluentCRM mailing lists)
@@ -23,6 +24,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ContactList extends Model
 {
     use HasUuids;
+
+    // Cache configuration
+    private const CACHE_PREFIX = 'crm:list:';
+    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_STATS_TTL = 300; // 5 minutes for frequently changing stats
+    private const CACHE_TAG = 'crm_lists';
 
     protected $fillable = [
         'title',
@@ -46,6 +53,68 @@ class ContactList extends Model
             $list->slug ??= str($list->title)->slug()->toString();
             $list->is_public ??= false;
         });
+
+        // Cache invalidation on model events
+        static::saved(fn (self $list) => $list->clearCache());
+        static::deleted(fn (self $list) => $list->clearCache());
+    }
+
+    // =====================================================
+    // CACHE METHODS
+    // =====================================================
+
+    /**
+     * Find list by ID with caching
+     */
+    public static function findCached(string $id): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $id,
+            self::CACHE_TTL,
+            fn () => self::with('creator')->find($id)
+        );
+    }
+
+    /**
+     * Get all lists with caching
+     */
+    public static function getAllCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'all',
+            self::CACHE_TTL,
+            fn () => self::orderBy('title')->get()
+        );
+    }
+
+    /**
+     * Get public lists with caching
+     */
+    public static function getPublicCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'public:all',
+            self::CACHE_TTL,
+            fn () => self::where('is_public', true)->orderBy('title')->get()
+        );
+    }
+
+    /**
+     * Clear all cache for this list
+     */
+    public function clearCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'all');
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'public:all');
+    }
+
+    /**
+     * Clear all list cache (static)
+     */
+    public static function clearAllCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->flush();
     }
 
     // Relationships

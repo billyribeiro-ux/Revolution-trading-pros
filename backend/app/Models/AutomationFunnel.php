@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Automation Funnel Model (FluentCRM Pro Automation Workflows)
@@ -35,6 +36,12 @@ use Illuminate\Database\Eloquent\Builder;
 class AutomationFunnel extends Model
 {
     use HasUuids, SoftDeletes;
+
+    // Cache configuration
+    private const CACHE_PREFIX = 'crm:funnel:';
+    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_STATS_TTL = 300; // 5 minutes for frequently changing stats
+    private const CACHE_TAG = 'crm_funnels';
 
     protected $fillable = [
         'title',
@@ -88,6 +95,83 @@ class AutomationFunnel extends Model
             $funnel->trigger_settings ??= [];
             $funnel->conditions ??= [];
         });
+
+        // Cache invalidation on model events
+        static::saved(fn (self $funnel) => $funnel->clearCache());
+        static::deleted(fn (self $funnel) => $funnel->clearCache());
+    }
+
+    // =====================================================
+    // CACHE METHODS
+    // =====================================================
+
+    /**
+     * Find funnel by ID with caching
+     */
+    public static function findCached(string $id): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $id,
+            self::CACHE_TTL,
+            fn () => self::with(['actions', 'creator'])->find($id)
+        );
+    }
+
+    /**
+     * Get all active funnels with caching
+     */
+    public static function getActiveCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'active:all',
+            self::CACHE_TTL,
+            fn () => self::active()->with('actions')->get()
+        );
+    }
+
+    /**
+     * Get funnels by trigger type with caching
+     */
+    public static function getByTriggerCached(string $triggerType): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'trigger:' . $triggerType,
+            self::CACHE_TTL,
+            fn () => self::active()->byTrigger($triggerType)->with('actions')->get()
+        );
+    }
+
+    /**
+     * Get funnel stats with short TTL caching
+     */
+    public function getStatsCached(): array
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $this->id . ':stats',
+            self::CACHE_STATS_TTL,
+            fn () => $this->getStats()
+        );
+    }
+
+    /**
+     * Clear all cache for this funnel
+     */
+    public function clearCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id . ':stats');
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'active:all');
+        if ($this->trigger_type) {
+            Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'trigger:' . $this->trigger_type);
+        }
+    }
+
+    /**
+     * Clear all funnel cache (static)
+     */
+    public static function clearAllCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->flush();
     }
 
     // Relationships

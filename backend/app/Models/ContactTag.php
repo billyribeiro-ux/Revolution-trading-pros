@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Contact Tag Model (FluentCRM contact tags)
@@ -23,6 +24,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ContactTag extends Model
 {
     use HasUuids;
+
+    // Cache configuration
+    private const CACHE_PREFIX = 'crm:tag:';
+    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_TAG = 'crm_tags';
 
     protected $fillable = [
         'title',
@@ -45,6 +51,68 @@ class ContactTag extends Model
             $tag->slug ??= str($tag->title)->slug()->toString();
             $tag->color ??= '#6366F1';
         });
+
+        // Cache invalidation on model events
+        static::saved(fn (self $tag) => $tag->clearCache());
+        static::deleted(fn (self $tag) => $tag->clearCache());
+    }
+
+    // =====================================================
+    // CACHE METHODS
+    // =====================================================
+
+    /**
+     * Find tag by ID with caching
+     */
+    public static function findCached(string $id): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . $id,
+            self::CACHE_TTL,
+            fn () => self::with('creator')->find($id)
+        );
+    }
+
+    /**
+     * Find tag by slug with caching
+     */
+    public static function findBySlugCached(string $slug): ?self
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'slug:' . $slug,
+            self::CACHE_TTL,
+            fn () => self::where('slug', $slug)->first()
+        );
+    }
+
+    /**
+     * Get all tags with caching
+     */
+    public static function getAllCached(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::tags([self::CACHE_TAG])->remember(
+            self::CACHE_PREFIX . 'all',
+            self::CACHE_TTL,
+            fn () => self::orderBy('title')->get()
+        );
+    }
+
+    /**
+     * Clear all cache for this tag
+     */
+    public function clearCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . $this->id);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'slug:' . $this->slug);
+        Cache::tags([self::CACHE_TAG])->forget(self::CACHE_PREFIX . 'all');
+    }
+
+    /**
+     * Clear all tag cache (static)
+     */
+    public static function clearAllCache(): void
+    {
+        Cache::tags([self::CACHE_TAG])->flush();
     }
 
     // Relationships
