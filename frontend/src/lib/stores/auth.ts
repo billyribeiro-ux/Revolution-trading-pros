@@ -354,6 +354,7 @@ function createAuthStore() {
 						credentials: 'include', // Include httpOnly cookies
 						headers: {
 							'Content-Type': 'application/json',
+							'Accept': 'application/json',
 							'X-Session-ID': safeLocalStorage('get', SESSION_ID_KEY) || ''
 						}
 					});

@@ -53,6 +53,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip Vite HMR and development files (prevents caching errors in dev mode)
+  if (url.pathname.startsWith('/src/') || 
+      url.pathname.startsWith('/@') || 
+      url.pathname.startsWith('/node_modules/') ||
+      url.pathname.includes('.svelte') ||
+      url.pathname.includes('__vite') ||
+      url.pathname.includes('?t=')) {
+    return;
+  }
+
   // Cache-first for static assets
   if (request.destination === 'image' || 
       request.destination === 'font' ||
