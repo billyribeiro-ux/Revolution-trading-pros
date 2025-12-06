@@ -120,14 +120,14 @@ export const load: PageLoad = async ({ url, fetch }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PRELOAD FUNCTION
+// INTERNAL PRELOAD HELPER
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Preload function for link hover prefetching
- * SvelteKit calls this when user hovers over dashboard links
+ * Internal preload helper for link hover prefetching
+ * Prefixed with underscore to avoid SvelteKit export validation
  */
-export const preload = async () => {
+export const _preloadDashboard = async () => {
 	if (!browser) return;
 
 	try {

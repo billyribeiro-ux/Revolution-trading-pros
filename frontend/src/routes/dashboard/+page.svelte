@@ -1,17 +1,27 @@
 <script lang="ts">
 	/**
-	 * User Dashboard Page - Svelte 5 / SvelteKit Implementation
+	 * User Dashboard Page - Simpler Trading Exact Match
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Matches WordPress WooCommerce My Account dashboard structure.
+	 * 100% match to WordPress Simpler Trading structure:
+	 * <div class="dashboard__content">
+	 *   <section class="dashboard__content-section">
+	 *     <h2 class="section-title">Memberships</h2>
+	 *     <div class="membership-cards row">
+	 *       <div class="col-sm-6 col-xl-4">
+	 *         <article class="membership-card membership-card--options">...</article>
+	 *       </div>
+	 *     </div>
+	 *   </section>
+	 * </div>
+	 *
 	 * Features:
 	 * - Svelte 5 runes ($state, $derived, $effect)
-	 * - SvelteKit data streaming
-	 * - Optimistic UI updates
+	 * - Bootstrap grid system (row, col-sm-6, col-xl-4)
+	 * - WordPress section structure
 	 * - Skeleton loading states
-	 * - Service-specific icons
 	 *
-	 * @version 3.0.0 (Svelte 5 / December 2025)
+	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { page } from '$app/stores';
@@ -199,25 +209,30 @@
 	</div>
 </header>
 
-<!-- Dashboard Content -->
-<div class="wc-accontent-inner">
+<!-- Dashboard Content - WordPress: .dashboard__content -->
+<div class="dashboard__content">
 	{#if isLoading}
-		<!-- Skeleton Loading State -->
-		<div class="cselt-row">
-			<h3 class="custom-head-0 skeleton-text">Trading Rooms</h3>
-			{#each Array(3) as _, i}
-				<div class="col-sm4">
-					<MembershipCard skeleton />
-				</div>
-			{/each}
-			<hr class="custom-hr-0" />
-			<h3 class="custom-head-1 skeleton-text">Live Alerts</h3>
-			{#each Array(2) as _, i}
-				<div class="col-sm4">
-					<MembershipCard skeleton />
-				</div>
-			{/each}
-		</div>
+		<!-- Skeleton Loading State - WordPress Exact Structure -->
+		<section class="dashboard__content-section">
+			<h2 class="section-title skeleton-text">Trading Rooms</h2>
+			<div class="membership-cards row">
+				{#each Array(3) as _, i}
+					<div class="col-sm-6 col-xl-4">
+						<MembershipCard skeleton slug="loading-{i}" name="Loading..." />
+					</div>
+				{/each}
+			</div>
+		</section>
+		<section class="dashboard__content-section">
+			<h2 class="section-title skeleton-text">Live Alerts</h2>
+			<div class="membership-cards row">
+				{#each Array(2) as _, i}
+					<div class="col-sm-6 col-xl-4">
+						<MembershipCard skeleton slug="loading-alert-{i}" name="Loading..." />
+					</div>
+				{/each}
+			</div>
+		</section>
 	{:else if error}
 		<!-- Error State -->
 		<div class="error-state" role="alert">
@@ -230,93 +245,113 @@
 			</button>
 		</div>
 	{:else if hasMemberships}
-		<!-- Memberships Grid - Matches WordPress cselt-row structure -->
-		<div class="cselt-row">
-			<!-- Trading Rooms Section -->
-			{#if tradingRooms.length > 0}
-				<h3 class="custom-head-0">Trading Rooms</h3>
-				{#each tradingRooms as room (room.id)}
-					<div class="col-sm4">
-						<MembershipCard
-							id={room.id}
-							name={room.name}
-							type={room.type}
-							slug={room.slug}
-							icon={room.icon}
-							status={room.status}
-							daysUntilExpiry={room.daysUntilExpiry}
-							accessUrl={room.accessUrl}
-							onclick={() => handleMembershipClick(room)}
-						/>
-					</div>
-				{/each}
-				<hr class="custom-hr-0" />
-			{/if}
+		<!-- WordPress Exact: Memberships organized by section -->
 
-			<!-- Alert Services Section -->
-			{#if alertServices.length > 0}
-				<h3 class="custom-head-1">Live Alerts</h3>
-				{#each alertServices as alert (alert.id)}
-					<div class="col-sm4">
-						<MembershipCard
-							id={alert.id}
-							name={alert.name}
-							type={alert.type}
-							slug={alert.slug}
-							icon={alert.icon}
-							status={alert.status}
-							daysUntilExpiry={alert.daysUntilExpiry}
-							accessUrl={alert.accessUrl}
-							onclick={() => handleMembershipClick(alert)}
-						/>
-					</div>
-				{/each}
-				<hr class="custom-hr-1" />
-			{/if}
+		<!-- Trading Rooms Section -->
+		{#if tradingRooms.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="membership-cards row">
+					{#each tradingRooms as room (room.id)}
+						<div class="col-sm-6 col-xl-4">
+							<MembershipCard
+								id={room.id}
+								name={room.name}
+								type={room.type}
+								slug={room.slug}
+								icon={room.icon}
+								dashboardUrl="/dashboard/{room.slug}"
+								roomUrl={room.accessUrl}
+								status={room.status}
+								daysUntilExpiry={room.daysUntilExpiry}
+								onclick={() => handleMembershipClick(room)}
+							/>
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
 
-			<!-- Courses Section -->
-			{#if courses.length > 0}
-				<h3 class="custom-head-2">Courses</h3>
-				{#each courses as course (course.id)}
-					<div class="col-sm4">
-						<MembershipCard
-							id={course.id}
-							name={course.name}
-							type={course.type}
-							slug={course.slug}
-							icon={course.icon}
-							status={course.status}
-							daysUntilExpiry={course.daysUntilExpiry}
-							accessUrl={course.accessUrl}
-							onclick={() => handleMembershipClick(course)}
-						/>
-					</div>
-				{/each}
-				<hr class="custom-hr-2" />
-			{/if}
+		<!-- Alert Services Section -->
+		{#if alertServices.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Alert Services</h2>
+				<div class="membership-cards row">
+					{#each alertServices as alert (alert.id)}
+						<div class="col-sm-6 col-xl-4">
+							<MembershipCard
+								id={alert.id}
+								name={alert.name}
+								type="alert"
+								slug={alert.slug}
+								icon={alert.icon}
+								dashboardUrl="/dashboard/{alert.slug}"
+								roomUrl={alert.accessUrl}
+								roomLabel="Alerts"
+								status={alert.status}
+								daysUntilExpiry={alert.daysUntilExpiry}
+								onclick={() => handleMembershipClick(alert)}
+							/>
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
 
-			<!-- Indicators Section -->
-			{#if indicators.length > 0}
-				<h3 class="custom-head-3">My Indicators</h3>
-				<div id="my-indicators-cards">
+		<!-- Courses Section -->
+		{#if courses.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Courses</h2>
+				<div class="membership-cards row">
+					{#each courses as course (course.id)}
+						<div class="col-sm-6 col-xl-4">
+							<MembershipCard
+								id={course.id}
+								name={course.name}
+								type="course"
+								slug={course.slug}
+								icon={course.icon}
+								dashboardUrl="/dashboard/{course.slug}"
+								roomUrl={course.accessUrl}
+								roomLabel="Course"
+								status={course.status}
+								daysUntilExpiry={course.daysUntilExpiry}
+								onclick={() => handleMembershipClick(course)}
+							/>
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
+
+		<!-- Indicators Section -->
+		{#if indicators.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">My Indicators</h2>
+				<div class="membership-cards row">
 					{#each indicators as indicator (indicator.id)}
-						<div class="col-sm4">
+						<div class="col-sm-6 col-xl-4">
 							<MembershipCard
 								id={indicator.id}
 								name={indicator.name}
-								type={indicator.type}
+								type="indicator"
 								slug={indicator.slug}
 								icon={indicator.icon}
+								dashboardUrl="/dashboard/{indicator.slug}"
+								roomUrl={indicator.accessUrl}
+								roomLabel="Indicator"
 								status={indicator.status}
 								daysUntilExpiry={indicator.daysUntilExpiry}
-								accessUrl={indicator.accessUrl}
 								onclick={() => handleMembershipClick(indicator)}
 							/>
 						</div>
 					{/each}
 				</div>
-			{/if}
-		</div>
+			</section>
+		{/if}
+
+		<!-- Weekly Watchlist Section (WordPress: special type with no Trading Room link) -->
+		<!-- This would be rendered separately if user has weekly watchlist -->
 	{:else}
 		<!-- Empty State -->
 		<div class="empty-state">
@@ -473,83 +508,73 @@
 
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   INNER CONTENT
+	   DASHBOARD CONTENT - WordPress: .dashboard__content
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.wc-accontent-inner {
-		padding: 4% 2%;
+	.dashboard__content {
+		padding: 30px;
 		background: #fff;
-		border-radius: 5px;
-		box-shadow: var(--card-shadow);
-		position: relative;
-		margin: 20px;
 		min-height: 400px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP GRID
+	   CONTENT SECTIONS - WordPress: .dashboard__content-section
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.cselt-row {
-		display: flex;
-		flex-flow: row wrap;
-		align-items: flex-end;
-		column-gap: 30px;
-		row-gap: 40px;
+	.dashboard__content-section {
+		margin-bottom: 40px;
 	}
 
-	.cselt-row .col-sm4 {
-		flex: 0 0 auto;
-		width: 100%;
-		max-width: 320px;
-	}
-
-	#my-indicators-cards {
-		display: flex;
-		flex-flow: row wrap;
-		gap: 30px;
-		width: 100%;
-	}
-
-	#my-indicators-cards .col-sm4 {
-		flex: 0 0 auto;
-		width: 100%;
-		max-width: 320px;
+	.dashboard__content-section:last-child {
+		margin-bottom: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECTION HEADERS
+	   SECTION TITLE - WordPress: .section-title
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.custom-head-0,
-	.custom-head-1,
-	.custom-head-2,
-	.custom-head-3 {
+	.section-title {
 		color: var(--text-color);
 		font-weight: 700;
-		font-size: 20px;
-		font-family: 'Open Sans', sans-serif;
-		width: 100%;
-		margin: 0;
-	}
-
-	.custom-head-1,
-	.custom-head-2,
-	.custom-head-3 {
-		margin-top: 30px;
+		font-size: 24px;
+		font-family: 'Open Sans Condensed', sans-serif;
+		margin: 0 0 20px 0;
+		padding-bottom: 10px;
+		border-bottom: 2px solid #0984ae;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECTION DIVIDERS
+	   MEMBERSHIP CARDS GRID - WordPress: .membership-cards.row (Bootstrap)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.custom-hr-0,
-	.custom-hr-1,
-	.custom-hr-2 {
-		border: none;
-		border-top: 1px solid var(--border-color);
+	.membership-cards {
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+	}
+
+	.membership-cards > .col-sm-6 {
+		position: relative;
 		width: 100%;
-		margin: 20px 0;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-bottom: 30px;
+	}
+
+	/* Bootstrap-style column widths */
+	@media (min-width: 576px) {
+		.membership-cards > .col-sm-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.membership-cards > .col-xl-4 {
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -706,34 +731,34 @@
 			display: none;
 		}
 
-		.wc-accontent-inner {
-			margin: 12px;
+		.dashboard__content {
 			padding: 16px;
+		}
+
+		.section-title {
+			font-size: 20px;
 		}
 
 		.trading-room-btn {
 			padding: 10px 16px;
 			font-size: 13px;
 		}
-	}
 
-	@media screen and (min-width: 468px) {
-		.cselt-row .col-sm4,
-		#my-indicators-cards .col-sm4 {
-			width: 48%;
+		.membership-cards {
+			margin-right: -8px;
+			margin-left: -8px;
+		}
+
+		.membership-cards > .col-sm-6 {
+			padding-right: 8px;
+			padding-left: 8px;
+			margin-bottom: 16px;
 		}
 	}
 
 	@media screen and (min-width: 768px) {
-		.cselt-row .col-sm4,
-		#my-indicators-cards .col-sm4 {
-			width: 31%;
-		}
-	}
-
-	@media screen and (min-width: 1280px) {
-		.dashb_headr {
-			padding: 30px;
+		.dashboard__content {
+			padding: 30px 40px;
 		}
 	}
 
@@ -745,6 +770,12 @@
 		.skeleton-text,
 		:global(.refresh-btn .spin) {
 			animation: none;
+		}
+
+		.dashboard__header,
+		.trading-room-btn,
+		.refresh-btn {
+			transition: none;
 		}
 	}
 </style>
