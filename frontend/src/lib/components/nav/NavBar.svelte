@@ -94,7 +94,7 @@
 </script>
 
 <script lang="ts">
-	import { onMount, tick, createEventDispatcher, type Snippet } from 'svelte';
+	import { onMount, tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import {
@@ -186,6 +186,13 @@
 		announcement?: string;
 		/** Disable transitions (for testing) */
 		disableTransitions?: boolean;
+		/** Svelte 5 callback props for events */
+		onnavclick?: (detail: { href: string; label: string }) => void;
+		ondropdownopen?: (detail: { id: string }) => void;
+		ondropdownclose?: (detail: { id: string }) => void;
+		onmobileopen?: () => void;
+		onmobileclose?: () => void;
+		onlogout?: () => void;
 	}
 
 	const {
@@ -199,14 +206,41 @@
 		logo,
 		actions,
 		announcement = '',
-		disableTransitions = false
+		disableTransitions = false,
+		onnavclick,
+		ondropdownopen,
+		ondropdownclose,
+		onmobileopen,
+		onmobileclose,
+		onlogout
 	}: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// EVENT DISPATCHER
+	// EVENT HELPERS (Svelte 5 callback pattern)
 	// ═══════════════════════════════════════════════════════════════════════════
 	
-	const dispatch = createEventDispatcher<NavBarEvents>();
+	function dispatch(event: keyof NavBarEvents, detail?: NavBarEvents[keyof NavBarEvents]) {
+		switch (event) {
+			case 'nav:click':
+				onnavclick?.(detail as { href: string; label: string });
+				break;
+			case 'nav:dropdown-open':
+				ondropdownopen?.(detail as { id: string });
+				break;
+			case 'nav:dropdown-close':
+				ondropdownclose?.(detail as { id: string });
+				break;
+			case 'nav:mobile-open':
+				onmobileopen?.();
+				break;
+			case 'nav:mobile-close':
+				onmobileclose?.();
+				break;
+			case 'nav:logout':
+				onlogout?.();
+				break;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE MACHINE
@@ -328,7 +362,11 @@
 
 		previousFocusRef = document.activeElement as HTMLElement;
 		mobileMenuState = 'opening';
+		
+		// ICT11+ Fix: Prevent layout shift by preserving scrollbar space
+		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 		document.body.style.overflow = 'hidden';
+		document.body.style.paddingRight = `${scrollbarWidth}px`;
 		
 		// Set inert on background content
 		if (navbarRef) navbarRef.inert = true;
@@ -357,6 +395,7 @@
 
 		mobileMenuState = 'idle';
 		document.body.style.overflow = '';
+		document.body.style.paddingRight = '';
 		
 		// Remove inert from background
 		if (navbarRef) navbarRef.inert = false;
@@ -792,11 +831,13 @@
 				aria-controls="mobile-nav"
 				type="button"
 			>
-				{#if isMobileMenuOpen}
-					<IconX size={24} aria-hidden="true" />
-				{:else}
+				<!-- ICT11+ Fix: Use CSS transform instead of DOM swap to prevent layout shift -->
+				<span class="hamburger-icon" class:open={isMobileMenuOpen}>
 					<IconMenu2 size={24} aria-hidden="true" />
-				{/if}
+				</span>
+				<span class="hamburger-icon hamburger-close" class:open={isMobileMenuOpen}>
+					<IconX size={24} aria-hidden="true" />
+				</span>
 			</button>
 		</div>
 	</div>
@@ -984,14 +1025,14 @@
 	   DESIGN TOKENS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar {
-		--nav-height: 74px;
+		--nav-height: 104px;
 		--nav-padding-inline: 1.5rem;
 		--nav-primary: #0E6AC4;
 		--nav-primary-dark: #0a4d8a;
 		--nav-primary-light: rgba(14, 106, 196, 0.1);
 		--nav-primary-glow: rgba(14, 106, 196, 0.4);
-		--nav-bg: rgba(10, 22, 40, 0.85);
-		--nav-bg-scrolled: rgba(10, 22, 40, 0.95);
+		--nav-bg: #151F31;
+		--nav-bg-scrolled: #151F31;
 		--nav-border: rgba(255, 255, 255, 0.1);
 		--nav-text: #ffffff;
 		--nav-text-secondary: rgba(255, 255, 255, 0.9);
@@ -1129,10 +1170,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		padding: 0.625rem 1rem;
+		padding: 0.5rem 0.875rem;
 		color: var(--nav-text);
-		font-size: 0.9375rem;
-		font-weight: 700;
+		font-size: 0.8125rem;
+		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
@@ -1147,8 +1188,8 @@
 
 	@media (min-width: 1280px) {
 		.nav-link {
-			padding: 0.75rem 1.25rem;
-			font-size: 1rem;
+			padding: 0.625rem 1rem;
+			font-size: 0.875rem;
 		}
 	}
 
@@ -1189,11 +1230,11 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.625rem 1rem;
+		gap: 0.25rem;
+		padding: 0.5rem 0.875rem;
 		color: var(--nav-text);
-		font-size: 0.9375rem;
-		font-weight: 700;
+		font-size: 0.8125rem;
+		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		white-space: nowrap;
@@ -1207,9 +1248,9 @@
 
 	@media (min-width: 1280px) {
 		.dropdown-trigger {
-			gap: 0.5rem;
-			padding: 0.75rem 1.25rem;
-			font-size: 1rem;
+			gap: 0.375rem;
+			padding: 0.625rem 1rem;
+			font-size: 0.875rem;
 		}
 	}
 
@@ -1491,6 +1532,7 @@
 	}
 
 	.hamburger {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1512,6 +1554,30 @@
 	.hamburger:focus-visible {
 		outline: 3px solid var(--nav-primary);
 		outline-offset: 2px;
+	}
+
+	/* ICT11+ Fix: CSS-based icon transition prevents layout shift */
+	.hamburger-icon {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.hamburger-icon.open {
+		opacity: 0;
+		transform: rotate(-90deg) scale(0.8);
+	}
+
+	.hamburger-close {
+		opacity: 0;
+		transform: rotate(90deg) scale(0.8);
+	}
+
+	.hamburger-close.open {
+		opacity: 1;
+		transform: rotate(0) scale(1);
 	}
 
 	@media (min-width: 1024px) {
@@ -1953,7 +2019,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1023px) {
 		.navbar {
-			--nav-height: 64px;
+			--nav-height: 84px;
 			--nav-padding-inline: 1rem;
 		}
 
@@ -1965,7 +2031,7 @@
 
 	@media (max-width: 767px) {
 		.navbar {
-			--nav-height: 60px;
+			--nav-height: 74px;
 		}
 
 		.logo {

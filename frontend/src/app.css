@@ -191,6 +191,8 @@
 	/* Smooth scrolling with reduced motion support */
 	html {
 		scroll-behavior: smooth;
+		/* ICT11+ Fix: Prevent layout shift when scrollbar appears/disappears */
+		scrollbar-gutter: stable;
 		/* Optimize font rendering */
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
