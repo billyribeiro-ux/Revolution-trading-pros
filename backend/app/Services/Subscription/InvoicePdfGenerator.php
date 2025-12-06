@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Subscription;
 
 use App\Models\Invoice;
+use App\Models\InvoiceSettings;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -14,33 +15,24 @@ use Barryvdh\DomPDF\Facade\Pdf;
  * Invoice PDF Generator (ICT9+ Enterprise Grade)
  *
  * Generates professional PDF invoices:
- * - Company branding
+ * - Visual customization via admin UI
+ * - Logo upload support
+ * - Color customization
  * - Tax details
  * - Line items
  * - Payment status
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @level ICT9+ Principal Engineer Grade
  */
 class InvoicePdfGenerator
 {
     /**
-     * Company information for invoices
+     * Get invoice settings (cached)
      */
-    private array $company;
-
-    public function __construct()
+    private function getSettings(): InvoiceSettings
     {
-        $this->company = [
-            'name' => config('app.name', 'Revolution Trading Pros'),
-            'address' => config('subscription.company_address', ''),
-            'city' => config('subscription.company_city', ''),
-            'country' => config('subscription.company_country', 'US'),
-            'vat_id' => config('subscription.business_vat_id', ''),
-            'email' => config('subscription.billing_email', config('mail.from.address')),
-            'phone' => config('subscription.company_phone', ''),
-            'logo' => config('subscription.invoice_logo', ''),
-        ];
+        return InvoiceSettings::get();
     }
 
     /**
@@ -50,19 +42,20 @@ class InvoicePdfGenerator
     {
         $user = $invoice->user;
         $subscription = $invoice->subscription;
+        $settings = $this->getSettings();
 
         $data = [
             'invoice' => $invoice,
             'user' => $user,
             'subscription' => $subscription,
-            'company' => $this->company,
+            'settings' => $settings,
             'items' => $this->getLineItems($invoice),
             'tax' => $this->getTaxDetails($invoice),
             'totals' => $this->calculateTotals($invoice),
             'payment' => $this->getPaymentDetails($invoice),
         ];
 
-        $pdf = Pdf::loadView('invoices.pdf', $data);
+        $pdf = Pdf::loadView('invoices.pdf-customizable', $data);
 
         // Configure PDF
         $pdf->setPaper('a4', 'portrait');
@@ -105,22 +98,133 @@ class InvoicePdfGenerator
     {
         $user = $invoice->user;
         $subscription = $invoice->subscription;
+        $settings = $this->getSettings();
 
         $data = [
             'invoice' => $invoice,
             'user' => $user,
             'subscription' => $subscription,
-            'company' => $this->company,
+            'settings' => $settings,
             'items' => $this->getLineItems($invoice),
             'tax' => $this->getTaxDetails($invoice),
             'totals' => $this->calculateTotals($invoice),
             'payment' => $this->getPaymentDetails($invoice),
         ];
 
-        $pdf = Pdf::loadView('invoices.pdf', $data);
+        $pdf = Pdf::loadView('invoices.pdf-customizable', $data);
         $filename = $this->generateFilename($invoice);
 
         return $pdf->stream($filename);
+    }
+
+    /**
+     * Stream preview PDF (for admin customization)
+     */
+    public function streamPreview(object $mockInvoice)
+    {
+        $settings = $this->getSettings();
+
+        $data = [
+            'invoice' => $mockInvoice,
+            'user' => $this->createMockUser(),
+            'settings' => $settings,
+            'items' => $this->getMockLineItems(),
+            'tax' => $this->getMockTax(),
+            'totals' => $this->getMockTotals(),
+            'payment' => $this->getMockPayment(),
+            'isPreview' => true,
+        ];
+
+        $pdf = Pdf::loadView('invoices.pdf-customizable', $data);
+
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+        ]);
+
+        return $pdf->stream('invoice-preview.pdf');
+    }
+
+    /**
+     * Create mock user for preview
+     */
+    private function createMockUser(): object
+    {
+        return (object) [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'company_name' => 'Acme Corporation',
+            'billing_address' => '123 Main Street',
+            'billing_city' => 'San Francisco',
+            'billing_state' => 'CA',
+            'billing_zip' => '94102',
+            'billing_country' => 'US',
+            'tax_id' => null,
+        ];
+    }
+
+    /**
+     * Get mock line items
+     */
+    private function getMockLineItems(): array
+    {
+        return [
+            [
+                'description' => 'Professional Plan - Monthly Subscription',
+                'quantity' => 1,
+                'unit_price' => 9900,
+                'total' => 9900,
+            ],
+        ];
+    }
+
+    /**
+     * Get mock tax
+     */
+    private function getMockTax(): array
+    {
+        return [
+            'rate' => 0,
+            'amount' => 0,
+            'type' => 'tax',
+            'description' => '',
+            'reverse_charge' => false,
+        ];
+    }
+
+    /**
+     * Get mock totals
+     */
+    private function getMockTotals(): array
+    {
+        return [
+            'subtotal' => 9900,
+            'tax' => 0,
+            'discount' => 0,
+            'total' => 9900,
+            'currency' => 'USD',
+            'formatted' => [
+                'subtotal' => '$99.00',
+                'tax' => '$0.00',
+                'discount' => '$0.00',
+                'total' => '$99.00',
+            ],
+        ];
+    }
+
+    /**
+     * Get mock payment
+     */
+    private function getMockPayment(): array
+    {
+        return [
+            'status' => 'paid',
+            'paid_at' => now(),
+            'payment_method' => 'card',
+            'card_last_four' => '4242',
+            'card_brand' => 'visa',
+        ];
     }
 
     /**
