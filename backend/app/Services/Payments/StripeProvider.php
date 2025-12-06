@@ -50,11 +50,11 @@ class StripeProvider implements PaymentProviderContract
     {
         $this->testMode = config('services.stripe.test_mode', true);
         $this->secretKey = $this->testMode
-            ? config('services.stripe.test_secret')
-            : config('services.stripe.secret');
+            ? config('services.stripe.test_secret', '')
+            : config('services.stripe.secret', '');
         $this->publishableKey = $this->testMode
-            ? config('services.stripe.test_publishable')
-            : config('services.stripe.publishable');
+            ? config('services.stripe.test_publishable', '')
+            : config('services.stripe.publishable', '');
         $this->webhookSecret = config('services.stripe.webhook_secret', '');
     }
 

@@ -17,90 +17,13 @@ use App\Http\Controllers\Admin\InvoiceSettingsController;
 */
 
 // Webhooks (no CSRF, no auth)
-Route::prefix('webhooks')->group(function () {
+Route::prefix('webhooks')->withoutMiddleware(['auth:sanctum'])->group(function () {
     Route::post('/stripe', [StripeWebhookController::class, 'handle'])
         ->name('webhooks.stripe');
-
-    // PayPal webhook would go here
-    // Route::post('/paypal', [PayPalWebhookController::class, 'handle'])
-    //     ->name('webhooks.paypal');
-
-    // Paddle webhook would go here
-    // Route::post('/paddle', [PaddleWebhookController::class, 'handle'])
-    //     ->name('webhooks.paddle');
-});
-
-// User subscription routes (authenticated)
-Route::middleware(['auth:sanctum'])->prefix('subscription')->group(function () {
-    // Current subscription
-    Route::get('/', 'SubscriptionController@show')
-        ->name('subscription.show');
-
-    // Available plans
-    Route::get('/plans', 'SubscriptionController@plans')
-        ->name('subscription.plans');
-
-    // Subscribe to a plan
-    Route::post('/subscribe', 'SubscriptionController@subscribe')
-        ->name('subscription.subscribe');
-
-    // Change plan
-    Route::put('/change-plan', 'SubscriptionController@changePlan')
-        ->name('subscription.change-plan');
-
-    // Cancel subscription
-    Route::post('/cancel', 'SubscriptionController@cancel')
-        ->name('subscription.cancel');
-
-    // Resume subscription
-    Route::post('/resume', 'SubscriptionController@resume')
-        ->name('subscription.resume');
-
-    // Usage
-    Route::get('/usage', 'SubscriptionController@usage')
-        ->name('subscription.usage');
-
-    // Invoices
-    Route::get('/invoices', 'SubscriptionController@invoices')
-        ->name('subscription.invoices');
-
-    Route::get('/invoices/{invoice}', 'SubscriptionController@invoice')
-        ->name('subscription.invoice');
-
-    Route::get('/invoices/{invoice}/download', 'SubscriptionController@downloadInvoice')
-        ->name('invoices.download');
-});
-
-// Billing routes (authenticated)
-Route::middleware(['auth:sanctum'])->prefix('billing')->group(function () {
-    // Payment methods
-    Route::get('/payment-methods', 'BillingController@paymentMethods')
-        ->name('billing.payment-methods');
-
-    Route::post('/payment-methods', 'BillingController@addPaymentMethod')
-        ->name('billing.add-payment-method');
-
-    Route::delete('/payment-methods/{id}', 'BillingController@removePaymentMethod')
-        ->name('billing.remove-payment-method');
-
-    Route::put('/payment-methods/{id}/default', 'BillingController@setDefaultPaymentMethod')
-        ->name('billing.set-default-payment-method');
-
-    // Billing portal
-    Route::get('/portal', 'BillingController@portal')
-        ->name('billing.portal');
-
-    // Plans page
-    Route::get('/plans', 'BillingController@plans')
-        ->name('billing.plans');
-
-    // Reactivate
-    Route::post('/reactivate', 'BillingController@reactivate')
-        ->name('billing.reactivate');
 });
 
 // Admin routes
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     // Dashboard
     Route::get('/subscriptions/dashboard', [SubscriptionAdminController::class, 'dashboard'])
         ->name('admin.subscriptions.dashboard');

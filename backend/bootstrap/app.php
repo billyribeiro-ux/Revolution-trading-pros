@@ -24,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
             // Load health check routes (L7+ Enterprise)
             Route::middleware('api')
                 ->group(base_path('routes/health.php'));
+
+            // Load subscription routes (ICT9+ Enterprise)
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/subscription.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {

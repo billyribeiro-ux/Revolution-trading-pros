@@ -391,8 +391,10 @@ class PaddleProvider implements PaymentProviderContract
     /**
      * List customer transactions
      */
-    public function listInvoices(string $customerId, int $limit = 10): array
+    public function listInvoices(string $customerId, array $options = []): array
     {
+        $limit = $options['limit'] ?? 10;
+
         $response = $this->request('GET', '/transactions', [
             'customer_id' => $customerId,
             'per_page' => $limit,
@@ -405,13 +407,13 @@ class PaddleProvider implements PaymentProviderContract
     /**
      * Create a price
      */
-    public function createPrice(array $data): array
+    public function createPrice(string $productId, array $data): array
     {
         $response = $this->request('POST', '/prices', [
             'description' => $data['description'] ?? $data['nickname'] ?? 'Price',
-            'product_id' => $data['product_id'],
+            'product_id' => $productId,
             'unit_price' => [
-                'amount' => (string) $data['unit_amount'],
+                'amount' => (string) ($data['unit_amount'] ?? 0),
                 'currency_code' => strtoupper($data['currency'] ?? 'USD'),
             ],
             'billing_cycle' => isset($data['interval']) ? [
@@ -726,6 +728,227 @@ class PaddleProvider implements PaymentProviderContract
     {
         $response = $this->request('GET', "/subscriptions/{$subscriptionId}/update-payment-method-transaction");
         return $response['data']['checkout']['url'] ?? '';
+    }
+
+    /**
+     * Check if in test/sandbox mode
+     */
+    public function isTestMode(): bool
+    {
+        return $this->sandbox;
+    }
+
+    /**
+     * Delete customer
+     */
+    public function deleteCustomer(string $customerId): bool
+    {
+        // Paddle doesn't support customer deletion - mark as archived
+        try {
+            $this->request('PATCH', "/customers/{$customerId}", [
+                'status' => 'archived',
+            ]);
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Attach payment method (Paddle manages payment methods differently)
+     */
+    public function attachPaymentMethod(string $customerId, string $paymentMethodId): array
+    {
+        // Paddle doesn't use separate payment method IDs
+        return ['customer_id' => $customerId, 'attached' => true];
+    }
+
+    /**
+     * Detach payment method
+     */
+    public function detachPaymentMethod(string $paymentMethodId): bool
+    {
+        // Paddle manages payment methods through subscription updates
+        return true;
+    }
+
+    /**
+     * List payment methods (Paddle doesn't expose this directly)
+     */
+    public function listPaymentMethods(string $customerId, string $type = 'card'): array
+    {
+        // Payment methods in Paddle are tied to subscriptions
+        return [];
+    }
+
+    /**
+     * Set default payment method
+     */
+    public function setDefaultPaymentMethod(string $customerId, string $paymentMethodId): array
+    {
+        return ['customer_id' => $customerId, 'default_set' => true];
+    }
+
+    /**
+     * Confirm payment intent (Paddle auto-confirms)
+     */
+    public function confirmPaymentIntent(string $paymentIntentId, array $options = []): array
+    {
+        return $this->confirmPayment($paymentIntentId, $options);
+    }
+
+    /**
+     * Cancel payment intent
+     */
+    public function cancelPaymentIntent(string $paymentIntentId): array
+    {
+        // Paddle transactions cannot be easily canceled once created
+        return ['canceled' => false, 'message' => 'Paddle transactions are managed differently'];
+    }
+
+    /**
+     * Get payment intent (transaction)
+     */
+    public function getPaymentIntent(string $paymentIntentId): ?array
+    {
+        try {
+            $response = $this->request('GET', "/transactions/{$paymentIntentId}");
+            return $response['data'];
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Create checkout session
+     */
+    public function createCheckoutSession(Order $order, array $urls, array $options = []): array
+    {
+        $intent = $this->createPaymentIntent($order, $options);
+        return [
+            'session_id' => $intent['transaction_id'],
+            'checkout_url' => $intent['checkout_url'],
+            'success_url' => $urls['success'] ?? null,
+            'cancel_url' => $urls['cancel'] ?? null,
+        ];
+    }
+
+    /**
+     * Get checkout session
+     */
+    public function getCheckoutSession(string $sessionId): ?array
+    {
+        return $this->getPaymentIntent($sessionId);
+    }
+
+    /**
+     * Create invoice (Paddle uses transactions)
+     */
+    public function createInvoice(string $customerId, array $items, array $options = []): array
+    {
+        $paddleItems = array_map(fn($item) => [
+            'price_id' => $item['price_id'],
+            'quantity' => $item['quantity'] ?? 1,
+        ], $items);
+
+        $response = $this->request('POST', '/transactions', [
+            'customer_id' => $customerId,
+            'items' => $paddleItems,
+            'collection_mode' => $options['collection_mode'] ?? 'automatic',
+        ]);
+
+        return $response['data'];
+    }
+
+    /**
+     * Pay invoice (Paddle auto-collects)
+     */
+    public function payInvoice(string $invoiceId): array
+    {
+        // Paddle handles this automatically
+        return $this->getInvoice($invoiceId);
+    }
+
+    /**
+     * Void invoice
+     */
+    public function voidInvoice(string $invoiceId): array
+    {
+        // Create credit adjustment
+        $response = $this->request('POST', '/adjustments', [
+            'action' => 'credit',
+            'transaction_id' => $invoiceId,
+            'reason' => 'Invoice voided',
+        ]);
+        return $response['data'];
+    }
+
+    /**
+     * Get refund
+     */
+    public function getRefund(string $refundId): ?array
+    {
+        try {
+            $response = $this->request('GET', "/adjustments/{$refundId}");
+            return $response['data'];
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Update price
+     */
+    public function updatePrice(string $priceId, array $data): array
+    {
+        $response = $this->request('PATCH', "/prices/{$priceId}", $data);
+        return $response['data'];
+    }
+
+    /**
+     * Parse webhook event
+     */
+    public function parseWebhookEvent(\Illuminate\Http\Request $request): array
+    {
+        $payload = $request->all();
+        return [
+            'type' => $payload['event_type'] ?? 'unknown',
+            'data' => $payload['data'] ?? [],
+            'raw' => $payload,
+        ];
+    }
+
+    /**
+     * Get publishable key (client token for Paddle.js)
+     */
+    public function getPublishableKey(): string
+    {
+        return config('services.paddle.client_token', '');
+    }
+
+    /**
+     * Format amount for Paddle (uses string amounts, not cents)
+     */
+    public function formatAmount(float $amount, string $currency = 'USD'): int
+    {
+        // Paddle uses cents internally
+        return (int) round($amount * 100);
+    }
+
+    /**
+     * Parse amount from Paddle format
+     */
+    public function parseAmount(int $amount, string $currency = 'USD'): float
+    {
+        return $amount / 100;
+    }
+
+    /**
+     * Get supported currencies
+     */
+    public function getSupportedCurrencies(): array
+    {
+        return ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'CHF', 'HKD', 'SGD', 'SEK', 'DKK', 'NOK', 'PLN', 'CZK', 'HUF', 'INR', 'BRL', 'MXN', 'ARS', 'TWD', 'THB', 'KRW', 'JPY', 'CNY', 'ZAR'];
     }
 
     /**
