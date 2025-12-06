@@ -58,9 +58,8 @@
 	<TestimonialsSection />
 </LazySection>
 
-<LazySection rootMargin="300px">
-	<LatestBlogsSection posts={data.posts} />
-</LazySection>
+<!-- Blog section renders immediately for SEO -->
+<LatestBlogsSection posts={data.posts} />
 
 <LazySection rootMargin="300px">
 	<CTASection />

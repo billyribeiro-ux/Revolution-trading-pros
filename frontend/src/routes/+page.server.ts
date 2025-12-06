@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		const response = await Promise.race([
 			fetch(`${API_BASE_URL}${API_ENDPOINTS.posts.list}?per_page=6`),
 			new Promise<Response>((_, reject) => 
-				setTimeout(() => reject(new Error('timeout')), 2000)
+				setTimeout(() => reject(new Error('timeout')), 3000)
 			)
 		]);
 

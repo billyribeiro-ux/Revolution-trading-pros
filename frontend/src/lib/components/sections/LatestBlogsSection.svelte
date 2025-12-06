@@ -22,7 +22,8 @@
 
     // --- Animation Logic ---
     let containerRef: HTMLElement;
-    let isVisible = $state(false);
+    // Default to true for SSR - content should be visible immediately
+    let isVisible = $state(true);
     let mouse = $state({ x: 0, y: 0 });
 
     const handleMouseMove = (e: MouseEvent) => {
