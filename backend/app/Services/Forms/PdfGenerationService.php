@@ -307,6 +307,7 @@ class PdfGenerationService
         // Get direction for RTL support
         $direction = $template->text_direction ?? 'ltr';
         $dirAttribute = $direction === 'rtl' ? 'dir="rtl"' : '';
+        $textAlign = $direction === 'rtl' ? 'right' : 'left';
 
         // Get font settings
         $fontFamily = $template->font_family ?? $styles['font_family'] ?? 'DejaVu Sans';
@@ -416,7 +417,7 @@ HTML;
         }
         th, td {
             padding: 8px 12px;
-            text-align: {$direction === 'rtl' ? 'right' : 'left'};
+            text-align: {$textAlign};
             border-bottom: 1px {$borderStyle} {$borderColor};
         }
         th {
