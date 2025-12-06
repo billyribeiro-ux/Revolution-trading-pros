@@ -99,6 +99,9 @@ Route::post('/popups/{popup}/impression', [PopupController::class, 'impression']
 Route::post('/popups/{popup}/conversion', [PopupController::class, 'conversion']);
 Route::post('/popups/events', [PopupController::class, 'events']);
 
+// Public consent configuration (for frontend banner)
+Route::get('/consent/config', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'publicSettings']);
+
 // Email verification routes
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])
     ->middleware(['signed'])->name('verification.verify');
@@ -396,6 +399,32 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::put('/settings', [SettingsController::class, 'update']);
     Route::get('/settings/{key}', [SettingsController::class, 'show']);
     Route::put('/settings/{key}', [SettingsController::class, 'updateSingle']);
+
+    // ========================================
+    // CONSENT MANAGEMENT SYSTEM
+    // Complete CMS for cookie consent (Consent Magic Pro equivalent)
+    // ========================================
+    Route::prefix('consent')->group(function () {
+        // Settings
+        Route::get('/settings', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'index']);
+        Route::get('/settings/{key}', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'show']);
+        Route::put('/settings/{key}', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'update']);
+        Route::post('/settings/bulk', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'bulkUpdate']);
+        Route::post('/settings/reset', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'reset']);
+        Route::post('/initialize', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'initialize']);
+
+        // Banner Templates
+        Route::get('/templates', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'templates']);
+        Route::get('/templates/active', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'activeTemplate']);
+        Route::post('/templates', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'createTemplate']);
+        Route::get('/templates/{id}', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'showTemplate']);
+        Route::put('/templates/{id}', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'updateTemplate']);
+        Route::delete('/templates/{id}', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'deleteTemplate']);
+        Route::post('/templates/{id}/activate', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'activateTemplate']);
+        Route::post('/templates/{id}/duplicate', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'duplicateTemplate']);
+        Route::get('/templates/{id}/export', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'exportTemplate']);
+        Route::post('/templates/import', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'importTemplate']);
+    });
 
     // API Connections Management
     Route::prefix('connections')->group(function () {

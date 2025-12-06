@@ -117,6 +117,20 @@
 		</div>
 	</header>
 
+	<!-- Quick Actions -->
+	<div class="quick-actions">
+		<a href="/admin/consent/settings" class="action-card">
+			<span class="action-icon">⚙️</span>
+			<span class="action-label">Settings</span>
+			<span class="action-desc">Configure consent system</span>
+		</a>
+		<a href="/admin/consent/templates" class="action-card">
+			<span class="action-icon">🎨</span>
+			<span class="action-label">Templates</span>
+			<span class="action-desc">Customize banner design</span>
+		</a>
+	</div>
+
 	<!-- Tabs -->
 	<nav class="tabs">
 		<button
@@ -477,6 +491,46 @@
 
 	.btn:hover {
 		transform: translateY(-1px);
+	}
+
+	.quick-actions {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.action-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 1rem 1.5rem;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 10px;
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.2s;
+	}
+
+	.action-card:hover {
+		background: rgba(14, 165, 233, 0.1);
+		border-color: rgba(14, 165, 233, 0.3);
+		transform: translateY(-2px);
+	}
+
+	.action-icon {
+		font-size: 1.5rem;
+	}
+
+	.action-label {
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: #f1f5f9;
+	}
+
+	.action-desc {
+		font-size: 0.75rem;
+		color: #64748b;
 	}
 
 	.tabs {
