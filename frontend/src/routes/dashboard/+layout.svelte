@@ -185,6 +185,16 @@
 		</div>
 	</div>
 
+	<!-- Mobile Overlay (WordPress: .csdashboard__overlay) -->
+	{#if isSidebarOpen}
+		<button
+			class="csdashboard__overlay"
+			onclick={closeSidebar}
+			aria-label="Close navigation"
+			tabindex="-1"
+		></button>
+	{/if}
+
 	<!-- Mobile Toggle Button -->
 	<MobileToggle
 		bind:isOpen={isSidebarOpen}
@@ -357,6 +367,30 @@
 
 	:global(.html--dashboard-menu-open body) {
 		overflow: hidden;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MOBILE OVERLAY (WordPress Reference: .csdashboard__overlay)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.csdashboard__overlay {
+		background-color: rgba(0, 0, 0, 0.65);
+		bottom: 0;
+		left: 0;
+		position: fixed;
+		right: 0;
+		top: 0;
+		z-index: 100009;
+		border: none;
+		cursor: pointer;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		transition: opacity 0.3s ease-in-out;
+	}
+
+	.csdashboard__overlay:focus {
+		outline: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

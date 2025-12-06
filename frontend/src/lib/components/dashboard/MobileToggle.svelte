@@ -4,15 +4,15 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Fixed mobile navigation toggle button matching WordPress reference.
+	 * Uses animated hamburger icon with 3 spans (WordPress style).
+	 *
 	 * Features:
-	 * - Animated hamburger icon
+	 * - Animated hamburger to X transition
 	 * - Accessible (ARIA attributes)
 	 * - Svelte 5 runes
 	 *
 	 * @version 3.0.0 (Svelte 5 / December 2025)
 	 */
-
-	import { IconMenu2, IconX } from '@tabler/icons-svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -58,12 +58,13 @@
 	aria-controls="dashboard-sidebar"
 	type="button"
 >
+	<!-- WordPress-style animated hamburger icon with 3 spans -->
 	<span class="dashboard__toggle-button" aria-hidden="true">
-		{#if isOpen}
-			<IconX size={24} />
-		{:else}
-			<IconMenu2 size={24} />
-		{/if}
+		<span class="dashboard__toggle-button-icon">
+			<span></span>
+			<span></span>
+			<span></span>
+		</span>
 	</span>
 </button>
 
@@ -76,13 +77,12 @@
 		--toggle-bg: #0984ae;
 		--toggle-bg-open: #076787;
 		--toggle-size: 50px;
-		--toggle-icon-size: 24px;
 		--toggle-shadow: 0 4px 14px rgba(9, 132, 174, 0.4);
-		--toggle-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		--toggle-transition: all 0.15s ease-in-out;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   TOGGLE BUTTON
+	   TOGGLE BUTTON (WordPress Reference)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.csdashboard__toggle {
@@ -90,18 +90,23 @@
 		position: fixed;
 		bottom: 20px;
 		left: 20px;
-		z-index: 1001;
+		z-index: 100010;
 		width: var(--toggle-size);
 		height: var(--toggle-size);
-		border-radius: 50%;
+		line-height: var(--toggle-size);
+		border-radius: 10px;
 		background: var(--toggle-bg);
-		border: none;
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		cursor: pointer;
 		box-shadow: var(--toggle-shadow);
 		transition: var(--toggle-transition);
 		padding: 0;
 		align-items: center;
 		justify-content: center;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		overflow: hidden;
 	}
 
 	.csdashboard__toggle.position-right {
@@ -111,11 +116,11 @@
 
 	.csdashboard__toggle:hover {
 		background: var(--toggle-bg-open);
-		transform: scale(1.05);
 	}
 
-	.csdashboard__toggle:active {
-		transform: scale(0.95);
+	.csdashboard__toggle:focus,
+	.csdashboard__toggle:hover {
+		outline: none;
 	}
 
 	.csdashboard__toggle:focus-visible {
@@ -125,15 +130,10 @@
 
 	.csdashboard__toggle.is-open {
 		background: var(--toggle-bg-open);
-		transform: rotate(180deg);
-	}
-
-	.csdashboard__toggle.is-open:hover {
-		transform: rotate(180deg) scale(1.05);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   TOGGLE ICON
+	   TOGGLE BUTTON CONTAINER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__toggle-button {
@@ -143,11 +143,68 @@
 		width: 100%;
 		height: 100%;
 		color: white;
-		transition: transform 0.3s ease;
+		position: relative;
 	}
 
-	.is-open .dashboard__toggle-button {
-		transform: rotate(-180deg);
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HAMBURGER ICON (WordPress 3-span pattern)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__toggle-button-icon {
+		height: var(--toggle-size);
+		position: relative;
+		width: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.dashboard__toggle-button-icon span {
+		background-color: #fff;
+		border-radius: 0;
+		display: block;
+		height: 2px;
+		left: 0;
+		opacity: 1;
+		position: absolute;
+		transform: rotate(0);
+		transform-origin: left center;
+		transition: var(--toggle-transition);
+		width: 20px;
+	}
+
+	.dashboard__toggle-button-icon span:first-child {
+		top: calc(50% - 6px);
+	}
+
+	.dashboard__toggle-button-icon span:nth-child(2) {
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.dashboard__toggle-button-icon span:nth-child(3) {
+		top: calc(50% + 4px);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   OPEN STATE - X Animation (WordPress Reference)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.is-open .dashboard__toggle-button-icon span:first-child {
+		transform: rotate(45deg);
+		top: calc(50% - 1px);
+		left: 3px;
+	}
+
+	.is-open .dashboard__toggle-button-icon span:nth-child(2) {
+		opacity: 0;
+		width: 0;
+	}
+
+	.is-open .dashboard__toggle-button-icon span:nth-child(3) {
+		transform: rotate(-45deg);
+		top: calc(50% - 1px);
+		left: 3px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -177,16 +234,8 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.csdashboard__toggle,
-		.dashboard__toggle-button {
+		.dashboard__toggle-button-icon span {
 			transition: none;
-		}
-
-		.csdashboard__toggle.is-open {
-			transform: none;
-		}
-
-		.is-open .dashboard__toggle-button {
-			transform: none;
 		}
 	}
 </style>
