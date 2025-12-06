@@ -125,6 +125,11 @@ docker-compose.override.yml
 coverage/
 .phpunit.result.cache
 
+# Playwright test results
+frontend/test-results/
+frontend/playwright-report/
+frontend/playwright/.cache/
+
 # Laravel-specific sensitive files
 backend/storage/oauth-*.key
 backend/.scribe/
