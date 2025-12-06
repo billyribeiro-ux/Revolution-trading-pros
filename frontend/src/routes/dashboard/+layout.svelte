@@ -1,17 +1,29 @@
 <script lang="ts">
 	/**
-	 * Dashboard Layout
-	 * Wraps all dashboard routes with the sidebar navigation
-	 * Matches WordPress WooCommerce My Account structure
+	 * Dashboard Layout - Svelte 5 / SvelteKit Implementation
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Wraps all dashboard routes with:
+	 * - Sidebar navigation with mobile support
+	 * - Authentication guard
+	 * - User memberships loading with caching
+	 * - Svelte 5 runes
+	 *
+	 * @version 3.0.0 (Svelte 5 / December 2025)
 	 */
-	import { onMount } from 'svelte';
+
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
+	import MobileToggle from '$lib/components/dashboard/MobileToggle.svelte';
 	import type { Snippet } from 'svelte';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPES & PROPS
+	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		children: Snippet;
@@ -19,117 +31,197 @@
 
 	let { children }: Props = $props();
 
-	// State
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE (Svelte 5 Runes)
+	// ═══════════════════════════════════════════════════════════════════════════
+
 	let memberships = $state<UserMembership[]>([]);
 	let isLoading = $state(true);
 	let isSidebarOpen = $state(false);
 	let isSidebarCollapsed = $state(false);
+	let error = $state<string | null>(null);
 
-	// Load memberships on mount
-	onMount(async () => {
-		// Check authentication
-		if (!$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=' + encodeURIComponent($page.url.pathname), { replaceState: true });
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const userName = $derived($user?.name || $user?.email?.split('@')[0] || 'My Account');
+	const userAvatar = $derived($user?.avatar || '');
+	const currentPath = $derived($page.url.pathname);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EFFECTS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Authentication guard and data loading
+	$effect(() => {
+		// Skip during SSR
+		if (!browser) return;
+
+		// Wait for auth initialization
+		if ($authStore.isInitializing) return;
+
+		// Redirect to login if not authenticated
+		if (!$isAuthenticated) {
+			const redirectUrl = encodeURIComponent($page.url.pathname + $page.url.search);
+			goto(`/login?redirect=${redirectUrl}`, { replaceState: true });
 			return;
 		}
+
+		// Load memberships
+		loadMemberships();
+	});
+
+	// Close sidebar on route change
+	$effect(() => {
+		if (browser && isSidebarOpen && currentPath) {
+			closeSidebar();
+		}
+	});
+
+	// Handle body scroll lock
+	$effect(() => {
+		if (!browser) return;
+
+		if (isSidebarOpen) {
+			document.documentElement.classList.add('html--dashboard-menu-open');
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.documentElement.classList.remove('html--dashboard-menu-open');
+			document.body.style.overflow = '';
+		}
+
+		return () => {
+			document.documentElement.classList.remove('html--dashboard-menu-open');
+			document.body.style.overflow = '';
+		};
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function loadMemberships(): Promise<void> {
+		if (!$isAuthenticated) return;
+
+		isLoading = true;
+		error = null;
 
 		try {
 			const data = await getUserMemberships();
 			memberships = data.memberships;
-		} catch (error) {
-			console.error('Failed to load memberships:', error);
+		} catch (e) {
+			console.error('Failed to load memberships:', e);
+			error = e instanceof Error ? e.message : 'Failed to load memberships';
 		} finally {
 			isLoading = false;
 		}
-	});
-
-	// Toggle mobile sidebar
-	function toggleSidebar() {
-		isSidebarOpen = !isSidebarOpen;
-		if (browser) {
-			document.documentElement.classList.toggle('html--dashboard-menu-open', isSidebarOpen);
-		}
 	}
 
-	// Close sidebar when route changes
-	$effect(() => {
-		if ($page.url.pathname && isSidebarOpen) {
-			isSidebarOpen = false;
-			if (browser) {
-				document.documentElement.classList.remove('html--dashboard-menu-open');
-			}
-		}
-	});
+	function toggleSidebar(): void {
+		isSidebarOpen = !isSidebarOpen;
+	}
+
+	function closeSidebar(): void {
+		isSidebarOpen = false;
+	}
+
+	function handleSidebarCollapseToggle(): void {
+		isSidebarCollapsed = !isSidebarCollapsed;
+	}
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HEAD
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
 	<title>{$page.data?.title || 'Dashboard'} | Revolution Trading Pros</title>
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     TEMPLATE
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if $isAuthenticated || $authStore.isInitializing}
 	<div class="woocommerce-account woocommerce-page logged-in">
 		<div class="woocommerce">
 			<!-- Sidebar Navigation -->
-			<nav
-				class="woocommerce-MyAccount-navigation dashboard-sidebar"
-				class:is-open={isSidebarOpen}
-			>
-				<DashboardSidebar
-					{memberships}
-					isCollapsed={isSidebarCollapsed}
-				/>
-			</nav>
+			<DashboardSidebar
+				{memberships}
+				bind:isCollapsed={isSidebarCollapsed}
+				bind:isMobileOpen={isSidebarOpen}
+				onToggleCollapse={handleSidebarCollapseToggle}
+				onCloseMobile={closeSidebar}
+				{userAvatar}
+				{userName}
+			/>
 
 			<!-- Main Content Area -->
-			<div class="woocommerce-MyAccount-content">
+			<main
+				class="woocommerce-MyAccount-content"
+				class:sidebar-collapsed={isSidebarCollapsed}
+				role="main"
+				aria-label="Dashboard content"
+			>
 				{#if isLoading}
-					<div class="dashboard-loading">
+					<div class="dashboard-loading" aria-busy="true" aria-label="Loading dashboard">
 						<div class="loading-spinner"></div>
-						<p>Loading...</p>
+						<p>Loading your dashboard...</p>
+					</div>
+				{:else if error}
+					<div class="dashboard-error" role="alert">
+						<div class="error-icon">!</div>
+						<p class="error-message">{error}</p>
+						<button class="retry-btn" onclick={loadMemberships}>
+							Try Again
+						</button>
 					</div>
 				{:else}
 					{@render children()}
 				{/if}
-			</div>
+			</main>
 		</div>
 	</div>
 
-	<!-- Mobile Dashboard Toggle -->
-	<div class="csdashboard__toggle">
-		<button
-			type="button"
-			class="dashboard__toggle-button"
-			onclick={toggleSidebar}
-			aria-label="Toggle dashboard menu"
-			aria-expanded={isSidebarOpen}
-		>
-			<span class="dashboard__toggle-button-icon">
-				<span></span>
-				<span></span>
-				<span></span>
-			</span>
-			<span class="framework__toggle-button-label">Menu</span>
-		</button>
-	</div>
-
-	<!-- Overlay for mobile -->
-	<button
-		class="csdashboard__overlay"
-		class:is-visible={isSidebarOpen}
-		onclick={toggleSidebar}
-		aria-label="Close menu"
-	></button>
+	<!-- Mobile Toggle Button -->
+	<MobileToggle
+		bind:isOpen={isSidebarOpen}
+		onToggle={toggleSidebar}
+		position="left"
+	/>
 {:else}
-	<div class="dashboard-loading">
+	<div class="dashboard-loading" aria-busy="true">
+		<div class="loading-spinner"></div>
 		<p>Redirecting to login...</p>
 	</div>
 {/if}
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
 <style>
-	/* WooCommerce Account Structure */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CSS CUSTOM PROPERTIES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	:root {
+		--dashboard-bg: #f4f4f4;
+		--dashboard-content-min-height: calc(100vh - 80px);
+		--dashboard-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		--loading-color: #0984ae;
+		--error-color: #ef4444;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MAIN LAYOUT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.woocommerce-account {
 		min-height: 100vh;
-		background: #f4f4f4;
+		background: var(--dashboard-bg);
 	}
 
 	.woocommerce-account .woocommerce {
@@ -138,29 +230,27 @@
 		width: 100%;
 	}
 
-	/* Sidebar Navigation */
-	.woocommerce-MyAccount-navigation {
-		margin-top: 0;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MAIN CONTENT
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.woocommerce-MyAccount-navigation.dashboard-sidebar {
-		display: flex;
-		flex: 0 0 auto;
-		flex-flow: row;
-		background-color: #0f2d41;
-		min-height: calc(100vh - 80px);
-		transition: all 0.3s ease-in-out;
-	}
-
-	/* Main Content Area */
 	.woocommerce-MyAccount-content {
+		flex: 1;
 		width: 100%;
-		background: #f4f4f4;
+		background: var(--dashboard-bg);
 		position: relative;
-		min-height: calc(100vh - 80px);
+		min-height: var(--dashboard-content-min-height);
+		transition: var(--dashboard-transition);
 	}
 
-	/* Loading State */
+	.woocommerce-MyAccount-content.sidebar-collapsed {
+		/* Adjust content when sidebar is collapsed */
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOADING STATE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard-loading {
 		display: flex;
 		flex-direction: column;
@@ -168,158 +258,116 @@
 		justify-content: center;
 		min-height: 400px;
 		color: #666;
+		gap: 16px;
 	}
 
 	.loading-spinner {
-		width: 40px;
-		height: 40px;
+		width: 44px;
+		height: 44px;
 		border: 3px solid #e5e7eb;
-		border-top-color: #0984ae;
+		border-top-color: var(--loading-color);
 		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin-bottom: 16px;
+		animation: spin 0.8s linear infinite;
 	}
 
 	@keyframes spin {
 		to { transform: rotate(360deg); }
 	}
 
-	/* Mobile Dashboard Toggle */
-	.csdashboard__toggle {
-		background-color: #0d2532;
-		bottom: 0;
-		height: 50px;
-		left: 0;
-		line-height: 50px;
-		padding: 0;
-		position: fixed;
-		right: 0;
-		z-index: 100010;
-		display: none;
+	.dashboard-loading p {
+		font-size: 14px;
+		color: #6b7280;
+		margin: 0;
 	}
 
-	.dashboard__toggle-button {
-		appearance: none;
-		background: none;
-		color: #fff;
-		height: 50px;
-		overflow: hidden;
-		padding: 0 10px 0 50px;
-		position: relative;
-		border-radius: 10px;
-		border: 1px solid #fff;
-		cursor: pointer;
-		margin: 0 auto;
-		display: block;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ERROR STATE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard-error {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 400px;
+		gap: 16px;
+		padding: 24px;
+		text-align: center;
 	}
 
-	.dashboard__toggle-button-icon {
-		height: 50px;
-		left: 20px;
-		position: absolute;
-		top: 40%;
-		margin-top: -7px;
-		width: 50px;
+	.error-icon {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: #fef2f2;
+		color: var(--error-color);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 24px;
+		font-weight: 700;
 	}
 
-	.dashboard__toggle-button-icon span {
-		background-color: #fff;
-		border-radius: 0;
-		display: block;
-		height: 2px;
-		left: 0;
-		opacity: 1;
-		position: absolute;
-		transform: rotate(0);
-		transform-origin: left center;
-		transition: all 0.15s ease-in-out;
-		width: 20px;
+	.error-message {
+		color: #374151;
+		font-size: 14px;
+		margin: 0;
+		max-width: 300px;
 	}
 
-	.dashboard__toggle-button-icon span:first-child {
-		top: 0;
-	}
-
-	.dashboard__toggle-button-icon span:nth-child(2) {
-		top: 6px;
-	}
-
-	.dashboard__toggle-button-icon span:nth-child(3) {
-		top: 12px;
-	}
-
-	.framework__toggle-button-label {
-		font-size: 12px;
-		position: relative;
-		text-transform: uppercase;
-		top: 0;
-	}
-
-	/* Overlay */
-	.csdashboard__overlay {
-		background-color: rgba(0, 0, 0, 0.65);
-		bottom: 0;
-		left: 0;
-		opacity: 0;
-		position: fixed;
-		right: 0;
-		top: 0;
-		transition: all 0.3s ease-in-out;
-		visibility: hidden;
-		z-index: 100009;
+	.retry-btn {
+		background: var(--loading-color);
+		color: white;
 		border: none;
+		padding: 10px 24px;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: 500;
 		cursor: pointer;
+		transition: background 0.2s ease;
 	}
 
-	.csdashboard__overlay.is-visible {
-		opacity: 1;
-		visibility: visible;
+	.retry-btn:hover {
+		background: #076787;
 	}
 
-	/* Responsive */
+	.retry-btn:focus-visible {
+		outline: 2px solid var(--loading-color);
+		outline-offset: 2px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media screen and (max-width: 980px) {
-		.csdashboard__toggle {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		.woocommerce-MyAccount-navigation.dashboard-sidebar {
-			width: 280px;
-			bottom: 50px;
-			left: 0;
-			opacity: 0;
-			overflow-x: hidden;
-			overflow-y: auto;
-			position: fixed;
-			top: 0;
-			visibility: hidden;
-			z-index: 1000011;
-		}
-
-		.woocommerce-MyAccount-navigation.dashboard-sidebar.is-open {
-			opacity: 1;
-			visibility: visible;
-		}
-
 		.woocommerce-MyAccount-content {
 			width: 100%;
-			padding-bottom: 60px;
+			padding-bottom: 70px; /* Space for mobile toggle */
 		}
 	}
 
-	/* Global styles for dashboard menu open state */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   GLOBAL STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	:global(.html--dashboard-menu-open) {
 		overflow: hidden;
 	}
 
-	:global(.html--dashboard-menu-open .csdashboard__overlay) {
-		opacity: 1;
-		visibility: visible;
+	:global(.html--dashboard-menu-open body) {
+		overflow: hidden;
 	}
 
-	:global(.html--dashboard-menu-open .woocommerce-MyAccount-navigation.dashboard-sidebar) {
-		opacity: 1;
-		visibility: visible;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   REDUCED MOTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.woocommerce-MyAccount-content,
+		.loading-spinner {
+			transition: none;
+			animation: none;
+		}
 	}
 </style>
