@@ -77,10 +77,10 @@
 
 		// Content
 		title: string;
-		description: string;
-		accept_btn_text: string;
-		reject_btn_text: string;
-		settings_btn_text: string;
+		message_text: string;
+		accept_btn_label: string;
+		reject_btn_label: string;
+		settings_btn_label: string;
 		privacy_link_text: string;
 		privacy_link_url: string;
 
@@ -147,11 +147,11 @@
 		animation_type: 'slide',
 		animation_duration: 300,
 		title: 'We value your privacy',
-		description:
+		message_text:
 			'We use cookies and similar technologies to enhance your experience, analyze site traffic, and for marketing purposes.',
-		accept_btn_text: 'Accept All',
-		reject_btn_text: 'Reject All',
-		settings_btn_text: 'Manage Preferences',
+		accept_btn_label: 'Accept All',
+		reject_btn_label: 'Reject All',
+		settings_btn_label: 'Manage Preferences',
 		privacy_link_text: 'Privacy Policy',
 		privacy_link_url: '/privacy',
 		show_reject_btn: true,
@@ -547,22 +547,22 @@
 
 				<div class="control-group">
 					<label class="control-label">Description</label>
-					<textarea class="textarea" bind:value={config.description} rows="3"></textarea>
+					<textarea class="textarea" bind:value={config.message_text} rows="3"></textarea>
 				</div>
 
 				<div class="control-group">
 					<label class="control-label">Accept Button Text</label>
-					<input type="text" class="input" bind:value={config.accept_btn_text} />
+					<input type="text" class="input" bind:value={config.accept_btn_label} />
 				</div>
 
 				<div class="control-group">
 					<label class="control-label">Reject Button Text</label>
-					<input type="text" class="input" bind:value={config.reject_btn_text} />
+					<input type="text" class="input" bind:value={config.reject_btn_label} />
 				</div>
 
 				<div class="control-group">
 					<label class="control-label">Settings Button Text</label>
-					<input type="text" class="input" bind:value={config.settings_btn_text} />
+					<input type="text" class="input" bind:value={config.settings_btn_label} />
 				</div>
 
 				<div class="control-group">
@@ -618,19 +618,19 @@
 					<div class="preview-banner">
 						<div class="preview-text">
 							<h3>{config.title}</h3>
-							<p>{config.description}</p>
+							<p>{config.message_text}</p>
 							{#if config.show_privacy_link}
 								<a href={config.privacy_link_url}>{config.privacy_link_text}</a>
 							{/if}
 						</div>
 						<div class="preview-actions">
 							{#if config.show_settings_btn}
-								<button class="preview-btn settings">{config.settings_btn_text}</button>
+								<button class="preview-btn settings">{config.settings_btn_label}</button>
 							{/if}
 							{#if config.show_reject_btn}
-								<button class="preview-btn reject">{config.reject_btn_text}</button>
+								<button class="preview-btn reject">{config.reject_btn_label}</button>
 							{/if}
-							<button class="preview-btn accept">{config.accept_btn_text}</button>
+							<button class="preview-btn accept">{config.accept_btn_label}</button>
 						</div>
 					</div>
 				</div>

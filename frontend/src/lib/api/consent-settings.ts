@@ -143,9 +143,10 @@ export interface BannerTemplate {
 
 	// Content
 	title: string;
-	accept_btn_text: string;
-	reject_btn_text: string;
-	settings_btn_text: string;
+	message_text?: string;
+	accept_btn_label: string;
+	reject_btn_label: string;
+	settings_btn_label: string;
 	privacy_link_text: string;
 	privacy_link_url?: string;
 	cookie_link_text: string;

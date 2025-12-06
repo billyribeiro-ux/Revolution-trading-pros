@@ -99,10 +99,10 @@ return new class extends Migration
 
             // Content
             $table->string('title')->default('We value your privacy');
-            $table->text('description')->nullable();
-            $table->string('accept_btn_text', 50)->default('Accept All');
-            $table->string('reject_btn_text', 50)->default('Reject All');
-            $table->string('settings_btn_text', 50)->default('Manage Preferences');
+            $table->text('message_text')->nullable(); // Banner message/body text
+            $table->string('accept_btn_label', 50)->default('Accept All');
+            $table->string('reject_btn_label', 50)->default('Reject All');
+            $table->string('settings_btn_label', 50)->default('Manage Preferences');
             $table->string('privacy_link_text', 100)->default('Privacy Policy');
             $table->string('privacy_link_url', 255)->nullable();
             $table->string('cookie_link_text', 100)->default('Cookie Policy');
