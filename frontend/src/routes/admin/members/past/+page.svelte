@@ -1,12 +1,30 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	/**
+	 * Past Members Dashboard - Svelte 5 / SvelteKit Implementation
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Enterprise-grade admin dashboard with:
+	 * - Svelte 5 runes ($state, $derived, $effect)
+	 * - SvelteKit data streaming from load function
+	 * - Multi-tier caching integration
+	 * - Optimistic UI updates
+	 * - Skeleton loading states
+	 *
+	 * @version 3.0.0 (Svelte 5 / December 2025)
+	 */
+
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import pastMembersApi, {
 		type TimePeriod,
 		type PastMember,
 		type DashboardOverview,
 		type ChurnReason,
-		TIME_PERIOD_LABELS
+		type PeriodStats,
+		type PaginatedResponse,
+		TIME_PERIOD_LABELS,
+		invalidateDashboardCache
 	} from '$lib/api/past-members-dashboard';
 	import {
 		IconArrowLeft,
@@ -26,39 +44,102 @@
 		IconCalendar,
 		IconFileAnalytics,
 		IconSparkles,
-		IconCheck
+		IconCheck,
+		IconAlertTriangle
 	} from '@tabler/icons-svelte';
 	import { toastStore } from '$lib/stores/toast';
+	import type { PastMembersPageData } from './+page';
 
-	// State
-	let loading = true;
-	let overview: DashboardOverview | null = null;
-	let churnReasons: ChurnReason[] = [];
-	let selectedPeriod: TimePeriod = '30d';
-	let members: PastMember[] = [];
-	let pagination = { current_page: 1, last_page: 1, per_page: 20, total: 0 };
-	let searchQuery = '';
-	let selectedMembers: Set<number> = new Set();
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PAGE DATA
+	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Modal state
-	let showEmailModal = false;
-	let emailTemplate: '30_free' | 'discount' | 'missed' | 'custom' = '30_free';
-	let customSubject = '';
-	let customBody = '';
-	let offerCode = '';
-	let discountPercent = 20;
-	let sending = false;
+	const data = $derived($page.data as PastMembersPageData);
 
-	// Survey modal
-	let showSurveyModal = false;
-	let surveyIncentive = '';
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE (Svelte 5 Runes)
+	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await loadDashboard();
+	// Dashboard state
+	let overview = $state<DashboardOverview | null>(null);
+	let churnReasons = $state<ChurnReason[]>([]);
+	let selectedPeriod = $state<TimePeriod>('30d');
+	let members = $state<PastMember[]>([]);
+	let searchQuery = $state('');
+	let selectedMembers = $state<Set<number>>(new Set());
+
+	// Loading states
+	let isLoading = $state(true);
+	let isRefreshing = $state(false);
+	let isLoadingMembers = $state(false);
+	let error = $state<string | null>(null);
+
+	// Pagination
+	let pagination = $state({
+		current_page: 1,
+		last_page: 1,
+		per_page: 20,
+		total: 0
 	});
 
-	async function loadDashboard() {
-		loading = true;
+	// Win-back email modal
+	let showEmailModal = $state(false);
+	let emailTemplate = $state<'30_free' | 'discount' | 'missed' | 'custom'>('30_free');
+	let customSubject = $state('');
+	let customBody = $state('');
+	let offerCode = $state('');
+	let discountPercent = $state(20);
+	let sending = $state(false);
+
+	// Survey modal
+	let showSurveyModal = $state(false);
+	let surveyIncentive = $state('');
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const periodStats = $derived(overview?.periods[selectedPeriod] as PeriodStats | undefined);
+	const hasMembers = $derived(members.length > 0);
+	const hasSelectedMembers = $derived(selectedMembers.size > 0);
+	const allSelected = $derived(selectedMembers.size === members.length && members.length > 0);
+	const periodLabel = $derived(TIME_PERIOD_LABELS[selectedPeriod]);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EFFECTS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Initialize from load function data
+	$effect(() => {
+		if (!browser) return;
+
+		// Handle auth errors
+		if (data?.authError) {
+			error = 'Session expired or access denied.';
+			isLoading = false;
+			return;
+		}
+
+		// Use data from load function if available
+		if (data?.overview) {
+			overview = data.overview;
+			churnReasons = data.churnReasons ?? [];
+			isLoading = false;
+			loadPeriodMembers();
+		} else {
+			// Fallback to client-side fetch
+			loadDashboard();
+		}
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS - Data Loading
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function loadDashboard(): Promise<void> {
+		isLoading = true;
+		error = null;
+
 		try {
 			const [overviewData, reasonsData] = await Promise.all([
 				pastMembersApi.getDashboardOverview(),
@@ -67,70 +148,108 @@
 			overview = overviewData;
 			churnReasons = reasonsData;
 			await loadPeriodMembers();
-		} catch (error) {
-			console.error('Failed to load dashboard:', error);
+		} catch (e) {
+			console.error('[PastMembers] Failed to load dashboard:', e);
+			error = e instanceof Error ? e.message : 'Failed to load dashboard';
 			toastStore.error('Failed to load dashboard data');
 		} finally {
-			loading = false;
+			isLoading = false;
 		}
 	}
 
-	async function loadPeriodMembers(page: number = 1) {
+	async function refreshDashboard(): Promise<void> {
+		isRefreshing = true;
+		error = null;
+
+		try {
+			// Invalidate cache and fetch fresh data
+			await invalidateDashboardCache();
+
+			const [overviewData, reasonsData] = await Promise.all([
+				pastMembersApi.getDashboardOverview({ skipCache: true }),
+				pastMembersApi.getChurnReasons(selectedPeriod)
+			]);
+
+			overview = overviewData;
+			churnReasons = reasonsData;
+			await loadPeriodMembers(1, true);
+
+			toastStore.success('Dashboard refreshed');
+		} catch (e) {
+			console.error('[PastMembers] Failed to refresh:', e);
+			toastStore.error('Failed to refresh dashboard');
+		} finally {
+			isRefreshing = false;
+		}
+	}
+
+	async function loadPeriodMembers(page: number = 1, skipCache: boolean = false): Promise<void> {
+		isLoadingMembers = true;
+
 		try {
 			const result = await pastMembersApi.getPastMembersByPeriod(
 				selectedPeriod,
 				page,
 				pagination.per_page,
-				searchQuery || undefined
+				searchQuery || undefined,
+				{ skipCache }
 			);
-			members = result.data;
+
+			members = result.members;
 			pagination = {
-				current_page: result.current_page,
-				last_page: result.last_page,
-				per_page: result.per_page,
-				total: result.total
+				current_page: result.pagination.current_page,
+				last_page: result.pagination.last_page,
+				per_page: result.pagination.per_page,
+				total: result.pagination.total
 			};
-		} catch (error) {
-			console.error('Failed to load members:', error);
+		} catch (e) {
+			console.error('[PastMembers] Failed to load members:', e);
+		} finally {
+			isLoadingMembers = false;
 		}
 	}
 
-	async function handlePeriodChange(period: TimePeriod) {
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS - User Actions
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function handlePeriodChange(period: TimePeriod): Promise<void> {
 		selectedPeriod = period;
-		selectedMembers.clear();
-		selectedMembers = selectedMembers;
+		selectedMembers = new Set();
 		await loadPeriodMembers();
 	}
 
-	async function handleSearch() {
+	async function handleSearch(): Promise<void> {
 		await loadPeriodMembers();
 	}
 
-	function toggleMemberSelection(id: number) {
-		if (selectedMembers.has(id)) {
-			selectedMembers.delete(id);
+	function toggleMemberSelection(id: number): void {
+		const newSet = new Set(selectedMembers);
+		if (newSet.has(id)) {
+			newSet.delete(id);
 		} else {
-			selectedMembers.add(id);
+			newSet.add(id);
 		}
-		selectedMembers = selectedMembers;
+		selectedMembers = newSet;
 	}
 
-	function selectAllMembers() {
-		if (selectedMembers.size === members.length) {
-			selectedMembers.clear();
+	function selectAllMembers(): void {
+		if (allSelected) {
+			selectedMembers = new Set();
 		} else {
-			members.forEach((m) => selectedMembers.add(m.id));
+			selectedMembers = new Set(members.map((m) => m.id));
 		}
-		selectedMembers = selectedMembers;
 	}
 
-	async function handleSendBulkWinBack() {
+	async function handleSendBulkWinBack(): Promise<void> {
 		sending = true;
+
 		try {
 			const options: import('$lib/api/past-members-dashboard').BulkEmailOptions = {
 				period: selectedPeriod,
 				template: emailTemplate
 			};
+
 			if (emailTemplate === 'custom' && customSubject) options.custom_subject = customSubject;
 			if (emailTemplate === 'custom' && customBody) options.custom_body = customBody;
 			if (offerCode) options.offer_code = offerCode;
@@ -140,17 +259,20 @@
 
 			toastStore.success(result.message);
 			showEmailModal = false;
-			selectedMembers.clear();
-			selectedMembers = selectedMembers;
-		} catch (error) {
-			toastStore.error(error instanceof Error ? error.message : 'Failed to send emails');
+			selectedMembers = new Set();
+
+			// Refresh dashboard after campaign
+			await refreshDashboard();
+		} catch (e) {
+			toastStore.error(e instanceof Error ? e.message : 'Failed to send emails');
 		} finally {
 			sending = false;
 		}
 	}
 
-	async function handleSendBulkSurvey() {
+	async function handleSendBulkSurvey(): Promise<void> {
 		sending = true;
+
 		try {
 			const result = await pastMembersApi.sendBulkSurvey(
 				selectedPeriod,
@@ -159,12 +281,19 @@
 
 			toastStore.success(result.message);
 			showSurveyModal = false;
-		} catch (error) {
-			toastStore.error(error instanceof Error ? error.message : 'Failed to send surveys');
+
+			// Refresh dashboard after campaign
+			await refreshDashboard();
+		} catch (e) {
+			toastStore.error(e instanceof Error ? e.message : 'Failed to send surveys');
 		} finally {
 			sending = false;
 		}
 	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS - Utilities
+	// ═══════════════════════════════════════════════════════════════════════════
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -213,12 +342,33 @@
 		}
 	}
 
-	$: periodStats = overview?.periods[selectedPeriod];
+	function openEmailModal(template: '30_free' | 'discount' | 'missed' | 'custom'): void {
+		emailTemplate = template;
+		showEmailModal = true;
+	}
+
+	function handleKeydown(event: KeyboardEvent): void {
+		if (event.key === 'Escape') {
+			showEmailModal = false;
+			showSurveyModal = false;
+		}
+	}
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HEAD
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
 	<title>Past Members Dashboard | Revolution Trading Pros</title>
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
+
+<svelte:window on:keydown={handleKeydown} />
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     TEMPLATE
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div class="past-members-page">
 	<!-- Header -->
@@ -243,18 +393,31 @@
 					<IconFileAnalytics size={18} />
 					Send Survey
 				</button>
-				<button class="btn-refresh" onclick={loadDashboard}>
-					<IconRefresh size={18} />
-					Refresh
+				<button class="btn-refresh" onclick={refreshDashboard} disabled={isRefreshing}>
+					<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
+					{isRefreshing ? 'Refreshing...' : 'Refresh'}
 				</button>
 			</div>
 		</div>
 	</div>
 
-	{#if loading}
+	{#if isLoading}
+		<!-- Skeleton Loading State -->
 		<div class="loading-state">
 			<div class="loader"></div>
 			<p>Loading dashboard...</p>
+		</div>
+	{:else if error}
+		<!-- Error State -->
+		<div class="error-state">
+			<div class="error-icon">
+				<IconAlertTriangle size={48} />
+			</div>
+			<h3>Failed to load dashboard</h3>
+			<p>{error}</p>
+			<button class="btn-primary" onclick={loadDashboard}>
+				Try Again
+			</button>
 		</div>
 	{:else}
 		<!-- Period Selector Cards -->
@@ -333,7 +496,7 @@
 					<h3>Top Cancellation Reasons</h3>
 				</div>
 				<div class="reasons-grid">
-					{#each churnReasons.slice(0, 5) as reason, i}
+					{#each churnReasons.slice(0, 5) as reason, i (reason.reason)}
 						<div class="reason-card">
 							<div class="reason-bar" style="--width: {reason.percentage}%"></div>
 							<div class="reason-content">
@@ -351,18 +514,18 @@
 		<div class="campaign-bar">
 			<div class="campaign-info">
 				<IconSparkles size={20} />
-				<span>Ready to win back <strong>{periodStats?.total_count || 0}</strong> members from {TIME_PERIOD_LABELS[selectedPeriod]}?</span>
+				<span>Ready to win back <strong>{periodStats?.total_count || 0}</strong> members from {periodLabel}?</span>
 			</div>
 			<div class="campaign-actions">
-				<button class="campaign-btn free" onclick={() => { emailTemplate = '30_free'; showEmailModal = true; }}>
+				<button class="campaign-btn free" onclick={() => openEmailModal('30_free')}>
 					<IconGift size={18} />
 					30 Days Free
 				</button>
-				<button class="campaign-btn discount" onclick={() => { emailTemplate = 'discount'; showEmailModal = true; }}>
+				<button class="campaign-btn discount" onclick={() => openEmailModal('discount')}>
 					<IconCurrencyDollar size={18} />
 					Discount Offer
 				</button>
-				<button class="campaign-btn personal" onclick={() => { emailTemplate = 'missed'; showEmailModal = true; }}>
+				<button class="campaign-btn personal" onclick={() => openEmailModal('missed')}>
 					<IconMail size={18} />
 					Personal Email
 				</button>
@@ -382,7 +545,7 @@
 			</div>
 
 			<div class="toolbar-actions">
-				{#if selectedMembers.size > 0}
+				{#if hasSelectedMembers}
 					<button class="btn-selected" onclick={() => (showEmailModal = true)}>
 						<IconMail size={18} />
 						Email {selectedMembers.size} Selected
@@ -393,7 +556,12 @@
 
 		<!-- Members Table -->
 		<div class="members-table-container">
-			{#if members.length === 0}
+			{#if isLoadingMembers}
+				<div class="table-loading">
+					<div class="loader small"></div>
+					<p>Loading members...</p>
+				</div>
+			{:else if !hasMembers}
 				<div class="empty-state">
 					<IconUsers size={64} stroke={1} />
 					<h3>No past members found</h3>
@@ -406,8 +574,9 @@
 							<th class="checkbox-col">
 								<input
 									type="checkbox"
-									checked={selectedMembers.size === members.length && members.length > 0}
+									checked={allSelected}
 									onchange={selectAllMembers}
+									aria-label="Select all members"
 								/>
 							</th>
 							<th>Member</th>
@@ -419,13 +588,14 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each members as member}
+						{#each members as member (member.id)}
 							<tr class:selected={selectedMembers.has(member.id)}>
 								<td class="checkbox-col">
 									<input
 										type="checkbox"
 										checked={selectedMembers.has(member.id)}
 										onchange={() => toggleMemberSelection(member.id)}
+										aria-label="Select {member.name}"
 									/>
 								</td>
 								<td>
@@ -456,7 +626,7 @@
 									</span>
 								</td>
 								<td>
-									<span class="reason-text">
+									<span class="reason-text-cell">
 										{member.last_membership?.cancellation_reason || 'Unknown'}
 									</span>
 								</td>
@@ -475,6 +645,7 @@
 							class="page-btn"
 							disabled={pagination.current_page === 1}
 							onclick={() => loadPeriodMembers(pagination.current_page - 1)}
+							aria-label="Previous page"
 						>
 							<IconChevronLeft size={18} />
 						</button>
@@ -483,6 +654,7 @@
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
 							onclick={() => loadPeriodMembers(pagination.current_page + 1)}
+							aria-label="Next page"
 						>
 							<IconChevronRight size={18} />
 						</button>
@@ -495,14 +667,24 @@
 
 <!-- Win-Back Email Modal -->
 {#if showEmailModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showEmailModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}>
-		<div class="modal-content" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="email-modal-title"
+		onclick={() => (showEmailModal = false)}
+	>
+		<div
+			class="modal-content"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+		>
 			<div class="modal-header">
 				<div>
-					<h2>Win-Back Campaign</h2>
-					<p>Sending to all {periodStats?.total_count || 0} members from {TIME_PERIOD_LABELS[selectedPeriod]}</p>
+					<h2 id="email-modal-title">Win-Back Campaign</h2>
+					<p>Sending to all {periodStats?.total_count || 0} members from {periodLabel}</p>
 				</div>
-				<button class="close-btn" onclick={() => (showEmailModal = false)}>
+				<button class="close-btn" onclick={() => (showEmailModal = false)} aria-label="Close modal">
 					<IconX size={20} />
 				</button>
 			</div>
@@ -627,14 +809,24 @@
 
 <!-- Survey Modal -->
 {#if showSurveyModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showSurveyModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSurveyModal = false)}>
-		<div class="modal-content survey-modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="survey-modal-title"
+		onclick={() => (showSurveyModal = false)}
+	>
+		<div
+			class="modal-content survey-modal"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+		>
 			<div class="modal-header">
 				<div>
-					<h2>Send Feedback Survey</h2>
+					<h2 id="survey-modal-title">Send Feedback Survey</h2>
 					<p>Gather insights from {periodStats?.total_count || 0} past members</p>
 				</div>
-				<button class="close-btn" onclick={() => (showSurveyModal = false)}>
+				<button class="close-btn" onclick={() => (showSurveyModal = false)} aria-label="Close modal">
 					<IconX size={20} />
 				</button>
 			</div>
@@ -661,14 +853,41 @@
 				<button class="btn-secondary" onclick={() => (showSurveyModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={handleSendBulkSurvey} disabled={sending}>
 					<IconSend size={18} />
-					{sending ? 'Sending...' : `Send Survey`}
+					{sending ? 'Sending...' : 'Send Survey'}
 				</button>
 			</div>
 		</div>
 	</div>
 {/if}
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CSS CUSTOM PROPERTIES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	:root {
+		--pm-bg: #0f172a;
+		--pm-card-bg: rgba(30, 41, 59, 0.6);
+		--pm-border: rgba(148, 163, 184, 0.1);
+		--pm-text: #f1f5f9;
+		--pm-text-muted: #94a3b8;
+		--pm-text-dim: #64748b;
+		--pm-primary: #6366f1;
+		--pm-primary-light: #a5b4fc;
+		--pm-success: #34d399;
+		--pm-warning: #fbbf24;
+		--pm-error: #f87171;
+		--pm-transition: all 0.2s ease;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE LAYOUT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.past-members-page {
 		padding: 2rem;
 		max-width: 1600px;
@@ -676,23 +895,26 @@
 		min-height: 100vh;
 	}
 
-	/* Header */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HEADER
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.back-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		background: none;
 		border: none;
 		cursor: pointer;
 		font-size: 0.875rem;
 		margin-bottom: 1rem;
-		transition: color 0.2s;
+		transition: var(--pm-transition);
 	}
 
 	.back-btn:hover {
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
 	.header-content {
@@ -731,7 +953,7 @@
 	}
 
 	.header-title p {
-		color: #64748b;
+		color: var(--pm-text-dim);
 		margin: 0.25rem 0 0;
 	}
 
@@ -740,7 +962,8 @@
 		gap: 0.75rem;
 	}
 
-	.btn-secondary, .btn-refresh {
+	.btn-secondary,
+	.btn-refresh {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -748,41 +971,101 @@
 		background: rgba(148, 163, 184, 0.1);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 12px;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: var(--pm-transition);
 	}
 
-	.btn-secondary:hover, .btn-refresh:hover {
+	.btn-secondary:hover,
+	.btn-refresh:hover:not(:disabled) {
 		border-color: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
-	/* Loading State */
-	.loading-state {
+	.btn-refresh:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	:global(.btn-refresh .spin) {
+		animation: spin 1s linear infinite;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOADING & ERROR STATES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.loading-state,
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		padding: 6rem 2rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
+	}
+
+	.error-state {
+		color: var(--pm-text);
+	}
+
+	.error-icon {
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		background: rgba(248, 113, 113, 0.15);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 24px;
+		color: var(--pm-error);
+	}
+
+	.error-state h3 {
+		margin: 0 0 0.5rem;
+	}
+
+	.error-state p {
+		color: var(--pm-text-muted);
+		margin: 0 0 1.5rem;
 	}
 
 	.loader {
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border-top-color: var(--pm-primary);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
-	@keyframes spin {
-		to { transform: rotate(360deg); }
+	.loader.small {
+		width: 32px;
+		height: 32px;
+		border-width: 3px;
 	}
 
-	/* Period Selector */
+	.table-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem 2rem;
+		color: var(--pm-text-dim);
+		gap: 1rem;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PERIOD SELECTOR
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.period-selector {
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
@@ -793,11 +1076,11 @@
 	.period-card {
 		position: relative;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.1);
+		background: var(--pm-card-bg);
+		border: 2px solid var(--pm-border);
 		border-radius: 16px;
 		cursor: pointer;
-		transition: all 0.3s;
+		transition: var(--pm-transition);
 		text-align: left;
 	}
 
@@ -807,26 +1090,26 @@
 	}
 
 	.period-card.active {
-		border-color: #6366f1;
+		border-color: var(--pm-primary);
 		background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
 	}
 
 	.period-label {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		font-weight: 500;
 	}
 
 	.period-count {
 		font-size: 1.75rem;
 		font-weight: 800;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		margin: 0.25rem 0;
 	}
 
 	.period-revenue {
 		font-size: 0.875rem;
-		color: #34d399;
+		color: var(--pm-success);
 		font-weight: 600;
 	}
 
@@ -836,7 +1119,7 @@
 		right: 0.75rem;
 		width: 24px;
 		height: 24px;
-		background: #6366f1;
+		background: var(--pm-primary);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -844,7 +1127,10 @@
 		color: white;
 	}
 
-	/* Stats Row */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   STATS ROW
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.stats-row {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -857,8 +1143,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem 1.5rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--pm-card-bg);
+		border: 1px solid var(--pm-border);
 		border-radius: 16px;
 	}
 
@@ -871,14 +1157,29 @@
 		justify-content: center;
 	}
 
-	.stat-card.primary .stat-icon { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-	.stat-card.success .stat-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.stat-card.warning .stat-icon { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-	.stat-card.info .stat-icon { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+	.stat-card.primary .stat-icon {
+		background: rgba(99, 102, 241, 0.15);
+		color: #818cf8;
+	}
+
+	.stat-card.success .stat-icon {
+		background: rgba(16, 185, 129, 0.15);
+		color: var(--pm-success);
+	}
+
+	.stat-card.warning .stat-icon {
+		background: rgba(251, 191, 36, 0.15);
+		color: var(--pm-warning);
+	}
+
+	.stat-card.info .stat-icon {
+		background: rgba(56, 189, 248, 0.15);
+		color: #38bdf8;
+	}
 
 	.stat-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 600;
@@ -887,17 +1188,20 @@
 	.stat-value {
 		font-size: 1.5rem;
 		font-weight: 800;
-		color: #f1f5f9;
+		color: var(--pm-text);
 	}
 
 	.stat-value.plan-name {
 		font-size: 1rem;
 	}
 
-	/* Churn Reasons */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CHURN REASONS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.churn-reasons-section {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--pm-card-bg);
+		border: 1px solid var(--pm-border);
 		border-radius: 20px;
 		padding: 1.5rem;
 		margin-bottom: 2rem;
@@ -907,7 +1211,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		margin-bottom: 1.25rem;
 	}
 
@@ -958,22 +1262,25 @@
 		justify-content: center;
 		font-size: 0.75rem;
 		font-weight: 700;
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
 	.reason-text {
 		flex: 1;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		font-weight: 500;
 		text-transform: capitalize;
 	}
 
 	.reason-count {
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		font-size: 0.875rem;
 	}
 
-	/* Campaign Bar */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CAMPAIGN BAR
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.campaign-bar {
 		display: flex;
 		align-items: center;
@@ -989,11 +1296,11 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
 	.campaign-info strong {
-		color: #f1f5f9;
+		color: var(--pm-text);
 	}
 
 	.campaign-actions {
@@ -1010,14 +1317,14 @@
 		font-weight: 600;
 		font-size: 0.875rem;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: var(--pm-transition);
 		border: 1px solid;
 	}
 
 	.campaign-btn.free {
 		background: rgba(16, 185, 129, 0.15);
 		border-color: rgba(16, 185, 129, 0.3);
-		color: #34d399;
+		color: var(--pm-success);
 	}
 
 	.campaign-btn.free:hover {
@@ -1027,7 +1334,7 @@
 	.campaign-btn.discount {
 		background: rgba(251, 191, 36, 0.15);
 		border-color: rgba(251, 191, 36, 0.3);
-		color: #fbbf24;
+		color: var(--pm-warning);
 	}
 
 	.campaign-btn.discount:hover {
@@ -1044,7 +1351,10 @@
 		background: rgba(244, 63, 94, 0.25);
 	}
 
-	/* Toolbar */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TOOLBAR
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.toolbar {
 		display: flex;
 		justify-content: space-between;
@@ -1060,23 +1370,23 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--pm-card-bg);
+		border: 1px solid var(--pm-border);
 		border-radius: 12px;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 	}
 
 	.search-box input {
 		flex: 1;
 		background: none;
 		border: none;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		font-size: 0.9375rem;
 		outline: none;
 	}
 
 	.search-box input::placeholder {
-		color: #64748b;
+		color: var(--pm-text-dim);
 	}
 
 	.toolbar-actions {
@@ -1098,10 +1408,13 @@
 		box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 	}
 
-	/* Table */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TABLE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.members-table-container {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--pm-card-bg);
+		border: 1px solid var(--pm-border);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -1112,11 +1425,11 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 	}
 
 	.empty-state h3 {
-		color: #f1f5f9;
+		color: var(--pm-text);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -1134,13 +1447,13 @@
 		text-align: left;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
 	.members-table tbody tr {
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--pm-border);
 		transition: background 0.2s;
 	}
 
@@ -1165,6 +1478,7 @@
 		width: 18px;
 		height: 18px;
 		cursor: pointer;
+		accent-color: var(--pm-primary);
 	}
 
 	.member-info {
@@ -1177,7 +1491,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #64748b, #94a3b8);
+		background: linear-gradient(135deg, #64748b, var(--pm-text-muted));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1188,12 +1502,12 @@
 
 	.member-name {
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--pm-text);
 	}
 
 	.member-email {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 	}
 
 	.plan-badge {
@@ -1204,17 +1518,17 @@
 		border-radius: 9999px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
 	.spending {
 		font-weight: 600;
-		color: #34d399;
+		color: var(--pm-success);
 	}
 
 	.date {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 	}
 
 	.days-badge {
@@ -1225,27 +1539,30 @@
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #fbbf24;
+		color: var(--pm-warning);
 	}
 
-	.reason-text {
+	.reason-text-cell {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		text-transform: capitalize;
 	}
 
-	/* Pagination */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGINATION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.pagination {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--pm-border);
 	}
 
 	.pagination-info {
 		font-size: 0.875rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 	}
 
 	.pagination-controls {
@@ -1263,15 +1580,15 @@
 		background: rgba(148, 163, 184, 0.1);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: var(--pm-transition);
 	}
 
 	.page-btn:hover:not(:disabled) {
 		background: rgba(99, 102, 241, 0.15);
 		border-color: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
 	.page-btn:disabled {
@@ -1281,10 +1598,13 @@
 
 	.page-indicator {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 	}
 
-	/* Modal */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MODAL
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
@@ -1317,19 +1637,19 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--pm-border);
 	}
 
 	.modal-header h2 {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		margin: 0;
 	}
 
 	.modal-header p {
 		font-size: 0.875rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 		margin: 0.25rem 0 0;
 	}
 
@@ -1342,8 +1662,13 @@
 		background: rgba(148, 163, 184, 0.1);
 		border: none;
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		cursor: pointer;
+		transition: var(--pm-transition);
+	}
+
+	.close-btn:hover {
+		background: rgba(148, 163, 184, 0.2);
 	}
 
 	.modal-body {
@@ -1359,7 +1684,7 @@
 		display: block;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.75rem;
@@ -1377,12 +1702,12 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.1);
+		background: var(--pm-card-bg);
+		border: 2px solid var(--pm-border);
 		border-radius: 12px;
 		cursor: pointer;
-		transition: all 0.2s;
-		color: #94a3b8;
+		transition: var(--pm-transition);
+		color: var(--pm-text-muted);
 	}
 
 	.template-option:hover {
@@ -1390,26 +1715,26 @@
 	}
 
 	.template-option.active {
-		border-color: #6366f1;
+		border-color: var(--pm-primary);
 		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 	}
 
 	.template-name {
 		font-weight: 600;
 		font-size: 0.8125rem;
-		color: #f1f5f9;
+		color: var(--pm-text);
 	}
 
 	.template-desc {
 		font-size: 0.6875rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 	}
 
 	/* Template Preview */
 	.template-preview {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid var(--pm-border);
 		border-radius: 12px;
 		padding: 1rem 1.25rem;
 		margin-bottom: 1.5rem;
@@ -1418,7 +1743,7 @@
 	.preview-header {
 		font-size: 0.6875rem;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--pm-text-dim);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 		margin-bottom: 0.5rem;
@@ -1426,13 +1751,13 @@
 
 	.preview-subject {
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		margin-bottom: 0.25rem;
 	}
 
 	.preview-desc {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 	}
 
 	/* Form Elements */
@@ -1444,7 +1769,7 @@
 		display: block;
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 		margin-bottom: 0.5rem;
 	}
 
@@ -1455,7 +1780,7 @@
 		background: rgba(15, 23, 42, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 12px;
-		color: #f1f5f9;
+		color: var(--pm-text);
 		font-size: 0.9375rem;
 		font-family: inherit;
 		resize: vertical;
@@ -1471,7 +1796,7 @@
 	.form-hint {
 		display: block;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--pm-text-dim);
 		margin-top: 0.5rem;
 	}
 
@@ -1481,7 +1806,7 @@
 		gap: 1rem;
 	}
 
-	.discount-slider input[type="range"] {
+	.discount-slider input[type='range'] {
 		flex: 1;
 		height: 8px;
 		background: rgba(99, 102, 241, 0.2);
@@ -1490,11 +1815,11 @@
 		appearance: none;
 	}
 
-	.discount-slider input[type="range"]::-webkit-slider-thumb {
+	.discount-slider input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		width: 20px;
 		height: 20px;
-		background: #6366f1;
+		background: var(--pm-primary);
 		border-radius: 50%;
 		cursor: pointer;
 	}
@@ -1505,7 +1830,7 @@
 		background: rgba(99, 102, 241, 0.15);
 		border-radius: 8px;
 		font-weight: 700;
-		color: #a5b4fc;
+		color: var(--pm-primary-light);
 		text-align: center;
 	}
 
@@ -1514,7 +1839,7 @@
 		text-align: center;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
-		color: #94a3b8;
+		color: var(--pm-text-muted);
 	}
 
 	.survey-info p {
@@ -1527,7 +1852,7 @@
 		justify-content: flex-end;
 		gap: 0.75rem;
 		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--pm-border);
 	}
 
 	.btn-primary {
@@ -1542,7 +1867,7 @@
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
-		transition: all 0.2s;
+		transition: var(--pm-transition);
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -1556,7 +1881,10 @@
 		transform: none;
 	}
 
-	/* Responsive */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 1200px) {
 		.period-selector {
 			grid-template-columns: repeat(3, 1fr);
@@ -1609,6 +1937,22 @@
 
 		.members-table {
 			min-width: 700px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   REDUCED MOTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.loader,
+		:global(.btn-refresh .spin) {
+			animation: none;
+		}
+
+		.period-card:hover,
+		.btn-primary:hover:not(:disabled) {
+			transform: none;
 		}
 	}
 </style>
