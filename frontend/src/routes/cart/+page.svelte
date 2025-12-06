@@ -1,79 +1,57 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	/**
+	 * Shopping Cart Page - WordPress Simpler Trading Style
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Matches the WooCommerce cart layout from SimplerCart.txt
+	 * Uses existing cart store for state management
+	 *
+	 * @version 4.0.0 (WordPress-style / December 2025)
+	 */
+
 	import { goto } from '$app/navigation';
-	import { gsap } from 'gsap';
 	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import { createOrder, createCheckoutSession } from '$lib/api/checkout';
 	import { isAuthenticated } from '$lib/stores/auth';
 	import {
 		IconTrash,
 		IconPlus,
 		IconMinus,
 		IconShoppingCart,
-		IconCreditCard,
-		IconShieldCheck,
 		IconArrowLeft,
+		IconArrowRight,
 		IconTicket,
 		IconX,
-		IconLoader
+		IconShieldCheck
 	} from '@tabler/icons-svelte';
 
-	// Svelte 5 state runes
-	let isVisible = $state(false);
-	let headerRef: HTMLDivElement | undefined = $state();
-	let cartItemsRef: HTMLDivElement | undefined = $state();
-	let summaryRef: HTMLDivElement | undefined = $state();
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE
+	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Coupon state
 	let couponCode = $state('');
 	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
+	let couponFormVisible = $state(false);
 
-	// Checkout state
-	let isCheckingOut = $state(false);
-	let checkoutError = $state('');
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED
+	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		isVisible = true;
-		initAnimations();
-	});
+	let discountAmount = $derived(
+		appliedCoupon
+			? appliedCoupon.type === 'percentage'
+				? ($cartTotal * appliedCoupon.discount) / 100
+				: appliedCoupon.discount
+			: 0
+	);
 
-	function initAnimations() {
-		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+	let finalTotal = $derived(Math.max(0, $cartTotal - discountAmount));
 
-		// Animate header
-		tl.from(headerRef, {
-			opacity: 0,
-			y: -50,
-			duration: 1,
-			ease: 'back.out(1.7)'
-		})
-			// Animate cart items
-			.from(
-				'.cart-item-card',
-				{
-					opacity: 0,
-					x: -60,
-					duration: 0.8,
-					stagger: 0.15,
-					ease: 'power4.out'
-				},
-				'-=0.5'
-			)
-			// Animate summary
-			.from(
-				summaryRef,
-				{
-					opacity: 0,
-					x: 60,
-					duration: 0.8,
-					ease: 'power4.out'
-				},
-				'-=0.6'
-			);
-	}
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
 
 	function removeItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly') {
 		cartStore.removeItem(itemId, interval);
@@ -94,57 +72,12 @@
 		}).format(price);
 	}
 
-	async function handleCheckout() {
-		// Check if user is authenticated
-		if (!$isAuthenticated) {
-			// Redirect to login with return URL
-			await goto('/login?redirect=/cart');
-			return;
-		}
-
-		if ($cartStore.items.length === 0) {
-			checkoutError = 'Your cart is empty';
-			return;
-		}
-
-		isCheckingOut = true;
-		checkoutError = '';
-
-		try {
-			// Step 1: Create order from cart items
-			const order = await createOrder({
-				items: $cartStore.items.map((item) => ({
-					id: item.id,
-					name: item.name,
-					price: item.price,
-					quantity: item.quantity,
-					interval: item.interval
-				})),
-				couponCode: appliedCoupon?.code,
-				discountAmount: discountAmount
-			});
-
-			// Step 2: Create Stripe Checkout session
-			const session = await createCheckoutSession(
-				order.id,
-				`${window.location.origin}/checkout/success?order_id=${order.id}`,
-				`${window.location.origin}/cart`
-			);
-
-			// Step 3: Redirect to Stripe Checkout
-			if (session.url) {
-				// Clear cart before redirecting
-				cartStore.clearCart();
-				window.location.href = session.url;
-			} else {
-				throw new Error('No checkout URL received');
-			}
-		} catch (error) {
-			console.error('Checkout error:', error);
-			checkoutError =
-				error instanceof Error ? error.message : 'Failed to process checkout. Please try again.';
-		} finally {
-			isCheckingOut = false;
+	function getIntervalLabel(interval?: string): string {
+		switch (interval) {
+			case 'monthly': return '/ month';
+			case 'quarterly': return '/ 3 months';
+			case 'yearly': return '/ year';
+			default: return '';
 		}
 	}
 
@@ -166,17 +99,13 @@
 					discount: result.discountAmount || 0,
 					type: result.type || 'percentage'
 				};
-
-				// Apply to cart store
 				cartStore.applyCoupon(appliedCoupon.code, appliedCoupon.discount);
-
 				couponCode = '';
-				couponError = '';
+				couponFormVisible = false;
 			} else {
 				couponError = result.message || 'Invalid coupon code';
 			}
 		} catch (error) {
-			console.error('Error applying coupon:', error);
 			couponError = 'Failed to apply coupon. Please try again.';
 		} finally {
 			applyingCoupon = false;
@@ -190,338 +119,272 @@
 		cartStore.removeCoupon();
 	}
 
-	// Svelte 5 derived runes - Calculate discount amount
-	let discountAmount = $derived(
-		appliedCoupon
-			? appliedCoupon.type === 'percentage'
-				? ($cartTotal * appliedCoupon.discount) / 100
-				: appliedCoupon.discount
-			: 0
-	);
-
-	// Calculate final total after discount
-	let finalTotal = $derived(Math.max(0, $cartTotal - discountAmount));
+	function proceedToCheckout() {
+		if (!$isAuthenticated) {
+			goto('/login?redirect=/checkout');
+			return;
+		}
+		goto('/checkout');
+	}
 </script>
 
 <svelte:head>
-	<title>Shopping Cart | Revolution Trading Pros</title>
+	<title>Cart | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="cart-page min-h-screen px-4 py-12 overflow-hidden relative">
-	<!-- Animated gradient background -->
-	<div class="gradient-bg absolute inset-0"></div>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     TEMPLATE - WordPress WooCommerce Cart Style
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
-	<!-- Grid overlay -->
-	<div class="grid-overlay absolute inset-0"></div>
-
-	<!-- Floating orbs -->
-	<div class="glow-orb glow-orb-1"></div>
-	<div class="glow-orb glow-orb-2"></div>
-	<div class="glow-orb glow-orb-3"></div>
-
-	<!-- Cart content -->
-	<div class="relative max-w-7xl mx-auto z-10">
-		<!-- Header -->
-		<div class="mb-12" bind:this={headerRef}>
-			<a
-				href="/"
-				class="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 mb-6 transition-colors duration-300"
-			>
-				<IconArrowLeft size={20} />
-				<span class="font-semibold">Continue Shopping</span>
+<div class="woocommerce-cart woocommerce-page">
+	<div class="container">
+		<!-- Page Header -->
+		<header class="cart-page-header">
+			<a href="/" class="back-link">
+				<IconArrowLeft size={18} />
+				<span>Continue Shopping</span>
 			</a>
-
-			<div class="flex items-center gap-4 mb-4">
-				<div
-					class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-0.5 shadow-lg shadow-purple-500/50"
-				>
-					<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
-						<IconShoppingCart size={32} class="text-purple-400" />
-					</div>
-				</div>
-				<div>
-					<h1
-						class="text-5xl md:text-6xl font-heading font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent"
-					>
-						Shopping Cart
-					</h1>
-					<p class="text-xl text-slate-300 mt-2">
-						{$cartItemCount}
-						{$cartItemCount === 1 ? 'item' : 'items'} in your cart
-					</p>
-				</div>
-			</div>
-		</div>
+			<h1 class="page-title">Shopping Cart</h1>
+			<p class="cart-count">{$cartItemCount} {$cartItemCount === 1 ? 'item' : 'items'}</p>
+		</header>
 
 		{#if $cartStore.items.length === 0}
-			<!-- Empty cart state -->
-			<div class="empty-cart-card relative">
-				<div
-					class="absolute -inset-1 bg-gradient-to-r from-slate-500/20 to-slate-700/20 rounded-3xl opacity-30 blur-2xl"
-				></div>
-				<div
-					class="relative bg-slate-900/95 backdrop-blur-xl border border-slate-500/30 rounded-3xl p-16 text-center shadow-2xl"
-				>
-					<div
-						class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-slate-600 to-slate-800 p-0.5"
-					>
-						<div class="w-full h-full bg-slate-900 rounded-full flex items-center justify-center">
-							<IconShoppingCart size={48} class="text-slate-400" />
-						</div>
-					</div>
-					<h2 class="text-3xl font-bold text-white mb-4">Your cart is empty</h2>
-					<p class="text-slate-400 mb-8 text-lg">
-						Start adding some amazing products to get started!
-					</p>
-					<a
-						href="/"
-						class="inline-block px-8 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
-					>
-						Browse Products
-					</a>
+			<!-- Empty Cart State -->
+			<div class="cart-empty">
+				<div class="cart-empty-icon">
+					<IconShoppingCart size={64} />
 				</div>
+				<h2>Your cart is empty</h2>
+				<p>Looks like you haven't added any products to your cart yet.</p>
+				<a href="/live-trading-rooms" class="btn btn-orange">
+					Browse Trading Rooms
+					<IconArrowRight size={18} />
+				</a>
 			</div>
 		{:else}
-			<!-- Cart items grid -->
-			<div class="grid lg:grid-cols-3 gap-8">
-				<!-- Cart items list -->
-				<div class="lg:col-span-2 space-y-4" bind:this={cartItemsRef}>
-					{#each $cartStore.items as item (item.id + (item.interval || ''))}
-						<div class="cart-item-card relative">
-							<div
-								class="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl opacity-50 blur-xl"
-							></div>
-							<div
-								class="relative bg-slate-900/95 backdrop-blur-xl border border-indigo-500/30 rounded-2xl p-6 shadow-xl"
-							>
-								<div class="flex gap-6">
-									<!-- Product image placeholder -->
-									<div
-										class="flex-shrink-0 w-24 h-24 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-0.5"
-									>
-										<div
-											class="w-full h-full bg-slate-900 rounded-xl flex items-center justify-center"
-										>
-											{#if item.type === 'membership'}
-												<IconShieldCheck size={40} class="text-indigo-400" />
-											{:else if item.type === 'course'}
-												<IconCreditCard size={40} class="text-purple-400" />
-											{:else}
-												<IconShoppingCart size={40} class="text-pink-400" />
-											{/if}
-										</div>
-									</div>
-
-									<!-- Product details -->
-									<div class="flex-1 min-w-0">
-										<div class="flex items-start justify-between gap-4 mb-2">
-											<div class="flex-1">
-												<h3 class="text-xl font-bold text-white mb-1">{item.name}</h3>
-												<p class="text-sm text-slate-400">{item.description}</p>
-												{#if item.interval}
-													<span
-														class="inline-block mt-2 px-3 py-1 bg-purple-500/20 text-purple-300 text-xs font-semibold rounded-full border border-purple-500/30"
-													>
-														{item.interval === 'monthly' ? 'Monthly' : 'Yearly'}
-													</span>
-												{/if}
-											</div>
+			<!-- Cart Content -->
+			<div class="cart-content">
+				<!-- Cart Items Table -->
+				<div class="cart-items-section">
+					<form class="woocommerce-cart-form">
+						<table class="shop_table cart" cellspacing="0">
+							<thead>
+								<tr>
+									<th class="product-remove">&nbsp;</th>
+									<th class="product-thumbnail">&nbsp;</th>
+									<th class="product-name">Product</th>
+									<th class="product-price">Price</th>
+									<th class="product-quantity">Quantity</th>
+									<th class="product-subtotal">Subtotal</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each $cartStore.items as item (item.id + (item.interval || ''))}
+									<tr class="cart_item">
+										<!-- Remove -->
+										<td class="product-remove">
 											<button
+												type="button"
+												class="remove"
+												aria-label="Remove this item"
 												onclick={() => removeItem(item.id, item.interval)}
-												class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-300"
-												aria-label="Remove item"
 											>
-												<IconTrash size={20} />
+												<IconX size={18} />
 											</button>
-										</div>
+										</td>
 
-										<div class="flex items-center justify-between mt-4">
-											<!-- Quantity controls -->
-											<div class="flex items-center gap-3">
-												<span class="text-sm text-slate-400 font-semibold">Quantity:</span>
-												<div class="flex items-center gap-2">
-													<button
-														onclick={() =>
-															updateQuantity(item.id, item.quantity - 1, item.interval)}
-														class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-indigo-500/20 text-white rounded-lg transition-all duration-300"
-														disabled={item.quantity <= 1}
-													>
-														<IconMinus size={16} />
-													</button>
-													<span class="w-12 text-center font-bold text-white text-lg"
-														>{item.quantity}</span
-													>
-													<button
-														onclick={() =>
-															updateQuantity(item.id, item.quantity + 1, item.interval)}
-														class="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-indigo-500/20 text-white rounded-lg transition-all duration-300"
-													>
-														<IconPlus size={16} />
-													</button>
-												</div>
-											</div>
-
-											<!-- Price -->
-											<div class="text-right">
-												<p class="text-2xl font-bold text-white">
-													{formatPrice(item.price * item.quantity)}
-												</p>
-												{#if item.quantity > 1}
-													<p class="text-sm text-slate-400">{formatPrice(item.price)} each</p>
+										<!-- Thumbnail -->
+										<td class="product-thumbnail">
+											<div class="product-image" style:background-image={item.image ? `url(${item.image})` : undefined}>
+												{#if !item.image}
+													<IconShoppingCart size={24} />
 												{/if}
 											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					{/each}
+										</td>
+
+										<!-- Name -->
+										<td class="product-name" data-title="Product">
+											<span class="product-title">{item.name}</span>
+											{#if item.interval}
+												<span class="subscription-interval">
+													Billed {item.interval}
+												</span>
+											{/if}
+										</td>
+
+										<!-- Price -->
+										<td class="product-price" data-title="Price">
+											<span class="woocommerce-Price-amount amount">
+												{formatPrice(item.price)}
+											</span>
+											{#if item.interval}
+												<span class="interval-label">{getIntervalLabel(item.interval)}</span>
+											{/if}
+										</td>
+
+										<!-- Quantity -->
+										<td class="product-quantity" data-title="Quantity">
+											<div class="quantity-controls">
+												<button
+													type="button"
+													class="qty-btn minus"
+													onclick={() => updateQuantity(item.id, item.quantity - 1, item.interval)}
+													disabled={item.quantity <= 1}
+												>
+													<IconMinus size={14} />
+												</button>
+												<input
+													type="number"
+													class="qty"
+													value={item.quantity}
+													min="1"
+													readonly
+												/>
+												<button
+													type="button"
+													class="qty-btn plus"
+													onclick={() => updateQuantity(item.id, item.quantity + 1, item.interval)}
+												>
+													<IconPlus size={14} />
+												</button>
+											</div>
+										</td>
+
+										<!-- Subtotal -->
+										<td class="product-subtotal" data-title="Subtotal">
+											<span class="woocommerce-Price-amount amount">
+												{formatPrice(item.price * item.quantity)}
+											</span>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</form>
 				</div>
 
-				<!-- Order summary -->
-				<div class="lg:col-span-1">
-					<div class="sticky top-24" bind:this={summaryRef}>
-						<div class="summary-card relative">
-							<div
-								class="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl opacity-30 blur-2xl"
-							></div>
-							<div
-								class="relative bg-slate-900/95 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-8 shadow-2xl"
-							>
-								<h2 class="text-2xl font-heading font-bold text-white mb-6">Order Summary</h2>
+				<!-- Cart Totals Sidebar -->
+				<div class="cart-totals-section">
+					<div class="cart_totals">
+						<h2>Cart totals</h2>
 
-								<!-- Coupon Code Section -->
-								<div class="mb-6">
-									<label for="coupon" class="block text-sm font-semibold text-slate-300 mb-2">
-										Have a coupon code?
-									</label>
+						<table class="shop_table shop_table_responsive" cellspacing="0">
+							<tbody>
+								<tr class="cart-subtotal">
+									<th>Subtotal</th>
+									<td data-title="Subtotal">
+										<span class="woocommerce-Price-amount amount">{formatPrice($cartTotal)}</span>
+									</td>
+								</tr>
 
-									{#if appliedCoupon}
-										<!-- Applied Coupon Display -->
-										<div
-											class="flex items-center justify-between p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl mb-4"
-										>
-											<div class="flex items-center gap-3">
-												<div
-													class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center"
-												>
-													<IconTicket size={20} class="text-emerald-400" />
-												</div>
-												<div>
-													<p class="font-bold text-emerald-400">{appliedCoupon.code}</p>
-													<p class="text-xs text-slate-400">
-														{appliedCoupon.type === 'percentage'
-															? `${appliedCoupon.discount}% off`
-															: `$${appliedCoupon.discount} off`}
-													</p>
-												</div>
-											</div>
-											<button
-												onclick={removeCouponCode}
-												class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
-												aria-label="Remove coupon"
-											>
-												<IconX size={20} />
+								{#if appliedCoupon && discountAmount > 0}
+									<tr class="cart-discount coupon-{appliedCoupon.code.toLowerCase()}">
+										<th>Coupon: {appliedCoupon.code}</th>
+										<td data-title="Coupon">
+											<span class="discount-amount">-{formatPrice(discountAmount)}</span>
+											<button type="button" class="remove-coupon" onclick={removeCouponCode}>
+												[Remove]
 											</button>
-										</div>
-									{:else}
-										<!-- Coupon Input Field -->
-										<div class="flex gap-2">
-											<div class="flex-1 relative">
-												<input
-													type="text"
-													id="coupon"
-													bind:value={couponCode}
-													onkeypress={(e) => e.key === 'Enter' && applyCouponCode()}
-													placeholder="Enter code"
-													class="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-colors uppercase"
-													disabled={applyingCoupon}
-												/>
-												{#if applyingCoupon}
-													<div class="absolute right-3 top-1/2 -translate-y-1/2">
-														<div
-															class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
-														></div>
-													</div>
-												{/if}
-											</div>
-											<button
-												onclick={applyCouponCode}
-												disabled={applyingCoupon || !couponCode.trim()}
-												class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-											>
-												Apply
-											</button>
-										</div>
-										{#if couponError}
-											<p class="mt-2 text-sm text-red-400">{couponError}</p>
-										{/if}
-									{/if}
-								</div>
-
-								<div class="space-y-4 mb-6">
-									<div class="flex justify-between text-slate-300">
-										<span>Subtotal</span>
-										<span class="font-semibold">{formatPrice($cartTotal)}</span>
-									</div>
-
-									{#if appliedCoupon && discountAmount > 0}
-										<div class="flex justify-between text-emerald-400">
-											<span class="flex items-center gap-2">
-												<IconTicket size={16} />
-												Discount ({appliedCoupon.code})
-											</span>
-											<span class="font-semibold">-{formatPrice(discountAmount)}</span>
-										</div>
-									{/if}
-
-									<div class="flex justify-between text-slate-300">
-										<span>Tax</span>
-										<span class="font-semibold">{formatPrice(0)}</span>
-									</div>
-									<div
-										class="h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"
-									></div>
-									<div class="flex justify-between text-white text-xl font-bold">
-										<span>Total</span>
-										<span>{formatPrice(finalTotal)}</span>
-									</div>
-
-									{#if appliedCoupon && discountAmount > 0}
-										<p class="text-sm text-emerald-400 text-center">
-											You saved {formatPrice(discountAmount)}!
-										</p>
-									{/if}
-								</div>
-
-								<button
-									onclick={handleCheckout}
-									disabled={isCheckingOut || $cartStore.items.length === 0}
-									class="w-full relative px-6 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-heading font-bold rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/50 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
-								>
-									<span class="relative z-10 flex items-center justify-center gap-2">
-										{#if isCheckingOut}
-											<IconLoader size={24} class="animate-spin" />
-											<span>Processing...</span>
-										{:else}
-											<IconCreditCard size={24} />
-											<span>Proceed to Checkout</span>
-										{/if}
-									</span>
-									<div
-										class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-									></div>
-								</button>
-
-								{#if checkoutError}
-									<p class="text-red-400 text-sm text-center mb-4">{checkoutError}</p>
+										</td>
+									</tr>
 								{/if}
 
-								<div class="flex items-center justify-center gap-2 text-emerald-400 text-sm">
-									<IconShieldCheck size={16} />
-									<span>Secure checkout guaranteed</span>
+								<tr class="tax-total">
+									<th>Tax</th>
+									<td data-title="Tax">
+										<span class="woocommerce-Price-amount amount">Calculated at checkout</span>
+									</td>
+								</tr>
+
+								<tr class="order-total">
+									<th>Total</th>
+									<td data-title="Total">
+										<strong>
+											<span class="woocommerce-Price-amount amount">{formatPrice(finalTotal)}</span>
+										</strong>
+									</td>
+								</tr>
+
+								{#if $cartStore.items.some(i => i.interval)}
+									<tr class="recurring-totals">
+										<th colspan="2">
+											<span class="recurring-label">Recurring Totals</span>
+										</th>
+									</tr>
+									{#each $cartStore.items.filter(i => i.interval) as item}
+										<tr class="recurring-total">
+											<td colspan="2">
+												<span class="recurring-amount">
+													{formatPrice(item.price)} {getIntervalLabel(item.interval)}
+												</span>
+											</td>
+										</tr>
+									{/each}
+								{/if}
+							</tbody>
+						</table>
+
+						<!-- Coupon Section -->
+						<div class="coupon-section">
+							{#if !appliedCoupon}
+								<div class="woocommerce-form-coupon-toggle">
+									<button
+										type="button"
+										class="showcoupon"
+										onclick={() => couponFormVisible = !couponFormVisible}
+									>
+										<IconTicket size={16} />
+										Have a coupon? Click here to enter your code
+									</button>
 								</div>
-							</div>
+
+								{#if couponFormVisible}
+									<div class="checkout_coupon woocommerce-form-coupon">
+										<p class="form-row form-row-first">
+											<input
+												type="text"
+												name="coupon_code"
+												class="input-text"
+												placeholder="Coupon code"
+												bind:value={couponCode}
+												onkeypress={(e) => e.key === 'Enter' && applyCouponCode()}
+												disabled={applyingCoupon}
+											/>
+										</p>
+										<p class="form-row form-row-last">
+											<button
+												type="button"
+												class="btn btn-default"
+												onclick={applyCouponCode}
+												disabled={applyingCoupon}
+											>
+												{applyingCoupon ? 'Applying...' : 'Apply coupon'}
+											</button>
+										</p>
+										{#if couponError}
+											<p class="coupon-error">{couponError}</p>
+										{/if}
+									</div>
+								{/if}
+							{/if}
+						</div>
+
+						<!-- Proceed to Checkout -->
+						<div class="wc-proceed-to-checkout">
+							<button
+								type="button"
+								class="checkout-button btn btn-orange btn-block"
+								onclick={proceedToCheckout}
+							>
+								Proceed to checkout
+								<IconArrowRight size={18} />
+							</button>
+						</div>
+
+						<!-- Security Badge -->
+						<div class="security-badge">
+							<IconShieldCheck size={20} />
+							<span>Secure checkout guaranteed</span>
 						</div>
 					</div>
 				</div>
@@ -530,135 +393,590 @@
 	</div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES - WordPress WooCommerce Cart
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
 <style>
-	/* Animated gradient background */
-	.gradient-bg {
-		background: linear-gradient(
-			135deg,
-			#0f172a 0%,
-			#1e1b4b 20%,
-			#312e81 40%,
-			#1e1b4b 60%,
-			#0f172a 80%,
-			#1e1b4b 100%
-		);
-		background-size: 400% 400%;
-		animation: gradientShift 25s ease infinite;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CSS CUSTOM PROPERTIES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	:root {
+		--cart-bg: #f4f4f4;
+		--cart-card-bg: #fff;
+		--cart-border: #dbdbdb;
+		--cart-text: #333;
+		--cart-text-muted: #666;
+		--cart-primary: #0984ae;
+		--cart-orange: #f99e31;
+		--cart-orange-hover: #f88b09;
+		--cart-success: #10b981;
+		--cart-error: #ef4444;
+		--cart-transition: all 0.15s ease-in-out;
 	}
 
-	@keyframes gradientShift {
-		0%,
-		100% {
-			background-position: 0% 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE LAYOUT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.woocommerce-cart {
+		min-height: 100vh;
+		background: var(--cart-bg);
+		padding: 40px 0;
 	}
 
-	/* Grid overlay */
-	.grid-overlay {
-		background-image:
-			linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-		background-size: 50px 50px;
-		animation: gridMove 30s linear infinite;
-		pointer-events: none;
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 20px;
 	}
 
-	@keyframes gridMove {
-		0% {
-			transform: translate(0, 0);
-		}
-		100% {
-			transform: translate(50px, 50px);
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE HEADER
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.cart-page-header {
+		margin-bottom: 30px;
 	}
 
-	/* Glowing orbs */
-	.glow-orb {
-		position: absolute;
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--cart-primary);
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 14px;
+		margin-bottom: 16px;
+		transition: var(--cart-transition);
+	}
+
+	.back-link:hover {
+		color: #076787;
+	}
+
+	.page-title {
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-size: 36px;
+		font-weight: 700;
+		color: var(--cart-text);
+		margin: 0 0 8px;
+	}
+
+	.cart-count {
+		color: var(--cart-text-muted);
+		font-size: 16px;
+		margin: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   EMPTY CART
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.cart-empty {
+		background: var(--cart-card-bg);
+		border-radius: 5px;
+		padding: 80px 40px;
+		text-align: center;
+		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+	}
+
+	.cart-empty-icon {
+		width: 120px;
+		height: 120px;
+		margin: 0 auto 24px;
+		background: var(--cart-bg);
 		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.4;
-		pointer-events: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--cart-text-muted);
 	}
 
-	.glow-orb-1 {
-		width: 600px;
-		height: 600px;
-		top: -100px;
-		right: -100px;
-		background: radial-gradient(circle, #8b5cf6, transparent 70%);
-		animation: float1 25s ease-in-out infinite;
+	.cart-empty h2 {
+		font-size: 28px;
+		font-weight: 700;
+		color: var(--cart-text);
+		margin: 0 0 12px;
 	}
 
-	.glow-orb-2 {
-		width: 500px;
-		height: 500px;
-		bottom: -100px;
-		left: -100px;
-		background: radial-gradient(circle, #ec4899, transparent 70%);
-		animation: float2 30s ease-in-out infinite;
+	.cart-empty p {
+		color: var(--cart-text-muted);
+		font-size: 16px;
+		margin: 0 0 24px;
 	}
 
-	.glow-orb-3 {
-		width: 450px;
-		height: 450px;
-		top: 50%;
-		left: 50%;
-		background: radial-gradient(circle, #14b8a6, transparent 70%);
-		animation: float3 35s ease-in-out infinite;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CART CONTENT LAYOUT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.cart-content {
+		display: grid;
+		grid-template-columns: 1fr 380px;
+		gap: 30px;
+		align-items: start;
 	}
 
-	@keyframes float1 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
+	.cart-items-section {
+		background: var(--cart-card-bg);
+		border-radius: 5px;
+		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+		overflow: hidden;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CART TABLE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.shop_table.cart {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.shop_table.cart thead th {
+		background: #f9f9f9;
+		padding: 16px 12px;
+		text-align: left;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--cart-text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		border-bottom: 1px solid var(--cart-border);
+	}
+
+	.shop_table.cart tbody tr {
+		border-bottom: 1px solid var(--cart-border);
+	}
+
+	.shop_table.cart tbody tr:last-child {
+		border-bottom: none;
+	}
+
+	.shop_table.cart tbody td {
+		padding: 20px 12px;
+		vertical-align: middle;
+	}
+
+	/* Product Remove */
+	.product-remove {
+		width: 40px;
+		text-align: center;
+	}
+
+	.product-remove .remove {
+		width: 28px;
+		height: 28px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+		border: 1px solid var(--cart-border);
+		border-radius: 4px;
+		color: var(--cart-text-muted);
+		cursor: pointer;
+		transition: var(--cart-transition);
+	}
+
+	.product-remove .remove:hover {
+		background: var(--cart-error);
+		border-color: var(--cart-error);
+		color: #fff;
+	}
+
+	/* Product Thumbnail */
+	.product-thumbnail {
+		width: 80px;
+	}
+
+	.product-image {
+		width: 60px;
+		height: 60px;
+		background: var(--cart-bg);
+		background-size: cover;
+		background-position: center;
+		border-radius: 5px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--cart-text-muted);
+	}
+
+	/* Product Name */
+	.product-name .product-title {
+		display: block;
+		font-weight: 600;
+		color: var(--cart-text);
+		font-size: 15px;
+	}
+
+	.product-name .subscription-interval {
+		display: block;
+		font-size: 12px;
+		color: var(--cart-primary);
+		margin-top: 4px;
+	}
+
+	/* Product Price */
+	.product-price .interval-label {
+		display: block;
+		font-size: 12px;
+		color: var(--cart-text-muted);
+	}
+
+	/* Quantity Controls */
+	.quantity-controls {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid var(--cart-border);
+		border-radius: 5px;
+		overflow: hidden;
+	}
+
+	.qty-btn {
+		width: 32px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #f9f9f9;
+		border: none;
+		cursor: pointer;
+		color: var(--cart-text);
+		transition: var(--cart-transition);
+	}
+
+	.qty-btn:hover:not(:disabled) {
+		background: var(--cart-primary);
+		color: #fff;
+	}
+
+	.qty-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.quantity-controls .qty {
+		width: 50px;
+		height: 36px;
+		border: none;
+		border-left: 1px solid var(--cart-border);
+		border-right: 1px solid var(--cart-border);
+		text-align: center;
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--cart-text);
+		-moz-appearance: textfield;
+	}
+
+	.quantity-controls .qty::-webkit-outer-spin-button,
+	.quantity-controls .qty::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	/* Product Subtotal */
+	.product-subtotal .amount {
+		font-weight: 700;
+		font-size: 16px;
+		color: var(--cart-text);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CART TOTALS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.cart-totals-section {
+		position: sticky;
+		top: 24px;
+	}
+
+	.cart_totals {
+		background: var(--cart-card-bg);
+		border-radius: 5px;
+		padding: 24px;
+		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+	}
+
+	.cart_totals h2 {
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--cart-text);
+		margin: 0 0 20px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--cart-border);
+	}
+
+	.cart_totals .shop_table {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+
+	.cart_totals .shop_table th,
+	.cart_totals .shop_table td {
+		padding: 12px 0;
+		border-bottom: 1px solid #eee;
+	}
+
+	.cart_totals .shop_table th {
+		text-align: left;
+		font-weight: 500;
+		color: var(--cart-text);
+	}
+
+	.cart_totals .shop_table td {
+		text-align: right;
+		color: var(--cart-text);
+	}
+
+	.cart_totals .order-total th,
+	.cart_totals .order-total td {
+		font-size: 18px;
+		font-weight: 700;
+		border-bottom: none;
+		padding-top: 16px;
+	}
+
+	.cart_totals .discount-amount {
+		color: var(--cart-success);
+	}
+
+	.cart_totals .remove-coupon {
+		display: block;
+		background: none;
+		border: none;
+		color: var(--cart-error);
+		font-size: 12px;
+		cursor: pointer;
+		padding: 0;
+		margin-top: 4px;
+	}
+
+	.recurring-totals th {
+		font-size: 14px;
+		color: var(--cart-text-muted) !important;
+		padding-top: 16px !important;
+	}
+
+	.recurring-label {
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		font-size: 11px;
+	}
+
+	.recurring-total td {
+		font-size: 14px;
+		padding: 8px 0 !important;
+		text-align: left !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COUPON SECTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.coupon-section {
+		margin-bottom: 20px;
+	}
+
+	.showcoupon {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		background: none;
+		border: none;
+		color: var(--cart-primary);
+		font-size: 14px;
+		cursor: pointer;
+		padding: 0;
+		transition: var(--cart-transition);
+	}
+
+	.showcoupon:hover {
+		color: #076787;
+	}
+
+	.checkout_coupon {
+		margin-top: 16px;
+		padding: 16px;
+		background: #f9f9f9;
+		border-radius: 5px;
+	}
+
+	.checkout_coupon .input-text {
+		width: 100%;
+		padding: 12px 16px;
+		border: 1px solid var(--cart-border);
+		border-radius: 5px;
+		font-size: 14px;
+		margin-bottom: 12px;
+		text-transform: uppercase;
+	}
+
+	.checkout_coupon .input-text:focus {
+		outline: none;
+		border-color: var(--cart-primary);
+	}
+
+	.coupon-error {
+		color: var(--cart-error);
+		font-size: 13px;
+		margin-top: 8px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BUTTONS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px 24px;
+		font-size: 14px;
+		font-weight: 700;
+		border-radius: 5px;
+		border: none;
+		cursor: pointer;
+		transition: var(--cart-transition);
+		text-decoration: none;
+	}
+
+	.btn-orange {
+		background: var(--cart-orange);
+		color: #fff;
+	}
+
+	.btn-orange:hover {
+		background: var(--cart-orange-hover);
+	}
+
+	.btn-default {
+		background: var(--cart-bg);
+		color: var(--cart-text);
+		border: 1px solid var(--cart-border);
+	}
+
+	.btn-default:hover {
+		background: #e9e9e9;
+	}
+
+	.btn-block {
+		width: 100%;
+	}
+
+	.checkout-button {
+		padding: 16px 24px;
+		font-size: 16px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SECURITY BADGE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.security-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 16px;
+		padding-top: 16px;
+		border-top: 1px solid #eee;
+		color: var(--cart-success);
+		font-size: 13px;
+		font-weight: 500;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 980px) {
+		.cart-content {
+			grid-template-columns: 1fr;
 		}
-		33% {
-			transform: translate(-100px, -50px) scale(1.1);
-		}
-		66% {
-			transform: translate(50px, -100px) scale(0.9);
+
+		.cart-totals-section {
+			position: static;
 		}
 	}
 
-	@keyframes float2 {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
+	@media screen and (max-width: 768px) {
+		.shop_table.cart thead {
+			display: none;
 		}
-		33% {
-			transform: translate(100px, 50px) scale(1.1);
+
+		.shop_table.cart tbody tr {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 12px;
+			padding: 16px;
 		}
-		66% {
-			transform: translate(-50px, 100px) scale(0.9);
+
+		.shop_table.cart tbody td {
+			padding: 0;
+		}
+
+		.product-remove {
+			grid-column: 2;
+			grid-row: 1;
+			justify-self: end;
+		}
+
+		.product-thumbnail {
+			grid-column: 1;
+			grid-row: 1 / 4;
+		}
+
+		.product-name {
+			grid-column: 2;
+			grid-row: 1;
+		}
+
+		.product-price {
+			grid-column: 2;
+			grid-row: 2;
+		}
+
+		.product-quantity {
+			grid-column: 1 / 3;
+			grid-row: 4;
+		}
+
+		.product-subtotal {
+			grid-column: 2;
+			grid-row: 3;
+		}
+
+		.shop_table.cart tbody td::before {
+			content: attr(data-title) ": ";
+			font-weight: 600;
+			margin-right: 8px;
+		}
+
+		.product-remove::before,
+		.product-thumbnail::before {
+			display: none;
+		}
+
+		.page-title {
+			font-size: 28px;
 		}
 	}
 
-	@keyframes float3 {
-		0%,
-		100% {
-			transform: translate(-50%, -50%) scale(1);
-		}
-		50% {
-			transform: translate(-50%, -50%) scale(1.2);
-		}
-	}
-
-	/* Responsive adjustments */
-	@media (max-width: 640px) {
-		.glow-orb {
-			filter: blur(60px);
-			opacity: 0.3;
+	@media screen and (max-width: 480px) {
+		.woocommerce-cart {
+			padding: 20px 0;
 		}
 
-		.glow-orb-1,
-		.glow-orb-2,
-		.glow-orb-3 {
-			width: 300px;
-			height: 300px;
+		.cart_totals {
+			padding: 16px;
+		}
+
+		.cart-empty {
+			padding: 40px 20px;
 		}
 	}
 </style>
