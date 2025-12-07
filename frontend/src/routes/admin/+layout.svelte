@@ -73,48 +73,43 @@
 		}
 	});
 
-	// Register keyboard shortcuts
+	// Initialize keyboard shortcuts
 	$effect(() => {
 		if (!browser) return;
 
-		// Register shortcut handlers
-		keyboard.registerAction('search', () => {
-			isCommandPaletteOpen = true;
-		});
-
-		keyboard.registerAction('show-shortcuts', () => {
-			isKeyboardHelpOpen = true;
-		});
-
-		keyboard.registerAction('goto-dashboard', () => {
-			goto('/admin');
-		});
-
-		keyboard.registerAction('goto-analytics', () => {
-			goto('/admin/analytics');
-		});
-
-		keyboard.registerAction('goto-content', () => {
-			goto('/admin/blog');
-		});
-
-		keyboard.registerAction('goto-settings', () => {
-			goto('/admin/settings');
-		});
-
-		// Global keyboard listener
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Cmd/Ctrl + K for command palette
-			if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-				e.preventDefault();
+		// Initialize keyboard shortcuts with custom actions
+		keyboard.init({
+			'search': () => {
 				isCommandPaletteOpen = true;
+			},
+			'search-alt': () => {
+				isCommandPaletteOpen = true;
+			},
+			'help': () => {
+				isKeyboardHelpOpen = true;
+			},
+			'goto-dashboard': () => {
+				goto('/admin');
+			},
+			'goto-analytics': () => {
+				goto('/admin/analytics');
+			},
+			'goto-blog': () => {
+				goto('/admin/blog');
+			},
+			'goto-settings': () => {
+				goto('/admin/settings');
+			},
+			'escape': () => {
+				isCommandPaletteOpen = false;
+				isNotificationCenterOpen = false;
+				isKeyboardHelpOpen = false;
+				isConnectionHealthOpen = false;
 			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
+		});
 
 		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
+			keyboard.destroy();
 		};
 	});
 
