@@ -11,78 +11,57 @@
     let openFaq: number | null = $state(null);
     const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-    // --- Intersection Observer for Scroll Animations ---
-    let observer: IntersectionObserver | null = $state(null);
-    const pendingElements = new Set<HTMLElement>();
-
-    function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-        // Store delay as data attribute
-        node.dataset.delay = (params.delay || 0).toString();
+    // --- Apple ICT9+ Scroll Animations ---
+    // Smooth, performant reveal animations using IntersectionObserver
+    let mounted = $state(false);
+    
+    function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
+        const delay = params.delay ?? 0;
+        const translateY = params.y ?? 30;
         
-        // Start visible (prevents flash of invisible content)
-        node.classList.add('opacity-100', 'translate-y-0');
-        
-        // Queue for observation when observer is ready
-        pendingElements.add(node);
-        
-        // If observer already exists, set up animation immediately
-        if (observer) {
-            setupRevealAnimation(node, observer);
+        // Check for reduced motion preference
+        if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return;
         }
-
-        return {
-            destroy() {
-                pendingElements.delete(node);
-                observer?.unobserve(node);
-            }
-        };
-    }
-
-    function setupRevealAnimation(node: HTMLElement, obs: IntersectionObserver) {
-        // Reset to hidden state for animation
-        node.classList.remove('opacity-100', 'translate-y-0');
-        node.classList.add('opacity-0', 'translate-y-8');
-        obs.observe(node);
-    }
-
-    onMount(() => {
-        const obs = new IntersectionObserver(
+        
+        // Set initial hidden state with transition already applied
+        node.style.opacity = '0';
+        node.style.transform = `translateY(${translateY}px)`;
+        node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+        node.style.transitionDelay = `${delay}ms`;
+        node.style.willChange = 'opacity, transform';
+        
+        const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        const el = entry.target as HTMLElement;
-                        const delay = parseInt(el.dataset.delay || '0');
-
+                        // Trigger animation
+                        node.style.opacity = '1';
+                        node.style.transform = 'translateY(0)';
+                        
+                        // Cleanup will-change after animation
                         setTimeout(() => {
-                            el.classList.remove('opacity-0', 'translate-y-8');
-                            el.classList.add(
-                                'opacity-100',
-                                'translate-y-0',
-                                'transition-all',
-                                'duration-700',
-                                'ease-out'
-                            );
-                        }, delay);
-
-                        obs.unobserve(el);
+                            node.style.willChange = 'auto';
+                        }, 800 + delay);
+                        
+                        observer.unobserve(node);
                     }
                 });
             },
-            {
-                threshold: 0.15,
-                rootMargin: '0px 0px -50px 0px'
-            }
+            { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
         );
-
-        // Process any elements that were queued before observer was ready
-        pendingElements.forEach((el) => setupRevealAnimation(el, obs));
         
-        // Set observer state
-        observer = obs;
-
-        return () => {
-            obs.disconnect();
+        observer.observe(node);
+        
+        return {
+            destroy() {
+                observer.disconnect();
+            }
         };
+    }
+    
+    onMount(() => {
+        mounted = true;
     });
 
     // --- EXPANDED FAQ DATA ---

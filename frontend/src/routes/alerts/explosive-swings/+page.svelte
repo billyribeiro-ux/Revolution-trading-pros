@@ -45,80 +45,57 @@
     // --- Icon SVG ---
     const IconCheckSvg = `<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>`;
 
-    // --- Intersection Observer for Scroll Animations ---
-    // ICT9+ Svelte 5 Pattern: Use $state for observer so actions can react to it
-    let observer: IntersectionObserver | null = $state(null);
-    const pendingElements = new Set<HTMLElement>();
-
-    function reveal(node: HTMLElement, params: { delay?: number } = {}) {
+    // --- Apple ICT9+ Scroll Animations ---
+    // Smooth, performant reveal animations using IntersectionObserver
+    let mounted = $state(false);
+    
+    function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
+        const delay = params.delay ?? 0;
+        const translateY = params.y ?? 30;
+        
         // Check for reduced motion preference
-        if (typeof window !== 'undefined') {
-            const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-            if (mediaQuery.matches) return;
+        if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return;
         }
-
-        // Store delay as data attribute
-        node.dataset.delay = (params.delay || 0).toString();
         
-        // Start visible (prevents flash of invisible content)
-        node.classList.add('opacity-100', 'translate-y-0');
+        // Set initial hidden state with transition already applied
+        node.style.opacity = '0';
+        node.style.transform = `translateY(${translateY}px)`;
+        node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+        node.style.transitionDelay = `${delay}ms`;
+        node.style.willChange = 'opacity, transform';
         
-        // Queue for observation when observer is ready
-        pendingElements.add(node);
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        // Trigger animation
+                        node.style.opacity = '1';
+                        node.style.transform = 'translateY(0)';
+                        
+                        // Cleanup will-change after animation
+                        setTimeout(() => {
+                            node.style.willChange = 'auto';
+                        }, 800 + delay);
+                        
+                        observer.unobserve(node);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+        );
         
-        // If observer already exists, set up animation immediately
-        if (observer) {
-            setupRevealAnimation(node, observer);
-        }
-
+        observer.observe(node);
+        
         return {
             destroy() {
-                pendingElements.delete(node);
-                observer?.unobserve(node);
+                observer.disconnect();
             }
         };
     }
-
-    function setupRevealAnimation(node: HTMLElement, obs: IntersectionObserver) {
-        // Reset to hidden state for animation
-        node.classList.remove('opacity-100', 'translate-y-0');
-        node.classList.add('opacity-0', 'translate-y-8');
-        obs.observe(node);
-    }
-
+    
     onMount(() => {
-        const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const el = entry.target as HTMLElement;
-                    const delay = parseInt(el.dataset.delay || '0');
-
-                    setTimeout(() => {
-                        el.classList.remove('opacity-0', 'translate-y-8');
-                        el.classList.add('opacity-100', 'translate-y-0');
-                    }, delay);
-
-                    // We now keep the observer attached for potential re-entry or just unobserve
-                    // Standard behavior is to animate once:
-                    observer?.unobserve(el);
-                }
-            });
-        };
-
-        const obs = new IntersectionObserver(handleIntersect, {
-            threshold: 0.15,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        // Process any elements that were queued before observer was ready
-        pendingElements.forEach((el) => setupRevealAnimation(el, obs));
-        
-        // Set observer state
-        observer = obs;
-
-        return () => {
-            obs.disconnect();
-        };
+        mounted = true;
     });
 
     // --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---
