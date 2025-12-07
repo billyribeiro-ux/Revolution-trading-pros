@@ -23,7 +23,7 @@
 	import {
 		IconHeartbeat,
 		IconShieldCheck,
-		IconShieldX,
+		IconShieldOff,
 		IconDatabase,
 		IconServer,
 		IconClock,
@@ -36,13 +36,12 @@
 		IconInfoCircle,
 		IconLock,
 		IconSettings,
-		IconApi,
-		IconBrandPhp,
+		IconCode,
 		IconWorld,
 		IconCertificate,
 		IconFolder,
-		IconCloudComputing,
-		IconBug,
+		IconCloud,
+		IconBugOff,
 		IconSpeedboat,
 		IconChartLine,
 		IconArrowRight,
@@ -667,7 +666,7 @@
 					<div class="api-health-grid">
 						<div class="api-health-card">
 							<div class="api-health-header">
-								<IconApi size={20} />
+								<IconPlugConnected size={20} />
 								<span>Connected APIs</span>
 							</div>
 							<div class="api-health-value">{$connectedCount}</div>
@@ -852,7 +851,7 @@
 							{/if}
 							<div class="metric-card" class:critical={healthData.security.vulnerabilities > 0}>
 								<div class="metric-icon">
-									<IconBug size={24} />
+									<IconBugOff size={24} />
 								</div>
 								<div class="metric-content">
 									<span class="metric-label">Vulnerabilities</span>
@@ -950,7 +949,7 @@
 							{#if healthData.server.phpVersion}
 								<div class="metric-card">
 									<div class="metric-icon">
-										<IconBrandPhp size={24} />
+										<IconCode size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">PHP Version</span>
@@ -961,7 +960,7 @@
 							{#if healthData.server.webServer}
 								<div class="metric-card">
 									<div class="metric-icon">
-										<IconCloudComputing size={24} />
+										<IconCloud size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Web Server</span>

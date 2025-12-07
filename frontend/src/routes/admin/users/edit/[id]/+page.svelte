@@ -5,7 +5,6 @@
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconCheck, IconX, IconUser } from '@tabler/icons-svelte';
 
-	let userId: number;
 	let loading = true;
 	let saving = false;
 	let error = '';
@@ -21,7 +20,7 @@
 		roles: [] as string[]
 	};
 
-	$: userId = parseInt($page.params.id);
+	let userId = $derived(parseInt($page.params.id));
 
 	onMount(async () => {
 		await loadUser();

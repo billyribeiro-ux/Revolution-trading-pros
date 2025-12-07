@@ -17,7 +17,7 @@
 	let loading = true;
 	let error: string | null = null;
 
-	$: contactId = $page.params.id as string;
+	let contactId = $derived($page.params.id as string);
 
 	onMount(async () => {
 		await loadContact();

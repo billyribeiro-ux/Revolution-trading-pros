@@ -86,9 +86,11 @@
 	}
 
 	// Reload products when type filter changes
-	$: if (selectedType) {
-		loadProducts();
-	}
+	$effect(() => {
+		if (selectedType) {
+			loadProducts();
+		}
+	});
 </script>
 
 <svelte:head>

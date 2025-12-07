@@ -193,7 +193,7 @@
 		</div>
 		<div class="flex gap-3">
 			<button
-				on:click={loadPreview}
+				onclick={loadPreview}
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,7 +203,7 @@
 				Preview
 			</button>
 			<button
-				on:click={downloadPreview}
+				onclick={downloadPreview}
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +212,7 @@
 				Download PDF
 			</button>
 			<button
-				on:click={saveSettings}
+				onclick={saveSettings}
 				disabled={saving}
 				class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
 			>
@@ -265,7 +265,7 @@
 						<nav class="flex overflow-x-auto">
 							{#each tabs as tab}
 								<button
-									on:click={() => (activeTab = tab.id)}
+									onclick={() => (activeTab = tab.id)}
 									class="px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors
 									{activeTab === tab.id
 										? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20'
@@ -300,11 +300,11 @@
 											<div class="flex gap-3">
 												<label class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition">
 													{uploading ? 'Uploading...' : 'Upload Logo'}
-													<input type="file" class="hidden" accept="image/*" on:change={uploadLogo} disabled={uploading} />
+													<input type="file" class="hidden" accept="image/*" onchange={uploadLogo} disabled={uploading} />
 												</label>
 												{#if logoUrl}
 													<button
-														on:click={removeLogo}
+														onclick={removeLogo}
 														class="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition"
 													>
 														Remove
@@ -628,7 +628,7 @@
 
 								<div class="pt-4 border-t border-gray-200 dark:border-gray-700">
 									<button
-										on:click={resetToDefaults}
+										onclick={resetToDefaults}
 										class="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition"
 									>
 										Reset to Defaults
@@ -713,13 +713,13 @@
 
 							<div class="mt-4 flex gap-2">
 								<button
-									on:click={loadPreview}
+									onclick={loadPreview}
 									class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
 								>
 									Full Preview
 								</button>
 								<button
-									on:click={downloadPreview}
+									onclick={downloadPreview}
 									class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
 								>
 									Download PDF
@@ -739,7 +739,7 @@
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Invoice Preview</h3>
 					<button
-						on:click={() => (showPreviewModal = false)}
+						onclick={() => (showPreviewModal = false)}
 						class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
 					>
 						<svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

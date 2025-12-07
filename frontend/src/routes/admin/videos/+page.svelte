@@ -89,13 +89,13 @@
 		return views.toString();
 	}
 
-	$: filteredVideos = videos.filter(video => {
-		const matchesSearch = !searchQuery || 
+	let filteredVideos = $derived(videos.filter(video => {
+		const matchesSearch = !searchQuery ||
 			video.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			video.description?.toLowerCase().includes(searchQuery.toLowerCase());
 		const matchesStatus = selectedStatus === 'all' || video.status === selectedStatus;
 		return matchesSearch && matchesStatus;
-	});
+	}));
 
 	onMount(() => {
 		loadVideos();

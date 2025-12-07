@@ -6,9 +6,11 @@
 	import apiClient, { type Membership, type Product } from '$lib/api/client';
 
 	// Only redirect on client-side - use replaceState to prevent history pollution
-	$: if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-		goto('/login?redirect=/account', { replaceState: true });
-	}
+	$effect(() => {
+		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+			goto('/login?redirect=/account', { replaceState: true });
+		}
+	});
 
 	let memberships: Membership[] = [];
 	let products: Product[] = [];

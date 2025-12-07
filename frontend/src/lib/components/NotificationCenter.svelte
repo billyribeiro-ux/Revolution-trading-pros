@@ -21,17 +21,18 @@
 		unreadCount,
 		type Notification
 	} from '$lib/stores/notifications';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconChecks from '@tabler/icons-svelte/icons/checks';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
-	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import {
+		IconBell,
+		IconX,
+		IconCheck,
+		IconTrash,
+		IconInfoCircle,
+		IconCircleCheck,
+		IconAlertTriangle,
+		IconAlertCircle,
+		IconSettings,
+		IconChevronRight
+	} from '@tabler/icons-svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -183,7 +184,7 @@
 			{#if $unreadCount > 0}
 				<div class="actions-bar" in:fade={{ duration: 150 }}>
 					<button class="action-btn" onclick={() => notificationStore.markAllAsRead()}>
-						<IconChecks size={16} />
+						<IconCheck size={16} />
 						Mark all as read
 					</button>
 				</div>

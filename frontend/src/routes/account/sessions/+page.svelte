@@ -14,9 +14,11 @@
 	import authService from '$lib/api/auth';
 
 	// Redirect if not authenticated - use replaceState to prevent history pollution
-	$: if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-		goto('/login?redirect=/account/sessions', { replaceState: true });
-	}
+	$effect(() => {
+		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+			goto('/login?redirect=/account/sessions', { replaceState: true });
+		}
+	});
 
 	let sessions: UserSession[] = [];
 	let loading = true;

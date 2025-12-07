@@ -8,7 +8,7 @@
 		IconTrash,
 		IconRefresh,
 		IconUsers,
-		IconPalette
+		IconColorSwatch
 	} from '@tabler/icons-svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag } from '$lib/crm/types';

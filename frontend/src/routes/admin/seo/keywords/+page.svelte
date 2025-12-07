@@ -10,10 +10,10 @@
 		IconRefresh
 	} from '@tabler/icons-svelte';
 
-	let keywords: any[] = [];
-	let stats: any = null;
-	let loading = false;
-	let searchQuery = '';
+	let keywords: any[] = $state([]);
+	let stats: any = $state(null);
+	let loading = $state(false);
+	let searchQuery = $state('');
 
 	onMount(() => {
 		loadKeywords();
@@ -73,8 +73,8 @@
 		return 'neutral';
 	}
 
-	$: filteredKeywords = keywords.filter((kw) =>
-		kw.keyword.toLowerCase().includes(searchQuery.toLowerCase())
+	let filteredKeywords = $derived(
+		keywords.filter((kw) => kw.keyword.toLowerCase().includes(searchQuery.toLowerCase()))
 	);
 </script>
 

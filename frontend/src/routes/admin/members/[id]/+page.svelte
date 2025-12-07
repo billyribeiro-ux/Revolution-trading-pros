@@ -33,7 +33,7 @@
 		IconFileText
 	} from '@tabler/icons-svelte';
 
-	$: memberId = Number($page.params.id);
+	let memberId = $derived(Number($page.params.id));
 
 	// State
 	let member: Member | null = null;

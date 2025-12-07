@@ -228,9 +228,9 @@
 		}
 	}
 
-	$: pendingCount = stats?.by_status?.pending || 0;
-	$: emailSentCount = stats?.by_status?.email_sent || 0;
-	$: clickedCount = stats?.by_status?.clicked || 0;
+	let pendingCount = $derived(stats?.by_status?.pending || 0);
+	let emailSentCount = $derived(stats?.by_status?.email_sent || 0);
+	let clickedCount = $derived(stats?.by_status?.clicked || 0);
 </script>
 
 <svelte:head>

@@ -152,11 +152,11 @@
 	let selectedRegion = 'all';
 	let expandedFaq: number | null = null;
 
-	$: regions = ['all', ...new Set(majorIndexes.map((i) => i.region))];
+	let regions = $derived(['all', ...new Set(majorIndexes.map((i) => i.region))]);
 
-	$: filteredIndexes = majorIndexes.filter((index) => {
+	let filteredIndexes = $derived(majorIndexes.filter((index) => {
 		return selectedRegion === 'all' || index.region === selectedRegion;
-	});
+	}));
 
 	function toggleFaq(index: number) {
 		expandedFaq = expandedFaq === index ? null : index;

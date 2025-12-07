@@ -29,8 +29,7 @@
 	/**
 	 * Custom class for styling.
 	 */
-	let className = '';
-	export { className as class };
+	let { class: className = '' } = $props();
 
 	// Local state for pending changes (not saved until user clicks Save)
 	let pendingConsent = {
@@ -40,14 +39,16 @@
 	};
 
 	// Sync with store when modal opens
-	$: if ($showPreferencesModal) {
-		const current = $consentStore;
-		pendingConsent = {
-			analytics: current.analytics,
-			marketing: current.marketing,
-			preferences: current.preferences,
-		};
-	}
+	$effect(() => {
+		if ($showPreferencesModal) {
+			const current = $consentStore;
+			pendingConsent = {
+				analytics: current.analytics,
+				marketing: current.marketing,
+				preferences: current.preferences,
+			};
+		}
+	});
 
 	// Category definitions for the UI
 	const categories: Array<{
@@ -146,28 +147,35 @@
 	let modalElement: HTMLElement;
 	let previouslyFocused: HTMLElement | null = null;
 
-	$: if (browser && $showPreferencesModal) {
-		previouslyFocused = document.activeElement as HTMLElement;
-		// Focus the modal after it renders
-		setTimeout(() => {
-			modalElement?.focus();
-		}, 0);
-	}
+	// Focus management when modal opens
+	$effect(() => {
+		if (browser && $showPreferencesModal) {
+			previouslyFocused = document.activeElement as HTMLElement;
+			// Focus the modal after it renders
+			setTimeout(() => {
+				modalElement?.focus();
+			}, 0);
+		}
+	});
 
 	// Restore focus on close
-	$: if (browser && !$showPreferencesModal && previouslyFocused) {
-		previouslyFocused.focus();
-		previouslyFocused = null;
-	}
+	$effect(() => {
+		if (browser && !$showPreferencesModal && previouslyFocused) {
+			previouslyFocused.focus();
+			previouslyFocused = null;
+		}
+	});
 
 	// Prevent body scroll when modal is open
-	$: if (browser) {
-		if ($showPreferencesModal) {
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.overflow = '';
+	$effect(() => {
+		if (browser) {
+			if ($showPreferencesModal) {
+				document.body.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = '';
+			}
 		}
-	}
+	});
 
 	onDestroy(() => {
 		if (browser) {
@@ -176,9 +184,11 @@
 	});
 
 	// Check for reduced motion
-	$: prefersReducedMotion = browser
-		? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		: false;
+	const prefersReducedMotion = $derived(
+		browser
+			? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+			: false
+	);
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

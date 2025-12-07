@@ -104,13 +104,13 @@
 	});
 
 	// Calculate overall retention metrics
-	$: overallMetrics = selectedCohort
+	const overallMetrics = $derived(selectedCohort
 		? {
 				avgWeek1: calculateAvgRetention(selectedCohort.retention_matrix, 0),
 				avgWeek4: calculateAvgRetention(selectedCohort.retention_matrix, 3),
 				avgWeek8: calculateAvgRetention(selectedCohort.retention_matrix, 7)
 			}
-		: null;
+		: null);
 
 	function calculateAvgRetention(
 		matrix: Array<{ cohort: string; size: number; periods: number[] }>,

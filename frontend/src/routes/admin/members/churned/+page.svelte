@@ -24,10 +24,10 @@
 	} from '@tabler/icons-svelte';
 
 	// Store state
-	$: members = $churnedStore.members;
-	$: stats = $churnedStore.stats;
-	$: pagination = $churnedStore.pagination;
-	$: loading = $churnedStore.loading;
+	let members = $derived($churnedStore.members);
+	let stats = $derived($churnedStore.stats);
+	let pagination = $derived($churnedStore.pagination);
+	let loading = $derived($churnedStore.loading);
 
 	// Local state
 	let searchQuery = '';

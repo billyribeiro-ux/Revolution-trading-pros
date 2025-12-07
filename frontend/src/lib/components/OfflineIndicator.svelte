@@ -17,13 +17,14 @@
 		pendingActionsCount,
 		isSyncing
 	} from '$lib/stores/offline';
-	import IconWifi from '@tabler/icons-svelte/icons/wifi';
-	import IconWifiOff from '@tabler/icons-svelte/icons/wifi-off';
-	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import {
+		IconWifi,
+		IconUpload,
+		IconLoader,
+		IconCheck,
+		IconX,
+		IconRefresh
+	} from '@tabler/icons-svelte';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);
@@ -47,7 +48,7 @@
 	>
 		<div class="banner-content">
 			<div class="banner-icon">
-				<IconWifiOff size={18} />
+				<IconWifi size={18} />
 			</div>
 			<div class="banner-text">
 				<span class="banner-title">You're offline</span>
@@ -55,7 +56,7 @@
 			</div>
 			{#if $hasPendingActions}
 				<div class="pending-badge">
-					<IconCloudUpload size={14} />
+					<IconUpload size={14} />
 					{$pendingActionsCount} pending
 				</div>
 			{/if}
@@ -74,7 +75,7 @@
 			<span class="banner-title">Back online</span>
 			{#if $isSyncing}
 				<div class="syncing-indicator">
-					<IconLoader2 size={14} class="spinning" />
+					<IconLoader size={14} class="spinning" />
 					Syncing...
 				</div>
 			{:else if $hasPendingActions}
@@ -100,9 +101,9 @@
 		in:fly={{ y: 20, duration: 200 }}
 	>
 		{#if $isSyncing}
-			<IconLoader2 size={18} class="spinning" />
+			<IconLoader size={18} class="spinning" />
 		{:else}
-			<IconCloudUpload size={18} />
+			<IconUpload size={18} />
 		{/if}
 		<span>{$pendingActionsCount}</span>
 	</button>
@@ -126,7 +127,7 @@
 					disabled={$isSyncing}
 				>
 					{#if $isSyncing}
-						<IconLoader2 size={14} class="spinning" />
+						<IconLoader size={14} class="spinning" />
 						Syncing...
 					{:else}
 						<IconRefresh size={14} />

@@ -5,13 +5,12 @@
 	import { previewForm } from '$lib/api/forms';
 	import type { Form } from '$lib/api/forms';
 
-	let formSlug: string;
 	let form: Form | null = null;
 	let loading = true;
 	let error = '';
 	let submitted = false;
 
-	$: formSlug = $page.params.slug;
+	let formSlug = $derived($page.params.slug);
 
 	onMount(async () => {
 		try {

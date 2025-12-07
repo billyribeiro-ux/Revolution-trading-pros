@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {
-		IconCalendarRepeat,
+		IconCalendarEvent,
 		IconPlus,
 		IconSearch,
 		IconEdit,
@@ -150,7 +150,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconCalendarRepeat size={24} />
+				<IconCalendarEvent size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -212,7 +212,7 @@
 		</div>
 	{:else if filteredCampaigns.length === 0}
 		<div class="empty-state">
-			<IconCalendarRepeat size={48} />
+			<IconCalendarEvent size={48} />
 			<h3>No recurring campaigns found</h3>
 			<p>Create your first recurring campaign for automated newsletters</p>
 			<a href="/admin/crm/recurring-campaigns/new" class="btn-primary">
@@ -240,7 +240,7 @@
 							<td>
 								<div class="campaign-cell">
 									<div class="campaign-icon">
-										<IconCalendarRepeat size={20} />
+										<IconCalendarEvent size={20} />
 									</div>
 									<div class="campaign-info">
 										<span class="campaign-title">{campaign.title}</span>

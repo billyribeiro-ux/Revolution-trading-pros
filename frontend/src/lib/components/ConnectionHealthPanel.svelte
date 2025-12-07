@@ -19,19 +19,20 @@
 		allConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconPlug from '@tabler/icons-svelte/icons/plug';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import {
+		IconX,
+		IconPlugConnected,
+		IconPlugConnectedX,
+		IconRefresh,
+		IconLoader,
+		IconCheck,
+		IconAlertTriangle,
+		IconAlertCircle,
+		IconClock,
+		IconActivity,
+		IconChartLine,
+		IconExternalLink
+	} from '@tabler/icons-svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -74,7 +75,7 @@
 	function getStatusIcon(status: ConnectionState) {
 		switch (status) {
 			case 'connected': return IconCheck;
-			case 'connecting': return IconLoader2;
+			case 'connecting': return IconLoader;
 			case 'error': return IconAlertCircle;
 			default: return IconPlugConnectedX;
 		}
@@ -154,7 +155,7 @@
 			<div class="panel-header">
 				<div class="header-left">
 					<div class="header-icon" class:healthy={overallHealth === 'healthy'} class:partial={overallHealth === 'partial'} class:unhealthy={overallHealth === 'unhealthy'}>
-						<IconPlug size={20} />
+						<IconPlugConnected size={20} />
 					</div>
 					<div class="header-info">
 						<h2>Connection Health</h2>

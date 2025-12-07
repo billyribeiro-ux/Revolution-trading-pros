@@ -1428,10 +1428,14 @@
 	}
 
 	// Reactive statements
-	$: completionStatus = getCompletionStatus();
-	$: if (course.modules) updateCourseDuration();
-	$: validateAll();
-	$: totalValue = getTotalValue();
+	let completionStatus = $derived(getCompletionStatus());
+	$effect(() => {
+		if (course.modules) updateCourseDuration();
+	});
+	$effect(() => {
+		validateAll();
+	});
+	let totalValue = $derived(getTotalValue());
 </script>
 
 <!-- Complete HTML Template -->

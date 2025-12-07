@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {
-		IconRoute,
+		IconGitBranch,
 		IconPlus,
 		IconSearch,
 		IconEdit,
@@ -170,7 +170,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconRoute size={24} />
+				<IconGitBranch size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -232,7 +232,7 @@
 		</div>
 	{:else if filteredFunnels.length === 0}
 		<div class="empty-state">
-			<IconRoute size={48} />
+			<IconGitBranch size={48} />
 			<h3>No automations found</h3>
 			<p>Create your first automation to engage contacts automatically</p>
 			<a href="/admin/crm/automations/new" class="btn-primary">
@@ -260,7 +260,7 @@
 							<td>
 								<div class="funnel-cell">
 									<div class="funnel-icon">
-										<IconRoute size={20} />
+										<IconGitBranch size={20} />
 									</div>
 									<div class="funnel-info">
 										<span class="funnel-title">{funnel.title}</span>

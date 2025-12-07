@@ -141,13 +141,13 @@
 		loadReports();
 	});
 
-	$: filteredReports = reports.filter((report) => {
+	const filteredReports = $derived(reports.filter((report) => {
 		if (activeFilter === 'all') return true;
 		if (activeFilter === 'active') return report.status === 'active';
 		if (activeFilter === 'scheduled') return report.schedule;
 		if (activeFilter === 'draft') return report.status === 'draft';
 		return true;
-	});
+	}));
 
 	// Report type icons
 	const typeIcons: Record<string, string> = {

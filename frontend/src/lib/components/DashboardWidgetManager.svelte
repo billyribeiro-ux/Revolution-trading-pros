@@ -25,28 +25,30 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
-	import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
-	import IconLayoutList from '@tabler/icons-svelte/icons/layout-list';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconWorld from '@tabler/icons-svelte/icons/world';
-	import IconArticle from '@tabler/icons-svelte/icons/article';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
-	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
-	import IconPlug from '@tabler/icons-svelte/icons/plug';
-	import IconHeartRateMonitor from '@tabler/icons-svelte/icons/heart-rate-monitor';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEyeCheck from '@tabler/icons-svelte/icons/eye-check';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import {
+		IconX,
+		IconGripVertical,
+		IconEye,
+		IconEyeOff,
+		IconLayoutGrid,
+		IconList,
+		IconRefresh,
+		IconChevronUp,
+		IconChevronDown,
+		IconChartLine,
+		IconWorld,
+		IconFileText,
+		IconUsers,
+		IconCurrencyDollar,
+		IconShoppingCart,
+		IconPlugConnected,
+		IconActivity,
+		IconBolt,
+		IconMail,
+		IconSearch,
+		IconEyeCheck,
+		IconSettings
+	} from '@tabler/icons-svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -62,12 +64,12 @@
 	const iconMap: Record<string, typeof IconChartLine> = {
 		'chart-line': IconChartLine,
 		'world': IconWorld,
-		'article': IconArticle,
+		'article': IconFileText,
 		'users': IconUsers,
 		'currency-dollar': IconCurrencyDollar,
 		'shopping-cart': IconShoppingCart,
-		'plug': IconPlug,
-		'heart-rate-monitor': IconHeartRateMonitor,
+		'plug': IconPlugConnected,
+		'heart-rate-monitor': IconActivity,
 		'bolt': IconBolt,
 		'mail': IconMail,
 		'search': IconSearch,
@@ -298,7 +300,7 @@
 									class:active={$widgetLayout === 'list'}
 									onclick={() => widgetStore.setLayout('list')}
 								>
-									<IconLayoutList size={18} />
+									<IconList size={18} />
 									List
 								</button>
 							</div>

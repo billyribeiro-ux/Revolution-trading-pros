@@ -10,7 +10,6 @@
 	import type { FormTheme } from '$lib/data/formTemplates';
 	import { themes } from '$lib/data/formTemplates';
 
-	let formId: number;
 	let form: Form | null = null;
 	let loading = true;
 	let error = '';
@@ -18,7 +17,7 @@
 	let showThemeCustomizer = false;
 	let selectedTheme: FormTheme | null = null;
 
-	$: formId = parseInt($page.params.id);
+	let formId = $derived(parseInt($page.params.id));
 
 	onMount(async () => {
 		try {

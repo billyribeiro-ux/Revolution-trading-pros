@@ -6,16 +6,16 @@
 	import { getForms, type Form } from '$lib/api/forms';
 	import { IconSearch, IconRefresh, IconChartBar } from '@tabler/icons-svelte';
 
-	let contentType = 'posts';
-	let contentId = '';
-	let focusKeyword = '';
-	let analysis: Partial<SeoAnalysis> | null = null;
-	let loading = false;
-	let analyzing = false;
+	let contentType = $state('posts');
+	let contentId = $state('');
+	let focusKeyword = $state('');
+	let analysis: Partial<SeoAnalysis> | null = $state(null);
+	let loading = $state(false);
+	let analyzing = $state(false);
 
 	// For content selector
-	let forms: Form[] = [];
-	let selectedContent: Record<string, unknown> | null = null;
+	let forms: Form[] = $state([]);
+	let selectedContent: Record<string, unknown> | null = $state(null);
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },
@@ -84,9 +84,11 @@
 		return 'Poor';
 	}
 
-	$: if (contentId) {
-		loadAnalysis();
-	}
+	$effect(() => {
+		if (contentId) {
+			loadAnalysis();
+		}
+	});
 </script>
 
 <svelte:head>

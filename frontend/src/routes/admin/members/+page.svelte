@@ -30,11 +30,11 @@
 	import { toastStore } from '$lib/stores/toast';
 
 	// Reactive state from stores
-	$: members = $membersStore.members;
-	$: stats = $membersStore.stats;
-	$: services = $membersStore.services;
-	$: pagination = $membersStore.pagination;
-	$: loading = $membersStore.loading;
+	let members = $derived($membersStore.members);
+	let stats = $derived($membersStore.stats);
+	let services = $derived($membersStore.services);
+	let pagination = $derived($membersStore.pagination);
+	let loading = $derived($membersStore.loading);
 
 	// Local state
 	let searchQuery = '';

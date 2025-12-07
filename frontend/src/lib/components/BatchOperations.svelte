@@ -10,14 +10,16 @@
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconArchive from '@tabler/icons-svelte/icons/archive';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconTag from '@tabler/icons-svelte/icons/tag';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import {
+		IconTrash,
+		IconInbox,
+		IconDownload,
+		IconTag,
+		IconMail,
+		IconX,
+		IconCheck,
+		IconLoader
+	} from '@tabler/icons-svelte';
 
 	interface BatchAction {
 		id: string;
@@ -63,7 +65,7 @@
 		{
 			id: 'archive',
 			label: 'Archive',
-			icon: IconArchive,
+			icon: IconInbox,
 			action: async (ids) => {
 				console.log('Archiving:', ids);
 				await new Promise(r => setTimeout(r, 1000));
@@ -148,7 +150,7 @@
 						disabled={isProcessing}
 					>
 						{#if processingAction === action.id}
-							<IconLoader2 size={18} class="spinning" />
+							<IconLoader size={18} class="spinning" />
 						{:else}
 							<svelte:component this={action.icon} size={18} />
 						{/if}

@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { fly, scale, fade } from 'svelte/transition';
 	import { cubicOut, backOut, elasticOut } from 'svelte/easing';
 	import { spring, tweened } from 'svelte/motion';
 
 	// Config available for widget customization
 	export const config: Record<string, unknown> = {};
-
-	const dispatch = createEventDispatcher();
 
 	interface Integration {
 		id: string;
@@ -167,7 +165,7 @@
 		}
 	}
 
-	$: connectedCount = integrations.filter((i) => i.connected).length;
+	const connectedCount = $derived(integrations.filter((i) => i.connected).length);
 </script>
 
 <div class="google-integration-widget">

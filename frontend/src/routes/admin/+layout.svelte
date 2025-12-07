@@ -15,14 +15,16 @@
 	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
-	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
-	import IconSun from '@tabler/icons-svelte/icons/sun';
-	import IconMoon from '@tabler/icons-svelte/icons/moon';
-	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconPlug from '@tabler/icons-svelte/icons/plug';
-	import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
+	import {
+		IconMenu2,
+		IconSun,
+		IconMoon,
+		IconDeviceDesktop,
+		IconBell,
+		IconSearch,
+		IconPlugConnected,
+		IconKeyboard
+	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
@@ -203,7 +205,7 @@
 					onclick={() => isConnectionHealthOpen = true}
 					title="API Connections"
 				>
-					<IconPlug size={18} />
+					<IconPlugConnected size={18} />
 				</button>
 
 				<!-- Rate Limit Indicator -->

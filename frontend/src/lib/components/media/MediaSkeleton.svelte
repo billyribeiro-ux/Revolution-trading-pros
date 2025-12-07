@@ -8,16 +8,25 @@
   - List skeleton for table views
   - Upload skeleton for upload progress
 
-  @version 1.0.0
+  @version 2.0.0
 -->
 <script lang="ts">
   // Props
-  export let type: 'grid' | 'card' | 'list' | 'upload' | 'single' = 'grid';
-  export let count: number = 8;
-  export let columns: number = 4;
-  export let aspectRatio: string = '1/1';
-  export let showText: boolean = true;
-  export let className: string = '';
+  let {
+    type = 'grid',
+    count = 8,
+    columns = 4,
+    aspectRatio = '1/1',
+    showText = true,
+    className = ''
+  }: {
+    type?: 'grid' | 'card' | 'list' | 'upload' | 'single';
+    count?: number;
+    columns?: number;
+    aspectRatio?: string;
+    showText?: boolean;
+    className?: string;
+  } = $props();
 </script>
 
 {#if type === 'grid'}

@@ -23,6 +23,7 @@
 	 */
 
 	import '$lib/styles/st-icons.css';
+	import type { MembershipStatus } from '$lib/api/user-memberships';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -44,7 +45,7 @@
 		roomUrl?: string;
 		roomLabel?: string;
 		skeleton?: boolean;
-		status?: 'active' | 'expiring' | 'expired';
+		status?: MembershipStatus;
 		daysUntilExpiry?: number;
 		accessUrl?: string;
 		onclick?: () => void;

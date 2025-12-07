@@ -18,34 +18,36 @@
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconCommand from '@tabler/icons-svelte/icons/command';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconArrowNarrowLeft from '@tabler/icons-svelte/icons/arrow-narrow-left';
-	import IconArrowUp from '@tabler/icons-svelte/icons/arrow-up';
-	import IconArrowDown from '@tabler/icons-svelte/icons/arrow-down';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconHistory from '@tabler/icons-svelte/icons/history';
-	import IconHome from '@tabler/icons-svelte/icons/home';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
-	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	import IconPhoto from '@tabler/icons-svelte/icons/photo';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconBrandGoogle from '@tabler/icons-svelte/icons/brand-google';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconForms from '@tabler/icons-svelte/icons/forms';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
-	import IconDatabase from '@tabler/icons-svelte/icons/database';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconLogout from '@tabler/icons-svelte/icons/logout';
+	import {
+		IconSearch,
+		IconTerminal,
+		IconArrowRight,
+		IconArrowBigDown,
+		IconArrowUp,
+		IconArrowDown,
+		IconX,
+		IconClock,
+		IconHome,
+		IconChartBar,
+		IconUsers,
+		IconMail,
+		IconSettings,
+		IconShoppingCart,
+		IconFileText,
+		IconPhoto,
+		IconPlugConnected,
+		IconActivity,
+		IconBrandGoogle,
+		IconTrendingUp,
+		IconForms,
+		IconVideo,
+		IconCreditCard,
+		IconDatabase,
+		IconRefresh,
+		IconDownload,
+		IconUpload,
+		IconLogout
+	} from '@tabler/icons-svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -280,7 +282,7 @@
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}
 										<div class="item-action">
-											<IconArrowNarrowLeft size={14} />
+											<IconArrowBigDown size={14} />
 										</div>
 									{/if}
 								</button>
@@ -299,7 +301,7 @@
 						Navigate
 					</span>
 					<span class="hint">
-						<kbd><IconArrowNarrowLeft size={12} /></kbd>
+						<kbd><IconArrowBigDown size={12} /></kbd>
 						Select
 					</span>
 					<span class="hint">
@@ -308,7 +310,7 @@
 					</span>
 				</div>
 				<div class="footer-shortcut">
-					<kbd><IconCommand size={12} /></kbd>
+					<kbd><IconTerminal size={12} /></kbd>
 					<kbd>K</kbd>
 				</div>
 			</div>

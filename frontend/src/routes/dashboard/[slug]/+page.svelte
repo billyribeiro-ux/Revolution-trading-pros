@@ -19,7 +19,7 @@
 	import {
 		IconPlayerPlay,
 		IconBook,
-		IconArchive,
+		IconInbox,
 		IconExternalLink,
 		IconChevronRight,
 		IconClock,
@@ -298,7 +298,7 @@
 					<div class="col-sm-6 col-lg-3">
 						<a href="/dashboard/{slug}/archive" class="action-card">
 							<div class="action-card__icon">
-								<IconArchive size={28} />
+								<IconInbox size={28} />
 							</div>
 							<div class="action-card__content">
 								<h3>Video Archive</h3>
