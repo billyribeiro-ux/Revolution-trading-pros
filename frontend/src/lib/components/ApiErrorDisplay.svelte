@@ -86,6 +86,7 @@
 </script>
 
 {#if error}
+	{@const Icon = IconComponent()}
 	<div
 		class="api-error {variant}"
 		class:critical={severity === 'critical'}
@@ -96,7 +97,7 @@
 		aria-live="polite"
 	>
 		<div class="error-icon">
-			<svelte:component this={IconComponent()} size={20} />
+			<Icon size={20} />
 		</div>
 
 		<div class="error-body">

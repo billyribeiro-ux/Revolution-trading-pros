@@ -8,10 +8,9 @@
   - Interactive selection
   - Zoom preview on hover
 
-  @version 1.0.0
+  @version 2.0.0
 -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { fade, scale } from 'svelte/transition';
 
   interface Variant {
@@ -22,18 +21,27 @@
     size: number;
   }
 
-  // Props
-  export let variants: Variant[] = [];
-  export let originalUrl: string = '';
-  export let originalSize: number = 0;
-  export let selectedSize: string | null = null;
-  export let showSizes: boolean = true;
-  export let interactive: boolean = true;
-  export let className: string = '';
+  interface Props {
+    variants?: Variant[];
+    originalUrl?: string;
+    originalSize?: number;
+    selectedSize?: string | null;
+    showSizes?: boolean;
+    interactive?: boolean;
+    className?: string;
+    onSelect?: (sizeName: string) => void;
+  }
 
-  const dispatch = createEventDispatcher<{
-    select: string;
-  }>();
+  let {
+    variants = [],
+    originalUrl = '',
+    originalSize = 0,
+    selectedSize = $bindable(null),
+    showSizes = true,
+    interactive = true,
+    className = '',
+    onSelect,
+  }: Props = $props();
 
   // Breakpoint labels
   const breakpointLabels: Record<string, string> = {
@@ -56,8 +64,11 @@
   };
 
   // State
-  let hoveredVariant: Variant | null = null;
-  let previewPosition = { x: 0, y: 0 };
+  let hoveredVariant = $state<Variant | null>(null);
+  let previewPosition = $state({ x: 0, y: 0 });
+
+  // Derived state
+  const sortedVariants = $derived([...variants].sort((a, b) => a.width - b.width));
 
   // Format bytes
   function formatBytes(bytes: number): string {
@@ -78,7 +89,7 @@
   function handleSelect(sizeName: string) {
     if (!interactive) return;
     selectedSize = sizeName;
-    dispatch('select', sizeName);
+    onSelect?.(sizeName);
   }
 
   // Handle hover preview
@@ -105,9 +116,6 @@
       y: rect.top,
     };
   }
-
-  // Sort variants by width
-  $: sortedVariants = [...variants].sort((a, b) => a.width - b.width);
 </script>
 
 <div class="responsive-preview {className}">
@@ -168,7 +176,7 @@
           <div
             class="indicator-bar"
             style="width: {(breakpointWidths[variant.sizeName] / 1920) * 100}%"
-          />
+          ></div>
         </div>
       </button>
     {/each}
@@ -186,12 +194,12 @@
             <div
               class="chart-bar"
               style="height: {(variant.size / originalSize) * 100}%"
-            />
+            ></div>
             <span class="chart-label">{variant.sizeName}</span>
           </div>
         {/each}
         <div class="chart-bar-wrapper original">
-          <div class="chart-bar chart-bar-original" style="height: 100%" />
+          <div class="chart-bar chart-bar-original" style="height: 100%"></div>
           <span class="chart-label">orig</span>
         </div>
       </div>

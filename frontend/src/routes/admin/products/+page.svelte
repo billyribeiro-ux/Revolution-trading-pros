@@ -12,10 +12,10 @@
 		IconShoppingCart
 	} from '@tabler/icons-svelte';
 
-	let loading = true;
-	let products: any[] = [];
-	let error = '';
-	let selectedType = 'all';
+	let loading = $state(true);
+	let products = $state<any[]>([]);
+	let error = $state('');
+	let selectedType = $state('all');
 
 	const productTypes = [
 		{ value: 'all', label: 'All Products', icon: IconShoppingCart },
@@ -86,9 +86,11 @@
 	}
 
 	// Reload products when type filter changes
-	$: if (selectedType) {
-		loadProducts();
-	}
+	$effect(() => {
+		if (selectedType) {
+			loadProducts();
+		}
+	});
 </script>
 
 <svelte:head>
@@ -110,12 +112,13 @@
 	<!-- Type Filter -->
 	<div class="type-filter">
 		{#each productTypes as type}
+			{@const Icon = type.icon}
 			<button
 				class="type-btn"
 				class:active={selectedType === type.value}
 				onclick={() => (selectedType = type.value)}
 			>
-				<svelte:component this={type.icon} size={20} />
+				<Icon size={20} />
 				{type.label}
 			</button>
 		{/each}
@@ -143,10 +146,11 @@
 	{:else}
 		<div class="products-grid">
 			{#each products as product}
+				{@const TypeIcon = getTypeIcon(product.type)}
 				<div class="product-card">
 					<div class="product-header">
 						<div class="product-type {getTypeColor(product.type)}">
-							<svelte:component this={getTypeIcon(product.type)} size={16} />
+							<TypeIcon size={16} />
 							{product.type}
 						</div>
 						<div class="product-status">

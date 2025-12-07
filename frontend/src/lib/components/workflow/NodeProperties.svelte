@@ -8,7 +8,13 @@
 
 	let { node }: Props = $props();
 
-	let config = $state({ ...node.config });
+	// Config state initialized with empty object
+	let config = $state({} as typeof node.config);
+
+	// Sync node.config prop to config state
+	$effect(() => {
+		config = { ...node.config };
+	});
 
 	function handleUpdate() {
 		workflowCanvas.updateNode(node.id, { config });

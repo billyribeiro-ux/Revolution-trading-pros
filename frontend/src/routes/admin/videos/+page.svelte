@@ -31,20 +31,20 @@
 		created_at: string;
 	}
 
-	let videos: Video[] = [];
-	let isLoading = true;
-	let error = '';
-	let searchQuery = '';
-	let selectedStatus = 'all';
-	let showUploadModal = false;
+	let videos = $state<Video[]>([]);
+	let isLoading = $state(true);
+	let error = $state('');
+	let searchQuery = $state('');
+	let selectedStatus = $state('all');
+	let showUploadModal = $state(false);
 
 	// Stats
-	let stats = {
+	let stats = $state({
 		totalVideos: 0,
 		totalViews: 0,
 		totalDuration: '0h',
 		publishedCount: 0
-	};
+	});
 
 	async function loadVideos() {
 		isLoading = true;
@@ -89,13 +89,13 @@
 		return views.toString();
 	}
 
-	$: filteredVideos = videos.filter(video => {
-		const matchesSearch = !searchQuery || 
+	let filteredVideos = $derived(videos.filter(video => {
+		const matchesSearch = !searchQuery ||
 			video.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			video.description?.toLowerCase().includes(searchQuery.toLowerCase());
 		const matchesStatus = selectedStatus === 'all' || video.status === selectedStatus;
 		return matchesSearch && matchesStatus;
-	});
+	}));
 
 	onMount(() => {
 		loadVideos();
@@ -168,9 +168,11 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" placeholder="Search videos..." bind:value={searchQuery} />
+			<label for="search-videos" class="sr-only">Search videos</label>
+			<input type="text" id="search-videos" placeholder="Search videos..." bind:value={searchQuery} />
 		</div>
-		<select class="filter-select" bind:value={selectedStatus}>
+		<label for="status-filter" class="sr-only">Filter by status</label>
+		<select id="status-filter" class="filter-select" bind:value={selectedStatus}>
 			<option value="all">All Videos</option>
 			<option value="published">Published</option>
 			<option value="draft">Drafts</option>
@@ -259,9 +261,13 @@
 
 <!-- Upload Modal -->
 {#if showUploadModal}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => showUploadModal = false} onkeydown={(e) => e.key === 'Escape' && (showUploadModal = false)}>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		onclick={() => showUploadModal = false}
+		onkeydown={(e) => e.key === 'Escape' && (showUploadModal = false)}
+	>
 		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>Upload Video</h2>
@@ -840,5 +846,17 @@
 		gap: 0.75rem;
 		padding: 1.25rem;
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>

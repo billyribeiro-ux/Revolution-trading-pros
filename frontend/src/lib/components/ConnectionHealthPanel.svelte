@@ -19,19 +19,20 @@
 		allConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconPlug from '@tabler/icons-svelte/icons/plug';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import {
+		IconX,
+		IconPlugConnected,
+		IconPlugConnectedX,
+		IconRefresh,
+		IconLoader,
+		IconCheck,
+		IconAlertTriangle,
+		IconAlertCircle,
+		IconClock,
+		IconActivity,
+		IconChartLine,
+		IconExternalLink
+	} from '@tabler/icons-svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -74,7 +75,7 @@
 	function getStatusIcon(status: ConnectionState) {
 		switch (status) {
 			case 'connected': return IconCheck;
-			case 'connecting': return IconLoader2;
+			case 'connecting': return IconLoader;
 			case 'error': return IconAlertCircle;
 			default: return IconPlugConnectedX;
 		}
@@ -140,21 +141,23 @@
 		class="health-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={close}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
+		onkeydown={(e) => e.key === 'Enter' && close()}
+		role="button"
+		tabindex="0"
+		aria-label="Close connection health panel"
 	>
 		<div
 			class="health-panel"
 			transition:fly={{ x: 400, duration: 300, easing: quintOut }}
 			onclick={(e) => e.stopPropagation()}
-			role="document"
+			onkeydown={(e) => e.stopPropagation()}
+			role="presentation"
 		>
 			<!-- Header -->
 			<div class="panel-header">
 				<div class="header-left">
 					<div class="header-icon" class:healthy={overallHealth === 'healthy'} class:partial={overallHealth === 'partial'} class:unhealthy={overallHealth === 'unhealthy'}>
-						<IconPlug size={20} />
+						<IconPlugConnected size={20} />
 					</div>
 					<div class="header-info">
 						<h2>Connection Health</h2>
@@ -217,9 +220,10 @@
 					<div class="services-list" in:fade={{ duration: 150 }}>
 						{#each Object.entries($allConnectionStatuses) as [service, status]}
 							{@const metrics = mockMetrics[service] || { responseTime: 0, uptime: 0, errorRate: 0 }}
+							{@const StatusIcon = getStatusIcon(status)}
 							<div class="service-card" class:connected={status === 'connected'} class:error={status === 'error'}>
 								<div class="service-status" style="color: {getStatusColor(status)}">
-									<svelte:component this={getStatusIcon(status)} size={20} class={status === 'connecting' ? 'spinning' : ''} />
+									<StatusIcon size={20} class={status === 'connecting' ? 'spinning' : ''} />
 								</div>
 								<div class="service-info">
 									<div class="service-header">

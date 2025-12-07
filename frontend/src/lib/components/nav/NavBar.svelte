@@ -811,8 +811,8 @@
 
 				<!-- Auth Buttons -->
 				{#if !$isAuthenticated}
-					<a href="/login" class="login-btn">Login</a>
 					<a href="/get-started" class="cta-btn">Get Started</a>
+					<a href="/login" class="login-btn">Login</a>
 				{:else}
 					<button 
 						class="user-btn"
@@ -1014,11 +1014,11 @@
 					Logout
 				</button>
 			{:else}
-				<a href="/login" class="mobile-login" onclick={() => handleNavClick('/login', 'Login')}>
-					Login
-				</a>
 				<a href="/get-started" class="mobile-cta" onclick={() => handleNavClick('/get-started', 'Get Started')}>
 					Get Started
+				</a>
+				<a href="/login" class="mobile-login" onclick={() => handleNavClick('/login', 'Login')}>
+					Login
 				</a>
 			{/if}
 		</div>
@@ -1476,16 +1476,17 @@
 		align-items: center;
 		height: 36px;
 		padding-inline: 1rem;
-		color: var(--nav-text);
+		color: #ffffff;
 		font-size: 0.75rem;
-		font-weight: 600;
+		font-weight: 700;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
-		background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
-		border: none;
+		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
+		background-color: var(--nav-primary-light);
+		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: var(--nav-radius);
-		transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1), background 200ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	@media (min-width: 1024px) {
@@ -1504,13 +1505,14 @@
 
 	.login-btn:hover,
 	.login-btn:focus-visible {
-		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%), var(--nav-primary-light);
+		background-color: rgba(14, 106, 196, 0.25);
 		box-shadow: 0 0 20px var(--nav-primary-glow);
+		border-color: rgba(14, 106, 196, 0.5);
 		transform: translateY(-2px);
 	}
 
 	.login-btn:focus-visible {
-		outline: 3px solid var(--nav-primary);
+		outline: 3px solid #ffffff;
 		outline-offset: 2px;
 	}
 
@@ -1519,17 +1521,16 @@
 		align-items: center;
 		height: 36px;
 		padding-inline: 1rem;
-		color: #ffffff;
+		color: var(--nav-text);
 		font-size: 0.75rem;
-		font-weight: 700;
+		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
-		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
-		background-color: var(--nav-primary-light);
-		border: 1px solid rgba(14, 106, 196, 0.2);
+		background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
+		border: none;
 		border-radius: var(--nav-radius);
-		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1), background 200ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	@media (min-width: 1024px) {
@@ -1548,14 +1549,13 @@
 
 	.cta-btn:hover,
 	.cta-btn:focus-visible {
-		background-color: rgba(14, 106, 196, 0.25);
+		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%), var(--nav-primary-light);
 		box-shadow: 0 0 20px var(--nav-primary-glow);
-		border-color: rgba(14, 106, 196, 0.5);
 		transform: translateY(-2px);
 	}
 
 	.cta-btn:focus-visible {
-		outline: 3px solid #ffffff;
+		outline: 3px solid var(--nav-primary);
 		outline-offset: 2px;
 	}
 

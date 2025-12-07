@@ -11,11 +11,13 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
 	import { connections, type ConnectionStatus } from '$lib/stores/connections';
-	import IconApiApp from '@tabler/icons-svelte/icons/api-app';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import {
+		IconPlugConnected,
+		IconChevronDown,
+		IconAlertTriangle,
+		IconCircleCheck,
+		IconClock
+	} from '@tabler/icons-svelte';
 
 	interface RateLimitInfo {
 		service: string;
@@ -28,7 +30,7 @@
 
 	let isOpen = $state(false);
 	let rateLimits = $state<RateLimitInfo[]>([]);
-	let refreshInterval: ReturnType<typeof setInterval>;
+	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 
 	// Mock data - in production, this would come from actual API responses
 	function generateMockRateLimits(): RateLimitInfo[] {
@@ -121,7 +123,7 @@
 		onclick={(e) => { e.stopPropagation(); toggle(); }}
 		title="API Rate Limits"
 	>
-		<IconApiApp size={18} />
+		<IconPlugConnected size={18} />
 		<span class="limit-percentage">{Math.round(lowestPercentage)}%</span>
 		<span class="chevron" class:rotated={isOpen}>
 			<IconChevronDown size={14} />
@@ -129,15 +131,19 @@
 	</button>
 
 	{#if isOpen}
+		{@const StatusIcon = getStatusIcon(overallStatus)}
 		<div
 			class="rate-limit-dropdown"
 			transition:scale={{ duration: 200, start: 0.95 }}
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="menu"
+			tabindex="-1"
 		>
 			<div class="dropdown-header">
 				<h4>API Rate Limits</h4>
 				<span class="header-status" style="color: {getStatusColor(overallStatus)}">
-					<svelte:component this={getStatusIcon(overallStatus)} size={14} />
+					<StatusIcon size={14} />
 					{overallStatus === 'ok' ? 'All services healthy' : overallStatus === 'warning' ? 'Some limits low' : 'Critical limits reached'}
 				</span>
 			</div>

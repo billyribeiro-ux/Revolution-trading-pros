@@ -52,9 +52,9 @@
 	let loading = $state(true);
 	let processing = $state(false);
 	let cardError = $state('');
-	let cardContainerRef: HTMLDivElement;
-	let applePayContainerRef: HTMLDivElement;
-	let googlePayContainerRef: HTMLDivElement;
+	let cardContainerRef = $state<HTMLDivElement>();
+	let applePayContainerRef = $state<HTMLDivElement>();
+	let googlePayContainerRef = $state<HTMLDivElement>();
 	let applePayAvailable = $state(false);
 	let googlePayAvailable = $state(false);
 
@@ -208,7 +208,7 @@
 
 <div class="square-payment" class:disabled class:has-error={error || cardError}>
 	{#if label}
-		<label class="field-label">{label}</label>
+		<label class="field-label" for="square-card-container">{label}</label>
 	{/if}
 
 	{#if testMode}
@@ -239,7 +239,7 @@
 			</div>
 		{/if}
 
-		<div bind:this={cardContainerRef} class="card-container"></div>
+		<div id="square-card-container" bind:this={cardContainerRef} class="card-container"></div>
 
 		{#if cardError}
 			<p class="card-error">{cardError}</p>

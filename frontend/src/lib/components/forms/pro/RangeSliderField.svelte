@@ -20,11 +20,36 @@
 	const suffix = $derived(field.attributes?.suffix || '');
 	const tickCount = $derived(field.attributes?.tick_count || 5);
 
-	let singleValue = $state<number>(
-		typeof value === 'number' ? value : Array.isArray(value) ? value[0] : min
-	);
-	let rangeStart = $state<number>(Array.isArray(value) ? value[0] : min);
-	let rangeEnd = $state<number>(Array.isArray(value) ? value[1] : max);
+	let singleValue = $state<number>(0);
+	let rangeStart = $state<number>(0);
+	let rangeEnd = $state<number>(100);
+
+	$effect(() => {
+		singleValue = min;
+	});
+
+	$effect(() => {
+		rangeStart = min;
+	});
+
+	$effect(() => {
+		rangeEnd = max;
+	});
+
+	// Sync state values with value prop changes
+	$effect(() => {
+		if (typeof value === 'number') {
+			singleValue = value;
+		} else if (Array.isArray(value)) {
+			rangeStart = value[0];
+			rangeEnd = value[1];
+		} else {
+			// Initialize from defaults if no value provided
+			singleValue = min;
+			rangeStart = min;
+			rangeEnd = max;
+		}
+	});
 
 	function formatValue(val: number): string {
 		return `${prefix}${val}${suffix}`;
@@ -106,6 +131,7 @@
 					value={rangeStart}
 					class="range-input range-start"
 					oninput={handleRangeStartChange}
+					aria-label={`${field.label} start value`}
 				/>
 				<input
 					type="range"
@@ -117,6 +143,7 @@
 					value={rangeEnd}
 					class="range-input range-end"
 					oninput={handleRangeEndChange}
+					aria-label={`${field.label} end value`}
 				/>
 			{:else}
 				<input

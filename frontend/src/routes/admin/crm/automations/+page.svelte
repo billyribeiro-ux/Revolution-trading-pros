@@ -168,7 +168,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconRoute size={24} />
+				<IconShare size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -230,7 +230,7 @@
 		</div>
 	{:else if filteredFunnels.length === 0}
 		<div class="empty-state">
-			<IconRoute size={48} />
+			<IconShare size={48} />
 			<h3>No automations found</h3>
 			<p>Create your first automation to engage contacts automatically</p>
 			<a href="/admin/crm/automations/new" class="btn-primary">
@@ -258,7 +258,7 @@
 							<td>
 								<div class="funnel-cell">
 									<div class="funnel-icon">
-										<IconRoute size={20} />
+										<IconShare size={20} />
 									</div>
 									<div class="funnel-info">
 										<span class="funnel-title">{funnel.title}</span>

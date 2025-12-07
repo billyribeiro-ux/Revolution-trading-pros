@@ -53,11 +53,11 @@
   // State
   // ═══════════════════════════════════════════════════════════════════════════
 
-  let overview: SavingsOverview | null = null;
-  let bandwidthData: BandwidthData[] = [];
-  let formatStats: FormatStats[] = [];
-  let isLoading = true;
-  let timeRange: '7d' | '30d' | '90d' | '1y' = '30d';
+  let overview = $state<SavingsOverview | null>(null);
+  let bandwidthData = $state<BandwidthData[]>([]);
+  let formatStats = $state<FormatStats[]>([]);
+  let isLoading = $state(true);
+  let timeRange = $state<'7d' | '30d' | '90d' | '1y'>('30d');
   let activeTab: 'overview' | 'bandwidth' | 'formats' | 'performance' = 'overview';
 
   // Animated values
@@ -214,7 +214,7 @@
     return `M0,${height} L${points.join(' L')} L${width},${height} Z`;
   }
 
-  $: maxBandwidth = bandwidthData.length > 0 ? Math.max(...bandwidthData.map(d => d.original)) : 0;
+  const maxBandwidth = $derived(bandwidthData.length > 0 ? Math.max(...bandwidthData.map(d => d.original)) : 0);
 </script>
 
 <svelte:head>

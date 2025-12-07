@@ -5,10 +5,10 @@
 	import { contactsApi, type Contact } from '$lib/api/forms';
 	import { IconPlus, IconSearch, IconMail, IconPhone } from '@tabler/icons-svelte';
 
-	let contacts: Contact[] = [];
-	let loading = true;
-	let searchQuery = '';
-	let statusFilter = '';
+	let contacts = $state<Contact[]>([]);
+	let loading = $state(true);
+	let searchQuery = $state('');
+	let statusFilter = $state('');
 
 	const statusOptions = [
 		{ value: '', label: 'All Statuses' },
@@ -47,7 +47,7 @@
 		}
 	}
 
-	$: filteredContacts = contacts.filter((contact) => {
+	let filteredContacts = $derived(contacts.filter((contact) => {
 		const matchesSearch =
 			contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			contact.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -56,7 +56,7 @@
 		const matchesStatus = !statusFilter || contact.status === statusFilter;
 
 		return matchesSearch && matchesStatus;
-	});
+	}));
 </script>
 
 <svelte:head>

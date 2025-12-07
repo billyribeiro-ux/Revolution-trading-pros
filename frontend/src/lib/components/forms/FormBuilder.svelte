@@ -23,11 +23,31 @@
 		},
 		styles: {},
 		status: 'draft',
-		fields: [],
-		...form
+		fields: []
 	});
 
-	let fields: FormField[] = $state(formData.fields || []);
+	let fields: FormField[] = $state([]);
+
+	// Sync with prop changes
+	$effect(() => {
+		if (form) {
+			formData = {
+				title: '',
+				description: '',
+				settings: {
+					success_message: 'Thank you for your submission!',
+					submit_text: 'Submit',
+					send_email: false,
+					email_to: ''
+				},
+				styles: {},
+				status: 'draft',
+				fields: [],
+				...form
+			};
+			fields = form.fields || [];
+		}
+	});
 	let availableFieldTypes: { type: string; label: string; icon?: string }[] = $state([]);
 	let fieldTypeMap: Record<string, string> = $state({});
 	let showFieldEditor = $state(false);
@@ -233,8 +253,8 @@
 				</div>
 
 				<div class="form-group">
-					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.settings.send_email} />
+					<label for="send-email" class="checkbox-label">
+						<input id="send-email" type="checkbox" bind:checked={formData.settings.send_email} />
 						<span>Send email notifications</span>
 					</label>
 				</div>

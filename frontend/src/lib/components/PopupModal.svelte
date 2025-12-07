@@ -67,20 +67,19 @@
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let currentPopup: Popup | null = null;
-	let isVisible = false;
+	let isVisible = $state(false);
 	let isLoading = false;
-	let isSubmitting = false;
-	let submitSuccess = false;
-	let submitError = '';
-	let formData: Record<string, any> = {};
-	let formErrors: Record<string, string> = {};
-	let modalElement: HTMLDivElement;
+	let isSubmitting = $state(false);
+	let submitSuccess = $state(false);
+	let submitError = $state('');
+	let formData = $state<Record<string, any>>({});
+	let formErrors = $state<Record<string, string>>({});
+	let modalElement = $state<HTMLDivElement>();
 	let previousFocus: HTMLElement | null = null;
 	let scrollPosition = 0;
 	let mousePosition = { x: 0, y: 0 };
 	let viewportSize = { width: 0, height: 0 };
-	let deviceType: 'mobile' | 'tablet' | 'desktop' = 'desktop';
+	let deviceType = $state<'mobile' | 'tablet' | 'desktop'>('desktop');
 	let userInteracted = false;
 	let impressionTime = 0;
 	let engagementTime = 0;
@@ -102,7 +101,7 @@
 
 	// A/B Testing
 	let variantId: string | null = null;
-	let testGroup: 'control' | 'variant' = 'control';
+	let testGroup = $state<'control' | 'variant'>('control');
 
 	// Performance metrics
 	let renderTime = 0;
@@ -110,18 +109,29 @@
 	let loadTime = 0;
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Reactive Statements
+	// Reactive Statements (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$: currentPopup = $activePopup;
+	let currentPopup = $derived($activePopup);
+
+	// Derived values
+	const formValid = $derived(validateForm());
+	const progressPercentage = $derived(calculateFormProgress());
+
+	// Side effects
 	// NOTE: updateDeviceType is called in onMount and resize handler, not reactively
 	// ENTERPRISE FIX: Only handle triggers if popup is active AND valid
-	$: if (browser && currentPopup && currentPopup.isActive && !isVisible) {
-		handlePopupTriggers(currentPopup);
-	}
-	$: if (isVisible) startEngagementTracking();
-	$: formValid = validateForm();
-	$: progressPercentage = calculateFormProgress();
+	$effect(() => {
+		if (browser && currentPopup && currentPopup.isActive && !isVisible) {
+			handlePopupTriggers(currentPopup);
+		}
+	});
+
+	$effect(() => {
+		if (isVisible) {
+			startEngagementTracking();
+		}
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -978,12 +988,14 @@
 	}
 
 	// Setup keyboard listener
-	$: if (browser && isVisible) {
-		keydownListener = handleKeydown;
-		document.addEventListener('keydown', keydownListener);
-	} else if (keydownListener) {
-		document.removeEventListener('keydown', keydownListener);
-	}
+	$effect(() => {
+		if (browser && isVisible) {
+			keydownListener = handleKeydown;
+			document.addEventListener('keydown', keydownListener);
+		} else if (keydownListener) {
+			document.removeEventListener('keydown', keydownListener);
+		}
+	});
 </script>
 
 {#if currentPopup && isVisible}
@@ -992,7 +1004,7 @@
 		class="popup-overlay"
 		style="background-color: {currentPopup.overlayColor}; opacity: {$overlayOpacity};"
 		role="button"
-		tabindex="-1"
+		tabindex="0"
 		aria-label="Close popup"
 		onclick={() => currentPopup?.closeOnOverlayClick && closePopup()}
 		onkeydown={(e) => e.key === 'Enter' && currentPopup?.closeOnOverlayClick && closePopup()}

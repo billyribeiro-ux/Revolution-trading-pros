@@ -31,7 +31,6 @@
 	// Derived state from page (safe - page state is consistent SSR/client)
 	let pathname = $derived(page.url.pathname);
 	let isAdminArea = $derived(pathname.startsWith('/admin'));
-	let isTradingRoom = $derived(pathname.startsWith('/live-trading-rooms/') && pathname.split('/').length > 2);
 	let isEmbedArea = $derived(pathname.startsWith('/embed'));
 	
 	// ICT9+ Hydration-Safe Pattern: 
@@ -62,7 +61,7 @@
 	<meta name="theme-color" content="#0a101c" />
 </svelte:head>
 
-{#if isAdminArea || isTradingRoom || isEmbedArea}
+{#if isAdminArea || isEmbedArea}
 	{@render children()}
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>

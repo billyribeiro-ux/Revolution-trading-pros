@@ -13,16 +13,16 @@
 	} from '@tabler/icons-svelte';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
 
-	let redirects: any[] = [];
-	let stats: any = null;
-	let loading = false;
-	let searchQuery = '';
-	let showEditor = false;
-	let editingRedirect: any = null;
-	let selectedIds: number[] = [];
+	let redirects: any[] = $state([]);
+	let stats: any = $state(null);
+	let loading = $state(false);
+	let searchQuery = $state('');
+	let showEditor = $state(false);
+	let editingRedirect: any = $state(null);
+	let selectedIds: number[] = $state([]);
 
 	const filterTypes = ['all', '301', '302', '307', '308', '410'];
-	let activeFilter = 'all';
+	let activeFilter = $state('all');
 
 	onMount(() => {
 		loadRedirects();
@@ -114,15 +114,17 @@
 		loadStats();
 	}
 
-	$: filteredRedirects = redirects.filter((redirect) => {
-		const matchesSearch =
-			redirect.source_url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			redirect.destination_url.toLowerCase().includes(searchQuery.toLowerCase());
+	let filteredRedirects = $derived(
+		redirects.filter((redirect) => {
+			const matchesSearch =
+				redirect.source_url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				redirect.destination_url.toLowerCase().includes(searchQuery.toLowerCase());
 
-		const matchesFilter = activeFilter === 'all' || redirect.redirect_type === activeFilter;
+			const matchesFilter = activeFilter === 'all' || redirect.redirect_type === activeFilter;
 
-		return matchesSearch && matchesFilter;
-	});
+			return matchesSearch && matchesFilter;
+		})
+	);
 </script>
 
 <svelte:head>

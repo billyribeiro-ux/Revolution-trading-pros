@@ -28,50 +28,50 @@
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
 
 	// State
-	let categories: Category[] = [];
-	let tags: Tag[] = [];
-	let filteredCategories: Category[] = [];
-	let filteredTags: Tag[] = [];
-	let loading = false;
-	let saving = false;
-	let showCategoryModal = false;
-	let showTagModal = false;
-	let editingCategory: Category | null = null;
-	let editingTag: Tag | null = null;
+	let categories = $state<Category[]>([]);
+	let tags = $state<Tag[]>([]);
+	let filteredCategories = $state<Category[]>([]);
+	let filteredTags = $state<Tag[]>([]);
+	let loading = $state(false);
+	let saving = $state(false);
+	let showCategoryModal = $state(false);
+	let showTagModal = $state(false);
+	let editingCategory = $state<Category | null>(null);
+	let editingTag = $state<Tag | null>(null);
 
 	// Search & Filter
-	let categorySearch = '';
-	let tagSearch = '';
-	let showHidden = false;
+	let categorySearch = $state('');
+	let tagSearch = $state('');
+	let showHidden = $state(false);
 
 	// Selection for bulk operations
-	let selectedCategories = new Set<number>();
-	let selectedTags = new Set<number>();
+	let selectedCategories = $state(new Set<number>());
+	let selectedTags = $state(new Set<number>());
 
 	// Forms
-	let categoryForm = {
+	let categoryForm = $state({
 		name: '',
 		slug: '',
 		description: '',
 		color: '#3b82f6',
 		is_visible: true
-	};
+	});
 
-	let tagForm = {
+	let tagForm = $state({
 		name: '',
 		slug: '',
 		color: '#10b981',
 		is_visible: true
-	};
+	});
 
 	// Validation errors
-	let categoryErrors: string[] = [];
-	let tagErrors: string[] = [];
+	let categoryErrors = $state<string[]>([]);
+	let tagErrors = $state<string[]>([]);
 
 	// Toast notifications
-	let toastMessage = '';
-	let toastType: 'success' | 'error' = 'success';
-	let showToast = false;
+	let toastMessage = $state('');
+	let toastType = $state<'success' | 'error'>('success');
+	let showToast = $state(false);
 
 	onMount(async () => {
 		await loadData();
@@ -130,12 +130,13 @@
 		});
 	}
 
-	$: {
+	// Effect to apply filters when search/filter changes
+	$effect(() => {
 		categorySearch;
 		tagSearch;
 		showHidden;
 		applyFilters();
-	}
+	});
 
 	function openCategoryModal(category: Category | null = null) {
 		if (category) {
@@ -347,14 +348,19 @@
 		}, 5000);
 	}
 
-	// Auto-generate slug when name changes
-	$: if (categoryForm.name && !editingCategory) {
-		categoryForm.slug = generateSlug(categoryForm.name);
-	}
+	// Auto-generate slug when name changes for categories
+	$effect(() => {
+		if (categoryForm.name && !editingCategory) {
+			categoryForm.slug = generateSlug(categoryForm.name);
+		}
+	});
 
-	$: if (tagForm.name && !editingTag) {
-		tagForm.slug = generateSlug(tagForm.name);
-	}
+	// Auto-generate slug when name changes for tags
+	$effect(() => {
+		if (tagForm.name && !editingTag) {
+			tagForm.slug = generateSlug(tagForm.name);
+		}
+	});
 </script>
 
 <svelte:head>

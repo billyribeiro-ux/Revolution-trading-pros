@@ -65,7 +65,7 @@
 </script>
 
 <div class="payment-method-selector">
-	<label class="field-label">
+	<label class="field-label" for="payment-method-{field.name}">
 		{field.label || 'Payment Method'}
 		{#if field.required}
 			<span class="required">*</span>
@@ -85,6 +85,7 @@
 				onclick={() => handleSelect(method.id)}
 			>
 				<input
+					id="payment-method-{method.id}"
 					type="radio"
 					name={field.name}
 					value={method.id}

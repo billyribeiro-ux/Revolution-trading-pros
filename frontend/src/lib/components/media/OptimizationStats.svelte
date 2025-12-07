@@ -8,7 +8,7 @@
   - Format conversions
   - Processing time
 
-  @version 1.0.0
+  @version 2.0.0
 -->
 <script lang="ts">
   import { fade, slide } from 'svelte/transition';
@@ -26,19 +26,30 @@
   }
 
   // Props
-  export let stats: Stats;
-  export let showDetails: boolean = true;
-  export let compact: boolean = false;
-  export let animated: boolean = true;
-  export let className: string = '';
+  let {
+    stats,
+    showDetails = true,
+    compact = false,
+    animated = true,
+    className = ''
+  }: {
+    stats: Stats;
+    showDetails?: boolean;
+    compact?: boolean;
+    animated?: boolean;
+    className?: string;
+  } = $props();
 
   // Animated savings
   const animatedSavings = tweened(0, {
-    duration: animated ? 1000 : 0,
+    duration: 1000,
     easing: cubicOut,
   });
 
-  $: animatedSavings.set(stats.savingsPercent);
+  $effect(() => {
+    const duration = animated ? 1000 : 0;
+    animatedSavings.set(stats.savingsPercent, { duration });
+  });
 
   // Format bytes
   function formatBytes(bytes: number): string {

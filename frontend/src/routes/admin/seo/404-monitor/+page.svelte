@@ -9,20 +9,20 @@
 	} from '@tabler/icons-svelte';
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
 
-	let logs: any[] = [];
-	let stats: any = null;
-	let loading = false;
-	let searchQuery = '';
-	let selectedIds: number[] = [];
-	let showCreateRedirect = false;
-	let selected404: any = null;
+	let logs: any[] = $state([]);
+	let stats: any = $state(null);
+	let loading = $state(false);
+	let searchQuery = $state('');
+	let selectedIds: number[] = $state([]);
+	let showCreateRedirect = $state(false);
+	let selected404: any = $state(null);
 
 	const sortOptions = [
 		{ value: 'hits', label: 'Most Hits' },
 		{ value: 'latest', label: 'Latest' },
 		{ value: 'oldest', label: 'Oldest' }
 	];
-	let sortBy = 'hits';
+	let sortBy = $state('hits');
 
 	onMount(() => {
 		loadLogs();
@@ -98,16 +98,18 @@
 		loadStats();
 	}
 
-	$: {
+	$effect(() => {
 		if (sortBy) {
 			loadLogs();
 		}
-	}
+	});
 
-	$: filteredLogs = logs.filter(
-		(log) =>
-			log.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			log.referer?.toLowerCase().includes(searchQuery.toLowerCase())
+	let filteredLogs = $derived(
+		logs.filter(
+			(log) =>
+				log.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				log.referer?.toLowerCase().includes(searchQuery.toLowerCase())
+		)
 	);
 </script>
 

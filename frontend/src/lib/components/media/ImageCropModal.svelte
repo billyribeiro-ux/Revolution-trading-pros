@@ -103,10 +103,10 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // Lifecycle - Svelte 5 $effect() rune
   // ═══════════════════════════════════════════════════════════════════════════
-  
+
   // Load image once on mount - use untrack to prevent re-running
-  let hasLoadedImage = false;
-  
+  let hasLoadedImage = $state(false);
+
   $effect(() => {
     // Only load once
     if (hasLoadedImage) return;
@@ -382,18 +382,16 @@
 />
 
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
-<div 
-  class="crop-modal-overlay" 
-  transition:fade 
+<div
+  class="crop-modal-overlay"
+  transition:fade
   onclick={() => dispatch('cancel')}
-  onkeydown={(e) => e.key === 'Escape' && dispatch('cancel')}
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="crop-modal-title"
-  tabindex="-1"
+  onkeydown={(e) => { if (e.key === 'Escape') dispatch('cancel'); if (e.key === 'Enter' || e.key === ' ') dispatch('cancel'); }}
+  role="button"
+  tabindex="0"
+  aria-label="Close modal"
 >
-  <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
-  <div class="crop-modal {className}" transition:scale onclick={(e) => e.stopPropagation()} role="document">
+  <div class="crop-modal {className}" transition:scale onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="crop-modal-title" tabindex="-1">
     <!-- Header -->
     <div class="modal-header">
       <h2 id="crop-modal-title" class="text-lg font-semibold text-gray-900 dark:text-white">Crop & Edit Image</h2>

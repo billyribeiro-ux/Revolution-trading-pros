@@ -33,31 +33,31 @@
 	import type { BannerTemplate } from '$lib/consent/templates/types';
 
 	// State
-	let selectedCategory = 'all';
-	let searchQuery = '';
-	let showEditor = false;
-	let editingTemplate: BannerTemplate | null = null;
-	let isCreatingNew = false;
-	let showImportModal = false;
-	let importJson = '';
-	let notification = '';
+	let selectedCategory = $state('all');
+	let searchQuery = $state('');
+	let showEditor = $state(false);
+	let editingTemplate = $state<BannerTemplate | null>(null);
+	let isCreatingNew = $state(false);
+	let showImportModal = $state(false);
+	let importJson = $state('');
+	let notification = $state('');
 	const importPlaceholder = '{"activeConfig": {...}, "customTemplates": [...]}';
 
 	// Get categories
-	$: categories = ['all', ...getTemplateCategories()];
+	let categories = $derived(['all', ...getTemplateCategories()]);
 
 	// Filtered templates
-	$: filteredTemplates = $allTemplates.filter((t) => {
+	let filteredTemplates = $derived($allTemplates.filter((t) => {
 		const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
 		const matchesSearch =
 			!searchQuery ||
 			t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			t.description.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesCategory && matchesSearch;
-	});
+	}));
 
 	// Active template ID
-	$: activeTemplateId = getActiveTemplateConfig().templateId;
+	let activeTemplateId = $derived(getActiveTemplateConfig().templateId);
 
 	onMount(() => {
 		if (browser) {

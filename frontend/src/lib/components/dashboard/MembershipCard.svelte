@@ -23,6 +23,7 @@
 	 */
 
 	import '$lib/styles/st-icons.css';
+	import type { MembershipStatus } from '$lib/api/user-memberships';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES

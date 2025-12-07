@@ -15,11 +15,11 @@
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	import TimeSeriesChart from '$lib/components/analytics/TimeSeriesChart.svelte';
 
-	let report: AttributionReport | null = null;
-	let loading = true;
-	let error: string | null = null;
-	let selectedPeriod = '30d';
-	let selectedModel = 'linear';
+	let report = $state<AttributionReport | null>(null);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let selectedPeriod = $state('30d');
+	let selectedModel = $state('linear');
 
 	const models = [
 		{ value: 'first_touch', label: 'First Touch', description: 'Credits the first interaction' },
@@ -65,10 +65,11 @@
 	});
 
 	// Calculate totals
-	$: totalRevenue = report?.channels?.reduce((sum, c) => sum + c.attributed_revenue, 0) || 0;
-	$: totalConversions =
-		report?.channels?.reduce((sum, c) => sum + c.attributed_conversions, 0) || 0;
-	$: totalTouchpoints = report?.channels?.reduce((sum, c) => sum + c.touchpoints, 0) || 0;
+	const totalRevenue = $derived(report?.channels?.reduce((sum, c) => sum + c.attributed_revenue, 0) || 0);
+	const totalConversions = $derived(
+		report?.channels?.reduce((sum, c) => sum + c.attributed_conversions, 0) || 0
+	);
+	const totalTouchpoints = $derived(report?.channels?.reduce((sum, c) => sum + c.touchpoints, 0) || 0);
 </script>
 
 <svelte:head>

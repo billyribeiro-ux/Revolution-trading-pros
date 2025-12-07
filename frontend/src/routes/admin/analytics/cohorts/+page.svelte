@@ -28,23 +28,23 @@
 		};
 	}
 
-	let cohorts: Cohort[] = [];
-	let loading = true;
-	let error: string | null = null;
-	let selectedPeriod = '90d';
-	let selectedGranularity = 'weekly';
-	let selectedCohort: Cohort | null = null;
-	let showCreateModal = false;
+	let cohorts = $state<Cohort[]>([]);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let selectedPeriod = $state('90d');
+	let selectedGranularity = $state('weekly');
+	let selectedCohort = $state<Cohort | null>(null);
+	let showCreateModal = $state(false);
 
 	// New cohort form
-	let newCohort = {
+	let newCohort = $state({
 		name: '',
 		description: '',
 		type: 'signup' as 'signup' | 'first_purchase' | 'custom',
 		granularity: 'weekly' as 'daily' | 'weekly' | 'monthly',
 		start_event: '',
 		return_event: ''
-	};
+	});
 
 	async function loadCohorts() {
 		loading = true;
@@ -104,13 +104,13 @@
 	});
 
 	// Calculate overall retention metrics
-	$: overallMetrics = selectedCohort
+	const overallMetrics = $derived(selectedCohort
 		? {
 				avgWeek1: calculateAvgRetention(selectedCohort.retention_matrix, 0),
 				avgWeek4: calculateAvgRetention(selectedCohort.retention_matrix, 3),
 				avgWeek8: calculateAvgRetention(selectedCohort.retention_matrix, 7)
 			}
-		: null;
+		: null);
 
 	function calculateAvgRetention(
 		matrix: Array<{ cohort: string; size: number; periods: number[] }>,
