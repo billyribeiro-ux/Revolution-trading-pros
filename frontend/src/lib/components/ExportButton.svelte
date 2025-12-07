@@ -11,15 +11,13 @@
 	 */
 
 	import { fade, scale } from 'svelte/transition';
-	import {
-		IconDownload,
-		IconTable,
-		IconCode,
-		IconFileText,
-		IconChevronDown,
-		IconCheck,
-		IconLoader2
-	} from '@tabler/icons-svelte';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconTable from '@tabler/icons-svelte/icons/table';
+	import IconCode from '@tabler/icons-svelte/icons/code';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
 	import { toastStore } from '$lib/stores/toast';
 
 	interface Props {

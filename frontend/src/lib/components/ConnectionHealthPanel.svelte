@@ -19,21 +19,19 @@
 		allConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections';
-	import {
-		IconX,
-		IconPlug,
-		IconPlugConnected,
-		IconPlugOff,
-		IconRefresh,
-		IconLoader2,
-		IconCheck,
-		IconAlertTriangle,
-		IconAlertCircle,
-		IconClock,
-		IconActivity,
-		IconChartLine,
-		IconExternalLink
-	} from '@tabler/icons-svelte';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconPlug from '@tabler/icons-svelte/icons/plug';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
 
 	interface Props {
 		isOpen?: boolean;
@@ -78,7 +76,7 @@
 			case 'connected': return IconCheck;
 			case 'connecting': return IconLoader2;
 			case 'error': return IconAlertCircle;
-			default: return IconPlugOff;
+			default: return IconPlugConnectedX;
 		}
 	}
 
