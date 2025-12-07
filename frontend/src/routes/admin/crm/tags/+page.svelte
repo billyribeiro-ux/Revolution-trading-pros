@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconTag,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconRefresh,
-		IconUsers,
-		IconPalette
-	} from '@tabler/icons-svelte';
+	import IconTag from '@tabler/icons-svelte/icons/tag';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconPalette from '@tabler/icons-svelte/icons/palette';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag } from '$lib/crm/types';
 

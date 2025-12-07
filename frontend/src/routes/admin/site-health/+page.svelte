@@ -20,38 +20,36 @@
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { getAuthToken } from '$lib/stores/auth';
-	import {
-		IconHeartbeat,
-		IconShieldCheck,
-		IconShieldX,
-		IconDatabase,
-		IconServer,
-		IconClock,
-		IconRefresh,
-		IconPlugConnected,
-		IconPlugConnectedX,
-		IconAlertTriangle,
-		IconCircleCheck,
-		IconCircleX,
-		IconInfoCircle,
-		IconLock,
-		IconSettings,
-		IconApi,
-		IconBrandPhp,
-		IconWorld,
-		IconCertificate,
-		IconFolder,
-		IconCloudComputing,
-		IconBug,
-		IconSpeedboat,
-		IconChartLine,
-		IconArrowRight,
-		IconExternalLink,
-		IconCheck,
-		IconX,
-		IconPlayerPlay,
-		IconDownload
-	} from '@tabler/icons-svelte';
+	import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
+	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
+	import IconShieldX from '@tabler/icons-svelte/icons/shield-x';
+	import IconDatabase from '@tabler/icons-svelte/icons/database';
+	import IconServer from '@tabler/icons-svelte/icons/server';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+	import IconCircleX from '@tabler/icons-svelte/icons/circle-x';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconApiApp from '@tabler/icons-svelte/icons/api-app';
+	import IconBrandPhp from '@tabler/icons-svelte/icons/brand-php';
+	import IconWorld from '@tabler/icons-svelte/icons/world';
+	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
+	import IconFolder from '@tabler/icons-svelte/icons/folder';
+	import IconCloud from '@tabler/icons-svelte/icons/cloud';
+	import IconBug from '@tabler/icons-svelte/icons/bug';
+	import IconRocket from '@tabler/icons-svelte/icons/rocket';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import {
 		connections,
 		connectedCount,
@@ -358,7 +356,7 @@
 
 	const tabs = [
 		{ id: 'overview', label: 'Overview', icon: IconHeartbeat },
-		{ id: 'performance', label: 'Performance', icon: IconSpeedboat },
+		{ id: 'performance', label: 'Performance', icon: IconRocket },
 		{ id: 'security', label: 'Security', icon: IconShieldCheck },
 		{ id: 'database', label: 'Database', icon: IconDatabase },
 		{ id: 'server', label: 'Server', icon: IconServer }
@@ -522,7 +520,7 @@
 					<div class="overview-card performance">
 						<div class="card-header">
 							<div class="card-icon">
-								<IconSpeedboat size={24} />
+								<IconRocket size={24} />
 							</div>
 							<div class="card-title">
 								<h3>Performance</h3>
@@ -667,7 +665,7 @@
 					<div class="api-health-grid">
 						<div class="api-health-card">
 							<div class="api-health-header">
-								<IconApi size={20} />
+								<IconApiApp size={20} />
 								<span>Connected APIs</span>
 							</div>
 							<div class="api-health-value">{$connectedCount}</div>
@@ -801,7 +799,7 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<IconSpeedboat size={48} />
+							<IconRocket size={48} />
 							<h4>No Performance Data</h4>
 							<p>Run health tests to collect performance metrics</p>
 							<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
@@ -961,7 +959,7 @@
 							{#if healthData.server.webServer}
 								<div class="metric-card">
 									<div class="metric-icon">
-										<IconCloudComputing size={24} />
+										<IconCloud size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Web Server</span>
