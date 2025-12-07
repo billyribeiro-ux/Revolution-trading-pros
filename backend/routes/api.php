@@ -431,6 +431,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
         Route::get('/', [\App\Http\Controllers\Api\ApiConnectionController::class, 'index']);
         Route::get('/services', [\App\Http\Controllers\Api\ApiConnectionController::class, 'services']);
         Route::get('/summary', [\App\Http\Controllers\Api\ApiConnectionController::class, 'summary']);
+        Route::get('/status', [\App\Http\Controllers\Api\ApiConnectionController::class, 'index']); // Alias for frontend compatibility
         Route::get('/health', [\App\Http\Controllers\Api\ApiConnectionController::class, 'health']);
         Route::get('/attention', [\App\Http\Controllers\Api\ApiConnectionController::class, 'needsAttention']);
         Route::get('/category/{category}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'byCategory']);
@@ -442,6 +443,12 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
         Route::post('/{serviceKey}/verify', [\App\Http\Controllers\Api\ApiConnectionController::class, 'verify']);
         Route::post('/{serviceKey}/refresh', [\App\Http\Controllers\Api\ApiConnectionController::class, 'refreshToken']);
         Route::patch('/{serviceKey}', [\App\Http\Controllers\Api\ApiConnectionController::class, 'update']);
+    });
+
+    // Site Health Monitoring
+    Route::prefix('site-health')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\Admin\SiteHealthController::class, 'index']);
+        Route::post('/run-tests', [\App\Http\Controllers\Api\Admin\SiteHealthController::class, 'runTests']);
     });
 
     // Subscription Plans

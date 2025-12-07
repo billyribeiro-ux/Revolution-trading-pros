@@ -29,7 +29,9 @@
 		IconTag,
 		IconVideo,
 		IconShoppingCart,
-		IconBellRinging
+		IconBellRinging,
+		IconHeartbeat,
+		IconPlugConnected
 	} from '@tabler/icons-svelte';
 	interface Props {
 		isOpen?: boolean;
@@ -86,6 +88,8 @@
 		{
 			title: 'System',
 			items: [
+				{ icon: IconHeartbeat, label: 'Site Health', href: '/admin/site-health' },
+				{ icon: IconPlugConnected, label: 'Connections', href: '/admin/connections' },
 				{ icon: IconUsers, label: 'Admin Users', href: '/admin/users' },
 				{ icon: IconSettings, label: 'Settings', href: '/admin/settings' }
 			]
