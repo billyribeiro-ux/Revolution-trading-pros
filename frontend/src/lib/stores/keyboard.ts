@@ -237,6 +237,18 @@ export const keyboard = {
 	},
 
 	/**
+	 * Register an action handler for an existing shortcut ID
+	 */
+	registerAction(id: string, action: () => void) {
+		keyboardStore.update(state => ({
+			...state,
+			shortcuts: state.shortcuts.map(s =>
+				s.id === id ? { ...s, action, enabled: true } : s
+			)
+		}));
+	},
+
+	/**
 	 * Unregister a shortcut
 	 */
 	unregister(id: string) {

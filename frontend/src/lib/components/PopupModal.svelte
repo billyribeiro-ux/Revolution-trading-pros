@@ -67,7 +67,6 @@
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let currentPopup: Popup | null = null;
 	let isVisible = false;
 	let isLoading = false;
 	let isSubmitting = false;
@@ -110,18 +109,29 @@
 	let loadTime = 0;
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Reactive Statements
+	// Reactive Statements (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$: currentPopup = $activePopup;
+	let currentPopup = $derived($activePopup);
+
+	// Derived values
+	const formValid = $derived(validateForm());
+	const progressPercentage = $derived(calculateFormProgress());
+
+	// Side effects
 	// NOTE: updateDeviceType is called in onMount and resize handler, not reactively
 	// ENTERPRISE FIX: Only handle triggers if popup is active AND valid
-	$: if (browser && currentPopup && currentPopup.isActive && !isVisible) {
-		handlePopupTriggers(currentPopup);
-	}
-	$: if (isVisible) startEngagementTracking();
-	$: formValid = validateForm();
-	$: progressPercentage = calculateFormProgress();
+	$effect(() => {
+		if (browser && currentPopup && currentPopup.isActive && !isVisible) {
+			handlePopupTriggers(currentPopup);
+		}
+	});
+
+	$effect(() => {
+		if (isVisible) {
+			startEngagementTracking();
+		}
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -978,12 +988,14 @@
 	}
 
 	// Setup keyboard listener
-	$: if (browser && isVisible) {
-		keydownListener = handleKeydown;
-		document.addEventListener('keydown', keydownListener);
-	} else if (keydownListener) {
-		document.removeEventListener('keydown', keydownListener);
-	}
+	$effect(() => {
+		if (browser && isVisible) {
+			keydownListener = handleKeydown;
+			document.addEventListener('keydown', keydownListener);
+		} else if (keydownListener) {
+			document.removeEventListener('keydown', keydownListener);
+		}
+	});
 </script>
 
 {#if currentPopup && isVisible}

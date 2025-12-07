@@ -18,7 +18,7 @@
 		IconFileText,
 		IconChevronDown,
 		IconCheck,
-		IconLoader2
+		IconLoader
 	} from '@tabler/icons-svelte';
 	import { toastStore } from '$lib/stores/toast';
 
@@ -169,7 +169,7 @@
 	}
 </script>
 
-<svelte:window on:click={closeDropdown} />
+<svelte:window onclick={closeDropdown} />
 
 <div class="export-container">
 	<button
@@ -181,7 +181,7 @@
 	>
 		{#if isExporting}
 			<span class="spinning">
-				<IconLoader2 size={18} />
+				<IconLoader size={18} />
 			</span>
 		{:else}
 			<IconDownload size={18} />

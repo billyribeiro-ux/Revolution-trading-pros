@@ -10,7 +10,7 @@
 	let loading = true;
 	let error: string | null = null;
 
-	$: dealId = $page.params.id as string;
+	let dealId = $derived($page.params.id as string);
 
 	onMount(async () => {
 		await loadDeal();

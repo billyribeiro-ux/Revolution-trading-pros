@@ -21,11 +21,10 @@
 	} from '$lib/stores/connections';
 	import {
 		IconX,
-		IconPlug,
 		IconPlugConnected,
-		IconPlugOff,
+		IconPlugConnectedX,
 		IconRefresh,
-		IconLoader2,
+		IconLoader,
 		IconCheck,
 		IconAlertTriangle,
 		IconAlertCircle,
@@ -76,9 +75,9 @@
 	function getStatusIcon(status: ConnectionState) {
 		switch (status) {
 			case 'connected': return IconCheck;
-			case 'connecting': return IconLoader2;
+			case 'connecting': return IconLoader;
 			case 'error': return IconAlertCircle;
-			default: return IconPlugOff;
+			default: return IconPlugConnectedX;
 		}
 	}
 
@@ -156,7 +155,7 @@
 			<div class="panel-header">
 				<div class="header-left">
 					<div class="header-icon" class:healthy={overallHealth === 'healthy'} class:partial={overallHealth === 'partial'} class:unhealthy={overallHealth === 'unhealthy'}>
-						<IconPlug size={20} />
+						<IconPlugConnected size={20} />
 					</div>
 					<div class="header-info">
 						<h2>Connection Health</h2>

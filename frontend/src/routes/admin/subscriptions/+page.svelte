@@ -77,7 +77,7 @@
 	}
 
 	// Filter and sort subscriptions
-	$: filteredSubscriptions = subscriptions
+	let filteredSubscriptions = $derived(subscriptions
 		.filter((sub) => {
 			if (statusFilter !== 'all' && sub.status !== statusFilter) return false;
 			if (intervalFilter !== 'all' && sub.interval !== intervalFilter) return false;
@@ -99,7 +99,7 @@
 			} else {
 				return a.status.localeCompare(b.status);
 			}
-		});
+		}));
 
 	// Actions
 	async function handlePause(subscription: Subscription) {

@@ -105,14 +105,14 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
-	$: filteredContacts = contacts.filter(contact => {
-		const matchesSearch = !searchQuery || 
+	let filteredContacts = $derived(contacts.filter(contact => {
+		const matchesSearch = !searchQuery ||
 			contact.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			contact.company?.toLowerCase().includes(searchQuery.toLowerCase());
 		const matchesStatus = selectedStatus === 'all' || contact.status === selectedStatus;
 		return matchesSearch && matchesStatus;
-	});
+	}));
 
 	onMount(async () => {
 		// Load connection status first

@@ -22,7 +22,7 @@
 		IconDeviceDesktop,
 		IconBell,
 		IconSearch,
-		IconPlug,
+		IconPlugConnected,
 		IconKeyboard
 	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
@@ -210,7 +210,7 @@
 					onclick={() => isConnectionHealthOpen = true}
 					title="API Connections"
 				>
-					<IconPlug size={18} />
+					<IconPlugConnected size={18} />
 				</button>
 
 				<!-- Rate Limit Indicator -->

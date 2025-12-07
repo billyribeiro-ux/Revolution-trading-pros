@@ -19,9 +19,8 @@
 	} from '$lib/stores/offline';
 	import {
 		IconWifi,
-		IconWifiOff,
-		IconCloudUpload,
-		IconLoader2,
+		IconUpload,
+		IconLoader,
 		IconCheck,
 		IconX,
 		IconRefresh
@@ -49,7 +48,7 @@
 	>
 		<div class="banner-content">
 			<div class="banner-icon">
-				<IconWifiOff size={18} />
+				<IconWifi size={18} />
 			</div>
 			<div class="banner-text">
 				<span class="banner-title">You're offline</span>
@@ -57,7 +56,7 @@
 			</div>
 			{#if $hasPendingActions}
 				<div class="pending-badge">
-					<IconCloudUpload size={14} />
+					<IconUpload size={14} />
 					{$pendingActionsCount} pending
 				</div>
 			{/if}
@@ -76,7 +75,7 @@
 			<span class="banner-title">Back online</span>
 			{#if $isSyncing}
 				<div class="syncing-indicator">
-					<IconLoader2 size={14} class="spinning" />
+					<IconLoader size={14} class="spinning" />
 					Syncing...
 				</div>
 			{:else if $hasPendingActions}
@@ -102,9 +101,9 @@
 		in:fly={{ y: 20, duration: 200 }}
 	>
 		{#if $isSyncing}
-			<IconLoader2 size={18} class="spinning" />
+			<IconLoader size={18} class="spinning" />
 		{:else}
-			<IconCloudUpload size={18} />
+			<IconUpload size={18} />
 		{/if}
 		<span>{$pendingActionsCount}</span>
 	</button>
@@ -128,7 +127,7 @@
 					disabled={$isSyncing}
 				>
 					{#if $isSyncing}
-						<IconLoader2 size={14} class="spinning" />
+						<IconLoader size={14} class="spinning" />
 						Syncing...
 					{:else}
 						<IconRefresh size={14} />

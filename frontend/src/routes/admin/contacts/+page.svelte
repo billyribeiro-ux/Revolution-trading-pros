@@ -47,7 +47,7 @@
 		}
 	}
 
-	$: filteredContacts = contacts.filter((contact) => {
+	let filteredContacts = $derived(contacts.filter((contact) => {
 		const matchesSearch =
 			contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			contact.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -56,7 +56,7 @@
 		const matchesStatus = !statusFilter || contact.status === statusFilter;
 
 		return matchesSearch && matchesStatus;
-	});
+	}));
 </script>
 
 <svelte:head>

@@ -57,7 +57,6 @@
 	let sortOrder: 'asc' | 'desc' = 'desc';
 	let dateRange = { start: '', end: '' };
 	let previewPost: any = null;
-	let showBulkActions = false;
 	let activeActionMenu: number | null = null;
 	let ws: WebSocket | null = null;
 	let showExportModal = false;
@@ -600,10 +599,14 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Reactive Statements
+	// Reactive Statements (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$: {
+	// Derived state for bulk actions visibility
+	const showBulkActions = $derived(selectedPosts.size > 0);
+
+	// Effect to reload posts when filters change
+	$effect(() => {
 		if (
 			searchQuery !== undefined ||
 			statusFilter !== undefined ||
@@ -615,9 +618,7 @@
 		) {
 			loadPosts();
 		}
-	}
-
-	$: showBulkActions = selectedPosts.size > 0;
+	});
 </script>
 
 <svelte:head>

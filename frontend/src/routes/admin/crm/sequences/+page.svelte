@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import {
 		IconMail,
-		IconMailFast,
 		IconPlus,
 		IconSearch,
 		IconFilter,
@@ -173,7 +172,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconMailFast size={24} />
+				<IconMail size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalSent)}</span>

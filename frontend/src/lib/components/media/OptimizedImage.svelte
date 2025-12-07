@@ -10,37 +10,66 @@
   - WebP/AVIF format negotiation
   - Lazy loading with Intersection Observer
 
-  @version 1.0.0
+  @version 2.0.0 - Svelte 5 Runes Migration
 -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { decode } from 'blurhash';
 
-  // Props
-  export let src: string;
-  export let alt: string = '';
-  export let blurhash: string | null = null;
-  export let lqip: string | null = null;
-  export let width: number | null = null;
-  export let height: number | null = null;
-  export let srcset: Record<string, string> | null = null;
-  export let sizes: string = '100vw';
-  export let loading: 'lazy' | 'eager' = 'lazy';
-  export let className: string = '';
-  export let aspectRatio: string | null = null;
-  export let objectFit: 'cover' | 'contain' | 'fill' | 'none' = 'cover';
-  export let priority: boolean = false;
-  export let onLoad: (() => void) | null = null;
-  export let onError: ((error: Error) => void) | null = null;
+  // Props - Svelte 5 $props() pattern with interface
+  interface Props {
+    src: string;
+    alt?: string;
+    blurhash?: string | null;
+    lqip?: string | null;
+    width?: number | null;
+    height?: number | null;
+    srcset?: Record<string, string> | null;
+    sizes?: string;
+    loading?: 'lazy' | 'eager';
+    className?: string;
+    aspectRatio?: string | null;
+    objectFit?: 'cover' | 'contain' | 'fill' | 'none';
+    priority?: boolean;
+    onLoad?: (() => void) | null;
+    onError?: ((error: Error) => void) | null;
+  }
 
-  // State
-  let loaded = false;
-  let error = false;
-  let canvas: HTMLCanvasElement;
-  let imgElement: HTMLImageElement;
-  let containerRef: HTMLDivElement;
-  let isInView = false;
+  let {
+    src,
+    alt = '',
+    blurhash = null,
+    lqip = null,
+    width = null,
+    height = null,
+    srcset = null,
+    sizes = '100vw',
+    loading = 'lazy',
+    className = '',
+    aspectRatio = null,
+    objectFit = 'cover',
+    priority = false,
+    onLoad: onLoadCallback = null,
+    onError: onErrorCallback = null
+  }: Props = $props();
+
+  // State - Svelte 5 $state() pattern
+  let loaded = $state(false);
+  let hasError = $state(false);
+  let canvas = $state<HTMLCanvasElement | null>(null);
+  let imgElement = $state<HTMLImageElement | null>(null);
+  let containerRef = $state<HTMLDivElement | null>(null);
+  let isInView = $state(false);
   let observer: IntersectionObserver | null = null;
+
+  // Computed aspect ratio style - Svelte 5 $derived() pattern
+  let aspectRatioStyle = $derived(
+    aspectRatio
+      ? `aspect-ratio: ${aspectRatio};`
+      : width && height
+        ? `aspect-ratio: ${width}/${height};`
+        : ''
+  );
 
   // Decode BlurHash to canvas
   function renderBlurhash(node: HTMLCanvasElement) {
@@ -65,8 +94,8 @@
 
     return Object.entries(srcset)
       .map(([size, url]) => {
-        const width = size.replace(/[^0-9]/g, '');
-        return `${url} ${width}w`;
+        const w = size.replace(/[^0-9]/g, '');
+        return `${url} ${w}w`;
       })
       .join(', ');
   }
@@ -74,13 +103,13 @@
   // Handle image load
   function handleLoad() {
     loaded = true;
-    onLoad?.();
+    onLoadCallback?.();
   }
 
   // Handle image error
   function handleError(e: Event) {
-    error = true;
-    onError?.(new Error('Image failed to load'));
+    hasError = true;
+    onErrorCallback?.(new Error('Image failed to load'));
   }
 
   // Setup Intersection Observer for lazy loading
@@ -113,13 +142,6 @@
   onDestroy(() => {
     observer?.disconnect();
   });
-
-  // Computed aspect ratio style
-  $: aspectRatioStyle = aspectRatio
-    ? `aspect-ratio: ${aspectRatio};`
-    : width && height
-      ? `aspect-ratio: ${width}/${height};`
-      : '';
 </script>
 
 <div
@@ -198,7 +220,7 @@
   {/if}
 
   <!-- Error state -->
-  {#if error}
+  {#if hasError}
     <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
       <div class="text-center text-gray-500 dark:text-gray-400">
         <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +232,7 @@
   {/if}
 
   <!-- Loading skeleton (if no placeholder available) -->
-  {#if !blurhash && !lqip && !loaded && !error && isInView}
+  {#if !blurhash && !lqip && !loaded && !hasError && isInView}
     <div class="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
   {/if}
 </div>

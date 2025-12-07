@@ -12,7 +12,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import { connections, type ConnectionStatus } from '$lib/stores/connections';
 	import {
-		IconApi,
+		IconPlugConnected,
 		IconChevronDown,
 		IconAlertTriangle,
 		IconCircleCheck,
@@ -123,7 +123,7 @@
 		onclick={(e) => { e.stopPropagation(); toggle(); }}
 		title="API Rate Limits"
 	>
-		<IconApi size={18} />
+		<IconPlugConnected size={18} />
 		<span class="limit-percentage">{Math.round(lowestPercentage)}%</span>
 		<span class="chevron" class:rotated={isOpen}>
 			<IconChevronDown size={14} />

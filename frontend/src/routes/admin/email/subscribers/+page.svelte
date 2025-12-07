@@ -250,7 +250,7 @@
 		loadSubscribers();
 	}
 
-	$: totalPages = Math.ceil(total / perPage);
+	let totalPages = $derived(Math.ceil(total / perPage));
 </script>
 
 <svelte:head>

@@ -10,10 +10,10 @@
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
 	import SeoAnalyzer from '$lib/components/seo/SeoAnalyzer.svelte';
 
-	let entities: any[] = [];
-	let selectedEntity: any = null;
-	let loading = false;
-	let searchQuery = '';
+	let entities: any[] = $state([]);
+	let selectedEntity: any = $state(null);
+	let loading = $state(false);
+	let searchQuery = $state('');
 
 	onMount(() => {
 		loadEntities();
@@ -25,8 +25,10 @@
 		entities = [];
 	}
 
-	$: filteredEntities = entities.filter((entity) =>
-		entity.title.toLowerCase().includes(searchQuery.toLowerCase())
+	let filteredEntities = $derived(
+		entities.filter((entity) =>
+			entity.title.toLowerCase().includes(searchQuery.toLowerCase())
+		)
 	);
 </script>
 

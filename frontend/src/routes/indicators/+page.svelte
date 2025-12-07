@@ -118,10 +118,11 @@
 
 	const categories = ['All', 'Momentum', 'Trend Following', 'Volatility', 'Volume'];
 
-	$: filteredIndicators =
+	let filteredIndicators = $derived(
 		selectedCategory === 'All'
 			? indicators
-			: indicators.filter((ind) => ind.category === selectedCategory);
+			: indicators.filter((ind) => ind.category === selectedCategory)
+	);
 
 	// Indicators structured data for rich snippets
 	const indicatorsSchema = [

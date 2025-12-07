@@ -20,13 +20,13 @@
 	import { browser } from '$app/environment';
 	import {
 		IconSearch,
-		IconCommand,
+		IconTerminal,
 		IconArrowRight,
-		IconCornerDownLeft,
+		IconArrowBigDown,
 		IconArrowUp,
 		IconArrowDown,
 		IconX,
-		IconHistory,
+		IconClock,
 		IconHome,
 		IconChartBar,
 		IconUsers,
@@ -35,7 +35,7 @@
 		IconShoppingCart,
 		IconFileText,
 		IconPhoto,
-		IconPlug,
+		IconPlugConnected,
 		IconActivity,
 		IconBrandGoogle,
 		IconTrendingUp,
@@ -77,7 +77,7 @@
 		{ id: 'templates', label: 'Email Templates', path: '/admin/email/templates', icon: IconMail, category: 'Marketing' },
 		{ id: 'products', label: 'Products', path: '/admin/products', icon: IconShoppingCart, category: 'Commerce' },
 		{ id: 'subscriptions', label: 'Subscriptions', path: '/admin/subscriptions', icon: IconCreditCard, category: 'Commerce' },
-		{ id: 'connections', label: 'API Connections', path: '/admin/connections', icon: IconPlug, category: 'Settings' },
+		{ id: 'connections', label: 'API Connections', path: '/admin/connections', icon: IconPlugConnected, category: 'Settings' },
 		{ id: 'site-health', label: 'Site Health', path: '/admin/site-health', icon: IconActivity, category: 'Settings' },
 		{ id: 'settings', label: 'Settings', path: '/admin/settings', icon: IconSettings, category: 'Settings' }
 	];
@@ -282,7 +282,7 @@
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}
 										<div class="item-action">
-											<IconCornerDownLeft size={14} />
+											<IconArrowBigDown size={14} />
 										</div>
 									{/if}
 								</button>
@@ -301,7 +301,7 @@
 						Navigate
 					</span>
 					<span class="hint">
-						<kbd><IconCornerDownLeft size={12} /></kbd>
+						<kbd><IconArrowBigDown size={12} /></kbd>
 						Select
 					</span>
 					<span class="hint">
@@ -310,7 +310,7 @@
 					</span>
 				</div>
 				<div class="footer-shortcut">
-					<kbd><IconCommand size={12} /></kbd>
+					<kbd><IconTerminal size={12} /></kbd>
 					<kbd>K</kbd>
 				</div>
 			</div>

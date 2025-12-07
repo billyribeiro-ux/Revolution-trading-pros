@@ -44,20 +44,20 @@
 	const importPlaceholder = '{"activeConfig": {...}, "customTemplates": [...]}';
 
 	// Get categories
-	$: categories = ['all', ...getTemplateCategories()];
+	let categories = $derived(['all', ...getTemplateCategories()]);
 
 	// Filtered templates
-	$: filteredTemplates = $allTemplates.filter((t) => {
+	let filteredTemplates = $derived($allTemplates.filter((t) => {
 		const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
 		const matchesSearch =
 			!searchQuery ||
 			t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			t.description.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesCategory && matchesSearch;
-	});
+	}));
 
 	// Active template ID
-	$: activeTemplateId = getActiveTemplateConfig().templateId;
+	let activeTemplateId = $derived(getActiveTemplateConfig().templateId);
 
 	onMount(() => {
 		if (browser) {

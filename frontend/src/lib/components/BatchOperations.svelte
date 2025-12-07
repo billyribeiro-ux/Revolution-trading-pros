@@ -12,13 +12,13 @@
 	import { quintOut } from 'svelte/easing';
 	import {
 		IconTrash,
-		IconArchive,
+		IconInbox,
 		IconDownload,
 		IconTag,
 		IconMail,
 		IconX,
 		IconCheck,
-		IconLoader2
+		IconLoader
 	} from '@tabler/icons-svelte';
 
 	interface BatchAction {
@@ -65,7 +65,7 @@
 		{
 			id: 'archive',
 			label: 'Archive',
-			icon: IconArchive,
+			icon: IconInbox,
 			action: async (ids) => {
 				console.log('Archiving:', ids);
 				await new Promise(r => setTimeout(r, 1000));
@@ -150,7 +150,7 @@
 						disabled={isProcessing}
 					>
 						{#if processingAction === action.id}
-							<IconLoader2 size={18} class="spinning" />
+							<IconLoader size={18} class="spinning" />
 						{:else}
 							<svelte:component this={action.icon} size={18} />
 						{/if}

@@ -1,22 +1,30 @@
 <script lang="ts">
 	/**
 	 * Thank You / Order Confirmation Page
-	 * Follows WordPress Simpler Trading patterns exactly
+	 * Enterprise L8 Pattern - Svelte 5 Runes
+	 *
+	 * Uses $props() to receive data from +page.ts load function
+	 * for proper SSR support and type safety.
+	 *
+	 * @version 2.0.0 - Svelte 5 Migration
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { page } from '$app/stores';
+	import type { PageProps } from './$types';
 
-	// Get order details from URL params or session
-	let orderNumber = $state($page.url.searchParams.get('order') || 'RTP-' + Date.now().toString(36).toUpperCase());
-	let productName = $state($page.url.searchParams.get('product') || 'Revolution Trading Pro Membership');
+	// Receive data from load function using Svelte 5 $props()
+	let { data }: PageProps = $props();
 
-	// Sample purchased item (would come from order data)
-	const purchasedItem = {
+	// Derive order details with fallbacks
+	let orderNumber = $derived(data.orderNumber || 'RTP-' + Date.now().toString(36).toUpperCase());
+	let productName = $derived(data.productName || 'Revolution Trading Pro Membership');
+
+	// Sample purchased item (derived from order data)
+	let purchasedItem = $derived({
 		name: productName,
 		image: '/images/membership-card.jpg',
 		type: 'Membership',
 		nextStep: 'Access your dashboard to start learning'
-	};
+	});
 
 	// Related upsell products
 	const upsellProducts = [

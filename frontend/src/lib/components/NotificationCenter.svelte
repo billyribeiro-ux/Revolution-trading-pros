@@ -25,13 +25,12 @@
 		IconBell,
 		IconX,
 		IconCheck,
-		IconCheckbox,
 		IconTrash,
 		IconInfoCircle,
 		IconCircleCheck,
 		IconAlertTriangle,
 		IconAlertCircle,
-		IconSettings2,
+		IconSettings,
 		IconChevronRight
 	} from '@tabler/icons-svelte';
 
@@ -88,7 +87,7 @@
 			case 'success': return IconCircleCheck;
 			case 'warning': return IconAlertTriangle;
 			case 'error': return IconAlertCircle;
-			case 'system': return IconSettings2;
+			case 'system': return IconSettings;
 			default: return IconInfoCircle;
 		}
 	}
@@ -185,7 +184,7 @@
 			{#if $unreadCount > 0}
 				<div class="actions-bar" in:fade={{ duration: 150 }}>
 					<button class="action-btn" onclick={() => notificationStore.markAllAsRead()}>
-						<IconCheckbox size={16} />
+						<IconCheck size={16} />
 						Mark all as read
 					</button>
 				</div>

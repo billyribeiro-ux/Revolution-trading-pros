@@ -79,11 +79,11 @@
 		return ((popup.conversions / popup.impressions) * 100).toFixed(1) + '%';
 	}
 
-	$: filteredPopups = popups.filter((popup) => {
+	let filteredPopups = $derived(popups.filter((popup) => {
 		if (selectedTab === 'active') return popup.isActive;
 		if (selectedTab === 'inactive') return !popup.isActive;
 		return true;
-	});
+	}));
 </script>
 
 <div class="popups-page">

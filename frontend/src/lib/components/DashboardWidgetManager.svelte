@@ -31,18 +31,18 @@
 		IconEye,
 		IconEyeOff,
 		IconLayoutGrid,
-		IconLayoutList,
+		IconList,
 		IconRefresh,
 		IconChevronUp,
 		IconChevronDown,
 		IconChartLine,
 		IconWorld,
-		IconArticle,
+		IconFileText,
 		IconUsers,
 		IconCurrencyDollar,
 		IconShoppingCart,
-		IconPlug,
-		IconHeartRateMonitor,
+		IconPlugConnected,
+		IconActivity,
 		IconBolt,
 		IconMail,
 		IconSearch,
@@ -64,12 +64,12 @@
 	const iconMap: Record<string, typeof IconChartLine> = {
 		'chart-line': IconChartLine,
 		'world': IconWorld,
-		'article': IconArticle,
+		'article': IconFileText,
 		'users': IconUsers,
 		'currency-dollar': IconCurrencyDollar,
 		'shopping-cart': IconShoppingCart,
-		'plug': IconPlug,
-		'heart-rate-monitor': IconHeartRateMonitor,
+		'plug': IconPlugConnected,
+		'heart-rate-monitor': IconActivity,
 		'bolt': IconBolt,
 		'mail': IconMail,
 		'search': IconSearch,
@@ -300,7 +300,7 @@
 									class:active={$widgetLayout === 'list'}
 									onclick={() => widgetStore.setLayout('list')}
 								>
-									<IconLayoutList size={18} />
+									<IconList size={18} />
 									List
 								</button>
 							</div>

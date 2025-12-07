@@ -130,12 +130,13 @@
 		});
 	}
 
-	$: {
+	// Effect to apply filters when search/filter changes
+	$effect(() => {
 		categorySearch;
 		tagSearch;
 		showHidden;
 		applyFilters();
-	}
+	});
 
 	function openCategoryModal(category: Category | null = null) {
 		if (category) {
@@ -347,14 +348,19 @@
 		}, 5000);
 	}
 
-	// Auto-generate slug when name changes
-	$: if (categoryForm.name && !editingCategory) {
-		categoryForm.slug = generateSlug(categoryForm.name);
-	}
+	// Auto-generate slug when name changes for categories
+	$effect(() => {
+		if (categoryForm.name && !editingCategory) {
+			categoryForm.slug = generateSlug(categoryForm.name);
+		}
+	});
 
-	$: if (tagForm.name && !editingTag) {
-		tagForm.slug = generateSlug(tagForm.name);
-	}
+	// Auto-generate slug when name changes for tags
+	$effect(() => {
+		if (tagForm.name && !editingTag) {
+			tagForm.slug = generateSlug(tagForm.name);
+		}
+	});
 </script>
 
 <svelte:head>

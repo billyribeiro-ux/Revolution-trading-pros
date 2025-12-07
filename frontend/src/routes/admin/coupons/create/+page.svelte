@@ -1004,12 +1004,14 @@
 		console.log('Track event:', event, data);
 	}
 
-	// Reactive statements
-	$: if (formData.code) {
-		calculatePreview();
-	}
+	// Reactive statements - migrated to Svelte 5 runes
+	$effect(() => {
+		if (formData.code) {
+			calculatePreview();
+		}
+	});
 
-	$: discountDisplay =
+	let discountDisplay = $derived(
 		formData.type === 'percentage'
 			? `${formData.value}% off`
 			: formData.type === 'fixed'
@@ -1018,7 +1020,8 @@
 					? `Buy ${formData.bogo_config?.buy_quantity || 1} Get ${formData.bogo_config?.get_quantity || 1}`
 					: formData.type === 'free_shipping'
 						? 'Free Shipping'
-						: 'Tiered Discount';
+						: 'Tiered Discount'
+	);
 </script>
 
 <svelte:head>

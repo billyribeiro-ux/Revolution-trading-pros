@@ -22,14 +22,14 @@
 		IconChartBar
 	} from '@tabler/icons-svelte';
 
-	$: serviceId = Number($page.params.id);
+	let serviceId = $derived(Number($page.params.id));
 
 	// Store state
-	$: service = $serviceMembersStore.service;
-	$: stats = $serviceMembersStore.stats;
-	$: members = $serviceMembersStore.members;
-	$: pagination = $serviceMembersStore.pagination;
-	$: loading = $serviceMembersStore.loading;
+	let service = $derived($serviceMembersStore.service);
+	let stats = $derived($serviceMembersStore.stats);
+	let members = $derived($serviceMembersStore.members);
+	let pagination = $derived($serviceMembersStore.pagination);
+	let loading = $derived($serviceMembersStore.loading);
 
 	// Local state
 	let searchQuery = '';

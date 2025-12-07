@@ -214,7 +214,7 @@
     return `M0,${height} L${points.join(' L')} L${width},${height} Z`;
   }
 
-  $: maxBandwidth = bandwidthData.length > 0 ? Math.max(...bandwidthData.map(d => d.original)) : 0;
+  const maxBandwidth = $derived(bandwidthData.length > 0 ? Math.max(...bandwidthData.map(d => d.original)) : 0);
 </script>
 
 <svelte:head>
