@@ -4,18 +4,36 @@
 	 * Uses extracted AdminSidebar component for cleaner architecture
 	 *
 	 * Updated to Svelte 5 runes syntax (November 2025)
+	 * Enhanced with Apple ICT9+ Enterprise Components
 	 *
-	 * @version 3.0.0
+	 * @version 4.0.0
 	 * @author Revolution Trading Pros
 	 */
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth';
 	import { themeStore, type Theme } from '$lib/stores/theme';
-	import { IconMenu2, IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-svelte';
+	import { unreadCount } from '$lib/stores/notifications';
+	import { keyboardStore } from '$lib/stores/keyboard';
+	import {
+		IconMenu2,
+		IconSun,
+		IconMoon,
+		IconDeviceDesktop,
+		IconBell,
+		IconSearch,
+		IconPlug,
+		IconKeyboard
+	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
+	import CommandPalette from '$lib/components/CommandPalette.svelte';
+	import NotificationCenter from '$lib/components/NotificationCenter.svelte';
+	import KeyboardShortcutsHelp from '$lib/components/KeyboardShortcutsHelp.svelte';
+	import RateLimitIndicator from '$lib/components/RateLimitIndicator.svelte';
+	import ConnectionHealthPanel from '$lib/components/ConnectionHealthPanel.svelte';
+	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 	import type { Snippet } from 'svelte';
 
 	// Theme icon mapping
@@ -38,14 +56,63 @@
 	// Svelte 5: Props with children snippet
 	let { children }: { children: Snippet } = $props();
 
-	// Svelte 5 state rune
+	// Svelte 5 state runes
 	let isSidebarOpen = $state(false);
+	let isCommandPaletteOpen = $state(false);
+	let isNotificationCenterOpen = $state(false);
+	let isKeyboardHelpOpen = $state(false);
+	let isConnectionHealthOpen = $state(false);
 
 	// Check if user is admin - Svelte 5 effect
 	$effect(() => {
 		if (browser && !$isAuthenticated) {
 			goto('/login?redirect=/admin');
 		}
+	});
+
+	// Register keyboard shortcuts
+	$effect(() => {
+		if (!browser) return;
+
+		// Register shortcut handlers
+		keyboardStore.registerAction('search', () => {
+			isCommandPaletteOpen = true;
+		});
+
+		keyboardStore.registerAction('show-shortcuts', () => {
+			isKeyboardHelpOpen = true;
+		});
+
+		keyboardStore.registerAction('goto-dashboard', () => {
+			goto('/admin');
+		});
+
+		keyboardStore.registerAction('goto-analytics', () => {
+			goto('/admin/analytics');
+		});
+
+		keyboardStore.registerAction('goto-content', () => {
+			goto('/admin/blog');
+		});
+
+		keyboardStore.registerAction('goto-settings', () => {
+			goto('/admin/settings');
+		});
+
+		// Global keyboard listener
+		const handleKeyDown = (e: KeyboardEvent) => {
+			// Cmd/Ctrl + K for command palette
+			if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+				e.preventDefault();
+				isCommandPaletteOpen = true;
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
 	});
 
 	function toggleSidebar() {
@@ -111,14 +178,60 @@
 				<h1>{formatPageTitle($page.url.pathname)}</h1>
 			</div>
 			<div class="header-actions">
+				<!-- Search Button -->
+				<button
+					class="header-btn"
+					onclick={() => isCommandPaletteOpen = true}
+					title="Search (⌘K)"
+				>
+					<IconSearch size={18} />
+					<span class="btn-label desktop-only">Search</span>
+					<kbd class="kbd desktop-only">⌘K</kbd>
+				</button>
+
+				<!-- Notifications Button -->
+				<button
+					class="header-btn notification-btn"
+					onclick={() => isNotificationCenterOpen = true}
+					title="Notifications"
+				>
+					<IconBell size={18} />
+					{#if $unreadCount > 0}
+						<span class="notification-badge">{$unreadCount > 9 ? '9+' : $unreadCount}</span>
+					{/if}
+				</button>
+
+				<!-- Connection Health Button -->
+				<button
+					class="header-btn"
+					onclick={() => isConnectionHealthOpen = true}
+					title="API Connections"
+				>
+					<IconPlug size={18} />
+				</button>
+
+				<!-- Rate Limit Indicator -->
+				<RateLimitIndicator />
+
+				<!-- Theme Toggle -->
 				<button
 					class="theme-toggle"
 					onclick={() => themeStore.cycle()}
 					title="Theme: {getThemeLabel($themeStore)} (click to cycle)"
 				>
 					<svelte:component this={getThemeIcon($themeStore)} size={20} />
-					<span class="theme-label">{getThemeLabel($themeStore)}</span>
+					<span class="theme-label desktop-only">{getThemeLabel($themeStore)}</span>
 				</button>
+
+				<!-- Keyboard Shortcuts -->
+				<button
+					class="header-btn desktop-only"
+					onclick={() => isKeyboardHelpOpen = true}
+					title="Keyboard Shortcuts"
+				>
+					<IconKeyboard size={18} />
+				</button>
+
 				<a href="/" class="view-site-btn" target="_blank">View Site</a>
 			</div>
 		</header>
@@ -132,6 +245,13 @@
 
 <!-- Toast Notifications -->
 <Toast />
+
+<!-- Global Modals & Overlays -->
+<CommandPalette bind:isOpen={isCommandPaletteOpen} />
+<NotificationCenter bind:isOpen={isNotificationCenterOpen} />
+<KeyboardShortcutsHelp bind:isOpen={isKeyboardHelpOpen} />
+<ConnectionHealthPanel bind:isOpen={isConnectionHealthOpen} />
+<OfflineIndicator />
 
 <style>
 	.admin-layout {
@@ -194,6 +314,62 @@
 		gap: 0.75rem;
 	}
 
+	.header-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: var(--radius-md, 0.5rem);
+		color: var(--color-rtp-muted, #94a3b8);
+		cursor: pointer;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+
+	.header-btn:hover {
+		background: rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.4);
+		color: var(--color-rtp-primary, #a5b4fc);
+	}
+
+	.btn-label {
+		font-size: 0.8125rem;
+		font-weight: 500;
+	}
+
+	.kbd {
+		padding: 0.125rem 0.375rem;
+		background: rgba(99, 102, 241, 0.15);
+		border-radius: 4px;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		color: #a5b4fc;
+		font-family: inherit;
+	}
+
+	.notification-btn {
+		position: relative;
+	}
+
+	.notification-badge {
+		position: absolute;
+		top: -4px;
+		right: -4px;
+		min-width: 18px;
+		height: 18px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #ef4444, #dc2626);
+		border-radius: 9px;
+		font-size: 0.625rem;
+		font-weight: 700;
+		color: white;
+		padding: 0 4px;
+	}
+
 	.theme-toggle {
 		display: flex;
 		align-items: center;
@@ -216,6 +392,10 @@
 	.theme-label {
 		font-size: 0.8125rem;
 		font-weight: 500;
+	}
+
+	.desktop-only {
+		display: inline-flex;
 	}
 
 	.view-site-btn {
@@ -256,6 +436,26 @@
 		}
 	}
 
+	@media (max-width: 768px) {
+		.desktop-only {
+			display: none !important;
+		}
+
+		.header-btn .btn-label,
+		.header-btn .kbd {
+			display: none;
+		}
+
+		.header-btn {
+			padding: 0.5rem;
+		}
+
+		.view-site-btn {
+			padding: 0.5rem 0.875rem;
+			font-size: 0.8125rem;
+		}
+	}
+
 	@media (max-width: 640px) {
 		.admin-header {
 			padding: 0 1rem;
@@ -267,6 +467,18 @@
 
 		.admin-content {
 			padding: 1rem;
+		}
+
+		.header-actions {
+			gap: 0.375rem;
+		}
+
+		.theme-toggle {
+			padding: 0.5rem;
+		}
+
+		.theme-label {
+			display: none;
 		}
 	}
 </style>
