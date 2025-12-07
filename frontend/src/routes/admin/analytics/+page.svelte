@@ -1,12 +1,21 @@
 <script lang="ts">
 	/**
-	 * Analytics Dashboard - Enterprise Analytics Hub
+	 * Analytics Dashboard - Apple ICT9+ Enterprise Grade
+	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * Main analytics dashboard integrating KPIs, funnels, cohorts,
-	 * attribution, and real-time metrics.
+	 * Premium analytics dashboard with:
+	 * - Connection status awareness
+	 * - Real data only (no fake numbers)
+	 * - Apple-level design and animations
+	 * - KPIs, funnels, cohorts, attribution
 	 */
-	import { onMount } from 'svelte';
+
+	import { onMount, onDestroy } from 'svelte';
+	import { fade, fly, scale } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
+	import { connections, isAnalyticsConnected, FEATURE_SERVICES, SERVICE_KEYS } from '$lib/stores/connections';
+	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import KpiGrid from '$lib/components/analytics/KpiGrid.svelte';
 	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';
 	import CohortMatrix from '$lib/components/analytics/CohortMatrix.svelte';
@@ -14,12 +23,19 @@
 	import RealTimeWidget from '$lib/components/analytics/RealTimeWidget.svelte';
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { IconChartBar, IconPlugConnected, IconRefresh, IconArrowRight } from '@tabler/icons-svelte';
 
-	let dashboardData: DashboardData | null = null;
-	let loading = true;
-	let error: string | null = null;
-	let selectedPeriod = '30d';
-	let attributionModel = 'linear';
+	// State
+	let dashboardData: DashboardData | null = $state(null);
+	let loading = $state(true);
+	let connectionsLoading = $state(true);
+	let error: string | null = $state(null);
+	let selectedPeriod = $state('30d');
+	let attributionModel = $state('linear');
+	let isConnected = $state(false);
+
+	// Subscribe to connection status
+	let unsubscribe: (() => void) | null = null;
 
 	// Navigation tabs
 	const tabs = [
@@ -28,9 +44,20 @@
 		{ id: 'cohorts', label: 'Cohorts', icon: '👥' },
 		{ id: 'attribution', label: 'Attribution', icon: '🎯' }
 	];
-	let activeTab = 'overview';
+	let activeTab = $state('overview');
+
+	// Analytics services that can be connected
+	const analyticsServices = [
+		{ key: SERVICE_KEYS.GOOGLE_ANALYTICS, name: 'Google Analytics', icon: '📊', color: '#f97316' },
+		{ key: SERVICE_KEYS.MIXPANEL, name: 'Mixpanel', icon: '📈', color: '#8b5cf6' },
+		{ key: SERVICE_KEYS.AMPLITUDE, name: 'Amplitude', icon: '📉', color: '#3b82f6' },
+		{ key: SERVICE_KEYS.SEGMENT, name: 'Segment', icon: '🔗', color: '#10b981' },
+		{ key: SERVICE_KEYS.PLAUSIBLE, name: 'Plausible', icon: '🌿', color: '#14b8a6' }
+	];
 
 	async function loadDashboard() {
+		if (!isConnected) return;
+
 		loading = true;
 		error = null;
 		try {
@@ -47,11 +74,29 @@
 		loadDashboard();
 	}
 
-	onMount(() => {
-		loadDashboard();
+	onMount(async () => {
+		// Load connection status first
+		await connections.load();
+		connectionsLoading = false;
+
+		// Subscribe to connection changes
+		unsubscribe = isAnalyticsConnected.subscribe((connected) => {
+			isConnected = connected;
+			if (connected && !dashboardData) {
+				loadDashboard();
+			}
+		});
+
+		// Start auto-refresh for connections
+		connections.startAutoRefresh();
 	});
 
-	// Format revenue time series for chart
+	onDestroy(() => {
+		if (unsubscribe) unsubscribe();
+		connections.stopAutoRefresh();
+	});
+
+	// Format time series data
 	$: revenueTimeSeries =
 		dashboardData?.time_series?.revenue?.map((item) => ({
 			date: item.date,
@@ -59,7 +104,6 @@
 			label: '$' + item.value.toLocaleString()
 		})) || [];
 
-	// Format users time series for chart
 	$: usersTimeSeries =
 		dashboardData?.time_series?.users?.map((item) => ({
 			date: item.date,
@@ -71,271 +115,295 @@
 	<title>Analytics Dashboard | Revolution Trading</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50">
+<div class="analytics-dashboard">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<!-- Header -->
-	<div class="bg-white border-b border-gray-200">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-			<div class="flex items-center justify-between">
-				<div>
-					<h1 class="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
-					<p class="text-sm text-gray-500 mt-1">Enterprise insights and performance metrics</p>
+	<header class="dashboard-header" in:fly={{ y: -20, duration: 500, easing: quintOut }}>
+		<div class="header-content">
+			<div class="header-title">
+				<div class="title-icon">
+					<IconChartBar size={28} />
 				</div>
-				<div class="flex items-center gap-4">
-					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-					<a
-						href="/admin/analytics/events"
-						class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-					>
-						Event Explorer
-					</a>
+				<div>
+					<h1>Analytics Dashboard</h1>
+					<p>Enterprise insights and performance metrics</p>
 				</div>
 			</div>
 
-			<!-- Tab Navigation -->
-			<div class="flex items-center gap-1 mt-6 border-b border-gray-200 -mb-px">
+			{#if isConnected}
+				<div class="header-actions">
+					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
+					<a href="/admin/analytics/events" class="btn-primary">
+						Event Explorer
+						<IconArrowRight size={18} />
+					</a>
+				</div>
+			{/if}
+		</div>
+
+		<!-- Connection Status Badge -->
+		<div class="connection-status" class:connected={isConnected}>
+			<IconPlugConnected size={16} />
+			<span>{isConnected ? 'Analytics Connected' : 'Not Connected'}</span>
+		</div>
+
+		<!-- Tab Navigation (only show when connected) -->
+		{#if isConnected}
+			<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
 				{#each tabs as tab}
 					<button
-						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors
-							{activeTab === tab.id
-							? 'border-blue-600 text-blue-600'
-							: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+						class="tab-btn"
+						class:active={activeTab === tab.id}
 						onclick={() => (activeTab = tab.id)}
 					>
-						<span class="mr-2">{tab.icon}</span>
+						<span class="tab-icon">{tab.icon}</span>
 						{tab.label}
 					</button>
 				{/each}
-			</div>
-		</div>
-	</div>
+			</nav>
+		{/if}
+	</header>
 
-	<!-- Content -->
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-		{#if loading}
-			<div class="flex items-center justify-center py-20">
-				<div
-					class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
-				></div>
+	<!-- Main Content -->
+	<main class="dashboard-content">
+		{#if connectionsLoading}
+			<!-- Loading Connections -->
+			<div class="loading-state" in:fade={{ duration: 300 }}>
+				<div class="loading-spinner"></div>
+				<p>Checking connections...</p>
+			</div>
+		{:else if !isConnected}
+			<!-- Not Connected State -->
+			<div class="not-connected-state" in:scale={{ duration: 400, start: 0.95 }}>
+				<ApiNotConnected
+					serviceName="Analytics"
+					description="Connect an analytics service to view real-time data, track user behavior, and measure conversions."
+					icon="📊"
+					color="#f97316"
+					features={[
+						'Real-time visitor tracking',
+						'User behavior analytics',
+						'Conversion funnel analysis',
+						'Cohort retention reports',
+						'Channel attribution'
+					]}
+				/>
+
+				<!-- Available Services -->
+				<div class="available-services" in:fly={{ y: 20, duration: 400, delay: 200 }}>
+					<h3>Available Analytics Services</h3>
+					<div class="services-grid">
+						{#each analyticsServices as service}
+							<a
+								href="/admin/connections?connect={service.key}"
+								class="service-card"
+								style="--service-color: {service.color}"
+							>
+								<span class="service-icon">{service.icon}</span>
+								<span class="service-name">{service.name}</span>
+								<IconArrowRight size={16} class="service-arrow" />
+							</a>
+						{/each}
+					</div>
+				</div>
+			</div>
+		{:else if loading}
+			<!-- Loading Dashboard -->
+			<div class="loading-state" in:fade={{ duration: 300 }}>
+				<div class="loading-spinner"></div>
+				<p>Loading analytics data...</p>
 			</div>
 		{:else if error}
-			<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-				<p class="text-red-600">{error}</p>
-				<button
-					class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-					onclick={loadDashboard}
-				>
-					Retry
+			<!-- Error State -->
+			<div class="error-state" in:fade={{ duration: 300 }}>
+				<div class="error-icon">⚠️</div>
+				<h3>Unable to Load Analytics</h3>
+				<p>{error}</p>
+				<button class="btn-retry" onclick={loadDashboard}>
+					<IconRefresh size={18} />
+					Try Again
 				</button>
 			</div>
 		{:else if dashboardData}
-			<!-- Overview Tab -->
-			{#if activeTab === 'overview'}
-				<div class="space-y-8">
-					<!-- Real-time Widget -->
-					<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-						<div class="lg:col-span-2">
-							<RealTimeWidget />
+			<!-- Dashboard Content -->
+			<div class="dashboard-grid" in:fade={{ duration: 400 }}>
+				<!-- Overview Tab -->
+				{#if activeTab === 'overview'}
+					<div class="tab-content">
+						<!-- Real-time Widget -->
+						<div class="grid-row">
+							<div class="widget-large">
+								<RealTimeWidget />
+							</div>
+							<div class="widget-small">
+								<div class="quick-actions">
+									<h3>Quick Actions</h3>
+									<a href="/admin/analytics/segments" class="action-link">
+										<span class="action-icon">👥</span>
+										<div class="action-text">
+											<strong>Segments</strong>
+											<span>Manage user segments</span>
+										</div>
+									</a>
+									<a href="/admin/analytics/goals" class="action-link">
+										<span class="action-icon">🎯</span>
+										<div class="action-text">
+											<strong>Goals</strong>
+											<span>Track conversion goals</span>
+										</div>
+									</a>
+									<a href="/admin/analytics/reports" class="action-link">
+										<span class="action-icon">📈</span>
+										<div class="action-text">
+											<strong>Reports</strong>
+											<span>Custom report builder</span>
+										</div>
+									</a>
+								</div>
+							</div>
 						</div>
-						<div class="bg-white rounded-xl border border-gray-200 p-6">
-							<h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-							<div class="space-y-3">
-								<a
-									href="/admin/analytics/segments"
-									class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-								>
-									<span class="text-2xl">👥</span>
-									<div>
-										<div class="font-medium text-gray-900">Segments</div>
-										<div class="text-sm text-gray-500">Manage user segments</div>
+
+						<!-- KPI Grid -->
+						{#if dashboardData.kpis && dashboardData.kpis.length > 0}
+							<KpiGrid kpis={dashboardData.kpis} />
+						{/if}
+
+						<!-- Time Series Charts -->
+						{#if revenueTimeSeries.length > 0 || usersTimeSeries.length > 0}
+							<div class="charts-row">
+								{#if revenueTimeSeries.length > 0}
+									<TimeSeriesChart
+										data={revenueTimeSeries}
+										title="Revenue Trend"
+										color="#10B981"
+										formatValue={(v) => '$' + v.toLocaleString()}
+									/>
+								{/if}
+								{#if usersTimeSeries.length > 0}
+									<TimeSeriesChart
+										data={usersTimeSeries}
+										title="Active Users"
+										color="#3B82F6"
+										formatValue={(v) => v.toLocaleString()}
+									/>
+								{/if}
+							</div>
+						{/if}
+
+						<!-- Top Pages & Events -->
+						<div class="data-tables">
+							<div class="data-table">
+								<h3>Top Pages</h3>
+								{#if dashboardData.top_pages && dashboardData.top_pages.length > 0}
+									<div class="table-rows">
+										{#each dashboardData.top_pages.slice(0, 10) as page, i}
+											<div class="table-row">
+												<span class="row-rank">{i + 1}</span>
+												<span class="row-label">{page.page_path}</span>
+												<span class="row-value">{page.views.toLocaleString()}</span>
+											</div>
+										{/each}
 									</div>
-								</a>
-								<a
-									href="/admin/analytics/goals"
-									class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-								>
-									<span class="text-2xl">🎯</span>
-									<div>
-										<div class="font-medium text-gray-900">Goals</div>
-										<div class="text-sm text-gray-500">Track conversion goals</div>
+								{:else}
+									<p class="no-data">No page data available yet</p>
+								{/if}
+							</div>
+
+							<div class="data-table">
+								<h3>Top Events</h3>
+								{#if dashboardData.top_events && dashboardData.top_events.length > 0}
+									<div class="table-rows">
+										{#each dashboardData.top_events.slice(0, 10) as event, i}
+											<div class="table-row">
+												<span class="row-rank">{i + 1}</span>
+												<span class="row-label">{event.event_name}</span>
+												<span class="row-value">{event.count.toLocaleString()}</span>
+											</div>
+										{/each}
 									</div>
-								</a>
-								<a
-									href="/admin/analytics/reports"
-									class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-								>
-									<span class="text-2xl">📈</span>
-									<div>
-										<div class="font-medium text-gray-900">Reports</div>
-										<div class="text-sm text-gray-500">Custom report builder</div>
-									</div>
-								</a>
+								{:else}
+									<p class="no-data">No event data available yet</p>
+								{/if}
 							</div>
 						</div>
 					</div>
+				{/if}
 
-					<!-- KPI Grid -->
-					{#if dashboardData.kpis}
-						<KpiGrid kpis={dashboardData.kpis} />
-					{/if}
-
-					<!-- Time Series Charts -->
-					<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						{#if revenueTimeSeries.length > 0}
-							<TimeSeriesChart
-								data={revenueTimeSeries}
-								title="Revenue Trend"
-								color="#10B981"
-								formatValue={(v) => '$' + v.toLocaleString()}
-							/>
-						{/if}
-						{#if usersTimeSeries.length > 0}
-							<TimeSeriesChart
-								data={usersTimeSeries}
-								title="Active Users"
-								color="#3B82F6"
-								formatValue={(v) => v.toLocaleString()}
-							/>
-						{/if}
-					</div>
-
-					<!-- Top Performing -->
-					<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						<!-- Top Pages -->
-						<div class="bg-white rounded-xl border border-gray-200 p-6">
-							<h3 class="text-lg font-semibold text-gray-900 mb-4">Top Pages</h3>
-							{#if dashboardData.top_pages && dashboardData.top_pages.length > 0}
-								<div class="space-y-3">
-									{#each dashboardData.top_pages.slice(0, 10) as page, i}
-										<div class="flex items-center justify-between">
-											<div class="flex items-center gap-3">
-												<span class="text-sm text-gray-400 w-6">{i + 1}.</span>
-												<span class="text-sm text-gray-900 truncate max-w-[300px]">
-													{page.page_path}
-												</span>
-											</div>
-											<span class="text-sm font-medium text-gray-600">
-												{page.views.toLocaleString()}
-											</span>
-										</div>
-									{/each}
-								</div>
-							{:else}
-								<p class="text-gray-500 text-sm">No page data available</p>
-							{/if}
+				<!-- Funnels Tab -->
+				{#if activeTab === 'funnels'}
+					<div class="tab-content">
+						<div class="tab-header">
+							<h2>Conversion Funnels</h2>
+							<a href="/admin/analytics/funnels/create" class="btn-primary">
+								Create Funnel
+							</a>
 						</div>
 
-						<!-- Top Events -->
-						<div class="bg-white rounded-xl border border-gray-200 p-6">
-							<h3 class="text-lg font-semibold text-gray-900 mb-4">Top Events</h3>
-							{#if dashboardData.top_events && dashboardData.top_events.length > 0}
-								<div class="space-y-3">
-									{#each dashboardData.top_events.slice(0, 10) as event, i}
-										<div class="flex items-center justify-between">
-											<div class="flex items-center gap-3">
-												<span class="text-sm text-gray-400 w-6">{i + 1}.</span>
-												<span class="text-sm text-gray-900">{event.event_name}</span>
-											</div>
-											<span class="text-sm font-medium text-gray-600">
-												{event.count.toLocaleString()}
-											</span>
-										</div>
-									{/each}
-								</div>
-							{:else}
-								<p class="text-gray-500 text-sm">No event data available</p>
-							{/if}
+						{#if dashboardData.funnels && dashboardData.funnels.length > 0}
+							<div class="funnels-grid">
+								{#each dashboardData.funnels as funnel}
+									<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
+								{/each}
+							</div>
+						{:else}
+							<div class="empty-state">
+								<span class="empty-icon">🔻</span>
+								<h3>No Funnels Yet</h3>
+								<p>Create your first funnel to track user journeys</p>
+								<a href="/admin/analytics/funnels/create" class="btn-primary">
+									Create First Funnel
+								</a>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
+				<!-- Cohorts Tab -->
+				{#if activeTab === 'cohorts'}
+					<div class="tab-content">
+						<div class="tab-header">
+							<h2>Cohort Analysis</h2>
+							<div class="tab-actions">
+								<select class="select-input">
+									<option value="weekly">Weekly Cohorts</option>
+									<option value="monthly">Monthly Cohorts</option>
+									<option value="daily">Daily Cohorts</option>
+								</select>
+								<a href="/admin/analytics/cohorts/create" class="btn-primary">
+									Create Cohort
+								</a>
+							</div>
 						</div>
-					</div>
-				</div>
-			{/if}
 
-			<!-- Funnels Tab -->
-			{#if activeTab === 'funnels'}
-				<div class="space-y-8">
-					<div class="flex items-center justify-between">
-						<h2 class="text-xl font-semibold text-gray-900">Conversion Funnels</h2>
-						<a
-							href="/admin/analytics/funnels/create"
-							class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-						>
-							Create Funnel
-						</a>
-					</div>
-
-					{#if dashboardData.funnels && dashboardData.funnels.length > 0}
-						<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-							{#each dashboardData.funnels as funnel}
-								<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
+						{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
+							{#each dashboardData.cohorts as cohort}
+								<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
 							{/each}
-						</div>
-					{:else}
-						<div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
-							<div class="text-4xl mb-4">🔻</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">No Funnels Yet</h3>
-							<p class="text-gray-500 mb-6">Create your first funnel to track user journeys</p>
-							<a
-								href="/admin/analytics/funnels/create"
-								class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
-							>
-								Create First Funnel
-							</a>
-						</div>
-					{/if}
-				</div>
-			{/if}
-
-			<!-- Cohorts Tab -->
-			{#if activeTab === 'cohorts'}
-				<div class="space-y-8">
-					<div class="flex items-center justify-between">
-						<h2 class="text-xl font-semibold text-gray-900">Cohort Analysis</h2>
-						<div class="flex items-center gap-3">
-							<select
-								class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							>
-								<option value="weekly">Weekly Cohorts</option>
-								<option value="monthly">Monthly Cohorts</option>
-								<option value="daily">Daily Cohorts</option>
-							</select>
-							<a
-								href="/admin/analytics/cohorts/create"
-								class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-							>
-								Create Cohort
-							</a>
-						</div>
+						{:else}
+							<div class="empty-state">
+								<span class="empty-icon">👥</span>
+								<h3>No Cohort Data</h3>
+								<p>Start tracking user retention with cohort analysis</p>
+								<a href="/admin/analytics/cohorts/create" class="btn-primary">
+									Create First Cohort
+								</a>
+							</div>
+						{/if}
 					</div>
+				{/if}
 
-					{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
-						{#each dashboardData.cohorts as cohort}
-							<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
-						{/each}
-					{:else}
-						<div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
-							<div class="text-4xl mb-4">👥</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">No Cohort Data</h3>
-							<p class="text-gray-500 mb-6">Start tracking user retention with cohort analysis</p>
-							<a
-								href="/admin/analytics/cohorts/create"
-								class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
-							>
-								Create First Cohort
-							</a>
-						</div>
-					{/if}
-				</div>
-			{/if}
-
-			<!-- Attribution Tab -->
-			{#if activeTab === 'attribution'}
-				<div class="space-y-8">
-					<div class="flex items-center justify-between">
-						<h2 class="text-xl font-semibold text-gray-900">Channel Attribution</h2>
-						<div class="flex items-center gap-3">
-							<select
-								bind:value={attributionModel}
-								class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							>
+				<!-- Attribution Tab -->
+				{#if activeTab === 'attribution'}
+					<div class="tab-content">
+						<div class="tab-header">
+							<h2>Channel Attribution</h2>
+							<select bind:value={attributionModel} class="select-input">
 								<option value="first_touch">First Touch</option>
 								<option value="last_touch">Last Touch</option>
 								<option value="linear">Linear</option>
@@ -343,65 +411,675 @@
 								<option value="position_based">Position Based</option>
 							</select>
 						</div>
-					</div>
 
-					{#if dashboardData.attribution && dashboardData.attribution.channels}
-						<AttributionChart
-							channels={dashboardData.attribution.channels}
-							model={attributionModel}
-						/>
+						{#if dashboardData.attribution && dashboardData.attribution.channels}
+							<AttributionChart
+								channels={dashboardData.attribution.channels}
+								model={attributionModel}
+							/>
 
-						<!-- Attribution Comparison -->
-						<div class="bg-white rounded-xl border border-gray-200 p-6">
-							<h3 class="text-lg font-semibold text-gray-900 mb-4">Model Comparison</h3>
-							<div class="overflow-x-auto">
-								<table class="w-full text-sm">
-									<thead>
-										<tr class="border-b border-gray-200">
-											<th class="text-left py-3 px-4 font-medium text-gray-600">Channel</th>
-											<th class="text-right py-3 px-4 font-medium text-gray-600">First Touch</th>
-											<th class="text-right py-3 px-4 font-medium text-gray-600">Last Touch</th>
-											<th class="text-right py-3 px-4 font-medium text-gray-600">Linear</th>
-											<th class="text-right py-3 px-4 font-medium text-gray-600">Time Decay</th>
-											<th class="text-right py-3 px-4 font-medium text-gray-600">Position Based</th>
-										</tr>
-									</thead>
-									<tbody>
-										{#each dashboardData.attribution.channels as channel}
-											<tr class="border-b border-gray-100 hover:bg-gray-50">
-												<td class="py-3 px-4 font-medium text-gray-900 capitalize"
-													>{channel.channel}</td
-												>
-												<td class="py-3 px-4 text-right text-gray-600"
-													>{channel.first_touch_share?.toFixed(1) || '-'}%</td
-												>
-												<td class="py-3 px-4 text-right text-gray-600"
-													>{channel.last_touch_share?.toFixed(1) || '-'}%</td
-												>
-												<td class="py-3 px-4 text-right text-gray-600"
-													>{channel.linear_share?.toFixed(1) || '-'}%</td
-												>
-												<td class="py-3 px-4 text-right text-gray-600"
-													>{channel.time_decay_share?.toFixed(1) || '-'}%</td
-												>
-												<td class="py-3 px-4 text-right text-gray-600"
-													>{channel.position_based_share?.toFixed(1) || '-'}%</td
-												>
+							<div class="attribution-table">
+								<h3>Model Comparison</h3>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>Channel</th>
+												<th>First Touch</th>
+												<th>Last Touch</th>
+												<th>Linear</th>
+												<th>Time Decay</th>
+												<th>Position Based</th>
 											</tr>
-										{/each}
-									</tbody>
-								</table>
+										</thead>
+										<tbody>
+											{#each dashboardData.attribution.channels as channel}
+												<tr>
+													<td class="channel-name">{channel.channel}</td>
+													<td>{channel.first_touch_share?.toFixed(1) || '-'}%</td>
+													<td>{channel.last_touch_share?.toFixed(1) || '-'}%</td>
+													<td>{channel.linear_share?.toFixed(1) || '-'}%</td>
+													<td>{channel.time_decay_share?.toFixed(1) || '-'}%</td>
+													<td>{channel.position_based_share?.toFixed(1) || '-'}%</td>
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
 							</div>
-						</div>
-					{:else}
-						<div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
-							<div class="text-4xl mb-4">🎯</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">No Attribution Data</h3>
-							<p class="text-gray-500">Attribution data will appear once conversions are tracked</p>
-						</div>
-					{/if}
-				</div>
-			{/if}
+						{:else}
+							<div class="empty-state">
+								<span class="empty-icon">🎯</span>
+								<h3>No Attribution Data</h3>
+								<p>Attribution data will appear once conversions are tracked</p>
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
 		{/if}
-	</div>
+	</main>
 </div>
+
+<style>
+	.analytics-dashboard {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		color: white;
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* Background Effects */
+	.bg-effects {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(80px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, #f97316, #ea580c);
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, #10b981, #14b8a6);
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%, 100% { transform: translate(0, 0) scale(1); }
+		33% { transform: translate(30px, -30px) scale(1.05); }
+		66% { transform: translate(-20px, 20px) scale(0.95); }
+	}
+
+	/* Header */
+	.dashboard-header {
+		position: relative;
+		z-index: 10;
+		background: rgba(15, 23, 42, 0.8);
+		backdrop-filter: blur(20px);
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		padding: 1.5rem 2rem;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.header-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.title-icon {
+		width: 48px;
+		height: 48px;
+		background: linear-gradient(135deg, #f97316, #ea580c);
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+	}
+
+	.header-title h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0;
+		background: linear-gradient(135deg, #ffffff, #94a3b8);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.header-title p {
+		font-size: 0.875rem;
+		color: #64748b;
+		margin: 0;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: linear-gradient(135deg, #f97316, #ea580c);
+		color: white;
+		border: none;
+		border-radius: 10px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+	}
+
+	/* Connection Status */
+	.connection-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 0.75rem;
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		border-radius: 20px;
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: #f87171;
+		margin-top: 1rem;
+		max-width: 1400px;
+		width: fit-content;
+	}
+
+	.connection-status.connected {
+		background: rgba(16, 185, 129, 0.1);
+		border-color: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	/* Tab Navigation */
+	.tab-nav {
+		display: flex;
+		gap: 0.25rem;
+		margin-top: 1.5rem;
+		max-width: 1400px;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		padding-bottom: 0;
+	}
+
+	.tab-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.875rem 1.25rem;
+		background: transparent;
+		border: none;
+		border-bottom: 2px solid transparent;
+		color: #64748b;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+		margin-bottom: -1px;
+	}
+
+	.tab-btn:hover {
+		color: #f1f5f9;
+	}
+
+	.tab-btn.active {
+		color: #f97316;
+		border-bottom-color: #f97316;
+	}
+
+	.tab-icon {
+		font-size: 1rem;
+	}
+
+	/* Main Content */
+	.dashboard-content {
+		position: relative;
+		z-index: 10;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
+	}
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 6rem 2rem;
+		gap: 1.5rem;
+	}
+
+	.loading-spinner {
+		width: 48px;
+		height: 48px;
+		border: 3px solid rgba(249, 115, 22, 0.2);
+		border-top-color: #f97316;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	.loading-state p {
+		color: #64748b;
+		font-size: 0.875rem;
+	}
+
+	/* Not Connected State */
+	.not-connected-state {
+		padding: 2rem 0;
+	}
+
+	.available-services {
+		margin-top: 3rem;
+	}
+
+	.available-services h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #94a3b8;
+		margin-bottom: 1.25rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.services-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 1rem;
+	}
+
+	.service-card {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem 1.25rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 12px;
+		text-decoration: none;
+		color: #f1f5f9;
+		transition: all 0.2s;
+	}
+
+	.service-card:hover {
+		background: rgba(30, 41, 59, 0.8);
+		border-color: var(--service-color, #f97316);
+		transform: translateY(-2px);
+	}
+
+	.service-icon {
+		font-size: 1.5rem;
+	}
+
+	.service-name {
+		flex: 1;
+		font-weight: 500;
+	}
+
+	.service-card :global(.service-arrow) {
+		color: #64748b;
+		transition: all 0.2s;
+	}
+
+	.service-card:hover :global(.service-arrow) {
+		color: var(--service-color, #f97316);
+		transform: translateX(4px);
+	}
+
+	/* Error State */
+	.error-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		background: rgba(239, 68, 68, 0.05);
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		border-radius: 16px;
+	}
+
+	.error-icon {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+	}
+
+	.error-state h3 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0 0 0.5rem;
+	}
+
+	.error-state p {
+		color: #94a3b8;
+		margin: 0 0 1.5rem;
+	}
+
+	.btn-retry {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 10px;
+		color: #f87171;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-retry:hover {
+		background: rgba(239, 68, 68, 0.2);
+	}
+
+	/* Dashboard Grid */
+	.tab-content {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.tab-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.tab-header h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	.tab-actions {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.select-input {
+		padding: 0.625rem 1rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 8px;
+		color: #f1f5f9;
+		font-size: 0.875rem;
+	}
+
+	.grid-row {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		gap: 1.5rem;
+	}
+
+	.widget-large,
+	.widget-small {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+		overflow: hidden;
+	}
+
+	.quick-actions {
+		padding: 1.5rem;
+	}
+
+	.quick-actions h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0 0 1rem;
+		color: #f1f5f9;
+	}
+
+	.action-link {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.875rem;
+		border-radius: 10px;
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.2s;
+	}
+
+	.action-link:hover {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.action-icon {
+		font-size: 1.5rem;
+	}
+
+	.action-text strong {
+		display: block;
+		color: #f1f5f9;
+		font-weight: 500;
+	}
+
+	.action-text span {
+		font-size: 0.8125rem;
+		color: #64748b;
+	}
+
+	.charts-row {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+	}
+
+	.data-tables {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+	}
+
+	.data-table {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+		padding: 1.5rem;
+	}
+
+	.data-table h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0 0 1rem;
+	}
+
+	.table-rows {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.table-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 0;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.table-row:last-child {
+		border-bottom: none;
+	}
+
+	.row-rank {
+		width: 24px;
+		font-size: 0.8125rem;
+		color: #64748b;
+	}
+
+	.row-label {
+		flex: 1;
+		font-size: 0.875rem;
+		color: #f1f5f9;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.row-value {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #94a3b8;
+	}
+
+	.no-data {
+		color: #64748b;
+		font-size: 0.875rem;
+		text-align: center;
+		padding: 2rem;
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+	}
+
+	.empty-icon {
+		font-size: 3rem;
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	.empty-state h3 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0 0 0.5rem;
+	}
+
+	.empty-state p {
+		color: #64748b;
+		margin: 0 0 1.5rem;
+	}
+
+	/* Funnels Grid */
+	.funnels-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
+	}
+
+	/* Attribution Table */
+	.attribution-table {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 16px;
+		padding: 1.5rem;
+	}
+
+	.attribution-table h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0 0 1rem;
+	}
+
+	.table-wrapper {
+		overflow-x: auto;
+	}
+
+	.attribution-table table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	.attribution-table th {
+		text-align: right;
+		padding: 0.75rem;
+		color: #64748b;
+		font-weight: 500;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.attribution-table th:first-child {
+		text-align: left;
+	}
+
+	.attribution-table td {
+		padding: 0.75rem;
+		text-align: right;
+		color: #94a3b8;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+	}
+
+	.attribution-table td.channel-name {
+		text-align: left;
+		color: #f1f5f9;
+		font-weight: 500;
+		text-transform: capitalize;
+	}
+
+	.attribution-table tr:hover {
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	/* Responsive */
+	@media (max-width: 1024px) {
+		.grid-row {
+			grid-template-columns: 1fr;
+		}
+
+		.charts-row,
+		.data-tables,
+		.funnels-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.header-content {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+		}
+
+		.header-actions {
+			width: 100%;
+			flex-wrap: wrap;
+		}
+
+		.dashboard-header,
+		.dashboard-content {
+			padding: 1rem;
+		}
+
+		.services-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

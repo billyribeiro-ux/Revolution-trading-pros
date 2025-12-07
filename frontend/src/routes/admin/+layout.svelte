@@ -65,7 +65,9 @@
 			'settings': 'Settings',
 			'popups': 'Popups',
 			'forms': 'Forms',
-			'videos': 'Videos'
+			'videos': 'Videos',
+			'site-health': 'Site Health',
+			'connections': 'API Connections'
 		};
 		
 		return titleMap[lastSegment] || lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
