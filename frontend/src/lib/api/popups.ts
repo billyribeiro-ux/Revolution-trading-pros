@@ -50,6 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
+import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 import type { Popup } from '$lib/stores/popups';
 
 // Re-export Popup type for convenience
@@ -803,7 +804,8 @@ class PopupEngagementService {
 		this.error.set(null);
 
 		try {
-			const token = browser ? localStorage.getItem('rtp_auth_token') : null;
+			// Use secure auth store token (memory-only, not localStorage)
+			const token = browser ? getAuthStoreToken() : null;
 			const response = await fetch(`${API_BASE}/admin/popups`, {
 				method: 'GET',
 				headers: {

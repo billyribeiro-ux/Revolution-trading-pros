@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './client';
+import { getAuthToken } from '$lib/stores/auth';
 
 // Types
 export interface Member {
@@ -291,11 +292,13 @@ export const membersApi = {
 			params.append('status', filters.status);
 		}
 		const queryString = params.toString();
+		// Use secure auth store token (memory-only, not localStorage)
+		const token = getAuthToken();
 		const response = await fetch(
 			`/api/admin/members/export${queryString ? `?${queryString}` : ''}`,
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem('rtp_auth_token')}`
+					Authorization: `Bearer ${token}`
 				}
 			}
 		);

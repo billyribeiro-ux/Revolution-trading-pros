@@ -50,6 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
+import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 import type {
 	Subscription,
 	SubscriptionStatus,
@@ -438,11 +439,11 @@ class SubscriptionService {
 	}
 
 	/**
-	 * Get auth token
+	 * Get auth token from secure auth store (memory-only, not localStorage)
 	 */
 	private getAuthToken(): string {
 		if (!browser) return '';
-		return localStorage.getItem('rtp_auth_token') || '';
+		return getAuthStoreToken() || '';
 	}
 
 	/**

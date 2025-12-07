@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast';
+	import { getAuthToken } from '$lib/stores/auth';
 	import {
 		IconMail,
 		IconPlus,
@@ -102,9 +103,10 @@
 	async function loadTemplates() {
 		try {
 			// Load templates from email templates API
+			// Use secure auth store token (memory-only, not localStorage)
 			const response = await fetch('/api/admin/email/templates', {
 				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('rtp_auth_token')}`,
+					'Authorization': `Bearer ${getAuthToken()}`,
 					'Content-Type': 'application/json'
 				}
 			});
