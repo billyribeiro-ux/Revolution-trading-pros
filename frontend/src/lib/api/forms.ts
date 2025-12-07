@@ -51,6 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import type { FormTheme } from '$lib/data/formTemplates';
+import { getAuthToken as getAuthStoreToken, getSessionId as getAuthSessionId } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -461,11 +462,13 @@ class FormsService {
 	}
 
 	/**
-	 * Get auth token
+	 * Get auth token from the secure auth store
+	 * @security Uses memory-only token storage from auth store
 	 */
 	private getAuthToken(): string {
 		if (!browser) return '';
-		return localStorage.getItem('rtp_auth_token') || '';
+		// Use the auth store's secure token getter (memory-only, not localStorage)
+		return getAuthStoreToken() || '';
 	}
 
 	/**
@@ -542,8 +545,18 @@ class FormsService {
 
 			if (!response.ok) {
 				if (response.status === 401) {
-					// Handle unauthorized
-					this.clearAuth();
+					// Try to refresh token before giving up
+					try {
+						const { authStore } = await import('$lib/stores/auth');
+						const refreshed = await authStore.refreshToken();
+						if (refreshed && retriesLeft > 0) {
+							// Token refreshed, retry the request
+							return this.executeRequest<T>(url, options, retriesLeft - 1);
+						}
+					} catch {
+						// Refresh failed, clear auth and redirect
+						await this.clearAuth();
+					}
 				}
 
 				const error = await response.json().catch(() => ({ message: 'Request failed' }));
@@ -819,11 +832,12 @@ class FormsService {
 		return !navigator.onLine || error?.message?.includes('Network');
 	}
 
-	private clearAuth(): void {
+	private async clearAuth(): Promise<void> {
 		if (!browser) return;
-		localStorage.removeItem('rtp_auth_token');
-		// Redirect to login
-		window.location.href = '/login';
+		// Import and use the auth store's logout method
+		// This properly clears the secure memory-only token and handles redirect
+		const { authStore } = await import('$lib/stores/auth');
+		await authStore.logout('/login');
 	}
 
 	private showNotification(message: string): void {

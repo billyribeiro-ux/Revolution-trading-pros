@@ -49,6 +49,7 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
+import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -444,10 +445,18 @@ class EnterpriseApiClient {
 
 	/**
 	 * Token management
+	 * @security Uses auth store's secure memory-only token as primary source
 	 */
 	private loadTokens(): void {
 		if (typeof window !== 'undefined') {
-			this.token = localStorage.getItem('rtp_auth_token');
+			// First try to get token from the secure auth store (memory-only)
+			const storeToken = getAuthStoreToken();
+			if (storeToken) {
+				this.token = storeToken;
+			} else {
+				// Fallback to localStorage for backwards compatibility during migration
+				this.token = localStorage.getItem('rtp_auth_token');
+			}
 			this.refreshToken = localStorage.getItem('rtp_refresh_token');
 		}
 	}
@@ -475,6 +484,11 @@ class EnterpriseApiClient {
 	}
 
 	getToken(): string | null {
+		// Always prefer the auth store's secure token
+		const storeToken = getAuthStoreToken();
+		if (storeToken) {
+			this.token = storeToken;
+		}
 		return this.token;
 	}
 

@@ -4,6 +4,8 @@
  * Enhanced with better type safety and error handling
  */
 
+import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+
 // Get API base URL from environment variable or use default
 export const API_BASE_URL = import.meta.env['VITE_API_URL'] || 'http://localhost:8000';
 export const CDN_URL = import.meta.env['VITE_CDN_URL'] || 'http://localhost:8000/storage';
@@ -177,8 +179,8 @@ export async function apiFetch<T>(
 		url += `?${queryString}`;
 	}
 
-	// Get auth token if available
-	const token = typeof window !== 'undefined' ? localStorage.getItem('rtp_auth_token') : null;
+	// Get auth token from secure auth store (memory-only, not localStorage)
+	const token = typeof window !== 'undefined' ? getAuthStoreToken() : null;
 
 	// Merge headers
 	const headers: Record<string, string> = {
