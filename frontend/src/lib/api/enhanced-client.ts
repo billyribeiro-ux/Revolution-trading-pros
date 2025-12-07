@@ -14,6 +14,7 @@
  */
 
 import { browser } from '$app/environment';
+import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 import { getCircuitBreaker, type CircuitBreaker } from '../resilience/circuit-breaker';
 import { retryNetworkRequest, withIdempotency, generateIdempotencyKey } from '../resilience/retry';
 import {
@@ -514,7 +515,8 @@ export class EnhancedApiClient {
 	private getAuthHeaders(): Record<string, string> {
 		if (!browser) return {};
 
-		const token = localStorage.getItem('rtp_auth_token');
+		// Use secure auth store token (memory-only, not localStorage)
+		const token = getAuthStoreToken();
 		if (!token) return {};
 
 		return {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast';
+	import { getAuthToken } from '$lib/stores/auth';
 	import {
 		IconUsers,
 		IconPlus,
@@ -83,9 +84,10 @@
 	async function loadStats() {
 		try {
 			// Get stats from dashboard
+			// Use secure auth store token (memory-only, not localStorage)
 			const response = await fetch('/api/admin/email/subscribers/stats', {
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem('rtp_auth_token')}`
+					Authorization: `Bearer ${getAuthToken()}`
 				}
 			});
 			if (response.ok) {
@@ -179,9 +181,10 @@
 
 	async function handleExport() {
 		try {
+			// Use secure auth store token (memory-only, not localStorage)
 			const response = await fetch('/api/admin/email/subscribers/export', {
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem('rtp_auth_token')}`
+					Authorization: `Bearer ${getAuthToken()}`
 				}
 			});
 			const blob = await response.blob();
