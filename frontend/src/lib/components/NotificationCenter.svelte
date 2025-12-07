@@ -21,19 +21,17 @@
 		unreadCount,
 		type Notification
 	} from '$lib/stores/notifications';
-	import {
-		IconBell,
-		IconX,
-		IconCheck,
-		IconCheckbox,
-		IconTrash,
-		IconInfoCircle,
-		IconCircleCheck,
-		IconAlertTriangle,
-		IconAlertCircle,
-		IconSettings2,
-		IconChevronRight
-	} from '@tabler/icons-svelte';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconChecks from '@tabler/icons-svelte/icons/checks';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 
 	interface Props {
 		isOpen?: boolean;
@@ -88,7 +86,7 @@
 			case 'success': return IconCircleCheck;
 			case 'warning': return IconAlertTriangle;
 			case 'error': return IconAlertCircle;
-			case 'system': return IconSettings2;
+			case 'system': return IconSettings;
 			default: return IconInfoCircle;
 		}
 	}
@@ -185,7 +183,7 @@
 			{#if $unreadCount > 0}
 				<div class="actions-bar" in:fade={{ duration: 150 }}>
 					<button class="action-btn" onclick={() => notificationStore.markAllAsRead()}>
-						<IconCheckbox size={16} />
+						<IconChecks size={16} />
 						Mark all as read
 					</button>
 				</div>

@@ -10,16 +10,14 @@
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import {
-		IconTrash,
-		IconArchive,
-		IconDownload,
-		IconTag,
-		IconMail,
-		IconX,
-		IconCheck,
-		IconLoader2
-	} from '@tabler/icons-svelte';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconTag from '@tabler/icons-svelte/icons/tag';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
 
 	interface BatchAction {
 		id: string;

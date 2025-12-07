@@ -11,13 +11,11 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
 	import { connections, type ConnectionStatus } from '$lib/stores/connections';
-	import {
-		IconApi,
-		IconChevronDown,
-		IconAlertTriangle,
-		IconCircleCheck,
-		IconClock
-	} from '@tabler/icons-svelte';
+	import IconApiApp from '@tabler/icons-svelte/icons/api-app';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
 
 	interface RateLimitInfo {
 		service: string;
@@ -123,7 +121,7 @@
 		onclick={(e) => { e.stopPropagation(); toggle(); }}
 		title="API Rate Limits"
 	>
-		<IconApi size={18} />
+		<IconApiApp size={18} />
 		<span class="limit-percentage">{Math.round(lowestPercentage)}%</span>
 		<span class="chevron" class:rotated={isOpen}>
 			<IconChevronDown size={14} />

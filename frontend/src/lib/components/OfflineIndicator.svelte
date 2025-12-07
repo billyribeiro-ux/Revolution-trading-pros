@@ -17,15 +17,13 @@
 		pendingActionsCount,
 		isSyncing
 	} from '$lib/stores/offline';
-	import {
-		IconWifi,
-		IconWifiOff,
-		IconCloudUpload,
-		IconLoader2,
-		IconCheck,
-		IconX,
-		IconRefresh
-	} from '@tabler/icons-svelte';
+	import IconWifi from '@tabler/icons-svelte/icons/wifi';
+	import IconWifiOff from '@tabler/icons-svelte/icons/wifi-off';
+	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
+	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);

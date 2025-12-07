@@ -18,36 +18,34 @@
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
-	import {
-		IconSearch,
-		IconCommand,
-		IconArrowRight,
-		IconCornerDownLeft,
-		IconArrowUp,
-		IconArrowDown,
-		IconX,
-		IconHistory,
-		IconHome,
-		IconChartBar,
-		IconUsers,
-		IconMail,
-		IconSettings,
-		IconShoppingCart,
-		IconFileText,
-		IconPhoto,
-		IconPlug,
-		IconActivity,
-		IconBrandGoogle,
-		IconTrendingUp,
-		IconForms,
-		IconVideo,
-		IconCreditCard,
-		IconDatabase,
-		IconRefresh,
-		IconDownload,
-		IconUpload,
-		IconLogout
-	} from '@tabler/icons-svelte';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconCommand from '@tabler/icons-svelte/icons/command';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconArrowNarrowLeft from '@tabler/icons-svelte/icons/arrow-narrow-left';
+	import IconArrowUp from '@tabler/icons-svelte/icons/arrow-up';
+	import IconArrowDown from '@tabler/icons-svelte/icons/arrow-down';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconHistory from '@tabler/icons-svelte/icons/history';
+	import IconHome from '@tabler/icons-svelte/icons/home';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconPhoto from '@tabler/icons-svelte/icons/photo';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconBrandGoogle from '@tabler/icons-svelte/icons/brand-google';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconForms from '@tabler/icons-svelte/icons/forms';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconDatabase from '@tabler/icons-svelte/icons/database';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconLogout from '@tabler/icons-svelte/icons/logout';
 
 	interface Props {
 		isOpen?: boolean;
@@ -77,7 +75,7 @@
 		{ id: 'templates', label: 'Email Templates', path: '/admin/email/templates', icon: IconMail, category: 'Marketing' },
 		{ id: 'products', label: 'Products', path: '/admin/products', icon: IconShoppingCart, category: 'Commerce' },
 		{ id: 'subscriptions', label: 'Subscriptions', path: '/admin/subscriptions', icon: IconCreditCard, category: 'Commerce' },
-		{ id: 'connections', label: 'API Connections', path: '/admin/connections', icon: IconPlug, category: 'Settings' },
+		{ id: 'connections', label: 'API Connections', path: '/admin/connections', icon: IconPlugConnected, category: 'Settings' },
 		{ id: 'site-health', label: 'Site Health', path: '/admin/site-health', icon: IconActivity, category: 'Settings' },
 		{ id: 'settings', label: 'Settings', path: '/admin/settings', icon: IconSettings, category: 'Settings' }
 	];
@@ -282,7 +280,7 @@
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}
 										<div class="item-action">
-											<IconCornerDownLeft size={14} />
+											<IconArrowNarrowLeft size={14} />
 										</div>
 									{/if}
 								</button>
@@ -301,7 +299,7 @@
 						Navigate
 					</span>
 					<span class="hint">
-						<kbd><IconCornerDownLeft size={12} /></kbd>
+						<kbd><IconArrowNarrowLeft size={12} /></kbd>
 						Select
 					</span>
 					<span class="hint">

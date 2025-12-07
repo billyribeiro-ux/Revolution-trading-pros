@@ -15,16 +15,14 @@
 	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
-	import {
-		IconMenu2,
-		IconSun,
-		IconMoon,
-		IconDeviceDesktop,
-		IconBell,
-		IconSearch,
-		IconPlug,
-		IconKeyboard
-	} from '@tabler/icons-svelte';
+	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
+	import IconSun from '@tabler/icons-svelte/icons/sun';
+	import IconMoon from '@tabler/icons-svelte/icons/moon';
+	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconPlug from '@tabler/icons-svelte/icons/plug';
+	import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
@@ -73,48 +71,43 @@
 		}
 	});
 
-	// Register keyboard shortcuts
+	// Initialize keyboard shortcuts
 	$effect(() => {
 		if (!browser) return;
 
-		// Register shortcut handlers
-		keyboard.registerAction('search', () => {
-			isCommandPaletteOpen = true;
-		});
-
-		keyboard.registerAction('show-shortcuts', () => {
-			isKeyboardHelpOpen = true;
-		});
-
-		keyboard.registerAction('goto-dashboard', () => {
-			goto('/admin');
-		});
-
-		keyboard.registerAction('goto-analytics', () => {
-			goto('/admin/analytics');
-		});
-
-		keyboard.registerAction('goto-content', () => {
-			goto('/admin/blog');
-		});
-
-		keyboard.registerAction('goto-settings', () => {
-			goto('/admin/settings');
-		});
-
-		// Global keyboard listener
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Cmd/Ctrl + K for command palette
-			if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-				e.preventDefault();
+		// Initialize keyboard shortcuts with custom actions
+		keyboard.init({
+			'search': () => {
 				isCommandPaletteOpen = true;
+			},
+			'search-alt': () => {
+				isCommandPaletteOpen = true;
+			},
+			'help': () => {
+				isKeyboardHelpOpen = true;
+			},
+			'goto-dashboard': () => {
+				goto('/admin');
+			},
+			'goto-analytics': () => {
+				goto('/admin/analytics');
+			},
+			'goto-blog': () => {
+				goto('/admin/blog');
+			},
+			'goto-settings': () => {
+				goto('/admin/settings');
+			},
+			'escape': () => {
+				isCommandPaletteOpen = false;
+				isNotificationCenterOpen = false;
+				isKeyboardHelpOpen = false;
+				isConnectionHealthOpen = false;
 			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
+		});
 
 		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
+			keyboard.destroy();
 		};
 	});
 
