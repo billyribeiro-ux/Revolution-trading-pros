@@ -5,10 +5,10 @@
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconCheck, IconX, IconUser } from '@tabler/icons-svelte';
 
-	let loading = true;
-	let saving = false;
-	let error = '';
-	let success = '';
+	let loading = $state(true);
+	let saving = $state(false);
+	let error = $state('');
+	let success = $state('');
 
 	let formData = {
 		name: '',

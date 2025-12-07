@@ -19,11 +19,11 @@
 		errorMessage?: string;
 	}
 
-	let mounted = false;
-	let selectedIntegration: Integration | null = null;
-	let showConnectModal = false;
+	let mounted = $state(false);
+	let selectedIntegration: Integration | null = $state(null);
+	let showConnectModal = $state(false);
 
-	let integrations: Integration[] = [
+	let integrations: Integration[] = $state([
 		{
 			id: 'google_search_console',
 			name: 'Google Search Console',
@@ -60,7 +60,7 @@
 			connected: false,
 			status: 'disconnected'
 		}
-	];
+	]);
 
 	const progressValue = tweened(0, { duration: 2000, easing: cubicOut });
 

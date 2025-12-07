@@ -5,10 +5,10 @@
 	import { contactsApi, type Contact } from '$lib/api/forms';
 	import { IconPlus, IconSearch, IconMail, IconPhone } from '@tabler/icons-svelte';
 
-	let contacts: Contact[] = [];
-	let loading = true;
-	let searchQuery = '';
-	let statusFilter = '';
+	let contacts = $state<Contact[]>([]);
+	let loading = $state(true);
+	let searchQuery = $state('');
+	let statusFilter = $state('');
 
 	const statusOptions = [
 		{ value: '', label: 'All Statuses' },

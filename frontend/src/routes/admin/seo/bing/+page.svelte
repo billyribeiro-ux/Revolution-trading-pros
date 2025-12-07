@@ -25,16 +25,16 @@
 	} from '$lib/api/bing-seo';
 
 	// State
-	let loading = true;
-	let stats: BingSeoStats | null = null;
-	let recentSubmissions: BingSubmission[] = [];
-	let topQueries: BingSearchPerformance[] = [];
+	let loading = $state(true);
+	let stats = $state<BingSeoStats | null>(null);
+	let recentSubmissions = $state<BingSubmission[]>([]);
+	let topQueries = $state<BingSearchPerformance[]>([]);
 
 	// URL submission
-	let urlToSubmit = '';
-	let submitting = false;
-	let batchUrls = '';
-	let showBatchModal = false;
+	let urlToSubmit = $state('');
+	let submitting = $state(false);
+	let batchUrls = $state('');
+	let showBatchModal = $state(false);
 
 	onMount(async () => {
 		await loadData();
@@ -263,8 +263,10 @@
 					indexed within minutes instead of waiting for the next crawl.
 				</p>
 				<div class="submit-form">
+					<label for="url-to-submit" class="sr-only">URL to submit</label>
 					<input
 						type="url"
+						id="url-to-submit"
 						bind:value={urlToSubmit}
 						placeholder="https://yourdomain.com/new-page"
 						onkeydown={(e) => e.key === 'Enter' && handleSubmitUrl()}
@@ -407,15 +409,17 @@
 {#if showBatchModal}
 	<div
 		class="modal-overlay"
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
 		onclick={() => (showBatchModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showBatchModal = false)}
+		onkeydown={(e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showBatchModal = false; }}
 	>
 		<div
 			class="modal-content"
-			role="document"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
 		>
@@ -430,7 +434,9 @@
 				<p class="batch-description">
 					Enter one URL per line. You can submit up to 10,000 URLs at once.
 				</p>
+				<label for="batch-urls" class="sr-only">Batch URLs</label>
 				<textarea
+					id="batch-urls"
 					bind:value={batchUrls}
 					placeholder="https://yourdomain.com/page-1
 https://yourdomain.com/page-2
@@ -1098,5 +1104,17 @@ https://yourdomain.com/page-3"
 		.submit-form {
 			flex-direction: column;
 		}
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>

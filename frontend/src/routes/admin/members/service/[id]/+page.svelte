@@ -32,12 +32,12 @@
 	let loading = $derived($serviceMembersStore.loading);
 
 	// Local state
-	let searchQuery = '';
-	let statusFilter = '';
-	let selectedMembers: Set<number> = new Set();
-	let showEmailModal = false;
-	let emailSubject = '';
-	let emailBody = '';
+	let searchQuery = $state('');
+	let statusFilter = $state('');
+	let selectedMembers = $state<Set<number>>(new Set());
+	let showEmailModal = $state(false);
+	let emailSubject = $state('');
+	let emailBody = $state('');
 
 	onMount(async () => {
 		await serviceMembersStore.loadServiceMembers(serviceId);

@@ -141,15 +141,17 @@
 		class="health-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={close}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
+		onkeydown={(e) => e.key === 'Enter' && close()}
+		role="button"
+		tabindex="0"
+		aria-label="Close connection health panel"
 	>
 		<div
 			class="health-panel"
 			transition:fly={{ x: 400, duration: 300, easing: quintOut }}
 			onclick={(e) => e.stopPropagation()}
-			role="document"
+			onkeydown={(e) => e.stopPropagation()}
+			role="presentation"
 		>
 			<!-- Header -->
 			<div class="panel-header">
@@ -218,9 +220,10 @@
 					<div class="services-list" in:fade={{ duration: 150 }}>
 						{#each Object.entries($allConnectionStatuses) as [service, status]}
 							{@const metrics = mockMetrics[service] || { responseTime: 0, uptime: 0, errorRate: 0 }}
+							{@const StatusIcon = getStatusIcon(status)}
 							<div class="service-card" class:connected={status === 'connected'} class:error={status === 'error'}>
 								<div class="service-status" style="color: {getStatusColor(status)}">
-									<svelte:component this={getStatusIcon(status)} size={20} class={status === 'connecting' ? 'spinning' : ''} />
+									<StatusIcon size={20} class={status === 'connecting' ? 'spinning' : ''} />
 								</div>
 								<div class="service-info">
 									<div class="service-header">

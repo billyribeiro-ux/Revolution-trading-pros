@@ -23,17 +23,40 @@
 		attributes: null,
 		required: false,
 		order: 0,
-		width: 100,
-		...field
+		width: 12
 	});
 
-	let showConditionalLogic = $state(!!fieldData.conditional_logic);
-	let optionsText = $state(fieldData.options ? fieldData.options.join('\n') : '');
+	let showConditionalLogic = $state(false);
+	let optionsText = $state('');
 
-	const needsOptions = ['select', 'radio', 'checkbox'].includes(fieldData.field_type);
-	const supportsValidation = !['heading', 'divider', 'html', 'hidden'].includes(
+	// Sync with prop changes
+	$effect(() => {
+		if (field) {
+			fieldData = {
+				field_type: 'text',
+				label: '',
+				name: '',
+				placeholder: '',
+				help_text: '',
+				default_value: '',
+				options: null,
+				validation: null,
+				conditional_logic: null,
+				attributes: null,
+				required: false,
+				order: 0,
+				width: 12,
+				...field
+			};
+			showConditionalLogic = !!field.conditional_logic;
+			optionsText = field.options ? field.options.join('\n') : '';
+		}
+	});
+
+	const needsOptions = $derived(['select', 'radio', 'checkbox'].includes(fieldData.field_type));
+	const supportsValidation = $derived(!['heading', 'divider', 'html', 'hidden'].includes(
 		fieldData.field_type
-	);
+	));
 
 	function handleSave() {
 		// Parse options from textarea - convert strings to FieldOption objects
@@ -163,8 +186,8 @@
 
 			<div class="form-row">
 				<div class="form-group">
-					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={fieldData.required} />
+					<label for="field-required" class="checkbox-label">
+						<input id="field-required" type="checkbox" bind:checked={fieldData.required} />
 						<span>Required Field</span>
 					</label>
 				</div>
@@ -285,8 +308,8 @@
 		<div class="form-section">
 			<div class="section-header">
 				<h4>Conditional Logic</h4>
-				<label class="checkbox-label">
-					<input type="checkbox" bind:checked={showConditionalLogic} />
+				<label for="conditional-enable" class="checkbox-label">
+					<input id="conditional-enable" type="checkbox" bind:checked={showConditionalLogic} />
 					<span>Enable conditional logic</span>
 				</label>
 			</div>
@@ -322,14 +345,16 @@
 					<div class="conditional-rules">
 						{#each fieldData.conditional_logic.rules as rule, index}
 							<div class="rule-row">
-								<select bind:value={rule.field} class="form-input">
+								<label for="rule-field-{index}" class="sr-only">Rule field</label>
+								<select id="rule-field-{index}" bind:value={rule.field} class="form-input">
 									<option value="">Select field...</option>
 									{#each availableFields as availField}
 										<option value={availField.name}>{availField.label}</option>
 									{/each}
 								</select>
 
-								<select bind:value={rule.operator} class="form-input">
+								<label for="rule-operator-{index}" class="sr-only">Rule operator</label>
+								<select id="rule-operator-{index}" bind:value={rule.operator} class="form-input">
 									<option value="equals">Equals</option>
 									<option value="not_equals">Not Equals</option>
 									<option value="contains">Contains</option>
@@ -340,7 +365,9 @@
 								</select>
 
 								{#if rule.operator !== 'is_empty' && rule.operator !== 'is_not_empty'}
+									<label for="rule-value-{index}" class="sr-only">Rule value</label>
 									<input
+										id="rule-value-{index}"
 										type="text"
 										bind:value={rule.value}
 										placeholder="Value"
@@ -564,5 +591,17 @@
 
 	.btn-secondary:hover {
 		background: rgba(99, 102, 241, 0.2);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>

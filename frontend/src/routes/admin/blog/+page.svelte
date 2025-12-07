@@ -40,33 +40,33 @@
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let posts: any[] = [];
-	let stats: any = null;
-	let loading = false;
-	let searchQuery = '';
-	let statusFilter = 'all';
-	let categoryFilter = 'all';
-	let categories: any[] = [];
-	let tags: any[] = [];
+	let posts = $state<any[]>([]);
+	let stats = $state<any>(null);
+	let loading = $state(false);
+	let searchQuery = $state('');
+	let statusFilter = $state('all');
+	let categoryFilter = $state('all');
+	let categories = $state<any[]>([]);
+	let tags = $state<any[]>([]);
 
 	// New state for improvements
-	let selectedPosts = new Set<number>();
-	let selectAll = false;
-	let viewMode: 'grid' | 'list' = 'grid';
-	let sortBy = 'created_at';
-	let sortOrder: 'asc' | 'desc' = 'desc';
-	let dateRange = { start: '', end: '' };
-	let previewPost: any = null;
-	let activeActionMenu: number | null = null;
-	let ws: WebSocket | null = null;
-	let showExportModal = false;
-	let exportFormat: 'csv' | 'json' | 'wordpress' = 'csv';
-	let showScheduleModal = false;
-	let schedulePost: any = null;
-	let showAnalyticsModal = false;
-	let analyticsPost: any = null;
-	let refreshInterval: ReturnType<typeof setInterval> | undefined;
-	let notifications: any[] = [];
+	let selectedPosts = $state(new Set<number>());
+	let selectAll = $state(false);
+	let viewMode = $state<'grid' | 'list'>('grid');
+	let sortBy = $state('created_at');
+	let sortOrder = $state<'asc' | 'desc'>('desc');
+	let dateRange = $state({ start: '', end: '' });
+	let previewPost = $state<any>(null);
+	let activeActionMenu = $state<number | null>(null);
+	let ws = $state<WebSocket | null>(null);
+	let showExportModal = $state(false);
+	let exportFormat = $state<'csv' | 'json' | 'wordpress'>('csv');
+	let showScheduleModal = $state(false);
+	let schedulePost = $state<any>(null);
+	let showAnalyticsModal = $state(false);
+	let analyticsPost = $state<any>(null);
+	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
+	let notifications = $state<any[]>([]);
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Status' },

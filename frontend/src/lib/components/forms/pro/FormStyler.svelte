@@ -69,8 +69,13 @@
 		onSettingsChange
 	}: Props = $props();
 
-	let currentSettings = $state<StyleSettings>({ ...settings });
+	let currentSettings = $state<StyleSettings>({});
 	let activeTab = $state<'container' | 'inputs' | 'buttons' | 'typography'>('container');
+
+	// Sync currentSettings with settings prop
+	$effect(() => {
+		if (settings !== undefined) currentSettings = { ...settings };
+	});
 
 	const shadowOptions = {
 		none: 'none',
@@ -224,16 +229,18 @@
 		{#if activeTab === 'container'}
 			<div class="settings-group">
 				<div class="setting-row">
-					<label>Background Color</label>
+					<label for="container-bg">Background Color</label>
 					<input
+						id="container-bg"
 						type="color"
 						value={currentSettings.containerBg || '#ffffff'}
 						oninput={(e) => updateSetting('containerBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Padding</label>
+					<label for="container-padding">Padding</label>
 					<input
+						id="container-padding"
 						type="text"
 						value={currentSettings.containerPadding || '1.5rem'}
 						oninput={(e) => updateSetting('containerPadding', (e.target as HTMLInputElement).value)}
@@ -241,8 +248,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Border Radius</label>
+					<label for="container-border-radius">Border Radius</label>
 					<input
+						id="container-border-radius"
 						type="text"
 						value={currentSettings.containerBorderRadius || '0.5rem'}
 						oninput={(e) => updateSetting('containerBorderRadius', (e.target as HTMLInputElement).value)}
@@ -250,16 +258,18 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Border Color</label>
+					<label for="container-border-color">Border Color</label>
 					<input
+						id="container-border-color"
 						type="color"
 						value={currentSettings.containerBorderColor || '#e5e7eb'}
 						oninput={(e) => updateSetting('containerBorderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Border Width</label>
+					<label for="container-border-width">Border Width</label>
 					<input
+						id="container-border-width"
 						type="text"
 						value={currentSettings.containerBorderWidth || '1px'}
 						oninput={(e) => updateSetting('containerBorderWidth', (e.target as HTMLInputElement).value)}
@@ -267,8 +277,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Shadow</label>
+					<label for="container-shadow">Shadow</label>
 					<select
+						id="container-shadow"
 						value={currentSettings.containerShadow || 'none'}
 						onchange={(e) => updateSetting('containerShadow', (e.target as HTMLSelectElement).value as StyleSettings['containerShadow'])}
 					>
@@ -283,48 +294,54 @@
 		{:else if activeTab === 'inputs'}
 			<div class="settings-group">
 				<div class="setting-row">
-					<label>Background Color</label>
+					<label for="input-bg">Background Color</label>
 					<input
+						id="input-bg"
 						type="color"
 						value={currentSettings.inputBg || '#ffffff'}
 						oninput={(e) => updateSetting('inputBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Text Color</label>
+					<label for="input-text-color">Text Color</label>
 					<input
+						id="input-text-color"
 						type="color"
 						value={currentSettings.inputTextColor || '#374151'}
 						oninput={(e) => updateSetting('inputTextColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Border Color</label>
+					<label for="input-border-color">Border Color</label>
 					<input
+						id="input-border-color"
 						type="color"
 						value={currentSettings.inputBorderColor || '#d1d5db'}
 						oninput={(e) => updateSetting('inputBorderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Focus Border Color</label>
+					<label for="input-focus-border-color">Focus Border Color</label>
 					<input
+						id="input-focus-border-color"
 						type="color"
 						value={currentSettings.inputFocusBorderColor || '#3b82f6'}
 						oninput={(e) => updateSetting('inputFocusBorderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Placeholder Color</label>
+					<label for="input-placeholder-color">Placeholder Color</label>
 					<input
+						id="input-placeholder-color"
 						type="color"
 						value={currentSettings.inputPlaceholderColor || '#9ca3af'}
 						oninput={(e) => updateSetting('inputPlaceholderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Border Radius</label>
+					<label for="input-border-radius">Border Radius</label>
 					<input
+						id="input-border-radius"
 						type="text"
 						value={currentSettings.inputBorderRadius || '0.375rem'}
 						oninput={(e) => updateSetting('inputBorderRadius', (e.target as HTMLInputElement).value)}
@@ -332,8 +349,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Padding</label>
+					<label for="input-padding">Padding</label>
 					<input
+						id="input-padding"
 						type="text"
 						value={currentSettings.inputPadding || '0.625rem 0.75rem'}
 						oninput={(e) => updateSetting('inputPadding', (e.target as HTMLInputElement).value)}
@@ -341,8 +359,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Font Size</label>
+					<label for="input-font-size">Font Size</label>
 					<input
+						id="input-font-size"
 						type="text"
 						value={currentSettings.inputFontSize || '0.9375rem'}
 						oninput={(e) => updateSetting('inputFontSize', (e.target as HTMLInputElement).value)}
@@ -350,16 +369,18 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Label Color</label>
+					<label for="label-color">Label Color</label>
 					<input
+						id="label-color"
 						type="color"
 						value={currentSettings.labelColor || '#374151'}
 						oninput={(e) => updateSetting('labelColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Label Font Size</label>
+					<label for="label-font-size">Label Font Size</label>
 					<input
+						id="label-font-size"
 						type="text"
 						value={currentSettings.labelFontSize || '0.875rem'}
 						oninput={(e) => updateSetting('labelFontSize', (e.target as HTMLInputElement).value)}
@@ -370,32 +391,36 @@
 		{:else if activeTab === 'buttons'}
 			<div class="settings-group">
 				<div class="setting-row">
-					<label>Background Color</label>
+					<label for="button-bg">Background Color</label>
 					<input
+						id="button-bg"
 						type="color"
 						value={currentSettings.buttonBg || '#3b82f6'}
 						oninput={(e) => updateSetting('buttonBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Text Color</label>
+					<label for="button-text-color">Text Color</label>
 					<input
+						id="button-text-color"
 						type="color"
 						value={currentSettings.buttonTextColor || '#ffffff'}
 						oninput={(e) => updateSetting('buttonTextColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Hover Background</label>
+					<label for="button-hover-bg">Hover Background</label>
 					<input
+						id="button-hover-bg"
 						type="color"
 						value={currentSettings.buttonHoverBg || '#2563eb'}
 						oninput={(e) => updateSetting('buttonHoverBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Border Radius</label>
+					<label for="button-border-radius">Border Radius</label>
 					<input
+						id="button-border-radius"
 						type="text"
 						value={currentSettings.buttonBorderRadius || '0.5rem'}
 						oninput={(e) => updateSetting('buttonBorderRadius', (e.target as HTMLInputElement).value)}
@@ -403,8 +428,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Padding</label>
+					<label for="button-padding">Padding</label>
 					<input
+						id="button-padding"
 						type="text"
 						value={currentSettings.buttonPadding || '0.75rem 1.5rem'}
 						oninput={(e) => updateSetting('buttonPadding', (e.target as HTMLInputElement).value)}
@@ -412,8 +438,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Font Size</label>
+					<label for="button-font-size">Font Size</label>
 					<input
+						id="button-font-size"
 						type="text"
 						value={currentSettings.buttonFontSize || '1rem'}
 						oninput={(e) => updateSetting('buttonFontSize', (e.target as HTMLInputElement).value)}
@@ -421,8 +448,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Font Weight</label>
+					<label for="button-font-weight">Font Weight</label>
 					<select
+						id="button-font-weight"
 						value={currentSettings.buttonFontWeight || '600'}
 						onchange={(e) => updateSetting('buttonFontWeight', (e.target as HTMLSelectElement).value)}
 					>
@@ -433,8 +461,9 @@
 					</select>
 				</div>
 				<div class="setting-row">
-					<label>Width</label>
+					<label for="button-width">Width</label>
 					<select
+						id="button-width"
 						value={currentSettings.buttonWidth || 'auto'}
 						onchange={(e) => updateSetting('buttonWidth', (e.target as HTMLSelectElement).value as StyleSettings['buttonWidth'])}
 					>
@@ -446,8 +475,9 @@
 		{:else if activeTab === 'typography'}
 			<div class="settings-group">
 				<div class="setting-row">
-					<label>Font Family</label>
+					<label for="font-family">Font Family</label>
 					<select
+						id="font-family"
 						value={currentSettings.fontFamily || 'inherit'}
 						onchange={(e) => updateSetting('fontFamily', (e.target as HTMLSelectElement).value)}
 					>
@@ -457,40 +487,45 @@
 					</select>
 				</div>
 				<div class="setting-row">
-					<label>Error Color</label>
+					<label for="error-color">Error Color</label>
 					<input
+						id="error-color"
 						type="color"
 						value={currentSettings.errorColor || '#dc2626'}
 						oninput={(e) => updateSetting('errorColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Error Background</label>
+					<label for="error-bg-color">Error Background</label>
 					<input
+						id="error-bg-color"
 						type="color"
 						value={currentSettings.errorBgColor || '#fef2f2'}
 						oninput={(e) => updateSetting('errorBgColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Success Color</label>
+					<label for="success-color">Success Color</label>
 					<input
+						id="success-color"
 						type="color"
 						value={currentSettings.successColor || '#166534'}
 						oninput={(e) => updateSetting('successColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Success Background</label>
+					<label for="success-bg-color">Success Background</label>
 					<input
+						id="success-bg-color"
 						type="color"
 						value={currentSettings.successBgColor || '#dcfce7'}
 						oninput={(e) => updateSetting('successBgColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Field Gap</label>
+					<label for="field-gap">Field Gap</label>
 					<input
+						id="field-gap"
 						type="text"
 						value={currentSettings.fieldGap || '1rem'}
 						oninput={(e) => updateSetting('fieldGap', (e.target as HTMLInputElement).value)}
@@ -498,8 +533,9 @@
 					/>
 				</div>
 				<div class="setting-row">
-					<label>Section Gap</label>
+					<label for="section-gap">Section Gap</label>
 					<input
+						id="section-gap"
 						type="text"
 						value={currentSettings.sectionGap || '2rem'}
 						oninput={(e) => updateSetting('sectionGap', (e.target as HTMLInputElement).value)}
@@ -515,12 +551,12 @@
 			<h4>Preview</h4>
 			<div class="form-preview" style={cssOutput}>
 				<div class="preview-field">
-					<label>Sample Label</label>
-					<input type="text" placeholder="Sample input field" />
+					<label for="preview-input">Sample Label</label>
+					<input id="preview-input" type="text" placeholder="Sample input field" />
 				</div>
 				<div class="preview-field">
-					<label>Another Field</label>
-					<textarea placeholder="Sample textarea"></textarea>
+					<label for="preview-textarea">Another Field</label>
+					<textarea id="preview-textarea" placeholder="Sample textarea"></textarea>
 				</div>
 				<button type="button">Submit Button</button>
 			</div>

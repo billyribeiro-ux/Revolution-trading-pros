@@ -10,12 +10,12 @@
 	import type { FormTheme } from '$lib/data/formTemplates';
 	import { themes } from '$lib/data/formTemplates';
 
-	let form: Form | null = null;
-	let loading = true;
-	let error = '';
-	let showEmbedCode = false;
-	let showThemeCustomizer = false;
-	let selectedTheme: FormTheme | null = null;
+	let form = $state<Form | null>(null);
+	let loading = $state(true);
+	let error = $state('');
+	let showEmbedCode = $state(false);
+	let showThemeCustomizer = $state(false);
+	let selectedTheme = $state<FormTheme | null>(null);
 
 	let formId = $derived(parseInt($page.params.id));
 

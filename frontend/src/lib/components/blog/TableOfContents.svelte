@@ -48,13 +48,18 @@
 	// Svelte 5: Reactive state using $state() rune
 	let tocItems: TocItem[] = $state([]);
 	let flatItems: TocItem[] = $state([]);
-	let isExpanded = $state(defaultExpanded);
+	let isExpanded = $state(true);
 	let activeId = $state('');
 	let readingProgress = $state(0);
 	let isFloatingMinimized = $state(false);
 	let contentElement: HTMLElement | null = $state(null);
 	let observer: IntersectionObserver | null = null;
 	let scrollListener: (() => void) | null = null;
+
+	// Sync with prop changes
+	$effect(() => {
+		isExpanded = defaultExpanded;
+	});
 
 	// Extract text from potentially HTML content
 	function stripHtml(html: string): string {

@@ -112,9 +112,9 @@
 		}
 	];
 
-	let heroVisible = false;
-	let cardsVisible: boolean[] = new Array(indicators.length).fill(false);
-	let selectedCategory = 'All';
+	let heroVisible = $state(false);
+	let cardsVisible = $state<boolean[]>(new Array(indicators.length).fill(false));
+	let selectedCategory = $state('All');
 
 	const categories = ['All', 'Momentum', 'Trend Following', 'Volatility', 'Volume'];
 
@@ -197,7 +197,9 @@
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						const index = parseInt(entry.target.getAttribute('data-index') || '0');
-						cardsVisible[index] = true;
+						const newCardsVisible = [...cardsVisible];
+						newCardsVisible[index] = true;
+						cardsVisible = newCardsVisible;
 					}
 				});
 			},
@@ -318,6 +320,7 @@
 		<div class="section-container">
 			<div class="indicators-grid">
 				{#each filteredIndicators as indicator, index}
+					{@const Icon = indicator.icon}
 					<article
 						class="indicator-card"
 						class:visible={cardsVisible[index]}
@@ -326,7 +329,7 @@
 					>
 						<div class="card-header" style="background: {indicator.gradient}">
 							<div class="card-icon">
-								<svelte:component this={indicator.icon} size={48} stroke={1.5} />
+								<Icon size={48} stroke={1.5} />
 							</div>
 							<div class="card-category">{indicator.category}</div>
 						</div>

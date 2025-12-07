@@ -22,8 +22,13 @@
 
 	let { template, isNew = false, onSave, onCancel, onPreview }: Props = $props();
 
-	// Svelte 5: Reactive state using $state() rune
-	let editedTemplate: BannerTemplate = $state(JSON.parse(JSON.stringify(template)));
+	// Svelte 5: Reactive state using $state() rune - initialized with empty structure
+	let editedTemplate: BannerTemplate = $state({} as BannerTemplate);
+
+	// Sync template prop to editedTemplate state
+	$effect(() => {
+		editedTemplate = JSON.parse(JSON.stringify(template));
+	});
 
 	// Svelte 5: Editor tabs state
 	type EditorTab = 'layout' | 'colors' | 'typography' | 'copy' | 'buttons' | 'advanced';

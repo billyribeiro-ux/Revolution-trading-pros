@@ -4,9 +4,9 @@
 	import { workflowApi } from '$lib/api/workflow';
 	import type { Workflow } from '$lib/types/workflow';
 
-	let workflows: Workflow[] = [];
-	let isLoading = true;
-	let filter: 'all' | 'active' | 'paused' = 'all';
+	let workflows = $state<Workflow[]>([]);
+	let isLoading = $state(true);
+	let filter = $state<'all' | 'active' | 'paused'>('all');
 
 	async function loadWorkflows() {
 		isLoading = true;

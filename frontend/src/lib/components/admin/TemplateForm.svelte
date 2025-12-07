@@ -16,14 +16,28 @@
 	}: Props = $props();
 
 	// Form fields
-	let name = $state(template?.name ?? '');
-	let slug = $state(template?.slug ?? '');
-	let subject = $state(template?.subject ?? '');
-	let email_type = $state(template?.email_type ?? '');
-	let body_html = $state(template?.body_html ?? '');
-	let body_text = $state(template?.body_text ?? '');
-	let variables = $state(template?.variables ? JSON.stringify(template.variables, null, 2) : '');
-	let is_active = $state(template?.is_active ?? true);
+	let name = $state('');
+	let slug = $state('');
+	let subject = $state('');
+	let email_type = $state('');
+	let body_html = $state('');
+	let body_text = $state('');
+	let variables = $state('');
+	let is_active = $state(true);
+
+	// Sync with prop changes
+	$effect(() => {
+		if (template) {
+			name = template.name ?? '';
+			slug = template.slug ?? '';
+			subject = template.subject ?? '';
+			email_type = template.email_type ?? '';
+			body_html = template.body_html ?? '';
+			body_text = template.body_text ?? '';
+			variables = template.variables ? JSON.stringify(template.variables, null, 2) : '';
+			is_active = template.is_active ?? true;
+		}
+	});
 
 	let loading = $state(false);
 	let error = $state('');
@@ -113,8 +127,8 @@
 				></textarea>
 			</div>
 			<div class="field">
-				<label class="inline">
-					<input type="checkbox" bind:checked={is_active} /> Active
+				<label for="is-active" class="inline">
+					<input id="is-active" type="checkbox" bind:checked={is_active} /> Active
 				</label>
 			</div>
 		</div>

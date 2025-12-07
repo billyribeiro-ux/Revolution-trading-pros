@@ -6,9 +6,9 @@
 	import { getForm } from '$lib/api/forms';
 	import type { Form } from '$lib/api/forms';
 
-	let form: Form | null = null;
-	let loading = true;
-	let error = '';
+	let form = $state<Form | null>(null);
+	let loading = $state(true);
+	let error = $state('');
 
 	let formId = $derived(parseInt($page.params.id));
 

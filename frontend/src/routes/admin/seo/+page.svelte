@@ -540,6 +540,7 @@
 		<h2 class="sections-title">SEO Tools</h2>
 		<div class="sections-grid">
 			{#each sections as section, i}
+				{@const SectionIcon = section.icon}
 				<a
 					href={section.href}
 					class="section-card"
@@ -557,7 +558,7 @@
 						</span>
 					{/if}
 					<div class="card-icon" style="background: {section.gradient}">
-						<svelte:component this={section.icon} size={24} />
+						<SectionIcon size={24} />
 					</div>
 					<h3>{section.title}</h3>
 					<p>{section.description}</p>

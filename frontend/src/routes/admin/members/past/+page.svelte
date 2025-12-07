@@ -669,15 +669,20 @@
 {#if showEmailModal}
 	<div
 		class="modal-overlay"
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="email-modal-title"
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
 		onclick={() => (showEmailModal = false)}
+		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showEmailModal = false; }}
 	>
 		<div
 			class="modal-content"
-			role="document"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="email-modal-title"
+			tabindex="-1"
 			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<div>
@@ -811,15 +816,20 @@
 {#if showSurveyModal}
 	<div
 		class="modal-overlay"
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="survey-modal-title"
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
 		onclick={() => (showSurveyModal = false)}
+		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showSurveyModal = false; }}
 	>
 		<div
 			class="modal-content survey-modal"
-			role="document"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="survey-modal-title"
+			tabindex="-1"
 			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<div>

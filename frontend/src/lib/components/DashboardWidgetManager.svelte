@@ -25,30 +25,29 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets';
-	import {
-		IconX,
-		IconGripVertical,
-		IconEye,
-		IconEyeOff,
-		IconLayoutGrid,
-		IconList,
-		IconRefresh,
-		IconChevronUp,
-		IconChevronDown,
-		IconChartLine,
-		IconWorld,
-		IconFileText,
-		IconUsers,
-		IconCurrencyDollar,
-		IconShoppingCart,
-		IconPlugConnected,
-		IconActivity,
-		IconBolt,
-		IconMail,
-		IconSearch,
-		IconEyeCheck,
-		IconSettings
-	} from '@tabler/icons-svelte';
+	// Direct path imports for Svelte 5 compatibility
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
+	import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
+	import IconList from '@tabler/icons-svelte/icons/list';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconWorld from '@tabler/icons-svelte/icons/world';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
+	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEyeCheck from '@tabler/icons-svelte/icons/eye-check';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
 
 	interface Props {
 		isOpen?: boolean;
@@ -136,15 +135,17 @@
 		class="widget-manager-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={close}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
+		onkeydown={(e) => e.key === 'Enter' && close()}
+		role="button"
+		tabindex="0"
+		aria-label="Close widget manager"
 	>
 		<div
 			class="widget-manager"
 			transition:scale={{ duration: 300, start: 0.95, easing: quintOut }}
 			onclick={(e) => e.stopPropagation()}
-			role="document"
+			onkeydown={(e) => e.stopPropagation()}
+			role="presentation"
 		>
 			<!-- Header -->
 			<div class="manager-header">
@@ -188,9 +189,10 @@
 			<!-- Content -->
 			<div class="manager-content">
 				{#if activeTab === 'visible'}
-					<div class="widget-list" in:fade={{ duration: 150 }}>
+					<div class="widget-list" in:fade={{ duration: 150 }} role="list">
 						<p class="helper-text">Drag to reorder widgets. Click the size button to cycle sizes.</p>
 						{#each $visibleWidgets as widget, index (widget.id)}
+							{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 							<div
 								class="widget-item"
 								class:dragging={draggedWidget?.id === widget.id}
@@ -200,6 +202,7 @@
 								ondragover={() => handleDragOver(index)}
 								ondragend={handleDragEnd}
 								animate:flip={{ duration: 200 }}
+								role="listitem"
 							>
 								<div class="drag-handle">
 									<IconGripVertical size={18} />
@@ -208,7 +211,7 @@
 									class="widget-icon"
 									style="background: {categoryColors[widget.category]}20; color: {categoryColors[widget.category]}"
 								>
-									<svelte:component this={iconMap[widget.icon] || IconChartLine} size={18} />
+									<WidgetIcon size={18} />
 								</div>
 								<div class="widget-info">
 									<span class="widget-title">{widget.title}</span>
@@ -258,12 +261,13 @@
 						{:else}
 							<p class="helper-text">Click the eye icon to show a widget on your dashboard.</p>
 							{#each $hiddenWidgets as widget (widget.id)}
+								{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 								<div class="widget-item hidden-item">
 									<div
 										class="widget-icon"
 										style="background: {categoryColors[widget.category]}20; color: {categoryColors[widget.category]}"
 									>
-										<svelte:component this={iconMap[widget.icon] || IconChartLine} size={18} />
+										<WidgetIcon size={18} />
 									</div>
 									<div class="widget-info">
 										<span class="widget-title">{widget.title}</span>
@@ -285,12 +289,13 @@
 					<div class="settings-panel" in:fade={{ duration: 150 }}>
 						<!-- Layout -->
 						<div class="setting-group">
-							<label class="setting-label">Layout</label>
+							<div class="setting-label">Layout</div>
 							<div class="layout-options">
 								<button
 									class="layout-btn"
 									class:active={$widgetLayout === 'grid'}
 									onclick={() => widgetStore.setLayout('grid')}
+									aria-label="Grid layout"
 								>
 									<IconLayoutGrid size={18} />
 									Grid
@@ -299,6 +304,7 @@
 									class="layout-btn"
 									class:active={$widgetLayout === 'list'}
 									onclick={() => widgetStore.setLayout('list')}
+									aria-label="List layout"
 								>
 									<IconList size={18} />
 									List
@@ -308,7 +314,7 @@
 
 						<!-- Auto Refresh -->
 						<div class="setting-group">
-							<label class="setting-label">Auto Refresh</label>
+							<div class="setting-label">Auto Refresh</div>
 							<div class="toggle-row">
 								<span class="toggle-description">
 									Automatically refresh widget data
@@ -317,6 +323,7 @@
 									class="toggle-switch"
 									class:active={$autoRefreshEnabled}
 									onclick={() => widgetStore.toggleAutoRefresh()}
+									aria-label="Toggle auto refresh"
 								>
 									<span class="toggle-knob"></span>
 								</button>
@@ -325,8 +332,8 @@
 
 						<!-- Reset -->
 						<div class="setting-group">
-							<label class="setting-label">Reset</label>
-							<button class="reset-btn" onclick={() => widgetStore.resetToDefaults()}>
+							<div class="setting-label">Reset</div>
+							<button class="reset-btn" onclick={() => widgetStore.resetToDefaults()} aria-label="Reset to defaults">
 								<IconRefresh size={16} />
 								Reset to Defaults
 							</button>
