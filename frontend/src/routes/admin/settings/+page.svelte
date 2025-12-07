@@ -946,7 +946,12 @@
 								<h3 class="font-medium text-white">Maintenance Mode</h3>
 								<p class="text-sm text-slate-400">Temporarily disable public access</p>
 							</div>
-							<button class="relative w-14 h-8 bg-slate-700 rounded-full transition-colors">
+							<button
+								type="button"
+								aria-label="Toggle maintenance mode"
+								title="Toggle maintenance mode"
+								class="relative w-14 h-8 bg-slate-700 rounded-full transition-colors"
+							>
 								<span class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform"></span>
 							</button>
 						</div>
@@ -956,7 +961,12 @@
 								<h3 class="font-medium text-white">Debug Mode</h3>
 								<p class="text-sm text-slate-400">Enable detailed error logging</p>
 							</div>
-							<button class="relative w-14 h-8 bg-slate-700 rounded-full transition-colors">
+							<button
+								type="button"
+								aria-label="Toggle debug mode"
+								title="Toggle debug mode"
+								class="relative w-14 h-8 bg-slate-700 rounded-full transition-colors"
+							>
 								<span class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform"></span>
 							</button>
 						</div>
@@ -1010,6 +1020,8 @@
 				<button
 					type="button"
 					onclick={() => showConnectModal = false}
+					aria-label="Close connection modal"
+					title="Close"
 					class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors"
 				>
 					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1023,11 +1035,12 @@
 				<!-- Environment Selector -->
 				{#if selectedService.environments && selectedService.environments.length > 1}
 					<div>
-						<label class="block text-sm font-medium text-slate-300 mb-2">Environment</label>
-						<div class="flex gap-2">
+						<span id="environment-label" class="block text-sm font-medium text-slate-300 mb-2">Environment</span>
+						<div class="flex gap-2" role="group" aria-labelledby="environment-label">
 							{#each selectedService.environments as env}
 								<button
 									onclick={() => selectedEnvironment = env}
+									aria-pressed={selectedEnvironment === env}
 									class="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all {selectedEnvironment === env
 										? 'bg-white text-slate-900'
 										: 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'}"
