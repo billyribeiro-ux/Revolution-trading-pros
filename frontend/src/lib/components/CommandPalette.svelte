@@ -57,7 +57,7 @@
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(0);
-	let inputRef: HTMLInputElement;
+	let inputRef = $state<HTMLInputElement | null>(null);
 	let recentSearches = $state<string[]>([]);
 
 	// Navigation items
@@ -269,6 +269,7 @@
 							<div class="group-label">{category}</div>
 							{#each items as item, itemIndex}
 								{@const globalIndex = flatResults.indexOf(item)}
+								{@const Icon = item.icon}
 								<button
 									class="result-item"
 									class:selected={selectedIndex === globalIndex}
@@ -276,7 +277,7 @@
 									onmouseenter={() => selectedIndex = globalIndex}
 								>
 									<div class="item-icon">
-										<svelte:component this={item.icon} size={18} />
+										<Icon size={18} />
 									</div>
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}

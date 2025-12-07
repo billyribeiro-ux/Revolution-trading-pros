@@ -78,7 +78,7 @@
 </script>
 
 <div class="calculator-field">
-	<label class="field-label">
+	<label for="calculator-{field.name}" class="field-label">
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
@@ -120,7 +120,7 @@
 		</div>
 	{/if}
 
-	<input type="hidden" name={field.name} value={calculatedValue()} />
+	<input id="calculator-{field.name}" type="hidden" name={field.name} value={calculatedValue()} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

@@ -453,6 +453,7 @@
 										class="payment-method"
 										class:selected={paymentMethod === 'stripe'}
 										onclick={() => paymentMethod = 'stripe'}
+										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'stripe'; } }}
 										role="button"
 										tabindex="0"
 									>
@@ -481,6 +482,7 @@
 										class="payment-method"
 										class:selected={paymentMethod === 'paypal'}
 										onclick={() => paymentMethod = 'paypal'}
+										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'paypal'; } }}
 										role="button"
 										tabindex="0"
 									>

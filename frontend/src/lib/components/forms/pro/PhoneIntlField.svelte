@@ -77,13 +77,23 @@
 		{ code: 'CO', name: 'Colombia', dialCode: '+57', flag: '🇨🇴' }
 	];
 
-	const defaultCountry = field.attributes?.default_country || 'US';
-	let selectedCountry = $state<Country>(
-		countries.find((c) => c.code === (value.country_code || defaultCountry)) || countries[0]
-	);
-	let phoneNumber = $state(value.number || '');
+	let defaultCountry = $state('US');
+	let selectedCountry = $state<Country>(countries[0]);
+	let phoneNumber = $state('');
 	let showDropdown = $state(false);
 	let searchQuery = $state('');
+
+	$effect(() => {
+		defaultCountry = field.attributes?.default_country || 'US';
+	});
+
+	$effect(() => {
+		selectedCountry = countries.find((c) => c.code === (value.country_code || defaultCountry)) || countries[0];
+	});
+
+	$effect(() => {
+		phoneNumber = value.number || '';
+	});
 
 	const filteredCountries = $derived(
 		searchQuery

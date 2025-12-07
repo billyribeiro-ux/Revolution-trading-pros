@@ -12,10 +12,10 @@
 		}
 	});
 
-	let memberships: Membership[] = [];
-	let products: Product[] = [];
-	let loadingMemberships = true;
-	let loadingProducts = true;
+	let memberships = $state<Membership[]>([]);
+	let products = $state<Product[]>([]);
+	let loadingMemberships = $state(true);
+	let loadingProducts = $state(true);
 
 	onMount(async () => {
 		if ($authStore.user) {

@@ -176,7 +176,7 @@
           <div
             class="indicator-bar"
             style="width: {(breakpointWidths[variant.sizeName] / 1920) * 100}%"
-          />
+          ></div>
         </div>
       </button>
     {/each}
@@ -194,12 +194,12 @@
             <div
               class="chart-bar"
               style="height: {(variant.size / originalSize) * 100}%"
-            />
+            ></div>
             <span class="chart-label">{variant.sizeName}</span>
           </div>
         {/each}
         <div class="chart-bar-wrapper original">
-          <div class="chart-bar chart-bar-original" style="height: 100%" />
+          <div class="chart-bar chart-bar-original" style="height: 100%"></div>
           <span class="chart-label">orig</span>
         </div>
       </div>

@@ -99,7 +99,7 @@
 	// Complete State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let course = {
+	let course = $state({
 		// Basic Information
 		name: '',
 		slug: '',
@@ -173,27 +173,27 @@
 		// Bonuses & Resources
 		bonuses: [] as Bonus[],
 		resources: [] as any[]
-	};
+	});
 
 	// UI State Management
-	let activeTab = 'basic';
-	let activeSection = 'info';
-	let uploading = false;
-	let saving = false;
-	let generating = false;
-	let analyzing = false;
-	let previewMode: 'desktop' | 'tablet' | 'mobile' = 'desktop';
-	let overallScore = 0;
-	let validationResults: ValidationResult[] = [];
-	let isDragging = false;
-	let draggedModule: Module | null = null;
-	let draggedLesson: Lesson | null = null;
-	let hasUnsavedChanges = false;
-	let lastSaved: Date | null = null;
+	let activeTab = $state('basic');
+	let activeSection = $state('info');
+	let uploading = $state(false);
+	let saving = $state(false);
+	let generating = $state(false);
+	let analyzing = $state(false);
+	let previewMode = $state<'desktop' | 'tablet' | 'mobile'>('desktop');
+	let overallScore = $state(0);
+	let validationResults = $state<ValidationResult[]>([]);
+	let isDragging = $state(false);
+	let draggedModule = $state<Module | null>(null);
+	let draggedLesson = $state<Lesson | null>(null);
+	let hasUnsavedChanges = $state(false);
+	let lastSaved = $state<Date | null>(null);
 	let autoSaveTimer: ReturnType<typeof setInterval>;
-	let showPricingModal = false;
-	let showAIPanel = false;
-	let expandedModules = new Set<string>();
+	let showPricingModal = $state(false);
+	let showAIPanel = $state(false);
+	let expandedModules = $state(new Set<string>());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle Hooks & Initialization

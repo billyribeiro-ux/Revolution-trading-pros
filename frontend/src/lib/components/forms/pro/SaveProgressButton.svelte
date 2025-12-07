@@ -21,10 +21,14 @@
 
 	let isSaving = $state(false);
 	let showEmailModal = $state(false);
-	let saveEmail = $state(email);
+	let saveEmail = $state('');
 	let savedHash = $state<string | null>(null);
 	let saveError = $state<string | null>(null);
 	let copySuccess = $state(false);
+
+	$effect(() => {
+		saveEmail = email;
+	});
 
 	async function saveProgress() {
 		if (!saveEmail && !email) {
@@ -134,8 +138,8 @@
 
 <!-- Email Modal -->
 {#if showEmailModal}
-	<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => e.key === 'Escape' && closeModal()} role="dialog" tabindex="-1">
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="document">
+	<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
 			<button type="button" class="modal-close" onclick={closeModal} aria-label="Close">
 				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<line x1="18" y1="6" x2="6" y2="18"></line>
@@ -156,7 +160,9 @@
 			</p>
 
 			<form onsubmit={(e) => { e.preventDefault(); handleEmailSubmit(); }}>
+				<label for="save-email-input" class="visually-hidden">Email address</label>
 				<input
+					id="save-email-input"
 					type="email"
 					placeholder="your@email.com"
 					bind:value={saveEmail}
@@ -177,8 +183,8 @@
 
 <!-- Success Modal -->
 {#if savedHash}
-	<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => e.key === 'Escape' && closeModal()} role="dialog" tabindex="-1">
-		<div class="modal-content success" onclick={(e) => e.stopPropagation()} role="document">
+	<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
+		<div class="modal-content success" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
 			<div class="success-icon">
 				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -192,8 +198,9 @@
 			</p>
 
 			<div class="resume-link-box">
+			<label for="resume-link-input" class="visually-hidden">Resume link</label>
 				<input type="text" value={getResumeUrl()} readonly class="resume-link-input" />
-				<button type="button" class="copy-btn" onclick={copyResumeLink}>
+				<button type="button" class="copy-btn" onclick={copyResumeLink} aria-label={copySuccess ? 'Link copied' : 'Copy link'}>
 					{#if copySuccess}
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<polyline points="20 6 9 17 4 12"></polyline>
@@ -475,5 +482,17 @@
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		margin-top: 0.5rem;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 </style>

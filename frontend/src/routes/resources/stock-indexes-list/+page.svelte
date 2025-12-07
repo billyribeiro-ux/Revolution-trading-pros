@@ -149,8 +149,8 @@
 		}
 	];
 
-	let selectedRegion = 'all';
-	let expandedFaq: number | null = null;
+	let selectedRegion = $state('all');
+	let expandedFaq = $state<number | null>(null);
 
 	let regions = $derived(['all', ...new Set(majorIndexes.map((i) => i.region))]);
 
@@ -260,8 +260,10 @@
 
 			<!-- Region Filter -->
 			<div class="filter-bar">
-				<IconWorld size={20} />
-				<select bind:value={selectedRegion} class="filter-select">
+				<label for="region-filter">
+					<IconWorld size={20} />
+				</label>
+				<select id="region-filter" bind:value={selectedRegion} class="filter-select">
 					{#each regions as region}
 						<option value={region}>{region === 'all' ? 'All Regions' : region}</option>
 					{/each}

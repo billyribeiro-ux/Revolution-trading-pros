@@ -198,9 +198,12 @@
 			in:scale={{ duration: 200, start: 0.95 }}
 			out:fade={{ duration: 150 }}
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 			role="menu"
+			tabindex="-1"
 		>
 			{#each formats as format}
+				{@const FormatIcon = getFormatIcon(format)}
 				<button
 					class="dropdown-item"
 					class:success={exportedFormat === format}
@@ -211,7 +214,7 @@
 					{#if exportedFormat === format}
 						<IconCheck size={18} class="success-icon" />
 					{:else}
-						<svelte:component this={getFormatIcon(format)} size={18} />
+						<FormatIcon size={18} />
 					{/if}
 					<span>{getFormatLabel(format)}</span>
 				</button>

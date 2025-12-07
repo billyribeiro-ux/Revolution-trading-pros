@@ -28,7 +28,7 @@
 </script>
 
 <div class="nps-field">
-	<label class="field-label">
+	<label class="field-label" for="nps-field-{field.name}">
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>

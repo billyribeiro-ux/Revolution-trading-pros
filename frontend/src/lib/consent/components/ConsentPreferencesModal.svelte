@@ -32,11 +32,11 @@
 	let { class: className = '' } = $props();
 
 	// Local state for pending changes (not saved until user clicks Save)
-	let pendingConsent = {
+	let pendingConsent = $state({
 		analytics: false,
 		marketing: false,
 		preferences: false,
-	};
+	});
 
 	// Sync with store when modal opens
 	$effect(() => {
@@ -144,7 +144,7 @@
 	}
 
 	// Focus trap
-	let modalElement: HTMLElement;
+	let modalElement = $state<HTMLElement>();
 	let previouslyFocused: HTMLElement | null = null;
 
 	// Focus management when modal opens

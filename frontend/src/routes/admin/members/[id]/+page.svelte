@@ -36,48 +36,48 @@
 	let memberId = $derived(Number($page.params.id));
 
 	// State
-	let member: Member | null = null;
-	let timeline: Array<{
+	let member = $state<Member | null>(null);
+	let timeline = $state<Array<{
 		type: string;
 		title: string;
 		date: string;
 		icon: string;
 		meta?: Record<string, unknown>;
-	}> = [];
-	let engagementScore = 0;
-	let loading = true;
-	let error: string | null = null;
+	}>>([]);
+	let engagementScore = $state(0);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
 
 	// Modal states
-	let showEmailModal = false;
-	let showNoteModal = false;
-	let showTagModal = false;
+	let showEmailModal = $state(false);
+	let showNoteModal = $state(false);
+	let showTagModal = $state(false);
 
 	// Email form
-	let emailSubject = '';
-	let emailBody = '';
-	let emailSending = false;
+	let emailSubject = $state('');
+	let emailBody = $state('');
+	let emailSending = $state(false);
 
 	// Notes
-	let notes: Array<{ id: number; content: string; created_at: string; author: string }> = [];
-	let newNote = '';
+	let notes = $state<Array<{ id: number; content: string; created_at: string; author: string }>>([]);
+	let newNote = $state('');
 
 	// Tags
-	let tags: string[] = [];
-	let newTag = '';
+	let tags = $state<string[]>([]);
+	let newTag = $state('');
 	let availableTags = ['VIP', 'High Value', 'At Risk', 'New', 'Engaged', 'Support Priority'];
 
 	// Active tab
-	let activeTab: 'overview' | 'subscriptions' | 'orders' | 'emails' | 'notes' = 'overview';
+	let activeTab = $state<'overview' | 'subscriptions' | 'orders' | 'emails' | 'notes'>('overview');
 
 	// Email history (mock)
-	let emailHistory: Array<{
+	let emailHistory = $state<Array<{
 		id: number;
 		subject: string;
 		sent_at: string;
 		status: 'sent' | 'opened' | 'clicked' | 'bounced';
 		campaign_type: string;
-	}> = [];
+	}>>([]);
 
 	onMount(async () => {
 		await loadMember();
@@ -460,9 +460,10 @@
 								</div>
 							{:else}
 								{#each timeline as event}
+									{@const Icon = getTimelineIcon(event.type)}
 									<div class="timeline-item">
 										<div class="timeline-icon">
-											<svelte:component this={getTimelineIcon(event.type)} size={16} />
+											<Icon size={16} />
 										</div>
 										<div class="timeline-content">
 											<div class="timeline-title">{event.title}</div>

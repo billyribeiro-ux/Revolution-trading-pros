@@ -363,8 +363,9 @@
 			<h2 class="section-title">Resources</h2>
 			<div class="resources-list">
 				{#each quickResources as resource}
+					{@const ResourceIcon = resource.icon}
 					<a href={resource.href} class="resource-item">
-						<svelte:component this={resource.icon} size={20} />
+						<ResourceIcon size={20} />
 						<span>{resource.title}</span>
 						<IconChevronRight size={16} class="chevron" />
 					</a>

@@ -112,7 +112,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <!-- WordPress: .dashboard__nav-primary -->
-<nav class="dashboard__nav-primary" role="navigation" aria-label="Dashboard navigation">
+<nav class="dashboard__nav-primary" aria-label="Dashboard navigation">
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     PROFILE SECTION (WordPress: .dashboard__profile-nav-item)

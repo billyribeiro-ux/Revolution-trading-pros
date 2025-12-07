@@ -73,7 +73,7 @@
 </script>
 
 <div class="payment-field">
-	<label class="field-label">
+	<label class="field-label" for="payment-field-{field.name}">
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
@@ -104,12 +104,14 @@
 			>
 				{#if paymentType === 'multiple'}
 					<input
+						id="payment-item-{item.id}"
 						type="checkbox"
 						checked={isSelected(item.id)}
 						onchange={(e) => handleMultiSelect(item, e.currentTarget.checked)}
 					/>
 				{:else}
 					<input
+						id="payment-item-{item.id}"
 						type="radio"
 						name={field.name}
 						checked={isSelected(item.id)}
@@ -131,6 +133,7 @@
 						<button
 							type="button"
 							class="qty-btn"
+							aria-label="Decrease quantity"
 							onclick={(e) => {
 								e.stopPropagation();
 								const qty = getQuantity(item.id);
@@ -140,16 +143,19 @@
 							-
 						</button>
 						<input
+							id="qty-{item.id}"
 							type="number"
 							min="1"
 							value={getQuantity(item.id)}
 							class="qty-input"
+							aria-label="Quantity"
 							onclick={(e) => e.stopPropagation()}
 							onchange={(e) => handleQuantityChange(item.id, parseInt(e.currentTarget.value) || 1)}
 						/>
 						<button
 							type="button"
 							class="qty-btn"
+							aria-label="Increase quantity"
 							onclick={(e) => {
 								e.stopPropagation();
 								handleQuantityChange(item.id, getQuantity(item.id) + 1);

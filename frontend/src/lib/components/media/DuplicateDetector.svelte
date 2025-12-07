@@ -337,13 +337,15 @@
 
 	<!-- Merge Modal -->
 	{#if selectedGroup}
-		<div class="modal-overlay" onclick={closeModal} role="presentation">
+		<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
 			<div
 				class="modal"
 				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="modal-title"
+				tabindex="-1"
 			>
 				<div class="modal-header">
 					<h3 id="modal-title">Merge Duplicates</h3>

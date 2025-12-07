@@ -20,11 +20,11 @@
 		}
 	});
 
-	let sessions: UserSession[] = [];
-	let loading = true;
-	let error: string | null = null;
-	let revoking: string | null = null;
-	let revokingAll = false;
+	let sessions = $state<UserSession[]>([]);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let revoking = $state<string | null>(null);
+	let revokingAll = $state(false);
 
 	onMount(async () => {
 		await loadSessions();

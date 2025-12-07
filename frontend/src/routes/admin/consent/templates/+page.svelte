@@ -33,14 +33,14 @@
 	import type { BannerTemplate } from '$lib/consent/templates/types';
 
 	// State
-	let selectedCategory = 'all';
-	let searchQuery = '';
-	let showEditor = false;
-	let editingTemplate: BannerTemplate | null = null;
-	let isCreatingNew = false;
-	let showImportModal = false;
-	let importJson = '';
-	let notification = '';
+	let selectedCategory = $state('all');
+	let searchQuery = $state('');
+	let showEditor = $state(false);
+	let editingTemplate = $state<BannerTemplate | null>(null);
+	let isCreatingNew = $state(false);
+	let showImportModal = $state(false);
+	let importJson = $state('');
+	let notification = $state('');
 	const importPlaceholder = '{"activeConfig": {...}, "customTemplates": [...]}';
 
 	// Get categories

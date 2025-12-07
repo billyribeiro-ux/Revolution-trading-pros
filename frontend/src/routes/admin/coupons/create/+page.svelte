@@ -253,19 +253,19 @@
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let saving = false;
-	let validating = false;
-	let generating = false;
-	let testing = false;
-	let errors: ValidationError[] = [];
-	let activeTab: 'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing' = 'basic';
-	let showPreview = false;
-	let showBulkGenerator = false;
-	let showImport = false;
+	let saving = $state(false);
+	let validating = $state(false);
+	let generating = $state(false);
+	let testing = $state(false);
+	let errors = $state<ValidationError[]>([]);
+	let activeTab = $state<'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing'>('basic');
+	let showPreview = $state(false);
+	let showBulkGenerator = $state(false);
+	let showImport = $state(false);
 	let duplicateFrom: string | null = $page.url.searchParams.get('duplicate');
 
 	// Form Data
-	let formData: CouponFormData = {
+	let formData = $state<CouponFormData>({
 		code: '',
 		type: 'percentage',
 		value: 0,
@@ -316,20 +316,20 @@
 		approved_at: null,
 		tags: [],
 		meta: {}
-	};
+	});
 
 	// Lookup Data
-	let availableProducts: any[] = [];
-	let availableCategories: any[] = [];
-	let availableSegments: any[] = [];
-	let availableCoupons: any[] = [];
-	let couponPreview: CouponPreview | null = null;
+	let availableProducts = $state<any[]>([]);
+	let availableCategories = $state<any[]>([]);
+	let availableSegments = $state<any[]>([]);
+	let availableCoupons = $state<any[]>([]);
+	let couponPreview = $state<CouponPreview | null>(null);
 
 	// Advanced Features
-	let generatedCodes: string[] = [];
-	let importedCodes: any[] = [];
-	let validationResults: any = null;
-	let testResults: any = null;
+	let generatedCodes = $state<string[]>([]);
+	let importedCodes = $state<any[]>([]);
+	let validationResults = $state<any>(null);
+	let testResults = $state<any>(null);
 
 	const dispatch = createEventDispatcher();
 

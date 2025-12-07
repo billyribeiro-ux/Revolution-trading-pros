@@ -165,7 +165,7 @@
 
 <div class="inventory-field" class:disabled class:has-error={error}>
 	<div class="field-header">
-		<label class="field-label">
+		<label class="field-label" for="{name}-products">
 			{label}
 			{#if required}
 				<span class="required-marker">*</span>
@@ -174,10 +174,13 @@
 	</div>
 
 	<div
+		id="{name}-products"
 		class="products-container"
 		class:layout-grid={layout === 'grid'}
 		class:layout-compact={layout === 'compact'}
 		style={layout === 'grid' ? `--columns: ${columns}` : ''}
+		role="group"
+		aria-label={label}
 	>
 		{#each products as product}
 			{@const stockStatus = getStockStatus(product)}

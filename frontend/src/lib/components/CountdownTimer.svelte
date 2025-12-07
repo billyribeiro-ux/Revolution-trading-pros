@@ -215,12 +215,17 @@
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
 	let lastUpdateTime: number = 0;
-	let currentColor: string = $state(timerColor);
+	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};
 	let milestonesReached: Set<number> = new Set();
 
+	// Sync timerColor prop to currentColor state
+	$effect(() => {
+		currentColor = timerColor;
+	});
+
 	// Animation values
-	const progressValue = tweened(0, { duration: animationDuration, easing: cubicOut });
+	const progressValue = tweened(0, { duration: 1000, easing: cubicOut });
 	const scaleValue = spring(1, { stiffness: 0.3, damping: 0.5 });
 	const pulseValue = spring(1, { stiffness: 0.5, damping: 0.3 });
 
@@ -262,7 +267,7 @@
 
 	$effect(() => {
 		// Update progress
-		progressValue.set(timeData.progress);
+		progressValue.set(timeData.progress, { duration: animationDuration });
 
 		// Trigger pulse animation on update
 		if (pulseOnUpdate && timeData.seconds !== previousValues.seconds) {

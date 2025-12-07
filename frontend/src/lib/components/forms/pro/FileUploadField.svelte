@@ -51,9 +51,14 @@
 		onupload
 	}: Props = $props();
 
-	let files = $state<UploadedFile[]>([...value]);
+	let files = $state<UploadedFile[]>([]);
 	let isDragging = $state(false);
-	let fileInput: HTMLInputElement;
+	let fileInput = $state<HTMLInputElement>();
+
+	// Sync files with value prop
+	$effect(() => {
+		if (value !== undefined) files = [...value];
+	});
 
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';
@@ -180,7 +185,7 @@
 
 <div class="file-upload-field" class:disabled class:has-error={error}>
 	{#if label}
-		<label class="field-label">
+		<label class="field-label" for="{name}-upload-area">
 			{label}
 			{#if required}
 				<span class="required">*</span>
@@ -190,6 +195,7 @@
 
 	{#if canAddMore}
 		<div
+			id="{name}-upload-area"
 			class="dropzone"
 			class:dragging={isDragging}
 			ondrop={handleDrop}
@@ -199,6 +205,7 @@
 			onkeydown={(e) => e.key === 'Enter' && openFilePicker()}
 			role="button"
 			tabindex="0"
+			aria-label={label || 'Upload files'}
 		>
 			<input
 				bind:this={fileInput}

@@ -31,50 +31,50 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   // Data
-  let items: MediaItem[] = [];
-  let selectedIds: Set<string> = new Set();
-  let focusedId: string | null = null;
-  let statistics: OptimizationStatistics | null = null;
+  let items = $state<MediaItem[]>([]);
+  let selectedIds = $state(new Set<string>());
+  let focusedId = $state<string | null>(null);
+  let statistics = $state<OptimizationStatistics | null>(null);
 
   // Pagination
-  let currentPage = 1;
-  let totalPages = 1;
-  let totalItems = 0;
-  let perPage = 24;
+  let currentPage = $state(1);
+  let totalPages = $state(1);
+  let totalItems = $state(0);
+  let perPage = $state(24);
 
   // Filters
-  let searchQuery = '';
-  let filterType: 'all' | 'image' | 'video' | 'document' = 'all';
-  let filterStatus: 'all' | 'optimized' | 'pending' | 'processing' = 'all';
-  let sortBy: 'created_at' | 'filename' | 'size' = 'created_at';
-  let sortDir: 'asc' | 'desc' = 'desc';
+  let searchQuery = $state('');
+  let filterType = $state<'all' | 'image' | 'video' | 'document'>('all');
+  let filterStatus = $state<'all' | 'optimized' | 'pending' | 'processing'>('all');
+  let sortBy = $state<'created_at' | 'filename' | 'size'>('created_at');
+  let sortDir = $state<'asc' | 'desc'>('desc');
 
   // UI State
-  let viewMode: 'grid' | 'list' = 'grid';
-  let isLoading = true;
-  let isUploading = false;
-  let showUploadPanel = false;
-  let showDetailsPanel = false;
-  let showStatsPanel = true;
-  let showCropModal = false;
-  let showPreviewModal = false;
-  let detailItem: MediaItem | null = null;
-  let contextMenu: { x: number; y: number; item: MediaItem } | null = null;
+  let viewMode = $state<'grid' | 'list'>('grid');
+  let isLoading = $state(true);
+  let isUploading = $state(false);
+  let showUploadPanel = $state(false);
+  let showDetailsPanel = $state(false);
+  let showStatsPanel = $state(true);
+  let showCropModal = $state(false);
+  let showPreviewModal = $state(false);
+  let detailItem = $state<MediaItem | null>(null);
+  let contextMenu = $state<{ x: number; y: number; item: MediaItem } | null>(null);
 
   // Upload tracking
-  let uploadQueue: Array<{
+  let uploadQueue = $state<Array<{
     id: string;
     file: File;
     progress: number;
     status: 'pending' | 'uploading' | 'processing' | 'complete' | 'error';
     error?: string;
     result?: MediaItem;
-  }> = [];
+  }>>([]);
 
   // AI features
-  let aiEnabled = false;
-  let isAnalyzing = false;
-  let aiStatus: { enabled: boolean; provider: string } | null = null;
+  let aiEnabled = $state(false);
+  let isAnalyzing = $state(false);
+  let aiStatus = $state<{ enabled: boolean; provider: string } | null>(null);
 
   // Animations
   const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
@@ -578,7 +578,7 @@
   // Toast Notifications
   // ═══════════════════════════════════════════════════════════════════════════
 
-  let toasts: Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }> = [];
+  let toasts = $state<Array<{ id: string; message: string; type: 'success' | 'error' | 'info' }>>([]);
 
   function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
     const id = crypto.randomUUID();
@@ -1375,8 +1375,7 @@
     tabindex="-1"
     transition:fade={{ duration: 200 }}
   >
-    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-    <div class="modal-content" onclick={(e) => e.stopPropagation()} role="document" transition:scale={{ duration: 300, start: 0.95 }}>
+    <div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation" transition:scale={{ duration: 300, start: 0.95 }}>
       <div class="modal-header">
         <h2 id="preview-modal-title">Responsive Preview</h2>
         <button class="btn-icon" onclick={() => (showPreviewModal = false)} aria-label="Close preview">

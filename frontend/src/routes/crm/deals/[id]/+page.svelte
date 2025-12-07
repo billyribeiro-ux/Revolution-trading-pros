@@ -6,9 +6,9 @@
 	import type { Deal } from '$lib/crm/types';
 	import { IconArrowLeft, IconCurrencyDollar, IconActivity } from '@tabler/icons-svelte';
 
-	let deal: Deal | null = null;
-	let loading = true;
-	let error: string | null = null;
+	let deal = $state<Deal | null>(null);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
 
 	let dealId = $derived($page.params.id as string);
 

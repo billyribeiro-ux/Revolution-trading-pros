@@ -118,7 +118,8 @@
 	<div class="controls-bar">
 		<div class="search-box">
 			<IconSearch size={20} />
-			<input type="text" bind:value={searchQuery} placeholder="Search keywords..." />
+			<label for="search-keywords" class="sr-only">Search keywords</label>
+			<input type="text" id="search-keywords" bind:value={searchQuery} placeholder="Search keywords..." />
 		</div>
 
 		<button class="btn-secondary" onclick={loadKeywords}>
@@ -169,8 +170,9 @@
 							</td>
 							<td>
 								{#if keyword.rank_change !== null && keyword.rank_change !== 0}
+									{@const TrendIcon = getTrendIcon(keyword.rank_change)}
 									<div class="trend {getTrendClass(keyword.rank_change)}">
-										<svelte:component this={getTrendIcon(keyword.rank_change)} size={16} />
+										<TrendIcon size={16} />
 										{Math.abs(keyword.rank_change)}
 									</div>
 								{:else}
@@ -614,5 +616,17 @@
 	.opp-volume {
 		font-size: 0.85rem;
 		color: #666;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>
