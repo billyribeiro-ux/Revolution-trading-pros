@@ -16,17 +16,18 @@
 
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	// Direct path imports for Svelte 5 compatibility
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconBook from '@tabler/icons-svelte/icons/book';
-	import IconInbox from '@tabler/icons-svelte/icons/inbox';
-	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import {
+		IconPlayerPlay,
+		IconBook,
+		IconInbox,
+		IconExternalLink,
+		IconChevronRight,
+		IconClock,
+		IconCalendar,
+		IconVideo,
+		IconDownload,
+		IconMessage
+	} from '@tabler/icons-svelte';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -170,7 +171,7 @@
 		{ title: 'Trading Room Rules', icon: IconBook, href: '#rules' },
 		{ title: 'Getting Started Guide', icon: IconChevronRight, href: '#getting-started' },
 		{ title: 'Platform Setup', icon: IconDownload, href: '#platform' },
-		{ title: 'Community Discord', icon: IconMessageCircle, href: '#discord' }
+		{ title: 'Community Discord', icon: IconMessage, href: '#discord' }
 	];
 </script>
 
@@ -310,7 +311,7 @@
 					<div class="col-sm-6 col-lg-3">
 						<a href="#discord" class="action-card">
 							<div class="action-card__icon">
-								<IconMessageCircle size={28} />
+								<IconMessage size={28} />
 							</div>
 							<div class="action-card__content">
 								<h3>Community</h3>

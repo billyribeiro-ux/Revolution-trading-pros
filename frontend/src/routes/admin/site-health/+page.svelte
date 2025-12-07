@@ -20,36 +20,36 @@
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { getAuthToken } from '$lib/stores/auth';
-	// Direct path imports for Svelte 5 compatibility
-	import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
-	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
-	import IconShieldOff from '@tabler/icons-svelte/icons/shield-off';
-	import IconDatabase from '@tabler/icons-svelte/icons/database';
-	import IconServer from '@tabler/icons-svelte/icons/server';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
-	import IconCircleX from '@tabler/icons-svelte/icons/circle-x';
-	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
-	import IconLock from '@tabler/icons-svelte/icons/lock';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconCode from '@tabler/icons-svelte/icons/code';
-	import IconWorld from '@tabler/icons-svelte/icons/world';
-	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
-	import IconFolder from '@tabler/icons-svelte/icons/folder';
-	import IconCloud from '@tabler/icons-svelte/icons/cloud';
-	import IconBugOff from '@tabler/icons-svelte/icons/bug-off';
-	import IconSpeedboat from '@tabler/icons-svelte/icons/speedboat';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import {
+		IconHeartbeat,
+		IconShieldCheck,
+		IconShield,
+		IconDatabase,
+		IconServer,
+		IconClock,
+		IconRefresh,
+		IconPlugConnected,
+		IconPlugConnectedX,
+		IconAlertTriangle,
+		IconCircleCheck,
+		IconCircleX,
+		IconInfoCircle,
+		IconLock,
+		IconSettings,
+		IconCode,
+		IconWorld,
+		IconCertificate,
+		IconFolder,
+		IconBug,
+		IconSpeedboat,
+		IconChartLine,
+		IconArrowRight,
+		IconExternalLink,
+		IconCheck,
+		IconX,
+		IconPlayerPlay,
+		IconDownload
+	} from '@tabler/icons-svelte';
 	import {
 		connections,
 		connectedCount,
@@ -852,7 +852,7 @@
 							{/if}
 							<div class="metric-card" class:critical={healthData.security.vulnerabilities > 0}>
 								<div class="metric-icon">
-									<IconBugOff size={24} />
+									<IconBug size={24} />
 								</div>
 								<div class="metric-content">
 									<span class="metric-label">Vulnerabilities</span>
@@ -961,7 +961,7 @@
 							{#if healthData.server.webServer}
 								<div class="metric-card">
 									<div class="metric-icon">
-										<IconCloud size={24} />
+										<IconWorld size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Web Server</span>

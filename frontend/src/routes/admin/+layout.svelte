@@ -15,15 +15,16 @@
 	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
-	// Direct path imports for Svelte 5 compatibility
-	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
-	import IconSun from '@tabler/icons-svelte/icons/sun';
-	import IconMoon from '@tabler/icons-svelte/icons/moon';
-	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
+	import {
+		IconMenu2,
+		IconSunHigh,
+		IconMoon,
+		IconDeviceDesktop,
+		IconBell,
+		IconSearch,
+		IconPlugConnected,
+		IconCommand
+	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
@@ -38,7 +39,7 @@
 	// Theme icon mapping
 	function getThemeIcon(theme: Theme) {
 		switch (theme) {
-			case 'light': return IconSun;
+			case 'light': return IconSunHigh;
 			case 'dark': return IconMoon;
 			case 'auto': return IconDeviceDesktop;
 		}
@@ -226,7 +227,7 @@
 					onclick={() => isKeyboardHelpOpen = true}
 					title="Keyboard Shortcuts"
 				>
-					<IconKeyboard size={18} />
+					<IconCommand size={18} />
 				</button>
 
 				<a href="/" class="view-site-btn" target="_blank">View Site</a>

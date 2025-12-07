@@ -1,21 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	// Direct path imports for Svelte 5 compatibility
-	import IconGitBranch from '@tabler/icons-svelte/icons/git-branch';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconCopy from '@tabler/icons-svelte/icons/copy';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import {
+		IconShare,
+		IconPlus,
+		IconSearch,
+		IconEdit,
+		IconTrash,
+		IconEye,
+		IconPlayerPlay,
+		IconPlayerPause,
+		IconCopy,
+		IconRefresh,
+		IconUsers,
+		IconChartBar,
+		IconDownload,
+		IconUpload,
+		IconBolt
+	} from '@tabler/icons-svelte';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 
@@ -169,7 +170,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconGitBranch size={24} />
+				<IconShare size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -231,7 +232,7 @@
 		</div>
 	{:else if filteredFunnels.length === 0}
 		<div class="empty-state">
-			<IconGitBranch size={48} />
+			<IconShare size={48} />
 			<h3>No automations found</h3>
 			<p>Create your first automation to engage contacts automatically</p>
 			<a href="/admin/crm/automations/new" class="btn-primary">
@@ -259,7 +260,7 @@
 							<td>
 								<div class="funnel-cell">
 									<div class="funnel-icon">
-										<IconGitBranch size={20} />
+										<IconShare size={20} />
 									</div>
 									<div class="funnel-info">
 										<span class="funnel-title">{funnel.title}</span>

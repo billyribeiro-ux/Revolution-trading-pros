@@ -25,29 +25,30 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets';
-	// Direct path imports for Svelte 5 compatibility
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
-	import IconEye from '@tabler/icons-svelte/icons/eye';
-	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
-	import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
-	import IconList from '@tabler/icons-svelte/icons/list';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconWorld from '@tabler/icons-svelte/icons/world';
-	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
-	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
-	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
-	import IconBolt from '@tabler/icons-svelte/icons/bolt';
-	import IconMail from '@tabler/icons-svelte/icons/mail';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEyeCheck from '@tabler/icons-svelte/icons/eye-check';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import {
+		IconX,
+		IconGripVertical,
+		IconEye,
+		IconEyeOff,
+		IconLayoutGrid,
+		IconList,
+		IconRefresh,
+		IconCaretUp,
+		IconCaretDown,
+		IconChartLine,
+		IconWorld,
+		IconFileText,
+		IconUsers,
+		IconCurrencyDollar,
+		IconShoppingCart,
+		IconPlugConnected,
+		IconActivity,
+		IconBolt,
+		IconMail,
+		IconSearch,
+		IconEyeCheck,
+		IconSettings
+	} from '@tabler/icons-svelte';
 
 	interface Props {
 		isOpen?: boolean;
@@ -230,14 +231,14 @@
 										onclick={() => widgetStore.moveWidget(widget.id, 'up')}
 										disabled={index === 0}
 									>
-										<IconChevronUp size={16} />
+										<IconCaretUp size={16} />
 									</button>
 									<button
 										class="move-btn"
 										onclick={() => widgetStore.moveWidget(widget.id, 'down')}
 										disabled={index === $visibleWidgets.length - 1}
 									>
-										<IconChevronDown size={16} />
+										<IconCaretDown size={16} />
 									</button>
 									<button
 										class="hide-btn"
