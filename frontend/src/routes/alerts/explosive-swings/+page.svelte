@@ -721,69 +721,102 @@
 				</div>
 			</div>
 
-			<div class="max-w-lg mx-auto">
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
 				<div
-					class="bg-slate-950 p-8 md:p-10 rounded-3xl shadow-2xl border-2 border-emerald-500 relative overflow-hidden transition-all duration-300"
+					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'monthly' ? 'border-emerald-500 opacity-100 scale-105' : 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>
-					{#if activePlan.savings}
-						<div
-							transition:fade
-							class="absolute top-0 right-0 bg-emerald-500 text-slate-900 px-4 py-1 rounded-bl-xl font-bold text-xs uppercase tracking-wide"
-						>
-							{activePlan.savings}
-						</div>
-					{/if}
-
-					<div class="text-center mb-8">
-						<h3 class="text-2xl font-bold text-white mb-2 capitalize">{selectedPlan} Pass</h3>
-
-						<div class="flex items-baseline justify-center gap-1 h-20 items-end pb-2">
-							<span class="text-6xl font-extrabold text-white tracking-tight">
-								${activePlan.price}
-							</span>
-							<span class="text-slate-500 font-medium text-lg">{activePlan.period}</span>
-						</div>
-
-						<p class="text-emerald-500 font-bold text-sm mt-2 min-h-[1.25rem]">
-							{activePlan.tagline}
-						</p>
+					<h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
+					<div class="flex items-baseline gap-1 mb-6">
+						<span class="text-4xl font-bold text-white">$97</span>
+						<span class="text-slate-500">/mo</span>
 					</div>
-
-					<ul class="space-y-5 mb-10 text-sm md:text-base">
-						<li class="flex items-center gap-3">
-							<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
-							<span class="text-slate-200">2-4 Premium Swings / Week</span>
-						</li>
-						<li class="flex items-center gap-3">
-							<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
-							<span class="text-slate-200">Instant SMS & Email Alerts</span>
-						</li>
-						<li class="flex items-center gap-3">
-							<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
-							<span class="text-slate-200">Private Discord Community</span>
-						</li>
-						<li class="flex items-center gap-3">
-							<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
-							<span class="text-slate-200">Detailed Technical Analysis</span>
-						</li>
-						{#if selectedPlan === 'annual'}
-							<li transition:slide class="flex items-center gap-3">
-								<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
-								<span class="text-emerald-400 font-bold">Strategy Video Library</span>
-							</li>
-						{/if}
+					<div class="text-xs font-mono text-slate-500 bg-slate-950 p-2 rounded mb-6 text-center">
+						Flexibility to cancel anytime
+					</div>
+					<ul class="space-y-4 mb-8 text-sm text-slate-400">
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> 2-4 Premium Swings / Week</li>
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> Instant SMS & Email Alerts</li>
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> Private Discord Community</li>
 					</ul>
-
 					<a
-						href={activePlan.link}
-						class="w-full bg-emerald-500 text-slate-900 py-4 rounded-xl font-bold text-lg hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/25 text-center block transform hover:-translate-y-1"
+						href="/checkout/monthly-swings"
+						class="block w-full py-3 bg-slate-950 border border-slate-800 text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
+						>Select Monthly</a
 					>
-						{activePlan.btnText}
-					</a>
+				</div>
+
+				<div
+					class="bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all {selectedPlan === 'quarterly' ? 'border-emerald-500 shadow-emerald-500/20 md:scale-110 opacity-100' : 'border-slate-800 shadow-slate-800/10 md:scale-100 opacity-70 hover:opacity-90'}"
+				>
+					<div
+						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-slate-900 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+					>
+						Most Popular
+					</div>
+					<h3 class="text-2xl font-bold text-white mb-4">Quarterly</h3>
+					<div class="flex items-baseline gap-1 mb-6">
+						<span class="text-5xl font-extrabold text-white">$247</span>
+						<span class="text-slate-500">/qtr</span>
+					</div>
+					<div
+						class="text-xs font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded mb-6 text-center border border-emerald-500/30"
+					>
+						Save 15% ($2.75 / day)
+					</div>
+					<ul class="space-y-4 mb-8 text-sm text-white">
+						<li class="flex gap-3">
+							<span class="text-emerald-500 font-bold">✓</span>
+							<span class="font-bold">Priority Support</span>
+						</li>
+						<li class="flex gap-3">
+							<span class="text-emerald-500 font-bold">✓</span> 2-4 Premium Swings / Week
+						</li>
+						<li class="flex gap-3">
+							<span class="text-emerald-500 font-bold">✓</span> Instant SMS & Email Alerts
+						</li>
+						<li class="flex gap-3">
+							<span class="text-emerald-500 font-bold">✓</span> Private Discord Community
+						</li>
+					</ul>
+					<a
+						href="/checkout/quarterly-swings"
+						class="block w-full py-4 bg-emerald-500 text-slate-900 font-bold rounded-xl text-center hover:bg-emerald-400 transition-colors shadow-lg"
+						>Join Quarterly</a
+					>
+				</div>
+
+				<div
+					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'annual' ? 'border-emerald-500 opacity-100 scale-105' : 'border-slate-800 opacity-70 hover:opacity-90'}"
+				>
+					<h3 class="text-xl font-bold text-white mb-4">Annual</h3>
+					<div class="flex items-baseline gap-1 mb-6">
+						<span class="text-4xl font-bold text-white">$927</span>
+						<span class="text-slate-500">/yr</span>
+					</div>
+					<div class="text-xs font-mono text-emerald-400 bg-slate-950 p-2 rounded mb-6 text-center">
+						Save 20% ($2.54 / day)
+					</div>
+					<ul class="space-y-4 mb-8 text-sm text-slate-400">
+						<li class="flex gap-3">
+							<span class="text-emerald-500">✓</span>
+							<span class="font-bold">Strategy Video Library</span>
+						</li>
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> 2-4 Premium Swings / Week</li>
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> Instant SMS & Email Alerts</li>
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> Private Discord Community</li>
+					</ul>
+					<a
+						href="/checkout/annual-swings"
+						class="block w-full py-3 bg-slate-950 border border-emerald-500 text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-slate-900 transition-colors"
+						>Select Annual</a
+					>
 				</div>
 			</div>
+			<div class="mt-12 text-center">
+				<p class="text-slate-500 text-sm">Secure checkout powered by Stripe. Cancel anytime.</p>
+			</div>
 
-			<p class="text-center text-slate-500 text-sm mt-12 flex items-center justify-center gap-2">
+			<p class="text-center text-slate-500 text-sm mt-6 flex items-center justify-center gap-2">
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 					><path
 						stroke-linecap="round"

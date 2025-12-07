@@ -624,21 +624,30 @@
 				</p>
 			</div>
 
-			<div class="flex justify-center mb-12">
-				<div
-					class="bg-rtp-surface p-1.5 rounded-xl shadow-inner border border-rtp-border inline-flex gap-1 relative"
-				>
-					{#each ['monthly', 'quarterly', 'annual'] as plan}
-						<button
-							onclick={() => (selectedPlan = plan as 'monthly' | 'quarterly' | 'annual')}
-							class="relative px-6 py-2.5 rounded-lg text-sm font-bold capitalize transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-rtp-primary
-                            {selectedPlan === plan
-								? 'text-white'
-								: 'text-rtp-muted hover:text-rtp-text'}"
-						>
-							{plan}
-						</button>
-					{/each}
+			<div class="flex justify-center mb-16">
+				<div class="bg-rtp-surface p-1.5 rounded-xl border border-rtp-border inline-flex relative">
+					<button
+						onclick={() => (selectedPlan = 'monthly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'monthly'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Monthly</button
+					>
+					<button
+						onclick={() => (selectedPlan = 'quarterly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'quarterly'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Quarterly</button
+					>
+					<button
+						onclick={() => (selectedPlan = 'annual')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'annual'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Annual</button
+					>
+
 					<div
 						class="absolute top-1.5 bottom-1.5 bg-rtp-primary rounded-lg shadow-md transition-all duration-300 ease-out"
 						style="left: {selectedPlan === 'monthly'
@@ -650,114 +659,99 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
 				<div
-					class="bg-rtp-surface p-8 rounded-2xl shadow-lg border-2 {selectedPlan === 'monthly'
-						? 'border-rtp-primary ring-2 ring-rtp-primary/20 opacity-100 scale-100'
-						: 'border-rtp-border opacity-60 scale-95'} transition-all duration-300"
+					class="bg-rtp-surface p-8 rounded-2xl border transition-all {selectedPlan === 'monthly' ? 'border-rtp-primary opacity-100 scale-105' : 'border-rtp-border opacity-70 hover:opacity-90'}"
 				>
-					<h3 class="text-xl font-bold text-rtp-text">Monthly</h3>
-					<div class="mt-4 flex items-baseline text-rtp-text">
-						<span class="text-5xl font-extrabold tracking-tight">$197</span>
-						<span class="ml-1 text-xl text-rtp-muted">/mo</span>
+					<h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
+					<div class="flex items-baseline gap-1 mb-6">
+						<span class="text-4xl font-bold text-white">$197</span>
+						<span class="text-rtp-muted">/mo</span>
 					</div>
-					<div
-						class="text-xs font-mono text-rtp-muted bg-rtp-bg p-2 rounded mt-4 text-center border border-rtp-border"
-					>
-						Cost: $9.85 / Trading Day
+					<div class="text-xs font-mono text-rtp-muted bg-rtp-bg p-2 rounded mb-6 text-center">
+						$9.85 / trading day
 					</div>
-					<ul class="mt-8 space-y-4 text-rtp-muted text-sm">
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-primary">✓</span> Live Voice & Screen
-						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-primary">✓</span> Real-Time Alerts
-						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-primary">✓</span> Chat Access
-						</li>
+					<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Live Voice & Screen</li>
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Real-time Alerts</li>
+						<li class="flex gap-3"><span class="text-rtp-primary">✓</span> Chat Access</li>
 					</ul>
 					<a
 						href="/checkout/monthly-room"
-						class="block w-full mt-8 bg-rtp-surface border border-rtp-primary text-rtp-primary py-3 rounded-lg font-bold text-center hover:bg-rtp-primary hover:text-white transition-colors"
+						class="block w-full py-3 bg-rtp-bg border border-rtp-border text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
 						>Select Monthly</a
 					>
 				</div>
 
 				<div
-					class="bg-rtp-surface p-8 rounded-2xl shadow-xl border-2 {selectedPlan === 'quarterly'
-						? 'border-rtp-emerald ring-4 ring-rtp-emerald/20 opacity-100 scale-105 z-10'
-						: 'border-rtp-border opacity-60 scale-95'} transition-all duration-300 relative"
+					class="bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all {selectedPlan === 'quarterly' ? 'border-rtp-emerald shadow-rtp-emerald/20 md:scale-110 opacity-100' : 'border-rtp-border shadow-rtp-border/10 md:scale-100 opacity-70 hover:opacity-90'}"
 				>
 					<div
-						class="absolute top-0 right-0 -mt-3 mr-3 bg-rtp-emerald text-white text-xs font-bold px-3 py-1 rounded-full"
+						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-emerald text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
 					>
-						MOST POPULAR
+						Most Popular
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text">Quarterly</h3>
-					<div class="mt-4 flex items-baseline text-rtp-text">
-						<span class="text-5xl font-extrabold tracking-tight">$497</span>
-						<span class="ml-1 text-xl text-rtp-muted">/qtr</span>
+					<h3 class="text-2xl font-bold text-white mb-4">Quarterly</h3>
+					<div class="flex items-baseline gap-1 mb-6">
+						<span class="text-5xl font-extrabold text-white">$497</span>
+						<span class="text-rtp-muted">/qtr</span>
 					</div>
 					<div
-						class="text-xs font-mono text-rtp-emerald bg-rtp-emerald/10 p-2 rounded mt-4 text-center border border-rtp-emerald/20 font-bold"
+						class="text-xs font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded mb-6 text-center border border-emerald-500/30"
 					>
-						Cost: $8.20 / Trading Day (Save 15%)
+						Save 15% ($8.20 / trading day)
 					</div>
-					<ul class="mt-8 space-y-4 text-rtp-text text-sm font-medium">
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-emerald">✓</span>
+					<ul class="space-y-4 mb-8 text-sm text-white">
+						<li class="flex gap-3">
+							<span class="text-rtp-emerald font-bold">✓</span>
 							<span class="font-bold">Priority Support</span>
 						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-emerald">✓</span> Live Voice & Screen
+						<li class="flex gap-3">
+							<span class="text-rtp-emerald font-bold">✓</span> Live Voice & Screen
 						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-emerald">✓</span> Real-Time Alerts
+						<li class="flex gap-3">
+							<span class="text-rtp-emerald font-bold">✓</span> Real-time Alerts
 						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-emerald">✓</span> Chat Access
+						<li class="flex gap-3">
+							<span class="text-rtp-emerald font-bold">✓</span> Chat Access
 						</li>
 					</ul>
 					<a
 						href="/checkout/quarterly-room"
-						class="block w-full mt-8 bg-rtp-emerald text-white py-4 rounded-lg font-bold text-center hover:bg-emerald-600 transition-colors shadow-lg"
+						class="block w-full py-4 bg-rtp-emerald text-white font-bold rounded-xl text-center hover:bg-emerald-600 transition-colors shadow-lg"
 						>Join Quarterly</a
 					>
 				</div>
 
 				<div
-					class="bg-rtp-surface p-8 rounded-2xl shadow-lg border-2 {selectedPlan === 'annual'
-						? 'border-rtp-indigo ring-2 ring-rtp-indigo/20 opacity-100 scale-100'
-						: 'border-rtp-border opacity-60 scale-95'} transition-all duration-300"
+					class="bg-rtp-surface p-8 rounded-2xl border transition-all {selectedPlan === 'annual' ? 'border-rtp-indigo opacity-100 scale-105' : 'border-rtp-border opacity-70 hover:opacity-90'}"
 				>
-					<h3 class="text-xl font-bold text-rtp-text">Annual</h3>
-					<div class="mt-4 flex items-baseline text-rtp-text">
-						<span class="text-5xl font-extrabold tracking-tight">$1,647</span>
-						<span class="ml-1 text-xl text-rtp-muted">/yr</span>
+					<h3 class="text-xl font-bold text-white mb-4">Annual</h3>
+					<div class="flex items-baseline gap-1 mb-6">
+						<span class="text-4xl font-bold text-white">$1,647</span>
+						<span class="text-rtp-muted">/yr</span>
 					</div>
-					<div
-						class="text-xs font-mono text-rtp-indigo bg-rtp-indigo/10 p-2 rounded mt-4 text-center border border-rtp-indigo/20 font-bold"
-					>
-						Cost: $6.50 / Trading Day (Save 30%)
+					<div class="text-xs font-mono text-rtp-indigo bg-rtp-bg p-2 rounded mb-6 text-center">
+						Save 30% ($6.50 / trading day)
 					</div>
-					<ul class="mt-8 space-y-4 text-rtp-muted text-sm">
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-indigo">✓</span> 1-on-1 Strategy Call
+					<ul class="space-y-4 mb-8 text-sm text-rtp-muted">
+						<li class="flex gap-3">
+							<span class="text-rtp-indigo">✓</span>
+							<span class="font-bold">1-on-1 Coaching Call</span>
 						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-indigo">✓</span> Live Voice & Screen
-						</li>
-						<li class="flex items-center gap-3">
-							<span class="text-rtp-indigo">✓</span> Real-Time Alerts
-						</li>
+						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Live Voice & Screen</li>
+						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Real-time Alerts</li>
+						<li class="flex gap-3"><span class="text-rtp-indigo">✓</span> Chat Access</li>
 					</ul>
 					<a
 						href="/checkout/annual-room"
-						class="block w-full mt-8 bg-rtp-surface border border-rtp-indigo text-rtp-indigo py-3 rounded-lg font-bold text-center hover:bg-rtp-indigo hover:text-white transition-colors"
+						class="block w-full py-3 bg-rtp-bg border border-rtp-indigo text-rtp-indigo font-bold rounded-lg text-center hover:bg-rtp-indigo hover:text-white transition-colors"
 						>Select Annual</a
 					>
 				</div>
+			</div>
+			<div class="mt-12 text-center">
+				<p class="text-rtp-muted text-sm">Secure checkout powered by Stripe. Cancel anytime.</p>
 			</div>
 		</div>
 	</section>
