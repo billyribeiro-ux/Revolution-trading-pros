@@ -23,7 +23,42 @@
 	import RealTimeWidget from '$lib/components/analytics/RealTimeWidget.svelte';
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import ExportButton from '$lib/components/ExportButton.svelte';
 	import { IconChartBar, IconPlugConnected, IconRefresh, IconArrowRight } from '@tabler/icons-svelte';
+
+	// Prepare export data
+	$: exportData = dashboardData ? [
+		{
+			metric: 'Total Users',
+			value: dashboardData.kpis?.total_users || 0,
+			period: selectedPeriod
+		},
+		{
+			metric: 'Total Revenue',
+			value: dashboardData.kpis?.total_revenue || 0,
+			period: selectedPeriod
+		},
+		{
+			metric: 'Conversion Rate',
+			value: dashboardData.kpis?.conversion_rate || 0,
+			period: selectedPeriod
+		},
+		{
+			metric: 'Average Order Value',
+			value: dashboardData.kpis?.avg_order_value || 0,
+			period: selectedPeriod
+		},
+		...(dashboardData.time_series?.revenue || []).map(item => ({
+			type: 'Revenue',
+			date: item.date,
+			value: item.value
+		})),
+		...(dashboardData.time_series?.users || []).map(item => ({
+			type: 'Users',
+			date: item.date,
+			value: item.value
+		}))
+	] : [];
 
 	// State
 	let dashboardData: DashboardData | null = $state(null);
@@ -139,6 +174,13 @@
 			{#if isConnected}
 				<div class="header-actions">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
+					<ExportButton
+						data={exportData}
+						filename="analytics-report-{selectedPeriod}"
+						formats={['csv', 'json']}
+						label="Export"
+						disabled={loading || !dashboardData}
+					/>
 					<a href="/admin/analytics/events" class="btn-primary">
 						Event Explorer
 						<IconArrowRight size={18} />

@@ -3,6 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast';
 	import { getAuthToken } from '$lib/stores/auth';
+	import { connections, isEmailConnected } from '$lib/stores/connections';
+	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import {
 		IconMail,
 		IconPlus,
@@ -34,6 +37,9 @@
 		type Campaign as APICampaign,
 		type CampaignStats
 	} from '$lib/api/campaigns';
+
+	// Connection-aware state
+	let connectionLoading = true;
 
 	// State
 	let loading = true;
@@ -73,7 +79,16 @@
 	let templates: { id: number; name: string }[] = [];
 
 	onMount(async () => {
-		await Promise.all([loadCampaigns(), loadStats(), loadTemplates()]);
+		// Load connection status first
+		await connections.load();
+		connectionLoading = false;
+
+		// Only load data if email is connected
+		if ($isEmailConnected) {
+			await Promise.all([loadCampaigns(), loadStats(), loadTemplates()]);
+		} else {
+			loading = false;
+		}
 	});
 
 	async function loadCampaigns() {
@@ -284,20 +299,40 @@
 				</div>
 			</div>
 
-			<div class="header-actions">
-				<button class="btn-secondary" onclick={loadCampaigns}>
-					<IconRefresh size={18} />
-					Refresh
-				</button>
-				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
-					<IconPlus size={18} />
-					New Campaign
-				</button>
-			</div>
+			{#if $isEmailConnected}
+				<div class="header-actions">
+					<button class="btn-secondary" onclick={loadCampaigns}>
+						<IconRefresh size={18} />
+						Refresh
+					</button>
+					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
+						<IconPlus size={18} />
+						New Campaign
+					</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 
-	{#if loading}
+	<!-- Connection Check -->
+	{#if connectionLoading}
+		<SkeletonLoader variant="dashboard" />
+	{:else if !$isEmailConnected}
+		<ApiNotConnected
+			serviceName="Email Marketing"
+			description="Connect an email marketing service to create and manage email campaigns, track opens, clicks, and subscriber engagement."
+			serviceKey="mailchimp"
+			icon="📧"
+			color="#6366f1"
+			features={[
+				'Create and schedule email campaigns',
+				'A/B test subject lines',
+				'Track opens, clicks, and conversions',
+				'Segment your audience',
+				'Automated email sequences'
+			]}
+		/>
+	{:else if loading}
 		<div class="loading-grid">
 			{#each [1, 2, 3, 4] as _}
 				<div class="skeleton skeleton-metric"></div>

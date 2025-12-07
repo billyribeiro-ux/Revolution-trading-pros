@@ -18,8 +18,12 @@
 		IconFilter
 	} from '@tabler/icons-svelte';
 	import { api } from '$lib/api/config';
+	import { connections, isBehaviorConnected } from '$lib/stores/connections';
+	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
 	let isLoading = true;
+	let connectionLoading = true;
 	let error = '';
 	let selectedPeriod = '7d';
 
@@ -72,8 +76,17 @@
 		loadData();
 	}
 
-	onMount(() => {
-		loadData();
+	onMount(async () => {
+		// Load connection status first
+		await connections.load();
+		connectionLoading = false;
+
+		// Only load data if behavior tracking is connected
+		if ($isBehaviorConnected) {
+			await loadData();
+		} else {
+			isLoading = false;
+		}
 	});
 </script>
 
@@ -88,24 +101,45 @@
 			<h1>Behavior Tracking</h1>
 			<p class="page-description">Analyze user interactions, clicks, scrolls, and session recordings</p>
 		</div>
-		<div class="header-actions">
-			<div class="period-selector">
-				<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}>24H</button>
-				<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}>7D</button>
-				<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}>30D</button>
+		{#if $isBehaviorConnected}
+			<div class="header-actions">
+				<div class="period-selector">
+					<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}>24H</button>
+					<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}>7D</button>
+					<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}>30D</button>
+				</div>
+				<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
 			</div>
-			<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-		</div>
+		{/if}
 	</div>
 
-	{#if error}
-		<div class="error-banner">{error}</div>
-	{/if}
+	<!-- Connection Check -->
+	{#if connectionLoading}
+		<SkeletonLoader variant="dashboard" />
+	{:else if !$isBehaviorConnected}
+		<ApiNotConnected
+			serviceName="Behavior Analytics"
+			description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."
+			serviceKey="google_analytics"
+			icon="🔍"
+			color="#10b981"
+			features={[
+				'Track user sessions and interactions',
+				'Record and replay user sessions',
+				'Generate click and scroll heatmaps',
+				'Analyze page engagement metrics',
+				'Identify UX issues and opportunities'
+			]}
+		/>
+	{:else}
+		{#if error}
+			<div class="error-banner">{error}</div>
+		{/if}
 
-	<!-- Metrics Grid -->
-	<div class="metrics-grid">
+		<!-- Metrics Grid -->
+		<div class="metrics-grid">
 		<div class="metric-card">
 			<div class="metric-icon blue">
 				<IconEye size={24} />
@@ -297,6 +331,7 @@
 			</div>
 		</div>
 	</div>
+	{/if}
 </div>
 
 <style>

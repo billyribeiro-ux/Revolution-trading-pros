@@ -1,10 +1,21 @@
-import { writable } from 'svelte/store';
+/**
+ * Theme Store - Apple ICT9+ Design System
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * Centralized theme management with:
+ * - Dark/Light mode toggle
+ * - System preference detection
+ * - Persistent storage
+ * - Smooth transitions
+ */
+
+import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 
-type Theme = 'light' | 'dark' | 'auto';
+export type Theme = 'light' | 'dark' | 'auto';
 
 function createThemeStore() {
-	const defaultTheme: Theme = 'light';
+	const defaultTheme: Theme = 'dark';
 
 	// Get initial theme from localStorage or default
 	const initialTheme = browser
@@ -18,12 +29,31 @@ function createThemeStore() {
 		if (!browser) return;
 
 		const root = document.documentElement;
+		const body = document.body;
+
+		// Remove existing classes
+		root.classList.remove('dark', 'light');
+		body.classList.remove('dark', 'light');
+
+		let effectiveTheme: 'dark' | 'light';
 
 		if (theme === 'auto') {
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			root.classList.toggle('dark', prefersDark);
+			effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 		} else {
-			root.classList.toggle('dark', theme === 'dark');
+			effectiveTheme = theme;
+		}
+
+		// Apply theme classes
+		root.classList.add(effectiveTheme);
+		body.classList.add(effectiveTheme);
+
+		// Set data attribute for CSS selectors
+		root.dataset.theme = effectiveTheme;
+
+		// Update meta theme-color for mobile browsers
+		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		if (metaThemeColor) {
+			metaThemeColor.setAttribute('content', effectiveTheme === 'dark' ? '#0f172a' : '#f8fafc');
 		}
 	}
 
@@ -43,6 +73,10 @@ function createThemeStore() {
 
 	return {
 		subscribe,
+
+		/**
+		 * Set theme and persist to localStorage
+		 */
 		setTheme: (theme: Theme) => {
 			if (browser) {
 				localStorage.setItem('theme', theme);
@@ -50,6 +84,10 @@ function createThemeStore() {
 			}
 			set(theme);
 		},
+
+		/**
+		 * Toggle between dark and light
+		 */
 		toggle: () => {
 			update((current) => {
 				const newTheme: Theme = current === 'light' ? 'dark' : 'light';
@@ -59,8 +97,49 @@ function createThemeStore() {
 				}
 				return newTheme;
 			});
+		},
+
+		/**
+		 * Cycle through all themes: dark -> light -> auto
+		 */
+		cycle: () => {
+			update((current) => {
+				const order: Theme[] = ['dark', 'light', 'auto'];
+				const currentIndex = order.indexOf(current);
+				const next = order[(currentIndex + 1) % order.length];
+				if (browser) {
+					localStorage.setItem('theme', next);
+					applyTheme(next);
+				}
+				return next;
+			});
+		},
+
+		/**
+		 * Initialize theme (call on app mount)
+		 */
+		init: () => {
+			if (browser) {
+				const theme = (localStorage.getItem('theme') as Theme) || defaultTheme;
+				applyTheme(theme);
+			}
 		}
 	};
 }
 
 export const themeStore = createThemeStore();
+
+/**
+ * Derived store for effective theme (resolves 'auto' to actual value)
+ */
+export const effectiveTheme = derived(themeStore, ($theme) => {
+	if ($theme === 'auto' && browser) {
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	}
+	return $theme === 'auto' ? 'dark' : $theme;
+});
+
+/**
+ * Check if dark mode is active
+ */
+export const isDark = derived(effectiveTheme, ($effectiveTheme) => $effectiveTheme === 'dark');

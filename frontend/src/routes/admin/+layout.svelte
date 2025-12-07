@@ -11,11 +11,29 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth';
-	import { IconMenu2 } from '@tabler/icons-svelte';
+	import { themeStore, type Theme } from '$lib/stores/theme';
+	import { IconMenu2, IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
 	import type { Snippet } from 'svelte';
+
+	// Theme icon mapping
+	function getThemeIcon(theme: Theme) {
+		switch (theme) {
+			case 'light': return IconSun;
+			case 'dark': return IconMoon;
+			case 'auto': return IconDeviceDesktop;
+		}
+	}
+
+	function getThemeLabel(theme: Theme) {
+		switch (theme) {
+			case 'light': return 'Light';
+			case 'dark': return 'Dark';
+			case 'auto': return 'Auto';
+		}
+	}
 
 	// Svelte 5: Props with children snippet
 	let { children }: { children: Snippet } = $props();
@@ -93,6 +111,14 @@
 				<h1>{formatPageTitle($page.url.pathname)}</h1>
 			</div>
 			<div class="header-actions">
+				<button
+					class="theme-toggle"
+					onclick={() => themeStore.cycle()}
+					title="Theme: {getThemeLabel($themeStore)} (click to cycle)"
+				>
+					<svelte:component this={getThemeIcon($themeStore)} size={20} />
+					<span class="theme-label">{getThemeLabel($themeStore)}</span>
+				</button>
 				<a href="/" class="view-site-btn" target="_blank">View Site</a>
 			</div>
 		</header>
@@ -163,6 +189,33 @@
 
 	.header-actions {
 		margin-left: auto;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.theme-toggle {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.875rem;
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: var(--radius-md, 0.5rem);
+		color: var(--color-rtp-muted, #94a3b8);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.theme-toggle:hover {
+		background: rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.4);
+		color: var(--color-rtp-primary, #a5b4fc);
+	}
+
+	.theme-label {
+		font-size: 0.8125rem;
+		font-weight: 500;
 	}
 
 	.view-site-btn {
