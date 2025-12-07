@@ -35,26 +35,32 @@
 	let attributionModel = $state('linear');
 	let isConnected = $state(false);
 
+	// Helper to get KPI value by key
+	function getKpiValue(kpis: typeof dashboardData.kpis, key: string): number {
+		const kpi = kpis?.find(k => k.kpi_key === key);
+		return kpi?.value || 0;
+	}
+
 	// Derived export data
 	let exportData = $derived(dashboardData ? [
 		{
 			metric: 'Total Users',
-			value: dashboardData.kpis?.total_users || 0,
+			value: getKpiValue(dashboardData.kpis, 'total_users'),
 			period: selectedPeriod
 		},
 		{
 			metric: 'Total Revenue',
-			value: dashboardData.kpis?.total_revenue || 0,
+			value: getKpiValue(dashboardData.kpis, 'total_revenue'),
 			period: selectedPeriod
 		},
 		{
 			metric: 'Conversion Rate',
-			value: dashboardData.kpis?.conversion_rate || 0,
+			value: getKpiValue(dashboardData.kpis, 'conversion_rate'),
 			period: selectedPeriod
 		},
 		{
 			metric: 'Average Order Value',
-			value: dashboardData.kpis?.avg_order_value || 0,
+			value: getKpiValue(dashboardData.kpis, 'avg_order_value'),
 			period: selectedPeriod
 		},
 		...(dashboardData.time_series?.revenue || []).map(item => ({

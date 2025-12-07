@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { fly, scale, fade } from 'svelte/transition';
 	import { cubicOut, backOut, elasticOut } from 'svelte/easing';
 	import { spring, tweened } from 'svelte/motion';
 
 	// Config available for widget customization
 	export const config: Record<string, unknown> = {};
-
-	const dispatch = createEventDispatcher();
 
 	interface Integration {
 		id: string;
@@ -21,11 +19,11 @@
 		errorMessage?: string;
 	}
 
-	let mounted = false;
-	let selectedIntegration: Integration | null = null;
-	let showConnectModal = false;
+	let mounted = $state(false);
+	let selectedIntegration: Integration | null = $state(null);
+	let showConnectModal = $state(false);
 
-	let integrations: Integration[] = [
+	let integrations: Integration[] = $state([
 		{
 			id: 'google_search_console',
 			name: 'Google Search Console',
@@ -62,7 +60,7 @@
 			connected: false,
 			status: 'disconnected'
 		}
-	];
+	]);
 
 	const progressValue = tweened(0, { duration: 2000, easing: cubicOut });
 
@@ -167,7 +165,7 @@
 		}
 	}
 
-	$: connectedCount = integrations.filter((i) => i.connected).length;
+	const connectedCount = $derived(integrations.filter((i) => i.connected).length);
 </script>
 
 <div class="google-integration-widget">

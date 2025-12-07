@@ -28,11 +28,16 @@
 		country: ''
 	};
 
-	let addressData = $state<AddressValue>({ ...defaultValue, ...value });
+	let addressData = $state<AddressValue>({ ...defaultValue });
 
 	const showAddress2 = $derived(field.attributes?.show_address_2 !== false);
 	const showCountry = $derived(field.attributes?.show_country !== false);
 	const enableAutocomplete = $derived(field.attributes?.enable_autocomplete !== false);
+
+	// Sync with prop value changes
+	$effect(() => {
+		addressData = { ...defaultValue, ...value };
+	});
 
 	const countries = [
 		{ code: 'US', name: 'United States' },
@@ -69,21 +74,15 @@
 	function getInputClasses(hasError: boolean): string {
 		return `address-input ${hasError ? 'input-error' : ''}`;
 	}
-
-	$effect(() => {
-		if (value) {
-			addressData = { ...defaultValue, ...value };
-		}
-	});
 </script>
 
 <div class="address-field">
-	<label class="field-label">
+	<div class="field-label">
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
 		{/if}
-	</label>
+	</div>
 
 	{#if field.help_text}
 		<p class="field-help">{field.help_text}</p>

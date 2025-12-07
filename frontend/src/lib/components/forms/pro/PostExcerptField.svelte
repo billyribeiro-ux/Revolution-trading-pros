@@ -33,8 +33,13 @@
 		onchange
 	}: Props = $props();
 
-	let excerpt = $state(value);
+	let excerpt = $state('');
 	const charCount = $derived(excerpt.length);
+
+	// Sync excerpt with value prop changes
+	$effect(() => {
+		excerpt = value;
+	});
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLTextAreaElement;

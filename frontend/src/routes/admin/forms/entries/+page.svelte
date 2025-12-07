@@ -11,10 +11,10 @@
 	} from '$lib/api/forms';
 	import { IconDownload, IconEye } from '@tabler/icons-svelte';
 
-	let forms: Form[] = [];
-	let entries: FormEntry[] = [];
-	let selectedFormId: number | null = null;
-	let loading = true;
+	let forms = $state<Form[]>([]);
+	let entries = $state<FormEntry[]>([]);
+	let selectedFormId = $state<number | null>(null);
+	let loading = $state(true);
 
 	onMount(async () => {
 		await loadForms();
@@ -78,10 +78,10 @@
 		}
 	}
 
-	$: formOptions = forms.map((form) => ({
+	let formOptions = $derived(forms.map((form) => ({
 		value: form.id,
 		label: form.title
-	}));
+	})));
 </script>
 
 <svelte:head>

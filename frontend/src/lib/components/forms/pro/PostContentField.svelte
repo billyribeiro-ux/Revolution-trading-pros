@@ -38,9 +38,14 @@
 		onchange
 	}: Props = $props();
 
-	let content = $state(value);
-	let editorRef: HTMLDivElement;
+	let content = $state('');
+	let editorRef = $state<HTMLDivElement>();
 	let showHtml = $state(false);
+
+	// Sync content with value prop changes
+	$effect(() => {
+		content = value;
+	});
 
 	const charCount = $derived(content.replace(/<[^>]*>/g, '').length);
 	const wordCount = $derived(
@@ -87,16 +92,16 @@
 
 <div class="post-content-field" class:disabled class:has-error={error}>
 	{#if label}
-		<label class="field-label">
+		<div id="content-label" class="field-label">
 			{label}
 			{#if required}
 				<span class="required">*</span>
 			{/if}
-		</label>
+		</div>
 	{/if}
 
 	{#if enableRichText}
-		<div class="editor-container">
+		<div class="editor-container" role="group" aria-labelledby="content-label">
 			<div class="toolbar">
 				<button type="button" onclick={() => execCommand('bold')} title="Bold" class="toolbar-btn">
 					<strong>B</strong>
@@ -192,6 +197,7 @@
 		</div>
 	{:else}
 		<textarea
+			id={name}
 			{name}
 			bind:value={content}
 			{placeholder}
@@ -201,6 +207,7 @@
 			maxlength={maxLength}
 			oninput={handleInput}
 			class="plain-textarea"
+			aria-labelledby={label ? "content-label" : undefined}
 		></textarea>
 	{/if}
 

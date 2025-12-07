@@ -210,184 +210,211 @@
 	</div>
 </header>
 
-<!-- Dashboard Content - WordPress: .dashboard__content -->
+<!-- Dashboard Content - WordPress: .dashboard__content (EXACT SimplerMain Match) -->
 <div class="dashboard__content">
-	{#if isLoading}
-		<!-- Skeleton Loading State - WordPress Exact Structure -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title skeleton-text">Trading Rooms</h2>
-			<div class="membership-cards row">
-				{#each Array(3) as _, i}
+	<!-- WordPress: .dashboard__content-main (left column) -->
+	<div class="dashboard__content-main">
+		{#if isLoading}
+			<!-- Skeleton Loading State - WordPress Exact Structure -->
+			<section class="dashboard__content-section">
+				<h2 class="section-title skeleton-text">Memberships</h2>
+				<div class="membership-cards row">
+					{#each Array(3) as _, i}
+						<div class="col-sm-6 col-xl-4">
+							<MembershipCard skeleton slug="loading-{i}" name="Loading..." />
+						</div>
+					{/each}
+				</div>
+			</section>
+			<section class="dashboard__content-section">
+				<h2 class="section-title skeleton-text">Mastery</h2>
+				<div class="membership-cards row">
+					{#each Array(2) as _, i}
+						<div class="col-sm-6 col-xl-4">
+							<MembershipCard skeleton slug="loading-mastery-{i}" name="Loading..." />
+						</div>
+					{/each}
+				</div>
+			</section>
+			<section class="dashboard__content-section">
+				<h2 class="section-title skeleton-text">Tools</h2>
+				<div class="membership-cards row">
 					<div class="col-sm-6 col-xl-4">
-						<MembershipCard skeleton slug="loading-{i}" name="Loading..." />
+						<MembershipCard skeleton slug="loading-tools" name="Loading..." />
 					</div>
-				{/each}
+				</div>
+			</section>
+		{:else if error}
+			<!-- Error State -->
+			<div class="error-state" role="alert">
+				<div class="error-icon">
+					<IconAlertTriangle size={48} />
+				</div>
+				<p class="error-message">{error}</p>
+				<button class="btn btn-primary" onclick={handleRetry}>
+					{error.includes('Session expired') ? 'Log In' : 'Try Again'}
+				</button>
 			</div>
-		</section>
-		<section class="dashboard__content-section">
-			<h2 class="section-title skeleton-text">Live Alerts</h2>
-			<div class="membership-cards row">
-				{#each Array(2) as _, i}
-					<div class="col-sm-6 col-xl-4">
-						<MembershipCard skeleton slug="loading-alert-{i}" name="Loading..." />
+		{:else if hasMemberships}
+			<!-- WordPress EXACT: Memberships organized by SimplerMain sections -->
+
+			<!-- SECTION: Memberships (Trading Rooms - options type) -->
+			{#if tradingRooms.length > 0}
+				<section class="dashboard__content-section">
+					<h2 class="section-title">Memberships</h2>
+					<div class="membership-cards row">
+						{#each tradingRooms as room (room.id)}
+							<div class="col-sm-6 col-xl-4">
+								<MembershipCard
+									id={room.id}
+									name={room.name}
+									type={room.type}
+									slug={room.slug}
+									icon={room.icon}
+									dashboardUrl="/dashboard/{room.slug}"
+									roomUrl={room.accessUrl}
+									status={room.status}
+									daysUntilExpiry={room.daysUntilExpiry}
+									onclick={() => handleMembershipClick(room)}
+								/>
+							</div>
+						{/each}
 					</div>
-				{/each}
+				</section>
+			{/if}
+
+			<!-- SECTION: Mastery (Moxie Mastery, Courses, Indicators) -->
+			{#if courses.length > 0 || indicators.length > 0}
+				<section class="dashboard__content-section">
+					<h2 class="section-title">Mastery</h2>
+					<div class="membership-cards row">
+						{#each courses as course (course.id)}
+							<div class="col-sm-6 col-xl-4">
+								<MembershipCard
+									id={course.id}
+									name={course.name}
+									type="moxie"
+									slug={course.slug}
+									icon={course.icon}
+									dashboardUrl="/dashboard/{course.slug}"
+									roomUrl={course.accessUrl}
+									roomLabel="Trading Room"
+									status={course.status}
+									daysUntilExpiry={course.daysUntilExpiry}
+									onclick={() => handleMembershipClick(course)}
+								/>
+							</div>
+						{/each}
+						{#each indicators as indicator (indicator.id)}
+							<div class="col-sm-6 col-xl-4">
+								<MembershipCard
+									id={indicator.id}
+									name={indicator.name}
+									type="moxie"
+									slug={indicator.slug}
+									icon={indicator.icon}
+									dashboardUrl="/dashboard/{indicator.slug}"
+									roomUrl={indicator.accessUrl}
+									roomLabel="Trading Room"
+									status={indicator.status}
+									daysUntilExpiry={indicator.daysUntilExpiry}
+									onclick={() => handleMembershipClick(indicator)}
+								/>
+							</div>
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- SECTION: Tools (Weekly Watchlist, Alert Services) -->
+			{#if weeklyWatchlist.length > 0 || alertServices.length > 0}
+				<section class="dashboard__content-section">
+					<h2 class="section-title">Tools</h2>
+					<div class="membership-cards row">
+						{#each weeklyWatchlist as ww (ww.id)}
+							<div class="col-sm-6 col-xl-4">
+								<MembershipCard
+									id={ww.id}
+									name={ww.name}
+									type="ww"
+									slug={ww.slug}
+									icon={ww.icon}
+									dashboardUrl="/dashboard/{ww.slug}"
+									status={ww.status}
+									daysUntilExpiry={ww.daysUntilExpiry}
+									onclick={() => handleMembershipClick(ww)}
+								/>
+							</div>
+						{/each}
+						{#each alertServices as alert (alert.id)}
+							<div class="col-sm-6 col-xl-4">
+								<MembershipCard
+									id={alert.id}
+									name={alert.name}
+									type="ww"
+									slug={alert.slug}
+									icon={alert.icon}
+									dashboardUrl="/dashboard/{alert.slug}"
+									status={alert.status}
+									daysUntilExpiry={alert.daysUntilExpiry}
+									onclick={() => handleMembershipClick(alert)}
+								/>
+							</div>
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- WordPress EXACT: Weekly Watchlist Featured Section -->
+			{#if weeklyWatchlist.length > 0}
+				<div class="dashboard__content-section u--background-color-white">
+					<section>
+						<div class="row">
+							<div class="col-sm-6 col-lg-5">
+								<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+								<!-- Mobile Image -->
+								<div class="hidden-lg">
+									<a href="/watchlist">
+										<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+									</a>
+								</div>
+								<h4 class="h5 u--font-weight-bold">Weekly Watchlist with Our Experts</h4>
+								<div class="u--hide-read-more">
+									<p>Get the latest weekly stock picks and market analysis.</p>
+								</div>
+								<a href="/watchlist" class="btn btn-tiny btn-default">Watch Now</a>
+							</div>
+							<div class="col-sm-6 col-lg-7 hidden-mobile">
+								<a href="/watchlist">
+									<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+								</a>
+							</div>
+						</div>
+					</section>
+				</div>
+			{/if}
+		{:else}
+			<!-- Empty State -->
+			<div class="empty-state">
+				<div class="empty-icon">
+					<IconUsers size={48} />
+				</div>
+				<h2>No Active Memberships</h2>
+				<p>You don't have any active memberships yet.</p>
+				<a href="/live-trading-rooms" class="btn btn-orange">
+					Explore Trading Rooms
+					<IconArrowRight size={16} />
+				</a>
 			</div>
+		{/if}
+	</div>
+
+	<!-- WordPress: .dashboard__content-sidebar (right column) -->
+	<aside class="dashboard__content-sidebar">
+		<section class="content-sidebar__section">
+			<!-- Sidebar content placeholder - matches SimplerMain empty sidebar -->
 		</section>
-	{:else if error}
-		<!-- Error State -->
-		<div class="error-state" role="alert">
-			<div class="error-icon">
-				<IconAlertTriangle size={48} />
-			</div>
-			<p class="error-message">{error}</p>
-			<button class="btn btn-primary" onclick={handleRetry}>
-				{error.includes('Session expired') ? 'Log In' : 'Try Again'}
-			</button>
-		</div>
-	{:else if hasMemberships}
-		<!-- WordPress Exact: Memberships organized by section -->
-
-		<!-- Trading Rooms Section -->
-		{#if tradingRooms.length > 0}
-			<section class="dashboard__content-section">
-				<h2 class="section-title">Memberships</h2>
-				<div class="membership-cards row">
-					{#each tradingRooms as room (room.id)}
-						<div class="col-sm-6 col-xl-4">
-							<MembershipCard
-								id={room.id}
-								name={room.name}
-								type={room.type}
-								slug={room.slug}
-								icon={room.icon}
-								dashboardUrl="/dashboard/{room.slug}"
-								roomUrl={room.accessUrl}
-								status={room.status}
-								daysUntilExpiry={room.daysUntilExpiry}
-								onclick={() => handleMembershipClick(room)}
-							/>
-						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
-
-		<!-- Alert Services Section -->
-		{#if alertServices.length > 0}
-			<section class="dashboard__content-section">
-				<h2 class="section-title">Alert Services</h2>
-				<div class="membership-cards row">
-					{#each alertServices as alert (alert.id)}
-						<div class="col-sm-6 col-xl-4">
-							<MembershipCard
-								id={alert.id}
-								name={alert.name}
-								type="alert"
-								slug={alert.slug}
-								icon={alert.icon}
-								dashboardUrl="/dashboard/{alert.slug}"
-								roomUrl={alert.accessUrl}
-								roomLabel="Alerts"
-								status={alert.status}
-								daysUntilExpiry={alert.daysUntilExpiry}
-								onclick={() => handleMembershipClick(alert)}
-							/>
-						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
-
-		<!-- Courses Section -->
-		{#if courses.length > 0}
-			<section class="dashboard__content-section">
-				<h2 class="section-title">Courses</h2>
-				<div class="membership-cards row">
-					{#each courses as course (course.id)}
-						<div class="col-sm-6 col-xl-4">
-							<MembershipCard
-								id={course.id}
-								name={course.name}
-								type="course"
-								slug={course.slug}
-								icon={course.icon}
-								dashboardUrl="/dashboard/{course.slug}"
-								roomUrl={course.accessUrl}
-								roomLabel="Course"
-								status={course.status}
-								daysUntilExpiry={course.daysUntilExpiry}
-								onclick={() => handleMembershipClick(course)}
-							/>
-						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
-
-		<!-- Indicators Section -->
-		{#if indicators.length > 0}
-			<section class="dashboard__content-section">
-				<h2 class="section-title">My Indicators</h2>
-				<div class="membership-cards row">
-					{#each indicators as indicator (indicator.id)}
-						<div class="col-sm-6 col-xl-4">
-							<MembershipCard
-								id={indicator.id}
-								name={indicator.name}
-								type="indicator"
-								slug={indicator.slug}
-								icon={indicator.icon}
-								dashboardUrl="/dashboard/{indicator.slug}"
-								roomUrl={indicator.accessUrl}
-								roomLabel="Indicator"
-								status={indicator.status}
-								daysUntilExpiry={indicator.daysUntilExpiry}
-								onclick={() => handleMembershipClick(indicator)}
-							/>
-						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
-
-		<!-- Weekly Watchlist Section (WordPress: special type with no Trading Room link) -->
-		{#if weeklyWatchlist.length > 0}
-			<section class="dashboard__content-section">
-				<h2 class="section-title">Weekly Watchlist</h2>
-				<div class="membership-cards row">
-					{#each weeklyWatchlist as ww (ww.id)}
-						<div class="col-sm-6 col-xl-4">
-							<MembershipCard
-								id={ww.id}
-								name={ww.name}
-								type="ww"
-								slug={ww.slug}
-								icon={ww.icon}
-								dashboardUrl="/dashboard/{ww.slug}"
-								status={ww.status}
-								daysUntilExpiry={ww.daysUntilExpiry}
-								onclick={() => handleMembershipClick(ww)}
-							/>
-						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
-	{:else}
-		<!-- Empty State -->
-		<div class="empty-state">
-			<div class="empty-icon">
-				<IconUsers size={48} />
-			</div>
-			<h2>No Active Memberships</h2>
-			<p>You don't have any active memberships yet.</p>
-			<a href="/live-trading-rooms" class="btn btn-orange">
-				Explore Trading Rooms
-				<IconArrowRight size={16} />
-			</a>
-		</div>
-	{/if}
+	</aside>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -516,13 +543,31 @@
 
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT - WordPress: .dashboard__content
+	   DASHBOARD CONTENT - WordPress: .dashboard__content (SimplerMain EXACT)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
+		display: flex;
+		gap: 30px;
 		padding: 30px;
 		background: #fff;
 		min-height: 400px;
+	}
+
+	/* WordPress: .dashboard__content-main (left column) */
+	.dashboard__content-main {
+		flex: 1;
+		min-width: 0;
+	}
+
+	/* WordPress: .dashboard__content-sidebar (right column) */
+	.dashboard__content-sidebar {
+		width: 280px;
+		flex-shrink: 0;
+	}
+
+	.content-sidebar__section {
+		/* Empty placeholder - matches SimplerMain */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -723,8 +768,149 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	   WEEKLY WATCHLIST FEATURED SECTION - WordPress SimplerMain EXACT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.u--background-color-white {
+		background-color: #fff;
+		padding: 24px;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	.section-title-alt {
+		color: var(--st-text-color);
+		font-family: 'Open Sans Condensed', sans-serif;
+		font-size: 24px;
+		font-weight: 700;
+		margin: 0 0 16px 0;
+	}
+
+	.section-title-alt--underline {
+		padding-bottom: 10px;
+		border-bottom: 2px solid var(--st-primary);
+	}
+
+	.h5 {
+		font-size: 18px;
+		line-height: 1.4;
+		margin: 0 0 12px;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700;
+		color: var(--st-text-color);
+	}
+
+	.u--hide-read-more {
+		margin-bottom: 16px;
+	}
+
+	.u--hide-read-more p {
+		font-size: 14px;
+		color: var(--st-text-muted);
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.u--border-radius {
+		border-radius: 8px;
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	.btn-tiny {
+		display: inline-block;
+		padding: 8px 16px;
+		font-size: 13px;
+		font-weight: 600;
+		border-radius: 4px;
+		text-decoration: none;
+		transition: var(--st-transition);
+	}
+
+	.btn-default {
+		background: var(--st-primary);
+		color: #fff;
+		border: 1px solid var(--st-primary);
+	}
+
+	.btn-default:hover {
+		background: var(--st-primary-hover);
+		border-color: var(--st-primary-hover);
+	}
+
+	/* Bootstrap-style row for Weekly Watchlist */
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+	}
+
+	.col-sm-6,
+	.col-lg-5,
+	.col-lg-7 {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+
+	@media (min-width: 576px) {
+		.col-sm-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-5 {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
+
+		.col-lg-7 {
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+		}
+	}
+
+	/* Responsive visibility classes */
+	.hidden-lg {
+		display: block;
+	}
+
+	.hidden-mobile {
+		display: none;
+	}
+
+	@media (min-width: 992px) {
+		.hidden-lg {
+			display: none;
+		}
+
+		.hidden-mobile {
+			display: block;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Hide sidebar on medium screens and below */
+	@media screen and (max-width: 992px) {
+		.dashboard__content {
+			flex-direction: column;
+		}
+
+		.dashboard__content-sidebar {
+			width: 100%;
+			display: none; /* Hide sidebar on mobile - matches SimplerMain behavior */
+		}
+	}
 
 	@media screen and (max-width: 576px) {
 		.dashboard__header {
@@ -761,6 +947,19 @@
 			padding-right: 8px;
 			padding-left: 8px;
 			margin-bottom: 16px;
+		}
+
+		/* Weekly Watchlist Featured Section responsive */
+		.u--background-color-white {
+			padding: 16px;
+		}
+
+		.section-title-alt {
+			font-size: 20px;
+		}
+
+		.h5 {
+			font-size: 16px;
 		}
 	}
 

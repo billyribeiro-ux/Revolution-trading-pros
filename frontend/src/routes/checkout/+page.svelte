@@ -27,7 +27,6 @@
 		IconCheck,
 		IconTicket,
 		IconX,
-		IconBrandPaypal,
 		IconLoader
 	} from '@tabler/icons-svelte';
 
@@ -215,7 +214,8 @@
 
 		try {
 			// Create checkout session with billing details
-			const session = await createCheckoutSession($cartStore.items, {
+			// Note: Cart items are accessed internally by the checkout service
+			const session = await createCheckoutSession({
 				billing,
 				couponCode: appliedCoupon?.code,
 				paymentMethod
@@ -453,6 +453,7 @@
 										class="payment-method"
 										class:selected={paymentMethod === 'stripe'}
 										onclick={() => paymentMethod = 'stripe'}
+										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'stripe'; } }}
 										role="button"
 										tabindex="0"
 									>
@@ -481,6 +482,7 @@
 										class="payment-method"
 										class:selected={paymentMethod === 'paypal'}
 										onclick={() => paymentMethod = 'paypal'}
+										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'paypal'; } }}
 										role="button"
 										tabindex="0"
 									>
@@ -493,7 +495,7 @@
 											onchange={() => paymentMethod = 'paypal'}
 										/>
 										<label for="payment_paypal">
-											<IconBrandPaypal size={24} />
+											<IconCreditCard size={24} />
 											<span class="method-title">PayPal</span>
 											<span class="method-description">You will be redirected to PayPal to complete payment</span>
 										</label>

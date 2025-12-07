@@ -51,10 +51,22 @@
 		onchange
 	}: Props = $props();
 
-	let addressValue = $state<AddressValue>({ ...value });
+	let addressValue = $state<AddressValue>({
+		address_line_1: '',
+		address_line_2: '',
+		city: '',
+		state: '',
+		zip: '',
+		country: ''
+	});
 	let isDetecting = $state(false);
 	let geolocationError = $state('');
 	let geolocationSupported = $state(typeof navigator !== 'undefined' && 'geolocation' in navigator);
+
+	// Sync addressValue with value prop
+	$effect(() => {
+		if (value !== undefined) addressValue = { ...value };
+	});
 
 	// Auto-detect location on mount if enabled
 	$effect(() => {

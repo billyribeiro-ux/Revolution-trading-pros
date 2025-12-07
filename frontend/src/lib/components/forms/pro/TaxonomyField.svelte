@@ -57,15 +57,25 @@
 		oncreate
 	}: Props = $props();
 
-	let selectedIds = $state<string[]>(
-		Array.isArray(value) ? value.map(String) : value ? [String(value)] : []
-	);
+	let selectedIds = $state<string[]>([]);
 	let searchQuery = $state('');
 	let showDropdown = $state(false);
 	let loading = $state(false);
-	let fetchedTerms = $state<TaxonomyTerm[]>(terms);
+	let fetchedTerms = $state<TaxonomyTerm[]>([]);
 	let newTermName = $state('');
 	let creating = $state(false);
+
+	// Sync selectedIds with value prop changes
+	$effect(() => {
+		selectedIds = Array.isArray(value) ? value.map(String) : value ? [String(value)] : [];
+	});
+
+	// Sync fetchedTerms with terms prop changes
+	$effect(() => {
+		if (terms.length > 0) {
+			fetchedTerms = terms;
+		}
+	});
 
 	$effect(() => {
 		if (fetchEndpoint && fetchedTerms.length === 0) {
@@ -183,7 +193,7 @@
 
 <div class="taxonomy-field" class:disabled class:has-error={error}>
 	{#if label}
-		<label class="field-label">
+		<label for={multiple ? `${name}-search` : name} class="field-label">
 			{label}
 			{#if required}
 				<span class="required">*</span>
@@ -211,6 +221,7 @@
 								class="tag-remove"
 								onclick={() => removeTerm(String(term.id))}
 								{disabled}
+								aria-label="Remove {term.name}"
 							>
 								×
 							</button>
@@ -222,6 +233,7 @@
 			<div class="search-wrapper">
 				<input
 					type="text"
+					id="{name}-search"
 					class="search-input"
 					placeholder="Search {taxonomy}..."
 					bind:value={searchQuery}
@@ -273,6 +285,7 @@
 	{:else}
 		<!-- Single select dropdown -->
 		<select
+			id={name}
 			{name}
 			{disabled}
 			onchange={(e) => toggleTerm((e.target as HTMLSelectElement).value)}

@@ -31,8 +31,13 @@
 		onchange
 	}: Props = $props();
 
-	let inputValue = $state(value);
+	let inputValue = $state('');
 	let charCount = $derived(inputValue.length);
+
+	// Sync inputValue with value prop changes
+	$effect(() => {
+		inputValue = value;
+	});
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLInputElement;

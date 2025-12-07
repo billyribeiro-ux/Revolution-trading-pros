@@ -43,7 +43,12 @@
 		onchange
 	}: Props = $props();
 
-	let selections = $state<Record<string, string>>({ ...value });
+	let selections = $state<Record<string, string>>({});
+
+	// Sync with prop value changes
+	$effect(() => {
+		selections = { ...value };
+	});
 
 	function getFilteredOptions(levelIndex: number): SelectOption[] {
 		if (levelIndex === 0) {

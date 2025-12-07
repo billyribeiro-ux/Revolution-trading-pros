@@ -428,7 +428,7 @@
 	// Toggle Functions with Animation Lock
 	// ─────────────────────────────────────────────────────────────────────────────
 
-	let isAnimating = false;
+	let isAnimating = $state(false);
 
 	async function toggleQuickMenu(): Promise<void> {
 		if (isAnimating) return;

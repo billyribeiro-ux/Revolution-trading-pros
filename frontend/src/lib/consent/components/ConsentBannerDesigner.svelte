@@ -168,7 +168,7 @@
 
 	// Active design tab
 	let activeTab: 'layout' | 'colors' | 'typography' | 'spacing' | 'content' | 'behavior' =
-		'layout';
+		$state('layout');
 
 	// Font options
 	const fontOptions = [
@@ -266,7 +266,7 @@
 		<div class="controls-panel">
 			{#if activeTab === 'layout'}
 				<div class="control-group">
-					<label class="control-label">Banner Type</label>
+					<div class="control-label">Banner Type</div>
 					<div class="layout-options">
 						<label class="layout-option" class:selected={config.layout_type === 'bar'}>
 							<input type="radio" bind:group={config.layout_type} value="bar" />
@@ -292,8 +292,8 @@
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Position</label>
-					<select class="select" bind:value={config.position}>
+					<label class="control-label" for="position">Position</label>
+					<select id="position" class="select" bind:value={config.position}>
 						<option value="top">Top</option>
 						<option value="bottom">Bottom</option>
 						<option value="center">Center (Modal)</option>
@@ -302,8 +302,8 @@
 
 				{#if config.layout_type === 'floating'}
 					<div class="control-group">
-						<label class="control-label">Horizontal Position</label>
-						<select class="select" bind:value={config.position_horizontal}>
+						<label class="control-label" for="position-horizontal">Horizontal Position</label>
+						<select id="position-horizontal" class="select" bind:value={config.position_horizontal}>
 							<option value="left">Left</option>
 							<option value="center">Center</option>
 							<option value="right">Right</option>
@@ -312,8 +312,9 @@
 				{/if}
 
 				<div class="control-group">
-					<label class="control-label">Max Width (px)</label>
+					<label class="control-label" for="max-width">Max Width (px)</label>
 					<input
+						id="max-width"
 						type="number"
 						class="input"
 						bind:value={config.container_max_width}
@@ -323,8 +324,9 @@
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Border Radius (px)</label>
+					<label class="control-label" for="border-radius">Border Radius (px)</label>
 					<input
+						id="border-radius"
 						type="range"
 						bind:value={config.container_border_radius}
 						min="0"
@@ -334,8 +336,8 @@
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Animation</label>
-					<select class="select" bind:value={config.animation_type}>
+					<label class="control-label" for="animation">Animation</label>
+					<select id="animation" class="select" bind:value={config.animation_type}>
 						<option value="slide">Slide</option>
 						<option value="fade">Fade</option>
 						<option value="none">None</option>
@@ -347,31 +349,31 @@
 				<div class="color-section">
 					<h4>Background & Text</h4>
 					<div class="control-group">
-						<label class="control-label">Background</label>
+						<label class="control-label" for="background-color">Background</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.background_color} />
-							<input type="text" bind:value={config.background_color} />
+							<input id="background-color-picker" type="color" bind:value={config.background_color} aria-label="Background color picker" />
+							<input id="background-color" type="text" bind:value={config.background_color} />
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Text Color</label>
+						<label class="control-label" for="text-color">Text Color</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.text_color} />
-							<input type="text" bind:value={config.text_color} />
+							<input id="text-color-picker" type="color" bind:value={config.text_color} aria-label="Text color picker" />
+							<input id="text-color" type="text" bind:value={config.text_color} />
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Title Color</label>
+						<label class="control-label" for="title-color">Title Color</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.title_color} />
-							<input type="text" bind:value={config.title_color} />
+							<input id="title-color-picker" type="color" bind:value={config.title_color} aria-label="Title color picker" />
+							<input id="title-color" type="text" bind:value={config.title_color} />
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Link Color</label>
+						<label class="control-label" for="link-color">Link Color</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.link_color} />
-							<input type="text" bind:value={config.link_color} />
+							<input id="link-color-picker" type="color" bind:value={config.link_color} aria-label="Link color picker" />
+							<input id="link-color" type="text" bind:value={config.link_color} />
 						</div>
 					</div>
 				</div>
@@ -379,17 +381,17 @@
 				<div class="color-section">
 					<h4>Accept Button</h4>
 					<div class="control-group">
-						<label class="control-label">Background</label>
+						<label class="control-label" for="accept-btn-bg">Background</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.accept_btn_bg} />
-							<input type="text" bind:value={config.accept_btn_bg} />
+							<input id="accept-btn-bg-picker" type="color" bind:value={config.accept_btn_bg} aria-label="Accept button background color picker" />
+							<input id="accept-btn-bg" type="text" bind:value={config.accept_btn_bg} />
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Text</label>
+						<label class="control-label" for="accept-btn-text">Text</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.accept_btn_text} />
-							<input type="text" bind:value={config.accept_btn_text} />
+							<input id="accept-btn-text-picker" type="color" bind:value={config.accept_btn_text} aria-label="Accept button text color picker" />
+							<input id="accept-btn-text" type="text" bind:value={config.accept_btn_text} />
 						</div>
 					</div>
 				</div>
@@ -397,17 +399,17 @@
 				<div class="color-section">
 					<h4>Reject Button</h4>
 					<div class="control-group">
-						<label class="control-label">Background</label>
+						<label class="control-label" for="reject-btn-bg">Background</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.reject_btn_bg} />
-							<input type="text" bind:value={config.reject_btn_bg} />
+							<input id="reject-btn-bg-picker" type="color" bind:value={config.reject_btn_bg} aria-label="Reject button background color picker" />
+							<input id="reject-btn-bg" type="text" bind:value={config.reject_btn_bg} />
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label">Text</label>
+						<label class="control-label" for="reject-btn-text">Text</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.reject_btn_text} />
-							<input type="text" bind:value={config.reject_btn_text} />
+							<input id="reject-btn-text-picker" type="color" bind:value={config.reject_btn_text} aria-label="Reject button text color picker" />
+							<input id="reject-btn-text" type="text" bind:value={config.reject_btn_text} />
 						</div>
 					</div>
 				</div>
@@ -415,10 +417,10 @@
 				<div class="color-section">
 					<h4>Settings Button</h4>
 					<div class="control-group">
-						<label class="control-label">Text/Border</label>
+						<label class="control-label" for="settings-btn-text">Text/Border</label>
 						<div class="color-input">
-							<input type="color" bind:value={config.settings_btn_text} />
-							<input type="text" bind:value={config.settings_btn_text} />
+							<input id="settings-btn-text-picker" type="color" bind:value={config.settings_btn_text} aria-label="Settings button text color picker" />
+							<input id="settings-btn-text" type="text" bind:value={config.settings_btn_text} />
 						</div>
 					</div>
 				</div>
@@ -426,8 +428,8 @@
 
 			{#if activeTab === 'typography'}
 				<div class="control-group">
-					<label class="control-label">Font Family</label>
-					<select class="select" bind:value={config.font_family}>
+					<label class="control-label" for="font-family">Font Family</label>
+					<select id="font-family" class="select" bind:value={config.font_family}>
 						{#each fontOptions as font}
 							<option value={font.value}>{font.label}</option>
 						{/each}
@@ -438,12 +440,12 @@
 					<h4>Title</h4>
 					<div class="control-row">
 						<div class="control-group">
-							<label class="control-label">Size (px)</label>
-							<input type="number" class="input" bind:value={config.title_font_size} min="12" max="48" />
+							<label class="control-label" for="title-font-size">Size (px)</label>
+							<input id="title-font-size" type="number" class="input" bind:value={config.title_font_size} min="12" max="48" />
 						</div>
 						<div class="control-group">
-							<label class="control-label">Weight</label>
-							<select class="select" bind:value={config.title_font_weight}>
+							<label class="control-label" for="title-font-weight">Weight</label>
+							<select id="title-font-weight" class="select" bind:value={config.title_font_weight}>
 								{#each weightOptions as weight}
 									<option value={weight}>{weight}</option>
 								{/each}
@@ -456,12 +458,12 @@
 					<h4>Body Text</h4>
 					<div class="control-row">
 						<div class="control-group">
-							<label class="control-label">Size (px)</label>
-							<input type="number" class="input" bind:value={config.body_font_size} min="10" max="24" />
+							<label class="control-label" for="body-font-size">Size (px)</label>
+							<input id="body-font-size" type="number" class="input" bind:value={config.body_font_size} min="10" max="24" />
 						</div>
 						<div class="control-group">
-							<label class="control-label">Weight</label>
-							<select class="select" bind:value={config.body_font_weight}>
+							<label class="control-label" for="body-font-weight">Weight</label>
+							<select id="body-font-weight" class="select" bind:value={config.body_font_weight}>
 								{#each weightOptions as weight}
 									<option value={weight}>{weight}</option>
 								{/each}
@@ -474,12 +476,12 @@
 					<h4>Buttons</h4>
 					<div class="control-row">
 						<div class="control-group">
-							<label class="control-label">Size (px)</label>
-							<input type="number" class="input" bind:value={config.btn_font_size} min="10" max="20" />
+							<label class="control-label" for="btn-font-size">Size (px)</label>
+							<input id="btn-font-size" type="number" class="input" bind:value={config.btn_font_size} min="10" max="20" />
 						</div>
 						<div class="control-group">
-							<label class="control-label">Weight</label>
-							<select class="select" bind:value={config.btn_font_weight}>
+							<label class="control-label" for="btn-font-weight">Weight</label>
+							<select id="btn-font-weight" class="select" bind:value={config.btn_font_weight}>
 								{#each weightOptions as weight}
 									<option value={weight}>{weight}</option>
 								{/each}
@@ -491,110 +493,110 @@
 
 			{#if activeTab === 'spacing'}
 				<div class="control-group">
-					<label class="control-label">Container Padding</label>
+					<div class="control-label">Container Padding</div>
 					<div class="spacing-grid">
 						<div>
-							<label>Top</label>
-							<input type="number" bind:value={config.padding_top} min="0" max="100" />
+							<label for="padding-top">Top</label>
+							<input id="padding-top" type="number" bind:value={config.padding_top} min="0" max="100" />
 						</div>
 						<div>
-							<label>Bottom</label>
-							<input type="number" bind:value={config.padding_bottom} min="0" max="100" />
+							<label for="padding-bottom">Bottom</label>
+							<input id="padding-bottom" type="number" bind:value={config.padding_bottom} min="0" max="100" />
 						</div>
 						<div>
-							<label>Left</label>
-							<input type="number" bind:value={config.padding_left} min="0" max="100" />
+							<label for="padding-left">Left</label>
+							<input id="padding-left" type="number" bind:value={config.padding_left} min="0" max="100" />
 						</div>
 						<div>
-							<label>Right</label>
-							<input type="number" bind:value={config.padding_right} min="0" max="100" />
+							<label for="padding-right">Right</label>
+							<input id="padding-right" type="number" bind:value={config.padding_right} min="0" max="100" />
 						</div>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Button Padding</label>
+					<div class="control-label">Button Padding</div>
 					<div class="control-row">
 						<div>
-							<label>Horizontal</label>
-							<input type="number" bind:value={config.btn_padding_x} min="0" max="60" />
+							<label for="btn-padding-x">Horizontal</label>
+							<input id="btn-padding-x" type="number" bind:value={config.btn_padding_x} min="0" max="60" />
 						</div>
 						<div>
-							<label>Vertical</label>
-							<input type="number" bind:value={config.btn_padding_y} min="0" max="40" />
+							<label for="btn-padding-y">Vertical</label>
+							<input id="btn-padding-y" type="number" bind:value={config.btn_padding_y} min="0" max="40" />
 						</div>
 					</div>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Button Margin (px)</label>
-					<input type="range" bind:value={config.btn_margin} min="0" max="20" />
+					<label class="control-label" for="btn-margin">Button Margin (px)</label>
+					<input id="btn-margin" type="range" bind:value={config.btn_margin} min="0" max="20" />
 					<span class="range-value">{config.btn_margin}px</span>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Button Border Radius (px)</label>
-					<input type="range" bind:value={config.btn_border_radius} min="0" max="24" />
+					<label class="control-label" for="btn-border-radius">Button Border Radius (px)</label>
+					<input id="btn-border-radius" type="range" bind:value={config.btn_border_radius} min="0" max="24" />
 					<span class="range-value">{config.btn_border_radius}px</span>
 				</div>
 			{/if}
 
 			{#if activeTab === 'content'}
 				<div class="control-group">
-					<label class="control-label">Title</label>
-					<input type="text" class="input" bind:value={config.title} />
+					<label class="control-label" for="banner-title">Title</label>
+					<input id="banner-title" type="text" class="input" bind:value={config.title} />
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Description</label>
-					<textarea class="textarea" bind:value={config.message_text} rows="3"></textarea>
+					<label class="control-label" for="banner-description">Description</label>
+					<textarea id="banner-description" class="textarea" bind:value={config.message_text} rows="3"></textarea>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Accept Button Text</label>
-					<input type="text" class="input" bind:value={config.accept_btn_label} />
+					<label class="control-label" for="accept-btn-label">Accept Button Text</label>
+					<input id="accept-btn-label" type="text" class="input" bind:value={config.accept_btn_label} />
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Reject Button Text</label>
-					<input type="text" class="input" bind:value={config.reject_btn_label} />
+					<label class="control-label" for="reject-btn-label">Reject Button Text</label>
+					<input id="reject-btn-label" type="text" class="input" bind:value={config.reject_btn_label} />
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Settings Button Text</label>
-					<input type="text" class="input" bind:value={config.settings_btn_label} />
+					<label class="control-label" for="settings-btn-label">Settings Button Text</label>
+					<input id="settings-btn-label" type="text" class="input" bind:value={config.settings_btn_label} />
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Privacy Link Text</label>
-					<input type="text" class="input" bind:value={config.privacy_link_text} />
+					<label class="control-label" for="privacy-link-text">Privacy Link Text</label>
+					<input id="privacy-link-text" type="text" class="input" bind:value={config.privacy_link_text} />
 				</div>
 
 				<div class="control-group">
-					<label class="control-label">Privacy Link URL</label>
-					<input type="text" class="input" bind:value={config.privacy_link_url} placeholder="/privacy" />
+					<label class="control-label" for="privacy-link-url">Privacy Link URL</label>
+					<input id="privacy-link-url" type="text" class="input" bind:value={config.privacy_link_url} placeholder="/privacy" />
 				</div>
 			{/if}
 
 			{#if activeTab === 'behavior'}
 				<div class="control-group toggle-control">
-					<label class="control-label">Show Reject Button</label>
-					<input type="checkbox" bind:checked={config.show_reject_btn} />
+					<label class="control-label" for="show-reject-btn">Show Reject Button</label>
+					<input id="show-reject-btn" type="checkbox" bind:checked={config.show_reject_btn} />
 				</div>
 
 				<div class="control-group toggle-control">
-					<label class="control-label">Show Settings Button</label>
-					<input type="checkbox" bind:checked={config.show_settings_btn} />
+					<label class="control-label" for="show-settings-btn">Show Settings Button</label>
+					<input id="show-settings-btn" type="checkbox" bind:checked={config.show_settings_btn} />
 				</div>
 
 				<div class="control-group toggle-control">
-					<label class="control-label">Show Privacy Link</label>
-					<input type="checkbox" bind:checked={config.show_privacy_link} />
+					<label class="control-label" for="show-privacy-link">Show Privacy Link</label>
+					<input id="show-privacy-link" type="checkbox" bind:checked={config.show_privacy_link} />
 				</div>
 
 				<div class="control-group toggle-control">
-					<label class="control-label">Show Close Button</label>
-					<input type="checkbox" bind:checked={config.show_close_btn} />
+					<label class="control-label" for="show-close-btn">Show Close Button</label>
+					<input id="show-close-btn" type="checkbox" bind:checked={config.show_close_btn} />
 				</div>
 			{/if}
 		</div>

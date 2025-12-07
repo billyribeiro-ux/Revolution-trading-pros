@@ -160,7 +160,7 @@
 
 <div class="paypal-payment" class:disabled class:has-error={error || paypalError}>
 	{#if label}
-		<label class="field-label">{label}</label>
+		<label class="field-label" for="paypal-buttons-container">{label}</label>
 	{/if}
 
 	{#if testMode}
@@ -182,7 +182,7 @@
 		</div>
 	{/if}
 
-	<div bind:this={buttonContainerRef} class="paypal-buttons" class:hidden={loading}></div>
+	<div id="paypal-buttons-container" bind:this={buttonContainerRef} class="paypal-buttons" class:hidden={loading}></div>
 
 	{#if paypalError}
 		<p class="paypal-error">{paypalError}</p>

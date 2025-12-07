@@ -35,7 +35,12 @@
 		onchange
 	}: Props = $props();
 
-	let colorValue = $state(value);
+	let colorValue = $state('#3b82f6');
+
+	// Sync with prop value changes
+	$effect(() => {
+		colorValue = value;
+	});
 
 	function handleColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;

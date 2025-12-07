@@ -14,15 +14,17 @@
 	import authService from '$lib/api/auth';
 
 	// Redirect if not authenticated - use replaceState to prevent history pollution
-	$: if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-		goto('/login?redirect=/account/sessions', { replaceState: true });
-	}
+	$effect(() => {
+		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+			goto('/login?redirect=/account/sessions', { replaceState: true });
+		}
+	});
 
-	let sessions: UserSession[] = [];
-	let loading = true;
-	let error: string | null = null;
-	let revoking: string | null = null;
-	let revokingAll = false;
+	let sessions = $state<UserSession[]>([]);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let revoking = $state<string | null>(null);
+	let revokingAll = $state(false);
 
 	onMount(async () => {
 		await loadSessions();

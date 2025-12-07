@@ -15,11 +15,7 @@
 	import { flip } from 'svelte/animate';
 	import { toasts, toastStore } from '$lib/stores/toast';
 	import type { Toast } from '$lib/stores/toast';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '@tabler/icons-svelte';
 
 	function getIcon(type: Toast['type']) {
 		switch (type) {
@@ -30,7 +26,7 @@
 			case 'warning':
 				return IconAlertTriangle;
 			case 'loading':
-				return IconLoader2;
+				return IconLoader;
 			default:
 				return IconInfoCircle;
 		}

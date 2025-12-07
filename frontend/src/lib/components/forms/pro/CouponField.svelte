@@ -22,7 +22,12 @@
 
 	let isValidating = $state(false);
 	let validationResult = $state<CouponResult | null>(null);
-	let inputValue = $state(value);
+	let inputValue = $state('');
+
+	// Sync with prop value changes
+	$effect(() => {
+		inputValue = value;
+	});
 
 	async function validateCoupon() {
 		if (!inputValue.trim()) {

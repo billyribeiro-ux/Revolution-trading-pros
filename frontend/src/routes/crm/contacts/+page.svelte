@@ -13,9 +13,9 @@
 		IconAlertTriangle
 	} from '@tabler/icons-svelte';
 
-	let localSearch = '';
-	let localStatus: ContactStatus | 'all' = 'all';
-	let localStage: LifecycleStage | 'all' = 'all';
+	let localSearch = $state('');
+	let localStatus = $state<ContactStatus | 'all'>('all');
+	let localStage = $state<LifecycleStage | 'all'>('all');
 
 	const statusOptions: { value: ContactStatus | 'all'; label: string }[] = [
 		{ value: 'all', label: 'All statuses' },
@@ -69,11 +69,11 @@
 		goto(`/crm/contacts/${contact.id}`);
 	}
 
-	$: totalContacts = $contacts.length;
-	$: highScoreContacts = $contacts.filter((c) => c.lead_score >= 75).length;
-	$: atRiskCustomers = $contacts.filter(
+	let totalContacts = $derived($contacts.length);
+	let highScoreContacts = $derived($contacts.filter((c) => c.lead_score >= 75).length);
+	let atRiskCustomers = $derived($contacts.filter(
 		(c) => c.status === 'customer' && c.health_score < 50
-	).length;
+	).length);
 </script>
 
 <svelte:head>
@@ -116,6 +116,7 @@
 			>
 				<IconSearch size={18} class="text-slate-500" />
 				<input
+					id="contact-search"
 					class="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
 					placeholder="Search by name, email, title"
 					bind:value={localSearch}

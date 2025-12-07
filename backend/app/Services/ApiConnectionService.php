@@ -97,6 +97,32 @@ class ApiConnectionService
                 ['key' => 'site_url', 'label' => 'Site URL', 'type' => 'url', 'required' => true],
             ],
         ],
+        'google_tag_manager' => [
+            'name' => 'Google Tag Manager',
+            'category' => 'analytics',
+            'description' => 'Manage marketing tags without code changes',
+            'icon' => 'google',
+            'color' => '#246FDB',
+            'docs_url' => 'https://tagmanager.google.com',
+            'is_oauth' => false,
+            'fields' => [
+                ['key' => 'container_id', 'label' => 'Container ID', 'type' => 'text', 'required' => true, 'placeholder' => 'GTM-XXXXXXX'],
+            ],
+        ],
+        'google_ads' => [
+            'name' => 'Google Ads',
+            'category' => 'analytics',
+            'description' => 'Track conversions and optimize ad campaigns',
+            'icon' => 'google',
+            'color' => '#34A853',
+            'docs_url' => 'https://ads.google.com',
+            'is_oauth' => true,
+            'oauth_scopes' => 'https://www.googleapis.com/auth/adwords',
+            'fields' => [
+                ['key' => 'conversion_id', 'label' => 'Conversion ID', 'type' => 'text', 'required' => true, 'placeholder' => 'AW-XXXXXXXXX'],
+                ['key' => 'conversion_label', 'label' => 'Conversion Label', 'type' => 'text', 'required' => false],
+            ],
+        ],
         'mixpanel' => [
             'name' => 'Mixpanel',
             'category' => 'analytics',

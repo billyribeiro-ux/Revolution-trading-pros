@@ -14,9 +14,9 @@
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups';
 
-	let popups: Popup[] = [];
-	let loading = true;
-	let selectedTab: 'active' | 'inactive' | 'all' = 'all';
+	let popups = $state<Popup[]>([]);
+	let loading = $state(true);
+	let selectedTab = $state<'active' | 'inactive' | 'all'>('all');
 
 	onMount(async () => {
 		await loadPopups();
@@ -79,11 +79,11 @@
 		return ((popup.conversions / popup.impressions) * 100).toFixed(1) + '%';
 	}
 
-	$: filteredPopups = popups.filter((popup) => {
+	let filteredPopups = $derived(popups.filter((popup) => {
 		if (selectedTab === 'active') return popup.isActive;
 		if (selectedTab === 'inactive') return !popup.isActive;
 		return true;
-	});
+	}));
 </script>
 
 <div class="popups-page">
@@ -101,13 +101,21 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={selectedTab === 'all'} onclick={() => (selectedTab = 'all')}>
+		<button
+			class="tab"
+			class:active={selectedTab === 'all'}
+			onclick={() => (selectedTab = 'all')}
+			role="tab"
+			aria-selected={selectedTab === 'all'}
+		>
 			All Popups ({popups.length})
 		</button>
 		<button
 			class="tab"
 			class:active={selectedTab === 'active'}
 			onclick={() => (selectedTab = 'active')}
+			role="tab"
+			aria-selected={selectedTab === 'active'}
 		>
 			Active ({popups.filter((p) => p.isActive).length})
 		</button>
@@ -115,6 +123,8 @@
 			class="tab"
 			class:active={selectedTab === 'inactive'}
 			onclick={() => (selectedTab = 'inactive')}
+			role="tab"
+			aria-selected={selectedTab === 'inactive'}
 		>
 			Inactive ({popups.filter((p) => !p.isActive).length})
 		</button>

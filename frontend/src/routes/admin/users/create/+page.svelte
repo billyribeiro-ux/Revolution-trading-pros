@@ -400,9 +400,9 @@
 	let onboardingPlans: any[] = [];
 
 	// Progress calculation
-	$: completionPercentage = calculateCompletion();
-	$: currentStepIndex = getStepIndex(activeStep);
-	$: canProceed = validateCurrentStep();
+	let completionPercentage = $derived(calculateCompletion());
+	let currentStepIndex = $derived(getStepIndex(activeStep));
+	let canProceed = $derived(validateCurrentStep());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -1053,17 +1053,23 @@
 	}
 
 	// Reactive statements for real-time validation
-	$: if (formData.username) {
-		checkUsernameAvailability();
-	}
+	$effect(() => {
+		if (formData.username) {
+			checkUsernameAvailability();
+		}
+	});
 
-	$: if (formData.email) {
-		checkEmailAvailability();
-	}
+	$effect(() => {
+		if (formData.email) {
+			checkEmailAvailability();
+		}
+	});
 
-	$: if (formData.password) {
-		checkPasswordStrength(formData.password);
-	}
+	$effect(() => {
+		if (formData.password) {
+			checkPasswordStrength(formData.password);
+		}
+	});
 </script>
 
 <svelte:head>

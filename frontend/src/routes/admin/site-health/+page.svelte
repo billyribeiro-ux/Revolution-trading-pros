@@ -499,12 +499,13 @@
 		<div class="tabs-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
 			<div class="tabs">
 				{#each tabs as tab}
+					{@const TabIcon = tab.icon}
 					<button
 						class="tab"
 						class:active={activeTab === tab.id}
 						onclick={() => (activeTab = tab.id)}
 					>
-						<svelte:component this={tab.icon} size={18} />
+						<TabIcon size={18} />
 						<span>{tab.label}</span>
 					</button>
 				{/each}
@@ -706,6 +707,7 @@
 						<h3>All Health Checks</h3>
 						<div class="checks-list">
 							{#each healthData.checks as check, i}
+								{@const StatusIcon = getStatusIcon(check.status)}
 								<div
 									class="check-item"
 									class:good={check.status === 'good'}
@@ -714,7 +716,7 @@
 									in:fly={{ y: 10, duration: 300, delay: 50 * i }}
 								>
 									<div class="check-icon" style="color: {getStatusColor(check.status)}">
-										<svelte:component this={getStatusIcon(check.status)} size={20} />
+										<StatusIcon size={20} />
 									</div>
 									<div class="check-info">
 										<h4>{check.name}</h4>
@@ -948,7 +950,7 @@
 							{#if healthData.server.phpVersion}
 								<div class="metric-card">
 									<div class="metric-icon">
-										<IconBrandPhp size={24} />
+										<IconCode size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">PHP Version</span>

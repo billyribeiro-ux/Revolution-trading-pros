@@ -9,13 +9,24 @@
 
 	let { redirect = null, onsaved, oncancel }: Props = $props();
 
+	// Form state initialized with defaults
 	let form = $state({
-		source_url: redirect?.source_url || '',
-		destination_url: redirect?.destination_url || '',
-		redirect_type: redirect?.redirect_type || '301',
-		is_regex: redirect?.is_regex || false,
-		is_active: redirect?.is_active !== undefined ? redirect.is_active : true,
-		notes: redirect?.notes || ''
+		source_url: '',
+		destination_url: '',
+		redirect_type: '301',
+		is_regex: false,
+		is_active: true,
+		notes: ''
+	});
+
+	// Sync redirect prop to form state
+	$effect(() => {
+		form.source_url = redirect?.source_url || '';
+		form.destination_url = redirect?.destination_url || '';
+		form.redirect_type = redirect?.redirect_type || '301';
+		form.is_regex = redirect?.is_regex || false;
+		form.is_active = redirect?.is_active !== undefined ? redirect.is_active : true;
+		form.notes = redirect?.notes || '';
 	});
 
 	let saving = $state(false);
@@ -118,8 +129,8 @@
 				</div>
 
 				<div class="form-group">
-					<label>
-						<input type="checkbox" bind:checked={form.is_regex} />
+					<label for="is-regex">
+						<input id="is-regex" type="checkbox" bind:checked={form.is_regex} />
 						Use Regular Expression
 					</label>
 					<div class="hint">Enable regex for pattern matching (e.g., /product/(.*) → /shop/$1)</div>
@@ -162,8 +173,8 @@
 				</div>
 
 				<div class="form-group">
-					<label>
-						<input type="checkbox" bind:checked={form.is_active} />
+					<label for="is-active">
+						<input id="is-active" type="checkbox" bind:checked={form.is_active} />
 						Active
 					</label>
 					<div class="hint">Only active redirects will be processed</div>

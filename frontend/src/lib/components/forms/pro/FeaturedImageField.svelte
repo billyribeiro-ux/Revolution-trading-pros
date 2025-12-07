@@ -35,12 +35,17 @@
 		onupload
 	}: Props = $props();
 
-	let imageUrl = $state(value);
+	let imageUrl = $state('');
 	let imageId = $state('');
 	let isDragging = $state(false);
 	let uploading = $state(false);
 	let uploadError = $state('');
 	let fileInput: HTMLInputElement;
+
+	// Sync imageUrl with value prop
+	$effect(() => {
+		if (value !== undefined) imageUrl = value;
+	});
 
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';
@@ -139,7 +144,7 @@
 
 <div class="featured-image-field" class:disabled class:has-error={error || uploadError}>
 	{#if label}
-		<label class="field-label">
+		<label for="featured-image-{name}" class="field-label">
 			{label}
 			{#if required}
 				<span class="required">*</span>
@@ -196,6 +201,7 @@
 	{/if}
 
 	<input
+		id="featured-image-{name}"
 		bind:this={fileInput}
 		type="file"
 		accept={acceptedTypes.join(',')}

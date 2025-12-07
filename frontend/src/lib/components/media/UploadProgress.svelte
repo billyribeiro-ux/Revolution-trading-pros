@@ -9,10 +9,9 @@
   - Cancel/retry actions
   - Total progress overview
 
-  @version 1.0.0
+  @version 2.0.0
 -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { fade, slide } from 'svelte/transition';
 
   interface UploadItem {
@@ -34,26 +33,36 @@
   }
 
   // Props
-  export let uploads: UploadItem[] = [];
-  export let showStats: boolean = true;
-  export let autoHideDelay: number = 5000; // ms, 0 to disable
-  export let className: string = '';
-
-  const dispatch = createEventDispatcher<{
-    cancel: string;
-    retry: string;
-    remove: string;
-    clear: void;
-  }>();
+  let {
+    uploads = [],
+    showStats = true,
+    autoHideDelay = 5000,
+    className = '',
+    onCancel,
+    onRetry,
+    onRemove,
+    onClear
+  }: {
+    uploads?: UploadItem[];
+    showStats?: boolean;
+    autoHideDelay?: number;
+    className?: string;
+    onCancel?: (id: string) => void;
+    onRetry?: (id: string) => void;
+    onRemove?: (id: string) => void;
+    onClear?: () => void;
+  } = $props();
 
   // Computed values
-  $: completedCount = uploads.filter((u) => u.status === 'complete').length;
-  $: errorCount = uploads.filter((u) => u.status === 'error').length;
-  $: inProgressCount = uploads.filter((u) => u.status === 'uploading' || u.status === 'processing').length;
-  $: totalProgress = uploads.length > 0
-    ? Math.round(uploads.reduce((sum, u) => sum + u.progress, 0) / uploads.length)
-    : 0;
-  $: isComplete = completedCount + errorCount === uploads.length && uploads.length > 0;
+  let completedCount = $derived(uploads.filter((u) => u.status === 'complete').length);
+  let errorCount = $derived(uploads.filter((u) => u.status === 'error').length);
+  let inProgressCount = $derived(uploads.filter((u) => u.status === 'uploading' || u.status === 'processing').length);
+  let totalProgress = $derived(
+    uploads.length > 0
+      ? Math.round(uploads.reduce((sum, u) => sum + u.progress, 0) / uploads.length)
+      : 0
+  );
+  let isComplete = $derived(completedCount + errorCount === uploads.length && uploads.length > 0);
 
   // Format bytes
   function formatBytes(bytes: number): string {
@@ -123,7 +132,7 @@
         {/if}
         <button
           class="clear-btn"
-          onclick={() => dispatch('clear')}
+          onclick={() => onClear?.()}
           title="Clear all"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +145,7 @@
     <!-- Overall progress bar -->
     {#if !isComplete}
       <div class="overall-progress">
-        <div class="progress-bar" style="width: {totalProgress}%" />
+        <div class="progress-bar" style="width: {totalProgress}%"></div>
       </div>
     {/if}
 
@@ -162,7 +171,7 @@
             <div class="file-name">{upload.file.name}</div>
             <div class="file-meta">
               <span>{formatBytes(upload.file.size)}</span>
-              <span class="status-dot {getStatusColor(upload.status)}" />
+              <span class="status-dot {getStatusColor(upload.status)}"></span>
               <span class="status-text">{getStatusText(upload.status)}</span>
             </div>
 
@@ -172,7 +181,7 @@
                 <div
                   class="file-progress-bar {upload.status === 'processing' ? 'animate-pulse' : ''}"
                   style="width: {upload.progress}%"
-                />
+                ></div>
               </div>
             {/if}
 
@@ -199,7 +208,7 @@
             {#if upload.status === 'uploading' || upload.status === 'pending'}
               <button
                 class="action-btn action-cancel"
-                onclick={() => dispatch('cancel', upload.id)}
+                onclick={() => onCancel?.(upload.id)}
                 title="Cancel"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +218,7 @@
             {:else if upload.status === 'error'}
               <button
                 class="action-btn action-retry"
-                onclick={() => dispatch('retry', upload.id)}
+                onclick={() => onRetry?.(upload.id)}
                 title="Retry"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +228,7 @@
             {:else if upload.status === 'complete'}
               <button
                 class="action-btn action-remove"
-                onclick={() => dispatch('remove', upload.id)}
+                onclick={() => onRemove?.(upload.id)}
                 title="Remove"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

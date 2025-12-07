@@ -169,7 +169,7 @@
 
 <div class="mollie-payment" class:disabled class:has-error={error || methodError}>
 	{#if label}
-		<label class="field-label">{label}</label>
+		<label class="field-label" for="mollie-method-select">{label}</label>
 	{/if}
 
 	{#if testMode}
@@ -188,6 +188,7 @@
 				type="button"
 				class="method-btn"
 				class:selected={selectedMethod === method.id}
+				aria-label="Select {method.name}"
 				onclick={() => selectMethod(method.id)}
 				{disabled}
 			>
@@ -202,11 +203,12 @@
 
 	{#if selectedMethod === 'ideal' && (loadingIssuers || issuers.length > 0)}
 		<div class="issuer-select">
-			<label class="issuer-label">Select your bank:</label>
+			<label class="issuer-label" for="ideal-issuer-select">Select your bank:</label>
 			{#if loadingIssuers}
 				<div class="loading-issuers">Loading banks...</div>
 			{:else}
 				<select
+					id="ideal-issuer-select"
 					bind:value={selectedIssuer}
 					class="issuer-dropdown"
 					{disabled}

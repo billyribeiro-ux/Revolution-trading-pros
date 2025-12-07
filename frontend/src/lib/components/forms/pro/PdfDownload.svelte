@@ -30,7 +30,11 @@
 	let isLoading = $state(false);
 	let previewUrl = $state<string | null>(null);
 	let error = $state<string | null>(null);
-	let pdfList = $state<PdfFile[]>(pdfs);
+	let pdfList = $state<PdfFile[]>([]);
+
+	$effect(() => {
+		pdfList = pdfs;
+	});
 
 	async function generatePdf() {
 		isGenerating = true;
@@ -146,7 +150,7 @@
 						Download PDF
 					</button>
 					{#if showPreview}
-						<button type="button" class="preview-btn" onclick={() => previewPdf(pdf)}>
+						<button type="button" class="preview-btn" onclick={() => previewPdf(pdf)} aria-label="Preview PDF">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
 								<circle cx="12" cy="12" r="3"></circle>
@@ -206,14 +210,14 @@
 						</div>
 						<div class="pdf-actions">
 							{#if showPreview}
-								<button type="button" class="action-btn preview" onclick={() => previewPdf(pdf)} title="Preview">
+								<button type="button" class="action-btn preview" onclick={() => previewPdf(pdf)} title="Preview" aria-label="Preview PDF">
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 										<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
 										<circle cx="12" cy="12" r="3"></circle>
 									</svg>
 								</button>
 							{/if}
-							<button type="button" class="action-btn download" onclick={() => downloadPdf(pdf)} title="Download">
+							<button type="button" class="action-btn download" onclick={() => downloadPdf(pdf)} title="Download" aria-label="Download PDF">
 								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 									<polyline points="7 10 12 15 17 10"></polyline>
@@ -294,11 +298,11 @@
 {/if}
 
 {#if previewUrl}
-	<div class="preview-overlay" onclick={closePreview} onkeydown={(e) => e.key === 'Escape' && closePreview()} role="dialog" tabindex="-1">
-		<div class="preview-modal" onclick={(e) => e.stopPropagation()} role="document">
+	<div class="preview-overlay" onclick={closePreview} onkeydown={(e) => { if (e.key === 'Escape') closePreview(); if (e.key === 'Enter' || e.key === ' ') closePreview(); }} role="button" tabindex="0" aria-label="Close preview">
+		<div class="preview-modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
 			<div class="preview-header">
 				<h3>PDF Preview</h3>
-				<button type="button" class="close-btn" onclick={closePreview}>
+				<button type="button" class="close-btn" onclick={closePreview} aria-label="Close preview">
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<line x1="18" y1="6" x2="6" y2="18"></line>
 						<line x1="6" y1="6" x2="18" y2="18"></line>

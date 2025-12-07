@@ -61,7 +61,7 @@
 	let isCorrect = $state<boolean | null>(null);
 
 	// Randomize options if needed
-	let options = $state(initialOptions);
+	let options = $state<QuizOption[]>([]);
 
 	$effect(() => {
 		if (randomizeOptions) {

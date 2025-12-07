@@ -22,14 +22,14 @@
 		status: 'active' | 'paused' | 'draft';
 	}
 
-	let reports: Report[] = [];
-	let loading = true;
-	let error: string | null = null;
-	let showCreateModal = false;
-	let activeFilter: 'all' | 'active' | 'scheduled' | 'draft' = 'all';
+	let reports = $state<Report[]>([]);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
+	let showCreateModal = $state(false);
+	let activeFilter = $state<'all' | 'active' | 'scheduled' | 'draft'>('all');
 
 	// New report form
-	let newReport = {
+	let newReport = $state({
 		name: '',
 		description: '',
 		type: 'dashboard' as 'dashboard' | 'table' | 'chart' | 'mixed',
@@ -38,7 +38,7 @@
 		schedule: false,
 		frequency: 'weekly' as 'daily' | 'weekly' | 'monthly',
 		recipients: ''
-	};
+	});
 
 	// Available metrics
 	const availableMetrics = [
@@ -141,13 +141,13 @@
 		loadReports();
 	});
 
-	$: filteredReports = reports.filter((report) => {
+	const filteredReports = $derived(reports.filter((report) => {
 		if (activeFilter === 'all') return true;
 		if (activeFilter === 'active') return report.status === 'active';
 		if (activeFilter === 'scheduled') return report.schedule;
 		if (activeFilter === 'draft') return report.status === 'draft';
 		return true;
-	});
+	}));
 
 	// Report type icons
 	const typeIcons: Record<string, string> = {

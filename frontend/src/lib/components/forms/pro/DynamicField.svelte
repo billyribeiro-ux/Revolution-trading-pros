@@ -83,9 +83,12 @@
 	let fetchError = $state('');
 	let searchQuery = $state('');
 	let showDropdown = $state(false);
-	let selectedValues = $state<string[]>(
-		Array.isArray(value) ? value : value ? [value] : []
-	);
+	let selectedValues = $state<string[]>([]);
+
+	// Sync with prop value changes
+	$effect(() => {
+		selectedValues = Array.isArray(value) ? value : value ? [value] : [];
+	});
 
 	// Fetch options on mount
 	$effect(() => {
@@ -181,12 +184,12 @@
 
 <div class="dynamic-field" class:disabled class:has-error={error}>
 	{#if label}
-		<label class="field-label">
+		<div class="field-label">
 			{label}
 			{#if required}
 				<span class="required">*</span>
 			{/if}
-		</label>
+		</div>
 	{/if}
 
 	{#if loading}
@@ -209,7 +212,8 @@
 					type="text"
 					class="search-input"
 					placeholder="Search options..."
-					bind:value={searchQuery}
+					value={searchQuery}
+					oninput={(e) => (searchQuery = (e.target as HTMLInputElement).value)}
 					onfocus={() => (showDropdown = true)}
 				/>
 			{/if}

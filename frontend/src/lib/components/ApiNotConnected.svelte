@@ -33,13 +33,19 @@
 
 	let {
 		serviceName,
-		description = `Connect ${serviceName} to enable this feature`,
+		description = '',
 		serviceKey,
 		icon = '🔌',
 		color = '#3b82f6',
 		features = [],
 		compact = false
 	}: Props = $props();
+
+	let finalDescription = $state('');
+
+	$effect(() => {
+		finalDescription = description || `Connect ${serviceName} to enable this feature`;
+	});
 
 	function handleConnect() {
 		if (serviceKey) {
@@ -88,7 +94,7 @@
 
 			<!-- Text -->
 			<h3 class="title">Connect {serviceName}</h3>
-			<p class="description">{description}</p>
+			<p class="description">{finalDescription}</p>
 
 			<!-- Features List -->
 			{#if features.length > 0}

@@ -6,12 +6,11 @@
 	import { getForm } from '$lib/api/forms';
 	import type { Form } from '$lib/api/forms';
 
-	let formId: number;
-	let form: Form | null = null;
-	let loading = true;
-	let error = '';
+	let form = $state<Form | null>(null);
+	let loading = $state(true);
+	let error = $state('');
 
-	$: formId = parseInt($page.params.id);
+	let formId = $derived(parseInt($page.params.id));
 
 	onMount(async () => {
 		try {

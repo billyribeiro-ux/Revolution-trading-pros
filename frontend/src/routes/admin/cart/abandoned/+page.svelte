@@ -31,22 +31,22 @@
 	import { toastStore } from '$lib/stores/toast';
 
 	// State
-	let loading = true;
-	let stats: DashboardStats | null = null;
-	let carts: AbandonedCart[] = [];
-	let pagination = { current_page: 1, last_page: 1, per_page: 20, total: 0 };
-	let searchQuery = '';
-	let statusFilter: CartStatus | '' = '';
-	let selectedCarts: Set<number> = new Set();
+	let loading = $state(true);
+	let stats = $state<DashboardStats | null>(null);
+	let carts = $state<AbandonedCart[]>([]);
+	let pagination = $state({ current_page: 1, last_page: 1, per_page: 20, total: 0 });
+	let searchQuery = $state('');
+	let statusFilter = $state<CartStatus | ''>('');
+	let selectedCarts = $state<Set<number>>(new Set());
 
 	// Modal state
-	let showRecoveryModal = false;
-	let recoveryTemplate: 'reminder_1' | 'reminder_2' | 'final_discount' | 'custom' = 'reminder_1';
-	let customSubject = '';
-	let customBody = '';
-	let discountCode = '';
-	let discountPercent = 15;
-	let sending = false;
+	let showRecoveryModal = $state(false);
+	let recoveryTemplate = $state<'reminder_1' | 'reminder_2' | 'final_discount' | 'custom'>('reminder_1');
+	let customSubject = $state('');
+	let customBody = $state('');
+	let discountCode = $state('');
+	let discountPercent = $state(15);
+	let sending = $state(false);
 
 	onMount(async () => {
 		await loadDashboard();
@@ -228,9 +228,9 @@
 		}
 	}
 
-	$: pendingCount = stats?.by_status?.pending || 0;
-	$: emailSentCount = stats?.by_status?.email_sent || 0;
-	$: clickedCount = stats?.by_status?.clicked || 0;
+	let pendingCount = $derived(stats?.by_status?.pending || 0);
+	let emailSentCount = $derived(stats?.by_status?.email_sent || 0);
+	let clickedCount = $derived(stats?.by_status?.clicked || 0);
 </script>
 
 <svelte:head>
@@ -581,8 +581,8 @@
 
 <!-- Recovery Email Modal -->
 {#if showRecoveryModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={() => (showRecoveryModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showRecoveryModal = false)}>
-		<div class="modal-content" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div class="modal-overlay" role="button" tabindex="0" aria-label="Close modal" onclick={() => (showRecoveryModal = false)} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showRecoveryModal = false; }}>
+		<div class="modal-content" role="dialog" aria-modal="true" tabindex="-1" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<div>
 					<h2>Send Recovery Email</h2>

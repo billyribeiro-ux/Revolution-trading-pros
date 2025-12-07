@@ -8,16 +8,25 @@
   - List skeleton for table views
   - Upload skeleton for upload progress
 
-  @version 1.0.0
+  @version 2.0.0
 -->
 <script lang="ts">
   // Props
-  export let type: 'grid' | 'card' | 'list' | 'upload' | 'single' = 'grid';
-  export let count: number = 8;
-  export let columns: number = 4;
-  export let aspectRatio: string = '1/1';
-  export let showText: boolean = true;
-  export let className: string = '';
+  let {
+    type = 'grid',
+    count = 8,
+    columns = 4,
+    aspectRatio = '1/1',
+    showText = true,
+    className = ''
+  }: {
+    type?: 'grid' | 'card' | 'list' | 'upload' | 'single';
+    count?: number;
+    columns?: number;
+    aspectRatio?: string;
+    showText?: boolean;
+    className?: string;
+  } = $props();
 </script>
 
 {#if type === 'grid'}
@@ -29,12 +38,12 @@
     {#each Array(count) as _, i}
       <div class="skeleton-card" style="animation-delay: {i * 0.05}s;">
         <div class="skeleton-thumbnail" style="aspect-ratio: {aspectRatio};">
-          <div class="skeleton-shimmer" />
+          <div class="skeleton-shimmer"></div>
         </div>
         {#if showText}
           <div class="skeleton-info">
-            <div class="skeleton-title" />
-            <div class="skeleton-meta" />
+            <div class="skeleton-title"></div>
+            <div class="skeleton-meta"></div>
           </div>
         {/if}
       </div>
@@ -45,16 +54,16 @@
   <!-- Single card skeleton -->
   <div class="skeleton-card-large {className}">
     <div class="skeleton-thumbnail-large" style="aspect-ratio: {aspectRatio};">
-      <div class="skeleton-shimmer" />
+      <div class="skeleton-shimmer"></div>
     </div>
     {#if showText}
       <div class="skeleton-content">
-        <div class="skeleton-heading" />
-        <div class="skeleton-text" />
-        <div class="skeleton-text short" />
+        <div class="skeleton-heading"></div>
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text short"></div>
         <div class="skeleton-actions">
-          <div class="skeleton-button" />
-          <div class="skeleton-button" />
+          <div class="skeleton-button"></div>
+          <div class="skeleton-button"></div>
         </div>
       </div>
     {/if}
@@ -65,17 +74,17 @@
   <div class="media-skeleton-list {className}">
     {#each Array(count) as _, i}
       <div class="skeleton-row" style="animation-delay: {i * 0.05}s;">
-        <div class="skeleton-checkbox" />
+        <div class="skeleton-checkbox"></div>
         <div class="skeleton-thumb-small">
-          <div class="skeleton-shimmer" />
+          <div class="skeleton-shimmer"></div>
         </div>
         <div class="skeleton-row-content">
-          <div class="skeleton-row-title" />
-          <div class="skeleton-row-meta" />
+          <div class="skeleton-row-title"></div>
+          <div class="skeleton-row-meta"></div>
         </div>
-        <div class="skeleton-row-size" />
-        <div class="skeleton-row-date" />
-        <div class="skeleton-row-actions" />
+        <div class="skeleton-row-size"></div>
+        <div class="skeleton-row-date"></div>
+        <div class="skeleton-row-actions"></div>
       </div>
     {/each}
   </div>
@@ -84,23 +93,23 @@
   <!-- Upload progress skeleton -->
   <div class="skeleton-upload {className}">
     <div class="skeleton-upload-header">
-      <div class="skeleton-upload-title" />
+      <div class="skeleton-upload-title"></div>
       <div class="skeleton-progress-bar">
-        <div class="skeleton-shimmer" />
+        <div class="skeleton-shimmer"></div>
       </div>
     </div>
     {#each Array(count) as _, i}
       <div class="skeleton-upload-item" style="animation-delay: {i * 0.1}s;">
         <div class="skeleton-upload-thumb">
-          <div class="skeleton-shimmer" />
+          <div class="skeleton-shimmer"></div>
         </div>
         <div class="skeleton-upload-info">
-          <div class="skeleton-upload-name" />
+          <div class="skeleton-upload-name"></div>
           <div class="skeleton-upload-progress">
-            <div class="skeleton-shimmer" />
+            <div class="skeleton-shimmer"></div>
           </div>
         </div>
-        <div class="skeleton-upload-action" />
+        <div class="skeleton-upload-action"></div>
       </div>
     {/each}
   </div>
@@ -108,7 +117,7 @@
 {:else if type === 'single'}
   <!-- Single image skeleton -->
   <div class="skeleton-single {className}" style="aspect-ratio: {aspectRatio};">
-    <div class="skeleton-shimmer" />
+    <div class="skeleton-shimmer"></div>
     <div class="skeleton-icon">
       <svg class="w-12 h-12 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

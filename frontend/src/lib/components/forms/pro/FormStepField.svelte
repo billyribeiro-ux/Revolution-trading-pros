@@ -6,6 +6,8 @@
 	 * Allows splitting long forms into manageable steps.
 	 */
 
+	import type { Snippet } from 'svelte';
+
 	interface StepConfig {
 		id: string;
 		title: string;
@@ -27,6 +29,7 @@
 		validationErrors?: Record<string, string[]>;
 		onstepchange?: (step: number, direction: 'next' | 'prev') => boolean | void;
 		onsubmit?: () => void;
+		children?: Snippet<[{ activeStep: number; currentStepData: StepConfig }]>;
 	}
 
 	let {
@@ -42,10 +45,16 @@
 		disabled = false,
 		validationErrors = {},
 		onstepchange,
-		onsubmit
+		onsubmit,
+		children
 	}: Props = $props();
 
-	let activeStep = $state(currentStep);
+	let activeStep = $state(0);
+
+	// Sync activeStep with currentStep prop changes
+	$effect(() => {
+		activeStep = currentStep;
+	});
 	let completedSteps = $state<Set<number>>(new Set());
 	let visitedSteps = $state<Set<number>>(new Set([0]));
 
@@ -150,8 +159,7 @@
 
 	<!-- Step Content -->
 	<div class="step-content">
-		<!-- Svelte 5: Dynamic slot names not allowed, use default slot with step data -->
-		<slot {activeStep} {currentStepData} />
+		{@render children?.({ activeStep, currentStepData })}
 	</div>
 
 	<!-- Navigation Buttons -->
