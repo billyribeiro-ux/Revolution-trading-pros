@@ -35,6 +35,9 @@
 	// API types that need normalization
 	type ApiType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
 
+	// Membership status from API
+	type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
+
 	interface Props {
 		id?: string;
 		name: string;

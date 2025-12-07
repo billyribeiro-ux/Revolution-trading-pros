@@ -16,18 +16,16 @@
 
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	import {
-		IconPlayerPlay,
-		IconBook,
-		IconInbox,
-		IconExternalLink,
-		IconChevronRight,
-		IconClock,
-		IconCalendar,
-		IconVideo,
-		IconDownload,
-		IconMessage
-	} from '@tabler/icons-svelte';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
