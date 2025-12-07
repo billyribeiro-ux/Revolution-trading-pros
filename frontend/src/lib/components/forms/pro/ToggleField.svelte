@@ -28,7 +28,7 @@
 </script>
 
 <div class="toggle-field">
-	<label class="field-label">
+	<label for="toggle-{field.name}" class="field-label">
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
@@ -50,6 +50,7 @@
 			class:active={value}
 			role="switch"
 			aria-checked={value}
+			aria-label="{field.label} toggle"
 			onclick={handleToggle}
 			onkeydown={handleKeyDown}
 		>
@@ -63,7 +64,7 @@
 		{/if}
 	</div>
 
-	<input type="hidden" name={field.name} value={value ? '1' : '0'} />
+	<input id="toggle-{field.name}" type="hidden" name={field.name} value={value ? '1' : '0'} />
 
 	{#if error && error.length > 0}
 		<div class="field-error">

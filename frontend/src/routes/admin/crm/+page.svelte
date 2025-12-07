@@ -24,22 +24,22 @@
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
-	let contacts: any[] = [];
-	let deals: any[] = [];
-	let isLoading = true;
-	let connectionLoading = true;
-	let error = '';
-	let searchQuery = '';
-	let activeTab: 'contacts' | 'deals' | 'pipeline' = 'contacts';
-	let selectedStatus = 'all';
+	let contacts = $state<any[]>([]);
+	let deals = $state<any[]>([]);
+	let isLoading = $state(true);
+	let connectionLoading = $state(true);
+	let error = $state('');
+	let searchQuery = $state('');
+	let activeTab = $state<'contacts' | 'deals' | 'pipeline'>('contacts');
+	let selectedStatus = $state('all');
 
 	// Stats
-	let stats = {
+	let stats = $state({
 		totalContacts: 0,
 		newThisMonth: 0,
 		activeDeals: 0,
 		dealValue: 0
-	};
+	});
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Contacts' },

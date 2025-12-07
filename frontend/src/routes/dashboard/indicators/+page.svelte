@@ -205,6 +205,7 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
+				id="indicator-search"
 				type="text"
 				placeholder="Search indicators..."
 				bind:value={searchQuery}
@@ -633,6 +634,7 @@
 		line-height: 1.5;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		flex: 1;

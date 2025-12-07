@@ -145,7 +145,7 @@
     <!-- Overall progress bar -->
     {#if !isComplete}
       <div class="overall-progress">
-        <div class="progress-bar" style="width: {totalProgress}%" />
+        <div class="progress-bar" style="width: {totalProgress}%"></div>
       </div>
     {/if}
 
@@ -171,7 +171,7 @@
             <div class="file-name">{upload.file.name}</div>
             <div class="file-meta">
               <span>{formatBytes(upload.file.size)}</span>
-              <span class="status-dot {getStatusColor(upload.status)}" />
+              <span class="status-dot {getStatusColor(upload.status)}"></span>
               <span class="status-text">{getStatusText(upload.status)}</span>
             </div>
 
@@ -181,7 +181,7 @@
                 <div
                   class="file-progress-bar {upload.status === 'processing' ? 'animate-pulse' : ''}"
                   style="width: {upload.progress}%"
-                />
+                ></div>
               </div>
             {/if}
 

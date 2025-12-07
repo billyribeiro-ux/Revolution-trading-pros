@@ -15,16 +15,15 @@
 	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
-	import {
-		IconMenu2,
-		IconSun,
-		IconMoon,
-		IconDeviceDesktop,
-		IconBell,
-		IconSearch,
-		IconPlugConnected,
-		IconKeyboard
-	} from '@tabler/icons-svelte';
+	// Direct path imports for Svelte 5 compatibility
+	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
+	import IconSun from '@tabler/icons-svelte/icons/sun';
+	import IconMoon from '@tabler/icons-svelte/icons/moon';
+	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';

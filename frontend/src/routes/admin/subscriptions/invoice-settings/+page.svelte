@@ -6,7 +6,7 @@
 	const API_BASE = '/api/admin/invoice-settings';
 
 	// Settings State
-	let settings = {
+	let settings = $state({
 		company_name: '',
 		company_email: '',
 		company_phone: '',
@@ -31,21 +31,21 @@
 		show_due_date: true,
 		invoice_prefix: 'INV-',
 		custom_css: ''
-	};
+	});
 
-	let logoUrl: string | null = null;
-	let fonts: { value: string; label: string }[] = [];
-	let countries: Record<string, string> = {};
+	let logoUrl = $state<string | null>(null);
+	let fonts = $state<{ value: string; label: string }[]>([]);
+	let countries = $state<Record<string, string>>({});
 
 	// UI State
-	let loading = true;
-	let saving = false;
-	let uploading = false;
-	let error = '';
-	let success = '';
-	let activeTab: 'branding' | 'company' | 'content' | 'display' | 'advanced' = 'branding';
-	let previewHtml = '';
-	let showPreviewModal = false;
+	let loading = $state(true);
+	let saving = $state(false);
+	let uploading = $state(false);
+	let error = $state('');
+	let success = $state('');
+	let activeTab = $state<'branding' | 'company' | 'content' | 'display' | 'advanced'>('branding');
+	let previewHtml = $state('');
+	let showPreviewModal = $state(false);
 
 	onMount(async () => {
 		await loadSettings();
@@ -283,9 +283,9 @@
 							<div class="space-y-6" transition:fade>
 								<!-- Logo Upload -->
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+									<div class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
 										Company Logo
-									</label>
+									</div>
 									<div class="flex items-start gap-6">
 										<div class="w-40 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-900 overflow-hidden">
 											{#if logoUrl}
@@ -317,59 +317,65 @@
 								</div>
 
 								<!-- Show Logo Toggle -->
-								<label class="flex items-center gap-3 cursor-pointer">
-									<input type="checkbox" bind:checked={settings.show_logo} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label for="show-logo-toggle" class="flex items-center gap-3 cursor-pointer">
+									<input type="checkbox" id="show-logo-toggle" bind:checked={settings.show_logo} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
 									<span class="text-sm text-gray-700 dark:text-gray-300">Show logo on invoices</span>
 								</label>
 
 								<!-- Colors -->
 								<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="primary-color" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Primary Color
 										</label>
 										<div class="flex items-center gap-3">
 											<input
 												type="color"
+												id="primary-color"
 												bind:value={settings.primary_color}
 												class="w-12 h-12 rounded-lg cursor-pointer border-0"
 											/>
 											<input
 												type="text"
+												id="primary-color-text"
 												bind:value={settings.primary_color}
 												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
 											/>
 										</div>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="secondary-color" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Secondary Color
 										</label>
 										<div class="flex items-center gap-3">
 											<input
 												type="color"
+												id="secondary-color"
 												bind:value={settings.secondary_color}
 												class="w-12 h-12 rounded-lg cursor-pointer border-0"
 											/>
 											<input
 												type="text"
+												id="secondary-color-text"
 												bind:value={settings.secondary_color}
 												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
 											/>
 										</div>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="accent-color" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Accent Color
 										</label>
 										<div class="flex items-center gap-3">
 											<input
 												type="color"
+												id="accent-color"
 												bind:value={settings.accent_color}
 												class="w-12 h-12 rounded-lg cursor-pointer border-0"
 											/>
 											<input
 												type="text"
+												id="accent-color-text"
 												bind:value={settings.accent_color}
 												class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
 											/>
@@ -379,10 +385,11 @@
 
 								<!-- Font Family -->
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label for="font-family" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 										Font Family
 									</label>
 									<select
+										id="font-family"
 										bind:value={settings.font_family}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 									>
@@ -399,22 +406,24 @@
 							<div class="space-y-6" transition:fade>
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="company-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Company Name
 										</label>
 										<input
 											type="text"
+											id="company-name"
 											bind:value={settings.company_name}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="Your Company Name"
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="company-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Email Address
 										</label>
 										<input
 											type="email"
+											id="company-email"
 											bind:value={settings.company_email}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="billing@company.com"
@@ -424,22 +433,24 @@
 
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="company-phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Phone Number
 										</label>
 										<input
 											type="tel"
+											id="company-phone"
 											bind:value={settings.company_phone}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="+1 (555) 123-4567"
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="tax-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Tax ID / VAT Number
 										</label>
 										<input
 											type="text"
+											id="tax-id"
 											bind:value={settings.tax_id}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="US123456789"
@@ -448,11 +459,12 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label for="company-address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 										Street Address
 									</label>
 									<input
 										type="text"
+										id="company-address"
 										bind:value={settings.company_address}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										placeholder="123 Business Street, Suite 100"
@@ -461,32 +473,36 @@
 
 								<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+										<label for="company-city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
 										<input
 											type="text"
+											id="company-city"
 											bind:value={settings.company_city}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+										<label for="company-state" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
 										<input
 											type="text"
+											id="company-state"
 											bind:value={settings.company_state}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP</label>
+										<label for="company-zip" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP</label>
 										<input
 											type="text"
+											id="company-zip"
 											bind:value={settings.company_zip}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+										<label for="company-country" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
 										<select
+											id="company-country"
 											bind:value={settings.company_country}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										>
@@ -504,22 +520,24 @@
 							<div class="space-y-6" transition:fade>
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="header-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Header Text
 										</label>
 										<input
 											type="text"
+											id="header-text"
 											bind:value={settings.header_text}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="INVOICE"
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label for="invoice-prefix" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 											Invoice Prefix
 										</label>
 										<input
 											type="text"
+											id="invoice-prefix"
 											bind:value={settings.invoice_prefix}
 											class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 											placeholder="INV-"
@@ -528,11 +546,12 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label for="payment-terms" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 										Payment Terms
 									</label>
 									<input
 										type="text"
+										id="payment-terms"
 										bind:value={settings.payment_terms}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										placeholder="Due upon receipt"
@@ -540,11 +559,12 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label for="footer-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 										Footer Text
 									</label>
 									<input
 										type="text"
+										id="footer-text"
 										bind:value={settings.footer_text}
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										placeholder="Thank you for your business!"
@@ -552,10 +572,11 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label for="notes-template" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 										Default Notes (shown on all invoices)
 									</label>
 									<textarea
+										id="notes-template"
 										bind:value={settings.notes_template}
 										rows="4"
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
@@ -572,32 +593,32 @@
 									Choose which elements to display on your invoices:
 								</p>
 
-								<label class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" bind:checked={settings.show_logo} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label for="display-show-logo" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+									<input type="checkbox" id="display-show-logo" bind:checked={settings.show_logo} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
 									<div>
 										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Company Logo</span>
 										<p class="text-xs text-gray-500">Display your uploaded logo at the top of invoices</p>
 									</div>
 								</label>
 
-								<label class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" bind:checked={settings.show_tax_id} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label for="display-show-tax-id" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+									<input type="checkbox" id="display-show-tax-id" bind:checked={settings.show_tax_id} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
 									<div>
 										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Tax ID / VAT Number</span>
 										<p class="text-xs text-gray-500">Include your tax identification number in the header</p>
 									</div>
 								</label>
 
-								<label class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" bind:checked={settings.show_payment_method} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label for="display-show-payment-method" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+									<input type="checkbox" id="display-show-payment-method" bind:checked={settings.show_payment_method} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
 									<div>
 										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Payment Method</span>
 										<p class="text-xs text-gray-500">Display the card type and last 4 digits used for payment</p>
 									</div>
 								</label>
 
-								<label class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" bind:checked={settings.show_due_date} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label for="display-show-due-date" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+									<input type="checkbox" id="display-show-due-date" bind:checked={settings.show_due_date} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
 									<div>
 										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Due Date</span>
 										<p class="text-xs text-gray-500">Include payment due date in the invoice details</p>
@@ -610,13 +631,14 @@
 						{#if activeTab === 'advanced'}
 							<div class="space-y-6" transition:fade>
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label for="custom-css" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 										Custom CSS
 									</label>
 									<p class="text-sm text-gray-500 mb-3">
 										Add custom CSS to further customize your invoice appearance. Use CSS variables like <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">var(--primary-color)</code>.
 									</p>
 									<textarea
+										id="custom-css"
 										bind:value={settings.custom_css}
 										rows="10"
 										class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm resize-none"
@@ -741,6 +763,7 @@
 					<button
 						onclick={() => (showPreviewModal = false)}
 						class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+						aria-label="Close preview"
 					>
 						<svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

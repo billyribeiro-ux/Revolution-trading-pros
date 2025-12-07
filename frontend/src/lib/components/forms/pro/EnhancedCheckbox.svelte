@@ -45,9 +45,14 @@
 		onchange
 	}: Props = $props();
 
-	let selectedValues = $state<string[]>(value);
+	let selectedValues = $state<string[]>([]);
 	let otherChecked = $state(false);
 	let otherText = $state('');
+
+	// Sync with prop value changes
+	$effect(() => {
+		selectedValues = value;
+	});
 
 	function handleCheckboxChange(optionValue: string, checked: boolean) {
 		if (disabled) return;

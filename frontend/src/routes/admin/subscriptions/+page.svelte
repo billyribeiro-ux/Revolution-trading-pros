@@ -19,30 +19,30 @@
 	} from '$lib/stores/subscriptions';
 
 	// State
-	let subscriptions: Subscription[] = [];
-	let stats: SubscriptionStats | null = null;
-	let upcomingRenewals: Subscription[] = [];
-	let failedPayments: any[] = [];
-	let loading = true;
-	let error = '';
+	let subscriptions = $state<Subscription[]>([]);
+	let stats = $state<SubscriptionStats | null>(null);
+	let upcomingRenewals = $state<Subscription[]>([]);
+	let failedPayments = $state<any[]>([]);
+	let loading = $state(true);
+	let error = $state('');
 
 	// Filters
-	let statusFilter: SubscriptionStatus | 'all' = 'all';
-	let searchQuery = '';
-	let intervalFilter: 'all' | 'monthly' | 'quarterly' | 'yearly' = 'all';
-	let sortBy: 'date' | 'price' | 'status' = 'date';
+	let statusFilter = $state<SubscriptionStatus | 'all'>('all');
+	let searchQuery = $state('');
+	let intervalFilter = $state<'all' | 'monthly' | 'quarterly' | 'yearly'>('all');
+	let sortBy = $state<'date' | 'price' | 'status'>('date');
 
 	// Modal state
-	let selectedSubscription: Subscription | null = null;
-	let showCancelModal = false;
-	let showPauseModal = false;
-	let cancelReason = '';
-	let pauseReason = '';
-	let cancelImmediate = false;
+	let selectedSubscription = $state<Subscription | null>(null);
+	let showCancelModal = $state(false);
+	let showPauseModal = $state(false);
+	let cancelReason = $state('');
+	let pauseReason = $state('');
+	let cancelImmediate = $state(false);
 
 	// Pagination
-	let currentPage = 1;
-	let perPage = 20;
+	let currentPage = $state(1);
+	let perPage = $state(20);
 
 	onMount(async () => {
 		await loadData();

@@ -183,7 +183,7 @@
 </script>
 
 <div class="signature-field" class:disabled class:has-error={error}>
-	<label class="signature-label">
+	<label for="signature-{name}" class="signature-label">
 		{label}
 		{#if required}
 			<span class="required-marker">*</span>
@@ -226,6 +226,7 @@
 					onclick={undoLastStroke}
 					disabled={disabled || paths.length === 0}
 					title="Undo"
+					aria-label="Undo last stroke"
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M3 7v6h6"></path>
@@ -240,6 +241,7 @@
 					onclick={clearCanvas}
 					disabled={disabled || !hasSignature}
 					title="Clear"
+					aria-label="Clear signature"
 				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<polyline points="3 6 5 6 21 6"></polyline>
@@ -250,7 +252,7 @@
 		</div>
 	</div>
 
-	<input type="hidden" {name} value={signatureData || ''} />
+	<input id="signature-{name}" type="hidden" {name} value={signatureData || ''} />
 
 	{#if error}
 		<div class="error-message">

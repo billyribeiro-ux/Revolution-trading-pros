@@ -20,37 +20,36 @@
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { getAuthToken } from '$lib/stores/auth';
-	import {
-		IconHeartbeat,
-		IconShieldCheck,
-		IconShieldOff,
-		IconDatabase,
-		IconServer,
-		IconClock,
-		IconRefresh,
-		IconPlugConnected,
-		IconPlugConnectedX,
-		IconAlertTriangle,
-		IconCircleCheck,
-		IconCircleX,
-		IconInfoCircle,
-		IconLock,
-		IconSettings,
-		IconCode,
-		IconWorld,
-		IconCertificate,
-		IconFolder,
-		IconCloud,
-		IconBugOff,
-		IconSpeedboat,
-		IconChartLine,
-		IconArrowRight,
-		IconExternalLink,
-		IconCheck,
-		IconX,
-		IconPlayerPlay,
-		IconDownload
-	} from '@tabler/icons-svelte';
+	// Direct path imports for Svelte 5 compatibility
+	import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
+	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
+	import IconShieldOff from '@tabler/icons-svelte/icons/shield-off';
+	import IconDatabase from '@tabler/icons-svelte/icons/database';
+	import IconServer from '@tabler/icons-svelte/icons/server';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+	import IconCircleX from '@tabler/icons-svelte/icons/circle-x';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconCode from '@tabler/icons-svelte/icons/code';
+	import IconWorld from '@tabler/icons-svelte/icons/world';
+	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
+	import IconFolder from '@tabler/icons-svelte/icons/folder';
+	import IconCloud from '@tabler/icons-svelte/icons/cloud';
+	import IconBugOff from '@tabler/icons-svelte/icons/bug-off';
+	import IconSpeedboat from '@tabler/icons-svelte/icons/speedboat';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import {
 		connections,
 		connectedCount,
@@ -500,12 +499,13 @@
 		<div class="tabs-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
 			<div class="tabs">
 				{#each tabs as tab}
+					{@const TabIcon = tab.icon}
 					<button
 						class="tab"
 						class:active={activeTab === tab.id}
 						onclick={() => (activeTab = tab.id)}
 					>
-						<svelte:component this={tab.icon} size={18} />
+						<TabIcon size={18} />
 						<span>{tab.label}</span>
 					</button>
 				{/each}
@@ -707,6 +707,7 @@
 						<h3>All Health Checks</h3>
 						<div class="checks-list">
 							{#each healthData.checks as check, i}
+								{@const StatusIcon = getStatusIcon(check.status)}
 								<div
 									class="check-item"
 									class:good={check.status === 'good'}
@@ -715,7 +716,7 @@
 									in:fly={{ y: 10, duration: 300, delay: 50 * i }}
 								>
 									<div class="check-icon" style="color: {getStatusColor(check.status)}">
-										<svelte:component this={getStatusIcon(check.status)} size={20} />
+										<StatusIcon size={20} />
 									</div>
 									<div class="check-info">
 										<h4>{check.name}</h4>

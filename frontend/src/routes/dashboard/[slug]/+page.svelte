@@ -16,18 +16,17 @@
 
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	import {
-		IconPlayerPlay,
-		IconBook,
-		IconInbox,
-		IconExternalLink,
-		IconChevronRight,
-		IconClock,
-		IconCalendar,
-		IconVideo,
-		IconDownload,
-		IconMessageCircle
-	} from '@tabler/icons-svelte';
+	// Direct path imports for Svelte 5 compatibility
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconInbox from '@tabler/icons-svelte/icons/inbox';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -363,8 +362,9 @@
 			<h2 class="section-title">Resources</h2>
 			<div class="resources-list">
 				{#each quickResources as resource}
+					{@const ResourceIcon = resource.icon}
 					<a href={resource.href} class="resource-item">
-						<svelte:component this={resource.icon} size={20} />
+						<ResourceIcon size={20} />
 						<span>{resource.title}</span>
 						<IconChevronRight size={16} class="chevron" />
 					</a>

@@ -30,14 +30,14 @@
 	let loading = $derived($churnedStore.loading);
 
 	// Local state
-	let searchQuery = '';
-	let winbackPotential = '';
-	let churnedWithinDays = '';
-	let selectedMembers: Set<number> = new Set();
-	let showEmailModal = false;
-	let emailSubject = '';
-	let emailBody = '';
-	let campaignType: 'winback' | 'free_trial' | 'promo' = 'winback';
+	let searchQuery = $state('');
+	let winbackPotential = $state('');
+	let churnedWithinDays = $state('');
+	let selectedMembers = $state<Set<number>>(new Set());
+	let showEmailModal = $state(false);
+	let emailSubject = $state('');
+	let emailBody = $state('');
+	let campaignType = $state<'winback' | 'free_trial' | 'promo'>('winback');
 
 	onMount(async () => {
 		await churnedStore.loadChurnedMembers();
@@ -275,6 +275,7 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
+				id="search-churned-members"
 				type="text"
 				placeholder="Search churned members..."
 				bind:value={searchQuery}
@@ -335,6 +336,7 @@
 								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
 								onchange={selectAllMembers}
+								aria-label="Select all churned members"
 							/>
 						</th>
 						<th>Member</th>
@@ -354,6 +356,7 @@
 									type="checkbox"
 									checked={selectedMembers.has(member.id)}
 									onchange={() => toggleMemberSelection(member.id)}
+									aria-label="Select {member.name}"
 								/>
 							</td>
 							<td>

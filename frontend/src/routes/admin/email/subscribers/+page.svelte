@@ -23,39 +23,39 @@
 	import { emailApi, type EmailSubscriber } from '$lib/api/email';
 
 	// State
-	let loading = true;
-	let subscribers: EmailSubscriber[] = [];
-	let total = 0;
-	let page = 1;
-	let perPage = 25;
-	let searchQuery = '';
-	let statusFilter = 'all';
-	let selectedTags: string[] = [];
-	let selectedSubscribers: Set<string> = new Set();
+	let loading = $state(true);
+	let subscribers = $state<EmailSubscriber[]>([]);
+	let total = $state(0);
+	let page = $state(1);
+	let perPage = $state(25);
+	let searchQuery = $state('');
+	let statusFilter = $state('all');
+	let selectedTags = $state<string[]>([]);
+	let selectedSubscribers = $state(new Set<string>());
 
 	// Modal states
-	let showAddModal = false;
-	let showImportModal = false;
-	let showTagModal = false;
+	let showAddModal = $state(false);
+	let showImportModal = $state(false);
+	let showTagModal = $state(false);
 
 	// New subscriber form
-	let newSubscriber = {
+	let newSubscriber = $state({
 		email: '',
 		first_name: '',
 		last_name: '',
 		tags: ''
-	};
+	});
 
 	// Stats
-	let stats = {
+	let stats = $state({
 		total: 0,
 		subscribed: 0,
 		unsubscribed: 0,
 		bounced: 0
-	};
+	});
 
 	// Available tags (will be fetched from API)
-	let availableTags = ['vip', 'newsletter', 'trial', 'customer', 'lead', 'inactive'];
+	let availableTags = $state(['vip', 'newsletter', 'trial', 'customer', 'lead', 'inactive']);
 
 	onMount(async () => {
 		await loadSubscribers();
@@ -513,15 +513,17 @@
 {#if showAddModal}
 	<div
 		class="modal-overlay"
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
 		onclick={() => (showAddModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)}
+		onkeydown={(e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showAddModal = false; }}
 	>
 		<div
 			class="modal-content"
-			role="document"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
 		>

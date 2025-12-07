@@ -94,13 +94,13 @@
 	);
 
 	// Determine icon based on status
-	let ErrorIcon = $derived(() => {
-		if (status === 401) return IconLock;
-		if (status === 403) return IconLock;
-		if (status === 404) return IconSearch;
-		if (status >= 500) return IconServer;
-		return IconAlertTriangle;
-	});
+	let ErrorIcon = $derived(
+		status === 401 ? IconLock :
+		status === 403 ? IconLock :
+		status === 404 ? IconSearch :
+		status >= 500 ? IconServer :
+		IconAlertTriangle
+	);
 
 	// Log admin errors
 	$effect(() => {
@@ -142,7 +142,7 @@
 		<!-- Error Header -->
 		<div class="error-header" style="--accent-color: {config.color}">
 			<div class="error-icon-wrapper">
-				<svelte:component this={ErrorIcon()} size={48} stroke={1.5} />
+				<ErrorIcon size={48} stroke={1.5} />
 			</div>
 			<div class="error-status-badge">
 				{status}

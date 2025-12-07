@@ -159,7 +159,7 @@
       class="absolute inset-0 w-full h-full blur-xl scale-110 transition-opacity duration-500"
       class:opacity-0={loaded}
       aria-hidden="true"
-    />
+    ></canvas>
   {/if}
 
   <!-- LQIP fallback -->
@@ -233,7 +233,7 @@
 
   <!-- Loading skeleton (if no placeholder available) -->
   {#if !blurhash && !lqip && !loaded && !hasError && isInView}
-    <div class="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+    <div class="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
   {/if}
 </div>
 

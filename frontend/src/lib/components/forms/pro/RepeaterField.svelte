@@ -55,13 +55,6 @@
 		onchange
 	}: Props = $props();
 
-	// Initialize rows with at least minRows
-	let rows = $state<RepeaterRow[]>(
-		value.length > 0
-			? value
-			: Array.from({ length: minRows }, () => createEmptyRow())
-	);
-
 	function generateId(): string {
 		return Math.random().toString(36).substring(2, 11);
 	}
@@ -73,6 +66,22 @@
 		});
 		return { id: generateId(), values };
 	}
+
+	let rows = $state<RepeaterRow[]>([]);
+
+	$effect(() => {
+		rows = Array.from({ length: minRows }, () => createEmptyRow());
+	});
+
+	// Sync rows with value prop changes
+	$effect(() => {
+		if (value.length > 0) {
+			rows = value;
+		} else if (rows.length === 0) {
+			// Ensure minimum rows if value becomes empty
+			rows = Array.from({ length: minRows }, () => createEmptyRow());
+		}
+	});
 
 	function addRow() {
 		if (rows.length >= maxRows || disabled) return;
@@ -126,15 +135,15 @@
 
 <div class="repeater-field" class:disabled class:has-error={error}>
 	{#if label}
-		<label class="field-label">
+		<div id="{name}-label" class="field-label">
 			{label}
 			{#if required}
 				<span class="required">*</span>
 			{/if}
-		</label>
+		</div>
 	{/if}
 
-	<div class="rows-container">
+	<div class="rows-container" role="group" aria-labelledby={label ? `${name}-label` : undefined}>
 		{#each rows as row, index (row.id)}
 			<div class="repeater-row" animate:flip={{ duration: 200 }}>
 				<div class="row-header">
@@ -183,7 +192,7 @@
 					{#each fields as field}
 						<div class="field-wrapper" style="width: {getFieldWidth(field.width)}">
 							{#if field.label}
-								<label class="inner-label">
+								<label for="{name}-{index}-{field.name}" class="inner-label">
 									{field.label}
 									{#if field.required}
 										<span class="required">*</span>
@@ -193,6 +202,7 @@
 
 							{#if field.type === 'select'}
 								<select
+									id="{name}-{index}-{field.name}"
 									name="{name}[{index}][{field.name}]"
 									value={row.values[field.name]}
 									{disabled}
@@ -205,6 +215,7 @@
 								</select>
 							{:else if field.type === 'textarea'}
 								<textarea
+									id="{name}-{index}-{field.name}"
 									name="{name}[{index}][{field.name}]"
 									value={row.values[field.name]}
 									placeholder={field.placeholder}
@@ -215,6 +226,7 @@
 							{:else}
 								<input
 									type={field.type}
+									id="{name}-{index}-{field.name}"
 									name="{name}[{index}][{field.name}]"
 									value={row.values[field.name]}
 									placeholder={field.placeholder}

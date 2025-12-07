@@ -42,12 +42,13 @@
 
   // Animated savings
   const animatedSavings = tweened(0, {
-    duration: animated ? 1000 : 0,
+    duration: 1000,
     easing: cubicOut,
   });
 
   $effect(() => {
-    animatedSavings.set(stats.savingsPercent);
+    const duration = animated ? 1000 : 0;
+    animatedSavings.set(stats.savingsPercent, { duration });
   });
 
   // Format bytes

@@ -144,6 +144,7 @@
 			<!-- Actions -->
 			<div class="batch-actions">
 				{#each effectiveActions as action}
+					{@const ActionIcon = action.icon}
 					<button
 						class="action-btn {getVariantClass(action.variant)}"
 						onclick={() => handleAction(action)}
@@ -152,7 +153,7 @@
 						{#if processingAction === action.id}
 							<IconLoader size={18} class="spinning" />
 						{:else}
-							<svelte:component this={action.icon} size={18} />
+							<ActionIcon size={18} />
 						{/if}
 						<span>{action.label}</span>
 					</button>

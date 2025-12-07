@@ -33,9 +33,13 @@
 	}: Props = $props();
 
 	let container: HTMLElement | null = $state(null);
-	let sliderPosition = $state(initialPosition);
+	let sliderPosition = $state(50);
 	let isDragging = $state(false);
 	let isLoaded = $state(false);
+
+	$effect(() => {
+		sliderPosition = initialPosition;
+	});
 
 	// Calculate savings
 	let savingsPercent = $derived(

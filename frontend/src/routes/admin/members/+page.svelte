@@ -37,20 +37,20 @@
 	let loading = $derived($membersStore.loading);
 
 	// Local state
-	let searchQuery = '';
-	let statusFilter: string = '';
-	let serviceFilter: number | '' = '';
-	let spendingFilter: string = '';
-	let showFilters = false;
-	let selectedMembers: Set<number> = new Set();
-	let showEmailModal = false;
-	let emailSubject = '';
-	let emailBody = '';
-	let selectedTemplate: string | number = '';
-	let showImportModal = false;
-	let importFile: File | null = null;
-	let importing = false;
-	let exporting = false;
+	let searchQuery = $state('');
+	let statusFilter = $state<string>('');
+	let serviceFilter = $state<number | ''>('');
+	let spendingFilter = $state('');
+	let showFilters = $state(false);
+	let selectedMembers = $state<Set<number>>(new Set());
+	let showEmailModal = $state(false);
+	let emailSubject = $state('');
+	let emailBody = $state('');
+	let selectedTemplate = $state<string | number>('');
+	let showImportModal = $state(false);
+	let importFile = $state<File | null>(null);
+	let importing = $state(false);
+	let exporting = $state(false);
 
 	// Initialize
 	onMount(async () => {
@@ -384,6 +384,7 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
+				id="search-members"
 				type="text"
 				placeholder="Search members by name or email..."
 				bind:value={searchQuery}
@@ -392,7 +393,13 @@
 		</div>
 
 		<div class="toolbar-actions">
-			<button class="filter-toggle" class:active={showFilters} onclick={() => (showFilters = !showFilters)}>
+			<button
+				class="filter-toggle"
+				class:active={showFilters}
+				onclick={() => (showFilters = !showFilters)}
+				aria-expanded={showFilters}
+				aria-label="Toggle filters"
+			>
 				<IconFilter size={18} />
 				Filters
 			</button>
@@ -483,6 +490,7 @@
 								type="checkbox"
 								checked={selectedMembers.size === members.length && members.length > 0}
 								onchange={selectAllMembers}
+								aria-label="Select all members"
 							/>
 						</th>
 						<th>Member</th>
@@ -501,6 +509,7 @@
 									type="checkbox"
 									checked={selectedMembers.has(member.id)}
 									onchange={() => toggleMemberSelection(member.id)}
+									aria-label="Select {member.name}"
 								/>
 							</td>
 							<td>

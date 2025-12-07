@@ -328,7 +328,7 @@
 						<span class="archive-losers">✗ {week.losers} Losers</span>
 						<span class="archive-winrate">{week.winRate}</span>
 					</div>
-					<a href="#" class="archive-link">View Details →</a>
+					<button type="button" class="archive-link">View Details →</button>
 				</div>
 			{/each}
 		</div>
@@ -777,6 +777,10 @@
 	}
 
 	.archive-link {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
 		color: var(--st-color-orange, #f97316);
 		text-decoration: none;
 		font-size: 0.875rem;

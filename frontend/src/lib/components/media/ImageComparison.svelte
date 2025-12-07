@@ -9,36 +9,45 @@
    * - Compression artifact detection
    * - Side-by-side and overlay modes
    *
-   * @version 1.0.0
+   * @version 2.0.0 - Svelte 5 Runes
    */
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount } from 'svelte';
   import { spring } from 'svelte/motion';
 
-  // Props
-  export let originalSrc: string;
-  export let optimizedSrc: string;
-  export let originalSize: number = 0;
-  export let optimizedSize: number = 0;
-  export let width: number = 800;
-  export let height: number = 600;
+  // Props - Svelte 5 syntax
+  interface Props {
+    originalSrc: string;
+    optimizedSrc: string;
+    originalSize?: number;
+    optimizedSize?: number;
+    width?: number;
+    height?: number;
+  }
 
-  const dispatch = createEventDispatcher();
+  let {
+    originalSrc,
+    optimizedSrc,
+    originalSize = 0,
+    optimizedSize = 0,
+    width = 800,
+    height = 600
+  }: Props = $props();
 
-  // State
-  let container: HTMLDivElement;
-  let isDragging = false;
-  let mode: 'slider' | 'side-by-side' | 'toggle' = 'slider';
-  let showOriginal = false;
-  let zoomLevel = 1;
-  let panX = 0;
-  let panY = 0;
+  // State - Svelte 5 runes
+  let container = $state<HTMLDivElement | null>(null);
+  let isDragging = $state(false);
+  let mode = $state<'slider' | 'side-by-side' | 'toggle'>('slider');
+  let showOriginal = $state(false);
+  let zoomLevel = $state(1);
+  let panX = $state(0);
+  let panY = $state(0);
 
   // Animated slider position (0-100)
   const sliderPosition = spring(50, { stiffness: 0.3, damping: 0.8 });
 
-  // Computed values
-  $: savings = originalSize > 0 ? ((originalSize - optimizedSize) / originalSize * 100).toFixed(1) : '0';
-  $: compressionRatio = optimizedSize > 0 ? (originalSize / optimizedSize).toFixed(1) : '1';
+  // Computed values - Svelte 5 derived
+  let savings = $derived(originalSize > 0 ? ((originalSize - optimizedSize) / originalSize * 100).toFixed(1) : '0');
+  let compressionRatio = $derived(optimizedSize > 0 ? (originalSize / optimizedSize).toFixed(1) : '1');
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Event Handlers
@@ -144,10 +153,7 @@
 <div
   class="comparison-container"
   bind:this={container}
-  onkeydown={handleKeydown}
   onwheel={handleWheel}
-  tabindex="0"
-  role="application"
   aria-label="Image comparison tool"
 >
   <!-- Mode Selector -->
@@ -156,6 +162,7 @@
       class:active={mode === 'slider'}
       onclick={() => mode = 'slider'}
       title="Slider comparison"
+      aria-label="Slider comparison"
     >
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
@@ -166,6 +173,7 @@
       class:active={mode === 'side-by-side'}
       onclick={() => mode = 'side-by-side'}
       title="Side by side"
+      aria-label="Side by side comparison"
     >
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path d="M2 4a1 1 0 011-1h6a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM12 4a1 1 0 011-1h4a1 1 0 011 1v12a1 1 0 01-1 1h-4a1 1 0 01-1-1V4z"/>
@@ -175,6 +183,7 @@
       class:active={mode === 'toggle'}
       onclick={() => mode = 'toggle'}
       title="Toggle view"
+      aria-label="Toggle view"
     >
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
@@ -184,13 +193,13 @@
 
   <!-- Zoom Controls -->
   <div class="zoom-controls">
-    <button onclick={() => zoomLevel = Math.max(1, zoomLevel - 0.5)} disabled={zoomLevel <= 1}>
+    <button onclick={() => zoomLevel = Math.max(1, zoomLevel - 0.5)} disabled={zoomLevel <= 1} aria-label="Zoom out">
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
       </svg>
     </button>
     <span>{Math.round(zoomLevel * 100)}%</span>
-    <button onclick={() => zoomLevel = Math.min(5, zoomLevel + 0.5)} disabled={zoomLevel >= 5}>
+    <button onclick={() => zoomLevel = Math.min(5, zoomLevel + 0.5)} disabled={zoomLevel >= 5} aria-label="Zoom in">
       <svg viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
       </svg>
@@ -210,7 +219,7 @@
   >
     {#if mode === 'slider'}
       <!-- Slider Mode -->
-      <div class="slider-wrapper" onmousedown={handleMouseDown} ontouchstart={handleTouchStart} ontouchmove={handleTouchMove}>
+      <div class="slider-wrapper" onmousedown={handleMouseDown} ontouchstart={handleTouchStart} ontouchmove={handleTouchMove} role="slider" aria-label="Image comparison slider" aria-valuenow={$sliderPosition} aria-valuemin="0" aria-valuemax="100" tabindex="0">
         <!-- Optimized (Background) -->
         <div class="image-layer optimized">
           <img src={optimizedSrc} alt="Optimized version" draggable="false" />
@@ -251,7 +260,7 @@
 
     {:else}
       <!-- Toggle Mode -->
-      <div class="toggle-wrapper" onclick={() => showOriginal = !showOriginal}>
+      <div class="toggle-wrapper" onclick={() => showOriginal = !showOriginal} onkeydown={(e) => e.key === ' ' && (showOriginal = !showOriginal, e.preventDefault())} role="button" tabindex="0">
         <div class="image-layer" class:visible={!showOriginal}>
           <img src={optimizedSrc} alt="Optimized version" draggable="false" />
           <span class="image-label">Optimized</span>

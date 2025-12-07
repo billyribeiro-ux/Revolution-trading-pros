@@ -13,9 +13,9 @@
 		IconAlertTriangle
 	} from '@tabler/icons-svelte';
 
-	let localSearch = '';
-	let localStatus: ContactStatus | 'all' = 'all';
-	let localStage: LifecycleStage | 'all' = 'all';
+	let localSearch = $state('');
+	let localStatus = $state<ContactStatus | 'all'>('all');
+	let localStage = $state<LifecycleStage | 'all'>('all');
 
 	const statusOptions: { value: ContactStatus | 'all'; label: string }[] = [
 		{ value: 'all', label: 'All statuses' },
@@ -116,6 +116,7 @@
 			>
 				<IconSearch size={18} class="text-slate-500" />
 				<input
+					id="contact-search"
 					class="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
 					placeholder="Search by name, email, title"
 					bind:value={localSearch}

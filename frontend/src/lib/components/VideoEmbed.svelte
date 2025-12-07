@@ -307,16 +307,27 @@
 	let isBuffering: boolean = $state(false);
 	let isFullscreen: boolean = $state(false);
 	let isPictureInPicture: boolean = $state(false);
-	let isMuted: boolean = $state(muted);
+	let isMuted: boolean = $state(false);
 	let hasError: boolean = $state(false);
+
+	// Sync muted prop to isMuted state
+	$effect(() => {
+		isMuted = muted;
+	});
 	let errorMessage: string = $state('');
 
 	// Time tracking
 	let currentTime: number = $state(0);
 	let duration: number = $state(0);
 	let bufferedEnd: number = $state(0);
-	let playbackRate: number = $state(defaultSpeed);
-	let currentVolume: number = $state(volume);
+	let playbackRate: number = $state(1.0);
+	let currentVolume: number = $state(1.0);
+
+	// Sync defaultSpeed and volume props to state
+	$effect(() => {
+		playbackRate = defaultSpeed;
+		currentVolume = volume;
+	});
 
 	// UI state
 	let showControls: boolean = $state(true);
@@ -333,12 +344,17 @@
 
 	// Quality options
 	let availableQualities: string[] = $state([]);
-	let currentQuality: string = $state(defaultQuality);
+	let currentQuality: string = $state('auto');
 
-	// Analytics - use $derived for quality to avoid stale closure
+	// Sync defaultQuality prop to currentQuality state
+	$effect(() => {
+		currentQuality = defaultQuality;
+	});
+
+	// Analytics - initialized with defaults
 	let analyticsBase = $state({
-		id: analyticsId || generateId(),
-		url,
+		id: '',
+		url: '',
 		platform: 'html5' as 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5',
 		events: [] as AnalyticsEvent[],
 		watchTime: 0,
@@ -346,6 +362,12 @@
 		interactions: 0,
 		bufferEvents: 0,
 		errors: 0
+	});
+
+	// Sync analyticsId and url props to analyticsBase
+	$effect(() => {
+		analyticsBase.id = analyticsId || generateId();
+		analyticsBase.url = url;
 	});
 	
 	// Derive full analytics object with current quality
@@ -1300,8 +1322,7 @@
 				src={embedUrl}
 				{title}
 				frameborder="0"
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-				allowfullscreen
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
 				class="video-iframe"
 			></iframe>
 		{/if}

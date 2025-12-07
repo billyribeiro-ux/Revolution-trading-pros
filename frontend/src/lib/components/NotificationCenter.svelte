@@ -135,15 +135,17 @@
 		class="notification-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={close}
-		role="dialog"
-		aria-modal="true"
-		tabindex="-1"
+		onkeydown={(e) => e.key === 'Enter' && close()}
+		role="button"
+		tabindex="0"
+		aria-label="Close notification center"
 	>
 		<div
 			class="notification-panel"
 			transition:fly={{ x: 320, duration: 300, easing: quintOut }}
 			onclick={(e) => e.stopPropagation()}
-			role="document"
+			onkeydown={(e) => e.stopPropagation()}
+			role="presentation"
 		>
 			<!-- Header -->
 			<div class="panel-header">
@@ -203,13 +205,14 @@
 						<div class="notification-group" in:fly={{ y: 20, duration: 200, delay: groupIndex * 50 }}>
 							<div class="group-label">{group}</div>
 							{#each items as notification (notification.id)}
+								{@const Icon = getIcon(notification.type)}
 								<button
 									class="notification-item"
 									class:unread={!notification.read}
 									onclick={() => handleNotificationClick(notification)}
 								>
 									<div class="item-icon" style="color: {getIconColor(notification.type)}">
-										<svelte:component this={getIcon(notification.type)} size={20} />
+										<Icon size={20} />
 									</div>
 									<div class="item-content">
 										<div class="item-header">
