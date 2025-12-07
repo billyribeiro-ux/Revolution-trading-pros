@@ -132,7 +132,13 @@ export const FEATURE_SERVICES: Record<string, ServiceKey[]> = {
 		SERVICE_KEYS.LINKEDIN,
 		SERVICE_KEYS.INSTAGRAM
 	],
-	monitoring: [SERVICE_KEYS.SENTRY, SERVICE_KEYS.DATADOG, SERVICE_KEYS.NEW_RELIC]
+	monitoring: [SERVICE_KEYS.SENTRY, SERVICE_KEYS.DATADOG, SERVICE_KEYS.NEW_RELIC],
+	behavior: [
+		SERVICE_KEYS.GOOGLE_ANALYTICS,
+		SERVICE_KEYS.MIXPANEL,
+		SERVICE_KEYS.AMPLITUDE,
+		SERVICE_KEYS.SEGMENT
+	]
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -333,6 +339,22 @@ export const isEmailConnected = derived(connectionsStore, ($state) => {
 export const isPaymentConnected = derived(connectionsStore, ($state) => {
 	const paymentServices = FEATURE_SERVICES.payment;
 	return paymentServices.some((key) => $state.connections[key]?.isConnected);
+});
+
+/**
+ * Check if CRM is connected
+ */
+export const isCrmConnected = derived(connectionsStore, ($state) => {
+	const crmServices = FEATURE_SERVICES.crm;
+	return crmServices.some((key) => $state.connections[key]?.isConnected);
+});
+
+/**
+ * Check if behavior tracking is connected
+ */
+export const isBehaviorConnected = derived(connectionsStore, ($state) => {
+	const behaviorServices = FEATURE_SERVICES.behavior;
+	return behaviorServices.some((key) => $state.connections[key]?.isConnected);
 });
 
 /**

@@ -20,10 +20,14 @@
 		IconRefresh
 	} from '@tabler/icons-svelte';
 	import { api } from '$lib/api/config';
+	import { connections, isCrmConnected } from '$lib/stores/connections';
+	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
 	let contacts: any[] = [];
 	let deals: any[] = [];
 	let isLoading = true;
+	let connectionLoading = true;
 	let error = '';
 	let searchQuery = '';
 	let activeTab: 'contacts' | 'deals' | 'pipeline' = 'contacts';
@@ -110,8 +114,17 @@
 		return matchesSearch && matchesStatus;
 	});
 
-	onMount(() => {
-		loadData();
+	onMount(async () => {
+		// Load connection status first
+		await connections.load();
+		connectionLoading = false;
+
+		// Only load data if CRM is connected
+		if ($isCrmConnected) {
+			await loadData();
+		} else {
+			isLoading = false;
+		}
 	});
 </script>
 
@@ -126,19 +139,40 @@
 			<h1>Customer Relationship Management</h1>
 			<p class="page-description">Manage contacts, deals, and customer relationships</p>
 		</div>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<button class="btn-primary">
-				<IconUserPlus size={18} />
-				Add Contact
-			</button>
-		</div>
+		{#if $isCrmConnected}
+			<div class="header-actions">
+				<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<button class="btn-primary">
+					<IconUserPlus size={18} />
+					Add Contact
+				</button>
+			</div>
+		{/if}
 	</header>
 
-	<!-- Stats Cards -->
-	<section class="stats-grid" data-section="statistics" aria-label="CRM Statistics">
+	<!-- Connection Check -->
+	{#if connectionLoading}
+		<SkeletonLoader variant="dashboard" />
+	{:else if !$isCrmConnected}
+		<ApiNotConnected
+			serviceName="CRM"
+			description="Connect a CRM platform to manage contacts, track deals, and streamline your customer relationships."
+			serviceKey="hubspot"
+			icon="👥"
+			color="#f97316"
+			features={[
+				'Centralized contact management',
+				'Track deals through your pipeline',
+				'Log activities and communications',
+				'Automated follow-up reminders',
+				'Revenue forecasting and reporting'
+			]}
+		/>
+	{:else}
+		<!-- Stats Cards -->
+		<section class="stats-grid" data-section="statistics" aria-label="CRM Statistics">
 		<div class="stat-card" data-stat="total-contacts" aria-label="Total Contacts">
 			<div class="stat-icon blue">
 				<IconUsers size={24} />
@@ -309,6 +343,7 @@
 		</div>
 	{/if}
 	</section>
+	{/if}
 </div>
 
 <style>
