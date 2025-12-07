@@ -25,32 +25,49 @@
 	};
 
 	// --- Pricing State ---
-	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = 'quarterly';
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
 	// --- FAQ Logic ---
-	let openFaq: number | null = null;
+	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- Intersection Observer for Scroll Animations ---
-	let observer: IntersectionObserver;
+	// ICT9+ Svelte 5 Pattern: Use $state for observer so actions can react to it
+	let observer: IntersectionObserver | null = $state(null);
+	const pendingElements = new Set<HTMLElement>();
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		node.classList.add('opacity-0', 'translate-y-8');
-
+		// Store delay as data attribute
+		node.dataset.delay = (params.delay || 0).toString();
+		
+		// Start visible (prevents flash of invisible content)
+		node.classList.add('opacity-100', 'translate-y-0');
+		
+		// Queue for observation when observer is ready
+		pendingElements.add(node);
+		
+		// If observer already exists, set up animation immediately
 		if (observer) {
-			node.dataset.delay = (params.delay || 0).toString();
-			observer.observe(node);
+			setupRevealAnimation(node, observer);
 		}
 
 		return {
 			destroy() {
-				if (observer) observer.unobserve(node);
+				pendingElements.delete(node);
+				observer?.unobserve(node);
 			}
 		};
 	}
 
+	function setupRevealAnimation(node: HTMLElement, obs: IntersectionObserver) {
+		// Reset to hidden state for animation
+		node.classList.remove('opacity-100', 'translate-y-0');
+		node.classList.add('opacity-0', 'translate-y-8');
+		obs.observe(node);
+	}
+
 	onMount(() => {
-		observer = new IntersectionObserver(
+		const obs = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
@@ -68,14 +85,22 @@
 							);
 						}, delay);
 
-						observer.unobserve(el);
+						obs.unobserve(el);
 					}
 				});
 			},
 			{ threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
 		);
 
-		document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+		// Process any elements that were queued before observer was ready
+		pendingElements.forEach((el) => setupRevealAnimation(el, obs));
+		
+		// Set observer state (triggers reactivity for any future elements)
+		observer = obs;
+
+		return () => {
+			obs.disconnect();
+		};
 	});
 
 	// --- SEO: STRUCTURED DATA (JSON-LD) ---

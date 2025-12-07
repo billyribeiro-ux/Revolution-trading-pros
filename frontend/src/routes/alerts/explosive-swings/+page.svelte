@@ -5,56 +5,85 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
-	let billingInterval: 'monthly' | 'annual' = 'monthly';
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
 	// Pricing Data Configuration
 	const pricing = {
 		monthly: {
 			price: '97',
 			period: '/mo',
-			btnText: 'Subscribe Monthly',
+			btnText: 'Select Monthly',
 			link: '/checkout/monthly-swings',
-			savings: null
+			savings: null,
+			tagline: 'Flexibility to cancel anytime'
+		},
+		quarterly: {
+			price: '247',
+			period: '/qtr',
+			btnText: 'Join Quarterly',
+			link: '/checkout/quarterly-swings',
+			savings: 'Most Popular',
+			tagline: 'Save 15% ($8.20 / trading day)'
 		},
 		annual: {
 			price: '927',
 			period: '/yr',
-			btnText: 'Join Annual & Save',
+			btnText: 'Select Annual',
 			link: '/checkout/annual-swings',
-			savings: 'Save $237 / year'
+			savings: 'Save 20%',
+			tagline: 'Like getting 2.5 months FREE'
 		}
 	};
 
-	$: activePlan = pricing[billingInterval];
+	// ICT9+ Svelte 5: Use $derived instead of $:
+	let activePlan = $derived(pricing[selectedPlan]);
 
 	// --- FAQ State ---
-	let openFaq: number | null = null;
+	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- Icon SVG ---
 	const IconCheckSvg = `<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>`;
 
-	// --- Intersection Observer (Scroll Reveal) ---
-	// Refined to be robust and respect user motion preferences
-	let observer: IntersectionObserver;
+	// --- Intersection Observer for Scroll Animations ---
+	// ICT9+ Svelte 5 Pattern: Use $state for observer so actions can react to it
+	let observer: IntersectionObserver | null = $state(null);
+	const pendingElements = new Set<HTMLElement>();
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
 		// Check for reduced motion preference
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-		if (mediaQuery.matches) return;
+		if (typeof window !== 'undefined') {
+			const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+			if (mediaQuery.matches) return;
+		}
 
-		node.classList.add('opacity-0', 'translate-y-8');
-
+		// Store delay as data attribute
+		node.dataset.delay = (params.delay || 0).toString();
+		
+		// Start visible (prevents flash of invisible content)
+		node.classList.add('opacity-100', 'translate-y-0');
+		
+		// Queue for observation when observer is ready
+		pendingElements.add(node);
+		
+		// If observer already exists, set up animation immediately
 		if (observer) {
-			node.dataset.delay = (params.delay || 0).toString();
-			observer.observe(node);
+			setupRevealAnimation(node, observer);
 		}
 
 		return {
 			destroy() {
-				if (observer) observer.unobserve(node);
+				pendingElements.delete(node);
+				observer?.unobserve(node);
 			}
 		};
+	}
+
+	function setupRevealAnimation(node: HTMLElement, obs: IntersectionObserver) {
+		// Reset to hidden state for animation
+		node.classList.remove('opacity-100', 'translate-y-0');
+		node.classList.add('opacity-0', 'translate-y-8');
+		obs.observe(node);
 	}
 
 	onMount(() => {
@@ -69,23 +98,25 @@
 						el.classList.add('opacity-100', 'translate-y-0');
 					}, delay);
 
-					observer.unobserve(el);
+					obs.unobserve(el);
 				}
 			});
 		};
 
-		observer = new IntersectionObserver(handleIntersect, {
+		const obs = new IntersectionObserver(handleIntersect, {
 			threshold: 0.15,
 			rootMargin: '0px 0px -50px 0px'
 		});
 
-		// Add transition classes globally to revealed elements
-		// (We do this here to keep the HTML clean)
-		const revealElements = document.querySelectorAll('[data-reveal]');
-		revealElements.forEach((el) => {
-			el.classList.add('transition-all', 'duration-700', 'ease-out');
-			observer.observe(el); // If you use data-reveal attribute instead of use:reveal
-		});
+		// Process any elements that were queued before observer was ready
+		pendingElements.forEach((el) => setupRevealAnimation(el, obs));
+		
+		// Set observer state
+		observer = obs;
+
+		return () => {
+			obs.disconnect();
+		};
 	});
 
 	// --- SEO: JSON-LD ---
@@ -120,7 +151,7 @@
 				offers: {
 					'@type': 'Offer',
 					priceCurrency: 'USD',
-					price: billingInterval === 'monthly' ? '97' : '927',
+					price: '97',
 					availability: 'https://schema.org/InStock',
 					url: 'https://revolutiontradingpros.com/alerts/explosive-swings'
 				},
@@ -653,32 +684,39 @@
 			</div>
 
 			<div class="flex justify-center mb-16">
-				<div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative">
+				<div class="bg-rtp-surface p-1.5 rounded-xl border border-rtp-border inline-flex relative">
 					<button
 						type="button"
-						onclick={() => (billingInterval = 'monthly')}
-						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {billingInterval ===
+						onclick={() => (selectedPlan = 'monthly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'monthly'
 							? 'text-white'
-							: 'text-slate-500 hover:text-white'}"
+							: 'text-rtp-muted hover:text-white'}">Monthly</button
 					>
-						Monthly
-					</button>
 					<button
 						type="button"
-						onclick={() => (billingInterval = 'annual')}
-						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {billingInterval ===
+						onclick={() => (selectedPlan = 'quarterly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'quarterly'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Quarterly</button
+					>
+					<button
+						type="button"
+						onclick={() => (selectedPlan = 'annual')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'annual'
 							? 'text-white'
-							: 'text-slate-500 hover:text-white'}"
+							: 'text-rtp-muted hover:text-white'}">Annual</button
 					>
-						Annual
-					</button>
+
 					<div
-						class="absolute top-1.5 bottom-1.5 bg-emerald-500 rounded-lg shadow-lg shadow-emerald-500/20 transition-all duration-300 ease-out"
-						style="left: {billingInterval === 'monthly'
+						class="absolute top-1.5 bottom-1.5 bg-rtp-primary rounded-lg shadow-md transition-all duration-300 ease-out"
+						style="left: {selectedPlan === 'monthly'
 							? '0.375rem'
-							: '50%'}; width: calc(50% - 0.375rem);"
+							: selectedPlan === 'quarterly'
+								? 'calc(33.33% + 0.2rem)'
+								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
 					></div>
 				</div>
 			</div>
@@ -697,7 +735,7 @@
 					{/if}
 
 					<div class="text-center mb-8">
-						<h3 class="text-2xl font-bold text-white mb-2 capitalize">{billingInterval} Pass</h3>
+						<h3 class="text-2xl font-bold text-white mb-2 capitalize">{selectedPlan} Pass</h3>
 
 						<div class="flex items-baseline justify-center gap-1 h-20 items-end pb-2">
 							<span class="text-6xl font-extrabold text-white tracking-tight">
@@ -707,9 +745,7 @@
 						</div>
 
 						<p class="text-emerald-500 font-bold text-sm mt-2 min-h-[1.25rem]">
-							{billingInterval === 'annual'
-								? 'Basically 2.5 months FREE'
-								: 'Flexibility to cancel anytime'}
+							{activePlan.tagline}
 						</p>
 					</div>
 
@@ -730,7 +766,7 @@
 							<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
 							<span class="text-slate-200">Detailed Technical Analysis</span>
 						</li>
-						{#if billingInterval === 'annual'}
+						{#if selectedPlan === 'annual'}
 							<li transition:slide class="flex items-center gap-3">
 								<div class="bg-emerald-500/20 p-1 rounded-full">{@html IconCheckSvg}</div>
 								<span class="text-emerald-400 font-bold">Strategy Video Library</span>

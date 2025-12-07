@@ -5,32 +5,49 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
-	let selectedPlan: 'monthly' | 'annual' = 'monthly';
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
 	// --- FAQ Logic ---
-	let openFaq: number | null = null;
+	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- Intersection Observer for Scroll Animations ---
-	let observer: IntersectionObserver;
+	// ICT9+ Svelte 5 Pattern: Use $state for observer so actions can react to it
+	let observer: IntersectionObserver | null = $state(null);
+	const pendingElements = new Set<HTMLElement>();
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		node.classList.add('opacity-0', 'translate-y-8');
-
+		// Store delay as data attribute
+		node.dataset.delay = (params.delay || 0).toString();
+		
+		// Start visible (prevents flash of invisible content)
+		node.classList.add('opacity-100', 'translate-y-0');
+		
+		// Queue for observation when observer is ready
+		pendingElements.add(node);
+		
+		// If observer already exists, set up animation immediately
 		if (observer) {
-			node.dataset.delay = (params.delay || 0).toString();
-			observer.observe(node);
+			setupRevealAnimation(node, observer);
 		}
 
 		return {
 			destroy() {
-				if (observer) observer.unobserve(node);
+				pendingElements.delete(node);
+				observer?.unobserve(node);
 			}
 		};
 	}
 
+	function setupRevealAnimation(node: HTMLElement, obs: IntersectionObserver) {
+		// Reset to hidden state for animation
+		node.classList.remove('opacity-100', 'translate-y-0');
+		node.classList.add('opacity-0', 'translate-y-8');
+		obs.observe(node);
+	}
+
 	onMount(() => {
-		observer = new IntersectionObserver(
+		const obs = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
@@ -48,14 +65,22 @@
 							);
 						}, delay);
 
-						observer.unobserve(el);
+						obs.unobserve(el);
 					}
 				});
 			},
 			{ threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
 		);
 
-		document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+		// Process any elements that were queued before observer was ready
+		pendingElements.forEach((el) => setupRevealAnimation(el, obs));
+		
+		// Set observer state (triggers reactivity for any future elements)
+		observer = obs;
+
+		return () => {
+			obs.disconnect();
+		};
 	});
 
 	// --- SEO: STRUCTURED DATA (JSON-LD) - PRESERVED ---
@@ -72,7 +97,7 @@
 		offers: {
 			'@type': 'Offer',
 			priceCurrency: 'USD',
-			price: selectedPlan === 'monthly' ? '97' : '927',
+			price: '97',
 			availability: 'https://schema.org/InStock',
 			url: 'https://revolutiontradingpros.com/alerts/explosive-swings',
 			category: 'FinancialService'
@@ -619,33 +644,39 @@
 			</div>
 
 			<div class="flex justify-center mb-16">
-				<div class="bg-rtp-bg p-1.5 rounded-xl border border-rtp-border inline-flex relative">
+				<div class="bg-rtp-surface p-1.5 rounded-xl border border-rtp-border inline-flex relative">
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'monthly')}
-						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {selectedPlan ===
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'monthly'
 							? 'text-white'
-							: 'text-rtp-muted hover:text-white'}"
+							: 'text-rtp-muted hover:text-white'}">Monthly</button
 					>
-						Monthly
-					</button>
+					<button
+						type="button"
+						onclick={() => (selectedPlan = 'quarterly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'quarterly'
+							? 'text-white'
+							: 'text-rtp-muted hover:text-white'}">Quarterly</button
+					>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'annual')}
-						class="relative z-10 px-8 py-3 rounded-lg font-bold text-sm md:text-base transition-colors duration-200 {selectedPlan ===
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'annual'
 							? 'text-white'
-							: 'text-rtp-muted hover:text-white'}"
+							: 'text-rtp-muted hover:text-white'}">Annual</button
 					>
-						Annual
-					</button>
 
 					<div
-						class="absolute top-1.5 bottom-1.5 bg-rtp-emerald rounded-lg shadow-lg shadow-emerald-500/20 transition-all duration-300 ease-out"
+						class="absolute top-1.5 bottom-1.5 bg-rtp-primary rounded-lg shadow-md transition-all duration-300 ease-out"
 						style="left: {selectedPlan === 'monthly'
 							? '0.375rem'
-							: '50%'}; width: calc(50% - 0.375rem);"
+							: selectedPlan === 'quarterly'
+								? 'calc(33.33% + 0.2rem)'
+								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
 					></div>
 				</div>
 			</div>
@@ -738,9 +769,105 @@
 									</ul>
 									<a
 										href="/checkout/monthly-swings"
-										class="w-full bg-rtp-surface border border-rtp-emerald text-emerald-500 py-4 rounded-xl font-bold text-lg hover:bg-emerald-500 hover:text-white transition-all text-center block"
+										class="w-full bg-rtp-surface border border-rtp-border text-white py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-black transition-all text-center block"
 									>
-										Subscribe Monthly
+										Select Monthly
+									</a>
+								</div>
+							{:else if selectedPlan === 'quarterly'}
+								<div
+									class="bg-rtp-bg p-8 md:p-10 rounded-3xl shadow-2xl border-2 border-rtp-primary h-full flex flex-col relative overflow-hidden"
+								>
+									<div
+										class="absolute top-0 right-0 bg-rtp-primary text-white px-4 py-1 rounded-bl-xl font-bold text-xs uppercase tracking-wide"
+									>
+										Most Popular
+									</div>
+									<div class="text-center mb-8">
+										<h3 class="text-2xl font-bold text-rtp-text mb-2">Quarterly Access</h3>
+										<div class="flex items-baseline justify-center gap-1">
+											<div class="text-6xl font-extrabold text-rtp-primary">$247</div>
+											<div class="text-rtp-muted font-medium">/qtr</div>
+										</div>
+										<p class="text-rtp-primary font-bold text-sm mt-4">
+											Save 15% ($8.20 / trading day)
+										</p>
+									</div>
+									<ul class="space-y-5 mb-10 flex-grow text-sm md:text-base">
+										<li class="flex items-center gap-3">
+											<div class="bg-blue-500/20 p-1 rounded-full">
+												<svg
+													class="w-4 h-4 text-rtp-primary"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													><path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="3"
+														d="M5 13l4 4L19 7"
+													/></svg
+												>
+											</div>
+											<span class="text-rtp-text font-bold">Priority Support</span>
+										</li>
+										<li class="flex items-center gap-3">
+											<div class="bg-blue-500/20 p-1 rounded-full">
+												<svg
+													class="w-4 h-4 text-rtp-primary"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													><path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="3"
+														d="M5 13l4 4L19 7"
+													/></svg
+												>
+											</div>
+											<span class="text-rtp-text">2-4 Premium Swings / Week</span>
+										</li>
+										<li class="flex items-center gap-3">
+											<div class="bg-blue-500/20 p-1 rounded-full">
+												<svg
+													class="w-4 h-4 text-rtp-primary"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													><path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="3"
+														d="M5 13l4 4L19 7"
+													/></svg
+												>
+											</div>
+											<span class="text-rtp-text">Instant SMS & Email Alerts</span>
+										</li>
+										<li class="flex items-center gap-3">
+											<div class="bg-blue-500/20 p-1 rounded-full">
+												<svg
+													class="w-4 h-4 text-rtp-primary"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													><path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="3"
+														d="M5 13l4 4L19 7"
+													/></svg
+												>
+											</div>
+											<span class="text-rtp-text">Private Discord Community</span>
+										</li>
+									</ul>
+									<a
+										href="/checkout/quarterly-swings"
+										class="w-full bg-rtp-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/25 text-center block"
+									>
+										Join Quarterly
 									</a>
 								</div>
 							{:else}

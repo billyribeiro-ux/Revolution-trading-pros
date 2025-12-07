@@ -5,39 +5,49 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
-	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = 'quarterly';
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
 	// --- FAQ Logic ---
-	let openFaq: number | null = null;
+	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- Intersection Observer for Scroll Animations ---
-	// Simple action to trigger animations when elements enter viewport
-	let observer: IntersectionObserver;
-	const animatedElements = new Set<HTMLElement>();
+	// ICT9+ Svelte 5 Pattern: Use $state for observer so actions can react to it
+	let observer: IntersectionObserver | null = $state(null);
+	const pendingElements = new Set<HTMLElement>();
 
 	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		// ENTERPRISE FIX: Don't hide content by default - show immediately, animate later
-		// This prevents content from being invisible if observer fails or delays
-		node.classList.add('opacity-100', 'translate-y-0'); // Visible by default
+		// Store delay as data attribute
+		node.dataset.delay = (params.delay || 0).toString();
 		
+		// Start visible (prevents flash of invisible content)
+		node.classList.add('opacity-100', 'translate-y-0');
+		
+		// Queue for observation when observer is ready
+		pendingElements.add(node);
+		
+		// If observer already exists, set up animation immediately
 		if (observer) {
-			// Reset for animation
-			node.classList.remove('opacity-100', 'translate-y-0');
-			node.classList.add('opacity-0', 'translate-y-8');
-			observer.observe(node);
-			node.dataset.delay = (params.delay || 0).toString();
+			setupRevealAnimation(node, observer);
 		}
 
 		return {
 			destroy() {
-				if (observer) observer.unobserve(node);
+				pendingElements.delete(node);
+				observer?.unobserve(node);
 			}
 		};
 	}
 
+	function setupRevealAnimation(node: HTMLElement, obs: IntersectionObserver) {
+		// Reset to hidden state for animation
+		node.classList.remove('opacity-100', 'translate-y-0');
+		node.classList.add('opacity-0', 'translate-y-8');
+		obs.observe(node);
+	}
+
 	onMount(() => {
-		observer = new IntersectionObserver(
+		const obs = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
@@ -55,7 +65,7 @@
 							);
 						}, delay);
 
-						observer.unobserve(el);
+						obs.unobserve(el);
 					}
 				});
 			},
@@ -65,8 +75,15 @@
 			}
 		);
 
-		// Re-observe elements if they were mounted before observer creation
-		document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+		// Process any elements that were queued before observer was ready
+		pendingElements.forEach((el) => setupRevealAnimation(el, obs));
+		
+		// Set observer state (triggers reactivity for any future elements)
+		observer = obs;
+
+		return () => {
+			obs.disconnect();
+		};
 	});
 
 	// --- SEO SCHEMA (JSON-LD) - PRESERVED ---
