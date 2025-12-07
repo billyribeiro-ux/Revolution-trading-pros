@@ -153,7 +153,7 @@
 		</aside>
 
 		<!-- WordPress: .dashboard__main -->
-		<main class="dashboard__main" role="main" aria-label="Dashboard content">
+		<main class="dashboard__main" aria-label="Dashboard content">
 			{#if isLoading}
 				<div class="dashboard-loading" aria-busy="true" aria-label="Loading dashboard">
 					<div class="loading-spinner"></div>

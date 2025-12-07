@@ -13,9 +13,9 @@
 	import { fade, scale } from 'svelte/transition';
 	import {
 		IconDownload,
-		IconFileTypeCsv,
-		IconFileTypeJson,
-		IconFileTypePdf,
+		IconTable,
+		IconCode,
+		IconFileText,
 		IconChevronDown,
 		IconCheck,
 		IconLoader2
@@ -152,9 +152,9 @@
 
 	function getFormatIcon(format: string) {
 		switch (format) {
-			case 'csv': return IconFileTypeCsv;
-			case 'json': return IconFileTypeJson;
-			case 'pdf': return IconFileTypePdf;
+			case 'csv': return IconTable;
+			case 'json': return IconCode;
+			case 'pdf': return IconFileText;
 			default: return IconDownload;
 		}
 	}
@@ -180,12 +180,16 @@
 		{disabled}
 	>
 		{#if isExporting}
-			<IconLoader2 size={18} class="spinning" />
+			<span class="spinning">
+				<IconLoader2 size={18} />
+			</span>
 		{:else}
 			<IconDownload size={18} />
 		{/if}
 		<span>{label}</span>
-		<IconChevronDown size={16} class="chevron" class:rotated={isOpen} />
+		<span class="chevron" class:rotated={isOpen}>
+			<IconChevronDown size={16} />
+		</span>
 	</button>
 
 	{#if isOpen}

@@ -44,11 +44,10 @@
 
 	let activeFilter = $state<'all' | 'unread'>('all');
 
-	$: filteredNotifications = activeFilter === 'unread'
+	// Derived filtered notifications
+	let filteredNotifications = $derived(activeFilter === 'unread'
 		? $notifications.filter(n => !n.read && !n.dismissed)
-		: $notifications.filter(n => !n.dismissed);
-
-	$: groupedNotifications = groupByDate(filteredNotifications);
+		: $notifications.filter(n => !n.dismissed));
 
 	function groupByDate(notifs: Notification[]) {
 		const groups: Record<string, Notification[]> = {
@@ -80,6 +79,9 @@
 
 		return Object.entries(groups).filter(([_, items]) => items.length > 0);
 	}
+
+	// Derived grouped notifications
+	let groupedNotifications = $derived(groupByDate(filteredNotifications));
 
 	function getIcon(type: string) {
 		switch (type) {

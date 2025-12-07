@@ -404,7 +404,7 @@ export function flushLogs(): LogEntry[] {
 // Trace Storage (for debugging)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-interface TraceRecord {
+export interface TraceRecord {
 	context: RequestContext;
 	endpoint: string;
 	method: string;

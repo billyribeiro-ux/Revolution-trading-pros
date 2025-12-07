@@ -14,7 +14,7 @@
 	import { isAuthenticated } from '$lib/stores/auth';
 	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
-	import { keyboardStore } from '$lib/stores/keyboard';
+	import { keyboard } from '$lib/stores/keyboard';
 	import {
 		IconMenu2,
 		IconSun,
@@ -63,6 +63,9 @@
 	let isKeyboardHelpOpen = $state(false);
 	let isConnectionHealthOpen = $state(false);
 
+	// Derived theme icon component
+	let ThemeIcon = $derived(getThemeIcon($themeStore));
+
 	// Check if user is admin - Svelte 5 effect
 	$effect(() => {
 		if (browser && !$isAuthenticated) {
@@ -75,27 +78,27 @@
 		if (!browser) return;
 
 		// Register shortcut handlers
-		keyboardStore.registerAction('search', () => {
+		keyboard.registerAction('search', () => {
 			isCommandPaletteOpen = true;
 		});
 
-		keyboardStore.registerAction('show-shortcuts', () => {
+		keyboard.registerAction('show-shortcuts', () => {
 			isKeyboardHelpOpen = true;
 		});
 
-		keyboardStore.registerAction('goto-dashboard', () => {
+		keyboard.registerAction('goto-dashboard', () => {
 			goto('/admin');
 		});
 
-		keyboardStore.registerAction('goto-analytics', () => {
+		keyboard.registerAction('goto-analytics', () => {
 			goto('/admin/analytics');
 		});
 
-		keyboardStore.registerAction('goto-content', () => {
+		keyboard.registerAction('goto-content', () => {
 			goto('/admin/blog');
 		});
 
-		keyboardStore.registerAction('goto-settings', () => {
+		keyboard.registerAction('goto-settings', () => {
 			goto('/admin/settings');
 		});
 
@@ -219,7 +222,7 @@
 					onclick={() => themeStore.cycle()}
 					title="Theme: {getThemeLabel($themeStore)} (click to cycle)"
 				>
-					<svelte:component this={getThemeIcon($themeStore)} size={20} />
+					<ThemeIcon size={20} />
 					<span class="theme-label desktop-only">{getThemeLabel($themeStore)}</span>
 				</button>
 

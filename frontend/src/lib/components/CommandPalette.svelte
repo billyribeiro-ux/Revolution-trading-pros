@@ -108,7 +108,7 @@
 	}
 
 	// Filter and combine results
-	$: filteredResults = searchQuery.trim() === ''
+	let filteredResults = $derived(searchQuery.trim() === ''
 		? [...navigationItems.slice(0, 5), ...quickActions.slice(0, 3)]
 		: [
 			...navigationItems.filter(item =>
@@ -119,19 +119,19 @@
 				fuzzyMatch(item.label, searchQuery) ||
 				fuzzyMatch(item.category, searchQuery)
 			)
-		];
+		]);
 
 	// Group results by category
-	$: groupedResults = filteredResults.reduce((acc, item) => {
+	let groupedResults = $derived(filteredResults.reduce((acc, item) => {
 		if (!acc[item.category]) {
 			acc[item.category] = [];
 		}
 		acc[item.category].push(item);
 		return acc;
-	}, {} as Record<string, typeof filteredResults>);
+	}, {} as Record<string, typeof filteredResults>));
 
 	// Flat list for keyboard navigation
-	$: flatResults = Object.values(groupedResults).flat();
+	let flatResults = $derived(Object.values(groupedResults).flat());
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (!isOpen) return;

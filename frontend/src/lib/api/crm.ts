@@ -383,7 +383,7 @@ export class CrmAPI {
 	}
 
 	async removeContactsFromList(id: string, contactIds: string[]): Promise<{ removed_count: number }> {
-		return apiClient.delete(`/admin/crm/lists/${id}/contacts`, { data: { contact_ids: contactIds } });
+		return apiClient.delete(`/admin/crm/lists/${id}/contacts`, { body: { contact_ids: contactIds } });
 	}
 
 	// =====================================================

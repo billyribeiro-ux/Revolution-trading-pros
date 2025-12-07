@@ -26,8 +26,17 @@
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import { IconChartBar, IconPlugConnected, IconRefresh, IconArrowRight } from '@tabler/icons-svelte';
 
-	// Prepare export data
-	$: exportData = dashboardData ? [
+	// State
+	let dashboardData: DashboardData | null = $state(null);
+	let loading = $state(true);
+	let connectionsLoading = $state(true);
+	let error: string | null = $state(null);
+	let selectedPeriod = $state('30d');
+	let attributionModel = $state('linear');
+	let isConnected = $state(false);
+
+	// Derived export data
+	let exportData = $derived(dashboardData ? [
 		{
 			metric: 'Total Users',
 			value: dashboardData.kpis?.total_users || 0,
@@ -58,16 +67,7 @@
 			date: item.date,
 			value: item.value
 		}))
-	] : [];
-
-	// State
-	let dashboardData: DashboardData | null = $state(null);
-	let loading = $state(true);
-	let connectionsLoading = $state(true);
-	let error: string | null = $state(null);
-	let selectedPeriod = $state('30d');
-	let attributionModel = $state('linear');
-	let isConnected = $state(false);
+	] : []);
 
 	// Subscribe to connection status
 	let unsubscribe: (() => void) | null = null;
@@ -132,18 +132,20 @@
 	});
 
 	// Format time series data
-	$: revenueTimeSeries =
+	let revenueTimeSeries = $derived(
 		dashboardData?.time_series?.revenue?.map((item) => ({
 			date: item.date,
 			value: item.value,
 			label: '$' + item.value.toLocaleString()
-		})) || [];
+		})) || []
+	);
 
-	$: usersTimeSeries =
+	let usersTimeSeries = $derived(
 		dashboardData?.time_series?.users?.map((item) => ({
 			date: item.date,
 			value: item.value
-		})) || [];
+		})) || []
+	);
 </script>
 
 <svelte:head>
