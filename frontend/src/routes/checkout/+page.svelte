@@ -18,18 +18,16 @@
 	import { cartStore, cartTotal, cartItemCount } from '$lib/stores/cart';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import {
-		IconArrowLeft,
-		IconArrowRight,
-		IconCreditCard,
-		IconShieldCheck,
-		IconLock,
-		IconCheck,
-		IconTicket,
-		IconX,
-		IconBrandPaypal,
-		IconLoader
-	} from '@tabler/icons-svelte';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
+	import IconLoader from '@tabler/icons-svelte/icons/loader';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -215,10 +213,10 @@
 
 		try {
 			// Create checkout session with billing details
-			const session = await createCheckoutSession($cartStore.items, {
+			const session = await createCheckoutSession({
 				billing,
 				couponCode: appliedCoupon?.code,
-				paymentMethod
+				provider: paymentMethod === 'paypal' ? 'paypal' : 'stripe'
 			});
 
 			// Redirect to payment processor

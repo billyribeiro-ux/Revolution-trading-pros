@@ -40,6 +40,7 @@ export interface User {
 	roles?: string[];
 	permissions?: string[];
 	is_admin?: boolean;
+	avatar?: string;
 }
 
 export interface UserSession {
