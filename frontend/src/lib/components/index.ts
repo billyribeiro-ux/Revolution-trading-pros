@@ -25,6 +25,14 @@ export {
 	NotificationPanel,
 	ExportButton,
 	MobileResponsiveTable,
+	CommandPalette,
+	NotificationCenter,
+	KeyboardShortcutsHelp,
+	RateLimitIndicator,
+	ConnectionHealthPanel,
+	OfflineIndicator,
+	DashboardWidgetManager,
+	BatchOperations,
 } from './ui';
 
 // ═══════════════════════════════════════════════════════════════════════════
