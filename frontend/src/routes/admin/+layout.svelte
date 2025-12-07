@@ -17,13 +17,13 @@
 	import { keyboard } from '$lib/stores/keyboard';
 	import {
 		IconMenu2,
-		IconSun,
+		IconSunHigh,
 		IconMoon,
 		IconDeviceDesktop,
 		IconBell,
 		IconSearch,
 		IconPlugConnected,
-		IconKeyboard
+		IconCommand
 	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
@@ -39,7 +39,7 @@
 	// Theme icon mapping
 	function getThemeIcon(theme: Theme) {
 		switch (theme) {
-			case 'light': return IconSun;
+			case 'light': return IconSunHigh;
 			case 'dark': return IconMoon;
 			case 'auto': return IconDeviceDesktop;
 		}
@@ -232,7 +232,7 @@
 					onclick={() => isKeyboardHelpOpen = true}
 					title="Keyboard Shortcuts"
 				>
-					<IconKeyboard size={18} />
+					<IconCommand size={18} />
 				</button>
 
 				<a href="/" class="view-site-btn" target="_blank">View Site</a>

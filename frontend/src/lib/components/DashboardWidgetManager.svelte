@@ -33,8 +33,8 @@
 		IconLayoutGrid,
 		IconList,
 		IconRefresh,
-		IconChevronUp,
-		IconChevronDown,
+		IconCaretUp,
+		IconCaretDown,
 		IconChartLine,
 		IconWorld,
 		IconFileText,
@@ -227,14 +227,14 @@
 										onclick={() => widgetStore.moveWidget(widget.id, 'up')}
 										disabled={index === 0}
 									>
-										<IconChevronUp size={16} />
+										<IconCaretUp size={16} />
 									</button>
 									<button
 										class="move-btn"
 										onclick={() => widgetStore.moveWidget(widget.id, 'down')}
 										disabled={index === $visibleWidgets.length - 1}
 									>
-										<IconChevronDown size={16} />
+										<IconCaretDown size={16} />
 									</button>
 									<button
 										class="hide-btn"

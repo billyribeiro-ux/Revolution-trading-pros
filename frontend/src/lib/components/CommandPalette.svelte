@@ -20,9 +20,8 @@
 	import { browser } from '$app/environment';
 	import {
 		IconSearch,
-		IconTerminal,
+		IconCode,
 		IconArrowRight,
-		IconArrowBigDown,
 		IconArrowUp,
 		IconArrowDown,
 		IconX,
@@ -282,7 +281,7 @@
 									<span class="item-label">{item.label}</span>
 									{#if selectedIndex === globalIndex}
 										<div class="item-action">
-											<IconArrowBigDown size={14} />
+											<IconArrowDown size={14} />
 										</div>
 									{/if}
 								</button>
@@ -301,7 +300,7 @@
 						Navigate
 					</span>
 					<span class="hint">
-						<kbd><IconArrowBigDown size={12} /></kbd>
+						<kbd><IconArrowDown size={12} /></kbd>
 						Select
 					</span>
 					<span class="hint">
@@ -310,7 +309,7 @@
 					</span>
 				</div>
 				<div class="footer-shortcut">
-					<kbd><IconTerminal size={12} /></kbd>
+					<kbd><IconCode size={12} /></kbd>
 					<kbd>K</kbd>
 				</div>
 			</div>

@@ -23,7 +23,7 @@
 	import {
 		IconHeartbeat,
 		IconShieldCheck,
-		IconShieldOff,
+		IconShield,
 		IconDatabase,
 		IconServer,
 		IconClock,
@@ -40,8 +40,7 @@
 		IconWorld,
 		IconCertificate,
 		IconFolder,
-		IconCloud,
-		IconBugOff,
+		IconBug,
 		IconSpeedboat,
 		IconChartLine,
 		IconArrowRight,
@@ -851,7 +850,7 @@
 							{/if}
 							<div class="metric-card" class:critical={healthData.security.vulnerabilities > 0}>
 								<div class="metric-icon">
-									<IconBugOff size={24} />
+									<IconBug size={24} />
 								</div>
 								<div class="metric-content">
 									<span class="metric-label">Vulnerabilities</span>
@@ -960,7 +959,7 @@
 							{#if healthData.server.webServer}
 								<div class="metric-card">
 									<div class="metric-icon">
-										<IconCloud size={24} />
+										<IconWorld size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Web Server</span>

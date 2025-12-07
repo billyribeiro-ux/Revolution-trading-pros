@@ -26,7 +26,7 @@
 		IconCalendar,
 		IconVideo,
 		IconDownload,
-		IconMessageCircle
+		IconMessage
 	} from '@tabler/icons-svelte';
 	import '$lib/styles/st-icons.css';
 
@@ -171,7 +171,7 @@
 		{ title: 'Trading Room Rules', icon: IconBook, href: '#rules' },
 		{ title: 'Getting Started Guide', icon: IconChevronRight, href: '#getting-started' },
 		{ title: 'Platform Setup', icon: IconDownload, href: '#platform' },
-		{ title: 'Community Discord', icon: IconMessageCircle, href: '#discord' }
+		{ title: 'Community Discord', icon: IconMessage, href: '#discord' }
 	];
 </script>
 
@@ -311,7 +311,7 @@
 					<div class="col-sm-6 col-lg-3">
 						<a href="#discord" class="action-card">
 							<div class="action-card__icon">
-								<IconMessageCircle size={28} />
+								<IconMessage size={28} />
 							</div>
 							<div class="action-card__content">
 								<h3>Community</h3>
