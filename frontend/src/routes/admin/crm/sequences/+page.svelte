@@ -1,21 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconMail,
-		IconPlus,
-		IconSearch,
-		IconFilter,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconCopy,
-		IconRefresh,
-		IconUsers,
-		IconChartBar,
-		IconClock
-	} from '@tabler/icons-svelte';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconMailForward from '@tabler/icons-svelte/icons/mail-forward';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconFilter from '@tabler/icons-svelte/icons/filter';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
 	import { crmAPI } from '$lib/api/crm';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
 
@@ -172,7 +171,7 @@
 		</div>
 		<div class="stat-card">
 			<div class="stat-icon amber">
-				<IconMail size={24} />
+				<IconMailForward size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalSent)}</span>
