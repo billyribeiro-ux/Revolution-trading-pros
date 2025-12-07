@@ -153,9 +153,11 @@
 				showSuccessToast(`${selectedService.name} connected successfully!`);
 			} else {
 				testResult = { success: false, error: data.error || 'Connection failed' };
+				showErrorToast(data.error || 'Connection failed. Please check your credentials.');
 			}
 		} catch (error) {
 			testResult = { success: false, error: 'Network error. Please try again.' };
+			showErrorToast('Network error. Please check your connection and try again.');
 		} finally {
 			isConnecting = false;
 		}
@@ -201,10 +203,13 @@
 			if (data.success) {
 				showDisconnectConfirm = false;
 				await fetchConnections();
-				showSuccessToast(`${disconnectingService.name} disconnected`);
+				showSuccessToast(`${disconnectingService.name} disconnected successfully`);
+			} else {
+				showErrorToast(data.error || 'Failed to disconnect. Please try again.');
 			}
 		} catch (error) {
 			console.error('Failed to disconnect:', error);
+			showErrorToast('Network error. Please check your connection and try again.');
 		}
 	}
 
@@ -223,14 +228,15 @@
 		showDisconnectConfirm = true;
 	}
 
-	// Toast notification
+	// Toast notifications - using enterprise toast store
+	import { toastStore } from '$lib/stores/toast';
+
 	function showSuccessToast(message: string) {
-		// Simple toast - could be enhanced with a toast library
-		const toast = document.createElement('div');
-		toast.className = 'fixed bottom-6 right-6 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl z-50 animate-slide-up';
-		toast.textContent = message;
-		document.body.appendChild(toast);
-		setTimeout(() => toast.remove(), 3000);
+		toastStore.success(message);
+	}
+
+	function showErrorToast(message: string) {
+		toastStore.error(message);
 	}
 
 	// Get health color
