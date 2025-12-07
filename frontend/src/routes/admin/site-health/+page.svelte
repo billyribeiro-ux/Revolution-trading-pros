@@ -409,12 +409,16 @@
 			</div>
 
 			<button class="action-btn run-tests" onclick={runHealthTests} disabled={isRunningTests}>
-				<IconPlayerPlay size={18} class:spinning={isRunningTests} />
+				<span class="icon-wrapper" class:spinning={isRunningTests}>
+					<IconPlayerPlay size={18} />
+				</span>
 				<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
 			</button>
 
 			<button class="action-btn refresh" onclick={handleRefresh} disabled={isLoading}>
-				<IconRefresh size={18} class:spinning={isLoading} />
+				<span class="icon-wrapper" class:spinning={isLoading}>
+					<IconRefresh size={18} />
+				</span>
 			</button>
 		</div>
 	</header>

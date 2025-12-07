@@ -302,8 +302,8 @@ export async function getServiceStats(): Promise<ServiceStats[]> {
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
-			const data = await handleResponse<{ services: ServiceStats[] }>(response);
-			return data.services ?? data;
+			const data = await handleResponse<{ services: ServiceStats[] } | ServiceStats[]>(response);
+			return Array.isArray(data) ? data : data.services;
 		},
 		{ ttl: CACHE_TTL.services, persist: true }
 	);
@@ -325,8 +325,8 @@ export async function getChurnReasons(period?: TimePeriod): Promise<ChurnReason[
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
-			const data = await handleResponse<{ reasons: ChurnReason[] }>(response);
-			return data.reasons ?? data;
+			const data = await handleResponse<{ reasons: ChurnReason[] } | ChurnReason[]>(response);
+			return Array.isArray(data) ? data : data.reasons;
 		},
 		{ ttl: CACHE_TTL.churnReasons }
 	);
@@ -346,8 +346,8 @@ export async function getCampaignHistory(): Promise<CampaignHistory[]> {
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
-			const data = await handleResponse<{ campaigns: CampaignHistory[] }>(response);
-			return data.campaigns ?? data;
+			const data = await handleResponse<{ campaigns: CampaignHistory[] } | CampaignHistory[]>(response);
+			return Array.isArray(data) ? data : data.campaigns;
 		},
 		{ ttl: CACHE_TTL.campaigns }
 	);

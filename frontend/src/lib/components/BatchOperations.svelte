@@ -82,9 +82,9 @@
 		}
 	];
 
-	$: effectiveActions = actions.length > 0 ? actions : defaultActions;
-	$: isVisible = selectedIds.length > 0;
-	$: allSelected = selectedIds.length === totalCount && totalCount > 0;
+	let effectiveActions = $derived(actions.length > 0 ? actions : defaultActions);
+	let isVisible = $derived(selectedIds.length > 0);
+	let allSelected = $derived(selectedIds.length === totalCount && totalCount > 0);
 
 	async function handleAction(action: BatchAction) {
 		if (isProcessing) return;

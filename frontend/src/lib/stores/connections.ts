@@ -20,12 +20,14 @@ import { getAuthToken } from '$lib/stores/auth';
 // Types
 // ═══════════════════════════════════════════════════════════════════════════════
 
+export type ConnectionState = 'connected' | 'disconnected' | 'error' | 'expired' | 'pending' | 'connecting';
+
 export interface ConnectionStatus {
 	key: string;
 	name: string;
 	category: string;
 	isConnected: boolean;
-	status: 'connected' | 'disconnected' | 'error' | 'expired' | 'pending';
+	status: ConnectionState;
 	healthScore: number;
 	lastVerified: string | null;
 	error: string | null;
@@ -355,6 +357,17 @@ export const isCrmConnected = derived(connectionsStore, ($state) => {
 export const isBehaviorConnected = derived(connectionsStore, ($state) => {
 	const behaviorServices = FEATURE_SERVICES.behavior;
 	return behaviorServices.some((key) => $state.connections[key]?.isConnected);
+});
+
+/**
+ * Get all connection statuses (for connection health panel)
+ */
+export const allConnectionStatuses = derived(connectionsStore, ($state) => {
+	const statuses: Record<string, ConnectionState> = {};
+	for (const [key, conn] of Object.entries($state.connections)) {
+		statuses[key] = conn.status;
+	}
+	return statuses;
 });
 
 /**

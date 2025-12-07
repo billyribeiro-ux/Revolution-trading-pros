@@ -362,7 +362,9 @@
 			</div>
 
 			<button class="refresh-btn" onclick={handleRefresh} disabled={isLoading}>
-				<IconRefresh size={18} class:spinning={isLoading} />
+				<span class="refresh-icon" class:spinning={isLoading}>
+					<IconRefresh size={18} />
+				</span>
 				<span>Refresh</span>
 			</button>
 		</div>

@@ -20,7 +20,7 @@
 
 	let { isOpen = $bindable(false), onclose }: Props = $props();
 
-	$: groupedShortcuts = $keyboard.shortcuts
+	let groupedShortcuts = $derived($keyboard.shortcuts
 		.filter(s => s.enabled)
 		.reduce((acc, shortcut) => {
 			if (!acc[shortcut.category]) {
@@ -28,7 +28,7 @@
 			}
 			acc[shortcut.category].push(shortcut);
 			return acc;
-		}, {} as Record<string, typeof $keyboard.shortcuts>);
+		}, {} as Record<string, typeof $keyboard.shortcuts>));
 
 	function close() {
 		isOpen = false;
@@ -43,9 +43,11 @@
 	}
 
 	// Sync with store
-	$: if ($keyboard.isHelpOpen !== isOpen) {
-		isOpen = $keyboard.isHelpOpen;
-	}
+	$effect(() => {
+		if ($keyboard.isHelpOpen !== isOpen) {
+			isOpen = $keyboard.isHelpOpen;
+		}
+	});
 </script>
 
 {#if isOpen}

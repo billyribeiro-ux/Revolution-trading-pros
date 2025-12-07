@@ -63,6 +63,9 @@
 	let isKeyboardHelpOpen = $state(false);
 	let isConnectionHealthOpen = $state(false);
 
+	// Derived theme icon component
+	let ThemeIcon = $derived(getThemeIcon($themeStore));
+
 	// Check if user is admin - Svelte 5 effect
 	$effect(() => {
 		if (browser && !$isAuthenticated) {
@@ -219,7 +222,7 @@
 					onclick={() => themeStore.cycle()}
 					title="Theme: {getThemeLabel($themeStore)} (click to cycle)"
 				>
-					<svelte:component this={getThemeIcon($themeStore)} size={20} />
+					<ThemeIcon size={20} />
 					<span class="theme-label desktop-only">{getThemeLabel($themeStore)}</span>
 				</button>
 

@@ -61,9 +61,9 @@ import {
 	createDefaultInterceptorChain,
 	executeRequestInterceptors,
 	executeResponseInterceptors,
-	executeErrorInterceptors,
-	type InterceptorChain
+	executeErrorInterceptors
 } from './interceptor';
+import type { InterceptorChain } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -461,7 +461,7 @@ export class EnterpriseClient {
 				lastError = error as Error;
 
 				// Check if error is retryable
-				if (this.shouldRetryError(error, config.retry, attempt, maxAttempts)) {
+				if (this.shouldRetryError(error, attempt, maxAttempts, config.retry)) {
 					const delay = this.calculateRetryDelay(attempt, config.retry);
 					log('debug', `Retrying after error (attempt ${attempt + 1})`, context, {
 						error: (error as Error).message,
@@ -491,9 +491,9 @@ export class EnterpriseClient {
 
 	private shouldRetryError(
 		error: unknown,
-		retry?: RetryConfig,
 		attempt: number,
-		maxAttempts: number
+		maxAttempts: number,
+		retry?: RetryConfig
 	): boolean {
 		if (attempt >= maxAttempts - 1) return false;
 

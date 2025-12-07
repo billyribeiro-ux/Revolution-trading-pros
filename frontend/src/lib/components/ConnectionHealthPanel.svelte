@@ -15,7 +15,7 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
-		connectionStore,
+		connections,
 		allConnectionStatuses,
 		type ConnectionState
 	} from '$lib/stores/connections';
@@ -115,7 +115,7 @@
 	async function refreshConnection(service: string) {
 		refreshingService = service;
 		try {
-			await connectionStore.checkConnection(service as keyof typeof serviceLabels);
+			await connections.load(true);
 		} finally {
 			refreshingService = null;
 		}
@@ -132,9 +132,9 @@
 		onclose?.();
 	}
 
-	$: connectedCount = Object.values($allConnectionStatuses).filter(s => s === 'connected').length;
-	$: totalCount = Object.keys($allConnectionStatuses).length;
-	$: overallHealth = connectedCount === totalCount ? 'healthy' : connectedCount > 0 ? 'partial' : 'unhealthy';
+	let connectedCount = $derived(Object.values($allConnectionStatuses).filter(s => s === 'connected').length);
+	let totalCount = $derived(Object.keys($allConnectionStatuses).length);
+	let overallHealth = $derived(connectedCount === totalCount ? 'healthy' : connectedCount > 0 ? 'partial' : 'unhealthy');
 </script>
 
 {#if isOpen}

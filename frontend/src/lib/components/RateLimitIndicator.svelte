@@ -58,15 +58,15 @@
 		});
 	}
 
-	$: overallStatus = rateLimits.some(r => r.status === 'critical')
+	let overallStatus = $derived(rateLimits.some(r => r.status === 'critical')
 		? 'critical'
 		: rateLimits.some(r => r.status === 'warning')
 		? 'warning'
-		: 'ok';
+		: 'ok');
 
-	$: lowestPercentage = rateLimits.length > 0
+	let lowestPercentage = $derived(rateLimits.length > 0
 		? Math.min(...rateLimits.map(r => r.percentage))
-		: 100;
+		: 100);
 
 	function getStatusColor(status: string) {
 		switch (status) {
@@ -125,7 +125,9 @@
 	>
 		<IconApi size={18} />
 		<span class="limit-percentage">{Math.round(lowestPercentage)}%</span>
-		<IconChevronDown size={14} class="chevron" class:rotated={isOpen} />
+		<span class="chevron" class:rotated={isOpen}>
+			<IconChevronDown size={14} />
+		</span>
 	</button>
 
 	{#if isOpen}
