@@ -1,234 +1,587 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Indicators Page
-	 * Shows user's purchased indicators and access
+	 * Dashboard - My Indicators Page - WordPress Simpler Trading Exact
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Shows user's purchased indicators with download access.
+	 * Matches WordPress Simpler Trading dashboard structure exactly.
+	 *
+	 * @version 2.0.0 (WordPress Exact / December 2025)
 	 */
-	import { fly, fade } from 'svelte/transition';
+
 	import {
 		IconChartLine,
 		IconDownload,
 		IconExternalLink,
 		IconCheck,
 		IconClock,
-		IconRefresh
+		IconRefresh,
+		IconChevronRight,
+		IconSearch,
+		IconAlertTriangle
 	} from '@tabler/icons-svelte';
+	import '$lib/styles/st-icons.css';
 
-	// Mock purchased indicators data - will be fetched from API
-	const purchasedIndicators = [
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let searchQuery = $state('');
+	let filterPlatform = $state<'all' | 'tradingview' | 'thinkorswim' | 'metatrader'>('all');
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PURCHASED INDICATORS (Mock data - will be fetched from API)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface PurchasedIndicator {
+		id: number;
+		name: string;
+		description: string;
+		platform: 'TradingView' | 'ThinkorSwim' | 'MetaTrader';
+		platformSlug: string;
+		status: 'active' | 'expiring' | 'expired';
+		expiresAt: string;
+		daysUntilExpiry?: number;
+		downloadUrl: string;
+		version: string;
+		slug: string;
+		lastUpdated: string;
+	}
+
+	const purchasedIndicators: PurchasedIndicator[] = [
 		{
 			id: 1,
 			name: 'Revolution Pro Scanner',
-			description: 'Advanced market scanner with real-time alerts',
+			description: 'Advanced market scanner with real-time alerts for momentum trades.',
 			platform: 'TradingView',
+			platformSlug: 'tradingview',
 			status: 'active',
-			expiresAt: '2025-12-31',
+			expiresAt: 'Dec 31, 2025',
+			daysUntilExpiry: 25,
 			downloadUrl: '#',
-			version: '2.4.1'
+			version: '2.4.1',
+			slug: 'revolution-pro-scanner',
+			lastUpdated: 'Dec 1, 2025'
 		},
 		{
 			id: 2,
-			name: 'Momentum Tracker',
-			description: 'Identify momentum shifts before they happen',
+			name: 'Momentum Tracker Elite',
+			description: 'Identify momentum shifts before they happen with advanced algorithms.',
 			platform: 'ThinkorSwim',
+			platformSlug: 'thinkorswim',
 			status: 'active',
-			expiresAt: '2025-06-15',
+			expiresAt: 'Jun 15, 2026',
+			daysUntilExpiry: 190,
 			downloadUrl: '#',
-			version: '1.8.0'
+			version: '1.8.0',
+			slug: 'momentum-tracker-elite',
+			lastUpdated: 'Nov 15, 2025'
 		},
 		{
 			id: 3,
 			name: 'Support & Resistance Zones',
-			description: 'Automatic S/R level detection',
+			description: 'Automatic S/R level detection with multi-timeframe confluence.',
 			platform: 'TradingView',
-			status: 'expired',
-			expiresAt: '2024-11-01',
+			platformSlug: 'tradingview',
+			status: 'expiring',
+			expiresAt: 'Dec 15, 2025',
+			daysUntilExpiry: 8,
 			downloadUrl: '#',
-			version: '3.1.2'
+			version: '3.1.2',
+			slug: 'support-resistance-zones',
+			lastUpdated: 'Oct 20, 2025'
+		},
+		{
+			id: 4,
+			name: 'Volume Profile Analyzer',
+			description: 'Professional volume analysis with point of control and value area.',
+			platform: 'TradingView',
+			platformSlug: 'tradingview',
+			status: 'active',
+			expiresAt: 'Mar 1, 2026',
+			daysUntilExpiry: 85,
+			downloadUrl: '#',
+			version: '2.0.5',
+			slug: 'volume-profile-analyzer',
+			lastUpdated: 'Nov 28, 2025'
+		},
+		{
+			id: 5,
+			name: 'Options Flow Scanner',
+			description: 'Track unusual options activity and smart money flow.',
+			platform: 'ThinkorSwim',
+			platformSlug: 'thinkorswim',
+			status: 'expired',
+			expiresAt: 'Nov 1, 2025',
+			downloadUrl: '#',
+			version: '1.5.0',
+			slug: 'options-flow-scanner',
+			lastUpdated: 'Sep 15, 2025'
 		}
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const filteredIndicators = $derived.by(() => {
+		return purchasedIndicators.filter(indicator => {
+			const matchesSearch = searchQuery === '' ||
+				indicator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				indicator.platform.toLowerCase().includes(searchQuery.toLowerCase());
+
+			const matchesPlatform = filterPlatform === 'all' ||
+				indicator.platformSlug === filterPlatform;
+
+			return matchesSearch && matchesPlatform;
+		});
+	});
+
+	const stats = $derived({
+		total: purchasedIndicators.length,
+		active: purchasedIndicators.filter(i => i.status === 'active').length,
+		expiring: purchasedIndicators.filter(i => i.status === 'expiring').length,
+		expired: purchasedIndicators.filter(i => i.status === 'expired').length
+	});
+
+	const platforms = [
+		{ id: 'all', name: 'All Platforms' },
+		{ id: 'tradingview', name: 'TradingView' },
+		{ id: 'thinkorswim', name: 'ThinkorSwim' },
+		{ id: 'metatrader', name: 'MetaTrader' }
 	];
 </script>
 
-<!-- Dashboard Header -->
-<div class="wc-content-sction">
-	<div class="dashb_headr">
-		<div class="dashb_headr-left">
-			<h1 class="dashb_pg-titl">My Indicators</h1>
-		</div>
-		<div class="dashb_headr-right">
-			<a href="/indicators" class="btn btn-xs btn-link start-here-btn">
-				Browse All Indicators
-			</a>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HEAD
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<svelte:head>
+	<title>My Indicators | Dashboard | Revolution Trading Pros</title>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DASHBOARD HEADER - WordPress: .dashboard__header
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">
+			<span class="st-icon-indicators"></span>
+			My Indicators
+		</h1>
+		<div class="dashboard__stats">
+			<span class="stat-item">
+				<strong>{stats.total}</strong> indicators
+			</span>
+			<span class="stat-item stat-active">
+				<IconCheck size={14} />
+				<strong>{stats.active}</strong> active
+			</span>
+			{#if stats.expiring > 0}
+				<span class="stat-item stat-warning">
+					<IconAlertTriangle size={14} />
+					<strong>{stats.expiring}</strong> expiring soon
+				</span>
+			{/if}
 		</div>
 	</div>
-</div>
+	<div class="dashboard__header-right">
+		<a href="/indicators" class="btn btn-link">
+			Browse All Indicators
+			<IconChevronRight size={16} />
+		</a>
+	</div>
+</header>
 
-<!-- Indicators Content -->
-<div class="wc-accontent-inner">
-	{#if purchasedIndicators.length > 0}
-		<div class="indicators-grid">
-			{#each purchasedIndicators as indicator, i (indicator.id)}
-				<div
-					class="indicator-card"
-					class:indicator-card--expired={indicator.status === 'expired'}
-					in:fly={{ y: 20, delay: 100 * i, duration: 400 }}
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DASHBOARD CONTENT - WordPress: .dashboard__content
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<div class="dashboard__content">
+	<!-- Filters Bar -->
+	<div class="filters-bar">
+		<div class="search-box">
+			<IconSearch size={18} />
+			<input
+				type="text"
+				placeholder="Search indicators..."
+				bind:value={searchQuery}
+			/>
+		</div>
+		<div class="filter-tabs">
+			{#each platforms as platform}
+				<button
+					class="filter-tab"
+					class:active={filterPlatform === platform.id}
+					onclick={() => filterPlatform = platform.id as typeof filterPlatform}
 				>
-					<div class="indicator-card__header">
-						<div class="indicator-card__icon">
-							<IconChartLine size={28} />
-						</div>
-						<div class="indicator-card__status" class:active={indicator.status === 'active'}>
-							{#if indicator.status === 'active'}
-								<IconCheck size={14} />
-								Active
-							{:else}
-								<IconClock size={14} />
-								Expired
-							{/if}
-						</div>
-					</div>
-
-					<h3 class="indicator-card__title">{indicator.name}</h3>
-					<p class="indicator-card__description">{indicator.description}</p>
-
-					<div class="indicator-card__meta">
-						<div class="meta-row">
-							<span class="meta-label">Platform:</span>
-							<span class="meta-value">{indicator.platform}</span>
-						</div>
-						<div class="meta-row">
-							<span class="meta-label">Version:</span>
-							<span class="meta-value">v{indicator.version}</span>
-						</div>
-						<div class="meta-row">
-							<span class="meta-label">{indicator.status === 'active' ? 'Expires:' : 'Expired:'}</span>
-							<span class="meta-value">{indicator.expiresAt}</span>
-						</div>
-					</div>
-
-					<div class="indicator-card__actions">
-						{#if indicator.status === 'active'}
-							<a href={indicator.downloadUrl} class="action-btn action-btn--primary">
-								<IconDownload size={18} />
-								Download
-							</a>
-							<a href="/docs/indicators" class="action-btn action-btn--secondary">
-								<IconExternalLink size={18} />
-								Documentation
-							</a>
-						{:else}
-							<a href="/indicators/{indicator.id}" class="action-btn action-btn--renew">
-								<IconRefresh size={18} />
-								Renew License
-							</a>
-						{/if}
-					</div>
-				</div>
+					{platform.name}
+				</button>
 			{/each}
 		</div>
+	</div>
+
+	<!-- Indicators Grid - WordPress: .membership-cards.row -->
+	{#if filteredIndicators.length > 0}
+		<section class="dashboard__content-section">
+			<div class="indicators-grid row">
+				{#each filteredIndicators as indicator (indicator.id)}
+					<div class="col-sm-6 col-xl-4">
+						<article
+							class="indicator-card"
+							class:is-expiring={indicator.status === 'expiring'}
+							class:is-expired={indicator.status === 'expired'}
+						>
+							<!-- Status Badge -->
+							{#if indicator.status === 'expiring'}
+								<span class="status-badge status-expiring">{indicator.daysUntilExpiry}d</span>
+							{:else if indicator.status === 'expired'}
+								<span class="status-badge status-expired">Expired</span>
+							{/if}
+
+							<div class="indicator-card__header">
+								<div class="indicator-card__icon">
+									<IconChartLine size={28} />
+								</div>
+								<div class="indicator-card__status" class:active={indicator.status === 'active'} class:expiring={indicator.status === 'expiring'}>
+									{#if indicator.status === 'active'}
+										<IconCheck size={14} />
+										Active
+									{:else if indicator.status === 'expiring'}
+										<IconAlertTriangle size={14} />
+										Expiring Soon
+									{:else}
+										<IconClock size={14} />
+										Expired
+									{/if}
+								</div>
+							</div>
+
+							<h3 class="indicator-card__title">{indicator.name}</h3>
+							<p class="indicator-card__description">{indicator.description}</p>
+
+							<div class="indicator-card__meta">
+								<div class="meta-row">
+									<span class="meta-label">Platform:</span>
+									<span class="meta-value">{indicator.platform}</span>
+								</div>
+								<div class="meta-row">
+									<span class="meta-label">Version:</span>
+									<span class="meta-value">v{indicator.version}</span>
+								</div>
+								<div class="meta-row">
+									<span class="meta-label">{indicator.status === 'expired' ? 'Expired:' : 'Expires:'}</span>
+									<span class="meta-value">{indicator.expiresAt}</span>
+								</div>
+								<div class="meta-row">
+									<span class="meta-label">Last Updated:</span>
+									<span class="meta-value">{indicator.lastUpdated}</span>
+								</div>
+							</div>
+
+							<div class="indicator-card__actions">
+								{#if indicator.status !== 'expired'}
+									<a href={indicator.downloadUrl} class="action-btn">
+										<IconDownload size={16} />
+										Download
+									</a>
+									<a href="/dashboard/indicators/{indicator.slug}/docs">
+										<IconExternalLink size={16} />
+										Docs
+									</a>
+								{:else}
+									<a href="/indicators/{indicator.slug}" class="action-btn action-btn--renew">
+										<IconRefresh size={16} />
+										Renew License
+									</a>
+								{/if}
+							</div>
+						</article>
+					</div>
+				{/each}
+			</div>
+		</section>
 	{:else}
-		<div class="empty-state" in:fade>
+		<div class="empty-state">
 			<IconChartLine size={64} />
-			<h2>No Indicators Yet</h2>
-			<p>You haven't purchased any indicators yet. Browse our collection to enhance your trading!</p>
-			<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
+			<h2>No Indicators Found</h2>
+			{#if searchQuery || filterPlatform !== 'all'}
+				<p>Try adjusting your search or filter criteria</p>
+				<button class="btn btn-primary" onclick={() => { searchQuery = ''; filterPlatform = 'all'; }}>
+					Clear Filters
+				</button>
+			{:else}
+				<p>You haven't purchased any indicators yet. Browse our collection to enhance your trading!</p>
+				<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
+			{/if}
 		</div>
 	{/if}
 </div>
 
-<style>
-	/* Content Section */
-	.wc-content-sction {
-		width: 100%;
-		margin: auto;
-		padding: 20px;
-	}
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
-	/* Dashboard Header */
-	.dashb_headr {
+<style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD HEADER - WordPress: .dashboard__header
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__header {
 		background-color: #fff;
-		border-bottom: 1px solid #dbdbdb;
-		max-width: 100%;
-		padding: 20px;
+		border-bottom: 1px solid var(--st-border-color, #dbdbdb);
+		padding: 20px 30px;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-	}
-
-	.dashb_headr-left,
-	.dashb_headr-right {
 		align-items: center;
-		display: flex;
-		flex-direction: row;
+		gap: 16px;
 	}
 
-	.dashb_pg-titl {
-		color: #333;
+	.dashboard__header-left,
+	.dashboard__header-right {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.dashboard__page-title {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		color: var(--st-text-color, #333);
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
 		margin: 0;
 	}
 
-	.start-here-btn {
+	.dashboard__page-title .st-icon-indicators {
+		font-size: 32px;
+		color: var(--st-primary, #0984ae);
+	}
+
+	.dashboard__stats {
+		display: flex;
+		gap: 16px;
+		margin-left: 24px;
+	}
+
+	.stat-item {
+		display: flex;
+		align-items: center;
+		gap: 4px;
 		font-size: 14px;
-		line-height: 18px;
-		padding: 8px 14px;
-		font-weight: 600;
-		color: #0984ae;
-		background: #f4f4f4;
-		border-color: transparent;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.stat-item strong {
+		color: var(--st-text-color, #333);
+	}
+
+	.stat-active {
+		color: #10b981;
+	}
+
+	.stat-active strong {
+		color: #10b981;
+	}
+
+	.stat-warning {
+		color: var(--st-warning, #f59e0b);
+	}
+
+	.stat-warning strong {
+		color: var(--st-warning, #f59e0b);
+	}
+
+	.btn-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		color: var(--st-link-color, #1e73be);
 		text-decoration: none;
-		border-radius: 5px;
-		transition: all 0.15s ease-in-out;
+		font-weight: 600;
+		font-size: 14px;
 	}
 
-	.start-here-btn:hover {
-		color: #0984ae;
-		background: #e7e7e7;
+	.btn-link:hover {
+		color: var(--st-primary, #0984ae);
 	}
 
-	/* Inner Content */
-	.wc-accontent-inner {
-		padding: 4% 2%;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT - WordPress: .dashboard__content
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content {
+		padding: 30px;
 		background: #fff;
-		border-radius: 5px;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 15%);
-		position: relative;
-		margin: 20px;
+		min-height: 400px;
 	}
 
-	/* Indicators Grid */
-	.indicators-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 1.5rem;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FILTERS BAR
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.filters-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		margin-bottom: 24px;
+		align-items: center;
+		justify-content: space-between;
 	}
 
-	/* Indicator Card */
-	.indicator-card {
-		background: #fff;
+	.search-box {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 16px;
+		background: #f8f9fa;
 		border: 1px solid #e5e7eb;
 		border-radius: 8px;
-		padding: 1.5rem;
-		transition: all 0.3s ease;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		flex: 1;
+		max-width: 300px;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.search-box input {
+		flex: 1;
+		border: none;
+		outline: none;
+		font-size: 14px;
+		background: transparent;
+	}
+
+	.filter-tabs {
+		display: flex;
+		gap: 8px;
+	}
+
+	.filter-tab {
+		padding: 8px 16px;
+		background: #f8f9fa;
+		border: 1px solid #e5e7eb;
+		border-radius: 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--st-text-muted, #64748b);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.filter-tab:hover {
+		border-color: var(--st-primary, #0984ae);
+		color: var(--st-primary, #0984ae);
+	}
+
+	.filter-tab.active {
+		background: var(--st-primary, #0984ae);
+		border-color: var(--st-primary, #0984ae);
+		color: #fff;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CONTENT SECTION - WordPress: .dashboard__content-section
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content-section {
+		margin-bottom: 40px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   INDICATORS GRID - Bootstrap Grid
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.indicators-grid {
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+	}
+
+	.indicators-grid > .col-sm-6 {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-bottom: 30px;
+	}
+
+	@media (min-width: 576px) {
+		.indicators-grid > .col-sm-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.indicators-grid > .col-xl-4 {
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   INDICATOR CARD - Similar to membership-card
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.indicator-card {
+		position: relative;
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 5px 30px rgb(0 0 0 / 10%);
+		transition: all 0.15s ease-in-out;
+		overflow: hidden;
+		padding: 24px;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.indicator-card:hover {
-		border-color: #0984ae;
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		transform: translateY(-4px);
+		box-shadow: 0 10px 40px rgb(0 0 0 / 15%);
 	}
 
-	.indicator-card--expired {
-		opacity: 0.7;
+	.indicator-card.is-expiring {
+		border: 2px solid var(--st-warning, #f59e0b);
 	}
 
+	.indicator-card.is-expired {
+		border: 2px solid var(--st-error, #ef4444);
+		opacity: 0.8;
+	}
+
+	/* Status Badge */
+	.status-badge {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		padding: 4px 10px;
+		border-radius: 12px;
+		font-size: 11px;
+		font-weight: 700;
+		color: #fff;
+		z-index: 1;
+	}
+
+	.status-expiring {
+		background: var(--st-warning, #f59e0b);
+	}
+
+	.status-expired {
+		background: var(--st-error, #ef4444);
+	}
+
+	/* Header */
 	.indicator-card__header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: 1rem;
+		margin-bottom: 16px;
 	}
 
 	.indicator-card__icon {
@@ -239,16 +592,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #0984ae;
+		color: var(--st-primary, #0984ae);
 	}
 
 	.indicator-card__status {
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.375rem 0.75rem;
+		gap: 4px;
+		padding: 6px 12px;
 		border-radius: 6px;
-		font-size: 0.75rem;
+		font-size: 12px;
 		font-weight: 600;
 		background: rgba(239, 68, 68, 0.1);
 		color: #ef4444;
@@ -259,32 +612,45 @@
 		color: #10b981;
 	}
 
+	.indicator-card__status.expiring {
+		background: rgba(245, 158, 11, 0.1);
+		color: #f59e0b;
+	}
+
+	/* Title & Description */
 	.indicator-card__title {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #333;
-		margin-bottom: 0.5rem;
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--st-text-color, #333);
+		margin: 0 0 8px;
+		line-height: 1.3;
 	}
 
 	.indicator-card__description {
-		font-size: 0.875rem;
-		color: #64748b;
-		margin-bottom: 1.25rem;
+		font-size: 14px;
+		color: var(--st-text-muted, #64748b);
+		margin: 0 0 16px;
 		line-height: 1.5;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		flex: 1;
 	}
 
+	/* Meta */
 	.indicator-card__meta {
 		background: #f8fafc;
 		border-radius: 8px;
-		padding: 1rem;
-		margin-bottom: 1.25rem;
+		padding: 12px;
+		margin-bottom: 16px;
 	}
 
 	.meta-row {
 		display: flex;
 		justify-content: space-between;
-		padding: 0.375rem 0;
-		font-size: 0.8rem;
+		padding: 6px 0;
+		font-size: 13px;
 	}
 
 	.meta-row:not(:last-child) {
@@ -292,83 +658,108 @@
 	}
 
 	.meta-label {
-		color: #64748b;
+		color: var(--st-text-muted, #64748b);
 	}
 
 	.meta-value {
-		color: #333;
+		color: var(--st-text-color, #333);
 		font-weight: 500;
 	}
 
+	/* Actions - WordPress: .membership-card__actions */
 	.indicator-card__actions {
 		display: flex;
-		gap: 0.75rem;
+		gap: 12px;
+		margin-top: auto;
 	}
 
-	.action-btn {
+	.indicator-card__actions a,
+	.indicator-card__actions .action-btn {
 		flex: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
-		padding: 0.75rem;
+		gap: 6px;
+		padding: 12px;
 		border-radius: 8px;
 		font-weight: 600;
-		font-size: 0.875rem;
+		font-size: 14px;
 		text-decoration: none;
-		transition: all 0.2s ease;
+		transition: all 0.15s ease;
+		background: #f4f4f4;
+		border: 1px solid #e5e7eb;
+		color: var(--st-text-color, #333);
 	}
 
-	.action-btn--primary {
-		background: #0984ae;
+	.indicator-card__actions a:first-child,
+	.indicator-card__actions .action-btn:first-child {
+		background: var(--st-primary, #0984ae);
+		border-color: var(--st-primary, #0984ae);
 		color: #fff;
 	}
 
-	.action-btn--primary:hover {
+	.indicator-card__actions a:first-child:hover {
 		background: #076787;
 	}
 
-	.action-btn--secondary {
-		background: #f4f4f4;
-		border: 1px solid #e5e7eb;
-		color: #333;
-	}
-
-	.action-btn--secondary:hover {
+	.indicator-card__actions a:hover {
 		background: #e5e7eb;
 	}
 
 	.action-btn--renew {
-		background: #fef3c7;
-		border: 1px solid #fcd34d;
-		color: #92400e;
+		background: #fef3c7 !important;
+		border-color: #fcd34d !important;
+		color: #92400e !important;
 	}
 
 	.action-btn--renew:hover {
-		background: #fde68a;
+		background: #fde68a !important;
 	}
 
-	/* Empty State */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   EMPTY STATE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
 		text-align: center;
-		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--st-text-muted, #64748b);
+		padding: 40px 20px;
 	}
 
 	.empty-state h2 {
 		font-size: 1.5rem;
-		color: #333;
-		margin: 1rem 0 0.5rem;
+		color: var(--st-text-color, #333);
+		margin: 16px 0 8px;
 	}
 
 	.empty-state p {
-		margin-bottom: 1.5rem;
+		margin: 0 0 24px;
+	}
+
+	.btn-primary {
+		padding: 12px 24px;
+		background: var(--st-primary, #0984ae);
+		border: none;
+		border-radius: 8px;
+		color: #fff;
+		font-weight: 600;
+		cursor: pointer;
+		text-decoration: none;
+	}
+
+	.btn-primary:hover {
+		background: #076787;
 	}
 
 	.btn-orange {
 		display: inline-flex;
-		padding: 0.75rem 2rem;
-		background: #f99e31;
+		padding: 12px 24px;
+		background: var(--st-orange, #f99e31);
 		border-radius: 8px;
 		color: #fff;
 		font-weight: 600;
@@ -376,12 +767,53 @@
 	}
 
 	.btn-orange:hover {
-		background: #f88b09;
+		background: var(--st-orange-hover, #dc7309);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 768px) {
+		.dashboard__header {
+			padding: 16px;
+		}
+
+		.dashboard__page-title {
+			font-size: 28px;
+		}
+
+		.dashboard__stats {
+			display: none;
+		}
+
+		.dashboard__content {
+			padding: 16px;
+		}
+
+		.filters-bar {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.search-box {
+			max-width: none;
+		}
+
+		.filter-tabs {
+			overflow-x: auto;
+			padding-bottom: 8px;
+		}
+
 		.indicators-grid {
-			grid-template-columns: 1fr;
+			margin-right: -8px;
+			margin-left: -8px;
+		}
+
+		.indicators-grid > .col-sm-6 {
+			padding-right: 8px;
+			padding-left: 8px;
+			margin-bottom: 16px;
 		}
 
 		.indicator-card__actions {
