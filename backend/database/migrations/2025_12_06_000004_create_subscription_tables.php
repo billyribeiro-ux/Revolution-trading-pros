@@ -8,38 +8,42 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Dunning attempts table
-        Schema::create('dunning_attempts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('subscription_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('invoice_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('attempt_number')->default(1);
-            $table->string('status')->default('pending'); // pending, succeeded, failed, cancelled
-            $table->timestamp('scheduled_at')->nullable();
-            $table->timestamp('processed_at')->nullable();
-            $table->timestamp('reminder_sent_at')->nullable();
-            $table->text('error_message')->nullable();
-            $table->timestamps();
+        // Dunning attempts table (skip if exists)
+        if (!Schema::hasTable('dunning_attempts')) {
+            Schema::create('dunning_attempts', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                $table->foreignId('subscription_id')->nullable()->constrained()->nullOnDelete();
+                $table->foreignId('invoice_id')->nullable()->constrained()->nullOnDelete();
+                $table->integer('attempt_number')->default(1);
+                $table->string('status')->default('pending'); // pending, succeeded, failed, cancelled
+                $table->timestamp('scheduled_at')->nullable();
+                $table->timestamp('processed_at')->nullable();
+                $table->timestamp('reminder_sent_at')->nullable();
+                $table->text('error_message')->nullable();
+                $table->timestamps();
 
-            $table->index(['subscription_id', 'status']);
-            $table->index(['scheduled_at', 'status']);
-        });
+                $table->index(['subscription_id', 'status']);
+                $table->index(['scheduled_at', 'status']);
+            });
+        }
 
-        // Usage records table
-        Schema::create('usage_records', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('subscription_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('feature', 100);
-            $table->integer('quantity')->default(1);
-            $table->json('metadata')->nullable();
-            $table->timestamp('recorded_at');
-            $table->timestamps();
+        // Usage records table (skip if exists)
+        if (!Schema::hasTable('usage_records')) {
+            Schema::create('usage_records', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                $table->foreignId('subscription_id')->nullable()->constrained()->nullOnDelete();
+                $table->string('feature', 100);
+                $table->integer('quantity')->default(1);
+                $table->json('metadata')->nullable();
+                $table->timestamp('recorded_at');
+                $table->timestamps();
 
-            $table->index(['user_id', 'feature', 'recorded_at']);
-            $table->index(['subscription_id', 'feature']);
-        });
+                $table->index(['user_id', 'feature', 'recorded_at']);
+                $table->index(['subscription_id', 'feature']);
+            });
+        }
 
         // Add payment provider columns to users if not exists
         if (!Schema::hasColumn('users', 'stripe_customer_id')) {
@@ -56,8 +60,8 @@ return new class extends Migration
             });
         }
 
-        // Add columns to subscriptions if not exists
-        if (!Schema::hasColumn('subscriptions', 'stripe_subscription_id')) {
+        // Add columns to subscriptions if table exists and column not exists
+        if (Schema::hasTable('subscriptions') && !Schema::hasColumn('subscriptions', 'stripe_subscription_id')) {
             Schema::table('subscriptions', function (Blueprint $table) {
                 $table->string('stripe_subscription_id')->nullable()->after('id');
                 $table->string('paypal_subscription_id')->nullable();
@@ -69,8 +73,8 @@ return new class extends Migration
             });
         }
 
-        // Add columns to invoices if not exists
-        if (!Schema::hasColumn('invoices', 'stripe_invoice_id')) {
+        // Add columns to invoices if table exists and column not exists
+        if (Schema::hasTable('invoices') && !Schema::hasColumn('invoices', 'stripe_invoice_id')) {
             Schema::table('invoices', function (Blueprint $table) {
                 $table->string('stripe_invoice_id')->nullable()->after('id');
                 $table->string('invoice_number')->nullable();
@@ -93,8 +97,8 @@ return new class extends Migration
             });
         }
 
-        // Add columns to payments if not exists
-        if (!Schema::hasColumn('payments', 'stripe_payment_intent_id')) {
+        // Add columns to payments if table exists and column not exists
+        if (Schema::hasTable('payments') && !Schema::hasColumn('payments', 'stripe_payment_intent_id')) {
             Schema::table('payments', function (Blueprint $table) {
                 $table->string('stripe_payment_intent_id')->nullable()->after('id');
                 $table->string('payment_method', 50)->nullable();
@@ -103,8 +107,8 @@ return new class extends Migration
             });
         }
 
-        // Add columns to plans if not exists
-        if (!Schema::hasColumn('plans', 'stripe_price_id')) {
+        // Add columns to plans if table exists and column not exists
+        if (Schema::hasTable('plans') && !Schema::hasColumn('plans', 'stripe_price_id')) {
             Schema::table('plans', function (Blueprint $table) {
                 $table->string('stripe_price_id')->nullable();
                 $table->string('stripe_yearly_price_id')->nullable();
