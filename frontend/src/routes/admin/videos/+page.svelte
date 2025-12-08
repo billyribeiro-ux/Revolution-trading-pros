@@ -6,12 +6,15 @@
 	 * Professional video management with room selector tabs and category tagging.
 	 * Upload videos to specific trading rooms or alert services with topic tags.
 	 *
-	 * Categories:
-	 * - Risk Management, Options Strategies, Macro Structure
-	 * - Psychology, Micro Structure, Technical Analysis
-	 * - Fundamentals, Trade Setups, Market Review, etc.
+	 * Connected to real backend API:
+	 * - GET /api/admin/trading-rooms - List rooms
+	 * - GET /api/admin/trading-rooms/traders - List traders
+	 * - GET /api/admin/trading-rooms/videos/{slug} - List videos
+	 * - POST /api/admin/trading-rooms/videos - Create video
+	 * - PUT /api/admin/trading-rooms/videos/{id} - Update video
+	 * - DELETE /api/admin/trading-rooms/videos/{id} - Delete video
 	 *
-	 * @version 3.0.0 - December 2025
+	 * @version 4.0.0 - December 2025 - Real API Integration
 	 */
 
 	import { onMount } from 'svelte';
@@ -35,29 +38,14 @@
 		IconUser,
 		IconBuilding,
 		IconTag,
-		IconTags
+		IconTags,
+		IconAlertCircle
 	} from '@tabler/icons-svelte';
+	import { tradingRoomApi, type TradingRoom, type Trader, type DailyVideo } from '$lib/api/trading-rooms';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// TYPES
+	// LOCAL TYPES (extending API types)
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	interface TradingRoom {
-		id: number;
-		name: string;
-		slug: string;
-		type: 'trading_room' | 'alert_service';
-		icon?: string;
-		color?: string;
-		video_count?: number;
-	}
-
-	interface Trader {
-		id: number;
-		name: string;
-		slug: string;
-		photo_url?: string;
-	}
 
 	interface VideoCategory {
 		id: string;
@@ -65,23 +53,9 @@
 		color: string;
 	}
 
-	interface Video {
-		id: number;
-		trading_room_id: number;
-		trader_id?: number;
-		title: string;
-		description?: string;
-		video_url: string;
-		video_platform: 'vimeo' | 'youtube' | 'bunny' | 'wistia' | 'direct';
-		thumbnail_url?: string;
-		duration?: number;
-		video_date: string;
-		is_featured: boolean;
-		is_published: boolean;
-		views_count: number;
-		categories: string[]; // Array of category IDs
-		trader?: Trader;
-		created_at: string;
+	// Extended video type with categories mapped from tags
+	interface Video extends Omit<DailyVideo, 'tags'> {
+		categories: string[]; // Mapped from backend 'tags' field
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -126,7 +100,14 @@
 	// Videos
 	let videos = $state<Video[]>([]);
 	let isLoading = $state(true);
+	let isLoadingRooms = $state(true);
 	let error = $state('');
+	let successMessage = $state('');
+
+	// Pagination
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let totalVideos = $state(0);
 
 	// Filters
 	let searchQuery = $state('');
@@ -138,6 +119,7 @@
 	let showEditModal = $state(false);
 	let editingVideo = $state<Video | null>(null);
 	let isSaving = $state(false);
+	let isDeleting = $state(false);
 
 	// Form state
 	let formData = $state({
@@ -151,7 +133,7 @@
 		video_date: new Date().toISOString().split('T')[0],
 		is_published: true,
 		is_featured: false,
-		categories: [] as string[]
+		categories: [] as string[] // Mapped to 'tags' when sending to API
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -172,31 +154,45 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// MOCK DATA (Replace with API calls)
+	// API FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function initializeMockData() {
-		rooms = [
-			{ id: 1, name: 'Day Trading Room', slug: 'day-trading-room', type: 'trading_room', color: '#0984ae', video_count: 45 },
-			{ id: 2, name: 'Swing Trading Room', slug: 'swing-trading-room', type: 'trading_room', color: '#10b981', video_count: 32 },
-			{ id: 3, name: 'Small Account Mentorship', slug: 'small-account-mentorship', type: 'trading_room', color: '#f59e0b', video_count: 28 },
-			{ id: 4, name: 'SPX Profit Pulse', slug: 'spx-profit-pulse', type: 'alert_service', color: '#ef4444', video_count: 15 },
-			{ id: 5, name: 'Explosive Swing', slug: 'explosive-swing', type: 'alert_service', color: '#8b5cf6', video_count: 12 }
-		];
+	/**
+	 * Load trading rooms and traders from API
+	 */
+	async function loadRoomsAndTraders() {
+		isLoadingRooms = true;
+		error = '';
 
-		traders = [
-			{ id: 1, name: 'John Carter', slug: 'john-carter', photo_url: '/images/traders/john-carter.jpg' },
-			{ id: 2, name: 'Henry Gambell', slug: 'henry-gambell', photo_url: '/images/traders/henry-gambell.jpg' },
-			{ id: 3, name: 'Danielle Shay', slug: 'danielle-shay', photo_url: '/images/traders/danielle-shay.jpg' },
-			{ id: 4, name: 'Bruce Marshall', slug: 'bruce-marshall', photo_url: '/images/traders/bruce-marshall.jpg' },
-			{ id: 5, name: 'Sam Shames', slug: 'sam-shames', photo_url: '/images/traders/sam-shames.jpg' },
-			{ id: 6, name: 'Allison Ostrander', slug: 'allison-ostrander', photo_url: '/images/traders/allison-ostrander.jpg' }
-		];
+		try {
+			// Load rooms and traders in parallel
+			const [roomsResponse, tradersResponse] = await Promise.all([
+				tradingRoomApi.rooms.list({ with_counts: true }),
+				tradingRoomApi.traders.list({ active_only: true })
+			]);
 
-		selectedRoom = rooms[0];
-		loadVideos();
+			if (roomsResponse.success) {
+				rooms = roomsResponse.data;
+				// Select first room by default
+				if (rooms.length > 0 && !selectedRoom) {
+					selectedRoom = rooms[0];
+				}
+			}
+
+			if (tradersResponse.success) {
+				traders = tradersResponse.data;
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to load rooms and traders';
+			console.error('Error loading rooms/traders:', err);
+		} finally {
+			isLoadingRooms = false;
+		}
 	}
 
+	/**
+	 * Load videos for the selected room from API
+	 */
 	async function loadVideos() {
 		if (!selectedRoom) return;
 
@@ -204,109 +200,37 @@
 		error = '';
 
 		try {
-			// TODO: Replace with actual API call
-			// const response = await fetch(`/api/admin/trading-rooms/videos/${selectedRoom.slug}`);
-			// const data = await response.json();
-			// videos = data.data;
+			const response = await tradingRoomApi.videos.adminListByRoom(selectedRoom.slug, {
+				published_only: false,
+				per_page: 50,
+				page: currentPage
+			});
 
-			// Mock data with categories
-			videos = [
-				{
-					id: 1,
-					trading_room_id: selectedRoom.id,
-					trader_id: 5,
-					title: 'Risk Management Fundamentals',
-					description: 'Learn the essential principles of managing risk in your trading portfolio.',
-					video_url: 'https://vimeo.com/123456789',
-					video_platform: 'vimeo',
-					thumbnail_url: '/images/traders/sam-shames.jpg',
-					duration: 1845,
-					video_date: '2025-12-05',
-					is_featured: true,
-					is_published: true,
-					views_count: 234,
-					categories: ['risk-management', 'psychology', 'position-sizing'],
-					trader: traders.find(t => t.id === 5),
-					created_at: '2025-12-05T10:00:00Z'
-				},
-				{
-					id: 2,
-					trading_room_id: selectedRoom.id,
-					trader_id: 4,
-					title: 'Options Strategies for Income',
-					description: 'Bruce explains covered calls, iron condors, and other income-generating strategies.',
-					video_url: 'https://vimeo.com/123456790',
-					video_platform: 'vimeo',
-					thumbnail_url: '/images/traders/bruce-marshall.jpg',
-					duration: 2100,
-					video_date: '2025-12-04',
-					is_featured: false,
-					is_published: true,
-					views_count: 189,
-					categories: ['options-strategies', 'trade-setups'],
-					trader: traders.find(t => t.id === 4),
-					created_at: '2025-12-04T10:00:00Z'
-				},
-				{
-					id: 3,
-					trading_room_id: selectedRoom.id,
-					trader_id: 2,
-					title: 'Macro Structure Analysis',
-					description: 'Understanding the bigger picture market structure and how it affects your trades.',
-					video_url: 'https://vimeo.com/123456791',
-					video_platform: 'vimeo',
-					thumbnail_url: '/images/traders/henry-gambell.jpg',
-					duration: 1560,
-					video_date: '2025-12-03',
-					is_featured: false,
-					is_published: true,
-					views_count: 312,
-					categories: ['macro-structure', 'technical-analysis', 'market-review'],
-					trader: traders.find(t => t.id === 2),
-					created_at: '2025-12-03T10:00:00Z'
-				},
-				{
-					id: 4,
-					trading_room_id: selectedRoom.id,
-					trader_id: 3,
-					title: 'Trading Psychology Deep Dive',
-					description: 'Master your emotions and develop the mindset of a professional trader.',
-					video_url: 'https://vimeo.com/123456792',
-					video_platform: 'vimeo',
-					thumbnail_url: '/images/traders/danielle-shay.jpg',
-					duration: 2400,
-					video_date: '2025-12-02',
-					is_featured: true,
-					is_published: true,
-					views_count: 456,
-					categories: ['psychology', 'risk-management'],
-					trader: traders.find(t => t.id === 3),
-					created_at: '2025-12-02T10:00:00Z'
-				},
-				{
-					id: 5,
-					trading_room_id: selectedRoom.id,
-					trader_id: 1,
-					title: 'Micro Structure & Order Flow',
-					description: 'Learn to read the tape and understand order flow dynamics.',
-					video_url: 'https://vimeo.com/123456793',
-					video_platform: 'vimeo',
-					thumbnail_url: '/images/traders/john-carter.jpg',
-					duration: 1920,
-					video_date: '2025-12-01',
-					is_featured: false,
-					is_published: true,
-					views_count: 278,
-					categories: ['micro-structure', 'technical-analysis', 'entry-exit'],
-					trader: traders.find(t => t.id === 1),
-					created_at: '2025-12-01T10:00:00Z'
-				}
-			];
+			if (response.success && response.data) {
+				// Map backend 'tags' to frontend 'categories'
+				videos = response.data.data.map(video => ({
+					...video,
+					categories: video.tags || []
+				}));
+				totalPages = response.data.last_page;
+				totalVideos = response.data.total;
+			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load videos';
+			console.error('Error loading videos:', err);
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	/**
+	 * Show success message temporarily
+	 */
+	function showSuccess(message: string) {
+		successMessage = message;
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -315,6 +239,7 @@
 
 	function selectRoom(room: TradingRoom) {
 		selectedRoom = room;
+		currentPage = 1;
 		loadVideos();
 	}
 
@@ -345,7 +270,7 @@
 			video_url: video.video_url,
 			video_platform: video.video_platform,
 			thumbnail_url: video.thumbnail_url || '',
-			video_date: video.video_date,
+			video_date: typeof video.video_date === 'string' ? video.video_date.split('T')[0] : video.video_date,
 			is_published: video.is_published,
 			is_featured: video.is_featured,
 			categories: video.categories || []
@@ -355,32 +280,43 @@
 
 	async function saveVideo() {
 		isSaving = true;
+		error = '';
 
 		try {
-			// TODO: Replace with actual API call
-			// if (editingVideo) {
-			//   await fetch(`/api/admin/trading-rooms/videos/${editingVideo.id}`, {
-			//     method: 'PUT',
-			//     headers: { 'Content-Type': 'application/json' },
-			//     body: JSON.stringify(formData)
-			//   });
-			// } else {
-			//   await fetch('/api/admin/trading-rooms/videos', {
-			//     method: 'POST',
-			//     headers: { 'Content-Type': 'application/json' },
-			//     body: JSON.stringify(formData)
-			//   });
-			// }
+			// Map frontend 'categories' to backend 'tags'
+			const apiData = {
+				trading_room_id: formData.trading_room_id,
+				trader_id: formData.trader_id,
+				title: formData.title,
+				description: formData.description,
+				video_url: formData.video_url,
+				video_platform: formData.video_platform,
+				thumbnail_url: formData.thumbnail_url || undefined,
+				video_date: formData.video_date,
+				is_published: formData.is_published,
+				is_featured: formData.is_featured,
+				tags: formData.categories // Map categories to tags for backend
+			};
 
-			// Simulate success
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			if (editingVideo) {
+				const response = await tradingRoomApi.videos.update(editingVideo.id, apiData);
+				if (response.success) {
+					showSuccess('Video updated successfully');
+				}
+			} else {
+				const response = await tradingRoomApi.videos.create(apiData);
+				if (response.success) {
+					showSuccess('Video created successfully');
+				}
+			}
 
 			showUploadModal = false;
 			showEditModal = false;
 			editingVideo = null;
 			await loadVideos();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to save video');
+			error = err instanceof Error ? err.message : 'Failed to save video';
+			console.error('Error saving video:', err);
 		} finally {
 			isSaving = false;
 		}
@@ -389,22 +325,37 @@
 	async function deleteVideo(video: Video) {
 		if (!confirm(`Are you sure you want to delete "${video.title}"?`)) return;
 
-		try {
-			// TODO: Replace with actual API call
-			// await fetch(`/api/admin/trading-rooms/videos/${video.id}`, { method: 'DELETE' });
+		isDeleting = true;
+		error = '';
 
-			await loadVideos();
+		try {
+			const response = await tradingRoomApi.videos.delete(video.id);
+			if (response.success) {
+				showSuccess('Video deleted successfully');
+				await loadVideos();
+			}
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to delete video');
+			error = err instanceof Error ? err.message : 'Failed to delete video';
+			console.error('Error deleting video:', err);
+		} finally {
+			isDeleting = false;
 		}
 	}
 
 	async function togglePublished(video: Video) {
 		try {
-			// TODO: Replace with actual API call
-			video.is_published = !video.is_published;
+			const newStatus = !video.is_published;
+			const response = await tradingRoomApi.videos.update(video.id, {
+				is_published: newStatus
+			});
+
+			if (response.success) {
+				video.is_published = newStatus;
+				showSuccess(`Video ${newStatus ? 'published' : 'unpublished'}`);
+			}
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to update video');
+			error = err instanceof Error ? err.message : 'Failed to update video';
+			console.error('Error toggling publish status:', err);
 		}
 	}
 
@@ -485,8 +436,20 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		initializeMockData();
+	onMount(async () => {
+		// Load rooms and traders first
+		await loadRoomsAndTraders();
+		// Then load videos for selected room
+		if (selectedRoom) {
+			await loadVideos();
+		}
+	});
+
+	// Load videos when selected room changes
+	$effect(() => {
+		if (selectedRoom && !isLoadingRooms) {
+			loadVideos();
+		}
 	});
 </script>
 
@@ -495,6 +458,24 @@
 </svelte:head>
 
 <div class="videos-page">
+	<!-- Success/Error Messages -->
+	{#if successMessage}
+		<div class="alert alert-success">
+			<IconCheck size={18} />
+			{successMessage}
+		</div>
+	{/if}
+
+	{#if error}
+		<div class="alert alert-error">
+			<IconAlertCircle size={18} />
+			{error}
+			<button class="alert-close" onclick={() => error = ''}>
+				<IconX size={16} />
+			</button>
+		</div>
+	{/if}
+
 	<!-- Header -->
 	<div class="page-header">
 		<div>
@@ -505,7 +486,7 @@
 			<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
-			<button class="btn-primary" onclick={openUploadModal}>
+			<button class="btn-primary" onclick={openUploadModal} disabled={!selectedRoom}>
 				<IconPlus size={18} />
 				Add Video
 			</button>
@@ -513,49 +494,67 @@
 	</div>
 
 	<!-- Room Selector Tabs -->
-	<div class="room-selector">
-		<!-- Trading Rooms -->
-		<div class="room-group">
-			<h3 class="room-group-title">
-				<IconBuilding size={16} />
-				Trading Rooms
-			</h3>
-			<div class="room-tabs">
-				{#each tradingRooms as room}
-					<button
-						class="room-tab"
-						class:active={selectedRoom?.id === room.id}
-						style:--room-color={room.color}
-						onclick={() => selectRoom(room)}
-					>
-						<span class="room-name">{room.name}</span>
-						<span class="room-count">{room.video_count}</span>
-					</button>
-				{/each}
-			</div>
+	{#if isLoadingRooms}
+		<div class="room-selector loading">
+			<div class="spinner"></div>
+			<p>Loading rooms...</p>
 		</div>
+	{:else if rooms.length === 0}
+		<div class="room-selector empty">
+			<IconBuilding size={32} />
+			<p>No trading rooms found. Create rooms in the Trading Rooms admin.</p>
+		</div>
+	{:else}
+		<div class="room-selector">
+			<!-- Trading Rooms -->
+			<div class="room-group">
+				<h3 class="room-group-title">
+					<IconBuilding size={16} />
+					Trading Rooms
+				</h3>
+				<div class="room-tabs">
+					{#each tradingRooms as room}
+						<button
+							class="room-tab"
+							class:active={selectedRoom?.id === room.id}
+							style:--room-color={room.color || '#6366f1'}
+							onclick={() => selectRoom(room)}
+						>
+							<span class="room-name">{room.name}</span>
+							<span class="room-count">{room.daily_videos_count || 0}</span>
+						</button>
+					{/each}
+					{#if tradingRooms.length === 0}
+						<p class="no-rooms">No trading rooms</p>
+					{/if}
+				</div>
+			</div>
 
-		<!-- Alert Services -->
-		<div class="room-group">
-			<h3 class="room-group-title">
-				<IconChartBar size={16} />
-				Alert Services
-			</h3>
-			<div class="room-tabs">
-				{#each alertServices as service}
-					<button
-						class="room-tab"
-						class:active={selectedRoom?.id === service.id}
-						style:--room-color={service.color}
-						onclick={() => selectRoom(service)}
-					>
-						<span class="room-name">{service.name}</span>
-						<span class="room-count">{service.video_count}</span>
-					</button>
-				{/each}
+			<!-- Alert Services -->
+			<div class="room-group">
+				<h3 class="room-group-title">
+					<IconChartBar size={16} />
+					Alert Services
+				</h3>
+				<div class="room-tabs">
+					{#each alertServices as service}
+						<button
+							class="room-tab"
+							class:active={selectedRoom?.id === service.id}
+							style:--room-color={service.color || '#8b5cf6'}
+							onclick={() => selectRoom(service)}
+						>
+							<span class="room-name">{service.name}</span>
+							<span class="room-count">{service.daily_videos_count || 0}</span>
+						</button>
+					{/each}
+					{#if alertServices.length === 0}
+						<p class="no-rooms">No alert services</p>
+					{/if}
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 
 	<!-- Selected Room Header -->
 	{#if selectedRoom}
@@ -984,6 +983,43 @@
 		color: #e2e8f0;
 	}
 
+	/* Alert Messages */
+	.alert {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem 1.25rem;
+		border-radius: 10px;
+		margin-bottom: 1.5rem;
+		font-size: 0.9rem;
+	}
+
+	.alert-success {
+		background: rgba(34, 197, 94, 0.15);
+		border: 1px solid rgba(34, 197, 94, 0.3);
+		color: #4ade80;
+	}
+
+	.alert-error {
+		background: rgba(239, 68, 68, 0.15);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		color: #f87171;
+	}
+
+	.alert-close {
+		margin-left: auto;
+		background: transparent;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.7;
+		transition: opacity 0.2s;
+	}
+
+	.alert-close:hover {
+		opacity: 1;
+	}
+
 	/* Room Selector */
 	.room-selector {
 		display: flex;
@@ -992,6 +1028,29 @@
 		margin-bottom: 1.5rem;
 		padding: 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
+	}
+
+	.room-selector.loading,
+	.room-selector.empty {
+		align-items: center;
+		justify-content: center;
+		padding: 3rem;
+		text-align: center;
+		color: #64748b;
+	}
+
+	.room-selector.loading p,
+	.room-selector.empty p {
+		margin: 1rem 0 0;
+	}
+
+	.no-rooms {
+		color: #64748b;
+		font-size: 0.85rem;
+		padding: 0.5rem;
+	}
+
+	.room-selector:not(.loading):not(.empty) {
 		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 14px;
 	}
