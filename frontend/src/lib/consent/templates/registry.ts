@@ -988,6 +988,85 @@ const premiumGold: BannerTemplate = {
 	border: '1px solid rgba(212, 175, 55, 0.3)',
 };
 
+/**
+ * Template 21: Revolution Trading Template
+ *
+ * Custom Revolution Trading consent banner design.
+ * White background, orange accept button, gray reject/options buttons.
+ */
+const revolutionTrading: BannerTemplate = {
+	id: 'revolution-trading',
+	name: 'Revolution Trading Template',
+	description: 'Revolution Trading consent banner. White background with orange accent.',
+	category: 'corporate',
+	isEditable: true,
+	position: 'bottom',
+	style: 'flat',
+	maxWidth: '100%',
+	showCloseButton: true,
+	showPrivacyLink: true,
+	showIcon: false,
+	buttonVariant: 'solid',
+	showRejectButton: true,
+	showCustomizeButton: true,
+	buttonOrder: ['customize', 'reject', 'accept'],
+	animation: 'slide-up',
+	animationDuration: 300,
+	colors: {
+		background: '#ffffff',
+		text: '#5D5D5D',
+		textMuted: '#5D5D5D',
+		accent: '#005BD3',
+		acceptButton: '#E16B43',
+		acceptButtonText: '#ffffff',
+		rejectButton: '#F0F0F0',
+		rejectButtonText: '#212121',
+		customizeButton: '#F0F0F0',
+		customizeButtonText: '#212121',
+		border: '#333333',
+	},
+	typography: {
+		fontFamily: 'Arial, sans-serif',
+		titleSize: '0',
+		titleWeight: '400',
+		descriptionSize: '20px',
+		buttonSize: '16px',
+		buttonWeight: '500',
+		lineHeight: '1.5',
+	},
+	spacing: {
+		padding: '45px 80px 40px 80px',
+		gap: '0',
+		buttonPadding: '20px 25px 20px 20px',
+		borderRadius: '0',
+		buttonBorderRadius: '0',
+	},
+	copy: {
+		title: '',
+		description: 'By clicking "Accept," you agree to our Terms of Use, Privacy Policy and consent to the use of cookies and similar tracking technologies to, among other things, serve you relevant ads ourselves or through our third-party ad partners with whom data from cookies is shared.',
+		acceptAll: 'Accept',
+		rejectAll: 'Reject',
+		customize: 'More options',
+		privacyPolicy: 'Privacy Policy',
+		cookiePolicy: 'Cookie Policy',
+	},
+	mobile: {
+		position: 'bottom',
+		useDrawer: false,
+		stackButtons: true,
+		compact: false,
+		fullWidthButtons: true,
+		padding: '30px 20px',
+	},
+	tablet: {
+		position: 'bottom',
+		maxWidth: '100%',
+		stackButtons: false,
+	},
+	boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
+	border: '1px solid #333333',
+};
+
 // =============================================================================
 // REGISTRY
 // =============================================================================
@@ -1016,6 +1095,7 @@ export const BANNER_TEMPLATES: BannerTemplate[] = [
 	fullscreenBlur,
 	natureGreen,
 	premiumGold,
+	revolutionTrading,
 ];
 
 /**

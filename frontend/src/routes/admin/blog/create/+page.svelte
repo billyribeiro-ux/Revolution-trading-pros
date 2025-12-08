@@ -523,6 +523,7 @@
 		border: none;
 		border-radius: 8px;
 		background: white;
+		color: #1a1a1a;
 		outline: none;
 	}
 
@@ -553,6 +554,8 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
+		color: #1a1a1a;
+		background: white;
 	}
 
 	textarea {
@@ -564,6 +567,7 @@
 		font-family: inherit;
 		resize: vertical;
 		background: white;
+		color: #1a1a1a;
 	}
 
 	textarea:focus {
@@ -629,6 +633,8 @@
 		border: 1px solid #e5e5e5;
 		border-radius: 6px;
 		font-size: 0.9rem;
+		color: #1a1a1a;
+		background: white;
 	}
 
 	.sidebar-panel input[type='checkbox'] {
@@ -815,6 +821,8 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		resize: vertical;
+		color: #1a1a1a;
+		background: white;
 	}
 
 	.sidebar-panel textarea:focus {

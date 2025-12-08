@@ -75,7 +75,14 @@ export const SERVICE_KEYS = {
 	PAYPAL: 'paypal',
 	SQUARE: 'square',
 
-	// CRM
+	// Fluent Ecosystem (Built-in)
+	FLUENT_FORMS_PRO: 'fluent_forms_pro', // FluentForms Pro 6.1.8+
+	FLUENT_CRM_PRO: 'fluent_crm_pro', // FluentCRM Pro (RevolutionCRM-L8)
+	FLUENT_SMTP: 'fluent_smtp', // FluentSMTP
+	FLUENT_SUPPORT: 'fluent_support', // FluentSupport (Helpdesk)
+	FLUENT_BOOKING: 'fluent_booking', // FluentBooking
+
+	// External CRM
 	HUBSPOT: 'hubspot',
 	SALESFORCE: 'salesforce',
 	PIPEDRIVE: 'pipedrive',
@@ -127,7 +134,16 @@ export const FEATURE_SERVICES: Record<string, ServiceKey[]> = {
 		SERVICE_KEYS.SENDINBLUE
 	],
 	payment: [SERVICE_KEYS.STRIPE, SERVICE_KEYS.PAYPAL, SERVICE_KEYS.SQUARE],
-	crm: [SERVICE_KEYS.HUBSPOT, SERVICE_KEYS.SALESFORCE, SERVICE_KEYS.PIPEDRIVE],
+	// Fluent Ecosystem (all built-in products)
+	fluent: [
+		SERVICE_KEYS.FLUENT_FORMS_PRO,
+		SERVICE_KEYS.FLUENT_CRM_PRO,
+		SERVICE_KEYS.FLUENT_SMTP,
+		SERVICE_KEYS.FLUENT_SUPPORT,
+		SERVICE_KEYS.FLUENT_BOOKING
+	],
+	forms: [SERVICE_KEYS.FLUENT_FORMS_PRO],
+	crm: [SERVICE_KEYS.FLUENT_CRM_PRO, SERVICE_KEYS.HUBSPOT, SERVICE_KEYS.SALESFORCE, SERVICE_KEYS.PIPEDRIVE],
 	social: [
 		SERVICE_KEYS.FACEBOOK,
 		SERVICE_KEYS.TWITTER,
@@ -349,6 +365,22 @@ export const isPaymentConnected = derived(connectionsStore, ($state) => {
 export const isCrmConnected = derived(connectionsStore, ($state) => {
 	const crmServices = FEATURE_SERVICES.crm;
 	return crmServices.some((key) => $state.connections[key]?.isConnected);
+});
+
+/**
+ * Check if Fluent ecosystem is connected (any Fluent product)
+ */
+export const isFluentConnected = derived(connectionsStore, ($state) => {
+	const fluentServices = FEATURE_SERVICES.fluent;
+	return fluentServices.some((key) => $state.connections[key]?.isConnected);
+});
+
+/**
+ * Check if Forms is connected (FluentForms Pro)
+ */
+export const isFormsConnected = derived(connectionsStore, ($state) => {
+	const formsServices = FEATURE_SERVICES.forms;
+	return formsServices.some((key) => $state.connections[key]?.isConnected);
 });
 
 /**
