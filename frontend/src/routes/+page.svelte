@@ -6,6 +6,8 @@
 	import LazySection from '$lib/components/LazySection.svelte';
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
 	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
+	import IndicatorsSection from '$lib/components/sections/IndicatorsSection.svelte';
+	import CoursesSection from '$lib/components/sections/CoursesSection.svelte';
 	import WhySection from '$lib/components/sections/WhySection.svelte';
 	import MentorshipSection from '$lib/components/sections/MentorshipSection.svelte';
 	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
@@ -44,6 +46,16 @@
 
 <LazySection rootMargin="300px">
 	<AlertServicesSection />
+</LazySection>
+
+<!-- Professional Trading Indicators Section -->
+<LazySection rootMargin="300px">
+	<IndicatorsSection />
+</LazySection>
+
+<!-- Expert-Led Trading Courses Section -->
+<LazySection rootMargin="300px">
+	<CoursesSection />
 </LazySection>
 
 <LazySection rootMargin="300px">
