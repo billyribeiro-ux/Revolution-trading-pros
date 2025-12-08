@@ -22,12 +22,56 @@ interface ConnectionStatus {
 	is_builtin?: boolean;
 }
 
-// Built-in services that are always available
+// Built-in Fluent Ecosystem services that are always available
 const BUILTIN_SERVICES: ConnectionStatus[] = [
 	{
-		key: 'revolution_crm',
-		name: 'RevolutionCRM Pro',
-		category: 'CRM',
+		key: 'fluent_forms_pro',
+		name: 'FluentForms Pro',
+		category: 'Fluent',
+		is_connected: true,
+		status: 'connected',
+		health_score: 100,
+		last_verified_at: new Date().toISOString(),
+		last_error: null,
+		is_builtin: true
+	},
+	{
+		key: 'fluent_crm_pro',
+		name: 'FluentCRM Pro',
+		category: 'Fluent',
+		is_connected: true,
+		status: 'connected',
+		health_score: 100,
+		last_verified_at: new Date().toISOString(),
+		last_error: null,
+		is_builtin: true
+	},
+	{
+		key: 'fluent_smtp',
+		name: 'FluentSMTP',
+		category: 'Fluent',
+		is_connected: true,
+		status: 'connected',
+		health_score: 100,
+		last_verified_at: new Date().toISOString(),
+		last_error: null,
+		is_builtin: true
+	},
+	{
+		key: 'fluent_support',
+		name: 'FluentSupport',
+		category: 'Fluent',
+		is_connected: true,
+		status: 'connected',
+		health_score: 100,
+		last_verified_at: new Date().toISOString(),
+		last_error: null,
+		is_builtin: true
+	},
+	{
+		key: 'fluent_booking',
+		name: 'FluentBooking',
+		category: 'Fluent',
 		is_connected: true,
 		status: 'connected',
 		health_score: 100,
