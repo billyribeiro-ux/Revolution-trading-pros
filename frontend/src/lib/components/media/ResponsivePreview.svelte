@@ -118,9 +118,9 @@
   }
 </script>
 
-<div class="responsive-preview {className}">
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 {className}">
   <!-- Header -->
-  <div class="preview-header">
+  <div class="flex items-center justify-between mb-4">
     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
       Responsive Variants
     </h3>
@@ -132,12 +132,10 @@
   </div>
 
   <!-- Variants grid -->
-  <div class="variants-grid">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
     {#each sortedVariants as variant (variant.sizeName)}
       <button
-        class="variant-card"
-        class:selected={selectedSize === variant.sizeName}
-        class:interactive={interactive}
+        class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 transition-all duration-200 {selectedSize === variant.sizeName ? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800' : 'border-transparent'} {interactive ? 'cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md' : ''}"
         onclick={() => handleSelect(variant.sizeName)}
         onmouseenter={(e) => handleMouseEnter(e, variant)}
         onmousemove={handleMouseMove}
@@ -145,36 +143,37 @@
         transition:scale={{ duration: 200 }}
       >
         <!-- Thumbnail -->
-        <div class="variant-thumbnail">
+        <div class="aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden">
           <img
             src={variant.url}
             alt="{variant.sizeName} preview"
             loading="lazy"
+            class="w-full h-full object-cover"
           />
         </div>
 
         <!-- Info -->
-        <div class="variant-info">
-          <div class="size-name">
+        <div class="p-2 text-center">
+          <div class="text-xs font-medium text-gray-700 dark:text-gray-300">
             {breakpointLabels[variant.sizeName] || variant.sizeName}
           </div>
-          <div class="size-dimensions">
+          <div class="text-[10px] text-gray-500 dark:text-gray-400">
             {variant.width} x {variant.height}
           </div>
           {#if showSizes}
-            <div class="size-details">
-              <span class="file-size">{formatBytes(variant.size)}</span>
+            <div class="flex items-center justify-center gap-2 mt-1">
+              <span class="text-[10px] text-gray-500">{formatBytes(variant.size)}</span>
               {#if originalSize > 0}
-                <span class="savings">-{getSavings(variant.size)}%</span>
+                <span class="text-[10px] font-medium text-green-500">-{getSavings(variant.size)}%</span>
               {/if}
             </div>
           {/if}
         </div>
 
         <!-- Breakpoint indicator -->
-        <div class="breakpoint-indicator">
+        <div class="h-1 bg-gray-200 dark:bg-gray-700">
           <div
-            class="indicator-bar"
+            class="h-full bg-blue-500"
             style="width: {(breakpointWidths[variant.sizeName] / 1920) * 100}%"
           ></div>
         </div>
@@ -184,23 +183,23 @@
 
   <!-- Size comparison chart -->
   {#if showSizes && sortedVariants.length > 0}
-    <div class="size-chart">
-      <div class="chart-header">
+    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="mb-2">
         <span class="text-xs text-gray-500">Size Comparison</span>
       </div>
-      <div class="chart-bars">
+      <div class="flex items-end justify-center gap-2 h-20">
         {#each sortedVariants as variant}
-          <div class="chart-bar-wrapper">
+          <div class="flex flex-col items-center gap-1">
             <div
-              class="chart-bar"
+              class="w-4 bg-blue-500 rounded-t transition-all duration-300"
               style="height: {(variant.size / originalSize) * 100}%"
             ></div>
-            <span class="chart-label">{variant.sizeName}</span>
+            <span class="text-[10px] text-gray-500">{variant.sizeName}</span>
           </div>
         {/each}
-        <div class="chart-bar-wrapper original">
-          <div class="chart-bar chart-bar-original" style="height: 100%"></div>
-          <span class="chart-label">orig</span>
+        <div class="flex flex-col items-center gap-1">
+          <div class="w-4 bg-gray-400 dark:bg-gray-500 rounded-t transition-all duration-300" style="height: 100%"></div>
+          <span class="text-[10px] text-gray-500">orig</span>
         </div>
       </div>
     </div>
@@ -209,133 +208,19 @@
   <!-- Hover preview tooltip -->
   {#if hoveredVariant}
     <div
-      class="hover-preview"
+      class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden pointer-events-none"
       style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
       transition:fade={{ duration: 150 }}
     >
       <img
         src={hoveredVariant.url}
         alt="Preview"
-        class="preview-image"
+        class="max-w-[200px] max-h-[150px] object-contain"
       />
-      <div class="preview-info">
+      <div class="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-gray-50 dark:bg-gray-900">
         <span class="font-medium">{hoveredVariant.width}x{hoveredVariant.height}</span>
         <span class="text-gray-500">{formatBytes(hoveredVariant.size)}</span>
       </div>
     </div>
   {/if}
 </div>
-
-<style>
-  @reference "tailwindcss";
-
-  .responsive-preview {
-    @apply bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4;
-  }
-
-  .preview-header {
-    @apply flex items-center justify-between mb-4;
-  }
-
-  .variants-grid {
-    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3;
-  }
-
-  .variant-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg overflow-hidden;
-    @apply border-2 border-transparent;
-    @apply transition-all duration-200;
-  }
-
-  .variant-card.interactive {
-    @apply cursor-pointer hover:border-blue-300 dark:hover:border-blue-600;
-    @apply hover:shadow-md;
-  }
-
-  .variant-card.selected {
-    @apply border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800;
-  }
-
-  .variant-thumbnail {
-    @apply aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden;
-  }
-
-  .variant-thumbnail img {
-    @apply w-full h-full object-cover;
-  }
-
-  .variant-info {
-    @apply p-2 text-center;
-  }
-
-  .size-name {
-    @apply text-xs font-medium text-gray-700 dark:text-gray-300;
-  }
-
-  .size-dimensions {
-    @apply text-[10px] text-gray-500 dark:text-gray-400;
-  }
-
-  .size-details {
-    @apply flex items-center justify-center gap-2 mt-1;
-  }
-
-  .file-size {
-    @apply text-[10px] text-gray-500;
-  }
-
-  .savings {
-    @apply text-[10px] font-medium text-green-500;
-  }
-
-  .breakpoint-indicator {
-    @apply h-1 bg-gray-200 dark:bg-gray-700;
-  }
-
-  .indicator-bar {
-    @apply h-full bg-blue-500;
-  }
-
-  .size-chart {
-    @apply mt-4 pt-4 border-t border-gray-200 dark:border-gray-700;
-  }
-
-  .chart-header {
-    @apply mb-2;
-  }
-
-  .chart-bars {
-    @apply flex items-end justify-center gap-2 h-20;
-  }
-
-  .chart-bar-wrapper {
-    @apply flex flex-col items-center gap-1;
-  }
-
-  .chart-bar {
-    @apply w-4 bg-blue-500 rounded-t transition-all duration-300;
-  }
-
-  .chart-bar-wrapper.original .chart-bar {
-    @apply bg-gray-400 dark:bg-gray-500;
-  }
-
-  .chart-label {
-    @apply text-[10px] text-gray-500;
-  }
-
-  .hover-preview {
-    @apply fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl;
-    @apply border border-gray-200 dark:border-gray-700 overflow-hidden;
-    @apply pointer-events-none;
-  }
-
-  .preview-image {
-    @apply max-w-[200px] max-h-[150px] object-contain;
-  }
-
-  .preview-info {
-    @apply flex items-center justify-between gap-2 px-2 py-1;
-    @apply text-xs bg-gray-50 dark:bg-gray-900;
-  }
-</style>

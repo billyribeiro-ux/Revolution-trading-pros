@@ -668,6 +668,7 @@
 		font-weight: 600;
 		color: var(--cart-text);
 		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 
 	.quantity-controls .qty::-webkit-outer-spin-button,
