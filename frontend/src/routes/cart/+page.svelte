@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * Shopping Cart Page - WordPress Simpler Trading Style
+	 * Shopping Cart Page - WordPress Revolution Trading Style
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Matches the WooCommerce cart layout from SimplerCart.txt
+	 * Matches the WooCommerce cart layout from Revolution Trading
 	 * Uses existing cart store for state management
 	 *
 	 * @version 4.0.0 (WordPress-style / December 2025)

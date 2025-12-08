@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * User Dashboard Page - Simpler Trading Exact Match
+	 * User Dashboard Page - Revolution Trading Pros
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * 100% match to WordPress Simpler Trading structure:
+	 * Member dashboard with WordPress-style structure:
 	 * <div class="dashboard__content">
 	 *   <section class="dashboard__content-section">
 	 *     <h2 class="section-title">Memberships</h2>
@@ -21,7 +21,7 @@
 	 * - WordPress section structure
 	 * - Skeleton loading states
 	 *
-	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 4.0.0 (December 2025)
 	 */
 
 	import { page } from '$app/stores';
@@ -210,7 +210,7 @@
 	</div>
 </header>
 
-<!-- Dashboard Content - WordPress: .dashboard__content (EXACT SimplerMain Match) -->
+<!-- Dashboard Content - WordPress: .dashboard__content (EXACT RevolutionMain Match) -->
 <div class="dashboard__content">
 	<!-- WordPress: .dashboard__content-main (left column) -->
 	<div class="dashboard__content-main">
@@ -256,7 +256,7 @@
 				</button>
 			</div>
 		{:else if hasMemberships}
-			<!-- WordPress EXACT: Memberships organized by SimplerMain sections -->
+			<!-- WordPress EXACT: Memberships organized by RevolutionMain sections -->
 
 			<!-- SECTION: Memberships (Trading Rooms - options type) -->
 			{#if tradingRooms.length > 0}
@@ -412,7 +412,7 @@
 	<!-- WordPress: .dashboard__content-sidebar (right column) -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<!-- Sidebar content placeholder - matches SimplerMain empty sidebar -->
+			<!-- Sidebar content placeholder - matches RevolutionMain empty sidebar -->
 		</section>
 	</aside>
 </div>
@@ -543,7 +543,7 @@
 
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT - WordPress: .dashboard__content (SimplerMain EXACT)
+	   DASHBOARD CONTENT - WordPress: .dashboard__content (RevolutionMain EXACT)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
@@ -567,7 +567,7 @@
 	}
 
 	.content-sidebar__section {
-		/* Empty placeholder - matches SimplerMain */
+		/* Empty placeholder - matches RevolutionMain */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -768,7 +768,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   WEEKLY WATCHLIST FEATURED SECTION - WordPress SimplerMain EXACT
+	   WEEKLY WATCHLIST FEATURED SECTION - WordPress RevolutionMain EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.u--background-color-white {
@@ -908,7 +908,7 @@
 
 		.dashboard__content-sidebar {
 			width: 100%;
-			display: none; /* Hide sidebar on mobile - matches SimplerMain behavior */
+			display: none; /* Hide sidebar on mobile - matches RevolutionMain behavior */
 		}
 	}
 

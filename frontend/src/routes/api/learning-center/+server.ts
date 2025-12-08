@@ -82,7 +82,7 @@ function initializeSampleData() {
 		{ id: 'inst_2', name: 'Chris Brecher', title: 'Lead Trader', avatar_url: '/images/instructors/chris-brecher.jpg' },
 		{ id: 'inst_3', name: 'Taylor Horton', title: 'Options Specialist', avatar_url: '/images/instructors/taylor-horton.jpg' },
 		{ id: 'inst_4', name: 'Sam Shames', title: 'Macro Analyst', avatar_url: '/images/instructors/sam-shames.jpg' },
-		{ id: 'inst_5', name: 'Simpler Trading Team', title: '', avatar_url: '/images/instructors/team.jpg' }
+		{ id: 'inst_5', name: 'Revolution Trading Team', title: '', avatar_url: '/images/instructors/team.jpg' }
 	];
 	sampleInstructors.forEach(i => instructors.set(i.id, i));
 

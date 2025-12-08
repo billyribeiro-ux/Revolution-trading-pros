@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Video Archive Page - WordPress Simpler Trading Exact
+	 * Video Archive Page - WordPress Revolution Trading Exact
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * URL: /dashboard/mastering-the-trade/archive

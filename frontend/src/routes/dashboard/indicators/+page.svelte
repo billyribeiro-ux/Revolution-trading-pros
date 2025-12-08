@@ -1,10 +1,10 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Indicators Page - WordPress Simpler Trading Exact
+	 * Dashboard - My Indicators Page - WordPress Revolution Trading Exact
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Shows user's purchased indicators with download access.
-	 * Matches WordPress Simpler Trading dashboard structure exactly.
+	 * Matches WordPress Revolution Trading dashboard structure exactly.
 	 *
 	 * @version 2.0.0 (WordPress Exact / December 2025)
 	 */

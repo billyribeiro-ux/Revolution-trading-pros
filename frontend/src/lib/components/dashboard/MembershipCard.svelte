@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * Membership Card Component - Simpler Trading Exact Match
+	 * Membership Card Component - Revolution Trading Exact Match
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * 100% match to WordPress Simpler Trading structure:
+	 * 100% match to WordPress Revolution Trading structure:
 	 * <article class="membership-card membership-card--{type}">
 	 *   <a class="membership-card__header">
 	 *     <span class="mem_icon">
@@ -19,7 +19,7 @@
 	 *   </div>
 	 * </article>
 	 *
-	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 4.0.0 (Revolution Trading Exact / December 2025)
 	 */
 
 	import '$lib/styles/st-icons.css';
@@ -86,7 +86,7 @@
 			'weekly-watchlist': 'ww',
 			// Slug-based mappings for specific services
 			'mastering-the-trade': 'options',
-			'simpler-showcase': 'options',
+			'revolution-showcase': 'options',
 			// Pass-through types
 			'trading-room': 'trading-room',
 			'options': 'options',
@@ -119,7 +119,7 @@
 			'spx-profit-pulse': 'st-icon-spx-profit-pulse',
 			'explosive-swings': 'st-icon-explosive-swings',
 			'mastering-the-trade': 'st-icon-mastering-the-trade',
-			'simpler-showcase': 'st-icon-simpler-showcase',
+			'revolution-showcase': 'st-icon-revolution-showcase',
 			'moxie': 'st-icon-moxie',
 			'weekly-watchlist': 'st-icon-trade-of-the-week'
 		};
@@ -162,7 +162,7 @@
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE - Matches Simpler Trading WordPress exactly
+     TEMPLATE - Matches Revolution Trading WordPress exactly
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if skeleton}
@@ -214,12 +214,12 @@
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Matches Simpler Trading CSS exactly
+     STYLES - Matches Revolution Trading CSS exactly
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP CARD - WordPress Simpler Trading Exact
+	   MEMBERSHIP CARD - WordPress Revolution Trading Exact
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card {
