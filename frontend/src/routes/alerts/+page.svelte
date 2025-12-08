@@ -4,7 +4,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Lists all available alert services with comparison.
-	 * Matches Simpler Trading's product listing style.
+	 * Matches Revolution Trading's product listing style.
 	 *
 	 * @version 1.0.0 (December 2025)
 	 */

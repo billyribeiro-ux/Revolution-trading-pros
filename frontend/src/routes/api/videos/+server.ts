@@ -55,7 +55,7 @@ function initializeSampleData() {
 				category_id: 'cat_1',
 				categories: ['Member Webinar'],
 				tags: ['FAQ', 'Getting Started'],
-				instructor: { id: 'inst_1', name: 'Simpler Trading Team' },
+				instructor: { id: 'inst_1', name: 'Revolution Trading Team' },
 				membership_id: 'mastering-the-trade',
 				is_premium: true,
 				is_published: true,

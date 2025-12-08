@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * Checkout Page - WordPress Simpler Trading Style (Multi-Step)
+	 * Checkout Page - WordPress Revolution Trading Style (Multi-Step)
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Matches the WooCommerce checkout layout from SimplerCart.txt:
+	 * Matches the WooCommerce checkout layout from Revolution Trading:
 	 * - 3-step wizard: Account → Billing → Payment
 	 * - Cart sidebar showing products
 	 * - Coupon toggle form

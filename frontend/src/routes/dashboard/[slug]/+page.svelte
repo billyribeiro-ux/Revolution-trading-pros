@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Individual Membership Dashboard Page - WordPress Simpler Trading Exact
+	 * Individual Membership Dashboard Page - WordPress Revolution Trading Exact
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * This is the page shown when clicking "Dashboard" on a membership card.
@@ -66,13 +66,13 @@
 				hasArchive: true,
 				hasDiscord: true
 			},
-			'simpler-showcase': {
+			'revolution-showcase': {
 				name: 'Revolution Showcase',
-				slug: 'simpler-showcase',
+				slug: 'revolution-showcase',
 				type: 'trading-room',
 				description: 'Exclusive showcase of trading strategies from our top educators.',
-				icon: 'st-icon-simpler-showcase',
-				tradingRoomUrl: '/trading-room/simpler-showcase',
+				icon: 'st-icon-revolution-showcase',
+				tradingRoomUrl: '/trading-room/revolution-showcase',
 				hasLearningCenter: true,
 				hasArchive: true,
 				hasDiscord: true
@@ -374,7 +374,7 @@
 		</section>
 	</div>
 
-	<!-- Sidebar - WordPress SimplerInsideDashboard EXACT -->
+	<!-- Sidebar - WordPress RevolutionInsideDashboard EXACT -->
 	<aside class="dashboard__content-sidebar">
 		<!-- Trading Room Schedule - WordPress: .content-sidebar__section -->
 		<section class="content-sidebar__section">
@@ -850,7 +850,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - WordPress SimplerInsideDashboard EXACT
+	   SIDEBAR - WordPress RevolutionInsideDashboard EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* WordPress: .content-sidebar__section */

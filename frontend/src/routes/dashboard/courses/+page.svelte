@@ -1,10 +1,10 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Courses Page - WordPress Simpler Trading Exact
+	 * Dashboard - My Courses Page - WordPress Revolution Trading Exact
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Shows user's enrolled courses with progress tracking.
-	 * Matches WordPress Simpler Trading dashboard structure exactly.
+	 * Matches WordPress Revolution Trading dashboard structure exactly.
 	 *
 	 * @version 2.0.0 (WordPress Exact / December 2025)
 	 */

@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * Dashboard - Support Page
-	 * Follows WordPress Simpler Trading patterns exactly
+	 * Follows WordPress Revolution Trading patterns exactly
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
 

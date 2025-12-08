@@ -3,7 +3,7 @@
 	 * Dashboard Sidebar Component - WordPress Exact Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Exact match of WordPress Simpler Trading sidebar structure:
+	 * Exact match of WordPress Revolution Trading sidebar structure:
 	 * - .dashboard__nav-primary (primary navigation)
 	 * - .dashboard__profile-nav-item (profile section)
 	 * - .dash_main_links (main navigation links)
