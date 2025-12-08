@@ -3,8 +3,7 @@
     import { cubicOut, quintOut, elasticOut } from 'svelte/easing'; // Added elasticOut
     import { fade, fly, draw, slide } from 'svelte/transition'; // Added slide
     import { browser } from '$app/environment';
-    import { gsap } from 'gsap'; // Added GSAP
-    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'; // Added ScrollTrigger
+    // GSAP imported dynamically in onMount to avoid SSR issues
 
     // Icons
     import IconBuildingBank from '@tabler/icons-svelte/icons/building-bank';
@@ -50,20 +49,28 @@
     onMount(() => {
         if (!browser) return;
 
-        // Register GSAP
-        gsap.registerPlugin(ScrollTrigger);
+        let scrollTriggerCleanup: (() => void) | null = null;
 
-        // Parallax Effects
-        gsap.to('.parallax-layer', {
-            yPercent: -20,
-            ease: "none",
-            scrollTrigger: {
-                trigger: "#main-content",
-                start: "top top",
-                end: "bottom top",
-                scrub: true
-            }
-        });
+        // Dynamically import GSAP to avoid SSR issues
+        (async () => {
+            const { gsap } = await import('gsap');
+            const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+            gsap.registerPlugin(ScrollTrigger);
+
+            scrollTriggerCleanup = () => ScrollTrigger.getAll().forEach(st => st.kill());
+
+            // Parallax Effects
+            gsap.to('.parallax-layer', {
+                yPercent: -20,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "#main-content",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+        })();
 
         const observer = new IntersectionObserver(
             (entries) => {
@@ -82,7 +89,7 @@
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            ScrollTrigger.getAll().forEach(st => st.kill());
+            if (scrollTriggerCleanup) scrollTriggerCleanup();
         };
     });
 

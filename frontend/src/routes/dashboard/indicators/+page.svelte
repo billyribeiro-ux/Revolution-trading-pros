@@ -10,18 +10,16 @@
 	 * @version 3.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
-	import {
-		IconChartLine,
-		IconDownload,
-		IconExternalLink,
-		IconCheck,
-		IconClock,
-		IconRefresh,
-		IconChevronRight,
-		IconSearch,
-		IconAlertTriangle,
-		IconLoader2
-	} from '@tabler/icons-svelte';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
 	import '$lib/styles/st-icons.css';
 	import { userIndicatorsApi, type PurchasedIndicator as ApiPurchasedIndicator } from '$lib/api/indicators';
 

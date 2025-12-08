@@ -278,8 +278,8 @@
                     class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-rtp-muted font-medium"
                 >
                     <div class="flex -space-x-2">
-                        <div class="w-8 h-8 rounded-full bg-gray-800 border-2 border-rtp-bg bg-cover" style="background-image: url('/avatars/1.jpg')"></div>
-                        <div class="w-8 h-8 rounded-full bg-gray-700 border-2 border-rtp-bg bg-cover" style="background-image: url('/avatars/2.jpg')"></div>
+                        <div class="w-8 h-8 rounded-full bg-gray-800 border-2 border-rtp-bg bg-cover" style="background-image: url('/avatars/1.svg')"></div>
+                        <div class="w-8 h-8 rounded-full bg-gray-700 border-2 border-rtp-bg bg-cover" style="background-image: url('/avatars/2.svg')"></div>
                         <div
                             class="w-8 h-8 rounded-full bg-rtp-primary border-2 border-rtp-bg flex items-center justify-center text-white text-xs font-bold"
                         >
