@@ -41,7 +41,7 @@ export interface PurchasedIndicator {
 	description?: string;
 	platform: 'TradingView' | 'ThinkorSwim' | 'MetaTrader' | 'NinjaTrader';
 	platform_slug: string;
-	status: 'active' | 'expiring' | 'expired';
+	status: 'active' | 'expiring' | 'expired' | 'trial';
 	expires_at: string;
 	days_until_expiry?: number;
 	download_url: string;
