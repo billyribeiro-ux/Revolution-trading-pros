@@ -1,20 +1,19 @@
 <script lang="ts">
 	/**
 	 * CoursesSection - Apple/Netflix Cinematic Design
-	 * Principal Engineer ICT9+ Standard
+	 * Mobile-First + GSAP Animations Fixed
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 * Features:
-	 * ✓ GSAP-powered scroll animations
-	 * ✓ 3D card hover effects
-	 * ✓ Cinematic video-style preview cards
-	 * ✓ Progress indicators and ratings
-	 * ✓ Staggered reveal with parallax
-	 * ✓ Netflix-style horizontal scroll on mobile
+	 * ✓ Mobile-first responsive design
+	 * ✓ GSAP ScrollTrigger with proper initialization
+	 * ✓ Touch-friendly card interactions
+	 * ✓ Reduced motion support
+	 * ✓ Horizontal scroll on mobile
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
-	import { cubicOut, backOut, elasticOut } from 'svelte/easing';
+	import { cubicOut, backOut } from 'svelte/easing';
 	import IconSchool from '@tabler/icons-svelte/icons/school';
 	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
@@ -123,6 +122,7 @@
 	let hoveredCard = $state<string | null>(null);
 	let gsapInstance: any = null;
 	let scrollTriggerInstance: any = null;
+	let prefersReducedMotion = $state(false);
 
 	// ============================================================================
 	// LIFECYCLE
@@ -132,7 +132,10 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// Intersection Observer
+		// Check for reduced motion preference
+		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		// Intersection Observer - lower threshold for mobile
 		observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting) {
@@ -140,12 +143,14 @@
 					observer?.disconnect();
 				}
 			},
-			{ threshold: 0.15 }
+			{ threshold: 0.1, rootMargin: '50px' }
 		);
 		if (sectionRef) observer.observe(sectionRef);
 
 		// Load GSAP asynchronously
-		loadGSAP();
+		if (!prefersReducedMotion) {
+			loadGSAP();
+		}
 
 		return () => {
 			observer?.disconnect();
@@ -153,31 +158,38 @@
 	});
 
 	async function loadGSAP() {
-		const gsap = (await import('gsap')).default;
-		const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
-		gsap.registerPlugin(ScrollTrigger);
-		gsapInstance = gsap;
-		scrollTriggerInstance = ScrollTrigger;
+		try {
+			const gsap = (await import('gsap')).default;
+			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+			gsap.registerPlugin(ScrollTrigger);
+			gsapInstance = gsap;
+			scrollTriggerInstance = ScrollTrigger;
 
-		// Parallax effect on cards
-		if (cardsRef) {
-			gsap.fromTo(
-				cardsRef.querySelectorAll('.course-card'),
-				{ y: 100, opacity: 0 },
-				{
-					y: 0,
-					opacity: 1,
-					duration: 1,
-					stagger: 0.15,
-					ease: 'power3.out',
-					scrollTrigger: {
-						trigger: cardsRef,
-						start: 'top 85%',
-						end: 'bottom 20%',
-						toggleActions: 'play none none reverse'
+			// Wait for cards to render
+			await tick();
+
+			// Animate cards on scroll
+			const cards = cardsRef?.querySelectorAll('.course-card');
+			if (cards && cards.length > 0) {
+				gsap.fromTo(
+					cards,
+					{ y: 60, opacity: 0 },
+					{
+						y: 0,
+						opacity: 1,
+						duration: 0.8,
+						stagger: 0.12,
+						ease: 'power2.out',
+						scrollTrigger: {
+							trigger: cardsRef,
+							start: 'top 80%',
+							toggleActions: 'play none none reverse'
+						}
 					}
-				}
-			);
+				);
+			}
+		} catch (e) {
+			console.debug('[CoursesSection] GSAP not available:', e);
 		}
 	}
 
@@ -222,114 +234,112 @@
 
 <section
 	bind:this={sectionRef}
-	class="relative py-32 lg:py-40 overflow-hidden bg-gradient-to-b from-zinc-950 via-black to-zinc-950"
+	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-zinc-950 via-black to-zinc-950"
 >
 	<!-- Cinematic Background -->
 	<div class="absolute inset-0 pointer-events-none">
-		<!-- Spotlight effects -->
+		<!-- Spotlight effects - smaller on mobile -->
 		<div
-			class="absolute top-0 left-1/4 w-[600px] h-[600px] bg-violet-500/5 rounded-full blur-[150px]"
+			class="absolute top-0 left-1/4 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-violet-500/5 rounded-full blur-[100px] sm:blur-[150px]"
 		></div>
 		<div
-			class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[150px]"
+			class="absolute bottom-0 right-1/4 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] bg-emerald-500/5 rounded-full blur-[100px] sm:blur-[150px]"
 		></div>
 
-		<!-- Film grain overlay -->
-		<div class="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E')]"></div>
-
-		<!-- Subtle grid -->
+		<!-- Subtle grid - larger on mobile for performance -->
 		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:80px_80px]"
+			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px] sm:bg-[size:80px_80px]"
 		></div>
 	</div>
 
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Section Header -->
 		{#if isVisible}
-			<div class="text-center mb-20" in:slideUp={{ delay: 0, duration: 1000 }}>
+			<div class="text-center mb-10 sm:mb-16 lg:mb-20" in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}>
 				<div
-					class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6"
+					class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-4 sm:mb-6"
 				>
-					<IconSchool class="w-4 h-4 text-violet-400" />
-					<span class="text-sm font-medium text-violet-400 tracking-wide">Trading Education</span>
+					<IconSchool class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-violet-400" />
+					<span class="text-xs sm:text-sm font-medium text-violet-400 tracking-wide">Trading Education</span>
 				</div>
 
-				<h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+				<h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
 					Master the Markets
 					<span
-						class="block mt-2 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent"
+						class="block mt-1 sm:mt-2 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent"
 					>
 						With Expert-Led Courses
 					</span>
 				</h2>
 
-				<p class="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+				<p class="text-base sm:text-lg lg:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
 					Structured curriculum designed by profitable traders. Learn at your pace with lifetime
 					access and live support.
 				</p>
 
-				<!-- Stats row -->
+				<!-- Stats row - 2x2 grid on mobile -->
 				<div
-					class="flex flex-wrap justify-center gap-8 mt-10 pt-10 border-t border-zinc-800/50"
-					in:slideUp={{ delay: 200, duration: 800 }}
+					class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-8 mt-8 sm:mt-10 pt-8 sm:pt-10 border-t border-zinc-800/50"
+					in:slideUp={{ delay: prefersReducedMotion ? 0 : 200, duration: prefersReducedMotion ? 0 : 600 }}
 				>
 					<div class="text-center">
-						<div class="text-3xl font-bold text-white">12,000+</div>
-						<div class="text-sm text-zinc-500">Students Enrolled</div>
+						<div class="text-2xl sm:text-3xl font-bold text-white">12,000+</div>
+						<div class="text-xs sm:text-sm text-zinc-500">Students Enrolled</div>
 					</div>
 					<div class="text-center">
-						<div class="text-3xl font-bold text-white">4.9</div>
-						<div class="text-sm text-zinc-500">Average Rating</div>
+						<div class="text-2xl sm:text-3xl font-bold text-white">4.9</div>
+						<div class="text-xs sm:text-sm text-zinc-500">Average Rating</div>
 					</div>
 					<div class="text-center">
-						<div class="text-3xl font-bold text-white">89%</div>
-						<div class="text-sm text-zinc-500">Completion Rate</div>
+						<div class="text-2xl sm:text-3xl font-bold text-white">89%</div>
+						<div class="text-xs sm:text-sm text-zinc-500">Completion Rate</div>
 					</div>
 					<div class="text-center">
-						<div class="text-3xl font-bold text-white">24/7</div>
-						<div class="text-sm text-zinc-500">Community Access</div>
+						<div class="text-2xl sm:text-3xl font-bold text-white">24/7</div>
+						<div class="text-xs sm:text-sm text-zinc-500">Community Access</div>
 					</div>
 				</div>
 			</div>
 		{/if}
 
-		<!-- Course Cards Grid -->
+		<!-- Course Cards Grid - Single column on mobile -->
 		<div
 			bind:this={cardsRef}
-			class="grid md:grid-cols-2 gap-6 lg:gap-8"
+			class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8"
 		>
 			{#each courses as course, i}
 				<a
 					href={course.href}
-					class="course-card group relative rounded-3xl overflow-hidden bg-gradient-to-br {course.bgGradient} border border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-500/10"
+					class="course-card group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br {course.bgGradient} border border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 active:scale-[0.98]"
 					onmouseenter={() => (hoveredCard = course.id)}
 					onmouseleave={() => (hoveredCard = null)}
+					ontouchstart={() => (hoveredCard = course.id)}
 				>
 					<!-- Card gradient overlay -->
 					<div
-						class="absolute inset-0 bg-gradient-to-br {course.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500"
+						class="absolute inset-0 bg-gradient-to-br {course.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300"
 					></div>
 
 					<!-- Content -->
-					<div class="relative p-6 lg:p-8">
+					<div class="relative p-4 sm:p-6 lg:p-8">
 						<!-- Header -->
-						<div class="flex items-start justify-between mb-6">
-							<div class="flex items-center gap-4">
+						<div class="flex items-start justify-between gap-3 mb-4 sm:mb-6">
+							<div class="flex items-center gap-3 sm:gap-4">
 								<!-- Icon -->
 								<div
-									class="w-14 h-14 rounded-2xl bg-gradient-to-br {course.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500"
+									class="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br {course.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
 								>
 									{#if course.icon}
-									{@const IconComponent = course.icon}
-									<IconComponent class="w-7 h-7 text-white" />
-								{/if}
+										{@const IconComponent = course.icon}
+										<IconComponent class="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+									{/if}
 								</div>
-								<div>
-									<span class="text-xs font-medium text-zinc-500 uppercase tracking-wider"
+								<div class="min-w-0">
+									<span class="text-[10px] sm:text-xs font-medium text-zinc-500 uppercase tracking-wider"
 										>{course.level}</span
 									>
 									<h3
-										class="text-xl lg:text-2xl font-bold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:{course.gradient} group-hover:bg-clip-text transition-all duration-300"
+										class="text-lg sm:text-xl lg:text-2xl font-bold text-white truncate"
 									>
 										{course.title}
 									</h3>
@@ -338,71 +348,71 @@
 
 							<!-- Badge -->
 							<span
-								class="px-3 py-1 text-xs font-bold rounded-full {course.badgeColor} text-white shadow-lg"
+								class="flex-shrink-0 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold rounded-full {course.badgeColor} text-white shadow-lg"
 							>
 								{course.badge}
 							</span>
 						</div>
 
 						<!-- Description -->
-						<p class="text-zinc-400 mb-6 leading-relaxed">{course.description}</p>
+						<p class="text-sm sm:text-base text-zinc-400 mb-4 sm:mb-6 leading-relaxed line-clamp-2 sm:line-clamp-none">{course.description}</p>
 
-						<!-- Features -->
-						<div class="flex flex-wrap gap-2 mb-6">
+						<!-- Features - Horizontal scroll on mobile -->
+						<div class="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
 							{#each course.features as feature}
 								<span
-									class="px-3 py-1 text-xs font-medium rounded-full bg-zinc-800/50 text-zinc-300 border border-zinc-700/50"
+									class="flex-shrink-0 px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-medium rounded-full bg-zinc-800/50 text-zinc-300 border border-zinc-700/50"
 								>
 									{feature}
 								</span>
 							{/each}
 						</div>
 
-						<!-- Meta info -->
-						<div class="flex items-center gap-6 text-sm text-zinc-500 mb-6">
-							<div class="flex items-center gap-1.5">
-								<IconClock class="w-4 h-4" />
+						<!-- Meta info - Stack on very small screens -->
+						<div class="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-zinc-500 mb-4 sm:mb-6">
+							<div class="flex items-center gap-1 sm:gap-1.5">
+								<IconClock class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
 								<span>{course.duration}</span>
 							</div>
-							<div class="flex items-center gap-1.5">
-								<IconUsers class="w-4 h-4" />
-								<span>{course.students} students</span>
+							<div class="flex items-center gap-1 sm:gap-1.5">
+								<IconUsers class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+								<span>{course.students}</span>
 							</div>
-							<div class="flex items-center gap-1.5">
-								<IconStar class="w-4 h-4 text-amber-400" />
+							<div class="flex items-center gap-1 sm:gap-1.5">
+								<IconStar class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
 								<span class="text-white font-medium">{course.rating}</span>
-								<span>({course.reviews})</span>
+								<span class="hidden sm:inline">({course.reviews})</span>
 							</div>
 						</div>
 
 						<!-- Footer -->
 						<div
-							class="flex items-center justify-between pt-6 border-t border-zinc-800/50"
+							class="flex items-center justify-between pt-4 sm:pt-6 border-t border-zinc-800/50"
 						>
-							<div class="flex items-baseline gap-2">
-								<span class="text-2xl font-bold text-white">{course.price}</span>
-								<span class="text-sm text-zinc-500 line-through">{course.originalPrice}</span>
+							<div class="flex items-baseline gap-1.5 sm:gap-2">
+								<span class="text-xl sm:text-2xl font-bold text-white">{course.price}</span>
+								<span class="text-xs sm:text-sm text-zinc-500 line-through">{course.originalPrice}</span>
 							</div>
 
 							<div
-								class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-gradient-to-r group-hover:{course.gradient} group-hover:border-transparent transition-all duration-300"
+								class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all duration-300"
 							>
-								<span class="text-sm font-semibold text-white">Enroll Now</span>
+								<span class="text-xs sm:text-sm font-semibold text-white">Enroll</span>
 								<IconArrowRight
-									class="w-4 h-4 text-white group-hover:translate-x-1 transition-transform"
+									class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white group-hover:translate-x-1 transition-transform"
 								/>
 							</div>
 						</div>
 					</div>
 
-					<!-- Play button overlay (appears on hover) -->
+					<!-- Play button overlay (hidden on mobile for better touch UX) -->
 					<div
-						class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+						class="hidden sm:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
 					>
 						<div
-							class="w-20 h-20 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-2xl"
+							class="w-16 sm:w-20 h-16 sm:h-20 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-2xl"
 						>
-							<IconPlayerPlay class="w-8 h-8 text-white ml-1" />
+							<IconPlayerPlay class="w-6 h-6 sm:w-8 sm:h-8 text-white ml-1" />
 						</div>
 					</div>
 				</a>
@@ -411,20 +421,31 @@
 
 		<!-- Bottom CTA -->
 		{#if isVisible}
-			<div class="text-center mt-16" in:slideUp={{ delay: 600, duration: 800 }}>
+			<div class="text-center mt-10 sm:mt-16" in:slideUp={{ delay: prefersReducedMotion ? 0 : 400, duration: prefersReducedMotion ? 0 : 600 }}>
 				<a
 					href="/courses"
-					class="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:scale-105 transition-all duration-300"
+					class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
 				>
-					<span>View All Courses</span>
-					<IconArrowRight class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+					<span class="text-sm sm:text-base">View All Courses</span>
+					<IconArrowRight class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
 				</a>
 
-				<p class="mt-6 text-sm text-zinc-500">
-					<IconCertificate class="w-4 h-4 inline mr-1" />
+				<p class="mt-4 sm:mt-6 text-xs sm:text-sm text-zinc-500">
+					<IconCertificate class="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1" />
 					All courses include certificate of completion
 				</p>
 			</div>
 		{/if}
 	</div>
 </section>
+
+<style>
+	/* Hide scrollbar for horizontal scroll on mobile */
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+</style>
