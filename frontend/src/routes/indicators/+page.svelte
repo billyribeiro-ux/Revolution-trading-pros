@@ -1,27 +1,24 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
-    import { gsap } from 'gsap';
-    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-    
-    // Icons
-    import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-    import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-    import IconTrendingDown from '@tabler/icons-svelte/icons/trending-down';
-    import IconActivity from '@tabler/icons-svelte/icons/activity';
-    import IconTarget from '@tabler/icons-svelte/icons/target';
-    import IconBolt from '@tabler/icons-svelte/icons/bolt';
-    import IconStar from '@tabler/icons-svelte/icons/star';
-    import IconCheck from '@tabler/icons-svelte/icons/check';
-    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-    import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-    import IconWaveSine from '@tabler/icons-svelte/icons/wave-sine';
-    import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
-    import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-    import IconUsers from '@tabler/icons-svelte/icons/users';
-    import IconSchool from '@tabler/icons-svelte/icons/school';
-    import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-    import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
+    import {
+        IconChartLine,
+        IconTrendingUp,
+        IconTrendingDown,
+        IconActivity,
+        IconTarget,
+        IconBolt,
+        IconStar,
+        IconCheck,
+        IconArrowRight,
+        IconChartCandle,
+        IconWaveSine,
+        IconChartBar,
+        IconAlertTriangle,
+        IconUsers,
+        IconSchool,
+        IconChevronDown
+    } from '@tabler/icons-svelte';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
     // --- Types ---
@@ -152,8 +149,6 @@
     let cardsVisible = $state<boolean[]>(new Array(indicators.length).fill(false));
     let selectedCategory = $state('All');
     let openFaq = $state<number | null>(null);
-    let mouseX = $state(0);
-    let mouseY = $state(0);
 
     let filteredIndicators = $derived(
         selectedCategory === 'All'
@@ -163,17 +158,6 @@
 
     function toggleFaq(index: number) {
         openFaq = openFaq === index ? null : index;
-    }
-    
-    // --- Mouse Spotlight Logic ---
-    function handleMouseMove(e: MouseEvent) {
-        if (!browser) return;
-        const target = e.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        target.style.setProperty('--mouse-x', `${x}px`);
-        target.style.setProperty('--mouse-y', `${y}px`);
     }
 
     // --- Structured Data ---
@@ -220,9 +204,6 @@
     onMount(() => {
         if (!browser) return;
 
-        gsap.registerPlugin(ScrollTrigger);
-
-        // --- Original Observer Logic (Preserved for compatibility) ---
         const heroObserver = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -254,63 +235,9 @@
         const cardElements = document.querySelectorAll('.indicator-card');
         cardElements.forEach((card) => cardObserver.observe(card));
 
-        // --- NEW: Cinematic GSAP Animations ---
-        
-        // 1. Hero Parallax & Reveal
-        const tlHero = gsap.timeline();
-        tlHero.to('.hero-title span', {
-            backgroundPosition: "200% center",
-            duration: 2,
-            ease: "none",
-            repeat: -1
-        });
-
-        // 2. Truth Section - Animated Chart Drawing
-        const chartPath = document.querySelector('.mockup-price-path');
-        const indicatorPath = document.querySelector('.mockup-indicator-path');
-        const annotation = document.querySelector('.mockup-annotation');
-
-        if (chartPath && indicatorPath) {
-            const chartLength = (chartPath as SVGPathElement).getTotalLength();
-            const indLength = (indicatorPath as SVGPathElement).getTotalLength();
-
-            gsap.set(chartPath, { strokeDasharray: chartLength, strokeDashoffset: chartLength });
-            gsap.set(indicatorPath, { strokeDasharray: indLength, strokeDashoffset: indLength });
-            gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
-
-            ScrollTrigger.create({
-                trigger: '.truth-section',
-                start: "top 60%",
-                onEnter: () => {
-                    gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: "power2.out" });
-                    gsap.to(indicatorPath, { strokeDashoffset: 0, duration: 2, delay: 0.2, ease: "power2.out" });
-                    gsap.to(annotation, { opacity: 1, scale: 1, y: 0, duration: 0.5, delay: 1.8, ease: "back.out(1.7)" });
-                }
-            });
-        }
-
-        // 3. Confluence Flow Animation
-        const connectors = document.querySelectorAll('.confluence-connector');
-        const steps = document.querySelectorAll('.confluence-step');
-        
-        const tlConfluence = gsap.timeline({
-            scrollTrigger: {
-                trigger: '.confluence-section',
-                start: "top 70%"
-            }
-        });
-
-        tlConfluence.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
-            .from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, "-=0.1")
-            .from(steps[1], { y: 30, opacity: 0, duration: 0.5 }, "-=0.1")
-            .from(connectors[1], { scale: 0, opacity: 0, duration: 0.3 }, "-=0.1")
-            .from(steps[2], { y: 30, opacity: 0, duration: 0.5 }, "-=0.1");
-
-
         return () => {
             heroObserver.disconnect();
             cardObserver.disconnect();
-            ScrollTrigger.getAll().forEach(st => st.kill());
         };
     });
 </script>
@@ -335,144 +262,106 @@
     schema={indicatorsSchema}
 />
 
-<div class="indicators-page antialiased">
-    <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[1] mix-blend-overlay" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+');"></div>
-
-    <section class="hero-section relative" class:visible={heroVisible}>
+<div class="indicators-page">
+    <section class="hero-section" class:visible={heroVisible}>
         <div class="hero-background">
-            <div class="glow-orb glow-orb-1 mix-blend-screen"></div>
-            <div class="glow-orb glow-orb-2 mix-blend-screen"></div>
-            <div class="glow-orb glow-orb-3 mix-blend-screen"></div>
-            
-            <div class="absolute inset-0 perspective-grid opacity-20"></div>
-
+            <div class="glow-orb glow-orb-1"></div>
+            <div class="glow-orb glow-orb-2"></div>
             <div class="chart-lines">
-                <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-                    <path class="chart-line-svg line-1" d="M0,300 Q400,250 800,350 T1600,200" fill="none" stroke="#2e8eff" stroke-width="2" />
-                    <path class="chart-line-svg line-2" d="M0,350 Q400,300 800,400 T1600,250" fill="none" stroke="#34d399" stroke-width="2" />
-                </svg>
+                <div class="chart-line line-1"></div>
+                <div class="chart-line line-2"></div>
+                <div class="chart-line line-3"></div>
             </div>
         </div>
 
-        <div class="hero-content relative z-10 px-4">
-            <div class="hero-badge animate-float">
-                <IconChartLine size={18} stroke={2} />
-                <span class="tracking-wide text-xs uppercase font-bold">The Professional Toolkit</span>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <IconChartLine size={20} stroke={2} />
+                <span>The Professional Toolkit</span>
             </div>
 
-            <h1 class="hero-title tracking-tight">
+            <h1 class="hero-title">
                 Master the Tools<br />
-                <span class="gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-emerald-400 to-blue-400 bg-[length:200%_auto]">Pro Traders Use</span>
+                <span class="gradient-text">Pro Traders Use</span>
             </h1>
 
-            <p class="hero-description text-lg md:text-xl text-slate-300/90 leading-relaxed">
+            <p class="hero-description">
                 Stop looking for a "magic bullet." Successful trading isn't about finding the perfect indicator—it's about interpreting the data correctly. We teach you how to use institutional-grade tools like VWAP and RSI to read the market's narrative, not just its noise.
             </p>
 
-            <div class="hero-cta-group pt-4">
-                <button class="cta-button primary group relative overflow-hidden">
-                    <span class="relative z-10 flex items-center gap-2">
-                        Join the Live Room
-                        <IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
-                    </span>
-                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+            <div class="hero-cta-group">
+                <button class="cta-button primary">
+                    Join the Live Room
+                    <IconArrowRight size={20} />
                 </button>
-                <button class="cta-button secondary backdrop-blur-md">
+                <button class="cta-button secondary">
                     Explore Indicators
                 </button>
             </div>
 
-            <div class="hero-stats border-t border-white/10 mt-12 pt-8">
-                <div class="stat-item group">
-                    <div class="p-3 rounded-full bg-white/5 group-hover:bg-blue-500/10 transition-colors">
-                        <IconTarget size={28} stroke={1.5} class="stat-icon text-blue-400" />
-                    </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <IconTarget size={32} stroke={1.5} class="stat-icon" />
                     <div class="stat-content">
-                        <div class="stat-value text-white font-mono">Precision</div>
-                        <div class="stat-label text-slate-400">Entries & Exits</div>
+                        <div class="stat-value">Precision</div>
+                        <div class="stat-label">Entries & Exits</div>
                     </div>
                 </div>
-                <div class="stat-item group">
-                    <div class="p-3 rounded-full bg-white/5 group-hover:bg-emerald-500/10 transition-colors">
-                        <IconBolt size={28} stroke={1.5} class="stat-icon text-emerald-400" />
-                    </div>
+                <div class="stat-item">
+                    <IconBolt size={32} stroke={1.5} class="stat-icon" />
                     <div class="stat-content">
-                        <div class="stat-value text-white font-mono">Real-Time</div>
-                        <div class="stat-label text-slate-400">Live Application</div>
+                        <div class="stat-value">Real-Time</div>
+                        <div class="stat-label">Live Application</div>
                     </div>
                 </div>
-                <div class="stat-item group">
-                    <div class="p-3 rounded-full bg-white/5 group-hover:bg-purple-500/10 transition-colors">
-                        <IconUsers size={28} stroke={1.5} class="stat-icon text-purple-400" />
-                    </div>
+                <div class="stat-item">
+                    <IconUsers size={32} stroke={1.5} class="stat-icon" />
                     <div class="stat-content">
-                        <div class="stat-value text-white font-mono">Community</div>
-                        <div class="stat-label text-slate-400">Mentorship</div>
+                        <div class="stat-value">Community</div>
+                        <div class="stat-label">Mentorship</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="truth-section relative overflow-hidden">
-        <div class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-blue-900/10 to-transparent pointer-events-none"></div>
-
-        <div class="section-container relative z-10">
+    <section class="truth-section">
+        <div class="section-container">
             <div class="truth-grid">
                 <div class="truth-content">
-                    <h2 class="section-title left-align tracking-tighter">The Truth About <span class="text-highlight">Technical Indicators</span></h2>
-                    <p class="truth-text text-slate-300">
+                    <h2 class="section-title left-align">The Truth About <span class="text-highlight">Technical Indicators</span></h2>
+                    <p class="truth-text">
                         Most new traders fail because they treat indicators as "Go/Stop" signals. They buy when the RSI crosses 30, or sell when lines cross, without understanding context.
                     </p>
-                    <p class="truth-text text-slate-300">
+                    <p class="truth-text">
                         <strong>Here is the reality:</strong> Indicators are just derivatives of price. They are tools, not crystal balls. In our community, we teach you to use these tools to build a case—a "confluence" of evidence—that tilts the probabilities in your favor.
                     </p>
-                    <ul class="truth-list space-y-4">
-                        <li class="bg-white/5 p-4 rounded-lg border border-white/5">
-                            <IconAlertTriangle size={24} class="warning-icon shrink-0" />
+                    <ul class="truth-list">
+                        <li>
+                            <IconAlertTriangle size={24} class="warning-icon" />
                             <span>Stop chasing "lagging" signals blindly.</span>
                         </li>
-                        <li class="bg-white/5 p-4 rounded-lg border border-white/5">
-                            <IconCheck size={24} class="check-icon shrink-0" />
+                        <li>
+                            <IconCheck size={24} class="check-icon" />
                             <span>Start using indicators to confirm price action.</span>
                         </li>
-                        <li class="bg-white/5 p-4 rounded-lg border border-white/5">
-                            <IconCheck size={24} class="check-icon shrink-0" />
+                        <li>
+                            <IconCheck size={24} class="check-icon" />
                             <span>Learn to spot what the institutions are doing.</span>
                         </li>
                     </ul>
                 </div>
                 <div class="truth-visual">
-                    <div class="chart-card glass-panel shadow-2xl shadow-blue-900/20 backdrop-blur-xl">
-                        <div class="chart-header flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                            <div class="flex gap-2">
-                                <span class="dot red"></span>
-                                <span class="dot yellow"></span>
-                                <span class="dot green"></span>
-                            </div>
-                            <div class="text-xs font-mono text-slate-500">M15 • ES_F</div>
+                    <div class="chart-card glass-panel">
+                        <div class="chart-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
                         </div>
-                        <div class="chart-mockup h-[220px] relative w-full">
-                            <svg class="w-full h-full overflow-visible" viewBox="0 0 400 200">
-                                <defs>
-                                    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stop-color="#2e8eff" stop-opacity="0.3"/>
-                                        <stop offset="100%" stop-color="#2e8eff" stop-opacity="0"/>
-                                    </linearGradient>
-                                </defs>
-                                <path class="mockup-price-path" d="M0,150 L50,140 L80,160 L120,100 L160,120 L220,50 L260,80 L350,20" 
-                                      fill="none" stroke="#2e8eff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                                
-                                <path class="mockup-indicator-path" d="M0,180 L50,175 L80,185 L120,170 L160,175 L220,172 L260,178 L350,180" 
-                                      fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 4" opacity="0.8" />
-                            </svg>
-                            
-                            <div class="mockup-annotation absolute top-4 right-8 bg-emerald-500 text-black font-bold px-3 py-1 rounded shadow-lg transform origin-bottom-left">
-                                <div class="flex items-center gap-1 text-xs">
-                                    <IconAlertTriangle size={14} />
-                                    <span>Bearish Divergence</span>
-                                </div>
-                            </div>
+                        <div class="chart-mockup">
+                            <div class="mockup-price"></div>
+                            <div class="mockup-indicator"></div>
+                            <div class="mockup-annotation">Divergence Detected</div>
                         </div>
                     </div>
                 </div>
@@ -482,8 +371,8 @@
 
     <section class="filter-section" id="indicators-list">
         <div class="filter-container">
-            <h3 class="tracking-tight">Explore Our Core Indicators</h3>
-            <p class="filter-subtitle text-lg">These are the exact tools active in our trading room charts right now.</p>
+            <h3>Explore Our Core Indicators</h3>
+            <p class="filter-subtitle">These are the exact tools active in our trading room charts right now.</p>
             <div class="filter-buttons">
                 {#each categories as category}
                     <button
@@ -504,34 +393,29 @@
                 {#each filteredIndicators as indicator, index}
                     {@const Icon = indicator.icon}
                     <article
-                        class="indicator-card group relative"
+                        class="indicator-card"
                         class:visible={cardsVisible[index]}
                         data-index={index}
-                        onmousemove={handleMouseMove}
-                        style="--delay: {index * 0.1}s; --card-color: {indicator.color};"
+                        style="--delay: {index * 0.1}s; --card-color: {indicator.color}"
                     >
-                        <div class="spotlight-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                        <div class="card-header relative overflow-hidden" style="background: {indicator.gradient}">
-                            <div class="absolute inset-0 bg-noise opacity-20"></div>
-                            
-                            <div class="card-icon relative z-10 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                        <div class="card-header" style="background: {indicator.gradient}">
+                            <div class="card-icon">
                                 <Icon size={48} stroke={1.5} />
                             </div>
-                            <div class="card-category shadow-lg">{indicator.category}</div>
+                            <div class="card-category">{indicator.category}</div>
                         </div>
 
-                        <div class="card-content bg-[#0B101E]">
-                            <h3 class="card-title text-white group-hover:text-[var(--card-color)] transition-colors duration-300">{indicator.name}</h3>
+                        <div class="card-content">
+                            <h3 class="card-title">{indicator.name}</h3>
                             <p class="card-description">{indicator.description}</p>
 
-                            <div class="card-use-case bg-white/5 border-l-2 border-[var(--card-color)]">
+                            <div class="card-use-case">
                                 <IconTarget size={18} stroke={2} />
                                 <span>{indicator.useCase}</span>
                             </div>
 
                             <div class="card-meta">
-                                <div class="meta-badge difficulty border border-white/10">
+                                <div class="meta-badge difficulty">
                                     <IconStar size={16} stroke={2} />
                                     <span>{indicator.difficulty}</span>
                                 </div>
@@ -539,16 +423,16 @@
 
                             <ul class="card-features">
                                 {#each indicator.features as feature}
-                                    <li class="group-hover:pl-1 transition-all duration-300">
+                                    <li>
                                         <IconCheck size={16} stroke={2} />
                                         <span>{feature}</span>
                                     </li>
                                 {/each}
                             </ul>
 
-                            <a href="/indicators/{indicator.slug}" class="card-button group/btn">
+                            <a href="/indicators/{indicator.slug}" class="card-button">
                                 View Strategy Guide
-                                <IconArrowRight size={18} stroke={2} class="transition-transform group-hover/btn:translate-x-1" />
+                                <IconArrowRight size={18} stroke={2} />
                             </a>
                         </div>
                     </article>
@@ -557,70 +441,52 @@
         </div>
     </section>
 
-    <section class="confluence-section relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none"></div>
-        <div class="section-container relative z-10">
-            <h2 class="section-title tracking-tight">The Power of <span class="gradient-text">Confluence</span></h2>
+    <section class="confluence-section">
+        <div class="section-container">
+            <h2 class="section-title">The Power of <span class="gradient-text">Confluence</span></h2>
             <p class="section-subtitle">A single indicator can be wrong. Three indicators telling the same story are rarely wrong. This is how we find high-probability trades.</p>
 
             <div class="confluence-grid">
-                <div class="confluence-step hover:border-blue-500/50 transition-colors duration-300">
-                    <div class="step-number shadow-lg shadow-blue-500/30">1</div>
-                    <h3 class="text-xl font-bold mb-2">Trend</h3>
-                    <p class="text-slate-400 text-sm">We use <strong>Moving Averages</strong> to determine if the market is bullish or bearish. We never fight the trend.</p>
+                <div class="confluence-step">
+                    <div class="step-number">1</div>
+                    <h3>Trend</h3>
+                    <p>We use <strong>Moving Averages</strong> to determine if the market is bullish or bearish. We never fight the trend.</p>
                 </div>
-                
-                <div class="confluence-connector hidden md:block">
-                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+                <div class="confluence-connector">+</div>
+                <div class="confluence-step">
+                    <div class="step-number">2</div>
+                    <h3>Location</h3>
+                    <p>We wait for price to return to value areas like <strong>VWAP</strong> or Support zones. We don't chase extended moves.</p>
                 </div>
-                <div class="confluence-connector md:hidden rotate-90">
-                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
-                </div>
-
-                <div class="confluence-step hover:border-emerald-500/50 transition-colors duration-300">
-                    <div class="step-number bg-emerald-500 shadow-lg shadow-emerald-500/30">2</div>
-                    <h3 class="text-xl font-bold mb-2">Location</h3>
-                    <p class="text-slate-400 text-sm">We wait for price to return to value areas like <strong>VWAP</strong> or Support zones. We don't chase extended moves.</p>
-                </div>
-
-                <div class="confluence-connector hidden md:block">
-                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
-                </div>
-                <div class="confluence-connector md:hidden rotate-90">
-                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
-                </div>
-
-                <div class="confluence-step hover:border-purple-500/50 transition-colors duration-300">
-                    <div class="step-number bg-purple-500 shadow-lg shadow-purple-500/30">3</div>
-                    <h3 class="text-xl font-bold mb-2">Momentum</h3>
-                    <p class="text-slate-400 text-sm">We execute when <strong>RSI or MACD</strong> confirms the buyers are stepping back in. This creates the "sniper" entry.</p>
+                <div class="confluence-connector">+</div>
+                <div class="confluence-step">
+                    <div class="step-number">3</div>
+                    <h3>Momentum</h3>
+                    <p>We execute when <strong>RSI or MACD</strong> confirms the buyers are stepping back in. This creates the "sniper" entry.</p>
                 </div>
             </div>
             
-            <div class="confluence-cta mt-12">
-                <p class="text-slate-400 mb-2">Want to see this confluence strategy in action?</p>
-                <a href="/trading-room" class="text-link inline-flex items-center gap-2 group">
-                    Watch us trade this setup live tomorrow morning 
-                    <IconArrowRight size={18} class="transition-transform group-hover:translate-x-1" />
-                </a>
+            <div class="confluence-cta">
+                <p>Want to see this confluence strategy in action?</p>
+                <a href="/trading-room" class="text-link">Watch us trade this setup live tomorrow morning &rarr;</a>
             </div>
         </div>
     </section>
 
     <section class="faq-section">
         <div class="section-container">
-            <h2 class="section-title tracking-tight">Common Questions</h2>
+            <h2 class="section-title">Common Questions</h2>
             <div class="faq-list">
                 {#each faqs as faq, i}
-                    <div class="faq-item transition-all duration-300" class:open={openFaq === i}>
-                        <button class="faq-question hover:text-blue-400 transition-colors" onclick={() => toggleFaq(i)}>
+                    <div class="faq-item" class:open={openFaq === i}>
+                        <button class="faq-question" onclick={() => toggleFaq(i)}>
                             {faq.question}
-                            <div class="faq-icon transform transition-transform duration-300" class:rotate-180={openFaq === i}>
+                            <div class="faq-icon" class:open={openFaq === i}>
                                 <IconChevronDown size={20} />
                             </div>
                         </button>
                         <div class="faq-answer">
-                            <p class="text-slate-300">{faq.answer}</p>
+                            <p>{faq.answer}</p>
                         </div>
                     </div>
                 {/each}
@@ -628,16 +494,12 @@
         </div>
     </section>
 
-    <section class="final-cta relative overflow-hidden">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
-        
-        <div class="cta-content relative z-10">
-            <div class="inline-block p-4 rounded-full bg-blue-500/10 mb-6">
-                <IconSchool size={48} class="cta-icon text-blue-400 !mb-0" />
-            </div>
-            <h2 class="tracking-tight">Stop Learning Alone. Start Trading Together.</h2>
+    <section class="final-cta">
+        <div class="cta-content">
+            <IconSchool size={48} class="cta-icon" />
+            <h2>Stop Learning Alone. Start Trading Together.</h2>
             <p>You have the tools. Now get the guidance. Join a community of traders who genuinely care about your success.</p>
-            <button class="cta-button primary large transform hover:scale-105 transition-transform duration-300 shadow-xl shadow-blue-500/20">
+            <button class="cta-button primary large">
                 Join Revolution Trading Pros
             </button>
             <p class="cta-subtext">No spam. No fake alerts. Just real trading.</p>
@@ -646,33 +508,11 @@
 </div>
 
 <style>
-    /* Retaining original CSS logic but updated for new Tailwind capabilities
-       and smoother animations.
-    */
-
     .indicators-page {
         min-height: 100vh;
-        background: #050812;
+        background: linear-gradient(to bottom, #0a0f1e 0%, #050812 100%);
         color: white;
-        font-family: 'Inter', system-ui, sans-serif;
-        overflow-x: hidden;
-    }
-
-    /* Cinematic Spotlight Effect */
-    .spotlight-overlay {
-        pointer-events: none;
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-            600px circle at var(--mouse-x) var(--mouse-y),
-            rgba(255, 255, 255, 0.06),
-            transparent 40%
-        );
-        z-index: 2;
-    }
-
-    .bg-noise {
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        font-family: 'Inter', sans-serif; /* Assumed font */
     }
 
     /* Common Utilities */
@@ -683,18 +523,18 @@
     }
 
     .section-title {
-        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-size: clamp(2rem, 4vw, 3rem);
         font-weight: 800;
         text-align: center;
         margin-bottom: 1.5rem;
-        line-height: 1.1;
+        line-height: 1.2;
     }
     
     .section-subtitle {
         text-align: center;
         max-width: 800px;
         margin: 0 auto 4rem;
-        color: #94a3b8;
+        color: rgba(255,255,255,0.7);
         font-size: 1.125rem;
         line-height: 1.6;
     }
@@ -712,7 +552,8 @@
 
     /* Hero Section */
     .hero-section {
-        min-height: 100vh;
+        position: relative;
+        min-height: 90vh; /* Increased height */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -720,7 +561,7 @@
         overflow: hidden;
         opacity: 0;
         transform: translateY(30px);
-        transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.8s ease, transform 0.8s ease;
     }
 
     .hero-section.visible {
@@ -738,95 +579,67 @@
         z-index: 0;
     }
 
-    .perspective-grid {
-        background-image: linear-gradient(rgba(46, 142, 255, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(46, 142, 255, 0.1) 1px, transparent 1px);
-        background-size: 40px 40px;
-        transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2);
-        animation: gridMove 20s linear infinite;
-        mask-image: linear-gradient(to bottom, transparent, black 40%, transparent);
-    }
-
-    @keyframes gridMove {
-        0% { transform: perspective(500px) rotateX(60deg) translateY(0) scale(2); }
-        100% { transform: perspective(500px) rotateX(60deg) translateY(40px) scale(2); }
-    }
-
     .glow-orb {
         position: absolute;
         border-radius: 50%;
-        filter: blur(100px);
-        opacity: 0.4;
-        animation: pulse 8s ease-in-out infinite;
+        filter: blur(80px);
+        opacity: 0.3;
+        animation: pulse 4s ease-in-out infinite;
     }
 
     .glow-orb-1 {
-        width: 800px;
-        height: 800px;
+        width: 600px;
+        height: 600px;
         background: radial-gradient(circle, #2e8eff 0%, transparent 70%);
-        top: -300px;
+        top: -200px;
         right: -200px;
     }
 
     .glow-orb-2 {
-        width: 600px;
-        height: 600px;
+        width: 500px;
+        height: 500px;
         background: radial-gradient(circle, #34d399 0%, transparent 70%);
-        bottom: -250px;
+        bottom: -150px;
         left: -150px;
         animation-delay: 2s;
     }
 
-    .glow-orb-3 {
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, #a78bfa 0%, transparent 70%);
+    .chart-lines {
+        position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        animation-delay: 4s;
-        opacity: 0.2;
+        width: 100%;
+        max-width: 1000px;
+        height: 400px;
     }
 
-    .chart-lines {
+    .chart-line {
         position: absolute;
-        top: 0;
-        left: 0;
         width: 100%;
-        height: 100%;
-        pointer-events: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, var(--line-color) 50%, transparent 100%);
+        opacity: 0.2;
+        animation: slideLine 3s ease-in-out infinite;
     }
-    
-    .chart-line-svg {
-        stroke-dasharray: 2000;
-        stroke-dashoffset: 2000;
-        animation: drawLine 4s ease-out forwards infinite;
-        opacity: 0.3;
-    }
-    
-    .line-2 { animation-delay: 2s; }
+
+    .line-1 { --line-color: #2e8eff; top: 30%; animation-delay: 0s; }
+    .line-2 { --line-color: #34d399; top: 50%; animation-delay: 1s; }
+    .line-3 { --line-color: #a78bfa; top: 70%; animation-delay: 2s; }
 
     @keyframes pulse {
         0%, 100% { transform: scale(1); opacity: 0.3; }
         50% { transform: scale(1.1); opacity: 0.5; }
     }
 
-    @keyframes drawLine {
-        0% { stroke-dashoffset: 2000; opacity: 0; }
-        20% { opacity: 0.4; }
-        100% { stroke-dashoffset: 0; opacity: 0; }
-    }
-
-    .animate-float {
-        animation: float 6s ease-in-out infinite;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+    @keyframes slideLine {
+        0%, 100% { transform: translateX(-10%); opacity: 0.1; }
+        50% { transform: translateX(10%); opacity: 0.3; }
     }
 
     .hero-content {
+        position: relative;
+        z-index: 1;
         max-width: 1000px;
         text-align: center;
         display: flex;
@@ -839,20 +652,30 @@
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 1.25rem;
-        background: rgba(46, 142, 255, 0.1);
-        border: 1px solid rgba(46, 142, 255, 0.2);
+        background: rgba(46, 142, 255, 0.15);
+        border: 1px solid rgba(46, 142, 255, 0.3);
         border-radius: 50px;
-        color: #60a5fa;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #2e8eff;
         margin-bottom: 2rem;
         backdrop-filter: blur(10px);
     }
 
     .hero-title {
-        font-size: clamp(3rem, 6vw, 5.5rem);
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
         font-weight: 800;
-        line-height: 1;
+        line-height: 1.1;
         margin-bottom: 1.5rem;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.02em;
+    }
+
+    .hero-description {
+        font-size: clamp(1.1rem, 2vw, 1.25rem);
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 850px;
+        margin: 0 auto 2.5rem;
     }
 
     /* CTA Buttons */
@@ -865,9 +688,9 @@
     }
 
     .cta-button {
-        padding: 1rem 2.5rem;
+        padding: 1rem 2rem;
         border-radius: 50px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1rem;
         cursor: pointer;
         display: inline-flex;
@@ -876,37 +699,37 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
         border: none;
-        letter-spacing: -0.01em;
     }
 
     .cta-button.primary {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #2e8eff 0%, #1e5cb8 100%);
         color: white;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 4px 15px rgba(46, 142, 255, 0.3);
     }
 
     .cta-button.primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 8px 25px rgba(46, 142, 255, 0.4);
     }
 
     .cta-button.secondary {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
         color: white;
     }
 
     .cta-button.secondary:hover {
-        background: rgba(255,255,255,0.08);
-        border-color: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.1);
     }
 
     .hero-stats {
         display: flex;
         justify-content: center;
-        gap: 4rem;
+        gap: 3rem;
         flex-wrap: wrap;
+        margin-top: 1rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
         width: 100%;
     }
 
@@ -916,38 +739,91 @@
         gap: 1rem;
     }
 
-    /* Truth Section */
+    .stat-content {
+        text-align: left;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Truth Section (New) */
     .truth-section {
-        padding: 8rem 0;
-        background: linear-gradient(to bottom, #050812, #0a0f1e);
+        padding: 6rem 0;
+        background: rgba(255,255,255,0.02);
     }
 
     .truth-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 6rem;
+        gap: 4rem;
         align-items: center;
     }
 
     .left-align { text-align: left; }
 
     .truth-text {
-        font-size: 1.125rem;
-        line-height: 1.8;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: rgba(255,255,255,0.8);
         margin-bottom: 1.5rem;
     }
 
+    .truth-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 2rem;
+    }
+
+    .truth-list li {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    :global(.warning-icon) { color: #f59e0b; }
+    :global(.check-icon) { color: #34d399; }
+
     .chart-card {
-        background: rgba(13, 18, 30, 0.6);
-        border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 24px;
-        padding: 2rem;
-        height: auto;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: 300px;
         position: relative;
     }
     
+    .chart-header { display: flex; gap: 8px; margin-bottom: 2rem; }
     .dot { width: 10px; height: 10px; border-radius: 50%; display: block; }
     .red { background: #ef4444; } .yellow { background: #f59e0b; } .green { background: #22c55e; }
+
+    .mockup-price {
+        height: 2px;
+        width: 100%;
+        background: linear-gradient(90deg, transparent, #2e8eff, transparent);
+        margin-bottom: 2rem;
+    }
+
+    .mockup-annotation {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+        background: #34d399;
+        color: #000;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
 
     /* Filter Section */
     .filter-section {
@@ -960,40 +836,51 @@
         text-align: center;
     }
 
+    .filter-container h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .filter-subtitle {
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 2rem;
+    }
+
     .filter-buttons {
         display: flex;
-        gap: 0.75rem;
+        gap: 1rem;
         justify-content: center;
         flex-wrap: wrap;
     }
 
     .filter-button {
-        padding: 0.6rem 1.5rem;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 50px;
-        color: #94a3b8;
-        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 600;
         font-size: 0.9375rem;
         cursor: pointer;
         transition: all 0.3s ease;
     }
 
     .filter-button:hover {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(46, 142, 255, 0.3);
         color: white;
     }
 
     .filter-button.active {
-        background: #2e8eff;
+        background: linear-gradient(135deg, #2e8eff 0%, #1e5cb8 100%);
         border-color: #2e8eff;
         color: white;
-        box-shadow: 0 0 20px rgba(46, 142, 255, 0.3);
     }
 
     /* Indicators Grid */
     .indicators-section {
-        padding: 2rem 2rem 8rem;
+        padding: 2rem 2rem 6rem;
     }
 
     .indicators-grid {
@@ -1003,16 +890,15 @@
     }
 
     .indicator-card {
-        background: #0B101E;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
         overflow: hidden;
-        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s ease;
+        transition: all 0.4s ease;
         opacity: 0;
         transform: translateY(30px);
         display: flex;
         flex-direction: column;
-        box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
     }
 
     .indicator-card.visible {
@@ -1022,16 +908,35 @@
     }
 
     .indicator-card:hover {
-        transform: translateY(-8px) scale(1.01);
-        border-color: rgba(255,255,255,0.1);
-        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+        transform: translateY(-8px);
+        border-color: var(--card-color);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     }
 
     .card-header {
+        position: relative;
         padding: 2.5rem 2rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .card-icon {
+        color: white;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    }
+
+    .card-category {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.4rem 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: white;
     }
 
     .card-content {
@@ -1039,6 +944,38 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .card-description {
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-use-case {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-left: 3px solid var(--card-color);
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .card-use-case :global(svg) {
+        color: var(--card-color);
+        flex-shrink: 0;
+        margin-top: 2px;
     }
 
     .card-meta {
@@ -1051,12 +988,11 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.25rem 0.75rem;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50px;
         font-size: 0.8125rem;
-        font-weight: 500;
-        color: #94a3b8;
+        font-weight: 600;
     }
 
     .meta-badge.difficulty :global(svg) {
@@ -1075,9 +1011,9 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.75rem 0;
-        font-size: 0.9rem;
-        color: #cbd5e1;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .card-features li:last-child {
@@ -1096,11 +1032,11 @@
         width: 100%;
         justify-content: center;
         padding: 1rem 1.5rem;
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.05);
         color: white;
         text-decoration: none;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
         font-weight: 600;
         font-size: 0.9375rem;
         transition: all 0.3s ease;
@@ -1110,13 +1046,14 @@
     .card-button:hover {
         background: var(--card-color);
         border-color: var(--card-color);
-        color: #000;
+        transform: translateX(4px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     }
 
     /* Confluence Section */
     .confluence-section {
-        padding: 8rem 2rem;
-        background: #050812;
+        padding: 6rem 2rem;
+        background: rgba(255,255,255,0.02);
         border-top: 1px solid rgba(255,255,255,0.05);
         border-bottom: 1px solid rgba(255,255,255,0.05);
     }
@@ -1125,57 +1062,58 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3rem;
-        margin: 5rem 0;
+        gap: 2rem;
+        margin: 4rem 0;
         flex-wrap: wrap;
     }
 
     .confluence-step {
-        background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-        border: 1px solid rgba(255,255,255,0.05);
-        padding: 2.5rem 2rem;
-        border-radius: 20px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 2rem;
+        border-radius: 16px;
         flex: 1;
         min-width: 250px;
         max-width: 350px;
         text-align: center;
         position: relative;
-        backdrop-filter: blur(10px);
     }
 
     .step-number {
         background: #2e8eff;
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        font-size: 1.25rem;
-        margin: -3.5rem auto 1.5rem;
+        font-weight: bold;
+        margin: -3rem auto 1.5rem;
         border: 4px solid #050812;
-        color: white;
+    }
+
+    .confluence-connector {
+        font-size: 3rem;
+        color: rgba(255,255,255,0.2);
+        font-weight: 100;
     }
 
     .confluence-cta {
         text-align: center;
-        margin-top: 4rem;
+        margin-top: 3rem;
     }
 
     .text-link {
         color: #34d399;
         font-weight: 600;
         text-decoration: none;
-        font-size: 1.125rem;
-        border-bottom: 1px solid transparent;
-        transition: border-color 0.2s;
+        font-size: 1.1rem;
     }
-    .text-link:hover { border-bottom-color: #34d399; }
+    .text-link:hover { text-decoration: underline; }
 
     /* FAQ Section */
     .faq-section {
-        padding: 8rem 2rem;
+        padding: 6rem 2rem;
         max-width: 900px;
         margin: 0 auto;
     }
@@ -1187,52 +1125,59 @@
     }
 
     .faq-item {
-        background: rgba(255,255,255,0.02);
-        border-radius: 16px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,0.05);
     }
 
     .faq-item.open {
-        background: rgba(255,255,255,0.04);
+        background: rgba(255,255,255,0.05);
         border-color: rgba(46,142,255,0.3);
-        box-shadow: 0 0 30px rgba(0,0,0,0.2);
     }
 
     .faq-question {
         width: 100%;
         text-align: left;
-        padding: 1.5rem 2rem;
+        padding: 1.5rem;
         background: none;
         border: none;
         color: white;
         font-weight: 600;
-        font-size: 1.125rem;
+        font-size: 1.1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
     }
 
+    .faq-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .faq-icon.open {
+        transform: rotate(180deg);
+    }
+
     .faq-answer {
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
-        padding: 0 2rem;
-        color: #94a3b8;
-        line-height: 1.7;
+        transition: max-height 0.3s ease;
+        padding: 0 1.5rem;
+        color: rgba(255,255,255,0.7);
+        line-height: 1.6;
     }
 
     .faq-item.open .faq-answer {
-        max-height: 300px;
-        padding-bottom: 2rem;
+        max-height: 200px; /* Adjust as needed */
+        padding-bottom: 1.5rem;
     }
 
     /* Final CTA */
     .final-cta {
-        padding: 10rem 2rem;
+        padding: 6rem 2rem;
         text-align: center;
-        background: radial-gradient(circle at center, rgba(10, 15, 30, 0) 0%, #050812 100%);
+        background: radial-gradient(circle at center, rgba(46,142,255,0.1) 0%, transparent 70%);
     }
 
     .cta-content {
@@ -1240,22 +1185,32 @@
         margin: 0 auto;
     }
 
-    .final-cta h2 {
-        font-size: clamp(2.5rem, 5vw, 3.5rem);
-        font-weight: 800;
+    :global(.cta-icon) {
+        color: #2e8eff;
         margin-bottom: 1.5rem;
-        line-height: 1.1;
+    }
+
+    .final-cta h2 {
+        font-size: clamp(2rem, 3vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
     }
 
     .final-cta p {
-        color: #cbd5e1;
-        font-size: 1.25rem;
-        margin-bottom: 2.5rem;
+        color: rgba(255,255,255,0.7);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
     }
 
     .cta-button.large {
-        padding: 1.25rem 3.5rem;
+        padding: 1.25rem 3rem;
         font-size: 1.125rem;
+    }
+
+    .cta-subtext {
+        font-size: 0.875rem;
+        color: rgba(255,255,255,0.5);
+        margin-top: 1rem;
     }
 
     /* Responsive */
@@ -1265,15 +1220,16 @@
     }
 
     @media (max-width: 1024px) {
-        .truth-grid { grid-template-columns: 1fr; gap: 4rem; }
-        .confluence-grid { flex-direction: column; gap: 2rem; }
+        .truth-grid { grid-template-columns: 1fr; gap: 2rem; }
+        .confluence-grid { flex-direction: column; gap: 1rem; }
+        .confluence-connector { transform: rotate(90deg); margin: 0; font-size: 2rem; }
     }
 
     @media (max-width: 768px) {
         .hero-section { padding: 6rem 1.5rem 4rem; min-height: auto; }
         .indicators-grid { grid-template-columns: 1fr; }
         .hero-stats { flex-direction: column; gap: 1.5rem; }
-        .stat-item { justify-content: flex-start; }
+        .stat-item { justify-content: center; }
         .filter-section { padding: 4rem 1rem 1rem; }
     }
 </style>
