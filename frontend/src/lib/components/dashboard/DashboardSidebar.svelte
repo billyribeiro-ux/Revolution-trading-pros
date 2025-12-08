@@ -63,6 +63,16 @@
 	// Current path for active state
 	const currentPath = $derived($page.url.pathname);
 
+	// Check if we're on any account page (for highlighting profile section)
+	const isAccountSection = $derived(
+		currentPath.startsWith('/dashboard/account') ||
+		currentPath.startsWith('/dashboard/orders') ||
+		currentPath.startsWith('/dashboard/subscriptions') ||
+		currentPath.startsWith('/dashboard/coupons') ||
+		currentPath.startsWith('/dashboard/addresses') ||
+		currentPath.startsWith('/dashboard/payment-methods')
+	);
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPER FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -117,7 +127,12 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     PROFILE SECTION (WordPress: .dashboard__profile-nav-item)
 	     ═══════════════════════════════════════════════════════════════════════ -->
-	<a href="/dashboard" class="dashboard__profile-nav-item" aria-current={isActive('/dashboard') ? 'page' : undefined}>
+	<a
+		href="/dashboard/account"
+		class="dashboard__profile-nav-item"
+		class:is-account-active={isAccountSection}
+		aria-current={isAccountSection ? 'page' : undefined}
+	>
 		<span
 			class="dashboard__profile-photo"
 			style:background-image={userAvatar ? `url(${userAvatar})` : undefined}
@@ -258,12 +273,6 @@
 		<li><p class="dashboard__nav-category">account</p></li>
 	</ul>
 	<ul class="dash_main_links">
-		<li class:is-active={isActive('/dashboard/account')}>
-			<a href="/dashboard/account">
-				<span class="dashboard__nav-item-icon st-icon-settings"></span>
-				<span class="dashboard__nav-item-text">Account Details</span>
-			</a>
-		</li>
 		<li class:is-active={isActive('/dashboard/orders')}>
 			<a href="/dashboard/orders">
 				<span class="dashboard__nav-item-icon">
@@ -280,6 +289,14 @@
 				<span class="dashboard__nav-item-text">Subscriptions</span>
 			</a>
 		</li>
+		<li class:is-active={isActive('/dashboard/coupons')}>
+			<a href="/dashboard/coupons">
+				<span class="dashboard__nav-item-icon">
+					<i class="fa fa-ticket-alt" aria-hidden="true"></i>
+				</span>
+				<span class="dashboard__nav-item-text">Coupons</span>
+			</a>
+		</li>
 		<li class:is-active={isActive('/dashboard/addresses')}>
 			<a href="/dashboard/addresses">
 				<span class="dashboard__nav-item-icon">
@@ -294,6 +311,12 @@
 					<i class="fa fa-wallet" aria-hidden="true"></i>
 				</span>
 				<span class="dashboard__nav-item-text">Payment Methods</span>
+			</a>
+		</li>
+		<li class:is-active={isActive('/dashboard/account')}>
+			<a href="/dashboard/account">
+				<span class="dashboard__nav-item-icon st-icon-settings"></span>
+				<span class="dashboard__nav-item-text">Account Details</span>
 			</a>
 		</li>
 		<li>
@@ -366,6 +389,22 @@
 
 	.dashboard__profile-nav-item:hover .dashboard__profile-name {
 		color: var(--sidebar-text-active);
+	}
+
+	/* Lighter blue highlight when on account section */
+	.dashboard__profile-nav-item.is-account-active {
+		background: rgba(9, 132, 174, 0.15);
+		border-radius: 8px;
+		padding: 10px 12px;
+		margin: 20px -12px 30px;
+	}
+
+	.dashboard__profile-nav-item.is-account-active .dashboard__profile-name {
+		color: #5bc0de;
+	}
+
+	.dashboard__profile-nav-item.is-account-active .dashboard__profile-photo {
+		border-color: #5bc0de;
 	}
 
 	.dashboard__profile-photo {
