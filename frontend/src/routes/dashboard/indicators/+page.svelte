@@ -5,8 +5,9 @@
 	 *
 	 * Shows user's purchased indicators with download access.
 	 * Matches WordPress Revolution Trading dashboard structure exactly.
+	 * Connected to real backend API.
 	 *
-	 * @version 2.0.0 (WordPress Exact / December 2025)
+	 * @version 2.1.0 (API Connected / December 2025)
 	 */
 
 	import {
@@ -18,107 +19,153 @@
 		IconRefresh,
 		IconChevronRight,
 		IconSearch,
-		IconAlertTriangle
+		IconAlertTriangle,
+		IconLoader2
 	} from '@tabler/icons-svelte';
 	import '$lib/styles/st-icons.css';
+	import { userIndicatorsApi, type PurchasedIndicator as ApiPurchasedIndicator } from '$lib/api/indicators';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPES
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface DisplayIndicator {
+		id: number;
+		name: string;
+		description: string;
+		platform: 'TradingView' | 'ThinkorSwim' | 'MetaTrader' | 'NinjaTrader';
+		platformSlug: string;
+		status: 'active' | 'expiring' | 'expired';
+		expiresAt: string;
+		daysUntilExpiry?: number;
+		downloadUrl: string;
+		downloadId: string;
+		version: string;
+		slug: string;
+		lastUpdated: string;
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
-	let filterPlatform = $state<'all' | 'tradingview' | 'thinkorswim' | 'metatrader'>('all');
+	let filterPlatform = $state<'all' | 'tradingview' | 'thinkorswim' | 'metatrader' | 'ninjatrader'>('all');
+	let purchasedIndicators = $state<DisplayIndicator[]>([]);
+	let isLoading = $state(true);
+	let isDownloading = $state<number | null>(null);
+	let errorMessage = $state('');
+	let successMessage = $state('');
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PURCHASED INDICATORS (Mock data - will be fetched from API)
+	// API FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface PurchasedIndicator {
-		id: number;
-		name: string;
-		description: string;
-		platform: 'TradingView' | 'ThinkorSwim' | 'MetaTrader';
-		platformSlug: string;
-		status: 'active' | 'expiring' | 'expired';
-		expiresAt: string;
-		daysUntilExpiry?: number;
-		downloadUrl: string;
-		version: string;
-		slug: string;
-		lastUpdated: string;
+	/**
+	 * Format date for display
+	 */
+	function formatDate(dateString: string): string {
+		const date = new Date(dateString);
+		return date.toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric'
+		});
 	}
 
-	const purchasedIndicators: PurchasedIndicator[] = [
-		{
-			id: 1,
-			name: 'Revolution Pro Scanner',
-			description: 'Advanced market scanner with real-time alerts for momentum trades.',
-			platform: 'TradingView',
-			platformSlug: 'tradingview',
-			status: 'active',
-			expiresAt: 'Dec 31, 2025',
-			daysUntilExpiry: 25,
-			downloadUrl: '#',
-			version: '2.4.1',
-			slug: 'revolution-pro-scanner',
-			lastUpdated: 'Dec 1, 2025'
-		},
-		{
-			id: 2,
-			name: 'Momentum Tracker Elite',
-			description: 'Identify momentum shifts before they happen with advanced algorithms.',
-			platform: 'ThinkorSwim',
-			platformSlug: 'thinkorswim',
-			status: 'active',
-			expiresAt: 'Jun 15, 2026',
-			daysUntilExpiry: 190,
-			downloadUrl: '#',
-			version: '1.8.0',
-			slug: 'momentum-tracker-elite',
-			lastUpdated: 'Nov 15, 2025'
-		},
-		{
-			id: 3,
-			name: 'Support & Resistance Zones',
-			description: 'Automatic S/R level detection with multi-timeframe confluence.',
-			platform: 'TradingView',
-			platformSlug: 'tradingview',
-			status: 'expiring',
-			expiresAt: 'Dec 15, 2025',
-			daysUntilExpiry: 8,
-			downloadUrl: '#',
-			version: '3.1.2',
-			slug: 'support-resistance-zones',
-			lastUpdated: 'Oct 20, 2025'
-		},
-		{
-			id: 4,
-			name: 'Volume Profile Analyzer',
-			description: 'Professional volume analysis with point of control and value area.',
-			platform: 'TradingView',
-			platformSlug: 'tradingview',
-			status: 'active',
-			expiresAt: 'Mar 1, 2026',
-			daysUntilExpiry: 85,
-			downloadUrl: '#',
-			version: '2.0.5',
-			slug: 'volume-profile-analyzer',
-			lastUpdated: 'Nov 28, 2025'
-		},
-		{
-			id: 5,
-			name: 'Options Flow Scanner',
-			description: 'Track unusual options activity and smart money flow.',
-			platform: 'ThinkorSwim',
-			platformSlug: 'thinkorswim',
-			status: 'expired',
-			expiresAt: 'Nov 1, 2025',
-			downloadUrl: '#',
-			version: '1.5.0',
-			slug: 'options-flow-scanner',
-			lastUpdated: 'Sep 15, 2025'
+	/**
+	 * Map API response to display format
+	 */
+	function mapToDisplay(indicator: ApiPurchasedIndicator): DisplayIndicator {
+		return {
+			id: indicator.id,
+			name: indicator.name,
+			description: indicator.description || '',
+			platform: indicator.platform,
+			platformSlug: indicator.platform_slug,
+			status: indicator.status,
+			expiresAt: formatDate(indicator.expires_at),
+			daysUntilExpiry: indicator.days_until_expiry,
+			downloadUrl: indicator.download_url,
+			downloadId: indicator.download_id,
+			version: indicator.version,
+			slug: indicator.slug,
+			lastUpdated: formatDate(indicator.last_updated)
+		};
+	}
+
+	/**
+	 * Load user's purchased indicators from API
+	 */
+	async function loadIndicators() {
+		isLoading = true;
+		errorMessage = '';
+
+		try {
+			const params: { platform?: string; status?: 'active' | 'expiring' | 'expired' } = {};
+
+			// Only send platform filter if not 'all'
+			if (filterPlatform !== 'all') {
+				params.platform = filterPlatform;
+			}
+
+			const response = await userIndicatorsApi.getPurchased(params);
+
+			if (response.success) {
+				purchasedIndicators = response.data.map(mapToDisplay);
+			} else {
+				errorMessage = response.message || 'Failed to load indicators';
+			}
+		} catch (err) {
+			console.error('Error loading indicators:', err);
+			errorMessage = 'Failed to load indicators. Please try again.';
+		} finally {
+			isLoading = false;
 		}
-	];
+	}
+
+	/**
+	 * Handle indicator download
+	 */
+	async function handleDownload(indicator: DisplayIndicator) {
+		isDownloading = indicator.id;
+		errorMessage = '';
+
+		try {
+			const response = await userIndicatorsApi.getDownload(indicator.slug, indicator.downloadId);
+
+			if (response.success && response.data.download_url) {
+				// Open download URL in new tab
+				window.open(response.data.download_url, '_blank');
+				successMessage = `Download started for ${indicator.name}`;
+				setTimeout(() => successMessage = '', 3000);
+			} else {
+				errorMessage = 'Failed to get download link';
+			}
+		} catch (err) {
+			console.error('Error downloading:', err);
+			errorMessage = 'Failed to download indicator. Please try again.';
+		} finally {
+			isDownloading = null;
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// LIFECYCLE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	$effect(() => {
+		loadIndicators();
+	});
+
+	// Reload when platform filter changes
+	$effect(() => {
+		// Track filterPlatform dependency
+		const _ = filterPlatform;
+		if (!isLoading) {
+			loadIndicators();
+		}
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -130,10 +177,7 @@
 				indicator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				indicator.platform.toLowerCase().includes(searchQuery.toLowerCase());
 
-			const matchesPlatform = filterPlatform === 'all' ||
-				indicator.platformSlug === filterPlatform;
-
-			return matchesSearch && matchesPlatform;
+			return matchesSearch;
 		});
 	});
 
@@ -148,7 +192,8 @@
 		{ id: 'all', name: 'All Platforms' },
 		{ id: 'tradingview', name: 'TradingView' },
 		{ id: 'thinkorswim', name: 'ThinkorSwim' },
-		{ id: 'metatrader', name: 'MetaTrader' }
+		{ id: 'metatrader', name: 'MetaTrader' },
+		{ id: 'ninjatrader', name: 'NinjaTrader' }
 	];
 </script>
 
@@ -200,6 +245,21 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div class="dashboard__content">
+	<!-- Success/Error Messages -->
+	{#if successMessage}
+		<div class="alert alert-success">
+			<IconCheck size={18} />
+			{successMessage}
+		</div>
+	{/if}
+	{#if errorMessage}
+		<div class="alert alert-error">
+			<IconAlertTriangle size={18} />
+			{errorMessage}
+			<button class="alert-dismiss" onclick={() => errorMessage = ''}>×</button>
+		</div>
+	{/if}
+
 	<!-- Filters Bar -->
 	<div class="filters-bar">
 		<div class="search-box">
@@ -225,7 +285,12 @@
 	</div>
 
 	<!-- Indicators Grid - WordPress: .membership-cards.row -->
-	{#if filteredIndicators.length > 0}
+	{#if isLoading}
+		<div class="loading-state">
+			<IconLoader2 size={48} class="spin" />
+			<p>Loading your indicators...</p>
+		</div>
+	{:else if filteredIndicators.length > 0}
 		<section class="dashboard__content-section">
 			<div class="indicators-grid row">
 				{#each filteredIndicators as indicator (indicator.id)}
@@ -284,10 +349,19 @@
 
 							<div class="indicator-card__actions">
 								{#if indicator.status !== 'expired'}
-									<a href={indicator.downloadUrl} class="action-btn">
-										<IconDownload size={16} />
-										Download
-									</a>
+									<button
+										class="action-btn"
+										onclick={() => handleDownload(indicator)}
+										disabled={isDownloading === indicator.id}
+									>
+										{#if isDownloading === indicator.id}
+											<IconLoader2 size={16} class="spin" />
+											Downloading...
+										{:else}
+											<IconDownload size={16} />
+											Download
+										{/if}
+									</button>
 									<a href="/dashboard/indicators/{indicator.slug}/docs">
 										<IconExternalLink size={16} />
 										Docs
@@ -420,6 +494,77 @@
 		padding: 30px;
 		background: #fff;
 		min-height: 400px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ALERTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.alert {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 16px;
+		border-radius: 8px;
+		margin-bottom: 16px;
+		font-size: 14px;
+	}
+
+	.alert-success {
+		background: rgba(16, 185, 129, 0.1);
+		color: #10b981;
+		border: 1px solid rgba(16, 185, 129, 0.2);
+	}
+
+	.alert-error {
+		background: rgba(239, 68, 68, 0.1);
+		color: #ef4444;
+		border: 1px solid rgba(239, 68, 68, 0.2);
+	}
+
+	.alert-dismiss {
+		margin-left: auto;
+		background: none;
+		border: none;
+		font-size: 18px;
+		cursor: pointer;
+		color: inherit;
+		opacity: 0.7;
+	}
+
+	.alert-dismiss:hover {
+		opacity: 1;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOADING STATE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		text-align: center;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.loading-state p {
+		margin-top: 16px;
+	}
+
+	:global(.spin) {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
