@@ -726,16 +726,17 @@ class SubscriptionService {
 	private async loadMetrics(): Promise<void> {
 		try {
 			const [revenue, churn, stats] = await Promise.all([
-				this.getRevenueMetrics(),
-				this.getChurnMetrics(),
-				this.getStats()
+				this.getRevenueMetrics().catch(() => null),
+				this.getChurnMetrics().catch(() => null),
+				this.getStats().catch(() => null)
 			]);
 
-			this.revenueMetrics.set(revenue);
-			this.churnMetrics.set(churn);
-			this.stats.set(stats);
+			if (revenue) this.revenueMetrics.set(revenue);
+			if (churn) this.churnMetrics.set(churn);
+			if (stats) this.stats.set(stats);
 		} catch (error) {
-			console.error('[SubscriptionService] Failed to load metrics:', error);
+			// Gracefully handle missing endpoints
+			console.debug('[SubscriptionService] Metrics not available');
 		}
 	}
 
