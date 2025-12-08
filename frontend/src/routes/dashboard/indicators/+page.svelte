@@ -4,23 +4,32 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Shows user's purchased indicators with download access.
-	 * Matches WordPress Revolution Trading dashboard structure exactly.
+	 * Fetches real data from the backend API.
 	 *
-	 * @version 2.0.0 (WordPress Exact / December 2025)
+	 * @version 3.0.0 (API Connected / December 2025)
 	 */
 
-	import {
-		IconChartLine,
-		IconDownload,
-		IconExternalLink,
-		IconCheck,
-		IconClock,
-		IconRefresh,
-		IconChevronRight,
-		IconSearch,
-		IconAlertTriangle
-	} from '@tabler/icons-svelte';
+	import { browser } from '$app/environment';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import IconLoader from '@tabler/icons-svelte/icons/loader';
 	import '$lib/styles/st-icons.css';
+	import {
+		getUserIndicators,
+		downloadIndicator,
+		invalidateIndicatorsCache,
+		type PurchasedIndicator,
+		type IndicatorStats
+	} from '$lib/api/user-indicators';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -28,104 +37,69 @@
 
 	let searchQuery = $state('');
 	let filterPlatform = $state<'all' | 'tradingview' | 'thinkorswim' | 'metatrader'>('all');
+	let indicators = $state<PurchasedIndicator[]>([]);
+	let stats = $state<IndicatorStats>({ total: 0, active: 0, expiring: 0, expired: 0 });
+	let isLoading = $state(true);
+	let isRefreshing = $state(false);
+	let error = $state<string | null>(null);
+	let downloadingId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PURCHASED INDICATORS (Mock data - will be fetched from API)
+	// LOAD INDICATORS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface PurchasedIndicator {
-		id: number;
-		name: string;
-		description: string;
-		platform: 'TradingView' | 'ThinkorSwim' | 'MetaTrader';
-		platformSlug: string;
-		status: 'active' | 'expiring' | 'expired';
-		expiresAt: string;
-		daysUntilExpiry?: number;
-		downloadUrl: string;
-		version: string;
-		slug: string;
-		lastUpdated: string;
+	async function loadIndicators(skipCache = false): Promise<void> {
+		if (skipCache) {
+			isRefreshing = true;
+			invalidateIndicatorsCache();
+		} else {
+			isLoading = true;
+		}
+		error = null;
+
+		try {
+			const response = await getUserIndicators({ skipCache });
+			if (response.success) {
+				indicators = response.data.indicators;
+				stats = response.data.stats;
+			}
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to load indicators';
+			console.error('[Indicators] Error loading:', e);
+		} finally {
+			isLoading = false;
+			isRefreshing = false;
+		}
 	}
 
-	const purchasedIndicators: PurchasedIndicator[] = [
-		{
-			id: 1,
-			name: 'Revolution Pro Scanner',
-			description: 'Advanced market scanner with real-time alerts for momentum trades.',
-			platform: 'TradingView',
-			platformSlug: 'tradingview',
-			status: 'active',
-			expiresAt: 'Dec 31, 2025',
-			daysUntilExpiry: 25,
-			downloadUrl: '#',
-			version: '2.4.1',
-			slug: 'revolution-pro-scanner',
-			lastUpdated: 'Dec 1, 2025'
-		},
-		{
-			id: 2,
-			name: 'Momentum Tracker Elite',
-			description: 'Identify momentum shifts before they happen with advanced algorithms.',
-			platform: 'ThinkorSwim',
-			platformSlug: 'thinkorswim',
-			status: 'active',
-			expiresAt: 'Jun 15, 2026',
-			daysUntilExpiry: 190,
-			downloadUrl: '#',
-			version: '1.8.0',
-			slug: 'momentum-tracker-elite',
-			lastUpdated: 'Nov 15, 2025'
-		},
-		{
-			id: 3,
-			name: 'Support & Resistance Zones',
-			description: 'Automatic S/R level detection with multi-timeframe confluence.',
-			platform: 'TradingView',
-			platformSlug: 'tradingview',
-			status: 'expiring',
-			expiresAt: 'Dec 15, 2025',
-			daysUntilExpiry: 8,
-			downloadUrl: '#',
-			version: '3.1.2',
-			slug: 'support-resistance-zones',
-			lastUpdated: 'Oct 20, 2025'
-		},
-		{
-			id: 4,
-			name: 'Volume Profile Analyzer',
-			description: 'Professional volume analysis with point of control and value area.',
-			platform: 'TradingView',
-			platformSlug: 'tradingview',
-			status: 'active',
-			expiresAt: 'Mar 1, 2026',
-			daysUntilExpiry: 85,
-			downloadUrl: '#',
-			version: '2.0.5',
-			slug: 'volume-profile-analyzer',
-			lastUpdated: 'Nov 28, 2025'
-		},
-		{
-			id: 5,
-			name: 'Options Flow Scanner',
-			description: 'Track unusual options activity and smart money flow.',
-			platform: 'ThinkorSwim',
-			platformSlug: 'thinkorswim',
-			status: 'expired',
-			expiresAt: 'Nov 1, 2025',
-			downloadUrl: '#',
-			version: '1.5.0',
-			slug: 'options-flow-scanner',
-			lastUpdated: 'Sep 15, 2025'
+	// Initial load
+	$effect(() => {
+		if (browser) {
+			loadIndicators();
 		}
-	];
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function handleDownload(indicator: PurchasedIndicator): Promise<void> {
+		downloadingId = indicator.id;
+		try {
+			await downloadIndicator(indicator.id);
+		} catch (e) {
+			console.error('[Indicators] Download error:', e);
+		} finally {
+			downloadingId = null;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const filteredIndicators = $derived.by(() => {
-		return purchasedIndicators.filter(indicator => {
+		return indicators.filter(indicator => {
 			const matchesSearch = searchQuery === '' ||
 				indicator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				indicator.platform.toLowerCase().includes(searchQuery.toLowerCase());
@@ -135,13 +109,6 @@
 
 			return matchesSearch && matchesPlatform;
 		});
-	});
-
-	const stats = $derived({
-		total: purchasedIndicators.length,
-		active: purchasedIndicators.filter(i => i.status === 'active').length,
-		expiring: purchasedIndicators.filter(i => i.status === 'expiring').length,
-		expired: purchasedIndicators.filter(i => i.status === 'expired').length
 	});
 
 	const platforms = [
@@ -188,6 +155,14 @@
 		</div>
 	</div>
 	<div class="dashboard__header-right">
+		<button
+			class="refresh-btn"
+			onclick={() => loadIndicators(true)}
+			disabled={isRefreshing}
+			aria-label="Refresh indicators"
+		>
+			<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
+		</button>
 		<a href="/indicators" class="btn btn-link">
 			Browse All Indicators
 			<IconChevronRight size={16} />
@@ -200,32 +175,49 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div class="dashboard__content">
-	<!-- Filters Bar -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				id="indicator-search"
-				type="text"
-				placeholder="Search indicators..."
-				bind:value={searchQuery}
-			/>
+	{#if isLoading}
+		<!-- Loading State -->
+		<div class="loading-state">
+			<span class="spin"><IconLoader size={48} /></span>
+			<p>Loading your indicators...</p>
 		</div>
-		<div class="filter-tabs">
-			{#each platforms as platform}
-				<button
-					class="filter-tab"
-					class:active={filterPlatform === platform.id}
-					onclick={() => filterPlatform = platform.id as typeof filterPlatform}
-				>
-					{platform.name}
-				</button>
-			{/each}
+	{:else if error}
+		<!-- Error State -->
+		<div class="error-state">
+			<IconAlertTriangle size={48} />
+			<h2>Failed to load indicators</h2>
+			<p>{error}</p>
+			<button class="btn btn-primary" onclick={() => loadIndicators(true)}>
+				Try Again
+			</button>
 		</div>
-	</div>
+	{:else}
+		<!-- Filters Bar -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					id="indicator-search"
+					type="text"
+					placeholder="Search indicators..."
+					bind:value={searchQuery}
+				/>
+			</div>
+			<div class="filter-tabs">
+				{#each platforms as platform}
+					<button
+						class="filter-tab"
+						class:active={filterPlatform === platform.id}
+						onclick={() => filterPlatform = platform.id as typeof filterPlatform}
+					>
+						{platform.name}
+					</button>
+				{/each}
+			</div>
+		</div>
 
-	<!-- Indicators Grid - WordPress: .membership-cards.row -->
-	{#if filteredIndicators.length > 0}
+		<!-- Indicators Grid - WordPress: .membership-cards.row -->
+		{#if filteredIndicators.length > 0}
 		<section class="dashboard__content-section">
 			<div class="indicators-grid row">
 				{#each filteredIndicators as indicator (indicator.id)}
@@ -284,11 +276,20 @@
 
 							<div class="indicator-card__actions">
 								{#if indicator.status !== 'expired'}
-									<a href={indicator.downloadUrl} class="action-btn">
-										<IconDownload size={16} />
-										Download
-									</a>
-									<a href="/dashboard/indicators/{indicator.slug}/docs">
+									<button
+										class="action-btn"
+										onclick={() => handleDownload(indicator)}
+										disabled={downloadingId === indicator.id}
+									>
+										{#if downloadingId === indicator.id}
+											<span class="spin"><IconLoader size={16} /></span>
+											Downloading...
+										{:else}
+											<IconDownload size={16} />
+											Download
+										{/if}
+									</button>
+									<a href={indicator.documentationUrl}>
 										<IconExternalLink size={16} />
 										Docs
 									</a>
@@ -304,20 +305,35 @@
 				{/each}
 			</div>
 		</section>
-	{:else}
+		{:else}
 		<div class="empty-state">
-			<IconChartLine size={64} />
-			<h2>No Indicators Found</h2>
 			{#if searchQuery || filterPlatform !== 'all'}
+				<!-- Filtered but no results -->
+				<div class="empty-icon">
+					<IconSearch size={48} />
+				</div>
+				<h2>No Indicators Found</h2>
 				<p>Try adjusting your search or filter criteria</p>
 				<button class="btn btn-primary" onclick={() => { searchQuery = ''; filterPlatform = 'all'; }}>
 					Clear Filters
 				</button>
 			{:else}
-				<p>You haven't purchased any indicators yet. Browse our collection to enhance your trading!</p>
-				<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
+				<!-- No indicators at all - Simpler Trading style -->
+				<div class="empty-icon empty-icon--lock">
+					<IconLock size={64} />
+				</div>
+				<h2>You don't have any Indicators</h2>
+				<p>Enhance your trading with our powerful indicator suite. Browse our collection to get started.</p>
+				<div class="empty-actions">
+					<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
+					<a href="/dashboard/support" class="btn btn-feedback">
+						<IconMessageCircle size={18} />
+						Give Feedback
+					</a>
+				</div>
 			{/if}
 		</div>
+		{/if}
 	{/if}
 </div>
 
@@ -410,6 +426,77 @@
 
 	.btn-link:hover {
 		color: var(--st-primary, #0984ae);
+	}
+
+	.refresh-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border: 1px solid var(--st-border-color, #dbdbdb);
+		border-radius: 8px;
+		background: #fff;
+		color: var(--st-text-muted, #64748b);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.refresh-btn:hover:not(:disabled) {
+		border-color: var(--st-primary, #0984ae);
+		color: var(--st-primary, #0984ae);
+	}
+
+	.refresh-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOADING & ERROR STATES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		color: var(--st-primary, #0984ae);
+	}
+
+	.loading-state p {
+		margin-top: 16px;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		text-align: center;
+		padding: 24px;
+		color: var(--st-error, #ef4444);
+	}
+
+	.error-state h2 {
+		margin: 16px 0 8px;
+		color: var(--st-text-color, #333);
+	}
+
+	.error-state p {
+		margin: 0 0 24px;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	:global(.spin) {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -719,7 +806,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
+	   EMPTY STATE - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.empty-state {
@@ -727,20 +814,51 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		min-height: 300px;
+		min-height: 400px;
 		text-align: center;
 		color: var(--st-text-muted, #64748b);
-		padding: 40px 20px;
+		padding: 60px 20px;
+		background: #f8fafc;
+		border-radius: 12px;
+		border: 2px dashed #e2e8f0;
+	}
+
+	.empty-icon {
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 24px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.empty-icon--lock {
+		background: linear-gradient(135deg, #fef3c7, #fef9c3);
+		color: #b45309;
 	}
 
 	.empty-state h2 {
 		font-size: 1.5rem;
 		color: var(--st-text-color, #333);
-		margin: 16px 0 8px;
+		margin: 0 0 12px;
+		font-weight: 700;
 	}
 
 	.empty-state p {
-		margin: 0 0 24px;
+		margin: 0 0 32px;
+		max-width: 400px;
+		line-height: 1.6;
+	}
+
+	.empty-actions {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.btn-primary {
@@ -760,16 +878,38 @@
 
 	.btn-orange {
 		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 		padding: 12px 24px;
 		background: var(--st-orange, #f99e31);
 		border-radius: 8px;
 		color: #fff;
 		font-weight: 600;
 		text-decoration: none;
+		transition: background-color 0.15s ease;
 	}
 
 	.btn-orange:hover {
 		background: var(--st-orange-hover, #dc7309);
+	}
+
+	.btn-feedback {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 24px;
+		background: #fff;
+		border: 2px solid #e5e7eb;
+		border-radius: 8px;
+		color: var(--st-text-color, #333);
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+
+	.btn-feedback:hover {
+		border-color: var(--st-primary, #0984ae);
+		color: var(--st-primary, #0984ae);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
