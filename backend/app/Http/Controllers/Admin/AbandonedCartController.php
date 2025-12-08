@@ -75,8 +75,14 @@ class AbandonedCartController extends Controller
                 ->keyBy('recovery_attempts');
 
             // Hourly breakdown (last 24 hours)
+            // Use database-agnostic hour extraction (strftime for SQLite, HOUR for MySQL)
+            $driver = \DB::connection()->getDriverName();
+            $hourExpr = $driver === 'sqlite'
+                ? "CAST(strftime('%H', abandoned_at) AS INTEGER)"
+                : "HOUR(abandoned_at)";
+
             $hourly = AbandonedCart::where('abandoned_at', '>=', now()->subHours(24))
-                ->selectRaw('HOUR(abandoned_at) as hour, COUNT(*) as count, SUM(total) as value')
+                ->selectRaw("{$hourExpr} as hour, COUNT(*) as count, SUM(total) as value")
                 ->groupBy('hour')
                 ->orderBy('hour')
                 ->get();

@@ -71,7 +71,8 @@ class EmailWebhookController extends Controller
         }
 
         if ($event = $request->get('event')) {
-            $query->whereJsonContains('events', $event);
+            // SQLite-compatible JSON contains check
+            $query->where('events', 'like', '%"' . $event . '"%');
         }
 
         $webhooks = $query->paginate($request->integer('per_page', 20));

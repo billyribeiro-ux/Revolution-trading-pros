@@ -67,9 +67,9 @@ class EmailSubscriberController extends Controller
             $query->where('engagement_level', $engagement);
         }
 
-        // Tag filter
+        // Tag filter (SQLite-compatible)
         if ($tag = $request->get('tag')) {
-            $query->whereJsonContains('tags', $tag);
+            $query->where('tags', 'like', '%"' . $tag . '"%');
         }
 
         // Date range
@@ -494,7 +494,8 @@ class EmailSubscriberController extends Controller
             $query->where('status', $status);
         }
         if ($tag = $request->get('tag')) {
-            $query->whereJsonContains('tags', $tag);
+            // SQLite-compatible JSON contains check
+            $query->where('tags', 'like', '%"' . $tag . '"%');
         }
         if ($from = $request->get('from_date')) {
             $query->whereDate('created_at', '>=', $from);
