@@ -3,19 +3,15 @@
 	 * Trading Room Video Management - Admin Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Professional video management with room selector tabs.
-	 * Upload videos to specific trading rooms or alert services.
+	 * Professional video management with room selector tabs and category tagging.
+	 * Upload videos to specific trading rooms or alert services with topic tags.
 	 *
-	 * Rooms:
-	 * - Day Trading Room
-	 * - Swing Trading Room
-	 * - Small Account Mentorship
+	 * Categories:
+	 * - Risk Management, Options Strategies, Macro Structure
+	 * - Psychology, Micro Structure, Technical Analysis
+	 * - Fundamentals, Trade Setups, Market Review, etc.
 	 *
-	 * Alert Services:
-	 * - SPX Profit Pulse
-	 * - Explosive Swing
-	 *
-	 * @version 2.0.0 - December 2025
+	 * @version 3.0.0 - December 2025
 	 */
 
 	import { onMount } from 'svelte';
@@ -37,7 +33,9 @@
 		IconX,
 		IconChartBar,
 		IconUser,
-		IconBuilding
+		IconBuilding,
+		IconTag,
+		IconTags
 	} from '@tabler/icons-svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -61,6 +59,12 @@
 		photo_url?: string;
 	}
 
+	interface VideoCategory {
+		id: string;
+		name: string;
+		color: string;
+	}
+
 	interface Video {
 		id: number;
 		trading_room_id: number;
@@ -75,8 +79,39 @@
 		is_featured: boolean;
 		is_published: boolean;
 		views_count: number;
+		categories: string[]; // Array of category IDs
 		trader?: Trader;
 		created_at: string;
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PREDEFINED CATEGORIES
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const availableCategories: VideoCategory[] = [
+		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
+		{ id: 'options-strategies', name: 'Options Strategies', color: '#f59e0b' },
+		{ id: 'macro-structure', name: 'Macro Structure', color: '#10b981' },
+		{ id: 'micro-structure', name: 'Micro Structure', color: '#06b6d4' },
+		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#3b82f6' },
+		{ id: 'fundamentals', name: 'Fundamentals', color: '#ec4899' },
+		{ id: 'trade-setups', name: 'Trade Setups', color: '#14b8a6' },
+		{ id: 'market-review', name: 'Market Review', color: '#6366f1' },
+		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
+		{ id: 'futures', name: 'Futures', color: '#84cc16' },
+		{ id: 'forex', name: 'Forex', color: '#22c55e' },
+		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
+		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
+		{ id: 'position-sizing', name: 'Position Sizing', color: '#0ea5e9' },
+		{ id: 'entry-exit', name: 'Entry & Exit', color: '#d946ef' },
+		{ id: 'scanner-setups', name: 'Scanner Setups', color: '#64748b' },
+		{ id: 'indicators', name: 'Indicators', color: '#fb7185' }
+	];
+
+	// Helper to get category by ID
+	function getCategoryById(id: string): VideoCategory | undefined {
+		return availableCategories.find(c => c.id === id);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -96,6 +131,7 @@
 	// Filters
 	let searchQuery = $state('');
 	let selectedTrader = $state('all');
+	let selectedCategory = $state('all');
 
 	// Modal state
 	let showUploadModal = $state(false);
@@ -114,8 +150,26 @@
 		thumbnail_url: '',
 		video_date: new Date().toISOString().split('T')[0],
 		is_published: true,
-		is_featured: false
+		is_featured: false,
+		categories: [] as string[]
 	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CATEGORY SELECTION
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function toggleCategory(categoryId: string) {
+		const index = formData.categories.indexOf(categoryId);
+		if (index === -1) {
+			formData.categories = [...formData.categories, categoryId];
+		} else {
+			formData.categories = formData.categories.filter(c => c !== categoryId);
+		}
+	}
+
+	function isCategorySelected(categoryId: string): boolean {
+		return formData.categories.includes(categoryId);
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MOCK DATA (Replace with API calls)
@@ -155,14 +209,14 @@
 			// const data = await response.json();
 			// videos = data.data;
 
-			// Mock data for now
+			// Mock data with categories
 			videos = [
 				{
 					id: 1,
 					trading_room_id: selectedRoom.id,
 					trader_id: 5,
-					title: 'Weekend Market Review',
-					description: 'Bulls held the gains from last week and in the process now have a "prize worth fighting for" into next week as we all wait for Powell and his purple tie.',
+					title: 'Risk Management Fundamentals',
+					description: 'Learn the essential principles of managing risk in your trading portfolio.',
 					video_url: 'https://vimeo.com/123456789',
 					video_platform: 'vimeo',
 					thumbnail_url: '/images/traders/sam-shames.jpg',
@@ -171,6 +225,7 @@
 					is_featured: true,
 					is_published: true,
 					views_count: 234,
+					categories: ['risk-management', 'psychology', 'position-sizing'],
 					trader: traders.find(t => t.id === 5),
 					created_at: '2025-12-05T10:00:00Z'
 				},
@@ -178,8 +233,8 @@
 					id: 2,
 					trading_room_id: selectedRoom.id,
 					trader_id: 4,
-					title: 'Santa Is Waiting For Powell',
-					description: "Bruce likes to really think about the upcoming economic calendar, such as next week's FED meeting, and how this will affect the market.",
+					title: 'Options Strategies for Income',
+					description: 'Bruce explains covered calls, iron condors, and other income-generating strategies.',
 					video_url: 'https://vimeo.com/123456790',
 					video_platform: 'vimeo',
 					thumbnail_url: '/images/traders/bruce-marshall.jpg',
@@ -188,6 +243,7 @@
 					is_featured: false,
 					is_published: true,
 					views_count: 189,
+					categories: ['options-strategies', 'trade-setups'],
 					trader: traders.find(t => t.id === 4),
 					created_at: '2025-12-04T10:00:00Z'
 				},
@@ -195,8 +251,8 @@
 					id: 3,
 					trading_room_id: selectedRoom.id,
 					trader_id: 2,
-					title: 'Ready For The Ripple',
-					description: "It's said there can be a ripple effect in equities due to the impact of currencies. Henry thinks the stage is set for that.",
+					title: 'Macro Structure Analysis',
+					description: 'Understanding the bigger picture market structure and how it affects your trades.',
 					video_url: 'https://vimeo.com/123456791',
 					video_platform: 'vimeo',
 					thumbnail_url: '/images/traders/henry-gambell.jpg',
@@ -205,8 +261,45 @@
 					is_featured: false,
 					is_published: true,
 					views_count: 312,
+					categories: ['macro-structure', 'technical-analysis', 'market-review'],
 					trader: traders.find(t => t.id === 2),
 					created_at: '2025-12-03T10:00:00Z'
+				},
+				{
+					id: 4,
+					trading_room_id: selectedRoom.id,
+					trader_id: 3,
+					title: 'Trading Psychology Deep Dive',
+					description: 'Master your emotions and develop the mindset of a professional trader.',
+					video_url: 'https://vimeo.com/123456792',
+					video_platform: 'vimeo',
+					thumbnail_url: '/images/traders/danielle-shay.jpg',
+					duration: 2400,
+					video_date: '2025-12-02',
+					is_featured: true,
+					is_published: true,
+					views_count: 456,
+					categories: ['psychology', 'risk-management'],
+					trader: traders.find(t => t.id === 3),
+					created_at: '2025-12-02T10:00:00Z'
+				},
+				{
+					id: 5,
+					trading_room_id: selectedRoom.id,
+					trader_id: 1,
+					title: 'Micro Structure & Order Flow',
+					description: 'Learn to read the tape and understand order flow dynamics.',
+					video_url: 'https://vimeo.com/123456793',
+					video_platform: 'vimeo',
+					thumbnail_url: '/images/traders/john-carter.jpg',
+					duration: 1920,
+					video_date: '2025-12-01',
+					is_featured: false,
+					is_published: true,
+					views_count: 278,
+					categories: ['micro-structure', 'technical-analysis', 'entry-exit'],
+					trader: traders.find(t => t.id === 1),
+					created_at: '2025-12-01T10:00:00Z'
 				}
 			];
 		} catch (err) {
@@ -236,7 +329,8 @@
 			thumbnail_url: '',
 			video_date: new Date().toISOString().split('T')[0],
 			is_published: true,
-			is_featured: false
+			is_featured: false,
+			categories: []
 		};
 		showUploadModal = true;
 	}
@@ -253,7 +347,8 @@
 			thumbnail_url: video.thumbnail_url || '',
 			video_date: video.video_date,
 			is_published: video.is_published,
-			is_featured: video.is_featured
+			is_featured: video.is_featured,
+			categories: video.categories || []
 		};
 		showEditModal = true;
 	}
@@ -357,16 +452,34 @@
 	const tradingRooms = $derived(rooms.filter(r => r.type === 'trading_room'));
 	const alertServices = $derived(rooms.filter(r => r.type === 'alert_service'));
 
+	// Filter videos by search, trader, and category
 	const filteredVideos = $derived(videos.filter(video => {
+		// Search matches title, description, or category names
+		const searchLower = searchQuery.toLowerCase();
+		const categoryNames = video.categories.map(c => getCategoryById(c)?.name.toLowerCase() || '');
 		const matchesSearch = !searchQuery ||
-			video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			video.description?.toLowerCase().includes(searchQuery.toLowerCase());
+			video.title.toLowerCase().includes(searchLower) ||
+			video.description?.toLowerCase().includes(searchLower) ||
+			categoryNames.some(name => name.includes(searchLower));
+
+		// Trader filter
 		const matchesTrader = selectedTrader === 'all' || video.trader_id?.toString() === selectedTrader;
-		return matchesSearch && matchesTrader;
+
+		// Category filter
+		const matchesCategory = selectedCategory === 'all' || video.categories.includes(selectedCategory);
+
+		return matchesSearch && matchesTrader && matchesCategory;
 	}));
 
 	const totalViews = $derived(videos.reduce((sum, v) => sum + v.views_count, 0));
 	const publishedCount = $derived(videos.filter(v => v.is_published).length);
+
+	// Get unique categories used in current videos
+	const usedCategories = $derived(() => {
+		const categoryIds = new Set<string>();
+		videos.forEach(v => v.categories.forEach(c => categoryIds.add(c)));
+		return Array.from(categoryIds).map(id => getCategoryById(id)).filter(Boolean) as VideoCategory[];
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
@@ -386,7 +499,7 @@
 	<div class="page-header">
 		<div>
 			<h1>Trading Room Videos</h1>
-			<p class="page-description">Manage daily videos for each trading room and alert service</p>
+			<p class="page-description">Manage daily videos with category tags for each room and service</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
@@ -472,16 +585,27 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<label for="search-videos" class="sr-only">Search videos</label>
-			<input type="text" id="search-videos" placeholder="Search videos..." bind:value={searchQuery} />
+			<label for="search-videos" class="sr-only">Search videos or categories</label>
+			<input type="text" id="search-videos" placeholder="Search videos, categories..." bind:value={searchQuery} />
 		</div>
-		<label for="trader-filter" class="sr-only">Filter by trader</label>
-		<select id="trader-filter" class="filter-select" bind:value={selectedTrader}>
-			<option value="all">All Traders</option>
-			{#each traders as trader}
-				<option value={trader.id.toString()}>{trader.name}</option>
-			{/each}
-		</select>
+		<div class="filter-group">
+			<label for="category-filter" class="sr-only">Filter by category</label>
+			<select id="category-filter" class="filter-select" bind:value={selectedCategory}>
+				<option value="all">All Categories</option>
+				{#each availableCategories as category}
+					<option value={category.id}>{category.name}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="filter-group">
+			<label for="trader-filter" class="sr-only">Filter by trader</label>
+			<select id="trader-filter" class="filter-select" bind:value={selectedTrader}>
+				<option value="all">All Traders</option>
+				{#each traders as trader}
+					<option value={trader.id.toString()}>{trader.name}</option>
+				{/each}
+			</select>
+		</div>
 	</div>
 
 	<!-- Content -->
@@ -499,7 +623,13 @@
 		<div class="empty-state">
 			<IconVideo size={64} />
 			<h3>No videos found</h3>
-			<p>Add your first video to {selectedRoom?.name}</p>
+			<p>
+				{#if searchQuery || selectedCategory !== 'all' || selectedTrader !== 'all'}
+					No videos match your filters. Try adjusting your search.
+				{:else}
+					Add your first video to {selectedRoom?.name}
+				{/if}
+			</p>
 			<button class="btn-primary" onclick={openUploadModal}>
 				<IconPlus size={18} />
 				Add Video
@@ -511,6 +641,7 @@
 				<thead>
 					<tr>
 						<th>Video</th>
+						<th>Categories</th>
 						<th>Trader</th>
 						<th>Date</th>
 						<th>Views</th>
@@ -537,6 +668,21 @@
 								<div class="video-info">
 									<span class="video-title">{video.title}</span>
 									<span class="video-platform">{video.video_platform}</span>
+								</div>
+							</td>
+							<td class="categories-cell">
+								<div class="category-tags">
+									{#each video.categories.slice(0, 3) as categoryId}
+										{@const category = getCategoryById(categoryId)}
+										{#if category}
+											<span class="category-tag" style:--tag-color={category.color}>
+												{category.name}
+											</span>
+										{/if}
+									{/each}
+									{#if video.categories.length > 3}
+										<span class="category-more">+{video.categories.length - 3}</span>
+									{/if}
 								</div>
 							</td>
 							<td>
@@ -598,7 +744,7 @@
 		onclick={() => { showUploadModal = false; showEditModal = false; }}
 		onkeydown={(e) => e.key === 'Escape' && (showUploadModal = false, showEditModal = false)}
 	>
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Video' : 'Add New Video'}</h2>
 				<button class="modal-close" onclick={() => { showUploadModal = false; showEditModal = false; }} type="button" aria-label="Close">&times;</button>
@@ -638,13 +784,53 @@
 				<!-- Title -->
 				<div class="form-group">
 					<label for="video-title">Title</label>
-					<input type="text" id="video-title" placeholder="Weekend Market Review" bind:value={formData.title} />
+					<input type="text" id="video-title" placeholder="Risk Management Fundamentals" bind:value={formData.title} />
 				</div>
 
 				<!-- Description -->
 				<div class="form-group">
 					<label for="video-description">Description</label>
 					<textarea id="video-description" rows="3" placeholder="Brief description of the video content..." bind:value={formData.description}></textarea>
+				</div>
+
+				<!-- Categories Section -->
+				<div class="form-group">
+					<label>
+						<IconTags size={16} style="display: inline; vertical-align: middle; margin-right: 4px;" />
+						Categories (select all that apply)
+					</label>
+					<div class="categories-grid">
+						{#each availableCategories as category}
+							<button
+								type="button"
+								class="category-btn"
+								class:selected={isCategorySelected(category.id)}
+								style:--tag-color={category.color}
+								onclick={() => toggleCategory(category.id)}
+							>
+								{#if isCategorySelected(category.id)}
+									<IconCheck size={14} />
+								{/if}
+								{category.name}
+							</button>
+						{/each}
+					</div>
+					{#if formData.categories.length > 0}
+						<div class="selected-categories">
+							<span class="selected-count">{formData.categories.length} selected:</span>
+							{#each formData.categories as categoryId}
+								{@const category = getCategoryById(categoryId)}
+								{#if category}
+									<span class="selected-tag" style:--tag-color={category.color}>
+										{category.name}
+										<button type="button" onclick={() => toggleCategory(categoryId)} aria-label="Remove {category.name}">
+											<IconX size={12} />
+										</button>
+									</span>
+								{/if}
+							{/each}
+						</div>
+					{/if}
 				</div>
 
 				<!-- Row: Trader + Date -->
@@ -1062,6 +1248,41 @@
 		text-transform: capitalize;
 	}
 
+	/* Category Tags in Table */
+	.categories-cell {
+		min-width: 200px;
+	}
+
+	.category-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.375rem;
+	}
+
+	.category-tag {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.25rem 0.5rem;
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: 500;
+		color: var(--tag-color, #6366f1);
+		white-space: nowrap;
+	}
+
+	.category-more {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.25rem 0.5rem;
+		background: rgba(100, 116, 139, 0.15);
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: 500;
+		color: #94a3b8;
+	}
+
 	.trader-cell {
 		display: flex;
 		align-items: center;
@@ -1194,6 +1415,10 @@
 		overflow: auto;
 	}
 
+	.modal-large {
+		max-width: 800px;
+	}
+
 	.modal-header {
 		display: flex;
 		justify-content: space-between;
@@ -1282,6 +1507,90 @@
 		gap: 1rem;
 	}
 
+	/* Categories Grid in Modal */
+	.categories-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: 0.75rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 10px;
+	}
+
+	.category-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(100, 116, 139, 0.1);
+		border: 1px solid rgba(100, 116, 139, 0.2);
+		border-radius: 6px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: #94a3b8;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.category-btn:hover {
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		color: var(--tag-color, #6366f1);
+	}
+
+	.category-btn.selected {
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 20%, transparent);
+		border-color: var(--tag-color, #6366f1);
+		color: var(--tag-color, #6366f1);
+	}
+
+	.selected-categories {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+		padding: 0.75rem;
+		background: rgba(99, 102, 241, 0.05);
+		border-radius: 8px;
+	}
+
+	.selected-count {
+		font-size: 0.75rem;
+		color: #64748b;
+		margin-right: 0.5rem;
+	}
+
+	.selected-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.375rem 0.625rem;
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		border-radius: 4px;
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--tag-color, #6366f1);
+	}
+
+	.selected-tag button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		background: transparent;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.7;
+		transition: opacity 0.15s;
+	}
+
+	.selected-tag button:hover {
+		opacity: 1;
+	}
+
 	.form-options {
 		display: flex;
 		gap: 1.5rem;
@@ -1361,7 +1670,12 @@
 		}
 
 		.videos-table {
-			min-width: 700px;
+			min-width: 900px;
+		}
+
+		.categories-grid {
+			max-height: 200px;
+			overflow-y: auto;
 		}
 	}
 </style>
