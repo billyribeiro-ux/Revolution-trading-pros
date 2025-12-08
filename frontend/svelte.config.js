@@ -16,6 +16,8 @@ const config = {
 		// ICT11+ Production Configuration - Suppress non-critical warnings
 		const suppressedCodes = [
 			'css_unused_selector',
+			'css_unknown_at_rule', // Tailwind @apply/@reference directives
+			'css_empty_rule', // Empty CSS rulesets used as placeholders
 			'state_referenced_locally', // Svelte 5 false positive for closures
 			'a11y_click_events_have_key_events', // Handled by component logic
 			'a11y_no_static_element_interactions' // Handled by component logic

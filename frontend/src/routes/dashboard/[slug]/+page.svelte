@@ -26,6 +26,8 @@
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import IconMessage from '@tabler/icons-svelte/icons/message';
+	import IconInbox from '@tabler/icons-svelte/icons/inbox';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -798,6 +800,7 @@
 		margin: 0 0 8px;
 		line-height: 1.4;
 		display: -webkit-box;
+		line-clamp: 2;
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;

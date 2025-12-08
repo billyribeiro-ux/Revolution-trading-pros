@@ -227,115 +227,231 @@
 </div>
 
 <style>
-  @reference "tailwindcss";
-
   .responsive-preview {
-    @apply bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4;
+    background-color: rgb(249 250 251);
+    border-radius: 0.75rem;
+    padding: 1rem;
+  }
+
+  :global(.dark) .responsive-preview {
+    background-color: rgba(31, 41, 55, 0.5);
   }
 
   .preview-header {
-    @apply flex items-center justify-between mb-4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
   }
 
   .variants-grid {
-    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .variants-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 768px) {
+    .variants-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
   }
 
   .variant-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg overflow-hidden;
-    @apply border-2 border-transparent;
-    @apply transition-all duration-200;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  :global(.dark) .variant-card {
+    background-color: rgb(31 41 55);
   }
 
   .variant-card.interactive {
-    @apply cursor-pointer hover:border-blue-300 dark:hover:border-blue-600;
-    @apply hover:shadow-md;
+    cursor: pointer;
+  }
+
+  .variant-card.interactive:hover {
+    border-color: rgb(147 197 253);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  }
+
+  :global(.dark) .variant-card.interactive:hover {
+    border-color: rgb(37 99 235);
   }
 
   .variant-card.selected {
-    @apply border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800;
+    border-color: rgb(59 130 246);
+    box-shadow: 0 0 0 2px rgb(191 219 254);
+  }
+
+  :global(.dark) .variant-card.selected {
+    box-shadow: 0 0 0 2px rgb(30 64 175);
   }
 
   .variant-thumbnail {
-    @apply aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden;
+    aspect-ratio: 1/1;
+    background-color: rgb(243 244 246);
+    overflow: hidden;
+  }
+
+  :global(.dark) .variant-thumbnail {
+    background-color: rgb(55 65 81);
   }
 
   .variant-thumbnail img {
-    @apply w-full h-full object-cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .variant-info {
-    @apply p-2 text-center;
+    padding: 0.5rem;
+    text-align: center;
   }
 
   .size-name {
-    @apply text-xs font-medium text-gray-700 dark:text-gray-300;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgb(55 65 81);
+  }
+
+  :global(.dark) .size-name {
+    color: rgb(209 213 219);
   }
 
   .size-dimensions {
-    @apply text-[10px] text-gray-500 dark:text-gray-400;
+    font-size: 10px;
+    color: rgb(107 114 128);
+  }
+
+  :global(.dark) .size-dimensions {
+    color: rgb(156 163 175);
   }
 
   .size-details {
-    @apply flex items-center justify-center gap-2 mt-1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
   }
 
   .file-size {
-    @apply text-[10px] text-gray-500;
+    font-size: 10px;
+    color: rgb(107 114 128);
   }
 
   .savings {
-    @apply text-[10px] font-medium text-green-500;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgb(34 197 94);
   }
 
   .breakpoint-indicator {
-    @apply h-1 bg-gray-200 dark:bg-gray-700;
+    height: 0.25rem;
+    background-color: rgb(229 231 235);
+  }
+
+  :global(.dark) .breakpoint-indicator {
+    background-color: rgb(55 65 81);
   }
 
   .indicator-bar {
-    @apply h-full bg-blue-500;
+    height: 100%;
+    background-color: rgb(59 130 246);
   }
 
   .size-chart {
-    @apply mt-4 pt-4 border-t border-gray-200 dark:border-gray-700;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(229 231 235);
+  }
+
+  :global(.dark) .size-chart {
+    border-color: rgb(55 65 81);
   }
 
   .chart-header {
-    @apply mb-2;
+    margin-bottom: 0.5rem;
   }
 
   .chart-bars {
-    @apply flex items-end justify-center gap-2 h-20;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 5rem;
   }
 
   .chart-bar-wrapper {
-    @apply flex flex-col items-center gap-1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .chart-bar {
-    @apply w-4 bg-blue-500 rounded-t transition-all duration-300;
+    width: 1rem;
+    background-color: rgb(59 130 246);
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    transition: all 0.3s;
   }
 
   .chart-bar-wrapper.original .chart-bar {
-    @apply bg-gray-400 dark:bg-gray-500;
+    background-color: rgb(156 163 175);
+  }
+
+  :global(.dark) .chart-bar-wrapper.original .chart-bar {
+    background-color: rgb(107 114 128);
   }
 
   .chart-label {
-    @apply text-[10px] text-gray-500;
+    font-size: 10px;
+    color: rgb(107 114 128);
   }
 
   .hover-preview {
-    @apply fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl;
-    @apply border border-gray-200 dark:border-gray-700 overflow-hidden;
-    @apply pointer-events-none;
+    position: fixed;
+    z-index: 50;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    border: 1px solid rgb(229 231 235);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  :global(.dark) .hover-preview {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
   }
 
   .preview-image {
-    @apply max-w-[200px] max-h-[150px] object-contain;
+    max-width: 200px;
+    max-height: 150px;
+    object-fit: contain;
   }
 
   .preview-info {
-    @apply flex items-center justify-between gap-2 px-2 py-1;
-    @apply text-xs bg-gray-50 dark:bg-gray-900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    background-color: rgb(249 250 251);
+  }
+
+  :global(.dark) .preview-info {
+    background-color: rgb(17 24 39);
   }
 </style>

@@ -25,30 +25,28 @@
 		type DashboardWidget,
 		type WidgetSize
 	} from '$lib/stores/widgets';
-	import {
-		IconX,
-		IconGripVertical,
-		IconEye,
-		IconEyeOff,
-		IconLayoutGrid,
-		IconList,
-		IconRefresh,
-		IconCaretUp,
-		IconCaretDown,
-		IconChartLine,
-		IconWorld,
-		IconFileText,
-		IconUsers,
-		IconCurrencyDollar,
-		IconShoppingCart,
-		IconPlugConnected,
-		IconActivity,
-		IconBolt,
-		IconMail,
-		IconSearch,
-		IconEyeCheck,
-		IconSettings
-	} from '@tabler/icons-svelte';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconEyeOff from '@tabler/icons-svelte/icons/eye-off';
+	import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
+	import IconList from '@tabler/icons-svelte/icons/list';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconCaretUp from '@tabler/icons-svelte/icons/caret-up';
+	import IconCaretDown from '@tabler/icons-svelte/icons/caret-down';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconWorld from '@tabler/icons-svelte/icons/world';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
+	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEyeCheck from '@tabler/icons-svelte/icons/eye-check';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
 
 	interface Props {
 		isOpen?: boolean;

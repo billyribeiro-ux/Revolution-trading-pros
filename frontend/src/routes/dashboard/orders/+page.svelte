@@ -7,16 +7,14 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated, authStore } from '$lib/stores/auth';
-	import {
-		IconPackage,
-		IconEye,
-		IconDownload,
-		IconClock,
-		IconCheck,
-		IconX,
-		IconTruck,
-		IconChevronRight
-	} from '@tabler/icons-svelte';
+	import IconPackage from '@tabler/icons-svelte/icons/package';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconDownload from '@tabler/icons-svelte/icons/download';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconTruck from '@tabler/icons-svelte/icons/truck';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 
 	// Redirect if not authenticated
 	onMount(() => {

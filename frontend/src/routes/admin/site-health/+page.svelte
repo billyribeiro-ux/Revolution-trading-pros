@@ -41,6 +41,7 @@
 	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
 	import IconFolder from '@tabler/icons-svelte/icons/folder';
 	import IconCloud from '@tabler/icons-svelte/icons/cloud';
+	import IconCode from '@tabler/icons-svelte/icons/code';
 	import IconBug from '@tabler/icons-svelte/icons/bug';
 	import IconRocket from '@tabler/icons-svelte/icons/rocket';
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';

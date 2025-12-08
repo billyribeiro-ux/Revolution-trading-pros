@@ -6,7 +6,11 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated, authStore } from '$lib/stores/auth';
-	import { IconCreditCard, IconPlus, IconTrash, IconCheck, IconBrandPaypal } from '@tabler/icons-svelte';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
 
 	onMount(() => {
 		if (!$isAuthenticated && !$authStore.isInitializing) {
@@ -104,8 +108,15 @@
 
 			{#if showAddForm}
 				<!-- Add Form Modal -->
-				<div class="add-form-overlay" onclick={() => showAddForm = false}>
-					<div class="add-form" onclick={(e) => e.stopPropagation()}>
+				<div
+					class="add-form-overlay"
+					role="button"
+					tabindex="0"
+					onclick={() => showAddForm = false}
+					onkeydown={(e) => e.key === 'Escape' && (showAddForm = false)}
+					aria-label="Close modal"
+				>
+					<div class="add-form" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 						<h3>Add Payment Method</h3>
 						<div class="payment-options">
 							<button class="payment-option">

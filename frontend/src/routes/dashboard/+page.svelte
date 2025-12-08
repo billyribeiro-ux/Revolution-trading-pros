@@ -375,7 +375,7 @@
 								<!-- Mobile Image -->
 								<div class="hidden-lg">
 									<a href="/watchlist">
-										<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+										<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist" class="u--border-radius" />
 									</a>
 								</div>
 								<h4 class="h5 u--font-weight-bold">Weekly Watchlist with Our Experts</h4>
@@ -386,7 +386,7 @@
 							</div>
 							<div class="col-sm-6 col-lg-7 hidden-mobile">
 								<a href="/watchlist">
-									<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+									<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist" class="u--border-radius" />
 								</a>
 							</div>
 						</div>
@@ -564,10 +564,6 @@
 	.dashboard__content-sidebar {
 		width: 280px;
 		flex-shrink: 0;
-	}
-
-	.content-sidebar__section {
-		/* Empty placeholder - matches RevolutionMain */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
