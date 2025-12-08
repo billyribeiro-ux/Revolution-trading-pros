@@ -322,6 +322,7 @@ class TradingRoomSSOController extends Controller
             }
 
             // Method 2: Check memberships with matching plan
+            // Use database-agnostic JSON matching (compatible with both MySQL and SQLite)
             $hasMembership = $user->memberships()
                 ->where('status', 'active')
                 ->where(function ($query) {
@@ -330,9 +331,10 @@ class TradingRoomSSOController extends Controller
                 })
                 ->whereHas('plan', function ($query) use ($room) {
                     // Check if plan slug matches room slug or plan includes room access
+                    // Use LIKE for SQLite compatibility instead of whereJsonContains
                     $query->where('slug', $room->slug)
-                        ->orWhereJsonContains('features', $room->slug)
-                        ->orWhereJsonContains('metadata->rooms', $room->slug);
+                        ->orWhere('features', 'like', '%"' . $room->slug . '"%')
+                        ->orWhere('metadata', 'like', '%"rooms"%:%"' . $room->slug . '"%');
                 })
                 ->exists();
 
@@ -372,9 +374,10 @@ class TradingRoomSSOController extends Controller
                     ->orWhere('expires_at', '>', now());
             })
             ->whereHas('plan', function ($query) use ($room) {
+                // Use LIKE for SQLite compatibility instead of whereJsonContains
                 $query->where('slug', $room->slug)
-                    ->orWhereJsonContains('features', $room->slug)
-                    ->orWhereJsonContains('metadata->rooms', $room->slug)
+                    ->orWhere('features', 'like', '%"' . $room->slug . '"%')
+                    ->orWhere('metadata', 'like', '%"rooms"%:%"' . $room->slug . '"%')
                     ->orWhere('slug', 'like', '%trading%');
             })
             ->with('plan')

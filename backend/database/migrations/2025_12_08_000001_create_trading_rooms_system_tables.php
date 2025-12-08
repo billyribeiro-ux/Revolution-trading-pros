@@ -109,7 +109,10 @@ return new class extends Migration
             $table->index(['trading_room_id', 'is_published', 'video_date']);
             $table->index('trader_id');
             $table->index('video_date');
-            $table->fullText(['title', 'description']);
+            // Fulltext only supported on MySQL/MariaDB
+            if (DB::connection()->getDriverName() !== 'sqlite') {
+                $table->fullText(['title', 'description']);
+            }
         });
 
         // ═══════════════════════════════════════════════════════════════════════════

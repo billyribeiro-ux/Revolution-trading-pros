@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Subscription;
-use App\Models\Plan;
+use App\Models\UserSubscription as Subscription;
+use App\Models\SubscriptionPlan as Plan;
 use App\Models\User;
 use App\Models\Invoice;
 use App\Models\Payment;
