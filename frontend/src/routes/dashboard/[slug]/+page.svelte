@@ -26,6 +26,8 @@
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import IconMessage from '@tabler/icons-svelte/icons/message';
+	import IconInbox from '@tabler/icons-svelte/icons/inbox';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════

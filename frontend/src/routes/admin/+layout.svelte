@@ -15,16 +15,14 @@
 	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
-	import {
-		IconMenu2,
-		IconSunHigh,
-		IconMoon,
-		IconDeviceDesktop,
-		IconBell,
-		IconSearch,
-		IconPlugConnected,
-		IconCommand
-	} from '@tabler/icons-svelte';
+	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
+	import IconSunHigh from '@tabler/icons-svelte/icons/sun-high';
+	import IconMoon from '@tabler/icons-svelte/icons/moon';
+	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconCommand from '@tabler/icons-svelte/icons/command';
 	import { browser } from '$app/environment';
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';

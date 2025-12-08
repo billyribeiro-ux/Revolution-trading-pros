@@ -6,7 +6,11 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated, authStore } from '$lib/stores/auth';
-	import { IconCreditCard, IconPlus, IconTrash, IconCheck, IconBrandPaypal } from '@tabler/icons-svelte';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
 
 	onMount(() => {
 		if (!$isAuthenticated && !$authStore.isInitializing) {
