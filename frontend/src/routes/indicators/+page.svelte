@@ -244,7 +244,7 @@
         (async () => {
             // Dynamically import GSAP to avoid SSR issues
             const { gsap } = await import('gsap');
-            const { ScrollTrigger } = await import('gsap/dist/ScrollTrigger');
+            const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
             gsap.registerPlugin(ScrollTrigger);
 
             // Store cleanup reference
