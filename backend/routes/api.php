@@ -1123,3 +1123,44 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/per
     Route::post('/queries/analyze', [PerformanceController::class, 'analyzeQueries']);
     Route::get('/queries/results', [PerformanceController::class, 'queryResults']);
 });
+
+// ========================================
+// TRADING ROOMS & ALERT SERVICES API
+// ========================================
+use App\Http\Controllers\Api\TradingRoomController;
+
+// Public trading room routes (for member dashboards)
+Route::middleware(['auth:sanctum'])->prefix('trading-rooms')->group(function () {
+    // List rooms user has access to
+    Route::get('/', [TradingRoomController::class, 'index']);
+    Route::get('/{slug}', [TradingRoomController::class, 'show']);
+
+    // Daily Videos (by room)
+    Route::get('/{slug}/videos', [TradingRoomController::class, 'listVideos']);
+
+    // Traders
+    Route::get('/traders', [TradingRoomController::class, 'listTraders']);
+});
+
+// Admin trading room routes (full CRUD)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/trading-rooms')->group(function () {
+    // Trading Rooms CRUD
+    Route::get('/', [TradingRoomController::class, 'index']);
+    Route::post('/', [TradingRoomController::class, 'store']);
+    Route::get('/{id}', [TradingRoomController::class, 'show'])->where('id', '[0-9]+');
+    Route::put('/{id}', [TradingRoomController::class, 'update']);
+    Route::delete('/{id}', [TradingRoomController::class, 'destroy']);
+
+    // Traders CRUD
+    Route::get('/traders', [TradingRoomController::class, 'listTraders']);
+    Route::post('/traders', [TradingRoomController::class, 'storeTrader']);
+    Route::put('/traders/{id}', [TradingRoomController::class, 'updateTrader']);
+    Route::delete('/traders/{id}', [TradingRoomController::class, 'destroyTrader']);
+
+    // Daily Videos CRUD
+    Route::get('/videos/{roomSlug}', [TradingRoomController::class, 'listVideos']);
+    Route::post('/videos', [TradingRoomController::class, 'storeVideo']);
+    Route::post('/videos/bulk', [TradingRoomController::class, 'bulkStoreVideos']);
+    Route::put('/videos/{id}', [TradingRoomController::class, 'updateVideo']);
+    Route::delete('/videos/{id}', [TradingRoomController::class, 'destroyVideo']);
+});
