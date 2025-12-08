@@ -15,6 +15,7 @@
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconShare from '@tabler/icons-svelte/icons/share';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 

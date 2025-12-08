@@ -11,7 +11,8 @@
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { keyboard } from '$lib/stores/keyboard';
-	import { IconCommand, IconX } from '@tabler/icons-svelte';
+	import IconCommand from '@tabler/icons-svelte/icons/command';
+	import IconX from '@tabler/icons-svelte/icons/x';
 
 	interface Props {
 		isOpen?: boolean;

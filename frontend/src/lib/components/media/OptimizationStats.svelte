@@ -196,88 +196,180 @@
 {/if}
 
 <style>
-  @reference "tailwindcss";
-
   .stats-compact {
-    @apply inline-flex items-center gap-2 text-sm;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .savings-badge {
-    @apply px-2 py-0.5 rounded-full text-xs font-semibold;
-    @apply bg-green-100 dark:bg-green-900/30;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: rgb(220 252 231);
+  }
+
+  :global(.dark) .savings-badge {
+    background-color: rgba(20, 83, 45, 0.3);
   }
 
   .stats-card {
-    @apply bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800;
-    @apply rounded-xl overflow-hidden;
+    background-color: rgb(240 253 244);
+    border: 1px solid rgb(187 247 208);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  :global(.dark) .stats-card {
+    background-color: rgba(20, 83, 45, 0.2);
+    border-color: rgb(22 101 52);
   }
 
   .stats-header {
-    @apply flex items-center gap-3 p-4 bg-green-100/50 dark:bg-green-900/30;
-    @apply border-b border-green-200 dark:border-green-800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: rgba(220, 252, 231, 0.5);
+    border-bottom: 1px solid rgb(187 247 208);
+  }
+
+  :global(.dark) .stats-header {
+    background-color: rgba(20, 83, 45, 0.3);
+    border-color: rgb(22 101 52);
   }
 
   .success-icon {
-    @apply w-10 h-10 rounded-full bg-green-500 text-white;
-    @apply flex items-center justify-center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background-color: rgb(34 197 94);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .stats-title {
-    @apply text-lg font-semibold text-green-800 dark:text-green-200;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: rgb(22 101 52);
+  }
+
+  :global(.dark) .stats-title {
+    color: rgb(187 247 208);
   }
 
   .stats-subtitle {
-    @apply text-sm text-green-600 dark:text-green-400;
+    font-size: 0.875rem;
+    color: rgb(22 163 74);
+  }
+
+  :global(.dark) .stats-subtitle {
+    color: rgb(74 222 128);
   }
 
   .stats-main {
-    @apply flex items-center justify-around p-6 gap-6;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 1.5rem;
+    gap: 1.5rem;
   }
 
   .savings-ring {
-    @apply relative flex items-center justify-center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .savings-value {
-    @apply absolute inset-0 flex flex-col items-center justify-center;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .size-comparison {
-    @apply flex flex-col items-center gap-2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .size-item {
-    @apply flex items-center gap-2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .size-label {
-    @apply text-xs text-gray-500 dark:text-gray-400 w-16;
+    font-size: 0.75rem;
+    color: rgb(107 114 128);
+    width: 4rem;
+  }
+
+  :global(.dark) .size-label {
+    color: rgb(156 163 175);
   }
 
   .size-value {
-    @apply text-sm;
+    font-size: 0.875rem;
   }
 
   .format-badge {
-    @apply px-1.5 py-0.5 text-[10px] font-medium rounded;
-    @apply bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400;
+    padding: 0.125rem 0.375rem;
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 0.25rem;
+    background-color: rgb(229 231 235);
+    color: rgb(75 85 99);
+  }
+
+  :global(.dark) .format-badge {
+    background-color: rgb(55 65 81);
+    color: rgb(156 163 175);
   }
 
   .format-badge-new {
-    @apply bg-green-200 text-green-700 dark:bg-green-800 dark:text-green-300;
+    background-color: rgb(187 247 208);
+    color: rgb(21 128 61);
+  }
+
+  :global(.dark) .format-badge-new {
+    background-color: rgb(22 101 52);
+    color: rgb(134 239 172);
   }
 
   .arrow-down {
-    @apply py-1;
+    padding: 0.25rem 0;
   }
 
   .stats-details {
-    @apply flex items-center justify-center gap-6 px-4 py-3;
-    @apply border-t border-green-200 dark:border-green-800;
-    @apply text-xs text-gray-600 dark:text-gray-400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgb(187 247 208);
+    font-size: 0.75rem;
+    color: rgb(75 85 99);
+  }
+
+  :global(.dark) .stats-details {
+    border-color: rgb(22 101 52);
+    color: rgb(156 163 175);
   }
 
   .detail-item {
-    @apply flex items-center gap-1.5;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
   }
 </style>

@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import {
-		IconDeviceFloppy,
-		IconEye,
-		IconPhoto,
-		IconX,
-		IconPlus,
-		IconCalendar,
-		IconLoader,
-		IconCheck,
-		IconTags
-	} from '@tabler/icons-svelte';
+	import IconDeviceFloppy from '@tabler/icons-svelte/icons/device-floppy';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconPhoto from '@tabler/icons-svelte/icons/photo';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconLoader from '@tabler/icons-svelte/icons/loader';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconTags from '@tabler/icons-svelte/icons/tags';
 	import RichTextEditor from '$lib/components/blog/RichTextEditor.svelte';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
@@ -872,16 +870,6 @@
 
 	.selected-tag button:hover {
 		opacity: 1;
-	}
-
-	.empty-text {
-		color: #999;
-		font-size: 0.9rem;
-	}
-
-	.empty-text a {
-		color: #3b82f6;
-		text-decoration: none;
 	}
 
 	.tags-selected {
