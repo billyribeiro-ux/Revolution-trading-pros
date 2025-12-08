@@ -159,7 +159,7 @@ export const membersApi = {
 			});
 		}
 		const queryString = params.toString();
-		const endpoint = `/api/admin/members${queryString ? `?${queryString}` : ''}`;
+		const endpoint = `/admin/members${queryString ? `?${queryString}` : ''}`;
 		return apiClient.get(endpoint, { cache: { ttl: 60000 } });
 	},
 
@@ -167,14 +167,14 @@ export const membersApi = {
 	 * Get member statistics
 	 */
 	async getStats(): Promise<MemberStats> {
-		return apiClient.get('/api/admin/members/stats', { cache: { ttl: 300000 } });
+		return apiClient.get('/admin/members/stats', { cache: { ttl: 300000 } });
 	},
 
 	/**
 	 * Get all services for filtering
 	 */
 	async getServices(): Promise<{ services: Service[] }> {
-		return apiClient.get('/api/admin/members/services', { cache: { ttl: 300000 } });
+		return apiClient.get('/admin/members/services', { cache: { ttl: 300000 } });
 	},
 
 	/**
@@ -205,7 +205,7 @@ export const membersApi = {
 		}
 		const queryString = params.toString();
 		return apiClient.get(
-			`/api/admin/members/service/${serviceId}${queryString ? `?${queryString}` : ''}`
+			`/admin/members/service/${serviceId}${queryString ? `?${queryString}` : ''}`
 		);
 	},
 
@@ -224,7 +224,7 @@ export const membersApi = {
 			});
 		}
 		const queryString = params.toString();
-		return apiClient.get(`/api/admin/members/churned${queryString ? `?${queryString}` : ''}`);
+		return apiClient.get(`/admin/members/churned${queryString ? `?${queryString}` : ''}`);
 	},
 
 	/**
@@ -241,7 +241,7 @@ export const membersApi = {
 			meta?: Record<string, unknown>;
 		}[];
 	}> {
-		return apiClient.get(`/api/admin/members/${id}`);
+		return apiClient.get(`/admin/members/${id}`);
 	},
 
 	/**
@@ -251,7 +251,7 @@ export const membersApi = {
 		templates: EmailTemplate[];
 		preset_templates: EmailTemplate[];
 	}> {
-		return apiClient.get('/api/admin/members/email-templates', { cache: { ttl: 300000 } });
+		return apiClient.get('/admin/members/email-templates', { cache: { ttl: 300000 } });
 	},
 
 	/**
@@ -266,7 +266,7 @@ export const membersApi = {
 			campaign_type?: 'winback' | 'promo' | 'general' | 'reminder';
 		}
 	): Promise<{ success: boolean; message: string }> {
-		return apiClient.post(`/api/admin/members/${memberId}/send-email`, data);
+		return apiClient.post(`/admin/members/${memberId}/send-email`, data);
 	},
 
 	/**
@@ -280,7 +280,7 @@ export const membersApi = {
 		campaign_type?: 'winback' | 'promo' | 'general' | 'reminder' | 'free_trial';
 		personalize?: boolean;
 	}): Promise<{ success: boolean; message: string; sent: number; failed: number }> {
-		return apiClient.post('/api/admin/members/bulk-email', data);
+		return apiClient.post('/admin/members/bulk-email', data);
 	},
 
 	/**

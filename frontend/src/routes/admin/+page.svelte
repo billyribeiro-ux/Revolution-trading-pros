@@ -111,12 +111,12 @@
 		
 		try {
 			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
-				api.get('/api/admin/members/stats'),
-				api.get('/api/admin/subscriptions/plans/stats'),
-				api.get('/api/admin/coupons'),
-				api.get('/api/admin/posts/stats'),
-				api.get('/api/admin/products/stats'),
-				api.get(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
+				api.get('/admin/members/stats'),
+				api.get('/admin/subscriptions/plans/stats'),
+				api.get('/admin/coupons'),
+				api.get('/admin/posts/stats'),
+				api.get('/admin/products/stats'),
+				api.get(`/admin/analytics/dashboard?period=${selectedPeriod}`)
 			]);
 
 			if (membersRes.status === 'fulfilled') {
