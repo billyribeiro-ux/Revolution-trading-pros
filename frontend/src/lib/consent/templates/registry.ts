@@ -989,15 +989,15 @@ const premiumGold: BannerTemplate = {
 };
 
 /**
- * Template 21: Simpler Trading (EXACT Match)
+ * Template 21: Revolution Trading Template
  *
- * Exact replica of Simpler Trading's Consent Magic Pro implementation.
+ * Custom Revolution Trading consent banner design.
  * White background, orange accept button, gray reject/options buttons.
  */
-const simplerTrading: BannerTemplate = {
-	id: 'simpler-trading',
-	name: 'Simpler Trading',
-	description: 'Exact match to Simpler Trading consent banner. White background with orange accent.',
+const revolutionTrading: BannerTemplate = {
+	id: 'revolution-trading',
+	name: 'Revolution Trading Template',
+	description: 'Revolution Trading consent banner. White background with orange accent.',
 	category: 'corporate',
 	isEditable: true,
 	position: 'bottom',
@@ -1095,7 +1095,7 @@ export const BANNER_TEMPLATES: BannerTemplate[] = [
 	fullscreenBlur,
 	natureGreen,
 	premiumGold,
-	simplerTrading,
+	revolutionTrading,
 ];
 
 /**

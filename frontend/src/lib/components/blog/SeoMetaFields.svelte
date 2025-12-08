@@ -160,6 +160,8 @@
 		border-radius: 6px;
 		font-size: 0.95rem;
 		font-family: inherit;
+		color: #1a1a1a;
+		background: white;
 	}
 
 	.form-group textarea {
