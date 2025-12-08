@@ -4,12 +4,12 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Shows user's purchased indicators with download access.
-	 * EXACT match of WordPress Simpler Trading membership-card structure.
-	 * Connected to real backend API.
+	 * Fetches real data from the backend API.
 	 *
-	 * @version 3.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 3.0.0 (API Connected / December 2025)
 	 */
 
+	import { browser } from '$app/environment';
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
@@ -19,156 +19,92 @@
 	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
 	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
-	import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import IconLoader from '@tabler/icons-svelte/icons/loader';
 	import '$lib/styles/st-icons.css';
-	import { userIndicatorsApi, type PurchasedIndicator as ApiPurchasedIndicator } from '$lib/api/indicators';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// TYPES
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	interface DisplayIndicator {
-		id: number;
-		name: string;
-		description: string;
-		platform: 'TradingView' | 'ThinkorSwim' | 'MetaTrader' | 'NinjaTrader';
-		platformSlug: string;
-		status: 'active' | 'expiring' | 'expired' | 'trial';
-		expiresAt: string;
-		daysUntilExpiry?: number;
-		downloadUrl: string;
-		downloadId: string;
-		version: string;
-		slug: string;
-		lastUpdated: string;
-		iconClass?: string;
-	}
+	import {
+		getUserIndicators,
+		downloadIndicator,
+		invalidateIndicatorsCache,
+		type PurchasedIndicator,
+		type IndicatorStats
+	} from '$lib/api/user-indicators';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let searchQuery = $state('');
-	let filterPlatform = $state<'all' | 'tradingview' | 'thinkorswim' | 'metatrader' | 'ninjatrader'>('all');
-	let purchasedIndicators = $state<DisplayIndicator[]>([]);
+	let filterPlatform = $state<'all' | 'tradingview' | 'thinkorswim' | 'metatrader'>('all');
+	let indicators = $state<PurchasedIndicator[]>([]);
+	let stats = $state<IndicatorStats>({ total: 0, active: 0, expiring: 0, expired: 0 });
 	let isLoading = $state(true);
-	let isDownloading = $state<number | null>(null);
-	let errorMessage = $state('');
-	let successMessage = $state('');
+	let isRefreshing = $state(false);
+	let error = $state<string | null>(null);
+	let downloadingId = $state<number | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// API FUNCTIONS
+	// LOAD INDICATORS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function formatDate(dateString: string): string {
-		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric'
-		});
-	}
-
-	function mapToDisplay(indicator: ApiPurchasedIndicator): DisplayIndicator {
-		return {
-			id: indicator.id,
-			name: indicator.name,
-			description: indicator.description || '',
-			platform: indicator.platform,
-			platformSlug: indicator.platform_slug,
-			status: indicator.status,
-			expiresAt: formatDate(indicator.expires_at),
-			daysUntilExpiry: indicator.days_until_expiry,
-			downloadUrl: indicator.download_url,
-			downloadId: indicator.download_id,
-			version: indicator.version,
-			slug: indicator.slug,
-			lastUpdated: formatDate(indicator.last_updated),
-			iconClass: `st-icon-${indicator.slug.replace(/-/g, '-')}`
-		};
-	}
-
-	async function loadIndicators() {
-		isLoading = true;
-		errorMessage = '';
+	async function loadIndicators(skipCache = false): Promise<void> {
+		if (skipCache) {
+			isRefreshing = true;
+			invalidateIndicatorsCache();
+		} else {
+			isLoading = true;
+		}
+		error = null;
 
 		try {
-			const params: { platform?: string; status?: 'active' | 'expiring' | 'expired' } = {};
-			if (filterPlatform !== 'all') {
-				params.platform = filterPlatform;
-			}
-
-			const response = await userIndicatorsApi.getPurchased(params);
-
+			const response = await getUserIndicators({ skipCache });
 			if (response.success) {
-				purchasedIndicators = response.data.map(mapToDisplay);
-			} else {
-				errorMessage = response.message || 'Failed to load indicators';
+				indicators = response.data.indicators;
+				stats = response.data.stats;
 			}
-		} catch (err) {
-			console.error('Error loading indicators:', err);
-			errorMessage = 'Failed to load indicators. Please try again.';
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to load indicators';
+			console.error('[Indicators] Error loading:', e);
 		} finally {
 			isLoading = false;
+			isRefreshing = false;
 		}
 	}
 
-	async function handleDownload(indicator: DisplayIndicator) {
-		isDownloading = indicator.id;
-		errorMessage = '';
-
-		try {
-			const response = await userIndicatorsApi.getDownload(indicator.slug, indicator.downloadId);
-
-			if (response.success && response.data.download_url) {
-				window.open(response.data.download_url, '_blank');
-				successMessage = `Download started for ${indicator.name}`;
-				setTimeout(() => successMessage = '', 3000);
-			} else {
-				errorMessage = 'Failed to get download link';
-			}
-		} catch (err) {
-			console.error('Error downloading:', err);
-			errorMessage = 'Failed to download indicator. Please try again.';
-		} finally {
-			isDownloading = null;
-		}
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
-
+	// Initial load
 	$effect(() => {
-		loadIndicators();
-	});
-
-	$effect(() => {
-		const _ = filterPlatform;
-		if (!isLoading) {
+		if (browser) {
 			loadIndicators();
 		}
 	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function handleDownload(indicator: PurchasedIndicator): Promise<void> {
+		downloadingId = indicator.id;
+		try {
+			await downloadIndicator(indicator.id);
+		} catch (e) {
+			console.error('[Indicators] Download error:', e);
+		} finally {
+			downloadingId = null;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const filteredIndicators = $derived.by(() => {
-		return purchasedIndicators.filter(indicator => {
+		return indicators.filter(indicator => {
 			const matchesSearch = searchQuery === '' ||
 				indicator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				indicator.platform.toLowerCase().includes(searchQuery.toLowerCase());
 			return matchesSearch;
 		});
-	});
-
-	const stats = $derived({
-		total: purchasedIndicators.length,
-		active: purchasedIndicators.filter(i => i.status === 'active').length,
-		expiring: purchasedIndicators.filter(i => i.status === 'expiring').length,
-		expired: purchasedIndicators.filter(i => i.status === 'expired').length,
-		trial: purchasedIndicators.filter(i => i.status === 'trial').length
 	});
 
 	const platforms = [
@@ -201,9 +137,17 @@
 		</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<a href="/indicators" class="btn btn-xs btn-link">
-			Browse Indicators Store
-			<IconChevronRight size={14} />
+		<button
+			class="refresh-btn"
+			onclick={() => loadIndicators(true)}
+			disabled={isRefreshing}
+			aria-label="Refresh indicators"
+		>
+			<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
+		</button>
+		<a href="/indicators" class="btn btn-link">
+			Browse All Indicators
+			<IconChevronRight size={16} />
 		</a>
 	</div>
 </header>
@@ -213,34 +157,35 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div class="dashboard__content">
-	<div class="dashboard__content-main">
-
-		<!-- Success/Error Messages -->
-		{#if successMessage}
-			<div class="woocommerce-message">
-				<IconCheck size={18} />
-				{successMessage}
-			</div>
-		{/if}
-		{#if errorMessage}
-			<div class="woocommerce-error">
-				<IconAlertTriangle size={18} />
-				{errorMessage}
-				<button class="dismiss" onclick={() => errorMessage = ''}>×</button>
-			</div>
-		{/if}
-
-		<!-- Dashboard Filters Bar - WordPress: .dashboard-filters -->
-		<div class="dashboard-filters">
-			<div class="dashboard-filters__search">
-				<IconSearch size={16} />
+	{#if isLoading}
+		<!-- Loading State -->
+		<div class="loading-state">
+			<span class="spin"><IconLoader size={48} /></span>
+			<p>Loading your indicators...</p>
+		</div>
+	{:else if error}
+		<!-- Error State -->
+		<div class="error-state">
+			<IconAlertTriangle size={48} />
+			<h2>Failed to load indicators</h2>
+			<p>{error}</p>
+			<button class="btn btn-primary" onclick={() => loadIndicators(true)}>
+				Try Again
+			</button>
+		</div>
+	{:else}
+		<!-- Filters Bar -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
 				<input
+					id="indicator-search"
 					type="text"
 					placeholder="Search indicators..."
 					bind:value={searchQuery}
 				/>
 			</div>
-			<div class="dashboard-filters__tabs">
+			<div class="filter-tabs">
 				{#each platforms as platform}
 					<button
 						class="filter-tab"
@@ -253,58 +198,32 @@
 			</div>
 		</div>
 
-		<!-- Loading State -->
-		{#if isLoading}
-			<div class="loading-container">
-				<div class="loading">
-					<span class="loading-icon"><IconLoader2 size={32} class="spin" /></span>
-					<span class="loading-message">Loading your indicators...</span>
-				</div>
-			</div>
-		{:else}
-			<!-- Indicators Section - WordPress: .dashboard__content-section -->
-			<section class="dashboard__content-section">
-				<h2 class="section-title">My Indicators</h2>
+		<!-- Indicators Grid - WordPress: .membership-cards.row -->
+		{#if filteredIndicators.length > 0}
+		<section class="dashboard__content-section">
+			<div class="indicators-grid row">
+				{#each filteredIndicators as indicator (indicator.id)}
+					<div class="col-sm-6 col-xl-4">
+						<article
+							class="indicator-card"
+							class:is-expiring={indicator.status === 'expiring'}
+							class:is-expired={indicator.status === 'expired'}
+						>
+							<!-- Status Badge -->
+							{#if indicator.status === 'expiring'}
+								<span class="status-badge status-expiring">{indicator.daysUntilExpiry}d</span>
+							{:else if indicator.status === 'expired'}
+								<span class="status-badge status-expired">Expired</span>
+							{/if}
 
-				{#if filteredIndicators.length > 0}
-					<!-- WordPress: .membership-cards.row -->
-					<div class="membership-cards row">
-						{#each filteredIndicators as indicator (indicator.id)}
-							<!-- WordPress: .col-sm-6.col-xl-4 -->
-							<div class="col-sm-6 col-xl-4">
-								<!-- WordPress: article.membership-card with status modifier -->
-								<article
-									class="membership-card membership-card--indicator"
-									class:membership-card--active={indicator.status === 'active'}
-									class:membership-card--trial={indicator.status === 'trial'}
-									class:membership-card--expiring={indicator.status === 'expiring'}
-									class:membership-card--expired={indicator.status === 'expired'}
-								>
-									<!-- WordPress: .membership-card__header (clickable) -->
-									<a href="/dashboard/indicators/{indicator.slug}" class="membership-card__header">
-										<span class="mem_icon">
-											<span class="membership-card__icon">
-												<span class="icon icon--lg">
-													<IconChartLine size={28} />
-												</span>
-											</span>
-										</span>
-										<span class="mem_div">{indicator.name}</span>
-									</a>
-
-									<!-- Status Indicator Bar (the vertical bar!) -->
-									<div class="membership-card__status-bar">
-										<div
-											class="status-bar__fill"
-											style:height={indicator.status === 'active' ? '100%' :
-												indicator.status === 'trial' ? '70%' :
-												indicator.status === 'expiring' ? '30%' : '0%'}
-										></div>
-									</div>
-
-									<!-- Status Badge -->
-									{#if indicator.status === 'trial'}
-										<span class="membership-card__badge badge--trial">Trial</span>
+							<div class="indicator-card__header">
+								<div class="indicator-card__icon">
+									<IconChartLine size={28} />
+								</div>
+								<div class="indicator-card__status" class:active={indicator.status === 'active'} class:expiring={indicator.status === 'expiring'}>
+									{#if indicator.status === 'active'}
+										<IconCheck size={14} />
+										Active
 									{:else if indicator.status === 'expiring'}
 										<span class="membership-card__badge badge--expiring">{indicator.daysUntilExpiry}d left</span>
 									{:else if indicator.status === 'expired'}
@@ -367,23 +286,33 @@
 		{/if}
 	</div>
 
-	<!-- Sidebar (WordPress: .dashboard__content-sidebar) -->
-	<aside class="dashboard__content-sidebar">
-		<section class="content-sidebar__section">
-			<h3 class="sidebar-title">Quick Stats</h3>
-			<div class="sidebar-stats">
-				<div class="stat-row">
-					<span class="stat-label">Total Indicators</span>
-					<span class="stat-value">{stats.total}</span>
-				</div>
-				<div class="stat-row stat--active">
-					<span class="stat-label">Active</span>
-					<span class="stat-value">{stats.active}</span>
-				</div>
-				{#if stats.trial > 0}
-					<div class="stat-row stat--trial">
-						<span class="stat-label">Trial</span>
-						<span class="stat-value">{stats.trial}</span>
+							<div class="indicator-card__actions">
+								{#if indicator.status !== 'expired'}
+									<button
+										class="action-btn"
+										onclick={() => handleDownload(indicator)}
+										disabled={downloadingId === indicator.id}
+									>
+										{#if downloadingId === indicator.id}
+											<span class="spin"><IconLoader size={16} /></span>
+											Downloading...
+										{:else}
+											<IconDownload size={16} />
+											Download
+										{/if}
+									</button>
+									<a href={indicator.documentationUrl}>
+										<IconExternalLink size={16} />
+										Docs
+									</a>
+								{:else}
+									<a href="/indicators/{indicator.slug}" class="action-btn action-btn--renew">
+										<IconRefresh size={16} />
+										Renew License
+									</a>
+								{/if}
+							</div>
+						</article>
 					</div>
 				{/if}
 				{#if stats.expiring > 0}
@@ -400,7 +329,36 @@
 				{/if}
 			</div>
 		</section>
-	</aside>
+		{:else}
+		<div class="empty-state">
+			{#if searchQuery || filterPlatform !== 'all'}
+				<!-- Filtered but no results -->
+				<div class="empty-icon">
+					<IconSearch size={48} />
+				</div>
+				<h2>No Indicators Found</h2>
+				<p>Try adjusting your search or filter criteria</p>
+				<button class="btn btn-primary" onclick={() => { searchQuery = ''; filterPlatform = 'all'; }}>
+					Clear Filters
+				</button>
+			{:else}
+				<!-- No indicators at all - Simpler Trading style -->
+				<div class="empty-icon empty-icon--lock">
+					<IconLock size={64} />
+				</div>
+				<h2>You don't have any Indicators</h2>
+				<p>Enhance your trading with our powerful indicator suite. Browse our collection to get started.</p>
+				<div class="empty-actions">
+					<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
+					<a href="/dashboard/support" class="btn btn-feedback">
+						<IconMessageCircle size={18} />
+						Give Feedback
+					</a>
+				</div>
+			{/if}
+		</div>
+		{/if}
+	{/if}
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -513,11 +471,80 @@
 		border-left: 4px solid #28a745;
 	}
 
-	.woocommerce-error {
-		background: #f8d7da;
-		color: #721c24;
-		border-left: 4px solid #dc3545;
+	.refresh-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border: 1px solid var(--st-border-color, #dbdbdb);
+		border-radius: 8px;
+		background: #fff;
+		color: var(--st-text-muted, #64748b);
+		cursor: pointer;
+		transition: all 0.15s ease;
 	}
+
+	.refresh-btn:hover:not(:disabled) {
+		border-color: var(--st-primary, #0984ae);
+		color: var(--st-primary, #0984ae);
+	}
+
+	.refresh-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOADING & ERROR STATES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		color: var(--st-primary, #0984ae);
+	}
+
+	.loading-state p {
+		margin-top: 16px;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		text-align: center;
+		padding: 24px;
+		color: var(--st-error, #ef4444);
+	}
+
+	.error-state h2 {
+		margin: 16px 0 8px;
+		color: var(--st-text-color, #333);
+	}
+
+	.error-state p {
+		margin: 0 0 24px;
+		color: var(--st-text-muted, #64748b);
+	}
+
+	:global(.spin) {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT - WordPress: .dashboard__content
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.woocommerce-message .dismiss,
 	.woocommerce-error .dismiss {
@@ -989,7 +1016,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
+	   EMPTY STATE - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.empty-state {
@@ -997,23 +1024,51 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		min-height: 300px;
+		min-height: 400px;
 		text-align: center;
-		color: #666;
-		padding: 40px 20px;
-		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgb(0 0 0 / 10%);
+		color: var(--st-text-muted, #64748b);
+		padding: 60px 20px;
+		background: #f8fafc;
+		border-radius: 12px;
+		border: 2px dashed #e2e8f0;
 	}
 
-	.empty-state h3 {
-		font-size: 1.25rem;
-		color: #333;
-		margin: 16px 0 8px;
+	.empty-icon {
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 24px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+		color: var(--st-text-muted, #64748b);
+	}
+
+	.empty-icon--lock {
+		background: linear-gradient(135deg, #fef3c7, #fef9c3);
+		color: #b45309;
+	}
+
+	.empty-state h2 {
+		font-size: 1.5rem;
+		color: var(--st-text-color, #333);
+		margin: 0 0 12px;
+		font-weight: 700;
 	}
 
 	.empty-state p {
-		margin: 0 0 20px;
+		margin: 0 0 32px;
+		max-width: 400px;
+		line-height: 1.6;
+	}
+
+	.empty-actions {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.btn-default {
@@ -1033,16 +1088,38 @@
 
 	.btn-orange {
 		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 		padding: 12px 24px;
 		background: #f99e31;
 		border-radius: 4px;
 		color: #fff;
 		font-weight: 600;
 		text-decoration: none;
+		transition: background-color 0.15s ease;
 	}
 
 	.btn-orange:hover {
 		background: #f88b09;
+	}
+
+	.btn-feedback {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 24px;
+		background: #fff;
+		border: 2px solid #e5e7eb;
+		border-radius: 8px;
+		color: var(--st-text-color, #333);
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+
+	.btn-feedback:hover {
+		border-color: var(--st-primary, #0984ae);
+		color: var(--st-primary, #0984ae);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

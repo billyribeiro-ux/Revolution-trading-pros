@@ -29,6 +29,7 @@
 	import { browser } from '$app/environment';
 	import { IconUsers, IconRefresh, IconAlertTriangle, IconArrowRight } from '@tabler/icons-svelte';
 	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
+	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
 	import {
 		getUserMemberships,
 		invalidateMembershipCache,
@@ -200,13 +201,8 @@
 		>
 			<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
 		</button>
-		<!-- WordPress: Trading Room Dropdown Button -->
-		<div class="trading-room-dropdown">
-			<a href="/live-trading-rooms" class="btn btn-orange trading-room-btn">
-				Trading Room
-				<IconArrowRight size={16} />
-			</a>
-		</div>
+		<!-- Trading Room Dropdown with JWT SSO -->
+		<TradingRoomDropdown />
 	</div>
 </header>
 
@@ -274,7 +270,9 @@
 									dashboardUrl="/dashboard/{room.slug}"
 									roomUrl={room.accessUrl}
 									status={room.status}
+									membershipType={room.membershipType}
 									daysUntilExpiry={room.daysUntilExpiry}
+									useSSO={true}
 									onclick={() => handleMembershipClick(room)}
 								/>
 							</div>
@@ -298,9 +296,11 @@
 									icon={course.icon}
 									dashboardUrl="/dashboard/{course.slug}"
 									roomUrl={course.accessUrl}
-									roomLabel="Trading Room"
+									roomLabel="Course"
 									status={course.status}
+									membershipType={course.membershipType}
 									daysUntilExpiry={course.daysUntilExpiry}
+									useSSO={false}
 									onclick={() => handleMembershipClick(course)}
 								/>
 							</div>
@@ -310,14 +310,16 @@
 								<MembershipCard
 									id={indicator.id}
 									name={indicator.name}
-									type="moxie"
+									type="indicator"
 									slug={indicator.slug}
 									icon={indicator.icon}
 									dashboardUrl="/dashboard/{indicator.slug}"
 									roomUrl={indicator.accessUrl}
-									roomLabel="Trading Room"
+									roomLabel="Indicator"
 									status={indicator.status}
+									membershipType={indicator.membershipType}
 									daysUntilExpiry={indicator.daysUntilExpiry}
+									useSSO={false}
 									onclick={() => handleMembershipClick(indicator)}
 								/>
 							</div>

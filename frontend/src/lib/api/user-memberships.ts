@@ -35,6 +35,7 @@ const CACHE_TTL = {
 export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
 export type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
 export type BillingInterval = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
+export type MembershipSubscriptionType = 'trial' | 'active' | 'paused' | 'complimentary' | null;
 
 export interface UserMembership {
 	id: string;
@@ -42,6 +43,7 @@ export interface UserMembership {
 	type: MembershipType;
 	slug: string;
 	status: MembershipStatus;
+	membershipType?: MembershipSubscriptionType;
 	icon?: string;
 	startDate: string;
 	nextBillingDate?: string;
@@ -356,6 +358,7 @@ function getMockMemberships(): UserMembershipsResponse {
 			type: 'trading-room',
 			slug: 'day-trading',
 			status: 'active',
+			membershipType: 'active',
 			icon: 'day-trading',
 			startDate: '2024-01-15',
 			nextBillingDate: '2025-01-15',
@@ -369,6 +372,7 @@ function getMockMemberships(): UserMembershipsResponse {
 			type: 'trading-room',
 			slug: 'swing-trading',
 			status: 'active',
+			membershipType: 'trial',
 			icon: 'swing-trading',
 			startDate: '2024-03-01',
 			nextBillingDate: '2025-03-01',
@@ -382,6 +386,7 @@ function getMockMemberships(): UserMembershipsResponse {
 			type: 'trading-room',
 			slug: 'small-accounts',
 			status: 'active',
+			membershipType: 'complimentary',
 			icon: 'small-accounts',
 			startDate: '2024-06-01',
 			nextBillingDate: '2025-06-01',
@@ -398,6 +403,7 @@ function getMockMemberships(): UserMembershipsResponse {
 			type: 'alert-service',
 			slug: 'spx-profit-pulse',
 			status: 'active',
+			membershipType: 'active',
 			icon: 'spx-profit-pulse',
 			startDate: '2024-02-01',
 			nextBillingDate: '2025-02-01',
@@ -411,6 +417,7 @@ function getMockMemberships(): UserMembershipsResponse {
 			type: 'alert-service',
 			slug: 'explosive-swings',
 			status: 'expiring',
+			membershipType: 'active',
 			icon: 'explosive-swings',
 			startDate: '2024-04-15',
 			nextBillingDate: '2024-12-10',

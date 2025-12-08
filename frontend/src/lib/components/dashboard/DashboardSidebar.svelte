@@ -24,12 +24,19 @@
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	interface SubscriptionInfo {
+		nextChargeDate?: string;
+		nextChargeAmount?: number;
+		paymentMethod?: string;
+	}
+
 	interface Props {
 		memberships?: UserMembership[];
 		isMobileOpen?: boolean;
 		onCloseMobile?: () => void;
 		userAvatar?: string;
 		userName?: string;
+		subscriptionInfo?: SubscriptionInfo;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -41,8 +48,39 @@
 		isMobileOpen = $bindable(false),
 		onCloseMobile,
 		userAvatar = '',
-		userName = 'My Account'
+		userName = 'My Account',
+		subscriptionInfo
 	}: Props = $props();
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// HELPER FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function formatDate(dateStr?: string): string {
+		if (!dateStr) return '';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString('en-US', {
+				month: 'short',
+				day: 'numeric',
+				year: 'numeric'
+			});
+		} catch {
+			return '';
+		}
+	}
+
+	function formatCurrency(amount?: number): string {
+		if (amount === undefined || amount === null) return '';
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD'
+		}).format(amount);
+	}
+
+	const hasSubscriptionInfo = $derived(
+		subscriptionInfo?.nextChargeDate || subscriptionInfo?.nextChargeAmount
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -140,6 +178,31 @@
 		></span>
 		<span class="dashboard__profile-name">{userName}</span>
 	</a>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     MEMBER SUBSCRIPTION INFO (Simpler Trading style)
+	     ═══════════════════════════════════════════════════════════════════════ -->
+	{#if hasSubscriptionInfo}
+		<div class="subscription-info-box">
+			<p class="subscription-info-title">Member Subscription Info</p>
+			{#if subscriptionInfo?.nextChargeDate && subscriptionInfo?.nextChargeAmount}
+				<p class="subscription-info-text">
+					Next charge: {formatCurrency(subscriptionInfo.nextChargeAmount)} on {formatDate(subscriptionInfo.nextChargeDate)}
+				</p>
+			{:else if subscriptionInfo?.nextChargeDate}
+				<p class="subscription-info-text">
+					Next charge: {formatDate(subscriptionInfo.nextChargeDate)}
+				</p>
+			{:else if subscriptionInfo?.nextChargeAmount}
+				<p class="subscription-info-text">
+					Amount: {formatCurrency(subscriptionInfo.nextChargeAmount)}
+				</p>
+			{/if}
+			{#if subscriptionInfo?.paymentMethod}
+				<p class="subscription-info-payment">via {subscriptionInfo.paymentMethod}</p>
+			{/if}
+		</div>
+	{/if}
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     MAIN LINKS (WordPress: .dash_main_links)
@@ -405,6 +468,40 @@
 
 	.dashboard__profile-nav-item.is-account-active .dashboard__profile-photo {
 		border-color: #5bc0de;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SUBSCRIPTION INFO BOX (Simpler Trading style)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.subscription-info-box {
+		background: rgba(9, 132, 174, 0.1);
+		border-radius: 8px;
+		padding: 14px 16px;
+		margin-bottom: 20px;
+	}
+
+	.subscription-info-title {
+		color: var(--sidebar-text-active);
+		font-weight: 700;
+		font-size: 11px;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		margin: 0 0 8px 0;
+		opacity: 0.7;
+	}
+
+	.subscription-info-text {
+		color: var(--sidebar-text-active);
+		font-size: 13px;
+		margin: 0 0 4px 0;
+		line-height: 1.4;
+	}
+
+	.subscription-info-payment {
+		color: var(--sidebar-text);
+		font-size: 12px;
+		margin: 0;
 	}
 
 	.dashboard__profile-photo {

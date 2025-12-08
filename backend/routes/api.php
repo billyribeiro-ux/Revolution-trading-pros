@@ -216,6 +216,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/my/subscriptions/{id}/payments', [ApiUserSubscriptionController::class, 'payments']);
     Route::post('/my/subscriptions/{id}/payment-method', [ApiUserSubscriptionController::class, 'updatePaymentMethod']);
     Route::post('/my/subscriptions/{id}/retry-payment', [ApiUserSubscriptionController::class, 'retryPayment']);
+
+    // ========================================
+    // USER INDICATORS API
+    // ========================================
+    Route::prefix('user/indicators')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'index']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'show']);
+        Route::get('/{id}/download', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'download']);
+        Route::get('/{id}/docs', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'documentation']);
+    });
 });
 
 // Admin routes (require admin / super-admin role) under /api/admin
@@ -1128,6 +1138,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/per
 // TRADING ROOMS & ALERT SERVICES API
 // ========================================
 use App\Http\Controllers\Api\TradingRoomController;
+use App\Http\Controllers\Api\TradingRoomSSOController;
 
 // Public trading room routes (for member dashboards)
 Route::middleware(['auth:sanctum'])->prefix('trading-rooms')->group(function () {
@@ -1140,7 +1151,22 @@ Route::middleware(['auth:sanctum'])->prefix('trading-rooms')->group(function () 
 
     // Traders
     Route::get('/traders', [TradingRoomController::class, 'listTraders']);
+
+    // ========================================
+    // TRADING ROOM SSO (JWT Authentication)
+    // ========================================
+    // Get all accessible rooms with SSO info
+    Route::get('/sso/accessible', [TradingRoomSSOController::class, 'getAccessibleRooms']);
+
+    // Generate JWT token for room access
+    Route::post('/{slug}/sso', [TradingRoomSSOController::class, 'generateToken']);
+
+    // Direct SSO redirect (browser)
+    Route::get('/{slug}/sso/redirect', [TradingRoomSSOController::class, 'redirect']);
 });
+
+// Public: Verify JWT token (for trading room platform to call back)
+Route::post('/trading-rooms/sso/verify', [TradingRoomSSOController::class, 'verifyToken']);
 
 // Admin trading room routes (full CRUD)
 Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/trading-rooms')->group(function () {
