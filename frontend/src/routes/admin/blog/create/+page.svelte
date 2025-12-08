@@ -8,12 +8,49 @@
 		IconX,
 		IconPlus,
 		IconCalendar,
-		IconLoader
+		IconLoader,
+		IconCheck,
+		IconTags
 	} from '@tabler/icons-svelte';
 	import RichTextEditor from '$lib/components/blog/RichTextEditor.svelte';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PREDEFINED BLOG CATEGORIES (same system as videos)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface BlogCategory {
+		id: string;
+		name: string;
+		color: string;
+	}
+
+	const predefinedCategories: BlogCategory[] = [
+		{ id: 'market-analysis', name: 'Market Analysis', color: '#3b82f6' },
+		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
+		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
+		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#6366f1' },
+		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
+		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
+		{ id: 'education', name: 'Education', color: '#14b8a6' },
+		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
+		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
+		{ id: 'stocks', name: 'Stocks', color: '#84cc16' },
+		{ id: 'futures', name: 'Futures', color: '#22c55e' },
+		{ id: 'forex', name: 'Forex', color: '#0ea5e9' },
+		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
+		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
+		{ id: 'day-trading', name: 'Day Trading', color: '#d946ef' },
+		{ id: 'swing-trading', name: 'Swing Trading', color: '#64748b' },
+		{ id: 'beginners', name: 'Beginners Guide', color: '#fb7185' }
+	];
+
+	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
+		return predefinedCategories.find(c => c.id === id);
+	}
 
 	let post = $state({
 		title: '',
@@ -34,9 +71,26 @@
 		meta_keywords: [] as string[],
 		indexable: true,
 		canonical_url: '',
-		categories: [] as number[],
+		categories: [] as string[], // Using string IDs for predefined categories
 		tags: [] as number[]
 	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CATEGORY SELECTION FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function toggleCategorySelection(categoryId: string) {
+		const index = post.categories.indexOf(categoryId);
+		if (index === -1) {
+			post.categories = [...post.categories, categoryId];
+		} else {
+			post.categories = post.categories.filter(c => c !== categoryId);
+		}
+	}
+
+	function isCategorySelected(categoryId: string): boolean {
+		return post.categories.includes(categoryId);
+	}
 
 	let content = $state('');
 	let categories: any[] = $state([]);
@@ -334,31 +388,44 @@
 				{/if}
 			</div>
 
-			<!-- Categories -->
-			<div class="sidebar-panel">
-				<h3>Categories</h3>
-				<div class="checkbox-list">
-					{#each availableCategories as category}
-						<label class="checkbox-item">
-							<input
-								type="checkbox"
-								value={category.id}
-								checked={post.categories.includes(category.id)}
-								onchange={(e) => {
-									if (e.currentTarget.checked) {
-										post.categories = [...post.categories, category.id];
-									} else {
-										post.categories = post.categories.filter((id) => id !== category.id);
-									}
-								}}
-							/>
-							<span style="color: {category.color}">{category.name}</span>
-						</label>
+			<!-- Categories (Colorful Button Selection) -->
+			<div class="sidebar-panel categories-panel">
+				<h3>
+					<IconTags size={16} />
+					Categories
+				</h3>
+				<div class="categories-grid">
+					{#each predefinedCategories as category}
+						<button
+							type="button"
+							class="category-btn"
+							class:selected={isCategorySelected(category.id)}
+							style:--tag-color={category.color}
+							onclick={() => toggleCategorySelection(category.id)}
+						>
+							{#if isCategorySelected(category.id)}
+								<IconCheck size={14} />
+							{/if}
+							{category.name}
+						</button>
 					{/each}
 				</div>
 
-				{#if availableCategories.length === 0}
-					<p class="empty-text">No categories. <a href="/admin/blog/categories">Create one</a></p>
+				{#if post.categories.length > 0}
+					<div class="selected-categories">
+						<span class="selected-count">{post.categories.length} selected:</span>
+						{#each post.categories as categoryId}
+							{@const category = getPredefinedCategoryById(categoryId)}
+							{#if category}
+								<span class="selected-tag" style:--tag-color={category.color}>
+									{category.name}
+									<button type="button" onclick={() => toggleCategorySelection(categoryId)} aria-label="Remove {category.name}">
+										<IconX size={12} />
+									</button>
+								</span>
+							{/if}
+						{/each}
+					</div>
 				{/if}
 			</div>
 
@@ -708,6 +775,103 @@
 
 	.checkbox-item:hover {
 		background: #f8f9fa;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COLORFUL CATEGORY SYSTEM (matching video management)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.categories-panel h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.categories-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: 0.75rem;
+		background: #f8f9fa;
+		border: 1px solid #e5e5e5;
+		border-radius: 8px;
+		max-height: 280px;
+		overflow-y: auto;
+	}
+
+	.category-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(100, 116, 139, 0.1);
+		border: 1px solid rgba(100, 116, 139, 0.2);
+		border-radius: 6px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: #64748b;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.category-btn:hover {
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		color: var(--tag-color, #6366f1);
+	}
+
+	.category-btn.selected {
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 20%, transparent);
+		border-color: var(--tag-color, #6366f1);
+		color: var(--tag-color, #6366f1);
+	}
+
+	.selected-categories {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+		padding: 0.75rem;
+		background: rgba(59, 130, 246, 0.05);
+		border: 1px solid rgba(59, 130, 246, 0.1);
+		border-radius: 8px;
+	}
+
+	.selected-count {
+		font-size: 0.75rem;
+		color: #64748b;
+		margin-right: 0.5rem;
+		width: 100%;
+	}
+
+	.selected-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.375rem 0.625rem;
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		border-radius: 4px;
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--tag-color, #6366f1);
+	}
+
+	.selected-tag button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		background: transparent;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+		opacity: 0.7;
+		transition: opacity 0.15s;
+	}
+
+	.selected-tag button:hover {
+		opacity: 1;
 	}
 
 	.empty-text {

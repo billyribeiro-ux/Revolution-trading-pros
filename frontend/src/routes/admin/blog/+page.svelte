@@ -37,6 +37,41 @@
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// PREDEFINED BLOG CATEGORIES (same system as videos)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface BlogCategory {
+		id: string;
+		name: string;
+		color: string;
+	}
+
+	const predefinedCategories: BlogCategory[] = [
+		{ id: 'market-analysis', name: 'Market Analysis', color: '#3b82f6' },
+		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
+		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
+		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#6366f1' },
+		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
+		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
+		{ id: 'education', name: 'Education', color: '#14b8a6' },
+		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
+		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
+		{ id: 'stocks', name: 'Stocks', color: '#84cc16' },
+		{ id: 'futures', name: 'Futures', color: '#22c55e' },
+		{ id: 'forex', name: 'Forex', color: '#0ea5e9' },
+		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
+		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
+		{ id: 'day-trading', name: 'Day Trading', color: '#d946ef' },
+		{ id: 'swing-trading', name: 'Swing Trading', color: '#64748b' },
+		{ id: 'beginners', name: 'Beginners Guide', color: '#fb7185' }
+	];
+
+	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
+		return predefinedCategories.find(c => c.id === id);
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -762,7 +797,7 @@
 
 			<select class="filter-select" bind:value={categoryFilter}>
 				<option value="all">All Categories</option>
-				{#each categories as category}
+				{#each predefinedCategories as category}
 					<option value={category.id}>{category.name}</option>
 				{/each}
 			</select>
@@ -965,14 +1000,20 @@
 
 							{#if post.categories && post.categories.length > 0}
 								<div class="post-categories">
-									{#each post.categories as category}
-										<span
-											class="category-badge"
-											style="background-color: {category.color}20; color: {category.color}"
-										>
-											{category.name}
-										</span>
+									{#each post.categories.slice(0, 3) as categoryId}
+										{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
+										{#if category}
+											<span
+												class="category-badge"
+												style:--tag-color={category.color || '#6366f1'}
+											>
+												{category.name}
+											</span>
+										{/if}
 									{/each}
+									{#if post.categories.length > 3}
+										<span class="category-more">+{post.categories.length - 3}</span>
+									{/if}
 								</div>
 							{/if}
 
@@ -1091,12 +1132,17 @@
 							</td>
 							<td>
 								{#if post.categories?.length > 0}
-									{#each post.categories.slice(0, 2) as category}
-										<span class="category-tag">{category.name}</span>
-									{/each}
-									{#if post.categories.length > 2}
-										<span class="more-tag">+{post.categories.length - 2}</span>
-									{/if}
+									<div class="table-category-tags">
+										{#each post.categories.slice(0, 2) as categoryId}
+											{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
+											{#if category}
+												<span class="category-tag-table" style:--tag-color={category.color || '#6366f1'}>{category.name}</span>
+											{/if}
+										{/each}
+										{#if post.categories.length > 2}
+											<span class="more-tag">+{post.categories.length - 2}</span>
+										{/if}
+									</div>
 								{:else}
 									-
 								{/if}
@@ -1833,10 +1879,27 @@
 	}
 
 	.category-badge {
-		padding: 0.25rem 0.75rem;
-		border-radius: 6px;
-		font-size: 0.75rem;
+		display: inline-flex;
+		align-items: center;
+		padding: 0.25rem 0.5rem;
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		border-radius: 4px;
+		font-size: 0.7rem;
 		font-weight: 500;
+		color: var(--tag-color, #6366f1);
+		white-space: nowrap;
+	}
+
+	.category-more {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.25rem 0.5rem;
+		background: rgba(100, 116, 139, 0.15);
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: 500;
+		color: #94a3b8;
 	}
 
 	.post-actions {
@@ -1982,6 +2045,25 @@
 
 	.featured-icon {
 		color: #fbbf24;
+	}
+
+	.table-category-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+
+	.category-tag-table {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.125rem 0.5rem;
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: 500;
+		color: var(--tag-color, #6366f1);
+		white-space: nowrap;
 	}
 
 	.category-tag {
