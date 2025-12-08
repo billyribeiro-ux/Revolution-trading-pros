@@ -291,7 +291,7 @@
 
 	async function loadGSAP() {
 		try {
-			const gsap = (await import('gsap')).default;
+			const { gsap } = await import('gsap');
 			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
 			gsap.registerPlugin(ScrollTrigger);
 			gsapInstance = gsap;
@@ -325,7 +325,14 @@
 
 	onDestroy(() => {
 		if (animationFrame) cancelAnimationFrame(animationFrame);
-		if (scrollTriggerInstance) scrollTriggerInstance.killAll();
+		// Kill only ScrollTriggers associated with this section
+		if (scrollTriggerInstance && sectionRef) {
+			scrollTriggerInstance.getAll().forEach((st: any) => {
+				if (st.trigger === sectionRef || sectionRef?.contains(st.trigger)) {
+					st.kill();
+				}
+			});
+		}
 	});
 
 	// ============================================================================
