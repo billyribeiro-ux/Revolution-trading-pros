@@ -281,7 +281,7 @@
     });
 </script>
 
-<svelte:window bind:scrollY bind:innerHeight on:mousemove={handleMouseMove} />
+<svelte:window bind:scrollY bind:innerHeight onmousemove={handleMouseMove} />
 
 <SEOHead
     title="Professional Trading Courses | Day, Swing & Options Mentorship"
@@ -570,7 +570,7 @@
             <div class="faq-grid">
                 {#each faqs as faq, i}
                     <div class="faq-item group" class:active={openFaqIndex === i}>
-                        <button class="faq-question focus:outline-none" on:click={() => toggleFaq(i)} aria-expanded={openFaqIndex === i}>
+                        <button class="faq-question focus:outline-none" onclick={() => toggleFaq(i)} aria-expanded={openFaqIndex === i}>
                             <span class="question-text group-hover:text-blue-300 transition-colors">{faq.question}</span>
                             <span class="chevron w-8 h-8 flex items-center justify-center rounded-full bg-white/5" class:rotated={openFaqIndex === i}>
                                 <IconChevronDown size={20} />
