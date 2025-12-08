@@ -122,10 +122,12 @@
 	// CHART RENDERING
 	// ============================================================================
 	function drawChart() {
-		if (!chartCtx || !canvasRef) return;
+		if (!chartCtx || !canvasRef || !chartRef) return;
 
-		const width = canvasRef.width;
-		const height = canvasRef.height;
+		// Use CSS dimensions, not canvas dimensions (which are scaled by DPR)
+		const rect = chartRef.getBoundingClientRect();
+		const width = rect.width;
+		const height = rect.height;
 		const visibleCandles = Math.floor(candleData.length * chartProgress);
 
 		// Clear canvas

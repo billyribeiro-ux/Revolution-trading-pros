@@ -595,9 +595,12 @@
             
             <h2 class="cta-title">Ready to Treat Trading Like a Business?</h2>
             <p class="cta-text">Join the waitlist for our next intake or start a self-paced course today.</p>
-            <a href="#courses" class="cta-button primary large shadow-2xl shadow-blue-500/20">
-                Find Your Course
-                <IconArrowRight size={24} />
+            <a href="#courses" class="cta-button primary large shadow-2xl shadow-blue-500/20 group/btn relative overflow-hidden">
+                <span class="relative z-10 flex items-center gap-2">
+                    Find Your Course
+                    <IconArrowRight size={24} class="group-hover/btn:translate-x-1 transition-transform duration-300" />
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
             </a>
         </div>
     </section>
