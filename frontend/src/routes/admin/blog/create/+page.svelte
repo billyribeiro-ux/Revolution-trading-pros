@@ -872,16 +872,6 @@
 		opacity: 1;
 	}
 
-	.empty-text {
-		color: #999;
-		font-size: 0.9rem;
-	}
-
-	.empty-text a {
-		color: #3b82f6;
-		text-decoration: none;
-	}
-
 	.tags-selected {
 		display: flex;
 		flex-wrap: wrap;

@@ -108,8 +108,15 @@
 
 			{#if showAddForm}
 				<!-- Add Form Modal -->
-				<div class="add-form-overlay" onclick={() => showAddForm = false}>
-					<div class="add-form" onclick={(e) => e.stopPropagation()}>
+				<div
+					class="add-form-overlay"
+					role="button"
+					tabindex="0"
+					onclick={() => showAddForm = false}
+					onkeydown={(e) => e.key === 'Escape' && (showAddForm = false)}
+					aria-label="Close modal"
+				>
+					<div class="add-form" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 						<h3>Add Payment Method</h3>
 						<div class="payment-options">
 							<button class="payment-option">

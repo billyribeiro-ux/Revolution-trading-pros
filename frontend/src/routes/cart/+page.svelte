@@ -667,11 +667,13 @@
 		font-size: 14px;
 		font-weight: 600;
 		color: var(--cart-text);
+		appearance: textfield;
 		-moz-appearance: textfield;
 	}
 
 	.quantity-controls .qty::-webkit-outer-spin-button,
 	.quantity-controls .qty::-webkit-inner-spin-button {
+		appearance: none;
 		-webkit-appearance: none;
 		margin: 0;
 	}

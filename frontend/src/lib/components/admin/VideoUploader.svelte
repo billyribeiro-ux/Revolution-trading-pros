@@ -76,8 +76,8 @@
 	let videoDuration = $state(0);
 
 	// File input refs
-	let videoInput: HTMLInputElement;
-	let thumbnailInput: HTMLInputElement;
+	let videoInput = $state<HTMLInputElement | null>(null);
+	let thumbnailInput = $state<HTMLInputElement | null>(null);
 
 	// Allowed file types
 	const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
@@ -343,8 +343,8 @@
 				ondragover={handleDragOver}
 				ondragleave={handleDragLeave}
 				ondrop={handleDrop}
-				onclick={() => videoInput.click()}
-				onkeydown={(e) => e.key === 'Enter' && videoInput.click()}
+				onclick={() => videoInput?.click()}
+				onkeydown={(e) => e.key === 'Enter' && videoInput?.click()}
 			>
 				{#if videoFile}
 					<div class="file-preview">
@@ -359,7 +359,7 @@
 								<span class="file-duration">{formatDuration(videoDuration)}</span>
 							{/if}
 						</div>
-						<button type="button" class="remove-file" onclick={() => videoFile = null}>
+						<button type="button" class="remove-file" aria-label="Remove video file" onclick={() => videoFile = null}>
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"></line>
 								<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -392,12 +392,12 @@
 					class:has-file={thumbnailFile !== null}
 					role="button"
 					tabindex="0"
-					onclick={() => thumbnailInput.click()}
-					onkeydown={(e) => e.key === 'Enter' && thumbnailInput.click()}
+					onclick={() => thumbnailInput?.click()}
+					onkeydown={(e) => e.key === 'Enter' && thumbnailInput?.click()}
 				>
 					{#if thumbnailFile}
 						<img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview" />
-						<button type="button" class="remove-thumbnail" onclick={() => thumbnailFile = null}>
+						<button type="button" class="remove-thumbnail" aria-label="Remove thumbnail" onclick={() => thumbnailFile = null}>
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"></line>
 								<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -486,8 +486,8 @@
 					</select>
 				</div>
 
-				<div class="form-group">
-					<label>Categories</label>
+				<fieldset class="form-group category-fieldset">
+					<legend>Categories</legend>
 					<div class="category-checkboxes">
 						{#each categories as category}
 							<label class="checkbox-label">
@@ -507,7 +507,7 @@
 							</label>
 						{/each}
 					</div>
-				</div>
+				</fieldset>
 			</div>
 
 			<div class="form-row">
@@ -811,6 +811,21 @@
 	/* Metadata Step */
 	.form-group {
 		margin-bottom: 1.25rem;
+	}
+
+	.category-fieldset {
+		border: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.category-fieldset legend {
+		display: block;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #94a3b8;
+		margin-bottom: 0.5rem;
+		padding: 0;
 	}
 
 	.form-group label {
