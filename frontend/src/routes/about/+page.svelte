@@ -1,567 +1,1279 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { cubicOut, quintOut } from 'svelte/easing';
-    import { fade, fly, draw } from 'svelte/transition';
     import { browser } from '$app/environment';
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
     
     // Icons
-    import IconBuildingBank from '@tabler/icons-svelte/icons/building-bank';
+    import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
     import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-    import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
-    import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
-    import IconChartDots from '@tabler/icons-svelte/icons/chart-dots';
-    import IconScale from '@tabler/icons-svelte/icons/scale';
-    import IconId from '@tabler/icons-svelte/icons/id';
-    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-    import IconBroadcast from '@tabler/icons-svelte/icons/broadcast';
-    import IconSchool from '@tabler/icons-svelte/icons/school';
-    import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
-    import IconCheck from '@tabler/icons-svelte/icons/check';
-    import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+    import IconTrendingDown from '@tabler/icons-svelte/icons/trending-down';
     import IconActivity from '@tabler/icons-svelte/icons/activity';
-
+    import IconTarget from '@tabler/icons-svelte/icons/target';
+    import IconBolt from '@tabler/icons-svelte/icons/bolt';
+    import IconStar from '@tabler/icons-svelte/icons/star';
+    import IconCheck from '@tabler/icons-svelte/icons/check';
+    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+    import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+    import IconWaveSine from '@tabler/icons-svelte/icons/wave-sine';
+    import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+    import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+    import IconUsers from '@tabler/icons-svelte/icons/users';
+    import IconSchool from '@tabler/icons-svelte/icons/school';
+    import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+    import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
-    // --- Animation Logic (Svelte 5 Runes) ---
-    let containerRef: HTMLElement | undefined = $state();
-    let isVisible = $state(false);
-    let mouse = $state({ x: 0, y: 0 });
+    // --- Types ---
+    interface Indicator {
+        id: string;
+        name: string;
+        slug: string;
+        category: string;
+        description: string;
+        useCase: string;
+        difficulty: string;
+        icon: any;
+        color: string;
+        gradient: string;
+        features: string[];
+    }
 
-    const handleMouseMove = (e: MouseEvent) => {
-        if (!containerRef) return;
-        const rect = containerRef.getBoundingClientRect();
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
-    };
-
-    onMount(() => {
-        if (!browser) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        if (containerRef) observer.observe(containerRef);
-    });
-
-    // Kept original function exactly as requested
-    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
-        return {
-            delay,
-            duration,
-            css: (t: number) => {
-                const eased = cubicOut(t);
-                return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
-            }
-        };
+    interface FaqItem {
+        question: string;
+        answer: string;
     }
 
     // --- Data ---
-    const stats = [
-        { value: '1,200+', label: 'Active Members', icon: IconUsersGroup },
-        { value: 'Daily', label: 'Live Guidance', icon: IconBroadcast },
-        { value: '100%', label: 'Transparency', icon: IconShieldLock },
-        { value: '24/7', label: 'Support Chat', icon: IconMessageCircle }
-    ];
-
-    const features = [
+    const indicators: Indicator[] = [
         {
-            icon: IconBroadcast,
-            title: 'Live Trading Floor',
-            subtitle: 'Not just alerts. Real-time education.',
-            description: 'We don’t just post a ticker and disappear. We share our screens, talk through the setup via voice chat, and explain the "Why" before the trade happens. You see the wins, the losses, and the management in real-time.'
+            id: '1',
+            name: 'RSI - Relative Strength Index',
+            slug: 'rsi',
+            category: 'Momentum',
+            description: 'Don’t just spot overbought conditions—identify divergence. The RSI is our primary tool for spotting exhaustion before the price turns.',
+            useCase: 'Spotting reversals and confirming trend weakness (Divergence)',
+            difficulty: 'Beginner',
+            icon: IconActivity,
+            color: '#2e8eff',
+            gradient: 'linear-gradient(135deg, #2e8eff 0%, #1e5cb8 100%)',
+            features: ['Bullish/Bearish Divergence', 'Trend Reset Zones', 'Momentum Confirmation']
         },
         {
-            icon: IconSchool,
-            title: 'Institutional Education',
-            subtitle: 'Master the mechanics of the market.',
-            description: 'Stop relying on lagging indicators. Our curriculum teaches you how to read Order Flow, Dark Pool data, and Gamma Exposure—the actual data institutions use to move price.'
+            id: '2',
+            name: 'MACD - Moving Average Convergence Divergence',
+            slug: 'macd',
+            category: 'Trend Following',
+            description: 'The grandfather of momentum indicators. We use it to filter out noise and stay on the right side of the dominant market trend.',
+            useCase: 'Filtering false breakouts and confirming trend direction',
+            difficulty: 'Intermediate',
+            icon: IconWaveSine,
+            color: '#34d399',
+            gradient: 'linear-gradient(135deg, #34d399 0%, #059669 100%)',
+            features: ['Histogram Momentum', 'Zero-Line Rejection', 'Multi-Timeframe Alignment']
         },
         {
-            icon: IconUsersGroup,
-            title: 'Mentorship & Community',
-            subtitle: 'You are no longer trading alone.',
-            description: 'Trading is the loneliest profession in the world—until now. Join a desk of serious traders who support each other, share alpha, and pick you up when you have a red day.'
+            id: '3',
+            name: 'Moving Averages (SMA/EMA)',
+            slug: 'moving-averages',
+            category: 'Trend Following',
+            description: 'The dynamic spine of the market. Learn why price respects the 9 EMA and 200 SMA, and how to use them as dynamic support.',
+            useCase: 'Trailing stops and identifying dynamic support/resistance zones',
+            difficulty: 'Beginner',
+            icon: IconChartLine,
+            color: '#a78bfa',
+            gradient: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)',
+            features: ['Golden Cross / Death Cross', 'The "9 EMA Ride"', 'Mean Reversion']
+        },
+        {
+            id: '4',
+            name: 'Bollinger Bands',
+            slug: 'bollinger-bands',
+            category: 'Volatility',
+            description: 'The market breathes in (squeeze) and breathes out (expansion). Bollinger Bands help you catch the explosive moves after the calm.',
+            useCase: 'Trading "The Squeeze" and measuring volatility extremes',
+            difficulty: 'Intermediate',
+            icon: IconChartBar,
+            color: '#fb923c',
+            gradient: 'linear-gradient(135deg, #fb923c 0%, #ea580c 100%)',
+            features: ['Volatility Squeezes', 'Band Walking', 'Mean Reversion Targets']
+        },
+        {
+            id: '5',
+            name: 'VWAP - Volume Weighted Average Price',
+            slug: 'vwap',
+            category: 'Volume',
+            description: 'The only indicator institutions care about. If you are day trading without VWAP, you are trading blind against the big banks.',
+            useCase: 'Institutional entry points and "Fair Value" assessment',
+            difficulty: 'Beginner',
+            icon: IconChartCandle,
+            color: '#f59e0b',
+            gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            features: ['Institutional Support', 'Intraday Trend Filter', 'Fair Value Gap']
+        },
+        {
+            id: '6',
+            name: 'Stochastic Oscillator',
+            slug: 'stochastic',
+            category: 'Momentum',
+            description: 'Faster than RSI, the Stochastic helps you time precision entries in chopping markets or pullbacks within a trend.',
+            useCase: 'Timing entries on pullbacks and range trading',
+            difficulty: 'Intermediate',
+            icon: IconActivity,
+            color: '#ec4899',
+            gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+            features: ['Fast vs Slow Lines', 'Hidden Divergence', 'Crossover Signals']
         }
     ];
 
-    const team = [
+    const faqs: FaqItem[] = [
         {
-            name: 'Michael Rodriguez',
-            role: 'Head Trader & Mentor',
-            id: 'DESK-LEAD',
-            specialties: ['Live Calling', 'Psychology'],
-            bio: 'Michael isn’t just an ex-Goldman trader; he’s a teacher. He leads the morning voice session every day, guiding members through volatility with a calm, professional demeanor focused on risk management.'
+            question: "Do I need all these indicators to be profitable?",
+            answer: "Absolutely not. In fact, using too many causes 'analysis paralysis.' In our trading room, we teach you to master 2-3 core tools (usually VWAP, one momentum indicator, and moving averages) to build a clean, actionable chart."
         },
         {
-            name: 'Sarah Chen',
-            role: 'Quant Strategist',
-            id: 'QUANT-01',
-            specialties: ['Data Analysis', 'Systems'],
-            bio: 'Sarah translates complex institutional data into actionable levels for our members. She builds the tools that help you see where the "Smart Money" is hiding.'
+            question: "Are these indicators lagging?",
+            answer: "Most indicators are lagging because they rely on past price data. However, we teach specific techniques—like divergence and multi-timeframe analysis—that turn these lagging tools into leading signals for future price action."
         },
         {
-            name: 'David Thompson',
-            role: 'Education Director',
-            id: 'EDU-LEAD',
-            specialties: ['Curriculum', 'Market Structure'],
-            bio: 'David specializes in fixing bad habits. His "Retail Rehab" sessions help traders unlearn the mistakes taught by fake gurus and replace them with professional process.'
+            question: "Which indicator is best for beginners?",
+            answer: "We recommend starting with Moving Averages and VWAP. They provide an immediate visual guide to the trend and institutional value without complex calculations. They are the foundation of market structure."
+        },
+        {
+            question: "Do you teach how to set these up?",
+            answer: "Yes. When you join Revolution Trading Pros, you get our exact chart templates and settings. We don't just tell you what to use; we show you how to configure your platform to look exactly like ours."
         }
     ];
 
-    const faqs = [
-        {
-            q: "Is this suitable for beginners?",
-            a: "Yes, but be prepared to work. We don't sell 'get rich quick' schemes. We provide a Foundation Course that brings you up to speed on our terminology and tools before you jump into the live room."
-        },
-        {
-            q: "Do you just give buy/sell alerts?",
-            a: "No. We are an educational community. While we call out our own live trades, the goal is for you to understand the *rationale* so you can eventually become self-sufficient. Blindly following alerts is a recipe for failure."
-        },
-        {
-            q: "What makes this different from other Discords?",
-            a: "Professionalism and care. We don't tolerate hype, rocket emojis, or pumping low-float stocks. This is a serious workspace for people who treat trading as a business, run by mentors who actually care if you succeed."
-        },
-        {
-            q: "Do I need a large account to start?",
-            a: "No. We teach risk management based on percentages, not dollar amounts. Many members start with small accounts or funded trader evaluations while they learn the system."
-        }
-    ];
+    const categories = ['All', 'Momentum', 'Trend Following', 'Volatility', 'Volume'];
 
-    // Schema Logic
-    const organizationSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'Revolution Trading Pros',
-        description: 'Professional trading community and mentorship program.',
-        foundingDate: '2018',
-        url: 'https://revolutiontradingpros.com',
-        sameAs: ['https://twitter.com/revolutiontradingpros'] // Example
-    };
+    // --- State Management (Runes) ---
+    let heroVisible = $state(false);
+    let cardsVisible = $state<boolean[]>(new Array(indicators.length).fill(false));
+    let selectedCategory = $state('All');
+    let openFaq = $state<number | null>(null);
+    let mouseX = $state(0);
+    let mouseY = $state(0);
+
+    let filteredIndicators = $derived(
+        selectedCategory === 'All'
+            ? indicators
+            : indicators.filter((ind) => ind.category === selectedCategory)
+    );
+
+    function toggleFaq(index: number) {
+        openFaq = openFaq === index ? null : index;
+    }
     
-    const faqSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: faqs.map(f => ({
-            '@type': 'Question',
-            name: f.q,
-            acceptedAnswer: {
-                '@type': 'Answer',
-                text: f.a
-            }
-        }))
-    };
+    // --- Mouse Spotlight Logic ---
+    function handleMouseMove(e: MouseEvent) {
+        if (!browser) return;
+        const target = e.currentTarget as HTMLElement;
+        const rect = target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        target.style.setProperty('--mouse-x', `${x}px`);
+        target.style.setProperty('--mouse-y', `${y}px`);
+    }
 
-    // --- New Visual Logic ---
-    // Fake Ticker Data for Visual Ambience
-    const tickerItems = ["ES_F +0.25%", "NQ_F -0.10%", "RTY_F +1.20%", "GC_F +0.05%", "CL_F -0.50%", "DX_F +0.12%", "VIX -4.5%"];
+    // --- Structured Data ---
+    const indicatorsSchema = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            '@id': 'https://revolutiontradingpros.com/indicators/#indicatorlist',
+            name: 'Professional Trading Indicators',
+            description: 'Technical analysis indicators used by professional traders',
+            numberOfItems: indicators.length,
+            itemListElement: indicators.map((indicator, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                    '@type': 'SoftwareApplication',
+                    name: indicator.name,
+                    description: indicator.description,
+                    url: `https://revolutiontradingpros.com/indicators/${indicator.slug}`,
+                    applicationCategory: 'FinanceApplication',
+                    operatingSystem: 'Web Browser',
+                    offers: {
+                        '@type': 'Offer',
+                        price: '0',
+                        priceCurrency: 'USD'
+                    }
+                }
+            }))
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map(faq => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: faq.answer
+                }
+            }))
+        }
+    ];
+
+    onMount(() => {
+        if (!browser) return;
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- Original Observer Logic (Preserved for compatibility) ---
+        const heroObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        heroVisible = true;
+                    }
+                });
+            },
+            { threshold: 0.2 }
+        );
+
+        const cardObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = parseInt(entry.target.getAttribute('data-index') || '0');
+                        const newCardsVisible = [...cardsVisible];
+                        newCardsVisible[index] = true;
+                        cardsVisible = newCardsVisible;
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        const heroElement = document.querySelector('.hero-section');
+        if (heroElement) heroObserver.observe(heroElement);
+
+        const cardElements = document.querySelectorAll('.indicator-card');
+        cardElements.forEach((card) => cardObserver.observe(card));
+
+        // --- NEW: Cinematic GSAP Animations ---
+        
+        // 1. Hero Parallax & Reveal
+        const tlHero = gsap.timeline();
+        tlHero.to('.hero-title span', {
+            backgroundPosition: "200% center",
+            duration: 2,
+            ease: "none",
+            repeat: -1
+        });
+
+        // 2. Truth Section - Animated Chart Drawing
+        const chartPath = document.querySelector('.mockup-price-path');
+        const indicatorPath = document.querySelector('.mockup-indicator-path');
+        const annotation = document.querySelector('.mockup-annotation');
+
+        if (chartPath && indicatorPath) {
+            const chartLength = (chartPath as SVGPathElement).getTotalLength();
+            const indLength = (indicatorPath as SVGPathElement).getTotalLength();
+
+            gsap.set(chartPath, { strokeDasharray: chartLength, strokeDashoffset: chartLength });
+            gsap.set(indicatorPath, { strokeDasharray: indLength, strokeDashoffset: indLength });
+            gsap.set(annotation, { opacity: 0, scale: 0.8, y: 10 });
+
+            ScrollTrigger.create({
+                trigger: '.truth-section',
+                start: "top 60%",
+                onEnter: () => {
+                    gsap.to(chartPath, { strokeDashoffset: 0, duration: 2, ease: "power2.out" });
+                    gsap.to(indicatorPath, { strokeDashoffset: 0, duration: 2, delay: 0.2, ease: "power2.out" });
+                    gsap.to(annotation, { opacity: 1, scale: 1, y: 0, duration: 0.5, delay: 1.8, ease: "back.out(1.7)" });
+                }
+            });
+        }
+
+        // 3. Confluence Flow Animation
+        const connectors = document.querySelectorAll('.confluence-connector');
+        const steps = document.querySelectorAll('.confluence-step');
+        
+        const tlConfluence = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.confluence-section',
+                start: "top 70%"
+            }
+        });
+
+        tlConfluence.from(steps[0], { y: 30, opacity: 0, duration: 0.5 })
+            .from(connectors[0], { scale: 0, opacity: 0, duration: 0.3 }, "-=0.1")
+            .from(steps[1], { y: 30, opacity: 0, duration: 0.5 }, "-=0.1")
+            .from(connectors[1], { scale: 0, opacity: 0, duration: 0.3 }, "-=0.1")
+            .from(steps[2], { y: 30, opacity: 0, duration: 0.5 }, "-=0.1");
+
+
+        return () => {
+            heroObserver.disconnect();
+            cardObserver.disconnect();
+            ScrollTrigger.getAll().forEach(st => st.kill());
+        };
+    });
 </script>
 
 <SEOHead
-    title="Revolution Trading Pros | The #1 Supportive Live Trading Community"
-    description="Join a professional trading floor that genuinely cares. Real trades, real-time voice guidance, and institutional data without the hype. Established 2018."
-    canonical="/"
-    schema={[organizationSchema, faqSchema]}
+    title="Best Technical Indicators for Day Trading (2025 Guide)"
+    description="Stop guessing. Master the RSI, VWAP, MACD, and Bollinger Bands with guidance from professional traders. Learn how to combine indicators for high-probability setups."
+    canonical="/indicators"
+    ogType="article"
+    ogImage="/og-indicators-guide.webp"
+    ogImageAlt="Technical Analysis Indicators Guide"
+    keywords={[
+        'trading indicators',
+        'technical analysis',
+        'RSI strategy',
+        'VWAP trading',
+        'MACD divergence',
+        'day trading tools',
+        'best indicators for day trading',
+        'chart reading'
+    ]}
+    schema={indicatorsSchema}
 />
 
-<svelte:head>
-    <style>
-        .ticker-wrap {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-        .ticker-move {
-            display: inline-block;
-            animation: ticker 30s linear infinite;
-        }
-        @keyframes ticker {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); }
-        }
-        .scanner-line {
-            animation: scan 4s ease-in-out infinite;
-            transform-origin: bottom;
-        }
-        @keyframes scan {
-            0% { transform: translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateX(350px); opacity: 0; }
-        }
-        /* Spotlight Effect Utility */
-        .spotlight-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(800px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%);
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .spotlight-card:hover::before { opacity: 1; }
-    </style>
-</svelte:head>
+<div class="indicators-page antialiased">
+    <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[1] mix-blend-overlay" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+');"></div>
 
-<div 
-    bind:this={containerRef}
-    onmousemove={handleMouseMove}
-    role="main"
-    class="relative bg-[#020202] min-h-screen text-slate-400 font-sans selection:bg-amber-900/40 selection:text-amber-100 overflow-x-hidden"
-    style="--x: {mouse.x}px; --y: {mouse.y}px;"
->
-    <div class="fixed inset-0 pointer-events-none z-0">
-        <div class="absolute inset-0 opacity-[0.03] mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
-        
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]"></div>
-        
-        <div class="absolute inset-0 opacity-40"
-             style="background: radial-gradient(600px circle at var(--x) var(--y), rgba(217,119,6,0.05), transparent 60%);">
+    <section class="hero-section relative" class:visible={heroVisible}>
+        <div class="hero-background">
+            <div class="glow-orb glow-orb-1 mix-blend-screen"></div>
+            <div class="glow-orb glow-orb-2 mix-blend-screen"></div>
+            <div class="glow-orb glow-orb-3 mix-blend-screen"></div>
+            
+            <div class="absolute inset-0 perspective-grid opacity-20"></div>
+
+            <div class="chart-lines">
+                <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                    <path class="chart-line-svg line-1" d="M0,300 Q400,250 800,350 T1600,200" fill="none" stroke="#2e8eff" stroke-width="2" />
+                    <path class="chart-line-svg line-2" d="M0,350 Q400,300 800,400 T1600,250" fill="none" stroke="#34d399" stroke-width="2" />
+                </svg>
+            </div>
         </div>
-    </div>
 
-    <div class="relative z-20 border-b border-white/5 bg-[#020202]/80 backdrop-blur-md h-10 flex items-center">
-        <div class="ticker-wrap text-[10px] font-mono uppercase tracking-widest text-slate-500">
-            <div class="ticker-move">
-                {#each [...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems] as item}
-                    <span class="inline-block px-8">
-                        <span class={item.includes('+') ? 'text-emerald-500' : 'text-rose-500'}>●</span> {item}
+        <div class="hero-content relative z-10 px-4">
+            <div class="hero-badge animate-float">
+                <IconChartLine size={18} stroke={2} />
+                <span class="tracking-wide text-xs uppercase font-bold">The Professional Toolkit</span>
+            </div>
+
+            <h1 class="hero-title tracking-tight">
+                Master the Tools<br />
+                <span class="gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-emerald-400 to-blue-400 bg-[length:200%_auto]">Pro Traders Use</span>
+            </h1>
+
+            <p class="hero-description text-lg md:text-xl text-slate-300/90 leading-relaxed">
+                Stop looking for a "magic bullet." Successful trading isn't about finding the perfect indicator—it's about interpreting the data correctly. We teach you how to use institutional-grade tools like VWAP and RSI to read the market's narrative, not just its noise.
+            </p>
+
+            <div class="hero-cta-group pt-4">
+                <button class="cta-button primary group relative overflow-hidden">
+                    <span class="relative z-10 flex items-center gap-2">
+                        Join the Live Room
+                        <IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
                     </span>
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                </button>
+                <button class="cta-button secondary backdrop-blur-md">
+                    Explore Indicators
+                </button>
+            </div>
+
+            <div class="hero-stats border-t border-white/10 mt-12 pt-8">
+                <div class="stat-item group">
+                    <div class="p-3 rounded-full bg-white/5 group-hover:bg-blue-500/10 transition-colors">
+                        <IconTarget size={28} stroke={1.5} class="stat-icon text-blue-400" />
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value text-white font-mono">Precision</div>
+                        <div class="stat-label text-slate-400">Entries & Exits</div>
+                    </div>
+                </div>
+                <div class="stat-item group">
+                    <div class="p-3 rounded-full bg-white/5 group-hover:bg-emerald-500/10 transition-colors">
+                        <IconBolt size={28} stroke={1.5} class="stat-icon text-emerald-400" />
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value text-white font-mono">Real-Time</div>
+                        <div class="stat-label text-slate-400">Live Application</div>
+                    </div>
+                </div>
+                <div class="stat-item group">
+                    <div class="p-3 rounded-full bg-white/5 group-hover:bg-purple-500/10 transition-colors">
+                        <IconUsers size={28} stroke={1.5} class="stat-icon text-purple-400" />
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value text-white font-mono">Community</div>
+                        <div class="stat-label text-slate-400">Mentorship</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="truth-section relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-blue-900/10 to-transparent pointer-events-none"></div>
+
+        <div class="section-container relative z-10">
+            <div class="truth-grid">
+                <div class="truth-content">
+                    <h2 class="section-title left-align tracking-tighter">The Truth About <span class="text-highlight">Technical Indicators</span></h2>
+                    <p class="truth-text text-slate-300">
+                        Most new traders fail because they treat indicators as "Go/Stop" signals. They buy when the RSI crosses 30, or sell when lines cross, without understanding context.
+                    </p>
+                    <p class="truth-text text-slate-300">
+                        <strong>Here is the reality:</strong> Indicators are just derivatives of price. They are tools, not crystal balls. In our community, we teach you to use these tools to build a case—a "confluence" of evidence—that tilts the probabilities in your favor.
+                    </p>
+                    <ul class="truth-list space-y-4">
+                        <li class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <IconAlertTriangle size={24} class="warning-icon shrink-0" />
+                            <span>Stop chasing "lagging" signals blindly.</span>
+                        </li>
+                        <li class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <IconCheck size={24} class="check-icon shrink-0" />
+                            <span>Start using indicators to confirm price action.</span>
+                        </li>
+                        <li class="bg-white/5 p-4 rounded-lg border border-white/5">
+                            <IconCheck size={24} class="check-icon shrink-0" />
+                            <span>Learn to spot what the institutions are doing.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="truth-visual">
+                    <div class="chart-card glass-panel shadow-2xl shadow-blue-900/20 backdrop-blur-xl">
+                        <div class="chart-header flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                            <div class="flex gap-2">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <div class="text-xs font-mono text-slate-500">M15 • ES_F</div>
+                        </div>
+                        <div class="chart-mockup h-[220px] relative w-full">
+                            <svg class="w-full h-full overflow-visible" viewBox="0 0 400 200">
+                                <defs>
+                                    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#2e8eff" stop-opacity="0.3"/>
+                                        <stop offset="100%" stop-color="#2e8eff" stop-opacity="0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path class="mockup-price-path" d="M0,150 L50,140 L80,160 L120,100 L160,120 L220,50 L260,80 L350,20" 
+                                      fill="none" stroke="#2e8eff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                
+                                <path class="mockup-indicator-path" d="M0,180 L50,175 L80,185 L120,170 L160,175 L220,172 L260,178 L350,180" 
+                                      fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 4" opacity="0.8" />
+                            </svg>
+                            
+                            <div class="mockup-annotation absolute top-4 right-8 bg-emerald-500 text-black font-bold px-3 py-1 rounded shadow-lg transform origin-bottom-left">
+                                <div class="flex items-center gap-1 text-xs">
+                                    <IconAlertTriangle size={14} />
+                                    <span>Bearish Divergence</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="filter-section" id="indicators-list">
+        <div class="filter-container">
+            <h3 class="tracking-tight">Explore Our Core Indicators</h3>
+            <p class="filter-subtitle text-lg">These are the exact tools active in our trading room charts right now.</p>
+            <div class="filter-buttons">
+                {#each categories as category}
+                    <button
+                        class="filter-button"
+                        class:active={selectedCategory === category}
+                        onclick={() => (selectedCategory = category)}
+                    >
+                        {category}
+                    </button>
                 {/each}
             </div>
         </div>
-    </div>
+    </section>
 
-    <main id="main-content" class="relative z-10 pt-24 pb-24 px-6 lg:px-8">
-        
-        <section class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
-            {#if isVisible}
-                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="flex flex-col lg:flex-row gap-16 lg:items-end border-b border-white/10 pb-16 relative">
-                    <div class="absolute -top-4 -left-4 w-8 h-8 border-t border-l border-amber-800/50"></div>
-                    <div class="absolute -bottom-4 -right-4 w-8 h-8 border-b border-r border-amber-800/50"></div>
+    <section class="indicators-section">
+        <div class="section-container">
+            <div class="indicators-grid">
+                {#each filteredIndicators as indicator, index}
+                    {@const Icon = indicator.icon}
+                    <article
+                        class="indicator-card group relative"
+                        class:visible={cardsVisible[index]}
+                        data-index={index}
+                        onmousemove={handleMouseMove}
+                        style="--delay: {index * 0.1}s; --card-color: {indicator.color};"
+                    >
+                        <div class="spotlight-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                    <div class="lg:w-2/3 relative z-10">
-                        <div class="inline-flex items-center gap-3 px-4 py-1.5 border border-emerald-900/30 bg-emerald-950/10 text-emerald-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                            <span class="relative flex h-2 w-2">
-                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </span>
-                            Live Trading Floor Open
+                        <div class="card-header relative overflow-hidden" style="background: {indicator.gradient}">
+                            <div class="absolute inset-0 bg-noise opacity-20"></div>
+                            
+                            <div class="card-icon relative z-10 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                                <Icon size={48} stroke={1.5} />
+                            </div>
+                            <div class="card-category shadow-lg">{indicator.category}</div>
                         </div>
-                        
-                        <h1 class="text-6xl sm:text-7xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.9] mb-10 mix-blend-screen">
-                            Trade Real <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-500">Capital.</span><br />
-                            <span class="text-amber-600 drop-shadow-[0_0_15px_rgba(217,119,6,0.4)]">Real Mentors.</span><br />
-                            <span class="text-slate-700">Real Time.</span>
-                        </h1>
-                        
-                        <p class="text-xl text-slate-400 font-light leading-relaxed max-w-2xl border-l-2 border-amber-600/50 pl-6 mb-12 bg-gradient-to-r from-white/5 to-transparent py-2">
-                            Stop guessing. Join a professional trading floor where we share screens, explain the 'why' behind every move, and fight for profitability together. No hindsight. No hiding.
-                        </p>
 
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="/join" class="group relative inline-flex justify-center items-center gap-3 px-10 py-5 bg-gradient-to-r from-amber-700 to-amber-800 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all overflow-hidden border border-amber-600/50 hover:border-amber-500">
-                                <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
-                                <span class="relative z-10">Join The Community</span>
-                                <IconArrowRight size={16} class="relative z-10 group-hover:translate-x-1 transition-transform" />
+                        <div class="card-content bg-[#0B101E]">
+                            <h3 class="card-title text-white group-hover:text-[var(--card-color)] transition-colors duration-300">{indicator.name}</h3>
+                            <p class="card-description">{indicator.description}</p>
+
+                            <div class="card-use-case bg-white/5 border-l-2 border-[var(--card-color)]">
+                                <IconTarget size={18} stroke={2} />
+                                <span>{indicator.useCase}</span>
+                            </div>
+
+                            <div class="card-meta">
+                                <div class="meta-badge difficulty border border-white/10">
+                                    <IconStar size={16} stroke={2} />
+                                    <span>{indicator.difficulty}</span>
+                                </div>
+                            </div>
+
+                            <ul class="card-features">
+                                {#each indicator.features as feature}
+                                    <li class="group-hover:pl-1 transition-all duration-300">
+                                        <IconCheck size={16} stroke={2} />
+                                        <span>{feature}</span>
+                                    </li>
+                                {/each}
+                            </ul>
+
+                            <a href="/indicators/{indicator.slug}" class="card-button group/btn">
+                                View Strategy Guide
+                                <IconArrowRight size={18} stroke={2} class="transition-transform group-hover/btn:translate-x-1" />
                             </a>
-                            <a href="#how-it-works" class="group inline-flex justify-center items-center gap-2 px-10 py-5 border border-white/10 hover:bg-white/5 text-slate-300 font-bold text-xs uppercase tracking-[0.2em] transition-all backdrop-blur-sm">
-                                <span class="group-hover:text-white transition-colors">See How It Works</span>
-                            </a>
                         </div>
-                    </div>
+                    </article>
+                {/each}
+            </div>
+        </div>
+    </section>
 
-                    <div class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/5 border border-white/10 backdrop-blur-sm shadow-2xl">
-                        {#each stats as stat, i}
-                            {@const Icon = stat.icon}
-                            <div class="bg-[#050505]/80 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden">
-                                <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                                <div class="text-amber-600 mb-3 opacity-60 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300 origin-left">
-                                    <Icon size={24} stroke={1.5} />
-                                </div>
-                                <div class="text-3xl font-serif text-white mb-1 tabular-nums tracking-tight">{stat.value}</div>
-                                <div class="text-[9px] font-mono uppercase text-slate-500 tracking-[0.2em]">{stat.label}</div>
-                            </div>
-                        {/each}
-                    </div>
+    <section class="confluence-section relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent pointer-events-none"></div>
+        <div class="section-container relative z-10">
+            <h2 class="section-title tracking-tight">The Power of <span class="gradient-text">Confluence</span></h2>
+            <p class="section-subtitle">A single indicator can be wrong. Three indicators telling the same story are rarely wrong. This is how we find high-probability trades.</p>
+
+            <div class="confluence-grid">
+                <div class="confluence-step hover:border-blue-500/50 transition-colors duration-300">
+                    <div class="step-number shadow-lg shadow-blue-500/30">1</div>
+                    <h3 class="text-xl font-bold mb-2">Trend</h3>
+                    <p class="text-slate-400 text-sm">We use <strong>Moving Averages</strong> to determine if the market is bullish or bearish. We never fight the trend.</p>
                 </div>
-            {/if}
-        </section>
-
-        <section class="max-w-[1400px] mx-auto mb-32 lg:mb-48 grid lg:grid-cols-2 gap-24 items-center">
-            {#if isVisible}
-                <div in:heavySlide={{ delay: 200 }} class="order-2 lg:order-1 relative group perspective-1000">
-                    <div class="relative w-full aspect-[4/3] bg-[#050505] border border-white/10 rounded-sm overflow-hidden shadow-2xl transform transition-transform duration-700 group-hover:rotate-y-2">
-                        <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
-                        
-                        <svg class="absolute inset-0 w-full h-full text-amber-500" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path 
-                                d="M0 280 L50 250 L100 260 L150 180 L200 200 L250 100 L300 120 L350 50 L400 20" 
-                                stroke="currentColor" 
-                                stroke-width="2" 
-                                stroke-linecap="round"
-                                vector-effect="non-scaling-stroke"
-                                in:draw={{ duration: 3000, easing: cubicOut }} 
-                            />
-                            <path d="M0 280 L50 250 L100 260 L150 180 L200 200 L250 100 L300 120 L350 50 L400 20 V 300 H 0 Z" fill="url(#grad)" opacity="0.2" in:fade={{ delay: 1000, duration: 2000 }} />
-                            <defs>
-                                <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#d97706" />
-                                    <stop offset="100%" stop-color="transparent" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-
-                        <div class="absolute top-0 bottom-0 w-[1px] bg-white/50 scanner-line shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                        
-                        <div class="absolute top-10 left-10 bg-[#080808]/90 border border-red-500/30 p-6 shadow-2xl max-w-xs backdrop-blur-md">
-                            <div class="flex items-center gap-2 mb-3">
-                                <IconActivity size={14} class="text-red-500 animate-pulse" />
-                                <div class="text-[9px] font-mono text-red-500 uppercase tracking-widest">The Retail Trap</div>
-                            </div>
-                            <p class="text-sm text-slate-300 font-light italic leading-relaxed">
-                                "Most traders fail not because they lack intelligence, but because they lack support, structure, and emotional control."
-                            </p>
-                        </div>
-                    </div>
+                
+                <div class="confluence-connector hidden md:block">
+                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
+                </div>
+                <div class="confluence-connector md:hidden rotate-90">
+                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
                 </div>
 
-                <div in:heavySlide={{ delay: 300 }} class="order-1 lg:order-2">
-                    <h2 class="text-4xl lg:text-5xl font-serif text-white mb-8 tracking-tight">You Shouldn't Have to <br /><span class="text-amber-600 italic">Trade Alone.</span></h2>
-                    <div class="space-y-6 text-lg font-light leading-relaxed text-slate-400">
-                        <p>
-                            The hardest part of trading isn't reading a chart. It's the psychological battle of sitting alone in a room, making high-stakes decisions with no one to guide you.
-                        </p>
-                        <p class="pl-4 border-l-2 border-white/20">
-                            <strong class="text-white font-medium">Revolution Trading Pros changed the model.</strong> We replaced the "Guru Alert" system with a true "Virtual Trading Floor."
-                        </p>
-                        <p>
-                            When you join us, you aren't just buying data. You are plugging into a collective intelligence. You get mentors who check your risk, a community that keeps you accountable, and a system that prioritizes long-term survival over gambling.
-                        </p>
-                        <ul class="space-y-4 mt-8">
-                            {#each ['No pump and dumps', 'No fake P&L screenshots', 'Real-time voice commentary'] as item}
-                                <li class="flex items-center gap-4 text-sm text-amber-500 font-mono uppercase tracking-wider group cursor-default">
-                                    <div class="p-1 rounded bg-amber-500/10 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-black transition-colors">
-                                        <IconCheck size={14} stroke={3} />
-                                    </div>
-                                    {item}
-                                </li>
-                            {/each}
-                        </ul>
-                    </div>
-                </div>
-            {/if}
-        </section>
-
-        <section id="how-it-works" class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
-            {#if isVisible}
-                <div in:heavySlide={{ delay: 400 }} class="border-t border-white/10 pt-20">
-                    <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
-                        <div>
-                            <span class="text-amber-600 font-mono text-[10px] tracking-[0.3em] uppercase mb-4 block flex items-center gap-2">
-                                <span class="w-8 h-[1px] bg-amber-600"></span> The Ecosystem
-                            </span>
-                            <h2 class="text-4xl md:text-6xl font-serif text-white tracking-tight">Everything You Need<br />To Succeed.</h2>
-                        </div>
-                        <p class="text-slate-500 text-sm max-w-md md:text-right hidden md:block leading-relaxed border-r-2 border-amber-600 pr-6">
-                            A complete operating system for your trading business, <br /> from data to psychology.
-                        </p>
-                    </div>
-
-                    <div class="grid md:grid-cols-3 gap-6">
-                        {#each features as feat, i}
-                            {@const Icon = feat.icon}
-                            <div class="group spotlight-card bg-[#050505] border border-white/10 p-10 hover:border-amber-600/30 transition-all duration-500 relative overflow-hidden flex flex-col h-full rounded-sm">
-                                <div class="absolute -top-6 -right-6 text-white opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-700 pointer-events-none transform group-hover:scale-110 group-hover:-rotate-12">
-                                    <Icon size={200} />
-                                </div>
-                                
-                                <div class="flex justify-between items-start mb-8 relative z-10">
-                                    <div class="p-4 bg-white/5 border border-white/5 text-amber-600 group-hover:bg-amber-600 group-hover:text-black transition-all duration-300 rounded-sm shadow-lg">
-                                        <Icon size={28} stroke={1.5} />
-                                    </div>
-                                    <span class="font-mono text-[10px] text-slate-700">0{i + 1}</span>
-                                </div>
-                                
-                                <h3 class="text-2xl font-serif text-white mb-3 relative z-10 group-hover:text-amber-500 transition-colors">{feat.title}</h3>
-                                <div class="w-12 h-[1px] bg-amber-600/50 mb-4 group-hover:w-full transition-all duration-700"></div>
-                                <p class="text-[10px] font-mono text-amber-600/80 uppercase tracking-widest mb-6 relative z-10 min-h-[1.5em]">{feat.subtitle}</p>
-                                <p class="text-sm text-slate-400 leading-relaxed font-light relative z-10 mt-auto">
-                                    {feat.description}
-                                </p>
-                            </div>
-                        {/each}
-                    </div>
-                </div>
-            {/if}
-        </section>
-
-        <section class="max-w-[1600px] mx-auto mb-32 lg:mb-48">
-            {#if isVisible}
-                <div in:heavySlide={{ delay: 500 }} class="border-t border-white/10 pt-20">
-                    <div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
-                        <div>
-                            <h2 class="text-4xl font-serif text-white mb-4">Meet Your Mentors.</h2>
-                            <p class="text-slate-400 max-w-2xl font-light text-lg">
-                                We aren't anonymous admins. We are real people who are in the chat every day.
-                            </p>
-                        </div>
-                        <div class="hidden md:flex gap-2">
-                             {#each team as _}<div class="w-2 h-2 rounded-full bg-white/20"></div>{/each}
-                        </div>
-                    </div>
-
-                    <div class="grid gap-px bg-white/5 border border-white/10 overflow-hidden rounded-sm">
-                        {#each team as member}
-                            <div class="group bg-[#050505] p-8 md:p-12 grid md:grid-cols-12 gap-8 items-center hover:bg-[#080808] transition-colors duration-300 relative">
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
-
-                                <div class="md:col-span-2 flex items-center gap-6">
-                                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center text-slate-400 border border-white/5 group-hover:border-amber-600/50 group-hover:text-amber-500 overflow-hidden shadow-2xl transition-all">
-                                        <IconId size={32} stroke={1.5} />
-                                    </div>
-                                    <div class="md:hidden">
-                                        <div class="text-xl font-serif text-white">{member.name}</div>
-                                        <div class="text-[10px] font-mono text-slate-500 uppercase">{member.role}</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="hidden md:block md:col-span-3">
-                                    <div class="text-2xl font-serif text-white group-hover:text-amber-500 transition-colors tracking-tight">{member.name}</div>
-                                    <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-2">
-                                        {member.role} <span class="text-white/10">|</span> <span class="text-white/20">{member.id}</span>
-                                    </div>
-                                </div>
-
-                                <div class="md:col-span-5">
-                                    <p class="text-sm text-slate-400 leading-relaxed font-light border-l border-white/10 pl-4">{member.bio}</p>
-                                </div>
-
-                                <div class="md:col-span-2 flex flex-col items-end gap-3">
-                                    {#each member.specialties as spec}
-                                        <span class="px-3 py-1.5 bg-white/5 border border-white/5 text-[9px] text-slate-300 font-mono uppercase tracking-wider rounded-sm hover:border-amber-600/50 hover:text-amber-500 transition-colors cursor-default whitespace-nowrap">
-                                            {spec}
-                                        </span>
-                                    {/each}
-                                </div>
-                            </div>
-                        {/each}
-                    </div>
-                </div>
-            {/if}
-        </section>
-
-        <section class="max-w-[1200px] mx-auto mb-32 lg:mb-48 px-4">
-             {#if isVisible}
-                <div in:heavySlide={{ delay: 600 }} class="text-center mb-20 relative">
-                    <div class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-64 h-64 bg-amber-600/20 blur-[100px] rounded-full pointer-events-none"></div>
-                    <h2 class="text-3xl font-serif text-white mb-4 relative z-10">Why Traders Stay.</h2>
-                    <p class="text-slate-500 text-[10px] font-mono uppercase tracking-[0.3em] relative z-10">Community Feedback</p>
+                <div class="confluence-step hover:border-emerald-500/50 transition-colors duration-300">
+                    <div class="step-number bg-emerald-500 shadow-lg shadow-emerald-500/30">2</div>
+                    <h3 class="text-xl font-bold mb-2">Location</h3>
+                    <p class="text-slate-400 text-sm">We wait for price to return to value areas like <strong>VWAP</strong> or Support zones. We don't chase extended moves.</p>
                 </div>
 
-                <div in:heavySlide={{ delay: 700 }} class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-[#080808]/80 backdrop-blur p-10 border border-white/5 rounded-sm relative hover:border-amber-600/30 transition-colors duration-500">
-                        <div class="absolute -top-4 -left-4 text-amber-900/20"><IconMessageCircle size={80} /></div>
-                        
-                        <div class="relative z-10">
-                             <div class="flex gap-1 mb-6 text-amber-600">
-                                 {#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
-                             </div>
-                            <p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
-                                "I spent years jumping from one alert service to another, losing money. Revolution is different. They actually taught me how to fish. I finally feel in control of my risk."
-                            </p>
-                            <div class="flex items-center gap-4 border-t border-white/5 pt-6">
-                                <div class="w-10 h-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white">MK</div>
-                                <div>
-                                    <div class="text-sm text-white font-medium">Verified Member</div>
-                                    <div class="text-[10px] text-slate-500 font-mono uppercase">Member since 2021</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-[#080808]/80 backdrop-blur p-10 border border-white/5 rounded-sm relative hover:border-amber-600/30 transition-colors duration-500">
-                         <div class="absolute -top-4 -left-4 text-amber-900/20"><IconMessageCircle size={80} /></div>
-                        
-                        <div class="relative z-10">
-                            <div class="flex gap-1 mb-6 text-amber-600">
-                                 {#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
-                             </div>
-                            <p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
-                                "The morning voice chat is a game changer. Hearing Michael explain his thought process in real-time kept me out of so many bad trades. It's like having a risk manager over your shoulder."
-                            </p>
-                            <div class="flex items-center gap-4 border-t border-white/5 pt-6">
-                                <div class="w-10 h-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white">JT</div>
-                                <div>
-                                    <div class="text-sm text-white font-medium">Verified Member</div>
-                                    <div class="text-[10px] text-slate-500 font-mono uppercase">Member since 2023</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="confluence-connector hidden md:block">
+                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
                 </div>
-             {/if}
-        </section>
-
-        <section class="max-w-[900px] mx-auto mb-32">
-             {#if isVisible}
-                <div in:heavySlide={{ delay: 800 }} class="border-t border-white/10 pt-20">
-                    <div class="text-center mb-16">
-                         <h2 class="text-4xl font-serif text-white mb-2">Frequently Asked Questions</h2>
-                         <div class="h-1 w-20 bg-amber-600 mx-auto rounded-full"></div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        {#each faqs as faq}
-                            <details class="group bg-[#050505] border border-white/10 open:border-amber-600/30 transition-all duration-300 rounded-sm overflow-hidden">
-                                <summary class="flex justify-between items-center p-6 cursor-pointer list-none bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                                    <span class="text-lg text-slate-200 font-light pr-8">{faq.q}</span>
-                                    <span class="text-amber-600 transform group-open:rotate-180 transition-transform duration-300">
-                                        <IconChevronDown size={20} />
-                                    </span>
-                                </summary>
-                                <div class="px-6 pb-8 text-slate-400 font-light leading-relaxed border-t border-white/5 pt-6 bg-[#020202]">
-                                    {faq.a}
-                                </div>
-                            </details>
-                        {/each}
-                    </div>
+                <div class="confluence-connector md:hidden rotate-90">
+                     <IconArrowRight size={32} class="text-slate-600 animate-pulse" />
                 </div>
-             {/if}
-        </section>
 
-        <section class="mt-32 border-t border-white/10 pt-32 pb-32 text-center relative overflow-hidden">
-            <div class="absolute inset-0 bg-amber-600/5 blur-[120px] pointer-events-none"></div>
-            <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
-
-            <div class="relative z-10 px-4">
-                <IconBuildingBank size={48} class="mx-auto text-amber-600 mb-8 opacity-80" stroke={1} />
-                <h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tighter">Ready to <span class="italic text-amber-600">Turn Pro?</span></h2>
-                <p class="text-slate-400 text-xl mb-12 max-w-xl mx-auto font-light leading-relaxed">
-                    The market is open. The team is ready. <br />The only thing missing is you.
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-6">
-                    <a href="/join" class="group relative flex justify-center items-center gap-4 px-12 py-6 bg-amber-700 text-white font-bold text-sm uppercase tracking-[0.2em] transition-all shadow-[0_0_40px_rgba(180,83,9,0.2)] hover:shadow-[0_0_60px_rgba(180,83,9,0.4)] overflow-hidden">
-                        <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
-                        <span class="relative z-10">Start Your Membership</span>
-                        <IconArrowRight size={18} class="relative z-10 group-hover:translate-x-1 transition-transform" />
-                    </a>
-                </div>
-                <div class="mt-12 flex flex-wrap justify-center gap-6 text-[10px] text-slate-600 uppercase tracking-widest font-mono">
-                    <span class="flex items-center gap-2"><IconShieldLock size={12} /> Secure Payment</span>
-                    <span class="w-px h-3 bg-slate-800"></span>
-                    <span>Cancel Anytime</span>
-                    <span class="w-px h-3 bg-slate-800"></span>
-                    <span>24/7 Support</span>
+                <div class="confluence-step hover:border-purple-500/50 transition-colors duration-300">
+                    <div class="step-number bg-purple-500 shadow-lg shadow-purple-500/30">3</div>
+                    <h3 class="text-xl font-bold mb-2">Momentum</h3>
+                    <p class="text-slate-400 text-sm">We execute when <strong>RSI or MACD</strong> confirms the buyers are stepping back in. This creates the "sniper" entry.</p>
                 </div>
             </div>
-        </section>
+            
+            <div class="confluence-cta mt-12">
+                <p class="text-slate-400 mb-2">Want to see this confluence strategy in action?</p>
+                <a href="/trading-room" class="text-link inline-flex items-center gap-2 group">
+                    Watch us trade this setup live tomorrow morning 
+                    <IconArrowRight size={18} class="transition-transform group-hover:translate-x-1" />
+                </a>
+            </div>
+        </div>
+    </section>
 
-    </main>
+    <section class="faq-section">
+        <div class="section-container">
+            <h2 class="section-title tracking-tight">Common Questions</h2>
+            <div class="faq-list">
+                {#each faqs as faq, i}
+                    <div class="faq-item transition-all duration-300" class:open={openFaq === i}>
+                        <button class="faq-question hover:text-blue-400 transition-colors" onclick={() => toggleFaq(i)}>
+                            {faq.question}
+                            <div class="faq-icon transform transition-transform duration-300" class:rotate-180={openFaq === i}>
+                                <IconChevronDown size={20} />
+                            </div>
+                        </button>
+                        <div class="faq-answer">
+                            <p class="text-slate-300">{faq.answer}</p>
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+        
+        <div class="cta-content relative z-10">
+            <div class="inline-block p-4 rounded-full bg-blue-500/10 mb-6">
+                <IconSchool size={48} class="cta-icon text-blue-400 !mb-0" />
+            </div>
+            <h2 class="tracking-tight">Stop Learning Alone. Start Trading Together.</h2>
+            <p>You have the tools. Now get the guidance. Join a community of traders who genuinely care about your success.</p>
+            <button class="cta-button primary large transform hover:scale-105 transition-transform duration-300 shadow-xl shadow-blue-500/20">
+                Join Revolution Trading Pros
+            </button>
+            <p class="cta-subtext">No spam. No fake alerts. Just real trading.</p>
+        </div>
+    </section>
 </div>
+
+<style>
+    /* Retaining original CSS logic but updated for new Tailwind capabilities
+       and smoother animations.
+    */
+
+    .indicators-page {
+        min-height: 100vh;
+        background: #050812;
+        color: white;
+        font-family: 'Inter', system-ui, sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* Cinematic Spotlight Effect */
+    .spotlight-overlay {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            600px circle at var(--mouse-x) var(--mouse-y),
+            rgba(255, 255, 255, 0.06),
+            transparent 40%
+        );
+        z-index: 2;
+    }
+
+    .bg-noise {
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    /* Common Utilities */
+    .section-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .section-title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+    
+    .section-subtitle {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 4rem;
+        color: #94a3b8;
+        font-size: 1.125rem;
+        line-height: 1.6;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #2e8eff 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-highlight {
+        color: #2e8eff;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8rem 2rem 6rem;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hero-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .perspective-grid {
+        background-image: linear-gradient(rgba(46, 142, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(46, 142, 255, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2);
+        animation: gridMove 20s linear infinite;
+        mask-image: linear-gradient(to bottom, transparent, black 40%, transparent);
+    }
+
+    @keyframes gridMove {
+        0% { transform: perspective(500px) rotateX(60deg) translateY(0) scale(2); }
+        100% { transform: perspective(500px) rotateX(60deg) translateY(40px) scale(2); }
+    }
+
+    .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.4;
+        animation: pulse 8s ease-in-out infinite;
+    }
+
+    .glow-orb-1 {
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, #2e8eff 0%, transparent 70%);
+        top: -300px;
+        right: -200px;
+    }
+
+    .glow-orb-2 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, #34d399 0%, transparent 70%);
+        bottom: -250px;
+        left: -150px;
+        animation-delay: 2s;
+    }
+
+    .glow-orb-3 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #a78bfa 0%, transparent 70%);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation-delay: 4s;
+        opacity: 0.2;
+    }
+
+    .chart-lines {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+    
+    .chart-line-svg {
+        stroke-dasharray: 2000;
+        stroke-dashoffset: 2000;
+        animation: drawLine 4s ease-out forwards infinite;
+        opacity: 0.3;
+    }
+    
+    .line-2 { animation-delay: 2s; }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.1); opacity: 0.5; }
+    }
+
+    @keyframes drawLine {
+        0% { stroke-dashoffset: 2000; opacity: 0; }
+        20% { opacity: 0.4; }
+        100% { stroke-dashoffset: 0; opacity: 0; }
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .hero-content {
+        max-width: 1000px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        background: rgba(46, 142, 255, 0.1);
+        border: 1px solid rgba(46, 142, 255, 0.2);
+        border-radius: 50px;
+        color: #60a5fa;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .hero-title {
+        font-size: clamp(3rem, 6vw, 5.5rem);
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+    }
+
+    /* CTA Buttons */
+    .hero-cta-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 4rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .cta-button {
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        border: none;
+        letter-spacing: -0.01em;
+    }
+
+    .cta-button.primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .cta-button.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    }
+
+    .cta-button.secondary {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: white;
+    }
+
+    .cta-button.secondary:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 4rem;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* Truth Section */
+    .truth-section {
+        padding: 8rem 0;
+        background: linear-gradient(to bottom, #050812, #0a0f1e);
+    }
+
+    .truth-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6rem;
+        align-items: center;
+    }
+
+    .left-align { text-align: left; }
+
+    .truth-text {
+        font-size: 1.125rem;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-card {
+        background: rgba(13, 18, 30, 0.6);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 24px;
+        padding: 2rem;
+        height: auto;
+        position: relative;
+    }
+    
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: block; }
+    .red { background: #ef4444; } .yellow { background: #f59e0b; } .green { background: #22c55e; }
+
+    /* Filter Section */
+    .filter-section {
+        padding: 6rem 2rem 2rem;
+    }
+
+    .filter-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-button {
+        padding: 0.6rem 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 50px;
+        color: #94a3b8;
+        font-weight: 500;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-button:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+    }
+
+    .filter-button.active {
+        background: #2e8eff;
+        border-color: #2e8eff;
+        color: white;
+        box-shadow: 0 0 20px rgba(46, 142, 255, 0.3);
+    }
+
+    /* Indicators Grid */
+    .indicators-section {
+        padding: 2rem 2rem 8rem;
+    }
+
+    .indicators-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 2rem;
+    }
+
+    .indicator-card {
+        background: #0B101E;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        overflow: hidden;
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s ease;
+        opacity: 0;
+        transform: translateY(30px);
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
+    }
+
+    .indicator-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: var(--delay);
+    }
+
+    .indicator-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        border-color: rgba(255,255,255,0.1);
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+        padding: 2.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-content {
+        padding: 2rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 6px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #94a3b8;
+    }
+
+    .meta-badge.difficulty :global(svg) {
+        color: #f59e0b;
+    }
+
+    .card-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+        flex-grow: 1;
+    }
+
+    .card-features li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        font-size: 0.9rem;
+        color: #cbd5e1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-features li:last-child {
+        border-bottom: none;
+    }
+
+    .card-features li :global(svg) {
+        color: var(--card-color);
+        flex-shrink: 0;
+    }
+
+    .card-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        color: white;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: all 0.3s ease;
+        margin-top: auto;
+    }
+
+    .card-button:hover {
+        background: var(--card-color);
+        border-color: var(--card-color);
+        color: #000;
+    }
+
+    /* Confluence Section */
+    .confluence-section {
+        padding: 8rem 2rem;
+        background: #050812;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .confluence-grid {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        margin: 5rem 0;
+        flex-wrap: wrap;
+    }
+
+    .confluence-step {
+        background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        flex: 1;
+        min-width: 250px;
+        max-width: 350px;
+        text-align: center;
+        position: relative;
+        backdrop-filter: blur(10px);
+    }
+
+    .step-number {
+        background: #2e8eff;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.25rem;
+        margin: -3.5rem auto 1.5rem;
+        border: 4px solid #050812;
+        color: white;
+    }
+
+    .confluence-cta {
+        text-align: center;
+        margin-top: 4rem;
+    }
+
+    .text-link {
+        color: #34d399;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 1.125rem;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+    }
+    .text-link:hover { border-bottom-color: #34d399; }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 8rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .faq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .faq-item {
+        background: rgba(255,255,255,0.02);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .faq-item.open {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(46,142,255,0.3);
+        box-shadow: 0 0 30px rgba(0,0,0,0.2);
+    }
+
+    .faq-question {
+        width: 100%;
+        text-align: left;
+        padding: 1.5rem 2rem;
+        background: none;
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 1.125rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+        padding: 0 2rem;
+        color: #94a3b8;
+        line-height: 1.7;
+    }
+
+    .faq-item.open .faq-answer {
+        max-height: 300px;
+        padding-bottom: 2rem;
+    }
+
+    /* Final CTA */
+    .final-cta {
+        padding: 10rem 2rem;
+        text-align: center;
+        background: radial-gradient(circle at center, rgba(10, 15, 30, 0) 0%, #050812 100%);
+    }
+
+    .cta-content {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .final-cta h2 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .final-cta p {
+        color: #cbd5e1;
+        font-size: 1.25rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .cta-button.large {
+        padding: 1.25rem 3.5rem;
+        font-size: 1.125rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .glow-orb-1 { width: 500px; height: 500px; }
+        .glow-orb-2 { width: 450px; height: 450px; }
+    }
+
+    @media (max-width: 1024px) {
+        .truth-grid { grid-template-columns: 1fr; gap: 4rem; }
+        .confluence-grid { flex-direction: column; gap: 2rem; }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section { padding: 6rem 1.5rem 4rem; min-height: auto; }
+        .indicators-grid { grid-template-columns: 1fr; }
+        .hero-stats { flex-direction: column; gap: 1.5rem; }
+        .stat-item { justify-content: flex-start; }
+        .filter-section { padding: 4rem 1rem 1rem; }
+    }
+</style>
