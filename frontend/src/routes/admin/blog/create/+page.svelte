@@ -10,7 +10,10 @@
 	import IconLoader from '@tabler/icons-svelte/icons/loader';
 	import IconCheck from '@tabler/icons-svelte/icons/check';
 	import IconTags from '@tabler/icons-svelte/icons/tags';
-	import RichTextEditor from '$lib/components/blog/RichTextEditor.svelte';
+	import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
+	import IconMaximize from '@tabler/icons-svelte/icons/maximize';
+	import IconMinimize from '@tabler/icons-svelte/icons/minimize';
+	import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
 	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
 	import { api } from '$lib/api/config';
 	import { mediaApi } from '$lib/api/media';
@@ -90,7 +93,17 @@
 		return post.categories.includes(categoryId);
 	}
 
-	let content = $state('');
+	// Content blocks for the BlockEditor
+	let contentBlocks = $state<Block[]>([
+		{
+			id: crypto.randomUUID(),
+			type: 'paragraph',
+			content: { text: '' },
+			settings: {},
+			order: 0
+		}
+	]);
+
 	let categories: any[] = $state([]);
 	let tags: any[] = $state([]);
 	let availableCategories: any[] = $state([]);
@@ -101,6 +114,8 @@
 	let showSeoPanel = $state(false);
 	let uploadingImage = $state(false);
 	let uploadError = $state('');
+	let isFullscreen = $state(false);
+	let editorMode = $state<'visual' | 'code'>('visual');
 
 	onMount(() => {
 		loadCategories();
@@ -135,8 +150,51 @@
 		}
 	}
 
-	function handleContentChange(newContent: string) {
-		content = newContent;
+	// Handle block editor changes
+	function handleBlocksChange(blocks: Block[]) {
+		contentBlocks = blocks;
+		// Also update the post content_blocks
+		post.content_blocks = blocks.map(b => ({
+			type: b.type,
+			content: b.content,
+			settings: b.settings
+		}));
+	}
+
+	// Handle block editor save
+	function handleEditorSave(blocks: Block[]) {
+		handleBlocksChange(blocks);
+		// Auto-save as draft
+		savePost('draft');
+	}
+
+	// Convert blocks to HTML for backward compatibility
+	function blocksToHtml(blocks: Block[]): string {
+		return blocks.map(block => {
+			switch (block.type) {
+				case 'paragraph':
+					return `<p>${block.content.text || ''}</p>`;
+				case 'heading':
+					const level = block.content.level || 2;
+					return `<h${level}>${block.content.text || ''}</h${level}>`;
+				case 'quote':
+					return `<blockquote>${block.content.text || ''}</blockquote>`;
+				case 'list':
+					const items = block.content.items || [];
+					const listType = block.content.listType === 'ordered' ? 'ol' : 'ul';
+					return `<${listType}>${items.map((item: string) => `<li>${item}</li>`).join('')}</${listType}>`;
+				case 'image':
+					return `<figure><img src="${block.content.src || ''}" alt="${block.content.alt || ''}" />${block.content.caption ? `<figcaption>${block.content.caption}</figcaption>` : ''}</figure>`;
+				case 'code':
+					return `<pre><code class="language-${block.content.language || 'text'}">${block.content.code || ''}</code></pre>`;
+				case 'separator':
+					return '<hr />';
+				case 'html':
+					return block.content.html || '';
+				default:
+					return block.content.text ? `<p>${block.content.text}</p>` : '';
+			}
+		}).join('\n');
 	}
 
 	async function createTag() {
@@ -157,10 +215,18 @@
 		saving = true;
 
 		try {
+			// Convert blocks to both formats for backward compatibility
+			const htmlContent = blocksToHtml(contentBlocks);
+
 			const postData = {
 				...post,
 				status,
-				content_blocks: [{ type: 'html', content }],
+				content: htmlContent, // HTML for backward compatibility
+				content_blocks: contentBlocks.map(b => ({
+					type: b.type,
+					content: b.content,
+					settings: b.settings
+				})),
 				published_at:
 					status === 'published' && !post.published_at
 						? new Date().toISOString()
@@ -276,9 +342,44 @@
 				></textarea>
 			</div>
 
-			<div class="form-group">
-				<label for="blog-content">Content</label>
-				<RichTextEditor bind:content onchange={handleContentChange} />
+			<!-- Advanced Block Editor -->
+			<div class="form-group editor-container" class:fullscreen={isFullscreen}>
+				<div class="editor-toolbar">
+					<label>Content</label>
+					<div class="editor-actions">
+						<button
+							type="button"
+							class="toolbar-btn"
+							title="Keyboard shortcuts"
+							onclick={() => {/* Handled by BlockEditor */}}
+						>
+							<IconKeyboard size={18} />
+						</button>
+						<button
+							type="button"
+							class="toolbar-btn"
+							title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+							onclick={() => isFullscreen = !isFullscreen}
+						>
+							{#if isFullscreen}
+								<IconMinimize size={18} />
+							{:else}
+								<IconMaximize size={18} />
+							{/if}
+						</button>
+					</div>
+				</div>
+				<BlockEditor
+					initialBlocks={contentBlocks}
+					title={post.title}
+					slug={post.slug}
+					metaDescription={post.meta_description}
+					focusKeyword={post.meta_keywords?.[0] || ''}
+					onSave={handleEditorSave}
+					onChange={handleBlocksChange}
+					autoSave={true}
+					autoSaveInterval={30000}
+				/>
 			</div>
 
 			<!-- SEO Section -->
@@ -980,6 +1081,80 @@
 	.sidebar-panel textarea:focus {
 		outline: none;
 		border-color: #3b82f6;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BLOCK EDITOR STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.editor-container {
+		display: flex;
+		flex-direction: column;
+		background: white;
+		border-radius: 8px;
+		overflow: hidden;
+		border: 1px solid #e5e5e5;
+		min-height: 600px;
+	}
+
+	.editor-container.fullscreen {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1000;
+		border-radius: 0;
+		min-height: 100vh;
+	}
+
+	.editor-toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid #e5e5e5;
+		background: #f8f9fa;
+	}
+
+	.editor-toolbar label {
+		font-weight: 600;
+		color: #1a1a1a;
+		font-size: 0.95rem;
+	}
+
+	.editor-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.toolbar-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: white;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		cursor: pointer;
+		color: #666;
+		transition: all 0.2s;
+	}
+
+	.toolbar-btn:hover {
+		background: #f0f0f0;
+		color: #3b82f6;
+	}
+
+	/* Make BlockEditor take full height */
+	.editor-container :global(.block-editor) {
+		flex: 1;
+		min-height: 500px;
+	}
+
+	.editor-container.fullscreen :global(.block-editor) {
+		min-height: calc(100vh - 60px);
 	}
 
 	@media (max-width: 1024px) {
