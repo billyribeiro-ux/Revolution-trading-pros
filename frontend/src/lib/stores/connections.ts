@@ -182,38 +182,53 @@ async function fetchConnectionStatus(): Promise<Record<string, ConnectionStatus>
 		throw new Error('Not authenticated');
 	}
 
-	const response = await fetch('/api/admin/connections/status', {
-		headers: {
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json'
+	// Use AbortController for timeout
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+	try {
+		const response = await fetch('/api/admin/connections/status', {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			},
+			signal: controller.signal
+		});
+
+		clearTimeout(timeoutId);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch connection status');
 		}
-	});
 
-	if (!response.ok) {
-		throw new Error('Failed to fetch connection status');
-	}
+		const data = await response.json();
 
-	const data = await response.json();
+		// Transform API response to our format
+		const connections: Record<string, ConnectionStatus> = {};
 
-	// Transform API response to our format
-	const connections: Record<string, ConnectionStatus> = {};
-
-	if (data.connections && Array.isArray(data.connections)) {
-		for (const conn of data.connections) {
-			connections[conn.key] = {
-				key: conn.key,
-				name: conn.name,
-				category: conn.category,
-				isConnected: conn.is_connected || conn.status === 'connected',
-				status: conn.status || (conn.is_connected ? 'connected' : 'disconnected'),
-				healthScore: conn.health_score || conn.connection?.health_score || 0,
-				lastVerified: conn.last_verified_at || conn.connection?.last_verified_at || null,
-				error: conn.last_error || conn.connection?.last_error || null
-			};
+		if (data.connections && Array.isArray(data.connections)) {
+			for (const conn of data.connections) {
+				connections[conn.key] = {
+					key: conn.key,
+					name: conn.name,
+					category: conn.category,
+					isConnected: conn.is_connected || conn.status === 'connected',
+					status: conn.status || (conn.is_connected ? 'connected' : 'disconnected'),
+					healthScore: conn.health_score || conn.connection?.health_score || 0,
+					lastVerified: conn.last_verified_at || conn.connection?.last_verified_at || null,
+					error: conn.last_error || conn.connection?.last_error || null
+				};
+			}
 		}
-	}
 
-	return connections;
+		return connections;
+	} catch (error) {
+		clearTimeout(timeoutId);
+		if (error instanceof Error && error.name === 'AbortError') {
+			throw new Error('Connection check timed out');
+		}
+		throw error;
+	}
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -249,9 +264,45 @@ export const connections = {
 				error: null
 			}));
 		} catch (error) {
+			// On error, set default state with built-in services marked as connected
+			const defaultConnections: Record<string, ConnectionStatus> = {
+				fluent_crm_pro: {
+					key: 'fluent_crm_pro',
+					name: 'FluentCRM Pro',
+					category: 'Fluent',
+					isConnected: true,
+					status: 'connected',
+					healthScore: 100,
+					lastVerified: new Date().toISOString(),
+					error: null
+				},
+				fluent_forms_pro: {
+					key: 'fluent_forms_pro',
+					name: 'FluentForms Pro',
+					category: 'Fluent',
+					isConnected: true,
+					status: 'connected',
+					healthScore: 100,
+					lastVerified: new Date().toISOString(),
+					error: null
+				},
+				fluent_smtp: {
+					key: 'fluent_smtp',
+					name: 'FluentSMTP',
+					category: 'Fluent',
+					isConnected: true,
+					status: 'connected',
+					healthScore: 100,
+					lastVerified: new Date().toISOString(),
+					error: null
+				}
+			};
+
 			connectionsStore.update((s) => ({
 				...s,
+				connections: defaultConnections,
 				isLoading: false,
+				lastFetched: Date.now(),
 				error: error instanceof Error ? error.message : 'Failed to load connections'
 			}));
 		}

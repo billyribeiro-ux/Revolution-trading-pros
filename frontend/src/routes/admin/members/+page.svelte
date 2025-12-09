@@ -52,14 +52,25 @@
 	let importing = $state(false);
 	let exporting = $state(false);
 
-	// Initialize
+	// Error state
+	let initError = $state('');
+
+	// Initialize - Use Promise.allSettled to prevent stuck loading if one API fails
 	onMount(async () => {
-		await Promise.all([
+		initError = '';
+		const results = await Promise.allSettled([
 			membersStore.loadMembers(),
 			membersStore.loadStats(),
 			membersStore.loadServices(),
 			emailStore.loadTemplates()
 		]);
+
+		// Check for critical failures
+		const [membersResult] = results;
+		if (membersResult.status === 'rejected') {
+			initError = 'Failed to load members. Please refresh the page.';
+			console.error('Members load error:', membersResult.reason);
+		}
 	});
 
 	// Handlers
@@ -218,6 +229,15 @@
 </svelte:head>
 
 <div class="members-page">
+	<!-- Error Banner -->
+	{#if initError}
+		<div class="error-banner">
+			<IconAlertTriangle size={20} />
+			<span>{initError}</span>
+			<button onclick={() => window.location.reload()}>Refresh Page</button>
+		</div>
+	{/if}
+
 	<!-- Header -->
 	<div class="page-header">
 		<div class="header-content">
@@ -1580,5 +1600,38 @@
 		font-size: 0.75rem;
 		color: #64748b;
 		margin-top: 0.25rem;
+	}
+
+	/* Error Banner */
+	.error-banner {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem 1.5rem;
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 12px;
+		color: #f87171;
+		margin-bottom: 1.5rem;
+	}
+
+	.error-banner span {
+		flex: 1;
+		font-weight: 500;
+	}
+
+	.error-banner button {
+		padding: 0.5rem 1rem;
+		background: rgba(239, 68, 68, 0.2);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 6px;
+		color: #f87171;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.error-banner button:hover {
+		background: rgba(239, 68, 68, 0.3);
 	}
 </style>

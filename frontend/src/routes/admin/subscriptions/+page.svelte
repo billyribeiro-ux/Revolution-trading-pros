@@ -53,7 +53,8 @@
 		error = '';
 
 		try {
-			const [subsResponse, statsData, renewals, failed] = await Promise.all([
+			// Use Promise.allSettled for robust error handling - prevents freezing if one API fails
+			const results = await Promise.allSettled([
 				getSubscriptions({
 					status: statusFilter === 'all' ? undefined : [statusFilter],
 					interval: intervalFilter === 'all' ? undefined : [intervalFilter],
@@ -64,10 +65,31 @@
 				getFailedPayments()
 			]);
 
-			subscriptions = subsResponse;
-			stats = statsData;
-			upcomingRenewals = renewals;
-			failedPayments = failed;
+			// Extract results with fallbacks for failed requests
+			const [subsResult, statsResult, renewalsResult, failedResult] = results;
+
+			subscriptions = subsResult.status === 'fulfilled' ? subsResult.value : [];
+			stats = statsResult.status === 'fulfilled' ? statsResult.value : {
+				total: 0,
+				active: 0,
+				totalActive: 0,
+				newThisMonth: 0,
+				onHold: 0,
+				cancelled: 0,
+				expired: 0,
+				pendingCancel: 0,
+				monthlyRecurringRevenue: 0,
+				churnRate: 0,
+				averageLifetimeValue: 0
+			};
+			upcomingRenewals = renewalsResult.status === 'fulfilled' ? renewalsResult.value : [];
+			failedPayments = failedResult.status === 'fulfilled' ? failedResult.value : [];
+
+			// Check if main subscriptions call failed
+			if (subsResult.status === 'rejected') {
+				error = 'Failed to load subscriptions. Some data may be unavailable.';
+				console.error('Subscriptions load error:', subsResult.reason);
+			}
 		} catch (err) {
 			error = 'Failed to load subscription data';
 			console.error(err);
