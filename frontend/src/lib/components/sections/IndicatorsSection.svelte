@@ -128,9 +128,13 @@
 		const rect = chartRef.getBoundingClientRect();
 		const width = rect.width;
 		const height = rect.height;
+		
+		// Skip if dimensions are invalid
+		if (width === 0 || height === 0) return;
+		
 		const visibleCandles = Math.floor(candleData.length * chartProgress);
 
-		// Clear canvas
+		// Clear canvas using CSS dimensions (context is already scaled)
 		chartCtx.clearRect(0, 0, width, height);
 
 		// Draw grid
@@ -222,10 +226,16 @@
 		isMounted = true;
 
 		// Setup canvas with resize observer (delayed to ensure DOM is ready)
+		// Use double rAF to ensure layout is complete
 		requestAnimationFrame(() => {
-			setupCanvas();
-			resizeObserver = new ResizeObserver(() => setupCanvas());
-			if (chartRef) resizeObserver.observe(chartRef);
+			requestAnimationFrame(() => {
+				setupCanvas();
+				resizeObserver = new ResizeObserver(() => {
+					setupCanvas();
+					drawChart(); // Redraw on resize
+				});
+				if (chartRef) resizeObserver.observe(chartRef);
+			});
 		});
 
 		// Intersection Observer for visibility - lower threshold for mobile
@@ -269,13 +279,27 @@
 
 	function setupCanvas() {
 		if (!canvasRef || !chartRef) return;
+		
 		const dpr = window.devicePixelRatio || 1;
 		const rect = chartRef.getBoundingClientRect();
+		
+		// Ensure we have valid dimensions
+		if (rect.width === 0 || rect.height === 0) {
+			console.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
+			return;
+		}
+		
+		// Reset canvas dimensions
 		canvasRef.width = rect.width * dpr;
 		canvasRef.height = rect.height * dpr;
+		
+		// Get fresh context after resize
 		chartCtx = canvasRef.getContext('2d');
 		if (chartCtx) {
+			// Reset transform before scaling
+			chartCtx.setTransform(1, 0, 0, 1, 0, 0);
 			chartCtx.scale(dpr, dpr);
+			console.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height);
 		}
 	}
 
@@ -294,7 +318,7 @@
 	async function loadGSAP() {
 		try {
 			const { gsap } = await import('gsap');
-			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
 			gsapInstance = gsap;
 			scrollTriggerInstance = ScrollTrigger;
