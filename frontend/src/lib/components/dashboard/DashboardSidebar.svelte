@@ -3,7 +3,7 @@
 	 * Dashboard Sidebar Component - WordPress Exact Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Exact match of WordPress Simpler Trading sidebar structure:
+	 * Exact match of WordPress Revolution Trading sidebar structure:
 	 * - .dashboard__nav-primary (primary navigation)
 	 * - .dashboard__profile-nav-item (profile section)
 	 * - .dash_main_links (main navigation links)
@@ -24,12 +24,19 @@
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	interface SubscriptionInfo {
+		nextChargeDate?: string;
+		nextChargeAmount?: number;
+		paymentMethod?: string;
+	}
+
 	interface Props {
 		memberships?: UserMembership[];
 		isMobileOpen?: boolean;
 		onCloseMobile?: () => void;
 		userAvatar?: string;
 		userName?: string;
+		subscriptionInfo?: SubscriptionInfo;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -41,8 +48,39 @@
 		isMobileOpen = $bindable(false),
 		onCloseMobile,
 		userAvatar = '',
-		userName = 'My Account'
+		userName = 'My Account',
+		subscriptionInfo
 	}: Props = $props();
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// HELPER FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function formatDate(dateStr?: string): string {
+		if (!dateStr) return '';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString('en-US', {
+				month: 'short',
+				day: 'numeric',
+				year: 'numeric'
+			});
+		} catch {
+			return '';
+		}
+	}
+
+	function formatCurrency(amount?: number): string {
+		if (amount === undefined || amount === null) return '';
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD'
+		}).format(amount);
+	}
+
+	const hasSubscriptionInfo = $derived(
+		subscriptionInfo?.nextChargeDate || subscriptionInfo?.nextChargeAmount
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -62,6 +100,16 @@
 
 	// Current path for active state
 	const currentPath = $derived($page.url.pathname);
+
+	// Check if we're on any account page (for highlighting profile section)
+	const isAccountSection = $derived(
+		currentPath.startsWith('/dashboard/account') ||
+		currentPath.startsWith('/dashboard/orders') ||
+		currentPath.startsWith('/dashboard/subscriptions') ||
+		currentPath.startsWith('/dashboard/coupons') ||
+		currentPath.startsWith('/dashboard/addresses') ||
+		currentPath.startsWith('/dashboard/payment-methods')
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPER FUNCTIONS
@@ -117,7 +165,12 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     PROFILE SECTION (WordPress: .dashboard__profile-nav-item)
 	     ═══════════════════════════════════════════════════════════════════════ -->
-	<a href="/dashboard" class="dashboard__profile-nav-item" aria-current={isActive('/dashboard') ? 'page' : undefined}>
+	<a
+		href="/dashboard/account"
+		class="dashboard__profile-nav-item"
+		class:is-account-active={isAccountSection}
+		aria-current={isAccountSection ? 'page' : undefined}
+	>
 		<span
 			class="dashboard__profile-photo"
 			style:background-image={userAvatar ? `url(${userAvatar})` : undefined}
@@ -125,6 +178,31 @@
 		></span>
 		<span class="dashboard__profile-name">{userName}</span>
 	</a>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     MEMBER SUBSCRIPTION INFO (Simpler Trading style)
+	     ═══════════════════════════════════════════════════════════════════════ -->
+	{#if hasSubscriptionInfo}
+		<div class="subscription-info-box">
+			<p class="subscription-info-title">Member Subscription Info</p>
+			{#if subscriptionInfo?.nextChargeDate && subscriptionInfo?.nextChargeAmount}
+				<p class="subscription-info-text">
+					Next charge: {formatCurrency(subscriptionInfo.nextChargeAmount)} on {formatDate(subscriptionInfo.nextChargeDate)}
+				</p>
+			{:else if subscriptionInfo?.nextChargeDate}
+				<p class="subscription-info-text">
+					Next charge: {formatDate(subscriptionInfo.nextChargeDate)}
+				</p>
+			{:else if subscriptionInfo?.nextChargeAmount}
+				<p class="subscription-info-text">
+					Amount: {formatCurrency(subscriptionInfo.nextChargeAmount)}
+				</p>
+			{/if}
+			{#if subscriptionInfo?.paymentMethod}
+				<p class="subscription-info-payment">via {subscriptionInfo.paymentMethod}</p>
+			{/if}
+		</div>
+	{/if}
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     MAIN LINKS (WordPress: .dash_main_links)
@@ -258,12 +336,6 @@
 		<li><p class="dashboard__nav-category">account</p></li>
 	</ul>
 	<ul class="dash_main_links">
-		<li class:is-active={isActive('/dashboard/account')}>
-			<a href="/dashboard/account">
-				<span class="dashboard__nav-item-icon st-icon-settings"></span>
-				<span class="dashboard__nav-item-text">Account Details</span>
-			</a>
-		</li>
 		<li class:is-active={isActive('/dashboard/orders')}>
 			<a href="/dashboard/orders">
 				<span class="dashboard__nav-item-icon">
@@ -280,6 +352,14 @@
 				<span class="dashboard__nav-item-text">Subscriptions</span>
 			</a>
 		</li>
+		<li class:is-active={isActive('/dashboard/coupons')}>
+			<a href="/dashboard/coupons">
+				<span class="dashboard__nav-item-icon">
+					<i class="fa fa-ticket-alt" aria-hidden="true"></i>
+				</span>
+				<span class="dashboard__nav-item-text">Coupons</span>
+			</a>
+		</li>
 		<li class:is-active={isActive('/dashboard/addresses')}>
 			<a href="/dashboard/addresses">
 				<span class="dashboard__nav-item-icon">
@@ -294,6 +374,12 @@
 					<i class="fa fa-wallet" aria-hidden="true"></i>
 				</span>
 				<span class="dashboard__nav-item-text">Payment Methods</span>
+			</a>
+		</li>
+		<li class:is-active={isActive('/dashboard/account')}>
+			<a href="/dashboard/account">
+				<span class="dashboard__nav-item-icon st-icon-settings"></span>
+				<span class="dashboard__nav-item-text">Account Details</span>
 			</a>
 		</li>
 		<li>
@@ -366,6 +452,56 @@
 
 	.dashboard__profile-nav-item:hover .dashboard__profile-name {
 		color: var(--sidebar-text-active);
+	}
+
+	/* Lighter blue highlight when on account section */
+	.dashboard__profile-nav-item.is-account-active {
+		background: rgba(9, 132, 174, 0.15);
+		border-radius: 8px;
+		padding: 10px 12px;
+		margin: 20px -12px 30px;
+	}
+
+	.dashboard__profile-nav-item.is-account-active .dashboard__profile-name {
+		color: #5bc0de;
+	}
+
+	.dashboard__profile-nav-item.is-account-active .dashboard__profile-photo {
+		border-color: #5bc0de;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SUBSCRIPTION INFO BOX (Simpler Trading style)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.subscription-info-box {
+		background: rgba(9, 132, 174, 0.1);
+		border-radius: 8px;
+		padding: 14px 16px;
+		margin-bottom: 20px;
+	}
+
+	.subscription-info-title {
+		color: var(--sidebar-text-active);
+		font-weight: 700;
+		font-size: 11px;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		margin: 0 0 8px 0;
+		opacity: 0.7;
+	}
+
+	.subscription-info-text {
+		color: var(--sidebar-text-active);
+		font-size: 13px;
+		margin: 0 0 4px 0;
+		line-height: 1.4;
+	}
+
+	.subscription-info-payment {
+		color: var(--sidebar-text);
+		font-size: 12px;
+		margin: 0;
 	}
 
 	.dashboard__profile-photo {

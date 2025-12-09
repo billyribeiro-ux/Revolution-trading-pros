@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Learning Center Page - WordPress Simpler Trading Exact
+	 * Learning Center Page - WordPress Revolution Trading Exact
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * URL: /dashboard/mastering-the-trade/learning-center

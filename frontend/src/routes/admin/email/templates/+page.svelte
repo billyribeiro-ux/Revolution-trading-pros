@@ -14,15 +14,23 @@
 		try {
 			const response = await emailTemplatesApi.list();
 			templates = (response.data as unknown as EmailTemplate[]) || [];
-		} catch (e) {
+		} catch (e: any) {
 			if (e instanceof AdminApiError) {
 				if (e.status === 401) {
 					goto('/login');
 					return;
 				}
-				error = e.message;
+				// Handle SQL errors with user-friendly messages
+				if (e.message.includes('SQLSTATE') || e.message.includes('Column not found') || e.message.includes('deleted_at')) {
+					error = 'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
+				} else {
+					error = e.message;
+				}
+			} else if (e?.message?.includes('SQLSTATE') || e?.message?.includes('deleted_at')) {
+				// Handle raw SQL errors
+				error = 'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
 			} else {
-				error = 'Failed to load templates';
+				error = 'Failed to load templates. Please refresh the page or contact support.';
 			}
 			console.error('Failed to load templates:', e);
 		} finally {
@@ -57,11 +65,22 @@
 	</div>
 
 	{#if loading}
-		<p class="text-muted">Loading...</p>
+		<div class="loading-state">
+			<div class="loader"></div>
+			<p>Loading templates...</p>
+		</div>
 	{:else if error}
-		<p class="alert alert-error">{error}</p>
+		<div class="alert alert-error">
+			<div class="error-content">
+				<span>{error}</span>
+				<button class="btn-retry" onclick={loadTemplates}>Retry</button>
+			</div>
+		</div>
 	{:else if templates.length === 0}
-		<p>No templates found. Create one to get started.</p>
+		<div class="empty-state">
+			<p>No templates found. Create one to get started.</p>
+			<button class="btn-primary" onclick={() => goto('/admin/email/templates/new')}>Create Template</button>
+		</div>
 	{:else}
 		<table class="templates-table">
 			<thead>
@@ -176,5 +195,56 @@
 		padding: 0.75rem 1rem;
 		border-radius: 6px;
 		margin-bottom: 1rem;
+		border: 1px solid rgba(239, 68, 68, 0.3);
+	}
+	.error-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.btn-retry {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		padding: 0.4rem 1rem;
+		border-radius: 6px;
+		cursor: pointer;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.btn-retry:hover {
+		background: rgba(239, 68, 68, 0.3);
+	}
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem 2rem;
+		color: #94a3b8;
+	}
+	.loader {
+		width: 40px;
+		height: 40px;
+		border: 3px solid rgba(99, 102, 241, 0.2);
+		border-top-color: #6366f1;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 1rem;
+	}
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 12px;
+		border: 1px solid rgba(148, 163, 184, 0.1);
+	}
+	.empty-state p {
+		color: #94a3b8;
+		margin-bottom: 1.5rem;
 	}
 </style>

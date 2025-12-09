@@ -558,10 +558,16 @@ class CouponManagementService {
 	}
 
 	/**
-	 * WebSocket setup
+	 * WebSocket setup - Optional, gracefully degrades if not available
 	 */
 	private setupWebSocket(): void {
 		if (!browser) return;
+		
+		// Skip WebSocket in development if not configured
+		if (!WS_URL || WS_URL === 'ws://localhost:8000') {
+			console.debug('[CouponService] WebSocket not configured, using polling fallback');
+			return;
+		}
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_URL}/coupons`);
@@ -575,16 +581,16 @@ class CouponManagementService {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				console.error('[CouponService] WebSocket error:', error);
+			this.wsConnection.onerror = () => {
+				console.debug('[CouponService] WebSocket not available, using polling');
 			};
 
 			this.wsConnection.onclose = () => {
 				console.debug('[CouponService] WebSocket disconnected');
-				setTimeout(() => this.setupWebSocket(), 5000);
+				// Don't auto-reconnect if WebSocket isn't properly configured
 			};
 		} catch (error) {
-			console.error('[CouponService] Failed to setup WebSocket:', error);
+			console.debug('[CouponService] WebSocket not available');
 		}
 	}
 
@@ -683,19 +689,36 @@ class CouponManagementService {
 	}
 
 	/**
-	 * Load initial data
+	 * Load initial data - gracefully handles missing endpoints
 	 */
 	private async loadInitialData(): Promise<void> {
 		try {
-			const [coupons, campaigns] = await Promise.all([this.getAllCoupons(), this.getCampaigns()]);
+			// Load coupons first
+			let coupons: EnhancedCoupon[] = [];
+			try {
+				coupons = await this.getAllCoupons();
+			} catch (error) {
+				console.debug('[CouponService] Coupons endpoint not available');
+			}
+
+			// Try to load campaigns (optional endpoint)
+			try {
+				await this.getCampaigns();
+			} catch (error) {
+				console.debug('[CouponService] Campaigns endpoint not available');
+			}
 
 			// Load metrics for active coupons
 			const activeCoupons = coupons.filter((c) => c.isActive);
 			for (const coupon of activeCoupons.slice(0, 10)) {
-				await this.getCouponMetrics(coupon.id);
+				try {
+					await this.getCouponMetrics(coupon.id);
+				} catch {
+					// Metrics endpoint may not exist
+				}
 			}
 		} catch (error) {
-			console.error('[CouponService] Failed to load initial data:', error);
+			console.debug('[CouponService] Initial data load skipped:', error);
 		}
 	}
 
@@ -1074,10 +1097,16 @@ class CouponManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async getCampaigns(): Promise<Campaign[]> {
-		const response = await this.authFetch<{ campaigns: Campaign[] }>(`${API_URL}/admin/campaigns`);
-
-		this.campaigns.set(response.campaigns);
-		return response.campaigns;
+		try {
+			const response = await this.authFetch<{ campaigns: Campaign[] }>(`${API_URL}/admin/campaigns`);
+			this.campaigns.set(response.campaigns || []);
+			return response.campaigns || [];
+		} catch (error) {
+			// Campaigns endpoint may not be implemented yet
+			console.debug('[CouponService] Campaigns not available');
+			this.campaigns.set([]);
+			return [];
+		}
 	}
 
 	async createCampaign(campaign: Partial<Campaign>): Promise<Campaign> {

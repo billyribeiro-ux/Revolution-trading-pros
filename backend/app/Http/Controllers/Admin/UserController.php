@@ -159,4 +159,33 @@ class UserController extends Controller
             'message' => 'Admin user deleted successfully',
         ]);
     }
+
+    /**
+     * Get admin user statistics
+     */
+    public function stats()
+    {
+        $totalAdmins = User::whereHas('roles', function ($q) {
+            $q->whereIn('name', ['admin', 'super-admin']);
+        })->count();
+
+        $superAdmins = User::whereHas('roles', function ($q) {
+            $q->where('name', 'super-admin');
+        })->count();
+
+        $regularAdmins = User::whereHas('roles', function ($q) {
+            $q->where('name', 'admin');
+        })->count();
+
+        $newThisMonth = User::whereHas('roles', function ($q) {
+            $q->whereIn('name', ['admin', 'super-admin']);
+        })->where('created_at', '>=', now()->startOfMonth())->count();
+
+        return response()->json([
+            'total_admins' => $totalAdmins,
+            'super_admins' => $superAdmins,
+            'regular_admins' => $regularAdmins,
+            'new_this_month' => $newThisMonth,
+        ]);
+    }
 }

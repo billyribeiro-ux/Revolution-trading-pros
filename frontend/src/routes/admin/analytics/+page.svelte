@@ -36,8 +36,9 @@
 	let isConnected = $state(false);
 
 	// Helper to get KPI value by key
-	function getKpiValue(kpis: typeof dashboardData.kpis, key: string): number {
-		const kpi = kpis?.find(k => k.kpi_key === key);
+	function getKpiValue(kpis: import('$lib/api/analytics').KpiValue[] | undefined, key: string): number {
+		if (!kpis) return 0;
+		const kpi = kpis.find(k => k.kpi_key === key);
 		return kpi?.value || 0;
 	}
 

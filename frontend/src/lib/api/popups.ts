@@ -572,10 +572,16 @@ class PopupEngagementService {
 	}
 
 	/**
-	 * WebSocket setup
+	 * WebSocket setup - Optional, gracefully degrades if not available
 	 */
 	private setupWebSocket(): void {
 		if (!browser || !WS_URL) return;
+
+		// Skip WebSocket in development if not configured
+		if (WS_URL === 'ws://localhost:8000') {
+			console.debug('[PopupService] WebSocket not configured, using polling fallback');
+			return;
+		}
 
 		try {
 			this.wsConnection = new WebSocket(`${WS_URL}/popups`);
@@ -589,16 +595,16 @@ class PopupEngagementService {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				console.error('[PopupService] WebSocket error:', error);
+			this.wsConnection.onerror = () => {
+				console.debug('[PopupService] WebSocket not available, using polling');
 			};
 
 			this.wsConnection.onclose = () => {
 				console.debug('[PopupService] WebSocket disconnected');
-				setTimeout(() => this.setupWebSocket(), 5000);
+				// Don't auto-reconnect if WebSocket isn't properly configured
 			};
 		} catch (error) {
-			console.error('[PopupService] Failed to setup WebSocket:', error);
+			console.debug('[PopupService] WebSocket not available');
 		}
 	}
 
@@ -852,7 +858,9 @@ class PopupEngagementService {
 			const response = await fetch(`${API_BASE}/popups/active?page=${encodeURIComponent(page)}`);
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch active popups');
+				// Endpoint may not exist yet
+				console.debug('[PopupService] Active popups endpoint not available');
+				return;
 			}
 
 			const data = await response.json();
@@ -864,7 +872,8 @@ class PopupEngagementService {
 			// Process popups
 			this.processActivePopups(popups);
 		} catch (error) {
-			console.error('[PopupService] Failed to load active popups:', error);
+			// Gracefully handle missing endpoint
+			console.debug('[PopupService] Popups not available');
 		}
 	}
 

@@ -3,7 +3,7 @@
 	 * Dashboard Layout - Svelte 5 / SvelteKit Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Exact match of WordPress Simpler Trading dashboard structure:
+	 * Exact match of WordPress Revolution Trading dashboard structure:
 	 * - .dashboard (root container)
 	 * - .dashboard__sidebar (aside - left navigation)
 	 * - .dashboard__main (main content area)

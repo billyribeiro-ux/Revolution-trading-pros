@@ -45,20 +45,19 @@
 	import type { User } from '$lib/stores/auth';
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission, PERMISSIONS } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
-	import {
-		IconDashboard,
-		IconForms,
-		IconMail,
-		IconTicket,
-		IconUsers,
-		IconSettings,
-		IconChevronDown,
-		IconLogout,
-		IconEye,
-		IconAlertTriangle,
-		IconRefresh,
-		IconCrown
-	} from '@tabler/icons-svelte';
+	// Individual Tabler icon imports (Svelte 5 compatible)
+	import IconDashboard from '@tabler/icons-svelte/icons/dashboard';
+	import IconForms from '@tabler/icons-svelte/icons/forms';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconLogout from '@tabler/icons-svelte/icons/logout';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconCrown from '@tabler/icons-svelte/icons/crown';
 
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)
@@ -345,6 +344,11 @@
 
 		clickOutsideTimeout = setTimeout(() => {
 			const target = event.target as HTMLElement;
+
+			// Don't close if clicking on trigger buttons (they handle their own toggle)
+			if (target.closest('.quick-menu-trigger') || target.closest('.user-menu-trigger')) {
+				return;
+			}
 
 			// Check if click is outside toolbar
 			if (!target.closest('.admin-toolbar')) {
@@ -1072,10 +1076,10 @@
 		border-radius: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 		padding: 0.5rem;
-		z-index: 10000;
+		z-index: 10200; /* Must be higher than toolbar (10100) */
 		animation: slideDown var(--transition-normal) ease;
 		will-change: transform, opacity;
-		contain: layout style paint;
+		/* Removed contain: layout style paint - it creates stacking context issues */
 	}
 
 	.dropdown-menu.right {

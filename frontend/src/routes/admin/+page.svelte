@@ -42,16 +42,24 @@
 		IconDeviceMobile,
 		IconDeviceDesktopAnalytics,
 		IconFileAnalytics,
-		IconExternalLink
+		IconExternalLink,
+		IconPlugConnected
 	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
 	import { api } from '$lib/api/config';
+	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
 
 	let isLoading = true;
 	let lastUpdated: Date | null = null;
 	let error: string | null = null;
 	let selectedPeriod = '30d';
 	let mounted = false;
+
+	// Connection status
+	let analyticsConnected = false;
+	let seoConnected = false;
+	let hasRealAnalyticsData = false;
+	let hasRealSeoData = false;
 
 	// Real stats data
 	let stats = {
@@ -63,31 +71,31 @@
 		totalProducts: 0
 	};
 
-	// Analytics metrics
+	// Analytics metrics - ALL VALUES START AT NULL (no fake data!)
 	let analytics = {
-		sessions: { value: 0, change: 12.5, trend: 'up' as 'up' | 'down' },
-		pageviews: { value: 0, change: 8.3, trend: 'up' as 'up' | 'down' },
-		avgSessionDuration: { value: '0s', change: 5.2, trend: 'up' as 'up' | 'down' },
-		totalUsers: { value: 0, change: 15.7, trend: 'up' as 'up' | 'down' },
-		bounceRate: { value: 42.3, change: -3.1, trend: 'up' as 'up' | 'down' },
-		newUsers: { value: 0, change: 22.4, trend: 'up' as 'up' | 'down' }
+		sessions: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
+		pageviews: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
+		avgSessionDuration: { value: null as string | null, change: 0, trend: 'up' as 'up' | 'down' },
+		totalUsers: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
+		bounceRate: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' },
+		newUsers: { value: null as number | null, change: 0, trend: 'up' as 'up' | 'down' }
 	};
 
-	// SEO metrics
+	// SEO metrics - ALL VALUES START AT NULL (no fake data!)
 	let seoMetrics = {
-		searchTraffic: { value: 0, change: 18.5 },
-		totalImpressions: { value: 0, change: 24.2 },
-		totalClicks: { value: 0, change: 15.8 },
-		avgCTR: { value: 3.2, change: 0.4 },
-		totalKeywords: { value: 0, change: 12 },
-		avgPosition: { value: 14.2, change: -2.3 },
-		indexedPages: { value: 0, change: 5 },
-		error404Count: { value: 0, hits: 0 },
-		redirections: { count: 0, hits: 0 }
+		searchTraffic: { value: null as number | null, change: 0 },
+		totalImpressions: { value: null as number | null, change: 0 },
+		totalClicks: { value: null as number | null, change: 0 },
+		avgCTR: { value: null as number | null, change: 0 },
+		totalKeywords: { value: null as number | null, change: 0 },
+		avgPosition: { value: null as number | null, change: 0 },
+		indexedPages: { value: null as number | null, change: 0 },
+		error404Count: { value: null as number | null, hits: 0 },
+		redirections: { count: null as number | null, hits: 0 }
 	};
 
-	// Device breakdown
-	let deviceBreakdown = { desktop: 58, mobile: 36, tablet: 6 };
+	// Device breakdown - null until real data
+	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } | null = null;
 
 	// Top pages
 	let topPages: { path: string; views: number; change: number }[] = [];
@@ -108,15 +116,18 @@
 	async function fetchDashboardStats() {
 		isLoading = true;
 		error = null;
-		
+
+		// Load connection status first
+		await connections.load();
+
 		try {
 			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
-				api.get('/api/admin/members/stats'),
-				api.get('/api/admin/subscriptions/plans/stats'),
-				api.get('/api/admin/coupons'),
-				api.get('/api/admin/posts/stats'),
-				api.get('/api/admin/products/stats'),
-				api.get(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
+				api.get('/admin/members/stats'),
+				api.get('/admin/subscriptions/plans/stats'),
+				api.get('/admin/coupons'),
+				api.get('/admin/posts/stats'),
+				api.get('/admin/products/stats'),
+				analyticsConnected ? api.get(`/admin/analytics/dashboard?period=${selectedPeriod}`) : Promise.reject('Not connected')
 			]);
 
 			if (membersRes.status === 'fulfilled') {
@@ -126,7 +137,7 @@
 				else stats.totalMembers = newMembers;
 				stats.activeSubscriptions = memberData?.subscriptions?.active || 0;
 			}
-			
+
 			if (subscriptionsRes.status === 'fulfilled') {
 				const subData = subscriptionsRes.value?.data || subscriptionsRes.value;
 				if (!stats.activeSubscriptions) {
@@ -134,69 +145,106 @@
 				}
 				stats.monthlyRevenue = subData?.monthly_revenue || subData?.mrr || 0;
 			}
-			
+
 			if (couponsRes.status === 'fulfilled') {
 				const couponsData = couponsRes.value;
 				const coupons = couponsData?.coupons || couponsData?.data || couponsData || [];
-				stats.activeCoupons = Array.isArray(coupons) 
-					? coupons.filter((c: any) => c.is_active).length 
+				stats.activeCoupons = Array.isArray(coupons)
+					? coupons.filter((c: any) => c.is_active).length
 					: couponsData?.total || 0;
 			}
-			
+
 			if (postsRes.status === 'fulfilled') {
 				const postsData = postsRes.value;
 				stats.totalPosts = postsData?.total || postsData?.data?.total || postsData?.posts?.length || 0;
 			}
-			
+
 			if (productsRes.status === 'fulfilled') {
 				const productsData = productsRes.value;
 				stats.totalProducts = productsData?.total || productsData?.data?.total || 0;
 			}
 
-			if (analyticsRes.status === 'fulfilled') {
+			// ONLY set analytics data if we have REAL data from a connected service
+			if (analyticsRes.status === 'fulfilled' && analyticsConnected) {
 				const data = analyticsRes.value?.data || analyticsRes.value;
 				if (data?.kpis) {
-					const sessionsVal = data.kpis.sessions?.value || 0;
-					if (mounted) animateValue(analytics.sessions.value, sessionsVal, 800, v => analytics.sessions.value = v);
-					else analytics.sessions.value = sessionsVal;
-					analytics.sessions.change = data.kpis.sessions?.change || 12.5;
-					analytics.sessions.trend = analytics.sessions.change >= 0 ? 'up' : 'down';
+					hasRealAnalyticsData = true;
 
-					const pageviewsVal = data.kpis.pageviews?.value || 0;
-					if (mounted) animateValue(analytics.pageviews.value, pageviewsVal, 800, v => analytics.pageviews.value = v);
-					else analytics.pageviews.value = pageviewsVal;
-					analytics.pageviews.change = data.kpis.pageviews?.change || 8.3;
-					analytics.pageviews.trend = analytics.pageviews.change >= 0 ? 'up' : 'down';
+					// Sessions - ONLY use real values, no fallbacks
+					if (data.kpis.sessions?.value !== undefined) {
+						const sessionsVal = data.kpis.sessions.value;
+						if (mounted && analytics.sessions.value !== null) {
+							animateValue(analytics.sessions.value, sessionsVal, 800, v => analytics.sessions.value = v);
+						} else {
+							analytics.sessions.value = sessionsVal;
+						}
+						analytics.sessions.change = data.kpis.sessions.change ?? 0;
+						analytics.sessions.trend = analytics.sessions.change >= 0 ? 'up' : 'down';
+					}
 
-					const usersVal = data.kpis.unique_visitors?.value || data.kpis.users?.value || 0;
-					if (mounted) animateValue(analytics.totalUsers.value, usersVal, 800, v => analytics.totalUsers.value = v);
-					else analytics.totalUsers.value = usersVal;
-					analytics.totalUsers.change = data.kpis.unique_visitors?.change || 15.7;
-					analytics.totalUsers.trend = analytics.totalUsers.change >= 0 ? 'up' : 'down';
+					// Pageviews - ONLY use real values
+					if (data.kpis.pageviews?.value !== undefined) {
+						const pageviewsVal = data.kpis.pageviews.value;
+						if (mounted && analytics.pageviews.value !== null) {
+							animateValue(analytics.pageviews.value, pageviewsVal, 800, v => analytics.pageviews.value = v);
+						} else {
+							analytics.pageviews.value = pageviewsVal;
+						}
+						analytics.pageviews.change = data.kpis.pageviews.change ?? 0;
+						analytics.pageviews.trend = analytics.pageviews.change >= 0 ? 'up' : 'down';
+					}
 
-					const newUsersVal = data.kpis.new_users?.value || 0;
-					if (mounted) animateValue(analytics.newUsers.value, newUsersVal, 800, v => analytics.newUsers.value = v);
-					else analytics.newUsers.value = newUsersVal;
-					analytics.newUsers.change = data.kpis.new_users?.change || 22.4;
-					analytics.newUsers.trend = analytics.newUsers.change >= 0 ? 'up' : 'down';
+					// Users - ONLY use real values
+					const usersData = data.kpis.unique_visitors || data.kpis.users;
+					if (usersData?.value !== undefined) {
+						const usersVal = usersData.value;
+						if (mounted && analytics.totalUsers.value !== null) {
+							animateValue(analytics.totalUsers.value, usersVal, 800, v => analytics.totalUsers.value = v);
+						} else {
+							analytics.totalUsers.value = usersVal;
+						}
+						analytics.totalUsers.change = usersData.change ?? 0;
+						analytics.totalUsers.trend = analytics.totalUsers.change >= 0 ? 'up' : 'down';
+					}
 
-					analytics.bounceRate.value = data.kpis.bounce_rate?.value || 42.3;
-					analytics.bounceRate.change = data.kpis.bounce_rate?.change || -3.1;
-					analytics.bounceRate.trend = analytics.bounceRate.change <= 0 ? 'up' : 'down';
+					// New Users - ONLY use real values
+					if (data.kpis.new_users?.value !== undefined) {
+						const newUsersVal = data.kpis.new_users.value;
+						if (mounted && analytics.newUsers.value !== null) {
+							animateValue(analytics.newUsers.value, newUsersVal, 800, v => analytics.newUsers.value = v);
+						} else {
+							analytics.newUsers.value = newUsersVal;
+						}
+						analytics.newUsers.change = data.kpis.new_users.change ?? 0;
+						analytics.newUsers.trend = analytics.newUsers.change >= 0 ? 'up' : 'down';
+					}
 
-					const duration = data.kpis.avg_session_duration?.value || 0;
-					analytics.avgSessionDuration.value = formatDuration(duration);
-					analytics.avgSessionDuration.change = data.kpis.avg_session_duration?.change || 5.2;
-					analytics.avgSessionDuration.trend = analytics.avgSessionDuration.change >= 0 ? 'up' : 'down';
+					// Bounce Rate - ONLY use real values (NO MORE 42.3% FAKE DATA!)
+					if (data.kpis.bounce_rate?.value !== undefined) {
+						analytics.bounceRate.value = data.kpis.bounce_rate.value;
+						analytics.bounceRate.change = data.kpis.bounce_rate.change ?? 0;
+						analytics.bounceRate.trend = analytics.bounceRate.change <= 0 ? 'up' : 'down';
+					}
+
+					// Session Duration - ONLY use real values
+					if (data.kpis.avg_session_duration?.value !== undefined) {
+						analytics.avgSessionDuration.value = formatDuration(data.kpis.avg_session_duration.value);
+						analytics.avgSessionDuration.change = data.kpis.avg_session_duration.change ?? 0;
+						analytics.avgSessionDuration.trend = analytics.avgSessionDuration.change >= 0 ? 'up' : 'down';
+					}
 				}
 				if (data?.top_pages) topPages = data.top_pages.slice(0, 5);
-				if (data?.seo) {
-					seoMetrics.searchTraffic.value = data.seo.search_traffic || 0;
-					seoMetrics.totalImpressions.value = data.seo.impressions || 0;
-					seoMetrics.totalClicks.value = data.seo.clicks || 0;
-					seoMetrics.totalKeywords.value = data.seo.keywords || 0;
-					seoMetrics.avgPosition.value = data.seo.avg_position || 14.2;
-					seoMetrics.indexedPages.value = data.seo.indexed_pages || 0;
+
+				// SEO data - ONLY use real values (NO MORE FAKE DATA!)
+				if (data?.seo && seoConnected) {
+					hasRealSeoData = true;
+					if (data.seo.search_traffic !== undefined) seoMetrics.searchTraffic.value = data.seo.search_traffic;
+					if (data.seo.impressions !== undefined) seoMetrics.totalImpressions.value = data.seo.impressions;
+					if (data.seo.clicks !== undefined) seoMetrics.totalClicks.value = data.seo.clicks;
+					if (data.seo.keywords !== undefined) seoMetrics.totalKeywords.value = data.seo.keywords;
+					if (data.seo.avg_position !== undefined) seoMetrics.avgPosition.value = data.seo.avg_position;
+					if (data.seo.indexed_pages !== undefined) seoMetrics.indexedPages.value = data.seo.indexed_pages;
+					if (data.seo.avg_ctr !== undefined) seoMetrics.avgCTR.value = data.seo.avg_ctr;
 				}
 			}
 
@@ -227,9 +275,28 @@
 		fetchDashboardStats();
 	}
 
+	// Subscribe to connection status
+	let unsubAnalytics: (() => void) | null = null;
+	let unsubSeo: (() => void) | null = null;
+
 	onMount(() => {
 		mounted = true;
+
+		// Subscribe to connection status changes
+		unsubAnalytics = isAnalyticsConnected.subscribe((connected) => {
+			analyticsConnected = connected;
+		});
+		unsubSeo = isSeoConnected.subscribe((connected) => {
+			seoConnected = connected;
+		});
+
 		fetchDashboardStats();
+
+		// Cleanup on destroy
+		return () => {
+			if (unsubAnalytics) unsubAnalytics();
+			if (unsubSeo) unsubSeo();
+		};
 	});
 </script>
 
@@ -276,51 +343,79 @@
 					<span class="panel-subtitle">Traffic & engagement overview</span>
 				</div>
 			</div>
-			<div class="panel-badge">
-				<IconCalendar size={14} />
-				Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} Days
-			</div>
+			{#if analyticsConnected}
+				<div class="panel-badge connected">
+					<IconCalendar size={14} />
+					Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} Days
+				</div>
+			{:else}
+				<a href="/admin/connections" class="panel-badge not-connected">
+					<IconPlugConnected size={14} />
+					Connect Analytics
+				</a>
+			{/if}
 		</div>
 
-		<div class="metrics-grid">
-			{#each [
-				{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' },
-				{ label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' },
-				{ label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true },
-				{ label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' },
-				{ label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true },
-				{ label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }
-			] as metric, i}
-				<div class="metric-card {metric.color}" in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}>
-					<div class="metric-icon-wrap {metric.color}">
-						<svelte:component this={metric.icon} size={20} />
-					</div>
-					<div class="metric-body">
-						<span class="metric-label">{metric.label}</span>
-						<div class="metric-value-row">
-							<span class="metric-value">
-								{#if isLoading}
-									<span class="loading-dots">...</span>
-								{:else if metric.isText}
-									{metric.value}
-								{:else}
-									{formatNumber(typeof metric.value === 'number' ? metric.value : 0)}{metric.suffix || ''}
+		{#if !analyticsConnected}
+			<!-- Not Connected State -->
+			<div class="not-connected-banner">
+				<div class="not-connected-icon">
+					<IconChartBar size={32} />
+				</div>
+				<div class="not-connected-text">
+					<h3>Analytics Not Connected</h3>
+					<p>Connect Google Analytics, Mixpanel, or another analytics service to see real traffic data.</p>
+				</div>
+				<a href="/admin/connections" class="connect-btn">
+					<IconPlugConnected size={16} />
+					Connect Service
+				</a>
+			</div>
+		{:else}
+			<div class="metrics-grid">
+				{#each [
+					{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' },
+					{ label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' },
+					{ label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true },
+					{ label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' },
+					{ label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true },
+					{ label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }
+				] as metric, i}
+					<div class="metric-card {metric.color}" in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}>
+						<div class="metric-icon-wrap {metric.color}">
+							<svelte:component this={metric.icon} size={20} />
+						</div>
+						<div class="metric-body">
+							<span class="metric-label">{metric.label}</span>
+							<div class="metric-value-row">
+								<span class="metric-value">
+									{#if isLoading}
+										<span class="loading-dots">...</span>
+									{:else if metric.value === null}
+										<span class="no-data">—</span>
+									{:else if metric.isText}
+										{metric.value}
+									{:else}
+										{formatNumber(typeof metric.value === 'number' ? metric.value : 0)}{metric.suffix || ''}
+									{/if}
+								</span>
+								{#if metric.value !== null && metric.change !== 0}
+									<div class="metric-trend" class:positive={metric.trend === 'up'} class:negative={metric.trend === 'down'}>
+										{#if metric.trend === 'up'}
+											<IconArrowUpRight size={14} />
+										{:else}
+											<IconArrowDownRight size={14} />
+										{/if}
+										<span>{Math.abs(metric.change).toFixed(1)}%</span>
+									</div>
 								{/if}
-							</span>
-							<div class="metric-trend" class:positive={metric.trend === 'up'} class:negative={metric.trend === 'down'}>
-								{#if metric.trend === 'up'}
-									<IconArrowUpRight size={14} />
-								{:else}
-									<IconArrowDownRight size={14} />
-								{/if}
-								<span>{Math.abs(metric.change).toFixed(1)}%</span>
 							</div>
 						</div>
+						<div class="metric-glow {metric.color}"></div>
 					</div>
-					<div class="metric-glow {metric.color}"></div>
-				</div>
-			{/each}
-		</div>
+				{/each}
+			</div>
+		{/if}
 	</section>
 
 	<!-- SEO & Site Health Row -->
@@ -337,91 +432,127 @@
 						<span class="panel-subtitle">Search engine visibility</span>
 					</div>
 				</div>
-				<a href="/admin/seo" class="panel-link">
-					View Details <IconExternalLink size={14} />
-				</a>
+				{#if seoConnected}
+					<a href="/admin/seo" class="panel-link">
+						View Details <IconExternalLink size={14} />
+					</a>
+				{:else}
+					<a href="/admin/connections" class="panel-badge not-connected">
+						<IconPlugConnected size={14} />
+						Connect SEO Tools
+					</a>
+				{/if}
 			</div>
 
-			<div class="seo-metrics-grid">
-				<div class="seo-metric-card primary">
-					<div class="seo-metric-header">
-						<IconSearch size={18} />
-						<span>Search Traffic</span>
+			{#if !seoConnected}
+				<!-- Not Connected State -->
+				<div class="not-connected-banner">
+					<div class="not-connected-icon">
+						<IconBrandGoogle size={32} />
 					</div>
-					<div class="seo-metric-value">{formatNumber(seoMetrics.searchTraffic.value)}</div>
-					<div class="seo-metric-change positive">
-						<IconArrowUpRight size={12} />
-						+{seoMetrics.searchTraffic.change}%
+					<div class="not-connected-text">
+						<h3>SEO Tools Not Connected</h3>
+						<p>Connect Google Search Console or another SEO tool to see real search performance data.</p>
 					</div>
-					<div class="seo-metric-bar">
-						<div class="seo-metric-bar-fill" style="width: 75%"></div>
-					</div>
+					<a href="/admin/connections" class="connect-btn">
+						<IconPlugConnected size={16} />
+						Connect Service
+					</a>
 				</div>
-
-				<div class="seo-metric-card">
-					<div class="seo-metric-header">
-						<IconEye size={18} />
-						<span>Impressions</span>
-					</div>
-					<div class="seo-metric-value">{formatNumber(seoMetrics.totalImpressions.value)}</div>
-					<div class="seo-metric-change positive">
-						<IconArrowUpRight size={12} />
-						+{seoMetrics.totalImpressions.change}%
-					</div>
-				</div>
-
-				<div class="seo-metric-card">
-					<div class="seo-metric-header">
-						<IconClick size={18} />
-						<span>Clicks</span>
-					</div>
-					<div class="seo-metric-value">{formatNumber(seoMetrics.totalClicks.value)}</div>
-					<div class="seo-metric-change positive">
-						<IconArrowUpRight size={12} />
-						+{seoMetrics.totalClicks.change}%
-					</div>
-				</div>
-
-				<div class="seo-metric-card">
-					<div class="seo-metric-header">
-						<IconTarget size={18} />
-						<span>Avg CTR</span>
-					</div>
-					<div class="seo-metric-value">{seoMetrics.avgCTR.value.toFixed(1)}%</div>
-					<div class="seo-metric-change positive">
-						<IconArrowUpRight size={12} />
-						+{seoMetrics.avgCTR.change}%
-					</div>
-				</div>
-
-				<div class="seo-metric-card">
-					<div class="seo-metric-header">
-						<IconChartLine size={18} />
-						<span>Keywords</span>
-					</div>
-					<div class="seo-metric-value">{formatNumber(seoMetrics.totalKeywords.value)}</div>
-					<div class="seo-metric-change positive">
-						<IconArrowUpRight size={12} />
-						+{seoMetrics.totalKeywords.change}
-					</div>
-				</div>
-
-				<div class="seo-metric-card">
-					<div class="seo-metric-header">
-						<IconTrendingUp size={18} />
-						<span>Avg Position</span>
-					</div>
-					<div class="seo-metric-value">{seoMetrics.avgPosition.value.toFixed(1)}</div>
-					<div class="seo-metric-change" class:positive={seoMetrics.avgPosition.change < 0} class:negative={seoMetrics.avgPosition.change > 0}>
-						{#if seoMetrics.avgPosition.change < 0}
-							<IconArrowUpRight size={12} />
-						{:else}
-							<IconArrowDownRight size={12} />
+			{:else}
+				<div class="seo-metrics-grid">
+					<div class="seo-metric-card primary">
+						<div class="seo-metric-header">
+							<IconSearch size={18} />
+							<span>Search Traffic</span>
+						</div>
+						<div class="seo-metric-value">{seoMetrics.searchTraffic.value !== null ? formatNumber(seoMetrics.searchTraffic.value) : '—'}</div>
+						{#if seoMetrics.searchTraffic.value !== null && seoMetrics.searchTraffic.change !== 0}
+							<div class="seo-metric-change positive">
+								<IconArrowUpRight size={12} />
+								+{seoMetrics.searchTraffic.change}%
+							</div>
 						{/if}
-						{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
+						<div class="seo-metric-bar">
+							<div class="seo-metric-bar-fill" style="width: {seoMetrics.searchTraffic.value !== null ? '75%' : '0%'}"></div>
+						</div>
+					</div>
+
+					<div class="seo-metric-card">
+						<div class="seo-metric-header">
+							<IconEye size={18} />
+							<span>Impressions</span>
+						</div>
+						<div class="seo-metric-value">{seoMetrics.totalImpressions.value !== null ? formatNumber(seoMetrics.totalImpressions.value) : '—'}</div>
+						{#if seoMetrics.totalImpressions.value !== null && seoMetrics.totalImpressions.change !== 0}
+							<div class="seo-metric-change positive">
+								<IconArrowUpRight size={12} />
+								+{seoMetrics.totalImpressions.change}%
+							</div>
+						{/if}
+					</div>
+
+					<div class="seo-metric-card">
+						<div class="seo-metric-header">
+							<IconClick size={18} />
+							<span>Clicks</span>
+						</div>
+						<div class="seo-metric-value">{seoMetrics.totalClicks.value !== null ? formatNumber(seoMetrics.totalClicks.value) : '—'}</div>
+						{#if seoMetrics.totalClicks.value !== null && seoMetrics.totalClicks.change !== 0}
+							<div class="seo-metric-change positive">
+								<IconArrowUpRight size={12} />
+								+{seoMetrics.totalClicks.change}%
+							</div>
+						{/if}
+					</div>
+
+					<div class="seo-metric-card">
+						<div class="seo-metric-header">
+							<IconTarget size={18} />
+							<span>Avg CTR</span>
+						</div>
+						<div class="seo-metric-value">{seoMetrics.avgCTR.value !== null ? seoMetrics.avgCTR.value.toFixed(1) + '%' : '—'}</div>
+						{#if seoMetrics.avgCTR.value !== null && seoMetrics.avgCTR.change !== 0}
+							<div class="seo-metric-change positive">
+								<IconArrowUpRight size={12} />
+								+{seoMetrics.avgCTR.change}%
+							</div>
+						{/if}
+					</div>
+
+					<div class="seo-metric-card">
+						<div class="seo-metric-header">
+							<IconChartLine size={18} />
+							<span>Keywords</span>
+						</div>
+						<div class="seo-metric-value">{seoMetrics.totalKeywords.value !== null ? formatNumber(seoMetrics.totalKeywords.value) : '—'}</div>
+						{#if seoMetrics.totalKeywords.value !== null && seoMetrics.totalKeywords.change !== 0}
+							<div class="seo-metric-change positive">
+								<IconArrowUpRight size={12} />
+								+{seoMetrics.totalKeywords.change}
+							</div>
+						{/if}
+					</div>
+
+					<div class="seo-metric-card">
+						<div class="seo-metric-header">
+							<IconTrendingUp size={18} />
+							<span>Avg Position</span>
+						</div>
+						<div class="seo-metric-value">{seoMetrics.avgPosition.value !== null ? seoMetrics.avgPosition.value.toFixed(1) : '—'}</div>
+						{#if seoMetrics.avgPosition.value !== null && seoMetrics.avgPosition.change !== 0}
+							<div class="seo-metric-change" class:positive={seoMetrics.avgPosition.change < 0} class:negative={seoMetrics.avgPosition.change > 0}>
+								{#if seoMetrics.avgPosition.change < 0}
+									<IconArrowUpRight size={12} />
+								{:else}
+									<IconArrowDownRight size={12} />
+								{/if}
+								{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
+							</div>
+						{/if}
 					</div>
 				</div>
-			</div>
+			{/if}
 		</section>
 
 		<!-- Site Health -->
@@ -580,6 +711,90 @@
 </div>
 
 <style>
+	/* Not Connected Banner Styles */
+	.not-connected-banner {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		padding: 2rem;
+		background: rgba(251, 146, 60, 0.05);
+		border: 1px dashed rgba(251, 146, 60, 0.3);
+		border-radius: 12px;
+		margin-top: 0.5rem;
+	}
+
+	.not-connected-icon {
+		width: 64px;
+		height: 64px;
+		background: rgba(251, 146, 60, 0.1);
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fb923c;
+		flex-shrink: 0;
+	}
+
+	.not-connected-text {
+		flex: 1;
+	}
+
+	.not-connected-text h3 {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0 0 0.25rem 0;
+	}
+
+	.not-connected-text p {
+		font-size: 0.875rem;
+		color: #94a3b8;
+		margin: 0;
+	}
+
+	.connect-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: linear-gradient(135deg, #f97316, #ea580c);
+		color: white;
+		text-decoration: none;
+		border-radius: 10px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		transition: all 0.2s;
+		flex-shrink: 0;
+	}
+
+	.connect-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+	}
+
+	.panel-badge.not-connected {
+		background: rgba(251, 146, 60, 0.1);
+		border: 1px solid rgba(251, 146, 60, 0.3);
+		color: #fb923c;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.panel-badge.not-connected:hover {
+		background: rgba(251, 146, 60, 0.2);
+	}
+
+	.panel-badge.connected {
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.no-data {
+		color: #64748b;
+		font-weight: 400;
+	}
+
 	/* Base Container */
 	.dashboard-container {
 		max-width: 1600px;

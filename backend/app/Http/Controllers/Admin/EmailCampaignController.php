@@ -401,11 +401,16 @@ class EmailCampaignController extends Controller
     {
         $campaign = EmailCampaign::findOrFail((int) $id);
 
-        // Get hourly stats for the last 7 days
+        // Get hourly stats for the last 7 days (database-agnostic)
+        $driver = DB::connection()->getDriverName();
+        $hourExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%H', created_at) AS INTEGER)"
+            : "HOUR(created_at)";
+
         $hourlyStats = DB::table('email_logs')
             ->where('campaign_id', $id)
             ->where('created_at', '>=', now()->subDays(7))
-            ->selectRaw('DATE(created_at) as date, HOUR(created_at) as hour, event_type, COUNT(*) as count')
+            ->selectRaw("DATE(created_at) as date, {$hourExpr} as hour, event_type, COUNT(*) as count")
             ->groupBy('date', 'hour', 'event_type')
             ->get();
 

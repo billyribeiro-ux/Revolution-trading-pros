@@ -4,7 +4,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Lists all available alert services with comparison.
-	 * Matches Simpler Trading's product listing style.
+	 * Matches Revolution Trading's product listing style.
 	 *
 	 * @version 1.0.0 (December 2025)
 	 */
@@ -52,45 +52,48 @@
 		}
 	];
 
-	// Animation observer
-	let observer: IntersectionObserver;
-
-	function reveal(node: HTMLElement, params: { delay?: number } = {}) {
-		node.classList.add('opacity-100', 'translate-y-0');
-
-		if (typeof window !== 'undefined' && observer) {
-			node.classList.remove('opacity-100', 'translate-y-0');
-			node.classList.add('opacity-0', 'translate-y-8');
-			node.dataset.delay = (params.delay || 0).toString();
-			observer.observe(node);
+	// --- Apple ICT9+ Scroll Animations ---
+	let mounted = $state(false);
+	
+	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
+		const delay = params.delay ?? 0;
+		const translateY = params.y ?? 30;
+		
+		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			return;
 		}
-
-		return {
-			destroy() {
-				if (observer) observer.unobserve(node);
-			}
-		};
-	}
-
-	onMount(() => {
-		observer = new IntersectionObserver(
+		
+		node.style.opacity = '0';
+		node.style.transform = `translateY(${translateY}px)`;
+		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+		node.style.transitionDelay = `${delay}ms`;
+		node.style.willChange = 'opacity, transform';
+		
+		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
-						const el = entry.target as HTMLElement;
-						const delay = parseInt(el.dataset.delay || '0');
-
-						setTimeout(() => {
-							el.classList.remove('opacity-0', 'translate-y-8');
-							el.classList.add('opacity-100', 'translate-y-0', 'transition-all', 'duration-700', 'ease-out');
-						}, delay);
-
-						observer.unobserve(el);
+						node.style.opacity = '1';
+						node.style.transform = 'translateY(0)';
+						setTimeout(() => { node.style.willChange = 'auto'; }, 800 + delay);
+						observer.unobserve(node);
 					}
 				});
 			},
-			{ threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
 		);
+		
+		observer.observe(node);
+		
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
+	}
+	
+	onMount(() => {
+		mounted = true;
 	});
 </script>
 

@@ -570,6 +570,12 @@ class SubscriptionService {
 	private setupWebSocket(): void {
 		if (!browser || !this.getAuthToken()) return;
 
+		// Skip WebSocket in development if not configured
+		if (!WS_BASE || WS_BASE === 'ws://localhost:8000') {
+			console.debug('[SubscriptionService] WebSocket not configured, using polling fallback');
+			return;
+		}
+
 		try {
 			this.wsConnection = new WebSocket(`${WS_BASE}/subscriptions`);
 
@@ -583,16 +589,16 @@ class SubscriptionService {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				console.error('[SubscriptionService] WebSocket error:', error);
+			this.wsConnection.onerror = () => {
+				console.debug('[SubscriptionService] WebSocket not available, using polling');
 			};
 
 			this.wsConnection.onclose = () => {
 				console.debug('[SubscriptionService] WebSocket disconnected');
-				setTimeout(() => this.setupWebSocket(), 5000);
+				// Don't auto-reconnect if WebSocket isn't properly configured
 			};
 		} catch (error) {
-			console.error('[SubscriptionService] Failed to setup WebSocket:', error);
+			console.debug('[SubscriptionService] WebSocket not available');
 		}
 	}
 
@@ -726,16 +732,17 @@ class SubscriptionService {
 	private async loadMetrics(): Promise<void> {
 		try {
 			const [revenue, churn, stats] = await Promise.all([
-				this.getRevenueMetrics(),
-				this.getChurnMetrics(),
-				this.getStats()
+				this.getRevenueMetrics().catch(() => null),
+				this.getChurnMetrics().catch(() => null),
+				this.getStats().catch(() => null)
 			]);
 
-			this.revenueMetrics.set(revenue);
-			this.churnMetrics.set(churn);
-			this.stats.set(stats);
+			if (revenue) this.revenueMetrics.set(revenue);
+			if (churn) this.churnMetrics.set(churn);
+			if (stats) this.stats.set(stats);
 		} catch (error) {
-			console.error('[SubscriptionService] Failed to load metrics:', error);
+			// Gracefully handle missing endpoints
+			console.debug('[SubscriptionService] Metrics not available');
 		}
 	}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Individual Membership Dashboard Page - WordPress Simpler Trading Exact
+	 * Individual Membership Dashboard Page - WordPress Revolution Trading Exact
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * This is the page shown when clicking "Dashboard" on a membership card.
@@ -16,10 +16,9 @@
 
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	// Direct path imports for Svelte 5 compatibility
 	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 	import IconBook from '@tabler/icons-svelte/icons/book';
-	import IconInbox from '@tabler/icons-svelte/icons/inbox';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
 	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
 	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 	import IconClock from '@tabler/icons-svelte/icons/clock';
@@ -27,6 +26,8 @@
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import IconMessage from '@tabler/icons-svelte/icons/message';
+	import IconInbox from '@tabler/icons-svelte/icons/inbox';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -65,13 +66,13 @@
 				hasArchive: true,
 				hasDiscord: true
 			},
-			'simpler-showcase': {
+			'revolution-showcase': {
 				name: 'Revolution Showcase',
-				slug: 'simpler-showcase',
+				slug: 'revolution-showcase',
 				type: 'trading-room',
 				description: 'Exclusive showcase of trading strategies from our top educators.',
-				icon: 'st-icon-simpler-showcase',
-				tradingRoomUrl: '/trading-room/simpler-showcase',
+				icon: 'st-icon-revolution-showcase',
+				tradingRoomUrl: '/trading-room/revolution-showcase',
 				hasLearningCenter: true,
 				hasArchive: true,
 				hasDiscord: true
@@ -170,7 +171,7 @@
 		{ title: 'Trading Room Rules', icon: IconBook, href: '#rules' },
 		{ title: 'Getting Started Guide', icon: IconChevronRight, href: '#getting-started' },
 		{ title: 'Platform Setup', icon: IconDownload, href: '#platform' },
-		{ title: 'Community Discord', icon: IconMessageCircle, href: '#discord' }
+		{ title: 'Community Discord', icon: IconMessage, href: '#discord' }
 	];
 </script>
 
@@ -310,7 +311,7 @@
 					<div class="col-sm-6 col-lg-3">
 						<a href="#discord" class="action-card">
 							<div class="action-card__icon">
-								<IconMessageCircle size={28} />
+								<IconMessage size={28} />
 							</div>
 							<div class="action-card__content">
 								<h3>Community</h3>
@@ -373,49 +374,40 @@
 		</section>
 	</div>
 
-	<!-- Sidebar -->
+	<!-- Sidebar - WordPress RevolutionInsideDashboard EXACT -->
 	<aside class="dashboard__content-sidebar">
-		<section class="sidebar-section">
-			<h3 class="sidebar-title">Membership Status</h3>
-			<div class="status-card">
-				<div class="status-row">
-					<span class="status-label">Status</span>
-					<span class="status-value status-active">Active</span>
+		<!-- Trading Room Schedule - WordPress: .content-sidebar__section -->
+		<section class="content-sidebar__section">
+			<h4 class="content-sidebar__heading">
+				Trading Room Schedule
+				<p class="pssubject">Schedule is subject to change.</p>
+			</h4>
+			<div class="room-sched">
+				<div class="schedule-item">
+					<h4>Morning Session</h4>
+					<span>9:00 AM - 11:30 AM ET</span>
 				</div>
-				<div class="status-row">
-					<span class="status-label">Member Since</span>
-					<span class="status-value">Jan 15, 2025</span>
-				</div>
-				<div class="status-row">
-					<span class="status-label">Next Billing</span>
-					<span class="status-value">Feb 15, 2025</span>
+				<div class="schedule-item">
+					<h4>Afternoon Session</h4>
+					<span>1:00 PM - 4:00 PM ET</span>
 				</div>
 			</div>
 		</section>
 
-		<section class="sidebar-section">
-			<h3 class="sidebar-title">Trading Schedule</h3>
-			<div class="schedule-list">
-				<div class="schedule-item">
-					<IconClock size={16} />
-					<div>
-						<strong>Morning Session</strong>
-						<span>9:00 AM - 11:30 AM ET</span>
-					</div>
-				</div>
-				<div class="schedule-item">
-					<IconClock size={16} />
-					<div>
-						<strong>Afternoon Session</strong>
-						<span>1:00 PM - 4:00 PM ET</span>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<section class="sidebar-section">
-			<h3 class="sidebar-title">Need Help?</h3>
-			<a href="/support" class="btn btn-outline btn-block">Contact Support</a>
+		<!-- Quick Links - WordPress: .content-sidebar__section -->
+		<section class="content-sidebar__section">
+			<h4 class="content-sidebar__heading">Quick Links</h4>
+			<ul class="link-list">
+				<li>
+					<a href="/dashboard/support" target="_blank">Support</a>
+				</li>
+				<li>
+					<a href="/tutorials" target="_blank">Platform Tutorials</a>
+				</li>
+				<li>
+					<a href="/blog" target="_blank">Revolution Blog</a>
+				</li>
+			</ul>
 		</section>
 	</aside>
 </div>
@@ -808,6 +800,7 @@
 		margin: 0 0 8px;
 		line-height: 1.4;
 		display: -webkit-box;
+		line-clamp: 2;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
@@ -859,10 +852,11 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR
+	   SIDEBAR - WordPress RevolutionInsideDashboard EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.sidebar-section {
+	/* WordPress: .content-sidebar__section */
+	.content-sidebar__section {
 		background: #fff;
 		border-radius: 8px;
 		padding: 20px;
@@ -870,86 +864,76 @@
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 	}
 
-	.sidebar-title {
-		font-size: 14px;
+	/* WordPress: .content-sidebar__heading */
+	.content-sidebar__heading {
+		font-size: 16px;
 		font-weight: 700;
 		color: var(--st-text-color, #333);
 		margin: 0 0 16px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
 	}
 
-	.status-card {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.status-row {
-		display: flex;
-		justify-content: space-between;
-		font-size: 14px;
-	}
-
-	.status-label {
+	/* WordPress: .pssubject */
+	.pssubject {
+		font-size: 10px;
+		margin-top: 15px;
+		text-transform: initial;
+		font-weight: 400;
 		color: var(--st-text-muted, #64748b);
 	}
 
-	.status-value {
+	/* WordPress: .room-sched */
+	.room-sched {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.room-sched .schedule-item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.room-sched .schedule-item h4 {
+		font-size: 14px;
 		font-weight: 600;
 		color: var(--st-text-color, #333);
+		margin: 0;
 	}
 
-	.status-active {
-		color: #10b981;
-	}
-
-	.schedule-list {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.schedule-item {
-		display: flex;
-		gap: 12px;
-		align-items: flex-start;
-		color: var(--st-text-muted, #64748b);
-	}
-
-	.schedule-item div {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-	}
-
-	.schedule-item strong {
-		font-size: 14px;
-		color: var(--st-text-color, #333);
-	}
-
-	.schedule-item span {
+	.room-sched .schedule-item span {
 		font-size: 13px;
+		color: var(--st-text-muted, #64748b);
 	}
 
-	.btn-outline {
-		display: block;
-		width: 100%;
-		padding: 12px;
-		border: 1px solid var(--st-border-color, #dbdbdb);
-		border-radius: 8px;
-		background: #fff;
-		color: var(--st-text-color, #333);
-		font-weight: 600;
-		font-size: 14px;
-		text-align: center;
+	/* WordPress: .link-list */
+	.link-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.link-list li {
+		padding: 8px 0;
+		border-bottom: 1px solid var(--st-border-color, #dbdbdb);
+	}
+
+	.link-list li:last-child {
+		border-bottom: none;
+	}
+
+	.link-list a {
+		color: var(--st-link-color, #1e73be);
 		text-decoration: none;
-		transition: all 0.15s ease;
+		font-size: 14px;
+		transition: color 0.15s ease;
 	}
 
-	.btn-outline:hover {
-		border-color: var(--st-primary, #0984ae);
+	.link-list a:hover {
 		color: var(--st-primary, #0984ae);
+		text-decoration: underline;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

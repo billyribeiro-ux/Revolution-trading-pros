@@ -216,6 +216,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/my/subscriptions/{id}/payments', [ApiUserSubscriptionController::class, 'payments']);
     Route::post('/my/subscriptions/{id}/payment-method', [ApiUserSubscriptionController::class, 'updatePaymentMethod']);
     Route::post('/my/subscriptions/{id}/retry-payment', [ApiUserSubscriptionController::class, 'retryPayment']);
+
+    // ========================================
+    // USER INDICATORS API
+    // ========================================
+    Route::prefix('user/indicators')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'index']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'show']);
+        Route::get('/{id}/download', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'download']);
+        Route::get('/{id}/docs', [\App\Http\Controllers\Api\UserIndicatorsController::class, 'documentation']);
+    });
 });
 
 // Admin routes (require admin / super-admin role) under /api/admin
@@ -1122,4 +1132,61 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/per
     // Query Analysis
     Route::post('/queries/analyze', [PerformanceController::class, 'analyzeQueries']);
     Route::get('/queries/results', [PerformanceController::class, 'queryResults']);
+});
+
+// ========================================
+// TRADING ROOMS & ALERT SERVICES API
+// ========================================
+use App\Http\Controllers\Api\TradingRoomController;
+use App\Http\Controllers\Api\TradingRoomSSOController;
+
+// Public trading room routes (for member dashboards)
+Route::middleware(['auth:sanctum'])->prefix('trading-rooms')->group(function () {
+    // List rooms user has access to
+    Route::get('/', [TradingRoomController::class, 'index']);
+    Route::get('/{slug}', [TradingRoomController::class, 'show']);
+
+    // Daily Videos (by room)
+    Route::get('/{slug}/videos', [TradingRoomController::class, 'listVideos']);
+
+    // Traders
+    Route::get('/traders', [TradingRoomController::class, 'listTraders']);
+
+    // ========================================
+    // TRADING ROOM SSO (JWT Authentication)
+    // ========================================
+    // Get all accessible rooms with SSO info
+    Route::get('/sso/accessible', [TradingRoomSSOController::class, 'getAccessibleRooms']);
+
+    // Generate JWT token for room access
+    Route::post('/{slug}/sso', [TradingRoomSSOController::class, 'generateToken']);
+
+    // Direct SSO redirect (browser)
+    Route::get('/{slug}/sso/redirect', [TradingRoomSSOController::class, 'redirect']);
+});
+
+// Public: Verify JWT token (for trading room platform to call back)
+Route::post('/trading-rooms/sso/verify', [TradingRoomSSOController::class, 'verifyToken']);
+
+// Admin trading room routes (full CRUD)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/trading-rooms')->group(function () {
+    // Trading Rooms CRUD
+    Route::get('/', [TradingRoomController::class, 'index']);
+    Route::post('/', [TradingRoomController::class, 'store']);
+    Route::get('/{id}', [TradingRoomController::class, 'show'])->where('id', '[0-9]+');
+    Route::put('/{id}', [TradingRoomController::class, 'update']);
+    Route::delete('/{id}', [TradingRoomController::class, 'destroy']);
+
+    // Traders CRUD
+    Route::get('/traders', [TradingRoomController::class, 'listTraders']);
+    Route::post('/traders', [TradingRoomController::class, 'storeTrader']);
+    Route::put('/traders/{id}', [TradingRoomController::class, 'updateTrader']);
+    Route::delete('/traders/{id}', [TradingRoomController::class, 'destroyTrader']);
+
+    // Daily Videos CRUD
+    Route::get('/videos/{roomSlug}', [TradingRoomController::class, 'listVideos']);
+    Route::post('/videos', [TradingRoomController::class, 'storeVideo']);
+    Route::post('/videos/bulk', [TradingRoomController::class, 'bulkStoreVideos']);
+    Route::put('/videos/{id}', [TradingRoomController::class, 'updateVideo']);
+    Route::delete('/videos/{id}', [TradingRoomController::class, 'destroyVideo']);
 });

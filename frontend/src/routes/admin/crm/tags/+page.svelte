@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	// Direct path imports for Svelte 5 compatibility
 	import IconTag from '@tabler/icons-svelte/icons/tag';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
@@ -8,7 +7,7 @@
 	import IconTrash from '@tabler/icons-svelte/icons/trash';
 	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
 	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconColorSwatch from '@tabler/icons-svelte/icons/color-swatch';
+	import IconPalette from '@tabler/icons-svelte/icons/palette';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag } from '$lib/crm/types';
 

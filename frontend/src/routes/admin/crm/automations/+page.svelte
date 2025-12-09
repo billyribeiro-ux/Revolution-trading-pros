@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	// Direct path imports for Svelte 5 compatibility
-	import IconGitBranch from '@tabler/icons-svelte/icons/git-branch';
+	import IconRoute from '@tabler/icons-svelte/icons/route';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
 	import IconEdit from '@tabler/icons-svelte/icons/edit';
@@ -16,6 +15,7 @@
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconShare from '@tabler/icons-svelte/icons/share';
 	import { crmAPI } from '$lib/api/crm';
 	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
 
@@ -169,7 +169,7 @@
 	<div class="stats-grid">
 		<div class="stat-card">
 			<div class="stat-icon blue">
-				<IconGitBranch size={24} />
+				<IconShare size={24} />
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
@@ -231,7 +231,7 @@
 		</div>
 	{:else if filteredFunnels.length === 0}
 		<div class="empty-state">
-			<IconGitBranch size={48} />
+			<IconShare size={48} />
 			<h3>No automations found</h3>
 			<p>Create your first automation to engage contacts automatically</p>
 			<a href="/admin/crm/automations/new" class="btn-primary">
@@ -259,7 +259,7 @@
 							<td>
 								<div class="funnel-cell">
 									<div class="funnel-icon">
-										<IconGitBranch size={20} />
+										<IconShare size={20} />
 									</div>
 									<div class="funnel-info">
 										<span class="funnel-title">{funnel.title}</span>

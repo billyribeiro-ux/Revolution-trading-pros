@@ -26,12 +26,18 @@
 		Search: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`
 	};
 
-	// --- SCROLL REVEAL LOGIC ---
+	// --- Apple ICT9+ Scroll Animations ---
 	function reveal(node: HTMLElement, { delay = 0, duration = 800, y = 30 } = {}) {
+		// Check for reduced motion preference
+		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			return;
+		}
+		
 		node.style.opacity = '0';
 		node.style.transform = `translateY(${y}px)`;
-		node.style.transition = `opacity ${duration}ms cubic-bezier(0.215, 0.610, 0.355, 1.000), transform ${duration}ms cubic-bezier(0.215, 0.610, 0.355, 1.000)`;
+		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
 		node.style.transitionDelay = `${delay}ms`;
+		node.style.willChange = 'opacity, transform';
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -39,11 +45,12 @@
 					if (entry.isIntersecting) {
 						node.style.opacity = '1';
 						node.style.transform = 'translateY(0)';
+						setTimeout(() => { node.style.willChange = 'auto'; }, 800 + delay);
 						observer.unobserve(node);
 					}
 				});
 			},
-			{ threshold: 0.1 }
+			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
 		);
 
 		observer.observe(node);

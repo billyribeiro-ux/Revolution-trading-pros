@@ -1,20 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconCalendarEvent,
-		IconPlus,
-		IconSearch,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconPlayerPlay,
-		IconPlayerPause,
-		IconCopy,
-		IconRefresh,
-		IconMail,
-		IconClock,
-		IconChartBar
-	} from '@tabler/icons-svelte';
+	import IconCalendarEvent from '@tabler/icons-svelte/icons/calendar-event';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
 	import { crmAPI } from '$lib/api/crm';
 	import type { RecurringCampaign, RecurringCampaignFilters, RecurringCampaignStatus } from '$lib/crm/types';
 

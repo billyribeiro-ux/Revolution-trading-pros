@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * Checkout Page - WordPress Simpler Trading Style (Multi-Step)
+	 * Checkout Page - WordPress Revolution Trading Style (Multi-Step)
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Matches the WooCommerce checkout layout from SimplerCart.txt:
+	 * Matches the WooCommerce checkout layout from Revolution Trading:
 	 * - 3-step wizard: Account → Billing → Payment
 	 * - Cart sidebar showing products
 	 * - Coupon toggle form
@@ -18,17 +18,16 @@
 	import { cartStore, cartTotal, cartItemCount } from '$lib/stores/cart';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import {
-		IconArrowLeft,
-		IconArrowRight,
-		IconCreditCard,
-		IconShieldCheck,
-		IconLock,
-		IconCheck,
-		IconTicket,
-		IconX,
-		IconLoader
-	} from '@tabler/icons-svelte';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
+	import IconLoader from '@tabler/icons-svelte/icons/loader';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -214,11 +213,10 @@
 
 		try {
 			// Create checkout session with billing details
-			// Note: Cart items are accessed internally by the checkout service
 			const session = await createCheckoutSession({
 				billing,
 				couponCode: appliedCoupon?.code,
-				paymentMethod
+				provider: paymentMethod === 'paypal' ? 'paypal' : 'stripe'
 			});
 
 			// Redirect to payment processor
@@ -545,27 +543,31 @@
 							<a href="/cart" class="btn btn-xs btn-default">Edit</a>
 						</div>
 
-						<!-- Products -->
+						<!-- Products - with thumbnails -->
 						<div class="checkout-cart-contents">
 							<div class="checkout-cart-products">
 								{#each $cartStore.items as item (item.id + (item.interval || ''))}
 									<div class="product">
-										<div class="product-image">
-											{#if item.image}
-												<img src={item.image} alt={item.name} />
-											{:else}
+										<div
+											class="product-image"
+											style:background-image={item.thumbnail || item.image
+												? `url(${item.thumbnail || item.image})`
+												: undefined}
+										>
+											{#if !item.thumbnail && !item.image}
 												<div class="product-placeholder"></div>
 											{/if}
 										</div>
 										<div class="product-details">
-											<div class="product-name">{item.name}</div>
-											{#if item.interval}
-												<div class="product-interval">{getIntervalLabel(item.interval)}</div>
-											{/if}
-											<div class="product-qty">Qty: {item.quantity}</div>
+											<div class="product-name">
+												{item.name}
+												{#if item.interval}
+													<span class="product-interval">({item.interval})</span>
+												{/if}
+											</div>
 										</div>
 										<div class="product-total">
-											{formatPrice(item.price * item.quantity)}
+											{formatPrice(item.price)}
 										</div>
 									</div>
 								{/each}
@@ -679,15 +681,17 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES
+	   CSS CUSTOM PROPERTIES - Simpler Trading Style
+	   Dark text, bold fonts, high contrast
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
 		--checkout-bg: #f4f4f4;
 		--checkout-card-bg: #fff;
 		--checkout-border: #dbdbdb;
-		--checkout-text: #333;
-		--checkout-text-muted: #666;
+		--checkout-text: #1a1a1a;           /* Darker text for better contrast */
+		--checkout-text-dark: #000;          /* Pure black for prices and labels */
+		--checkout-text-muted: #555;         /* Darker muted text */
 		--checkout-primary: #0984ae;
 		--checkout-orange: #f99e31;
 		--checkout-orange-hover: #f88b09;
@@ -740,7 +744,7 @@
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 		margin: 0;
 	}
 
@@ -854,7 +858,7 @@
 	.card-body h3 {
 		font-size: 20px;
 		font-weight: 700;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 		margin: 0 0 24px;
 		padding-bottom: 16px;
 		border-bottom: 1px solid var(--checkout-border);
@@ -880,14 +884,15 @@
 
 	.user-info-box .label {
 		font-size: 13px;
+		font-weight: 600;
 		margin: 0 0 4px;
 		opacity: 0.8;
 	}
 
 	.user-info-box .value {
-		font-weight: 600;
+		font-weight: 700;
 		margin: 0;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -912,8 +917,8 @@
 
 	.form-row label {
 		font-size: 14px;
-		font-weight: 500;
-		color: var(--checkout-text);
+		font-weight: 700;
+		color: var(--checkout-text-dark);
 	}
 
 	.form-row label .required {
@@ -922,7 +927,7 @@
 	}
 
 	.form-row label .optional {
-		font-weight: 400;
+		font-weight: 500;
 		color: var(--checkout-text-muted);
 	}
 
@@ -932,6 +937,8 @@
 		border: 1px solid var(--checkout-border);
 		border-radius: 5px;
 		font-size: 15px;
+		font-weight: 600;
+		color: var(--checkout-text-dark);
 		transition: var(--checkout-transition);
 	}
 
@@ -1149,7 +1156,10 @@
 		height: 50px;
 		border-radius: 5px;
 		overflow: hidden;
-		background: var(--checkout-bg);
+		background-color: var(--checkout-bg);
+		background-size: cover;
+		background-position: center;
+		flex-shrink: 0;
 	}
 
 	.product-image img {
@@ -1170,26 +1180,28 @@
 	}
 
 	.product-name {
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 14px;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 		margin-bottom: 4px;
 	}
 
 	.product-interval {
 		font-size: 12px;
+		font-weight: 600;
 		color: var(--checkout-primary);
 	}
 
 	.product-qty {
 		font-size: 12px;
+		font-weight: 600;
 		color: var(--checkout-text-muted);
 	}
 
 	.product-total {
 		font-weight: 700;
 		font-size: 14px;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 	}
 
 	/* Cart Table */
@@ -1206,17 +1218,19 @@
 
 	.cart-table th {
 		text-align: left;
-		font-weight: 500;
-		color: var(--checkout-text-muted);
+		font-weight: 700;
+		color: var(--checkout-text-dark);
 	}
 
 	.cart-table td {
 		text-align: right;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
+		font-weight: 600;
 	}
 
 	.cart-table .discount {
 		color: var(--checkout-success);
+		font-weight: 700;
 	}
 
 	.remove-coupon {
@@ -1228,15 +1242,15 @@
 		margin-left: 8px;
 	}
 
-	/* Order Total */
+	/* Order Total - Dark and Bold */
 	.checkout-order-total {
 		display: flex;
 		justify-content: space-between;
 		padding: 16px 0;
-		border-top: 2px solid var(--checkout-text);
+		border-top: 2px solid var(--checkout-text-dark);
 		font-size: 18px;
 		font-weight: 700;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 	}
 
 	/* Recurring Table */

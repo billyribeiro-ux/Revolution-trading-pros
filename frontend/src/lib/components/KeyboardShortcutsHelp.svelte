@@ -11,7 +11,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { keyboard } from '$lib/stores/keyboard';
-	import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
+	import IconCommand from '@tabler/icons-svelte/icons/command';
 	import IconX from '@tabler/icons-svelte/icons/x';
 
 	interface Props {
@@ -68,7 +68,7 @@
 			<!-- Header -->
 			<div class="modal-header">
 				<div class="header-title">
-					<IconKeyboard size={24} />
+					<IconCommand size={24} />
 					<h2>Keyboard Shortcuts</h2>
 				</div>
 				<button class="close-btn" onclick={close}>

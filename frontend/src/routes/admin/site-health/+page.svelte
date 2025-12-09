@@ -20,10 +20,9 @@
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { getAuthToken } from '$lib/stores/auth';
-	// Direct path imports for Svelte 5 compatibility
 	import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
 	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
-	import IconShieldOff from '@tabler/icons-svelte/icons/shield-off';
+	import IconShieldX from '@tabler/icons-svelte/icons/shield-x';
 	import IconDatabase from '@tabler/icons-svelte/icons/database';
 	import IconServer from '@tabler/icons-svelte/icons/server';
 	import IconClock from '@tabler/icons-svelte/icons/clock';
@@ -36,13 +35,15 @@
 	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
 	import IconLock from '@tabler/icons-svelte/icons/lock';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconCode from '@tabler/icons-svelte/icons/code';
+	import IconApiApp from '@tabler/icons-svelte/icons/api-app';
+	import IconBrandPhp from '@tabler/icons-svelte/icons/brand-php';
 	import IconWorld from '@tabler/icons-svelte/icons/world';
 	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
 	import IconFolder from '@tabler/icons-svelte/icons/folder';
 	import IconCloud from '@tabler/icons-svelte/icons/cloud';
-	import IconBugOff from '@tabler/icons-svelte/icons/bug-off';
-	import IconSpeedboat from '@tabler/icons-svelte/icons/speedboat';
+	import IconCode from '@tabler/icons-svelte/icons/code';
+	import IconBug from '@tabler/icons-svelte/icons/bug';
+	import IconRocket from '@tabler/icons-svelte/icons/rocket';
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
 	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
@@ -111,6 +112,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let isLoading = $state(true);
+	let isRefreshing = $state(false);
 	let isRunningTests = $state(false);
 	let showContent = $state(false);
 	let healthData = $state<SiteHealthData | null>(null);
@@ -280,8 +282,13 @@
 	}
 
 	async function handleRefresh() {
-		await loadHealthData();
-		toastStore.success('Health data refreshed');
+		isRefreshing = true;
+		try {
+			await loadHealthData();
+			toastStore.success('Health data refreshed');
+		} finally {
+			isRefreshing = false;
+		}
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -356,7 +363,7 @@
 
 	const tabs = [
 		{ id: 'overview', label: 'Overview', icon: IconHeartbeat },
-		{ id: 'performance', label: 'Performance', icon: IconSpeedboat },
+		{ id: 'performance', label: 'Performance', icon: IconRocket },
 		{ id: 'security', label: 'Security', icon: IconShieldCheck },
 		{ id: 'database', label: 'Database', icon: IconDatabase },
 		{ id: 'server', label: 'Server', icon: IconServer }
@@ -413,8 +420,8 @@
 				<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
 			</button>
 
-			<button class="action-btn refresh" onclick={handleRefresh} disabled={isLoading}>
-				<span class="icon-wrapper" class:spinning={isLoading}>
+			<button class="action-btn refresh" onclick={handleRefresh} disabled={isRefreshing}>
+				<span class="icon-wrapper" class:spinning={isRefreshing}>
 					<IconRefresh size={18} />
 				</span>
 			</button>
@@ -521,7 +528,7 @@
 					<div class="overview-card performance">
 						<div class="card-header">
 							<div class="card-icon">
-								<IconSpeedboat size={24} />
+								<IconRocket size={24} />
 							</div>
 							<div class="card-title">
 								<h3>Performance</h3>
@@ -666,7 +673,7 @@
 					<div class="api-health-grid">
 						<div class="api-health-card">
 							<div class="api-health-header">
-								<IconPlugConnected size={20} />
+								<IconApiApp size={20} />
 								<span>Connected APIs</span>
 							</div>
 							<div class="api-health-value">{$connectedCount}</div>
@@ -801,7 +808,7 @@
 						</div>
 					{:else}
 						<div class="empty-state">
-							<IconSpeedboat size={48} />
+							<IconRocket size={48} />
 							<h4>No Performance Data</h4>
 							<p>Run health tests to collect performance metrics</p>
 							<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
@@ -852,7 +859,7 @@
 							{/if}
 							<div class="metric-card" class:critical={healthData.security.vulnerabilities > 0}>
 								<div class="metric-icon">
-									<IconBugOff size={24} />
+									<IconBug size={24} />
 								</div>
 								<div class="metric-content">
 									<span class="metric-label">Vulnerabilities</span>

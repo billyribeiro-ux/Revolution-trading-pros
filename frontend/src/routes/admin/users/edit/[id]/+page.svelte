@@ -32,20 +32,34 @@
 		try {
 			const response = await usersApi.get(userId);
 			const user = response.data;
+			if (!user) {
+				error = 'User not found. Please check the user ID and try again.';
+				return;
+			}
 			formData.name = user.name || '';
 			formData.first_name = user.first_name || '';
 			formData.last_name = user.last_name || '';
 			formData.email = user.email || '';
 			formData.roles = user.roles?.map((r: any) => r.name) || [];
-		} catch (err) {
+		} catch (err: any) {
 			if (err instanceof AdminApiError) {
 				if (err.status === 401) {
 					goto('/login');
 					return;
 				}
-				error = err.message;
+				if (err.status === 404) {
+					error = 'User not found. The user may have been deleted.';
+				} else if (err.status === 403) {
+					error = 'Permission denied. You do not have access to edit this user.';
+				} else if (err.message?.includes('SQLSTATE') || err.message?.includes('Column not found')) {
+					error = 'Database configuration issue. Please contact support.';
+				} else {
+					error = err.message || 'Failed to load user data.';
+				}
+			} else if (err?.name === 'TypeError' && err?.message === 'Failed to fetch') {
+				error = 'Network error. Please check your connection and try again.';
 			} else {
-				error = 'Failed to load user';
+				error = 'Failed to load user. Please try again.';
 			}
 			console.error('Failed to load user:', err);
 		} finally {
@@ -136,7 +150,8 @@
 	{#if error}
 		<div class="alert error">
 			<IconX size={20} />
-			{error}
+			<span class="error-message">{error}</span>
+			<button class="btn-retry" onclick={loadUser}>Retry</button>
 		</div>
 	{/if}
 
@@ -360,6 +375,27 @@
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.3);
 		color: #f87171;
+		justify-content: flex-start;
+	}
+
+	.error-message {
+		flex: 1;
+	}
+
+	.btn-retry {
+		padding: 0.5rem 1rem;
+		background: rgba(239, 68, 68, 0.2);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 6px;
+		color: #f87171;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		white-space: nowrap;
+	}
+
+	.btn-retry:hover {
+		background: rgba(239, 68, 68, 0.3);
 	}
 
 	.loading {
