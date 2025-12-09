@@ -1,389 +1,238 @@
 /**
- * Dashboard Memberships API - Real Membership Management
+ * Dashboard Memberships API - Proxy to Backend
  *
- * Manages user memberships including:
- * - Active memberships
- * - Membership tiers and access levels
- * - Subscription status
- * - Member benefits
+ * Proxies membership requests to the Laravel backend.
+ * Handles user memberships, access levels, and subscription status.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025 - Connected to real backend
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-// Membership Types
-interface Membership {
-	id: string;
-	slug: string;
-	name: string;
-	description: string;
-	short_description: string;
-	thumbnail_url: string;
-	banner_url?: string;
-	tier: 'basic' | 'pro' | 'elite' | 'lifetime';
-	category: 'trading-room' | 'alerts' | 'mastery' | 'tools' | 'bundle';
-	features: string[];
-	price_monthly?: number;
-	price_annual?: number;
-	price_lifetime?: number;
-	has_trading_room: boolean;
-	has_alerts: boolean;
-	has_learning_center: boolean;
-	has_daily_videos: boolean;
-	instructor?: {
-		id: string;
-		name: string;
-		avatar_url?: string;
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+/**
+ * Get authorization headers from request
+ */
+function getAuthHeaders(request: Request): HeadersInit {
+	const authHeader = request.headers.get('Authorization');
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
 	};
-	trading_room_schedule?: {
-		morning?: string;
-		afternoon?: string;
-		evening?: string;
-	};
-	is_active: boolean;
-	is_featured: boolean;
-	sort_order: number;
-	created_at: string;
-	updated_at: string;
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	}
+	return headers;
 }
 
-interface UserMembership {
-	id: string;
-	user_id: string;
-	membership_id: string;
-	membership: Membership;
-	status: 'active' | 'paused' | 'cancelled' | 'expired';
-	subscription_type: 'monthly' | 'annual' | 'lifetime';
-	started_at: string;
-	expires_at?: string;
-	cancelled_at?: string;
-	auto_renew: boolean;
-	payment_method?: string;
-}
+// GET - List user memberships (proxies to backend)
+export const GET: RequestHandler = async ({ url, request }) => {
+	try {
+		// Check for admin endpoint or user endpoint
+		const isAdmin = url.searchParams.get('admin') === 'true';
+		const userId = url.searchParams.get('user_id');
 
-// In-memory storage
-const memberships: Map<string, Membership> = new Map();
-const userMemberships: Map<string, UserMembership[]> = new Map();
+		// Forward query params to backend
+		const queryParams = new URLSearchParams();
 
-// Initialize sample data
-function initializeSampleData() {
-	if (memberships.size > 0) return;
+		const page = url.searchParams.get('page');
+		const limit = url.searchParams.get('limit') || url.searchParams.get('per_page');
+		const status = url.searchParams.get('status');
+		const type = url.searchParams.get('type');
 
-	const sampleMemberships: Membership[] = [
-		{
-			id: 'mem_1',
-			slug: 'mastering-the-trade',
-			name: 'Mastering the Trade',
-			description: 'Learn to master the markets with our comprehensive trading room and educational content.',
-			short_description: 'Live trading room with daily analysis and education',
-			thumbnail_url: '/images/memberships/mastering-the-trade.jpg',
-			banner_url: '/images/memberships/mastering-the-trade-banner.jpg',
-			tier: 'pro',
-			category: 'trading-room',
-			features: [
-				'Daily Live Trading Room (9:00 AM - 4:00 PM ET)',
-				'Real-time Trade Alerts',
-				'Access to Learning Center (400+ Videos)',
-				'Weekly Member Webinars',
-				'Discord Community Access',
-				'Mobile App Access'
-			],
-			price_monthly: 297,
-			price_annual: 2497,
-			price_lifetime: 4997,
-			has_trading_room: true,
-			has_alerts: true,
-			has_learning_center: true,
-			has_daily_videos: true,
-			instructor: {
-				id: 'inst_1',
-				name: 'John Carter',
-				avatar_url: '/images/instructors/john-carter.jpg'
-			},
-			trading_room_schedule: {
-				morning: '9:00 AM - 11:30 AM ET',
-				afternoon: '1:00 PM - 4:00 PM ET'
-			},
-			is_active: true,
-			is_featured: true,
-			sort_order: 1,
-			created_at: '2020-01-01T00:00:00Z',
-			updated_at: '2024-06-01T00:00:00Z'
-		},
-		{
-			id: 'mem_2',
-			slug: 'options-alerts',
-			name: 'Options Alert Service',
-			description: 'Get real-time options trade alerts directly to your phone.',
-			short_description: 'Real-time options trade alerts',
-			thumbnail_url: '/images/memberships/options-alerts.jpg',
-			tier: 'basic',
-			category: 'alerts',
-			features: [
-				'Real-time SMS/Email Alerts',
-				'Entry, Target, and Stop Prices',
-				'Weekly Trade Recap',
-				'Mobile App Access'
-			],
-			price_monthly: 97,
-			price_annual: 797,
-			has_trading_room: false,
-			has_alerts: true,
-			has_learning_center: false,
-			has_daily_videos: false,
-			is_active: true,
-			is_featured: false,
-			sort_order: 2,
-			created_at: '2020-01-01T00:00:00Z',
-			updated_at: '2024-06-01T00:00:00Z'
-		},
-		{
-			id: 'mem_3',
-			slug: 'futures-trading-room',
-			name: 'Futures Trading Room',
-			description: 'Live futures trading room with expert analysis.',
-			short_description: 'Live futures trading and analysis',
-			thumbnail_url: '/images/memberships/futures-room.jpg',
-			tier: 'pro',
-			category: 'trading-room',
-			features: [
-				'Pre-market Analysis (8:30 AM ET)',
-				'Live Trading Room (9:30 AM - 4:00 PM ET)',
-				'Futures Trade Alerts',
-				'Weekly Market Outlook',
-				'ES, NQ, CL Focus'
-			],
-			price_monthly: 247,
-			price_annual: 1997,
-			has_trading_room: true,
-			has_alerts: true,
-			has_learning_center: true,
-			has_daily_videos: true,
-			instructor: {
-				id: 'inst_2',
-				name: 'Chris Brecher',
-				avatar_url: '/images/instructors/chris-brecher.jpg'
-			},
-			trading_room_schedule: {
-				morning: '8:30 AM - 12:00 PM ET',
-				afternoon: '1:00 PM - 4:00 PM ET'
-			},
-			is_active: true,
-			is_featured: true,
-			sort_order: 3,
-			created_at: '2020-06-01T00:00:00Z',
-			updated_at: '2024-06-01T00:00:00Z'
-		},
-		{
-			id: 'mem_4',
-			slug: 'squeeze-pro',
-			name: 'Squeeze Pro Indicator',
-			description: 'The legendary TTM Squeeze indicator with enhanced features.',
-			short_description: 'Professional squeeze indicator',
-			thumbnail_url: '/images/memberships/squeeze-pro.jpg',
-			tier: 'basic',
-			category: 'tools',
-			features: [
-				'TTM Squeeze Pro Indicator',
-				'Multi-timeframe Analysis',
-				'Works on TradingView, ThinkOrSwim',
-				'Setup Guide and Tutorials',
-				'Lifetime Updates'
-			],
-			price_lifetime: 497,
-			has_trading_room: false,
-			has_alerts: false,
-			has_learning_center: false,
-			has_daily_videos: false,
-			is_active: true,
-			is_featured: false,
-			sort_order: 4,
-			created_at: '2018-01-01T00:00:00Z',
-			updated_at: '2024-06-01T00:00:00Z'
-		},
-		{
-			id: 'mem_5',
-			slug: 'options-mastery',
-			name: 'Options Mastery Course',
-			description: 'Complete options trading education from beginner to advanced.',
-			short_description: 'Comprehensive options trading course',
-			thumbnail_url: '/images/memberships/options-mastery.jpg',
-			tier: 'pro',
-			category: 'mastery',
-			features: [
-				'50+ Hours of Video Content',
-				'Options Basics to Advanced',
-				'Greeks Deep Dive',
-				'Strategy Playbook',
-				'Certificate of Completion'
-			],
-			price_lifetime: 1497,
-			has_trading_room: false,
-			has_alerts: false,
-			has_learning_center: true,
-			has_daily_videos: false,
-			instructor: {
-				id: 'inst_3',
-				name: 'Taylor Horton',
-				avatar_url: '/images/instructors/taylor-horton.jpg'
-			},
-			is_active: true,
-			is_featured: true,
-			sort_order: 5,
-			created_at: '2021-01-01T00:00:00Z',
-			updated_at: '2024-06-01T00:00:00Z'
+		if (page) queryParams.set('page', page);
+		if (limit) queryParams.set('per_page', limit);
+		if (status) queryParams.set('status', status);
+		if (type) queryParams.set('type', type);
+
+		// Use admin products endpoint for admin or user memberships endpoint for regular users
+		let backendUrl: string;
+		if (isAdmin) {
+			// Admin: Get all membership products
+			queryParams.set('type', 'membership');
+			backendUrl = `${BACKEND_URL}/admin/products${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+		} else {
+			// User: Get user's memberships
+			backendUrl = `${BACKEND_URL}/me/memberships${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 		}
-	];
 
-	sampleMemberships.forEach(m => memberships.set(m.id, m));
-
-	// Sample user memberships (for demo user)
-	const demoUserMemberships: UserMembership[] = [
-		{
-			id: 'umem_1',
-			user_id: 'demo_user',
-			membership_id: 'mem_1',
-			membership: sampleMemberships[0],
-			status: 'active',
-			subscription_type: 'annual',
-			started_at: '2024-01-15T00:00:00Z',
-			expires_at: '2025-01-15T00:00:00Z',
-			auto_renew: true,
-			payment_method: 'Visa ****4242'
-		},
-		{
-			id: 'umem_2',
-			user_id: 'demo_user',
-			membership_id: 'mem_4',
-			membership: sampleMemberships[3],
-			status: 'active',
-			subscription_type: 'lifetime',
-			started_at: '2023-06-01T00:00:00Z',
-			auto_renew: false
-		}
-	];
-
-	userMemberships.set('demo_user', demoUserMemberships);
-}
-
-// GET - List memberships or user's memberships
-export const GET: RequestHandler = async ({ url }) => {
-	initializeSampleData();
-
-	const user_id = url.searchParams.get('user_id');
-	const category = url.searchParams.get('category');
-	const tier = url.searchParams.get('tier');
-	const featured = url.searchParams.get('featured');
-	const all = url.searchParams.get('all') === 'true';
-
-	// If user_id provided, return user's memberships
-	if (user_id) {
-		const userMems = userMemberships.get(user_id) || [];
-		return json({
-			success: true,
-			data: {
-				memberships: userMems,
-				total: userMems.length
-			}
+		const response = await fetch(backendUrl, {
+			method: 'GET',
+			headers: getAuthHeaders(request),
 		});
-	}
 
-	// Otherwise, list all available memberships
-	let filtered = Array.from(memberships.values());
-
-	// Only active unless all requested
-	if (!all) {
-		filtered = filtered.filter(m => m.is_active);
-	}
-
-	// Filter by category
-	if (category) {
-		filtered = filtered.filter(m => m.category === category);
-	}
-
-	// Filter by tier
-	if (tier) {
-		filtered = filtered.filter(m => m.tier === tier);
-	}
-
-	// Filter by featured
-	if (featured === 'true') {
-		filtered = filtered.filter(m => m.is_featured);
-	}
-
-	// Sort by order
-	filtered.sort((a, b) => a.sort_order - b.sort_order);
-
-	return json({
-		success: true,
-		data: {
-			memberships: filtered,
-			categories: ['trading-room', 'alerts', 'mastery', 'tools', 'bundle'],
-			tiers: ['basic', 'pro', 'elite', 'lifetime']
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Failed to fetch memberships' }));
+			return json({
+				success: false,
+				error: errorData.message || 'Failed to fetch memberships',
+				data: {
+					memberships: [],
+					user_memberships: [],
+					pagination: { page: 1, limit: 12, total: 0, total_pages: 0 }
+				}
+			}, { status: response.status });
 		}
-	});
+
+		const data = await response.json();
+
+		// Transform response based on endpoint type
+		if (isAdmin) {
+			// Admin response - product list
+			const memberships = (data.data || []).map((item: any) => ({
+				id: item.id,
+				slug: item.slug,
+				name: item.name,
+				description: item.description || '',
+				short_description: item.short_description || '',
+				thumbnail_url: item.thumbnail_url || item.image_url || '',
+				banner_url: item.banner_url,
+				tier: item.tier || 'basic',
+				category: item.category || 'membership',
+				features: item.features || [],
+				price_monthly: item.price_monthly,
+				price_annual: item.price_annual,
+				price_lifetime: item.price_lifetime,
+				has_trading_room: item.has_trading_room ?? false,
+				has_alerts: item.has_alerts ?? false,
+				has_learning_center: item.has_learning_center ?? false,
+				has_daily_videos: item.has_daily_videos ?? false,
+				instructor: item.instructor,
+				trading_room_schedule: item.trading_room_schedule,
+				is_active: item.is_active ?? true,
+				is_featured: item.is_featured ?? false,
+				sort_order: item.sort_order || 0,
+				created_at: item.created_at,
+				updated_at: item.updated_at
+			}));
+
+			return json({
+				success: true,
+				data: {
+					memberships,
+					pagination: {
+						page: data.current_page || 1,
+						limit: data.per_page || 12,
+						total: data.total || 0,
+						total_pages: data.last_page || 0
+					}
+				}
+			});
+		} else {
+			// User response - their memberships
+			const userMemberships = Array.isArray(data) ? data : (data.data || []);
+
+			return json({
+				success: true,
+				data: {
+					user_memberships: userMemberships.map((item: any) => ({
+						id: item.id,
+						user_id: item.user_id,
+						membership_id: item.membership_id || item.product_id,
+						membership: item.membership || item.product || {},
+						status: item.status || 'active',
+						subscription_type: item.subscription_type || item.billing_cycle || 'monthly',
+						started_at: item.started_at || item.created_at,
+						expires_at: item.expires_at || item.end_date,
+						cancelled_at: item.cancelled_at,
+						auto_renew: item.auto_renew ?? true,
+						payment_method: item.payment_method
+					}))
+				}
+			});
+		}
+	} catch (err) {
+		console.error('Memberships API proxy error:', err);
+		return json({
+			success: false,
+			error: 'Failed to connect to backend',
+			data: {
+				memberships: [],
+				user_memberships: [],
+				pagination: { page: 1, limit: 12, total: 0, total_pages: 0 }
+			}
+		}, { status: 503 });
+	}
 };
 
-// POST - Add membership to user
+// POST - Create membership product (admin) or assign membership (user)
 export const POST: RequestHandler = async ({ request }) => {
-	initializeSampleData();
-
 	try {
 		const body = await request.json();
 
-		if (!body.user_id || !body.membership_id) {
-			throw error(400, 'user_id and membership_id are required');
+		// Determine if this is admin creating product or assigning membership
+		const isAssignment = body.user_id && body.membership_id;
+
+		let backendUrl: string;
+		let requestBody: Record<string, any>;
+
+		if (isAssignment) {
+			// Assign membership to user
+			backendUrl = `${BACKEND_URL}/admin/products/${body.membership_id}/assign-user`;
+			requestBody = {
+				user_id: body.user_id,
+				subscription_type: body.subscription_type || 'monthly',
+				auto_renew: body.auto_renew ?? true
+			};
+		} else {
+			// Create new membership product
+			if (!body.name) {
+				throw error(400, 'Membership name is required');
+			}
+
+			backendUrl = `${BACKEND_URL}/admin/products`;
+			requestBody = {
+				name: body.name,
+				slug: body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+				type: 'membership',
+				description: body.description || '',
+				short_description: body.short_description || '',
+				thumbnail_url: body.thumbnail_url || '',
+				tier: body.tier || 'basic',
+				category: body.category || 'membership',
+				features: body.features || [],
+				price_monthly: body.price_monthly,
+				price_annual: body.price_annual,
+				price_lifetime: body.price_lifetime,
+				has_trading_room: body.has_trading_room ?? false,
+				has_alerts: body.has_alerts ?? false,
+				has_learning_center: body.has_learning_center ?? false,
+				has_daily_videos: body.has_daily_videos ?? false,
+				instructor_id: body.instructor_id,
+				is_active: body.is_active ?? true,
+				is_featured: body.is_featured ?? false,
+				sort_order: body.sort_order ?? 0
+			};
 		}
 
-		const membership = memberships.get(body.membership_id);
-		if (!membership) {
-			throw error(404, 'Membership not found');
+		const response = await fetch(backendUrl, {
+			method: 'POST',
+			headers: getAuthHeaders(request),
+			body: JSON.stringify(requestBody),
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Failed to process membership request' }));
+			return json({
+				success: false,
+				error: errorData.message || 'Failed to process membership request',
+				errors: errorData.errors
+			}, { status: response.status });
 		}
 
-		const userMems = userMemberships.get(body.user_id) || [];
-
-		// Check if user already has this membership
-		const existing = userMems.find(um => um.membership_id === body.membership_id);
-		if (existing && existing.status === 'active') {
-			throw error(400, 'User already has an active subscription to this membership');
-		}
-
-		const newUserMembership: UserMembership = {
-			id: `umem_${Date.now()}`,
-			user_id: body.user_id,
-			membership_id: body.membership_id,
-			membership,
-			status: 'active',
-			subscription_type: body.subscription_type || 'monthly',
-			started_at: new Date().toISOString(),
-			auto_renew: body.auto_renew ?? true,
-			payment_method: body.payment_method
-		};
-
-		// Set expiration based on subscription type
-		if (body.subscription_type === 'monthly') {
-			const expires = new Date();
-			expires.setMonth(expires.getMonth() + 1);
-			newUserMembership.expires_at = expires.toISOString();
-		} else if (body.subscription_type === 'annual') {
-			const expires = new Date();
-			expires.setFullYear(expires.getFullYear() + 1);
-			newUserMembership.expires_at = expires.toISOString();
-		}
-
-		userMems.push(newUserMembership);
-		userMemberships.set(body.user_id, userMems);
+		const data = await response.json();
 
 		return json({
 			success: true,
-			data: newUserMembership
+			data: data
 		}, { status: 201 });
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Failed to add membership');
+		console.error('Memberships API create error:', err);
+		throw error(500, 'Failed to process membership request');
 	}
 };

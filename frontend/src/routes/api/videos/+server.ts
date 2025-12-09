@@ -1,241 +1,150 @@
 /**
- * Videos API - Real CRUD Operations
+ * Videos API - Proxy to Backend
  *
- * Handles video management for the dashboard and learning center.
- * Supports video uploads, metadata management, and category organization.
+ * Proxies video management requests to the Laravel backend.
+ * Handles video CRUD operations, listing, and filtering.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025 - Connected to real backend
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-// Video interface
-interface Video {
-	id: string;
-	title: string;
-	slug: string;
-	description: string;
-	thumbnail_url: string;
-	video_url: string;
-	duration: number; // seconds
-	category_id: string;
-	categories: string[];
-	tags: string[];
-	instructor: {
-		id: string;
-		name: string;
-		avatar?: string;
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+/**
+ * Get authorization headers from request
+ */
+function getAuthHeaders(request: Request): HeadersInit {
+	const authHeader = request.headers.get('Authorization');
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
 	};
-	membership_id: string;
-	is_premium: boolean;
-	is_published: boolean;
-	view_count: number;
-	created_at: string;
-	updated_at: string;
-	published_at?: string;
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	}
+	return headers;
 }
 
-// In production, this would connect to a real database
-// For now, using in-memory storage that persists during runtime
-const videos: Map<string, Video> = new Map();
+// GET - List videos (proxies to backend)
+export const GET: RequestHandler = async ({ url, request }) => {
+	try {
+		// Forward query params to backend
+		const queryParams = new URLSearchParams();
 
-// Initialize with sample data
-function initializeSampleData() {
-	if (videos.size === 0) {
-		const sampleVideos: Video[] = [
-			{
-				id: 'vid_1',
-				title: 'Mastering the Trade Room FAQs',
-				slug: 'mastering-the-trade-room-faqs',
-				description: 'Mastering the Trade Room FAQs - A comprehensive guide to getting started.',
-				thumbnail_url: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27120614/MemberWebinar-Generic1.jpg',
-				video_url: '',
-				duration: 3600,
-				category_id: 'cat_1',
-				categories: ['Member Webinar'],
-				tags: ['FAQ', 'Getting Started'],
-				instructor: { id: 'inst_1', name: 'Revolution Trading Team' },
-				membership_id: 'mastering-the-trade',
-				is_premium: true,
-				is_published: true,
-				view_count: 1250,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString(),
-				published_at: new Date().toISOString()
-			},
-			{
-				id: 'vid_2',
-				title: 'How to Find 3 Reasons to do a Trade',
-				slug: '3-reasons-to-do-a-trade',
-				description: 'Learn how to identify three compelling reasons before entering any trade.',
-				thumbnail_url: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-				video_url: '',
-				duration: 2700,
-				category_id: 'cat_1',
-				categories: ['Member Webinar', 'Trade & Money Management/Trading Plan'],
-				tags: ['Trade Setup', 'Risk Management'],
-				instructor: { id: 'inst_2', name: 'Chris Brecher' },
-				membership_id: 'mastering-the-trade',
-				is_premium: true,
-				is_published: true,
-				view_count: 890,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString(),
-				published_at: new Date().toISOString()
-			},
-			{
-				id: 'vid_3',
-				title: 'Analysis of A Trade',
-				slug: 'analysis-of-a-trade',
-				description: 'Deep dive into trade analysis methodology.',
-				thumbnail_url: 'https://cdn.simplertrading.com/2021/06/23152021/MemberWebinar-TaylorH.jpg',
-				video_url: '',
-				duration: 4200,
-				category_id: 'cat_2',
-				categories: ['Member Webinar', 'Trade Setups & Strategies'],
-				tags: ['Analysis', 'Strategy'],
-				instructor: { id: 'inst_3', name: 'Taylor Horton' },
-				membership_id: 'mastering-the-trade',
-				is_premium: true,
-				is_published: true,
-				view_count: 1560,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString(),
-				published_at: new Date().toISOString()
-			},
-			{
-				id: 'vid_4',
-				title: 'John Carter Bigger Picture Outlook',
-				slug: 'john-carter-bigger-picture-outlook',
-				description: 'Market update and review of what to expect moving forward.',
-				thumbnail_url: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-				video_url: '',
-				duration: 5400,
-				category_id: 'cat_1',
-				categories: ['Member Webinar', 'Trade & Money Management/Trading Plan'],
-				tags: ['Market Outlook', 'Macro'],
-				instructor: { id: 'inst_4', name: 'John Carter' },
-				membership_id: 'mastering-the-trade',
-				is_premium: true,
-				is_published: true,
-				view_count: 2340,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString(),
-				published_at: new Date().toISOString()
-			}
-		];
+		const page = url.searchParams.get('page');
+		const limit = url.searchParams.get('limit') || url.searchParams.get('per_page');
+		const membership_id = url.searchParams.get('membership_id');
+		const category = url.searchParams.get('category');
+		const search = url.searchParams.get('search');
+		const platform = url.searchParams.get('platform');
+		const published = url.searchParams.get('published');
 
-		sampleVideos.forEach(v => videos.set(v.id, v));
-	}
-}
+		if (page) queryParams.set('page', page);
+		if (limit) queryParams.set('per_page', limit);
+		if (membership_id) queryParams.set('membership_id', membership_id);
+		if (category) queryParams.set('category', category);
+		if (search) queryParams.set('search', search);
+		if (platform) queryParams.set('platform', platform);
+		if (published) queryParams.set('is_published', published);
 
-// GET - List videos with filtering and pagination
-export const GET: RequestHandler = async ({ url }) => {
-	initializeSampleData();
+		const backendUrl = `${BACKEND_URL}/videos${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
-	const page = parseInt(url.searchParams.get('page') || '1');
-	const limit = parseInt(url.searchParams.get('limit') || '12');
-	const membership_id = url.searchParams.get('membership_id');
-	const category = url.searchParams.get('category');
-	const search = url.searchParams.get('search')?.toLowerCase();
-	const published_only = url.searchParams.get('published') !== 'false';
+		const response = await fetch(backendUrl, {
+			method: 'GET',
+			headers: getAuthHeaders(request),
+		});
 
-	let filtered = Array.from(videos.values());
-
-	// Filter by membership
-	if (membership_id) {
-		filtered = filtered.filter(v => v.membership_id === membership_id);
-	}
-
-	// Filter by category
-	if (category) {
-		filtered = filtered.filter(v => v.categories.includes(category));
-	}
-
-	// Filter by published status
-	if (published_only) {
-		filtered = filtered.filter(v => v.is_published);
-	}
-
-	// Search
-	if (search) {
-		filtered = filtered.filter(v =>
-			v.title.toLowerCase().includes(search) ||
-			v.description.toLowerCase().includes(search) ||
-			v.instructor.name.toLowerCase().includes(search)
-		);
-	}
-
-	// Sort by most recent
-	filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-	// Pagination
-	const total = filtered.length;
-	const start = (page - 1) * limit;
-	const paginated = filtered.slice(start, start + limit);
-
-	return json({
-		success: true,
-		data: {
-			videos: paginated,
-			pagination: {
-				page,
-				limit,
-				total,
-				total_pages: Math.ceil(total / limit)
-			}
+		if (!response.ok) {
+			// If backend returns error, return appropriate error response
+			const errorData = await response.json().catch(() => ({ message: 'Failed to fetch videos' }));
+			return json({
+				success: false,
+				error: errorData.message || 'Failed to fetch videos',
+				data: { videos: [], pagination: { page: 1, limit: 12, total: 0, total_pages: 0 } }
+			}, { status: response.status });
 		}
-	});
+
+		const data = await response.json();
+
+		// Transform backend pagination response to match frontend expected format
+		return json({
+			success: true,
+			data: {
+				videos: data.data || [],
+				pagination: {
+					page: data.current_page || 1,
+					limit: data.per_page || 12,
+					total: data.total || 0,
+					total_pages: data.last_page || 0
+				}
+			}
+		});
+	} catch (err) {
+		console.error('Videos API proxy error:', err);
+		return json({
+			success: false,
+			error: 'Failed to connect to backend',
+			data: { videos: [], pagination: { page: 1, limit: 12, total: 0, total_pages: 0 } }
+		}, { status: 503 });
+	}
 };
 
-// POST - Create new video
+// POST - Create new video (proxies to backend)
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
 
-		// Validate required fields
-		if (!body.title || !body.membership_id) {
-			throw error(400, 'Title and membership_id are required');
+		// Validate required fields before sending to backend
+		if (!body.title) {
+			throw error(400, 'Title is required');
+		}
+		if (!body.url) {
+			throw error(400, 'Video URL is required');
 		}
 
-		const id = `vid_${Date.now()}`;
-		const slug = body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+		const response = await fetch(`${BACKEND_URL}/admin/videos`, {
+			method: 'POST',
+			headers: getAuthHeaders(request),
+			body: JSON.stringify({
+				title: body.title,
+				description: body.description || '',
+				url: body.video_url || body.url,
+				platform: body.platform || 'html5',
+				thumbnail_url: body.thumbnail_url || '',
+				duration: body.duration || 0,
+				video_id: body.video_id || '',
+				metadata: {
+					categories: body.categories || [],
+					tags: body.tags || [],
+					instructor: body.instructor,
+					membership_id: body.membership_id,
+					is_premium: body.is_premium ?? true,
+				},
+			}),
+		});
 
-		const newVideo: Video = {
-			id,
-			title: body.title,
-			slug,
-			description: body.description || '',
-			thumbnail_url: body.thumbnail_url || '',
-			video_url: body.video_url || '',
-			duration: body.duration || 0,
-			category_id: body.category_id || '',
-			categories: body.categories || [],
-			tags: body.tags || [],
-			instructor: body.instructor || { id: '', name: 'Unknown' },
-			membership_id: body.membership_id,
-			is_premium: body.is_premium ?? true,
-			is_published: body.is_published ?? false,
-			view_count: 0,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		};
-
-		if (body.is_published) {
-			newVideo.published_at = new Date().toISOString();
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Failed to create video' }));
+			return json({
+				success: false,
+				error: errorData.message || 'Failed to create video',
+				errors: errorData.errors
+			}, { status: response.status });
 		}
 
-		videos.set(id, newVideo);
+		const data = await response.json();
 
 		return json({
 			success: true,
-			data: newVideo
+			data: data.video || data
 		}, { status: 201 });
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
+		console.error('Videos API create error:', err);
 		throw error(500, 'Failed to create video');
 	}
 };

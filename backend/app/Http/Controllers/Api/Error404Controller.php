@@ -75,7 +75,8 @@ class Error404Controller extends Controller
     }
 
     /**
-     * Find similar pages for a 404 URL.
+     * Find similar pages for a 404 URL using fuzzy matching.
+     * Uses Levenshtein distance to find similar URLs from resolved 404s or existing pages.
      */
     public function findSimilar(Request $request)
     {
@@ -83,10 +84,84 @@ class Error404Controller extends Controller
             'url' => 'required|string',
         ]);
 
-        // Mock implementation - in production, use fuzzy matching or ML
+        $targetUrl = $request->url;
+        $targetPath = parse_url($targetUrl, PHP_URL_PATH) ?? $targetUrl;
+        $targetSegments = array_filter(explode('/', trim($targetPath, '/')));
+
+        $suggestions = [];
+
+        // Get resolved 404 errors with redirects as potential suggestions
+        $resolved404s = Error404::where('is_resolved', true)
+            ->whereNotNull('redirect_url')
+            ->limit(100)
+            ->get();
+
+        foreach ($resolved404s as $error) {
+            $resolvedPath = parse_url($error->url, PHP_URL_PATH) ?? $error->url;
+            $similarity = $this->calculateSimilarity($targetPath, $resolvedPath);
+
+            if ($similarity >= 0.5) {
+                $suggestions[] = [
+                    'url' => $error->redirect_url,
+                    'original_url' => $error->url,
+                    'similarity' => round($similarity * 100),
+                    'type' => 'resolved_404'
+                ];
+            }
+        }
+
+        // Extract keywords from URL path for content-based suggestions
+        $keywords = array_filter($targetSegments, fn($s) => strlen($s) > 2);
+
+        if (!empty($keywords)) {
+            // Search for similar URLs based on path segments
+            $query = Error404::where('is_resolved', true);
+            foreach (array_slice($keywords, 0, 3) as $keyword) {
+                $query->orWhere('redirect_url', 'like', "%{$keyword}%");
+            }
+
+            $keywordMatches = $query->limit(10)->get();
+            foreach ($keywordMatches as $match) {
+                if ($match->redirect_url && !in_array($match->redirect_url, array_column($suggestions, 'url'))) {
+                    $suggestions[] = [
+                        'url' => $match->redirect_url,
+                        'original_url' => $match->url,
+                        'similarity' => 40,
+                        'type' => 'keyword_match'
+                    ];
+                }
+            }
+        }
+
+        // Sort by similarity and limit results
+        usort($suggestions, fn($a, $b) => $b['similarity'] <=> $a['similarity']);
+        $suggestions = array_slice($suggestions, 0, 5);
+
         return response()->json([
-            'suggestions' => [],
+            'suggestions' => $suggestions,
+            'analyzed_url' => $targetUrl,
         ]);
+    }
+
+    /**
+     * Calculate similarity between two URL paths using Levenshtein distance.
+     */
+    private function calculateSimilarity(string $path1, string $path2): float
+    {
+        $path1 = strtolower(trim($path1, '/'));
+        $path2 = strtolower(trim($path2, '/'));
+
+        if ($path1 === $path2) {
+            return 1.0;
+        }
+
+        $maxLen = max(strlen($path1), strlen($path2));
+        if ($maxLen === 0) {
+            return 1.0;
+        }
+
+        $distance = levenshtein($path1, $path2);
+        return 1 - ($distance / $maxLen);
     }
 
     /**
