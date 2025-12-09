@@ -2,9 +2,10 @@
  * Banner Template Store
  *
  * Manages active template selection, customizations, and persistence.
+ * Now connects to backend API for persistence across devices.
  *
  * @module consent/templates/store
- * @version 1.0.0
+ * @version 2.0.0 - Backend API Integration
  */
 
 import { browser } from '$app/environment';
@@ -13,11 +14,19 @@ import type { BannerTemplate, TemplateCustomization, ActiveTemplateConfig } from
 import { BANNER_TEMPLATES, getTemplate, DEFAULT_TEMPLATE_ID } from './registry';
 
 // =============================================================================
-// STORAGE KEYS
+// API CONFIGURATION
 // =============================================================================
 
-const ACTIVE_TEMPLATE_KEY = 'rtp_active_template';
-const CUSTOM_TEMPLATES_KEY = 'rtp_custom_templates';
+const API_BASE = '/api/admin/consent';
+
+function getAuthHeaders(): HeadersInit {
+	const token = browser ? localStorage.getItem('access_token') : '';
+	return {
+		'Content-Type': 'application/json',
+		Accept: 'application/json',
+		...(token ? { Authorization: `Bearer ${token}` } : {}),
+	};
+}
 
 // =============================================================================
 // STORES
@@ -32,9 +41,24 @@ const activeTemplateConfig = writable<ActiveTemplateConfig>({
 });
 
 /**
- * Custom templates created by user
+ * Custom templates created by user (from backend)
  */
 const customTemplates = writable<Map<string, BannerTemplate>>(new Map());
+
+/**
+ * Backend templates (from database)
+ */
+const backendTemplates = writable<BannerTemplate[]>([]);
+
+/**
+ * Active template ID from backend
+ */
+const backendActiveId = writable<number | null>(null);
+
+/**
+ * Loading state
+ */
+export const isLoading = writable<boolean>(false);
 
 /**
  * Preview mode template (for admin preview)
@@ -54,14 +78,20 @@ export const isPreviewMode = writable<boolean>(false);
  * Current active template (fully resolved with customizations)
  */
 export const activeTemplate = derived(
-	[activeTemplateConfig, customTemplates, previewTemplate, isPreviewMode],
-	([$config, $custom, $preview, $isPreview]) => {
+	[activeTemplateConfig, customTemplates, backendTemplates, previewTemplate, isPreviewMode],
+	([$config, $custom, $backend, $preview, $isPreview]) => {
 		// If preview mode, return preview template
 		if ($isPreview && $preview) {
 			return $preview;
 		}
 
-		// Check custom templates first
+		// Check backend templates first
+		const backendTemplate = $backend.find((t) => t.id === $config.templateId);
+		if (backendTemplate) {
+			return applyCustomization(backendTemplate, $config.customization);
+		}
+
+		// Check custom templates
 		const customTemplate = $custom.get($config.templateId);
 		if (customTemplate) {
 			return applyCustomization(customTemplate, $config.customization);
@@ -78,16 +108,25 @@ export const activeTemplate = derived(
 );
 
 /**
- * All available templates (built-in + custom)
+ * All available templates (built-in + backend + custom)
  */
-export const allTemplates = derived(customTemplates, ($custom) => {
+export const allTemplates = derived([customTemplates, backendTemplates], ([$custom, $backend]) => {
 	const templates = [...BANNER_TEMPLATES];
-	$custom.forEach((template) => {
-		// Add custom templates that don't override built-in ones
-		if (!BANNER_TEMPLATES.find((t) => t.id === template.id)) {
+
+	// Add backend templates
+	$backend.forEach((template) => {
+		if (!templates.find((t) => t.id === template.id)) {
 			templates.push(template);
 		}
 	});
+
+	// Add custom templates
+	$custom.forEach((template) => {
+		if (!templates.find((t) => t.id === template.id)) {
+			templates.push(template);
+		}
+	});
+
 	return templates;
 });
 
@@ -117,18 +156,269 @@ function applyCustomization(
 }
 
 /**
- * Deep merge objects
+ * Convert backend template format to frontend format
  */
-function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
-	const result = { ...target };
-	for (const key in source) {
-		if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-			result[key] = deepMerge(result[key] as any, source[key] as any);
-		} else if (source[key] !== undefined) {
-			result[key] = source[key] as any;
+function convertBackendTemplate(backendTemplate: any): BannerTemplate {
+	return {
+		id: backendTemplate.id.toString(),
+		name: backendTemplate.name,
+		description: backendTemplate.description || '',
+		category: backendTemplate.category || 'custom',
+		layout: backendTemplate.layout_type || 'bar',
+		position: backendTemplate.position || 'bottom',
+		isEditable: !backendTemplate.is_system,
+		colors: {
+			background: backendTemplate.background_color || '#1e293b',
+			text: backendTemplate.text_color || '#e2e8f0',
+			link: backendTemplate.link_color || '#0ea5e9',
+			title: backendTemplate.title_color || '#f8fafc',
+			border: backendTemplate.border_color || '#334155',
+			acceptBg: backendTemplate.accept_btn_bg || '#0ea5e9',
+			acceptText: backendTemplate.accept_btn_text || '#ffffff',
+			rejectBg: backendTemplate.reject_btn_bg || 'transparent',
+			rejectText: backendTemplate.reject_btn_text || '#94a3b8',
+			settingsBg: backendTemplate.settings_btn_bg || 'transparent',
+			settingsText: backendTemplate.settings_btn_text || '#94a3b8',
+			toggleActive: backendTemplate.toggle_active_color || '#0ea5e9',
+			toggleInactive: backendTemplate.toggle_inactive_color || '#475569',
+		},
+		typography: {
+			fontFamily: backendTemplate.font_family || 'Inter, system-ui, sans-serif',
+			titleSize: backendTemplate.title_font_size || 18,
+			titleWeight: backendTemplate.title_font_weight || 600,
+			bodySize: backendTemplate.body_font_size || 14,
+			bodyWeight: backendTemplate.body_font_weight || 400,
+			buttonSize: backendTemplate.btn_font_size || 14,
+			buttonWeight: backendTemplate.btn_font_weight || 500,
+		},
+		spacing: {
+			padding: {
+				top: backendTemplate.padding_top || 20,
+				bottom: backendTemplate.padding_bottom || 20,
+				left: backendTemplate.padding_left || 24,
+				right: backendTemplate.padding_right || 24,
+			},
+			buttonPadding: {
+				x: backendTemplate.btn_padding_x || 16,
+				y: backendTemplate.btn_padding_y || 10,
+			},
+			buttonMargin: backendTemplate.btn_margin || 8,
+			borderRadius: backendTemplate.btn_border_radius || 6,
+			containerRadius: backendTemplate.container_border_radius || 12,
+			maxWidth: backendTemplate.container_max_width || 1200,
+		},
+		animation: {
+			type: backendTemplate.animation_type || 'slide',
+			duration: backendTemplate.animation_duration || 300,
+		},
+		copy: {
+			title: backendTemplate.title || 'We value your privacy',
+			acceptButton: backendTemplate.accept_btn_label || 'Accept All',
+			rejectButton: backendTemplate.reject_btn_label || 'Reject All',
+			settingsButton: backendTemplate.settings_btn_label || 'Manage Preferences',
+			privacyLinkText: backendTemplate.privacy_link_text || 'Privacy Policy',
+			cookieLinkText: backendTemplate.cookie_link_text || 'Cookie Policy',
+		},
+		options: {
+			showRejectButton: backendTemplate.show_reject_btn ?? true,
+			showSettingsButton: backendTemplate.show_settings_btn ?? true,
+			showPrivacyLink: backendTemplate.show_privacy_link ?? true,
+			showCookieLink: backendTemplate.show_cookie_link ?? false,
+			closeOnScroll: backendTemplate.close_on_scroll ?? false,
+			closeOnScrollDistance: backendTemplate.close_on_scroll_distance || 60,
+			showCloseButton: backendTemplate.show_close_btn ?? false,
+			blockPageScroll: backendTemplate.block_page_scroll ?? false,
+			showPoweredBy: backendTemplate.show_powered_by ?? false,
+		},
+	};
+}
+
+/**
+ * Convert frontend template to backend format
+ */
+function convertToBackendFormat(template: BannerTemplate): any {
+	return {
+		name: template.name,
+		description: template.description,
+		category: template.category,
+		layout_type: template.layout,
+		position: template.position,
+		background_color: template.colors?.background,
+		text_color: template.colors?.text,
+		link_color: template.colors?.link,
+		title_color: template.colors?.title,
+		border_color: template.colors?.border,
+		accept_btn_bg: template.colors?.acceptBg,
+		accept_btn_text: template.colors?.acceptText,
+		reject_btn_bg: template.colors?.rejectBg,
+		reject_btn_text: template.colors?.rejectText,
+		settings_btn_bg: template.colors?.settingsBg,
+		settings_btn_text: template.colors?.settingsText,
+		toggle_active_color: template.colors?.toggleActive,
+		toggle_inactive_color: template.colors?.toggleInactive,
+		font_family: template.typography?.fontFamily,
+		title_font_size: template.typography?.titleSize,
+		title_font_weight: template.typography?.titleWeight,
+		body_font_size: template.typography?.bodySize,
+		body_font_weight: template.typography?.bodyWeight,
+		btn_font_size: template.typography?.buttonSize,
+		btn_font_weight: template.typography?.buttonWeight,
+		padding_top: template.spacing?.padding?.top,
+		padding_bottom: template.spacing?.padding?.bottom,
+		padding_left: template.spacing?.padding?.left,
+		padding_right: template.spacing?.padding?.right,
+		btn_padding_x: template.spacing?.buttonPadding?.x,
+		btn_padding_y: template.spacing?.buttonPadding?.y,
+		btn_margin: template.spacing?.buttonMargin,
+		btn_border_radius: template.spacing?.borderRadius,
+		container_border_radius: template.spacing?.containerRadius,
+		container_max_width: template.spacing?.maxWidth,
+		animation_type: template.animation?.type,
+		animation_duration: template.animation?.duration,
+		title: template.copy?.title,
+		accept_btn_label: template.copy?.acceptButton,
+		reject_btn_label: template.copy?.rejectButton,
+		settings_btn_label: template.copy?.settingsButton,
+		privacy_link_text: template.copy?.privacyLinkText,
+		cookie_link_text: template.copy?.cookieLinkText,
+		show_reject_btn: template.options?.showRejectButton,
+		show_settings_btn: template.options?.showSettingsButton,
+		show_privacy_link: template.options?.showPrivacyLink,
+		show_cookie_link: template.options?.showCookieLink,
+		close_on_scroll: template.options?.closeOnScroll,
+		close_on_scroll_distance: template.options?.closeOnScrollDistance,
+		show_close_btn: template.options?.showCloseButton,
+		block_page_scroll: template.options?.blockPageScroll,
+		show_powered_by: template.options?.showPoweredBy,
+	};
+}
+
+// =============================================================================
+// API FUNCTIONS
+// =============================================================================
+
+/**
+ * Fetch templates from backend
+ */
+async function fetchTemplatesFromBackend(): Promise<void> {
+	if (!browser) return;
+
+	try {
+		const response = await fetch(`${API_BASE}/templates`, {
+			headers: getAuthHeaders(),
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			if (data.success && data.data) {
+				const templates = (data.data.templates || []).map(convertBackendTemplate);
+				backendTemplates.set(templates);
+
+				if (data.data.activeId) {
+					backendActiveId.set(data.data.activeId);
+					activeTemplateConfig.update((config) => ({
+						...config,
+						templateId: data.data.activeId.toString(),
+					}));
+				}
+			}
 		}
+	} catch (error) {
+		console.error('[TemplateStore] Failed to fetch templates from backend:', error);
 	}
-	return result;
+}
+
+/**
+ * Create template in backend
+ */
+async function createTemplateInBackend(template: BannerTemplate): Promise<string | null> {
+	if (!browser) return null;
+
+	try {
+		const response = await fetch(`${API_BASE}/templates`, {
+			method: 'POST',
+			headers: getAuthHeaders(),
+			body: JSON.stringify(convertToBackendFormat(template)),
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			if (data.success && data.data) {
+				await fetchTemplatesFromBackend();
+				return data.data.id.toString();
+			}
+		}
+	} catch (error) {
+		console.error('[TemplateStore] Failed to create template:', error);
+	}
+	return null;
+}
+
+/**
+ * Update template in backend
+ */
+async function updateTemplateInBackend(id: string, template: Partial<BannerTemplate>): Promise<boolean> {
+	if (!browser) return false;
+
+	try {
+		const response = await fetch(`${API_BASE}/templates/${id}`, {
+			method: 'PUT',
+			headers: getAuthHeaders(),
+			body: JSON.stringify(convertToBackendFormat(template as BannerTemplate)),
+		});
+
+		if (response.ok) {
+			await fetchTemplatesFromBackend();
+			return true;
+		}
+	} catch (error) {
+		console.error('[TemplateStore] Failed to update template:', error);
+	}
+	return false;
+}
+
+/**
+ * Delete template from backend
+ */
+async function deleteTemplateFromBackend(id: string): Promise<boolean> {
+	if (!browser) return false;
+
+	try {
+		const response = await fetch(`${API_BASE}/templates/${id}`, {
+			method: 'DELETE',
+			headers: getAuthHeaders(),
+		});
+
+		if (response.ok) {
+			await fetchTemplatesFromBackend();
+			return true;
+		}
+	} catch (error) {
+		console.error('[TemplateStore] Failed to delete template:', error);
+	}
+	return false;
+}
+
+/**
+ * Activate template in backend
+ */
+async function activateTemplateInBackend(id: string): Promise<boolean> {
+	if (!browser) return false;
+
+	try {
+		const response = await fetch(`${API_BASE}/templates/${id}/activate`, {
+			method: 'POST',
+			headers: getAuthHeaders(),
+		});
+
+		if (response.ok) {
+			backendActiveId.set(parseInt(id));
+			return true;
+		}
+	} catch (error) {
+		console.error('[TemplateStore] Failed to activate template:', error);
+	}
+	return false;
 }
 
 // =============================================================================
@@ -136,61 +426,39 @@ function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>)
 // =============================================================================
 
 /**
- * Initialize template store (load from storage)
+ * Initialize template store (load from backend)
  */
-export function initializeTemplateStore(): void {
+export async function initializeTemplateStore(): Promise<void> {
 	if (!browser) return;
 
-	// Load active template config
+	isLoading.set(true);
+
 	try {
-		const stored = localStorage.getItem(ACTIVE_TEMPLATE_KEY);
-		if (stored) {
-			const config = JSON.parse(stored) as ActiveTemplateConfig;
-			activeTemplateConfig.set(config);
-		}
-	} catch (e) {
-		console.debug('[TemplateStore] Failed to load active template:', e);
+		await fetchTemplatesFromBackend();
+	} catch (error) {
+		console.error('[TemplateStore] Failed to initialize:', error);
+	} finally {
+		isLoading.set(false);
 	}
 
-	// Load custom templates
-	try {
-		const stored = localStorage.getItem(CUSTOM_TEMPLATES_KEY);
-		if (stored) {
-			const templates = JSON.parse(stored) as BannerTemplate[];
-			const map = new Map<string, BannerTemplate>();
-			templates.forEach((t) => map.set(t.id, t));
-			customTemplates.set(map);
-		}
-	} catch (e) {
-		console.debug('[TemplateStore] Failed to load custom templates:', e);
-	}
-
-	console.debug('[TemplateStore] Initialized');
-}
-
-/**
- * Save store to localStorage
- */
-function saveToStorage(): void {
-	if (!browser) return;
-
-	const config = get(activeTemplateConfig);
-	localStorage.setItem(ACTIVE_TEMPLATE_KEY, JSON.stringify(config));
-
-	const custom = get(customTemplates);
-	localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify([...custom.values()]));
+	console.debug('[TemplateStore] Initialized with backend data');
 }
 
 /**
  * Set active template
  */
-export function setActiveTemplate(templateId: string): void {
-	const template = getTemplate(templateId) || get(customTemplates).get(templateId);
+export async function setActiveTemplate(templateId: string): Promise<void> {
+	const template =
+		getTemplate(templateId) ||
+		get(customTemplates).get(templateId) ||
+		get(backendTemplates).find((t) => t.id === templateId);
+
 	if (!template) {
 		console.warn('[TemplateStore] Template not found:', templateId);
 		return;
 	}
 
+	// Update local state immediately
 	activeTemplateConfig.update((config) => ({
 		...config,
 		templateId,
@@ -198,7 +466,12 @@ export function setActiveTemplate(templateId: string): void {
 		updatedAt: new Date().toISOString(),
 	}));
 
-	saveToStorage();
+	// Sync to backend if it's a backend template
+	const backendTemplate = get(backendTemplates).find((t) => t.id === templateId);
+	if (backendTemplate) {
+		await activateTemplateInBackend(templateId);
+	}
+
 	console.debug('[TemplateStore] Active template set:', templateId);
 }
 
@@ -223,8 +496,6 @@ export function updateCustomization(customization: Partial<TemplateCustomization
 			updatedAt: new Date().toISOString(),
 		};
 	});
-
-	saveToStorage();
 }
 
 /**
@@ -236,40 +507,52 @@ export function clearCustomization(): void {
 		customization: undefined,
 		updatedAt: new Date().toISOString(),
 	}));
-
-	saveToStorage();
 }
 
 /**
- * Save as custom template
+ * Save as custom template (to backend)
  */
-export function saveAsCustomTemplate(name: string): string {
+export async function saveAsCustomTemplate(name: string): Promise<string> {
 	const current = get(activeTemplate);
-	const customId = `custom-${Date.now().toString(36)}`;
 
 	const customTemplate: BannerTemplate = {
 		...current,
-		id: customId,
+		id: `custom-${Date.now().toString(36)}`,
 		name,
 		category: 'custom',
 		isEditable: true,
 	};
 
+	// Try to save to backend first
+	const backendId = await createTemplateInBackend(customTemplate);
+
+	if (backendId) {
+		console.debug('[TemplateStore] Custom template saved to backend:', backendId);
+		return backendId;
+	}
+
+	// Fallback to local storage
 	customTemplates.update((map) => {
-		map.set(customId, customTemplate);
+		map.set(customTemplate.id, customTemplate);
 		return new Map(map);
 	});
 
-	saveToStorage();
-	console.debug('[TemplateStore] Custom template saved:', customId);
-
-	return customId;
+	console.debug('[TemplateStore] Custom template saved locally:', customTemplate.id);
+	return customTemplate.id;
 }
 
 /**
  * Update custom template
  */
-export function updateCustomTemplate(id: string, updates: Partial<BannerTemplate>): void {
+export async function updateCustomTemplate(id: string, updates: Partial<BannerTemplate>): Promise<void> {
+	// Try backend first
+	const backendTemplate = get(backendTemplates).find((t) => t.id === id);
+	if (backendTemplate) {
+		await updateTemplateInBackend(id, updates);
+		return;
+	}
+
+	// Fallback to local
 	customTemplates.update((map) => {
 		const existing = map.get(id);
 		if (existing) {
@@ -277,14 +560,19 @@ export function updateCustomTemplate(id: string, updates: Partial<BannerTemplate
 		}
 		return new Map(map);
 	});
-
-	saveToStorage();
 }
 
 /**
  * Delete custom template
  */
-export function deleteCustomTemplate(id: string): void {
+export async function deleteCustomTemplate(id: string): Promise<void> {
+	// Try backend first
+	const backendTemplate = get(backendTemplates).find((t) => t.id === id);
+	if (backendTemplate) {
+		await deleteTemplateFromBackend(id);
+	}
+
+	// Remove from local
 	customTemplates.update((map) => {
 		map.delete(id);
 		return new Map(map);
@@ -293,10 +581,8 @@ export function deleteCustomTemplate(id: string): void {
 	// If active template was deleted, reset to default
 	const config = get(activeTemplateConfig);
 	if (config.templateId === id) {
-		setActiveTemplate(DEFAULT_TEMPLATE_ID);
+		await setActiveTemplate(DEFAULT_TEMPLATE_ID);
 	}
-
-	saveToStorage();
 }
 
 /**
@@ -318,10 +604,10 @@ export function exitPreviewMode(): void {
 /**
  * Apply preview as active
  */
-export function applyPreview(): void {
+export async function applyPreview(): Promise<void> {
 	const preview = get(previewTemplate);
 	if (preview) {
-		setActiveTemplate(preview.id);
+		await setActiveTemplate(preview.id);
 	}
 	exitPreviewMode();
 }
@@ -348,6 +634,7 @@ export function exportTemplateConfig(): string {
 		{
 			activeConfig: get(activeTemplateConfig),
 			customTemplates: [...get(customTemplates).values()],
+			backendTemplates: get(backendTemplates),
 			exportedAt: new Date().toISOString(),
 		},
 		null,
@@ -358,7 +645,7 @@ export function exportTemplateConfig(): string {
 /**
  * Import template configuration
  */
-export function importTemplateConfig(json: string): boolean {
+export async function importTemplateConfig(json: string): Promise<boolean> {
 	try {
 		const data = JSON.parse(json);
 
@@ -367,16 +654,26 @@ export function importTemplateConfig(json: string): boolean {
 		}
 
 		if (data.customTemplates && Array.isArray(data.customTemplates)) {
-			const map = new Map<string, BannerTemplate>();
-			data.customTemplates.forEach((t: BannerTemplate) => map.set(t.id, t));
-			customTemplates.set(map);
+			// Try to import to backend
+			for (const template of data.customTemplates) {
+				await createTemplateInBackend(template);
+			}
 		}
 
-		saveToStorage();
+		// Refresh from backend
+		await fetchTemplatesFromBackend();
+
 		console.debug('[TemplateStore] Configuration imported');
 		return true;
 	} catch (e) {
 		console.error('[TemplateStore] Failed to import configuration:', e);
 		return false;
 	}
+}
+
+/**
+ * Refresh templates from backend
+ */
+export async function refreshTemplates(): Promise<void> {
+	await fetchTemplatesFromBackend();
 }
