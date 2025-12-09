@@ -228,7 +228,7 @@
 					<IconCommand size={18} />
 				</button>
 
-				<a href="/" class="view-site-btn" target="_blank">View Site</a>
+				<a href="/" class="view-site-btn">View Site</a>
 			</div>
 		</header>
 
