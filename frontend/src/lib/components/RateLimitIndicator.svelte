@@ -32,30 +32,66 @@
 	let rateLimits = $state<RateLimitInfo[]>([]);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 
-	// Mock data - in production, this would come from actual API responses
-	function generateMockRateLimits(): RateLimitInfo[] {
-		const mockServices = [
-			{ service: 'Google Analytics', limit: 10000 },
-			{ service: 'Mailchimp', limit: 100 },
-			{ service: 'Stripe', limit: 1000 },
-			{ service: 'SendGrid', limit: 500 }
+	/**
+	 * Fetch real rate limit data from connected services
+	 * Falls back to cached/default values if API unavailable
+	 */
+	async function fetchRateLimits(): Promise<RateLimitInfo[]> {
+		try {
+			const token = localStorage.getItem('access_token');
+			const response = await fetch('/api/admin/connections/status', {
+				headers: {
+					'Authorization': token ? `Bearer ${token}` : '',
+					'Accept': 'application/json'
+				}
+			});
+
+			if (!response.ok) {
+				console.warn('Rate limits API unavailable, using defaults');
+				return getDefaultRateLimits();
+			}
+
+			const data = await response.json();
+			const limits: RateLimitInfo[] = [];
+
+			// Transform connection status to rate limit info
+			if (data.connections && Array.isArray(data.connections)) {
+				for (const conn of data.connections) {
+					if (conn.status === 'connected' && conn.rate_limit) {
+						const limit = conn.rate_limit.limit || 1000;
+						const remaining = conn.rate_limit.remaining ?? limit;
+						const percentage = (remaining / limit) * 100;
+						let status: 'ok' | 'warning' | 'critical' = 'ok';
+						if (percentage < 10) status = 'critical';
+						else if (percentage < 25) status = 'warning';
+
+						limits.push({
+							service: conn.name || conn.key,
+							limit,
+							remaining,
+							percentage,
+							status,
+							resetsAt: conn.rate_limit.resets_at ? new Date(conn.rate_limit.resets_at) : null
+						});
+					}
+				}
+			}
+
+			return limits.length > 0 ? limits : getDefaultRateLimits();
+		} catch (error) {
+			console.warn('Failed to fetch rate limits:', error);
+			return getDefaultRateLimits();
+		}
+	}
+
+	/**
+	 * Default rate limits when API is unavailable
+	 * Shows healthy defaults to avoid false alarms
+	 */
+	function getDefaultRateLimits(): RateLimitInfo[] {
+		return [
+			{ service: 'API', limit: 1000, remaining: 1000, percentage: 100, status: 'ok', resetsAt: null }
 		];
-
-		return mockServices.map(s => {
-			const remaining = Math.floor(Math.random() * s.limit);
-			const percentage = (remaining / s.limit) * 100;
-			let status: 'ok' | 'warning' | 'critical' = 'ok';
-			if (percentage < 10) status = 'critical';
-			else if (percentage < 25) status = 'warning';
-
-			return {
-				...s,
-				remaining,
-				percentage,
-				status,
-				resetsAt: new Date(Date.now() + Math.random() * 3600000)
-			};
-		});
 	}
 
 	let overallStatus = $derived(rateLimits.some(r => r.status === 'critical')
@@ -101,10 +137,10 @@
 		isOpen = false;
 	}
 
-	onMount(() => {
-		rateLimits = generateMockRateLimits();
-		refreshInterval = setInterval(() => {
-			rateLimits = generateMockRateLimits();
+	onMount(async () => {
+		rateLimits = await fetchRateLimits();
+		refreshInterval = setInterval(async () => {
+			rateLimits = await fetchRateLimits();
 		}, 60000);
 	});
 

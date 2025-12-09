@@ -1,232 +1,147 @@
 /**
- * CRM Deals API - RevolutionCRM Pro
+ * CRM Deals API - Proxy to Backend
  *
- * Manages deals/opportunities for the built-in CRM system.
+ * Proxies deals/opportunities management requests to the Laravel backend.
+ * Handles deal CRUD operations for the RevolutionCRM Pro system.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025 - Connected to real backend
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-interface Deal {
-	id: string;
-	name: string;
-	contact_id: string;
-	contact_name?: string;
-	company_id?: string;
-	pipeline_id: string;
-	stage_id: string;
-	stage_name: string;
-	amount: number;
-	currency: string;
-	probability: number;
-	status: 'open' | 'won' | 'lost' | 'abandoned';
-	priority: 'low' | 'normal' | 'high' | 'urgent';
-	expected_close_date: string;
-	close_date?: string;
-	owner_id: string;
-	owner_name: string;
-	source_channel?: string;
-	tags: string[];
-	created_at: string;
-	updated_at: string;
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+/**
+ * Get authorization headers from request
+ */
+function getAuthHeaders(request: Request): HeadersInit {
+	const authHeader = request.headers.get('Authorization');
+	const headers: HeadersInit = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+	};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	}
+	return headers;
 }
 
-// In-memory storage with sample data
-const deals: Map<string, Deal> = new Map();
+// GET - List deals (proxies to backend)
+export const GET: RequestHandler = async ({ url, request }) => {
+	try {
+		// Forward query params to backend
+		const queryParams = new URLSearchParams();
 
-// Initialize with sample data
-function initializeSampleData() {
-	if (deals.size > 0) return;
+		const status = url.searchParams.get('status');
+		const pipeline_id = url.searchParams.get('pipeline_id');
+		const stage_id = url.searchParams.get('stage_id');
+		const page = url.searchParams.get('page');
+		const limit = url.searchParams.get('limit') || url.searchParams.get('per_page');
+		const owner_id = url.searchParams.get('owner_id');
+		const contact_id = url.searchParams.get('contact_id');
 
-	const sampleDeals: Deal[] = [
-		{
-			id: 'deal_1',
-			name: 'Enterprise Trading Package - FinTech Solutions',
-			contact_id: 'contact_6',
-			contact_name: 'Amanda Taylor',
-			pipeline_id: 'pipeline_main',
-			stage_id: 'negotiation',
-			stage_name: 'Negotiation',
-			amount: 24999,
-			currency: 'USD',
-			probability: 75,
-			status: 'open',
-			priority: 'high',
-			expected_close_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-			owner_id: 'user_1',
-			owner_name: 'Sales Team',
-			source_channel: 'event',
-			tags: ['enterprise', 'priority'],
-			created_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: 'deal_2',
-			name: 'Pro Membership Upgrade - Michael Chen',
-			contact_id: 'contact_3',
-			contact_name: 'Michael Chen',
-			pipeline_id: 'pipeline_main',
-			stage_id: 'proposal',
-			stage_name: 'Proposal',
-			amount: 1499,
-			currency: 'USD',
-			probability: 50,
-			status: 'open',
-			priority: 'normal',
-			expected_close_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-			owner_id: 'user_1',
-			owner_name: 'Sales Team',
-			source_channel: 'trial',
-			tags: ['upgrade', 'trial-conversion'],
-			created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: 'deal_3',
-			name: 'VIP Coaching Package - Robert Davis',
-			contact_id: 'contact_5',
-			contact_name: 'Robert Davis',
-			pipeline_id: 'pipeline_main',
-			stage_id: 'qualified',
-			stage_name: 'Qualified',
-			amount: 4999,
-			currency: 'USD',
-			probability: 30,
-			status: 'open',
-			priority: 'normal',
-			expected_close_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-			owner_id: 'user_1',
-			owner_name: 'Sales Team',
-			source_channel: 'webinar',
-			tags: ['coaching', 'high-value'],
-			created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		{
-			id: 'deal_4',
-			name: 'Annual Premium - Sarah Johnson (Renewal)',
-			contact_id: 'contact_2',
-			contact_name: 'Sarah Johnson',
-			pipeline_id: 'pipeline_renewals',
-			stage_id: 'closed',
-			stage_name: 'Closed Won',
-			amount: 12999,
-			currency: 'USD',
-			probability: 100,
-			status: 'won',
-			priority: 'high',
-			expected_close_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-			close_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-			owner_id: 'user_1',
-			owner_name: 'Sales Team',
-			source_channel: 'renewal',
-			tags: ['renewal', 'vip'],
-			created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-			updated_at: new Date().toISOString()
+		if (status && status !== 'all') queryParams.set('status', status);
+		if (pipeline_id) queryParams.set('pipeline_id', pipeline_id);
+		if (stage_id) queryParams.set('stage_id', stage_id);
+		if (page) queryParams.set('page', page);
+		if (limit) queryParams.set('per_page', limit);
+		if (owner_id) queryParams.set('owner_id', owner_id);
+		if (contact_id) queryParams.set('contact_id', contact_id);
+
+		const backendUrl = `${BACKEND_URL}/admin/crm/deals${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+
+		const response = await fetch(backendUrl, {
+			method: 'GET',
+			headers: getAuthHeaders(request),
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Failed to fetch deals' }));
+			return json({
+				success: false,
+				error: errorData.message || 'Failed to fetch deals',
+				data: [],
+				meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
+			}, { status: response.status });
 		}
-	];
 
-	for (const deal of sampleDeals) {
-		deals.set(deal.id, deal);
+		const data = await response.json();
+
+		// Transform backend pagination response to match frontend expected format
+		return json({
+			success: true,
+			data: data.data || [],
+			meta: {
+				page: data.current_page || 1,
+				limit: data.per_page || 20,
+				total: data.total || 0,
+				total_pages: data.last_page || 0
+			}
+		});
+	} catch (err) {
+		console.error('CRM Deals API proxy error:', err);
+		return json({
+			success: false,
+			error: 'Failed to connect to backend',
+			data: [],
+			meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
+		}, { status: 503 });
 	}
-}
-
-// Initialize on module load
-initializeSampleData();
-
-// GET - List deals
-export const GET: RequestHandler = async ({ url }) => {
-	const status = url.searchParams.get('status');
-	const pipeline_id = url.searchParams.get('pipeline_id');
-	const stage_id = url.searchParams.get('stage_id');
-	const page = parseInt(url.searchParams.get('page') || '1');
-	const limit = parseInt(url.searchParams.get('limit') || '20');
-
-	let dealList = Array.from(deals.values());
-
-	// Filter by status
-	if (status && status !== 'all') {
-		dealList = dealList.filter(d => d.status === status);
-	}
-
-	// Filter by pipeline
-	if (pipeline_id) {
-		dealList = dealList.filter(d => d.pipeline_id === pipeline_id);
-	}
-
-	// Filter by stage
-	if (stage_id) {
-		dealList = dealList.filter(d => d.stage_id === stage_id);
-	}
-
-	// Sort by expected close date (soonest first)
-	dealList.sort((a, b) =>
-		new Date(a.expected_close_date).getTime() - new Date(b.expected_close_date).getTime()
-	);
-
-	// Pagination
-	const total = dealList.length;
-	const offset = (page - 1) * limit;
-	const paginatedDeals = dealList.slice(offset, offset + limit);
-
-	return json({
-		success: true,
-		data: paginatedDeals,
-		meta: {
-			page,
-			limit,
-			total,
-			total_pages: Math.ceil(total / limit)
-		}
-	});
 };
 
-// POST - Create deal
+// POST - Create deal (proxies to backend)
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
 
+		// Validate required fields
 		if (!body.name) {
 			throw error(400, 'Deal name is required');
 		}
 
-		const id = `deal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+		const response = await fetch(`${BACKEND_URL}/admin/crm/deals`, {
+			method: 'POST',
+			headers: getAuthHeaders(request),
+			body: JSON.stringify({
+				name: body.name,
+				contact_id: body.contact_id,
+				company_id: body.company_id,
+				pipeline_id: body.pipeline_id || 'default',
+				stage_id: body.stage_id,
+				amount: body.amount || 0,
+				currency: body.currency || 'USD',
+				probability: body.probability || 10,
+				status: body.status || 'open',
+				priority: body.priority || 'normal',
+				expected_close_date: body.expected_close_date,
+				owner_id: body.owner_id,
+				source_channel: body.source_channel,
+				tags: body.tags || [],
+				custom_fields: body.custom_fields || {},
+			}),
+		});
 
-		const deal: Deal = {
-			id,
-			name: body.name,
-			contact_id: body.contact_id || '',
-			contact_name: body.contact_name,
-			company_id: body.company_id,
-			pipeline_id: body.pipeline_id || 'pipeline_main',
-			stage_id: body.stage_id || 'lead',
-			stage_name: body.stage_name || 'Lead',
-			amount: body.amount || 0,
-			currency: body.currency || 'USD',
-			probability: body.probability || 10,
-			status: body.status || 'open',
-			priority: body.priority || 'normal',
-			expected_close_date: body.expected_close_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-			owner_id: body.owner_id || 'user_1',
-			owner_name: body.owner_name || 'Sales Team',
-			source_channel: body.source_channel,
-			tags: body.tags || [],
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		};
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Failed to create deal' }));
+			return json({
+				success: false,
+				error: errorData.message || 'Failed to create deal',
+				errors: errorData.errors
+			}, { status: response.status });
+		}
 
-		deals.set(id, deal);
+		const data = await response.json();
 
 		return json({
 			success: true,
-			data: deal
+			data: data
 		}, { status: 201 });
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
+		console.error('CRM Deals API create error:', err);
 		throw error(500, 'Failed to create deal');
 	}
 };

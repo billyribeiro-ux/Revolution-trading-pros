@@ -1596,19 +1596,91 @@ export default {
 	prefetchData
 };
 
-// Additional API exports for compatibility
+// Organization APIs - These proxy to backend endpoints
+// Note: /api/admin/organization/teams and /api/admin/organization/departments
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
+function getAuthHeaders(): HeadersInit {
+	const token = typeof localStorage !== 'undefined' ? localStorage.getItem('access_token') : '';
+	return {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+		...(token ? { 'Authorization': `Bearer ${token}` } : {})
+	};
+}
+
 export const teamsApi = {
-	list: async () => ({ data: [] }),
-	get: async (_id: number) => ({ data: null }),
-	create: async (_data: any) => ({ data: null }),
-	update: async (_id: number, _data: any) => ({ data: null }),
-	delete: async (_id: number) => ({ success: true })
+	list: async () => {
+		const response = await fetch(`${API_BASE}/admin/organization/teams`, { headers: getAuthHeaders() });
+		if (!response.ok) return { data: [] }; // Graceful fallback
+		return response.json();
+	},
+	get: async (id: number | string) => {
+		const response = await fetch(`${API_BASE}/admin/organization/teams/${id}`, { headers: getAuthHeaders() });
+		if (!response.ok) return { data: null };
+		return response.json();
+	},
+	create: async (data: any) => {
+		const response = await fetch(`${API_BASE}/admin/organization/teams`, {
+			method: 'POST',
+			headers: getAuthHeaders(),
+			body: JSON.stringify(data)
+		});
+		if (!response.ok) throw new AdminApiError('Failed to create team', response.status);
+		return response.json();
+	},
+	update: async (id: number | string, data: any) => {
+		const response = await fetch(`${API_BASE}/admin/organization/teams/${id}`, {
+			method: 'PUT',
+			headers: getAuthHeaders(),
+			body: JSON.stringify(data)
+		});
+		if (!response.ok) throw new AdminApiError('Failed to update team', response.status);
+		return response.json();
+	},
+	delete: async (id: number | string) => {
+		const response = await fetch(`${API_BASE}/admin/organization/teams/${id}`, {
+			method: 'DELETE',
+			headers: getAuthHeaders()
+		});
+		return { success: response.ok };
+	}
 };
 
 export const departmentsApi = {
-	list: async () => ({ data: [] }),
-	get: async (_id: number) => ({ data: null }),
-	create: async (_data: any) => ({ data: null }),
-	update: async (_id: number, _data: any) => ({ data: null }),
-	delete: async (_id: number) => ({ success: true })
+	list: async () => {
+		const response = await fetch(`${API_BASE}/admin/organization/departments`, { headers: getAuthHeaders() });
+		if (!response.ok) return { data: [] }; // Graceful fallback
+		return response.json();
+	},
+	get: async (id: number | string) => {
+		const response = await fetch(`${API_BASE}/admin/organization/departments/${id}`, { headers: getAuthHeaders() });
+		if (!response.ok) return { data: null };
+		return response.json();
+	},
+	create: async (data: any) => {
+		const response = await fetch(`${API_BASE}/admin/organization/departments`, {
+			method: 'POST',
+			headers: getAuthHeaders(),
+			body: JSON.stringify(data)
+		});
+		if (!response.ok) throw new AdminApiError('Failed to create department', response.status);
+		return response.json();
+	},
+	update: async (id: number | string, data: any) => {
+		const response = await fetch(`${API_BASE}/admin/organization/departments/${id}`, {
+			method: 'PUT',
+			headers: getAuthHeaders(),
+			body: JSON.stringify(data)
+		});
+		if (!response.ok) throw new AdminApiError('Failed to update department', response.status);
+		return response.json();
+	},
+	delete: async (id: number | string) => {
+		const response = await fetch(`${API_BASE}/admin/organization/departments/${id}`, {
+			method: 'DELETE',
+			headers: getAuthHeaders()
+		});
+		return { success: response.ok };
+	}
 };

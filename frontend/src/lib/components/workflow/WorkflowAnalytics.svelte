@@ -15,31 +15,42 @@
 	async function loadAnalytics() {
 		isLoading = true;
 		try {
-			// In production: const data = await workflowApi.getWorkflowAnalytics(workflowId);
-			analytics = {
-				workflow_id: workflowId,
-				total_runs: 1247,
-				successful_runs: 1089,
-				failed_runs: 158,
-				success_rate: 87.3,
-				avg_duration_ms: 3420,
-				runs_by_day: generateMockData(),
-				failure_reasons: [
-					{ reason: 'Timeout error', count: 45 },
-					{ reason: 'API rate limit', count: 38 },
-					{ reason: 'Invalid data', count: 28 },
-					{ reason: 'Network error', count: 22 },
-					{ reason: 'Permission denied', count: 15 }
-				]
-			};
+			const token = localStorage.getItem('access_token');
+			const response = await fetch(`/api/admin/workflows/${workflowId}/analytics?range=${timeRange}`, {
+				headers: {
+					'Authorization': token ? `Bearer ${token}` : '',
+					'Accept': 'application/json'
+				}
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				analytics = {
+					workflow_id: workflowId,
+					total_runs: data.total_runs || 0,
+					successful_runs: data.successful_runs || 0,
+					failed_runs: data.failed_runs || 0,
+					success_rate: data.success_rate || 0,
+					avg_duration_ms: data.avg_duration_ms || 0,
+					runs_by_day: data.runs_by_day || generateEmptyData(),
+					failure_reasons: data.failure_reasons || []
+				};
+			} else {
+				// Show empty state when no data available
+				analytics = getEmptyAnalytics();
+			}
 		} catch (error) {
 			console.error('Failed to load analytics:', error);
+			analytics = getEmptyAnalytics();
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	function generateMockData() {
+	/**
+	 * Generate empty data array for the time range
+	 */
+	function generateEmptyData() {
 		const data = [];
 		const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
 		for (let i = days; i >= 0; i--) {
@@ -47,10 +58,26 @@
 			date.setDate(date.getDate() - i);
 			data.push({
 				date: date.toISOString().split('T')[0],
-				count: Math.floor(Math.random() * 50) + 20
+				count: 0
 			});
 		}
 		return data;
+	}
+
+	/**
+	 * Get empty analytics state
+	 */
+	function getEmptyAnalytics(): WorkflowAnalytics {
+		return {
+			workflow_id: workflowId,
+			total_runs: 0,
+			successful_runs: 0,
+			failed_runs: 0,
+			success_rate: 0,
+			avg_duration_ms: 0,
+			runs_by_day: generateEmptyData(),
+			failure_reasons: []
+		};
 	}
 
 	function formatDuration(ms: number): string {
