@@ -55,6 +55,19 @@
 	// Error state
 	let initError = $state('');
 
+	// Debounce timer for search
+	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	// Debounced search handler for faster UX
+	function handleSearchInput() {
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+		searchDebounceTimer = setTimeout(() => {
+			handleSearch();
+		}, 300); // 300ms debounce
+	}
+
 	// Initialize - Use Promise.allSettled to prevent stuck loading if one API fails
 	onMount(async () => {
 		initError = '';
@@ -408,6 +421,7 @@
 				type="text"
 				placeholder="Search members by name or email..."
 				bind:value={searchQuery}
+				oninput={handleSearchInput}
 				onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 			/>
 		</div>

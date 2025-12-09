@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { subscriptionStore } from '$lib/stores/subscriptions';
 	import {
 		getSubscriptions,
@@ -44,9 +44,28 @@
 	let currentPage = $state(1);
 	let perPage = $state(20);
 
+	// Debounce timer for search
+	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 	onMount(async () => {
 		await loadData();
 	});
+
+	onDestroy(() => {
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+	});
+
+	// Debounced search handler
+	function handleSearchInput() {
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+		searchDebounceTimer = setTimeout(() => {
+			loadData();
+		}, 300); // 300ms debounce
+	}
 
 	async function loadData() {
 		loading = true;
@@ -409,7 +428,7 @@
 						type="text"
 						id="search"
 						bind:value={searchQuery}
-						oninput={loadData}
+						oninput={handleSearchInput}
 						placeholder="Search subscriptions..."
 						class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
 					/>
