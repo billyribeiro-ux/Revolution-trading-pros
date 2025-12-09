@@ -12,26 +12,32 @@
 		IconRefresh,
 		IconDownload,
 		IconCalendar,
-		IconFilter
+		IconFilter,
+		IconSettings
 	} from '@tabler/icons-svelte';
 
 	// Analytics data
 	let loading = true;
 	let dateRange = '30d';
 
-	// Metrics
+	// Connection status - NO MOCK DATA
+	let isConnected = false;
+	let connectionError: string | null = null;
+	let hasData = false;
+
+	// Metrics - Start with null values, no fake data
 	let metrics = {
-		totalMembers: 0,
-		memberGrowth: 0,
-		mrr: 0,
-		mrrGrowth: 0,
-		churnRate: 0,
-		churnChange: 0,
-		avgLtv: 0,
-		ltvGrowth: 0
+		totalMembers: null as number | null,
+		memberGrowth: null as number | null,
+		mrr: null as number | null,
+		mrrGrowth: null as number | null,
+		churnRate: null as number | null,
+		churnChange: null as number | null,
+		avgLtv: null as number | null,
+		ltvGrowth: null as number | null
 	};
 
-	// Chart data
+	// Chart data - Empty arrays, no fake data
 	let growthData: { month: string; members: number; new: number; churned: number }[] = [];
 	let cohortData: { cohort: string; m0: number; m1: number; m2: number; m3: number; m4: number; m5: number }[] = [];
 	let revenueData: { month: string; mrr: number; expansion: number; contraction: number; churn: number }[] = [];
@@ -44,64 +50,90 @@
 
 	async function loadAnalytics() {
 		loading = true;
-		// Simulate API call with mock data
-		await new Promise((resolve) => setTimeout(resolve, 800));
+		connectionError = null;
 
-		metrics = {
-			totalMembers: 12847,
-			memberGrowth: 12.5,
-			mrr: 89420,
-			mrrGrowth: 8.3,
-			churnRate: 2.4,
-			churnChange: -0.3,
-			avgLtv: 847,
-			ltvGrowth: 15.2
-		};
+		try {
+			// Call REAL API - no mock data fallback
+			const [metricsRes, growthRes, cohortRes, revenueRes, churnRes, segmentRes] = await Promise.allSettled([
+				fetch(`/api/admin/members/analytics/metrics?range=${dateRange}`),
+				fetch(`/api/admin/members/analytics/growth?range=${dateRange}`),
+				fetch(`/api/admin/members/analytics/cohorts?range=${dateRange}`),
+				fetch(`/api/admin/members/analytics/revenue?range=${dateRange}`),
+				fetch(`/api/admin/members/analytics/churn-reasons?range=${dateRange}`),
+				fetch(`/api/admin/members/analytics/segments?range=${dateRange}`)
+			]);
 
-		growthData = [
-			{ month: 'Jul', members: 10200, new: 420, churned: 180 },
-			{ month: 'Aug', members: 10650, new: 580, churned: 130 },
-			{ month: 'Sep', members: 11100, new: 620, churned: 170 },
-			{ month: 'Oct', members: 11780, new: 850, churned: 170 },
-			{ month: 'Nov', members: 12350, new: 720, churned: 150 },
-			{ month: 'Dec', members: 12847, new: 640, churned: 143 }
-		];
+			let dataReceived = false;
 
-		cohortData = [
-			{ cohort: 'Jul 2024', m0: 100, m1: 92, m2: 88, m3: 85, m4: 82, m5: 80 },
-			{ cohort: 'Aug 2024', m0: 100, m1: 94, m2: 89, m3: 86, m4: 84, m5: 0 },
-			{ cohort: 'Sep 2024', m0: 100, m1: 91, m2: 87, m3: 84, m4: 0, m5: 0 },
-			{ cohort: 'Oct 2024', m0: 100, m1: 93, m2: 89, m3: 0, m4: 0, m5: 0 },
-			{ cohort: 'Nov 2024', m0: 100, m1: 95, m2: 0, m3: 0, m4: 0, m5: 0 },
-			{ cohort: 'Dec 2024', m0: 100, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0 }
-		];
+			// Process metrics
+			if (metricsRes.status === 'fulfilled' && metricsRes.value.ok) {
+				const data = await metricsRes.value.json();
+				if (data && typeof data.totalMembers === 'number') {
+					metrics = data;
+					dataReceived = true;
+				}
+			}
 
-		revenueData = [
-			{ month: 'Jul', mrr: 72000, expansion: 3200, contraction: 1100, churn: 2400 },
-			{ month: 'Aug', mrr: 76500, expansion: 4100, contraction: 900, churn: 2200 },
-			{ month: 'Sep', mrr: 80200, expansion: 3800, contraction: 1200, churn: 2100 },
-			{ month: 'Oct', mrr: 84100, expansion: 4500, contraction: 800, churn: 1900 },
-			{ month: 'Nov', mrr: 86800, expansion: 3200, contraction: 1000, churn: 2000 },
-			{ month: 'Dec', mrr: 89420, expansion: 3800, contraction: 900, churn: 1800 }
-		];
+			// Process growth data
+			if (growthRes.status === 'fulfilled' && growthRes.value.ok) {
+				const data = await growthRes.value.json();
+				if (Array.isArray(data) && data.length > 0) {
+					growthData = data;
+					dataReceived = true;
+				}
+			}
 
-		churnReasons = [
-			{ reason: 'Price too high', count: 42, percentage: 28 },
-			{ reason: 'Found alternative', count: 31, percentage: 21 },
-			{ reason: 'Not using enough', count: 27, percentage: 18 },
-			{ reason: 'Technical issues', count: 19, percentage: 13 },
-			{ reason: 'Missing features', count: 16, percentage: 11 },
-			{ reason: 'Other', count: 15, percentage: 10 }
-		];
+			// Process cohort data
+			if (cohortRes.status === 'fulfilled' && cohortRes.value.ok) {
+				const data = await cohortRes.value.json();
+				if (Array.isArray(data) && data.length > 0) {
+					cohortData = data;
+					dataReceived = true;
+				}
+			}
 
-		segmentData = [
-			{ segment: 'Enterprise', count: 847, revenue: 42350, churnRate: 1.2 },
-			{ segment: 'Professional', count: 3420, revenue: 28140, churnRate: 2.1 },
-			{ segment: 'Starter', count: 5890, revenue: 14720, churnRate: 3.4 },
-			{ segment: 'Trial', count: 2690, revenue: 4210, churnRate: 8.2 }
-		];
+			// Process revenue data
+			if (revenueRes.status === 'fulfilled' && revenueRes.value.ok) {
+				const data = await revenueRes.value.json();
+				if (Array.isArray(data) && data.length > 0) {
+					revenueData = data;
+					dataReceived = true;
+				}
+			}
 
-		loading = false;
+			// Process churn reasons
+			if (churnRes.status === 'fulfilled' && churnRes.value.ok) {
+				const data = await churnRes.value.json();
+				if (Array.isArray(data) && data.length > 0) {
+					churnReasons = data;
+					dataReceived = true;
+				}
+			}
+
+			// Process segment data
+			if (segmentRes.status === 'fulfilled' && segmentRes.value.ok) {
+				const data = await segmentRes.value.json();
+				if (Array.isArray(data) && data.length > 0) {
+					segmentData = data;
+					dataReceived = true;
+				}
+			}
+
+			isConnected = dataReceived;
+			hasData = dataReceived;
+
+			if (!dataReceived) {
+				connectionError = 'Member analytics data is not available. Ensure your analytics service is connected and configured.';
+			}
+		} catch (err) {
+			console.error('Failed to load member analytics:', err);
+			isConnected = false;
+			hasData = false;
+			connectionError = 'Failed to connect to analytics service. Please check your connection settings.';
+			// NO MOCK DATA - Show connection error instead
+		} finally {
+			loading = false;
+		}
 	}
 
 	function formatCurrency(amount: number): string {
@@ -183,6 +215,37 @@
 			{/each}
 		</div>
 		<div class="skeleton skeleton-chart"></div>
+	{:else if !hasData || connectionError}
+		<!-- NOT CONNECTED STATE - No fake data -->
+		<div class="not-connected-state">
+			<div class="not-connected-card">
+				<div class="not-connected-icon">
+					<IconChartBar size={40} />
+				</div>
+				<h2>Member Analytics Not Available</h2>
+				<p>{connectionError || 'Connect your analytics service to view real member metrics, growth data, and churn analysis.'}</p>
+				<div class="not-connected-actions">
+					<a href="/admin/connections" class="btn-connect">
+						<IconSettings size={18} />
+						Connect Analytics
+					</a>
+					<button class="btn-retry" onclick={loadAnalytics}>
+						<IconRefresh size={18} />
+						Retry
+					</button>
+				</div>
+				<div class="analytics-features">
+					<h3>Available when connected:</h3>
+					<ul>
+						<li>Real-time member metrics & growth trends</li>
+						<li>Monthly Recurring Revenue (MRR) tracking</li>
+						<li>Cohort retention analysis</li>
+						<li>Churn reason insights</li>
+						<li>Segment performance breakdowns</li>
+					</ul>
+				</div>
+			</div>
+		</div>
 	{:else}
 		<!-- Key Metrics -->
 		<div class="metrics-grid">
@@ -616,6 +679,132 @@
 	@keyframes shimmer {
 		0% { background-position: 200% 0; }
 		100% { background-position: -200% 0; }
+	}
+
+	/* Not Connected State - NO MOCK DATA */
+	.not-connected-state {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 3rem 1.5rem;
+		min-height: 400px;
+	}
+
+	.not-connected-card {
+		max-width: 500px;
+		text-align: center;
+		padding: 3rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 20px;
+	}
+
+	.not-connected-icon {
+		width: 80px;
+		height: 80px;
+		margin: 0 auto 1.5rem;
+		background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(249, 115, 22, 0.3));
+		border-radius: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fb923c;
+	}
+
+	.not-connected-card h2 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0 0 0.75rem;
+	}
+
+	.not-connected-card > p {
+		font-size: 0.9375rem;
+		color: #94a3b8;
+		line-height: 1.6;
+		margin: 0 0 1.5rem;
+	}
+
+	.not-connected-actions {
+		display: flex;
+		gap: 0.75rem;
+		justify-content: center;
+		margin-bottom: 2rem;
+	}
+
+	.btn-connect {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 600;
+		border-radius: 10px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.btn-connect:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+	}
+
+	.btn-retry {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: rgba(148, 163, 184, 0.1);
+		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 500;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 10px;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-retry:hover {
+		background: rgba(148, 163, 184, 0.15);
+		color: #f1f5f9;
+	}
+
+	.analytics-features {
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.analytics-features h3 {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #64748b;
+		margin: 0 0 1rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.analytics-features ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		text-align: left;
+	}
+
+	.analytics-features li {
+		font-size: 0.875rem;
+		color: #cbd5e1;
+		padding: 0.5rem 0;
+		padding-left: 1.5rem;
+		position: relative;
+	}
+
+	.analytics-features li::before {
+		content: '✓';
+		position: absolute;
+		left: 0;
+		color: #34d399;
 	}
 
 	/* Metrics Grid */

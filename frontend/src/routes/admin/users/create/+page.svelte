@@ -420,51 +420,67 @@
 
 	async function loadLookupData() {
 		try {
-			// Mock data for demo - would be real API calls in production
-			departments = [
-				{ id: 'eng', name: 'Engineering' },
-				{ id: 'sales', name: 'Sales' },
-				{ id: 'marketing', name: 'Marketing' },
-				{ id: 'support', name: 'Support' },
-				{ id: 'finance', name: 'Finance' }
-			];
+			// Load REAL data from APIs using Promise.allSettled for resilience
+			const [deptRes, teamsRes, managersRes, locationsRes, trainingRes, onboardingRes] = await Promise.allSettled([
+				fetch('/api/admin/organization/departments'),
+				fetch('/api/admin/organization/teams'),
+				fetch('/api/admin/users?role=manager&limit=50'),
+				fetch('/api/admin/organization/locations'),
+				fetch('/api/admin/organization/training-modules'),
+				fetch('/api/admin/organization/onboarding-plans')
+			]);
 
-			teams = [
-				{ id: 'frontend', name: 'Frontend Team' },
-				{ id: 'backend', name: 'Backend Team' },
-				{ id: 'mobile', name: 'Mobile Team' },
-				{ id: 'devops', name: 'DevOps Team' }
-			];
+			// Process departments - provide sensible defaults if API fails
+			if (deptRes.status === 'fulfilled' && deptRes.value.ok) {
+				const data = await deptRes.value.json();
+				departments = Array.isArray(data) ? data : (data.data || []);
+			}
+			// Default departments only if API returns empty
+			if (departments.length === 0) {
+				departments = [{ id: 'general', name: 'General' }];
+			}
 
-			managers = [
-				{ id: '1', name: 'John Smith', job_title: 'Engineering Manager' },
-				{ id: '2', name: 'Sarah Johnson', job_title: 'Sales Director' },
-				{ id: '3', name: 'Mike Wilson', job_title: 'Team Lead' }
-			];
+			// Process teams
+			if (teamsRes.status === 'fulfilled' && teamsRes.value.ok) {
+				const data = await teamsRes.value.json();
+				teams = Array.isArray(data) ? data : (data.data || []);
+			}
 
-			locations = [
-				{ id: 'sf', name: 'San Francisco HQ', timezone: 'America/Los_Angeles' },
-				{ id: 'ny', name: 'New York', timezone: 'America/New_York' },
-				{ id: 'lon', name: 'London', timezone: 'Europe/London' },
-				{ id: 'remote', name: 'Remote', timezone: 'UTC' }
-			];
+			// Process managers
+			if (managersRes.status === 'fulfilled' && managersRes.value.ok) {
+				const data = await managersRes.value.json();
+				managers = Array.isArray(data) ? data : (data.data || []);
+			}
 
-			trainingModules = [
-				{ id: 'security', name: 'Security Fundamentals', required: true },
-				{ id: 'compliance', name: 'Compliance Training', required: true },
-				{ id: 'product', name: 'Product Knowledge', required: false },
-				{ id: 'sales', name: 'Sales Training', required: false },
-				{ id: 'support', name: 'Customer Support', required: false }
-			];
+			// Process locations - provide remote as default
+			if (locationsRes.status === 'fulfilled' && locationsRes.value.ok) {
+				const data = await locationsRes.value.json();
+				locations = Array.isArray(data) ? data : (data.data || []);
+			}
+			if (locations.length === 0) {
+				locations = [{ id: 'remote', name: 'Remote', timezone: 'UTC' }];
+			}
 
-			onboardingPlans = [
-				{ id: 'standard', name: 'Standard Onboarding', duration: 5 },
-				{ id: 'accelerated', name: 'Accelerated Program', duration: 3 },
-				{ id: 'executive', name: 'Executive Onboarding', duration: 10 },
-				{ id: 'technical', name: 'Technical Track', duration: 7 }
-			];
+			// Process training modules
+			if (trainingRes.status === 'fulfilled' && trainingRes.value.ok) {
+				const data = await trainingRes.value.json();
+				trainingModules = Array.isArray(data) ? data : (data.data || []);
+			}
+
+			// Process onboarding plans
+			if (onboardingRes.status === 'fulfilled' && onboardingRes.value.ok) {
+				const data = await onboardingRes.value.json();
+				onboardingPlans = Array.isArray(data) ? data : (data.data || []);
+			}
+			if (onboardingPlans.length === 0) {
+				onboardingPlans = [{ id: 'standard', name: 'Standard Onboarding', duration: 5 }];
+			}
 		} catch (error) {
 			console.error('Failed to load lookup data:', error);
+			// Set minimal defaults on complete failure
+			departments = [{ id: 'general', name: 'General' }];
+			locations = [{ id: 'remote', name: 'Remote', timezone: 'UTC' }];
+			onboardingPlans = [{ id: 'standard', name: 'Standard Onboarding', duration: 5 }];
 		}
 	}
 
@@ -707,12 +723,18 @@
 
 		checkingUsername = true;
 		try {
-			// Mock API call
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			usernameAvailable = Math.random() > 0.3; // Mock 70% availability
+			// Call REAL API to check username availability
+			const response = await fetch(`/api/admin/users/check-username?username=${encodeURIComponent(formData.username)}`);
+			if (response.ok) {
+				const data = await response.json();
+				usernameAvailable = data.available === true;
+			} else {
+				// On API error, assume available and let server validate on submit
+				usernameAvailable = null;
+			}
 		} catch (error) {
 			console.error('Failed to check username:', error);
-			usernameAvailable = null;
+			usernameAvailable = null; // Don't block user, server will validate on submit
 		} finally {
 			checkingUsername = false;
 		}
@@ -726,12 +748,18 @@
 
 		checkingEmail = true;
 		try {
-			// Mock API call
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			emailAvailable = Math.random() > 0.2; // Mock 80% availability
+			// Call REAL API to check email availability
+			const response = await fetch(`/api/admin/users/check-email?email=${encodeURIComponent(formData.email)}`);
+			if (response.ok) {
+				const data = await response.json();
+				emailAvailable = data.available === true;
+			} else {
+				// On API error, assume available and let server validate on submit
+				emailAvailable = null;
+			}
 		} catch (error) {
 			console.error('Failed to check email:', error);
-			emailAvailable = null;
+			emailAvailable = null; // Don't block user, server will validate on submit
 		} finally {
 			checkingEmail = false;
 		}

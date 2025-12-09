@@ -430,7 +430,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
 				{#each filteredConnections() as service, index}
 					<div
-						class="group relative"
+						class="group relative h-full"
 						in:fly={{ y: 30, duration: 400, delay: index * 50, easing: quintOut }}
 					>
 						<!-- Glow Effect -->
@@ -441,7 +441,7 @@
 
 						<!-- Card -->
 						<div
-							class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 hover:transform hover:-translate-y-1"
+							class="service-card relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 hover:transform hover:-translate-y-1 flex flex-col"
 						>
 							<!-- Header -->
 							<div class="flex items-start justify-between mb-4">
@@ -469,11 +469,12 @@
 							</div>
 
 							<!-- Description -->
-							<p class="text-sm text-gray-400 mb-4 line-clamp-2">{service.description}</p>
+							<p class="text-sm text-gray-400 mb-4 line-clamp-2 flex-grow">{service.description}</p>
 
-							<!-- Connection Info -->
+							<!-- Connection Info (fixed height container) -->
+							<div class="connection-info-container mb-4">
 							{#if service.is_connected && service.connection}
-								<div class="space-y-2 mb-4 p-3 bg-black/20 rounded-xl">
+								<div class="space-y-2 p-3 bg-black/20 rounded-xl">
 									<div class="flex justify-between text-xs">
 										<span class="text-gray-500">Health</span>
 										<span class={getHealthColor(service.connection.health_score)}>
@@ -489,10 +490,27 @@
 										<span class="text-white">{formatDate(service.connection.last_verified_at)}</span>
 									</div>
 								</div>
+							{:else}
+								<!-- Placeholder for uniform card height -->
+								<div class="space-y-2 p-3 bg-black/10 rounded-xl border border-dashed border-white/5">
+									<div class="flex justify-between text-xs">
+										<span class="text-gray-600">Status</span>
+										<span class="text-gray-500">Not connected</span>
+									</div>
+									<div class="flex justify-between text-xs">
+										<span class="text-gray-600">API Calls</span>
+										<span class="text-gray-500">—</span>
+									</div>
+									<div class="flex justify-between text-xs">
+										<span class="text-gray-600">Last Verified</span>
+										<span class="text-gray-500">—</span>
+									</div>
+								</div>
 							{/if}
+							</div>
 
-							<!-- Actions -->
-							<div class="flex gap-2">
+							<!-- Actions (always at bottom) -->
+							<div class="flex gap-2 mt-auto">
 								{#if service.is_connected}
 									<button
 										onclick={() => openDisconnectConfirm(service)}
@@ -751,5 +769,19 @@
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+	}
+
+	/* Uniform card sizing */
+	.service-card {
+		min-height: 320px;
+	}
+
+	.connection-info-container {
+		min-height: 90px;
+	}
+
+	/* Actions always at bottom */
+	.service-card > :last-child {
+		margin-top: auto;
 	}
 </style>

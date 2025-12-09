@@ -112,6 +112,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let isLoading = $state(true);
+	let isRefreshing = $state(false);
 	let isRunningTests = $state(false);
 	let showContent = $state(false);
 	let healthData = $state<SiteHealthData | null>(null);
@@ -281,8 +282,13 @@
 	}
 
 	async function handleRefresh() {
-		await loadHealthData();
-		toastStore.success('Health data refreshed');
+		isRefreshing = true;
+		try {
+			await loadHealthData();
+			toastStore.success('Health data refreshed');
+		} finally {
+			isRefreshing = false;
+		}
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -414,8 +420,8 @@
 				<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
 			</button>
 
-			<button class="action-btn refresh" onclick={handleRefresh} disabled={isLoading}>
-				<span class="icon-wrapper" class:spinning={isLoading}>
+			<button class="action-btn refresh" onclick={handleRefresh} disabled={isRefreshing}>
+				<span class="icon-wrapper" class:spinning={isRefreshing}>
 					<IconRefresh size={18} />
 				</span>
 			</button>

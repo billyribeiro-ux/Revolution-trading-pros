@@ -55,17 +55,47 @@
 		testing = true;
 		message = '';
 
+		// Validate required fields before testing
+		if (!settings.host || !settings.port || !settings.from_address) {
+			message = 'Please fill in all required fields (Host, Port, From Email) before testing.';
+			messageType = 'error';
+			testing = false;
+			return;
+		}
+
 		try {
 			const result: any = await apiFetch('/admin/email/settings/test', {
 				method: 'POST',
 				body: JSON.stringify(settings)
 			});
 
-			message = result.message || 'Test successful!';
-			messageType = result.success ? 'success' : 'error';
+			if (result && result.success === true) {
+				message = result.message || 'Connection test successful! Email delivery is working.';
+				messageType = 'success';
+			} else if (result && result.success === false) {
+				message = result.error || result.message || 'Connection test failed. Please check your SMTP credentials.';
+				messageType = 'error';
+			} else {
+				message = result?.message || 'Test completed. Check your inbox for a test email.';
+				messageType = 'success';
+			}
 		} catch (error: any) {
-			message = error.message || 'Test failed';
+			// Handle different types of errors
+			if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+				message = 'Network error: Unable to reach the server. Please check your internet connection and try again.';
+			} else if (error.status === 401) {
+				message = 'Authentication error: Please log in again and retry.';
+			} else if (error.status === 403) {
+				message = 'Permission denied: You do not have access to test email settings.';
+			} else if (error.status === 500) {
+				message = 'Server error: The email test failed on the server. Please check your SMTP configuration.';
+			} else if (error.message) {
+				message = `Test failed: ${error.message}`;
+			} else {
+				message = 'Test failed: An unexpected error occurred. Please try again.';
+			}
 			messageType = 'error';
+			console.error('Email test connection error:', error);
 		} finally {
 			testing = false;
 		}

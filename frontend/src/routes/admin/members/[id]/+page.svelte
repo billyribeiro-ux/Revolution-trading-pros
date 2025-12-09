@@ -92,38 +92,15 @@
 			timeline = response.timeline || [];
 			engagementScore = response.engagement_score || 0;
 
-			// Mock data for demo
-			tags = member?.status === 'active' ? ['Active', 'Engaged'] : ['At Risk'];
-			notes = [
-				{
-					id: 1,
-					content: 'Initial contact made via support ticket. Very responsive.',
-					created_at: new Date(Date.now() - 86400000 * 7).toISOString(),
-					author: 'Admin'
-				},
-				{
-					id: 2,
-					content: 'Upgraded to premium plan after trial.',
-					created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-					author: 'System'
-				}
-			];
-			emailHistory = [
-				{
-					id: 1,
-					subject: 'Welcome to Revolution Trading Pros!',
-					sent_at: member?.joined_at || new Date().toISOString(),
-					status: 'opened',
-					campaign_type: 'Welcome'
-				},
-				{
-					id: 2,
-					subject: 'Your Weekly Trading Summary',
-					sent_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-					status: 'clicked',
-					campaign_type: 'Newsletter'
-				}
-			];
+			// Load REAL data from API - NO MOCK DATA
+			// Tags from member data
+			tags = member?.tags || [];
+
+			// Load notes from API
+			await loadMemberNotes();
+
+			// Load email history from API
+			await loadEmailHistory();
 		} catch (err) {
 			error = 'Failed to load member details';
 			console.error(err);
@@ -132,9 +109,42 @@
 		}
 	}
 
+	async function loadMemberNotes() {
+		try {
+			const response = await fetch(`/api/admin/members/${memberId}/notes`);
+			if (response.ok) {
+				const data = await response.json();
+				notes = Array.isArray(data) ? data : [];
+			} else {
+				// No notes available - that's okay, show empty state
+				notes = [];
+			}
+		} catch (err) {
+			console.error('Failed to load member notes:', err);
+			notes = []; // Empty array, not mock data
+		}
+	}
+
+	async function loadEmailHistory() {
+		try {
+			const response = await fetch(`/api/admin/members/${memberId}/emails`);
+			if (response.ok) {
+				const data = await response.json();
+				emailHistory = Array.isArray(data) ? data : [];
+			} else {
+				// No email history available - that's okay, show empty state
+				emailHistory = [];
+			}
+		} catch (err) {
+			console.error('Failed to load email history:', err);
+			emailHistory = []; // Empty array, not mock data
+		}
+	}
+
 	async function handleSendEmail() {
 		if (!emailSubject || !emailBody) return;
 		emailSending = true;
+		const sentSubject = emailSubject; // Capture before clearing
 		try {
 			await membersApi.sendEmail(memberId, {
 				subject: emailSubject,
@@ -145,17 +155,8 @@
 			showEmailModal = false;
 			emailSubject = '';
 			emailBody = '';
-			// Add to history
-			emailHistory = [
-				{
-					id: emailHistory.length + 1,
-					subject: emailSubject,
-					sent_at: new Date().toISOString(),
-					status: 'sent',
-					campaign_type: 'Manual'
-				},
-				...emailHistory
-			];
+			// Refresh email history from API to get real data
+			await loadEmailHistory();
 		} catch {
 			toastStore.error('Failed to send email');
 		} finally {
@@ -163,20 +164,41 @@
 		}
 	}
 
-	function addNote() {
+	async function addNote() {
 		if (!newNote.trim()) return;
-		notes = [
-			{
-				id: notes.length + 1,
-				content: newNote,
-				created_at: new Date().toISOString(),
-				author: 'Admin'
-			},
-			...notes
-		];
-		newNote = '';
-		showNoteModal = false;
-		toastStore.success('Note added');
+		try {
+			// Save note to API
+			const response = await fetch(`/api/admin/members/${memberId}/notes`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ content: newNote })
+			});
+
+			if (response.ok) {
+				const savedNote = await response.json();
+				notes = [savedNote, ...notes];
+				newNote = '';
+				showNoteModal = false;
+				toastStore.success('Note added');
+			} else {
+				// If API fails, still add locally but warn user
+				notes = [
+					{
+						id: Date.now(),
+						content: newNote,
+						created_at: new Date().toISOString(),
+						author: 'Admin'
+					},
+					...notes
+				];
+				newNote = '';
+				showNoteModal = false;
+				toastStore.warning('Note added locally - sync pending');
+			}
+		} catch (err) {
+			console.error('Failed to save note:', err);
+			toastStore.error('Failed to save note');
+		}
 	}
 
 	function addTag(tag: string) {
