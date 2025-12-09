@@ -681,33 +681,34 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES - Simpler Trading Style
-	   Dark text, bold fonts, high contrast
+	   CSS CUSTOM PROPERTIES - Simpler Trading Colors (EXACT MATCH)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
 		--checkout-bg: #f4f4f4;
-		--checkout-card-bg: #fff;
+		--checkout-card-bg: #ffffff;
 		--checkout-border: #dbdbdb;
-		--checkout-text: #1a1a1a;           /* Darker text for better contrast */
-		--checkout-text-dark: #000;          /* Pure black for prices and labels */
-		--checkout-text-muted: #555;         /* Darker muted text */
+		--checkout-text: #333333;
+		--checkout-text-dark: #1a1a1a;
+		--checkout-text-muted: #666666;
 		--checkout-primary: #0984ae;
+		--checkout-primary-hover: #076787;
 		--checkout-orange: #f99e31;
 		--checkout-orange-hover: #f88b09;
 		--checkout-success: #10b981;
-		--checkout-error: #ef4444;
-		--checkout-transition: all 0.15s ease-in-out;
+		--checkout-error: #dc3545;
+		--checkout-transition: all 0.15s ease;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE LAYOUT
+	   PAGE LAYOUT - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.woocommerce-checkout {
 		min-height: 100vh;
 		background: var(--checkout-bg);
 		padding: 40px 0;
+		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	}
 
 	.container {
@@ -730,14 +731,14 @@
 		gap: 8px;
 		color: var(--checkout-primary);
 		text-decoration: none;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 14px;
 		margin-bottom: 12px;
 		transition: var(--checkout-transition);
 	}
 
 	.back-link:hover {
-		color: #076787;
+		color: var(--checkout-primary-hover);
 	}
 
 	.page-title {
@@ -746,6 +747,7 @@
 		font-weight: 700;
 		color: var(--checkout-text-dark);
 		margin: 0;
+		text-transform: uppercase;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -775,8 +777,9 @@
 		gap: 10px;
 		padding: 16px 20px;
 		border-right: 1px solid var(--checkout-border);
-		color: var(--checkout-text-muted);
-		font-weight: 500;
+		color: var(--checkout-text-dark);
+		font-weight: 700;
+		font-size: 14px;
 		transition: var(--checkout-transition);
 	}
 
@@ -786,7 +789,7 @@
 
 	.checkout-steps-nav li.active {
 		background: var(--checkout-primary);
-		color: #fff;
+		color: #ffffff;
 	}
 
 	.checkout-steps-nav li.completed {
@@ -795,6 +798,7 @@
 
 	.checkout-steps-nav li.disabled {
 		opacity: 0.5;
+		color: var(--checkout-text-muted);
 	}
 
 	.step-number {
@@ -847,7 +851,7 @@
 	.card {
 		background: var(--checkout-card-bg);
 		border-radius: 5px;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
 	}
 
@@ -1123,12 +1127,13 @@
 		align-items: center;
 		padding: 16px 20px;
 		border-bottom: 1px solid var(--checkout-border);
+		background: #fafafa;
 	}
 
 	.checkout-cart .card-header h4 {
 		font-size: 16px;
 		font-weight: 700;
-		color: var(--checkout-text);
+		color: var(--checkout-text-dark);
 		margin: 0;
 	}
 

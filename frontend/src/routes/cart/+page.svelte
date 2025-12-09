@@ -1,17 +1,18 @@
 <script lang="ts">
 	/**
-	 * Shopping Cart Page - Simpler Trading Style
+	 * Shopping Cart Page - Simpler Trading Style (EXACT MATCH)
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Matches the Simpler Trading cart layout exactly
-	 * Features:
-	 * - Max quantity of 1 per product/service
-	 * - NonMemberCheckout for unauthenticated users
-	 * - Subscription conflict detection
-	 * - Dark prices and bolder fonts
-	 * - Product thumbnails
+	 * Matches the Simpler Trading cart layout exactly with card-based products
+	 * Reference: SimplerCart file
 	 *
-	 * @version 5.0.0 (Simpler Trading Style / Svelte 5 December 2025)
+	 * Features:
+	 * - Card-based product layout (not table)
+	 * - Cart sidebar with totals
+	 * - Coupon input in sidebar
+	 * - NonMemberCheckout for unauthenticated users
+	 *
+	 * @version 6.0.0 (Simpler Trading EXACT Match / December 2025)
 	 */
 
 	import { goto } from '$app/navigation';
@@ -22,7 +23,6 @@
 	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconTicket from '@tabler/icons-svelte/icons/ticket';
 	import IconX from '@tabler/icons-svelte/icons/x';
 	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
 
@@ -34,7 +34,6 @@
 	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
-	let couponFormVisible = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
@@ -50,20 +49,14 @@
 
 	let finalTotal = $derived(Math.max(0, $cartTotal - discountAmount));
 
+	let hasSubscriptions = $derived($cartStore.items.some((i) => i.interval));
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function removeItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly') {
 		cartStore.removeItem(itemId, interval);
-	}
-
-	function updateQuantity(
-		itemId: string,
-		quantity: number,
-		interval?: 'monthly' | 'quarterly' | 'yearly'
-	) {
-		cartStore.updateQuantity(itemId, quantity, interval);
 	}
 
 	function formatPrice(price: number): string {
@@ -75,10 +68,27 @@
 
 	function getIntervalLabel(interval?: string): string {
 		switch (interval) {
-			case 'monthly': return '/ month';
-			case 'quarterly': return '/ 3 months';
-			case 'yearly': return '/ year';
-			default: return '';
+			case 'monthly':
+				return '/ month';
+			case 'quarterly':
+				return 'every 3 months';
+			case 'yearly':
+				return '/ year';
+			default:
+				return '';
+		}
+	}
+
+	function getIntervalText(interval?: string): string {
+		switch (interval) {
+			case 'monthly':
+				return 'every month';
+			case 'quarterly':
+				return 'every 3 months';
+			case 'yearly':
+				return 'every year';
+			default:
+				return '';
 		}
 	}
 
@@ -102,7 +112,6 @@
 				};
 				cartStore.applyCoupon(appliedCoupon.code, appliedCoupon.discount);
 				couponCode = '';
-				couponFormVisible = false;
 			} else {
 				couponError = result.message || 'Invalid coupon code';
 			}
@@ -127,6 +136,12 @@
 		}
 		goto('/checkout');
 	}
+
+	function clearCart() {
+		if (confirm('Clear All Items?')) {
+			cartStore.clearCart();
+		}
+	}
 </script>
 
 <svelte:head>
@@ -134,280 +149,272 @@
 </svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE - Simpler Trading Cart Style
+     TEMPLATE - Simpler Trading Cart Style (EXACT STRUCTURE)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <!-- Show NonMemberCheckout for unauthenticated users with items in cart -->
 {#if !$isAuthenticated && $cartStore.items.length > 0}
 	<NonMemberCheckout />
 {:else}
-<div class="woocommerce-cart woocommerce-page">
-	<div class="container">
-		<!-- Page Header -->
-		<header class="cart-page-header">
-			<a href="/" class="back-link">
-				<IconArrowLeft size={18} />
-				<span>Continue Shopping</span>
-			</a>
-			<h1 class="page-title">Shopping Cart</h1>
-			<p class="cart-count">{$cartItemCount} {$cartItemCount === 1 ? 'item' : 'items'}</p>
-		</header>
-
-		{#if $cartStore.items.length === 0}
-			<!-- Empty Cart State -->
-			<div class="cart-empty">
-				<div class="cart-empty-icon">
-					<IconShoppingCart size={64} />
-				</div>
-				<h2>Your cart is empty</h2>
-				<p>Looks like you haven't added any products to your cart yet.</p>
-				<a href="/live-trading-rooms" class="btn btn-orange">
-					Browse Trading Rooms
-					<IconArrowRight size={18} />
+	<div class="woocommerce-cart woocommerce-page">
+		<div class="container">
+			<!-- Page Header -->
+			<header class="cart-page-header">
+				<a href="/" class="back-link">
+					<IconArrowLeft size={18} />
+					<span>Continue Shopping</span>
 				</a>
-			</div>
-		{:else}
-			<!-- Cart Content -->
-			<div class="cart-content">
-				<!-- Cart Items Table - Simpler Trading Style -->
-				<div class="cart-items-section">
-					<form class="woocommerce-cart-form">
-						<table class="shop_table cart" cellspacing="0">
-							<thead>
-								<tr>
-									<th class="product-remove">&nbsp;</th>
-									<th class="product-thumbnail">&nbsp;</th>
-									<th class="product-name">Product</th>
-									<th class="product-price">Price</th>
-									<th class="product-subtotal">Total</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each $cartStore.items as item (item.id + (item.interval || ''))}
-									<tr class="cart_item">
-										<!-- Remove -->
-										<td class="product-remove">
-											<button
-												type="button"
-												class="remove"
-												aria-label="Remove this item"
-												onclick={() => removeItem(item.id, item.interval)}
-											>
-												<IconX size={18} />
-											</button>
-										</td>
+				<h1 class="page-title">CART</h1>
+				<p class="cart-count">{$cartItemCount} {$cartItemCount === 1 ? 'item' : 'items'} in your cart</p>
+			</header>
 
-										<!-- Thumbnail - Shows product thumbnail or image -->
-										<td class="product-thumbnail">
-											<div
-												class="product-image"
-												style:background-image={item.thumbnail || item.image
-													? `url(${item.thumbnail || item.image})`
-													: undefined}
-											>
-												{#if !item.thumbnail && !item.image}
-													<IconShoppingCart size={24} />
-												{/if}
-											</div>
-										</td>
-
-										<!-- Name -->
-										<td class="product-name" data-title="Product">
-											<span class="product-title">{item.name}</span>
-											{#if item.interval}
-												<span class="subscription-interval">
-													({item.interval})
-												</span>
-											{/if}
-										</td>
-
-										<!-- Price -->
-										<td class="product-price" data-title="Price">
-											<span class="woocommerce-Price-amount amount">
-												{formatPrice(item.price)}
-											</span>
-											{#if item.interval}
-												<span class="interval-label">{getIntervalLabel(item.interval)}</span>
-											{/if}
-										</td>
-
-										<!-- Subtotal (quantity is always 1) -->
-										<td class="product-subtotal" data-title="Total">
-											<span class="woocommerce-Price-amount amount">
-												{formatPrice(item.price)}
-											</span>
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</form>
-				</div>
-
-				<!-- Cart Totals Sidebar -->
-				<div class="cart-totals-section">
-					<div class="cart_totals">
-						<h2>Cart totals</h2>
-
-						<table class="shop_table shop_table_responsive" cellspacing="0">
-							<tbody>
-								<tr class="cart-subtotal">
-									<th>Subtotal</th>
-									<td data-title="Subtotal">
-										<span class="woocommerce-Price-amount amount">{formatPrice($cartTotal)}</span>
-									</td>
-								</tr>
-
-								{#if appliedCoupon && discountAmount > 0}
-									<tr class="cart-discount coupon-{appliedCoupon.code.toLowerCase()}">
-										<th>Coupon: {appliedCoupon.code}</th>
-										<td data-title="Coupon">
-											<span class="discount-amount">-{formatPrice(discountAmount)}</span>
-											<button type="button" class="remove-coupon" onclick={removeCouponCode}>
-												[Remove]
-											</button>
-										</td>
-									</tr>
-								{/if}
-
-								<tr class="tax-total">
-									<th>Tax</th>
-									<td data-title="Tax">
-										<span class="woocommerce-Price-amount amount">Calculated at checkout</span>
-									</td>
-								</tr>
-
-								<tr class="order-total">
-									<th>Total</th>
-									<td data-title="Total">
-										<strong>
-											<span class="woocommerce-Price-amount amount">{formatPrice(finalTotal)}</span>
-										</strong>
-									</td>
-								</tr>
-
-								{#if $cartStore.items.some(i => i.interval)}
-									<tr class="recurring-totals">
-										<th colspan="2">
-											<span class="recurring-label">Recurring Totals</span>
-										</th>
-									</tr>
-									{#each $cartStore.items.filter(i => i.interval) as item}
-										<tr class="recurring-total">
-											<td colspan="2">
-												<span class="recurring-amount">
-													{formatPrice(item.price)} {getIntervalLabel(item.interval)}
-												</span>
-											</td>
-										</tr>
-									{/each}
-								{/if}
-							</tbody>
-						</table>
-
-						<!-- Coupon Section -->
-						<div class="coupon-section">
-							{#if !appliedCoupon}
-								<div class="woocommerce-form-coupon-toggle">
-									<button
-										type="button"
-										class="showcoupon"
-										onclick={() => couponFormVisible = !couponFormVisible}
-									>
-										<IconTicket size={16} />
-										Have a coupon? Click here to enter your code
-									</button>
-								</div>
-
-								{#if couponFormVisible}
-									<div class="checkout_coupon woocommerce-form-coupon">
-										<p class="form-row form-row-first">
-											<input
-												type="text"
-												name="coupon_code"
-												class="input-text"
-												placeholder="Coupon code"
-												bind:value={couponCode}
-												onkeypress={(e) => e.key === 'Enter' && applyCouponCode()}
-												disabled={applyingCoupon}
-											/>
-										</p>
-										<p class="form-row form-row-last">
-											<button
-												type="button"
-												class="btn btn-default"
-												onclick={applyCouponCode}
-												disabled={applyingCoupon}
-											>
-												{applyingCoupon ? 'Applying...' : 'Apply coupon'}
-											</button>
-										</p>
-										{#if couponError}
-											<p class="coupon-error">{couponError}</p>
-										{/if}
-									</div>
-								{/if}
-							{/if}
-						</div>
-
-						<!-- Proceed to Checkout -->
-						<div class="wc-proceed-to-checkout">
-							<button
-								type="button"
-								class="checkout-button btn btn-orange btn-block"
-								onclick={proceedToCheckout}
-							>
-								Proceed to checkout
+			{#if $cartStore.items.length === 0}
+				<!-- Empty Cart State -->
+				<div class="cart-empty">
+					<div class="card">
+						<div class="card-body">
+							<div class="cart-empty-icon">
+								<IconShoppingCart size={64} />
+							</div>
+							<h2>Your cart is empty</h2>
+							<p>Looks like you haven't added any products to your cart yet.</p>
+							<a href="/live-trading-rooms" class="btn btn-lg btn-orange">
+								Browse Trading Rooms
 								<IconArrowRight size={18} />
-							</button>
-						</div>
-
-						<!-- Security Badge -->
-						<div class="security-badge">
-							<IconShieldCheck size={20} />
-							<span>Secure checkout guaranteed</span>
+							</a>
 						</div>
 					</div>
 				</div>
-			</div>
-		{/if}
+			{:else}
+				<!-- Cart Form - Simpler Trading Structure -->
+				<form class="woocommerce-cart-form" onsubmit={(e) => e.preventDefault()}>
+					<div class="woocommerce-cart-form__contents">
+						<div class="row">
+							<!-- Products Column -->
+							<div class="col-xs-12 col-sm-7 col-md-8">
+								<div class="products" data-products-view="list">
+									<div class="flex-grid">
+										{#each $cartStore.items as item (item.id + (item.interval || ''))}
+											<article class="product flex-grid-item cart_item">
+												<div class="card">
+													<figure class="card-media">
+														<div
+															class="card-image"
+															style:background-image={item.thumbnail || item.image
+																? `url(${item.thumbnail || item.image})`
+																: undefined}
+														>
+															{#if !item.thumbnail && !item.image}
+																<IconShoppingCart size={32} />
+															{/if}
+														</div>
+													</figure>
+
+													<section class="card-body">
+														<h4 class="card-title">
+															{item.name}&nbsp;
+														</h4>
+														{#if item.interval}
+															<div class="card-description">
+																<span class="membership-tagline">
+																	<span class="bold">Subscription:</span>
+																	<span class="woocommerce-Price-amount amount">
+																		<span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}
+																	</span>
+																	<span class="subscription-details"> {getIntervalText(item.interval)}</span>
+																</span>
+															</div>
+														{/if}
+														<div class="product-quantity" data-title="Quantity">
+															<input type="hidden" name="cart[qty]" value="1" />
+														</div>
+													</section>
+
+													<footer class="card-footer">
+														<div class="product-add-to-cart product-remove">
+															<button
+																type="button"
+																class="btn btn-xs btn-default"
+																aria-label="Remove this item"
+																onclick={() => removeItem(item.id, item.interval)}
+															>
+																<IconX size={12} />&nbsp;Remove
+															</button>
+														</div>
+														<div class="product-price">
+															<span class="woocommerce-Price-amount-wrap">
+																<span class="woocommerce-Price-amount amount">
+																	<span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}
+																</span>
+															</span>
+														</div>
+													</footer>
+												</div>
+											</article>
+										{/each}
+									</div>
+								</div>
+
+								<div class="clear-cart">
+									<button
+										type="button"
+										class="btn btn-lg btn-default"
+										onclick={clearCart}
+									>
+										Clear Cart
+									</button>
+								</div>
+							</div>
+
+							<!-- Cart Totals Sidebar -->
+							<div class="col-xs-12 col-sm-5 col-md-4">
+								<div class="cart-collaterals">
+									<div class="card">
+										<div class="card-body">
+											<div class="cart_totals">
+												<!-- Order Total -->
+												<div class="order-total">
+													<div>Total</div>
+													<div class="order-total-price">
+														{#if appliedCoupon && discountAmount > 0}
+															<span class="original-price">${$cartTotal.toFixed(2)}</span>
+														{/if}
+														${finalTotal.toFixed(2)}
+													</div>
+												</div>
+
+												<!-- Applied Coupon -->
+												{#if appliedCoupon && discountAmount > 0}
+													<div class="coupon-applied">
+														<span class="coupon-label">Coupon: {appliedCoupon.code}</span>
+														<span class="coupon-discount">-${discountAmount.toFixed(2)}</span>
+														<button type="button" class="remove-coupon" onclick={removeCouponCode}>
+															<IconX size={12} />
+														</button>
+													</div>
+												{/if}
+
+												<!-- Recurring Totals for Subscriptions -->
+												{#if hasSubscriptions}
+													<div class="cart-table-wrapper">
+														<table class="cart-table">
+															<tbody>
+																<tr class="recurring-totals">
+																	<th colspan="2">Recurring Totals</th>
+																</tr>
+																{#each $cartStore.items.filter((i) => i.interval) as item}
+																	<tr class="cart-subtotal recurring-total">
+																		<th rowspan="1">Subtotal</th>
+																		<td data-title="Subtotal">
+																			<span class="woocommerce-Price-amount amount">
+																				<span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}
+																			</span>
+																			{getIntervalText(item.interval)}
+																		</td>
+																	</tr>
+																{/each}
+																<tr class="tax-total recurring-total">
+																	<th>Tax</th>
+																	<td data-title="Tax">Calculated at checkout</td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												{/if}
+
+												<!-- Proceed to Checkout -->
+												<div class="cart-proceed-to-checkout">
+													<button
+														type="button"
+														class="btn btn-lg btn-block btn-orange"
+														onclick={proceedToCheckout}
+													>
+														Proceed to checkout
+													</button>
+												</div>
+
+												<p class="tax-disclaimer">* Plus applicable taxes</p>
+
+												<!-- Coupon Input -->
+												<div class="cart-coupon">
+													<div class="input-group">
+														<input
+															type="text"
+															name="coupon_code"
+															class="form-control input-sm"
+															id="coupon_code"
+															bind:value={couponCode}
+															placeholder="Coupon code"
+															disabled={applyingCoupon}
+														/>
+														<span class="input-group-btn">
+															<button
+																type="button"
+																class="btn btn-sm btn-blue"
+																onclick={applyCouponCode}
+																disabled={applyingCoupon}
+															>
+																{applyingCoupon ? '...' : 'Apply'}
+															</button>
+														</span>
+													</div>
+													{#if couponError}
+														<p class="coupon-error">{couponError}</p>
+													{/if}
+												</div>
+
+												<!-- Security Badge -->
+												<div class="security-badge">
+													<IconShieldCheck size={20} />
+													<span>Secure checkout guaranteed</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			{/if}
+		</div>
 	</div>
-</div>
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Simpler Trading Cart
+     STYLES - Simpler Trading Cart (EXACT MATCH)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES - Simpler Trading Style
-	   Dark prices, bold fonts, high contrast
+	   CSS CUSTOM PROPERTIES - Simpler Trading Colors
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
-		--cart-bg: #f4f4f4;
-		--cart-card-bg: #fff;
-		--cart-border: #dbdbdb;
-		--cart-text: #1a1a1a;           /* Darker text for better contrast */
-		--cart-text-dark: #000;         /* Pure black for prices */
-		--cart-text-muted: #555;        /* Darker muted text */
-		--cart-primary: #0984ae;
-		--cart-orange: #f99e31;
-		--cart-orange-hover: #f88b09;
-		--cart-success: #10b981;
-		--cart-error: #ef4444;
-		--cart-transition: all 0.15s ease-in-out;
+		--st-bg: #f4f4f4;
+		--st-card-bg: #ffffff;
+		--st-border: #dbdbdb;
+		--st-text: #333333;
+		--st-text-dark: #1a1a1a;
+		--st-text-muted: #666666;
+		--st-primary: #0984ae;
+		--st-primary-hover: #076787;
+		--st-orange: #f99e31;
+		--st-orange-hover: #f88b09;
+		--st-blue: #0984ae;
+		--st-success: #10b981;
+		--st-error: #dc3545;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE LAYOUT
+	   PAGE LAYOUT - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.woocommerce-cart {
 		min-height: 100vh;
-		background: var(--cart-bg);
+		background: var(--st-bg);
 		padding: 40px 0;
+		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	}
 
 	.container {
@@ -428,29 +435,31 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		color: var(--cart-primary);
+		color: var(--st-primary);
 		text-decoration: none;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 14px;
-		margin-bottom: 16px;
-		transition: var(--cart-transition);
+		margin-bottom: 12px;
+		transition: color 0.15s ease;
 	}
 
 	.back-link:hover {
-		color: #076787;
+		color: var(--st-primary-hover);
 	}
 
 	.page-title {
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
-		color: var(--cart-text);
+		color: var(--st-text-dark);
 		margin: 0 0 8px;
+		text-transform: uppercase;
 	}
 
 	.cart-count {
-		color: var(--cart-text-muted);
+		color: var(--st-text-muted);
 		font-size: 16px;
+		font-weight: 500;
 		margin: 0;
 	}
 
@@ -458,377 +467,381 @@
 	   EMPTY CART
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.cart-empty {
-		background: var(--cart-card-bg);
+	.cart-empty .card {
+		background: var(--st-card-bg);
 		border-radius: 5px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	}
+
+	.cart-empty .card-body {
 		padding: 80px 40px;
 		text-align: center;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 	}
 
 	.cart-empty-icon {
 		width: 120px;
 		height: 120px;
 		margin: 0 auto 24px;
-		background: var(--cart-bg);
+		background: var(--st-bg);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--cart-text-muted);
+		color: var(--st-text-muted);
 	}
 
 	.cart-empty h2 {
 		font-size: 28px;
 		font-weight: 700;
-		color: var(--cart-text);
+		color: var(--st-text-dark);
 		margin: 0 0 12px;
 	}
 
 	.cart-empty p {
-		color: var(--cart-text-muted);
+		color: var(--st-text-muted);
 		font-size: 16px;
 		margin: 0 0 24px;
+		font-weight: 500;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CART CONTENT LAYOUT
+	   CART FORM LAYOUT - Simpler Trading Row Structure
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.cart-content {
-		display: grid;
-		grid-template-columns: 1fr 380px;
-		gap: 30px;
-		align-items: start;
+	.woocommerce-cart-form__contents {
+		display: block;
 	}
 
-	.cart-items-section {
-		background: var(--cart-card-bg);
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0 -15px;
+	}
+
+	.col-xs-12 {
+		padding: 0 15px;
+	}
+
+	.col-sm-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+
+	.col-md-8 {
+		flex: 0 0 66.666667%;
+		max-width: 66.666667%;
+	}
+
+	.col-sm-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+
+	.col-md-4 {
+		flex: 0 0 33.333333%;
+		max-width: 33.333333%;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PRODUCTS - Card Layout (Simpler Trading Style)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.products {
+		margin-bottom: 20px;
+	}
+
+	.flex-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.product.cart_item {
+		display: block;
+	}
+
+	.product .card {
+		background: var(--st-card-bg);
 		border-radius: 5px;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		display: grid;
+		grid-template-columns: 120px 1fr auto;
 		overflow: hidden;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   CART TABLE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.shop_table.cart {
-		width: 100%;
-		border-collapse: collapse;
+	/* Card Media - Product Image */
+	.card-media {
+		margin: 0;
+		grid-row: 1 / 3;
 	}
 
-	.shop_table.cart thead th {
-		background: #f9f9f9;
-		padding: 16px 12px;
-		text-align: left;
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--cart-text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		border-bottom: 1px solid var(--cart-border);
-	}
-
-	.shop_table.cart tbody tr {
-		border-bottom: 1px solid var(--cart-border);
-	}
-
-	.shop_table.cart tbody tr:last-child {
-		border-bottom: none;
-	}
-
-	.shop_table.cart tbody td {
-		padding: 20px 12px;
-		vertical-align: middle;
-	}
-
-	/* Product Remove */
-	.product-remove {
-		width: 40px;
-		text-align: center;
-	}
-
-	.product-remove .remove {
-		width: 28px;
-		height: 28px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border: 1px solid var(--cart-border);
-		border-radius: 4px;
-		color: var(--cart-text-muted);
-		cursor: pointer;
-		transition: var(--cart-transition);
-	}
-
-	.product-remove .remove:hover {
-		background: var(--cart-error);
-		border-color: var(--cart-error);
-		color: #fff;
-	}
-
-	/* Product Thumbnail */
-	.product-thumbnail {
-		width: 80px;
-	}
-
-	.product-image {
-		width: 60px;
-		height: 60px;
-		background: var(--cart-bg);
+	.card-image {
+		width: 120px;
+		height: 100%;
+		min-height: 120px;
+		background: var(--st-bg);
 		background-size: cover;
 		background-position: center;
-		border-radius: 5px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--cart-text-muted);
+		color: var(--st-text-muted);
 	}
 
-	/* Product Name */
-	.product-name .product-title {
-		display: block;
-		font-weight: 700;
-		color: var(--cart-text-dark);
-		font-size: 15px;
+	/* Card Body - Product Details */
+	.card-body {
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 
-	.product-name .subscription-interval {
-		display: inline;
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--cart-primary);
-		margin-left: 4px;
-	}
-
-	/* Product Price - DARK and BOLD */
-	.product-price .amount {
-		color: var(--cart-text-dark) !important;
-		font-weight: 700 !important;
+	.card-title {
 		font-size: 16px;
+		font-weight: 700;
+		color: var(--st-text-dark);
+		margin: 0 0 8px;
 	}
 
-	.product-price .interval-label {
+	.card-description {
+		font-size: 14px;
+		color: var(--st-text-muted);
+	}
+
+	.membership-tagline {
 		display: block;
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--cart-text-muted);
 	}
 
-	/* Quantity Controls */
-	.quantity-controls {
+	.membership-tagline .bold {
+		font-weight: 700;
+		color: var(--st-text-dark);
+	}
+
+	.subscription-details {
+		color: var(--st-text-muted);
+	}
+
+	.product-quantity {
+		display: none;
+	}
+
+	/* Card Footer - Remove & Price */
+	.card-footer {
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		justify-content: center;
+		gap: 12px;
+		border-left: 1px solid #eeeeee;
+	}
+
+	.product-remove .btn {
 		display: inline-flex;
 		align-items: center;
-		border: 1px solid var(--cart-border);
-		border-radius: 5px;
-		overflow: hidden;
+		gap: 4px;
 	}
 
-	.qty-btn {
-		width: 32px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #f9f9f9;
-		border: none;
-		cursor: pointer;
-		color: var(--cart-text);
-		transition: var(--cart-transition);
-	}
-
-	.qty-btn:hover:not(:disabled) {
-		background: var(--cart-primary);
-		color: #fff;
-	}
-
-	.qty-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.quantity-controls .qty {
-		width: 50px;
-		height: 36px;
-		border: none;
-		border-left: 1px solid var(--cart-border);
-		border-right: 1px solid var(--cart-border);
-		text-align: center;
-		font-size: 14px;
-		font-weight: 600;
-		color: var(--cart-text);
-		appearance: textfield;
-		-moz-appearance: textfield;
-		appearance: textfield;
-	}
-
-	.quantity-controls .qty::-webkit-outer-spin-button,
-	.quantity-controls .qty::-webkit-inner-spin-button {
-		appearance: none;
-		-webkit-appearance: none;
-		margin: 0;
-	}
-
-	/* Product Subtotal - DARK and BOLD */
-	.product-subtotal .amount {
-		font-weight: 700 !important;
-		font-size: 16px;
-		color: var(--cart-text-dark) !important;
+	.product-price {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--st-text-dark);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CART TOTALS
+	   CLEAR CART
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.cart-totals-section {
+	.clear-cart {
+		margin-top: 16px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CART TOTALS SIDEBAR
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.cart-collaterals {
 		position: sticky;
 		top: 24px;
 	}
 
-	.cart_totals {
-		background: var(--cart-card-bg);
+	.cart-collaterals .card {
+		background: var(--st-card-bg);
 		border-radius: 5px;
-		padding: 24px;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
-	.cart_totals h2 {
+	.cart-collaterals .card-body {
+		padding: 24px;
+	}
+
+	.cart_totals {
+		/* Container for totals */
+	}
+
+	/* Order Total - Simpler Trading Style */
+	.order-total {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-bottom: 16px;
+		border-bottom: 2px solid var(--st-text-dark);
 		font-size: 20px;
 		font-weight: 700;
-		color: var(--cart-text-dark);
-		margin: 0 0 20px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid var(--cart-border);
+		color: var(--st-text-dark);
 	}
 
-	.cart_totals .shop_table {
-		width: 100%;
-		margin-bottom: 20px;
+	.order-total-price {
+		font-size: 24px;
 	}
 
-	.cart_totals .shop_table th,
-	.cart_totals .shop_table td {
-		padding: 12px 0;
-		border-bottom: 1px solid #eee;
+	.order-total-price .original-price {
+		font-size: 16px;
+		text-decoration: line-through;
+		color: var(--st-text-muted);
+		margin-right: 8px;
 	}
 
-	.cart_totals .shop_table th {
-		text-align: left;
-		font-weight: 700;
-		color: var(--cart-text-dark);
-	}
-
-	.cart_totals .shop_table td {
-		text-align: right;
-		color: var(--cart-text-dark);
-		font-weight: 600;
-	}
-
-	.cart_totals .shop_table td .amount {
-		color: var(--cart-text-dark) !important;
-		font-weight: 700 !important;
-	}
-
-	.cart_totals .order-total th,
-	.cart_totals .order-total td {
-		font-size: 18px;
-		font-weight: 700;
-		border-bottom: none;
-		padding-top: 16px;
-		color: var(--cart-text-dark);
-	}
-
-	.cart_totals .discount-amount {
-		color: var(--cart-success);
-	}
-
-	.cart_totals .remove-coupon {
-		display: block;
-		background: none;
-		border: none;
-		color: var(--cart-error);
-		font-size: 12px;
-		cursor: pointer;
-		padding: 0;
-		margin-top: 4px;
-	}
-
-	.recurring-totals th {
-		font-size: 14px;
-		color: var(--cart-text-muted) !important;
-		padding-top: 16px !important;
-	}
-
-	.recurring-label {
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		font-size: 11px;
-	}
-
-	.recurring-total td {
-		font-size: 14px;
-		padding: 8px 0 !important;
-		text-align: left !important;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   COUPON SECTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.coupon-section {
-		margin-bottom: 20px;
-	}
-
-	.showcoupon {
+	/* Coupon Applied */
+	.coupon-applied {
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		margin-top: 12px;
+		padding: 10px;
+		background: #ecfdf5;
+		border-radius: 5px;
+		font-size: 14px;
+	}
+
+	.coupon-label {
+		flex: 1;
+		font-weight: 600;
+		color: var(--st-text-dark);
+	}
+
+	.coupon-discount {
+		font-weight: 700;
+		color: var(--st-success);
+	}
+
+	.remove-coupon {
 		background: none;
 		border: none;
-		color: var(--cart-primary);
-		font-size: 14px;
+		color: var(--st-error);
 		cursor: pointer;
-		padding: 0;
-		transition: var(--cart-transition);
+		padding: 4px;
 	}
 
-	.showcoupon:hover {
-		color: #076787;
+	/* Recurring Totals Table */
+	.cart-table-wrapper {
+		margin-top: 20px;
+		padding-top: 16px;
+		border-top: 1px solid #eeeeee;
 	}
 
-	.checkout_coupon {
-		margin-top: 16px;
-		padding: 16px;
-		background: #f9f9f9;
-		border-radius: 5px;
-	}
-
-	.checkout_coupon .input-text {
+	.cart-table {
 		width: 100%;
-		padding: 12px 16px;
-		border: 1px solid var(--cart-border);
-		border-radius: 5px;
-		font-size: 14px;
-		margin-bottom: 12px;
-		text-transform: uppercase;
 	}
 
-	.checkout_coupon .input-text:focus {
+	.cart-table th,
+	.cart-table td {
+		padding: 10px 0;
+		font-size: 14px;
+	}
+
+	.cart-table th {
+		text-align: left;
+		font-weight: 700;
+		color: var(--st-text-dark);
+	}
+
+	.cart-table td {
+		text-align: right;
+		color: var(--st-text-dark);
+		font-weight: 600;
+	}
+
+	.recurring-totals th {
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: var(--st-text-muted) !important;
+		font-weight: 600;
+	}
+
+	.tax-total td {
+		color: var(--st-text-muted);
+		font-weight: 500;
+	}
+
+	/* Proceed to Checkout */
+	.cart-proceed-to-checkout {
+		margin-top: 20px;
+	}
+
+	.tax-disclaimer {
+		margin-top: 12px;
+		font-size: 12px;
+		color: var(--st-text-muted);
+		text-align: center;
+		font-weight: 500;
+	}
+
+	/* Coupon Input */
+	.cart-coupon {
+		margin-top: 20px;
+		padding-top: 20px;
+		border-top: 1px solid #eeeeee;
+	}
+
+	.input-group {
+		display: flex;
+		gap: 0;
+	}
+
+	.input-group .form-control {
+		flex: 1;
+		padding: 10px 12px;
+		border: 1px solid var(--st-border);
+		border-radius: 5px 0 0 5px;
+		font-size: 14px;
+		text-transform: uppercase;
+		font-weight: 600;
+	}
+
+	.input-group .form-control:focus {
 		outline: none;
-		border-color: var(--cart-primary);
+		border-color: var(--st-primary);
+	}
+
+	.input-group-btn .btn {
+		border-radius: 0 5px 5px 0;
 	}
 
 	.coupon-error {
-		color: var(--cart-error);
-		font-size: 13px;
 		margin-top: 8px;
+		font-size: 13px;
+		color: var(--st-error);
+		font-weight: 600;
+	}
+
+	/* Security Badge */
+	.security-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 20px;
+		padding-top: 16px;
+		border-top: 1px solid #eeeeee;
+		color: var(--st-success);
+		font-size: 13px;
+		font-weight: 600;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BUTTONS
+	   BUTTONS - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.btn {
@@ -842,53 +855,69 @@
 		border-radius: 5px;
 		border: none;
 		cursor: pointer;
-		transition: var(--cart-transition);
+		transition: all 0.15s ease;
 		text-decoration: none;
 	}
 
-	.btn-orange {
-		background: var(--cart-orange);
-		color: #fff;
+	.btn-lg {
+		padding: 14px 28px;
+		font-size: 16px;
 	}
 
-	.btn-orange:hover {
-		background: var(--cart-orange-hover);
+	.btn-sm {
+		padding: 10px 16px;
+		font-size: 14px;
 	}
 
-	.btn-default {
-		background: var(--cart-bg);
-		color: var(--cart-text);
-		border: 1px solid var(--cart-border);
-	}
-
-	.btn-default:hover {
-		background: #e9e9e9;
+	.btn-xs {
+		padding: 6px 12px;
+		font-size: 12px;
 	}
 
 	.btn-block {
 		width: 100%;
 	}
 
-	.checkout-button {
-		padding: 16px 24px;
-		font-size: 16px;
+	.btn-orange {
+		background: var(--st-orange);
+		color: #ffffff;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECURITY BADGE
-	   ═══════════════════════════════════════════════════════════════════════════ */
+	.btn-orange:hover:not(:disabled) {
+		background: var(--st-orange-hover);
+	}
 
-	.security-badge {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		margin-top: 16px;
-		padding-top: 16px;
-		border-top: 1px solid #eee;
-		color: var(--cart-success);
-		font-size: 13px;
-		font-weight: 500;
+	.btn-orange:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-blue {
+		background: var(--st-blue);
+		color: #ffffff;
+	}
+
+	.btn-blue:hover:not(:disabled) {
+		background: var(--st-primary-hover);
+	}
+
+	.btn-default {
+		background: var(--st-bg);
+		color: var(--st-text-dark);
+		border: 1px solid var(--st-border);
+	}
+
+	.btn-default:hover {
+		background: #e9e9e9;
+	}
+
+	/* WooCommerce Price Styling */
+	.woocommerce-Price-amount {
+		font-weight: 700;
+	}
+
+	.woocommerce-Price-currencySymbol {
+		font-weight: 700;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -896,71 +925,40 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media screen and (max-width: 980px) {
-		.cart-content {
-			grid-template-columns: 1fr;
+		.col-sm-7,
+		.col-md-8 {
+			flex: 0 0 100%;
+			max-width: 100%;
+			margin-bottom: 24px;
 		}
 
-		.cart-totals-section {
+		.col-sm-5,
+		.col-md-4 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+
+		.cart-collaterals {
 			position: static;
 		}
 	}
 
 	@media screen and (max-width: 768px) {
-		.shop_table.cart thead {
-			display: none;
+		.product .card {
+			grid-template-columns: 80px 1fr;
 		}
 
-		.shop_table.cart tbody tr {
-			display: grid;
-			grid-template-columns: auto 1fr;
-			gap: 12px;
-			padding: 16px;
+		.card-footer {
+			grid-column: 1 / -1;
+			flex-direction: row;
+			justify-content: space-between;
+			border-left: none;
+			border-top: 1px solid #eeeeee;
 		}
 
-		.shop_table.cart tbody td {
-			padding: 0;
-		}
-
-		.product-remove {
-			grid-column: 2;
-			grid-row: 1;
-			justify-self: end;
-		}
-
-		.product-thumbnail {
-			grid-column: 1;
-			grid-row: 1 / 4;
-		}
-
-		.product-name {
-			grid-column: 2;
-			grid-row: 1;
-		}
-
-		.product-price {
-			grid-column: 2;
-			grid-row: 2;
-		}
-
-		.product-quantity {
-			grid-column: 1 / 3;
-			grid-row: 4;
-		}
-
-		.product-subtotal {
-			grid-column: 2;
-			grid-row: 3;
-		}
-
-		.shop_table.cart tbody td::before {
-			content: attr(data-title) ": ";
-			font-weight: 600;
-			margin-right: 8px;
-		}
-
-		.product-remove::before,
-		.product-thumbnail::before {
-			display: none;
+		.card-image {
+			width: 80px;
+			min-height: 80px;
 		}
 
 		.page-title {
@@ -973,12 +971,30 @@
 			padding: 20px 0;
 		}
 
-		.cart_totals {
+		.cart-collaterals .card-body {
 			padding: 16px;
 		}
 
-		.cart-empty {
+		.cart-empty .card-body {
 			padding: 40px 20px;
+		}
+
+		.product .card {
+			grid-template-columns: 1fr;
+		}
+
+		.card-media {
+			grid-row: auto;
+		}
+
+		.card-image {
+			width: 100%;
+			height: 160px;
+		}
+
+		.card-footer {
+			flex-direction: row;
+			justify-content: space-between;
 		}
 	}
 </style>
