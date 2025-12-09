@@ -399,14 +399,8 @@ class MemberController extends Controller
                 ->avg('price') * User::whereHas('subscriptions', fn($q) => $q->whereIn('status', ['cancelled', 'expired']))
                     ->whereDoesntHave('subscriptions', fn($q) => $q->where('status', 'active'))
                     ->count(),
-            'top_churn_reasons' => DB::table('user_subscriptions')
-                ->whereIn('status', ['cancelled', 'expired'])
-                ->whereNotNull('metadata')
-                ->selectRaw("JSON_EXTRACT(metadata, '$.cancel_reason') as reason, COUNT(*) as count")
-                ->groupBy('reason')
-                ->orderByDesc('count')
-                ->take(5)
-                ->get(),
+            // Use database-agnostic approach for churn reasons
+            'top_churn_reasons' => $this->getTopChurnReasons(),
         ];
 
         return response()->json([
@@ -830,5 +824,36 @@ class MemberController extends Controller
             ',
             default => '',
         };
+    }
+
+    /**
+     * Get top churn reasons (database-agnostic)
+     * Works with both MySQL and SQLite
+     */
+    private function getTopChurnReasons(): \Illuminate\Support\Collection
+    {
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'sqlite') {
+            // For SQLite, use json_extract which is supported
+            return DB::table('user_subscriptions')
+                ->whereIn('status', ['cancelled', 'expired'])
+                ->whereNotNull('metadata')
+                ->selectRaw("json_extract(metadata, '$.cancel_reason') as reason, COUNT(*) as count")
+                ->groupBy('reason')
+                ->orderByDesc('count')
+                ->take(5)
+                ->get();
+        }
+
+        // For MySQL, use JSON_EXTRACT
+        return DB::table('user_subscriptions')
+            ->whereIn('status', ['cancelled', 'expired'])
+            ->whereNotNull('metadata')
+            ->selectRaw("JSON_EXTRACT(metadata, '$.cancel_reason') as reason, COUNT(*) as count")
+            ->groupBy('reason')
+            ->orderByDesc('count')
+            ->take(5)
+            ->get();
     }
 }

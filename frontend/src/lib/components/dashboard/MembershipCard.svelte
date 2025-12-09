@@ -19,11 +19,11 @@
 	 *   </div>
 	 * </article>
 	 *
-	 * @version 4.0.0 (Revolution Trading Exact / December 2025)
+	 * @version 5.0.0 (JWT SSO + Membership Types / December 2025)
 	 */
 
 	import '$lib/styles/st-icons.css';
-	import type { MembershipStatus } from '$lib/api/user-memberships';
+	import { enterTradingRoom } from '$lib/api/trading-room-sso';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -36,7 +36,10 @@
 	type ApiType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
 
 	// Membership status from API
-	type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
+	type MembershipStatusType = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
+
+	// Membership type (subscription type)
+	type MembershipType = 'trial' | 'active' | 'paused' | 'complimentary' | null;
 
 	interface Props {
 		id?: string;
@@ -48,9 +51,11 @@
 		roomUrl?: string;
 		roomLabel?: string;
 		skeleton?: boolean;
-		status?: MembershipStatus;
+		status?: MembershipStatusType;
+		membershipType?: MembershipType;
 		daysUntilExpiry?: number;
 		accessUrl?: string;
+		useSSO?: boolean;
 		onclick?: () => void;
 	}
 
@@ -69,10 +74,18 @@
 		roomLabel,
 		skeleton = false,
 		status = 'active',
+		membershipType = null,
 		daysUntilExpiry,
 		accessUrl,
+		useSSO = true,
 		onclick
 	}: Props = $props();
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let isEnteringRoom = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -159,6 +172,41 @@
 
 	// Show room link (Weekly Watchlist has no Trading Room link)
 	const showRoomLink = $derived(normalizedType !== 'ww' && finalRoomLabel !== null);
+
+	// Membership type label
+	const membershipTypeLabel = $derived.by(() => {
+		const labels: Record<string, string> = {
+			trial: 'trial',
+			active: 'active',
+			paused: 'paused',
+			complimentary: 'complimentary'
+		};
+		return membershipType ? labels[membershipType] : null;
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function handleEnterRoom(event: MouseEvent): Promise<void> {
+		// Only intercept if using SSO and it's a trading room type
+		if (!useSSO || normalizedType === 'ww' || normalizedType === 'course' || normalizedType === 'indicator') {
+			return; // Let default link behavior handle it
+		}
+
+		event.preventDefault();
+		isEnteringRoom = true;
+
+		try {
+			await enterTradingRoom(slug);
+		} catch (e) {
+			console.error('[MembershipCard] Failed to enter trading room:', e);
+			// Fallback to direct navigation
+			window.open(finalRoomUrl, '_blank', 'noopener,noreferrer');
+		} finally {
+			isEnteringRoom = false;
+		}
+	}
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -181,7 +229,7 @@
 	</article>
 {:else}
 	<!-- WordPress: <article class="membership-card membership-card--options"> -->
-	<article class="membership-card {cardModifier}" class:is-expiring={status === 'expiring'} class:is-expired={status === 'expired'}>
+	<article class="membership-card {cardModifier}" class:is-expiring={status === 'expiring'} class:is-expired={status === 'expired'} class:is-entering={isEnteringRoom}>
 		<!-- Status Badge -->
 		{#if status === 'expiring' && daysUntilExpiry !== undefined}
 			<span class="status-badge status-expiring">{daysUntilExpiry}d</span>
@@ -200,14 +248,31 @@
 				</span>
 			</span>
 			<!-- WordPress: <span class="mem_div">Mastering the Trade</span> -->
-			<span class="mem_div">{name}</span>
+			<span class="mem_div">
+				{name}
+				{#if membershipTypeLabel}
+					<span class="membership-type membership-type--{membershipType}">Membership: {membershipTypeLabel}</span>
+				{/if}
+			</span>
 		</a>
 
 		<!-- WordPress: <div class="membership-card__actions"> -->
 		<div class="membership-card__actions">
 			<a href={finalDashboardUrl}>Dashboard</a>
 			{#if showRoomLink}
-				<a href={finalRoomUrl} target="_blank" rel="nofollow">{finalRoomLabel}</a>
+				<a
+					href={finalRoomUrl}
+					target="_blank"
+					rel="nofollow"
+					onclick={handleEnterRoom}
+					class:is-loading={isEnteringRoom}
+				>
+					{#if isEnteringRoom}
+						Entering...
+					{:else}
+						{finalRoomLabel}
+					{/if}
+				</a>
 			{/if}
 		</div>
 	</article>
@@ -267,6 +332,50 @@
 
 	.status-expired {
 		background: #ef4444;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MEMBERSHIP TYPE LABEL (Simpler Trading style)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.membership-type {
+		display: block;
+		font-size: 12px;
+		font-weight: 400;
+		color: var(--st-text-muted, #64748b);
+		margin-top: 4px;
+		text-transform: capitalize;
+	}
+
+	.membership-type--trial {
+		color: #1e40af;
+	}
+
+	.membership-type--active {
+		color: #166534;
+	}
+
+	.membership-type--paused {
+		color: #6b7280;
+	}
+
+	.membership-type--complimentary {
+		color: #7c3aed;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LOADING STATE (SSO in progress)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.membership-card.is-entering {
+		pointer-events: none;
+		opacity: 0.8;
+	}
+
+	.membership-card__actions a.is-loading {
+		background-color: #f4f4f4;
+		color: #0984ae;
+		cursor: wait;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

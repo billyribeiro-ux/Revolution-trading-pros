@@ -112,8 +112,14 @@ class EmailAuditLogController extends Controller
             ->limit(10)
             ->get();
 
+        // Use database-agnostic hour extraction
+        $driver = \DB::connection()->getDriverName();
+        $hourExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%H', created_at) AS INTEGER)"
+            : "HOUR(created_at)";
+
         $stats['hourly_distribution'] = EmailAuditLog::where('created_at', '>=', now()->subDays(7))
-            ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+            ->selectRaw("{$hourExpr} as hour, COUNT(*) as count")
             ->groupBy('hour')
             ->orderBy('hour')
             ->pluck('count', 'hour');
@@ -326,9 +332,14 @@ class EmailAuditLogController extends Controller
             ];
         }
 
-        // Unusual activity times
+        // Unusual activity times (database-agnostic)
+        $driver = \DB::connection()->getDriverName();
+        $hourCondition = $driver === 'sqlite'
+            ? "CAST(strftime('%H', created_at) AS INTEGER) BETWEEN 2 AND 5"
+            : "HOUR(created_at) BETWEEN 2 AND 5";
+
         $nightActivity = EmailAuditLog::where('created_at', '>=', now()->subDay())
-            ->whereRaw('HOUR(created_at) BETWEEN 2 AND 5')
+            ->whereRaw($hourCondition)
             ->count();
 
         if ($nightActivity > 50) {

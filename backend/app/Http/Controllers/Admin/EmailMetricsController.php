@@ -143,11 +143,19 @@ class EmailMetricsController extends Controller
 
         $stats = $this->getEngagementStats($dateRange);
 
-        // Hourly engagement distribution
+        // Hourly engagement distribution (database-agnostic)
+        $driver = DB::connection()->getDriverName();
+        $hourExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%H', created_at) AS INTEGER)"
+            : "HOUR(created_at)";
+        $dayExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%w', created_at) AS INTEGER)"
+            : "DAYOFWEEK(created_at)";
+
         $hourlyEngagement = DB::table('email_logs')
             ->where('created_at', '>=', $dateRange['start'])
             ->whereIn('event_type', ['opened', 'clicked'])
-            ->selectRaw('HOUR(created_at) as hour, event_type, COUNT(*) as count')
+            ->selectRaw("{$hourExpr} as hour, event_type, COUNT(*) as count")
             ->groupBy('hour', 'event_type')
             ->get()
             ->groupBy('hour');
@@ -158,7 +166,7 @@ class EmailMetricsController extends Controller
         $dayOfWeekEngagement = DB::table('email_logs')
             ->where('created_at', '>=', $dateRange['start'])
             ->whereIn('event_type', ['opened', 'clicked'])
-            ->selectRaw('DAYOFWEEK(created_at) as day, COUNT(*) as count')
+            ->selectRaw("{$dayExpr} as day, COUNT(*) as count")
             ->groupBy('day')
             ->pluck('count', 'day');
 
