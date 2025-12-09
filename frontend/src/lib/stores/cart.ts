@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
 
 export interface CartItem {
@@ -6,12 +6,63 @@ export interface CartItem {
 	name: string;
 	description?: string;
 	price: number;
-	type: 'membership' | 'course' | 'alert-service';
+	type: 'membership' | 'course' | 'alert-service' | 'indicator';
 	image?: string;
+	thumbnail?: string; // Product thumbnail URL
 	quantity: number;
 	interval?: 'monthly' | 'quarterly' | 'yearly'; // For subscriptions
 	couponCode?: string; // Applied coupon code
 	discount?: number; // Discount amount
+	productSlug?: string; // Unique product identifier
+}
+
+/**
+ * Subscription conflict types for user feedback
+ */
+export type SubscriptionConflictType =
+	| 'already_subscribed'  // User has exact same subscription
+	| 'upgrade'             // User is upgrading (e.g., monthly to quarterly/yearly)
+	| 'downgrade'           // User is downgrading (e.g., yearly to monthly)
+	| 'already_owned'       // User already owns this product (course/indicator)
+	| null;                 // No conflict
+
+export interface SubscriptionConflict {
+	type: SubscriptionConflictType;
+	currentInterval?: 'monthly' | 'quarterly' | 'yearly';
+	newInterval?: 'monthly' | 'quarterly' | 'yearly';
+	productName: string;
+	message: string;
+}
+
+/**
+ * Interval priority for upgrade/downgrade detection
+ */
+const INTERVAL_PRIORITY: Record<string, number> = {
+	monthly: 1,
+	quarterly: 2,
+	yearly: 3
+};
+
+/**
+ * Check if changing from one interval to another is an upgrade
+ */
+export function isUpgrade(
+	currentInterval: 'monthly' | 'quarterly' | 'yearly',
+	newInterval: 'monthly' | 'quarterly' | 'yearly'
+): boolean {
+	return INTERVAL_PRIORITY[newInterval] > INTERVAL_PRIORITY[currentInterval];
+}
+
+/**
+ * Get a human-readable interval label
+ */
+export function getIntervalDisplayName(interval: string): string {
+	switch (interval) {
+		case 'monthly': return 'Monthly';
+		case 'quarterly': return 'Quarterly';
+		case 'yearly': return 'Annual';
+		default: return interval;
+	}
 }
 
 interface CartState {
@@ -57,25 +108,45 @@ function createCartStore() {
 		subscribe,
 
 		/**
-		 * Add item to cart
+		 * Add item to cart - Limited to quantity of 1 per product/service
+		 * Returns true if item was added, false if already in cart
 		 */
-		addItem: (item: Omit<CartItem, 'quantity'>) => {
+		addItem: (item: Omit<CartItem, 'quantity'>): boolean => {
+			let added = false;
 			update((state) => {
-				// Check if item already exists
+				// Check if exact item already exists (same ID and interval)
 				const existingIndex = state.items.findIndex(
 					(i) => i.id === item.id && i.interval === item.interval
 				);
 
 				if (existingIndex >= 0) {
-					// Increase quantity for existing item
-					state.items[existingIndex].quantity += 1;
+					// Item already in cart - DO NOT increase quantity (max 1 per item)
+					added = false;
 				} else {
-					// Add new item with quantity 1
+					// Add new item with quantity 1 (always 1, never more)
 					state.items.push({ ...item, quantity: 1 });
+					added = true;
 				}
 
 				return state;
 			});
+			return added;
+		},
+
+		/**
+		 * Check if an item is already in the cart
+		 */
+		hasItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly'): boolean => {
+			const state = get({ subscribe });
+			return state.items.some((i) => i.id === itemId && i.interval === interval);
+		},
+
+		/**
+		 * Check if user has any subscription variant of a product in cart
+		 */
+		hasAnyVariant: (itemId: string): CartItem | undefined => {
+			const state = get({ subscribe });
+			return state.items.find((i) => i.id === itemId);
 		},
 
 		/**
@@ -91,7 +162,7 @@ function createCartStore() {
 		},
 
 		/**
-		 * Update item quantity
+		 * Update item quantity - Enforces max quantity of 1
 		 */
 		updateQuantity: (
 			itemId: string,
@@ -106,7 +177,8 @@ function createCartStore() {
 						// Remove item if quantity is 0 or less
 						state.items = state.items.filter((i) => !(i.id === itemId && i.interval === interval));
 					} else {
-						item.quantity = quantity;
+						// Enforce max quantity of 1
+						item.quantity = Math.min(quantity, 1);
 					}
 				}
 

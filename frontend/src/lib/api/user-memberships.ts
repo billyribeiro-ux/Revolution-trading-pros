@@ -434,6 +434,182 @@ function getMockMemberships(): UserMembershipsResponse {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// OWNERSHIP & SUBSCRIPTION CONFLICT CHECKING
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface OwnershipCheckResult {
+	owned: boolean;
+	membership?: UserMembership;
+	conflictType?: 'already_subscribed' | 'upgrade' | 'downgrade' | 'already_owned' | null;
+	message?: string;
+}
+
+/**
+ * Interval priority for upgrade/downgrade detection
+ */
+const INTERVAL_PRIORITY: Record<string, number> = {
+	monthly: 1,
+	quarterly: 2,
+	yearly: 3,
+	lifetime: 4
+};
+
+/**
+ * Check if user already owns a product or has an active subscription
+ * Returns ownership status and conflict information
+ */
+export async function checkProductOwnership(
+	productId: string,
+	productSlug: string,
+	productType: MembershipType,
+	newInterval?: BillingInterval
+): Promise<OwnershipCheckResult> {
+	try {
+		const membershipsData = await getUserMemberships();
+		const allMemberships = membershipsData.memberships || [];
+
+		// Find matching membership by slug or ID
+		const existingMembership = allMemberships.find(
+			(m) =>
+				(m.slug === productSlug || m.id === productId) &&
+				(m.status === 'active' || m.status === 'expiring')
+		);
+
+		if (!existingMembership) {
+			return { owned: false };
+		}
+
+		// For one-time purchases (courses, indicators), simply return owned
+		if (productType === 'course' || productType === 'indicator') {
+			return {
+				owned: true,
+				membership: existingMembership,
+				conflictType: 'already_owned',
+				message: `You already own "${existingMembership.name}"`
+			};
+		}
+
+		// For subscriptions, check interval changes
+		const currentInterval = existingMembership.interval;
+
+		if (!currentInterval || !newInterval) {
+			// If no intervals, it's an exact match
+			return {
+				owned: true,
+				membership: existingMembership,
+				conflictType: 'already_subscribed',
+				message: `You're already subscribed to "${existingMembership.name}"`
+			};
+		}
+
+		if (currentInterval === newInterval) {
+			return {
+				owned: true,
+				membership: existingMembership,
+				conflictType: 'already_subscribed',
+				message: `You're already subscribed to "${existingMembership.name}"`
+			};
+		}
+
+		const currentPriority = INTERVAL_PRIORITY[currentInterval] || 0;
+		const newPriority = INTERVAL_PRIORITY[newInterval] || 0;
+
+		if (newPriority > currentPriority) {
+			return {
+				owned: true,
+				membership: existingMembership,
+				conflictType: 'upgrade',
+				message: `You're upgrading from ${getIntervalDisplayLabel(currentInterval)} to ${getIntervalDisplayLabel(newInterval)}`
+			};
+		} else {
+			return {
+				owned: true,
+				membership: existingMembership,
+				conflictType: 'downgrade',
+				message: `You're downgrading from ${getIntervalDisplayLabel(currentInterval)} to ${getIntervalDisplayLabel(newInterval)}`
+			};
+		}
+	} catch (error) {
+		console.error('[UserMemberships] Error checking ownership:', error);
+		return { owned: false };
+	}
+}
+
+/**
+ * Get display label for billing interval
+ */
+function getIntervalDisplayLabel(interval: BillingInterval): string {
+	switch (interval) {
+		case 'monthly':
+			return 'Monthly';
+		case 'quarterly':
+			return 'Quarterly';
+		case 'yearly':
+			return 'Annual';
+		case 'lifetime':
+			return 'Lifetime';
+		default:
+			return interval;
+	}
+}
+
+/**
+ * Check if user owns any variant of a product (any billing interval)
+ */
+export async function checkProductVariantOwnership(
+	productSlug: string,
+	productType: MembershipType
+): Promise<UserMembership | null> {
+	try {
+		const membershipsData = await getUserMemberships();
+		const allMemberships = membershipsData.memberships || [];
+
+		return (
+			allMemberships.find(
+				(m) =>
+					m.slug === productSlug &&
+					m.type === productType &&
+					(m.status === 'active' || m.status === 'expiring')
+			) || null
+		);
+	} catch (error) {
+		console.error('[UserMemberships] Error checking variant ownership:', error);
+		return null;
+	}
+}
+
+/**
+ * Get all products the user currently owns (for blocking duplicate purchases)
+ */
+export async function getOwnedProducts(): Promise<{
+	courses: string[];
+	indicators: string[];
+	subscriptions: Array<{ slug: string; interval: BillingInterval }>;
+}> {
+	try {
+		const membershipsData = await getUserMemberships();
+		const allMemberships = membershipsData.memberships || [];
+		const activeMemberships = allMemberships.filter(
+			(m) => m.status === 'active' || m.status === 'expiring'
+		);
+
+		return {
+			courses: activeMemberships.filter((m) => m.type === 'course').map((m) => m.slug),
+			indicators: activeMemberships.filter((m) => m.type === 'indicator').map((m) => m.slug),
+			subscriptions: activeMemberships
+				.filter((m) => m.type === 'trading-room' || m.type === 'alert-service')
+				.map((m) => ({
+					slug: m.slug,
+					interval: m.interval || 'monthly'
+				}))
+		};
+	} catch (error) {
+		console.error('[UserMemberships] Error getting owned products:', error);
+		return { courses: [], indicators: [], subscriptions: [] };
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // EXPORT
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -442,5 +618,8 @@ export default {
 	getMembershipDetails,
 	getTradingRoomAccess,
 	invalidateMembershipCache,
-	preloadMembershipData
+	preloadMembershipData,
+	checkProductOwnership,
+	checkProductVariantOwnership,
+	getOwnedProducts
 };

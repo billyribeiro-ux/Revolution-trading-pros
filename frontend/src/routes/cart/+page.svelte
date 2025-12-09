@@ -1,29 +1,30 @@
 <script lang="ts">
 	/**
-	 * Shopping Cart Page - WordPress Revolution Trading Style
+	 * Shopping Cart Page - Simpler Trading Style
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Matches the WooCommerce cart layout from Revolution Trading
-	 * Uses existing cart store for state management
+	 * Matches the Simpler Trading cart layout exactly
+	 * Features:
+	 * - Max quantity of 1 per product/service
+	 * - NonMemberCheckout for unauthenticated users
+	 * - Subscription conflict detection
+	 * - Dark prices and bolder fonts
+	 * - Product thumbnails
 	 *
-	 * @version 4.0.0 (WordPress-style / December 2025)
+	 * @version 5.0.0 (Simpler Trading Style / Svelte 5 December 2025)
 	 */
 
 	import { goto } from '$app/navigation';
 	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import { isAuthenticated } from '$lib/stores/auth';
-	import {
-		IconTrash,
-		IconPlus,
-		IconMinus,
-		IconShoppingCart,
-		IconArrowLeft,
-		IconArrowRight,
-		IconTicket,
-		IconX,
-		IconShieldCheck
-	} from '@tabler/icons-svelte';
+	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
+	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -133,9 +134,13 @@
 </svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE - WordPress WooCommerce Cart Style
+     TEMPLATE - Simpler Trading Cart Style
      ═══════════════════════════════════════════════════════════════════════════ -->
 
+<!-- Show NonMemberCheckout for unauthenticated users with items in cart -->
+{#if !$isAuthenticated && $cartStore.items.length > 0}
+	<NonMemberCheckout />
+{:else}
 <div class="woocommerce-cart woocommerce-page">
 	<div class="container">
 		<!-- Page Header -->
@@ -164,7 +169,7 @@
 		{:else}
 			<!-- Cart Content -->
 			<div class="cart-content">
-				<!-- Cart Items Table -->
+				<!-- Cart Items Table - Simpler Trading Style -->
 				<div class="cart-items-section">
 					<form class="woocommerce-cart-form">
 						<table class="shop_table cart" cellspacing="0">
@@ -174,8 +179,7 @@
 									<th class="product-thumbnail">&nbsp;</th>
 									<th class="product-name">Product</th>
 									<th class="product-price">Price</th>
-									<th class="product-quantity">Quantity</th>
-									<th class="product-subtotal">Subtotal</th>
+									<th class="product-subtotal">Total</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -193,10 +197,15 @@
 											</button>
 										</td>
 
-										<!-- Thumbnail -->
+										<!-- Thumbnail - Shows product thumbnail or image -->
 										<td class="product-thumbnail">
-											<div class="product-image" style:background-image={item.image ? `url(${item.image})` : undefined}>
-												{#if !item.image}
+											<div
+												class="product-image"
+												style:background-image={item.thumbnail || item.image
+													? `url(${item.thumbnail || item.image})`
+													: undefined}
+											>
+												{#if !item.thumbnail && !item.image}
 													<IconShoppingCart size={24} />
 												{/if}
 											</div>
@@ -207,7 +216,7 @@
 											<span class="product-title">{item.name}</span>
 											{#if item.interval}
 												<span class="subscription-interval">
-													Billed {item.interval}
+													({item.interval})
 												</span>
 											{/if}
 										</td>
@@ -222,38 +231,10 @@
 											{/if}
 										</td>
 
-										<!-- Quantity -->
-										<td class="product-quantity" data-title="Quantity">
-											<div class="quantity-controls">
-												<button
-													type="button"
-													class="qty-btn minus"
-													onclick={() => updateQuantity(item.id, item.quantity - 1, item.interval)}
-													disabled={item.quantity <= 1}
-												>
-													<IconMinus size={14} />
-												</button>
-												<input
-													type="number"
-													class="qty"
-													value={item.quantity}
-													min="1"
-													readonly
-												/>
-												<button
-													type="button"
-													class="qty-btn plus"
-													onclick={() => updateQuantity(item.id, item.quantity + 1, item.interval)}
-												>
-													<IconPlus size={14} />
-												</button>
-											</div>
-										</td>
-
-										<!-- Subtotal -->
-										<td class="product-subtotal" data-title="Subtotal">
+										<!-- Subtotal (quantity is always 1) -->
+										<td class="product-subtotal" data-title="Total">
 											<span class="woocommerce-Price-amount amount">
-												{formatPrice(item.price * item.quantity)}
+												{formatPrice(item.price)}
 											</span>
 										</td>
 									</tr>
@@ -392,22 +373,25 @@
 		{/if}
 	</div>
 </div>
+{/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - WordPress WooCommerce Cart
+     STYLES - Simpler Trading Cart
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES
+	   CSS CUSTOM PROPERTIES - Simpler Trading Style
+	   Dark prices, bold fonts, high contrast
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
 		--cart-bg: #f4f4f4;
 		--cart-card-bg: #fff;
 		--cart-border: #dbdbdb;
-		--cart-text: #333;
-		--cart-text-muted: #666;
+		--cart-text: #1a1a1a;           /* Darker text for better contrast */
+		--cart-text-dark: #000;         /* Pure black for prices */
+		--cart-text-muted: #555;        /* Darker muted text */
 		--cart-primary: #0984ae;
 		--cart-orange: #f99e31;
 		--cart-orange-hover: #f88b09;
@@ -606,22 +590,30 @@
 	/* Product Name */
 	.product-name .product-title {
 		display: block;
-		font-weight: 600;
-		color: var(--cart-text);
+		font-weight: 700;
+		color: var(--cart-text-dark);
 		font-size: 15px;
 	}
 
 	.product-name .subscription-interval {
-		display: block;
-		font-size: 12px;
+		display: inline;
+		font-size: 13px;
+		font-weight: 600;
 		color: var(--cart-primary);
-		margin-top: 4px;
+		margin-left: 4px;
 	}
 
-	/* Product Price */
+	/* Product Price - DARK and BOLD */
+	.product-price .amount {
+		color: var(--cart-text-dark) !important;
+		font-weight: 700 !important;
+		font-size: 16px;
+	}
+
 	.product-price .interval-label {
 		display: block;
 		font-size: 12px;
+		font-weight: 600;
 		color: var(--cart-text-muted);
 	}
 
@@ -678,11 +670,11 @@
 		margin: 0;
 	}
 
-	/* Product Subtotal */
+	/* Product Subtotal - DARK and BOLD */
 	.product-subtotal .amount {
-		font-weight: 700;
+		font-weight: 700 !important;
 		font-size: 16px;
-		color: var(--cart-text);
+		color: var(--cart-text-dark) !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -704,7 +696,7 @@
 	.cart_totals h2 {
 		font-size: 20px;
 		font-weight: 700;
-		color: var(--cart-text);
+		color: var(--cart-text-dark);
 		margin: 0 0 20px;
 		padding-bottom: 16px;
 		border-bottom: 1px solid var(--cart-border);
@@ -723,13 +715,19 @@
 
 	.cart_totals .shop_table th {
 		text-align: left;
-		font-weight: 500;
-		color: var(--cart-text);
+		font-weight: 700;
+		color: var(--cart-text-dark);
 	}
 
 	.cart_totals .shop_table td {
 		text-align: right;
-		color: var(--cart-text);
+		color: var(--cart-text-dark);
+		font-weight: 600;
+	}
+
+	.cart_totals .shop_table td .amount {
+		color: var(--cart-text-dark) !important;
+		font-weight: 700 !important;
 	}
 
 	.cart_totals .order-total th,
@@ -738,6 +736,7 @@
 		font-weight: 700;
 		border-bottom: none;
 		padding-top: 16px;
+		color: var(--cart-text-dark);
 	}
 
 	.cart_totals .discount-amount {
