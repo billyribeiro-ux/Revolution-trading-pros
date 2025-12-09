@@ -118,9 +118,9 @@
   }
 </script>
 
-<div class="responsive-preview {className}">
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 {className}">
   <!-- Header -->
-  <div class="preview-header">
+  <div class="flex items-center justify-between mb-4">
     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
       Responsive Variants
     </h3>
@@ -132,12 +132,10 @@
   </div>
 
   <!-- Variants grid -->
-  <div class="variants-grid">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
     {#each sortedVariants as variant (variant.sizeName)}
       <button
-        class="variant-card"
-        class:selected={selectedSize === variant.sizeName}
-        class:interactive={interactive}
+        class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 transition-all duration-200 {selectedSize === variant.sizeName ? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800' : 'border-transparent'} {interactive ? 'cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md' : ''}"
         onclick={() => handleSelect(variant.sizeName)}
         onmouseenter={(e) => handleMouseEnter(e, variant)}
         onmousemove={handleMouseMove}
@@ -145,36 +143,37 @@
         transition:scale={{ duration: 200 }}
       >
         <!-- Thumbnail -->
-        <div class="variant-thumbnail">
+        <div class="aspect-square bg-gray-100 dark:bg-gray-700 overflow-hidden">
           <img
             src={variant.url}
             alt="{variant.sizeName} preview"
             loading="lazy"
+            class="w-full h-full object-cover"
           />
         </div>
 
         <!-- Info -->
-        <div class="variant-info">
-          <div class="size-name">
+        <div class="p-2 text-center">
+          <div class="text-xs font-medium text-gray-700 dark:text-gray-300">
             {breakpointLabels[variant.sizeName] || variant.sizeName}
           </div>
-          <div class="size-dimensions">
+          <div class="text-[10px] text-gray-500 dark:text-gray-400">
             {variant.width} x {variant.height}
           </div>
           {#if showSizes}
-            <div class="size-details">
-              <span class="file-size">{formatBytes(variant.size)}</span>
+            <div class="flex items-center justify-center gap-2 mt-1">
+              <span class="text-[10px] text-gray-500">{formatBytes(variant.size)}</span>
               {#if originalSize > 0}
-                <span class="savings">-{getSavings(variant.size)}%</span>
+                <span class="text-[10px] font-medium text-green-500">-{getSavings(variant.size)}%</span>
               {/if}
             </div>
           {/if}
         </div>
 
         <!-- Breakpoint indicator -->
-        <div class="breakpoint-indicator">
+        <div class="h-1 bg-gray-200 dark:bg-gray-700">
           <div
-            class="indicator-bar"
+            class="h-full bg-blue-500"
             style="width: {(breakpointWidths[variant.sizeName] / 1920) * 100}%"
           ></div>
         </div>
@@ -184,23 +183,23 @@
 
   <!-- Size comparison chart -->
   {#if showSizes && sortedVariants.length > 0}
-    <div class="size-chart">
-      <div class="chart-header">
+    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="mb-2">
         <span class="text-xs text-gray-500">Size Comparison</span>
       </div>
-      <div class="chart-bars">
+      <div class="flex items-end justify-center gap-2 h-20">
         {#each sortedVariants as variant}
-          <div class="chart-bar-wrapper">
+          <div class="flex flex-col items-center gap-1">
             <div
-              class="chart-bar"
+              class="w-4 bg-blue-500 rounded-t transition-all duration-300"
               style="height: {(variant.size / originalSize) * 100}%"
             ></div>
-            <span class="chart-label">{variant.sizeName}</span>
+            <span class="text-[10px] text-gray-500">{variant.sizeName}</span>
           </div>
         {/each}
-        <div class="chart-bar-wrapper original">
-          <div class="chart-bar chart-bar-original" style="height: 100%"></div>
-          <span class="chart-label">orig</span>
+        <div class="flex flex-col items-center gap-1">
+          <div class="w-4 bg-gray-400 dark:bg-gray-500 rounded-t transition-all duration-300" style="height: 100%"></div>
+          <span class="text-[10px] text-gray-500">orig</span>
         </div>
       </div>
     </div>
@@ -209,249 +208,19 @@
   <!-- Hover preview tooltip -->
   {#if hoveredVariant}
     <div
-      class="hover-preview"
+      class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden pointer-events-none"
       style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
       transition:fade={{ duration: 150 }}
     >
       <img
         src={hoveredVariant.url}
         alt="Preview"
-        class="preview-image"
+        class="max-w-[200px] max-h-[150px] object-contain"
       />
-      <div class="preview-info">
+      <div class="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-gray-50 dark:bg-gray-900">
         <span class="font-medium">{hoveredVariant.width}x{hoveredVariant.height}</span>
         <span class="text-gray-500">{formatBytes(hoveredVariant.size)}</span>
       </div>
     </div>
   {/if}
 </div>
-
-<style>
-  .responsive-preview {
-    background-color: rgb(249 250 251);
-    border-radius: 0.75rem;
-    padding: 1rem;
-  }
-
-  :global(.dark) .responsive-preview {
-    background-color: rgba(31, 41, 55, 0.5);
-  }
-
-  .preview-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-
-  .variants-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-
-  @media (min-width: 640px) {
-    .variants-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 768px) {
-    .variants-grid {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-  }
-
-  .variant-card {
-    background-color: #fff;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-  }
-
-  :global(.dark) .variant-card {
-    background-color: rgb(31 41 55);
-  }
-
-  .variant-card.interactive {
-    cursor: pointer;
-  }
-
-  .variant-card.interactive:hover {
-    border-color: rgb(147 197 253);
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-  }
-
-  :global(.dark) .variant-card.interactive:hover {
-    border-color: rgb(37 99 235);
-  }
-
-  .variant-card.selected {
-    border-color: rgb(59 130 246);
-    box-shadow: 0 0 0 2px rgb(191 219 254);
-  }
-
-  :global(.dark) .variant-card.selected {
-    box-shadow: 0 0 0 2px rgb(30 64 175);
-  }
-
-  .variant-thumbnail {
-    aspect-ratio: 1/1;
-    background-color: rgb(243 244 246);
-    overflow: hidden;
-  }
-
-  :global(.dark) .variant-thumbnail {
-    background-color: rgb(55 65 81);
-  }
-
-  .variant-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .variant-info {
-    padding: 0.5rem;
-    text-align: center;
-  }
-
-  .size-name {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: rgb(55 65 81);
-  }
-
-  :global(.dark) .size-name {
-    color: rgb(209 213 219);
-  }
-
-  .size-dimensions {
-    font-size: 10px;
-    color: rgb(107 114 128);
-  }
-
-  :global(.dark) .size-dimensions {
-    color: rgb(156 163 175);
-  }
-
-  .size-details {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
-  }
-
-  .file-size {
-    font-size: 10px;
-    color: rgb(107 114 128);
-  }
-
-  .savings {
-    font-size: 10px;
-    font-weight: 500;
-    color: rgb(34 197 94);
-  }
-
-  .breakpoint-indicator {
-    height: 0.25rem;
-    background-color: rgb(229 231 235);
-  }
-
-  :global(.dark) .breakpoint-indicator {
-    background-color: rgb(55 65 81);
-  }
-
-  .indicator-bar {
-    height: 100%;
-    background-color: rgb(59 130 246);
-  }
-
-  .size-chart {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgb(229 231 235);
-  }
-
-  :global(.dark) .size-chart {
-    border-color: rgb(55 65 81);
-  }
-
-  .chart-header {
-    margin-bottom: 0.5rem;
-  }
-
-  .chart-bars {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 0.5rem;
-    height: 5rem;
-  }
-
-  .chart-bar-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .chart-bar {
-    width: 1rem;
-    background-color: rgb(59 130 246);
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-    transition: all 0.3s;
-  }
-
-  .chart-bar-wrapper.original .chart-bar {
-    background-color: rgb(156 163 175);
-  }
-
-  :global(.dark) .chart-bar-wrapper.original .chart-bar {
-    background-color: rgb(107 114 128);
-  }
-
-  .chart-label {
-    font-size: 10px;
-    color: rgb(107 114 128);
-  }
-
-  .hover-preview {
-    position: fixed;
-    z-index: 50;
-    background-color: #fff;
-    border-radius: 0.5rem;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-    border: 1px solid rgb(229 231 235);
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  :global(.dark) .hover-preview {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-  }
-
-  .preview-image {
-    max-width: 200px;
-    max-height: 150px;
-    object-fit: contain;
-  }
-
-  .preview-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    background-color: rgb(249 250 251);
-  }
-
-  :global(.dark) .preview-info {
-    background-color: rgb(17 24 39);
-  }
-</style>

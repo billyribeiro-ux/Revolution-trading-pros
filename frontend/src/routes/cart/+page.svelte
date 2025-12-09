@@ -661,6 +661,7 @@
 		color: var(--cart-text);
 		appearance: textfield;
 		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 
 	.quantity-controls .qty::-webkit-outer-spin-button,

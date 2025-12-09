@@ -107,9 +107,9 @@
 </script>
 
 {#if uploads.length > 0}
-  <div class="upload-progress-panel {className}" transition:slide>
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden {className}" transition:slide>
     <!-- Header -->
-    <div class="panel-header">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-3">
         <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
           {#if isComplete}
@@ -125,13 +125,13 @@
 
       <div class="flex items-center gap-2">
         {#if completedCount > 0}
-          <span class="badge badge-success">{completedCount} done</span>
+          <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">{completedCount} done</span>
         {/if}
         {#if errorCount > 0}
-          <span class="badge badge-error">{errorCount} failed</span>
+          <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">{errorCount} failed</span>
         {/if}
         <button
-          class="clear-btn"
+          class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           onclick={() => onClear?.()}
           title="Clear all"
         >
@@ -144,17 +144,17 @@
 
     <!-- Overall progress bar -->
     {#if !isComplete}
-      <div class="overall-progress">
-        <div class="progress-bar" style="width: {totalProgress}%"></div>
+      <div class="h-1 bg-gray-200 dark:bg-gray-700">
+        <div class="h-full bg-blue-500 transition-all duration-300" style="width: {totalProgress}%"></div>
       </div>
     {/if}
 
     <!-- Upload items -->
-    <div class="upload-list">
+    <div class="max-h-[300px] overflow-y-auto">
       {#each uploads as upload (upload.id)}
-        <div class="upload-item" transition:slide>
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0" transition:slide>
           <!-- Thumbnail -->
-          <div class="upload-thumbnail">
+          <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
             {#if upload.result?.thumbnailUrl}
               <img src={upload.result.thumbnailUrl} alt="" class="w-full h-full object-cover" />
             {:else if upload.file.type.startsWith('image/')}
@@ -167,19 +167,19 @@
           </div>
 
           <!-- Info -->
-          <div class="upload-info">
-            <div class="file-name">{upload.file.name}</div>
-            <div class="file-meta">
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-900 dark:text-white truncate">{upload.file.name}</div>
+            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <span>{formatBytes(upload.file.size)}</span>
-              <span class="status-dot {getStatusColor(upload.status)}"></span>
-              <span class="status-text">{getStatusText(upload.status)}</span>
+              <span class="w-2 h-2 rounded-full {getStatusColor(upload.status)}"></span>
+              <span class="text-xs">{getStatusText(upload.status)}</span>
             </div>
 
             <!-- Progress bar for individual file -->
             {#if upload.status === 'uploading' || upload.status === 'processing'}
-              <div class="file-progress">
+              <div class="h-1 bg-gray-200 dark:bg-gray-700 rounded-full mt-2 overflow-hidden">
                 <div
-                  class="file-progress-bar {upload.status === 'processing' ? 'animate-pulse' : ''}"
+                  class="h-full bg-blue-500 transition-all duration-300 rounded-full {upload.status === 'processing' ? 'animate-pulse' : ''}"
                   style="width: {upload.progress}%"
                 ></div>
               </div>
@@ -187,27 +187,27 @@
 
             <!-- Error message -->
             {#if upload.status === 'error' && upload.error}
-              <div class="error-message">{upload.error}</div>
+              <div class="text-xs text-red-500 mt-1">{upload.error}</div>
             {/if}
 
             <!-- Optimization stats -->
             {#if showStats && upload.status === 'complete' && upload.result?.stats}
-              <div class="optimization-stats" transition:fade>
-                <span class="stat-original">{formatBytes(upload.result.stats.originalSize)}</span>
+              <div class="flex items-center gap-1 text-xs mt-1" transition:fade>
+                <span class="text-gray-400 line-through">{formatBytes(upload.result.stats.originalSize)}</span>
                 <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="stat-optimized">{formatBytes(upload.result.stats.optimizedSize)}</span>
-                <span class="stat-savings">-{upload.result.stats.savingsPercent}%</span>
+                <span class="text-gray-600 dark:text-gray-300">{formatBytes(upload.result.stats.optimizedSize)}</span>
+                <span class="text-green-500 font-medium">-{upload.result.stats.savingsPercent}%</span>
               </div>
             {/if}
           </div>
 
           <!-- Actions -->
-          <div class="upload-actions">
+          <div class="flex-shrink-0">
             {#if upload.status === 'uploading' || upload.status === 'pending'}
               <button
-                class="action-btn action-cancel"
+                class="p-1.5 rounded-lg transition-colors text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                 onclick={() => onCancel?.(upload.id)}
                 title="Cancel"
               >
@@ -217,7 +217,7 @@
               </button>
             {:else if upload.status === 'error'}
               <button
-                class="action-btn action-retry"
+                class="p-1.5 rounded-lg transition-colors text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 onclick={() => onRetry?.(upload.id)}
                 title="Retry"
               >
@@ -227,7 +227,7 @@
               </button>
             {:else if upload.status === 'complete'}
               <button
-                class="action-btn action-remove"
+                class="p-1.5 rounded-lg transition-colors text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                 onclick={() => onRemove?.(upload.id)}
                 title="Remove"
               >
@@ -242,266 +242,3 @@
     </div>
   </div>
 {/if}
-
-<style>
-  .upload-progress-panel {
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    border: 1px solid rgb(229 231 235);
-    overflow: hidden;
-  }
-
-  :global(.dark) .upload-progress-panel {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-  }
-
-  .panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgb(229 231 235);
-  }
-
-  :global(.dark) .panel-header {
-    border-color: rgb(55 65 81);
-  }
-
-  .overall-progress {
-    height: 0.25rem;
-    background-color: rgb(229 231 235);
-  }
-
-  :global(.dark) .overall-progress {
-    background-color: rgb(55 65 81);
-  }
-
-  .progress-bar {
-    height: 100%;
-    background-color: rgb(59 130 246);
-    transition: all 0.3s;
-  }
-
-  .upload-list {
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .upload-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgb(243 244 246);
-  }
-
-  .upload-item:last-child {
-    border-bottom: 0;
-  }
-
-  :global(.dark) .upload-item {
-    border-color: rgb(55 65 81);
-  }
-
-  .upload-thumbnail {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    flex-shrink: 0;
-    background-color: rgb(243 244 246);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  :global(.dark) .upload-thumbnail {
-    background-color: rgb(55 65 81);
-  }
-
-  .upload-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .file-name {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: rgb(17 24 39);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  :global(.dark) .file-name {
-    color: #fff;
-  }
-
-  .file-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: rgb(107 114 128);
-  }
-
-  :global(.dark) .file-meta {
-    color: rgb(156 163 175);
-  }
-
-  .status-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 9999px;
-  }
-
-  .status-text {
-    font-size: 0.75rem;
-  }
-
-  .file-progress {
-    height: 0.25rem;
-    background-color: rgb(229 231 235);
-    border-radius: 9999px;
-    margin-top: 0.5rem;
-    overflow: hidden;
-  }
-
-  :global(.dark) .file-progress {
-    background-color: rgb(55 65 81);
-  }
-
-  .file-progress-bar {
-    height: 100%;
-    background-color: rgb(59 130 246);
-    transition: all 0.3s;
-    border-radius: 9999px;
-  }
-
-  .error-message {
-    font-size: 0.75rem;
-    color: rgb(239 68 68);
-    margin-top: 0.25rem;
-  }
-
-  .optimization-stats {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-  }
-
-  .stat-original {
-    color: rgb(156 163 175);
-    text-decoration: line-through;
-  }
-
-  .stat-optimized {
-    color: rgb(75 85 99);
-  }
-
-  :global(.dark) .stat-optimized {
-    color: rgb(209 213 219);
-  }
-
-  .stat-savings {
-    color: rgb(34 197 94);
-    font-weight: 500;
-  }
-
-  .upload-actions {
-    flex-shrink: 0;
-  }
-
-  .action-btn {
-    padding: 0.375rem;
-    border-radius: 0.5rem;
-    transition: color 0.15s, background-color 0.15s;
-  }
-
-  .action-cancel {
-    color: rgb(156 163 175);
-  }
-
-  .action-cancel:hover {
-    color: rgb(239 68 68);
-    background-color: rgb(254 242 242);
-  }
-
-  :global(.dark) .action-cancel:hover {
-    background-color: rgba(127, 29, 29, 0.2);
-  }
-
-  .action-retry {
-    color: rgb(156 163 175);
-  }
-
-  .action-retry:hover {
-    color: rgb(59 130 246);
-    background-color: rgb(239 246 255);
-  }
-
-  :global(.dark) .action-retry:hover {
-    background-color: rgba(30, 58, 138, 0.2);
-  }
-
-  .action-remove {
-    color: rgb(34 197 94);
-  }
-
-  .action-remove:hover {
-    color: rgb(22 163 74);
-    background-color: rgb(240 253 244);
-  }
-
-  :global(.dark) .action-remove:hover {
-    background-color: rgba(20, 83, 45, 0.2);
-  }
-
-  .clear-btn {
-    padding: 0.375rem;
-    color: rgb(156 163 175);
-    border-radius: 0.5rem;
-    transition: color 0.15s, background-color 0.15s;
-  }
-
-  .clear-btn:hover {
-    color: rgb(75 85 99);
-    background-color: rgb(243 244 246);
-  }
-
-  :global(.dark) .clear-btn:hover {
-    color: rgb(209 213 219);
-    background-color: rgb(55 65 81);
-  }
-
-  .badge {
-    padding: 0.125rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 9999px;
-  }
-
-  .badge-success {
-    background-color: rgb(220 252 231);
-    color: rgb(21 128 61);
-  }
-
-  :global(.dark) .badge-success {
-    background-color: rgba(20, 83, 45, 0.3);
-    color: rgb(74 222 128);
-  }
-
-  .badge-error {
-    background-color: rgb(254 226 226);
-    color: rgb(185 28 28);
-  }
-
-  :global(.dark) .badge-error {
-    background-color: rgba(127, 29, 29, 0.3);
-    color: rgb(248 113 113);
-  }
-</style>
