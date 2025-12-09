@@ -1475,14 +1475,11 @@ export const createABTest = (formId: number, config: ABTestConfig) =>
 export const getABTestResults = (formId: number, testId: string) =>
 	formsService.getABTestResults(formId, testId);
 
-// Contacts API (placeholder for now - implement as needed)
-export const contactsApi = {
-	list: async () => ({ contacts: [] }),
-	get: async (id: number) => ({ contact: null }),
-	create: async (data: any) => ({ contact: null }),
-	update: async (id: number, data: any) => ({ contact: null }),
-	delete: async (id: number) => ({ success: true })
-};
+/**
+ * @deprecated Use crmAPI from '$lib/api/crm' instead for contact management.
+ * This export is maintained for backwards compatibility only.
+ */
+export { crmAPI as contactsApi } from './crm';
 
 // Form actions
 export const publishForm = (formId: number) =>
@@ -1494,19 +1491,35 @@ export const unpublishForm = (formId: number) =>
 export const archiveForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'archived' });
 
-// Submission management
+// Submission management - Connected to real backend API
 export const updateSubmissionStatus = async (
 	formId: number,
 	submissionId: number | string,
 	status: string
 ) => {
-	// Placeholder implementation - formId used for API routing
-	return { success: true, submission: { id: submissionId, status, form_id: formId } };
+	const token = browser ? localStorage.getItem('access_token') : '';
+	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}/status`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: JSON.stringify({ status })
+	});
+	if (!response.ok) throw new Error('Failed to update submission status');
+	return response.json();
 };
 
 export const deleteSubmission = async (formId: number, submissionId: number | string) => {
-	// Placeholder implementation - formId used for API routing
-	return { success: true, form_id: formId };
+	const token = browser ? localStorage.getItem('access_token') : '';
+	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}`, {
+		method: 'DELETE',
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	if (!response.ok) throw new Error('Failed to delete submission');
+	return response.json();
 };
 
 export const bulkUpdateSubmissionStatus = async (
@@ -1514,16 +1527,34 @@ export const bulkUpdateSubmissionStatus = async (
 	submissionIds: (number | string)[],
 	status: string
 ) => {
-	// Placeholder implementation - formId used for API routing
-	return { success: true, updated: submissionIds.length, form_id: formId };
+	const token = browser ? localStorage.getItem('access_token') : '';
+	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-update-status`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: JSON.stringify({ submission_ids: submissionIds, status })
+	});
+	if (!response.ok) throw new Error('Failed to bulk update submissions');
+	return response.json();
 };
 
 export const bulkDeleteSubmissions = async (formId: number, submissionIds: (number | string)[]) => {
-	// Placeholder implementation - formId used for API routing
-	return { success: true, deleted: submissionIds.length, form_id: formId };
+	const token = browser ? localStorage.getItem('access_token') : '';
+	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-delete`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: JSON.stringify({ submission_ids: submissionIds })
+	});
+	if (!response.ok) throw new Error('Failed to bulk delete submissions');
+	return response.json();
 };
 
-// Type exports (placeholders)
+// Type exports
 export interface FormEntry {
 	id: number;
 	form_id: number;
@@ -1533,18 +1564,10 @@ export interface FormEntry {
 	updated_at?: string;
 }
 
-export interface Contact {
-	id: number;
-	email: string;
-	name?: string;
-	full_name?: string;
-	phone?: string;
-	company?: string;
-	status?: string;
-	last_activity_at?: string;
-	created_at: string;
-	updated_at?: string;
-}
+/**
+ * @deprecated Use Contact type from '$lib/crm/types' instead.
+ */
+export type { Contact } from '$lib/crm/types';
 
 // Analytics
 export const getSubmissionStats = (formId: number) => formsService.getFormAnalytics(formId);
