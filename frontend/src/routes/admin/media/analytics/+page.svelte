@@ -60,6 +60,10 @@
   let timeRange = $state<'7d' | '30d' | '90d' | '1y'>('30d');
   let activeTab: 'overview' | 'bandwidth' | 'formats' | 'performance' = 'overview';
 
+  // Connection status - NO MOCK DATA
+  let isConnected = $state(false);
+  let connectionError = $state<string | null>(null);
+
   // Animated values
   const savingsPercent = tweened(0, { duration: 1500, easing: cubicOut });
   const totalSavings = tweened(0, { duration: 1500, easing: cubicOut });
@@ -79,82 +83,61 @@
 
   async function loadData() {
     isLoading = true;
+    connectionError = null;
 
     try {
-      // Load all data in parallel
-      const [overviewRes, bandwidthRes, formatsRes] = await Promise.all([
+      // Load all data in parallel using Promise.allSettled for resilience
+      const [overviewRes, bandwidthRes, formatsRes] = await Promise.allSettled([
         fetch('/api/media/analytics/overview'),
         fetch(`/api/media/analytics/bandwidth?range=${timeRange}`),
         fetch('/api/media/analytics/formats'),
       ]);
 
-      if (overviewRes.ok) {
-        overview = await overviewRes.json();
-        if (overview) {
-          savingsPercent.set(overview.savingsPercent);
-          totalSavings.set(overview.totalSavings);
-          co2Saved.set(overview.co2Saved);
+      // Check if any request succeeded - that means we're connected
+      let hasData = false;
+
+      if (overviewRes.status === 'fulfilled' && overviewRes.value.ok) {
+        const data = await overviewRes.value.json();
+        if (data && typeof data.totalOriginal === 'number') {
+          overview = data;
+          hasData = true;
+          if (overview) {
+            savingsPercent.set(overview.savingsPercent);
+            totalSavings.set(overview.totalSavings);
+            co2Saved.set(overview.co2Saved);
+          }
         }
       }
 
-      if (bandwidthRes.ok) {
-        bandwidthData = await bandwidthRes.json();
+      if (bandwidthRes.status === 'fulfilled' && bandwidthRes.value.ok) {
+        const data = await bandwidthRes.value.json();
+        if (Array.isArray(data) && data.length > 0) {
+          bandwidthData = data;
+          hasData = true;
+        }
       }
 
-      if (formatsRes.ok) {
-        formatStats = await formatsRes.json();
+      if (formatsRes.status === 'fulfilled' && formatsRes.value.ok) {
+        const data = await formatsRes.value.json();
+        if (Array.isArray(data) && data.length > 0) {
+          formatStats = data;
+          hasData = true;
+        }
+      }
+
+      // Only mark as connected if we received valid data
+      isConnected = hasData;
+
+      if (!hasData) {
+        connectionError = 'Media optimization service is not connected. Connect your image optimization service to view real analytics.';
       }
     } catch (e) {
       console.error('Failed to load analytics:', e);
-      // Use mock data for demo
-      loadMockData();
+      isConnected = false;
+      connectionError = 'Failed to connect to media analytics service. Please check your connection settings.';
+      // NO MOCK DATA - Show connection error instead
     } finally {
       isLoading = false;
-    }
-  }
-
-  function loadMockData() {
-    // Mock overview data
-    overview = {
-      totalOriginal: 1024 * 1024 * 1024 * 2.5, // 2.5 GB
-      totalOptimized: 1024 * 1024 * 1024 * 0.8, // 800 MB
-      totalSavings: 1024 * 1024 * 1024 * 1.7, // 1.7 GB
-      savingsPercent: 68,
-      totalImages: 1247,
-      optimizedImages: 1089,
-      avgCompressionRatio: 3.2,
-      estimatedCostSavings: 45.50,
-      co2Saved: 2.4,
-    };
-
-    // Mock bandwidth data
-    const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-    bandwidthData = Array.from({ length: days }, (_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (days - i - 1));
-      const original = Math.random() * 50 + 20;
-      const optimized = original * (0.25 + Math.random() * 0.15);
-      return {
-        date: date.toISOString().split('T')[0],
-        original: original * 1024 * 1024,
-        optimized: optimized * 1024 * 1024,
-        savings: (original - optimized) * 1024 * 1024,
-        requests: Math.floor(Math.random() * 1000 + 500),
-      };
-    });
-
-    // Mock format stats
-    formatStats = [
-      { format: 'WebP', count: 523, originalSize: 850 * 1024 * 1024, optimizedSize: 180 * 1024 * 1024, savings: 78.8 },
-      { format: 'AVIF', count: 312, originalSize: 620 * 1024 * 1024, optimizedSize: 95 * 1024 * 1024, savings: 84.7 },
-      { format: 'JPEG', count: 254, originalSize: 410 * 1024 * 1024, optimizedSize: 165 * 1024 * 1024, savings: 59.8 },
-      { format: 'PNG', count: 158, originalSize: 380 * 1024 * 1024, optimizedSize: 220 * 1024 * 1024, savings: 42.1 },
-    ];
-
-    if (overview) {
-      savingsPercent.set(overview.savingsPercent);
-      totalSavings.set(overview.totalSavings);
-      co2Saved.set(overview.co2Saved);
     }
   }
 
@@ -262,6 +245,42 @@
     <div class="loading-state">
       <div class="spinner"></div>
       <p>Loading analytics...</p>
+    </div>
+  {:else if !isConnected || connectionError}
+    <!-- NOT CONNECTED STATE - No fake data -->
+    <div class="not-connected-state">
+      <div class="not-connected-card">
+        <div class="not-connected-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+          </svg>
+        </div>
+        <h2>Media Analytics Not Connected</h2>
+        <p>{connectionError || 'Connect your image optimization service to view real bandwidth savings and analytics data.'}</p>
+        <div class="not-connected-actions">
+          <a href="/admin/connections" class="btn-primary">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+            </svg>
+            Connect Service
+          </a>
+          <button class="btn-secondary" onclick={loadData}>
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+            </svg>
+            Retry
+          </button>
+        </div>
+        <div class="service-info">
+          <h3>Supported Services</h3>
+          <ul>
+            <li>Cloudflare Images</li>
+            <li>Imgix</li>
+            <li>Cloudinary</li>
+            <li>Custom CDN with analytics</li>
+          </ul>
+        </div>
+      </div>
     </div>
   {:else if overview}
     <!-- Hero Stats -->
@@ -671,6 +690,132 @@
     height: 400px;
     gap: 16px;
     color: #86868b;
+  }
+
+  /* Not Connected State - NO MOCK DATA */
+  .not-connected-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    min-height: 500px;
+  }
+
+  .not-connected-card {
+    max-width: 480px;
+    text-align: center;
+    padding: 48px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .not-connected-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .not-connected-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .not-connected-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0 0 12px;
+  }
+
+  .not-connected-card > p {
+    font-size: 15px;
+    color: #86868b;
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+
+  .not-connected-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .not-connected-actions .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .not-connected-actions .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+  }
+
+  .not-connected-actions .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .not-connected-actions .btn-secondary:hover {
+    background: #e8e8ed;
+  }
+
+  .service-info {
+    padding-top: 24px;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .service-info h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #86868b;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .service-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .service-info li {
+    font-size: 13px;
+    color: #1d1d1f;
+    padding: 6px 12px;
+    background: #f5f5f7;
+    border-radius: 6px;
   }
 
   .spinner {
