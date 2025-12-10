@@ -10,16 +10,14 @@
 	 */
 
 	import { page } from '$app/stores';
-	import {
-		IconBook,
-		IconPlayerPlay,
-		IconCheck,
-		IconLock,
-		IconChevronRight,
-		IconClock,
-		IconFilter,
-		IconSearch
-	} from '@tabler/icons-svelte';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconFilter from '@tabler/icons-svelte/icons/filter';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
