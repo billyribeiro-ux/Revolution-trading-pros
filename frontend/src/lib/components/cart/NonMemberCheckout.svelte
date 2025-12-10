@@ -1,21 +1,20 @@
 <script lang="ts">
 	/**
-	 * NonMemberCheckout Component - Simpler Trading Style
+	 * NonMemberCheckout Component - Simpler Trading Style (EXACT MATCH)
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Displays the checkout page for non-authenticated users
-	 * Shows Sign In/Register forms alongside the cart summary
-	 * Identical to the Simpler Trading non-member checkout experience
+	 * This component replicates the exact Simpler Trading non-member checkout
+	 * experience including class names, HTML structure, and styling.
 	 *
-	 * @version 1.0.0 (Svelte 5 / December 2025)
+	 * Reference: SimplerNonMemberCart file
+	 *
+	 * @version 2.0.0 (Simpler Trading Exact Match / December 2025)
 	 */
 
 	import { goto } from '$app/navigation';
 	import { cartStore, cartTotal, cartItemCount } from '$lib/stores/cart';
 	import { login, register } from '$lib/api/auth';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
 	import IconTicket from '@tabler/icons-svelte/icons/ticket';
 	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
 
@@ -23,7 +22,7 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let activeForm = $state<'login' | 'register'>('login');
+	let showRegisterForm = $state(false);
 	let isSubmitting = $state(false);
 	let errorMessage = $state('');
 	let successMessage = $state('');
@@ -73,8 +72,8 @@
 		}
 	}
 
-	function toggleForm() {
-		activeForm = activeForm === 'login' ? 'register' : 'login';
+	function toggleForms() {
+		showRegisterForm = !showRegisterForm;
 		errorMessage = '';
 		successMessage = '';
 	}
@@ -132,10 +131,10 @@
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE - Non-Member Checkout (Simpler Trading Style)
+     TEMPLATE - Simpler Trading NonMember Checkout (EXACT STRUCTURE)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<div class="nonmember-checkout">
+<div class="woocommerce-checkout woocommerce-page checkout-nonmember">
 	<div class="container">
 		<!-- Page Header -->
 		<header class="checkout-page-header">
@@ -146,68 +145,70 @@
 			<h1 class="page-title">Checkout</h1>
 		</header>
 
-		<!-- Step Navigation -->
-		<nav class="checkout-nav">
+		<!-- Step Navigation - Simpler Trading Style -->
+		<nav class="checkout-nav hidden-xs">
 			<ul>
-				<li class="active">
-					<span class="step-label">Sign In / Register</span>
+				<li id="nav-checkout-account" class="active">
+					<span>Sign In / Register</span>
 				</li>
-				<li class="disabled">
-					<span class="step-label">Billing Info</span>
+				<li id="nav-checkout-billing" class="disabled">
+					<span>Billing Info</span>
 				</li>
-				<li class="disabled">
-					<span class="step-label">Payment</span>
+				<li id="nav-checkout-payment" class="disabled">
+					<span>Payment</span>
 				</li>
 			</ul>
 		</nav>
 
 		<!-- Checkout Content -->
-		<div class="checkout-content">
-			<!-- Forms Section -->
-			<div class="checkout-forms-section">
-				<!-- Login Form -->
-				{#if activeForm === 'login'}
-					<div class="checkout-account-login">
-						<div class="card">
-							<div class="card-body">
-								<div class="login-split">
-									<div class="login-left">
+		<div class="checkout-steps">
+			<!-- Account Step -->
+			<div id="checkout-account" class="checkout-step active">
+				<div class="checkout-step-content">
+					<!-- Login/Register Forms - LEFT SIDE -->
+					{#if !showRegisterForm}
+						<!-- Login Form - Simpler Trading Style -->
+						<div class="checkout-account-login is-visible">
+							<div class="card">
+								<div class="card-body">
+									<div class="checkout-account-login-left">
 										<h3>Sign in</h3>
-										<form onsubmit={handleLogin}>
+										<form id="form-login" name="login" method="post" onsubmit={handleLogin}>
 											{#if errorMessage}
 												<div class="form-message error" role="alert">
 													{errorMessage}
 												</div>
 											{/if}
 
-											<div class="form-group">
-												<label for="login_email">Email Address</label>
+											<div class="form-group required">
+												<label for="login_username">Email Address</label>
 												<input
-													type="email"
-													id="login_email"
+													type="text"
 													class="form-control"
+													name="username"
+													id="login_username"
 													bind:value={loginEmail}
 													disabled={isSubmitting}
-													required
 												/>
 											</div>
 
-											<div class="form-group">
+											<div class="form-group required">
 												<label for="login_password">Password</label>
 												<input
 													type="password"
-													id="login_password"
 													class="form-control"
+													name="password"
+													id="login_password"
 													bind:value={loginPassword}
 													disabled={isSubmitting}
-													required
 												/>
 											</div>
 
-											<div class="form-group checkbox-group">
-												<label class="checkbox-label">
+											<div class="form-group form-check">
+												<label class="form-check-label">
 													<input
 														type="checkbox"
+														class="form-check-input"
 														bind:checked={rememberMe}
 														disabled={isSubmitting}
 													/>
@@ -218,7 +219,7 @@
 											<div class="form-group">
 												<button
 													type="submit"
-													class="btn btn-lg btn-block btn-orange"
+													class="btn btn-lg btn-block btn-orange font-weight-bold"
 													disabled={isSubmitting}
 												>
 													{isSubmitting ? 'Signing In...' : 'Sign In'}
@@ -226,20 +227,18 @@
 											</div>
 
 											<div class="text-center">
-												<a href="/forgot-password" class="forgot-password-link"
-													>Forgot your password?</a
-												>
+												<a href="/forgot-password" class="forgot-password-link">Forgot your password?</a>
 											</div>
 										</form>
 									</div>
 
-									<div class="login-right">
+									<div class="checkout-account-login-right text-center">
 										<h3>New to Revolution Trading?</h3>
 										<p>You will need an account to purchase our classes and other products.</p>
 										<button
 											type="button"
-											class="btn btn-lg btn-block btn-orange"
-											onclick={toggleForm}
+											class="toggle-account-forms btn btn-lg btn-block btn-orange font-weight-bold"
+											onclick={toggleForms}
 										>
 											Register for an Account
 										</button>
@@ -247,218 +246,223 @@
 								</div>
 							</div>
 						</div>
-					</div>
-				{:else}
-					<!-- Register Form -->
-					<div class="checkout-account-register">
-						<form onsubmit={handleRegister}>
-							<div class="card">
-								<div class="card-body">
-									<h3>Register for an Account</h3>
+					{:else}
+						<!-- Register Form - Simpler Trading Style -->
+						<div class="checkout-account-register is-visible">
+							<form id="form-register" name="register" method="post" onsubmit={handleRegister}>
+								<div class="card">
+									<div class="card-body">
+										<h3>Register for an Account</h3>
 
-									{#if errorMessage}
-										<div class="form-message error" role="alert">
-											{errorMessage}
-										</div>
-									{/if}
+										{#if errorMessage}
+											<div class="form-message error" role="alert">
+												{errorMessage}
+											</div>
+										{/if}
 
-									{#if successMessage}
-										<div class="form-message success" role="alert">
-											{successMessage}
-										</div>
-									{/if}
+										{#if successMessage}
+											<div class="form-message success" role="alert">
+												{successMessage}
+											</div>
+										{/if}
 
-									<div class="form-row">
-										<div class="form-group form-group-half">
-											<label for="register_first_name"
-												>First Name <abbr class="required">*</abbr></label
-											>
-											<input
-												type="text"
-												id="register_first_name"
-												class="form-control"
-												bind:value={registerFirstName}
-												disabled={isSubmitting}
-												required
-											/>
-										</div>
+										<div class="form-row">
+											<div class="form-group form-group-half">
+												<label for="reg_billing_first_name">First Name <abbr class="required" title="required">*</abbr></label>
+												<input
+													type="text"
+													class="form-control"
+													name="billing_first_name"
+													id="reg_billing_first_name"
+													bind:value={registerFirstName}
+													disabled={isSubmitting}
+												/>
+											</div>
 
-										<div class="form-group form-group-half">
-											<label for="register_last_name"
-												>Last Name <abbr class="required">*</abbr></label
-											>
-											<input
-												type="text"
-												id="register_last_name"
-												class="form-control"
-												bind:value={registerLastName}
-												disabled={isSubmitting}
-												required
-											/>
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label for="register_email">Email Address <abbr class="required">*</abbr></label
-										>
-										<input
-											type="email"
-											id="register_email"
-											class="form-control"
-											bind:value={registerEmail}
-											disabled={isSubmitting}
-											required
-										/>
-									</div>
-
-									<div class="form-group">
-										<label for="register_password">Password <abbr class="required">*</abbr></label>
-										<input
-											type="password"
-											id="register_password"
-											class="form-control"
-											bind:value={registerPassword}
-											disabled={isSubmitting}
-											required
-										/>
-									</div>
-								</div>
-
-								<div class="card-footer">
-									<div class="register-actions">
-										<button
-											type="button"
-											class="btn btn-lg btn-default"
-											onclick={toggleForm}
-											disabled={isSubmitting}
-										>
-											<IconArrowLeft size={16} />
-											Back to Sign In
-										</button>
-										<button
-											type="submit"
-											class="btn btn-lg btn-orange"
-											disabled={isSubmitting}
-										>
-											{isSubmitting ? 'Creating Account...' : 'Register'}
-										</button>
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-				{/if}
-			</div>
-
-			<!-- Cart Sidebar -->
-			<div class="checkout-cart-section">
-				<div class="checkout-cart">
-					<div class="card">
-						<!-- Header -->
-						<div class="card-header">
-							<h4>Shopping Cart</h4>
-							<a href="/cart" class="btn btn-xs btn-default">Edit</a>
-						</div>
-
-						<!-- Products -->
-						<div class="checkout-cart-contents">
-							<div class="checkout-cart-products">
-								{#each $cartStore.items as item (item.id + (item.interval || ''))}
-									<div class="product">
-										<div
-											class="product-image"
-											style:background-image={item.thumbnail || item.image
-												? `url(${item.thumbnail || item.image})`
-												: undefined}
-										>
-											{#if !item.thumbnail && !item.image}
-												<IconShoppingCart size={20} />
-											{/if}
-										</div>
-										<div class="product-details">
-											<div class="product-name">
-												{item.name}
-												{#if item.interval}
-													<span class="product-interval">({item.interval})</span>
-												{/if}
+											<div class="form-group form-group-half">
+												<label for="reg_billing_last_name">Last Name <abbr class="required" title="required">*</abbr></label>
+												<input
+													type="text"
+													class="form-control"
+													name="billing_last_name"
+													id="reg_billing_last_name"
+													bind:value={registerLastName}
+													disabled={isSubmitting}
+												/>
 											</div>
 										</div>
-										<div class="product-total">
-											{formatPrice(item.price)}
+
+										<div class="form-group">
+											<label for="reg_email">Email Address <abbr class="required" title="required">*</abbr></label>
+											<input
+												type="email"
+												class="form-control"
+												name="email"
+												id="reg_email"
+												bind:value={registerEmail}
+												disabled={isSubmitting}
+											/>
+										</div>
+
+										<div class="form-group">
+											<label for="reg_password">Password <abbr class="required" title="required">*</abbr></label>
+											<input
+												type="password"
+												class="form-control"
+												name="password"
+												id="reg_password"
+												bind:value={registerPassword}
+												disabled={isSubmitting}
+											/>
 										</div>
 									</div>
-								{/each}
-							</div>
 
-							<!-- Tax row -->
-							<div class="cart-table-wrapper">
-								<table class="cart-table">
-									<tbody>
-										<tr class="tax-total">
-											<th>Tax</th>
-											<td>Calculated at checkout</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-
-							<!-- Total -->
-							<div class="checkout-order-total">
-								<div class="total-label">Total</div>
-								<div class="checkout-order-total-price">
-									{formatPrice($cartTotal)}
-								</div>
-							</div>
-
-							<!-- Recurring totals for subscriptions -->
-							{#if hasSubscriptions}
-								<div class="cart-table-wrapper">
-									<table class="cart-table">
-										<tbody>
-											<tr class="recurring-totals">
-												<th colspan="2">Recurring Totals</th>
-											</tr>
-											{#each $cartStore.items.filter((i) => i.interval) as item}
-												<tr class="cart-subtotal recurring-total">
-													<td colspan="2">
-														{formatPrice(item.price)}
-														{getIntervalLabel(item.interval)}
-													</td>
-												</tr>
-											{/each}
-										</tbody>
-									</table>
-								</div>
-							{/if}
-						</div>
-
-						<!-- Coupon Section -->
-						<div class="coupon-section">
-							<div class="coupon-toggle">
-								<IconTicket size={16} />
-								<button
-									type="button"
-									class="showcoupon"
-									onclick={() => (couponFormVisible = !couponFormVisible)}
-								>
-									Have a coupon? Click here to enter your code
-								</button>
-							</div>
-
-							{#if couponFormVisible}
-								<form class="checkout-coupon" onsubmit={(e) => e.preventDefault()}>
-									<p>If you have a coupon code, please apply it below.</p>
-									<div class="coupon-input-row">
-										<input
-											type="text"
-											placeholder="Coupon code"
-											bind:value={couponCode}
-											class="input-text"
-										/>
-										<button type="submit" class="btn btn-default"> Apply </button>
+									<div class="card-footer">
+										<div class="register-actions">
+											<button
+												type="button"
+												class="toggle-account-forms btn btn-lg btn-default"
+												onclick={toggleForms}
+												disabled={isSubmitting}
+											>
+												<IconArrowLeft size={16} />
+												Back to Sign In
+											</button>
+											<button
+												type="submit"
+												class="btn btn-lg btn-orange font-weight-bold"
+												disabled={isSubmitting}
+											>
+												{isSubmitting ? 'Creating Account...' : 'Register'}
+											</button>
+										</div>
 									</div>
-								</form>
-							{/if}
+								</div>
+							</form>
+						</div>
+					{/if}
+
+					<!-- Cart Sidebar - RIGHT SIDE - Simpler Trading Style -->
+					<div class="checkout-cart">
+						<div id="order_review" class="woocommerce-checkout-review-order">
+							<div class="woocommerce-checkout-review-order-table">
+								<div class="card">
+									<div class="card-header">
+										<h4>Shopping Cart</h4>
+										<a href="/cart" class="btn btn-xs btn-default">Edit</a>
+									</div>
+
+									<div class="checkout-cart-contents">
+										<!-- Products -->
+										<div class="checkout-cart-products">
+											{#each $cartStore.items as item (item.id + (item.interval || ''))}
+												<div class="product">
+													<div
+														class="product-image"
+														style:background-image={item.thumbnail || item.image
+															? `url(${item.thumbnail || item.image})`
+															: undefined}
+													>
+														{#if !item.thumbnail && !item.image}
+															<IconShoppingCart size={20} />
+														{/if}
+													</div>
+													<div class="product-name">
+														{item.name}
+														{#if item.interval}
+															&nbsp;<span class="product-interval">({item.interval})</span>
+														{/if}
+													</div>
+													<div class="product-total">
+														<span class="woocommerce-Price-amount amount">
+															<bdi><span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}</bdi>
+														</span>
+													</div>
+												</div>
+											{/each}
+										</div>
+
+										<!-- Tax Row -->
+										<div class="cart-table-wrapper">
+											<table class="cart-table">
+												<tbody>
+													<tr class="tax-total">
+														<th>Tax</th>
+														<td>Calculated at checkout</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<!-- Order Total -->
+										<div class="checkout-order-total">
+											<div>Total</div>
+											<div class="checkout-order-total-price">
+												<span class="woocommerce-Price-amount amount">
+													<bdi><span class="woocommerce-Price-currencySymbol">$</span>{$cartTotal.toFixed(2)}</bdi>
+												</span>
+											</div>
+										</div>
+
+										<!-- Recurring Totals for Subscriptions -->
+										{#if hasSubscriptions}
+											<div class="cart-table-wrapper">
+												<table class="cart-table">
+													<tbody>
+														<tr class="recurring-totals">
+															<th colspan="2">Recurring Totals</th>
+														</tr>
+														{#each $cartStore.items.filter((i) => i.interval) as item}
+															<tr class="cart-subtotal recurring-total">
+																<td colspan="2">
+																	<span class="woocommerce-Price-amount amount">
+																		<bdi><span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}</bdi>
+																	</span>
+																	{getIntervalLabel(item.interval)}
+																</td>
+															</tr>
+														{/each}
+													</tbody>
+												</table>
+											</div>
+										{/if}
+									</div>
+
+									<!-- Coupon Section -->
+									<div class="coupon-section">
+										<div class="woocommerce-form-coupon-toggle">
+											<div class="woocommerce-info">
+												<IconTicket size={16} />
+												<button
+													type="button"
+													class="showcoupon"
+													onclick={() => (couponFormVisible = !couponFormVisible)}
+												>
+													Have a coupon? Click here to enter your code
+												</button>
+											</div>
+										</div>
+
+										{#if couponFormVisible}
+											<form class="checkout_coupon woocommerce-form-coupon" onsubmit={(e) => e.preventDefault()}>
+												<p>If you have a coupon code, please apply it below.</p>
+												<div class="coupon-input-row">
+													<input
+														type="text"
+														name="coupon_code"
+														class="input-text"
+														placeholder="Coupon code"
+														bind:value={couponCode}
+													/>
+													<button type="submit" class="btn btn-default">
+														Apply coupon
+													</button>
+												</div>
+											</form>
+										{/if}
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -468,37 +472,38 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Non-Member Checkout (Simpler Trading Style)
+     STYLES - Simpler Trading NonMember Checkout (EXACT MATCH)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES
+	   CSS CUSTOM PROPERTIES - Simpler Trading Colors
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
-		--checkout-bg: #f4f4f4;
-		--checkout-card-bg: #fff;
-		--checkout-border: #dbdbdb;
-		--checkout-text: #333;
-		--checkout-text-dark: #1a1a1a;
-		--checkout-text-muted: #666;
-		--checkout-primary: #0984ae;
-		--checkout-orange: #f99e31;
-		--checkout-orange-hover: #f88b09;
-		--checkout-success: #10b981;
-		--checkout-error: #ef4444;
-		--checkout-transition: all 0.15s ease-in-out;
+		--st-bg: #f4f4f4;
+		--st-card-bg: #ffffff;
+		--st-border: #dbdbdb;
+		--st-text: #333333;
+		--st-text-dark: #1a1a1a;
+		--st-text-muted: #666666;
+		--st-primary: #0984ae;
+		--st-primary-hover: #076787;
+		--st-orange: #f99e31;
+		--st-orange-hover: #f88b09;
+		--st-success: #10b981;
+		--st-error: #dc3545;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE LAYOUT
+	   PAGE LAYOUT - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.nonmember-checkout {
+	.checkout-nonmember {
 		min-height: 100vh;
-		background: var(--checkout-bg);
+		background: var(--st-bg);
 		padding: 40px 0;
+		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	}
 
 	.container {
@@ -519,28 +524,29 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		color: var(--checkout-primary);
+		color: var(--st-primary);
 		text-decoration: none;
 		font-weight: 700;
 		font-size: 14px;
 		margin-bottom: 12px;
-		transition: var(--checkout-transition);
+		transition: color 0.15s ease;
 	}
 
 	.back-link:hover {
-		color: #076787;
+		color: var(--st-primary-hover);
 	}
 
 	.page-title {
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 		margin: 0;
+		text-transform: uppercase;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   STEP NAVIGATION
+	   CHECKOUT NAV - Simpler Trading Step Navigation
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.checkout-nav {
@@ -552,10 +558,10 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		background: var(--checkout-card-bg);
+		background: var(--st-card-bg);
 		border-radius: 5px;
 		overflow: hidden;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
 	.checkout-nav li {
@@ -564,10 +570,11 @@
 		align-items: center;
 		justify-content: center;
 		padding: 16px 20px;
-		border-right: 1px solid var(--checkout-border);
-		color: var(--checkout-text-dark);
+		border-right: 1px solid var(--st-border);
 		font-weight: 700;
-		transition: var(--checkout-transition);
+		font-size: 14px;
+		color: var(--st-text-dark);
+		transition: all 0.15s ease;
 	}
 
 	.checkout-nav li:last-child {
@@ -575,20 +582,32 @@
 	}
 
 	.checkout-nav li.active {
-		background: var(--checkout-primary);
-		color: #fff;
+		background: var(--st-primary);
+		color: #ffffff;
 	}
 
 	.checkout-nav li.disabled {
 		opacity: 0.5;
-		color: var(--checkout-text-muted);
+		color: var(--st-text-muted);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CHECKOUT CONTENT
+	   CHECKOUT STEPS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.checkout-content {
+	.checkout-steps {
+		position: relative;
+	}
+
+	.checkout-step {
+		display: none;
+	}
+
+	.checkout-step.active {
+		display: block;
+	}
+
+	.checkout-step-content {
 		display: grid;
 		grid-template-columns: 1fr 380px;
 		gap: 30px;
@@ -600,9 +619,9 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.card {
-		background: var(--checkout-card-bg);
+		background: var(--st-card-bg);
 		border-radius: 5px;
-		box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
 	}
 
@@ -613,7 +632,7 @@
 	.card-body h3 {
 		font-size: 20px;
 		font-weight: 700;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 		margin: 0 0 24px;
 	}
 
@@ -622,57 +641,73 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 16px 20px;
-		border-bottom: 1px solid var(--checkout-border);
+		border-bottom: 1px solid var(--st-border);
+		background: #fafafa;
 	}
 
 	.card-header h4 {
 		font-size: 16px;
 		font-weight: 700;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 		margin: 0;
 	}
 
 	.card-footer {
 		padding: 20px 30px;
 		background: #f9f9f9;
-		border-top: 1px solid var(--checkout-border);
+		border-top: 1px solid var(--st-border);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   LOGIN SPLIT LAYOUT
+	   LOGIN FORM - checkout-account-login (Simpler Trading Style)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.login-split {
+	.checkout-account-login .card-body {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 40px;
 	}
 
-	.login-left {
+	.checkout-account-login-left {
 		padding-right: 40px;
-		border-right: 1px solid var(--checkout-border);
+		border-right: 1px solid var(--st-border);
 	}
 
-	.login-right {
-		text-align: center;
+	.checkout-account-login-right {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		text-align: center;
 	}
 
-	.login-right h3 {
+	.checkout-account-login-right h3 {
 		margin-bottom: 16px;
 	}
 
-	.login-right p {
-		color: var(--checkout-text-muted);
+	.checkout-account-login-right p {
+		color: var(--st-text-muted);
 		margin-bottom: 24px;
 		font-weight: 500;
+		line-height: 1.6;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   FORMS
+	   REGISTER FORM - checkout-account-register
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.checkout-account-register .card-body h3 {
+		margin-bottom: 24px;
+	}
+
+	.register-actions {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FORMS - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.form-group {
@@ -683,30 +718,31 @@
 		display: block;
 		font-size: 14px;
 		font-weight: 700;
-		color: var(--checkout-text-dark);
-		margin-bottom: 6px;
+		color: var(--st-text-dark);
+		margin-bottom: 8px;
 	}
 
 	.form-group label .required {
-		color: var(--checkout-error);
+		color: var(--st-error);
 		text-decoration: none;
 	}
 
 	.form-control {
 		width: 100%;
 		padding: 12px 16px;
-		border: 1px solid var(--checkout-border);
+		border: 1px solid var(--st-border);
 		border-radius: 5px;
 		font-size: 15px;
 		font-weight: 500;
-		color: var(--checkout-text-dark);
-		transition: var(--checkout-transition);
+		color: var(--st-text-dark);
+		background: #ffffff;
+		transition: all 0.15s ease;
 	}
 
 	.form-control:focus {
 		outline: none;
-		border-color: var(--checkout-primary);
-		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.1);
+		border-color: var(--st-primary);
+		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.15);
 	}
 
 	.form-row {
@@ -715,12 +751,12 @@
 		gap: 16px;
 	}
 
-	.checkbox-group {
+	.form-check {
 		display: flex;
 		align-items: center;
 	}
 
-	.checkbox-label {
+	.form-check-label {
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -728,9 +764,10 @@
 		font-weight: 500 !important;
 	}
 
-	.checkbox-label input[type='checkbox'] {
+	.form-check-input {
 		width: 18px;
 		height: 18px;
+		cursor: pointer;
 	}
 
 	.form-message {
@@ -738,22 +775,23 @@
 		border-radius: 5px;
 		margin-bottom: 16px;
 		font-weight: 600;
+		font-size: 14px;
 	}
 
 	.form-message.error {
 		background: #fef2f2;
-		color: var(--checkout-error);
+		color: var(--st-error);
 		border: 1px solid #fecaca;
 	}
 
 	.form-message.success {
 		background: #ecfdf5;
-		color: var(--checkout-success);
+		color: var(--st-success);
 		border: 1px solid #a7f3d0;
 	}
 
 	.forgot-password-link {
-		color: var(--checkout-primary);
+		color: var(--st-primary);
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 600;
@@ -763,18 +801,12 @@
 		text-decoration: underline;
 	}
 
-	.register-actions {
-		display: flex;
-		justify-content: space-between;
-		gap: 16px;
-	}
-
 	.text-center {
 		text-align: center;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BUTTONS
+	   BUTTONS - Simpler Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.btn {
@@ -788,7 +820,7 @@
 		border-radius: 5px;
 		border: none;
 		cursor: pointer;
-		transition: var(--checkout-transition);
+		transition: all 0.15s ease;
 		text-decoration: none;
 	}
 
@@ -802,12 +834,12 @@
 	}
 
 	.btn-orange {
-		background: var(--checkout-orange);
-		color: #fff;
+		background: var(--st-orange);
+		color: #ffffff;
 	}
 
 	.btn-orange:hover:not(:disabled) {
-		background: var(--checkout-orange-hover);
+		background: var(--st-orange-hover);
 	}
 
 	.btn-orange:disabled {
@@ -816,9 +848,9 @@
 	}
 
 	.btn-default {
-		background: var(--checkout-bg);
-		color: var(--checkout-text-dark);
-		border: 1px solid var(--checkout-border);
+		background: var(--st-bg);
+		color: var(--st-text-dark);
+		border: 1px solid var(--st-border);
 	}
 
 	.btn-default:hover {
@@ -830,11 +862,15 @@
 		font-size: 12px;
 	}
 
+	.font-weight-bold {
+		font-weight: 700;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CART SIDEBAR
+	   CART SIDEBAR - checkout-cart (Simpler Trading Style)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.checkout-cart-section {
+	.checkout-cart {
 		position: sticky;
 		top: 24px;
 	}
@@ -844,15 +880,15 @@
 	}
 
 	.checkout-cart-products {
-		margin-bottom: 20px;
+		margin-bottom: 16px;
 	}
 
 	.checkout-cart-products .product {
 		display: flex;
+		align-items: center;
 		gap: 12px;
 		padding: 12px 0;
-		border-bottom: 1px solid #eee;
-		align-items: center;
+		border-bottom: 1px solid #eeeeee;
 	}
 
 	.checkout-cart-products .product:last-child {
@@ -863,38 +899,33 @@
 		width: 50px;
 		height: 50px;
 		border-radius: 5px;
-		background: var(--checkout-bg);
+		background: var(--st-bg);
 		background-size: cover;
 		background-position: center;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--checkout-text-muted);
+		color: var(--st-text-muted);
 		flex-shrink: 0;
 	}
 
-	.product-details {
-		flex: 1;
-		min-width: 0;
-	}
-
 	.product-name {
+		flex: 1;
 		font-weight: 700;
 		font-size: 14px;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 	}
 
 	.product-interval {
-		font-weight: 500;
+		font-weight: 600;
 		font-size: 12px;
-		color: var(--checkout-primary);
-		margin-left: 4px;
+		color: var(--st-primary);
 	}
 
 	.product-total {
 		font-weight: 700;
 		font-size: 14px;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 	}
 
 	/* Cart Table */
@@ -915,19 +946,24 @@
 
 	.cart-table th {
 		text-align: left;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 	}
 
 	.cart-table td {
 		text-align: right;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
+	}
+
+	.cart-table .tax-total td {
+		color: var(--st-text-muted);
+		font-weight: 500;
 	}
 
 	.recurring-totals th {
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: var(--checkout-text-muted) !important;
+		color: var(--st-text-muted) !important;
 		padding-top: 16px;
 	}
 
@@ -936,61 +972,71 @@
 		font-size: 13px;
 	}
 
-	/* Order Total */
+	/* Order Total - Simpler Trading Style */
 	.checkout-order-total {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		padding: 16px 0;
-		border-top: 2px solid var(--checkout-text-dark);
+		border-top: 2px solid var(--st-text-dark);
 		margin-top: 16px;
-	}
-
-	.total-label {
 		font-size: 18px;
 		font-weight: 700;
-		color: var(--checkout-text-dark);
+		color: var(--st-text-dark);
 	}
 
 	.checkout-order-total-price {
-		font-size: 18px;
+		font-size: 20px;
 		font-weight: 700;
-		color: var(--checkout-text-dark);
 	}
 
-	/* Coupon Section */
+	/* WooCommerce Price Styling */
+	.woocommerce-Price-amount {
+		font-weight: 700;
+	}
+
+	.woocommerce-Price-currencySymbol {
+		font-weight: 700;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COUPON SECTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.coupon-section {
 		padding: 16px 20px;
-		border-top: 1px solid var(--checkout-border);
+		border-top: 1px solid var(--st-border);
 	}
 
-	.coupon-toggle {
+	.woocommerce-info {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		color: var(--checkout-primary);
+		color: var(--st-primary);
 	}
 
 	.showcoupon {
 		background: none;
 		border: none;
-		color: var(--checkout-primary);
+		color: var(--st-primary);
 		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
 		padding: 0;
+		text-align: left;
 	}
 
 	.showcoupon:hover {
 		text-decoration: underline;
 	}
 
-	.checkout-coupon {
+	.checkout_coupon {
 		margin-top: 16px;
 	}
 
-	.checkout-coupon p {
+	.checkout_coupon p {
 		font-size: 13px;
-		color: var(--checkout-text-muted);
+		color: var(--st-text-muted);
 		margin-bottom: 12px;
 		font-weight: 500;
 	}
@@ -1003,7 +1049,7 @@
 	.coupon-input-row .input-text {
 		flex: 1;
 		padding: 10px 12px;
-		border: 1px solid var(--checkout-border);
+		border: 1px solid var(--st-border);
 		border-radius: 5px;
 		font-size: 13px;
 		text-transform: uppercase;
@@ -1012,7 +1058,7 @@
 
 	.coupon-input-row .input-text:focus {
 		outline: none;
-		border-color: var(--checkout-primary);
+		border-color: var(--st-primary);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1020,24 +1066,24 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media screen and (max-width: 980px) {
-		.checkout-content {
+		.checkout-step-content {
 			grid-template-columns: 1fr;
 		}
 
-		.checkout-cart-section {
+		.checkout-cart {
 			position: static;
 			order: -1;
 		}
 
-		.login-split {
+		.checkout-account-login .card-body {
 			grid-template-columns: 1fr;
 			gap: 30px;
 		}
 
-		.login-left {
+		.checkout-account-login-left {
 			padding-right: 0;
 			border-right: none;
-			border-bottom: 1px solid var(--checkout-border);
+			border-bottom: 1px solid var(--st-border);
 			padding-bottom: 30px;
 		}
 	}
@@ -1049,7 +1095,7 @@
 
 		.checkout-nav li {
 			border-right: none;
-			border-bottom: 1px solid var(--checkout-border);
+			border-bottom: 1px solid var(--st-border);
 		}
 
 		.checkout-nav li:last-child {
@@ -1070,7 +1116,7 @@
 	}
 
 	@media screen and (max-width: 480px) {
-		.nonmember-checkout {
+		.checkout-nonmember {
 			padding: 20px 0;
 		}
 
