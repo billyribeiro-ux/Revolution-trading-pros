@@ -310,16 +310,16 @@ This text discusses key concepts and provides insights into the main topic. The 
 
 				<div class="options-row">
 					<div class="option-group">
-						<label>Tone</label>
-						<select bind:value={tone}>
+						<label for="ai-tone-select">Tone</label>
+						<select id="ai-tone-select" bind:value={tone}>
 							{#each toneOptions as option}
 								<option value={option.value}>{option.label}</option>
 							{/each}
 						</select>
 					</div>
 					<div class="option-group">
-						<label>Length</label>
-						<select bind:value={length}>
+						<label for="ai-length-select">Length</label>
+						<select id="ai-length-select" bind:value={length}>
 							<option value="short">Short (~100 words)</option>
 							<option value="medium">Medium (~200 words)</option>
 							<option value="long">Long (~400 words)</option>
@@ -329,8 +329,8 @@ This text discusses key concepts and provides insights into the main topic. The 
 
 				<div class="options-row">
 					<div class="option-group full">
-						<label>Style</label>
-						<select bind:value={style}>
+						<label for="ai-style-select">Style</label>
+						<select id="ai-style-select" bind:value={style}>
 							<option value="blog">Blog Post</option>
 							<option value="news">News Article</option>
 							<option value="tutorial">Tutorial</option>
@@ -366,8 +366,8 @@ This text discusses key concepts and provides insights into the main topic. The 
 				</div>
 				<div class="options-row">
 					<div class="option-group full">
-						<label>Translate to</label>
-						<select bind:value={targetLanguage}>
+						<label for="ai-language-select">Translate to</label>
+						<select id="ai-language-select" bind:value={targetLanguage}>
 							{#each languages as lang}
 								<option value={lang.code}>{lang.name}</option>
 							{/each}

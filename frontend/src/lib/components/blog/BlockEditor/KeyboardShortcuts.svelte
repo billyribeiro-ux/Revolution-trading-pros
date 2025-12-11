@@ -175,7 +175,7 @@
 					type="text"
 					placeholder="Search shortcuts..."
 					bind:value={searchQuery}
-					autofocus
+					aria-label="Search keyboard shortcuts"
 				/>
 				{#if searchQuery}
 					<button class="clear-btn" onclick={() => searchQuery = ''}>

@@ -389,7 +389,10 @@
 						></iframe>
 					</div>
 				{:else}
-					<video src={block.content.embedUrl} controls></video>
+					<video src={block.content.embedUrl} controls>
+						<track kind="captions" src="" label="Captions" default />
+						Your browser does not support the video tag.
+					</video>
 				{/if}
 			{:else if isEditing}
 				<div class="video-placeholder">
