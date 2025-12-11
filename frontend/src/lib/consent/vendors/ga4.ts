@@ -172,10 +172,16 @@ export const ga4Vendor: VendorConfig = {
 			window.gtag('js', new Date());
 
 			// Step 5: Configure GA4 with privacy-preserving defaults
+			// ICT8-11+ Fix: Disable browser history change detection to prevent
+			// conflicts with SvelteKit's router (avoids history.pushState warnings)
 			window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
 				// Don't automatically send page views - we'll track them manually
 				// This gives us more control and avoids duplicate events during SPA navigation
 				send_page_view: false,
+
+				// CRITICAL: Disable automatic page_view tracking on history changes
+				// This prevents GA4 from calling history.pushState which conflicts with SvelteKit
+				page_changes_enabled: false,
 
 				// Anonymize IP addresses (now default in GA4, but explicit is better)
 				anonymize_ip: true,

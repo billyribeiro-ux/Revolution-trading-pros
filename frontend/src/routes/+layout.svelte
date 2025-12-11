@@ -5,6 +5,10 @@
 	 * ICT9+ Hydration-Safe Pattern:
 	 * - Auth-dependent UI uses client-only state to prevent SSR/client mismatch
 	 * - Stores that differ between SSR and client are only read after mount
+	 * 
+	 * ICT8-11+ GA4 Integration:
+	 * - Uses SvelteKit's afterNavigate for page view tracking
+	 * - Prevents GA4 from using history.pushState (conflicts with SvelteKit router)
 	 */
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
@@ -12,6 +16,7 @@
 	import { MarketingFooter } from '$lib/components/layout';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
@@ -26,6 +31,9 @@
 		ConsentSettingsButton
 	} from '$lib/consent';
 
+	// GA4 Page View Tracking (ICT8-11+ SvelteKit-native approach)
+	import { trackPageView } from '$lib/consent/vendors/ga4';
+
 	let { children }: { children: Snippet } = $props();
 
 	// Derived state from page (safe - page state is consistent SSR/client)
@@ -38,6 +46,14 @@
 	// SSR always renders without admin toolbar, client adds it after hydration
 	let mounted = $state(false);
 	let isAdmin = $derived(mounted && $isAdminUser);
+
+	// ICT8-11+ Fix: Track page views using SvelteKit's navigation lifecycle
+	// This replaces GA4's history.pushState interception which conflicts with SvelteKit
+	afterNavigate(({ to }) => {
+		if (browser && to?.url) {
+			trackPageView(to.url.href);
+		}
+	});
 
 	onMount(() => {
 		// Mark as mounted FIRST to enable client-only derived values

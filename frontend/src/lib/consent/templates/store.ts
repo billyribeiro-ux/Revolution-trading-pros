@@ -156,9 +156,79 @@ function applyCustomization(
 }
 
 /**
- * Convert backend template format to frontend format
+ * Backend template format (different from frontend BannerTemplate)
+ * This is the format returned by the Laravel API
  */
-function convertBackendTemplate(backendTemplate: any): BannerTemplate {
+interface BackendBannerTemplate {
+	id: string;
+	name: string;
+	description: string;
+	category: string;
+	layout: string;
+	position: string;
+	isEditable: boolean;
+	colors: {
+		background: string;
+		text: string;
+		link: string;
+		title: string;
+		border: string;
+		acceptBg: string;
+		acceptText: string;
+		rejectBg: string;
+		rejectText: string;
+		settingsBg: string;
+		settingsText: string;
+		toggleActive: string;
+		toggleInactive: string;
+	};
+	typography: {
+		fontFamily: string;
+		titleSize: number;
+		titleWeight: number;
+		bodySize: number;
+		bodyWeight: number;
+		buttonSize: number;
+		buttonWeight: number;
+	};
+	spacing: {
+		padding: { top: number; bottom: number; left: number; right: number };
+		buttonPadding: { x: number; y: number };
+		buttonMargin: number;
+		borderRadius: number;
+		containerRadius: number;
+		maxWidth: number;
+	};
+	animation: {
+		type: string;
+		duration: number;
+	};
+	copy: {
+		title: string;
+		acceptButton: string;
+		rejectButton: string;
+		settingsButton: string;
+		privacyLinkText: string;
+		cookieLinkText: string;
+	};
+	options: {
+		showRejectButton: boolean;
+		showSettingsButton: boolean;
+		showPrivacyLink: boolean;
+		showCookieLink: boolean;
+		closeOnScroll: boolean;
+		closeOnScrollDistance: number;
+		showCloseButton: boolean;
+		blockPageScroll: boolean;
+		showPoweredBy: boolean;
+	};
+}
+
+/**
+ * Convert backend template format to frontend format
+ * Note: Returns BackendBannerTemplate which has a different structure than BannerTemplate
+ */
+function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
 	return {
 		id: backendTemplate.id.toString(),
 		name: backendTemplate.name,
@@ -234,9 +304,10 @@ function convertBackendTemplate(backendTemplate: any): BannerTemplate {
 }
 
 /**
- * Convert frontend template to backend format
+ * Convert frontend template to backend API format
+ * Accepts any template-like object and extracts relevant properties
  */
-function convertToBackendFormat(template: BannerTemplate): any {
+function convertToBackendFormat(template: Partial<BackendBannerTemplate> | BannerTemplate | any): any {
 	return {
 		name: template.name,
 		description: template.description,
@@ -427,9 +498,17 @@ async function activateTemplateInBackend(id: string): Promise<boolean> {
 
 /**
  * Initialize template store (load from backend)
+ * Only fetches from backend if user is authenticated
  */
 export async function initializeTemplateStore(): Promise<void> {
 	if (!browser) return;
+
+	// Only fetch from backend if user has an auth token
+	const token = localStorage.getItem('access_token');
+	if (!token) {
+		console.debug('[TemplateStore] Skipping backend fetch - user not authenticated');
+		return;
+	}
 
 	isLoading.set(true);
 

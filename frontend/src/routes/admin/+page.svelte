@@ -94,8 +94,8 @@
 		redirections: { count: null as number | null, hits: 0 }
 	};
 
-	// Device breakdown - null until real data
-	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } | null = null;
+	// Device breakdown - default values to prevent null access errors
+	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } = { desktop: 0, mobile: 0, tablet: 0 };
 
 	// Top pages
 	let topPages: { path: string; views: number; change: number }[] = [];

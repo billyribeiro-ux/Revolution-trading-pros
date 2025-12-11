@@ -234,7 +234,7 @@
 
 		<!-- Page Content -->
 		<main class="admin-content">
-			{@render children()}
+			{@render children?.()}
 		</main>
 	</div>
 </div>
