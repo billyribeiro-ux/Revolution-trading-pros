@@ -338,23 +338,27 @@
 	let clickOutsideTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	function handleClickOutside(event: MouseEvent): void {
-		if (clickOutsideTimeout) {
-			clearTimeout(clickOutsideTimeout);
+		const target = event.target as HTMLElement;
+		
+		console.log('[AdminToolbar] handleClickOutside called, target:', target.tagName, target.className);
+		
+		// Don't close if clicking on trigger buttons (they handle their own toggle)
+		if (target.closest('.quick-menu-trigger') || target.closest('.user-menu-trigger')) {
+			console.log('[AdminToolbar] Click on trigger button, ignoring');
+			return;
+		}
+		
+		// Don't close if clicking inside dropdown menus
+		if (target.closest('.dropdown-menu')) {
+			console.log('[AdminToolbar] Click inside dropdown menu, ignoring');
+			return;
 		}
 
-		clickOutsideTimeout = setTimeout(() => {
-			const target = event.target as HTMLElement;
-
-			// Don't close if clicking on trigger buttons (they handle their own toggle)
-			if (target.closest('.quick-menu-trigger') || target.closest('.user-menu-trigger')) {
-				return;
-			}
-
-			// Check if click is outside toolbar
-			if (!target.closest('.admin-toolbar')) {
-				closeAllDropdowns();
-			}
-		}, 50);
+		// Check if click is outside toolbar - close dropdowns
+		if (!target.closest('.admin-toolbar')) {
+			console.log('[AdminToolbar] Click outside toolbar, closing dropdowns');
+			closeAllDropdowns();
+		}
 	}
 
 	function closeAllDropdowns(): void {
@@ -435,7 +439,11 @@
 	let isAnimating = $state(false);
 
 	async function toggleQuickMenu(): Promise<void> {
-		if (isAnimating) return;
+		console.log('[AdminToolbar] toggleQuickMenu called, isAnimating:', isAnimating, 'isLoading:', isLoading);
+		if (isAnimating) {
+			console.log('[AdminToolbar] toggleQuickMenu blocked by isAnimating');
+			return;
+		}
 
 		isAnimating = true;
 		showDropdown = false; // Close other menu
@@ -456,7 +464,11 @@
 	}
 
 	async function toggleUserMenu(): Promise<void> {
-		if (isAnimating) return;
+		console.log('[AdminToolbar] toggleUserMenu called, isAnimating:', isAnimating, 'isLoading:', isLoading);
+		if (isAnimating) {
+			console.log('[AdminToolbar] toggleUserMenu blocked by isAnimating');
+			return;
+		}
 
 		isAnimating = true;
 		showQuickMenu = false; // Close other menu
@@ -878,8 +890,7 @@
 		border-bottom: 2px solid var(--toolbar-border);
 		z-index: 10100; /* Must be higher than NavBar (10001) */
 		box-shadow: var(--toolbar-shadow);
-		contain: layout style paint;
-		will-change: transform;
+		/* Removed contain: layout style paint - can cause click event issues */
 	}
 
 	.toolbar-container {

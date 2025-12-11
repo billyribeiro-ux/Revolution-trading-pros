@@ -19,8 +19,8 @@ test.describe('Admin Toolbar Debug', () => {
     });
     
     // Navigate to home page
-    await page.goto('http://localhost:5174/');
-    await page.waitForLoadState('networkidle');
+    await page.goto('http://localhost:5174/', { timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded');
     
     // Inject mock auth state to simulate logged-in admin
     await page.evaluate(() => {
@@ -44,9 +44,9 @@ test.describe('Admin Toolbar Debug', () => {
     });
     
     // Reload to pick up the auth state
-    await page.reload();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
+    await page.reload({ timeout: 10000 });
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(1000);
     
     // Check for admin toolbar
     const adminToolbar = page.locator('.admin-toolbar');
