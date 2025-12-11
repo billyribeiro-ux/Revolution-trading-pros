@@ -98,6 +98,39 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Neon PostgreSQL - Serverless Database (LIGHTNING STACK)
+        |--------------------------------------------------------------------------
+        |
+        | Serverless PostgreSQL with autoscaling and branching.
+        | - Auto-scales to zero when idle
+        | - Branch databases like git
+        | - Global edge caching
+        | - Connection pooling built-in
+        |
+        | Get credentials: https://console.neon.tech
+        |
+        */
+
+        'neon' => [
+            'driver' => 'pgsql',
+            'url' => env('NEON_DATABASE_URL'),
+            'host' => env('NEON_DB_HOST'),
+            'port' => env('NEON_DB_PORT', '5432'),
+            'database' => env('NEON_DB_DATABASE', 'neondb'),
+            'username' => env('NEON_DB_USERNAME'),
+            'password' => env('NEON_DB_PASSWORD'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'require', // Required for Neon
+            'options' => [
+                PDO::ATTR_EMULATE_PREPARES => true,
+            ],
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
@@ -176,6 +209,42 @@ return [
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Upstash Redis - Edge-Optimized (LIGHTNING STACK)
+        |--------------------------------------------------------------------------
+        |
+        | Serverless Redis with global replication.
+        | - <1ms read latency globally
+        | - Auto-scaling
+        | - REST API fallback for edge functions
+        |
+        | Get credentials: https://console.upstash.com
+        |
+        */
+
+        'upstash' => [
+            'url' => env('UPSTASH_REDIS_URL'),
+            'host' => env('UPSTASH_REDIS_HOST'),
+            'username' => 'default',
+            'password' => env('UPSTASH_REDIS_PASSWORD'),
+            'port' => env('UPSTASH_REDIS_PORT', '6379'),
+            'database' => '0',
+            'scheme' => 'tls', // Required for Upstash
+            'max_retries' => 3,
+            'backoff_algorithm' => 'decorrelated_jitter',
+            'backoff_base' => 100,
+            'backoff_cap' => 1000,
+            'read_timeout' => 60,
+            'timeout' => 30,
+            'context' => [
+                'ssl' => [
+                    'verify_peer' => true,
+                    'verify_peer_name' => true,
+                ],
+            ],
         ],
 
     ],

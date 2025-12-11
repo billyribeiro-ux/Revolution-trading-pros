@@ -74,4 +74,107 @@ return [
         'timeout' => env('SHARP_SERVICE_TIMEOUT', 60),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cloudflare Services (LIGHTNING STACK)
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for Cloudflare services including R2 Storage, Images,
+    | Workers, and KV. These services provide edge-optimized performance.
+    |
+    | Setup Guide: docs/LIGHTNING_STACK_SETUP.md
+    |
+    */
+
+    'cloudflare' => [
+        // Account ID - Found in Cloudflare Dashboard URL or Overview page
+        'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
+
+        // Global API Token - For general API access
+        'api_token' => env('CLOUDFLARE_API_TOKEN'),
+
+        /*
+        |----------------------------------------------------------------------
+        | Cloudflare Images (NOT USED - Using Sharp Service Instead)
+        |----------------------------------------------------------------------
+        | We use the built-in Sharp image processing service which provides:
+        | - WebP/AVIF conversion at upload time (more efficient)
+        | - BlurHash placeholders
+        | - Responsive image generation
+        | - Zero monthly cost
+        |
+        | See: backend/services/sharp-image-processor/
+        | Config: services.sharp
+        |
+        */
+        'images_enabled' => false, // Disabled - using Sharp service
+
+        /*
+        |----------------------------------------------------------------------
+        | Cloudflare R2 Storage
+        |----------------------------------------------------------------------
+        | S3-compatible object storage with zero egress fees.
+        | Already configured in config/filesystems.php
+        |
+        | Get credentials: https://dash.cloudflare.com > R2
+        |
+        */
+        'r2_enabled' => env('CLOUDFLARE_R2_ENABLED', false),
+
+        /*
+        |----------------------------------------------------------------------
+        | Cloudflare Workers KV (Optional)
+        |----------------------------------------------------------------------
+        | Edge key-value storage for caching at 300+ locations.
+        |
+        */
+        'kv_enabled' => env('CLOUDFLARE_KV_ENABLED', false),
+        'kv_namespace_id' => env('CLOUDFLARE_KV_NAMESPACE_ID'),
+
+        /*
+        |----------------------------------------------------------------------
+        | Cloudflare Workers (Optional)
+        |----------------------------------------------------------------------
+        | Edge compute for API responses at edge locations.
+        |
+        */
+        'workers_enabled' => env('CLOUDFLARE_WORKERS_ENABLED', false),
+        'workers_route' => env('CLOUDFLARE_WORKERS_ROUTE'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upstash Redis (LIGHTNING STACK)
+    |--------------------------------------------------------------------------
+    |
+    | Serverless Redis with global replication for <1ms reads.
+    | Configuration is in config/database.php (redis.upstash)
+    |
+    | Get credentials: https://console.upstash.com
+    |
+    */
+
+    'upstash' => [
+        'enabled' => env('UPSTASH_ENABLED', false),
+        'rest_url' => env('UPSTASH_REDIS_REST_URL'),
+        'rest_token' => env('UPSTASH_REDIS_REST_TOKEN'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Neon PostgreSQL (LIGHTNING STACK)
+    |--------------------------------------------------------------------------
+    |
+    | Serverless PostgreSQL with autoscaling and branching.
+    | Configuration is in config/database.php (neon)
+    |
+    | Get credentials: https://console.neon.tech
+    |
+    */
+
+    'neon' => [
+        'enabled' => env('NEON_ENABLED', false),
+        'project_id' => env('NEON_PROJECT_ID'),
+    ],
+
 ];

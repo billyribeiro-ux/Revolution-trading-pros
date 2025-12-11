@@ -7,6 +7,9 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"build:cloudflare": "DEPLOY_TARGET=cloudflare vite build",
+		"build:vercel": "DEPLOY_TARGET=vercel vite build",
+		"build:static": "DEPLOY_TARGET=static vite build",
 		"preview": "vite preview",
 		"check": "svelte-check --threshold error",
 		"check:all": "svelte-check",
@@ -16,7 +19,9 @@
 		"test:ui": "playwright test --ui",
 		"test:headed": "playwright test --headed",
 		"test:unit": "vitest",
-		"test:unit:ui": "vitest --ui"
+		"test:unit:ui": "vitest --ui",
+		"deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare",
+		"deploy:preview": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare --branch preview"
 	},
 	"dependencies": {
 		"@formkit/auto-animate": "^0.9.0",
@@ -63,6 +68,7 @@
 	"devDependencies": {
 		"@opentelemetry/api": "^1.9.0",
 		"@playwright/test": "^1.57.0",
+		"@sveltejs/adapter-cloudflare": "^6.0.0",
 		"@sveltejs/adapter-static": "3.0.10",
 		"@sveltejs/adapter-vercel": "^6.2.0",
 		"@sveltejs/kit": "2.49.2",

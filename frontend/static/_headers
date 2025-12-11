@@ -1,0 +1,53 @@
+#===============================================================================
+# REVOLUTION TRADING PROS - CLOUDFLARE PAGES HEADERS
+# ⚡ LIGHTNING STACK - Performance & Security Headers
+#
+# These headers are automatically applied by Cloudflare Pages.
+# @see https://developers.cloudflare.com/pages/configuration/headers/
+#===============================================================================
+
+# Global headers for all pages
+/*
+  # Security Headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+
+  # Performance Headers
+  X-DNS-Prefetch-Control: on
+
+# Static assets - Long cache (1 year)
+/_app/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts - Long cache (1 year)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# Images - Long cache (1 year)
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Favicon
+/favicon.ico
+  Cache-Control: public, max-age=86400
+
+# Sitemap and robots
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+  Content-Type: application/xml
+
+/robots.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain
+
+# API routes - No cache
+/api/*
+  Cache-Control: no-store, no-cache, must-revalidate
+
+# Blog pages - Short cache for dynamic content
+/blog/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=60
