@@ -863,3 +863,416 @@ export interface CompanyFilters {
 	sort_order?: 'asc' | 'desc';
 	per_page?: number;
 }
+
+// =====================================================
+// FLUENTCRM PRO - ABANDONED CARTS
+// =====================================================
+
+export type AbandonedCartStatus = 'draft' | 'processing' | 'recovered' | 'lost' | 'opt_out';
+
+export interface AbandonedCart {
+	id: string;
+	checkout_key: string;
+	cart_hash?: string;
+	contact_id?: string;
+	is_optout: boolean;
+	full_name?: string;
+	email: string;
+	provider: string;
+	user_id?: string;
+	order_id?: string;
+	automation_id?: string;
+	checkout_page_id?: string;
+	status: AbandonedCartStatus;
+	subtotal: number;
+	shipping: number;
+	discounts: number;
+	fees: number;
+	tax: number;
+	total: number;
+	currency: string;
+	cart?: CartContents;
+	note?: string;
+	recovered_at?: string;
+	abandoned_at?: string;
+	click_counts: number;
+	created_at: string;
+	updated_at: string;
+	customer_avatar?: string;
+	order_url?: string;
+	recovery_url?: string;
+	contact?: Contact;
+	automation?: AutomationFunnel;
+}
+
+export interface CartContents {
+	cart_contents: CartItem[];
+	customer_data?: CustomerData;
+}
+
+export interface CartItem {
+	product_id: string;
+	product_name: string;
+	quantity: number;
+	line_total: number;
+	line_tax: number;
+	product_image?: string;
+	variation_id?: string;
+	variation_data?: Record<string, string>;
+}
+
+export interface CustomerData {
+	differentShipping?: string;
+	billingAddress?: CartAddress;
+	shippingAddress?: CartAddress;
+}
+
+export interface CartAddress {
+	address_1?: string;
+	address_2?: string;
+	city?: string;
+	state?: string;
+	postcode?: string;
+	country?: string;
+}
+
+export interface AbandonedCartSettings {
+	enabled: string;
+	capture_after_minutes: number;
+	lost_cart_days: number;
+	cool_off_period_days: number;
+	gdpr_consent: string;
+	gdpr_consent_text: string;
+	disabled_user_roles: string[];
+	track_add_to_cart: string;
+	add_to_cart_exclude_user_roles: string[];
+	tags_on_cart_abandoned: string[];
+	lists_on_cart_abandoned: string[];
+	tags_on_cart_lost: string[];
+	lists_on_cart_lost: string[];
+	new_contact_status: string;
+	wc_recovered_statuses: string[];
+}
+
+export interface AbandonedCartStats {
+	recovered_revenue: StatWidget;
+	processing_revenue: StatWidget;
+	lost_revenue: StatWidget;
+	draft_revenue: StatWidget;
+	optout_revenue: StatWidget;
+	recovery_rate: StatWidget;
+}
+
+export interface StatWidget {
+	title: string;
+	value: string;
+	count: string;
+}
+
+export interface AbandonedCartFilters {
+	status?: AbandonedCartStatus;
+	search?: string;
+	date_range?: string[];
+	per_page?: number;
+}
+
+// =====================================================
+// FLUENTCRM PRO - EMAIL TEMPLATES
+// =====================================================
+
+export type TemplateType = 'raw' | 'visual';
+
+export interface EmailTemplate {
+	id: string;
+	title: string;
+	slug: string;
+	subject?: string;
+	content: string;
+	design_template: TemplateType;
+	template_config?: Record<string, any>;
+	is_default: boolean;
+	category?: string;
+	thumbnail?: string;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	creator?: User;
+}
+
+export interface TemplateCategory {
+	id: string;
+	name: string;
+	slug: string;
+	templates_count: number;
+}
+
+// =====================================================
+// FLUENTCRM PRO - WEBHOOKS
+// =====================================================
+
+export type WebhookEvent =
+	| 'contact_created'
+	| 'contact_updated'
+	| 'contact_deleted'
+	| 'tag_applied'
+	| 'tag_removed'
+	| 'list_applied'
+	| 'list_removed'
+	| 'email_opened'
+	| 'email_clicked'
+	| 'contact_unsubscribed'
+	| 'deal_created'
+	| 'deal_won'
+	| 'deal_lost';
+
+export interface Webhook {
+	id: string;
+	name: string;
+	url: string;
+	events: WebhookEvent[];
+	secret?: string;
+	is_active: boolean;
+	headers?: Record<string, string>;
+	last_triggered_at?: string;
+	trigger_count: number;
+	failure_count: number;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	creator?: User;
+}
+
+export interface WebhookLog {
+	id: string;
+	webhook_id: string;
+	event: WebhookEvent;
+	payload: Record<string, any>;
+	response_code?: number;
+	response_body?: string;
+	is_success: boolean;
+	error_message?: string;
+	triggered_at: string;
+}
+
+// =====================================================
+// FLUENTCRM PRO - IMPORT/EXPORT
+// =====================================================
+
+export type ImportType = 'contacts' | 'tags' | 'lists' | 'sequences' | 'campaigns' | 'automations' | 'templates';
+export type ImportStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface ImportJob {
+	id: string;
+	type: ImportType;
+	file_name: string;
+	file_path?: string;
+	total_rows: number;
+	processed_rows: number;
+	success_count: number;
+	error_count: number;
+	status: ImportStatus;
+	field_mapping?: Record<string, string>;
+	settings?: ImportSettings;
+	errors?: ImportError[];
+	created_by?: string;
+	started_at?: string;
+	completed_at?: string;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface ImportSettings {
+	update_existing: boolean;
+	skip_duplicates: boolean;
+	add_to_lists?: string[];
+	apply_tags?: string[];
+	contact_status?: string;
+}
+
+export interface ImportError {
+	row: number;
+	field?: string;
+	message: string;
+}
+
+export interface ExportJob {
+	id: string;
+	type: ImportType;
+	filters?: Record<string, any>;
+	fields: string[];
+	total_records: number;
+	status: ImportStatus;
+	file_url?: string;
+	created_by?: string;
+	started_at?: string;
+	completed_at?: string;
+	created_at: string;
+	updated_at: string;
+}
+
+// =====================================================
+// FLUENTCRM PRO - MANAGER PERMISSIONS
+// =====================================================
+
+export interface ManagerRole {
+	id: string;
+	name: string;
+	slug: string;
+	description?: string;
+	permissions: ManagerPermission[];
+	users_count: number;
+	is_default: boolean;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface ManagerPermission {
+	module: string;
+	action: 'view' | 'create' | 'edit' | 'delete' | 'manage';
+	allowed: boolean;
+}
+
+export interface ManagerUser {
+	id: string;
+	user_id: string;
+	role_id: string;
+	name: string;
+	email: string;
+	avatar?: string;
+	assigned_at: string;
+	role?: ManagerRole;
+}
+
+export interface PermissionModule {
+	id: string;
+	name: string;
+	actions: string[];
+}
+
+// =====================================================
+// FLUENTCRM PRO - DOUBLE OPT-IN
+// =====================================================
+
+export interface DoubleOptInSettings {
+	enabled: boolean;
+	email_subject: string;
+	email_body: string;
+	confirmation_page_url?: string;
+	redirect_url?: string;
+	after_confirmation_status: string;
+	apply_tags_on_confirm?: string[];
+	add_to_lists_on_confirm?: string[];
+}
+
+// =====================================================
+// FLUENTCRM PRO - EMAIL PREFERENCES
+// =====================================================
+
+export interface EmailPreferencePage {
+	enabled: boolean;
+	title: string;
+	intro_text: string;
+	show_lists: boolean;
+	show_tags: boolean;
+	show_communication_types: boolean;
+	show_unsubscribe_all: boolean;
+	custom_css?: string;
+	redirect_after_update?: string;
+}
+
+export interface CommunicationType {
+	id: string;
+	name: string;
+	description?: string;
+	is_active: boolean;
+}
+
+// =====================================================
+// FLUENTCRM PRO - SYSTEM LOGS
+// =====================================================
+
+export type LogLevel = 'debug' | 'info' | 'warning' | 'error' | 'critical';
+export type LogCategory = 'email' | 'automation' | 'import' | 'api' | 'webhook' | 'system';
+
+export interface SystemLog {
+	id: string;
+	level: LogLevel;
+	category: LogCategory;
+	message: string;
+	context?: Record<string, any>;
+	contact_id?: string;
+	user_id?: string;
+	ip_address?: string;
+	created_at: string;
+	contact?: Contact;
+}
+
+export interface SystemLogFilters {
+	level?: LogLevel;
+	category?: LogCategory;
+	search?: string;
+	date_from?: string;
+	date_to?: string;
+	per_page?: number;
+}
+
+// =====================================================
+// FLUENTCRM PRO - ONE-TIME CAMPAIGNS
+// =====================================================
+
+export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'archived';
+export type CampaignType = 'regular' | 'plain_text' | 'raw_html';
+
+export interface Campaign {
+	id: string;
+	title: string;
+	slug: string;
+	status: CampaignStatus;
+	type: CampaignType;
+	email_subject: string;
+	email_pre_header?: string;
+	email_body: string;
+	design_template: string;
+	template_config?: Record<string, any>;
+	settings?: SequenceSettings;
+	subscriber_settings?: SubscriberSettings;
+	utm_settings?: UtmSettings;
+	scheduled_at?: string;
+	sent_at?: string;
+	recipients_count: number;
+	sent_count: number;
+	failed_count: number;
+	open_count: number;
+	click_count: number;
+	unsubscribe_count: number;
+	bounce_count: number;
+	complaint_count: number;
+	revenue: number;
+	created_by?: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at?: string;
+	creator?: User;
+	open_rate?: number;
+	click_rate?: number;
+}
+
+export interface UtmSettings {
+	utm_source?: string;
+	utm_medium?: string;
+	utm_campaign?: string;
+	utm_term?: string;
+	utm_content?: string;
+}
+
+export interface CampaignStats {
+	total: number;
+	sent: number;
+	scheduled: number;
+	draft: number;
+	total_emails_sent: number;
+	total_opens: number;
+	total_clicks: number;
+	avg_open_rate: number;
+	avg_click_rate: number;
+}

@@ -91,11 +91,18 @@
 		{ name: 'Lists', href: '/admin/crm/lists', icon: IconListDetails },
 		{ name: 'Tags', href: '/admin/crm/tags', icon: IconTag },
 		{ name: 'Segments', href: '/admin/crm/segments', icon: IconFilter },
+		{ name: 'Companies', href: '/admin/crm/companies', icon: IconBuilding },
 		{ name: 'Campaigns', href: '/admin/crm/campaigns', icon: IconMail },
 		{ name: 'Email Sequences', href: '/admin/crm/sequences', icon: IconMailForward },
 		{ name: 'Recurring Campaigns', href: '/admin/crm/recurring-campaigns', icon: IconRepeat },
 		{ name: 'Automations', href: '/admin/crm/automations', icon: IconRobot },
-		{ name: 'Smart Links', href: '/admin/crm/smart-links', icon: IconLink }
+		{ name: 'Smart Links', href: '/admin/crm/smart-links', icon: IconLink },
+		{ name: 'Email Templates', href: '/admin/crm/templates', icon: IconMail },
+		{ name: 'Abandoned Carts', href: '/admin/crm/abandoned-carts', icon: IconCurrencyDollar },
+		{ name: 'Webhooks', href: '/admin/crm/webhooks', icon: IconLink },
+		{ name: 'Import / Export', href: '/admin/crm/import-export', icon: IconChartBar },
+		{ name: 'System Logs', href: '/admin/crm/logs', icon: IconListDetails },
+		{ name: 'Settings', href: '/admin/crm/settings', icon: IconDotsVertical }
 	];
 
 	const statusOptions = [
