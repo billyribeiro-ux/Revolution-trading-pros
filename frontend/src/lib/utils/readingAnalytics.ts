@@ -221,7 +221,7 @@ export function initReadingAnalytics(config: {
 	/**
 	 * Send analytics event
 	 */
-	function sendEvent(eventType: string, data: Record<string, any>): void {
+	function sendEvent(eventType: string, data: Record<string, unknown>): void {
 		if (!opts.endpoint) return;
 
 		const payload = {

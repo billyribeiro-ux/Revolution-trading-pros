@@ -7,9 +7,19 @@
 	import { browser } from '$app/environment';
 	import TableOfContents from './TableOfContents.svelte';
 
+	interface ContentBlock {
+		type: string;
+		data?: {
+			level?: number;
+			text?: string;
+			items?: string[];
+			[key: string]: unknown;
+		};
+	}
+
 	// Svelte 5: Props using $props() rune
 	interface Props {
-		contentBlocks?: any[];
+		contentBlocks?: ContentBlock[];
 		showAfterScroll?: number;
 		title?: string;
 	}

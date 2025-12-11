@@ -13,7 +13,6 @@
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
 	import ReadingProgress from '$lib/components/blog/ReadingProgress.svelte';
 	import SocialShare from '$lib/components/blog/SocialShare.svelte';
-	import CodeBlock from '$lib/components/blog/CodeBlock.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
@@ -87,12 +86,21 @@
 		goto('/blog');
 	}
 
+	interface ContentBlock {
+		type: string;
+		data?: {
+			text?: string;
+			items?: string[];
+			[key: string]: unknown;
+		};
+	}
+
 	// Calculate reading time from post content
 	let readingTime = $derived.by(() => {
 		if (!post) return 0;
 		// Extract text from content blocks
 		const text = post.content_blocks
-			?.map((block: any) => {
+			?.map((block: ContentBlock) => {
 				if (block.type === 'paragraph' || block.type === 'heading') {
 					return block.data?.text || '';
 				}
@@ -570,7 +578,7 @@
 		opacity: 0.3;
 	}
 
-	.featured-image img {
+	.featured-image :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
