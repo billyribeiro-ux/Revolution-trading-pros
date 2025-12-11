@@ -362,14 +362,21 @@
 
 		previousFocusRef = document.activeElement as HTMLElement;
 
-		// ICT11+ Fix: Apply scroll lock BEFORE state change to prevent race condition
-		// This ensures scrollbar compensation happens synchronously before any DOM updates
+		// ICT11+ Enterprise Fix: Apply scroll lock with synchronized compensation
+		// CRITICAL: Both body AND navbar must receive padding compensation because:
+		// - Body needs it to prevent content jump
+		// - Navbar (position: sticky) is viewport-relative, not body-relative
+		// - Without navbar compensation, hamburger shifts when scrollbar disappears
 		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+		// Apply compensation atomically to both elements
 		document.body.style.overflow = 'hidden';
 		document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-		// Store scrollbar width on body for reference (not on navbar - that causes double compensation)
-		document.body.dataset.scrollbarWidth = String(scrollbarWidth);
+		// CRITICAL: Navbar must also compensate - it's position:sticky (viewport-relative)
+		if (navbarRef) {
+			navbarRef.style.paddingRight = `${scrollbarWidth}px`;
+		}
 
 		// NOW change state after scroll lock is in place
 		mobileMenuState = 'opening';
@@ -398,10 +405,12 @@
 
 		mobileMenuState = 'idle';
 
-		// Clean up scroll lock - only reset body styles (navbar doesn't need separate handling)
+		// ICT11+ Enterprise Fix: Clean up scroll lock from BOTH body and navbar
 		document.body.style.overflow = '';
 		document.body.style.paddingRight = '';
-		delete document.body.dataset.scrollbarWidth;
+		if (navbarRef) {
+			navbarRef.style.paddingRight = '';
+		}
 
 		// Restore focus
 		requestAnimationFrame(() => {
@@ -614,10 +623,12 @@
 			document.removeEventListener('click', handleClickOutside);
 			document.removeEventListener('keydown', handleKeydown);
 			scrollObserver?.disconnect();
-			// Clean up all scroll lock styles
+			// ICT11+ Enterprise Fix: Clean up all scroll lock styles from both body and navbar
 			document.body.style.overflow = '';
 			document.body.style.paddingRight = '';
-			delete document.body.dataset.scrollbarWidth;
+			if (navbarRef) {
+				navbarRef.style.paddingRight = '';
+			}
 		};
 	});
 </script>
