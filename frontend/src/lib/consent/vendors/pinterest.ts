@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
@@ -152,7 +152,7 @@ export const pinterestVendor: VendorConfig = {
 	load: () => {
 		const tagId = env.PUBLIC_PINTEREST_TAG_ID;
 		if (!tagId) {
-			console.warn('[Pinterest] Missing PUBLIC_PINTEREST_TAG_ID environment variable');
+			if (!dev) console.warn('[Pinterest] Missing PUBLIC_PINTEREST_TAG_ID environment variable');
 			return;
 		}
 		initializePinterest(tagId);

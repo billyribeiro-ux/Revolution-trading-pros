@@ -21,18 +21,21 @@
 	let { data }: { data: PageData } = $props();
 
 	// ICT11+ Performance: Handle streamed posts data
-	let posts = $state(data.posts || []);
+	let streamedPosts = $state<any[]>([]);
 	
 	// Update posts when streamed data arrives
 	$effect(() => {
 		if (data.streamed?.posts) {
-			data.streamed.posts.then((streamedPosts: any[]) => {
-				if (streamedPosts?.length > 0) {
-					posts = streamedPosts;
+			data.streamed.posts.then((resolved: any[]) => {
+				if (resolved?.length > 0) {
+					streamedPosts = resolved;
 				}
 			});
 		}
 	});
+
+	// Derive posts from either streamed data or initial data
+	let posts = $derived(streamedPosts.length > 0 ? streamedPosts : (data.posts || []));
 
 	const homepageSchema = [
 		{

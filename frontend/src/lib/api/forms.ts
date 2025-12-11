@@ -1492,12 +1492,13 @@ export const archiveForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'archived' });
 
 // Submission management - Connected to real backend API
+// @security Uses secure token getter from auth store (memory-only, not localStorage)
 export const updateSubmissionStatus = async (
 	formId: number,
 	submissionId: number | string,
 	status: string
 ) => {
-	const token = browser ? localStorage.getItem('access_token') : '';
+	const token = getAuthStoreToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}/status`, {
 		method: 'PUT',
 		headers: {
@@ -1511,7 +1512,7 @@ export const updateSubmissionStatus = async (
 };
 
 export const deleteSubmission = async (formId: number, submissionId: number | string) => {
-	const token = browser ? localStorage.getItem('access_token') : '';
+	const token = getAuthStoreToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}`, {
 		method: 'DELETE',
 		headers: {
@@ -1527,7 +1528,7 @@ export const bulkUpdateSubmissionStatus = async (
 	submissionIds: (number | string)[],
 	status: string
 ) => {
-	const token = browser ? localStorage.getItem('access_token') : '';
+	const token = getAuthStoreToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-update-status`, {
 		method: 'POST',
 		headers: {
@@ -1541,7 +1542,7 @@ export const bulkUpdateSubmissionStatus = async (
 };
 
 export const bulkDeleteSubmissions = async (formId: number, submissionIds: (number | string)[]) => {
-	const token = browser ? localStorage.getItem('access_token') : '';
+	const token = getAuthStoreToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-delete`, {
 		method: 'POST',
 		headers: {

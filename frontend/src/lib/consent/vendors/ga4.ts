@@ -1,32 +1,36 @@
 /**
  * Google Analytics 4 (GA4) Vendor Configuration
- *
- * Implements GA4 integration with full Google Consent Mode v2 support.
- * GA4 is loaded only when analytics consent is granted.
+ * 
+ * ICT11+ Principal Engineer Implementation
+ * 
+ * Architecture:
+ *   - GA4 is configured with send_page_view: false to disable automatic tracking
+ *   - Page views are tracked manually via SvelteKit's afterNavigate hook
+ *   - This prevents GA4 from hooking into history.pushState/replaceState
+ *   - Zero conflicts with SvelteKit's router
  *
  * Configuration:
  *   Set PUBLIC_GA4_MEASUREMENT_ID in your environment (.env or .env.local):
  *   PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX
  *
- * Verification:
- *   Use Google Tag Assistant (https://tagassistant.google.com/)
- *   to verify consent mode and tag firing.
+ * Usage in +layout.svelte:
+ *   import { afterNavigate } from '$app/navigation';
+ *   import { trackPageView } from '$lib/consent/vendors/ga4';
+ *   afterNavigate(() => trackPageView());
  *
  * @module consent/vendors/ga4
- * @version 1.0.0
+ * @version 2.0.0 - SvelteKit-native implementation
  */
 
 import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
-
-// Use dynamic environment variable (optional at build time)
-const PUBLIC_GA4_MEASUREMENT_ID = env.PUBLIC_GA4_MEASUREMENT_ID || '';
 import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
 import { consentStore } from '../store';
 
-// Window interface extended in src/app.d.ts
+// Use dynamic environment variable (optional at build time)
+const PUBLIC_GA4_MEASUREMENT_ID = env.PUBLIC_GA4_MEASUREMENT_ID || '';
 
 /**
  * Track if GA4 has been initialized.
@@ -35,6 +39,7 @@ let ga4Initialized = false;
 
 /**
  * Initialize the gtag function and dataLayer.
+ * Creates a minimal stub that queues commands until gtag.js loads.
  */
 function initGtag(): void {
 	if (!browser) return;
@@ -50,6 +55,11 @@ function initGtag(): void {
 
 /**
  * Send a page view event to GA4.
+ * 
+ * ICT11+ Pattern: This is the ONLY way page views are tracked.
+ * Call this from SvelteKit's afterNavigate hook in your root layout.
+ * 
+ * @param url - Optional URL override (defaults to current location)
  */
 export function trackPageView(url?: string): void {
 	if (!browser || !ga4Initialized) return;
@@ -171,25 +181,23 @@ export const ga4Vendor: VendorConfig = {
 			// Step 4: Initialize gtag with measurement ID
 			window.gtag('js', new Date());
 
-			// Step 5: Configure GA4 with privacy-preserving defaults
-			// ICT8-11+ Fix: Disable browser history change detection to prevent
-			// conflicts with SvelteKit's router (avoids history.pushState warnings)
+			// Step 5: Configure GA4 - SvelteKit-native approach
+			// 
+			// ICT11+ Architecture Decision:
+			// - send_page_view: false - We handle page tracking via afterNavigate
+			// - No history hooks - SvelteKit owns the router, we just listen
+			// - Clean separation of concerns: GA4 collects, SvelteKit navigates
+			//
 			window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
-				// Don't automatically send page views - we'll track them manually
-				// This gives us more control and avoids duplicate events during SPA navigation
+				// CRITICAL: Disable automatic page view tracking
+				// We track manually via SvelteKit's afterNavigate hook
 				send_page_view: false,
 
-				// CRITICAL: Disable automatic page_view tracking on history changes
-				// This prevents GA4 from calling history.pushState which conflicts with SvelteKit
-				page_changes_enabled: false,
-
-				// Anonymize IP addresses (now default in GA4, but explicit is better)
+				// Anonymize IP addresses (GDPR compliance)
 				anonymize_ip: true,
 
-				// Don't allow Google signals (requires additional consent handling)
+				// Consent-dependent features
 				allow_google_signals: currentConsent.marketing,
-
-				// Don't allow ad personalization by default
 				allow_ad_personalization_signals: currentConsent.marketing,
 			});
 

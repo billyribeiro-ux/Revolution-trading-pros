@@ -10,6 +10,11 @@
 import { test as setup, expect } from '@playwright/test';
 import { TEST_USER, loginViaUI } from '../helpers';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ESM-compatible __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const authFile = path.join(__dirname, '../.auth/user.json');
 
