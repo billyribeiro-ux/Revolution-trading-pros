@@ -14,11 +14,6 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-
-// Load environment variables from .env.e2e if it exists
-dotenv.config({ path: path.resolve(__dirname, '.env.e2e') });
 
 // Environment configuration with sensible defaults
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
@@ -60,22 +55,17 @@ export default defineConfig({
 	// ========================================
 	// REPORTING
 	// ========================================
-	reporter: [
-		// Console output - minimal on CI, verbose locally
-		['list', { printSteps: !CI }],
-		// HTML report for detailed analysis
-		[
-			'html',
-			{
-				outputFolder: 'playwright-report',
-				open: CI ? 'never' : 'on-failure'
-			}
-		],
-		// JSON report for CI parsing
-		['json', { outputFile: 'test-results/results.json' }],
-		// JUnit for CI integration (GitHub Actions, Jenkins, etc.)
-		['junit', { outputFile: 'test-results/junit.xml' }]
-	],
+	reporter: CI
+		? [
+				['list'],
+				['html', { outputFolder: 'playwright-report', open: 'never' }],
+				['json', { outputFile: 'test-results/results.json' }],
+				['junit', { outputFile: 'test-results/junit.xml' }]
+			]
+		: [
+				['list', { printSteps: true }],
+				['html', { outputFolder: 'playwright-report', open: 'on-failure' }]
+			],
 
 	// Output directory for test artifacts
 	outputDir: 'test-results',
@@ -113,11 +103,11 @@ export default defineConfig({
 		locale: 'en-US',
 		timezoneId: 'America/New_York',
 
-		// Ignore HTTPS errors for local development
-		ignoreHTTPSErrors: !CI,
+		// Ignore HTTPS errors for testing
+		ignoreHTTPSErrors: true,
 
-		// Bypass CSP for testing (dev only)
-		bypassCSP: !CI,
+		// Bypass CSP for testing
+		bypassCSP: true,
 
 		// Color scheme
 		colorScheme: 'light'
@@ -144,17 +134,6 @@ export default defineConfig({
 	// ========================================
 	projects: [
 		// ----------------
-		// SETUP PROJECT (runs first, used for auth state)
-		// ----------------
-		{
-			name: 'setup',
-			testMatch: /.*\.setup\.ts$/,
-			use: {
-				...devices['Desktop Chrome']
-			}
-		},
-
-		// ----------------
 		// DESKTOP BROWSERS
 		// ----------------
 		{
@@ -162,22 +141,19 @@ export default defineConfig({
 			use: {
 				...devices['Desktop Chrome'],
 				channel: 'chromium'
-			},
-			dependencies: ['setup']
+			}
 		},
 		{
 			name: 'firefox',
 			use: {
 				...devices['Desktop Firefox']
-			},
-			dependencies: ['setup']
+			}
 		},
 		{
 			name: 'webkit',
 			use: {
 				...devices['Desktop Safari']
-			},
-			dependencies: ['setup']
+			}
 		},
 
 		// ----------------
@@ -187,15 +163,13 @@ export default defineConfig({
 			name: 'mobile-chrome',
 			use: {
 				...devices['Pixel 5']
-			},
-			dependencies: ['setup']
+			}
 		},
 		{
 			name: 'mobile-safari',
 			use: {
 				...devices['iPhone 13']
-			},
-			dependencies: ['setup']
+			}
 		},
 
 		// ----------------
@@ -205,8 +179,7 @@ export default defineConfig({
 			name: 'tablet',
 			use: {
 				...devices['iPad Pro 11']
-			},
-			dependencies: ['setup']
+			}
 		},
 
 		// ----------------
@@ -224,29 +197,14 @@ export default defineConfig({
 	// ========================================
 	// WEB SERVER CONFIGURATION
 	// ========================================
-	webServer: [
-		// Frontend dev server
-		{
-			command: 'npm run dev',
-			url: BASE_URL,
-			reuseExistingServer: !CI,
-			timeout: TIMEOUTS.webServer,
-			stdout: DEBUG ? 'pipe' : 'ignore',
-			stderr: 'pipe',
-			env: {
-				NODE_ENV: 'test'
-			}
-		}
-		// Uncomment to also start backend:
-		// {
-		//   command: 'cd ../backend && php artisan serve',
-		//   url: API_URL.replace('/api', '') + '/api/health/live',
-		//   reuseExistingServer: !CI,
-		//   timeout: TIMEOUTS.webServer,
-		//   stdout: DEBUG ? 'pipe' : 'ignore',
-		//   stderr: 'pipe',
-		// },
-	],
+	webServer: {
+		command: 'npm run dev',
+		url: BASE_URL,
+		reuseExistingServer: !CI,
+		timeout: TIMEOUTS.webServer,
+		stdout: DEBUG ? 'pipe' : 'ignore',
+		stderr: 'pipe'
+	},
 
 	// ========================================
 	// GLOBAL SETUP/TEARDOWN
