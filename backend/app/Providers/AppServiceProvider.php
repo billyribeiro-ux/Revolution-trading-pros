@@ -42,5 +42,10 @@ class AppServiceProvider extends ServiceProvider
         // Register implicit model binding with authorization
         Gate::define('viewAny-form', [FormPolicy::class, 'viewAny']);
         Gate::define('viewAny-popup', [PopupPolicy::class, 'viewAny']);
+
+        // Analytics permission - admin and super-admin can view reading analytics
+        Gate::define('view-analytics', function ($user) {
+            return $user->hasRole(['admin', 'super-admin']);
+        });
     }
 }

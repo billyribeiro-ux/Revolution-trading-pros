@@ -80,8 +80,15 @@ Route::get('/robots.txt', [RobotsController::class, 'index']);
 // ========================================
 // READING ANALYTICS (ICT11+ Blog Analytics)
 // ========================================
+// Public tracking endpoint (rate limited in controller)
 Route::post('/analytics/reading', [ReadingAnalyticsController::class, 'track']);
 Route::post('/analytics/track', function () { return response()->json(['status' => 'ok']); });
+
+// Admin reading analytics (protected)
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/reading-analytics')->group(function () {
+    Route::get('/', [ReadingAnalyticsController::class, 'getAllAnalytics']);
+    Route::get('/{postId}', [ReadingAnalyticsController::class, 'getPostAnalytics'])->where('postId', '[0-9]+');
+});
 
 // Public routes
 Route::get('/time/now', [TimeController::class, 'now']);

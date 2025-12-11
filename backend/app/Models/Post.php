@@ -512,15 +512,24 @@ class Post extends Model
     {
         $type = $block['type'] ?? 'paragraph';
         $content = $block['content'] ?? '';
-        
+
+        // Sanitize content to prevent XSS attacks
+        $safeContent = e($content);
+        $safeLevel = (int) ($block['level'] ?? 2);
+        $safeAlt = e($block['alt'] ?? '');
+        $safeLanguage = e($block['language'] ?? 'plaintext');
+
+        // For image src, validate it's a proper URL
+        $safeSrc = filter_var($content, FILTER_VALIDATE_URL) ? e($content) : '';
+
         return match($type) {
-            'heading' => "<h{$block['level']}>{$content}</h{$block['level']}>",
-            'paragraph' => "<p>{$content}</p>",
-            'image' => "<img src=\"{$content}\" alt=\"{$block['alt']}\">",
-            'code' => "<pre><code class=\"language-{$block['language']}\">{$content}</code></pre>",
-            'quote' => "<blockquote>{$content}</blockquote>",
+            'heading' => "<h{$safeLevel}>{$safeContent}</h{$safeLevel}>",
+            'paragraph' => "<p>{$safeContent}</p>",
+            'image' => $safeSrc ? "<img src=\"{$safeSrc}\" alt=\"{$safeAlt}\" loading=\"lazy\">" : '',
+            'code' => "<pre><code class=\"language-{$safeLanguage}\">{$safeContent}</code></pre>",
+            'quote' => "<blockquote>{$safeContent}</blockquote>",
             'list' => $this->renderList($block),
-            default => "<div>{$content}</div>",
+            default => "<div>{$safeContent}</div>",
         };
     }
 
@@ -530,7 +539,8 @@ class Post extends Model
     protected function renderList(array $block): string
     {
         $tag = $block['ordered'] ? 'ol' : 'ul';
-        $items = array_map(fn($item) => "<li>{$item}</li>", $block['items'] ?? []);
+        // Escape each list item to prevent XSS
+        $items = array_map(fn($item) => "<li>" . e($item) . "</li>", $block['items'] ?? []);
         return "<{$tag}>" . implode('', $items) . "</{$tag}>";
     }
 
