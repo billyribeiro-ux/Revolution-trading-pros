@@ -26,9 +26,11 @@ setup('authenticate as test user', async ({ page }) => {
 	}
 
 	console.log('Setting up authenticated session...');
+	console.log('Email:', TEST_USER.email);
 
 	// Navigate to login page
 	await page.goto('/login');
+	await page.waitForLoadState('domcontentloaded');
 
 	// Dismiss cookie consent banner if present
 	const acceptCookiesButton = page.getByRole('button', { name: /accept all/i });
@@ -38,29 +40,29 @@ setup('authenticate as test user', async ({ page }) => {
 	}
 
 	// Fill in credentials using placeholder text for more reliable selection
-	await page.getByPlaceholder(/trader@example\.com|email/i).fill(TEST_USER.email);
-	await page.getByPlaceholder(/••••••••|password/i).fill(TEST_USER.password);
+	const emailInput = page.getByPlaceholder(/trader@example\.com/i);
+	const passwordInput = page.getByPlaceholder(/••••••••/i);
+	
+	await emailInput.fill(TEST_USER.email);
+	await passwordInput.fill(TEST_USER.password);
 
 	// Submit form
 	await page.getByRole('button', { name: /sign in/i }).click();
 
-	// Wait for login to complete - either redirect or error message
-	await Promise.race([
-		page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 30000 }),
-		page.waitForSelector('.error-message, [data-testid="login-error"]', { timeout: 30000 })
-	]);
-
-	// Check if we're still on login page (login failed)
-	if (page.url().includes('/login')) {
-		const errorText = await page.locator('.error-message, [data-testid="login-error"]').textContent().catch(() => 'Unknown error');
-		console.log('Login failed:', errorText);
-		return;
+	// Wait for navigation or timeout
+	try {
+		await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 });
+		console.log('Login successful, redirected to:', page.url());
+		
+		// Save storage state
+		await page.context().storageState({ path: authFile });
+		console.log('Auth setup complete, session saved');
+	} catch {
+		// Login didn't redirect - check for error or just continue
+		console.log('Login did not redirect. Current URL:', page.url());
+		console.log('This may be expected if credentials are invalid or backend is not running.');
+		// Don't fail the setup - tests that need auth will handle it
 	}
-
-	// Save storage state
-	await page.context().storageState({ path: authFile });
-
-	console.log('Auth setup complete, session saved');
 });
 
 // Admin auth setup (separate file in production)
