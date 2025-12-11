@@ -6,9 +6,19 @@
 	 */
 	import { browser } from '$app/environment';
 
+	interface ContentBlock {
+		type: string;
+		data?: {
+			level?: number;
+			text?: string;
+			items?: string[];
+			[key: string]: unknown;
+		};
+	}
+
 	// Svelte 5: Props using $props() rune
 	interface Props {
-		contentBlocks?: any[];
+		contentBlocks?: ContentBlock[];
 		title?: string;
 		minHeadings?: number;
 		maxDepth?: number;
@@ -48,18 +58,15 @@
 	// Svelte 5: Reactive state using $state() rune
 	let tocItems: TocItem[] = $state([]);
 	let flatItems: TocItem[] = $state([]);
-	let isExpanded = $state(true);
+	// Initialize from prop - user interactions will override
+	// svelte-ignore state_referenced_locally
+	let isExpanded = $state(defaultExpanded);
 	let activeId = $state('');
 	let readingProgress = $state(0);
 	let isFloatingMinimized = $state(false);
 	let contentElement: HTMLElement | null = $state(null);
 	let observer: IntersectionObserver | null = null;
 	let scrollListener: (() => void) | null = null;
-
-	// Sync with prop changes
-	$effect(() => {
-		isExpanded = defaultExpanded;
-	});
 
 	// Extract text from potentially HTML content
 	function stripHtml(html: string): string {

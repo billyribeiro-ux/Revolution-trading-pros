@@ -5,8 +5,6 @@
 	 *
 	 * @version 1.0.0 - December 2024
 	 */
-	import { browser } from '$app/environment';
-
 	interface Props {
 		/** Code content */
 		code: string;
@@ -32,7 +30,6 @@
 	}: Props = $props();
 
 	let copied = $state(false);
-	let highlightedCode = $state(code);
 
 	// Parse highlight lines
 	let highlightedLineSet = $derived.by(() => {
@@ -246,9 +243,8 @@
 			.replace(/'/g, '&#039;');
 	}
 
-	$effect(() => {
-		highlightedCode = highlight(code, language);
-	});
+	// Svelte 5: Use $derived instead of $state + $effect
+	let highlightedCode = $derived(highlight(code, language));
 
 	async function copyCode() {
 		try {

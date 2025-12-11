@@ -4,8 +4,7 @@
 	 * @version 3.0.0 - December 2024
 	 * Features: BlurHash images, Link prefetching, $state/$derived/$effect runes
 	 */
-	import { onDestroy } from 'svelte';
-	import { goto, preloadData } from '$app/navigation';
+	import { preloadData } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
@@ -49,10 +48,8 @@
 	let posts = $state<BlogPost[]>([]);
 	let currentPage = $state(1);
 	let lastPage = $state(1);
-	let total = $state(0);
 	let loading = $state(true);
 	let error = $state('');
-	let retryCount = $state(0);
 	let abortController = $state<AbortController | null>(null);
 	let prefetchedSlugs = $state(new Set<string>());
 
@@ -107,8 +104,6 @@
 
 				currentPage = response.current_page || 1;
 				lastPage = response.last_page || 1;
-				total = response.total || 0;
-				retryCount = 0;
 			} catch (fetchError) {
 				clearTimeout(timeoutId);
 
@@ -153,10 +148,6 @@
 			month: 'long',
 			day: 'numeric'
 		});
-	}
-
-	function viewPost(slug: string) {
-		goto(`/blog/${slug}`);
 	}
 
 	function nextPage() {
@@ -298,14 +289,11 @@
 	{:else}
 		<div class="posts-grid">
 			{#each posts as post (post.id)}
-				<article
+				<a
+					href="/blog/{post.slug}"
 					class="post-card"
-					onclick={() => viewPost(post.slug)}
-					onkeydown={(e) => e.key === 'Enter' && viewPost(post.slug)}
 					onmouseenter={() => prefetchPost(post.slug)}
 					onfocus={() => prefetchPost(post.slug)}
-					role="article"
-					tabindex="0"
 				>
 					<div class="post-image">
 						{#if post.featured_image}
@@ -369,7 +357,7 @@
 							</div>
 						{/if}
 					</div>
-				</article>
+				</a>
 			{/each}
 		</div>
 
@@ -467,6 +455,9 @@
 	}
 
 	.post-card {
+		display: block;
+		text-decoration: none;
+		color: inherit;
 		background: rgba(30, 41, 59, 0.5);
 		backdrop-filter: blur(10px);
 		border-radius: 16px;

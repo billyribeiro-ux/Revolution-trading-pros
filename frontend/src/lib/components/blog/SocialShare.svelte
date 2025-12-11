@@ -33,7 +33,7 @@
 		url = typeof window !== 'undefined' ? window.location.href : '',
 		title,
 		description = '',
-		image = '',
+		image: _image = '',
 		hashtags = '',
 		via = 'RevTradingPros',
 		layout = 'horizontal',
@@ -89,7 +89,7 @@
 			setTimeout(() => {
 				copied = false;
 			}, 2000);
-		} catch (err) {
+		} catch {
 			// Fallback for older browsers
 			const textarea = document.createElement('textarea');
 			textarea.value = url;
