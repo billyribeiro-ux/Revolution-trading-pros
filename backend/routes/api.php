@@ -93,11 +93,15 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])
     ->middleware('throttle:5,1');
 
-// Public popup runtime routes
-Route::get('/popups/active', [PopupController::class, 'active']);
-Route::post('/popups/{popup}/impression', [PopupController::class, 'impression']);
-Route::post('/popups/{popup}/conversion', [PopupController::class, 'conversion']);
-Route::post('/popups/events', [PopupController::class, 'events']);
+// Public popup runtime routes with rate limiting for security
+Route::get('/popups/active', [PopupController::class, 'active'])
+    ->middleware('throttle:120,1'); // 120 requests/minute - normal page loads
+Route::post('/popups/{popup}/impression', [PopupController::class, 'impression'])
+    ->middleware('throttle:60,1'); // 60 impressions/minute per IP
+Route::post('/popups/{popup}/conversion', [PopupController::class, 'conversion'])
+    ->middleware('throttle:30,1'); // 30 conversions/minute per IP
+Route::post('/popups/events', [PopupController::class, 'events'])
+    ->middleware('throttle:60,1'); // 60 batch events/minute per IP
 
 // Public consent configuration (for frontend banner)
 Route::get('/consent/config', [\App\Http\Controllers\Admin\ConsentSettingsController::class, 'publicSettings']);

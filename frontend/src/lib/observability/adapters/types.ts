@@ -310,6 +310,48 @@ export interface ConsoleAdapterConfig {
 }
 
 /**
+ * Configuration for Microsoft Clarity adapter.
+ */
+export interface MicrosoftClarityConfig {
+	/** Clarity Project ID */
+	projectId: string;
+	/** Enable cookie consent mode */
+	cookieConsent?: boolean;
+	/** Custom upload endpoint */
+	upload?: string;
+	/** Session expiry in days */
+	expire?: number;
+	/** Allowed cookies */
+	cookies?: string[];
+	/** Enable tracking */
+	track?: boolean;
+	/** Enable content tracking */
+	content?: boolean;
+}
+
+/**
+ * Configuration for Apple Privacy Attribution adapter.
+ */
+export interface AppleAttributionConfig {
+	/** Apple Merchant ID */
+	merchantId?: string;
+	/** Source identifier for attribution */
+	sourceIdentifier?: string;
+	/** Campaign ID for SKAdNetwork */
+	campaignId?: number;
+	/** Enable Private Click Measurement */
+	enablePCM?: boolean;
+	/** Custom conversion value mapping */
+	conversionValueMapping?: {
+		[eventName: string]: {
+			coarseValue: 'low' | 'medium' | 'high';
+			fineValue: number;
+			lockWindow?: boolean;
+		};
+	};
+}
+
+/**
  * Master analytics configuration.
  */
 export interface AnalyticsConfig {
@@ -319,6 +361,10 @@ export interface AnalyticsConfig {
 	environment: 'development' | 'staging' | 'production';
 	/** Google Analytics configuration */
 	googleAnalytics?: GoogleAnalyticsConfig;
+	/** Microsoft Clarity configuration */
+	microsoftClarity?: MicrosoftClarityConfig;
+	/** Apple Privacy Attribution configuration */
+	appleAttribution?: AppleAttributionConfig;
 	/** Backend analytics configuration */
 	backend?: BackendAnalyticsConfig;
 	/** Console adapter configuration */
