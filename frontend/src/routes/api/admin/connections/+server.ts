@@ -99,21 +99,45 @@ const serviceDefinitions: ServiceDefinition[] = [
 		]
 	},
 
-	// Email Marketing
+	// Fluent Ecosystem (Built-in CRM & Marketing)
 	{
-		key: 'mailchimp',
-		name: 'Mailchimp',
-		category: 'Email',
-		description: 'Email marketing automation and subscriber management',
-		icon: 'mail',
-		color: '#FFE01B',
-		docs_url: 'https://mailchimp.com/developer',
+		key: 'fluent_crm_pro',
+		name: 'FluentCRM Pro',
+		category: 'CRM',
+		description: 'Built-in CRM for email marketing, automation, and contact management (Already Installed)',
+		icon: 'users',
+		color: '#7C3AED',
+		docs_url: 'https://fluentcrm.com/docs',
 		is_oauth: false,
-		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true },
-			{ key: 'server_prefix', label: 'Server Prefix', type: 'text', required: true, placeholder: 'us1' }
-		]
+		is_builtin: true,
+		fields: []
 	},
+	{
+		key: 'fluent_forms_pro',
+		name: 'FluentForms Pro',
+		category: 'Forms',
+		description: 'Built-in form builder with advanced features (Already Installed)',
+		icon: 'box',
+		color: '#10B981',
+		docs_url: 'https://fluentforms.com/docs',
+		is_oauth: false,
+		is_builtin: true,
+		fields: []
+	},
+	{
+		key: 'fluent_smtp',
+		name: 'FluentSMTP',
+		category: 'Email',
+		description: 'Built-in SMTP mailer for reliable email delivery (Already Installed)',
+		icon: 'mail',
+		color: '#3B82F6',
+		docs_url: 'https://fluentsmtp.com/docs',
+		is_oauth: false,
+		is_builtin: true,
+		fields: []
+	},
+
+	// Email Delivery (Transactional only - no marketing)
 	{
 		key: 'sendgrid',
 		name: 'SendGrid',
@@ -127,34 +151,8 @@ const serviceDefinitions: ServiceDefinition[] = [
 			{ key: 'api_key', label: 'API Key', type: 'password', required: true }
 		]
 	},
-	{
-		key: 'convertkit',
-		name: 'ConvertKit',
-		category: 'Email',
-		description: 'Creator-focused email marketing platform',
-		icon: 'mail',
-		color: '#FB6970',
-		docs_url: 'https://developers.convertkit.com',
-		is_oauth: false,
-		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true },
-			{ key: 'api_secret', label: 'API Secret', type: 'password', required: true }
-		]
-	},
-	{
-		key: 'activecampaign',
-		name: 'ActiveCampaign',
-		category: 'Email',
-		description: 'Email marketing, automation, and CRM',
-		icon: 'mail',
-		color: '#356AE6',
-		docs_url: 'https://developers.activecampaign.com',
-		is_oauth: false,
-		fields: [
-			{ key: 'api_url', label: 'API URL', type: 'url', required: true, placeholder: 'https://account.api-us1.com' },
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true }
-		]
-	},
+	// NOTE: Email marketing is handled by built-in FluentCRM Pro
+	// External services like ConvertKit and ActiveCampaign removed to avoid duplication
 
 	// Analytics
 	{

@@ -63,12 +63,10 @@ export const SERVICE_KEYS = {
 	AHREFS: 'ahrefs',
 	MOZ: 'moz',
 
-	// Email
-	MAILCHIMP: 'mailchimp',
+	// Email Delivery (Transactional - marketing handled by FluentCRM)
 	SENDGRID: 'sendgrid',
 	MAILGUN: 'mailgun',
 	POSTMARK: 'postmark',
-	SENDINBLUE: 'sendinblue',
 
 	// Payment
 	STRIPE: 'stripe',
@@ -127,11 +125,10 @@ export const FEATURE_SERVICES: Record<string, ServiceKey[]> = {
 		SERVICE_KEYS.MOZ
 	],
 	email: [
-		SERVICE_KEYS.MAILCHIMP,
+		SERVICE_KEYS.FLUENT_SMTP, // Built-in
 		SERVICE_KEYS.SENDGRID,
 		SERVICE_KEYS.MAILGUN,
-		SERVICE_KEYS.POSTMARK,
-		SERVICE_KEYS.SENDINBLUE
+		SERVICE_KEYS.POSTMARK
 	],
 	payment: [SERVICE_KEYS.STRIPE, SERVICE_KEYS.PAYPAL, SERVICE_KEYS.SQUARE],
 	// Fluent Ecosystem (all built-in products)
