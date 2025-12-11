@@ -193,16 +193,16 @@ jobs:
         continue-on-error: true
 
   # ========================================
-  # API TESTS (Requires backend - manual only)
+  # API TESTS (Disabled - requires backend infrastructure)
+  # To enable: change 'if: false' to the commented condition below
   # ========================================
   api-tests:
     name: API Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Only run API tests when explicitly requested
-    if: >-
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.run_api_tests == 'true') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'test-api'))
+    # Disabled until backend infrastructure is available in CI
+    # To enable, use: (github.event_name == 'workflow_dispatch' && github.event.inputs.run_api_tests == 'true')
+    if: false
 
     services:
       mysql:
