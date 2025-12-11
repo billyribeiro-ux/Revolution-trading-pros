@@ -130,6 +130,10 @@ frontend/test-results/
 frontend/playwright-report/
 frontend/playwright/.cache/
 
+# E2E test environment and auth state
+frontend/.env.e2e
+frontend/tests/e2e/.auth/*.json
+
 # Laravel-specific sensitive files
 backend/storage/oauth-*.key
 backend/.scribe/
