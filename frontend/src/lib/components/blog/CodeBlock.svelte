@@ -35,7 +35,7 @@
 	let highlightedCode = $state(code);
 
 	// Parse highlight lines
-	let highlightedLineSet = $derived(() => {
+	let highlightedLineSet = $derived.by(() => {
 		if (!highlightLines) return new Set<number>();
 
 		const lines = new Set<number>();
@@ -293,7 +293,7 @@
 		{#if showLineNumbers}
 			<div class="line-numbers" aria-hidden="true">
 				{#each codeLines as _, i}
-					<span class="line-number" class:highlighted={highlightedLineSet().has(i + 1)}
+					<span class="line-number" class:highlighted={highlightedLineSet.has(i + 1)}
 						>{i + 1}</span
 					>
 				{/each}

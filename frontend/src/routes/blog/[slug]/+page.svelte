@@ -88,7 +88,7 @@
 	}
 
 	// Calculate reading time from post content
-	let readingTime = $derived(() => {
+	let readingTime = $derived.by(() => {
 		if (!post) return 0;
 		// Extract text from content blocks
 		const text = post.content_blocks
@@ -258,7 +258,7 @@
 							<div class="meta-row">
 								<span class="date">{formatDate(post.published_at)}</span>
 								<span class="separator">•</span>
-								<span class="reading-time">{formatReadingTime(readingTime())}</span>
+								<span class="reading-time">{formatReadingTime(readingTime)}</span>
 								{#if post.views !== undefined}
 									<span class="separator">•</span>
 									<span class="views">{post.views.toLocaleString()} views</span>
