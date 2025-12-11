@@ -1375,11 +1375,13 @@
 		align-items: center;
 		gap: 0.75rem;
 		flex-shrink: 0;
+		min-width: 44px;
 	}
 
 	@media (min-width: 1024px) {
 		.actions {
 			gap: 1rem;
+			min-width: 180px;
 		}
 	}
 
