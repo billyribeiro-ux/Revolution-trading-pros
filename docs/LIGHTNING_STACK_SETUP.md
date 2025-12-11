@@ -11,7 +11,7 @@
 2. [Cost Summary](#2-cost-summary)
 3. [Step 1: Cloudflare Account Setup](#3-step-1-cloudflare-account-setup)
 4. [Step 2: Cloudflare R2 Storage](#4-step-2-cloudflare-r2-storage)
-5. [Step 3: Cloudflare Images](#5-step-3-cloudflare-images)
+5. [Step 3: Sharp Image Processing (Already Configured)](#5-step-3-sharp-image-processing-already-configured)
 6. [Step 4: Cloudflare Pages (Frontend)](#6-step-4-cloudflare-pages-frontend)
 7. [Step 5: Neon PostgreSQL Database](#7-step-5-neon-postgresql-database)
 8. [Step 6: Upstash Redis Cache](#8-step-6-upstash-redis-cache)
@@ -38,9 +38,9 @@ User (anywhere) ──► Cloudflare Edge (300+ locations)
                            │
          ┌─────────────────┼─────────────────┐
          ▼                 ▼                 ▼
-   Cloudflare         Cloudflare        Cloudflare
-     Pages              Images              R2
-   (Frontend)          (Media)          (Storage)
+   Cloudflare         Sharp Service      Cloudflare
+     Pages             (Images)              R2
+   (Frontend)      (WebP/AVIF/Blur)      (Storage)
          │                 │                 │
          └─────────────────┴─────────────────┘
                            │
@@ -52,6 +52,22 @@ User (anywhere) ──► Cloudflare Edge (300+ locations)
         Upstash Redis              Neon PostgreSQL
        (Edge Caching)            (Serverless DB)
 ```
+
+### Why Sharp + R2 Instead of Cloudflare Images?
+
+Your project already includes a **high-performance Sharp image processing service** that provides:
+
+| Feature | Sharp (Your System) | Cloudflare Images |
+|---------|---------------------|-------------------|
+| Processing | At upload time (once) | On-the-fly (every request) |
+| Cost | FREE (self-hosted) | $5/month + usage |
+| Control | Full control | Limited |
+| Formats | WebP, AVIF, PNG, JPG | WebP, AVIF |
+| BlurHash | ✅ Built-in | ❌ Not available |
+| Responsive | ✅ Pre-generated | ✅ On-demand |
+| Speed | Instant (pre-cached) | Fast (edge computed) |
+
+**Recommendation:** Keep Sharp for processing, R2 for storage. This gives you the best of both worlds with zero monthly image processing costs.
 
 ### Performance Targets
 
@@ -71,10 +87,10 @@ User (anywhere) ──► Cloudflare Edge (300+ locations)
 
 | Traffic Level | Monthly Cost |
 |---------------|--------------|
-| Starting (< 10K visitors) | **$5-10** |
-| Growing (10K-50K visitors) | **$20-35** |
-| Popular (50K-100K visitors) | **$50-80** |
-| High Traffic (100K+ visitors) | **$100-150** |
+| Starting (< 10K visitors) | **$0-5** |
+| Growing (10K-50K visitors) | **$15-30** |
+| Popular (50K-100K visitors) | **$45-75** |
+| High Traffic (100K+ visitors) | **$95-145** |
 
 ### Service Breakdown
 
@@ -82,9 +98,11 @@ User (anywhere) ──► Cloudflare Edge (300+ locations)
 |---------|-----------|-----------|
 | Cloudflare Pages | Unlimited | - |
 | Cloudflare R2 | 10GB storage | $0.015/GB |
-| Cloudflare Images | - | $5/month (100K images) |
+| Sharp Processing | FREE (included) | - |
 | Neon PostgreSQL | 0.5GB | $19/month (10GB) |
 | Upstash Redis | 10K req/day | $10/month (unlimited) |
+
+**Note:** By using your existing Sharp service instead of Cloudflare Images, you save **$5/month** while maintaining full control over image processing.
 
 ---
 
@@ -117,7 +135,6 @@ User (anywhere) ──► Cloudflare Edge (300+ locations)
 
 ```
 Permissions:
-├── Account > Cloudflare Images > Edit
 ├── Account > Workers R2 Storage > Edit
 ├── Account > Workers Scripts > Edit
 └── Zone > Zone > Read (for your domain)
@@ -180,43 +197,112 @@ R2_BUCKET=revolution-trading-media
 R2_PUBLIC_URL=https://media.revolutiontradingpros.com
 ```
 
+### 4.5 Configure CORS (Required for Uploads)
+
+1. Go to your bucket → **Settings** → **CORS Policy**
+2. Add this configuration:
+
+```json
+[
+  {
+    "AllowedOrigins": [
+      "https://revolutiontradingpros.com",
+      "https://www.revolutiontradingpros.com",
+      "https://api.revolutiontradingpros.com"
+    ],
+    "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
 ---
 
-## 5. Step 3: Cloudflare Images
+## 5. Step 3: Sharp Image Processing (Already Configured)
 
-### 5.1 Enable Cloudflare Images
+### 5.1 Overview
 
-**Link:** https://dash.cloudflare.com/?to=/:account/images
+Your project includes a **Node.js Sharp image processing service** that automatically:
 
-1. Go to **Images** in sidebar
-2. Click **Get Started** to subscribe
-3. Cost: **$5/month** for 100K images
+- Converts images to WebP and AVIF formats
+- Generates responsive image sizes (thumbnail, small, medium, large, xlarge)
+- Creates BlurHash placeholders for instant loading
+- Uploads processed images to R2 storage
 
-### 5.2 Get Images Credentials
+### 5.2 Service Location
 
-1. Go to **Images** → **Overview**
-2. Find your **Account Hash** (looks like: `ZWd9g1K7...`)
-3. Go to **API Tokens** → Create a token with Images permissions
-
-**Save these values:**
+The Sharp service is located at:
 ```
-CLOUDFLARE_IMAGES_ENABLED=true
-CLOUDFLARE_IMAGES_TOKEN=your-images-token
-CLOUDFLARE_IMAGES_HASH=your-account-hash
+backend/services/sharp-image-processor/
 ```
 
-### 5.3 Create Image Variants (Optional)
+### 5.3 Configuration
 
-1. Go to **Images** → **Variants**
-2. Create these variants:
+The Sharp service is configured in `backend/config/services.php`:
 
-| Variant Name | Settings |
-|--------------|----------|
-| thumbnail | Fit: Cover, Width: 150, Height: 150 |
-| card | Fit: Cover, Width: 400, Height: 300 |
-| medium | Fit: Contain, Width: 640, Height: 480 |
-| large | Fit: Contain, Width: 1280, Height: 960 |
-| hero | Fit: Cover, Width: 1920, Height: 1080 |
+```php
+'sharp' => [
+    'enabled' => env('SHARP_SERVICE_ENABLED', true),
+    'url' => env('SHARP_SERVICE_URL', 'http://localhost:3001'),
+    'timeout' => env('SHARP_SERVICE_TIMEOUT', 60),
+],
+```
+
+### 5.4 Environment Variables
+
+Add these to your `.env`:
+
+```env
+SHARP_SERVICE_ENABLED=true
+SHARP_SERVICE_URL=http://localhost:3001
+SHARP_SERVICE_TIMEOUT=60
+```
+
+### 5.5 Image Sizes Generated
+
+When you upload an image, Sharp automatically generates:
+
+| Size | Dimensions | Use Case |
+|------|------------|----------|
+| thumbnail | 150x150 | Grid thumbnails |
+| small | 320px wide | Mobile views |
+| medium | 640px wide | Tablet views |
+| large | 1280px wide | Desktop views |
+| xlarge | 1920px wide | Full-screen/hero |
+| blurhash | 4x3 hash | Placeholder |
+
+### 5.6 Output Formats
+
+Each image is converted to:
+- **WebP** - Modern browsers (85% smaller than JPG)
+- **AVIF** - Latest browsers (95% smaller than JPG)
+- **Original format** - Fallback for older browsers
+
+### 5.7 How It Works
+
+1. **Upload**: User uploads image through admin panel
+2. **Process**: Sharp service processes the image
+3. **Generate**: Creates all sizes in WebP/AVIF
+4. **BlurHash**: Generates placeholder hash
+5. **Upload to R2**: Stores all variants in Cloudflare R2
+6. **Cache**: URLs cached for instant access
+
+```
+Upload Flow:
+┌──────────┐     ┌──────────────┐     ┌────────────┐
+│  Admin   │ ──► │ Sharp Service │ ──► │  R2 Bucket │
+│  Panel   │     │  (Process)    │     │  (Store)   │
+└──────────┘     └──────────────┘     └────────────┘
+                        │
+                        ▼
+                 ┌──────────────┐
+                 │   Outputs:    │
+                 │ - WebP sizes  │
+                 │ - AVIF sizes  │
+                 │ - BlurHash    │
+                 └──────────────┘
+```
 
 ---
 
@@ -401,7 +487,34 @@ Edit `.env` with your credentials from steps 4-8.
 5. Add environment variables from your `.env`
 6. Deploy!
 
-### 9.4 Run Migrations
+### 9.4 Deploy Sharp Service
+
+The Sharp service needs to run alongside your Laravel backend:
+
+**Option A: Same Server (Docker Compose)**
+```yaml
+services:
+  laravel:
+    # ... your Laravel config
+
+  sharp:
+    build: ./services/sharp-image-processor
+    ports:
+      - "3001:3001"
+    environment:
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - R2_BUCKET=${R2_BUCKET}
+      - R2_ENDPOINT=${R2_ENDPOINT}
+```
+
+**Option B: Separate Service (Railway)**
+1. Create a new Railway project for Sharp service
+2. Point it to `backend/services/sharp-image-processor`
+3. Add R2 environment variables
+4. Update `SHARP_SERVICE_URL` in your Laravel `.env`
+
+### 9.5 Run Migrations
 
 After deployment, run:
 
@@ -463,11 +576,14 @@ CACHE_STORE=upstash
 FILESYSTEM_DISK=r2
 MEDIA_DISK=r2
 
-# Enable all services
+# Enable services
 NEON_ENABLED=true
 UPSTASH_ENABLED=true
 CLOUDFLARE_R2_ENABLED=true
-CLOUDFLARE_IMAGES_ENABLED=true
+
+# Sharp Service
+SHARP_SERVICE_ENABLED=true
+SHARP_SERVICE_URL=http://sharp:3001  # or your deployed URL
 ```
 
 ### 11.2 Update Frontend Environment
@@ -477,7 +593,7 @@ Create `frontend/.env.production`:
 ```env
 PUBLIC_API_URL=https://api.revolutiontradingpros.com
 PUBLIC_APP_NAME=Revolution Trading Pros
-PUBLIC_IMAGES_URL=https://imagedelivery.net/YOUR_HASH
+PUBLIC_MEDIA_URL=https://media.revolutiontradingpros.com
 ```
 
 ### 11.3 Clear All Caches
@@ -506,12 +622,28 @@ npm run deploy:cloudflare
 
 - [ ] Frontend loads at https://revolutiontradingpros.com
 - [ ] API responds at https://api.revolutiontradingpros.com/api/posts
-- [ ] Images load from Cloudflare (check Network tab)
+- [ ] Images load from R2 (check Network tab for `media.` domain)
+- [ ] WebP/AVIF images served to modern browsers
 - [ ] Blog posts display correctly
 - [ ] Admin panel works
+- [ ] Image uploads work (Sharp + R2)
 - [ ] SSL certificates are valid (green padlock)
 
-### 12.2 Performance Test
+### 12.2 Verify Image Processing
+
+1. Upload a test image in admin panel
+2. Check R2 bucket for generated variants:
+   - `images/{id}/thumbnail.webp`
+   - `images/{id}/small.webp`
+   - `images/{id}/medium.webp`
+   - `images/{id}/large.webp`
+   - `images/{id}/xlarge.webp`
+   - `images/{id}/thumbnail.avif`
+   - etc.
+
+3. Verify BlurHash is stored in database
+
+### 12.3 Performance Test
 
 Run a Lighthouse test:
 
@@ -526,7 +658,7 @@ Run a Lighthouse test:
 - Best Practices: 90+
 - SEO: 90+
 
-### 12.3 Speed Test Tools
+### 12.4 Speed Test Tools
 
 - **GTmetrix:** https://gtmetrix.com
 - **PageSpeed Insights:** https://pagespeed.web.dev
@@ -541,6 +673,14 @@ Run a Lighthouse test:
 1. Check R2 bucket public access is enabled
 2. Verify R2_PUBLIC_URL is correct
 3. Check CORS settings in R2 bucket
+4. Verify Sharp service is running
+
+### Sharp Service Not Processing
+
+1. Check Sharp service logs: `docker logs sharp`
+2. Verify R2 credentials in Sharp environment
+3. Test Sharp endpoint: `curl http://localhost:3001/health`
+4. Check Laravel can reach Sharp: verify `SHARP_SERVICE_URL`
 
 ### Database Connection Failed
 
@@ -574,10 +714,76 @@ Run a Lighthouse test:
 |---------|-----------|------|
 | Cloudflare | https://dash.cloudflare.com | https://developers.cloudflare.com |
 | Cloudflare R2 | https://dash.cloudflare.com/?to=/:account/r2 | https://developers.cloudflare.com/r2 |
-| Cloudflare Images | https://dash.cloudflare.com/?to=/:account/images | https://developers.cloudflare.com/images |
 | Cloudflare Pages | https://dash.cloudflare.com/?to=/:account/pages | https://developers.cloudflare.com/pages |
 | Neon | https://console.neon.tech | https://neon.tech/docs |
 | Upstash | https://console.upstash.com | https://docs.upstash.com |
+
+---
+
+## Architecture Summary
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        LIGHTNING STACK v3.0                             │
+│                    (Sharp + R2 Configuration)                           │
+└─────────────────────────────────────────────────────────────────────────┘
+
+                              ┌─────────────────┐
+                              │    User (Web)   │
+                              └────────┬────────┘
+                                       │
+                                       ▼
+                       ┌───────────────────────────────┐
+                       │    Cloudflare Edge Network    │
+                       │     (300+ global locations)   │
+                       └───────────────┬───────────────┘
+                                       │
+              ┌────────────────────────┼────────────────────────┐
+              │                        │                        │
+              ▼                        ▼                        ▼
+    ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+    │ Cloudflare Pages│     │  Cloudflare R2  │     │  Laravel API    │
+    │   (Frontend)    │     │    (Media)      │     │   (Backend)     │
+    │                 │     │                 │     │                 │
+    │ • SvelteKit SSR │     │ • Zero egress   │     │ • REST API      │
+    │ • Edge rendered │     │ • Global CDN    │     │ • Auth/Admin    │
+    │ • <50ms TTFB    │     │ • WebP/AVIF     │     │ • Business logic│
+    └─────────────────┘     └─────────────────┘     └────────┬────────┘
+                                       ▲                     │
+                                       │                     │
+                            ┌──────────┴──────────┐         │
+                            │   Sharp Service     │         │
+                            │ (Image Processing)  │         │
+                            │                     │◄────────┘
+                            │ • WebP conversion   │
+                            │ • AVIF conversion   │
+                            │ • Responsive sizes  │
+                            │ • BlurHash          │
+                            └─────────────────────┘
+                                                            │
+                      ┌─────────────────────────────────────┤
+                      │                                     │
+                      ▼                                     ▼
+            ┌─────────────────┐                   ┌─────────────────┐
+            │  Upstash Redis  │                   │ Neon PostgreSQL │
+            │    (Cache)      │                   │   (Database)    │
+            │                 │                   │                 │
+            │ • Session store │                   │ • Serverless    │
+            │ • API cache     │                   │ • Auto-scaling  │
+            │ • <1ms reads    │                   │ • Branching     │
+            └─────────────────┘                   └─────────────────┘
+
+
+Cost Breakdown (Monthly):
+──────────────────────────
+Cloudflare Pages:    FREE (unlimited)
+Cloudflare R2:       FREE (up to 10GB) or $0.015/GB
+Sharp Processing:    FREE (self-hosted)
+Neon PostgreSQL:     FREE (0.5GB) or $19/mo (10GB)
+Upstash Redis:       FREE (10K/day) or $10/mo (unlimited)
+──────────────────────────
+TOTAL:               $0-29/month
+```
 
 ---
 
@@ -591,6 +797,21 @@ If you encounter issues:
 
 ---
 
-**Document Version:** 3.0.0
+**Document Version:** 3.1.0
 **Last Updated:** December 2024
 **Author:** Revolution Trading Pros Engineering Team
+
+---
+
+## Changelog
+
+### v3.1.0 (Current)
+- Removed Cloudflare Images (replaced with existing Sharp service)
+- Updated architecture diagram for Sharp + R2 workflow
+- Added Sharp service deployment instructions
+- Reduced monthly costs by $5/month
+- Added image processing verification steps
+
+### v3.0.0
+- Initial Lightning Stack implementation
+- Cloudflare Pages, R2, Neon, Upstash integration

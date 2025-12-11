@@ -95,19 +95,19 @@ return [
 
         /*
         |----------------------------------------------------------------------
-        | Cloudflare Images
+        | Cloudflare Images (NOT USED - Using Sharp Service Instead)
         |----------------------------------------------------------------------
-        | High-performance image delivery with automatic optimization.
-        | - Auto WebP/AVIF conversion
-        | - On-the-fly resizing
-        | - Global CDN (<20ms delivery)
+        | We use the built-in Sharp image processing service which provides:
+        | - WebP/AVIF conversion at upload time (more efficient)
+        | - BlurHash placeholders
+        | - Responsive image generation
+        | - Zero monthly cost
         |
-        | Get credentials: https://dash.cloudflare.com > Images
+        | See: backend/services/sharp-image-processor/
+        | Config: services.sharp
         |
         */
-        'images_enabled' => env('CLOUDFLARE_IMAGES_ENABLED', false),
-        'images_token' => env('CLOUDFLARE_IMAGES_TOKEN'),
-        'images_hash' => env('CLOUDFLARE_IMAGES_HASH'),
+        'images_enabled' => false, // Disabled - using Sharp service
 
         /*
         |----------------------------------------------------------------------
