@@ -19,6 +19,7 @@
 		type: string;
 		required: boolean;
 		placeholder?: string;
+		help?: string;
 	}
 
 	interface Service {
@@ -29,6 +30,8 @@
 		icon: string;
 		color: string;
 		docs_url?: string;
+		signup_url?: string;
+		pricing_url?: string;
 		is_oauth: boolean;
 		fields: ServiceField[];
 		environments?: string[];
@@ -279,17 +282,40 @@
 	// Get category icon
 	function getCategoryIcon(icon: string): string {
 		const icons: Record<string, string> = {
+			// Infrastructure
+			server: '🖥️',
+			database: '🗄️',
+			// Payments
 			'credit-card': '💳',
+			// Analytics
 			'chart-bar': '📊',
+			// Email
 			mail: '✉️',
+			// Storage
 			cloud: '☁️',
+			// CRM
 			users: '👥',
+			// Social
 			'share-2': '🔗',
+			// Communication
 			'message-circle': '💬',
+			// AI
 			cpu: '🤖',
+			// Automation
 			zap: '⚡',
+			// Search
 			search: '🔍',
+			// SEO
 			'trending-up': '📈',
+			// Pixels/Conversion Tracking
+			target: '🎯',
+			// CDN
+			globe: '🌐',
+			// Hosting
+			'upload-cloud': '☁️',
+			// Monitoring
+			'alert-triangle': '⚠️',
+			// Default
 			box: '📦'
 		};
 		return icons[icon] || '📦';
@@ -587,6 +613,48 @@
 					<div>
 						<h2 class="text-xl font-bold text-white">Connect {selectedService.name}</h2>
 						<p class="text-sm text-gray-400">{selectedService.description}</p>
+						<!-- Quick Links -->
+						<div class="flex gap-3 mt-2">
+							{#if selectedService.signup_url}
+								<a
+									href={selectedService.signup_url}
+									target="_blank"
+									rel="noopener"
+									class="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+								>
+									<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+									</svg>
+									Sign Up
+								</a>
+							{/if}
+							{#if selectedService.pricing_url}
+								<a
+									href={selectedService.pricing_url}
+									target="_blank"
+									rel="noopener"
+									class="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+								>
+									<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+									</svg>
+									Pricing
+								</a>
+							{/if}
+							{#if selectedService.docs_url}
+								<a
+									href={selectedService.docs_url}
+									target="_blank"
+									rel="noopener"
+									class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-300 transition-colors"
+								>
+									<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+									</svg>
+									Docs
+								</a>
+							{/if}
+						</div>
 					</div>
 				</div>
 				<button
@@ -636,6 +704,9 @@
 							bind:value={credentialValues[field.key]}
 							class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300"
 						/>
+						{#if field.help}
+							<p class="mt-1 text-xs text-gray-500">{field.help}</p>
+						{/if}
 					</div>
 				{/each}
 
