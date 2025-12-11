@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
@@ -30,6 +31,8 @@
 		tags?: Tag[];
 		views?: number;
 		author_image?: string | null;
+		blurhash?: string | null;
+		featured_image_blurhash?: string | null;
 	}
 
 	// Svelte 5 state runes
@@ -210,7 +213,16 @@
 
 			{#if post.featured_image}
 				<div class="featured-image">
-					<img src={post.featured_image} alt={post.title} />
+					<BlurHashImage
+					src={post.featured_image}
+					alt={post.title}
+					blurhash={post.featured_image_blurhash || post.blurhash}
+					width="100%"
+					height="100%"
+					loading="eager"
+					decoding="async"
+					sizes="(max-width: 768px) 100vw, 800px"
+				/>
 				</div>
 			{/if}
 

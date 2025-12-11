@@ -1,12 +1,18 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import { goto } from '$app/navigation';
+	/**
+	 * Blog List Page - Svelte 5 Runes Implementation
+	 * @version 3.0.0 - December 2024
+	 * Features: BlurHash images, Link prefetching, $state/$derived/$effect runes
+	 */
+	import { onDestroy } from 'svelte';
+	import { goto, preloadData } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 
 	// ============================================================================
-	// TypeScript Interfaces (L70 Type Safety)
+	// TypeScript Interfaces
 	// ============================================================================
 
 	interface Category {
@@ -24,6 +30,8 @@
 	interface BlogPost extends Post {
 		categories?: Category[];
 		tags?: Tag[];
+		blurhash?: string | null;
+		featured_image_blurhash?: string | null;
 	}
 
 	interface PaginatedResponse {
@@ -34,39 +42,36 @@
 		total: number;
 	}
 
-	interface ErrorResponse {
-		error: string;
-		message: string;
-	}
-
 	// ============================================================================
-	// State Management
+	// State Management - Svelte 5 Runes
 	// ============================================================================
 
-	let posts: BlogPost[] = [];
-	let currentPage = 1;
-	let lastPage = 1;
-	let total = 0;
-	let loading = true;
-	let error = '';
-	let retryCount = 0;
+	let posts = $state<BlogPost[]>([]);
+	let currentPage = $state(1);
+	let lastPage = $state(1);
+	let total = $state(0);
+	let loading = $state(true);
+	let error = $state('');
+	let retryCount = $state(0);
+	let abortController = $state<AbortController | null>(null);
+	let prefetchedSlugs = $state(new Set<string>());
+
 	const MAX_RETRIES = 3;
 	const RETRY_DELAY = 2000;
-	let abortController: AbortController | null = null;
 
 	// ============================================================================
-	// Performance & Error Handling (L70 Standards)
+	// Derived Values
 	// ============================================================================
 
-	/**
-	 * Load blog posts with retry logic, timeout, and comprehensive error handling
-	 *
-	 * Features:
-	 * - Exponential backoff for retries
-	 * - Request timeout (10s)
-	 * - AbortController for cleanup
-	 * - Detailed error messages
-	 */
+	let hasNextPage = $derived(currentPage < lastPage);
+	let hasPrevPage = $derived(currentPage > 1);
+	let showPagination = $derived(lastPage > 1);
+	let isEmpty = $derived(!loading && !error && posts.length === 0);
+
+	// ============================================================================
+	// Performance & Error Handling
+	// ============================================================================
+
 	async function loadPosts(page: number = 1, retry = 0): Promise<void> {
 		try {
 			loading = true;
@@ -78,7 +83,7 @@
 			}
 
 			abortController = new AbortController();
-			const timeoutId = setTimeout(() => abortController?.abort(), 10000); // 10s timeout
+			const timeoutId = setTimeout(() => abortController?.abort(), 10000);
 
 			try {
 				const response = await apiFetch<PaginatedResponse>(
@@ -87,7 +92,6 @@
 
 				clearTimeout(timeoutId);
 
-				// Validate response structure
 				if (!response.data || !Array.isArray(response.data)) {
 					throw new Error('Invalid response format from server');
 				}
@@ -104,18 +108,13 @@
 				currentPage = response.current_page || 1;
 				lastPage = response.last_page || 1;
 				total = response.total || 0;
-				retryCount = 0; // Reset retry count on success
+				retryCount = 0;
 			} catch (fetchError) {
 				clearTimeout(timeoutId);
 
 				if (fetchError instanceof Error && fetchError.name === 'AbortError') {
 					if (retry < MAX_RETRIES) {
-						// Exponential backoff: 2s, 4s, 8s
 						const delay = RETRY_DELAY * Math.pow(2, retry);
-						console.log(
-							`Request timeout. Retrying in ${delay / 1000}s... (${retry + 1}/${MAX_RETRIES})`
-						);
-
 						await new Promise((resolve) => setTimeout(resolve, delay));
 						return loadPosts(page, retry + 1);
 					} else {
@@ -126,11 +125,8 @@
 				throw fetchError;
 			}
 		} catch (err) {
-			// Retry on network errors
 			if (retry < MAX_RETRIES && err instanceof TypeError && err.message.includes('fetch')) {
 				const delay = RETRY_DELAY * Math.pow(2, retry);
-				console.log(`Network error. Retrying in ${delay / 1000}s... (${retry + 1}/${MAX_RETRIES})`);
-
 				await new Promise((resolve) => setTimeout(resolve, delay));
 				return loadPosts(page, retry + 1);
 			}
@@ -143,10 +139,8 @@
 		}
 	}
 
-	/**
-	 * Sanitize text to prevent XSS attacks
-	 */
 	function sanitizeText(text: string): string {
+		if (typeof document === 'undefined') return text;
 		const div = document.createElement('div');
 		div.textContent = text;
 		return div.innerHTML;
@@ -166,14 +160,14 @@
 	}
 
 	function nextPage() {
-		if (currentPage < lastPage) {
+		if (hasNextPage) {
 			loadPosts(currentPage + 1);
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 
 	function prevPage() {
-		if (currentPage > 1) {
+		if (hasPrevPage) {
 			loadPosts(currentPage - 1);
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
@@ -183,16 +177,35 @@
 		loadPosts(currentPage);
 	}
 
-	// Lifecycle
-	onMount(() => {
-		loadPosts();
-	});
+	// ============================================================================
+	// Link Prefetching - Preload post data on hover
+	// ============================================================================
 
-	onDestroy(() => {
-		// Cleanup: abort any pending requests
-		if (abortController) {
-			abortController.abort();
-		}
+	function prefetchPost(slug: string) {
+		if (prefetchedSlugs.has(slug)) return;
+
+		// Mark as prefetched to avoid duplicates
+		prefetchedSlugs = new Set([...prefetchedSlugs, slug]);
+
+		// Use SvelteKit's preloadData for route prefetching
+		preloadData(`/blog/${slug}`).catch(() => {
+			// Silently fail - prefetching is optional
+		});
+	}
+
+	// ============================================================================
+	// Lifecycle - Svelte 5 $effect
+	// ============================================================================
+
+	$effect(() => {
+		loadPosts();
+
+		return () => {
+			// Cleanup: abort any pending requests
+			if (abortController) {
+				abortController.abort();
+			}
+		};
 	});
 
 	// Structured data for blog list
@@ -212,6 +225,13 @@
 		}
 	};
 </script>
+
+<svelte:head>
+	<!-- Prefetch hints for common blog posts -->
+	{#each posts.slice(0, 3) as post}
+		<link rel="prefetch" href="/blog/{post.slug}" />
+	{/each}
+</svelte:head>
 
 <SEOHead
 	title="Blog - Trading Insights & Tutorials"
@@ -271,27 +291,33 @@
 				Try Again
 			</button>
 		</div>
-	{:else if posts.length === 0}
+	{:else if isEmpty}
 		<div class="empty">
 			<p>No blog posts published yet.</p>
 		</div>
 	{:else}
 		<div class="posts-grid">
-			{#each posts as post}
-				<div
+			{#each posts as post (post.id)}
+				<article
 					class="post-card"
 					onclick={() => viewPost(post.slug)}
 					onkeydown={(e) => e.key === 'Enter' && viewPost(post.slug)}
-					role="button"
+					onmouseenter={() => prefetchPost(post.slug)}
+					onfocus={() => prefetchPost(post.slug)}
+					role="article"
 					tabindex="0"
 				>
-					{#if post.featured_image}
-						<div class="post-image">
-							<img src={post.featured_image} alt={post.title} />
+					<div class="post-image">
+						{#if post.featured_image}
+							<BlurHashImage
+								src={post.featured_image}
+								alt={post.title}
+								blurhash={post.featured_image_blurhash || post.blurhash}
+								width="100%"
+								height="200px"
+							/>
 							<div class="image-overlay"></div>
-						</div>
-					{:else}
-						<div class="post-image placeholder">
+						{:else}
 							<div class="placeholder-content">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -309,8 +335,8 @@
 									<polyline points="21 15 16 10 5 21"></polyline>
 								</svg>
 							</div>
-						</div>
-					{/if}
+						{/if}
+					</div>
 
 					<div class="post-content">
 						<div class="post-meta">
@@ -329,7 +355,7 @@
 
 						{#if post.categories && post.categories.length > 0}
 							<div class="categories">
-								{#each post.categories as category}
+								{#each post.categories as category (category.id)}
 									<span class="category-tag">{category.name}</span>
 								{/each}
 							</div>
@@ -337,7 +363,7 @@
 
 						{#if post.tags && post.tags.length > 0}
 							<div class="tags">
-								{#each post.tags as tag}
+								{#each post.tags as tag (tag.id)}
 									<span class="tag">{tag.name}</span>
 								{/each}
 							</div>
@@ -364,13 +390,18 @@
 							</span>
 						</div>
 					</div>
-				</div>
+				</article>
 			{/each}
 		</div>
 
-		{#if lastPage > 1}
-			<div class="pagination">
-				<button class="btn-pagination" onclick={prevPage} disabled={currentPage === 1}>
+		{#if showPagination}
+			<nav class="pagination" aria-label="Blog pagination">
+				<button
+					class="btn-pagination"
+					onclick={prevPage}
+					disabled={!hasPrevPage}
+					aria-label="Previous page"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"
@@ -387,9 +418,16 @@
 					Previous
 				</button>
 
-				<span class="page-info">Page {currentPage} of {lastPage}</span>
+				<span class="page-info" aria-live="polite">
+					Page {currentPage} of {lastPage}
+				</span>
 
-				<button class="btn-pagination" onclick={nextPage} disabled={currentPage === lastPage}>
+				<button
+					class="btn-pagination"
+					onclick={nextPage}
+					disabled={!hasNextPage}
+					aria-label="Next page"
+				>
 					Next
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -405,7 +443,7 @@
 						<polyline points="9 18 15 12 9 6"></polyline>
 					</svg>
 				</button>
-			</div>
+			</nav>
 		{/if}
 	{/if}
 </div>
@@ -495,16 +533,10 @@
 		height: 200px;
 		position: relative;
 		overflow: hidden;
+		background: linear-gradient(135deg, #1e293b, #334155);
 	}
 
-	.post-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 0.3s;
-	}
-
-	.post-card:hover .post-image img {
+	.post-card:hover .post-image :global(img) {
 		transform: scale(1.05);
 	}
 
@@ -512,16 +544,15 @@
 		position: absolute;
 		inset: 0;
 		background: linear-gradient(to bottom, transparent 0%, rgba(15, 23, 42, 0.8) 100%);
-	}
-
-	.post-image.placeholder {
-		background: linear-gradient(135deg, #1e293b, #334155);
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		pointer-events: none;
 	}
 
 	.placeholder-content {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		color: #475569;
 	}
 
