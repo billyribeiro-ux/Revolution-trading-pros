@@ -4,6 +4,11 @@ import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
+	// Suppress vite-plugin-svelte warnings for packages with missing exports condition
+	// See: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition
+	ssr: {
+		noExternal: ['svelte-email']
+	},
 	// Vitest configuration
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],

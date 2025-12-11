@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
@@ -179,7 +179,7 @@ export const redditVendor: VendorConfig = {
 	load: () => {
 		const pixelId = env.PUBLIC_REDDIT_PIXEL_ID;
 		if (!pixelId) {
-			console.warn('[Reddit] Missing PUBLIC_REDDIT_PIXEL_ID environment variable');
+			if (!dev) console.warn('[Reddit] Missing PUBLIC_REDDIT_PIXEL_ID environment variable');
 			return;
 		}
 		initializeReddit(pixelId);
