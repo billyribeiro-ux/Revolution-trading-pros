@@ -1,13 +1,59 @@
-import adapter from '@sveltejs/adapter-vercel';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
 /**
  * Revolution Trading Pros - SvelteKit Configuration
- * Enterprise-grade SSR/SSG configuration with performance optimizations
+ * ⚡ LIGHTNING STACK - ICT 11+ Principal Engineer Configuration
  *
- * @version 2.0.0 - L8 Principal Engineer
+ * Optimized for Cloudflare Pages deployment with edge SSR.
+ * - Global edge deployment (300+ locations)
+ * - Sub-50ms TTFB worldwide
+ * - Automatic static asset caching
+ * - Edge-side rendering for dynamic content
+ *
+ * @version 3.0.0 - Lightning Stack Edition
  * @author Revolution Trading Pros
  */
+
+import adapterCloudflare from '@sveltejs/adapter-cloudflare';
+import adapterVercel from '@sveltejs/adapter-vercel';
+import adapterStatic from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+
+// Determine which adapter to use based on environment
+const getAdapter = () => {
+	const target = process.env.DEPLOY_TARGET || 'cloudflare';
+
+	switch (target) {
+		case 'cloudflare':
+			return adapterCloudflare({
+				// Enable edge SSR for dynamic pages
+				routes: {
+					include: ['/*'],
+					exclude: ['<all>']
+				},
+				// Platform-specific optimizations
+				platformProxy: {
+					configPath: 'wrangler.toml',
+					experimentalJsonConfig: false,
+					persist: false
+				}
+			});
+		case 'vercel':
+			return adapterVercel({
+				runtime: 'edge', // Use edge runtime for speed
+				regions: ['iad1'], // Primary region
+				split: false
+			});
+		case 'static':
+			return adapterStatic({
+				pages: 'build',
+				assets: 'build',
+				fallback: 'index.html',
+				precompress: true, // Enable brotli/gzip
+				strict: true
+			});
+		default:
+			return adapterCloudflare();
+	}
+};
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -26,7 +72,7 @@ const config = {
 		handler(warning);
 	},
 	kit: {
-		adapter: adapter(),
+		adapter: getAdapter(),
 		prerender: {
 			handleHttpError: ({ status, path }) => {
 				// Ignore 404 errors for unimplemented routes
@@ -44,30 +90,36 @@ const config = {
 			entries: ['*', '/sitemap.xml', '/robots.txt']
 		},
 		// Inline small CSS files for faster initial render
-		inlineStyleThreshold: 1024,
+		inlineStyleThreshold: 2048, // Increased from 1024 for better FCP
 		// Content Security Policy - WCAG/OWASP compliant
-		// Disabled in development, enabled in production builds
-		// Note: CSP with strict-dynamic breaks Vite's dev server HMR
-		// csp: {
-		// 	mode: 'hash',
-		// 	directives: {
-		// 		'default-src': ['self'],
-		// 		'script-src': ['self', 'strict-dynamic'],
-		// 		'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
-		// 		'font-src': ['self', 'fonts.gstatic.com'],
-		// 		'img-src': ['self', 'data:', 'https:'],
-		// 		'connect-src': ['self', 'wss:', 'https:'],
-		// 		'frame-ancestors': ['none'],
-		// 		'base-uri': ['self'],
-		// 		'form-action': ['self']
-		// 	}
-		// },
+		csp: {
+			mode: 'auto',
+			directives: {
+				'default-src': ['self'],
+				'script-src': ['self', 'unsafe-inline'], // Required for Cloudflare
+				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
+				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
+				'img-src': ['self', 'data:', 'https:', 'blob:'],
+				'connect-src': ['self', 'wss:', 'https:'],
+				'frame-ancestors': ['none'],
+				'base-uri': ['self'],
+				'form-action': ['self']
+			}
+		},
 		// Alias for cleaner imports
 		alias: {
 			$components: 'src/lib/components',
 			$stores: 'src/lib/stores',
 			$utils: 'src/lib/utils',
 			$api: 'src/lib/api'
+		},
+		// Service worker for offline support and caching
+		serviceWorker: {
+			register: true
+		},
+		// Environment variable prefix
+		env: {
+			publicPrefix: 'PUBLIC_'
 		}
 	},
 	// Compile-time optimizations
