@@ -199,6 +199,8 @@
 			onkeydown={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
+			aria-label="Insert block"
+			tabindex="-1"
 			transition:scale={{ duration: 200, start: 0.95 }}
 		>
 			<div class="inserter-header">
@@ -208,7 +210,7 @@
 						type="text"
 						placeholder="Search blocks..."
 						bind:value={localSearch}
-						autofocus
+						aria-label="Search blocks"
 					/>
 					{#if localSearch}
 						<button

@@ -284,7 +284,7 @@
 				bind:value={newCommentContent}
 				placeholder="Add your comment..."
 				rows="3"
-				autofocus
+				aria-label="Comment content"
 			></textarea>
 			{#if selectedBlockId}
 				<div class="context-info">
@@ -444,7 +444,7 @@
 								bind:value={replyContent}
 								placeholder="Write a reply..."
 								rows="2"
-								autofocus
+								aria-label="Reply content"
 							></textarea>
 							<div class="reply-actions">
 								<button class="cancel-btn" onclick={() => replyingTo = null}>

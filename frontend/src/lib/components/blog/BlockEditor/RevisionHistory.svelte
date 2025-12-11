@@ -151,11 +151,68 @@
 		}
 	}
 
+	// Diff view state
+	let showDiffView = $state(false);
+
 	// Handle compare
 	function handleCompare(): void {
-		if (compareRevisionA && compareRevisionB && onCompare) {
-			onCompare(compareRevisionA, compareRevisionB);
+		if (compareRevisionA && compareRevisionB) {
+			showDiffView = true;
+			if (onCompare) {
+				onCompare(compareRevisionA, compareRevisionB);
+			}
 		}
+	}
+
+	// Get detailed diff between two revisions
+	function getDetailedDiff(revA: Revision, revB: Revision): {
+		added: Block[];
+		removed: Block[];
+		modified: { before: Block; after: Block }[];
+		unchanged: Block[];
+	} {
+		const blocksA = revA.blocks;
+		const blocksB = revB.blocks;
+		const idsA = new Set(blocksA.map(b => b.id));
+		const idsB = new Set(blocksB.map(b => b.id));
+
+		const added: Block[] = [];
+		const removed: Block[] = [];
+		const modified: { before: Block; after: Block }[] = [];
+		const unchanged: Block[] = [];
+
+		// Find removed (in A but not in B)
+		blocksA.forEach(block => {
+			if (!idsB.has(block.id)) {
+				removed.push(block);
+			}
+		});
+
+		// Find added (in B but not in A)
+		blocksB.forEach(block => {
+			if (!idsA.has(block.id)) {
+				added.push(block);
+			}
+		});
+
+		// Find modified and unchanged
+		blocksB.forEach(blockB => {
+			const blockA = blocksA.find(b => b.id === blockB.id);
+			if (blockA) {
+				if (JSON.stringify(blockA.content) !== JSON.stringify(blockB.content)) {
+					modified.push({ before: blockA, after: blockB });
+				} else {
+					unchanged.push(blockB);
+				}
+			}
+		});
+
+		return { added, removed, modified, unchanged };
+	}
+
+	// Get text content from block for diff display
+	function getBlockText(block: Block): string {
+		return block.content.text || block.content.html?.replace(/<[^>]*>/g, '') || `[${block.type}]`;
 	}
 
 	// Toggle compare mode
@@ -391,6 +448,155 @@
 				</div>
 			</div>
 		</div>
+		</div>
+	{/if}
+
+	<!-- Diff Viewer Modal -->
+	{#if showDiffView && compareRevisionA && compareRevisionB}
+		{@const detailedDiff = getDetailedDiff(compareRevisionA, compareRevisionB)}
+		<div
+			class="diff-overlay"
+			onclick={() => showDiffView = false}
+			onkeydown={(e) => { if (e.key === 'Escape') showDiffView = false; }}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="diff-modal-title"
+			tabindex="-1"
+		>
+			<div class="diff-modal" onclick={(e) => e.stopPropagation()} role="document">
+				<div class="diff-header">
+					<h4 id="diff-modal-title">Revision Comparison</h4>
+					<div class="diff-header-meta">
+						<span class="revision-label revision-a">
+							{formatRelativeTime(compareRevisionA.createdAt)}
+						</span>
+						<span class="diff-arrow">→</span>
+						<span class="revision-label revision-b">
+							{formatRelativeTime(compareRevisionB.createdAt)}
+						</span>
+					</div>
+					<button class="close-btn" onclick={() => showDiffView = false} aria-label="Close">✕</button>
+				</div>
+
+				<div class="diff-stats">
+					<span class="stat stat-added">
+						<strong>+{detailedDiff.added.length}</strong> added
+					</span>
+					<span class="stat stat-removed">
+						<strong>-{detailedDiff.removed.length}</strong> removed
+					</span>
+					<span class="stat stat-modified">
+						<strong>~{detailedDiff.modified.length}</strong> modified
+					</span>
+					<span class="stat stat-unchanged">
+						<strong>{detailedDiff.unchanged.length}</strong> unchanged
+					</span>
+				</div>
+
+				<div class="diff-content">
+					<!-- Removed blocks -->
+					{#if detailedDiff.removed.length > 0}
+						<div class="diff-section">
+							<h5 class="section-title removed-title">Removed Blocks</h5>
+							{#each detailedDiff.removed as block}
+								<div class="diff-block removed">
+									<div class="block-header">
+										<span class="block-type-badge">{block.type}</span>
+										<span class="diff-indicator">−</span>
+									</div>
+									<div class="block-content">
+										{getBlockText(block)}
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
+
+					<!-- Added blocks -->
+					{#if detailedDiff.added.length > 0}
+						<div class="diff-section">
+							<h5 class="section-title added-title">Added Blocks</h5>
+							{#each detailedDiff.added as block}
+								<div class="diff-block added">
+									<div class="block-header">
+										<span class="block-type-badge">{block.type}</span>
+										<span class="diff-indicator">+</span>
+									</div>
+									<div class="block-content">
+										{getBlockText(block)}
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
+
+					<!-- Modified blocks (side-by-side) -->
+					{#if detailedDiff.modified.length > 0}
+						<div class="diff-section">
+							<h5 class="section-title modified-title">Modified Blocks</h5>
+							{#each detailedDiff.modified as { before, after }}
+								<div class="diff-block-pair">
+									<div class="diff-block before">
+										<div class="block-header">
+											<span class="block-type-badge">{before.type}</span>
+											<span class="version-label">Before</span>
+										</div>
+										<div class="block-content">
+											{getBlockText(before)}
+										</div>
+									</div>
+									<div class="diff-arrow-container">
+										<span class="change-arrow">→</span>
+									</div>
+									<div class="diff-block after">
+										<div class="block-header">
+											<span class="block-type-badge">{after.type}</span>
+											<span class="version-label">After</span>
+										</div>
+										<div class="block-content">
+											{getBlockText(after)}
+										</div>
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
+
+					<!-- Unchanged blocks (collapsed) -->
+					{#if detailedDiff.unchanged.length > 0}
+						<details class="diff-section unchanged-section">
+							<summary class="section-title unchanged-title">
+								{detailedDiff.unchanged.length} Unchanged Blocks
+							</summary>
+							{#each detailedDiff.unchanged as block}
+								<div class="diff-block unchanged">
+									<div class="block-header">
+										<span class="block-type-badge">{block.type}</span>
+									</div>
+									<div class="block-content">
+										{getBlockText(block)}
+									</div>
+								</div>
+							{/each}
+						</details>
+					{/if}
+
+					{#if detailedDiff.added.length === 0 && detailedDiff.removed.length === 0 && detailedDiff.modified.length === 0}
+						<div class="no-changes">
+							<p>No differences found between these revisions.</p>
+						</div>
+					{/if}
+				</div>
+
+				<div class="diff-footer">
+					<button class="cancel-btn" onclick={() => showDiffView = false}>
+						Close
+					</button>
+					<button class="restore-btn" onclick={() => { onRestore(compareRevisionB); showDiffView = false; }}>
+						Restore Newer Version
+					</button>
+				</div>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -872,5 +1078,299 @@
 
 	.restore-btn:hover {
 		background: var(--primary-hover, #2563eb);
+	}
+
+	/* Diff Viewer Modal Styles */
+	.diff-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1100;
+		padding: 1rem;
+	}
+
+	.diff-modal {
+		width: 100%;
+		max-width: 900px;
+		max-height: 90vh;
+		background: var(--bg-primary, #ffffff);
+		border-radius: 0.75rem;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+	}
+
+	.diff-header {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.25rem;
+		border-bottom: 1px solid var(--border-color, #e5e7eb);
+	}
+
+	.diff-header h4 {
+		margin: 0;
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--text-primary, #1f2937);
+	}
+
+	.diff-header-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-left: auto;
+		margin-right: 1rem;
+	}
+
+	.revision-label {
+		padding: 0.25rem 0.625rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+
+	.revision-label.revision-a {
+		background: #fef2f2;
+		color: #b91c1c;
+	}
+
+	.revision-label.revision-b {
+		background: #ecfdf5;
+		color: #047857;
+	}
+
+	.diff-arrow {
+		color: var(--text-tertiary, #9ca3af);
+	}
+
+	.diff-stats {
+		display: flex;
+		gap: 1.5rem;
+		padding: 0.875rem 1.25rem;
+		background: var(--bg-secondary, #f9fafb);
+		border-bottom: 1px solid var(--border-color, #e5e7eb);
+	}
+
+	.stat {
+		font-size: 0.8125rem;
+	}
+
+	.stat-added {
+		color: #059669;
+	}
+
+	.stat-removed {
+		color: #dc2626;
+	}
+
+	.stat-modified {
+		color: #d97706;
+	}
+
+	.stat-unchanged {
+		color: var(--text-tertiary, #9ca3af);
+	}
+
+	.diff-content {
+		flex: 1;
+		overflow-y: auto;
+		padding: 1.25rem;
+	}
+
+	.diff-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.diff-section:last-child {
+		margin-bottom: 0;
+	}
+
+	.section-title {
+		margin: 0 0 0.75rem;
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.375rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+
+	.removed-title {
+		background: #fef2f2;
+		color: #b91c1c;
+	}
+
+	.added-title {
+		background: #ecfdf5;
+		color: #047857;
+	}
+
+	.modified-title {
+		background: #fffbeb;
+		color: #b45309;
+	}
+
+	.unchanged-title {
+		background: var(--bg-secondary, #f9fafb);
+		color: var(--text-secondary, #6b7280);
+		cursor: pointer;
+	}
+
+	.unchanged-section {
+		border: 1px solid var(--border-color, #e5e7eb);
+		border-radius: 0.5rem;
+		padding: 0;
+	}
+
+	.unchanged-section .section-title {
+		margin: 0;
+		padding: 0.75rem 1rem;
+		border-radius: 0.5rem;
+	}
+
+	.unchanged-section[open] .section-title {
+		border-bottom: 1px solid var(--border-color, #e5e7eb);
+		border-radius: 0.5rem 0.5rem 0 0;
+	}
+
+	.unchanged-section .diff-block {
+		margin: 0.5rem 1rem;
+	}
+
+	.unchanged-section .diff-block:last-child {
+		margin-bottom: 1rem;
+	}
+
+	.diff-block {
+		padding: 0.875rem;
+		border-radius: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.diff-block.removed {
+		background: #fef2f2;
+		border-left: 3px solid #ef4444;
+	}
+
+	.diff-block.added {
+		background: #ecfdf5;
+		border-left: 3px solid #10b981;
+	}
+
+	.diff-block.before {
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+	}
+
+	.diff-block.after {
+		background: #ecfdf5;
+		border: 1px solid #a7f3d0;
+	}
+
+	.diff-block.unchanged {
+		background: var(--bg-secondary, #f9fafb);
+		border: 1px solid var(--border-color, #e5e7eb);
+	}
+
+	.diff-block-pair {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+		align-items: stretch;
+	}
+
+	.diff-arrow-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 0.5rem;
+	}
+
+	.change-arrow {
+		font-size: 1.25rem;
+		color: var(--text-tertiary, #9ca3af);
+	}
+
+	.block-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.block-type-badge {
+		padding: 0.125rem 0.5rem;
+		background: rgba(0, 0, 0, 0.1);
+		border-radius: 0.25rem;
+		font-size: 0.625rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+	}
+
+	.diff-indicator {
+		margin-left: auto;
+		font-size: 1rem;
+		font-weight: 700;
+	}
+
+	.diff-block.removed .diff-indicator {
+		color: #dc2626;
+	}
+
+	.diff-block.added .diff-indicator {
+		color: #059669;
+	}
+
+	.version-label {
+		font-size: 0.6875rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+		opacity: 0.7;
+	}
+
+	.block-content {
+		font-size: 0.875rem;
+		line-height: 1.5;
+		color: var(--text-secondary, #6b7280);
+		word-break: break-word;
+	}
+
+	.no-changes {
+		padding: 3rem;
+		text-align: center;
+	}
+
+	.no-changes p {
+		margin: 0;
+		color: var(--text-tertiary, #9ca3af);
+	}
+
+	.diff-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		padding: 1rem 1.25rem;
+		border-top: 1px solid var(--border-color, #e5e7eb);
+		background: var(--bg-secondary, #f9fafb);
+	}
+
+	@media (max-width: 640px) {
+		.diff-block-pair {
+			grid-template-columns: 1fr;
+		}
+
+		.diff-arrow-container {
+			padding: 0.5rem 0;
+		}
+
+		.change-arrow {
+			transform: rotate(90deg);
+		}
 	}
 </style>

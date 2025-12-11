@@ -673,16 +673,16 @@
 			</div>
 			<div class="edit-form">
 				<div class="field">
-					<label>Alt Text</label>
-					<input type="text" bind:value={editForm.alt} placeholder="Describe this image" />
+					<label for="media-alt-text">Alt Text</label>
+					<input id="media-alt-text" type="text" bind:value={editForm.alt} placeholder="Describe this image" />
 				</div>
 				<div class="field">
-					<label>Caption</label>
-					<textarea bind:value={editForm.caption} placeholder="Optional caption"></textarea>
+					<label for="media-caption">Caption</label>
+					<textarea id="media-caption" bind:value={editForm.caption} placeholder="Optional caption"></textarea>
 				</div>
 				<div class="field">
-					<label>Tags</label>
-					<input type="text" bind:value={editForm.tags} placeholder="tag1, tag2, tag3" />
+					<label for="media-tags">Tags</label>
+					<input id="media-tags" type="text" bind:value={editForm.tags} placeholder="tag1, tag2, tag3" />
 				</div>
 			</div>
 			<div class="edit-actions">
