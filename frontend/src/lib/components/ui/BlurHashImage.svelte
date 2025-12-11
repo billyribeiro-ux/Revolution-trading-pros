@@ -2,8 +2,9 @@
 	/**
 	 * BlurHashImage - Svelte 5 Component
 	 * Progressive image loading with BlurHash placeholder
+	 * Includes automatic responsive srcset generation
 	 *
-	 * @version 1.0.0 - December 2024
+	 * @version 2.0.0 - December 2024
 	 * Uses Svelte 5 runes ($state, $derived, $effect)
 	 */
 
@@ -18,6 +19,12 @@
 		decoding?: 'async' | 'sync' | 'auto';
 		sizes?: string;
 		srcset?: string;
+		/** Enable automatic srcset generation for responsive images */
+		autoSrcset?: boolean;
+		/** Custom breakpoints for srcset generation (default: [320, 640, 768, 1024, 1280, 1536]) */
+		breakpoints?: number[];
+		/** Image quality for srcset variants (1-100) */
+		quality?: number;
 	}
 
 	let {
@@ -30,8 +37,57 @@
 		loading = 'lazy',
 		decoding = 'async',
 		sizes,
-		srcset
+		srcset,
+		autoSrcset = false,
+		breakpoints = [320, 640, 768, 1024, 1280, 1536],
+		quality = 80
 	}: Props = $props();
+
+	/**
+	 * Generate responsive srcset from base URL
+	 * Supports Cloudflare R2 and common image CDN patterns
+	 */
+	function generateSrcset(baseUrl: string, widths: number[]): string {
+		// If srcset is already provided, use it
+		if (srcset) return srcset;
+
+		// If autoSrcset is disabled, return empty
+		if (!autoSrcset) return '';
+
+		// Detect image CDN patterns and generate appropriate srcset
+		const url = new URL(baseUrl, 'https://example.com');
+
+		// Check if it's a Cloudflare Images URL
+		if (url.hostname.includes('imagedelivery.net')) {
+			return widths
+				.map(w => `${url.origin}${url.pathname}/w=${w},q=${quality} ${w}w`)
+				.join(', ');
+		}
+
+		// Check if it's an R2/S3 URL with Sharp integration
+		if (url.pathname.includes('/media/') || url.pathname.includes('/images/')) {
+			return widths
+				.map(w => `${baseUrl}?w=${w}&q=${quality} ${w}w`)
+				.join(', ');
+		}
+
+		// For standard URLs, assume query param based resizing
+		const separator = baseUrl.includes('?') ? '&' : '?';
+		return widths
+			.map(w => `${baseUrl}${separator}width=${w}&quality=${quality} ${w}w`)
+			.join(', ');
+	}
+
+	/**
+	 * Generate default sizes attribute if not provided
+	 */
+	function generateSizes(): string {
+		if (sizes) return sizes;
+		if (!autoSrcset) return '';
+
+		// Responsive sizes based on common viewport breakpoints
+		return '(max-width: 640px) 100vw, (max-width: 1024px) 75vw, 50vw';
+	}
 
 	// State using Svelte 5 runes
 	let isLoaded = $state(false);
@@ -89,8 +145,8 @@
 			{alt}
 			{loading}
 			{decoding}
-			{sizes}
-			{srcset}
+			sizes={generateSizes() || sizes}
+			srcset={generateSrcset(src, breakpoints) || srcset}
 			class="image"
 			class:loaded={isLoaded}
 			onload={handleLoad}
