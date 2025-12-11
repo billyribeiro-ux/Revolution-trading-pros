@@ -1292,7 +1292,7 @@
 		position: absolute;
 		top: calc(100% + 0.5rem);
 		inset-inline-start: 0;
-		min-width: 13rem;
+		min-width: 14rem;
 		margin: 0;
 		padding: 0.25rem 0;
 		list-style: none;
@@ -1327,6 +1327,7 @@
 		font-weight: 600;
 		font-family: var(--nav-font);
 		text-decoration: none;
+		white-space: nowrap;
 		transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1), padding-inline-start 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
