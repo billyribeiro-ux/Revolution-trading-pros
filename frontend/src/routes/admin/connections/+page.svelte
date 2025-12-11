@@ -9,6 +9,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { quintOut, elasticOut, backOut } from 'svelte/easing';
 
@@ -321,8 +322,32 @@
 		return icons[icon] || '📦';
 	}
 
-	onMount(() => {
-		fetchConnections();
+	onMount(async () => {
+		await fetchConnections();
+
+		// Handle URL query parameters
+		const urlParams = $page.url.searchParams;
+
+		// Handle ?connect= parameter - auto-open modal for specific service
+		const connectServiceKey = urlParams.get('connect');
+		if (connectServiceKey) {
+			const serviceToConnect = connections.find(s => s.key === connectServiceKey);
+			if (serviceToConnect) {
+				openConnectModal(serviceToConnect);
+			}
+		}
+
+		// Handle ?category= parameter - filter to specific category
+		const categoryParam = urlParams.get('category');
+		if (categoryParam) {
+			// Find matching category (case-insensitive)
+			const matchingCategory = Object.keys(categories).find(
+				cat => cat.toLowerCase() === categoryParam.toLowerCase()
+			);
+			if (matchingCategory) {
+				selectedCategory = matchingCategory;
+			}
+		}
 	});
 </script>
 
