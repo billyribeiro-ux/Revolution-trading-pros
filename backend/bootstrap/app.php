@@ -6,6 +6,7 @@ use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SanitizeInput;
 use App\Http\Middleware\EnsureSuperadmin;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\HttpCacheHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -55,6 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ApiVersion::class,
             SanitizeInput::class,
             ValidateSession::class,
+            HttpCacheHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

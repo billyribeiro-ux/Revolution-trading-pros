@@ -46,6 +46,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\NewsletterCategoryController;
 use App\Http\Controllers\Api\PastMembersController;
+use App\Http\Controllers\Api\SitemapController;
 use App\Http\Controllers\Admin\PastMembersDashboardController;
 use App\Http\Controllers\Admin\AbandonedCartController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,16 @@ Route::prefix('health')->group(function () {
     Route::get('/live', [HealthCheckController::class, 'liveness']);
     Route::get('/ready', [HealthCheckController::class, 'readiness']);
     Route::get('/optimization', [HealthCheckController::class, 'optimization']);
+});
+
+// ========================================
+// SITEMAP ENDPOINTS (SEO - Lightning Stack)
+// ========================================
+Route::prefix('sitemap')->group(function () {
+    Route::get('/', [SitemapController::class, 'index']);
+    Route::get('/posts/{page?}', [SitemapController::class, 'posts'])->where('page', '[0-9]+');
+    Route::get('/categories', [SitemapController::class, 'categories']);
+    Route::get('/tags', [SitemapController::class, 'tags']);
 });
 
 // Public routes
