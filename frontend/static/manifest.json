@@ -14,27 +14,21 @@
 	"icons": [
 		{
 			"src": "/favicon.png",
-			"sizes": "192x192",
+			"sizes": "128x128",
 			"type": "image/png",
 			"purpose": "any"
 		},
 		{
 			"src": "/favicon.png",
-			"sizes": "192x192",
+			"sizes": "128x128",
 			"type": "image/png",
 			"purpose": "maskable"
-		},
-		{
-			"src": "/revolution-trading-pros.png",
-			"sizes": "512x512",
-			"type": "image/png",
-			"purpose": "any"
 		}
 	],
 	"screenshots": [
 		{
 			"src": "/revolution-trading-pros.png",
-			"sizes": "1280x720",
+			"sizes": "3163x835",
 			"type": "image/png",
 			"form_factor": "wide",
 			"label": "Revolution Trading Pros Dashboard"
@@ -46,28 +40,28 @@
 			"short_name": "Trading Rooms",
 			"description": "Join live trading sessions with professional traders",
 			"url": "/live-trading-rooms",
-			"icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
+			"icons": [{ "src": "/favicon.png", "sizes": "128x128" }]
 		},
 		{
 			"name": "Trading Courses",
 			"short_name": "Courses",
 			"description": "Access professional trading education",
 			"url": "/courses",
-			"icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
+			"icons": [{ "src": "/favicon.png", "sizes": "128x128" }]
 		},
 		{
 			"name": "Trading Alerts",
 			"short_name": "Alerts",
 			"description": "Get real-time trading signals",
 			"url": "/alerts",
-			"icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
+			"icons": [{ "src": "/favicon.png", "sizes": "128x128" }]
 		},
 		{
 			"name": "Trading Blog",
 			"short_name": "Blog",
 			"description": "Read latest trading insights",
 			"url": "/blog",
-			"icons": [{ "src": "/favicon.png", "sizes": "192x192" }]
+			"icons": [{ "src": "/favicon.png", "sizes": "128x128" }]
 		}
 	],
 	"related_applications": [],
@@ -81,7 +75,8 @@
 	},
 	"share_target": {
 		"action": "/share",
-		"method": "GET",
+		"method": "POST",
+		"enctype": "multipart/form-data",
 		"params": {
 			"title": "title",
 			"text": "text",
