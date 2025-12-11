@@ -9,11 +9,11 @@
 	 * @author Revolution Trading Pros
 	 */
 
-	import type { Block, BlockType } from './types';
+	import type { Block, BlockType, BlockSettings, BlockContent } from './types';
 
 	interface Props {
 		block: Block;
-		onUpdate: (content: Partial<Block['content']>) => void;
+		onUpdate: (updates: { content?: Partial<BlockContent>; settings?: Partial<BlockSettings> }) => void;
 		onTransform: (type: BlockType) => void;
 		onDuplicate: () => void;
 		onDelete: () => void;
@@ -62,7 +62,7 @@
 	];
 
 	// Heading levels
-	const headingLevels = [
+	const headingLevels: { level: 1 | 2 | 3 | 4 | 5 | 6; label: string }[] = [
 		{ level: 1, label: 'H1' },
 		{ level: 2, label: 'H2' },
 		{ level: 3, label: 'H3' },
@@ -72,7 +72,7 @@
 	];
 
 	// Text alignment options
-	const alignOptions = [
+	const alignOptions: { value: 'left' | 'center' | 'right' | 'justify'; icon: string; label: string }[] = [
 		{ value: 'left', icon: '☰', label: 'Left' },
 		{ value: 'center', icon: '☷', label: 'Center' },
 		{ value: 'right', icon: '☲', label: 'Right' },
@@ -93,13 +93,13 @@
 	}
 
 	// Handle heading level change
-	function setHeadingLevel(level: number): void {
-		onUpdate({ level });
+	function setHeadingLevel(level: 1 | 2 | 3 | 4 | 5 | 6): void {
+		onUpdate({ settings: { level } });
 	}
 
 	// Handle alignment change
-	function setAlignment(align: string): void {
-		onUpdate({ align });
+	function setAlignment(align: 'left' | 'center' | 'right' | 'justify'): void {
+		onUpdate({ settings: { textAlign: align } });
 		showAlignMenu = false;
 	}
 
@@ -166,10 +166,10 @@
 			>
 				<span class="block-type-icon">
 					{#if block.type === 'paragraph'}¶
-					{:else if block.type === 'heading'}H{block.content.level || 2}
+					{:else if block.type === 'heading'}H{block.settings.level || 2}
 					{:else if block.type === 'quote'}"
 					{:else if block.type === 'list'}•
-					{:else if block.type === 'code'}</>
+					{:else if block.type === 'code'}&lt;/&gt;
 					{:else if block.type === 'image'}🖼
 					{:else if block.type === 'video'}▶
 					{:else}⬡
@@ -199,7 +199,7 @@
 								{#each headingLevels as h}
 									<button
 										class="level-btn"
-										class:active={block.content.level === h.level}
+										class:active={block.settings.level === h.level}
 										onclick={() => setHeadingLevel(h.level)}
 									>
 										{h.label}
@@ -279,7 +279,7 @@
 						showMoreMenu = false;
 					}}
 				>
-					{alignOptions.find(a => a.value === (block.content.align || 'left'))?.icon || '☰'}
+					{alignOptions.find(a => a.value === (block.settings.textAlign || 'left'))?.icon || '☰'}
 					<span class="dropdown-arrow">▼</span>
 				</button>
 				{#if showAlignMenu}
@@ -287,7 +287,7 @@
 						{#each alignOptions as align}
 							<button
 								class="dropdown-item"
-								class:active={block.content.align === align.value}
+								class:active={block.settings.textAlign === align.value}
 								onclick={() => setAlignment(align.value)}
 							>
 								<span class="item-icon">{align.icon}</span>
@@ -391,21 +391,30 @@
 
 <!-- Link Modal -->
 {#if showLinkModal}
-	<div class="modal-overlay" onclick={() => showLinkModal = false}>
-		<div class="link-modal" onclick={(e) => e.stopPropagation()}>
-			<h4>Insert Link</h4>
+	<div 
+		class="modal-overlay" 
+		onclick={() => showLinkModal = false}
+		onkeydown={(e) => { if (e.key === 'Escape') showLinkModal = false; }}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="link-modal-title"
+		tabindex="-1"
+	>
+		<div class="link-modal" role="document">
+			<h4 id="link-modal-title">Insert Link</h4>
 			<div class="field">
-				<label>URL</label>
+				<label for="link-url-input">URL</label>
 				<input
+					id="link-url-input"
 					type="url"
 					placeholder="https://example.com"
 					bind:value={linkUrl}
-					autofocus
 				/>
 			</div>
 			<div class="field">
-				<label>Link Text (optional)</label>
+				<label for="link-text-input">Link Text (optional)</label>
 				<input
+					id="link-text-input"
 					type="text"
 					placeholder="Click here"
 					bind:value={linkText}

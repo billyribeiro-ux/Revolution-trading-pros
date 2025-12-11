@@ -44,7 +44,7 @@
 	// State
 	// ==========================================================================
 
-	let editableRef: HTMLElement;
+	let editableRef = $state<HTMLElement | undefined>(undefined);
 	let isTyping = $state(false);
 
 	// ==========================================================================

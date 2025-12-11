@@ -1,1262 +1,1018 @@
 <script lang="ts">
 	/**
-	 * Individual Lesson Page - WordPress Simpler Trading Exact
+	 * Lesson Detail Page - Individual Lesson View
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/mastering-the-trade/learning-center/5
-	 * Shows video player, lesson content, and navigation between lessons.
-	 *
-	 * Features:
-	 * - Video player with progress tracking
-	 * - Lesson notes and resources
-	 * - Navigation to previous/next lessons
-	 * - Mark as complete functionality
-	 * - Related lessons sidebar
+	 * URL: /dashboard/[slug]/learning-center/[lessonId]
+	 * Shows individual lesson with video player, description, resources,
+	 * and navigation to related lessons.
 	 *
 	 * @version 1.0.0 (December 2025)
 	 */
 
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconPlayerPause from '@tabler/icons-svelte/icons/player-pause';
-	import IconCheck from '@tabler/icons-svelte/icons/check';
-	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconNotes from '@tabler/icons-svelte/icons/notes';
-	import IconList from '@tabler/icons-svelte/icons/list';
-	import IconMaximize from '@tabler/icons-svelte/icons/maximize';
-	import IconVolume from '@tabler/icons-svelte/icons/volume';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconBookmark from '@tabler/icons-svelte/icons/bookmark';
-	import IconShare from '@tabler/icons-svelte/icons/share';
+	import { learningCenterStore } from '$lib/stores/learningCenter';
+	import type { LessonWithRelations, TradingRoom, Trainer, LessonResource } from '$lib/types/learning-center';
+	import { get } from 'svelte/store';
+	import VideoEmbed from '$lib/components/VideoEmbed.svelte';
+	import { LessonCard, TrainerCard } from '$lib/components/learning-center';
+	import {
+		IconArrowLeft,
+		IconArrowRight,
+		IconCheck,
+		IconBookmark,
+		IconDownload,
+		IconShare,
+		IconClock,
+		IconCalendar,
+		IconChevronRight
+	} from '$lib/icons';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ROUTE PARAMS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const slug = $derived($page.params.slug);
-	const lessonId = $derived(parseInt($page.params['lessonId'] || '1'));
+	const roomSlug = $derived($page.params.slug);
+	const lessonId = $derived($page.params.lessonId);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let isPlaying = $state(false);
-	let currentTime = $state(0);
-	let duration = $state(0);
-	let volume = $state(1);
-	let isMuted = $state(false);
-	let playbackRate = $state(1);
-	let isFullscreen = $state(false);
-	let showNotes = $state(false);
-	let showPlaylist = $state(true);
-	let isCompleted = $state(false);
-	let videoElement: HTMLVideoElement;
+	let isMarkingComplete = $state(false);
+	let showShareModal = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// LESSON DATA (Mock - will be fetched from API)
+	// STORE DATA
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Lesson {
-		id: number;
-		title: string;
-		description: string;
-		duration: string;
-		durationSeconds: number;
-		videoUrl: string;
-		thumbnailUrl: string;
-		completed: boolean;
-		moduleId: number;
-		moduleName: string;
-		order: number;
-		notes?: string;
-		resources?: { name: string; url: string; type: string }[];
-	}
+	let storeData = $derived(get(learningCenterStore));
 
-	// All lessons in this membership's learning center
-	const allLessons: Lesson[] = [
-		{
-			id: 1,
-			title: 'Welcome to Revolution Trading',
-			description: 'Get an overview of what you\'ll learn and how to make the most of your membership.',
-			duration: '10:00',
-			durationSeconds: 600,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/welcome.jpg',
-			completed: true,
-			moduleId: 1,
-			moduleName: 'Welcome & Getting Started',
-			order: 1,
-			notes: 'Welcome to Revolution Trading! In this lesson, we cover the fundamentals of what you\'ll learn throughout this course.',
-			resources: [
-				{ name: 'Welcome Guide PDF', url: '/resources/welcome-guide.pdf', type: 'pdf' },
-				{ name: 'Platform Quick Reference', url: '/resources/platform-guide.pdf', type: 'pdf' }
-			]
-		},
-		{
-			id: 2,
-			title: 'Platform Setup Guide',
-			description: 'Learn how to set up your trading platform for optimal performance.',
-			duration: '15:00',
-			durationSeconds: 900,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/platform.jpg',
-			completed: true,
-			moduleId: 1,
-			moduleName: 'Welcome & Getting Started',
-			order: 2
-		},
-		{
-			id: 3,
-			title: 'Trading Room Navigation',
-			description: 'Navigate the trading room like a pro with this comprehensive walkthrough.',
-			duration: '12:00',
-			durationSeconds: 720,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/navigation.jpg',
-			completed: true,
-			moduleId: 1,
-			moduleName: 'Welcome & Getting Started',
-			order: 3
-		},
-		{
-			id: 4,
-			title: 'Setting Up Your Workspace',
-			description: 'Customize your workspace for maximum efficiency and comfort.',
-			duration: '8:00',
-			durationSeconds: 480,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/workspace.jpg',
-			completed: true,
-			moduleId: 1,
-			moduleName: 'Welcome & Getting Started',
-			order: 4
-		},
-		{
-			id: 5,
-			title: 'Understanding Market Structure',
-			description: 'Master the fundamentals of market structure and price action.',
-			duration: '25:00',
-			durationSeconds: 1500,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/market-structure.jpg',
-			completed: true,
-			moduleId: 2,
-			moduleName: 'Core Trading Strategies',
-			order: 5,
-			notes: 'Market structure is the foundation of technical analysis. Understanding how markets move will help you identify high-probability setups.',
-			resources: [
-				{ name: 'Market Structure Cheat Sheet', url: '/resources/market-structure.pdf', type: 'pdf' }
-			]
-		},
-		{
-			id: 6,
-			title: 'Entry & Exit Techniques',
-			description: 'Learn precise entry and exit techniques used by professional traders.',
-			duration: '30:00',
-			durationSeconds: 1800,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/entries.jpg',
-			completed: true,
-			moduleId: 2,
-			moduleName: 'Core Trading Strategies',
-			order: 6
-		},
-		{
-			id: 7,
-			title: 'Position Sizing Fundamentals',
-			description: 'Protect your capital with proper position sizing strategies.',
-			duration: '20:00',
-			durationSeconds: 1200,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/position-sizing.jpg',
-			completed: true,
-			moduleId: 2,
-			moduleName: 'Core Trading Strategies',
-			order: 7
-		},
-		{
-			id: 8,
-			title: 'Advanced Entry Patterns',
-			description: 'Discover advanced entry patterns for higher probability trades.',
-			duration: '35:00',
-			durationSeconds: 2100,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/patterns.jpg',
-			completed: false,
-			moduleId: 2,
-			moduleName: 'Core Trading Strategies',
-			order: 8
-		},
-		{
-			id: 9,
-			title: 'Multi-Timeframe Analysis',
-			description: 'Use multiple timeframes to confirm trades and improve accuracy.',
-			duration: '40:00',
-			durationSeconds: 2400,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/timeframes.jpg',
-			completed: false,
-			moduleId: 2,
-			moduleName: 'Core Trading Strategies',
-			order: 9
-		},
-		{
-			id: 10,
-			title: 'Candlestick Patterns Mastery',
-			description: 'Master the most important candlestick patterns for trading.',
-			duration: '45:00',
-			durationSeconds: 2700,
-			videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-			thumbnailUrl: '/images/lessons/candlesticks.jpg',
-			completed: false,
-			moduleId: 3,
-			moduleName: 'Technical Analysis Deep Dive',
-			order: 10
-		}
-	];
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	const currentLesson = $derived(allLessons.find(l => l.id === lessonId) || allLessons[0]);
-	const currentIndex = $derived(allLessons.findIndex(l => l.id === lessonId));
-	const previousLesson = $derived(currentIndex > 0 ? allLessons[currentIndex - 1] : null);
-	const nextLesson = $derived(currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null);
-	const moduleProgress = $derived.by(() => {
-		const moduleLessons = allLessons.filter(l => l.moduleId === currentLesson.moduleId);
-		const completed = moduleLessons.filter(l => l.completed).length;
-		return Math.round((completed / moduleLessons.length) * 100);
+	// Find the trading room
+	let tradingRoom = $derived.by((): TradingRoom | undefined => {
+		return storeData.tradingRooms.find(r => r.slug === roomSlug);
 	});
-	const formattedCurrentTime = $derived(formatTime(currentTime));
-	const formattedDuration = $derived(formatTime(duration));
-	const progressPercent = $derived(duration > 0 ? (currentTime / duration) * 100 : 0);
+
+	let roomId = $derived(tradingRoom?.id || '');
+
+	// Get lessons for this room
+	let roomLessons = $derived.by((): LessonWithRelations[] => {
+		if (!roomId) return [];
+		return storeData.lessons.filter(l => l.tradingRoomId === roomId);
+	});
+
+	// Find the current lesson
+	let lesson = $derived.by((): LessonWithRelations | undefined => {
+		return roomLessons.find(l => l.slug === lessonId);
+	});
+
+	// Get trainer info
+	let trainer = $derived.by((): Trainer | undefined => {
+		if (!lesson?.trainerId) return undefined;
+		return storeData.trainers.find(t => t.id === lesson.trainerId);
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// VIDEO CONTROLS
+	// NAVIGATION
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function formatTime(seconds: number): string {
-		const mins = Math.floor(seconds / 60);
-		const secs = Math.floor(seconds % 60);
-		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	// Sort lessons by module and order
+	let sortedLessons = $derived.by(() => {
+		return [...roomLessons].sort((a, b) => {
+			// First by module
+			if (a.moduleId !== b.moduleId) {
+				return (a.moduleOrder || 0) - (b.moduleOrder || 0);
+			}
+			// Then by sort order within module
+			return a.sortOrder - b.sortOrder;
+		});
+	});
+
+	// Find current lesson index
+	let currentIndex = $derived(sortedLessons.findIndex(l => l.slug === lessonId));
+
+	// Previous and next lessons
+	let prevLesson = $derived(currentIndex > 0 ? sortedLessons[currentIndex - 1] : null);
+	let nextLesson = $derived(currentIndex < sortedLessons.length - 1 ? sortedLessons[currentIndex + 1] : null);
+
+	// Related lessons (same category or trainer, excluding current)
+	let relatedLessons = $derived.by(() => {
+		if (!lesson) return [];
+		return roomLessons
+			.filter(l =>
+				l.id !== lesson.id &&
+				(l.categoryId === lesson.categoryId || l.trainerId === lesson.trainerId)
+			)
+			.slice(0, 3);
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// COMPUTED VALUES
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let isCompleted = $derived(lesson?.userProgress?.isCompleted ?? false);
+	let isBookmarked = $derived(lesson?.userProgress?.isBookmarked ?? false);
+	let progressPercent = $derived(lesson?.userProgress?.progressPercent ?? 0);
+
+	let publishedDate = $derived.by(() => {
+		if (!lesson?.publishedAt) return '';
+		return new Date(lesson.publishedAt).toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		});
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EVENT HANDLERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function handleMarkComplete() {
+		if (!lesson || !roomId || isMarkingComplete) return;
+
+		isMarkingComplete = true;
+		try {
+			// TODO: Implement mark complete API call
+			console.log('Mark lesson complete:', lesson.id, roomId);
+		} catch (err) {
+			console.error('Failed to mark lesson complete:', err);
+		} finally {
+			isMarkingComplete = false;
+		}
 	}
 
-	function togglePlay() {
-		if (!videoElement) return;
-		if (isPlaying) {
-			videoElement.pause();
+	async function handleToggleBookmark() {
+		if (!lesson || !roomId) return;
+		try {
+			// TODO: Implement toggle bookmark API call
+			console.log('Toggle bookmark:', lesson.id, roomId);
+		} catch (err) {
+			console.error('Failed to toggle bookmark:', err);
+		}
+	}
+
+	function handleVideoProgress(percent: number) {
+		// Update progress as user watches
+		if (lesson && roomId && percent > progressPercent) {
+			// TODO: Implement progress update API call
+			console.log('Update progress:', lesson.id, roomId, percent);
+		}
+	}
+
+	function handleVideoEnded() {
+		// Auto-complete when video finishes
+		if (lesson && roomId && !isCompleted) {
+			handleMarkComplete();
+		}
+	}
+
+	function handleShare() {
+		if (browser && navigator.share) {
+			navigator.share({
+				title: lesson?.title,
+				text: lesson?.description,
+				url: window.location.href
+			}).catch(() => {});
 		} else {
-			videoElement.play();
-		}
-		isPlaying = !isPlaying;
-	}
-
-	function handleTimeUpdate() {
-		if (videoElement) {
-			currentTime = videoElement.currentTime;
+			showShareModal = true;
 		}
 	}
 
-	function handleLoadedMetadata() {
-		if (videoElement) {
-			duration = videoElement.duration;
-		}
-	}
-
-	function handleSeek(event: MouseEvent) {
-		const target = event.currentTarget as HTMLElement;
-		const rect = target.getBoundingClientRect();
-		const percent = (event.clientX - rect.left) / rect.width;
-		if (videoElement) {
-			videoElement.currentTime = percent * duration;
-		}
-	}
-
-	function handleVolumeChange(event: Event) {
-		const target = event.target as HTMLInputElement;
-		volume = parseFloat(target.value);
-		if (videoElement) {
-			videoElement.volume = volume;
-		}
-		isMuted = volume === 0;
-	}
-
-	function toggleMute() {
-		if (videoElement) {
-			isMuted = !isMuted;
-			videoElement.muted = isMuted;
-		}
-	}
-
-	function changePlaybackRate(rate: number) {
-		playbackRate = rate;
-		if (videoElement) {
-			videoElement.playbackRate = rate;
-		}
-	}
-
-	function toggleFullscreen() {
-		if (!browser) return;
-		const container = document.querySelector('.video-container');
-		if (!container) return;
-
-		if (!document.fullscreenElement) {
-			container.requestFullscreen();
-			isFullscreen = true;
-		} else {
-			document.exitFullscreen();
-			isFullscreen = false;
-		}
-	}
-
-	function markAsComplete() {
-		isCompleted = true;
-		// In real app, this would call API to save progress
-		console.log(`Lesson ${lessonId} marked as complete`);
-	}
-
-	function goToLesson(id: number) {
-		goto(`/dashboard/${slug}/learning-center/${id}`);
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// KEYBOARD SHORTCUTS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
-
-		switch (event.key) {
-			case ' ':
-			case 'k':
-				event.preventDefault();
-				togglePlay();
-				break;
-			case 'ArrowLeft':
-				if (videoElement) videoElement.currentTime -= 10;
-				break;
-			case 'ArrowRight':
-				if (videoElement) videoElement.currentTime += 10;
-				break;
-			case 'ArrowUp':
-				volume = Math.min(1, volume + 0.1);
-				if (videoElement) videoElement.volume = volume;
-				break;
-			case 'ArrowDown':
-				volume = Math.max(0, volume - 0.1);
-				if (videoElement) videoElement.volume = volume;
-				break;
-			case 'f':
-				toggleFullscreen();
-				break;
-			case 'm':
-				toggleMute();
-				break;
+	function copyLink() {
+		if (browser) {
+			navigator.clipboard.writeText(window.location.href);
+			showShareModal = false;
 		}
 	}
 </script>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HEAD
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
 <svelte:head>
-	<title>{currentLesson.title} | Learning Center | Revolution Trading Pros</title>
+	<title>{lesson?.title || 'Lesson'} | Learning Center | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<svelte:window onkeydown={handleKeydown} />
-
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     LESSON HEADER
+     CONTENT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<header class="lesson-header">
-	<div class="lesson-header__left">
-		<nav class="breadcrumb" aria-label="Breadcrumb">
-			<a href="/dashboard">Dashboard</a>
-			<span class="separator">/</span>
-			<a href="/dashboard/{slug}">{slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</a>
-			<span class="separator">/</span>
-			<a href="/dashboard/{slug}/learning-center">Learning Center</a>
-			<span class="separator">/</span>
-			<span class="current">{currentLesson.moduleName}</span>
-		</nav>
-		<h1 class="lesson-title">{currentLesson.title}</h1>
+{#if !lesson}
+	<div class="error-state">
+		<h3>Lesson Not Found</h3>
+		<p>The lesson "{lessonId}" doesn't exist.</p>
+		<a href="/dashboard/{roomSlug}/learning-center" class="btn-back">
+			<IconArrowLeft size={18} />
+			Back to Learning Center
+		</a>
 	</div>
-	<div class="lesson-header__right">
-		<button class="btn-icon" title="Bookmark">
-			<IconBookmark size={20} />
-		</button>
-		<button class="btn-icon" title="Share">
-			<IconShare size={20} />
-		</button>
-		{#if !isCompleted && !currentLesson.completed}
-			<button class="btn-complete" onclick={markAsComplete}>
-				<IconCheck size={18} />
-				Mark Complete
-			</button>
-		{:else}
-			<span class="completed-badge">
-				<IconCheck size={18} />
-				Completed
-			</span>
-		{/if}
-	</div>
-</header>
+{:else}
+	<div class="lesson-page">
+		<!-- Header -->
+		<header class="lesson-header">
+			<nav class="breadcrumb">
+				<a href="/dashboard">Dashboard</a>
+				<IconChevronRight size={14} />
+				<a href="/dashboard/{roomSlug}">{tradingRoom?.shortName || roomSlug}</a>
+				<IconChevronRight size={14} />
+				<a href="/dashboard/{roomSlug}/learning-center">Learning Center</a>
+				<IconChevronRight size={14} />
+				<span class="current">{lesson.title}</span>
+			</nav>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MAIN CONTENT
-     ═══════════════════════════════════════════════════════════════════════════ -->
+			<div class="header-actions">
+				<button
+					type="button"
+					class="action-btn"
+					class:active={isBookmarked}
+					onclick={handleToggleBookmark}
+					aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+				>
+					<IconBookmark size={18} />
+				</button>
+				<button
+					type="button"
+					class="action-btn"
+					onclick={handleShare}
+					aria-label="Share lesson"
+				>
+					<IconShare size={18} />
+				</button>
+			</div>
+		</header>
 
-<div class="lesson-layout" class:playlist-open={showPlaylist}>
-	<!-- Video Player -->
-	<main class="lesson-main">
-		<div class="video-container">
-			<video
-				bind:this={videoElement}
-				src={currentLesson.videoUrl}
-				poster={currentLesson.thumbnailUrl}
-				ontimeupdate={handleTimeUpdate}
-				onloadedmetadata={handleLoadedMetadata}
-				onended={() => { isPlaying = false; markAsComplete(); }}
-				onplay={() => isPlaying = true}
-				onpause={() => isPlaying = false}
-			>
-				<track kind="captions" src="" label="English" />
-			</video>
-
-			<!-- Video Overlay (click to play/pause) -->
-			<button class="video-overlay" onclick={togglePlay}>
-				{#if !isPlaying}
-					<div class="play-button">
-						<IconPlayerPlay size={48} />
+		<div class="lesson-layout">
+			<!-- Main content -->
+			<main class="lesson-main">
+				<!-- Video Player -->
+				{#if lesson.videoUrl}
+					<div class="video-container">
+						<VideoEmbed
+							url={lesson.videoUrl}
+							poster={lesson.posterUrl}
+							title={lesson.title}
+							customControls
+							showProgressBar
+							showSpeedControl
+							showQualitySelector
+							showFullscreen
+							showPictureInPicture
+							startTime={lesson.userProgress?.lastPosition || 0}
+							onProgress={handleVideoProgress}
+							onEnded={handleVideoEnded}
+						/>
 					</div>
 				{/if}
-			</button>
 
-			<!-- Video Controls -->
-			<div class="video-controls">
-				<!-- Progress Bar -->
-				<button class="progress-bar" onclick={handleSeek}>
-					<div class="progress-bar__buffered" style="width: 100%"></div>
-					<div class="progress-bar__played" style="width: {progressPercent}%"></div>
-					<div class="progress-bar__thumb" style="left: {progressPercent}%"></div>
-				</button>
-
-				<!-- Control Buttons -->
-				<div class="controls-row">
-					<div class="controls-left">
-						<button class="control-btn" onclick={togglePlay} title={isPlaying ? 'Pause' : 'Play'}>
-							{#if isPlaying}
-								<IconPlayerPause size={24} />
-							{:else}
-								<IconPlayerPlay size={24} />
-							{/if}
-						</button>
-
-						<!-- Volume -->
-						<div class="volume-control">
-							<button class="control-btn" onclick={toggleMute} title={isMuted ? 'Unmute' : 'Mute'}>
-								<IconVolume size={20} />
-							</button>
-							<input
-								type="range"
-								class="volume-slider"
-								min="0"
-								max="1"
-								step="0.1"
-								value={volume}
-								oninput={handleVolumeChange}
-							/>
-						</div>
-
-						<!-- Time Display -->
-						<span class="time-display">{formattedCurrentTime} / {formattedDuration}</span>
+				<!-- Lesson Info -->
+				<div class="lesson-info">
+					<div class="lesson-meta">
+						{#if lesson.category}
+							<span class="category-tag">{lesson.category.name}</span>
+						{/if}
+						{#if lesson.duration}
+							<span class="meta-item">
+								<IconClock size={14} />
+								{lesson.duration}
+							</span>
+						{/if}
+						{#if publishedDate}
+							<span class="meta-item">
+								<IconCalendar size={14} />
+								{publishedDate}
+							</span>
+						{/if}
 					</div>
 
-					<div class="controls-right">
-						<!-- Playback Speed -->
-						<div class="speed-control">
-							<button class="control-btn" title="Playback Speed">
-								<IconSettings size={20} />
-								<span>{playbackRate}x</span>
-							</button>
-							<div class="speed-menu">
-								{#each [0.5, 0.75, 1, 1.25, 1.5, 2] as rate}
-									<button
-										class:active={playbackRate === rate}
-										onclick={() => changePlaybackRate(rate)}
-									>
-										{rate}x
-									</button>
+					<h1 class="lesson-title">{lesson.title}</h1>
+
+					<!-- Trainer inline -->
+					{#if trainer}
+						<div class="trainer-inline">
+							{#if trainer.thumbnailUrl || trainer.imageUrl}
+								<img
+									src={trainer.thumbnailUrl || trainer.imageUrl}
+									alt={trainer.name}
+									class="trainer-avatar"
+								/>
+							{/if}
+							<div class="trainer-info">
+								<span class="trainer-name">{trainer.name}</span>
+								<span class="trainer-title">{trainer.title}</span>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Progress bar -->
+					{#if progressPercent > 0 || isCompleted}
+						<div class="progress-indicator">
+							<div class="progress-bar">
+								<div class="progress-fill" style="width: {isCompleted ? 100 : progressPercent}%"></div>
+							</div>
+							<span class="progress-text">
+								{#if isCompleted}
+									<IconCheck size={14} />
+									Completed
+								{:else}
+									{progressPercent}% complete
+								{/if}
+							</span>
+						</div>
+					{/if}
+
+					<!-- Description -->
+					{#if lesson.fullDescription || lesson.description}
+						<div class="lesson-description">
+							<h2>About this lesson</h2>
+							<p>{lesson.fullDescription || lesson.description}</p>
+						</div>
+					{/if}
+
+					<!-- Resources -->
+					{#if lesson.resources && lesson.resources.length > 0}
+						<div class="lesson-resources">
+							<h2>Resources</h2>
+							<div class="resources-list">
+								{#each lesson.resources as resource}
+									<a href={resource.fileUrl} class="resource-item" download>
+										<div class="resource-icon">
+											<IconDownload size={18} />
+										</div>
+										<div class="resource-info">
+											<span class="resource-name">{resource.name}</span>
+											{#if resource.description}
+												<span class="resource-desc">{resource.description}</span>
+											{/if}
+										</div>
+									</a>
 								{/each}
 							</div>
 						</div>
-
-						<!-- Playlist Toggle -->
-						<button
-							class="control-btn"
-							onclick={() => showPlaylist = !showPlaylist}
-							title="Toggle Playlist"
-						>
-							<IconList size={20} />
-						</button>
-
-						<!-- Fullscreen -->
-						<button class="control-btn" onclick={toggleFullscreen} title="Fullscreen">
-							<IconMaximize size={20} />
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Lesson Info -->
-		<div class="lesson-info">
-			<div class="lesson-meta">
-				<span class="meta-item">
-					<IconClock size={16} />
-					{currentLesson.duration}
-				</span>
-				<span class="meta-item module">
-					{currentLesson.moduleName}
-				</span>
-			</div>
-
-			<p class="lesson-description">{currentLesson.description}</p>
-
-			<!-- Tabs -->
-			<div class="lesson-tabs">
-				<button
-					class="tab-btn"
-					class:active={!showNotes}
-					onclick={() => showNotes = false}
-				>
-					About
-				</button>
-				<button
-					class="tab-btn"
-					class:active={showNotes}
-					onclick={() => showNotes = true}
-				>
-					<IconNotes size={16} />
-					Notes & Resources
-				</button>
-			</div>
-
-			{#if showNotes}
-				<div class="lesson-notes">
-					{#if currentLesson.notes}
-						<div class="notes-content">
-							<h3>Lesson Notes</h3>
-							<p>{currentLesson.notes}</p>
-						</div>
 					{/if}
 
-					{#if currentLesson.resources && currentLesson.resources.length > 0}
-						<div class="resources-list">
-							<h3>Resources</h3>
-							{#each currentLesson.resources as resource}
-								<a href={resource.url} class="resource-item" download>
-									<IconDownload size={18} />
-									<span>{resource.name}</span>
-								</a>
+					<!-- Complete button -->
+					{#if !isCompleted}
+						<button
+							type="button"
+							class="btn-complete"
+							onclick={handleMarkComplete}
+							disabled={isMarkingComplete}
+						>
+							<IconCheck size={18} />
+							{isMarkingComplete ? 'Marking...' : 'Mark as Complete'}
+						</button>
+					{:else}
+						<div class="completion-badge">
+							<IconCheck size={20} />
+							<span>You've completed this lesson!</span>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Navigation -->
+				<nav class="lesson-nav">
+					{#if prevLesson}
+						<a href="/dashboard/{roomSlug}/learning-center/{prevLesson.slug}" class="nav-link prev">
+							<IconArrowLeft size={18} />
+							<div class="nav-info">
+								<span class="nav-label">Previous</span>
+								<span class="nav-title">{prevLesson.title}</span>
+							</div>
+						</a>
+					{:else}
+						<div></div>
+					{/if}
+
+					{#if nextLesson}
+						<a href="/dashboard/{roomSlug}/learning-center/{nextLesson.slug}" class="nav-link next">
+							<div class="nav-info">
+								<span class="nav-label">Next</span>
+								<span class="nav-title">{nextLesson.title}</span>
+							</div>
+							<IconArrowRight size={18} />
+						</a>
+					{:else}
+						<div></div>
+					{/if}
+				</nav>
+			</main>
+
+			<!-- Sidebar -->
+			<aside class="lesson-sidebar">
+				<!-- Trainer card -->
+				{#if trainer}
+					<TrainerCard
+						{trainer}
+						variant="full"
+						showBio
+						showSpecialties
+						showSocialLinks
+					/>
+				{/if}
+
+				<!-- Related lessons -->
+				{#if relatedLessons.length > 0}
+					<div class="sidebar-section">
+						<h3>Related Lessons</h3>
+						<div class="related-lessons">
+							{#each relatedLessons as relatedLesson}
+								<LessonCard
+									lesson={relatedLesson}
+									compact
+									showTrainer={false}
+									href="/dashboard/{roomSlug}/learning-center/{relatedLesson.slug}"
+								/>
 							{/each}
 						</div>
-					{/if}
-
-					{#if !currentLesson.notes && (!currentLesson.resources || currentLesson.resources.length === 0)}
-						<p class="no-content">No notes or resources available for this lesson.</p>
-					{/if}
-				</div>
-			{:else}
-				<div class="lesson-about">
-					<h3>What you'll learn</h3>
-					<p>{currentLesson.description}</p>
-				</div>
-			{/if}
-
-			<!-- Navigation -->
-			<div class="lesson-navigation">
-				{#if previousLesson}
-					<button class="nav-btn prev" onclick={() => goToLesson(previousLesson.id)}>
-						<IconChevronLeft size={20} />
-						<div class="nav-info">
-							<span class="nav-label">Previous</span>
-							<span class="nav-title">{previousLesson.title}</span>
-						</div>
-					</button>
-				{:else}
-					<div></div>
+					</div>
 				{/if}
 
-				{#if nextLesson}
-					<button class="nav-btn next" onclick={() => goToLesson(nextLesson.id)}>
-						<div class="nav-info">
-							<span class="nav-label">Next</span>
-							<span class="nav-title">{nextLesson.title}</span>
-						</div>
-						<IconChevronRight size={20} />
-					</button>
-				{:else}
-					<div></div>
-				{/if}
+				<!-- Back to learning center -->
+				<a href="/dashboard/{roomSlug}/learning-center" class="back-link">
+					<IconArrowLeft size={16} />
+					Back to all lessons
+				</a>
+			</aside>
+		</div>
+	</div>
+
+	<!-- Share Modal -->
+	{#if showShareModal}
+		<div class="modal-overlay" onclick={() => showShareModal = false}>
+			<div class="modal" onclick={(e) => e.stopPropagation()}>
+				<h3>Share this lesson</h3>
+				<div class="share-url">
+					<input type="text" readonly value={browser ? window.location.href : ''} />
+					<button type="button" onclick={copyLink}>Copy</button>
+				</div>
+				<button type="button" class="modal-close" onclick={() => showShareModal = false}>
+					Close
+				</button>
 			</div>
 		</div>
-	</main>
-
-	<!-- Playlist Sidebar -->
-	{#if showPlaylist}
-		<aside class="playlist-sidebar">
-			<div class="playlist-header">
-				<h2>Course Content</h2>
-				<span class="playlist-progress">{moduleProgress}% complete</span>
-			</div>
-
-			<div class="playlist-content">
-				{#each allLessons as lesson (lesson.id)}
-					<button
-						class="playlist-item"
-						class:active={lesson.id === lessonId}
-						class:completed={lesson.completed}
-						onclick={() => goToLesson(lesson.id)}
-					>
-						<div class="playlist-status">
-							{#if lesson.completed}
-								<IconCheck size={16} />
-							{:else if lesson.id === lessonId}
-								<IconPlayerPlay size={16} />
-							{:else}
-								<span class="lesson-number">{lesson.order}</span>
-							{/if}
-						</div>
-						<div class="playlist-info">
-							<span class="playlist-title">{lesson.title}</span>
-							<span class="playlist-duration">{lesson.duration}</span>
-						</div>
-					</button>
-				{/each}
-			</div>
-		</aside>
 	{/if}
-</div>
+{/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
+	.lesson-page {
+		background: #0f172a;
+		min-height: 100vh;
+	}
+
 	/* Header */
 	.lesson-header {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
-		padding: 20px 24px;
-		background: #fff;
-		border-bottom: 1px solid #e5e7eb;
+		align-items: center;
+		padding: 16px 32px;
+		background: #1e293b;
+		border-bottom: 1px solid #334155;
 	}
 
 	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 		font-size: 13px;
 		color: #64748b;
-		margin-bottom: 8px;
 	}
 
 	.breadcrumb a {
-		color: #0984ae;
+		color: #94a3b8;
 		text-decoration: none;
+		transition: color 0.2s;
 	}
 
 	.breadcrumb a:hover {
-		text-decoration: underline;
+		color: #f97316;
 	}
 
-	.breadcrumb .separator {
-		margin: 0 8px;
-		color: #cbd5e1;
+	.breadcrumb .current {
+		color: white;
+		max-width: 200px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
-	.lesson-title {
-		font-size: 24px;
-		font-weight: 700;
-		color: #1e293b;
-		margin: 0;
-	}
-
-	.lesson-header__right {
+	.header-actions {
 		display: flex;
-		align-items: center;
-		gap: 12px;
+		gap: 8px;
 	}
 
-	.btn-icon {
-		width: 40px;
-		height: 40px;
+	.action-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #f1f5f9;
+		width: 40px;
+		height: 40px;
+		background: #334155;
 		border: none;
 		border-radius: 8px;
-		color: #64748b;
+		color: #94a3b8;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all 0.2s ease;
 	}
 
-	.btn-icon:hover {
-		background: #e2e8f0;
-		color: #334155;
+	.action-btn:hover {
+		background: #475569;
+		color: white;
 	}
 
-	.btn-complete {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 20px;
-		background: #0984ae;
-		color: #fff;
-		border: none;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.btn-complete:hover {
-		background: #0369a1;
-	}
-
-	.completed-badge {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 20px;
-		background: #10b981;
-		color: #fff;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
+	.action-btn.active {
+		background: #f97316;
+		color: white;
 	}
 
 	/* Layout */
 	.lesson-layout {
-		display: flex;
-		min-height: calc(100vh - 140px);
-		background: #f8fafc;
+		display: grid;
+		grid-template-columns: 1fr 340px;
+		gap: 32px;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 32px;
 	}
 
+	/* Main content */
 	.lesson-main {
-		flex: 1;
-		max-width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
 	}
 
-	.lesson-layout.playlist-open .lesson-main {
-		max-width: calc(100% - 360px);
-	}
-
-	/* Video Container */
+	/* Video container */
 	.video-container {
-		position: relative;
+		border-radius: 12px;
+		overflow: hidden;
 		background: #000;
-		aspect-ratio: 16 / 9;
 	}
 
-	.video-container video {
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
-	}
-
-	.video-overlay {
-		position: absolute;
-		inset: 0;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.play-button {
-		width: 80px;
-		height: 80px;
-		background: rgba(0, 0, 0, 0.7);
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #fff;
-		transition: transform 0.15s ease;
-	}
-
-	.video-overlay:hover .play-button {
-		transform: scale(1.1);
-	}
-
-	/* Video Controls */
-	.video-controls {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-		padding: 40px 16px 16px;
-		opacity: 0;
-		transition: opacity 0.2s ease;
-	}
-
-	.video-container:hover .video-controls {
-		opacity: 1;
-	}
-
-	/* Progress Bar */
-	.progress-bar {
-		width: 100%;
-		height: 4px;
-		background: rgba(255, 255, 255, 0.3);
-		border-radius: 2px;
-		margin-bottom: 12px;
-		position: relative;
-		cursor: pointer;
-		border: none;
-		padding: 0;
-	}
-
-	.progress-bar:hover {
-		height: 6px;
-	}
-
-	.progress-bar__buffered {
-		position: absolute;
-		height: 100%;
-		background: rgba(255, 255, 255, 0.4);
-		border-radius: 2px;
-	}
-
-	.progress-bar__played {
-		position: absolute;
-		height: 100%;
-		background: #0984ae;
-		border-radius: 2px;
-	}
-
-	.progress-bar__thumb {
-		position: absolute;
-		top: 50%;
-		width: 12px;
-		height: 12px;
-		background: #fff;
-		border-radius: 50%;
-		transform: translate(-50%, -50%);
-		opacity: 0;
-		transition: opacity 0.15s ease;
-	}
-
-	.progress-bar:hover .progress-bar__thumb {
-		opacity: 1;
-	}
-
-	/* Controls Row */
-	.controls-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.controls-left,
-	.controls-right {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.control-btn {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		background: transparent;
-		border: none;
-		color: #fff;
-		padding: 8px;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-
-	.control-btn:hover {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	.time-display {
-		color: #fff;
-		font-size: 13px;
-		font-family: monospace;
-		margin-left: 8px;
-	}
-
-	/* Volume Control */
-	.volume-control {
-		display: flex;
-		align-items: center;
-	}
-
-	.volume-slider {
-		width: 0;
-		opacity: 0;
-		transition: all 0.2s ease;
-	}
-
-	.volume-control:hover .volume-slider {
-		width: 80px;
-		opacity: 1;
-		margin-left: 8px;
-	}
-
-	/* Speed Control */
-	.speed-control {
-		position: relative;
-	}
-
-	.speed-menu {
-		display: none;
-		position: absolute;
-		bottom: 100%;
-		right: 0;
-		background: rgba(0, 0, 0, 0.9);
-		border-radius: 8px;
-		padding: 8px;
-		margin-bottom: 8px;
-	}
-
-	.speed-control:hover .speed-menu {
-		display: block;
-	}
-
-	.speed-menu button {
-		display: block;
-		width: 100%;
-		padding: 8px 16px;
-		background: transparent;
-		border: none;
-		color: #fff;
-		font-size: 13px;
-		cursor: pointer;
-		text-align: left;
-		border-radius: 4px;
-	}
-
-	.speed-menu button:hover,
-	.speed-menu button.active {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	/* Lesson Info */
+	/* Lesson info */
 	.lesson-info {
+		background: #1e293b;
+		border-radius: 12px;
 		padding: 24px;
-		background: #fff;
+		border: 1px solid #334155;
 	}
 
 	.lesson-meta {
 		display: flex;
-		gap: 16px;
+		flex-wrap: wrap;
+		gap: 12px;
 		margin-bottom: 16px;
+	}
+
+	.category-tag {
+		padding: 4px 12px;
+		background: rgba(249, 115, 22, 0.1);
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #f97316;
+		text-transform: uppercase;
 	}
 
 	.meta-item {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		font-size: 14px;
+		gap: 4px;
+		font-size: 0.875rem;
 		color: #64748b;
 	}
 
-	.meta-item.module {
-		background: #f1f5f9;
-		padding: 4px 12px;
-		border-radius: 16px;
+	.lesson-title {
+		margin: 0 0 16px;
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: white;
+		line-height: 1.3;
 	}
 
-	.lesson-description {
-		font-size: 15px;
-		color: #475569;
-		line-height: 1.6;
-		margin-bottom: 24px;
-	}
-
-	/* Tabs */
-	.lesson-tabs {
-		display: flex;
-		gap: 8px;
-		border-bottom: 1px solid #e5e7eb;
-		margin-bottom: 20px;
-	}
-
-	.tab-btn {
+	/* Trainer inline */
+	.trainer-inline {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		padding: 12px 16px;
-		background: none;
-		border: none;
-		border-bottom: 2px solid transparent;
-		color: #64748b;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.15s ease;
+		gap: 12px;
+		margin-bottom: 16px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid #334155;
 	}
 
-	.tab-btn:hover {
-		color: #0984ae;
+	.trainer-avatar {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid #f97316;
 	}
 
-	.tab-btn.active {
-		color: #0984ae;
-		border-bottom-color: #0984ae;
+	.trainer-info {
+		display: flex;
+		flex-direction: column;
 	}
 
-	/* Notes & Resources */
-	.lesson-notes,
-	.lesson-about {
-		min-height: 150px;
-	}
-
-	.notes-content,
-	.resources-list {
-		margin-bottom: 24px;
-	}
-
-	.notes-content h3,
-	.resources-list h3,
-	.lesson-about h3 {
-		font-size: 16px;
+	.trainer-name {
+		font-size: 0.9rem;
 		font-weight: 600;
-		color: #1e293b;
-		margin: 0 0 12px;
+		color: white;
 	}
 
-	.notes-content p,
-	.lesson-about p {
-		font-size: 14px;
-		color: #475569;
-		line-height: 1.6;
+	.trainer-title {
+		font-size: 0.8rem;
+		color: #94a3b8;
+	}
+
+	/* Progress indicator */
+	.progress-indicator {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.progress-bar {
+		flex: 1;
+		height: 6px;
+		background: #334155;
+		border-radius: 3px;
+		overflow: hidden;
+	}
+
+	.progress-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #f97316, #ea580c);
+		transition: width 0.3s ease;
+	}
+
+	.progress-text {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 0.8rem;
+		color: #22c55e;
+		font-weight: 500;
+	}
+
+	/* Description */
+	.lesson-description h2 {
+		margin: 0 0 12px;
+		font-size: 1rem;
+		font-weight: 600;
+		color: white;
+	}
+
+	.lesson-description p {
+		margin: 0;
+		font-size: 0.9rem;
+		color: #cbd5e1;
+		line-height: 1.7;
+	}
+
+	/* Resources */
+	.lesson-resources {
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid #334155;
+	}
+
+	.lesson-resources h2 {
+		margin: 0 0 16px;
+		font-size: 1rem;
+		font-weight: 600;
+		color: white;
+	}
+
+	.resources-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
 	}
 
 	.resource-item {
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		padding: 12px 16px;
-		background: #f8fafc;
+		padding: 12px;
+		background: #0f172a;
 		border-radius: 8px;
 		text-decoration: none;
-		color: #334155;
-		font-size: 14px;
-		margin-bottom: 8px;
-		transition: background 0.15s ease;
+		transition: background 0.2s ease;
 	}
 
 	.resource-item:hover {
-		background: #e2e8f0;
+		background: #1e293b;
 	}
 
-	.no-content {
-		color: #94a3b8;
-		font-size: 14px;
-		text-align: center;
-		padding: 40px;
+	.resource-icon {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(249, 115, 22, 0.1);
+		border-radius: 8px;
+		color: #f97316;
+	}
+
+	.resource-info {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.resource-name {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: white;
+	}
+
+	.resource-desc {
+		font-size: 0.75rem;
+		color: #64748b;
+	}
+
+	/* Complete button */
+	.btn-complete {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		width: 100%;
+		margin-top: 24px;
+		padding: 14px;
+		background: linear-gradient(135deg, #f97316, #ea580c);
+		border: none;
+		border-radius: 8px;
+		color: white;
+		font-size: 1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.btn-complete:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3);
+	}
+
+	.btn-complete:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
+
+	.completion-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 24px;
+		padding: 14px;
+		background: rgba(34, 197, 94, 0.1);
+		border: 1px solid rgba(34, 197, 94, 0.3);
+		border-radius: 8px;
+		color: #22c55e;
+		font-weight: 600;
 	}
 
 	/* Navigation */
-	.lesson-navigation {
-		display: flex;
-		justify-content: space-between;
-		margin-top: 32px;
-		padding-top: 24px;
-		border-top: 1px solid #e5e7eb;
+	.lesson-nav {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
 	}
 
-	.nav-btn {
+	.nav-link {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		padding: 16px;
-		background: #f8fafc;
-		border: 1px solid #e5e7eb;
+		background: #1e293b;
 		border-radius: 12px;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		max-width: 45%;
+		border: 1px solid #334155;
+		text-decoration: none;
+		transition: all 0.2s ease;
 	}
 
-	.nav-btn:hover {
-		background: #f1f5f9;
-		border-color: #0984ae;
+	.nav-link:hover {
+		border-color: #f97316;
+		background: #253346;
 	}
 
-	.nav-btn.next {
+	.nav-link.next {
+		justify-content: flex-end;
 		text-align: right;
+	}
+
+	.nav-link.next .nav-info {
+		align-items: flex-end;
 	}
 
 	.nav-info {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: 2px;
 	}
 
 	.nav-label {
-		font-size: 12px;
+		font-size: 0.75rem;
 		color: #64748b;
 		text-transform: uppercase;
 	}
 
 	.nav-title {
-		font-size: 14px;
-		font-weight: 600;
-		color: #1e293b;
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: white;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
-	/* Playlist Sidebar */
-	.playlist-sidebar {
-		width: 360px;
-		background: #fff;
-		border-left: 1px solid #e5e7eb;
+	/* Sidebar */
+	.lesson-sidebar {
 		display: flex;
 		flex-direction: column;
+		gap: 24px;
 	}
 
-	.playlist-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+	.sidebar-section {
+		background: #1e293b;
+		border-radius: 12px;
 		padding: 20px;
-		border-bottom: 1px solid #e5e7eb;
+		border: 1px solid #334155;
 	}
 
-	.playlist-header h2 {
-		font-size: 16px;
+	.sidebar-section h3 {
+		margin: 0 0 16px;
+		font-size: 0.9rem;
 		font-weight: 600;
-		color: #1e293b;
-		margin: 0;
+		color: white;
 	}
 
-	.playlist-progress {
-		font-size: 13px;
-		color: #0984ae;
-		font-weight: 500;
+	.related-lessons {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 
-	.playlist-content {
-		flex: 1;
-		overflow-y: auto;
-	}
-
-	.playlist-item {
+	.back-link {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		width: 100%;
-		padding: 16px 20px;
-		background: transparent;
-		border: none;
-		border-bottom: 1px solid #f1f5f9;
-		cursor: pointer;
-		transition: background 0.15s ease;
-		text-align: left;
+		gap: 8px;
+		padding: 12px 16px;
+		background: #1e293b;
+		border-radius: 8px;
+		border: 1px solid #334155;
+		color: #94a3b8;
+		text-decoration: none;
+		font-size: 0.875rem;
+		transition: all 0.2s ease;
 	}
 
-	.playlist-item:hover {
-		background: #f8fafc;
+	.back-link:hover {
+		border-color: #f97316;
+		color: white;
 	}
 
-	.playlist-item.active {
-		background: #eff6ff;
-		border-left: 3px solid #0984ae;
+	/* Error state */
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 400px;
+		text-align: center;
+		padding: 40px;
+		color: #64748b;
 	}
 
-	.playlist-item.completed {
-		opacity: 0.7;
+	.error-state h3 {
+		margin: 16px 0 8px;
+		color: white;
+		font-size: 1.25rem;
 	}
 
-	.playlist-status {
-		width: 28px;
-		height: 28px;
+	.error-state p {
+		margin: 0 0 24px;
+	}
+
+	.btn-back {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 20px;
+		background: #f97316;
+		color: white;
+		text-decoration: none;
+		border-radius: 8px;
+		font-weight: 500;
+		transition: background 0.2s ease;
+	}
+
+	.btn-back:hover {
+		background: #ea580c;
+	}
+
+	/* Modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.7);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #f1f5f9;
-		border-radius: 50%;
-		color: #64748b;
-		font-size: 12px;
-		font-weight: 600;
-		flex-shrink: 0;
+		z-index: 1000;
 	}
 
-	.playlist-item.completed .playlist-status {
-		background: #10b981;
-		color: #fff;
+	.modal {
+		background: #1e293b;
+		border-radius: 12px;
+		padding: 24px;
+		max-width: 400px;
+		width: 90%;
 	}
 
-	.playlist-item.active .playlist-status {
-		background: #0984ae;
-		color: #fff;
+	.modal h3 {
+		margin: 0 0 16px;
+		font-size: 1.125rem;
+		color: white;
 	}
 
-	.playlist-info {
+	.share-url {
+		display: flex;
+		gap: 8px;
+		margin-bottom: 16px;
+	}
+
+	.share-url input {
 		flex: 1;
-		min-width: 0;
+		padding: 10px 12px;
+		background: #0f172a;
+		border: 1px solid #334155;
+		border-radius: 6px;
+		color: white;
+		font-size: 0.875rem;
 	}
 
-	.playlist-title {
-		display: block;
-		font-size: 14px;
+	.share-url button {
+		padding: 10px 16px;
+		background: #f97316;
+		border: none;
+		border-radius: 6px;
+		color: white;
 		font-weight: 500;
-		color: #334155;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		cursor: pointer;
 	}
 
-	.playlist-duration {
-		font-size: 12px;
-		color: #94a3b8;
+	.modal-close {
+		width: 100%;
+		padding: 10px;
+		background: #334155;
+		border: none;
+		border-radius: 6px;
+		color: white;
+		cursor: pointer;
 	}
 
 	/* Responsive */
 	@media (max-width: 1024px) {
-		.lesson-layout.playlist-open .lesson-main {
-			max-width: 100%;
+		.lesson-layout {
+			grid-template-columns: 1fr;
 		}
 
-		.playlist-sidebar {
-			display: none;
+		.lesson-sidebar {
+			order: -1;
 		}
 	}
 
 	@media (max-width: 768px) {
 		.lesson-header {
-			flex-direction: column;
-			gap: 16px;
+			padding: 12px 16px;
 		}
 
-		.lesson-header__right {
-			width: 100%;
-			justify-content: flex-end;
+		.breadcrumb {
+			display: none;
 		}
 
-		.lesson-navigation {
-			flex-direction: column;
-			gap: 12px;
+		.lesson-layout {
+			padding: 16px;
 		}
 
-		.nav-btn {
-			max-width: 100%;
+		.lesson-title {
+			font-size: 1.5rem;
+		}
+
+		.lesson-nav {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

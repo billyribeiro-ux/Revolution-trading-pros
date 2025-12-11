@@ -477,13 +477,20 @@
 							{:else if viewMode === 'grid'}
 								<div class="media-grid">
 									{#each filteredItems() as item}
-										<button
+										<div
 											class="media-item"
 											class:selected={selectedItems.has(item.id)}
+											role="button"
+											tabindex="0"
 											onclick={() => toggleSelection(item)}
 											ondblclick={() => {
 												onSelect(item);
 												onClose();
+											}}
+											onkeydown={(e) => {
+												if (e.key === 'Enter' || e.key === ' ') {
+													toggleSelection(item);
+												}
 											}}
 										>
 											<div class="item-preview">
@@ -508,7 +515,7 @@
 													🗑️
 												</button>
 											</div>
-										</button>
+										</div>
 									{/each}
 								</div>
 							{:else}

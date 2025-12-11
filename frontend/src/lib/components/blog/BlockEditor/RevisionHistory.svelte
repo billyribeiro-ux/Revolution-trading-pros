@@ -59,7 +59,8 @@
 	});
 
 	// Format relative time
-	function formatRelativeTime(date: Date): string {
+	function formatRelativeTime(dateStr: string): string {
+		const date = new Date(dateStr);
 		const now = new Date();
 		const diff = now.getTime() - date.getTime();
 		const seconds = Math.floor(diff / 1000);
@@ -79,7 +80,8 @@
 	}
 
 	// Format full date
-	function formatFullDate(date: Date): string {
+	function formatFullDate(dateStr: string): string {
+		const date = new Date(dateStr);
 		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
@@ -324,11 +326,19 @@
 
 	<!-- Preview Modal -->
 	{#if showPreview && selectedRevision && !compareMode}
-		<div class="preview-overlay" onclick={() => showPreview = false}>
-			<div class="preview-modal" onclick={(e) => e.stopPropagation()}>
+		<div 
+			class="preview-overlay" 
+			onclick={() => showPreview = false}
+			onkeydown={(e) => { if (e.key === 'Escape') showPreview = false; }}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="preview-modal-title"
+			tabindex="-1"
+		>
+			<div class="preview-modal" role="document">
 				<div class="preview-header">
 					<div>
-						<h4>Revision Preview</h4>
+						<h4 id="preview-modal-title">Revision Preview</h4>
 						<p class="preview-date">{formatFullDate(selectedRevision.createdAt)}</p>
 					</div>
 					<button class="close-btn" onclick={() => showPreview = false}>✕</button>
@@ -342,20 +352,22 @@
 						<p class="preview-description">{selectedRevision.description}</p>
 					{/if}
 
-					<div class="preview-diff">
-						{@const diff = getDiff(selectedRevision)}
-						<div class="diff-summary">
-							<span class="diff-item added">
-								<strong>{diff.added}</strong> added
-							</span>
-							<span class="diff-item removed">
-								<strong>{diff.removed}</strong> removed
-							</span>
-							<span class="diff-item modified">
-								<strong>{diff.modified}</strong> modified
-							</span>
-						</div>
-					</div>
+					{#if selectedRevision}
+						{@const previewDiff = getDiff(selectedRevision)}
+						{#if previewDiff}
+							<div class="diff-summary">
+								<span class="diff-item added">
+									<strong>{previewDiff.added}</strong> added
+								</span>
+								<span class="diff-item removed">
+									<strong>{previewDiff.removed}</strong> removed
+								</span>
+								<span class="diff-item modified">
+									<strong>{previewDiff.modified}</strong> modified
+								</span>
+							</div>
+						{/if}
+					{/if}
 
 					<div class="preview-blocks">
 						<h6>Blocks in this revision:</h6>
@@ -368,7 +380,6 @@
 							{/each}
 						</div>
 					</div>
-				</div>
 
 				<div class="preview-footer">
 					<button class="cancel-btn" onclick={() => showPreview = false}>
@@ -379,6 +390,7 @@
 					</button>
 				</div>
 			</div>
+		</div>
 		</div>
 	{/if}
 </div>

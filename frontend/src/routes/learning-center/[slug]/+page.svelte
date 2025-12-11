@@ -476,18 +476,21 @@ What you'll learn:
      HEAD
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-{#if lesson}
 <svelte:head>
-	<title>{lesson.title} | Learning Center | Revolution Trading Pros</title>
-	<meta name="description" content={lesson.description} />
-	<meta name="robots" content="noindex, follow" />
-	<meta property="og:title" content={lesson.title} />
-	<meta property="og:description" content={lesson.description} />
-	<meta property="og:image" content={lesson.thumbnail} />
-	<meta property="og:type" content="article" />
-	<meta name="twitter:card" content="summary_large_image" />
+	{#if lesson}
+		<title>{lesson.title} | Learning Center | Revolution Trading Pros</title>
+		<meta name="description" content={lesson.description} />
+		<meta name="robots" content="noindex, follow" />
+		<meta property="og:title" content={lesson.title} />
+		<meta property="og:description" content={lesson.description} />
+		<meta property="og:image" content={lesson.thumbnail} />
+		<meta property="og:type" content="article" />
+		<meta name="twitter:card" content="summary_large_image" />
+	{:else}
+		<title>Lesson Not Found | Learning Center | Revolution Trading Pros</title>
+		<meta name="description" content="The requested lesson could not be found." />
+	{/if}
 </svelte:head>
-{/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      PAGE CONTENT

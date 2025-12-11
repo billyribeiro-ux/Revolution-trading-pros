@@ -10,9 +10,9 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
-	import { learningCenterStore, learningCenterHelpers } from '$lib/stores/learningCenter';
+	import { learningCenterStore } from '$lib/stores/learningCenter';
 	import type { LessonWithRelations, TradingRoom, Trainer, LessonResource } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
 	import VideoEmbed from '$lib/components/VideoEmbed.svelte';
@@ -34,8 +34,8 @@
 	// ROUTE PARAMS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const roomSlug = $derived($page.params.slug);
-	const lessonSlug = $derived($page.params.lessonSlug);
+	const roomSlug = $derived(page.params.slug);
+	const lessonSlug = $derived((page.params as Record<string, string>).lessonSlug);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -60,7 +60,7 @@
 	// Get lessons for this room
 	let roomLessons = $derived.by((): LessonWithRelations[] => {
 		if (!roomId) return [];
-		return learningCenterHelpers.getLessonsForRoom(roomId);
+		return learningCenterStore.getLessonsForRoom(roomId) as LessonWithRelations[];
 	});
 
 	// Find the current lesson
@@ -134,7 +134,7 @@
 
 		isMarkingComplete = true;
 		try {
-			await learningCenterHelpers.markLessonComplete(lesson.id, roomId);
+			await learningCenterStore.markLessonComplete(lesson.id, roomId);
 		} catch (err) {
 			console.error('Failed to mark lesson complete:', err);
 		} finally {
@@ -145,7 +145,7 @@
 	async function handleToggleBookmark() {
 		if (!lesson || !roomId) return;
 		try {
-			await learningCenterHelpers.toggleBookmark(lesson.id, roomId);
+			await learningCenterStore.toggleBookmark(lesson.id);
 		} catch (err) {
 			console.error('Failed to toggle bookmark:', err);
 		}
@@ -154,7 +154,7 @@
 	function handleVideoProgress(percent: number) {
 		// Update progress as user watches
 		if (lesson && roomId && percent > progressPercent) {
-			learningCenterHelpers.updateProgress(lesson.id, roomId, percent);
+			learningCenterStore.updateLessonProgress(lesson.id, percent);
 		}
 	}
 
@@ -439,7 +439,11 @@
 
 	<!-- Share Modal -->
 	{#if showShareModal}
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="modal-overlay" onclick={() => showShareModal = false}>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="modal" onclick={(e) => e.stopPropagation()}>
 				<h3>Share this lesson</h3>
 				<div class="share-url">
@@ -830,6 +834,7 @@
 		color: white;
 		display: -webkit-box;
 		-webkit-line-clamp: 1;
+		line-clamp: 1;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

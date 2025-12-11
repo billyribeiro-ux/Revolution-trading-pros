@@ -12,22 +12,20 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { learningCenterStore, learningCenterHelpers } from '$lib/stores/learningCenter';
+	import { learningCenterStore } from '$lib/stores/learningCenter';
 	import type { CreateLessonInput, LessonType, AccessLevel, LessonStatus } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
 	import { RoomSelector } from '$lib/components/learning-center';
-	import {
-		IconArrowLeft,
-		IconUpload,
-		IconVideo,
-		IconFileText,
-		IconFile,
-		IconHelp,
-		IconCast,
-		IconCheck,
-		IconX,
-		IconPlus
-	} from '$lib/icons';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconUpload from '@tabler/icons-svelte/icons/upload';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconFile from '@tabler/icons-svelte/icons/file';
+	import IconHelp from '@tabler/icons-svelte/icons/help';
+	import IconCast from '@tabler/icons-svelte/icons/cast';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -79,7 +77,8 @@
 	let availableModules = $derived.by(() => {
 		if (formData.tradingRoomIds.length === 0) return [];
 		// Get modules for the first selected room
-		return learningCenterHelpers.getModulesForRoom(formData.tradingRoomIds[0]);
+		const store = get(learningCenterStore);
+		return store.modules.filter(m => m.tradingRoomId === formData.tradingRoomIds[0]);
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -236,7 +235,8 @@
 		isSubmitting = true;
 
 		try {
-			const lesson = await learningCenterHelpers.createLesson(formData);
+			// TODO: Implement create functionality via API
+			console.log('Create lesson:', formData);
 			// Redirect to the lesson edit page or listing
 			await goto('/admin/learning-center');
 		} catch (err) {
@@ -450,14 +450,15 @@
 				<div class="type-selector">
 					<label class="label">Content Type</label>
 					<div class="type-options">
-						{#each lessonTypes as type}
+						{#each lessonTypes as type (type.value)}
+							{@const Icon = type.icon}
 							<button
 								type="button"
 								class="type-option"
 								class:selected={formData.type === type.value}
 								onclick={() => formData.type = type.value}
 							>
-								<svelte:component this={type.icon} size={24} />
+								<Icon size={24} />
 								<span class="type-label">{type.label}</span>
 								<span class="type-desc">{type.description}</span>
 							</button>

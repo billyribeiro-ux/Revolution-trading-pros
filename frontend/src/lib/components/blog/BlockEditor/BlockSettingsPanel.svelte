@@ -198,75 +198,85 @@
 				{#if expandedSections.has('typography')}
 					<div class="section-content">
 						<div class="field">
-							<label>Font Family</label>
-							<select
-								value={block.settings.fontFamily || 'inherit'}
-								onchange={(e) => updateSetting('fontFamily', e.currentTarget.value)}
-							>
-								{#each fontFamilies as font}
-									<option value={font.value}>{font.label}</option>
-								{/each}
-							</select>
-						</div>
-
-						<div class="field-row">
-							<div class="field">
-								<label>Size</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="8"
-										max="200"
-										value={parseInt(block.settings.fontSize || '16')}
-										onchange={(e) => updateSetting('fontSize', `${e.currentTarget.value}px`)}
-									/>
-									<span class="unit">px</span>
-								</div>
-							</div>
-							<div class="field">
-								<label>Weight</label>
+							<label>
+								Font Family
 								<select
-									value={block.settings.fontWeight || '400'}
-									onchange={(e) => updateSetting('fontWeight', e.currentTarget.value)}
+									value={block.settings.fontFamily || 'inherit'}
+									onchange={(e) => updateSetting('fontFamily', e.currentTarget.value)}
 								>
-									{#each fontWeights as weight}
-										<option value={weight.value}>{weight.label}</option>
+									{#each fontFamilies as font}
+										<option value={font.value}>{font.label}</option>
 									{/each}
 								</select>
+							</label>
+						</div>
+
+						<div class="field-row">
+							<div class="field">
+								<label>
+									Size
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="8"
+											max="200"
+											value={parseInt(block.settings.fontSize || '16')}
+											onchange={(e) => updateSetting('fontSize', `${e.currentTarget.value}px`)}
+										/>
+										<span class="unit">px</span>
+									</div>
+								</label>
+							</div>
+							<div class="field">
+								<label>
+									Weight
+									<select
+										value={block.settings.fontWeight || '400'}
+										onchange={(e) => updateSetting('fontWeight', e.currentTarget.value)}
+									>
+										{#each fontWeights as weight}
+											<option value={weight.value}>{weight.label}</option>
+										{/each}
+									</select>
+								</label>
 							</div>
 						</div>
 
 						<div class="field-row">
 							<div class="field">
-								<label>Line Height</label>
-								<input
-									type="number"
-									min="0.5"
-									max="3"
-									step="0.1"
-									value={parseFloat(block.settings.lineHeight || '1.6')}
-									onchange={(e) => updateSetting('lineHeight', e.currentTarget.value)}
-								/>
-							</div>
-							<div class="field">
-								<label>Letter Spacing</label>
-								<div class="input-with-unit">
+								<label>
+									Line Height
 									<input
 										type="number"
-										min="-5"
-										max="20"
-										step="0.5"
-										value={parseFloat(block.settings.letterSpacing || '0')}
-										onchange={(e) => updateSetting('letterSpacing', `${e.currentTarget.value}px`)}
+										min="0.5"
+										max="3"
+										step="0.1"
+										value={parseFloat(block.settings.lineHeight || '1.6')}
+										onchange={(e) => updateSetting('lineHeight', e.currentTarget.value)}
 									/>
-									<span class="unit">px</span>
-								</div>
+								</label>
+							</div>
+							<div class="field">
+								<label>
+									Letter Spacing
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="-5"
+											max="20"
+											step="0.5"
+											value={parseFloat(block.settings.letterSpacing || '0')}
+											onchange={(e) => updateSetting('letterSpacing', `${e.currentTarget.value}px`)}
+										/>
+										<span class="unit">px</span>
+									</div>
+								</label>
 							</div>
 						</div>
 
 						<div class="field">
-							<label>Text Alignment</label>
-							<div class="button-group">
+							<span class="field-label">Text Alignment</span>
+							<div class="button-group" role="group" aria-label="Text alignment">
 								{#each textAlignments as align}
 									<button
 										class="icon-btn"
@@ -281,8 +291,8 @@
 						</div>
 
 						<div class="field">
-							<label>Text Transform</label>
-							<div class="button-group">
+							<span class="field-label">Text Transform</span>
+							<div class="button-group" role="group" aria-label="Text transform">
 								<button
 									class="text-btn"
 									class:active={!block.settings.textTransform || block.settings.textTransform === 'none'}
@@ -329,29 +339,35 @@
 				{#if expandedSections.has('colors')}
 					<div class="section-content">
 						<div class="field">
-							<label>Text Color</label>
-							<div class="color-picker-trigger">
-								<button
-									class="color-swatch"
-									style="background-color: {block.settings.textColor || '#000000'}"
-									onclick={() => showColorPicker = showColorPicker === 'text' ? null : 'text'}
-								></button>
-								<input
-									type="text"
-									value={block.settings.textColor || '#000000'}
-									onchange={(e) => updateSetting('textColor', e.currentTarget.value)}
-								/>
-							</div>
+							<label>
+								Text Color
+								<div class="color-picker-trigger">
+									<button
+										type="button"
+										class="color-swatch"
+										style="background-color: {block.settings.textColor || '#000000'}"
+										onclick={() => showColorPicker = showColorPicker === 'text' ? null : 'text'}
+										aria-label="Pick text color"
+									></button>
+									<input
+										type="text"
+										value={block.settings.textColor || '#000000'}
+										onchange={(e) => updateSetting('textColor', e.currentTarget.value)}
+									/>
+								</div>
+							</label>
 							{#if showColorPicker === 'text'}
 								<div class="color-palette">
 									{#each presetColors as color}
 										<button
+											type="button"
 											class="preset-color"
 											style="background-color: {color}"
 											onclick={() => {
 												updateSetting('textColor', color);
 												showColorPicker = null;
 											}}
+											aria-label="Select color {color}"
 										></button>
 									{/each}
 								</div>
@@ -359,29 +375,35 @@
 						</div>
 
 						<div class="field">
-							<label>Background Color</label>
-							<div class="color-picker-trigger">
-								<button
-									class="color-swatch"
-									style="background-color: {block.settings.backgroundColor || 'transparent'}"
-									onclick={() => showColorPicker = showColorPicker === 'bg' ? null : 'bg'}
-								></button>
-								<input
-									type="text"
-									value={block.settings.backgroundColor || 'transparent'}
-									onchange={(e) => updateSetting('backgroundColor', e.currentTarget.value)}
-								/>
-							</div>
+							<label>
+								Background Color
+								<div class="color-picker-trigger">
+									<button
+										type="button"
+										class="color-swatch"
+										style="background-color: {block.settings.backgroundColor || 'transparent'}"
+										onclick={() => showColorPicker = showColorPicker === 'bg' ? null : 'bg'}
+										aria-label="Pick background color"
+									></button>
+									<input
+										type="text"
+										value={block.settings.backgroundColor || 'transparent'}
+										onchange={(e) => updateSetting('backgroundColor', e.currentTarget.value)}
+									/>
+								</div>
+							</label>
 							{#if showColorPicker === 'bg'}
 								<div class="color-palette">
 									{#each presetColors as color}
 										<button
+											type="button"
 											class="preset-color"
 											style="background-color: {color}"
 											onclick={() => {
 												updateSetting('backgroundColor', color);
 												showColorPicker = null;
 											}}
+											aria-label="Select color {color}"
 										></button>
 									{/each}
 								</div>
@@ -389,13 +411,15 @@
 						</div>
 
 						<div class="field">
-							<label>Background Gradient</label>
-							<input
-								type="text"
-								placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-								value={block.settings.backgroundGradient || ''}
-								onchange={(e) => updateSetting('backgroundGradient', e.currentTarget.value)}
-							/>
+							<label>
+								Background Gradient
+								<input
+									type="text"
+									placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+									value={block.settings.backgroundGradient || ''}
+									onchange={(e) => updateSetting('backgroundGradient', e.currentTarget.value)}
+								/>
+							</label>
 						</div>
 					</div>
 				{/if}
@@ -413,12 +437,13 @@
 				{#if expandedSections.has('spacing')}
 					<div class="section-content">
 						<div class="spacing-control">
-							<label>Padding</label>
-							<div class="spacing-grid">
+							<span class="field-label">Padding</span>
+							<div class="spacing-grid" role="group" aria-label="Padding values">
 								<div class="spacing-top">
 									<input
 										type="number"
 										min="0"
+										aria-label="Padding top"
 										value={parseInt(paddingValues.top) || 0}
 										onchange={(e) => {
 											const newValues = { ...paddingValues, top: `${e.currentTarget.value}px` };
@@ -430,6 +455,7 @@
 									<input
 										type="number"
 										min="0"
+										aria-label="Padding left"
 										value={parseInt(paddingValues.left) || 0}
 										onchange={(e) => {
 											const newValues = { ...paddingValues, left: `${e.currentTarget.value}px` };
@@ -444,6 +470,7 @@
 									<input
 										type="number"
 										min="0"
+										aria-label="Padding right"
 										value={parseInt(paddingValues.right) || 0}
 										onchange={(e) => {
 											const newValues = { ...paddingValues, right: `${e.currentTarget.value}px` };
@@ -455,6 +482,7 @@
 									<input
 										type="number"
 										min="0"
+										aria-label="Padding bottom"
 										value={parseInt(paddingValues.bottom) || 0}
 										onchange={(e) => {
 											const newValues = { ...paddingValues, bottom: `${e.currentTarget.value}px` };
@@ -466,11 +494,12 @@
 						</div>
 
 						<div class="spacing-control">
-							<label>Margin</label>
-							<div class="spacing-grid">
+							<span class="field-label">Margin</span>
+							<div class="spacing-grid" role="group" aria-label="Margin values">
 								<div class="spacing-top">
 									<input
 										type="number"
+										aria-label="Margin top"
 										value={parseInt(marginValues.top) || 0}
 										onchange={(e) => {
 											const newValues = { ...marginValues, top: `${e.currentTarget.value}px` };
@@ -481,6 +510,7 @@
 								<div class="spacing-left">
 									<input
 										type="number"
+										aria-label="Margin left"
 										value={parseInt(marginValues.left) || 0}
 										onchange={(e) => {
 											const newValues = { ...marginValues, left: `${e.currentTarget.value}px` };
@@ -494,6 +524,7 @@
 								<div class="spacing-right">
 									<input
 										type="number"
+										aria-label="Margin right"
 										value={parseInt(marginValues.right) || 0}
 										onchange={(e) => {
 											const newValues = { ...marginValues, right: `${e.currentTarget.value}px` };
@@ -504,6 +535,7 @@
 								<div class="spacing-bottom">
 									<input
 										type="number"
+										aria-label="Margin bottom"
 										value={parseInt(marginValues.bottom) || 0}
 										onchange={(e) => {
 											const newValues = { ...marginValues, bottom: `${e.currentTarget.value}px` };
@@ -530,55 +562,65 @@
 					<div class="section-content">
 						<div class="field-row">
 							<div class="field">
-								<label>Style</label>
-								<select
-									value={block.settings.borderStyle || 'none'}
-									onchange={(e) => updateSetting('borderStyle', e.currentTarget.value)}
-								>
-									{#each borderStyles as style}
-										<option value={style.value}>{style.label}</option>
-									{/each}
-								</select>
+								<label>
+									Style
+									<select
+										value={block.settings.borderStyle || 'none'}
+										onchange={(e) => updateSetting('borderStyle', e.currentTarget.value)}
+									>
+										{#each borderStyles as style}
+											<option value={style.value}>{style.label}</option>
+										{/each}
+									</select>
+								</label>
 							</div>
 							<div class="field">
-								<label>Width</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="0"
-										max="20"
-										value={parseInt(block.settings.borderWidth || '0')}
-										onchange={(e) => updateSetting('borderWidth', `${e.currentTarget.value}px`)}
-									/>
-									<span class="unit">px</span>
-								</div>
+								<label>
+									Width
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="0"
+											max="20"
+											value={parseInt(block.settings.borderWidth || '0')}
+											onchange={(e) => updateSetting('borderWidth', `${e.currentTarget.value}px`)}
+										/>
+										<span class="unit">px</span>
+									</div>
+								</label>
 							</div>
 						</div>
 
 						<div class="field">
-							<label>Border Color</label>
-							<div class="color-picker-trigger">
-								<button
-									class="color-swatch"
-									style="background-color: {block.settings.borderColor || '#CCCCCC'}"
-									onclick={() => showColorPicker = showColorPicker === 'border' ? null : 'border'}
-								></button>
-								<input
-									type="text"
-									value={block.settings.borderColor || '#CCCCCC'}
-									onchange={(e) => updateSetting('borderColor', e.currentTarget.value)}
-								/>
-							</div>
+							<label>
+								Border Color
+								<div class="color-picker-trigger">
+									<button
+										type="button"
+										class="color-swatch"
+										style="background-color: {block.settings.borderColor || '#CCCCCC'}"
+										onclick={() => showColorPicker = showColorPicker === 'border' ? null : 'border'}
+										aria-label="Pick border color"
+									></button>
+									<input
+										type="text"
+										value={block.settings.borderColor || '#CCCCCC'}
+										onchange={(e) => updateSetting('borderColor', e.currentTarget.value)}
+									/>
+								</div>
+							</label>
 							{#if showColorPicker === 'border'}
 								<div class="color-palette">
 									{#each presetColors as color}
 										<button
+											type="button"
 											class="preset-color"
 											style="background-color: {color}"
 											onclick={() => {
 												updateSetting('borderColor', color);
 												showColorPicker = null;
 											}}
+											aria-label="Select color {color}"
 										></button>
 									{/each}
 								</div>
@@ -586,27 +628,31 @@
 						</div>
 
 						<div class="field">
-							<label>Border Radius</label>
-							<div class="input-with-unit">
-								<input
-									type="number"
-									min="0"
-									max="100"
-									value={parseInt(block.settings.borderRadius || '0')}
-									onchange={(e) => updateSetting('borderRadius', `${e.currentTarget.value}px`)}
-								/>
-								<span class="unit">px</span>
-							</div>
+							<label>
+								Border Radius
+								<div class="input-with-unit">
+									<input
+										type="number"
+										min="0"
+										max="100"
+										value={parseInt(block.settings.borderRadius || '0')}
+										onchange={(e) => updateSetting('borderRadius', `${e.currentTarget.value}px`)}
+									/>
+									<span class="unit">px</span>
+								</div>
+							</label>
 						</div>
 
 						<div class="field">
-							<label>Box Shadow</label>
-							<input
-								type="text"
-								placeholder="0 4px 6px rgba(0, 0, 0, 0.1)"
-								value={block.settings.boxShadow || ''}
-								onchange={(e) => updateSetting('boxShadow', e.currentTarget.value)}
-							/>
+							<label>
+								Box Shadow
+								<input
+									type="text"
+									placeholder="0 4px 6px rgba(0, 0, 0, 0.1)"
+									value={block.settings.boxShadow || ''}
+									onchange={(e) => updateSetting('boxShadow', e.currentTarget.value)}
+								/>
+							</label>
 						</div>
 					</div>
 				{/if}
@@ -625,45 +671,51 @@
 				{#if expandedSections.has('animation')}
 					<div class="section-content">
 						<div class="field">
-							<label>Entrance Animation</label>
-							<select
-								value={block.settings.animation || 'none'}
-								onchange={(e) => updateSetting('animation', e.currentTarget.value)}
-							>
-								{#each animations as anim}
-									<option value={anim.value}>{anim.label}</option>
-								{/each}
-							</select>
+							<label>
+								Entrance Animation
+								<select
+									value={block.settings.animation || 'none'}
+									onchange={(e) => updateSetting('animation', e.currentTarget.value)}
+								>
+									{#each animations as anim}
+										<option value={anim.value}>{anim.label}</option>
+									{/each}
+								</select>
+							</label>
 						</div>
 
 						<div class="field-row">
 							<div class="field">
-								<label>Duration</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="0"
-										max="5"
-										step="0.1"
-										value={parseFloat(block.settings.animationDuration || '0.5')}
-										onchange={(e) => updateSetting('animationDuration', `${e.currentTarget.value}s`)}
-									/>
-									<span class="unit">s</span>
-								</div>
+								<label>
+									Duration
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="0"
+											max="5"
+											step="0.1"
+											value={parseFloat(block.settings.animationDuration || '0.5')}
+											onchange={(e) => updateSetting('animationDuration', `${e.currentTarget.value}s`)}
+										/>
+										<span class="unit">s</span>
+									</div>
+								</label>
 							</div>
 							<div class="field">
-								<label>Delay</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="0"
-										max="5"
-										step="0.1"
-										value={parseFloat(block.settings.animationDelay || '0')}
-										onchange={(e) => updateSetting('animationDelay', `${e.currentTarget.value}s`)}
-									/>
-									<span class="unit">s</span>
-								</div>
+								<label>
+									Delay
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="0"
+											max="5"
+											step="0.1"
+											value={parseFloat(block.settings.animationDelay || '0')}
+											onchange={(e) => updateSetting('animationDelay', `${e.currentTarget.value}s`)}
+										/>
+										<span class="unit">s</span>
+									</div>
+								</label>
 							</div>
 						</div>
 					</div>
@@ -683,82 +735,94 @@
 					<div class="section-content">
 						<div class="field-row">
 							<div class="field">
-								<label>Rotate</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="-360"
-										max="360"
-										value={parseInt(block.settings.rotate || '0')}
-										onchange={(e) => updateSetting('rotate', `${e.currentTarget.value}deg`)}
-									/>
-									<span class="unit">°</span>
-								</div>
+								<label>
+									Rotate
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="-360"
+											max="360"
+											value={parseInt(block.settings.rotate || '0')}
+											onchange={(e) => updateSetting('rotate', `${e.currentTarget.value}deg`)}
+										/>
+										<span class="unit">°</span>
+									</div>
+								</label>
 							</div>
 							<div class="field">
-								<label>Scale</label>
-								<input
-									type="number"
-									min="0"
-									max="3"
-									step="0.1"
-									value={parseFloat(block.settings.scale || '1')}
-									onchange={(e) => updateSetting('scale', e.currentTarget.value)}
-								/>
-							</div>
-						</div>
-
-						<div class="field-row">
-							<div class="field">
-								<label>Translate X</label>
-								<div class="input-with-unit">
+								<label>
+									Scale
 									<input
 										type="number"
-										value={parseInt(block.settings.translateX || '0')}
-										onchange={(e) => updateSetting('translateX', `${e.currentTarget.value}px`)}
+										min="0"
+										max="3"
+										step="0.1"
+										value={parseFloat(block.settings.scale || '1')}
+										onchange={(e) => updateSetting('scale', e.currentTarget.value)}
 									/>
-									<span class="unit">px</span>
-								</div>
-							</div>
-							<div class="field">
-								<label>Translate Y</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										value={parseInt(block.settings.translateY || '0')}
-										onchange={(e) => updateSetting('translateY', `${e.currentTarget.value}px`)}
-									/>
-									<span class="unit">px</span>
-								</div>
+								</label>
 							</div>
 						</div>
 
 						<div class="field-row">
 							<div class="field">
-								<label>Skew X</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="-45"
-										max="45"
-										value={parseInt(block.settings.skewX || '0')}
-										onchange={(e) => updateSetting('skewX', `${e.currentTarget.value}deg`)}
-									/>
-									<span class="unit">°</span>
-								</div>
+								<label>
+									Translate X
+									<div class="input-with-unit">
+										<input
+											type="number"
+											value={parseInt(block.settings.translateX || '0')}
+											onchange={(e) => updateSetting('translateX', `${e.currentTarget.value}px`)}
+										/>
+										<span class="unit">px</span>
+									</div>
+								</label>
 							</div>
 							<div class="field">
-								<label>Skew Y</label>
-								<div class="input-with-unit">
-									<input
-										type="number"
-										min="-45"
-										max="45"
-										value={parseInt(block.settings.skewY || '0')}
-										onchange={(e) => updateSetting('skewY', `${e.currentTarget.value}deg`)}
-									/>
-									<span class="unit">°</span>
-								</div>
+								<label>
+									Translate Y
+									<div class="input-with-unit">
+										<input
+											type="number"
+											value={parseInt(block.settings.translateY || '0')}
+											onchange={(e) => updateSetting('translateY', `${e.currentTarget.value}px`)}
+										/>
+										<span class="unit">px</span>
+									</div>
+								</label>
+							</div>
+						</div>
+
+						<div class="field-row">
+							<div class="field">
+								<label>
+									Skew X
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="-45"
+											max="45"
+											value={parseInt(block.settings.skewX || '0')}
+											onchange={(e) => updateSetting('skewX', `${e.currentTarget.value}deg`)}
+										/>
+										<span class="unit">°</span>
+									</div>
+								</label>
+							</div>
+							<div class="field">
+								<label>
+									Skew Y
+									<div class="input-with-unit">
+										<input
+											type="number"
+											min="-45"
+											max="45"
+											value={parseInt(block.settings.skewY || '0')}
+											onchange={(e) => updateSetting('skewY', `${e.currentTarget.value}deg`)}
+										/>
+										<span class="unit">°</span>
+									</div>
+								</label>
 							</div>
 						</div>
 					</div>
@@ -777,34 +841,38 @@
 				{#if expandedSections.has('effects')}
 					<div class="section-content">
 						<div class="field">
-							<label>Opacity</label>
-							<div class="slider-field">
-								<input
-									type="range"
-									min="0"
-									max="1"
-									step="0.01"
-									value={block.settings.opacity || 1}
-									oninput={(e) => updateSetting('opacity', parseFloat(e.currentTarget.value))}
-								/>
-								<span class="value">{Math.round((block.settings.opacity || 1) * 100)}%</span>
-							</div>
+							<label>
+								Opacity
+								<div class="slider-field">
+									<input
+										type="range"
+										min="0"
+										max="1"
+										step="0.01"
+										value={block.settings.opacity || 1}
+										oninput={(e) => updateSetting('opacity', parseFloat(e.currentTarget.value))}
+									/>
+									<span class="value">{Math.round((block.settings.opacity || 1) * 100)}%</span>
+								</div>
+							</label>
 						</div>
 
 						<div class="field">
-							<label>Blend Mode</label>
-							<select
-								value={block.settings.blendMode || 'normal'}
-								onchange={(e) => updateSetting('blendMode', e.currentTarget.value)}
-							>
-								{#each blendModes as mode}
-									<option value={mode}>{mode}</option>
-								{/each}
-							</select>
+							<label>
+								Blend Mode
+								<select
+									value={block.settings.blendMode || 'normal'}
+									onchange={(e) => updateSetting('blendMode', e.currentTarget.value)}
+								>
+									{#each blendModes as mode}
+										<option value={mode}>{mode}</option>
+									{/each}
+								</select>
+							</label>
 						</div>
 
 						<div class="field">
-							<label>CSS Filters</label>
+							<span class="field-label">CSS Filters</span>
 							<div class="filter-controls">
 								<div class="filter-item">
 									<span>Blur</span>
@@ -812,7 +880,7 @@
 										type="range"
 										min="0"
 										max="20"
-										value={parseInt(block.settings.filterBlur || '0')}
+										value={parseInt(String(block.settings.filterBlur || '0'))}
 										oninput={(e) => updateSetting('filterBlur', `${e.currentTarget.value}px`)}
 									/>
 									<span class="value">{block.settings.filterBlur || '0px'}</span>
@@ -823,7 +891,7 @@
 										type="range"
 										min="0"
 										max="200"
-										value={parseInt(block.settings.filterBrightness || '100')}
+										value={parseInt(String(block.settings.filterBrightness || '100'))}
 										oninput={(e) => updateSetting('filterBrightness', `${e.currentTarget.value}%`)}
 									/>
 									<span class="value">{block.settings.filterBrightness || '100%'}</span>
@@ -834,7 +902,7 @@
 										type="range"
 										min="0"
 										max="200"
-										value={parseInt(block.settings.filterContrast || '100')}
+										value={parseInt(String(block.settings.filterContrast || '100'))}
 										oninput={(e) => updateSetting('filterContrast', `${e.currentTarget.value}%`)}
 									/>
 									<span class="value">{block.settings.filterContrast || '100%'}</span>
@@ -845,7 +913,7 @@
 										type="range"
 										min="0"
 										max="100"
-										value={parseInt(block.settings.filterGrayscale || '0')}
+										value={parseInt(String(block.settings.filterGrayscale || '0'))}
 										oninput={(e) => updateSetting('filterGrayscale', `${e.currentTarget.value}%`)}
 									/>
 									<span class="value">{block.settings.filterGrayscale || '0%'}</span>
@@ -856,7 +924,7 @@
 										type="range"
 										min="0"
 										max="200"
-										value={parseInt(block.settings.filterSaturate || '100')}
+										value={parseInt(String(block.settings.filterSaturate || '100'))}
 										oninput={(e) => updateSetting('filterSaturate', `${e.currentTarget.value}%`)}
 									/>
 									<span class="value">{block.settings.filterSaturate || '100%'}</span>
@@ -879,35 +947,41 @@
 				{#if expandedSections.has('customCss')}
 					<div class="section-content">
 						<div class="field">
-							<label>CSS Class</label>
-							<input
-								type="text"
-								placeholder="my-custom-class another-class"
-								value={block.settings.customClass || ''}
-								onchange={(e) => updateSetting('customClass', e.currentTarget.value)}
-							/>
+							<label>
+								CSS Class
+								<input
+									type="text"
+									placeholder="my-custom-class another-class"
+									value={block.settings.customClass || ''}
+									onchange={(e) => updateSetting('customClass', e.currentTarget.value)}
+								/>
+							</label>
 						</div>
 
 						<div class="field">
-							<label>CSS ID</label>
-							<input
-								type="text"
-								placeholder="my-element-id"
-								value={block.settings.customId || ''}
-								onchange={(e) => updateSetting('customId', e.currentTarget.value)}
-							/>
+							<label>
+								CSS ID
+								<input
+									type="text"
+									placeholder="my-element-id"
+									value={block.settings.customId || ''}
+									onchange={(e) => updateSetting('customId', e.currentTarget.value)}
+								/>
+							</label>
 						</div>
 
 						<div class="field">
-							<label>Custom CSS</label>
-							<textarea
+							<label>
+								Custom CSS
+								<textarea
 								rows="6"
-								placeholder=".selector {
+								placeholder=".selector &#123;
   property: value;
-}"
-								value={block.settings.customCss || ''}
-								onchange={(e) => updateSetting('customCss', e.currentTarget.value)}
+&#125;"
+								value={block.settings.customCSS || ''}
+								onchange={(e) => updateSetting('customCSS', e.currentTarget.value)}
 							></textarea>
+							</label>
 						</div>
 					</div>
 				{/if}
@@ -977,22 +1051,26 @@
 							<h4>📱 Tablet (768px - 1024px)</h4>
 							<div class="field-row">
 								<div class="field">
-									<label>Font Size</label>
-									<input
-										type="text"
-										placeholder="e.g., 14px"
-										value={block.settings.tabletFontSize || ''}
-										onchange={(e) => updateSetting('tabletFontSize', e.currentTarget.value)}
-									/>
+									<label>
+										Font Size
+										<input
+											type="text"
+											placeholder="e.g., 14px"
+											value={block.settings.tabletFontSize || ''}
+											onchange={(e) => updateSetting('tabletFontSize', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 								<div class="field">
-									<label>Padding</label>
-									<input
-										type="text"
-										placeholder="e.g., 10px 15px"
-										value={block.settings.tabletPadding || ''}
-										onchange={(e) => updateSetting('tabletPadding', e.currentTarget.value)}
-									/>
+									<label>
+										Padding
+										<input
+											type="text"
+											placeholder="e.g., 10px 15px"
+											value={block.settings.tabletPadding || ''}
+											onchange={(e) => updateSetting('tabletPadding', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 							</div>
 						</div>
@@ -1001,22 +1079,26 @@
 							<h4>📲 Mobile (&lt; 768px)</h4>
 							<div class="field-row">
 								<div class="field">
-									<label>Font Size</label>
-									<input
-										type="text"
-										placeholder="e.g., 12px"
-										value={block.settings.mobileFontSize || ''}
-										onchange={(e) => updateSetting('mobileFontSize', e.currentTarget.value)}
-									/>
+									<label>
+										Font Size
+										<input
+											type="text"
+											placeholder="e.g., 12px"
+											value={block.settings.mobileFontSize || ''}
+											onchange={(e) => updateSetting('mobileFontSize', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 								<div class="field">
-									<label>Padding</label>
-									<input
-										type="text"
-										placeholder="e.g., 8px 10px"
-										value={block.settings.mobilePadding || ''}
-										onchange={(e) => updateSetting('mobilePadding', e.currentTarget.value)}
-									/>
+									<label>
+										Padding
+										<input
+											type="text"
+											placeholder="e.g., 8px 10px"
+											value={block.settings.mobilePadding || ''}
+											onchange={(e) => updateSetting('mobilePadding', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 							</div>
 						</div>
@@ -1036,69 +1118,81 @@
 				{#if expandedSections.has('zindex')}
 					<div class="section-content">
 						<div class="field">
-							<label>Z-Index</label>
-							<input
-								type="number"
-								min="-999"
-								max="9999"
-								value={block.settings.zIndex || 0}
-								onchange={(e) => updateSetting('zIndex', parseInt(e.currentTarget.value))}
-							/>
+							<label>
+								Z-Index
+								<input
+									type="number"
+									min="-999"
+									max="9999"
+									value={block.settings.zIndex || 0}
+									onchange={(e) => updateSetting('zIndex', parseInt(e.currentTarget.value))}
+								/>
+							</label>
 						</div>
 
 						<div class="field">
-							<label>Position</label>
-							<select
-								value={block.settings.position || 'static'}
-								onchange={(e) => updateSetting('position', e.currentTarget.value)}
-							>
-								<option value="static">Static</option>
-								<option value="relative">Relative</option>
-								<option value="absolute">Absolute</option>
-								<option value="fixed">Fixed</option>
-								<option value="sticky">Sticky</option>
-							</select>
+							<label>
+								Position
+								<select
+									value={block.settings.position || 'static'}
+									onchange={(e) => updateSetting('position', e.currentTarget.value)}
+								>
+									<option value="static">Static</option>
+									<option value="relative">Relative</option>
+									<option value="absolute">Absolute</option>
+									<option value="fixed">Fixed</option>
+									<option value="sticky">Sticky</option>
+								</select>
+							</label>
 						</div>
 
 						{#if block.settings.position && block.settings.position !== 'static'}
 							<div class="field-row">
 								<div class="field">
-									<label>Top</label>
-									<input
-										type="text"
-										placeholder="auto"
-										value={block.settings.positionTop || ''}
-										onchange={(e) => updateSetting('positionTop', e.currentTarget.value)}
-									/>
+									<label>
+										Top
+										<input
+											type="text"
+											placeholder="auto"
+											value={block.settings.positionTop || ''}
+											onchange={(e) => updateSetting('positionTop', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 								<div class="field">
-									<label>Right</label>
-									<input
-										type="text"
-										placeholder="auto"
-										value={block.settings.positionRight || ''}
-										onchange={(e) => updateSetting('positionRight', e.currentTarget.value)}
-									/>
+									<label>
+										Right
+										<input
+											type="text"
+											placeholder="auto"
+											value={block.settings.positionRight || ''}
+											onchange={(e) => updateSetting('positionRight', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 							</div>
 							<div class="field-row">
 								<div class="field">
-									<label>Bottom</label>
-									<input
-										type="text"
-										placeholder="auto"
-										value={block.settings.positionBottom || ''}
-										onchange={(e) => updateSetting('positionBottom', e.currentTarget.value)}
-									/>
+									<label>
+										Bottom
+										<input
+											type="text"
+											placeholder="auto"
+											value={block.settings.positionBottom || ''}
+											onchange={(e) => updateSetting('positionBottom', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 								<div class="field">
-									<label>Left</label>
-									<input
-										type="text"
-										placeholder="auto"
-										value={block.settings.positionLeft || ''}
-										onchange={(e) => updateSetting('positionLeft', e.currentTarget.value)}
-									/>
+									<label>
+										Left
+										<input
+											type="text"
+											placeholder="auto"
+											value={block.settings.positionLeft || ''}
+											onchange={(e) => updateSetting('positionLeft', e.currentTarget.value)}
+										/>
+									</label>
 								</div>
 							</div>
 						{/if}
@@ -1200,7 +1294,8 @@
 		margin-bottom: 0;
 	}
 
-	.field label {
+	.field label,
+	.field-label {
 		display: block;
 		margin-bottom: 0.375rem;
 		font-size: 0.75rem;
@@ -1348,7 +1443,7 @@
 		margin-bottom: 0;
 	}
 
-	.spacing-control > label {
+	.spacing-control > .field-label {
 		display: block;
 		margin-bottom: 0.5rem;
 		font-size: 0.75rem;
@@ -1420,6 +1515,7 @@
 		flex: 1;
 		height: 4px;
 		-webkit-appearance: none;
+		appearance: none;
 		background: var(--border-color, #e5e7eb);
 		border-radius: 2px;
 		cursor: pointer;
@@ -1463,6 +1559,7 @@
 		width: 100%;
 		height: 4px;
 		-webkit-appearance: none;
+		appearance: none;
 		background: var(--border-color, #e5e7eb);
 		border-radius: 2px;
 	}

@@ -138,12 +138,17 @@ export interface BlockSettings {
 	lineHeight?: string;
 	letterSpacing?: string;
 	textColor?: string;
+	textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 
 	// Heading specific
 	level?: 1 | 2 | 3 | 4 | 5 | 6;
 	anchor?: string;
 
-	// Spacing
+	// Spacing - shorthand
+	padding?: string;
+	margin?: string;
+
+	// Spacing - individual
 	marginTop?: string;
 	marginBottom?: string;
 	marginLeft?: string;
@@ -170,6 +175,27 @@ export interface BlockSettings {
 
 	// Animation
 	animation?: AnimationSettings;
+	animationDuration?: string;
+	animationDelay?: string;
+
+	// Transform
+	rotate?: string;
+	scale?: string;
+	translateX?: string;
+	translateY?: string;
+	skewX?: string;
+	skewY?: string;
+
+	// Visual Effects
+	opacity?: number;
+	blendMode?: 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' | 'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
+
+	// Filters
+	filterBlur?: string;
+	filterBrightness?: string;
+	filterContrast?: string;
+	filterGrayscale?: string;
+	filterSaturate?: string;
 
 	// Layout
 	width?: string;
@@ -180,6 +206,8 @@ export interface BlockSettings {
 	justifyContent?: string;
 	alignItems?: string;
 	gap?: string;
+	columnCount?: number;
+	columnLayout?: string;
 
 	// Image specific
 	imageSize?: 'thumbnail' | 'medium' | 'large' | 'full' | 'custom';
@@ -200,16 +228,30 @@ export interface BlockSettings {
 	buttonIcon?: string;
 	buttonIconPosition?: 'left' | 'right';
 
-	// Responsive
+	// Responsive visibility
 	hideOnDesktop?: boolean;
 	hideOnTablet?: boolean;
 	hideOnMobile?: boolean;
+
+	// Responsive typography
+	tabletFontSize?: string;
+	mobileFontSize?: string;
+
+	// Responsive spacing
+	tabletPadding?: string;
+	mobilePadding?: string;
 
 	// Advanced
 	customCSS?: string;
 	customId?: string;
 	customClass?: string;
 	ariaLabel?: string;
+	position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+	zIndex?: number;
+	positionTop?: string;
+	positionRight?: string;
+	positionBottom?: string;
+	positionLeft?: string;
 }
 
 export interface AnimationSettings {
@@ -964,6 +1006,9 @@ export interface Revision {
 	createdByName: string;
 	type: 'auto' | 'manual' | 'publish';
 	title?: string;
+	description?: string;
+	author?: string;
+	isAutosave?: boolean;
 	wordCount: number;
 	blockCount: number;
 }

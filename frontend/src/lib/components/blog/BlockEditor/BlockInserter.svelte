@@ -8,55 +8,53 @@
 
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
-	import {
-		IconAlignLeft,
-		IconH1,
-		IconQuote,
-		IconBlockquote,
-		IconCode,
-		IconFileCode,
-		IconList,
-		IconChecklist,
-		IconPhoto,
-		IconPhotoAlbum,
-		IconVideo,
-		IconVolume,
-		IconFileDownload,
-		IconBrandYoutube,
-		IconGif,
-		IconColumns,
-		IconBox,
-		IconMinus,
-		IconSpacingVertical,
-		IconLayoutRows,
-		IconClick,
-		IconApps,
-		IconLayoutNavbarCollapse,
-		IconLayoutDistributeHorizontal,
-		IconToggleLeft,
-		IconListTree,
-		IconTrendingUp,
-		IconChartCandle,
-		IconAlertCircle,
-		IconBulb,
-		IconAlertTriangle,
-		IconInfoCircle,
-		IconId,
-		IconMessageCircle,
-		IconSpeakerphone,
-		IconClock,
-		IconShare,
-		IconUser,
-		IconArticle,
-		IconMail,
-		IconRobot,
-		IconFileDescription,
-		IconLanguage,
-		IconBrackets,
-		IconTemplate,
-		IconX,
-		IconSearch
-	} from '@tabler/icons-svelte';
+	import IconAlignLeft from '@tabler/icons-svelte/icons/align-left';
+	import IconH1 from '@tabler/icons-svelte/icons/h-1';
+	import IconQuote from '@tabler/icons-svelte/icons/quote';
+	import IconBlockquote from '@tabler/icons-svelte/icons/blockquote';
+	import IconCode from '@tabler/icons-svelte/icons/code';
+	import IconFileCode from '@tabler/icons-svelte/icons/file-code';
+	import IconList from '@tabler/icons-svelte/icons/list';
+	import IconChecklist from '@tabler/icons-svelte/icons/checklist';
+	import IconPhoto from '@tabler/icons-svelte/icons/photo';
+	import IconPhotoFilled from '@tabler/icons-svelte/icons/photo-filled';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconVolume from '@tabler/icons-svelte/icons/volume';
+	import IconFileDownload from '@tabler/icons-svelte/icons/file-download';
+	import IconBrandYoutube from '@tabler/icons-svelte/icons/brand-youtube';
+	import IconGif from '@tabler/icons-svelte/icons/gif';
+	import IconColumns from '@tabler/icons-svelte/icons/columns';
+	import IconBox from '@tabler/icons-svelte/icons/box';
+	import IconMinus from '@tabler/icons-svelte/icons/minus';
+	import IconSpacingVertical from '@tabler/icons-svelte/icons/spacing-vertical';
+	import IconLayoutRows from '@tabler/icons-svelte/icons/layout-rows';
+	import IconClick from '@tabler/icons-svelte/icons/click';
+	import IconApps from '@tabler/icons-svelte/icons/apps';
+	import IconLayoutNavbarCollapse from '@tabler/icons-svelte/icons/layout-navbar-collapse';
+	import IconLayoutDistributeHorizontal from '@tabler/icons-svelte/icons/layout-distribute-horizontal';
+	import IconToggleLeft from '@tabler/icons-svelte/icons/toggle-left';
+	import IconListTree from '@tabler/icons-svelte/icons/list-tree';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconBulb from '@tabler/icons-svelte/icons/bulb';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconId from '@tabler/icons-svelte/icons/id';
+	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
+	import IconSpeakerphone from '@tabler/icons-svelte/icons/speakerphone';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconShare from '@tabler/icons-svelte/icons/share';
+	import IconUser from '@tabler/icons-svelte/icons/user';
+	import IconArticle from '@tabler/icons-svelte/icons/article';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconRobot from '@tabler/icons-svelte/icons/robot';
+	import IconFileDescription from '@tabler/icons-svelte/icons/file-description';
+	import IconLanguage from '@tabler/icons-svelte/icons/language';
+	import IconBrackets from '@tabler/icons-svelte/icons/brackets';
+	import IconTemplate from '@tabler/icons-svelte/icons/template';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
 
 	import type { BlockType, BlockCategory, BlockDefinition } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
@@ -103,7 +101,7 @@
 		list: IconList,
 		checklist: IconChecklist,
 		image: IconPhoto,
-		gallery: IconPhotoAlbum,
+		gallery: IconPhotoFilled,
 		video: IconVideo,
 		audio: IconVolume,
 		file: IconFileDownload,

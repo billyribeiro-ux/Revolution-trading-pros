@@ -241,10 +241,10 @@
 										{#if indicator.status !== 'expired'}
 											<button
 												onclick={() => handleDownload(indicator)}
-												disabled={isDownloading === indicator.id}
+												disabled={downloadingId === indicator.id}
 											>
-												{#if isDownloading === indicator.id}
-													<IconLoader2 size={14} class="spin" />
+												{#if downloadingId === indicator.id}
+													<IconLoader size={14} class="spin" />
 													Downloading...
 												{:else}
 													<IconDownload size={14} />
@@ -262,13 +262,16 @@
 											</a>
 										{/if}
 									</div>
-								</article>
+								</div>
 							</div>
-						{/each}
+						</article>
 					</div>
-				{:else}
-					<!-- Empty State -->
-					<div class="empty-state">
+				{/each}
+			</div>
+		</section>
+	{:else}
+			<!-- Empty State -->
+			<div class="empty-state">
 						<IconChartLine size={64} />
 						<h3>No Indicators Found</h3>
 						{#if searchQuery || filterPlatform !== 'all'}
@@ -282,85 +285,8 @@
 						{/if}
 					</div>
 				{/if}
-			</section>
 		{/if}
 	</div>
-
-							<div class="indicator-card__actions">
-								{#if indicator.status !== 'expired'}
-									<button
-										class="action-btn"
-										onclick={() => handleDownload(indicator)}
-										disabled={downloadingId === indicator.id}
-									>
-										{#if downloadingId === indicator.id}
-											<span class="spin"><IconLoader size={16} /></span>
-											Downloading...
-										{:else}
-											<IconDownload size={16} />
-											Download
-										{/if}
-									</button>
-									<a href={indicator.documentationUrl}>
-										<IconExternalLink size={16} />
-										Docs
-									</a>
-								{:else}
-									<a href="/indicators/{indicator.slug}" class="action-btn action-btn--renew">
-										<IconRefresh size={16} />
-										Renew License
-									</a>
-								{/if}
-							</div>
-						</article>
-					</div>
-				{/if}
-				{#if stats.expiring > 0}
-					<div class="stat-row stat--expiring">
-						<span class="stat-label">Expiring Soon</span>
-						<span class="stat-value">{stats.expiring}</span>
-					</div>
-				{/if}
-				{#if stats.expired > 0}
-					<div class="stat-row stat--expired">
-						<span class="stat-label">Expired</span>
-						<span class="stat-value">{stats.expired}</span>
-					</div>
-				{/if}
-			</div>
-		</section>
-		{:else}
-		<div class="empty-state">
-			{#if searchQuery || filterPlatform !== 'all'}
-				<!-- Filtered but no results -->
-				<div class="empty-icon">
-					<IconSearch size={48} />
-				</div>
-				<h2>No Indicators Found</h2>
-				<p>Try adjusting your search or filter criteria</p>
-				<button class="btn btn-primary" onclick={() => { searchQuery = ''; filterPlatform = 'all'; }}>
-					Clear Filters
-				</button>
-			{:else}
-				<!-- No indicators at all - Simpler Trading style -->
-				<div class="empty-icon empty-icon--lock">
-					<IconLock size={64} />
-				</div>
-				<h2>You don't have any Indicators</h2>
-				<p>Enhance your trading with our powerful indicator suite. Browse our collection to get started.</p>
-				<div class="empty-actions">
-					<a href="/indicators" class="btn btn-orange">Browse Indicators</a>
-					<a href="/dashboard/support" class="btn btn-feedback">
-						<IconMessageCircle size={18} />
-						Give Feedback
-					</a>
-				</div>
-			{/if}
-		</div>
-		{/if}
-	{/if}
-</div>
-
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES - WordPress Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->

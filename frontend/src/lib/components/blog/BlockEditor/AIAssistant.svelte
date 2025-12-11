@@ -241,14 +241,15 @@ This text discusses key concepts and provides insights into the main topic. The 
 	<div class="quick-actions">
 		<span class="quick-label">Quick actions:</span>
 		<div class="quick-buttons">
-			{#each quickActions as action}
+			{#each quickActions as action (action.id)}
+				{@const Icon = action.icon}
 				<button
 					type="button"
 					class="quick-btn"
 					onclick={() => handleQuickAction(action)}
 					title={action.prompt}
 				>
-					<svelte:component this={action.icon} size={14} />
+					<Icon size={14} />
 					{action.label}
 				</button>
 			{/each}

@@ -115,6 +115,25 @@ import IconJson from '@tabler/icons-svelte/icons/json';
 import IconPdf from '@tabler/icons-svelte/icons/pdf';
 import IconFileExport from '@tabler/icons-svelte/icons/file-export';
 import IconFileSpreadsheet from '@tabler/icons-svelte/icons/file-spreadsheet';
+// Additional icons needed by components
+import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
+import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
+import IconDots from '@tabler/icons-svelte/icons/dots';
+import IconVideo from '@tabler/icons-svelte/icons/video';
+import IconPhoto from '@tabler/icons-svelte/icons/photo';
+import IconLoader from '@tabler/icons-svelte/icons/loader';
+import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+import IconHome from '@tabler/icons-svelte/icons/home';
+import IconMessage from '@tabler/icons-svelte/icons/message';
+import IconHeart from '@tabler/icons-svelte/icons/heart';
+import IconThumbUp from '@tabler/icons-svelte/icons/thumb-up';
+import IconAward from '@tabler/icons-svelte/icons/award';
+import IconGridDots from '@tabler/icons-svelte/icons/grid-dots';
+import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+import IconCircleX from '@tabler/icons-svelte/icons/circle-x';
+import IconProgress from '@tabler/icons-svelte/icons/progress';
 
 // Re-export all icons
 export {
@@ -224,7 +243,26 @@ export {
 	IconJson,
 	IconPdf,
 	IconFileExport,
-	IconFileSpreadsheet
+	IconFileSpreadsheet,
+	// Additional icons
+	IconChevronDown,
+	IconChevronUp,
+	IconChevronLeft,
+	IconDots,
+	IconVideo,
+	IconPhoto,
+	IconLoader,
+	IconArrowRight,
+	IconArrowLeft,
+	IconHome,
+	IconMessage,
+	IconHeart,
+	IconThumbUp,
+	IconAward,
+	IconCircleCheck,
+	IconCircleX,
+	IconProgress,
+	IconGridDots
 };
 
 import type { Component } from 'svelte';

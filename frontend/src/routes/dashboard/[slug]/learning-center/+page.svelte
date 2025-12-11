@@ -14,7 +14,7 @@
 
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	import { learningCenterStore, learningCenterHelpers } from '$lib/stores/learningCenter';
+	import { learningCenterStore } from '$lib/stores/learningCenter';
 	import type { TradingRoom, LessonWithRelations, LessonModule, LessonCategory, Trainer, UserRoomProgress, LessonFilter } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
 	import {
@@ -67,13 +67,15 @@
 	// Get lessons for this room
 	let roomLessons = $derived.by((): LessonWithRelations[] => {
 		if (!roomId) return [];
-		return learningCenterHelpers.getLessonsForRoom(roomId);
+		const store = get(learningCenterStore);
+		return store.lessons.filter(l => l.tradingRoomIds.includes(roomId));
 	});
 
 	// Get modules for this room
 	let roomModules = $derived.by((): LessonModule[] => {
 		if (!roomId) return [];
-		return learningCenterHelpers.getModulesForRoom(roomId);
+		const store = get(learningCenterStore);
+		return store.modules.filter(m => m.tradingRoomId === roomId);
 	});
 
 	// Get categories from store
@@ -97,7 +99,14 @@
 		if (!currentFilter.search && !currentFilter.categoryId && !currentFilter.trainerId && !currentFilter.type) {
 			return roomLessons;
 		}
-		return learningCenterHelpers.filterLessons({ ...currentFilter, tradingRoomId: roomId });
+		// Simple filter implementation
+		return roomLessons.filter(lesson => {
+			if (currentFilter.search && !lesson.title.toLowerCase().includes(currentFilter.search.toLowerCase())) return false;
+			if (currentFilter.categoryId && lesson.categoryId !== currentFilter.categoryId) return false;
+			if (currentFilter.trainerId && lesson.trainerId !== currentFilter.trainerId) return false;
+			if (currentFilter.type && lesson.type !== currentFilter.type) return false;
+			return true;
+		});
 	});
 
 	// Group lessons by module for accordion view
@@ -173,7 +182,8 @@
 	async function handleBookmark(lessonId: string) {
 		if (!roomId) return;
 		try {
-			await learningCenterHelpers.toggleBookmark(lessonId, roomId);
+			// TODO: Implement bookmark toggle via API
+			console.log('Toggle bookmark:', lessonId, roomId);
 		} catch (err) {
 			console.error('Failed to toggle bookmark:', err);
 		}
@@ -334,8 +344,7 @@
 						{/each}
 
 						<!-- Uncategorized lessons -->
-						{@const uncategorizedLessons = lessonsByModule.get('uncategorized') || []}
-						{#if uncategorizedLessons.length > 0}
+						{#if (uncategorizedLessons = lessonsByModule.get('uncategorized') || []).length > 0}
 							<ModuleAccordion
 								module={{
 									id: 'uncategorized',

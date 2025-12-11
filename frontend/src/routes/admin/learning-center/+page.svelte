@@ -9,22 +9,20 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { learningCenterStore, learningCenterHelpers } from '$lib/stores/learningCenter';
+	import { learningCenterStore } from '$lib/stores/learningCenter';
 	import type { LessonWithRelations, TradingRoom, Trainer, LessonCategory } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
-	import {
-		IconPlus,
-		IconSearch,
-		IconFilter,
-		IconEdit,
-		IconTrash,
-		IconEye,
-		IconCopy,
-		IconDots,
-		IconVideo,
-		IconFileText,
-		IconChevronDown
-	} from '$lib/icons';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconSearch from '@tabler/icons-svelte/icons/search';
+	import IconFilter from '@tabler/icons-svelte/icons/filter';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconDots from '@tabler/icons-svelte/icons/dots';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconFileText from '@tabler/icons-svelte/icons/file-text';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -121,7 +119,8 @@
 		if (!lessonToDelete) return;
 
 		try {
-			await learningCenterHelpers.deleteLesson(lessonToDelete);
+			// TODO: Implement delete functionality via API
+			console.log('Delete lesson:', lessonToDelete);
 		} catch (err) {
 			console.error('Failed to delete lesson:', err);
 		}
@@ -272,6 +271,7 @@
 			</thead>
 			<tbody>
 				{#each filteredLessons as lesson (lesson.id)}
+					{@const Icon = getTypeIcon(lesson.type)}
 					<tr>
 						<td class="col-title">
 							<div class="lesson-cell">
@@ -280,7 +280,7 @@
 										<img src={lesson.thumbnailUrl} alt="" />
 									{:else}
 										<div class="thumb-placeholder">
-											<svelte:component this={getTypeIcon(lesson.type)} size={20} />
+											<Icon size={20} />
 										</div>
 									{/if}
 								</div>
