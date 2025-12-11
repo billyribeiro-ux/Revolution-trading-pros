@@ -1,6 +1,7 @@
 <script lang="ts">
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
+	 * ICT11+ Performance: Uses streamed data for blog posts to eliminate TTFB blocking
 	 */
 	import Hero from '$lib/components/sections/Hero.svelte';
 	import LazySection from '$lib/components/LazySection.svelte';
@@ -18,6 +19,20 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	// ICT11+ Performance: Handle streamed posts data
+	let posts = $state(data.posts || []);
+	
+	// Update posts when streamed data arrives
+	$effect(() => {
+		if (data.streamed?.posts) {
+			data.streamed.posts.then((streamedPosts: any[]) => {
+				if (streamedPosts?.length > 0) {
+					posts = streamedPosts;
+				}
+			});
+		}
+	});
 
 	const homepageSchema = [
 		{
@@ -71,7 +86,7 @@
 </LazySection>
 
 <!-- Blog section renders immediately for SEO -->
-<LatestBlogsSection posts={data.posts} />
+<LatestBlogsSection posts={posts} />
 
 <LazySection rootMargin="300px">
 	<CTASection />
