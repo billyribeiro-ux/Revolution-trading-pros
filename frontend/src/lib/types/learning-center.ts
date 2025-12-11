@@ -2,157 +2,273 @@
  * Learning Center Types
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * Type definitions for the Learning Center feature, including courses,
- * modules, lessons, and progress tracking.
+ * Type definitions for the Learning Center system.
+ * Each trading room/alert service has its own learning center with
+ * room-specific educational content.
  *
  * @version 1.0.0 (December 2025)
  */
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LESSON
+// TRADING ROOM / SERVICE TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export interface LessonResource {
+export type TradingRoomType = 'trading-room' | 'alert-service' | 'mastery' | 'course' | 'indicator';
+
+export interface TradingRoom {
 	id: string;
+	slug: string;
 	name: string;
-	url: string;
-	type: 'pdf' | 'video' | 'link' | 'download';
-	size?: string;
+	shortName?: string;
+	description: string;
+	type: TradingRoomType;
+	icon: string;
+	color?: string;
+	tradingRoomUrl?: string;
+	hasLearningCenter: boolean;
+	hasArchive: boolean;
+	hasDiscord: boolean;
+	isActive: boolean;
+	sortOrder: number;
+	createdAt: string;
+	updatedAt: string;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TRAINER TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface Trainer {
+	id: string;
+	slug: string;
+	name: string;
+	firstName: string;
+	lastName: string;
+	title: string;
+	bio: string;
+	shortBio?: string;
+	imageUrl: string;
+	thumbnailUrl?: string;
+	socialLinks?: {
+		twitter?: string;
+		linkedin?: string;
+		youtube?: string;
+	};
+	specialties: string[];
+	isActive: boolean;
+	sortOrder: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CATEGORY TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface LessonCategory {
+	id: string;
+	slug: string;
+	name: string;
+	description?: string;
+	icon?: string;
+	color?: string;
+	parentId?: string; // For nested categories
+	sortOrder: number;
+	isActive: boolean;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LESSON TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type LessonType = 'video' | 'article' | 'pdf' | 'quiz' | 'webinar-replay';
+export type LessonStatus = 'draft' | 'published' | 'archived';
+export type AccessLevel = 'free' | 'member' | 'premium';
 
 export interface Lesson {
-	id: number;
-	title: string;
-	description: string;
-	duration: string;
-	durationSeconds: number;
-	videoUrl: string;
-	thumbnailUrl?: string;
-	completed: boolean;
-	locked: boolean;
-	moduleId: number;
-	moduleName: string;
-	order: number;
-	notes?: string;
-	resources?: LessonResource[];
-	watchedSeconds?: number;
-	completedAt?: string;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// MODULE
-// ═══════════════════════════════════════════════════════════════════════════
-
-export interface CourseModule {
-	id: number;
-	title: string;
-	description: string;
-	category: string;
-	lessons: Lesson[];
-	totalDuration: string;
-	progress: number;
-	order: number;
-	locked: boolean;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// COURSE
-// ═══════════════════════════════════════════════════════════════════════════
-
-export interface Course {
 	id: string;
 	slug: string;
 	title: string;
 	description: string;
-	thumbnail?: string;
-	modules: CourseModule[];
-	totalLessons: number;
-	totalDuration: string;
-	progress: number;
-	enrolledAt?: string;
-	lastAccessedAt?: string;
+	fullDescription?: string;
+
+	// Content
+	type: LessonType;
+	videoUrl?: string;
+	posterUrl?: string;
+	thumbnailUrl?: string;
+	articleContent?: string;
+	pdfUrl?: string;
+	duration?: string; // e.g., "45:00" for videos
+
+	// Relationships
+	tradingRoomIds: string[]; // Which rooms this lesson belongs to
+	trainerId: string;
+	categoryId: string;
+	tags: string[];
+
+	// Access & Status
+	status: LessonStatus;
+	accessLevel: AccessLevel;
+	isFeatured: boolean;
+	isPinned: boolean;
+
+	// Ordering
+	sortOrder: number;
+	moduleId?: string; // For organizing into modules/sections
+	moduleOrder?: number;
+
+	// Metadata
+	publishedAt?: string;
+	createdAt: string;
+	updatedAt: string;
+
+	// Analytics (optional, populated separately)
+	viewCount?: number;
+	completionCount?: number;
+	averageRating?: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PROGRESS
+// MODULE TYPES (for organizing lessons into sections)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export interface LessonProgress {
-	lessonId: number;
-	watchedSeconds: number;
-	completed: boolean;
-	completedAt?: string;
-	lastWatchedAt: string;
-}
-
-export interface CourseProgress {
-	courseId: string;
-	lessonsCompleted: number;
-	totalLessons: number;
-	percentComplete: number;
-	lastAccessedAt: string;
-	lessonProgress: LessonProgress[];
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// VIDEO ARCHIVE
-// ═══════════════════════════════════════════════════════════════════════════
-
-export interface ArchivedVideo {
-	id: number;
-	title: string;
-	description: string;
-	duration: string;
-	date: string;
-	month: string;
-	views: number;
-	thumbnail?: string;
-	videoUrl: string;
-	category?: string;
-	tags?: string[];
-}
-
-export interface VideoArchiveFilters {
-	search: string;
-	month: string;
-	category: string;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// CATEGORIES
-// ═══════════════════════════════════════════════════════════════════════════
-
-export interface LearningCategory {
+export interface LessonModule {
 	id: string;
+	slug: string;
+	tradingRoomId: string;
 	name: string;
 	description?: string;
-	icon?: string;
-	courseCount?: number;
+	sortOrder: number;
+	isExpanded?: boolean; // UI state for accordion
+	lessonCount?: number; // Computed
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// API RESPONSES
+// USER PROGRESS TYPES
 // ═══════════════════════════════════════════════════════════════════════════
+
+export interface UserLessonProgress {
+	id: string;
+	userId: string;
+	lessonId: string;
+	tradingRoomId: string;
+
+	// Progress tracking
+	isCompleted: boolean;
+	completedAt?: string;
+	progressPercent: number; // 0-100
+	lastPosition?: number; // Video position in seconds
+
+	// Engagement
+	isBookmarked: boolean;
+	rating?: number; // 1-5
+	notes?: string;
+
+	// Timestamps
+	firstViewedAt: string;
+	lastViewedAt: string;
+}
+
+export interface UserModuleProgress {
+	moduleId: string;
+	completedLessons: number;
+	totalLessons: number;
+	progressPercent: number;
+}
+
+export interface UserRoomProgress {
+	tradingRoomId: string;
+	completedLessons: number;
+	totalLessons: number;
+	progressPercent: number;
+	moduleProgress: UserModuleProgress[];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RESOURCE TYPES (downloadable files)
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type ResourceType = 'pdf' | 'spreadsheet' | 'image' | 'video' | 'zip' | 'other';
+
+export interface LessonResource {
+	id: string;
+	lessonId: string;
+	name: string;
+	description?: string;
+	type: ResourceType;
+	fileUrl: string;
+	fileSize?: number; // bytes
+	downloadCount?: number;
+	sortOrder: number;
+	createdAt: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ADMIN/UPLOAD TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface CreateLessonInput {
+	title: string;
+	description: string;
+	fullDescription?: string;
+	type: LessonType;
+	videoUrl?: string;
+	posterUrl?: string;
+	thumbnailUrl?: string;
+	duration?: string;
+	tradingRoomIds: string[];
+	trainerId: string;
+	categoryId: string;
+	tags?: string[];
+	accessLevel?: AccessLevel;
+	moduleId?: string;
+	status?: LessonStatus;
+}
+
+export interface UpdateLessonInput extends Partial<CreateLessonInput> {
+	id: string;
+}
+
+export interface LessonFilter {
+	tradingRoomId?: string;
+	trainerId?: string;
+	categoryId?: string;
+	moduleId?: string;
+	type?: LessonType;
+	status?: LessonStatus;
+	accessLevel?: AccessLevel;
+	search?: string;
+	tags?: string[];
+	isFeatured?: boolean;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// API RESPONSE TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface LessonWithRelations extends Lesson {
+	trainer?: Trainer;
+	category?: LessonCategory;
+	tradingRooms?: TradingRoom[];
+	module?: LessonModule;
+	resources?: LessonResource[];
+	userProgress?: UserLessonProgress;
+}
 
 export interface LearningCenterData {
-	courses: Course[];
-	categories: LearningCategory[];
-	overallProgress: number;
-	recentlyWatched: Lesson[];
+	tradingRoom: TradingRoom;
+	modules: LessonModule[];
+	lessons: LessonWithRelations[];
+	categories: LessonCategory[];
+	trainers: Trainer[];
+	userProgress?: UserRoomProgress;
 }
 
-export interface LessonData {
-	lesson: Lesson;
-	course: Course;
-	module: CourseModule;
-	previousLesson: Lesson | null;
-	nextLesson: Lesson | null;
-}
-
-export interface VideoArchiveData {
-	videos: ArchivedVideo[];
-	totalCount: number;
-	currentPage: number;
+export interface PaginatedLessons {
+	lessons: LessonWithRelations[];
+	total: number;
+	page: number;
+	pageSize: number;
 	totalPages: number;
-	filters: VideoArchiveFilters;
 }
