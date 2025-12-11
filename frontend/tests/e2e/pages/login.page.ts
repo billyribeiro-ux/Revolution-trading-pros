@@ -31,15 +31,16 @@ export class LoginPage extends BasePage {
 		super(page);
 
 		// Form elements - using multiple selector strategies for resilience
-		this.emailInput = page.locator(
-			'input[type="email"], input[name="email"], input[id="email"], [data-testid="email-input"]'
-		).first();
-		this.passwordInput = page.locator(
-			'input[type="password"], input[name="password"], input[id="password"], [data-testid="password-input"]'
-		).first();
-		this.submitButton = page.locator(
-			'button[type="submit"], button:has-text("Sign In"), button:has-text("Log In"), button:has-text("Login")'
-		).first();
+		// Prioritize placeholder-based selection for Revolution Trading Pros login form
+		this.emailInput = page.getByPlaceholder(/trader@example\.com/i).or(
+			page.locator('input[type="email"], input[name="email"], input[id="email"], [data-testid="email-input"]').first()
+		);
+		this.passwordInput = page.getByPlaceholder(/••••••••/i).or(
+			page.locator('input[type="password"], input[name="password"], input[id="password"], [data-testid="password-input"]').first()
+		);
+		this.submitButton = page.getByRole('button', { name: /sign in/i }).or(
+			page.locator('button[type="submit"], button:has-text("Log In"), button:has-text("Login")').first()
+		);
 		this.rememberMeCheckbox = page.locator(
 			'input[type="checkbox"][name="remember"], [data-testid="remember-me"]'
 		);

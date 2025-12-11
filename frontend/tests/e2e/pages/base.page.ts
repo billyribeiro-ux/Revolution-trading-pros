@@ -44,10 +44,32 @@ export abstract class BasePage {
 
 	/**
 	 * Wait for page to be fully loaded and ready
+	 * Note: We don't use 'networkidle' as modern SPAs have persistent connections
+	 * (WebSockets, analytics, etc.) that prevent networkidle from ever firing
 	 */
 	async waitForPageReady(): Promise<void> {
 		await this.page.waitForLoadState('domcontentloaded');
-		await this.page.waitForLoadState('networkidle');
+		// Wait for hydration to complete by checking for Svelte's hydration marker
+		await this.page.waitForFunction(() => {
+			return document.body.dataset.sveltekit !== undefined || 
+				   document.querySelector('[data-sveltekit-hydrated]') !== null ||
+				   !document.body.classList.contains('loading');
+		}, { timeout: 10000 }).catch(() => {
+			// Fallback: just wait a bit for hydration
+		});
+		// Dismiss cookie consent if present
+		await this.dismissCookieConsent();
+	}
+
+	/**
+	 * Dismiss cookie consent banner if present
+	 */
+	async dismissCookieConsent(): Promise<void> {
+		const acceptButton = this.page.getByRole('button', { name: /accept all/i });
+		if (await acceptButton.isVisible({ timeout: 1000 }).catch(() => false)) {
+			await acceptButton.click();
+			await this.page.waitForTimeout(300);
+		}
 	}
 
 	/**
