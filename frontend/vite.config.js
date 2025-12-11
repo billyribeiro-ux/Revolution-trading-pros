@@ -138,11 +138,7 @@ export default defineConfig({
 		// Optimize dependency discovery
 		entries: [
 			'src/routes/**/*.svelte'
-		],
-		// ICT8-11+ Performance: Disable esbuild optimization for faster dev startup
-		esbuildOptions: {
-			target: 'esnext'
-		}
+		]
 	},
 	// Enable CSS code splitting
 	css: {

@@ -104,7 +104,6 @@ export function handleConsentRevoked(
 
 /**
  * Load all vendors that have appropriate consent.
- * ICT8-11+ Performance: Load vendors sequentially with yielding to prevent main thread blocking
  *
  * @param consent - The current consent state
  * @param vendors - Array of vendor configurations
@@ -117,21 +116,22 @@ export async function loadVendorsForConsent(
 
 	console.debug('[VendorLoader] Loading vendors for consent state:', consent);
 
-	let loaded = 0;
+	// Process vendors in parallel
+	const results = await Promise.allSettled(
+		vendors.map(async (vendor) => {
+			if (hasRequiredConsent(vendor, consent)) {
+				return loadVendor(vendor, consent);
+			} else {
+				// Handle revoked consent
+				handleConsentRevoked(vendor, consent);
+				return false;
+			}
+		})
+	);
 
-	// ICT8-11+ Performance: Load vendors sequentially with yielding to main thread
-	// This prevents blocking the main thread during initial page load
-	for (const vendor of vendors) {
-		if (hasRequiredConsent(vendor, consent)) {
-			// Yield to main thread between vendor loads
-			await new Promise(resolve => setTimeout(resolve, 0));
-			const success = await loadVendor(vendor, consent);
-			if (success) loaded++;
-		} else {
-			// Handle revoked consent
-			handleConsentRevoked(vendor, consent);
-		}
-	}
+	const loaded = results.filter(
+		(r) => r.status === 'fulfilled' && r.value === true
+	).length;
 
 	console.debug(`[VendorLoader] Loaded ${loaded}/${vendors.length} vendors`);
 }

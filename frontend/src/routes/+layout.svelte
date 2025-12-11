@@ -60,44 +60,19 @@
 		mounted = true;
 		
 		if (browser) {
-			// ICT8-11+ Performance: Activate font stylesheet immediately
-			const fontLink = document.getElementById('critical-fonts') as HTMLLinkElement;
-			if (fontLink) fontLink.media = 'all';
-			
-			// ICT8-11+ Performance: Register service worker immediately for caching
 			registerServiceWorker();
-			
-			// ICT8-11+ Performance: Defer non-critical initialization to after LCP
-			// Use requestIdleCallback for consent/tracking (not render-blocking)
-			if ('requestIdleCallback' in window) {
-				(window as any).requestIdleCallback(() => {
-					initPerformanceMonitoring();
-					initializeConsent();
-				}, { timeout: 2000 });
-			} else {
-				// Fallback: defer by 100ms to not block main thread
-				setTimeout(() => {
-					initPerformanceMonitoring();
-					initializeConsent();
-				}, 100);
-			}
+			initPerformanceMonitoring();
+			initializeConsent();
 		}
 	});
 </script>
 
 <svelte:head>
-	<!-- ICT8-11+ Performance: Preconnect to critical origins FIRST -->
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+	<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	
-	<!-- ICT8-11+ Performance: Load only critical font weights with display=swap -->
-	<link 
-		rel="stylesheet" 
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-		media="print"
-		id="critical-fonts"
-	/>
-	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="all" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 	<meta name="theme-color" content="#0a101c" />
 </svelte:head>
