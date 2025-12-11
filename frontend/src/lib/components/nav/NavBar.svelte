@@ -826,26 +826,26 @@
 					</button>
 				{/if}
 			{/if}
-
-			<!-- Hamburger -->
-			<button
-				bind:this={hamburgerRef}
-				class="hamburger"
-				onclick={toggleMobileMenu}
-				aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-				aria-expanded={isMobileMenuOpen}
-				aria-controls="mobile-nav"
-				type="button"
-			>
-				<!-- ICT11+ Fix: Use CSS transform instead of DOM swap to prevent layout shift -->
-				<span class="hamburger-icon" class:open={isMobileMenuOpen}>
-					<IconMenu2 size={24} aria-hidden="true" />
-				</span>
-				<span class="hamburger-icon hamburger-close" class:open={isMobileMenuOpen}>
-					<IconX size={24} aria-hidden="true" />
-				</span>
-			</button>
 		</div>
+
+		<!-- ICT11+ Fix: Hamburger outside actions container to prevent layout shift -->
+		<button
+			bind:this={hamburgerRef}
+			class="hamburger"
+			onclick={toggleMobileMenu}
+			aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+			aria-expanded={isMobileMenuOpen}
+			aria-controls="mobile-nav"
+			type="button"
+		>
+			<!-- ICT11+ Fix: Use CSS transform instead of DOM swap to prevent layout shift -->
+			<span class="hamburger-icon" class:open={isMobileMenuOpen}>
+				<IconMenu2 size={24} aria-hidden="true" />
+			</span>
+			<span class="hamburger-icon hamburger-close" class:open={isMobileMenuOpen}>
+				<IconX size={24} aria-hidden="true" />
+			</span>
+		</button>
 	</div>
 </header>
 
@@ -1567,11 +1567,13 @@
 		justify-content: center;
 		width: 44px;
 		height: 44px;
+		margin-inline-start: 0.75rem;
 		color: #ffffff;
 		background: transparent;
 		border: none;
 		border-radius: var(--nav-radius);
 		cursor: pointer;
+		flex-shrink: 0;
 		transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
