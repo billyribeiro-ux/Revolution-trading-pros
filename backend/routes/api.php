@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\NewsletterCategoryController;
 use App\Http\Controllers\Api\PastMembersController;
 use App\Http\Controllers\Api\SitemapController;
 use App\Http\Controllers\Api\RobotsController;
+use App\Http\Controllers\Api\ReadingAnalyticsController;
 use App\Http\Controllers\Admin\PastMembersDashboardController;
 use App\Http\Controllers\Admin\AbandonedCartController;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,12 @@ Route::prefix('sitemap')->group(function () {
 // ROBOTS.TXT (SEO - Lightning Stack)
 // ========================================
 Route::get('/robots.txt', [RobotsController::class, 'index']);
+
+// ========================================
+// READING ANALYTICS (ICT11+ Blog Analytics)
+// ========================================
+Route::post('/analytics/reading', [ReadingAnalyticsController::class, 'track']);
+Route::post('/analytics/track', function () { return response()->json(['status' => 'ok']); });
 
 // Public routes
 Route::get('/time/now', [TimeController::class, 'now']);
