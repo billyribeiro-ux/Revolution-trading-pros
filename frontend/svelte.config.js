@@ -96,11 +96,11 @@ const config = {
 			mode: 'auto',
 			directives: {
 				'default-src': ['self'],
-				'script-src': ['self', 'unsafe-inline'], // Required for Cloudflare
+				'script-src': ['self', 'unsafe-inline', 'https://www.googletagmanager.com', 'https://www.google-analytics.com'],
 				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
 				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
-				'connect-src': ['self', 'wss:', 'https:'],
+				'connect-src': ['self', 'wss:', 'https:', 'http://localhost:8000', 'http://127.0.0.1:8000', 'http://localhost:8001', 'http://127.0.0.1:8001'],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']
