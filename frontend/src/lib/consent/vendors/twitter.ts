@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
@@ -165,7 +165,7 @@ export const twitterVendor: VendorConfig = {
 	load: () => {
 		const pixelId = env.PUBLIC_TWITTER_PIXEL_ID;
 		if (!pixelId) {
-			console.warn('[Twitter] Missing PUBLIC_TWITTER_PIXEL_ID environment variable');
+			if (!dev) console.warn('[Twitter] Missing PUBLIC_TWITTER_PIXEL_ID environment variable');
 			return;
 		}
 		initializeTwitter(pixelId);

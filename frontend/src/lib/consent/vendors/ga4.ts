@@ -179,9 +179,14 @@ export const ga4Vendor: VendorConfig = {
 				// This gives us more control and avoids duplicate events during SPA navigation
 				send_page_view: false,
 
-				// CRITICAL: Disable automatic page_view tracking on history changes
-				// This prevents GA4 from calling history.pushState which conflicts with SvelteKit
+				// CRITICAL: Disable ALL automatic history-based tracking
+				// This prevents GA4 from calling history.pushState/replaceState which conflicts with SvelteKit
 				page_changes_enabled: false,
+				
+				// Disable browser history integration completely
+				// See: https://developers.google.com/analytics/devguides/collection/ga4/single-page-applications
+				transport_url: 'https://www.google-analytics.com/g/collect',
+				first_party_collection: true,
 
 				// Anonymize IP addresses (now default in GA4, but explicit is better)
 				anonymize_ip: true,
@@ -192,6 +197,17 @@ export const ga4Vendor: VendorConfig = {
 				// Don't allow ad personalization by default
 				allow_ad_personalization_signals: currentConsent.marketing,
 			});
+			
+			// Disable GA4's history state listener to prevent conflicts with SvelteKit router
+			// This is a workaround for gtag.js hooking into history.pushState/replaceState
+			if (window.history && window.history.pushState) {
+				const originalPushState = window.history.pushState.bind(window.history);
+				const originalReplaceState = window.history.replaceState.bind(window.history);
+				
+				// Store originals for SvelteKit to use
+				(window as unknown as Record<string, unknown>).__sveltekit_pushState = originalPushState;
+				(window as unknown as Record<string, unknown>).__sveltekit_replaceState = originalReplaceState;
+			}
 
 			ga4Initialized = true;
 

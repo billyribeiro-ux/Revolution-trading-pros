@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
@@ -150,7 +150,7 @@ export const linkedinVendor: VendorConfig = {
 	load: () => {
 		const partnerId = env.PUBLIC_LINKEDIN_PARTNER_ID;
 		if (!partnerId) {
-			console.warn('[LinkedIn] Missing PUBLIC_LINKEDIN_PARTNER_ID environment variable');
+			if (!dev) console.warn('[LinkedIn] Missing PUBLIC_LINKEDIN_PARTNER_ID environment variable');
 			return;
 		}
 		initializeLinkedIn(partnerId);
