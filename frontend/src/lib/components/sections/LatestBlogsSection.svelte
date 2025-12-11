@@ -178,8 +178,14 @@
                                     <h4 class="text-lg font-medium text-slate-300 group-hover:text-white transition-colors mb-2 leading-snug">
                                         {post.title}
                                     </h4>
-                                    <div class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
-                                        {post.author?.name || 'Desk Analyst'}
+                                    <div class="flex items-center justify-between mt-3">
+                                        <span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+                                            {post.author?.name || 'Desk Analyst'}
+                                        </span>
+                                        <span class="read-more-link inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-slate-500 group-hover:text-amber-500 transition-all duration-300">
+                                            <span>Read More</span>
+                                            <IconArrowRight size={12} class="transform group-hover:translate-x-1 transition-transform duration-300" />
+                                        </span>
                                     </div>
                                 </a>
                             {/each}
