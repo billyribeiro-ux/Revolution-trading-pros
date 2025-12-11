@@ -342,6 +342,27 @@
 								{/each}
 							</div>
 						{/if}
+
+						<div class="read-more-wrapper">
+							<span class="read-more-btn">
+								<span class="btn-text">Read More</span>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="arrow-icon"
+								>
+									<line x1="5" y1="12" x2="19" y2="12"></line>
+									<polyline points="12 5 19 12 12 19"></polyline>
+								</svg>
+							</span>
+						</div>
 					</div>
 				</div>
 			{/each}
@@ -572,6 +593,63 @@
 		font-size: 0.75rem;
 		border-radius: 8px;
 		border: 1px solid rgba(148, 163, 184, 0.2);
+	}
+
+	/* Read More Button Styles */
+	.read-more-wrapper {
+		margin-top: 1.25rem;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.read-more-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+		color: #60a5fa;
+		font-size: 0.875rem;
+		font-weight: 600;
+		border-radius: 8px;
+		border: 1px solid rgba(96, 165, 250, 0.3);
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.read-more-btn::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, #60a5fa, #a78bfa);
+		opacity: 0;
+		transition: opacity 0.3s;
+	}
+
+	.read-more-btn .btn-text,
+	.read-more-btn .arrow-icon {
+		position: relative;
+		z-index: 1;
+	}
+
+	.read-more-btn .arrow-icon {
+		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.post-card:hover .read-more-btn {
+		border-color: transparent;
+		color: white;
+		transform: translateX(4px);
+		box-shadow: 0 8px 20px -8px rgba(96, 165, 250, 0.5);
+	}
+
+	.post-card:hover .read-more-btn::before {
+		opacity: 1;
+	}
+
+	.post-card:hover .read-more-btn .arrow-icon {
+		transform: translateX(4px);
 	}
 
 	.pagination {
