@@ -95,7 +95,7 @@
 	let imgElement = $state<HTMLImageElement | null>(null);
 
 	// Generate a simple gradient placeholder if no blurhash
-	let placeholderStyle = $derived(() => {
+	let placeholderStyle = $derived.by(() => {
 		if (blurhash) {
 			// If blurhash is provided, use it as a data URL
 			// The blurhash should be pre-converted to a data URL on the server
@@ -134,7 +134,7 @@
 	<div
 		class="placeholder"
 		class:hidden={isLoaded}
-		style={placeholderStyle()}
+		style={placeholderStyle}
 	></div>
 
 	<!-- Actual image -->

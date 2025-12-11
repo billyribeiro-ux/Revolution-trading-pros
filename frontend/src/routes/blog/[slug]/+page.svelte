@@ -1,17 +1,26 @@
 <script lang="ts">
 	/**
 	 * Blog Post Page - Svelte 5 Runes Implementation
-	 * @version 2.0.0 - November 2025
+	 * ICT11+ Production-Grade with Full Analytics & Engagement Features
+	 * @version 3.0.0 - December 2024
 	 */
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
 	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
+	import ReadingProgress from '$lib/components/blog/ReadingProgress.svelte';
+	import SocialShare from '$lib/components/blog/SocialShare.svelte';
+	import CodeBlock from '$lib/components/blog/CodeBlock.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
+	import { initReadingAnalytics, calculateReadingTime, formatReadingTime } from '$lib/utils/readingAnalytics';
+
+	// Import print stylesheet
+	import '$lib/styles/print.css';
 
 	interface Category {
 		id: number;
@@ -78,6 +87,45 @@
 		goto('/blog');
 	}
 
+	// Calculate reading time from post content
+	let readingTime = $derived.by(() => {
+		if (!post) return 0;
+		// Extract text from content blocks
+		const text = post.content_blocks
+			?.map((block: any) => {
+				if (block.type === 'paragraph' || block.type === 'heading') {
+					return block.data?.text || '';
+				}
+				if (block.type === 'list') {
+					return (block.data?.items || []).join(' ');
+				}
+				return '';
+			})
+			.join(' ') || post.excerpt || '';
+		return calculateReadingTime(text);
+	});
+
+	// Initialize reading analytics when post loads
+	$effect(() => {
+		if (browser && post) {
+			const cleanup = initReadingAnalytics({
+				postId: post.id,
+				slug: post.slug,
+				contentSelector: '.post-body',
+				options: {
+					debug: import.meta.env.DEV,
+					endpoint: '/api/analytics/reading',
+				}
+			});
+			return cleanup;
+		}
+	});
+
+	// Track social shares
+	function handleSocialShare(platform: string) {
+		console.log(`Shared on ${platform}:`, post?.slug);
+	}
+
 	// Derived SEO values - Svelte 5 runes
 	let articleSchema = $derived(
 		post &&
@@ -124,6 +172,14 @@
 		schema={articleSchema}
 	/>
 {/if}
+
+<!-- Reading Progress Indicator -->
+<ReadingProgress
+	contentSelector=".post-body"
+	height={4}
+	color="#3b82f6"
+	position="top"
+/>
 
 <div class="blog-post-container">
 	{#if loading}
@@ -201,6 +257,8 @@
 							{/if}
 							<div class="meta-row">
 								<span class="date">{formatDate(post.published_at)}</span>
+								<span class="separator">•</span>
+								<span class="reading-time">{formatReadingTime(readingTime)}</span>
 								{#if post.views !== undefined}
 									<span class="separator">•</span>
 									<span class="views">{post.views.toLocaleString()} views</span>
@@ -306,6 +364,18 @@
 						</div>
 					</div>
 				{/if}
+
+				<!-- Social Share Section -->
+				<div class="share-section">
+					<SocialShare
+						url={`https://revolutiontradingpros.com/blog/${post.slug}`}
+						title={post.title}
+						description={post.excerpt || post.meta_description || ''}
+						hashtags="trading,forex,stocks"
+						onShare={handleSocialShare}
+						size="medium"
+					/>
+				</div>
 			</div>
 
 			<div class="post-footer">
@@ -680,6 +750,19 @@
 		background: rgba(96, 165, 250, 0.2);
 		border-color: #60a5fa;
 		color: #60a5fa;
+	}
+
+	/* Share Section */
+	.share-section {
+		margin-top: 2rem;
+		padding-top: 2rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	/* Reading Time */
+	.reading-time {
+		color: #60a5fa;
+		font-weight: 500;
 	}
 
 	.post-footer {
