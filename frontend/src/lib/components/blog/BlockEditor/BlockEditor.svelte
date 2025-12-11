@@ -43,7 +43,6 @@
 		IconMaximize,
 		IconMinimize,
 		IconLayoutGrid,
-		IconOutline,
 		IconDeviceFloppy,
 		IconCloudUpload,
 		IconSearch,
