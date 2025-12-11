@@ -362,20 +362,14 @@
 
 		previousFocusRef = document.activeElement as HTMLElement;
 
-		// ICT11+ Enterprise Fix: Apply scroll lock with synchronized compensation
-		// CRITICAL: Both body AND navbar must receive padding compensation because:
-		// - Body needs it to prevent content jump
-		// - Navbar (position: sticky) is viewport-relative, not body-relative
-		// - Without navbar compensation, hamburger shifts when scrollbar disappears
+		// ICT11+ Enterprise Fix: Scroll lock with proper compensation
+		// Apply on <html> element for consistent behavior across browsers
+		// Padding compensates for scrollbar removal - prevents layout shift
 		const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-		// Apply compensation atomically to both elements
-		document.body.style.overflow = 'hidden';
-		document.body.style.paddingRight = `${scrollbarWidth}px`;
-
-		// CRITICAL: Navbar must also compensate - it's position:sticky (viewport-relative)
-		if (navbarRef) {
-			navbarRef.style.paddingRight = `${scrollbarWidth}px`;
+		document.documentElement.style.overflow = 'hidden';
+		if (scrollbarWidth > 0) {
+			document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
 		}
 
 		// NOW change state after scroll lock is in place
@@ -405,12 +399,9 @@
 
 		mobileMenuState = 'idle';
 
-		// ICT11+ Enterprise Fix: Clean up scroll lock from BOTH body and navbar
-		document.body.style.overflow = '';
-		document.body.style.paddingRight = '';
-		if (navbarRef) {
-			navbarRef.style.paddingRight = '';
-		}
+		// ICT11+ Enterprise Fix: Clean up scroll lock
+		document.documentElement.style.overflow = '';
+		document.documentElement.style.paddingRight = '';
 
 		// Restore focus
 		requestAnimationFrame(() => {
@@ -623,12 +614,9 @@
 			document.removeEventListener('click', handleClickOutside);
 			document.removeEventListener('keydown', handleKeydown);
 			scrollObserver?.disconnect();
-			// ICT11+ Enterprise Fix: Clean up all scroll lock styles from both body and navbar
-			document.body.style.overflow = '';
-			document.body.style.paddingRight = '';
-			if (navbarRef) {
-				navbarRef.style.paddingRight = '';
-			}
+			// ICT11+ Enterprise Fix: Clean up scroll lock
+			document.documentElement.style.overflow = '';
+			document.documentElement.style.paddingRight = '';
 		};
 	});
 </script>
