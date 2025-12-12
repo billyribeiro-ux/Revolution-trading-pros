@@ -5,6 +5,7 @@
 	 *
 	 * Exact match of Simpler Trading's WooCommerce My Account page.
 	 * Shows greeting and links to account sections.
+	 * Sidebar is handled by DashboardSidebar component (shows account nav when on account pages).
 	 *
 	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
 	 */
@@ -82,35 +83,6 @@
 			</div>
 		</section>
 	</div>
-
-	<!-- Sidebar - WordPress: .dashboard__content-sidebar -->
-	<aside class="dashboard__content-sidebar">
-		<nav class="dashboard__nav-secondary">
-			<ul class="woocommerce-MyAccount-navigation">
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--orders">
-					<a href="/dashboard/orders">My Orders</a>
-				</li>
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--subscriptions">
-					<a href="/dashboard/subscriptions">My Subscriptions</a>
-				</li>
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--coupons">
-					<a href="/dashboard/coupons">Coupons</a>
-				</li>
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-address">
-					<a href="/dashboard/addresses">Billing Address</a>
-				</li>
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--payment-methods">
-					<a href="/dashboard/payment-methods">Payment Methods</a>
-				</li>
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-account">
-					<a href="/dashboard/account/edit">Account Details</a>
-				</li>
-				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--logout">
-					<button onclick={handleLogout}>Log out</button>
-				</li>
-			</ul>
-		</nav>
-	</aside>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -150,16 +122,13 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
-		display: flex;
-		gap: 30px;
 		padding: 30px;
 		background: #f4f4f4;
 		min-height: calc(100vh - 80px);
 	}
 
 	.dashboard__content-main {
-		flex: 1;
-		min-width: 0;
+		width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -238,91 +207,8 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - WooCommerce MyAccount Navigation
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content-sidebar {
-		width: 240px;
-		flex-shrink: 0;
-	}
-
-	.dashboard__nav-secondary {
-		background: #fff;
-		border-radius: 4px;
-		overflow: hidden;
-	}
-
-	.woocommerce-MyAccount-navigation {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.woocommerce-MyAccount-navigation-link {
-		border-bottom: 1px solid #e5e5e5;
-	}
-
-	.woocommerce-MyAccount-navigation-link:last-child {
-		border-bottom: none;
-	}
-
-	.woocommerce-MyAccount-navigation-link a,
-	.woocommerce-MyAccount-navigation-link button {
-		display: block;
-		width: 100%;
-		padding: 14px 20px;
-		color: #333;
-		font-size: 14px;
-		font-weight: 400;
-		text-decoration: none;
-		text-align: left;
-		background: none;
-		border: none;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.woocommerce-MyAccount-navigation-link a:hover,
-	.woocommerce-MyAccount-navigation-link button:hover {
-		background: #f4f4f4;
-		color: #0984ae;
-	}
-
-	.woocommerce-MyAccount-navigation-link.is-active a {
-		background: #0984ae;
-		color: #fff;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media screen and (max-width: 991px) {
-		.dashboard__content {
-			flex-direction: column-reverse;
-		}
-
-		.dashboard__content-sidebar {
-			width: 100%;
-		}
-
-		.woocommerce-MyAccount-navigation {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 2px;
-		}
-
-		.woocommerce-MyAccount-navigation-link {
-			border-bottom: none;
-		}
-
-		.woocommerce-MyAccount-navigation-link a,
-		.woocommerce-MyAccount-navigation-link button {
-			padding: 10px 16px;
-			border: 1px solid #e5e5e5;
-			border-radius: 4px;
-		}
-	}
 
 	@media screen and (max-width: 768px) {
 		.dashboard__header {

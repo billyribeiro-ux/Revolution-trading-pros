@@ -179,163 +179,207 @@
 		<span class="dashboard__profile-name">{userName}</span>
 	</a>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     MEMBER SUBSCRIPTION INFO (Simpler Trading style)
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	{#if hasSubscriptionInfo}
-		<div class="subscription-info-box">
-			<p class="subscription-info-title">Member Subscription Info</p>
-			{#if subscriptionInfo?.nextChargeDate && subscriptionInfo?.nextChargeAmount}
-				<p class="subscription-info-text">
-					Next charge: {formatCurrency(subscriptionInfo.nextChargeAmount)} on {formatDate(subscriptionInfo.nextChargeDate)}
-				</p>
-			{:else if subscriptionInfo?.nextChargeDate}
-				<p class="subscription-info-text">
-					Next charge: {formatDate(subscriptionInfo.nextChargeDate)}
-				</p>
-			{:else if subscriptionInfo?.nextChargeAmount}
-				<p class="subscription-info-text">
-					Amount: {formatCurrency(subscriptionInfo.nextChargeAmount)}
-				</p>
-			{/if}
-			{#if subscriptionInfo?.paymentMethod}
-				<p class="subscription-info-payment">via {subscriptionInfo.paymentMethod}</p>
-			{/if}
-		</div>
-	{/if}
+	{#if isAccountSection}
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     ACCOUNT NAVIGATION (When on My Account pages - Simpler Trading EXACT)
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		<ul class="dash_main_links">
+			<li class:is-active={isActive('/dashboard/orders')}>
+				<a href="/dashboard/orders">
+					<span class="dashboard__nav-item-icon st-icon-home"></span>
+					<span class="dashboard__nav-item-text">My Orders</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/subscriptions')}>
+				<a href="/dashboard/subscriptions">
+					<span class="dashboard__nav-item-icon st-icon-courses"></span>
+					<span class="dashboard__nav-item-text">My Subscriptions</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/coupons')}>
+				<a href="/dashboard/coupons">
+					<span class="dashboard__nav-item-icon st-icon-indicators"></span>
+					<span class="dashboard__nav-item-text">Coupons</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/addresses')}>
+				<a href="/dashboard/addresses">
+					<span class="dashboard__nav-item-icon st-icon-chart"></span>
+					<span class="dashboard__nav-item-text">Billing Address</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/payment-methods')}>
+				<a href="/dashboard/payment-methods">
+					<span class="dashboard__nav-item-icon st-icon-chart"></span>
+					<span class="dashboard__nav-item-text">Payment Methods</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/account')}>
+				<a href="/dashboard/account">
+					<span class="dashboard__nav-item-icon st-icon-settings"></span>
+					<span class="dashboard__nav-item-text">Account Details</span>
+				</a>
+			</li>
+			<li>
+				<a href="/logout">
+					<span class="dashboard__nav-item-icon st-icon-logout"></span>
+					<span class="dashboard__nav-item-text">Log out</span>
+				</a>
+			</li>
+		</ul>
+	{:else}
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     MEMBER SUBSCRIPTION INFO (Simpler Trading style)
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		{#if hasSubscriptionInfo}
+			<div class="subscription-info-box">
+				<p class="subscription-info-title">Member Subscription Info</p>
+				{#if subscriptionInfo?.nextChargeDate && subscriptionInfo?.nextChargeAmount}
+					<p class="subscription-info-text">
+						Next charge: {formatCurrency(subscriptionInfo.nextChargeAmount)} on {formatDate(subscriptionInfo.nextChargeDate)}
+					</p>
+				{:else if subscriptionInfo?.nextChargeDate}
+					<p class="subscription-info-text">
+						Next charge: {formatDate(subscriptionInfo.nextChargeDate)}
+					</p>
+				{:else if subscriptionInfo?.nextChargeAmount}
+					<p class="subscription-info-text">
+						Amount: {formatCurrency(subscriptionInfo.nextChargeAmount)}
+					</p>
+				{/if}
+				{#if subscriptionInfo?.paymentMethod}
+					<p class="subscription-info-payment">via {subscriptionInfo.paymentMethod}</p>
+				{/if}
+			</div>
+		{/if}
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     MAIN LINKS (WordPress: .dash_main_links)
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	<ul class="dash_main_links">
-		<li class:is-active={isActive('/dashboard')}>
-			<a href="/dashboard">
-				<span class="dashboard__nav-item-icon st-icon-home"></span>
-				<span class="dashboard__nav-item-text">Member Dashboard</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/courses')}>
-			<a href="/dashboard/courses">
-				<span class="dashboard__nav-item-icon st-icon-learning-center"></span>
-				<span class="dashboard__nav-item-text">My Classes</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/indicators')}>
-			<a href="/dashboard/indicators">
-				<span class="dashboard__nav-item-icon st-icon-handle-stick"></span>
-				<span class="dashboard__nav-item-text">My Indicators</span>
-			</a>
-		</li>
-	</ul>
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     MAIN LINKS (WordPress: .dash_main_links)
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		<ul class="dash_main_links">
+			<li class:is-active={isActive('/dashboard')}>
+				<a href="/dashboard">
+					<span class="dashboard__nav-item-icon st-icon-home"></span>
+					<span class="dashboard__nav-item-text">Member Dashboard</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/courses')}>
+				<a href="/dashboard/courses">
+					<span class="dashboard__nav-item-icon st-icon-courses"></span>
+					<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/indicators')}>
+				<a href="/dashboard/indicators">
+					<span class="dashboard__nav-item-icon st-icon-indicators"></span>
+					<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
+				</a>
+			</li>
+		</ul>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     MEMBERSHIPS SECTION (WordPress: .dashboard__nav-category)
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	{#if hasTradingRooms || hasAlertServices}
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     MEMBERSHIPS SECTION (WordPress: .dashboard__nav-category)
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		{#if hasTradingRooms || hasAlertServices}
+			<ul>
+				<li><p class="dashboard__nav-category">memberships</p></li>
+			</ul>
+			<ul class="dash_main_links">
+				{#each tradingRooms as room (room.id)}
+					<li
+						class="{room.slug}-mp"
+						class:is-active={isActive(`/dashboard/${room.slug}`)}
+					>
+						<a href="/dashboard/{room.slug}">
+							<span class="dashboard__nav-item-icon st-icon-mastering-the-trade">
+								{#if room.icon}
+									<img src={room.icon} alt="" class="service-icon-img" loading="lazy" />
+								{/if}
+							</span>
+							<span class="dashboard__nav-item-text">{room.name}</span>
+						</a>
+					</li>
+				{/each}
+				{#each alertServices as alert (alert.id)}
+					<li
+						class="{alert.slug}-mp"
+						class:is-active={isActive(`/dashboard/${alert.slug}`)}
+					>
+						<a href="/dashboard/{alert.slug}">
+							<span class="dashboard__nav-item-icon {getServiceIconClass(alert.slug)}">
+								{#if alert.icon}
+									<img src={alert.icon} alt="" class="service-icon-img" loading="lazy" />
+								{/if}
+							</span>
+							<span class="dashboard__nav-item-text">{alert.name}</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     MASTERY SECTION
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		{#if hasCourses}
+			<ul>
+				<li><p class="dashboard__nav-category">mastery</p></li>
+			</ul>
+			<ul class="dash_main_links">
+				{#each courses as course (course.id)}
+					<li
+						class="{course.slug}-mp"
+						class:is-active={isActive(`/dashboard/${course.slug}`)}
+					>
+						<a href="/dashboard/{course.slug}">
+							<span class="dashboard__nav-item-icon st-icon-moxie">
+								{#if course.icon}
+									<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
+								{/if}
+							</span>
+							<span class="dashboard__nav-item-text">{course.name}</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     TOOLS SECTION (Simpler Trading EXACT - Always shown)
+		     ═══════════════════════════════════════════════════════════════════════ -->
 		<ul>
-			<li><p class="dashboard__nav-category">memberships</p></li>
+			<li><p class="dashboard__nav-category">tools</p></li>
 		</ul>
 		<ul class="dash_main_links">
-			{#each tradingRooms as room (room.id)}
-				<li
-					class="{room.slug}-mp"
-					class:is-active={isActive(`/live-trading-rooms/${room.slug}`)}
-				>
-					<a href="/live-trading-rooms/{room.slug}">
-						<span class="dashboard__nav-item-icon {getServiceIconClass(room.slug)}">
-							{#if room.icon}
-								<img src={room.icon} alt="" class="service-icon-img" loading="lazy" />
-							{:else}
-								<i class="fa fa-graduation-cap" aria-hidden="true"></i>
-							{/if}
-						</span>
-						<span class="dashboard__nav-item-text">{room.name}</span>
-					</a>
-				</li>
-			{/each}
-			{#each alertServices as alert (alert.id)}
-				<li
-					class="{alert.slug}-mp"
-					class:is-active={isActive(`/alerts/${alert.slug}`)}
-				>
-					<a href="/alerts/{alert.slug}">
-						<span class="dashboard__nav-item-icon {getServiceIconClass(alert.slug)}">
-							{#if alert.icon}
-								<img src={alert.icon} alt="" class="service-icon-img" loading="lazy" />
-							{:else}
-								<i class="fa fa-bell" aria-hidden="true"></i>
-							{/if}
-						</span>
-						<span class="dashboard__nav-item-text">{alert.name}</span>
-					</a>
-				</li>
-			{/each}
+			<li class:is-active={isActive('/dashboard/ww')}>
+				<a href="/dashboard/ww">
+					<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+					<span class="dashboard__nav-item-text">Weekly Watchlist</span>
+				</a>
+			</li>
+			<li class:is-active={isActive('/dashboard/support')}>
+				<a href="https://intercom.help/simpler-trading/en/" target="_blank">
+					<span class="dashboard__nav-item-icon st-icon-support"></span>
+					<span class="dashboard__nav-item-text">Support</span>
+				</a>
+			</li>
 		</ul>
-	{/if}
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     MASTERY SECTION
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	{#if hasCourses}
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     ACCOUNT SECTION (Simpler Trading EXACT - just My Account)
+		     ═══════════════════════════════════════════════════════════════════════ -->
 		<ul>
-			<li><p class="dashboard__nav-category">mastery</p></li>
+			<li><p class="dashboard__nav-category">account</p></li>
 		</ul>
 		<ul class="dash_main_links">
-			{#each courses as course (course.id)}
-				<li
-					class="{course.slug}-mp"
-					class:is-active={isActive(`/dashboard/courses/${course.slug}`)}
-				>
-					<a href="/dashboard/courses/{course.slug}">
-						<span class="dashboard__nav-item-icon st-icon-learning-center">
-							{#if course.icon}
-								<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
-							{:else}
-								<i class="fa fa-book" aria-hidden="true"></i>
-							{/if}
-						</span>
-						<span class="dashboard__nav-item-text">{course.name}</span>
-					</a>
-				</li>
-			{/each}
+			<li class:is-active={isActive('/dashboard/account')}>
+				<a href="/dashboard/account">
+					<span class="dashboard__nav-item-icon st-icon-settings"></span>
+					<span class="dashboard__nav-item-text">My Account</span>
+				</a>
+			</li>
 		</ul>
 	{/if}
-
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     TOOLS SECTION (Simpler Trading EXACT - Always shown)
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	<ul>
-		<li><p class="dashboard__nav-category">tools</p></li>
-	</ul>
-	<ul class="dash_main_links">
-		<li class:is-active={isActive('/dashboard/watchlist')}>
-			<a href="/dashboard/watchlist">
-				<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
-				<span class="dashboard__nav-item-text">Weekly Watchlist</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/support')}>
-			<a href="/dashboard/support">
-				<span class="dashboard__nav-item-icon st-icon-support"></span>
-				<span class="dashboard__nav-item-text">Support</span>
-			</a>
-		</li>
-	</ul>
-
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     ACCOUNT SECTION (Simpler Trading EXACT - just My Account)
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	<ul>
-		<li><p class="dashboard__nav-category">account</p></li>
-	</ul>
-	<ul class="dash_main_links">
-		<li class:is-active={isActive('/dashboard/account')}>
-			<a href="/dashboard/account">
-				<span class="dashboard__nav-item-icon st-icon-settings"></span>
-				<span class="dashboard__nav-item-text">My Account</span>
-			</a>
-		</li>
-	</ul>
 </nav>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
