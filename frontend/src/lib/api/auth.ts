@@ -1321,4 +1321,56 @@ export const verifyMFA = (code: string) => authService.verifyMFA(code);
 export const disableMFA = (password: string) => authService.disableMFA(password);
 export const getSecurityEvents = () => authService.getSecurityEvents();
 
+/**
+ * Initialize authentication on app startup
+ * 
+ * ICT11+ Pattern: Restore session on page refresh
+ * 
+ * This function should be called once on app mount to:
+ * 1. Check if there's a stored session ID
+ * 2. Attempt to refresh the token using httpOnly cookies
+ * 3. Fetch user data if refresh succeeds
+ * 4. Mark initialization as complete
+ * 
+ * @returns Promise<boolean> - true if session was restored, false otherwise
+ */
+export async function initializeAuth(): Promise<boolean> {
+	if (!browser) return false;
+
+	const sessionId = authStore.getSessionId();
+	
+	// No stored session - nothing to restore
+	if (!sessionId) {
+		authStore.completeInitialization(false);
+		return false;
+	}
+
+	try {
+		// Attempt to refresh token using httpOnly cookie
+		const refreshed = await authStore.refreshToken();
+		
+		if (refreshed) {
+			// Token refreshed successfully, fetch user data
+			try {
+				await authService.getUser();
+				console.debug('[Auth] Session restored successfully');
+				return true;
+			} catch (userError) {
+				console.debug('[Auth] Failed to fetch user after token refresh:', userError);
+				authStore.clearAuth();
+				return false;
+			}
+		} else {
+			// Token refresh failed - session expired
+			console.debug('[Auth] Token refresh failed - session expired');
+			authStore.clearAuth();
+			return false;
+		}
+	} catch (error) {
+		console.debug('[Auth] Session restoration failed:', error);
+		authStore.completeInitialization(false);
+		return false;
+	}
+}
+
 export default authService;
