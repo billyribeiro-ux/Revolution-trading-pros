@@ -133,199 +133,721 @@ body.light,
 	--focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.3);
 }
 
-/* Light theme specific overrides for admin components */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ADMIN DASHBOARD DESIGN TOKENS - Netflix L11+ Principal Engineer Grade
+ * Comprehensive token system for bulletproof light/dark theme support
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Admin-specific CSS Custom Properties - Added to :root for runtime access */
+html.light,
+body.light,
+:root.light {
+	/* Admin Surface Hierarchy - Clean, professional whites */
+	--admin-bg: #f5f5f7;
+	--admin-bg-subtle: #fafafa;
+	--admin-surface: #ffffff;
+	--admin-surface-elevated: #ffffff;
+	--admin-surface-overlay: rgba(255, 255, 255, 0.98);
+	--admin-surface-sunken: #f0f0f2;
+
+	/* Admin Card System */
+	--admin-card-bg: #ffffff;
+	--admin-card-border: #e5e5e7;
+	--admin-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+	--admin-card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+
+	/* Admin Interactive Elements */
+	--admin-btn-bg: #f5f5f7;
+	--admin-btn-bg-hover: #e8e8ed;
+	--admin-btn-bg-active: #dcdce2;
+	--admin-btn-border: #d2d2d7;
+	--admin-btn-border-hover: #c7c7cc;
+	--admin-btn-text: #424245;
+	--admin-btn-text-hover: #1d1d1f;
+
+	/* Admin Primary Action Buttons */
+	--admin-btn-primary-bg: #4f46e5;
+	--admin-btn-primary-bg-hover: #4338ca;
+	--admin-btn-primary-text: #ffffff;
+	--admin-btn-primary-border: #4338ca;
+
+	/* Admin Ghost/Subtle Buttons */
+	--admin-btn-ghost-bg: transparent;
+	--admin-btn-ghost-bg-hover: rgba(79, 70, 229, 0.08);
+	--admin-btn-ghost-text: #6e6e73;
+	--admin-btn-ghost-text-hover: #4f46e5;
+
+	/* Admin Text Colors - High Contrast for Readability */
+	--admin-text-primary: #1d1d1f;
+	--admin-text-secondary: #424245;
+	--admin-text-muted: #6e6e73;
+	--admin-text-placeholder: #86868b;
+	--admin-text-disabled: #aeaeb2;
+
+	/* Admin Borders */
+	--admin-border: #d2d2d7;
+	--admin-border-light: #e8e8ed;
+	--admin-border-subtle: #f0f0f2;
+	--admin-border-focus: #4f46e5;
+	--admin-border-interactive: rgba(79, 70, 229, 0.25);
+
+	/* Admin Accent Colors - Vibrant for Light Backgrounds */
+	--admin-accent-primary: #4f46e5;
+	--admin-accent-primary-soft: rgba(79, 70, 229, 0.08);
+	--admin-accent-primary-muted: rgba(79, 70, 229, 0.15);
+
+	/* Admin Semantic Colors */
+	--admin-success: #059669;
+	--admin-success-bg: rgba(5, 150, 105, 0.08);
+	--admin-success-border: rgba(5, 150, 105, 0.2);
+	--admin-warning: #d97706;
+	--admin-warning-bg: rgba(217, 119, 6, 0.08);
+	--admin-warning-border: rgba(217, 119, 6, 0.2);
+	--admin-error: #dc2626;
+	--admin-error-bg: rgba(220, 38, 38, 0.08);
+	--admin-error-border: rgba(220, 38, 38, 0.2);
+	--admin-info: #2563eb;
+	--admin-info-bg: rgba(37, 99, 235, 0.08);
+	--admin-info-border: rgba(37, 99, 235, 0.2);
+
+	/* Admin Widget/Metric Card Colors */
+	--admin-widget-purple-bg: rgba(139, 92, 246, 0.08);
+	--admin-widget-purple-icon: #7c3aed;
+	--admin-widget-purple-border: rgba(139, 92, 246, 0.15);
+	--admin-widget-emerald-bg: rgba(16, 185, 129, 0.08);
+	--admin-widget-emerald-icon: #059669;
+	--admin-widget-emerald-border: rgba(16, 185, 129, 0.15);
+	--admin-widget-blue-bg: rgba(59, 130, 246, 0.08);
+	--admin-widget-blue-icon: #2563eb;
+	--admin-widget-blue-border: rgba(59, 130, 246, 0.15);
+	--admin-widget-amber-bg: rgba(245, 158, 11, 0.08);
+	--admin-widget-amber-icon: #d97706;
+	--admin-widget-amber-border: rgba(245, 158, 11, 0.15);
+
+	/* Admin Input Fields */
+	--admin-input-bg: #ffffff;
+	--admin-input-border: #d2d2d7;
+	--admin-input-border-hover: #c7c7cc;
+	--admin-input-border-focus: #4f46e5;
+	--admin-input-text: #1d1d1f;
+	--admin-input-placeholder: #86868b;
+	--admin-input-focus-ring: rgba(79, 70, 229, 0.2);
+
+	/* Admin Navigation */
+	--admin-nav-text: #6e6e73;
+	--admin-nav-text-hover: #4f46e5;
+	--admin-nav-text-active: #4f46e5;
+	--admin-nav-bg-hover: rgba(79, 70, 229, 0.06);
+	--admin-nav-bg-active: rgba(79, 70, 229, 0.1);
+	--admin-nav-border-active: rgba(79, 70, 229, 0.25);
+	--admin-nav-section-title: #86868b;
+
+	/* Admin Header */
+	--admin-header-bg: #ffffff;
+	--admin-header-border: #d2d2d7;
+	--admin-header-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+	/* Admin Sidebar */
+	--admin-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+	--admin-sidebar-border: #d2d2d7;
+
+	/* Admin Table */
+	--admin-table-header-bg: #f5f5f7;
+	--admin-table-row-hover: #fafafa;
+	--admin-table-border: #e8e8ed;
+
+	/* Admin Badge Colors */
+	--admin-badge-default-bg: #f0f0f2;
+	--admin-badge-default-text: #424245;
+	--admin-badge-primary-bg: rgba(79, 70, 229, 0.1);
+	--admin-badge-primary-text: #4f46e5;
+
+	/* Admin Focus Ring */
+	--admin-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.25);
+
+	/* Admin Scrollbar */
+	--admin-scrollbar-track: #f5f5f7;
+	--admin-scrollbar-thumb: #c7c7cc;
+	--admin-scrollbar-thumb-hover: #a1a1a6;
+
+	/* Admin Kbd/Shortcut Keys */
+	--admin-kbd-bg: rgba(79, 70, 229, 0.08);
+	--admin-kbd-text: #4f46e5;
+	--admin-kbd-border: rgba(79, 70, 229, 0.15);
+}
+
+/* Dark Theme Admin Tokens */
+html.dark,
+body.dark,
+:root.dark,
+:root {
+	/* Admin Surface Hierarchy - Rich, deep surfaces */
+	--admin-bg: oklch(0.12 0.02 250);
+	--admin-bg-subtle: oklch(0.10 0.02 250);
+	--admin-surface: oklch(0.18 0.02 250);
+	--admin-surface-elevated: oklch(0.22 0.02 250);
+	--admin-surface-overlay: rgba(30, 41, 59, 0.98);
+	--admin-surface-sunken: oklch(0.10 0.02 250);
+
+	/* Admin Card System */
+	--admin-card-bg: oklch(0.18 0.02 250);
+	--admin-card-border: rgba(99, 102, 241, 0.15);
+	--admin-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	--admin-card-shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.4);
+
+	/* Admin Interactive Elements */
+	--admin-btn-bg: rgba(99, 102, 241, 0.1);
+	--admin-btn-bg-hover: rgba(99, 102, 241, 0.2);
+	--admin-btn-bg-active: rgba(99, 102, 241, 0.25);
+	--admin-btn-border: rgba(99, 102, 241, 0.2);
+	--admin-btn-border-hover: rgba(99, 102, 241, 0.4);
+	--admin-btn-text: oklch(0.75 0.02 250);
+	--admin-btn-text-hover: oklch(0.85 0.10 270);
+
+	/* Admin Primary Action Buttons */
+	--admin-btn-primary-bg: oklch(0.60 0.20 270);
+	--admin-btn-primary-bg-hover: oklch(0.55 0.22 270);
+	--admin-btn-primary-text: #ffffff;
+	--admin-btn-primary-border: oklch(0.55 0.22 270);
+
+	/* Admin Ghost/Subtle Buttons */
+	--admin-btn-ghost-bg: transparent;
+	--admin-btn-ghost-bg-hover: rgba(99, 102, 241, 0.1);
+	--admin-btn-ghost-text: oklch(0.60 0.02 250);
+	--admin-btn-ghost-text-hover: oklch(0.75 0.15 270);
+
+	/* Admin Text Colors */
+	--admin-text-primary: oklch(0.96 0.01 250);
+	--admin-text-secondary: oklch(0.80 0.02 250);
+	--admin-text-muted: oklch(0.60 0.02 250);
+	--admin-text-placeholder: oklch(0.50 0.02 250);
+	--admin-text-disabled: oklch(0.40 0.02 250);
+
+	/* Admin Borders */
+	--admin-border: rgba(99, 102, 241, 0.15);
+	--admin-border-light: rgba(99, 102, 241, 0.1);
+	--admin-border-subtle: rgba(99, 102, 241, 0.05);
+	--admin-border-focus: oklch(0.60 0.20 270);
+	--admin-border-interactive: rgba(99, 102, 241, 0.3);
+
+	/* Admin Accent Colors */
+	--admin-accent-primary: oklch(0.70 0.15 270);
+	--admin-accent-primary-soft: rgba(99, 102, 241, 0.1);
+	--admin-accent-primary-muted: rgba(99, 102, 241, 0.2);
+
+	/* Admin Semantic Colors */
+	--admin-success: oklch(0.70 0.18 145);
+	--admin-success-bg: rgba(16, 185, 129, 0.15);
+	--admin-success-border: rgba(16, 185, 129, 0.3);
+	--admin-warning: oklch(0.80 0.15 85);
+	--admin-warning-bg: rgba(245, 158, 11, 0.15);
+	--admin-warning-border: rgba(245, 158, 11, 0.3);
+	--admin-error: oklch(0.65 0.20 25);
+	--admin-error-bg: rgba(239, 68, 68, 0.15);
+	--admin-error-border: rgba(239, 68, 68, 0.3);
+	--admin-info: oklch(0.70 0.15 240);
+	--admin-info-bg: rgba(59, 130, 246, 0.15);
+	--admin-info-border: rgba(59, 130, 246, 0.3);
+
+	/* Admin Widget/Metric Card Colors */
+	--admin-widget-purple-bg: rgba(139, 92, 246, 0.15);
+	--admin-widget-purple-icon: oklch(0.70 0.20 300);
+	--admin-widget-purple-border: rgba(139, 92, 246, 0.25);
+	--admin-widget-emerald-bg: rgba(16, 185, 129, 0.15);
+	--admin-widget-emerald-icon: oklch(0.70 0.18 160);
+	--admin-widget-emerald-border: rgba(16, 185, 129, 0.25);
+	--admin-widget-blue-bg: rgba(59, 130, 246, 0.15);
+	--admin-widget-blue-icon: oklch(0.70 0.18 240);
+	--admin-widget-blue-border: rgba(59, 130, 246, 0.25);
+	--admin-widget-amber-bg: rgba(245, 158, 11, 0.15);
+	--admin-widget-amber-icon: oklch(0.80 0.15 85);
+	--admin-widget-amber-border: rgba(245, 158, 11, 0.25);
+
+	/* Admin Input Fields */
+	--admin-input-bg: oklch(0.15 0.02 250);
+	--admin-input-border: rgba(99, 102, 241, 0.2);
+	--admin-input-border-hover: rgba(99, 102, 241, 0.3);
+	--admin-input-border-focus: oklch(0.60 0.20 270);
+	--admin-input-text: oklch(0.96 0.01 250);
+	--admin-input-placeholder: oklch(0.50 0.02 250);
+	--admin-input-focus-ring: rgba(99, 102, 241, 0.3);
+
+	/* Admin Navigation */
+	--admin-nav-text: oklch(0.60 0.02 250);
+	--admin-nav-text-hover: oklch(0.75 0.15 270);
+	--admin-nav-text-active: oklch(0.75 0.15 270);
+	--admin-nav-bg-hover: rgba(99, 102, 241, 0.1);
+	--admin-nav-bg-active: rgba(99, 102, 241, 0.15);
+	--admin-nav-border-active: rgba(99, 102, 241, 0.3);
+	--admin-nav-section-title: oklch(0.50 0.02 250);
+
+	/* Admin Header */
+	--admin-header-bg: oklch(0.18 0.02 250);
+	--admin-header-border: rgba(99, 102, 241, 0.1);
+	--admin-header-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+	/* Admin Sidebar */
+	--admin-sidebar-bg: linear-gradient(180deg, oklch(0.18 0.02 250) 0%, oklch(0.12 0.02 250) 100%);
+	--admin-sidebar-border: rgba(99, 102, 241, 0.1);
+
+	/* Admin Table */
+	--admin-table-header-bg: oklch(0.15 0.02 250);
+	--admin-table-row-hover: oklch(0.20 0.02 250);
+	--admin-table-border: rgba(99, 102, 241, 0.1);
+
+	/* Admin Badge Colors */
+	--admin-badge-default-bg: rgba(99, 102, 241, 0.1);
+	--admin-badge-default-text: oklch(0.75 0.02 250);
+	--admin-badge-primary-bg: rgba(99, 102, 241, 0.2);
+	--admin-badge-primary-text: oklch(0.80 0.15 270);
+
+	/* Admin Focus Ring */
+	--admin-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.35);
+
+	/* Admin Scrollbar */
+	--admin-scrollbar-track: oklch(0.15 0.02 250);
+	--admin-scrollbar-thumb: oklch(0.35 0.02 250);
+	--admin-scrollbar-thumb-hover: oklch(0.45 0.02 250);
+
+	/* Admin Kbd/Shortcut Keys */
+	--admin-kbd-bg: rgba(99, 102, 241, 0.15);
+	--admin-kbd-text: oklch(0.75 0.15 270);
+	--admin-kbd-border: rgba(99, 102, 241, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ADMIN UTILITY CLASSES - Theme-aware components
+ * These classes automatically adapt to light/dark themes
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Admin Layout Background */
+.admin-layout {
+	background: var(--admin-bg);
+	color: var(--admin-text-primary);
+}
+
+/* Admin Card Component */
+.admin-card {
+	background: var(--admin-card-bg);
+	border: 1px solid var(--admin-card-border);
+	box-shadow: var(--admin-card-shadow);
+	border-radius: var(--radius-xl, 1rem);
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-card:hover {
+	box-shadow: var(--admin-card-shadow-hover);
+}
+
+/* Admin Button - Default */
+.admin-btn {
+	background: var(--admin-btn-bg);
+	border: 1px solid var(--admin-btn-border);
+	color: var(--admin-btn-text);
+	border-radius: var(--radius-md, 0.5rem);
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn:hover {
+	background: var(--admin-btn-bg-hover);
+	border-color: var(--admin-btn-border-hover);
+	color: var(--admin-btn-text-hover);
+}
+
+.admin-btn:active {
+	background: var(--admin-btn-bg-active);
+}
+
+.admin-btn:focus-visible {
+	box-shadow: var(--admin-focus-ring);
+	outline: none;
+}
+
+/* Admin Button - Primary */
+.admin-btn-primary {
+	background: var(--admin-btn-primary-bg);
+	border: 1px solid var(--admin-btn-primary-border);
+	color: var(--admin-btn-primary-text);
+}
+
+.admin-btn-primary:hover {
+	background: var(--admin-btn-primary-bg-hover);
+}
+
+/* Admin Button - Ghost */
+.admin-btn-ghost {
+	background: var(--admin-btn-ghost-bg);
+	border: 1px solid transparent;
+	color: var(--admin-btn-ghost-text);
+}
+
+.admin-btn-ghost:hover {
+	background: var(--admin-btn-ghost-bg-hover);
+	color: var(--admin-btn-ghost-text-hover);
+}
+
+/* Admin Sidebar */
+.admin-sidebar {
+	background: var(--admin-sidebar-bg);
+	border-right: 1px solid var(--admin-sidebar-border);
+}
+
+/* Admin Header */
+.admin-header {
+	background: var(--admin-header-bg);
+	border-bottom: 1px solid var(--admin-header-border);
+	box-shadow: var(--admin-header-shadow);
+}
+
+/* Admin Navigation Item */
+.nav-item {
+	color: var(--admin-nav-text);
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item:hover {
+	background: var(--admin-nav-bg-hover);
+	color: var(--admin-nav-text-hover);
+}
+
+.nav-item.active {
+	background: var(--admin-nav-bg-active);
+	color: var(--admin-nav-text-active);
+	border: 1px solid var(--admin-nav-border-active);
+}
+
+.nav-section-title {
+	color: var(--admin-nav-section-title);
+}
+
+/* Admin Input Field */
+.admin-input {
+	background: var(--admin-input-bg);
+	border: 1px solid var(--admin-input-border);
+	color: var(--admin-input-text);
+	border-radius: var(--radius-md, 0.5rem);
+	transition: all 0.2s ease;
+}
+
+.admin-input::placeholder {
+	color: var(--admin-input-placeholder);
+}
+
+.admin-input:hover {
+	border-color: var(--admin-input-border-hover);
+}
+
+.admin-input:focus {
+	border-color: var(--admin-input-border-focus);
+	box-shadow: 0 0 0 3px var(--admin-input-focus-ring);
+	outline: none;
+}
+
+/* Admin Widget Cards */
+.admin-widget {
+	background: var(--admin-card-bg);
+	border: 1px solid var(--admin-card-border);
+	border-radius: var(--radius-xl, 1rem);
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-widget:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--admin-card-shadow-hover);
+}
+
+.admin-widget-purple {
+	--widget-bg: var(--admin-widget-purple-bg);
+	--widget-icon: var(--admin-widget-purple-icon);
+	--widget-border: var(--admin-widget-purple-border);
+}
+
+.admin-widget-emerald {
+	--widget-bg: var(--admin-widget-emerald-bg);
+	--widget-icon: var(--admin-widget-emerald-icon);
+	--widget-border: var(--admin-widget-emerald-border);
+}
+
+.admin-widget-blue {
+	--widget-bg: var(--admin-widget-blue-bg);
+	--widget-icon: var(--admin-widget-blue-icon);
+	--widget-border: var(--admin-widget-blue-border);
+}
+
+.admin-widget-amber {
+	--widget-bg: var(--admin-widget-amber-bg);
+	--widget-icon: var(--admin-widget-amber-icon);
+	--widget-border: var(--admin-widget-amber-border);
+}
+
+.admin-widget-icon {
+	background: var(--widget-bg);
+	color: var(--widget-icon);
+}
+
+/* Admin Table */
+.admin-table {
+	border: 1px solid var(--admin-table-border);
+	border-radius: var(--radius-lg, 0.75rem);
+	overflow: hidden;
+}
+
+.admin-table th {
+	background: var(--admin-table-header-bg);
+	color: var(--admin-text-secondary);
+	font-weight: 600;
+	text-align: left;
+	border-bottom: 1px solid var(--admin-table-border);
+}
+
+.admin-table td {
+	border-bottom: 1px solid var(--admin-table-border);
+	color: var(--admin-text-primary);
+}
+
+.admin-table tr:hover td {
+	background: var(--admin-table-row-hover);
+}
+
+/* Admin Badges */
+.admin-badge {
+	background: var(--admin-badge-default-bg);
+	color: var(--admin-badge-default-text);
+	font-size: 0.75rem;
+	font-weight: 500;
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--radius-md, 0.5rem);
+}
+
+.admin-badge-primary {
+	background: var(--admin-badge-primary-bg);
+	color: var(--admin-badge-primary-text);
+}
+
+.admin-badge-success {
+	background: var(--admin-success-bg);
+	color: var(--admin-success);
+}
+
+.admin-badge-warning {
+	background: var(--admin-warning-bg);
+	color: var(--admin-warning);
+}
+
+.admin-badge-error {
+	background: var(--admin-error-bg);
+	color: var(--admin-error);
+}
+
+/* Admin Text Utilities */
+.admin-text-primary {
+	color: var(--admin-text-primary);
+}
+
+.admin-text-secondary {
+	color: var(--admin-text-secondary);
+}
+
+.admin-text-muted {
+	color: var(--admin-text-muted);
+}
+
+/* Admin Kbd/Shortcut Keys */
+.kbd,
+.admin-kbd {
+	background: var(--admin-kbd-bg);
+	color: var(--admin-kbd-text);
+	border: 1px solid var(--admin-kbd-border);
+	padding: 0.125rem 0.375rem;
+	border-radius: 4px;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	font-family: inherit;
+}
+
+/* Admin Scrollbar Styling */
+.admin-scrollbar::-webkit-scrollbar-track {
+	background: var(--admin-scrollbar-track);
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+	background: var(--admin-scrollbar-thumb);
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: var(--admin-scrollbar-thumb-hover);
+}
+
+/* Status Indicators */
+.admin-status-online {
+	color: var(--admin-success);
+}
+
+.admin-status-offline {
+	color: var(--admin-error);
+}
+
+.admin-status-warning {
+	color: var(--admin-warning);
+}
+
+/* Admin Empty State */
+.admin-empty-state {
+	background: var(--admin-surface-sunken);
+	border: 2px dashed var(--admin-border);
+	border-radius: var(--radius-xl, 1rem);
+	color: var(--admin-text-muted);
+}
+
+/* Legacy light theme overrides - kept for backwards compatibility */
 html.light .admin-layout,
 body.light .admin-layout {
-	background: #f5f5f7;
+	background: var(--admin-bg);
 }
 
 html.light .admin-sidebar,
 body.light .admin-sidebar {
-	background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
-	border-right: 1px solid #d2d2d7;
+	background: var(--admin-sidebar-bg);
+	border-right-color: var(--admin-sidebar-border);
 }
 
 html.light .admin-header,
 body.light .admin-header {
-	background: #ffffff;
-	border-bottom: 1px solid #d2d2d7;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-html.light .nav-item,
-body.light .nav-item {
-	color: #6e6e73;
-}
-
-html.light .nav-item:hover,
-body.light .nav-item:hover {
-	background: rgba(79, 70, 229, 0.06);
-	color: #4f46e5;
-}
-
-html.light .nav-item.active,
-body.light .nav-item.active {
-	background: rgba(79, 70, 229, 0.1);
-	color: #4f46e5;
-	border: 1px solid rgba(79, 70, 229, 0.2);
-}
-
-html.light .nav-section-title,
-body.light .nav-section-title {
-	color: #86868b;
-}
-
-html.light .header-btn,
-body.light .header-btn {
-	background: #f5f5f7;
-	border-color: #d2d2d7;
-	color: #6e6e73;
-}
-
-html.light .header-btn:hover,
-body.light .header-btn:hover {
-	background: #e8e8ed;
-	border-color: #c7c7cc;
-	color: #4f46e5;
-}
-
-html.light .theme-toggle,
-body.light .theme-toggle {
-	background: #f5f5f7;
-	border-color: #d2d2d7;
-	color: #6e6e73;
-}
-
-html.light .theme-toggle:hover,
-body.light .theme-toggle:hover {
-	background: #e8e8ed;
-	border-color: #c7c7cc;
-	color: #4f46e5;
-}
-
-html.light .view-site-btn,
-body.light .view-site-btn {
-	background: rgba(79, 70, 229, 0.06);
-	color: #4f46e5;
-	border-color: rgba(79, 70, 229, 0.2);
-}
-
-html.light .view-site-btn:hover,
-body.light .view-site-btn:hover {
-	background: rgba(79, 70, 229, 0.12);
-	border-color: rgba(79, 70, 229, 0.3);
-}
-
-html.light .header-title h1,
-body.light .header-title h1 {
-	color: #1d1d1f;
-}
-
-html.light .user-info,
-body.light .user-info {
-	background: #f5f5f7;
-}
-
-html.light .user-name,
-body.light .user-name {
-	color: #1d1d1f;
-}
-
-html.light .user-role,
-body.light .user-role {
-	color: #6e6e73;
-}
-
-html.light .exit-btn,
-body.light .exit-btn {
-	border-color: rgba(220, 38, 38, 0.2);
-	color: #6e6e73;
-}
-
-html.light .exit-btn:hover,
-body.light .exit-btn:hover {
-	background: rgba(220, 38, 38, 0.08);
-	color: #dc2626;
-	border-color: rgba(220, 38, 38, 0.3);
-}
-
-html.light .kbd,
-body.light .kbd {
-	background: rgba(79, 70, 229, 0.08);
-	color: #4f46e5;
+	background: var(--admin-header-bg);
+	border-bottom-color: var(--admin-header-border);
+	box-shadow: var(--admin-header-shadow);
 }
 
 /* Light theme scrollbar */
 html.light ::-webkit-scrollbar-track,
 body.light ::-webkit-scrollbar-track {
-	background: #f5f5f7;
+	background: var(--admin-scrollbar-track);
 }
 
 html.light ::-webkit-scrollbar-thumb,
 body.light ::-webkit-scrollbar-thumb {
-	background: #c7c7cc;
+	background: var(--admin-scrollbar-thumb);
 }
 
 html.light ::-webkit-scrollbar-thumb:hover,
 body.light ::-webkit-scrollbar-thumb:hover {
-	background: #a1a1a6;
+	background: var(--admin-scrollbar-thumb-hover);
 }
 
-/* Rate Limit Indicator light theme */
-html.light .rate-limit-btn,
-body.light .rate-limit-btn {
-	background: rgba(5, 150, 105, 0.08);
-	border-color: rgba(5, 150, 105, 0.2);
-	color: #059669;
+/* User info section */
+.user-info {
+	background: var(--admin-surface-sunken);
 }
 
-html.light .rate-limit-btn:hover,
-body.light .rate-limit-btn:hover {
-	background: rgba(5, 150, 105, 0.15);
+.user-name {
+	color: var(--admin-text-primary);
 }
 
-html.light .rate-limit-btn.warning,
-body.light .rate-limit-btn.warning {
-	background: rgba(217, 119, 6, 0.08);
-	border-color: rgba(217, 119, 6, 0.2);
-	color: #d97706;
+.user-role {
+	color: var(--admin-text-muted);
 }
 
-html.light .rate-limit-btn.critical,
-body.light .rate-limit-btn.critical {
-	background: rgba(220, 38, 38, 0.08);
-	border-color: rgba(220, 38, 38, 0.2);
-	color: #dc2626;
+/* Exit button */
+.exit-btn {
+	border-color: var(--admin-error-border);
+	color: var(--admin-text-muted);
 }
 
-html.light .rate-limit-btn.disconnected,
-body.light .rate-limit-btn.disconnected {
-	background: rgba(110, 110, 115, 0.08);
-	border-color: rgba(110, 110, 115, 0.2);
-	color: #6e6e73;
+.exit-btn:hover {
+	background: var(--admin-error-bg);
+	color: var(--admin-error);
+	border-color: var(--admin-error-border);
 }
 
-html.light .rate-limit-dropdown,
-body.light .rate-limit-dropdown {
-	background: #ffffff;
-	border-color: #d2d2d7;
+/* Header button styles */
+.header-btn {
+	background: var(--admin-btn-bg);
+	border-color: var(--admin-btn-border);
+	color: var(--admin-btn-text);
+}
+
+.header-btn:hover {
+	background: var(--admin-btn-bg-hover);
+	border-color: var(--admin-btn-border-hover);
+	color: var(--admin-btn-text-hover);
+}
+
+/* Theme toggle */
+.theme-toggle {
+	background: var(--admin-btn-bg);
+	border-color: var(--admin-btn-border);
+	color: var(--admin-btn-text);
+}
+
+.theme-toggle:hover {
+	background: var(--admin-btn-bg-hover);
+	border-color: var(--admin-btn-border-hover);
+	color: var(--admin-btn-text-hover);
+}
+
+/* View site button */
+.view-site-btn {
+	background: var(--admin-accent-primary-soft);
+	color: var(--admin-accent-primary);
+	border-color: var(--admin-border-interactive);
+}
+
+.view-site-btn:hover {
+	background: var(--admin-accent-primary-muted);
+}
+
+/* Header title */
+.header-title h1 {
+	color: var(--admin-text-primary);
+}
+
+/* Rate Limit Indicator */
+.rate-limit-btn {
+	background: var(--admin-success-bg);
+	border-color: var(--admin-success-border);
+	color: var(--admin-success);
+}
+
+.rate-limit-btn:hover {
+	background: var(--admin-success-bg);
+	opacity: 0.9;
+}
+
+.rate-limit-btn.warning {
+	background: var(--admin-warning-bg);
+	border-color: var(--admin-warning-border);
+	color: var(--admin-warning);
+}
+
+.rate-limit-btn.critical {
+	background: var(--admin-error-bg);
+	border-color: var(--admin-error-border);
+	color: var(--admin-error);
+}
+
+.rate-limit-btn.disconnected {
+	background: var(--admin-badge-default-bg);
+	border-color: var(--admin-border);
+	color: var(--admin-text-muted);
+}
+
+.rate-limit-dropdown {
+	background: var(--admin-surface);
+	border-color: var(--admin-border);
 	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
-html.light .dropdown-header,
-body.light .dropdown-header {
-	border-bottom-color: #e8e8ed;
+.dropdown-header {
+	border-bottom-color: var(--admin-border-light);
 }
 
-html.light .dropdown-header h4,
-body.light .dropdown-header h4 {
-	color: #1d1d1f;
+.dropdown-header h4 {
+	color: var(--admin-text-primary);
 }
 
-html.light .dropdown-footer,
-body.light .dropdown-footer {
-	background: #f5f5f7;
-	border-top-color: #e8e8ed;
+.dropdown-footer {
+	background: var(--admin-surface-sunken);
+	border-top-color: var(--admin-border-light);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
