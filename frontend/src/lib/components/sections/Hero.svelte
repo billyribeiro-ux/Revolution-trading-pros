@@ -1,9 +1,14 @@
 <script lang="ts">
 	/**
-	 * HeroSection Component - Google L8+ Principal Engineer Standard
-	 * Updated to Svelte 5 Runes Syntax (November 2025)
+	 * HeroSection - Netflix L11+ Principal Architect Grade
 	 * ══════════════════════════════════════════════════════════════════════════════
-	 * ZERO DELAYS - Instant initialization with parallel execution
+	 * Cinematic Trading Hero with:
+	 * - Split layout (content left, chart right)
+	 * - Preserved lightweight-charts candlestick animation
+	 * - GSAP orchestrated entrance sequence
+	 * - Floating trading elements and depth layers
+	 * - Stats ticker strip
+	 * - Fully responsive with mobile optimization
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 * Performance Features:
 	 * ✓ Zero setTimeout/requestIdleCallback delays
@@ -19,6 +24,9 @@
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
+	import HeroContent from '$lib/components/hero/HeroContent.svelte';
+	import HeroChartScene from '$lib/components/hero/HeroChartScene.svelte';
+	import HeroStatsStrip from '$lib/components/hero/HeroStatsStrip.svelte';
 
 	// ============================================================================
 	// MODULE-LEVEL PRE-COMPUTATION (Executed at import time - ZERO runtime cost)
@@ -69,77 +77,52 @@
 		return candles;
 	}
 
-	// Slide data - static, no runtime cost
-	const SLIDES = Object.freeze([
-		{
-			title: 'Live Trading Rooms',
-			subtitle: 'Institutional-Style Sessions',
-			description: 'Join structured sessions with clear levels, real-time execution, and disciplined risk management.',
-			primaryCTA: { text: 'Explore Rooms', href: '/live-trading-rooms/day-trading' },
-			secondaryCTA: { text: 'Create Free Account', href: '/signup' }
-		},
-		{
-			title: 'SPX Profit Pulse',
-			subtitle: 'Context-Rich Alerts',
-			description: 'Receive SPX alerts with entry context, invalidation, and sizing guidance (not lottery tickets).',
-			primaryCTA: { text: 'Get Alerts', href: '/alerts/spx-profit-pulse' },
-			secondaryCTA: { text: 'Learn More', href: '/alerts/explosive-swings' }
-		},
-		{
-			title: 'Trading Frameworks',
-			subtitle: 'Structured Education',
-			description: 'Master robust frameworks for execution, risk, and review workflows across market conditions.',
-			primaryCTA: { text: 'Browse Courses', href: '/courses' },
-			secondaryCTA: { text: 'View Mentorship', href: '/mentorship' }
-		},
-		{
-			title: 'Pro Tools & Indicators',
-			subtitle: 'Professional-Grade Edge',
-			description: 'Volume profiles, internals, momentum systems, and tooling built for repeatable institutional logic.',
-			primaryCTA: { text: 'View Indicators', href: '/indicators' },
-			secondaryCTA: { text: 'See All Tools', href: '/store' }
-		}
-	]);
-
 	// ============================================================================
 	// STATE - Svelte 5 Runes
 	// ============================================================================
 	let chart: ReturnType<typeof import('lightweight-charts').createChart> | null = null;
 	let series: any = null;
 	let replayInterval: ReturnType<typeof setInterval> | null = null;
-	let slideInterval: ReturnType<typeof setInterval> | null = null;
-	let currentSlide = $state(0);
 	let isLooping = $state(false);
 	let gsapLib: any = null;
-	let timeline: any = null;
-	let gsapLoaded = $state(false);
+	let masterTimeline: any = null;
 
-	// DOM refs - use $state for bind:this in Svelte 5
+	// DOM refs
 	let heroSection = $state<HTMLElement | null>(null);
 	let chartContainer = $state<HTMLElement | null>(null);
+	let chartSceneRef = $state<HTMLElement | null>(null);
+	let heroContentRef: HeroContent | null = null;
 	let resizeObserver: ResizeObserver | null = null;
 	let visibilityObserver: IntersectionObserver | null = null;
+
+	// State
 	let isVisible = $state(true);
 	let chartReady = $state(false);
 	let mounted = $state(false);
-
-	// Animation state for will-change
+	let entranceComplete = $state(false);
 	let isAnimating = $state(false);
+	let statsVisible = $state(false);
+
+	// Chart price state (for display)
+	let currentPrice = $state(475.50);
+	let priceChange = $state(0.42);
 
 	// ============================================================================
 	// CHART INITIALIZATION - LAZY LOADED FOR PERFORMANCE
 	// ============================================================================
 
 	async function initChart(): Promise<void> {
-		if (!browser || !chartContainer || !heroSection || chartReady) {
+		if (!browser || !chartContainer || chartReady) {
 			return;
 		}
 
 		// Lazy load chart library - CRITICAL FOR PERFORMANCE
 		const { createChart, CandlestickSeries, CrosshairMode, ColorType } = await import('lightweight-charts');
 
-		const width = heroSection.clientWidth || window.innerWidth;
-		const height = heroSection.clientHeight || window.innerHeight;
+		// Get dimensions from scene container
+		const sceneRect = chartSceneRef?.getBoundingClientRect();
+		const width = sceneRect?.width || chartContainer.clientWidth || 600;
+		const height = sceneRect?.height || chartContainer.clientHeight || 400;
 
 		// Cleanup
 		if (chart) {
@@ -151,7 +134,7 @@
 		chart = createChart(chartContainer, {
 			layout: {
 				background: { type: ColorType.Solid, color: 'transparent' },
-				textColor: 'rgba(255, 255, 255, 0.1)'
+				textColor: 'rgba(255, 255, 255, 0.15)'
 			},
 			grid: {
 				vertLines: { visible: false },
@@ -164,8 +147,8 @@
 			timeScale: {
 				visible: false,
 				rightOffset: 0,
-				barSpacing: 4,
-				minBarSpacing: 2,
+				barSpacing: 6,
+				minBarSpacing: 3,
 				fixLeftEdge: false,
 				fixRightEdge: true,
 				lockVisibleTimeRangeOnResize: true,
@@ -175,18 +158,18 @@
 			},
 			crosshair: { mode: CrosshairMode.Hidden },
 			rightPriceScale: {
-				visible: true,
+				visible: false,
 				borderColor: 'transparent'
 			}
 		});
 
 		series = chart.addSeries(CandlestickSeries, {
-			upColor: 'rgba(52, 211, 153, 0.4)',
-			downColor: 'rgba(239, 68, 68, 0.4)',
+			upColor: 'rgba(52, 211, 153, 0.7)',
+			downColor: 'rgba(239, 68, 68, 0.7)',
 			borderVisible: false,
 			wickVisible: true,
-			wickUpColor: 'rgba(52, 211, 153, 0.4)',
-			wickDownColor: 'rgba(239, 68, 68, 0.4)',
+			wickUpColor: 'rgba(52, 211, 153, 0.5)',
+			wickDownColor: 'rgba(239, 68, 68, 0.5)',
 			priceLineVisible: false
 		});
 
@@ -208,7 +191,7 @@
 	// ============================================================================
 
 	function startReplay(startIndex: number = 10): void {
-		if (!browser || !series || !chart || !heroSection) return;
+		if (!browser || !series || !chart) return;
 
 		if (replayInterval) {
 			clearInterval(replayInterval);
@@ -217,8 +200,9 @@
 
 		let currentIndex = Math.max(startIndex, 1);
 		const totalCandles = CANDLE_DATA.length;
-		const chartWidth = heroSection?.clientWidth || window.innerWidth;
-		const barsVisible = Math.floor(chartWidth / 4);
+		const sceneRect = chartSceneRef?.getBoundingClientRect();
+		const chartWidth = sceneRect?.width || 600;
+		const barsVisible = Math.floor(chartWidth / 6);
 
 		replayInterval = setInterval(() => {
 			if (!series || isLooping || !isVisible) return;
@@ -232,13 +216,24 @@
 
 			series.setData(CANDLE_DATA.slice(0, currentIndex));
 
+			// Update current price display
+			const latestCandle = CANDLE_DATA[currentIndex - 1];
+			if (latestCandle) {
+				currentPrice = latestCandle.close;
+				const firstCandle = CANDLE_DATA[0];
+				if (firstCandle) {
+					const change = ((latestCandle.close - firstCandle.open) / firstCandle.open) * 100;
+					priceChange = change;
+				}
+			}
+
 			if (chart?.timeScale()) {
 				chart.timeScale().setVisibleLogicalRange({
 					from: Math.max(0, currentIndex - barsVisible + 1),
 					to: currentIndex + 1
 				});
 			}
-		}, 700);
+		}, 600);
 	}
 
 	function handleLoop(): void {
@@ -261,96 +256,66 @@
 			.to(chartContainer, { opacity: 0, duration: 0.5, ease: 'power2.in' })
 			.call(() => {
 				series.setData(CANDLE_DATA.slice(0, 10));
+				currentPrice = 475.50;
+				priceChange = 0.42;
 				if (chart?.timeScale()) {
 					chart.timeScale().setVisibleLogicalRange({ from: 0, to: 10 });
 				}
 			})
-			.to(chartContainer, { opacity: 0.3, duration: 0.5, ease: 'power2.out' });
+			.to(chartContainer, { opacity: 1, duration: 0.5, ease: 'power2.out' });
 	}
 
 	// ============================================================================
-	// SLIDE ANIMATIONS - GSAP TIMELINE (ZERO DELAYS)
+	// MASTER ENTRANCE ANIMATION - GSAP ORCHESTRATION
 	// ============================================================================
 
-	/**
-	 * L8+ Animation: Uses GSAP timeline sequencing instead of individual delays
-	 * Visual result is IDENTICAL, but execution starts immediately
-	 */
-	function animateSlide(slideIndex: number): void {
-		if (!browser || !gsapLib) return;
+	async function orchestrateEntrance(): Promise<void> {
+		if (!browser || !heroSection || entranceComplete) return;
 
-		const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
-		if (!slide) return;
+		try {
+			const gsapModule = await import('gsap');
+			gsapLib = gsapModule?.gsap || gsapModule?.default;
 
-		const h1 = slide.querySelector('h1');
-		const h2 = slide.querySelector('h2');
-		const p = slide.querySelector('p');
-		const buttons = slide.querySelectorAll('a');
-
-		// Kill any existing timeline
-		if (timeline) {
-			timeline.kill();
-		}
-
-		// Enable will-change during animation
-		isAnimating = true;
-
-		// Create new timeline - all animations queued, zero delays
-		timeline = gsapLib.timeline({
-			onComplete: () => {
-				isAnimating = false;
+			if (!gsapLib) {
+				entranceComplete = true;
+				statsVisible = true;
+				return;
 			}
-		});
 
-		switch (slideIndex) {
-			case 0:
-				// Scale entrance - timeline sequencing replaces delays
-				timeline
-					.fromTo(h1, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' }, 0)
-					.fromTo(h2, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, 0.15)
-					.fromTo(p, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.6 }, 0.3)
-					.fromTo(buttons, { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12, ease: 'power2.out' }, 0.5);
-				break;
+			isAnimating = true;
 
-			case 1:
-				// Bounce entrance
-				timeline
-					.fromTo(h1, { opacity: 0, y: -100, rotation: -5 }, { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: 'bounce.out' }, 0)
-					.fromTo(h2, { opacity: 0, y: -100, rotation: -5 }, { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: 'bounce.out' }, 0.1)
-					.fromTo(p, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.3)
-					.fromTo(buttons, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, 0.5);
-				break;
+			// Create master timeline
+			masterTimeline = gsapLib.timeline({
+				defaults: { ease: 'power3.out' },
+				onComplete: () => {
+					entranceComplete = true;
+					isAnimating = false;
+				}
+			});
 
-			case 2:
-				// Spin entrance
-				timeline
-					.fromTo(h1, { opacity: 0, scale: 1.5, rotation: 180 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.9, ease: 'power3.out' }, 0)
-					.fromTo(h2, { opacity: 0, scale: 1.5, rotation: 180 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.9, ease: 'power3.out' }, 0.1)
-					.fromTo(p, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.7 }, 0.3)
-					.fromTo(buttons, { opacity: 0, scale: 0.5, rotation: 90 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.7, stagger: 0.12, ease: 'back.out(1.7)' }, 0.5);
-				break;
+			// Hero section fade in
+			masterTimeline.fromTo(heroSection,
+				{ opacity: 0 },
+				{ opacity: 1, duration: 0.5 },
+				0
+			);
 
-			case 3:
-				// Slide entrance
-				timeline
-					.fromTo(h1, { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, 0)
-					.fromTo(h2, { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, 0.1)
-					.fromTo(p, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 0.3)
-					.fromTo(buttons, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, 0.5);
-				break;
+			// Trigger HeroContent animation
+			await tick();
+			if (heroContentRef?.animateEntrance) {
+				heroContentRef.animateEntrance();
+			}
+
+			// Stats strip appears after content
+			masterTimeline.call(() => {
+				statsVisible = true;
+			}, [], 1.8);
+
+		} catch (e) {
+			console.warn('GSAP orchestration failed:', e);
+			entranceComplete = true;
+			statsVisible = true;
 		}
-	}
-
-	async function showSlide(index: number): Promise<void> {
-		currentSlide = index;
-		// Wait for DOM update then animate
-		await tick();
-		animateSlide(index);
-	}
-
-	function nextSlide(): void {
-		const next = (currentSlide + 1) % SLIDES.length;
-		showSlide(next);
 	}
 
 	// ============================================================================
@@ -358,11 +323,12 @@
 	// ============================================================================
 
 	function handleResize(): void {
-		if (!browser || !chart || !heroSection) return;
+		if (!browser || !chart || !chartSceneRef) return;
 
+		const sceneRect = chartSceneRef.getBoundingClientRect();
 		chart.applyOptions({
-			width: heroSection.clientWidth,
-			height: heroSection.clientHeight
+			width: sceneRect.width,
+			height: sceneRect.height
 		});
 	}
 
@@ -384,7 +350,7 @@
 	}
 
 	// ============================================================================
-	// LIFECYCLE - Use onMount only, no $effect for initialization
+	// LIFECYCLE
 	// ============================================================================
 
 	onMount(async () => {
@@ -392,58 +358,37 @@
 
 		mounted = true;
 
-		// CRITICAL: Show first slide IMMEDIATELY with CSS fallback
-		currentSlide = 0;
-		
-		// Setup resize observer
-		if (heroSection && typeof ResizeObserver !== 'undefined') {
+		// Setup resize observer on chart scene
+		if (chartSceneRef && typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
-			resizeObserver.observe(heroSection);
+			resizeObserver.observe(chartSceneRef);
 		}
-		
+
 		// Setup visibility observer
 		if (heroSection) {
 			setupVisibilityObserver();
 		}
-		
-		// Initialize chart (don't await - let it load in background)
-		if (chartContainer && heroSection) {
+
+		// Initialize chart after a tick to ensure DOM is ready
+		await tick();
+		if (chartContainer) {
 			initChart();
 		}
-		
-		// Load GSAP
-		try {
-			const gsapModule = await import('gsap');
-			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
-			if (gsapLib) {
-				gsapLoaded = true;
-				// Animate first slide after GSAP loads
-				animateSlide(currentSlide);
-			}
-		} catch (e) {
-			console.warn('GSAP failed to load:', e);
-		}
 
-		// Start slide interval
-		slideInterval = setInterval(() => {
-			nextSlide();
-			if (gsapLoaded) {
-				animateSlide(currentSlide);
-			}
-		}, 7000);
+		// Orchestrate entrance animation
+		orchestrateEntrance();
 	});
 
 	onDestroy(() => {
-		if (slideInterval) clearInterval(slideInterval);
 		if (replayInterval) clearInterval(replayInterval);
-		if (timeline) timeline.kill();
+		if (masterTimeline) masterTimeline.kill();
 		if (chart) chart.remove();
 		if (resizeObserver) resizeObserver.disconnect();
 		if (visibilityObserver) visibilityObserver.disconnect();
 
 		chart = null;
 		series = null;
-		timeline = null;
+		masterTimeline = null;
 		mounted = false;
 	});
 </script>
@@ -454,39 +399,41 @@
 	class="hero-section"
 	class:hero-animating={isAnimating}
 >
-	<!-- Chart Background -->
-	<div
-		id="chart-bg"
-		bind:this={chartContainer}
-		class="hero-chart"
-		aria-hidden="true"
-	></div>
+	<!-- Background Gradient Layers -->
+	<div class="hero-bg-gradient" aria-hidden="true"></div>
+	<div class="hero-bg-grid" aria-hidden="true"></div>
 
-	<!-- Content Overlay -->
-	<div class="hero-content">
-		<div class="hero-slides">
-			{#each SLIDES as slide, i (i)}
-				<article
-					data-slide={i}
-					class="slide"
-					class:slide--hidden={i !== currentSlide}
-					class:slide--active={i === currentSlide}
-					aria-hidden={i !== currentSlide}
-				>
-					<h1 class="slide__title">{slide.title}</h1>
-					<h2 class="slide__subtitle">{slide.subtitle}</h2>
-					<p class="slide__description">{slide.description}</p>
-					<div class="slide__actions">
-						<a href={slide.primaryCTA.href} class="cta cta--primary">
-							<span>{slide.primaryCTA.text}</span>
-						</a>
-						<a href={slide.secondaryCTA.href} class="cta cta--secondary">
-							<span>{slide.secondaryCTA.text}</span>
-						</a>
-					</div>
-				</article>
-			{/each}
+	<!-- Main Content Container -->
+	<div class="hero-container">
+		<!-- Split Layout -->
+		<div class="hero-split">
+			<!-- Left: Content Zone -->
+			<div class="hero-content-zone">
+				<HeroContent bind:this={heroContentRef} />
+			</div>
+
+			<!-- Right: Chart Zone -->
+			<div class="hero-chart-zone" bind:this={chartSceneRef}>
+				<HeroChartScene
+					bind:chartContainer={chartContainer}
+					{chartReady}
+					{isVisible}
+					{currentPrice}
+					{priceChange}
+				/>
+			</div>
 		</div>
+
+		<!-- Bottom: Stats Strip -->
+		<div class="hero-stats-zone">
+			<HeroStatsStrip isVisible={statsVisible} />
+		</div>
+	</div>
+
+	<!-- Scroll Indicator -->
+	<div class="scroll-indicator" aria-hidden="true">
+		<span class="scroll-indicator__line"></span>
+		<span class="scroll-indicator__text">Scroll</span>
 	</div>
 </section>
 
@@ -495,9 +442,8 @@
 	 * CSS Custom Properties
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	:root {
-		--hero-bg: #0a101c;
+		--hero-bg: #0a0f1a;
 		--hero-nav-height: 80px;
-		--hero-chart-opacity: 0.3;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -506,264 +452,278 @@
 	.hero-section {
 		position: relative;
 		min-height: 100vh;
-		min-height: 100dvh; /* Dynamic viewport for mobile */
+		min-height: 100dvh;
 		padding-block-start: var(--hero-nav-height);
 		background: var(--hero-bg);
 		display: flex;
-		align-items: center;
-		justify-content: center;
+		flex-direction: column;
 		overflow: hidden;
 
-		/* Performance: Isolate repaints */
+		/* Performance */
 		contain: layout style paint;
 		content-visibility: auto;
 		contain-intrinsic-size: 100vw 100vh;
 	}
 
-	/* Radial gradient overlay */
-	.hero-section::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: radial-gradient(ellipse at center, rgba(10, 16, 28, 0) 0%, var(--hero-bg) 80%);
-		pointer-events: none;
-		z-index: 1;
-	}
-
 	/* will-change only during animations */
-	.hero-animating .hero-chart,
-	.hero-animating .slide {
+	.hero-animating .hero-content-zone,
+	.hero-animating .hero-chart-zone {
 		will-change: transform, opacity;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Chart Background - GPU Optimized
+	 * Background Layers
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-chart {
+	.hero-bg-gradient {
 		position: absolute;
 		inset: 0;
 		z-index: 0;
-		opacity: var(--hero-chart-opacity);
+		background:
+			radial-gradient(ellipse 80% 50% at 80% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+			radial-gradient(ellipse 60% 40% at 20% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+			radial-gradient(ellipse 100% 100% at 50% 100%, rgba(15, 23, 42, 0.9) 0%, transparent 40%);
+		pointer-events: none;
+	}
 
-		/* GPU-accelerated mask */
-		mask-image: linear-gradient(
-			to right,
-			transparent 0%,
-			black 15%,
-			black 85%,
-			transparent 100%
-		);
-		-webkit-mask-image: linear-gradient(
-			to right,
-			transparent 0%,
-			black 15%,
-			black 85%,
-			transparent 100%
-		);
-
-		/* Performance */
-		contain: strict;
-		transform: translateZ(0); /* Force GPU layer */
+	.hero-bg-grid {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		background-image:
+			linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+		background-size: 60px 60px;
+		mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, black 30%, transparent 70%);
+		-webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, black 30%, transparent 70%);
+		pointer-events: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Content Layer
+	 * Main Container
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-content {
+	.hero-container {
 		position: relative;
 		z-index: 10;
-		inline-size: 100%;
-		max-inline-size: 80rem;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+		max-width: 90rem;
 		margin-inline: auto;
-		padding-inline: 1rem;
-		padding-block: 5rem;
+		padding-inline: 1.5rem;
+		padding-block: 2rem;
+		gap: 2rem;
 	}
 
-	@media (min-width: 640px) {
-		.hero-content {
-			padding-inline: 1.5rem;
+	@media (min-width: 1024px) {
+		.hero-container {
+			padding-inline: 3rem;
+			padding-block: 3rem;
+			gap: 2.5rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.hero-container {
+			padding-inline: 4rem;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Split Layout
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.hero-split {
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
+		align-items: center;
+		flex: 1;
+	}
+
+	@media (min-width: 1024px) {
+		.hero-split {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			gap: 4rem;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.hero-split {
+			gap: 5rem;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Content Zone (Left)
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.hero-content-zone {
+		flex: 1;
+		max-width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	@media (min-width: 1024px) {
+		.hero-content-zone {
+			flex: 0 0 55%;
+			max-width: 55%;
+			justify-content: flex-start;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.hero-content-zone {
+			flex: 0 0 52%;
+			max-width: 52%;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Chart Zone (Right)
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.hero-chart-zone {
+		flex: 1;
+		width: 100%;
+		max-width: 100%;
+		min-height: 280px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	@media (min-width: 768px) {
+		.hero-chart-zone {
+			min-height: 350px;
 		}
 	}
 
 	@media (min-width: 1024px) {
-		.hero-content {
-			padding-inline: 2rem;
+		.hero-chart-zone {
+			flex: 0 0 42%;
+			max-width: 42%;
+			min-height: 420px;
 		}
 	}
 
-	.hero-slides {
-		position: relative;
-		min-block-size: 24rem;
+	@media (min-width: 1280px) {
+		.hero-chart-zone {
+			flex: 0 0 45%;
+			max-width: 45%;
+			min-height: 480px;
+		}
+	}
+
+	@media (min-width: 1536px) {
+		.hero-chart-zone {
+			min-height: 520px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Slides - GPU Accelerated Transitions
+	 * Stats Zone (Bottom)
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.slide {
-		text-align: center;
-		max-inline-size: 56rem;
+	.hero-stats-zone {
+		width: 100%;
+		max-width: 72rem;
 		margin-inline: auto;
-
-		/* GPU-accelerated properties only */
-		opacity: 1;
-		transform: translateZ(0);
-		transition: opacity 0.5s ease-in-out;
-	}
-
-	.slide--hidden {
-		display: none !important;
-		pointer-events: none;
-	}
-
-	.slide--active {
-		display: block !important;
-		pointer-events: auto;
-		opacity: 1 !important;
-		/* CSS fallback animation - instant visibility before GSAP loads */
-		animation: slideIn 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-	}
-	
-	@keyframes slideIn {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Typography
+	 * Scroll Indicator
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.slide__title {
-		font-family: var(--font-heading, system-ui);
-		font-size: clamp(2.5rem, 8vw, 4.5rem);
-		font-weight: 800;
-		line-height: 1.1;
-		color: white;
-		margin-block-end: 1rem;
-		opacity: 1;
-
-		/* GPU layer for animations */
-		transform: translateZ(0);
-	}
-
-	.slide__subtitle {
-		font-family: var(--font-heading, system-ui);
-		font-size: clamp(1.5rem, 5vw, 2.5rem);
-		font-weight: 700;
-		color: white;
-		margin-block-end: 1.5rem;
-		opacity: 1;
-		transform: translateZ(0);
-	}
-
-	.slide__description {
-		font-size: clamp(1rem, 2.5vw, 1.25rem);
-		line-height: 1.7;
-		color: white;
-		max-inline-size: 42rem;
-		margin-inline: auto;
-		margin-block-end: 2rem;
-		opacity: 1;
-		transform: translateZ(0);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CTA Buttons - GPU Accelerated
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.slide__actions {
+	.scroll-indicator {
+		position: absolute;
+		bottom: 2rem;
+		left: 50%;
+		transform: translateX(-50%);
 		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		justify-content: center;
-		opacity: 1;
-	}
-
-	.cta {
-		display: inline-flex;
+		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		position: relative;
-		padding: 1rem 2.5rem;
-		font-family: var(--font-heading, system-ui);
-		font-size: 1rem;
-		font-weight: 600;
-		border-radius: 9999px;
-		text-align: center;
-		text-decoration: none;
-		overflow: hidden;
-		cursor: pointer;
-		opacity: 1;
-
-		/* GPU-accelerated transitions only */
-		transform: translateY(0) translateZ(0);
-		transition:
-			transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-			box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		gap: 0.5rem;
+		opacity: 0.5;
+		transition: opacity 0.3s ease;
 	}
 
-	.cta span {
-		position: relative;
-		z-index: 2;
+	.scroll-indicator:hover {
+		opacity: 0.8;
 	}
 
-	.cta--primary {
-		background-color: #facc15;
-		color: #fff;
-		box-shadow: 0 4px 15px rgba(250, 204, 21, 0.2);
+	.scroll-indicator__line {
+		width: 1px;
+		height: 2.5rem;
+		background: linear-gradient(to bottom, rgba(99, 102, 241, 0.6), transparent);
+		animation: scrollPulse 2s ease-in-out infinite;
 	}
 
-	.cta--primary:hover,
-	.cta--primary:focus-visible {
-		transform: translateY(-3px) translateZ(0);
-		box-shadow: 0 8px 25px rgba(250, 204, 21, 0.4);
-	}
-
-	.cta--secondary {
-		background-color: rgba(31, 41, 55, 0.5);
-		color: #fff;
-		border: 2px solid #4b5563;
-		backdrop-filter: blur(5px);
-	}
-
-	.cta--secondary:hover,
-	.cta--secondary:focus-visible {
-		background-color: rgba(55, 65, 81, 0.7);
-		border-color: #6b7280;
-		transform: translateY(-3px) translateZ(0);
-	}
-
-	.cta:focus-visible {
-		outline: 2px solid #facc15;
-		outline-offset: 2px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Responsive
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 768px) {
-		.cta {
-			padding: 0.875rem 2rem;
-			font-size: 0.9rem;
+	@keyframes scrollPulse {
+		0%, 100% {
+			opacity: 0.5;
+			height: 2.5rem;
+		}
+		50% {
+			opacity: 1;
+			height: 3rem;
 		}
 	}
 
+	.scroll-indicator__text {
+		font-family: var(--font-heading, system-ui);
+		font-size: 0.65rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	/* Hide scroll indicator on short screens */
+	@media (max-height: 700px) {
+		.scroll-indicator {
+			display: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Mobile Optimizations
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 640px) {
 		.hero-section {
 			padding-block-start: 60px;
 		}
 
-		.slide__actions {
-			flex-direction: column;
-			align-items: center;
+		.hero-container {
+			padding-inline: 1rem;
+			padding-block: 1.5rem;
+			gap: 1.5rem;
 		}
 
-		.cta {
-			inline-size: 100%;
-			max-inline-size: 280px;
+		.hero-split {
+			gap: 2rem;
+		}
+
+		.hero-chart-zone {
+			min-height: 240px;
+			order: -1; /* Chart first on mobile for visual impact */
+		}
+
+		.scroll-indicator {
+			bottom: 1rem;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Ultra-wide Optimizations
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	@media (min-width: 2000px) {
+		.hero-container {
+			max-width: 100rem;
+		}
+
+		.hero-chart-zone {
+			min-height: 600px;
 		}
 	}
 
@@ -771,9 +731,12 @@
 	 * Reduced Motion
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	@media (prefers-reduced-motion: reduce) {
-		.slide,
-		.cta,
-		.hero-chart {
+		.scroll-indicator__line {
+			animation: none;
+		}
+
+		.hero-bg-gradient,
+		.hero-bg-grid {
 			transition: none;
 		}
 	}
