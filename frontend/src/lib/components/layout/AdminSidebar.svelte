@@ -163,10 +163,15 @@
 {/if}
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN SIDEBAR - Netflix L11+ Principal Engineer Grade
+	 * Uses CSS custom properties for bulletproof light/dark theme support
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.admin-sidebar {
 		width: 240px;
-		background: linear-gradient(180deg, var(--color-rtp-surface, #1e293b) 0%, var(--color-rtp-bg, #0f172a) 100%);
-		border-right: 1px solid rgba(99, 102, 241, 0.1);
+		background: var(--admin-sidebar-bg);
+		border-right: 1px solid var(--admin-sidebar-border);
 		display: flex;
 		flex-direction: column;
 		position: fixed;
@@ -174,12 +179,15 @@
 		left: 0;
 		height: 100vh;
 		z-index: var(--z-modal, 500);
-		transition: transform 0.3s ease;
+		transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+					background 0.3s ease,
+					border-color 0.3s ease;
 	}
 
+	/* Sidebar Header */
 	.sidebar-header {
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid var(--admin-border-light);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -190,32 +198,40 @@
 		width: auto;
 	}
 
+	/* Close Button (Mobile) */
 	.close-btn {
 		display: none;
-		background: none;
+		background: transparent;
 		border: none;
-		color: var(--color-rtp-muted, #94a3b8);
+		color: var(--admin-text-muted);
 		cursor: pointer;
 		padding: 0.5rem;
 		border-radius: var(--radius-md, 0.5rem);
-		transition: all 0.2s;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.close-btn:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: var(--color-rtp-primary, #818cf8);
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-accent-primary);
 	}
 
+	.close-btn:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
+	}
+
+	/* Navigation Container */
 	.sidebar-nav {
 		flex: 1;
 		padding: 0.5rem 1rem;
 		overflow-y: auto;
 	}
 
+	/* Section Title */
 	.nav-section-title {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: var(--color-rtp-muted, #64748b);
+		color: var(--admin-nav-section-title);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		padding: 1rem 0.5rem 0.5rem;
@@ -227,57 +243,69 @@
 		padding-top: 0.5rem;
 	}
 
+	/* Navigation Item */
 	.nav-item {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.6rem 0.75rem;
-		color: var(--color-rtp-muted, #94a3b8);
+		color: var(--admin-nav-text);
 		text-decoration: none;
 		border-radius: var(--radius-md, 0.5rem);
 		font-size: 0.9rem;
 		font-weight: 500;
 		margin-bottom: 0.25rem;
-		transition: all 0.2s;
+		border: 1px solid transparent;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.nav-item:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: var(--color-rtp-text, #a5b4fc);
+		background: var(--admin-nav-bg-hover);
+		color: var(--admin-nav-text-hover);
+	}
+
+	.nav-item:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
 	}
 
 	.nav-item.active {
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-		color: var(--color-rtp-primary, #a5b4fc);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: var(--admin-nav-bg-active);
+		color: var(--admin-nav-text-active);
+		border-color: var(--admin-nav-border-active);
+		font-weight: 600;
 	}
 
+	/* Sidebar Footer */
 	.sidebar-footer {
 		padding: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid var(--admin-border-light);
 	}
 
+	/* User Info Card */
 	.user-info {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.05);
+		background: var(--admin-surface-sunken);
 		border-radius: var(--radius-lg, 0.75rem);
 		margin-bottom: 0.75rem;
+		transition: background-color 0.3s ease;
 	}
 
 	.user-avatar {
 		width: 40px;
 		height: 40px;
 		border-radius: var(--radius-md, 0.5rem);
-		background: linear-gradient(135deg, var(--color-rtp-primary, #6366f1), var(--color-rtp-indigo, #8b5cf6));
+		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-widget-purple-icon));
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-weight: 700;
 		font-size: 1.125rem;
 		color: white;
+		flex-shrink: 0;
 	}
 
 	.user-details {
@@ -290,7 +318,7 @@
 	.user-name {
 		font-weight: 600;
 		font-size: 0.9375rem;
-		color: var(--color-rtp-text, #e2e8f0);
+		color: var(--admin-text-primary);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -298,9 +326,10 @@
 
 	.user-role {
 		font-size: 0.8125rem;
-		color: var(--color-rtp-muted, #64748b);
+		color: var(--admin-text-muted);
 	}
 
+	/* Exit Button */
 	.exit-btn {
 		display: flex;
 		align-items: center;
@@ -308,21 +337,27 @@
 		gap: 0.75rem;
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: none;
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: transparent;
+		border: 1px solid var(--admin-error-border);
 		border-radius: var(--radius-md, 0.5rem);
-		color: var(--color-rtp-muted, #94a3b8);
+		color: var(--admin-text-muted);
 		text-decoration: none;
 		font-weight: 500;
-		transition: all 0.2s;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.exit-btn:hover {
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border-color: rgba(239, 68, 68, 0.3);
+		background: var(--admin-error-bg);
+		color: var(--admin-error);
+		border-color: var(--admin-error-border);
 	}
 
+	.exit-btn:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
+	}
+
+	/* Mobile Overlay */
 	.sidebar-overlay {
 		display: none;
 		position: fixed;
@@ -330,9 +365,13 @@
 		background: rgba(0, 0, 0, 0.5);
 		z-index: calc(var(--z-modal, 500) - 1);
 		border: none;
+		cursor: pointer;
 	}
 
-	/* Responsive */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 1024px) {
 		.admin-sidebar {
 			transform: translateX(-100%);

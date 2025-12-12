@@ -148,12 +148,12 @@
 	<title>Admin Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-	<!-- Ambient Background Effects -->
-	<div class="fixed inset-0 overflow-hidden pointer-events-none">
-		<div class="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-		<div class="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-		<div class="absolute top-1/2 left-1/2 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
+<div class="dashboard-container">
+	<!-- Ambient Background Effects - Theme aware -->
+	<div class="ambient-effects">
+		<div class="ambient-blob ambient-blob-purple"></div>
+		<div class="ambient-blob ambient-blob-blue"></div>
+		<div class="ambient-blob ambient-blob-emerald"></div>
 	</div>
 
 	<div class="relative z-10 p-6 lg:p-8 max-w-[1800px] mx-auto">
@@ -161,23 +161,23 @@
 		<header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
 			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 				<div>
-					<h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+					<h1 class="dashboard-title">
 						Admin Dashboard
 					</h1>
-					<p class="mt-2 text-slate-400 text-lg">
+					<p class="dashboard-subtitle">
 						Real-time metrics and system overview
 					</p>
 				</div>
 
 				<div class="flex items-center gap-4">
 					<!-- Connection Status Indicator -->
-					<div class="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl">
-						<span class="w-2 h-2 rounded-full {connectedCount > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}"></span>
-						<span class="text-sm text-slate-300">{connectedCount}/{totalServices} Connected</span>
+					<div class="status-indicator">
+						<span class="status-dot {connectedCount > 0 ? 'online' : 'offline'}"></span>
+						<span class="status-text">{connectedCount}/{totalServices} Connected</span>
 					</div>
 
 					<!-- Last Updated -->
-					<div class="text-sm text-slate-400">
+					<div class="updated-text">
 						Updated {getTimeAgo(lastUpdated)}
 					</div>
 
@@ -185,11 +185,11 @@
 					<button
 						onclick={() => loadDashboard()}
 						disabled={isLoading}
-						class="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all disabled:opacity-50"
+						class="refresh-btn"
 						title="Refresh dashboard"
 						aria-label="Refresh dashboard"
 					>
-						<svg class="w-5 h-5 text-slate-300 {isLoading ? 'animate-spin' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg class="w-5 h-5 {isLoading ? 'animate-spin' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 						</svg>
 					</button>
@@ -200,22 +200,19 @@
 		<!-- Connection Alert Banner -->
 		{#if connectedCount === 0}
 			<div
-				class="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center gap-4"
+				class="alert-banner alert-warning"
 				in:fly={{ y: 20, duration: 400 }}
 			>
-				<div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-					<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<div class="alert-icon warning">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
 					</svg>
 				</div>
 				<div class="flex-1">
-					<h3 class="font-semibold text-amber-300">No Services Connected</h3>
-					<p class="text-sm text-slate-400">Connect your services in Settings to see real metrics on this dashboard.</p>
+					<h3 class="alert-title">No Services Connected</h3>
+					<p class="alert-description">Connect your services in Settings to see real metrics on this dashboard.</p>
 				</div>
-				<a
-					href="/admin/settings"
-					class="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-xl text-sm font-medium transition-all"
-				>
+				<a href="/admin/settings" class="alert-action">
 					Connect Services
 				</a>
 			</div>
@@ -225,112 +222,108 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
 			<!-- Visitors Widget -->
 			<div
-				class="group relative"
+				class="metric-widget metric-widget-purple"
 				in:fly={{ y: 30, duration: 400, delay: 100, easing: quintOut }}
 			>
-				<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-				<div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-purple-400/30 transition-all">
+				<div class="metric-widget-inner">
 					<div class="flex items-center justify-between mb-4">
-						<div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
-							<svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<div class="metric-icon purple">
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
 							</svg>
 						</div>
 						{#if !connections.google_analytics}
-							<span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded-lg text-xs font-medium">Not Connected</span>
+							<span class="metric-badge disconnected">Not Connected</span>
 						{/if}
 					</div>
 
 					{#if connections.google_analytics}
-						<div class="text-3xl font-bold text-white mb-1">{formatNumber(metrics.visitors)}</div>
-						<div class="text-sm text-slate-400">Visitors Today</div>
+						<div class="metric-value">{formatNumber(metrics.visitors)}</div>
+						<div class="metric-label">Visitors Today</div>
 					{:else}
-						<div class="text-lg text-slate-500 mb-1">No Data</div>
-						<div class="text-sm text-slate-500">Connect Google Analytics</div>
+						<div class="metric-value-empty">No Data</div>
+						<div class="metric-label-empty">Connect Google Analytics</div>
 					{/if}
 				</div>
 			</div>
 
 			<!-- Revenue Widget -->
 			<div
-				class="group relative"
+				class="metric-widget metric-widget-emerald"
 				in:fly={{ y: 30, duration: 400, delay: 150, easing: quintOut }}
 			>
-				<div class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-				<div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-emerald-400/30 transition-all">
+				<div class="metric-widget-inner">
 					<div class="flex items-center justify-between mb-4">
-						<div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-							<svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<div class="metric-icon emerald">
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 							</svg>
 						</div>
 						{#if !connections.stripe}
-							<span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded-lg text-xs font-medium">Not Connected</span>
+							<span class="metric-badge disconnected">Not Connected</span>
 						{/if}
 					</div>
 
 					{#if connections.stripe}
-						<div class="text-3xl font-bold text-white mb-1">{formatCurrency(metrics.revenue)}</div>
-						<div class="text-sm text-slate-400">Revenue This Month</div>
+						<div class="metric-value">{formatCurrency(metrics.revenue)}</div>
+						<div class="metric-label">Revenue This Month</div>
 					{:else}
-						<div class="text-lg text-slate-500 mb-1">No Data</div>
-						<div class="text-sm text-slate-500">Connect Stripe</div>
+						<div class="metric-value-empty">No Data</div>
+						<div class="metric-label-empty">Connect Stripe</div>
 					{/if}
 				</div>
 			</div>
 
 			<!-- SEO Score Widget -->
 			<div
-				class="group relative"
+				class="metric-widget metric-widget-blue"
 				in:fly={{ y: 30, duration: 400, delay: 200, easing: quintOut }}
 			>
-				<div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-				<div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-blue-400/30 transition-all">
+				<div class="metric-widget-inner">
 					<div class="flex items-center justify-between mb-4">
-						<div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-							<svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<div class="metric-icon blue">
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 							</svg>
 						</div>
 						{#if !connections.google_search_console}
-							<span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded-lg text-xs font-medium">Not Connected</span>
+							<span class="metric-badge disconnected">Not Connected</span>
 						{/if}
 					</div>
 
 					{#if connections.google_search_console}
-						<div class="text-3xl font-bold text-white mb-1">{metrics.seo_score ?? '—'}/100</div>
-						<div class="text-sm text-slate-400">SEO Health Score</div>
+						<div class="metric-value">{metrics.seo_score ?? '—'}/100</div>
+						<div class="metric-label">SEO Health Score</div>
 					{:else}
-						<div class="text-lg text-slate-500 mb-1">No Data</div>
-						<div class="text-sm text-slate-500">Connect Search Console</div>
+						<div class="metric-value-empty">No Data</div>
+						<div class="metric-label-empty">Connect Search Console</div>
 					{/if}
 				</div>
 			</div>
 
 			<!-- MRR Widget -->
 			<div
-				class="group relative"
+				class="metric-widget metric-widget-amber"
 				in:fly={{ y: 30, duration: 400, delay: 250, easing: quintOut }}
 			>
-				<div class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-				<div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-amber-400/30 transition-all">
+				<div class="metric-widget-inner">
 					<div class="flex items-center justify-between mb-4">
-						<div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
-							<svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<div class="metric-icon amber">
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
 							</svg>
 						</div>
 						{#if !connections.stripe}
-							<span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded-lg text-xs font-medium">Not Connected</span>
+							<span class="metric-badge disconnected">Not Connected</span>
 						{/if}
 					</div>
 
 					{#if connections.stripe}
-						<div class="text-3xl font-bold text-white mb-1">{formatCurrency(metrics.mrr)}</div>
-						<div class="text-sm text-slate-400">Monthly Recurring Revenue</div>
+						<div class="metric-value">{formatCurrency(metrics.mrr)}</div>
+						<div class="metric-label">Monthly Recurring Revenue</div>
 					{:else}
-						<div class="text-lg text-slate-500 mb-1">No Data</div>
-						<div class="text-sm text-slate-500">Connect Stripe</div>
+						<div class="metric-value-empty">No Data</div>
+						<div class="metric-label-empty">Connect Stripe</div>
 					{/if}
 				</div>
 			</div>
@@ -340,106 +333,106 @@
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 			<!-- Google Services Status -->
 			<div
-				class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+				class="section-card"
 				in:fly={{ y: 30, duration: 400, delay: 300, easing: quintOut }}
 			>
-				<div class="flex items-center justify-between mb-6">
-					<h2 class="text-lg font-semibold text-white flex items-center gap-2">
-						<span class="text-xl">🔍</span> Google Integrations
+				<div class="section-header">
+					<h2 class="section-title">
+						<span class="section-icon">🔍</span> Google Integrations
 					</h2>
-					<a href="/admin/settings" class="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+					<a href="/admin/settings" class="section-link">
 						Manage →
 					</a>
 				</div>
 
 				<div class="space-y-4">
 					<!-- Google Analytics -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
-								<span class="text-sm font-bold text-amber-400">G</span>
+							<div class="integration-icon amber">
+								<span class="text-sm font-bold">G</span>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Google Analytics 4</div>
-								<div class="text-xs text-slate-500">Traffic & behavior tracking</div>
+								<div class="integration-name">Google Analytics 4</div>
+								<div class="integration-desc">Traffic & behavior tracking</div>
 							</div>
 						</div>
 						{#if connections.google_analytics}
-							<span class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium">
-								<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+							<span class="connection-badge connected">
+								<span class="connection-dot"></span>
 								Connected
 							</span>
 						{:else}
-							<a href="/admin/settings" class="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg text-xs font-medium transition-all">
+							<a href="/admin/settings" class="connect-btn">
 								Connect
 							</a>
 						{/if}
 					</div>
 
 					<!-- Google Search Console -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-								<span class="text-sm font-bold text-blue-400">G</span>
+							<div class="integration-icon blue">
+								<span class="text-sm font-bold">G</span>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Search Console</div>
-								<div class="text-xs text-slate-500">SEO & indexing status</div>
+								<div class="integration-name">Search Console</div>
+								<div class="integration-desc">SEO & indexing status</div>
 							</div>
 						</div>
 						{#if connections.google_search_console}
-							<span class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium">
-								<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+							<span class="connection-badge connected">
+								<span class="connection-dot"></span>
 								Connected
 							</span>
 						{:else}
-							<a href="/admin/settings" class="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg text-xs font-medium transition-all">
+							<a href="/admin/settings" class="connect-btn">
 								Connect
 							</a>
 						{/if}
 					</div>
 
 					<!-- Google Tag Manager -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-								<span class="text-sm font-bold text-indigo-400">G</span>
+							<div class="integration-icon purple">
+								<span class="text-sm font-bold">G</span>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Tag Manager</div>
-								<div class="text-xs text-slate-500">Marketing tag management</div>
+								<div class="integration-name">Tag Manager</div>
+								<div class="integration-desc">Marketing tag management</div>
 							</div>
 						</div>
 						{#if connections.google_tag_manager}
-							<span class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium">
-								<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+							<span class="connection-badge connected">
+								<span class="connection-dot"></span>
 								Connected
 							</span>
 						{:else}
-							<a href="/admin/settings" class="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg text-xs font-medium transition-all">
+							<a href="/admin/settings" class="connect-btn">
 								Connect
 							</a>
 						{/if}
 					</div>
 
 					<!-- Google Ads -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-								<span class="text-sm font-bold text-green-400">G</span>
+							<div class="integration-icon emerald">
+								<span class="text-sm font-bold">G</span>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Google Ads</div>
-								<div class="text-xs text-slate-500">Conversion tracking</div>
+								<div class="integration-name">Google Ads</div>
+								<div class="integration-desc">Conversion tracking</div>
 							</div>
 						</div>
 						{#if connections.google_ads}
-							<span class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium">
-								<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+							<span class="connection-badge connected">
+								<span class="connection-dot"></span>
 								Connected
 							</span>
 						{:else}
-							<a href="/admin/settings" class="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg text-xs font-medium transition-all">
+							<a href="/admin/settings" class="connect-btn">
 								Connect
 							</a>
 						{/if}
@@ -449,82 +442,82 @@
 
 			<!-- System Health -->
 			<div
-				class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+				class="section-card"
 				in:fly={{ y: 30, duration: 400, delay: 350, easing: quintOut }}
 			>
-				<div class="flex items-center justify-between mb-6">
-					<h2 class="text-lg font-semibold text-white flex items-center gap-2">
-						<span class="text-xl">🖥️</span> System Status
+				<div class="section-header">
+					<h2 class="section-title">
+						<span class="section-icon">🖥️</span> System Status
 					</h2>
-					<span class="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium">
-						<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+					<span class="connection-badge connected">
+						<span class="connection-dot"></span>
 						Operational
 					</span>
 				</div>
 
 				<div class="space-y-4">
 					<!-- API Status -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-								<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<div class="integration-icon emerald">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
 								</svg>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">API Server</div>
-								<div class="text-xs text-slate-500">Backend services</div>
+								<div class="integration-name">API Server</div>
+								<div class="integration-desc">Backend services</div>
 							</div>
 						</div>
-						<span class="text-xs text-emerald-400">Online</span>
+						<span class="status-text-online">Online</span>
 					</div>
 
 					<!-- Database -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-								<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<div class="integration-icon emerald">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
 								</svg>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Database</div>
-								<div class="text-xs text-slate-500">MySQL connection</div>
+								<div class="integration-name">Database</div>
+								<div class="integration-desc">MySQL connection</div>
 							</div>
 						</div>
-						<span class="text-xs text-emerald-400">Connected</span>
+						<span class="status-text-online">Connected</span>
 					</div>
 
 					<!-- Cache -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-								<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<div class="integration-icon emerald">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
 								</svg>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Cache</div>
-								<div class="text-xs text-slate-500">Redis cache layer</div>
+								<div class="integration-name">Cache</div>
+								<div class="integration-desc">Redis cache layer</div>
 							</div>
 						</div>
-						<span class="text-xs text-emerald-400">Active</span>
+						<span class="status-text-online">Active</span>
 					</div>
 
 					<!-- Queue -->
-					<div class="flex items-center justify-between p-3 bg-black/20 rounded-xl">
+					<div class="integration-row">
 						<div class="flex items-center gap-3">
-							<div class="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-								<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<div class="integration-icon emerald">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 								</svg>
 							</div>
 							<div>
-								<div class="text-sm font-medium text-white">Job Queue</div>
-								<div class="text-xs text-slate-500">Background tasks</div>
+								<div class="integration-name">Job Queue</div>
+								<div class="integration-desc">Background tasks</div>
 							</div>
 						</div>
-						<span class="text-xs text-emerald-400">Running</span>
+						<span class="status-text-online">Running</span>
 					</div>
 				</div>
 			</div>
@@ -535,58 +528,559 @@
 			class="grid grid-cols-2 md:grid-cols-4 gap-4"
 			in:fly={{ y: 30, duration: 400, delay: 400, easing: quintOut }}
 		>
-			<a
-				href="/admin/settings"
-				class="group p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:border-purple-400/30 transition-all hover:-translate-y-1"
-			>
-				<div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-					<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<a href="/admin/settings" class="quick-action-card purple">
+				<div class="quick-action-icon purple">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
 					</svg>
 				</div>
-				<div class="text-sm font-medium text-white">API Settings</div>
-				<div class="text-xs text-slate-500">Connect services</div>
+				<div class="quick-action-title">API Settings</div>
+				<div class="quick-action-desc">Connect services</div>
 			</a>
 
-			<a
-				href="/admin/analytics"
-				class="group p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:border-blue-400/30 transition-all hover:-translate-y-1"
-			>
-				<div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-					<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<a href="/admin/analytics" class="quick-action-card blue">
+				<div class="quick-action-icon blue">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
 					</svg>
 				</div>
-				<div class="text-sm font-medium text-white">Analytics</div>
-				<div class="text-xs text-slate-500">View reports</div>
+				<div class="quick-action-title">Analytics</div>
+				<div class="quick-action-desc">View reports</div>
 			</a>
 
-			<a
-				href="/admin/members"
-				class="group p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:border-emerald-400/30 transition-all hover:-translate-y-1"
-			>
-				<div class="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-					<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<a href="/admin/members" class="quick-action-card emerald">
+				<div class="quick-action-icon emerald">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
 					</svg>
 				</div>
-				<div class="text-sm font-medium text-white">Members</div>
-				<div class="text-xs text-slate-500">Manage users</div>
+				<div class="quick-action-title">Members</div>
+				<div class="quick-action-desc">Manage users</div>
 			</a>
 
-			<a
-				href="/admin/seo"
-				class="group p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:border-amber-400/30 transition-all hover:-translate-y-1"
-			>
-				<div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-					<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<a href="/admin/seo" class="quick-action-card amber">
+				<div class="quick-action-icon amber">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 					</svg>
 				</div>
-				<div class="text-sm font-medium text-white">SEO Tools</div>
-				<div class="text-xs text-slate-500">Optimize search</div>
+				<div class="quick-action-title">SEO Tools</div>
+				<div class="quick-action-desc">Optimize search</div>
 			</a>
 		</div>
 	</div>
 </div>
+
+<style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN DASHBOARD - Netflix L11+ Principal Engineer Grade
+	 * Theme-aware styles with bulletproof light/dark support
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Dashboard Container */
+	.dashboard-container {
+		min-height: 100vh;
+		position: relative;
+	}
+
+	/* Ambient Background Effects */
+	.ambient-effects {
+		position: fixed;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+		opacity: 0.5;
+	}
+
+	.ambient-blob {
+		position: absolute;
+		border-radius: 9999px;
+		filter: blur(60px);
+	}
+
+	.ambient-blob-purple {
+		top: -10rem;
+		right: -10rem;
+		width: 24rem;
+		height: 24rem;
+		background: var(--admin-widget-purple-bg);
+	}
+
+	.ambient-blob-blue {
+		bottom: -10rem;
+		left: -10rem;
+		width: 24rem;
+		height: 24rem;
+		background: var(--admin-widget-blue-bg);
+	}
+
+	.ambient-blob-emerald {
+		top: 50%;
+		left: 50%;
+		width: 16rem;
+		height: 16rem;
+		background: var(--admin-widget-emerald-bg);
+	}
+
+	/* Dashboard Title */
+	.dashboard-title {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--admin-text-primary);
+		letter-spacing: -0.02em;
+	}
+
+	@media (min-width: 1024px) {
+		.dashboard-title {
+			font-size: 2.25rem;
+		}
+	}
+
+	.dashboard-subtitle {
+		margin-top: 0.5rem;
+		font-size: 1.125rem;
+		color: var(--admin-text-muted);
+	}
+
+	/* Status Indicator */
+	.status-indicator {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: var(--admin-card-bg);
+		border: 1px solid var(--admin-card-border);
+		border-radius: 0.75rem;
+		box-shadow: var(--admin-card-shadow);
+	}
+
+	.status-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 9999px;
+	}
+
+	.status-dot.online {
+		background: var(--admin-success);
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	.status-dot.offline {
+		background: var(--admin-text-muted);
+	}
+
+	.status-text {
+		font-size: 0.875rem;
+		color: var(--admin-text-secondary);
+	}
+
+	.updated-text {
+		font-size: 0.875rem;
+		color: var(--admin-text-muted);
+	}
+
+	/* Refresh Button */
+	.refresh-btn {
+		padding: 0.5rem;
+		background: var(--admin-btn-bg);
+		border: 1px solid var(--admin-btn-border);
+		border-radius: 0.75rem;
+		color: var(--admin-btn-text);
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.refresh-btn:hover {
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-btn-text-hover);
+	}
+
+	.refresh-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Alert Banner */
+	.alert-banner {
+		margin-bottom: 2rem;
+		padding: 1rem;
+		border-radius: 1rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.alert-warning {
+		background: var(--admin-warning-bg);
+		border: 1px solid var(--admin-warning-border);
+	}
+
+	.alert-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.alert-icon.warning {
+		background: var(--admin-warning-bg);
+		color: var(--admin-warning);
+	}
+
+	.alert-title {
+		font-weight: 600;
+		color: var(--admin-warning);
+	}
+
+	.alert-description {
+		font-size: 0.875rem;
+		color: var(--admin-text-muted);
+	}
+
+	.alert-action {
+		padding: 0.5rem 1rem;
+		background: var(--admin-warning-bg);
+		color: var(--admin-warning);
+		border-radius: 0.75rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: all 0.2s;
+		white-space: nowrap;
+	}
+
+	.alert-action:hover {
+		background: var(--admin-warning-border);
+	}
+
+	/* Metric Widgets */
+	.metric-widget {
+		position: relative;
+	}
+
+	.metric-widget-inner {
+		position: relative;
+		background: var(--admin-card-bg);
+		border: 1px solid var(--admin-card-border);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		box-shadow: var(--admin-card-shadow);
+		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.metric-widget:hover .metric-widget-inner {
+		transform: translateY(-2px);
+		box-shadow: var(--admin-card-shadow-hover);
+	}
+
+	.metric-widget-purple:hover .metric-widget-inner {
+		border-color: var(--admin-widget-purple-border);
+	}
+
+	.metric-widget-emerald:hover .metric-widget-inner {
+		border-color: var(--admin-widget-emerald-border);
+	}
+
+	.metric-widget-blue:hover .metric-widget-inner {
+		border-color: var(--admin-widget-blue-border);
+	}
+
+	.metric-widget-amber:hover .metric-widget-inner {
+		border-color: var(--admin-widget-amber-border);
+	}
+
+	/* Metric Icon */
+	.metric-icon {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.metric-icon.purple {
+		background: var(--admin-widget-purple-bg);
+		color: var(--admin-widget-purple-icon);
+	}
+
+	.metric-icon.emerald {
+		background: var(--admin-widget-emerald-bg);
+		color: var(--admin-widget-emerald-icon);
+	}
+
+	.metric-icon.blue {
+		background: var(--admin-widget-blue-bg);
+		color: var(--admin-widget-blue-icon);
+	}
+
+	.metric-icon.amber {
+		background: var(--admin-widget-amber-bg);
+		color: var(--admin-widget-amber-icon);
+	}
+
+	/* Metric Badge */
+	.metric-badge {
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	.metric-badge.disconnected {
+		background: var(--admin-badge-default-bg);
+		color: var(--admin-text-muted);
+	}
+
+	/* Metric Values */
+	.metric-value {
+		font-size: 1.875rem;
+		font-weight: 700;
+		color: var(--admin-text-primary);
+		margin-bottom: 0.25rem;
+	}
+
+	.metric-label {
+		font-size: 0.875rem;
+		color: var(--admin-text-muted);
+	}
+
+	.metric-value-empty {
+		font-size: 1.125rem;
+		color: var(--admin-text-muted);
+		margin-bottom: 0.25rem;
+	}
+
+	.metric-label-empty {
+		font-size: 0.875rem;
+		color: var(--admin-text-placeholder);
+	}
+
+	/* Section Card */
+	.section-card {
+		background: var(--admin-card-bg);
+		border: 1px solid var(--admin-card-border);
+		border-radius: 1rem;
+		padding: 1.5rem;
+		box-shadow: var(--admin-card-shadow);
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+	}
+
+	.section-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--admin-text-primary);
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.section-icon {
+		font-size: 1.25rem;
+	}
+
+	.section-link {
+		font-size: 0.875rem;
+		color: var(--admin-accent-primary);
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.section-link:hover {
+		color: var(--admin-btn-primary-bg-hover);
+	}
+
+	/* Integration Row */
+	.integration-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.75rem;
+		background: var(--admin-surface-sunken);
+		border-radius: 0.75rem;
+	}
+
+	.integration-icon {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.integration-icon.amber {
+		background: var(--admin-widget-amber-bg);
+		color: var(--admin-widget-amber-icon);
+	}
+
+	.integration-icon.blue {
+		background: var(--admin-widget-blue-bg);
+		color: var(--admin-widget-blue-icon);
+	}
+
+	.integration-icon.purple {
+		background: var(--admin-widget-purple-bg);
+		color: var(--admin-widget-purple-icon);
+	}
+
+	.integration-icon.emerald {
+		background: var(--admin-widget-emerald-bg);
+		color: var(--admin-widget-emerald-icon);
+	}
+
+	.integration-name {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--admin-text-primary);
+	}
+
+	.integration-desc {
+		font-size: 0.75rem;
+		color: var(--admin-text-muted);
+	}
+
+	/* Connection Badge */
+	.connection-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	.connection-badge.connected {
+		background: var(--admin-success-bg);
+		color: var(--admin-success);
+	}
+
+	.connection-dot {
+		width: 0.375rem;
+		height: 0.375rem;
+		border-radius: 9999px;
+		background: currentColor;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	.connect-btn {
+		padding: 0.375rem 0.75rem;
+		background: var(--admin-accent-primary-soft);
+		color: var(--admin-accent-primary);
+		border-radius: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.connect-btn:hover {
+		background: var(--admin-accent-primary-muted);
+	}
+
+	.status-text-online {
+		font-size: 0.75rem;
+		color: var(--admin-success);
+		font-weight: 500;
+	}
+
+	/* Quick Action Cards */
+	.quick-action-card {
+		display: block;
+		padding: 1.25rem;
+		background: var(--admin-card-bg);
+		border: 1px solid var(--admin-card-border);
+		border-radius: 1rem;
+		text-decoration: none;
+		box-shadow: var(--admin-card-shadow);
+		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.quick-action-card:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--admin-card-shadow-hover);
+	}
+
+	.quick-action-card.purple:hover {
+		border-color: var(--admin-widget-purple-border);
+	}
+
+	.quick-action-card.blue:hover {
+		border-color: var(--admin-widget-blue-border);
+	}
+
+	.quick-action-card.emerald:hover {
+		border-color: var(--admin-widget-emerald-border);
+	}
+
+	.quick-action-card.amber:hover {
+		border-color: var(--admin-widget-amber-border);
+	}
+
+	.quick-action-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 0.75rem;
+		transition: transform 0.2s;
+	}
+
+	.quick-action-card:hover .quick-action-icon {
+		transform: scale(1.1);
+	}
+
+	.quick-action-icon.purple {
+		background: var(--admin-widget-purple-bg);
+		color: var(--admin-widget-purple-icon);
+	}
+
+	.quick-action-icon.blue {
+		background: var(--admin-widget-blue-bg);
+		color: var(--admin-widget-blue-icon);
+	}
+
+	.quick-action-icon.emerald {
+		background: var(--admin-widget-emerald-bg);
+		color: var(--admin-widget-emerald-icon);
+	}
+
+	.quick-action-icon.amber {
+		background: var(--admin-widget-amber-bg);
+		color: var(--admin-widget-amber-icon);
+	}
+
+	.quick-action-title {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--admin-text-primary);
+	}
+
+	.quick-action-desc {
+		font-size: 0.75rem;
+		color: var(--admin-text-muted);
+	}
+
+	/* Pulse Animation */
+	@keyframes pulse {
+		0%, 100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+</style>

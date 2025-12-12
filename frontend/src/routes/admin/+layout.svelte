@@ -250,14 +250,20 @@
 <OfflineIndicator />
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN LAYOUT - Netflix L11+ Principal Engineer Grade
+	 * Uses CSS custom properties for bulletproof light/dark theme support
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.admin-layout {
 		display: flex;
 		min-height: 100vh;
-		background: var(--color-rtp-bg, #0f172a);
-		color: var(--color-rtp-text, #e2e8f0);
+		background: var(--admin-bg);
+		color: var(--admin-text-primary);
+		transition: background-color 0.3s ease, color 0.3s ease;
 	}
 
-	/* Main Content */
+	/* Main Content Area */
 	.admin-main {
 		flex: 1;
 		margin-left: 240px;
@@ -266,10 +272,12 @@
 		min-height: 100vh;
 	}
 
+	/* Header - Theme-aware styling */
 	.admin-header {
 		height: 70px;
-		background: var(--color-rtp-surface, #1e293b);
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		background: var(--admin-header-bg);
+		border-bottom: 1px solid var(--admin-header-border);
+		box-shadow: var(--admin-header-shadow);
 		display: flex;
 		align-items: center;
 		padding: 0 2rem;
@@ -277,32 +285,42 @@
 		position: sticky;
 		top: 0;
 		z-index: 30;
+		transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 	}
 
+	/* Mobile Menu Button */
 	.mobile-menu-btn {
 		display: none;
-		background: none;
+		background: transparent;
 		border: none;
-		color: var(--color-rtp-muted, #94a3b8);
+		color: var(--admin-text-muted);
 		cursor: pointer;
 		padding: 0.5rem;
 		border-radius: var(--radius-md, 0.5rem);
-		transition: all 0.2s;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.mobile-menu-btn:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: var(--color-rtp-primary, #818cf8);
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-accent-primary);
 	}
 
+	.mobile-menu-btn:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
+	}
+
+	/* Header Title */
 	.header-title h1 {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: var(--color-rtp-text, #f1f5f9);
+		color: var(--admin-text-primary);
 		text-transform: capitalize;
 		margin: 0;
+		letter-spacing: -0.01em;
 	}
 
+	/* Header Actions Container */
 	.header-actions {
 		margin-left: auto;
 		display: flex;
@@ -310,45 +328,61 @@
 		gap: 0.75rem;
 	}
 
+	/* Header Button - Theme-aware */
 	.header-btn {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--admin-btn-bg);
+		border: 1px solid var(--admin-btn-border);
 		border-radius: var(--radius-md, 0.5rem);
-		color: var(--color-rtp-muted, #94a3b8);
+		color: var(--admin-btn-text);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 		position: relative;
 	}
 
 	.header-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
-		color: var(--color-rtp-primary, #a5b4fc);
+		background: var(--admin-btn-bg-hover);
+		border-color: var(--admin-btn-border-hover);
+		color: var(--admin-btn-text-hover);
 	}
 
+	.header-btn:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
+	}
+
+	.header-btn:active {
+		background: var(--admin-btn-bg-active);
+		transform: scale(0.98);
+	}
+
+	/* Button Label */
 	.btn-label {
 		font-size: 0.8125rem;
 		font-weight: 500;
 	}
 
+	/* Keyboard Shortcut Indicator - Uses CSS variables from app.css */
 	.kbd {
 		padding: 0.125rem 0.375rem;
-		background: rgba(99, 102, 241, 0.15);
+		background: var(--admin-kbd-bg);
+		border: 1px solid var(--admin-kbd-border);
 		border-radius: 4px;
 		font-size: 0.6875rem;
 		font-weight: 600;
-		color: #a5b4fc;
+		color: var(--admin-kbd-text);
 		font-family: inherit;
 	}
 
+	/* Notification Button */
 	.notification-btn {
 		position: relative;
 	}
 
+	/* Notification Badge - Always visible (red) */
 	.notification-badge {
 		position: absolute;
 		top: -4px;
@@ -364,25 +398,32 @@
 		font-weight: 700;
 		color: white;
 		padding: 0 4px;
+		box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
 	}
 
+	/* Theme Toggle Button */
 	.theme-toggle {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.875rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--admin-btn-bg);
+		border: 1px solid var(--admin-btn-border);
 		border-radius: var(--radius-md, 0.5rem);
-		color: var(--color-rtp-muted, #94a3b8);
+		color: var(--admin-btn-text);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.theme-toggle:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
-		color: var(--color-rtp-primary, #a5b4fc);
+		background: var(--admin-btn-bg-hover);
+		border-color: var(--admin-btn-border-hover);
+		color: var(--admin-btn-text-hover);
+	}
+
+	.theme-toggle:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
 	}
 
 	.theme-label {
@@ -390,34 +431,47 @@
 		font-weight: 500;
 	}
 
+	/* Desktop-only elements */
 	.desktop-only {
 		display: inline-flex;
 	}
 
+	/* View Site Button - Accent styled */
 	.view-site-btn {
 		padding: 0.625rem 1.25rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: var(--color-rtp-primary, #a5b4fc);
+		background: var(--admin-accent-primary-soft);
+		color: var(--admin-accent-primary);
 		text-decoration: none;
 		border-radius: var(--radius-md, 0.5rem);
 		font-weight: 600;
 		font-size: 0.9375rem;
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		transition: all 0.2s;
+		border: 1px solid var(--admin-border-interactive);
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.view-site-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: var(--admin-accent-primary-muted);
+		transform: translateY(-1px);
 	}
 
+	.view-site-btn:focus-visible {
+		box-shadow: var(--admin-focus-ring);
+		outline: none;
+	}
+
+	/* Main Content Area */
 	.admin-content {
 		flex: 1;
 		padding: 2rem;
 		overflow-y: auto;
+		background: var(--admin-bg);
 	}
 
-	/* Responsive */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Tablet and below */
 	@media (max-width: 1024px) {
 		.admin-main {
 			margin-left: 0;
@@ -432,6 +486,7 @@
 		}
 	}
 
+	/* Mobile landscape and below */
 	@media (max-width: 768px) {
 		.desktop-only {
 			display: none !important;
@@ -452,6 +507,7 @@
 		}
 	}
 
+	/* Mobile portrait */
 	@media (max-width: 640px) {
 		.admin-header {
 			padding: 0 1rem;
