@@ -65,9 +65,10 @@ import type {
 
 const API_BASE = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
 const WS_BASE = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
-const ANALYTICS_API = browser
-	? import.meta.env.VITE_ANALYTICS_API || 'http://localhost:8002/api'
-	: '';
+// Analytics API - only enable if explicitly configured (microservice is optional)
+const ANALYTICS_API = browser && import.meta.env.VITE_ANALYTICS_API
+	? import.meta.env.VITE_ANALYTICS_API
+	: null; // Disabled by default - microservice not required
 
 const CACHE_TTL = 300000; // 5 minutes
 const RETRY_ATTEMPTS = 3;
@@ -1102,19 +1103,27 @@ class SubscriptionService {
 		return this.authFetch<SubscriptionStats>(`${API_BASE}/my/subscriptions/metrics`);
 	}
 
-	async getRevenueMetrics(): Promise<RevenueMetrics> {
+	async getRevenueMetrics(): Promise<RevenueMetrics | null> {
+		// Analytics microservice is optional - return null if not configured
+		if (!ANALYTICS_API) return null as any;
 		return this.authFetch<RevenueMetrics>(`${ANALYTICS_API}/revenue/metrics`);
 	}
 
-	async getChurnMetrics(): Promise<ChurnMetrics> {
+	async getChurnMetrics(): Promise<ChurnMetrics | null> {
+		// Analytics microservice is optional - return null if not configured
+		if (!ANALYTICS_API) return null as any;
 		return this.authFetch<ChurnMetrics>(`${ANALYTICS_API}/churn/metrics`);
 	}
 
-	async getCohortAnalysis(cohort: string): Promise<CohortAnalysis> {
+	async getCohortAnalysis(cohort: string): Promise<CohortAnalysis | null> {
+		// Analytics microservice is optional - return null if not configured
+		if (!ANALYTICS_API) return null as any;
 		return this.authFetch<CohortAnalysis>(`${ANALYTICS_API}/cohorts/${cohort}`);
 	}
 
 	async getChurnPredictions(): Promise<ChurnPrediction[]> {
+		// Analytics microservice is optional - return empty array if not configured
+		if (!ANALYTICS_API) return [];
 		const response = await this.authFetch<{ predictions: ChurnPrediction[] }>(
 			`${ANALYTICS_API}/churn/predictions`
 		);
@@ -1122,6 +1131,8 @@ class SubscriptionService {
 	}
 
 	async getUpsellRecommendations(customerId: string): Promise<any[]> {
+		// Analytics microservice is optional - return empty array if not configured
+		if (!ANALYTICS_API) return [];
 		const response = await this.authFetch<{ recommendations: any[] }>(
 			`${ANALYTICS_API}/upsell/recommendations/${customerId}`
 		);
@@ -1258,19 +1269,21 @@ class SubscriptionService {
 	}
 
 	private trackEvent(event: string, data: any): void {
-		// Analytics tracking
+		// Analytics tracking via Google Analytics
 		if (browser && 'gtag' in window) {
 			(window as any).gtag('event', event, data);
 		}
 
-		// Custom analytics
-		this.authFetch(`${ANALYTICS_API}/events/track`, {
-			method: 'POST',
-			body: JSON.stringify({ event, data, timestamp: Date.now() }),
-			skipCache: true
-		}).catch((error) => {
-			console.error('[SubscriptionService] Failed to track event:', error);
-		});
+		// Custom analytics microservice (optional - only if configured)
+		if (ANALYTICS_API) {
+			this.authFetch(`${ANALYTICS_API}/events/track`, {
+				method: 'POST',
+				body: JSON.stringify({ event, data, timestamp: Date.now() }),
+				skipCache: true
+			}).catch(() => {
+				// Silently ignore - analytics microservice is optional
+			});
+		}
 	}
 }
 
