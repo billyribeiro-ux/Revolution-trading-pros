@@ -17,6 +17,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// Types
 	interface ConsentSettings {
@@ -204,17 +205,9 @@
 	async function loadSettings() {
 		loading = true;
 		try {
-			const response = await fetch('/api/admin/consent/settings', {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-				},
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				if (data.success && data.data) {
-					settings = { ...settings, ...data.data };
-				}
+			const data = await adminFetch('/api/admin/consent/settings');
+			if (data.success && data.data) {
+				settings = { ...settings, ...data.data };
 			}
 		} catch (error) {
 			console.error('Failed to load settings:', error);
@@ -226,20 +219,11 @@
 	async function saveSettings() {
 		saving = true;
 		try {
-			const response = await fetch('/api/admin/consent/settings/bulk', {
+			await adminFetch('/api/admin/consent/settings/bulk', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-				},
 				body: JSON.stringify({ settings }),
 			});
-
-			if (response.ok) {
-				showNotification('Settings saved successfully', 'success');
-			} else {
-				showNotification('Failed to save settings', 'error');
-			}
+			showNotification('Settings saved successfully', 'success');
 		} catch (error) {
 			console.error('Failed to save settings:', error);
 			showNotification('Failed to save settings', 'error');
@@ -254,20 +238,11 @@
 
 		saving = true;
 		try {
-			const response = await fetch('/api/admin/consent/settings/reset', {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-				},
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				if (data.success && data.data) {
-					settings = { ...settings, ...data.data };
-				}
-				showNotification('Settings reset to defaults', 'success');
+			const data = await adminFetch('/api/admin/consent/settings/reset', { method: 'POST' });
+			if (data.success && data.data) {
+				settings = { ...settings, ...data.data };
 			}
+			showNotification('Settings reset to defaults', 'success');
 		} catch (error) {
 			console.error('Failed to reset settings:', error);
 			showNotification('Failed to reset settings', 'error');

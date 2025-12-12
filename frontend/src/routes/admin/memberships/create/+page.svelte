@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { IconCrown, IconPlus, IconX, IconCheck } from '@tabler/icons-svelte';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	let membership = {
 		name: '',
@@ -49,21 +50,14 @@
 
 		saving = true;
 		try {
-			const response = await fetch('/api/admin/membership-plans', {
+			await adminFetch('/api/admin/membership-plans', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					...membership,
 					features: validFeatures
 				})
 			});
-
-			if (response.ok) {
-				goto('/admin/memberships');
-			} else {
-				const error = await response.json();
-				alert(error.message || 'Failed to create membership plan');
-			}
+			goto('/admin/memberships');
 		} catch (error) {
 			console.error('Failed to save membership:', error);
 			alert('Failed to save membership plan');
