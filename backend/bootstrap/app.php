@@ -60,6 +60,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // API routes should return JSON 401 instead of redirecting to login
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated.',
+                    'error' => 'Authentication required'
+                ], 401);
+            }
+        });
+
         // Custom exception handling with structured logging
         $exceptions->report(function (\Throwable $e) {
             // Log structured exception data for observability
