@@ -281,13 +281,13 @@ html.dark,
 body.dark,
 :root.dark,
 :root {
-	/* Admin Surface Hierarchy - Rich, deep surfaces */
-	--admin-bg: oklch(0.12 0.02 250);
-	--admin-bg-subtle: oklch(0.10 0.02 250);
-	--admin-surface: oklch(0.18 0.02 250);
-	--admin-surface-elevated: oklch(0.22 0.02 250);
-	--admin-surface-overlay: rgba(30, 41, 59, 0.98);
-	--admin-surface-sunken: oklch(0.10 0.02 250);
+	/* Admin Surface Hierarchy - Slightly lighter dark surfaces for better visibility */
+	--admin-bg: oklch(0.16 0.02 250);
+	--admin-bg-subtle: oklch(0.14 0.02 250);
+	--admin-surface: oklch(0.20 0.02 250);
+	--admin-surface-elevated: oklch(0.24 0.02 250);
+	--admin-surface-overlay: rgba(38, 50, 68, 0.98);
+	--admin-surface-sunken: oklch(0.13 0.02 250);
 
 	/* Admin Card System */
 	--admin-card-bg: oklch(0.18 0.02 250);
