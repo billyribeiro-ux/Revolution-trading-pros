@@ -1622,6 +1622,81 @@ export const recordPopupImpression = (popupId: string) => popupService.recordImp
 export const recordPopupConversion = (popupId: string, data?: ConversionData) =>
 	popupService.recordConversion(popupId, data);
 export const getPopupAnalytics = (popupId: string) => popupService.getAnalytics(popupId);
+
+/**
+ * Submit popup form with FluentCRM opt-in integration
+ *
+ * This function processes popup form submissions through the FluentCRM integration:
+ * - Creates/updates contact in CRM
+ * - Applies configured tags and segments
+ * - Triggers automations
+ * - Handles double opt-in if configured
+ */
+export interface PopupFormData {
+	email: string;
+	name?: string;
+	first_name?: string;
+	last_name?: string;
+	phone?: string;
+	company?: string;
+	consent?: boolean;
+	[key: string]: unknown;
+}
+
+export interface PopupFormSubmitResult {
+	status: 'ok' | 'error';
+	message: string;
+	contact_id?: number;
+	double_optin_required?: boolean;
+}
+
+export async function submitPopupForm(
+	popupId: string,
+	formData: PopupFormData,
+	metadata?: Record<string, unknown>
+): Promise<PopupFormSubmitResult> {
+	const sessionId = browser ? sessionStorage.getItem('popup_session_id') || `session_${Date.now()}` : '';
+
+	try {
+		const response = await fetch(`${API_BASE}/popups/${popupId}/form-submit`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				formData,
+				sessionId,
+				metadata: {
+					...metadata,
+					page_url: browser ? window.location.href : '',
+					utm_source: browser ? new URLSearchParams(window.location.search).get('utm_source') : null,
+					utm_campaign: browser ? new URLSearchParams(window.location.search).get('utm_campaign') : null,
+					utm_medium: browser ? new URLSearchParams(window.location.search).get('utm_medium') : null
+				}
+			})
+		});
+
+		if (!response.ok) {
+			throw new Error('Form submission failed');
+		}
+
+		const result = await response.json();
+
+		// Also record as conversion for analytics
+		await recordPopupConversion(popupId, {
+			action: 'form_submit',
+			value: formData.email
+		});
+
+		return result;
+	} catch (error: any) {
+		console.error('[PopupService] Form submission failed:', error);
+		return {
+			status: 'error',
+			message: error.message || 'Failed to submit form'
+		};
+	}
+}
 export const createABTest = (basePopupId: string, variants: Partial<ABTestVariant>[]) =>
 	popupService.createABTest(basePopupId, variants);
 export const duplicatePopup = async (id: string) => {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Popup;
+use App\Services\Fluent\FluentEcosystemService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Gate;
 
 class PopupController extends Controller
 {
+    public function __construct(
+        private readonly FluentEcosystemService $fluentEcosystem,
+    ) {}
     /**
      * List all popups for the admin UI.
      * Requires admin authentication (defense in depth - also enforced at route level).
@@ -202,6 +206,128 @@ class PopupController extends Controller
         ]);
 
         return response()->json(['status' => 'ok']);
+    }
+
+    /**
+     * Process popup form submission with FluentCRM opt-in integration.
+     *
+     * This endpoint handles the full opt-in flow:
+     * 1. Validates form data
+     * 2. Records form submission in popup analytics
+     * 3. Creates/updates contact in FluentCRM
+     * 4. Applies tags and segments
+     * 5. Triggers automations
+     */
+    public function formSubmit(Request $request, Popup $popup): JsonResponse
+    {
+        $payload = $request->validate([
+            'formData' => ['required', 'array'],
+            'formData.email' => ['required', 'email', 'max:255'],
+            'formData.name' => ['nullable', 'string', 'max:255'],
+            'formData.first_name' => ['nullable', 'string', 'max:100'],
+            'formData.last_name' => ['nullable', 'string', 'max:100'],
+            'formData.phone' => ['nullable', 'string', 'max:50'],
+            'formData.company' => ['nullable', 'string', 'max:255'],
+            'formData.consent' => ['nullable', 'boolean'],
+            'sessionId' => ['nullable', 'string', 'max:191'],
+            'metadata' => ['nullable', 'array'],
+        ]);
+
+        $formData = $payload['formData'];
+        $metadata = array_merge($payload['metadata'] ?? [], [
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'session_id' => $payload['sessionId'] ?? null,
+            'page_url' => $request->header('Referer'),
+        ]);
+
+        // Record form submission in popup analytics
+        $popup->increment('form_submissions');
+        $popup->increment('conversions');
+        $popup->update(['last_conversion_at' => now()]);
+
+        // Process opt-in through FluentEcosystem
+        try {
+            $result = $this->fluentEcosystem->processPopupOptIn($popup, $formData, $metadata);
+
+            Log::info('popup_form_submission', [
+                'popup_id' => $popup->id,
+                'popup_name' => $popup->name,
+                'email' => $formData['email'],
+                'contact_id' => $result['contact_id'],
+                'contact_created' => $result['contact_created'],
+                'tags_applied' => $result['tags_applied'],
+                'automations_triggered' => $result['automations_triggered'],
+                'session_id' => $payload['sessionId'] ?? null,
+            ]);
+
+            return response()->json([
+                'status' => 'ok',
+                'message' => $result['double_optin_sent']
+                    ? 'Please check your email to confirm your subscription'
+                    : 'Successfully subscribed',
+                'contact_id' => $result['contact_id'],
+                'double_optin_required' => $result['double_optin_sent'],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('popup_form_submission_failed', [
+                'popup_id' => $popup->id,
+                'email' => $formData['email'],
+                'error' => $e->getMessage(),
+            ]);
+
+            // Still return success to user (subscription recorded even if CRM sync failed)
+            return response()->json([
+                'status' => 'ok',
+                'message' => 'Successfully subscribed',
+            ]);
+        }
+    }
+
+    /**
+     * Get popup opt-in configuration for admin.
+     */
+    public function getOptInConfig(Request $request, Popup $popup): JsonResponse
+    {
+        // Defense in depth: verify admin access
+        if (!$request->user() || !$request->user()->hasAnyRole(['admin', 'super-admin'])) {
+            abort(403, 'Unauthorized access to popup management');
+        }
+
+        $config = $this->fluentEcosystem->getPopupOptInConfig($popup);
+
+        return response()->json($config);
+    }
+
+    /**
+     * Update popup opt-in configuration.
+     */
+    public function updateOptInConfig(Request $request, Popup $popup): JsonResponse
+    {
+        // Defense in depth: verify admin access
+        if (!$request->user() || !$request->user()->hasAnyRole(['admin', 'super-admin'])) {
+            abort(403, 'Unauthorized access to popup management');
+        }
+
+        $config = $request->validate([
+            'enabled' => ['nullable', 'boolean'],
+            'double_optin' => ['nullable', 'boolean'],
+            'lists' => ['nullable', 'array'],
+            'segments' => ['nullable', 'array'],
+            'tags' => ['nullable', 'array'],
+            'automations' => ['nullable', 'array'],
+            'consent_text' => ['nullable', 'string', 'max:500'],
+            'privacy_policy_url' => ['nullable', 'string', 'max:255'],
+            'gdpr_enabled' => ['nullable', 'boolean'],
+        ]);
+
+        $popup = $this->fluentEcosystem->updatePopupOptInConfig($popup, $config);
+
+        return response()->json([
+            'status' => 'ok',
+            'popup' => $this->toFrontendPopup($popup),
+        ]);
     }
 
     /**

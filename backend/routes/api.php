@@ -131,6 +131,8 @@ Route::post('/popups/{popup}/impression', [PopupController::class, 'impression']
     ->middleware('throttle:60,1'); // 60 impressions/minute per IP
 Route::post('/popups/{popup}/conversion', [PopupController::class, 'conversion'])
     ->middleware('throttle:30,1'); // 30 conversions/minute per IP
+Route::post('/popups/{popup}/form-submit', [PopupController::class, 'formSubmit'])
+    ->middleware('throttle:10,1'); // 10 form submissions/minute per IP (stricter for opt-ins)
 Route::post('/popups/events', [PopupController::class, 'events'])
     ->middleware('throttle:60,1'); // 60 batch events/minute per IP
 
@@ -534,6 +536,8 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::put('/popups/{popup}', [PopupController::class, 'update']);
     Route::delete('/popups/{popup}', [PopupController::class, 'destroy']);
     Route::get('/popups/{popup}/analytics', [PopupController::class, 'analytics']);
+    Route::get('/popups/{popup}/optin-config', [PopupController::class, 'getOptInConfig']);
+    Route::put('/popups/{popup}/optin-config', [PopupController::class, 'updateOptInConfig']);
     
     // Blog Posts (admin CRUD & analytics)
     Route::get('/posts', [AdminPostController::class, 'index']);
