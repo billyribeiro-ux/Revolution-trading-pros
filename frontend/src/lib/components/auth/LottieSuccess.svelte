@@ -10,7 +10,8 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import lottie from 'lottie-web';
+
+	// lottie-web loaded dynamically - no default export
 
 	interface Props {
 		onComplete?: () => void;
@@ -19,7 +20,8 @@
 
 	let { onComplete, size = 120 }: Props = $props();
 
-	let containerRef: HTMLDivElement;
+	let containerRef = $state<HTMLDivElement | null>(null);
+	let animationInstance: any = null;
 
 	// Premium success checkmark animation data
 	const successAnimationData = {
@@ -231,20 +233,29 @@
 	onMount(() => {
 		if (!browser || !containerRef) return;
 
-		const animation = lottie.loadAnimation({
-			container: containerRef,
-			renderer: 'svg',
-			loop: false,
-			autoplay: true,
-			animationData: successAnimationData
-		});
+		// Use IIFE for async lottie import - Svelte 5 pattern
+		(async () => {
+			// lottie-web uses named export, not default
+			const lottieModule = await import('lottie-web');
+			const lottie = lottieModule.default || lottieModule;
 
-		animation.addEventListener('complete', () => {
-			onComplete?.();
-		});
+			animationInstance = lottie.loadAnimation({
+				container: containerRef!,
+				renderer: 'svg',
+				loop: false,
+				autoplay: true,
+				animationData: successAnimationData
+			});
+
+			animationInstance.addEventListener('complete', () => {
+				onComplete?.();
+			});
+		})();
 
 		return () => {
-			animation.destroy();
+			if (animationInstance) {
+				animationInstance.destroy();
+			}
 		};
 	});
 </script>
