@@ -1,629 +1,352 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Account Page
-	 * User account settings and profile management
+	 * Dashboard - My Account Page - Simpler Trading EXACT
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Exact match of Simpler Trading's WooCommerce My Account page.
+	 * Shows greeting and links to account sections.
+	 *
+	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
 	 */
-	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { fade, fly } from 'svelte/transition';
-	import {
-		IconUser,
-		IconMail,
-		IconLock,
-		IconCreditCard,
-		IconBell,
-		IconShield,
-		IconLogout,
-		IconEdit,
-		IconCheck
-	} from '@tabler/icons-svelte';
 
-	// Redirect if not authenticated - use replaceState to prevent history pollution
-	onMount(() => {
-		if (!$isAuthenticated && !$authStore.isInitializing) {
+	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const userName = $derived($user?.name || $user?.email?.split('@')[0] || 'Guest');
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EFFECTS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	$effect(() => {
+		if (browser && !$isAuthenticated && !$authStore.isInitializing) {
 			goto('/login?redirect=/dashboard/account', { replaceState: true });
 		}
 	});
 
-	let activeTab = 'profile';
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
 
-	const tabs = [
-		{ id: 'profile', label: 'Profile', icon: IconUser },
-		{ id: 'security', label: 'Security', icon: IconShield },
-		{ id: 'billing', label: 'Billing', icon: IconCreditCard },
-		{ id: 'notifications', label: 'Notifications', icon: IconBell }
-	];
-
-	// Form states
-	let profileForm = {
-		name: $user?.name || '',
-		email: $user?.email || '',
-		phone: ''
-	};
-
-	let isSaving = false;
-	let saveSuccess = false;
-
-	async function handleSaveProfile() {
-		isSaving = true;
-		// Simulate API call
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		isSaving = false;
-		saveSuccess = true;
-		setTimeout(() => saveSuccess = false, 3000);
-	}
-
-	function handleLogout() {
+	function handleLogout(): void {
 		authStore.logout();
-		// Use replaceState so back button doesn't return to protected page
 		goto('/', { replaceState: true });
 	}
 </script>
 
-<SEOHead
-	title="My Account"
-	description="Manage your account settings and preferences."
-	noindex
-/>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HEAD
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
-{#if $isAuthenticated}
-	<main class="dashboard-page">
-		<div class="container">
-			<!-- Header -->
-			<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
-				<div class="page-header__content">
-					<h1 class="page-header__title">My Account</h1>
-					<p class="page-header__subtitle">Manage your profile and account settings</p>
-				</div>
-			</header>
+<svelte:head>
+	<title>My Account | Revolution Trading Pros</title>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
 
-			<div class="account-layout">
-				<!-- Sidebar -->
-				<aside class="account-sidebar" in:fly={{ x: -20, duration: 400 }}>
-					<nav class="sidebar-nav">
-						{#each tabs as tab}
-							{@const Icon = tab.icon}
-							<button
-								class="sidebar-nav__item"
-								class:active={activeTab === tab.id}
-								onclick={() => activeTab = tab.id}
-							>
-								<Icon size={20} />
-								<span>{tab.label}</span>
-							</button>
-						{/each}
-					</nav>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DASHBOARD HEADER - WordPress: .dashboard__header
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
-					<button class="logout-btn" onclick={handleLogout}>
-						<IconLogout size={20} />
-						<span>Logout</span>
-					</button>
-				</aside>
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
 
-				<!-- Content -->
-				<div class="account-content" in:fly={{ y: 20, duration: 400, delay: 100 }}>
-					{#if activeTab === 'profile'}
-						<div class="content-section">
-							<h2 class="section-title">Profile Information</h2>
-							<p class="section-description">Update your personal information and contact details.</p>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DASHBOARD CONTENT - WordPress: .dashboard__content
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
-							<form class="profile-form" onsubmit={(e) => { e.preventDefault(); handleSaveProfile(); }}>
-								<div class="form-group">
-									<label for="name">Full Name</label>
-									<input
-										type="text"
-										id="name"
-										bind:value={profileForm.name}
-										placeholder="Enter your full name"
-									/>
-								</div>
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<section class="dashboard__content-section">
+			<!-- WooCommerce: .woocommerce-MyAccount-content -->
+			<div class="woocommerce-MyAccount-content">
+				<!-- Content Box - Simpler Trading Style -->
+				<div class="content-box content-box--centered">
+					<div class="content-box__section">
+						<p>
+							Hello <strong>{userName}</strong> (not <strong>{userName}</strong>? <button class="link-button" onclick={handleLogout}>Log out</button>)
+						</p>
 
-								<div class="form-group">
-									<label for="email">Email Address</label>
-									<input
-										type="email"
-										id="email"
-										bind:value={profileForm.email}
-										placeholder="Enter your email"
-									/>
-								</div>
-
-								<div class="form-group">
-									<label for="phone">Phone Number</label>
-									<input
-										type="tel"
-										id="phone"
-										bind:value={profileForm.phone}
-										placeholder="Enter your phone number"
-									/>
-								</div>
-
-								<div class="form-actions">
-									<button type="submit" class="save-btn" disabled={isSaving}>
-										{#if isSaving}
-											Saving...
-										{:else if saveSuccess}
-											<IconCheck size={18} />
-											Saved!
-										{:else}
-											Save Changes
-										{/if}
-									</button>
-								</div>
-							</form>
-						</div>
-					{:else if activeTab === 'security'}
-						<div class="content-section">
-							<h2 class="section-title">Security Settings</h2>
-							<p class="section-description">Manage your password and security preferences.</p>
-
-							<div class="security-options">
-								<div class="security-item">
-									<div class="security-item__info">
-										<IconLock size={24} />
-										<div>
-											<h3>Password</h3>
-											<p>Last changed 30 days ago</p>
-										</div>
-									</div>
-									<button class="security-item__btn">Change Password</button>
-								</div>
-
-								<div class="security-item">
-									<div class="security-item__info">
-										<IconShield size={24} />
-										<div>
-											<h3>Two-Factor Authentication</h3>
-											<p>Add an extra layer of security</p>
-										</div>
-									</div>
-									<button class="security-item__btn">Enable 2FA</button>
-								</div>
-							</div>
-						</div>
-					{:else if activeTab === 'billing'}
-						<div class="content-section">
-							<h2 class="section-title">Billing & Subscriptions</h2>
-							<p class="section-description">Manage your payment methods and subscriptions.</p>
-
-							<div class="billing-card">
-								<div class="billing-card__header">
-									<h3>Current Plan</h3>
-									<span class="plan-badge">Pro</span>
-								</div>
-								<p class="billing-card__text">Your subscription renews on January 1, 2026</p>
-								<div class="billing-card__actions">
-									<button class="billing-btn">Manage Subscription</button>
-									<button class="billing-btn billing-btn--secondary">View Invoices</button>
-								</div>
-							</div>
-						</div>
-					{:else if activeTab === 'notifications'}
-						<div class="content-section">
-							<h2 class="section-title">Notification Preferences</h2>
-							<p class="section-description">Choose how you want to receive updates.</p>
-
-							<div class="notification-options">
-								<label class="notification-item">
-									<div class="notification-item__info">
-										<h3>Email Notifications</h3>
-										<p>Receive updates via email</p>
-									</div>
-									<input type="checkbox" checked />
-								</label>
-
-								<label class="notification-item">
-									<div class="notification-item__info">
-										<h3>Trading Alerts</h3>
-										<p>Get notified about trading opportunities</p>
-									</div>
-									<input type="checkbox" checked />
-								</label>
-
-								<label class="notification-item">
-									<div class="notification-item__info">
-										<h3>Marketing Emails</h3>
-										<p>Receive promotional content</p>
-									</div>
-									<input type="checkbox" />
-								</label>
-							</div>
-						</div>
-					{/if}
+						<p class="u--margin-bottom-0">
+							From your account dashboard you can view your <a href="/dashboard/orders">recent orders</a>, manage your <a href="/dashboard/addresses">billing address</a>, and <a href="/dashboard/account/edit">edit your password and account details</a>.
+						</p>
+					</div>
 				</div>
 			</div>
-		</div>
-	</main>
-{:else}
-	<div class="loading-state">
-		<p>Redirecting to login...</p>
+		</section>
 	</div>
-{/if}
+
+	<!-- Sidebar - WordPress: .dashboard__content-sidebar -->
+	<aside class="dashboard__content-sidebar">
+		<nav class="dashboard__nav-secondary">
+			<ul class="woocommerce-MyAccount-navigation">
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--orders">
+					<a href="/dashboard/orders">My Orders</a>
+				</li>
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--subscriptions">
+					<a href="/dashboard/subscriptions">My Subscriptions</a>
+				</li>
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--coupons">
+					<a href="/dashboard/coupons">Coupons</a>
+				</li>
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-address">
+					<a href="/dashboard/addresses">Billing Address</a>
+				</li>
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--payment-methods">
+					<a href="/dashboard/payment-methods">Payment Methods</a>
+				</li>
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--edit-account">
+					<a href="/dashboard/account/edit">Account Details</a>
+				</li>
+				<li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--logout">
+					<button onclick={handleLogout}>Log out</button>
+				</li>
+			</ul>
+		</nav>
+	</aside>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES - Simpler Trading EXACT CSS
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
-	.dashboard-page {
-		min-height: 100vh;
-		background: var(--rtp-bg, #0a0f1a);
-		color: var(--rtp-text, #e5e7eb);
-		padding: 8rem 1.5rem 4rem;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD HEADER - WordPress: .dashboard__header
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.page-header {
-		margin-bottom: 2rem;
-	}
-
-	.page-header__title {
-		font-size: 2.5rem;
-		font-weight: 700;
-		color: #fff;
-		margin-bottom: 0.5rem;
-	}
-
-	.page-header__subtitle {
-		color: #94a3b8;
-		font-size: 1.1rem;
-	}
-
-	.account-layout {
-		display: grid;
-		grid-template-columns: 280px 1fr;
-		gap: 2rem;
-	}
-
-	@media (max-width: 900px) {
-		.account-layout {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	.account-sidebar {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 1rem;
-		padding: 1rem;
-		height: fit-content;
-		position: sticky;
-		top: 140px;
-	}
-
-	.sidebar-nav {
+	.dashboard__header {
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
 		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		justify-content: space-between;
+		align-items: center;
 	}
 
-	.sidebar-nav__item {
+	.dashboard__header-left {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		padding: 0.875rem 1rem;
-		background: transparent;
-		border: none;
-		border-radius: 8px;
-		color: #94a3b8;
-		font-size: 0.9rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
+	}
+
+	.dashboard__page-title {
+		color: #333;
+		font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
+		font-size: 36px;
+		font-weight: 700;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT - WordPress: .dashboard__content
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content {
+		display: flex;
+		gap: 30px;
+		padding: 30px;
+		background: #f4f4f4;
+		min-height: calc(100vh - 80px);
+	}
+
+	.dashboard__content-main {
+		flex: 1;
+		min-width: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CONTENT BOX - WooCommerce Style (Simpler Trading EXACT)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content-section {
+		background: #fff;
+		border-radius: 4px;
+		padding: 30px;
+	}
+
+	.woocommerce-MyAccount-content {
+		max-width: 800px;
+	}
+
+	.content-box {
+		background: #fafafa;
+		border: 1px solid #e5e5e5;
+		border-radius: 4px;
+	}
+
+	.content-box--centered {
 		text-align: left;
 	}
 
-	.sidebar-nav__item:hover {
-		background: rgba(255, 255, 255, 0.05);
-		color: #e5e7eb;
+	.content-box__section {
+		padding: 30px;
 	}
 
-	.sidebar-nav__item.active {
-		background: rgba(250, 204, 21, 0.1);
-		color: #facc15;
+	.content-box__section p {
+		color: #333;
+		font-size: 16px;
+		line-height: 1.7;
+		margin: 0 0 15px;
 	}
 
-	.logout-btn {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
+	.content-box__section p:last-child {
+		margin-bottom: 0;
+	}
+
+	.content-box__section strong {
+		font-weight: 700;
+	}
+
+	.content-box__section a {
+		color: #0984ae;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.content-box__section a:hover {
+		color: #076787;
+		text-decoration: underline;
+	}
+
+	.link-button {
+		background: none;
+		border: none;
+		padding: 0;
+		color: #0984ae;
+		font-size: inherit;
+		font-family: inherit;
+		cursor: pointer;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.link-button:hover {
+		color: #076787;
+		text-decoration: underline;
+	}
+
+	.u--margin-bottom-0 {
+		margin-bottom: 0 !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SIDEBAR - WooCommerce MyAccount Navigation
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content-sidebar {
+		width: 240px;
+		flex-shrink: 0;
+	}
+
+	.dashboard__nav-secondary {
+		background: #fff;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.woocommerce-MyAccount-navigation {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.woocommerce-MyAccount-navigation-link {
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.woocommerce-MyAccount-navigation-link:last-child {
+		border-bottom: none;
+	}
+
+	.woocommerce-MyAccount-navigation-link a,
+	.woocommerce-MyAccount-navigation-link button {
+		display: block;
 		width: 100%;
-		padding: 0.875rem 1rem;
-		background: transparent;
+		padding: 14px 20px;
+		color: #333;
+		font-size: 14px;
+		font-weight: 400;
+		text-decoration: none;
+		text-align: left;
+		background: none;
 		border: none;
-		border-radius: 8px;
-		color: #ef4444;
-		font-size: 0.9rem;
-		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.15s ease;
 	}
 
-	.logout-btn:hover {
-		background: rgba(239, 68, 68, 0.1);
+	.woocommerce-MyAccount-navigation-link a:hover,
+	.woocommerce-MyAccount-navigation-link button:hover {
+		background: #f4f4f4;
+		color: #0984ae;
 	}
 
-	.account-content {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 1rem;
-		padding: 2rem;
-	}
-
-	.content-section {
-		max-width: 600px;
-	}
-
-	.section-title {
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: #fff;
-		margin-bottom: 0.5rem;
-	}
-
-	.section-description {
-		color: #94a3b8;
-		margin-bottom: 2rem;
-	}
-
-	.profile-form {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
-
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.form-group label {
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: #e5e7eb;
-	}
-
-	.form-group input {
-		padding: 0.875rem 1rem;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 8px;
-		color: #e5e7eb;
-		font-size: 0.9rem;
-		transition: all 0.2s ease;
-	}
-
-	.form-group input:focus {
-		outline: none;
-		border-color: #facc15;
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.form-group input::placeholder {
-		color: #64748b;
-	}
-
-	.form-actions {
-		padding-top: 1rem;
-	}
-
-	.save-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.875rem 2rem;
-		background: linear-gradient(135deg, #facc15, #f97316);
-		border: none;
-		border-radius: 8px;
-		color: #0a0f1a;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.save-btn:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
-	}
-
-	.save-btn:disabled {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-
-	.security-options {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.security-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.25rem;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 12px;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-
-	.security-item__info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		color: #64748b;
-	}
-
-	.security-item__info h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		color: #fff;
-		margin-bottom: 0.25rem;
-	}
-
-	.security-item__info p {
-		font-size: 0.8rem;
-		color: #64748b;
-	}
-
-	.security-item__btn {
-		padding: 0.625rem 1.25rem;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 8px;
-		color: #e5e7eb;
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.security-item__btn:hover {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	.billing-card {
-		padding: 1.5rem;
-		background: rgba(250, 204, 21, 0.05);
-		border: 1px solid rgba(250, 204, 21, 0.2);
-		border-radius: 12px;
-	}
-
-	.billing-card__header {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		margin-bottom: 0.75rem;
-	}
-
-	.billing-card__header h3 {
-		font-size: 1.125rem;
-		font-weight: 600;
+	.woocommerce-MyAccount-navigation-link.is-active a {
+		background: #0984ae;
 		color: #fff;
 	}
 
-	.plan-badge {
-		padding: 0.25rem 0.75rem;
-		background: linear-gradient(135deg, #facc15, #f97316);
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: #0a0f1a;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.billing-card__text {
-		font-size: 0.9rem;
-		color: #94a3b8;
-		margin-bottom: 1.25rem;
-	}
-
-	.billing-card__actions {
-		display: flex;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-	}
-
-	.billing-btn {
-		padding: 0.625rem 1.25rem;
-		background: linear-gradient(135deg, #facc15, #f97316);
-		border: none;
-		border-radius: 8px;
-		color: #0a0f1a;
-		font-size: 0.875rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.billing-btn--secondary {
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		color: #e5e7eb;
-	}
-
-	.notification-options {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.notification-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.25rem;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 12px;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.notification-item:hover {
-		border-color: rgba(255, 255, 255, 0.15);
-	}
-
-	.notification-item__info h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		color: #fff;
-		margin-bottom: 0.25rem;
-	}
-
-	.notification-item__info p {
-		font-size: 0.8rem;
-		color: #64748b;
-	}
-
-	.notification-item input[type="checkbox"] {
-		width: 20px;
-		height: 20px;
-		accent-color: #facc15;
-		cursor: pointer;
-	}
-
-	.loading-state {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--rtp-bg, #0a0f1a);
-		color: #94a3b8;
-	}
-
-	@media (max-width: 768px) {
-		.dashboard-page {
-			padding: 7rem 1rem 3rem;
+	@media screen and (max-width: 991px) {
+		.dashboard__content {
+			flex-direction: column-reverse;
 		}
 
-		.page-header__title {
-			font-size: 2rem;
+		.dashboard__content-sidebar {
+			width: 100%;
 		}
 
-		.account-sidebar {
-			position: static;
+		.woocommerce-MyAccount-navigation {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 2px;
 		}
 
-		.sidebar-nav {
-			flex-direction: row;
-			overflow-x: auto;
-			padding-bottom: 0.5rem;
+		.woocommerce-MyAccount-navigation-link {
+			border-bottom: none;
 		}
 
-		.sidebar-nav__item {
-			white-space: nowrap;
+		.woocommerce-MyAccount-navigation-link a,
+		.woocommerce-MyAccount-navigation-link button {
+			padding: 10px 16px;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		.dashboard__header {
+			padding: 16px 20px;
 		}
 
-		.account-content {
-			padding: 1.5rem;
+		.dashboard__page-title {
+			font-size: 28px;
+		}
+
+		.dashboard__content {
+			padding: 20px;
+		}
+
+		.dashboard__content-section {
+			padding: 20px;
+		}
+
+		.content-box__section {
+			padding: 20px;
+		}
+
+		.content-box__section p {
+			font-size: 14px;
 		}
 	}
 </style>

@@ -9,11 +9,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { BACKEND_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const backendUrl = BACKEND_URL || 'http://localhost:8000';
+	const backendUrl = env.BACKEND_URL || 'http://localhost:8000';
 
 	try {
 		const response = await fetch(`${backendUrl}/api${endpoint}`, {

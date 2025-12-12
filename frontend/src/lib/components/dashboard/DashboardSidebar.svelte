@@ -302,90 +302,37 @@
 	{/if}
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
-	     TOOLS SECTION
+	     TOOLS SECTION (Simpler Trading EXACT - Always shown)
 	     ═══════════════════════════════════════════════════════════════════════ -->
-	{#if hasIndicators}
-		<ul>
-			<li><p class="dashboard__nav-category">tools</p></li>
-		</ul>
-		<ul class="dash_main_links">
-			{#each indicators as indicator (indicator.id)}
-				<li
-					class="{indicator.slug}-mp"
-					class:is-active={isActive(`/dashboard/indicators/${indicator.slug}`)}
-				>
-					<a href="/dashboard/indicators/{indicator.slug}">
-						<span class="dashboard__nav-item-icon st-icon-chart">
-							{#if indicator.icon}
-								<img src={indicator.icon} alt="" class="service-icon-img" loading="lazy" />
-							{:else}
-								<i class="fa fa-chart-line" aria-hidden="true"></i>
-							{/if}
-						</span>
-						<span class="dashboard__nav-item-text">{indicator.name}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-	{/if}
+	<ul>
+		<li><p class="dashboard__nav-category">tools</p></li>
+	</ul>
+	<ul class="dash_main_links">
+		<li class:is-active={isActive('/dashboard/watchlist')}>
+			<a href="/dashboard/watchlist">
+				<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+				<span class="dashboard__nav-item-text">Weekly Watchlist</span>
+			</a>
+		</li>
+		<li class:is-active={isActive('/dashboard/support')}>
+			<a href="/dashboard/support">
+				<span class="dashboard__nav-item-icon st-icon-support"></span>
+				<span class="dashboard__nav-item-text">Support</span>
+			</a>
+		</li>
+	</ul>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
-	     ACCOUNT SECTION
+	     ACCOUNT SECTION (Simpler Trading EXACT - just My Account)
 	     ═══════════════════════════════════════════════════════════════════════ -->
 	<ul>
 		<li><p class="dashboard__nav-category">account</p></li>
 	</ul>
 	<ul class="dash_main_links">
-		<li class:is-active={isActive('/dashboard/orders')}>
-			<a href="/dashboard/orders">
-				<span class="dashboard__nav-item-icon">
-					<i class="fa fa-receipt" aria-hidden="true"></i>
-				</span>
-				<span class="dashboard__nav-item-text">Orders</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/subscriptions')}>
-			<a href="/dashboard/subscriptions">
-				<span class="dashboard__nav-item-icon">
-					<i class="fa fa-credit-card" aria-hidden="true"></i>
-				</span>
-				<span class="dashboard__nav-item-text">Subscriptions</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/coupons')}>
-			<a href="/dashboard/coupons">
-				<span class="dashboard__nav-item-icon">
-					<i class="fa fa-ticket-alt" aria-hidden="true"></i>
-				</span>
-				<span class="dashboard__nav-item-text">Coupons</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/addresses')}>
-			<a href="/dashboard/addresses">
-				<span class="dashboard__nav-item-icon">
-					<i class="fa fa-map-marker-alt" aria-hidden="true"></i>
-				</span>
-				<span class="dashboard__nav-item-text">Addresses</span>
-			</a>
-		</li>
-		<li class:is-active={isActive('/dashboard/payment-methods')}>
-			<a href="/dashboard/payment-methods">
-				<span class="dashboard__nav-item-icon">
-					<i class="fa fa-wallet" aria-hidden="true"></i>
-				</span>
-				<span class="dashboard__nav-item-text">Payment Methods</span>
-			</a>
-		</li>
 		<li class:is-active={isActive('/dashboard/account')}>
 			<a href="/dashboard/account">
 				<span class="dashboard__nav-item-icon st-icon-settings"></span>
-				<span class="dashboard__nav-item-text">Account Details</span>
-			</a>
-		</li>
-		<li>
-			<a href="/logout">
-				<span class="dashboard__nav-item-icon st-icon-logout"></span>
-				<span class="dashboard__nav-item-text">Logout</span>
+				<span class="dashboard__nav-item-text">My Account</span>
 			</a>
 		</li>
 	</ul>
