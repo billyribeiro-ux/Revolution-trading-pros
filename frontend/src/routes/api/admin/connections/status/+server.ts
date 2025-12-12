@@ -100,12 +100,11 @@ const EXTERNAL_SERVICES: Omit<ConnectionStatus, 'is_connected' | 'status' | 'hea
 	{ key: 'ahrefs', name: 'Ahrefs', category: 'SEO' },
 	{ key: 'moz', name: 'Moz', category: 'SEO' },
 
-	// Email
-	{ key: 'mailchimp', name: 'Mailchimp', category: 'Email' },
-	{ key: 'sendgrid', name: 'SendGrid', category: 'Email' },
-	{ key: 'mailgun', name: 'Mailgun', category: 'Email' },
-	{ key: 'postmark', name: 'Postmark', category: 'Email' },
-	{ key: 'sendinblue', name: 'Brevo (Sendinblue)', category: 'Email' },
+	// Email Delivery (FluentCRM handles email marketing, these are for transactional/SMTP relay)
+	{ key: 'sendgrid', name: 'SendGrid (SMTP)', category: 'Email Delivery' },
+	{ key: 'mailgun', name: 'Mailgun (SMTP)', category: 'Email Delivery' },
+	{ key: 'postmark', name: 'Postmark (SMTP)', category: 'Email Delivery' },
+	{ key: 'amazon_ses', name: 'Amazon SES', category: 'Email Delivery' },
 
 	// Payment
 	{ key: 'stripe', name: 'Stripe', category: 'Payment' },
