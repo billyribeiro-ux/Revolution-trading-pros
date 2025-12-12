@@ -8,7 +8,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { BACKEND_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 // Mock users data (same as in +server.ts for consistency)
 const mockUsers: Record<number, any> = {
@@ -52,6 +52,7 @@ const mockUsers: Record<number, any> = {
 
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
+	const BACKEND_URL = env.BACKEND_URL;
 	if (!BACKEND_URL) return null;
 
 	try {

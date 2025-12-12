@@ -8,7 +8,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { BACKEND_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 // Mock trading rooms data (matches the migration seed data)
 const mockTradingRooms = [
@@ -131,6 +131,7 @@ const mockTradingRooms = [
 
 // Try to fetch from backend, fallback to mock data
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
+	const BACKEND_URL = env.BACKEND_URL;
 	if (!BACKEND_URL) return null;
 
 	try {
