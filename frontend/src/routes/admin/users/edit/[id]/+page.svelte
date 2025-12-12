@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconCheck, IconX, IconUser } from '@tabler/icons-svelte';
 
 	let loading = $state(true);
@@ -30,33 +29,41 @@
 		loading = true;
 		error = '';
 		try {
-			const response = await usersApi.get(userId);
-			const user = response.data;
+			// Use SvelteKit proxy endpoint
+			const response = await fetch(`/api/admin/users/${userId}`);
+
+			if (!response.ok) {
+				if (response.status === 401) {
+					goto('/login');
+					return;
+				}
+				if (response.status === 404) {
+					error = 'User not found. The user may have been deleted.';
+					return;
+				}
+				if (response.status === 403) {
+					error = 'Permission denied. You do not have access to edit this user.';
+					return;
+				}
+				error = 'Failed to load user data.';
+				return;
+			}
+
+			const result = await response.json();
+			const user = result.data;
+
 			if (!user) {
 				error = 'User not found. Please check the user ID and try again.';
 				return;
 			}
+
 			formData.name = user.name || '';
 			formData.first_name = user.first_name || '';
 			formData.last_name = user.last_name || '';
 			formData.email = user.email || '';
 			formData.roles = user.roles?.map((r: any) => r.name) || [];
 		} catch (err: any) {
-			if (err instanceof AdminApiError) {
-				if (err.status === 401) {
-					goto('/login');
-					return;
-				}
-				if (err.status === 404) {
-					error = 'User not found. The user may have been deleted.';
-				} else if (err.status === 403) {
-					error = 'Permission denied. You do not have access to edit this user.';
-				} else if (err.message?.includes('SQLSTATE') || err.message?.includes('Column not found')) {
-					error = 'Database configuration issue. Please contact support.';
-				} else {
-					error = err.message || 'Failed to load user data.';
-				}
-			} else if (err?.name === 'TypeError' && err?.message === 'Failed to fetch') {
+			if (err?.name === 'TypeError' && err?.message === 'Failed to fetch') {
 				error = 'Network error. Please check your connection and try again.';
 			} else {
 				error = 'Failed to load user. Please try again.';
@@ -98,17 +105,24 @@
 				payload.password_confirmation = formData.password_confirmation;
 			}
 
-			await usersApi.update(userId, payload);
+			// Use SvelteKit proxy endpoint
+			const response = await fetch(`/api/admin/users/${userId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+
+			if (!response.ok) {
+				const result = await response.json().catch(() => ({}));
+				throw new Error(result.message || 'Failed to update user');
+			}
+
 			success = 'User updated successfully!';
 			setTimeout(() => {
 				goto('/admin/users');
 			}, 1500);
-		} catch (err) {
-			if (err instanceof AdminApiError) {
-				error = err.message;
-			} else {
-				error = 'Failed to update user';
-			}
+		} catch (err: any) {
+			error = err.message || 'Failed to update user';
 			console.error('Failed to update user:', err);
 		} finally {
 			saving = false;

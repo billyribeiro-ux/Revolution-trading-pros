@@ -266,16 +266,13 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	onMount(async () => {
-		// Load connection status
-		await connections.load();
-		connections.startAutoRefresh();
-
-		// If connected, load SEO data
-		if ($isSeoConnected) {
-			await loadSeoData();
-		}
-
+		// Built-in SEO - always available (like RankMath Pro)
+		// External connections are optional enhancements
 		isLoading = false;
+
+		// Load SEO data from built-in system
+		await loadSeoData();
+
 		setTimeout(() => {
 			showContent = true;
 			metricsSpring.set(1);
@@ -283,7 +280,7 @@
 	});
 
 	onDestroy(() => {
-		connections.stopAutoRefresh();
+		// Cleanup if needed
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -350,15 +347,10 @@
 		</div>
 
 		<div class="header-actions">
-			<!-- Connection Status Badge -->
-			<div class="connection-badge" class:connected={$isSeoConnected}>
-				{#if $isSeoConnected}
-					<IconPlugConnected size={16} />
-					<span>SEO Tools Connected</span>
-				{:else}
-					<IconPlugConnectedX size={16} />
-					<span>Not Connected</span>
-				{/if}
+			<!-- Built-in SEO Status Badge -->
+			<div class="connection-badge connected">
+				<IconPlugConnected size={16} />
+				<span>Built-in SEO Active</span>
 			</div>
 
 			<button class="refresh-btn" onclick={handleRefresh} disabled={isLoading}>
@@ -375,51 +367,6 @@
 		<div class="loading-state" in:fade>
 			<div class="loading-spinner"></div>
 			<p>Loading SEO data...</p>
-		</div>
-	{:else if !$isSeoConnected}
-		<!-- Not Connected State -->
-		<div class="not-connected-section" in:scale={{ duration: 400, start: 0.95 }}>
-			<ApiNotConnected
-				serviceName="SEO Tools"
-				description="Connect your SEO tools to unlock powerful search optimization features. Track rankings, monitor backlinks, and optimize your site's visibility."
-				icon="🔍"
-				color="#10b981"
-				features={[
-					'Track keyword rankings and positions',
-					'Monitor backlink profile and growth',
-					'Analyze search visibility trends',
-					'Get technical SEO recommendations',
-					'Export comprehensive SEO reports'
-				]}
-			/>
-
-			<!-- Available SEO Services -->
-			<div class="services-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
-				<h2>Available SEO Services</h2>
-				<p class="services-subtitle">Connect one or more services to enable SEO features</p>
-
-				<div class="services-grid">
-					{#each seoServices as service, i}
-						<button
-							class="service-card"
-							onclick={() => goto(`/admin/connections?connect=${service.key}`)}
-							style="--service-color: {service.color}; --delay: {i * 50}ms"
-							in:fly={{ y: 20, duration: 400, delay: 300 + i * 50 }}
-						>
-							<div class="service-icon">
-								<span>{service.icon}</span>
-							</div>
-							<div class="service-info">
-								<h3>{service.name}</h3>
-								<p>{service.description}</p>
-							</div>
-							<div class="service-action">
-								<IconArrowRight size={18} />
-							</div>
-						</button>
-					{/each}
-				</div>
-			</div>
 		</div>
 	{:else}
 		<!-- Connected State with Real Data -->
@@ -535,8 +482,8 @@
 		</div>
 	{/if}
 
-	<!-- SEO Sections Grid - Always visible -->
-	<div class="sections-wrapper" in:fly={{ y: 20, duration: 500, delay: $isSeoConnected ? 300 : 400 }}>
+	<!-- SEO Sections Grid - Built-in SEO tools (like RankMath Pro) -->
+	<div class="sections-wrapper" in:fly={{ y: 20, duration: 500, delay: 300 }}>
 		<h2 class="sections-title">SEO Tools</h2>
 		<div class="sections-grid">
 			{#each sections as section, i}
@@ -544,18 +491,11 @@
 				<a
 					href={section.href}
 					class="section-card"
-					class:requires-connection={section.requiresConnection && !$isSeoConnected}
 					style="--card-color: {section.color}; --card-gradient: {section.gradient}"
-					in:fly={{ y: 20, duration: 400, delay: ($isSeoConnected ? 400 : 500) + i * 30 }}
+					in:fly={{ y: 20, duration: 400, delay: 400 + i * 30 }}
 				>
 					{#if section.isNew}
 						<span class="new-badge">NEW</span>
-					{/if}
-					{#if section.requiresConnection && !$isSeoConnected}
-						<span class="connection-required-badge">
-							<IconPlugConnectedX size={12} />
-							<span>Requires Connection</span>
-						</span>
 					{/if}
 					<div class="card-icon" style="background: {section.gradient}">
 						<SectionIcon size={24} />
@@ -571,7 +511,7 @@
 	</div>
 
 	<!-- Last Updated Footer -->
-	{#if lastUpdated && $isSeoConnected}
+	{#if lastUpdated}
 		<div class="last-updated" in:fade={{ delay: 600 }}>
 			<IconClock size={14} />
 			<span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
