@@ -255,8 +255,40 @@
 	}
 
 	// ============================================================================
-	// SLIDE ANIMATIONS - ENHANCED CINEMATIC TRANSITIONS
+	// SLIDE ANIMATIONS - ULTRA CINEMATIC TRANSITIONS (Netflix/Apple Level)
 	// ============================================================================
+
+	// Pulse the ambient glow during transitions
+	function pulseAmbientGlow(): void {
+		const glowEl = document.querySelector('.ambient-glow');
+		if (!glowEl || !gsapLib) return;
+
+		gsapLib.to(glowEl, {
+			opacity: 1.5,
+			scale: 1.2,
+			duration: 0.3,
+			ease: 'power2.out',
+			yoyo: true,
+			repeat: 1
+		});
+	}
+
+	// Flash effect on chart during transition
+	function flashChart(): void {
+		if (!chartContainer || !gsapLib) return;
+
+		gsapLib.to(chartContainer, {
+			opacity: 0.7,
+			duration: 0.15,
+			ease: 'power2.out',
+			yoyo: true,
+			repeat: 1,
+			onComplete: () => {
+				gsapLib.to(chartContainer, { opacity: 0.4, duration: 0.3 });
+			}
+		});
+	}
+
 	function animateSlideOut(slideIndex: number): Promise<void> {
 		return new Promise((resolve) => {
 			if (!gsapLib || slideIndex < 0) {
@@ -270,18 +302,49 @@
 				return;
 			}
 
-			const elements = slide.querySelectorAll('h1, h2, p, .slide__actions');
+			const h1 = slide.querySelector('h1');
+			const h2 = slide.querySelector('h2');
+			const p = slide.querySelector('p');
+			const buttons = slide.querySelectorAll('a');
 
-			gsapLib.to(elements, {
-				opacity: 0,
-				y: -30,
-				scale: 0.95,
-				filter: 'blur(8px)',
-				duration: 0.4,
-				stagger: 0.05,
-				ease: 'power2.in',
-				onComplete: resolve
-			});
+			const exitTL = gsapLib.timeline({ onComplete: resolve });
+
+			// Cinematic exit - elements scatter/dissolve
+			exitTL
+				.to(buttons, {
+					opacity: 0,
+					y: 20,
+					scale: 0.8,
+					stagger: 0.03,
+					duration: 0.25,
+					ease: 'power3.in'
+				}, 0)
+				.to(p, {
+					opacity: 0,
+					y: -20,
+					filter: 'blur(4px)',
+					duration: 0.3,
+					ease: 'power2.in'
+				}, 0.05)
+				.to(h2, {
+					opacity: 0,
+					y: -30,
+					scale: 0.95,
+					filter: 'blur(6px)',
+					duration: 0.35,
+					ease: 'power2.in'
+				}, 0.1)
+				.to(h1, {
+					opacity: 0,
+					scale: 0.9,
+					filter: 'blur(12px)',
+					y: -40,
+					duration: 0.4,
+					ease: 'power3.in'
+				}, 0.15);
+
+			// Trigger ambient effects
+			pulseAmbientGlow();
 		});
 	}
 
@@ -294,91 +357,121 @@
 		const h1 = slide.querySelector('h1');
 		const h2 = slide.querySelector('h2');
 		const p = slide.querySelector('p');
-		const actions = slide.querySelector('.slide__actions');
 		const buttons = slide.querySelectorAll('a');
 
 		if (timeline) timeline.kill();
 
 		isAnimating = true;
 
+		// Flash chart for dramatic effect
+		flashChart();
+
 		timeline = gsapLib.timeline({
 			onComplete: () => { isAnimating = false; }
 		});
 
-		// Reset elements first
-		gsapLib.set([h1, h2, p, actions], {
+		// Reset all elements
+		gsapLib.set([h1, h2, p, ...buttons], {
 			opacity: 0,
 			y: 0,
 			x: 0,
 			scale: 1,
 			rotation: 0,
-			filter: 'blur(0px)'
+			rotationX: 0,
+			rotationY: 0,
+			skewX: 0,
+			skewY: 0,
+			filter: 'blur(0px)',
+			transformPerspective: 1000
 		});
 
-		// Each slide has unique cinematic entrance
+		// Each slide has a unique CINEMATIC entrance
 		switch (slideIndex) {
-			case 0: // Scale & Glow entrance
+			case 0: // "EPIC REVEAL" - Title explodes from center with shockwave
 				timeline
+					// Title bursts from tiny with massive blur
 					.fromTo(h1,
-						{ opacity: 0, scale: 0.8, filter: 'blur(10px)' },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0)
+						{ opacity: 0, scale: 0.3, filter: 'blur(30px)', y: 50 },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, duration: 1.2, ease: 'expo.out' }, 0)
+					// Subtitle slides up with golden shimmer
 					.fromTo(h2,
-						{ opacity: 0, y: 30, filter: 'blur(5px)' },
-						{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, 0.2)
-					.fromTo(p,
-						{ opacity: 0, y: 20 },
-						{ opacity: 1, y: 0, duration: 0.6 }, 0.4)
-					.fromTo(buttons,
-						{ opacity: 0, y: 30, scale: 0.9 },
-						{ opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.1, ease: 'back.out(1.2)' }, 0.55);
-				break;
-
-			case 1: // Elastic Drop entrance
-				timeline
-					.fromTo(h1,
-						{ opacity: 0, y: -80, scale: 1.1 },
-						{ opacity: 1, y: 0, scale: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }, 0)
-					.fromTo(h2,
-						{ opacity: 0, y: -60, scale: 1.05 },
-						{ opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'elastic.out(1, 0.6)' }, 0.1)
-					.fromTo(p,
-						{ opacity: 0, y: -40 },
-						{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.25)
-					.fromTo(buttons,
-						{ opacity: 0, y: 40 },
-						{ opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }, 0.45);
-				break;
-
-			case 2: // Cinematic Zoom entrance
-				timeline
-					.fromTo(h1,
-						{ opacity: 0, scale: 2, filter: 'blur(20px)' },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.1, ease: 'power4.out' }, 0)
-					.fromTo(h2,
-						{ opacity: 0, scale: 1.5, filter: 'blur(10px)' },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0.15)
-					.fromTo(p,
-						{ opacity: 0, x: -50 },
-						{ opacity: 1, x: 0, duration: 0.7, ease: 'power2.out' }, 0.35)
-					.fromTo(buttons,
-						{ opacity: 0, scale: 0.5 },
-						{ opacity: 1, scale: 1, duration: 0.7, stagger: 0.12, ease: 'back.out(2)' }, 0.5);
-				break;
-
-			case 3: // Slide & Reveal entrance
-				timeline
-					.fromTo(h1,
-						{ opacity: 0, x: -100, skewX: -10 },
-						{ opacity: 1, x: 0, skewX: 0, duration: 0.9, ease: 'power3.out' }, 0)
-					.fromTo(h2,
-						{ opacity: 0, x: 100, skewX: 10 },
-						{ opacity: 1, x: 0, skewX: 0, duration: 0.9, ease: 'power3.out' }, 0.1)
+						{ opacity: 0, y: 60, scale: 0.9, filter: 'blur(8px)' },
+						{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0.3)
+					// Description fades in smoothly
 					.fromTo(p,
 						{ opacity: 0, y: 30 },
-						{ opacity: 1, y: 0, duration: 0.6 }, 0.3)
+						{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.5)
+					// Buttons pop in with spring physics
 					.fromTo(buttons,
-						{ opacity: 0, x: -30 },
-						{ opacity: 1, x: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }, 0.45);
+						{ opacity: 0, y: 40, scale: 0.7 },
+						{ opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.12, ease: 'back.out(1.7)' }, 0.65)
+					// Subtle pulse on primary button
+					.to(buttons[0], {
+						boxShadow: '0 0 40px rgba(250, 204, 21, 0.6)',
+						duration: 0.3,
+						yoyo: true,
+						repeat: 1
+					}, 1.2);
+				break;
+
+			case 1: // "METEOR DROP" - Elements crash in from above with bounce
+				timeline
+					// Title slams down from way above
+					.fromTo(h1,
+						{ opacity: 0, y: -200, scale: 1.3, rotationX: -45 },
+						{ opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.1, ease: 'bounce.out' }, 0)
+					// Subtitle follows with lighter bounce
+					.fromTo(h2,
+						{ opacity: 0, y: -150, scale: 1.2 },
+						{ opacity: 1, y: 0, scale: 1, duration: 1, ease: 'elastic.out(1, 0.4)' }, 0.15)
+					// Description drops in
+					.fromTo(p,
+						{ opacity: 0, y: -80 },
+						{ opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0.35)
+					// Buttons slam in from above
+					.fromTo(buttons,
+						{ opacity: 0, y: -60, rotationX: -30 },
+						{ opacity: 1, y: 0, rotationX: 0, duration: 0.7, stagger: 0.1, ease: 'back.out(1.4)' }, 0.55);
+				break;
+
+			case 2: // "CINEMATIC ZOOM" - Dolly zoom effect like Hitchcock
+				timeline
+					// Title zooms from far away with dramatic blur
+					.fromTo(h1,
+						{ opacity: 0, scale: 3, filter: 'blur(40px)', z: -500 },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', z: 0, duration: 1.4, ease: 'expo.out' }, 0)
+					// Subtitle emerges from the blur
+					.fromTo(h2,
+						{ opacity: 0, scale: 2, filter: 'blur(20px)' },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.1, ease: 'power4.out' }, 0.2)
+					// Description materializes
+					.fromTo(p,
+						{ opacity: 0, scale: 1.5, filter: 'blur(10px)' },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0.45)
+					// Buttons zoom in from distance
+					.fromTo(buttons,
+						{ opacity: 0, scale: 0.3, filter: 'blur(5px)' },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.8, stagger: 0.15, ease: 'back.out(2)' }, 0.7);
+				break;
+
+			case 3: // "MATRIX SLIDE" - Dramatic side-to-side with skew distortion
+				timeline
+					// Title slides from left with heavy skew
+					.fromTo(h1,
+						{ opacity: 0, x: -300, skewX: -20, scale: 0.8 },
+						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' }, 0)
+					// Subtitle slides from right with opposite skew
+					.fromTo(h2,
+						{ opacity: 0, x: 300, skewX: 20, scale: 0.8 },
+						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' }, 0.12)
+					// Description slides up
+					.fromTo(p,
+						{ opacity: 0, y: 50, skewY: 3 },
+						{ opacity: 1, y: 0, skewY: 0, duration: 0.8, ease: 'power3.out' }, 0.35)
+					// Buttons slide in from left with stagger
+					.fromTo(buttons,
+						{ opacity: 0, x: -80, skewX: -10 },
+						{ opacity: 1, x: 0, skewX: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out' }, 0.55);
 				break;
 		}
 	}
@@ -622,45 +715,65 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Ambient Background Layers
+	 * Ambient Background Layers - CINEMATIC DEPTH
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.hero-ambient {
 		position: absolute;
 		inset: 0;
 		z-index: 0;
 		pointer-events: none;
+		overflow: hidden;
 	}
 
 	.ambient-gradient {
 		position: absolute;
 		inset: 0;
 		background:
-			radial-gradient(ellipse 120% 80% at 50% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-			radial-gradient(ellipse 80% 50% at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-			radial-gradient(ellipse 60% 40% at 20% 60%, rgba(52, 211, 153, 0.06) 0%, transparent 50%);
+			radial-gradient(ellipse 150% 100% at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+			radial-gradient(ellipse 100% 60% at 100% 100%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+			radial-gradient(ellipse 80% 50% at 0% 80%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
+			radial-gradient(ellipse 60% 40% at 30% 30%, rgba(250, 204, 21, 0.05) 0%, transparent 50%);
+		animation: ambientPulse 8s ease-in-out infinite;
+	}
+
+	@keyframes ambientPulse {
+		0%, 100% { opacity: 1; transform: scale(1); }
+		50% { opacity: 0.8; transform: scale(1.05); }
 	}
 
 	.ambient-grid {
 		position: absolute;
-		inset: 0;
+		inset: -50px;
 		background-image:
-			linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-		background-size: 80px 80px;
-		mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 70%);
-		-webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 70%);
+			linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+		background-size: 60px 60px;
+		mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 70%);
+		-webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 70%);
+		animation: gridFloat 20s linear infinite;
+		transform: perspective(500px) rotateX(5deg);
+	}
+
+	@keyframes gridFloat {
+		0% { transform: perspective(500px) rotateX(5deg) translateY(0); }
+		100% { transform: perspective(500px) rotateX(5deg) translateY(60px); }
 	}
 
 	.ambient-glow {
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		width: 100%;
-		height: 100%;
-		transform: translate(-50%, -50%);
-		background: radial-gradient(ellipse 60% 40% at 50% 50%, var(--accent-color, rgba(99, 102, 241, 0.15)) 0%, transparent 60%);
-		transition: background 1s ease;
+		width: 120%;
+		height: 120%;
+		transform: translate(-50%, -50%) scale(1);
+		background: radial-gradient(
+			ellipse 50% 35% at 50% 50%,
+			var(--accent-color, rgba(99, 102, 241, 0.2)) 0%,
+			transparent 70%
+		);
+		transition: background 1.5s ease, transform 0.5s ease, opacity 0.5s ease;
 		mix-blend-mode: screen;
+		filter: blur(40px);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -757,49 +870,70 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Typography
+	 * Typography - CINEMATIC TEXT EFFECTS
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.slide__title {
 		font-family: var(--font-heading, system-ui);
-		font-size: clamp(2.5rem, 8vw, 5rem);
+		font-size: clamp(2.75rem, 9vw, 5.5rem);
 		font-weight: 800;
-		line-height: 1.05;
+		line-height: 1.0;
 		color: white;
 		margin-block-end: 0.75rem;
-		letter-spacing: -0.02em;
-		text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+		letter-spacing: -0.03em;
+		text-shadow:
+			0 0 40px rgba(255, 255, 255, 0.15),
+			0 4px 30px rgba(0, 0, 0, 0.5),
+			0 0 80px rgba(99, 102, 241, 0.2);
 		transform: translateZ(0);
+		transform-style: preserve-3d;
+		perspective: 1000px;
 	}
 
 	.slide__subtitle {
 		font-family: var(--font-heading, system-ui);
-		font-size: clamp(1.25rem, 4vw, 2rem);
-		font-weight: 600;
-		background: linear-gradient(135deg, #facc15 0%, #f59e0b 50%, #fbbf24 100%);
+		font-size: clamp(1.35rem, 4.5vw, 2.25rem);
+		font-weight: 700;
+		background: linear-gradient(
+			135deg,
+			#fde047 0%,
+			#facc15 25%,
+			#f59e0b 50%,
+			#facc15 75%,
+			#fde047 100%
+		);
+		background-size: 200% 100%;
 		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
+		animation: shimmer 3s ease-in-out infinite;
 		margin-block-end: 1.5rem;
 		transform: translateZ(0);
+		filter: drop-shadow(0 2px 10px rgba(250, 204, 21, 0.3));
+	}
+
+	@keyframes shimmer {
+		0%, 100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
 	}
 
 	.slide__description {
-		font-size: clamp(1rem, 2.5vw, 1.25rem);
-		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.8);
-		max-width: 42rem;
+		font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+		line-height: 1.75;
+		color: rgba(255, 255, 255, 0.85);
+		max-width: 44rem;
 		margin-inline: auto;
 		margin-block-end: 2.5rem;
 		transform: translateZ(0);
+		text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CTA Buttons
+	 * CTA Buttons - CINEMATIC INTERACTIVE EFFECTS
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.slide__actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1rem;
+		gap: 1.25rem;
 		justify-content: center;
 	}
 
@@ -808,16 +942,17 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 1rem 2.5rem;
+		padding: 1.1rem 2.75rem;
 		font-family: var(--font-heading, system-ui);
-		font-size: 1rem;
-		font-weight: 600;
+		font-size: 1.05rem;
+		font-weight: 700;
 		border-radius: 9999px;
 		text-decoration: none;
 		overflow: hidden;
 		cursor: pointer;
 		transform: translateY(0) translateZ(0);
-		transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+		transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+		letter-spacing: 0.02em;
 	}
 
 	.cta__text {
@@ -825,55 +960,122 @@
 		z-index: 2;
 	}
 
+	/* Primary Button - Golden Powerhouse */
 	.cta--primary {
-		background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+		background: linear-gradient(135deg, #facc15 0%, #f59e0b 50%, #facc15 100%);
+		background-size: 200% 100%;
 		color: #1f2937;
 		box-shadow:
-			0 4px 20px rgba(250, 204, 21, 0.3),
-			0 0 0 1px rgba(250, 204, 21, 0.1);
+			0 4px 25px rgba(250, 204, 21, 0.35),
+			0 0 0 1px rgba(250, 204, 21, 0.15),
+			inset 0 1px 0 rgba(255, 255, 255, 0.3);
+		animation: buttonShimmer 4s ease-in-out infinite;
+	}
+
+	@keyframes buttonShimmer {
+		0%, 100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
 	}
 
 	.cta--primary .cta__glow {
 		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, #fde047 0%, #facc15 100%);
+		inset: -2px;
+		background: linear-gradient(135deg, #fde047, #facc15, #fde047);
+		border-radius: inherit;
 		opacity: 0;
-		transition: opacity 0.3s ease;
+		z-index: -1;
+		filter: blur(10px);
+		transition: opacity 0.4s ease;
+	}
+
+	.cta--primary::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgba(255, 255, 255, 0.4),
+			transparent
+		);
+		transition: left 0.6s ease;
 	}
 
 	.cta--primary:hover {
-		transform: translateY(-3px) translateZ(0);
+		transform: translateY(-4px) scale(1.02) translateZ(0);
 		box-shadow:
-			0 8px 30px rgba(250, 204, 21, 0.5),
-			0 0 0 1px rgba(250, 204, 21, 0.2);
+			0 12px 40px rgba(250, 204, 21, 0.5),
+			0 0 60px rgba(250, 204, 21, 0.3),
+			0 0 0 2px rgba(250, 204, 21, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.4);
 	}
 
 	.cta--primary:hover .cta__glow {
 		opacity: 1;
 	}
 
-	.cta--primary:active {
-		transform: translateY(-1px) scale(0.98) translateZ(0);
+	.cta--primary:hover::before {
+		left: 100%;
 	}
 
+	.cta--primary:active {
+		transform: translateY(-2px) scale(0.98) translateZ(0);
+		box-shadow:
+			0 6px 20px rgba(250, 204, 21, 0.4),
+			0 0 30px rgba(250, 204, 21, 0.2);
+	}
+
+	/* Secondary Button - Glass Morphism */
 	.cta--secondary {
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.03);
 		color: white;
-		border: 2px solid rgba(255, 255, 255, 0.2);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		border: 2px solid rgba(255, 255, 255, 0.15);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		box-shadow:
+			0 4px 20px rgba(0, 0, 0, 0.2),
+			inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	}
+
+	.cta--secondary::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.1) 0%,
+			transparent 50%,
+			rgba(255, 255, 255, 0.05) 100%
+		);
+		opacity: 0;
+		transition: opacity 0.4s ease;
 	}
 
 	.cta--secondary:hover {
-		background: rgba(255, 255, 255, 0.1);
-		border-color: rgba(255, 255, 255, 0.35);
-		transform: translateY(-3px) translateZ(0);
-		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.3);
+		transform: translateY(-4px) translateZ(0);
+		box-shadow:
+			0 12px 35px rgba(0, 0, 0, 0.35),
+			0 0 0 1px rgba(255, 255, 255, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.15);
+	}
+
+	.cta--secondary:hover::before {
+		opacity: 1;
+	}
+
+	.cta--secondary:active {
+		transform: translateY(-2px) scale(0.98) translateZ(0);
 	}
 
 	.cta:focus-visible {
 		outline: 2px solid #facc15;
-		outline-offset: 3px;
+		outline-offset: 4px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
