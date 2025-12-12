@@ -17,8 +17,11 @@
 		SubscriptionStatus,
 		SubscriptionStats
 	} from '$lib/stores/subscriptions';
+	import { connections, isPaymentConnected } from '$lib/stores/connections';
+	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	// State
+	let connectionLoading = $state(true);
 	let subscriptions = $state<Subscription[]>([]);
 	let stats = $state<SubscriptionStats | null>(null);
 	let upcomingRenewals = $state<Subscription[]>([]);
@@ -48,7 +51,16 @@
 	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 	onMount(async () => {
-		await loadData();
+		// Load connection status first
+		await connections.load();
+		connectionLoading = false;
+
+		// Only load data if payment is connected
+		if ($isPaymentConnected) {
+			await loadData();
+		} else {
+			loading = false;
+		}
 	});
 
 	onDestroy(() => {
@@ -260,14 +272,25 @@
 			<p class="text-slate-400">Monitor and manage all customer subscriptions</p>
 		</div>
 
-		{#if error}
-			<div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
-				<p class="text-red-400">{error}</p>
+		<!-- Connection Check -->
+		{#if connectionLoading}
+			<div class="flex items-center justify-center py-20">
+				<div class="relative">
+					<div class="w-12 h-12 border-4 border-purple-500/20 rounded-full"></div>
+					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+				</div>
 			</div>
-		{/if}
+		{:else if !$isPaymentConnected}
+			<ServiceConnectionStatus feature="payment" variant="card" showFeatures={true} />
+		{:else}
+			{#if error}
+				<div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
+					<p class="text-red-400">{error}</p>
+				</div>
+			{/if}
 
-		<!-- Stats Overview -->
-		{#if stats}
+			<!-- Stats Overview -->
+			{#if stats}
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 				<div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
 					<div class="flex items-center justify-between mb-2">
@@ -618,6 +641,7 @@
 				</table>
 			</div>
 		</div>
+		{/if}
 	</div>
 </div>
 

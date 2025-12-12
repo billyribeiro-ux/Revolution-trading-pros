@@ -7,6 +7,8 @@
 	 */
 	import { onMount } from 'svelte';
 	import { analyticsApi } from '$lib/api/analytics';
+	import { connections, isAnalyticsConnected } from '$lib/stores/connections';
+	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	interface Report {
 		id: string;
@@ -24,6 +26,7 @@
 
 	let reports = $state<Report[]>([]);
 	let loading = $state(true);
+	let connectionLoading = $state(true);
 	let error = $state<string | null>(null);
 	let showCreateModal = $state(false);
 	let activeFilter = $state<'all' | 'active' | 'scheduled' | 'draft'>('all');
@@ -137,8 +140,17 @@
 		});
 	}
 
-	onMount(() => {
-		loadReports();
+	onMount(async () => {
+		// Load connection status first
+		await connections.load();
+		connectionLoading = false;
+
+		// Only load data if analytics is connected
+		if ($isAnalyticsConnected) {
+			await loadReports();
+		} else {
+			loading = false;
+		}
 	});
 
 	const filteredReports = $derived(reports.filter((report) => {
@@ -162,37 +174,51 @@
 	<title>Reports | Analytics</title>
 </svelte:head>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-	<!-- Header -->
-	<div class="flex items-center justify-between mb-8">
-		<div>
-			<h1 class="text-2xl font-bold text-gray-900">Reports</h1>
-			<p class="text-sm text-gray-500 mt-1">Create and manage custom analytics reports</p>
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<!-- Header -->
+		<div class="flex items-center justify-between mb-8">
+			<div>
+				<h1 class="text-2xl font-bold text-white">Reports</h1>
+				<p class="text-sm text-slate-400 mt-1">Create and manage custom analytics reports</p>
+			</div>
+			{#if $isAnalyticsConnected}
+				<button
+					onclick={() => (showCreateModal = true)}
+					class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg"
+				>
+					Create Report
+				</button>
+			{/if}
 		</div>
-		<button
-			onclick={() => (showCreateModal = true)}
-			class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-		>
-			Create Report
-		</button>
-	</div>
 
-	<!-- Filters -->
-	<div class="flex items-center gap-2 mb-6">
-		{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter}
-			<button
-				onclick={() => (activeFilter = filter.value as typeof activeFilter)}
-				class="px-4 py-2 rounded-lg text-sm font-medium transition-all
-					{activeFilter === filter.value
-					? 'bg-gray-900 text-white'
-					: 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}"
-			>
-				{filter.label}
-			</button>
-		{/each}
-	</div>
+		<!-- Connection Check -->
+		{#if connectionLoading}
+			<div class="flex items-center justify-center py-20">
+				<div class="relative">
+					<div class="w-12 h-12 border-4 border-purple-500/20 rounded-full"></div>
+					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+				</div>
+			</div>
+		{:else if !$isAnalyticsConnected}
+			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
+		{:else}
+			<!-- Filters -->
+			<div class="flex items-center gap-2 mb-6">
+				{#each [{ value: 'all', label: 'All Reports' }, { value: 'active', label: 'Active' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'draft', label: 'Drafts' }] as filter}
+					<button
+						onclick={() => (activeFilter = filter.value as typeof activeFilter)}
+						class="px-4 py-2 rounded-lg text-sm font-medium transition-all
+							{activeFilter === filter.value
+							? 'bg-white text-slate-900'
+							: 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'}"
+					>
+						{filter.label}
+					</button>
+				{/each}
+			</div>
 
-	{#if loading}
+			{#if loading}
 		<div class="flex items-center justify-center py-20">
 			<div
 				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
@@ -287,6 +313,8 @@
 			{/each}
 		</div>
 	{/if}
+		{/if}
+	</div>
 </div>
 
 <!-- Create Report Modal -->
