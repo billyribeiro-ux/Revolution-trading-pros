@@ -3,9 +3,23 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 
+// ICT11+ Custom plugin to suppress known third-party package warnings
+const suppressKnownWarnings = () => ({
+	name: 'suppress-known-warnings',
+	configResolved(config) {
+		const originalWarn = config.logger.warn;
+		config.logger.warn = (msg, options) => {
+			// Suppress svelte-email missing exports condition warning
+			if (typeof msg === 'string' && msg.includes('svelte-email')) return;
+			originalWarn(msg, options);
+		};
+	}
+});
+
 export default defineConfig({
-	// Suppress vite-plugin-svelte warnings for packages with missing exports condition
-	// See: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition
+	// ICT11+ Configuration: Suppress vite-plugin-svelte warnings for third-party packages
+	// with missing exports condition (svelte-email@0.0.4 has svelte field but no exports)
+	// This is the correct fix per: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition
 	ssr: {
 		noExternal: ['svelte-email']
 	},
@@ -21,6 +35,7 @@ export default defineConfig({
 		},
 	},
 	plugins: [
+		suppressKnownWarnings(),
 		tailwindcss(),
 		sveltekit(),
 		// Brotli compression (best compression)
