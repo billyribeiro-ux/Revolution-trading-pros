@@ -63,7 +63,11 @@ import type {
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
+// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+const isDev = import.meta.env.DEV;
+const API_BASE = browser 
+	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')) 
+	: '';
 const WS_BASE = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
 // Analytics API - only enable if explicitly configured (microservice is optional)
 const ANALYTICS_API = browser && import.meta.env.VITE_ANALYTICS_API

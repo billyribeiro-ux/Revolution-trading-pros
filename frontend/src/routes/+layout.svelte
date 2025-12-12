@@ -21,6 +21,7 @@
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser } from '$lib/stores/auth';
+	import { initializeAuth } from '$lib/api/auth';
 	import type { Snippet } from 'svelte';
 
 	// Consent System
@@ -55,11 +56,15 @@
 		}
 	});
 
-	onMount(() => {
+	onMount(async () => {
 		// Mark as mounted FIRST to enable client-only derived values
 		mounted = true;
 		
 		if (browser) {
+			// ICT11+ Pattern: Restore auth session on page refresh
+			// This must run early to restore user state before protected routes check auth
+			await initializeAuth();
+			
 			registerServiceWorker();
 			initPerformanceMonitoring();
 			initializeConsent();

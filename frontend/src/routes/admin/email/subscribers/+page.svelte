@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast';
-	import { getAuthToken } from '$lib/stores/auth';
+	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
 		IconUsers,
 		IconPlus,
@@ -83,17 +83,8 @@
 
 	async function loadStats() {
 		try {
-			// Get stats from dashboard
-			// Use secure auth store token (memory-only, not localStorage)
-			const response = await fetch('/api/admin/email/subscribers/stats', {
-				headers: {
-					Authorization: `Bearer ${getAuthToken()}`
-				}
-			});
-			if (response.ok) {
-				const data = await response.json();
-				stats = data.data || data;
-			}
+			const data = await adminFetch('/api/admin/email/subscribers/stats');
+			stats = data.data || data;
 		} catch (err) {
 			console.error('Failed to load stats:', err);
 		}
@@ -181,12 +172,7 @@
 
 	async function handleExport() {
 		try {
-			// Use secure auth store token (memory-only, not localStorage)
-			const response = await fetch('/api/admin/email/subscribers/export', {
-				headers: {
-					Authorization: `Bearer ${getAuthToken()}`
-				}
-			});
+			const response = await adminFetch<Response>('/api/admin/email/subscribers/export', { rawResponse: true });
 			const blob = await response.blob();
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement('a');

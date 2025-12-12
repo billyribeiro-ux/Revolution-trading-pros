@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast';
-	import { getAuthToken } from '$lib/stores/auth';
+	import { adminFetch } from '$lib/utils/adminFetch';
 	import { connections, isEmailConnected } from '$lib/stores/connections';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
@@ -117,18 +117,8 @@
 
 	async function loadTemplates() {
 		try {
-			// Load templates from email templates API
-			// Use secure auth store token (memory-only, not localStorage)
-			const response = await fetch('/api/admin/email/templates', {
-				headers: {
-					'Authorization': `Bearer ${getAuthToken()}`,
-					'Content-Type': 'application/json'
-				}
-			});
-			if (response.ok) {
-				const data = await response.json();
-				templates = (data.data || data || []).map((t: any) => ({ id: t.id, name: t.name }));
-			}
+			const data = await adminFetch('/api/admin/email/templates');
+			templates = (data.data || data || []).map((t: any) => ({ id: t.id, name: t.name }));
 		} catch (err) {
 			console.error('Failed to load templates:', err);
 		}

@@ -13,6 +13,7 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// Types
 	interface ConnectionStatus {
@@ -55,9 +56,8 @@
 	// Fetch connection status
 	async function fetchConnectionStatus() {
 		try {
-			const response = await fetch('/api/admin/connections/summary');
-			if (response.ok) {
-				const data = await response.json();
+			const data = await adminFetch('/api/admin/connections/summary');
+			if (data) {
 				// Map connected services
 				if (data.connections) {
 					for (const conn of data.connections) {
@@ -77,11 +77,8 @@
 		// Only fetch metrics if services are connected
 		if (connections.google_analytics) {
 			try {
-				const response = await fetch('/api/analytics/realtime');
-				if (response.ok) {
-					const data = await response.json();
-					metrics = { ...metrics, ...data };
-				}
+				const data = await adminFetch('/api/analytics/realtime');
+				metrics = { ...metrics, ...data };
 			} catch (e) {
 				console.warn('Analytics fetch failed:', e);
 			}
@@ -89,11 +86,8 @@
 
 		if (connections.stripe) {
 			try {
-				const response = await fetch('/api/payments/summary');
-				if (response.ok) {
-					const data = await response.json();
-					metrics = { ...metrics, revenue: data.revenue, mrr: data.mrr };
-				}
+				const data = await adminFetch('/api/payments/summary');
+				metrics = { ...metrics, revenue: data.revenue, mrr: data.mrr };
 			} catch (e) {
 				console.warn('Payments fetch failed:', e);
 			}

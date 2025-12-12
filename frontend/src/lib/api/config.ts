@@ -6,8 +6,16 @@
 
 import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 
-// Get API base URL from environment variable or use default
-export const API_BASE_URL = import.meta.env['VITE_API_URL'] || 'http://localhost:8000';
+// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+// This prevents CORS issues by routing all API calls through the same origin
+// In production, use the full API URL from environment variables
+const isDev = import.meta.env.DEV;
+
+// Get API base URL - empty string in dev (uses Vite proxy), full URL in production
+export const API_BASE_URL = isDev 
+	? '' 
+	: (import.meta.env['VITE_API_URL'] || 'http://localhost:8000');
+
 export const CDN_URL = import.meta.env['VITE_CDN_URL'] || 'http://localhost:8000/storage';
 export const WS_URL = import.meta.env['VITE_WS_URL'] || 'ws://localhost:8000';
 

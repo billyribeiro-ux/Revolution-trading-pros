@@ -11,15 +11,14 @@
 
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
-	import {
-		IconPlugConnected,
-		IconPlugConnectedX,
-		IconChevronDown,
-		IconAlertTriangle,
-		IconCircleCheck,
-		IconClock,
-		IconPlug
-	} from '@tabler/icons-svelte';
+	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
+	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
+	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
+	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconPlugOff from '@tabler/icons-svelte/icons/plug-off';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface RateLimitInfo {
 		service: string;
@@ -42,20 +41,8 @@
 	 */
 	async function fetchRateLimits(): Promise<RateLimitInfo[]> {
 		try {
-			const token = localStorage.getItem('access_token');
-			const response = await fetch('/api/admin/connections/status', {
-				headers: {
-					'Authorization': token ? `Bearer ${token}` : '',
-					'Accept': 'application/json'
-				}
-			});
-
-			if (!response.ok) {
-				console.warn('Rate limits API unavailable');
-				return [];
-			}
-
-			const data = await response.json();
+			// ICT11+ Pattern: Use adminFetch for authenticated admin API calls
+			const data = await adminFetch('/api/admin/connections/status', { skipAuthRedirect: true });
 			const limits: RateLimitInfo[] = [];
 
 			// Transform connection status to rate limit info
@@ -217,7 +204,7 @@
 				<!-- No services connected - show helpful message -->
 				<div class="no-services">
 					<div class="no-services-icon">
-						<IconPlug size={32} />
+						<IconPlugOff size={32} />
 					</div>
 					<p class="no-services-title">No Services Connected</p>
 					<p class="no-services-desc">

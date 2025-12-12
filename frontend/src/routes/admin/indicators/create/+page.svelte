@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { IconPhoto, IconX, IconSparkles, IconCheck } from '@tabler/icons-svelte';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	let indicator = {
 		name: '',
@@ -35,15 +36,11 @@
 			const formData = new FormData();
 			formData.append('file', file);
 
-			const response = await fetch('/api/uploads/file', {
+			const data = await adminFetch('/api/uploads/file', {
 				method: 'POST',
 				body: formData
 			});
-
-			if (response.ok) {
-				const data = await response.json();
-				indicator.thumbnail = data.url;
-			}
+			indicator.thumbnail = data.url;
 		} catch (error) {
 			console.error('Failed to upload image:', error);
 		} finally {
@@ -59,18 +56,11 @@
 
 		saving = true;
 		try {
-			const response = await fetch('/api/admin/products', {
+			await adminFetch('/api/admin/products', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(indicator)
 			});
-
-			if (response.ok) {
-				goto('/admin/indicators');
-			} else {
-				const error = await response.json();
-				alert(error.message || 'Failed to create indicator');
-			}
+			goto('/admin/indicators');
 		} catch (error) {
 			console.error('Failed to save indicator:', error);
 			alert('Failed to save indicator');

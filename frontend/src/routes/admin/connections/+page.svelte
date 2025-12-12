@@ -13,6 +13,7 @@
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { quintOut, backOut, cubicOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// Types
 	interface ServiceField {
@@ -126,13 +127,10 @@
 	// Fetch data
 	async function fetchConnections() {
 		try {
-			const response = await fetch('/api/admin/connections');
-			if (response.ok) {
-				const data = await response.json();
-				connections = data.connections;
-				categories = data.categories;
-				summary = data.summary;
-			}
+			const data = await adminFetch('/api/admin/connections');
+			connections = data.connections;
+			categories = data.categories;
+			summary = data.summary;
 		} catch (error) {
 			console.error('Failed to fetch connections:', error);
 		} finally {
@@ -148,16 +146,13 @@
 		testResult = null;
 
 		try {
-			const response = await fetch(`/api/admin/connections/${selectedService.key}/connect`, {
+			const data = await adminFetch(`/api/admin/connections/${selectedService.key}/connect`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					credentials: credentialValues,
 					environment: selectedEnvironment
 				})
 			});
-
-			const data = await response.json();
 
 			if (data.success) {
 				showConnectModal = false;
@@ -183,13 +178,10 @@
 		testResult = null;
 
 		try {
-			const response = await fetch(`/api/admin/connections/${selectedService.key}/test`, {
+			const data = await adminFetch(`/api/admin/connections/${selectedService.key}/test`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ credentials: credentialValues })
 			});
-
-			const data = await response.json();
 			testResult = data;
 		} catch (error) {
 			testResult = { success: false, error: 'Network error. Please try again.' };
@@ -203,12 +195,10 @@
 		if (!disconnectingService) return;
 
 		try {
-			const response = await fetch(
+			const data = await adminFetch(
 				`/api/admin/connections/${disconnectingService.key}/disconnect`,
 				{ method: 'POST' }
 			);
-
-			const data = await response.json();
 
 			if (data.success) {
 				showDisconnectConfirm = false;
@@ -710,9 +700,9 @@
 			<!-- Form -->
 			<div class="p-6 space-y-4">
 				{#if selectedService.environments && selectedService.environments.length > 1}
-					<div>
-						<label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Environment</label>
-						<div class="grid grid-cols-2 gap-2">
+					<fieldset>
+						<legend class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Environment</legend>
+						<div class="grid grid-cols-2 gap-2" role="group">
 							{#each selectedService.environments as env}
 								<button
 									onclick={() => (selectedEnvironment = env)}
@@ -724,7 +714,7 @@
 								</button>
 							{/each}
 						</div>
-					</div>
+					</fieldset>
 				{/if}
 
 				{#each selectedService.fields as field}

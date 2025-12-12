@@ -57,7 +57,11 @@ import { getAuthToken as getAuthStoreToken, getSessionId as getAuthSessionId } f
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
+// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+const isDev = import.meta.env.DEV;
+const API_BASE = browser 
+	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')) 
+	: '';
 const WS_BASE = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
 const AI_API = browser ? import.meta.env.VITE_AI_API_URL || 'http://localhost:8001/api' : '';
 
@@ -619,6 +623,12 @@ class FormsService {
 	private setupWebSocket(): void {
 		if (!browser || !this.getAuthToken()) return;
 
+		// ICT11+ Pattern: Skip WebSocket in dev if not configured
+		if (isDev && !import.meta.env.VITE_WS_URL) {
+			console.debug('[FormsService] WebSocket skipped in dev (no VITE_WS_URL configured)');
+			return;
+		}
+
 		try {
 			this.wsConnection = new WebSocket(`${WS_BASE}/forms`);
 
@@ -632,16 +642,25 @@ class FormsService {
 			};
 
 			this.wsConnection.onerror = (error) => {
-				console.error('[FormsService] WebSocket error:', error);
+				// Silent fail in dev - WebSocket server may not be running
+				if (!isDev) {
+					console.error('[FormsService] WebSocket error:', error);
+				}
 			};
 
 			this.wsConnection.onclose = () => {
-				console.debug('[FormsService] WebSocket disconnected');
-				// Reconnect after delay
-				setTimeout(() => this.setupWebSocket(), 5000);
+				if (!isDev) {
+					console.debug('[FormsService] WebSocket disconnected');
+				}
+				// Reconnect after delay (skip in dev)
+				if (!isDev) {
+					setTimeout(() => this.setupWebSocket(), 5000);
+				}
 			};
 		} catch (error) {
-			console.error('[FormsService] Failed to setup WebSocket:', error);
+			if (!isDev) {
+				console.error('[FormsService] Failed to setup WebSocket:', error);
+			}
 		}
 	}
 

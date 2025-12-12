@@ -4,11 +4,6 @@ import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
-	// Suppress vite-plugin-svelte warnings for packages with missing exports condition
-	// See: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition
-	ssr: {
-		noExternal: ['svelte-email']
-	},
 	// Vitest configuration
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
@@ -55,6 +50,12 @@ export default defineConfig({
 		// Proxy API requests to Laravel backend
 		proxy: {
 			'/api': {
+				target: 'http://localhost:8000',
+				changeOrigin: true,
+				secure: false
+			},
+			// ICT11+ Pattern: Proxy admin routes to prevent CORS
+			'/admin': {
 				target: 'http://localhost:8000',
 				changeOrigin: true,
 				secure: false
@@ -118,11 +119,7 @@ export default defineConfig({
 	optimizeDeps: {
 		// Pre-bundle only critical dependencies
 		include: [
-			'svelte',
-			// svelte-email@0.0.4 has svelte field but no exports condition
-			// Include it here to avoid vite-plugin-svelte warning
-			// See: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition
-			'svelte-email'
+			'svelte'
 		],
 		// Exclude heavy dependencies - lazy load them
 		exclude: [

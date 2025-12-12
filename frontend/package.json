@@ -5,7 +5,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "svelte-kit sync && vite dev",
+		"dev:fast": "vite dev",
 		"build": "vite build",
 		"build:cloudflare": "DEPLOY_TARGET=cloudflare vite build",
 		"build:vercel": "DEPLOY_TARGET=vercel vite build",
@@ -68,7 +69,6 @@
 		"rune-scroller": "^1.0.0",
 		"runed": "^0.37.0",
 		"svelte-animations": "^1.0.3",
-		"svelte-email": "^0.0.4",
 		"svelte-lottie": "^0.0.0",
 		"svelte-motion": "^0.12.2",
 		"svelte-ux": "^1.0.9",
