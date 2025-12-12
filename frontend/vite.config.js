@@ -53,6 +53,12 @@ export default defineConfig({
 				target: 'http://localhost:8000',
 				changeOrigin: true,
 				secure: false
+			},
+			// ICT11+ Pattern: Proxy admin routes to prevent CORS
+			'/admin': {
+				target: 'http://localhost:8000',
+				changeOrigin: true,
+				secure: false
 			}
 		}
 	},
