@@ -117,8 +117,9 @@
 		isLoading = true;
 		error = null;
 
-		// Load connection status first
-		await connections.load();
+		// Built-in analytics - always try to fetch (no external connection required)
+		analyticsConnected = true; // Platform has built-in analytics
+		seoConnected = true; // Platform has built-in SEO
 
 		try {
 			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
@@ -127,7 +128,7 @@
 				api.get('/admin/coupons'),
 				api.get('/admin/posts/stats'),
 				api.get('/admin/products/stats'),
-				analyticsConnected ? api.get(`/admin/analytics/dashboard?period=${selectedPeriod}`) : Promise.reject('Not connected')
+				api.get(`/admin/analytics/dashboard?period=${selectedPeriod}`) // Always try built-in analytics
 			]);
 
 			if (membersRes.status === 'fulfilled') {
@@ -164,8 +165,8 @@
 				stats.totalProducts = productsData?.total || productsData?.data?.total || 0;
 			}
 
-			// ONLY set analytics data if we have REAL data from a connected service
-			if (analyticsRes.status === 'fulfilled' && analyticsConnected) {
+			// Process analytics data from built-in analytics system
+			if (analyticsRes.status === 'fulfilled') {
 				const data = analyticsRes.value?.data || analyticsRes.value;
 				if (data?.kpis) {
 					hasRealAnalyticsData = true;
@@ -235,8 +236,8 @@
 				}
 				if (data?.top_pages) topPages = data.top_pages.slice(0, 5);
 
-				// SEO data - ONLY use real values (NO MORE FAKE DATA!)
-				if (data?.seo && seoConnected) {
+				// SEO data from built-in SEO system
+				if (data?.seo) {
 					hasRealSeoData = true;
 					if (data.seo.search_traffic !== undefined) seoMetrics.searchTraffic.value = data.seo.search_traffic;
 					if (data.seo.impressions !== undefined) seoMetrics.totalImpressions.value = data.seo.impressions;
@@ -275,28 +276,12 @@
 		fetchDashboardStats();
 	}
 
-	// Subscribe to connection status
-	let unsubAnalytics: (() => void) | null = null;
-	let unsubSeo: (() => void) | null = null;
-
 	onMount(() => {
 		mounted = true;
-
-		// Subscribe to connection status changes
-		unsubAnalytics = isAnalyticsConnected.subscribe((connected) => {
-			analyticsConnected = connected;
-		});
-		unsubSeo = isSeoConnected.subscribe((connected) => {
-			seoConnected = connected;
-		});
-
+		// Built-in analytics and SEO - no external connection needed
+		analyticsConnected = true;
+		seoConnected = true;
 		fetchDashboardStats();
-
-		// Cleanup on destroy
-		return () => {
-			if (unsubAnalytics) unsubAnalytics();
-			if (unsubSeo) unsubSeo();
-		};
 	});
 </script>
 

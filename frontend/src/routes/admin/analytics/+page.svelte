@@ -98,8 +98,6 @@
 	];
 
 	async function loadDashboard() {
-		if (!isConnected) return;
-
 		loading = true;
 		error = null;
 		try {
@@ -117,25 +115,14 @@
 	}
 
 	onMount(async () => {
-		// Load connection status first
-		await connections.load();
+		// Built-in analytics - no external connection required
+		isConnected = true;
 		connectionsLoading = false;
-
-		// Subscribe to connection changes
-		unsubscribe = isAnalyticsConnected.subscribe((connected) => {
-			isConnected = connected;
-			if (connected && !dashboardData) {
-				loadDashboard();
-			}
-		});
-
-		// Start auto-refresh for connections
-		connections.startAutoRefresh();
+		loadDashboard();
 	});
 
 	onDestroy(() => {
 		if (unsubscribe) unsubscribe();
-		connections.stopAutoRefresh();
 	});
 
 	// Format time series data
