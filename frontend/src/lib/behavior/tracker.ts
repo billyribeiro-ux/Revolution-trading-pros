@@ -486,15 +486,24 @@ export class BehaviorTracker {
 		}
 
 		try {
-			await fetch(this.config.apiEndpoint, {
+			const response = await fetch(this.config.apiEndpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(batch),
 				keepalive: true
 			});
+			
+			// Silently handle non-OK responses (endpoint may not exist)
+			if (!response.ok && response.status !== 404) {
+				console.debug('[BehaviorTracker] Server returned:', response.status);
+			}
 		} catch (error) {
-			console.error('[BehaviorTracker] Failed to send events:', error);
-			// Store in localStorage for retry
+			// Silently fail - behavior tracking is non-critical
+			// Only log in debug mode to avoid console spam
+			if (import.meta.env.DEV && import.meta.env.VITE_DEBUG_BEHAVIOR) {
+				console.debug('[BehaviorTracker] Failed to send events:', error);
+			}
+			// Store in localStorage for retry when endpoint becomes available
 			this.storeFailedBatch(batch);
 		}
 	}
