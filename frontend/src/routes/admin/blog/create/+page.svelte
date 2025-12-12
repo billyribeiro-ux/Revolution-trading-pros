@@ -100,7 +100,11 @@
 			type: 'paragraph',
 			content: { text: '' },
 			settings: {},
-			order: 0
+			metadata: {
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				version: 1
+			}
 		}
 	]);
 
@@ -109,6 +113,8 @@
 	let availableCategories: any[] = $state([]);
 	let availableTags: any[] = $state([]);
 	let saving = $state(false);
+	let saveError = $state('');
+	let saveSuccess = $state('');
 	let showFeaturedImage = $state(false);
 	let newTag = $state('');
 	let showSeoPanel = $state(false);
@@ -213,8 +219,16 @@
 
 	async function savePost(status: string) {
 		saving = true;
+		saveError = '';
+		saveSuccess = '';
 
 		try {
+			// Validate required fields
+			if (!post.title.trim()) {
+				saveError = 'Title is required';
+				return;
+			}
+
 			// Convert blocks to both formats for backward compatibility
 			const htmlContent = blocksToHtml(contentBlocks);
 
@@ -222,10 +236,12 @@
 				...post,
 				status,
 				content: htmlContent, // HTML for backward compatibility
-				content_blocks: contentBlocks.map(b => ({
+				blocks: contentBlocks.map(b => ({
+					id: b.id,
 					type: b.type,
 					content: b.content,
-					settings: b.settings
+					settings: b.settings,
+					metadata: b.metadata
 				})),
 				published_at:
 					status === 'published' && !post.published_at
@@ -233,11 +249,26 @@
 						: post.published_at || null
 			};
 
-			await api.post('/api/admin/posts', postData);
-			goto('/admin/blog');
-		} catch (error) {
+			// Use SvelteKit proxy endpoint (relative URL)
+			const response = await fetch('/api/admin/posts', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(postData)
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result.message || 'Failed to save post');
+			}
+
+			saveSuccess = status === 'published' ? 'Post published!' : 'Draft saved!';
+
+			// Navigate after short delay to show success message
+			setTimeout(() => goto('/admin/blog'), 1000);
+		} catch (error: any) {
 			console.error('Failed to save post:', error);
-			alert('Failed to save post');
+			saveError = error.message || 'Failed to save post. Please try again.';
 		} finally {
 			saving = false;
 		}
@@ -305,10 +336,16 @@
 			<h1>Create New Post</h1>
 		</div>
 		<div class="header-actions">
+			{#if saveError}
+				<span class="save-error">{saveError}</span>
+			{/if}
+			{#if saveSuccess}
+				<span class="save-success">{saveSuccess}</span>
+			{/if}
 			<button class="btn-secondary" onclick={() => goto('/admin/blog')}> Cancel </button>
 			<button class="btn-secondary" onclick={() => savePost('draft')} disabled={saving}>
 				<IconDeviceFloppy size={18} />
-				Save Draft
+				{saving ? 'Saving...' : 'Save Draft'}
 			</button>
 			<button class="btn-primary" onclick={() => savePost('published')} disabled={saving}>
 				<IconEye size={18} />
@@ -370,15 +407,14 @@
 					</div>
 				</div>
 				<BlockEditor
-					initialBlocks={contentBlocks}
-					title={post.title}
-					slug={post.slug}
+					bind:blocks={contentBlocks}
+					postTitle={post.title}
+					postSlug={post.slug}
 					metaDescription={post.meta_description}
 					focusKeyword={post.meta_keywords?.[0] || ''}
-					onSave={handleEditorSave}
-					onChange={handleBlocksChange}
-					autoSave={true}
-					autoSaveInterval={30000}
+					onsave={handleEditorSave}
+					onchange={handleBlocksChange}
+					autosaveInterval={30000}
 				/>
 			</div>
 
@@ -611,7 +647,28 @@
 
 	.header-actions {
 		display: flex;
+		align-items: center;
 		gap: 0.75rem;
+	}
+
+	.save-error {
+		padding: 0.5rem 1rem;
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+		border-radius: 6px;
+		color: #dc2626;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.save-success {
+		padding: 0.5rem 1rem;
+		background: #f0fdf4;
+		border: 1px solid #bbf7d0;
+		border-radius: 6px;
+		color: #16a34a;
+		font-size: 0.875rem;
+		font-weight: 500;
 	}
 
 	.btn-primary,

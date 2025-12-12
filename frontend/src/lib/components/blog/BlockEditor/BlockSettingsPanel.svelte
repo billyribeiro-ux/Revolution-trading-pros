@@ -13,10 +13,15 @@
 
 	interface Props {
 		block: Block;
-		onUpdate: (settings: Partial<BlockSettings>) => void;
+		onupdate: (updates: Partial<Block>) => void;
 	}
 
-	let { block, onUpdate }: Props = $props();
+	let { block, onupdate }: Props = $props();
+
+	// Wrapper to update settings
+	function updateSettings(settings: Partial<BlockSettings>): void {
+		onupdate({ settings: { ...block.settings, ...settings } });
+	}
 
 	// Active settings tab
 	let activeTab = $state<'style' | 'advanced' | 'responsive'>('style');
@@ -114,13 +119,13 @@
 
 	// Update a single setting
 	function updateSetting(key: keyof BlockSettings, value: unknown): void {
-		onUpdate({ [key]: value });
+		updateSettings({ [key]: value });
 	}
 
 	// Update nested setting
 	function updateNestedSetting(parent: string, key: string, value: unknown): void {
 		const current = (block.settings as Record<string, unknown>)[parent] || {};
-		onUpdate({
+		updateSettings({
 			[parent]: {
 				...(typeof current === 'object' ? current : {}),
 				[key]: value
@@ -186,6 +191,27 @@
 
 	<div class="tab-content">
 		{#if activeTab === 'style'}
+			<!-- Heading Level Selector (for heading blocks) -->
+			{#if block.type === 'heading'}
+				<div class="section heading-level-section">
+					<div class="section-content" style="padding: 0.75rem 1rem;">
+						<span class="field-label">Heading Level</span>
+						<div class="heading-level-buttons">
+							{#each [1, 2, 3, 4, 5, 6] as lvl}
+								<button
+									type="button"
+									class="level-btn"
+									class:active={block.settings.level === lvl}
+									onclick={() => updateSetting('level', lvl)}
+								>
+									H{lvl}
+								</button>
+							{/each}
+						</div>
+					</div>
+				</div>
+			{/if}
+
 			<!-- Typography Section -->
 			<div class="section">
 				<button
@@ -1633,5 +1659,44 @@
 		font-size: 0.75rem;
 		line-height: 1.5;
 		resize: vertical;
+	}
+
+	/* Heading Level Selector */
+	.heading-level-section {
+		background: linear-gradient(135deg, #3b82f610 0%, #8b5cf610 100%);
+		border-color: #3b82f630;
+	}
+
+	.heading-level-buttons {
+		display: flex;
+		gap: 0.375rem;
+		margin-top: 0.5rem;
+	}
+
+	.heading-level-buttons .level-btn {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem;
+		background: white;
+		border: 1px solid var(--border-color, #e5e7eb);
+		border-radius: 0.375rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: #666;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.heading-level-buttons .level-btn:hover {
+		background: #f3f4f6;
+		color: #1a1a1a;
+	}
+
+	.heading-level-buttons .level-btn.active {
+		background: #3b82f6;
+		border-color: #3b82f6;
+		color: white;
 	}
 </style>

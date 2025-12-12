@@ -2,15 +2,41 @@
  * Posts API Endpoint
  *
  * Handles blog post management including listing, creating, updating, and deleting posts.
- * Returns mock data when backend is not connected.
+ * Connects to Laravel backend with fallback to mock data for development.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { BACKEND_URL } from '$env/static/private';
 
-// Mock data for posts
+// Try to fetch from backend
+async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
+	const backendUrl = BACKEND_URL || 'http://localhost:8000';
+
+	try {
+		const response = await fetch(`${backendUrl}/api${endpoint}`, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				...(options?.headers || {})
+			}
+		});
+
+		if (!response.ok) {
+			console.warn(`Backend returned ${response.status} for ${endpoint}`);
+			return null;
+		}
+		return await response.json();
+	} catch (err) {
+		console.warn(`Backend not available for ${endpoint}:`, err);
+		return null;
+	}
+}
+
+// Mock data for development fallback
 const mockPosts = [
 	{
 		id: 1,
@@ -18,6 +44,7 @@ const mockPosts = [
 		slug: 'getting-started-options-trading',
 		excerpt: 'Learn the fundamentals of options trading and how to get started with your first trade.',
 		content: '<p>Options trading can be a powerful tool in your investing arsenal...</p>',
+		blocks: [],
 		status: 'published',
 		category_id: 1,
 		category: { id: 1, name: 'Options Trading', slug: 'options-trading', color: '#f59e0b' },
@@ -40,6 +67,7 @@ const mockPosts = [
 		slug: 'risk-management-day-traders',
 		excerpt: 'Protect your capital with proven risk management techniques used by professional traders.',
 		content: '<p>Effective risk management is the cornerstone of successful trading...</p>',
+		blocks: [],
 		status: 'published',
 		category_id: 2,
 		category: { id: 2, name: 'Risk Management', slug: 'risk-management', color: '#ef4444' },
@@ -62,6 +90,7 @@ const mockPosts = [
 		slug: 'technical-analysis-chart-patterns',
 		excerpt: 'Master the most important chart patterns every trader needs to know.',
 		content: '<p>Technical analysis involves analyzing price charts to predict future movements...</p>',
+		blocks: [],
 		status: 'draft',
 		category_id: 3,
 		category: { id: 3, name: 'Technical Analysis', slug: 'technical-analysis', color: '#6366f1' },
@@ -77,55 +106,27 @@ const mockPosts = [
 		published_at: null,
 		created_at: '2025-12-05T16:00:00Z',
 		updated_at: '2025-12-05T16:00:00Z'
-	},
-	{
-		id: 4,
-		title: 'Weekly Market Analysis: December 2025',
-		slug: 'weekly-market-analysis-december-2025',
-		excerpt: 'Our comprehensive analysis of market trends and opportunities for the week ahead.',
-		content: '<p>This week we are looking at several key market developments...</p>',
-		status: 'scheduled',
-		category_id: 4,
-		category: { id: 4, name: 'Market Analysis', slug: 'market-analysis', color: '#3b82f6' },
-		tags: ['market', 'weekly', 'analysis'],
-		author: { id: 1, name: 'Admin', avatar: null },
-		featured_image: null,
-		view_count: 0,
-		like_count: 0,
-		comment_count: 0,
-		seo_title: 'Weekly Market Analysis December 2025 | Revolution Trading',
-		seo_description: 'Weekly market analysis and trading opportunities.',
-		is_featured: true,
-		published_at: '2025-12-15T08:00:00Z',
-		created_at: '2025-12-10T14:00:00Z',
-		updated_at: '2025-12-10T14:00:00Z'
-	},
-	{
-		id: 5,
-		title: 'Psychology of Trading: Managing Emotions',
-		slug: 'psychology-trading-emotions',
-		excerpt: 'How to keep your emotions in check and trade with discipline.',
-		content: '<p>Trading psychology is often the difference between success and failure...</p>',
-		status: 'published',
-		category_id: 5,
-		category: { id: 5, name: 'Psychology', slug: 'psychology', color: '#8b5cf6' },
-		tags: ['psychology', 'emotions', 'discipline'],
-		author: { id: 1, name: 'Admin', avatar: null },
-		featured_image: null,
-		view_count: 2150,
-		like_count: 87,
-		comment_count: 24,
-		seo_title: 'Trading Psychology: Managing Emotions | Revolution Trading',
-		seo_description: 'Master your trading psychology and manage emotions effectively.',
-		is_featured: true,
-		published_at: '2025-11-20T10:00:00Z',
-		created_at: '2025-11-18T09:00:00Z',
-		updated_at: '2025-11-20T10:00:00Z'
 	}
 ];
 
 // GET - List posts with filtering and pagination
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
+	const authHeader = request.headers.get('Authorization') || '';
+
+	// Build query string
+	const queryParams = url.searchParams.toString();
+	const endpoint = `/admin/posts${queryParams ? `?${queryParams}` : ''}`;
+
+	// Try backend first
+	const backendData = await fetchFromBackend(endpoint, {
+		headers: { Authorization: authHeader }
+	});
+
+	if (backendData?.data) {
+		return json(backendData);
+	}
+
+	// Fallback to mock data
 	const status = url.searchParams.get('status');
 	const category = url.searchParams.get('category');
 	const search = url.searchParams.get('search');
@@ -198,17 +199,33 @@ export const GET: RequestHandler = async ({ url }) => {
 			per_page: perPage,
 			total,
 			last_page: Math.ceil(total / perPage)
-		}
+		},
+		_mock: true,
+		_message: 'Using mock data. Connect backend for real data.'
 	});
 };
 
 // POST - Create new post
 export const POST: RequestHandler = async ({ request }) => {
+	const authHeader = request.headers.get('Authorization') || '';
+
 	try {
 		const body = await request.json();
 
+		// Try backend first
+		const backendData = await fetchFromBackend('/admin/posts', {
+			method: 'POST',
+			headers: { Authorization: authHeader },
+			body: JSON.stringify(body)
+		});
+
+		if (backendData?.data) {
+			return json(backendData);
+		}
+
+		// Fallback: create in mock
 		const newPost = {
-			id: mockPosts.length + 1,
+			id: Date.now(),
 			...body,
 			view_count: 0,
 			like_count: 0,
@@ -222,9 +239,92 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({
 			success: true,
 			data: newPost,
-			message: 'Post created successfully'
+			message: 'Post created successfully (mock)',
+			_mock: true
 		});
 	} catch (err) {
+		console.error('POST /api/admin/posts error:', err);
 		throw error(400, 'Invalid request body');
 	}
+};
+
+// PUT - Update post
+export const PUT: RequestHandler = async ({ request, url }) => {
+	const authHeader = request.headers.get('Authorization') || '';
+	const postId = url.searchParams.get('id');
+
+	if (!postId) {
+		throw error(400, 'Post ID required');
+	}
+
+	try {
+		const body = await request.json();
+
+		// Try backend first
+		const backendData = await fetchFromBackend(`/admin/posts/${postId}`, {
+			method: 'PUT',
+			headers: { Authorization: authHeader },
+			body: JSON.stringify(body)
+		});
+
+		if (backendData?.data) {
+			return json(backendData);
+		}
+
+		// Fallback: update in mock
+		const index = mockPosts.findIndex(p => p.id === parseInt(postId));
+		if (index === -1) {
+			throw error(404, 'Post not found');
+		}
+
+		mockPosts[index] = {
+			...mockPosts[index],
+			...body,
+			updated_at: new Date().toISOString()
+		};
+
+		return json({
+			success: true,
+			data: mockPosts[index],
+			message: 'Post updated successfully (mock)',
+			_mock: true
+		});
+	} catch (err) {
+		console.error('PUT /api/admin/posts error:', err);
+		throw error(400, 'Invalid request body');
+	}
+};
+
+// DELETE - Delete post
+export const DELETE: RequestHandler = async ({ url, request }) => {
+	const authHeader = request.headers.get('Authorization') || '';
+	const postId = url.searchParams.get('id');
+
+	if (!postId) {
+		throw error(400, 'Post ID required');
+	}
+
+	// Try backend first
+	const backendData = await fetchFromBackend(`/admin/posts/${postId}`, {
+		method: 'DELETE',
+		headers: { Authorization: authHeader }
+	});
+
+	if (backendData?.success !== undefined) {
+		return json(backendData);
+	}
+
+	// Fallback: delete from mock
+	const index = mockPosts.findIndex(p => p.id === parseInt(postId));
+	if (index === -1) {
+		throw error(404, 'Post not found');
+	}
+
+	mockPosts.splice(index, 1);
+
+	return json({
+		success: true,
+		message: 'Post deleted successfully (mock)',
+		_mock: true
+	});
 };

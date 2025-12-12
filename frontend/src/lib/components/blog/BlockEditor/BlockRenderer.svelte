@@ -151,19 +151,36 @@
 	<!-- Heading Block -->
 	{:else if block.type === 'heading'}
 		{@const level = block.settings.level || 2}
-		<svelte:element
-			this={`h${level}`}
-			bind:this={editableRef}
-			contenteditable={isEditing}
-			class="editable-content heading-{level}"
-			class:placeholder={!block.content.text}
-			oninput={handleTextInput}
-			onpaste={handlePaste}
-			data-placeholder={`Heading ${level}`}
-			id={block.settings.anchor || undefined}
-		>
-			{block.content.text || ''}
-		</svelte:element>
+		<div class="heading-block-wrapper">
+			{#if isEditing && isSelected}
+				<div class="heading-level-selector">
+					{#each [1, 2, 3, 4, 5, 6] as lvl}
+						<button
+							type="button"
+							class="level-btn"
+							class:active={level === lvl}
+							onclick={() => onupdate({ settings: { ...block.settings, level: lvl } })}
+							title="Heading {lvl}"
+						>
+							H{lvl}
+						</button>
+					{/each}
+				</div>
+			{/if}
+			<svelte:element
+				this={`h${level}`}
+				bind:this={editableRef}
+				contenteditable={isEditing}
+				class="editable-content heading-{level}"
+				class:placeholder={!block.content.text}
+				oninput={handleTextInput}
+				onpaste={handlePaste}
+				data-placeholder={`Heading ${level}`}
+				id={block.settings.anchor || undefined}
+			>
+				{block.content.text || ''}
+			</svelte:element>
+		</div>
 
 	<!-- Quote Block -->
 	{:else if block.type === 'quote'}
@@ -544,6 +561,48 @@
 	}
 
 	/* Headings */
+	.heading-block-wrapper {
+		position: relative;
+	}
+
+	.heading-level-selector {
+		display: flex;
+		gap: 0.25rem;
+		margin-bottom: 0.5rem;
+		padding: 0.375rem;
+		background: #f5f5f5;
+		border-radius: 8px;
+		width: fit-content;
+	}
+
+	.level-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 32px;
+		height: 28px;
+		padding: 0 0.5rem;
+		background: white;
+		border: 1px solid #e5e5e5;
+		border-radius: 4px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #666;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.level-btn:hover {
+		background: #e5e5e5;
+		color: #1a1a1a;
+	}
+
+	.level-btn.active {
+		background: #3b82f6;
+		border-color: #3b82f6;
+		color: white;
+	}
+
 	.heading-1 { font-size: 2.25rem; font-weight: 700; margin: 0; }
 	.heading-2 { font-size: 1.875rem; font-weight: 600; margin: 0; }
 	.heading-3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
