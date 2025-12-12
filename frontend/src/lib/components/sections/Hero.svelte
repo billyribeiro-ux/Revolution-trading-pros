@@ -1,41 +1,22 @@
 <script lang="ts">
 	/**
-	 * HeroSection - Netflix L11+ Principal Architect Grade
+	 * HeroSection - Netflix L11+ Enhanced Slider Hero
 	 * ══════════════════════════════════════════════════════════════════════════════
-	 * Cinematic Trading Hero with:
-	 * - Split layout (content left, chart right)
-	 * - Preserved lightweight-charts candlestick animation
-	 * - GSAP orchestrated entrance sequence
-	 * - Floating trading elements and depth layers
-	 * - Stats ticker strip
-	 * - Fully responsive with mobile optimization
-	 * ══════════════════════════════════════════════════════════════════════════════
-	 * Performance Features:
-	 * ✓ Zero setTimeout/requestIdleCallback delays
-	 * ✓ Synchronous chart initialization
-	 * ✓ GSAP Timeline (no individual delays)
-	 * ✓ Module-level pre-computation
-	 * ✓ CSS containment & content-visibility
-	 * ✓ will-change management
-	 * ✓ ResizeObserver (no window listener)
-	 * ✓ Intersection Observer for visibility
-	 * ✓ GPU-accelerated transforms only
+	 * ORIGINAL SLIDER STRUCTURE with cinematic enhancements:
+	 * - 4 rotating slides with unique GSAP animations per slide
+	 * - Enhanced chart background with volumetric glow
+	 * - Cinematic slide transitions with blur/scale effects
+	 * - Slide indicator dots with progress animation
+	 * - Ambient depth layers and grid background
+	 * - Premium button interactions
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
-	import HeroContent from '$lib/components/hero/HeroContent.svelte';
-	import HeroChartScene from '$lib/components/hero/HeroChartScene.svelte';
-	import HeroStatsStrip from '$lib/components/hero/HeroStatsStrip.svelte';
 
 	// ============================================================================
-	// MODULE-LEVEL PRE-COMPUTATION (Executed at import time - ZERO runtime cost)
+	// MODULE-LEVEL PRE-COMPUTATION
 	// ============================================================================
-
-	/**
-	 * Pre-generated candle data - computed once at module load
-	 * L8+ Performance: Zero runtime computation
-	 */
 	const CANDLE_DATA = generateCandleData();
 
 	function generateCandleData() {
@@ -77,54 +58,83 @@
 		return candles;
 	}
 
+	// Slide data - 4 rotating slides
+	const SLIDES = Object.freeze([
+		{
+			title: 'Live Trading Rooms',
+			subtitle: 'Institutional-Style Sessions',
+			description: 'Join structured sessions with clear levels, real-time execution, and disciplined risk management.',
+			primaryCTA: { text: 'Explore Rooms', href: '/live-trading-rooms/day-trading' },
+			secondaryCTA: { text: 'Create Free Account', href: '/signup' },
+			accentColor: 'rgba(99, 102, 241, 0.5)'
+		},
+		{
+			title: 'SPX Profit Pulse',
+			subtitle: 'Context-Rich Alerts',
+			description: 'Receive SPX alerts with entry context, invalidation, and sizing guidance (not lottery tickets).',
+			primaryCTA: { text: 'Get Alerts', href: '/alerts/spx-profit-pulse' },
+			secondaryCTA: { text: 'Learn More', href: '/alerts/explosive-swings' },
+			accentColor: 'rgba(250, 204, 21, 0.5)'
+		},
+		{
+			title: 'Trading Frameworks',
+			subtitle: 'Structured Education',
+			description: 'Master robust frameworks for execution, risk, and review workflows across market conditions.',
+			primaryCTA: { text: 'Browse Courses', href: '/courses' },
+			secondaryCTA: { text: 'View Mentorship', href: '/mentorship' },
+			accentColor: 'rgba(52, 211, 153, 0.5)'
+		},
+		{
+			title: 'Pro Tools & Indicators',
+			subtitle: 'Professional-Grade Edge',
+			description: 'Volume profiles, internals, momentum systems, and tooling built for repeatable institutional logic.',
+			primaryCTA: { text: 'View Indicators', href: '/indicators' },
+			secondaryCTA: { text: 'See All Tools', href: '/store' },
+			accentColor: 'rgba(139, 92, 246, 0.5)'
+		}
+	]);
+
 	// ============================================================================
-	// STATE - Svelte 5 Runes
+	// STATE
 	// ============================================================================
 	let chart: ReturnType<typeof import('lightweight-charts').createChart> | null = null;
 	let series: any = null;
 	let replayInterval: ReturnType<typeof setInterval> | null = null;
+	let slideInterval: ReturnType<typeof setInterval> | null = null;
+	let currentSlide = $state(0);
+	let previousSlide = $state(-1);
 	let isLooping = $state(false);
 	let gsapLib: any = null;
-	let masterTimeline: any = null;
+	let timeline: any = null;
+	let gsapLoaded = $state(false);
+	let isTransitioning = $state(false);
 
 	// DOM refs
 	let heroSection = $state<HTMLElement | null>(null);
 	let chartContainer = $state<HTMLElement | null>(null);
-	let chartSceneRef = $state<HTMLElement | null>(null);
-	let heroContentRef: HeroContent | null = null;
+	let slidesContainer = $state<HTMLElement | null>(null);
 	let resizeObserver: ResizeObserver | null = null;
 	let visibilityObserver: IntersectionObserver | null = null;
-
-	// State
 	let isVisible = $state(true);
 	let chartReady = $state(false);
 	let mounted = $state(false);
-	let entranceComplete = $state(false);
 	let isAnimating = $state(false);
-	let statsVisible = $state(false);
 
-	// Chart price state (for display)
-	let currentPrice = $state(475.50);
-	let priceChange = $state(0.42);
+	// Progress for slide indicator
+	let slideProgress = $state(0);
+	let progressInterval: ReturnType<typeof setInterval> | null = null;
 
 	// ============================================================================
-	// CHART INITIALIZATION - LAZY LOADED FOR PERFORMANCE
+	// CHART INITIALIZATION
 	// ============================================================================
-
 	async function initChart(): Promise<void> {
-		if (!browser || !chartContainer || chartReady) {
-			return;
-		}
+		if (!browser || !chartContainer || !heroSection || chartReady) return;
 
-		// Lazy load chart library - CRITICAL FOR PERFORMANCE
 		const { createChart, CandlestickSeries, CrosshairMode, ColorType } = await import('lightweight-charts');
 
-		// Get dimensions from scene container
-		const sceneRect = chartSceneRef?.getBoundingClientRect();
-		const width = sceneRect?.width || chartContainer.clientWidth || 600;
-		const height = sceneRect?.height || chartContainer.clientHeight || 400;
+		const width = heroSection.clientWidth || window.innerWidth;
+		const height = heroSection.clientHeight || window.innerHeight;
 
-		// Cleanup
 		if (chart) {
 			chart.remove();
 			chart = null;
@@ -134,7 +144,7 @@
 		chart = createChart(chartContainer, {
 			layout: {
 				background: { type: ColorType.Solid, color: 'transparent' },
-				textColor: 'rgba(255, 255, 255, 0.15)'
+				textColor: 'rgba(255, 255, 255, 0.08)'
 			},
 			grid: {
 				vertLines: { visible: false },
@@ -147,8 +157,8 @@
 			timeScale: {
 				visible: false,
 				rightOffset: 0,
-				barSpacing: 6,
-				minBarSpacing: 3,
+				barSpacing: 5,
+				minBarSpacing: 2,
 				fixLeftEdge: false,
 				fixRightEdge: true,
 				lockVisibleTimeRangeOnResize: true,
@@ -157,23 +167,19 @@
 				borderColor: 'transparent'
 			},
 			crosshair: { mode: CrosshairMode.Hidden },
-			rightPriceScale: {
-				visible: false,
-				borderColor: 'transparent'
-			}
+			rightPriceScale: { visible: false, borderColor: 'transparent' }
 		});
 
 		series = chart.addSeries(CandlestickSeries, {
-			upColor: 'rgba(52, 211, 153, 0.7)',
-			downColor: 'rgba(239, 68, 68, 0.7)',
+			upColor: 'rgba(52, 211, 153, 0.5)',
+			downColor: 'rgba(239, 68, 68, 0.5)',
 			borderVisible: false,
 			wickVisible: true,
-			wickUpColor: 'rgba(52, 211, 153, 0.5)',
-			wickDownColor: 'rgba(239, 68, 68, 0.5)',
+			wickUpColor: 'rgba(52, 211, 153, 0.35)',
+			wickDownColor: 'rgba(239, 68, 68, 0.35)',
 			priceLineVisible: false
 		});
 
-		// Initial view - 10 candles
 		const initialCount = 10;
 		series.setData(CANDLE_DATA.slice(0, initialCount));
 
@@ -181,7 +187,6 @@
 			chart.timeScale().setVisibleLogicalRange({ from: 0, to: initialCount });
 		}
 
-		// Mark chart as ready and start replay
 		chartReady = true;
 		startReplay(initialCount);
 	}
@@ -189,9 +194,8 @@
 	// ============================================================================
 	// REPLAY ANIMATION
 	// ============================================================================
-
 	function startReplay(startIndex: number = 10): void {
-		if (!browser || !series || !chart) return;
+		if (!browser || !series || !chart || !heroSection) return;
 
 		if (replayInterval) {
 			clearInterval(replayInterval);
@@ -200,9 +204,8 @@
 
 		let currentIndex = Math.max(startIndex, 1);
 		const totalCandles = CANDLE_DATA.length;
-		const sceneRect = chartSceneRef?.getBoundingClientRect();
-		const chartWidth = sceneRect?.width || 600;
-		const barsVisible = Math.floor(chartWidth / 6);
+		const chartWidth = heroSection?.clientWidth || window.innerWidth;
+		const barsVisible = Math.floor(chartWidth / 5);
 
 		replayInterval = setInterval(() => {
 			if (!series || isLooping || !isVisible) return;
@@ -215,17 +218,6 @@
 			}
 
 			series.setData(CANDLE_DATA.slice(0, currentIndex));
-
-			// Update current price display
-			const latestCandle = CANDLE_DATA[currentIndex - 1];
-			if (latestCandle) {
-				currentPrice = latestCandle.close;
-				const firstCandle = CANDLE_DATA[0];
-				if (firstCandle) {
-					const change = ((latestCandle.close - firstCandle.open) / firstCandle.open) * 100;
-					priceChange = change;
-				}
-			}
 
 			if (chart?.timeScale()) {
 				chart.timeScale().setVisibleLogicalRange({
@@ -242,7 +234,6 @@
 		isLooping = true;
 		isAnimating = true;
 
-		// Use timeline for loop animation - no delays
 		const loopTL = gsapLib.timeline({
 			onComplete: () => {
 				isLooping = false;
@@ -253,88 +244,212 @@
 		});
 
 		loopTL
-			.to(chartContainer, { opacity: 0, duration: 0.5, ease: 'power2.in' })
+			.to(chartContainer, { opacity: 0, scale: 1.02, duration: 0.6, ease: 'power2.in' })
 			.call(() => {
 				series.setData(CANDLE_DATA.slice(0, 10));
-				currentPrice = 475.50;
-				priceChange = 0.42;
 				if (chart?.timeScale()) {
 					chart.timeScale().setVisibleLogicalRange({ from: 0, to: 10 });
 				}
 			})
-			.to(chartContainer, { opacity: 1, duration: 0.5, ease: 'power2.out' });
+			.to(chartContainer, { opacity: 0.4, scale: 1, duration: 0.6, ease: 'power2.out' });
 	}
 
 	// ============================================================================
-	// MASTER ENTRANCE ANIMATION - GSAP ORCHESTRATION
+	// SLIDE ANIMATIONS - ENHANCED CINEMATIC TRANSITIONS
 	// ============================================================================
-
-	async function orchestrateEntrance(): Promise<void> {
-		if (!browser || !heroSection || entranceComplete) return;
-
-		try {
-			const gsapModule = await import('gsap');
-			gsapLib = gsapModule?.gsap || gsapModule?.default;
-
-			if (!gsapLib) {
-				entranceComplete = true;
-				statsVisible = true;
+	function animateSlideOut(slideIndex: number): Promise<void> {
+		return new Promise((resolve) => {
+			if (!gsapLib || slideIndex < 0) {
+				resolve();
 				return;
 			}
 
-			isAnimating = true;
-
-			// Create master timeline
-			masterTimeline = gsapLib.timeline({
-				defaults: { ease: 'power3.out' },
-				onComplete: () => {
-					entranceComplete = true;
-					isAnimating = false;
-				}
-			});
-
-			// Hero section fade in
-			masterTimeline.fromTo(heroSection,
-				{ opacity: 0 },
-				{ opacity: 1, duration: 0.5 },
-				0
-			);
-
-			// Trigger HeroContent animation
-			await tick();
-			if (heroContentRef?.animateEntrance) {
-				heroContentRef.animateEntrance();
+			const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
+			if (!slide) {
+				resolve();
+				return;
 			}
 
-			// Stats strip appears after content
-			masterTimeline.call(() => {
-				statsVisible = true;
-			}, [], 1.8);
+			const elements = slide.querySelectorAll('h1, h2, p, .slide__actions');
 
-		} catch (e) {
-			console.warn('GSAP orchestration failed:', e);
-			entranceComplete = true;
-			statsVisible = true;
+			gsapLib.to(elements, {
+				opacity: 0,
+				y: -30,
+				scale: 0.95,
+				filter: 'blur(8px)',
+				duration: 0.4,
+				stagger: 0.05,
+				ease: 'power2.in',
+				onComplete: resolve
+			});
+		});
+	}
+
+	function animateSlideIn(slideIndex: number): void {
+		if (!browser || !gsapLib) return;
+
+		const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
+		if (!slide) return;
+
+		const h1 = slide.querySelector('h1');
+		const h2 = slide.querySelector('h2');
+		const p = slide.querySelector('p');
+		const actions = slide.querySelector('.slide__actions');
+		const buttons = slide.querySelectorAll('a');
+
+		if (timeline) timeline.kill();
+
+		isAnimating = true;
+
+		timeline = gsapLib.timeline({
+			onComplete: () => { isAnimating = false; }
+		});
+
+		// Reset elements first
+		gsapLib.set([h1, h2, p, actions], {
+			opacity: 0,
+			y: 0,
+			x: 0,
+			scale: 1,
+			rotation: 0,
+			filter: 'blur(0px)'
+		});
+
+		// Each slide has unique cinematic entrance
+		switch (slideIndex) {
+			case 0: // Scale & Glow entrance
+				timeline
+					.fromTo(h1,
+						{ opacity: 0, scale: 0.8, filter: 'blur(10px)' },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0)
+					.fromTo(h2,
+						{ opacity: 0, y: 30, filter: 'blur(5px)' },
+						{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, 0.2)
+					.fromTo(p,
+						{ opacity: 0, y: 20 },
+						{ opacity: 1, y: 0, duration: 0.6 }, 0.4)
+					.fromTo(buttons,
+						{ opacity: 0, y: 30, scale: 0.9 },
+						{ opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.1, ease: 'back.out(1.2)' }, 0.55);
+				break;
+
+			case 1: // Elastic Drop entrance
+				timeline
+					.fromTo(h1,
+						{ opacity: 0, y: -80, scale: 1.1 },
+						{ opacity: 1, y: 0, scale: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }, 0)
+					.fromTo(h2,
+						{ opacity: 0, y: -60, scale: 1.05 },
+						{ opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'elastic.out(1, 0.6)' }, 0.1)
+					.fromTo(p,
+						{ opacity: 0, y: -40 },
+						{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.25)
+					.fromTo(buttons,
+						{ opacity: 0, y: 40 },
+						{ opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }, 0.45);
+				break;
+
+			case 2: // Cinematic Zoom entrance
+				timeline
+					.fromTo(h1,
+						{ opacity: 0, scale: 2, filter: 'blur(20px)' },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.1, ease: 'power4.out' }, 0)
+					.fromTo(h2,
+						{ opacity: 0, scale: 1.5, filter: 'blur(10px)' },
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0.15)
+					.fromTo(p,
+						{ opacity: 0, x: -50 },
+						{ opacity: 1, x: 0, duration: 0.7, ease: 'power2.out' }, 0.35)
+					.fromTo(buttons,
+						{ opacity: 0, scale: 0.5 },
+						{ opacity: 1, scale: 1, duration: 0.7, stagger: 0.12, ease: 'back.out(2)' }, 0.5);
+				break;
+
+			case 3: // Slide & Reveal entrance
+				timeline
+					.fromTo(h1,
+						{ opacity: 0, x: -100, skewX: -10 },
+						{ opacity: 1, x: 0, skewX: 0, duration: 0.9, ease: 'power3.out' }, 0)
+					.fromTo(h2,
+						{ opacity: 0, x: 100, skewX: 10 },
+						{ opacity: 1, x: 0, skewX: 0, duration: 0.9, ease: 'power3.out' }, 0.1)
+					.fromTo(p,
+						{ opacity: 0, y: 30 },
+						{ opacity: 1, y: 0, duration: 0.6 }, 0.3)
+					.fromTo(buttons,
+						{ opacity: 0, x: -30 },
+						{ opacity: 1, x: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }, 0.45);
+				break;
+		}
+	}
+
+	async function showSlide(index: number): Promise<void> {
+		if (isTransitioning) return;
+		isTransitioning = true;
+
+		// Animate out previous slide
+		if (previousSlide >= 0 && gsapLoaded) {
+			await animateSlideOut(previousSlide);
+		}
+
+		previousSlide = currentSlide;
+		currentSlide = index;
+
+		await tick();
+
+		if (gsapLoaded) {
+			animateSlideIn(index);
+		}
+
+		// Reset progress
+		slideProgress = 0;
+
+		isTransitioning = false;
+	}
+
+	function nextSlide(): void {
+		const next = (currentSlide + 1) % SLIDES.length;
+		showSlide(next);
+	}
+
+	function goToSlide(index: number): void {
+		if (index !== currentSlide) {
+			// Reset slide interval when manually clicking
+			if (slideInterval) {
+				clearInterval(slideInterval);
+			}
+			showSlide(index);
+			// Restart interval
+			slideInterval = setInterval(nextSlide, 7000);
 		}
 	}
 
 	// ============================================================================
-	// RESIZE HANDLING
+	// PROGRESS ANIMATION
 	// ============================================================================
+	function startProgressTimer(): void {
+		if (progressInterval) clearInterval(progressInterval);
+		slideProgress = 0;
 
-	function handleResize(): void {
-		if (!browser || !chart || !chartSceneRef) return;
-
-		const sceneRect = chartSceneRef.getBoundingClientRect();
-		chart.applyOptions({
-			width: sceneRect.width,
-			height: sceneRect.height
-		});
+		progressInterval = setInterval(() => {
+			slideProgress += (100 / 70); // 7 seconds = 7000ms, update every 100ms
+			if (slideProgress >= 100) {
+				slideProgress = 0;
+			}
+		}, 100);
 	}
 
 	// ============================================================================
-	// VISIBILITY OPTIMIZATION - Pause when off-screen
+	// RESIZE & VISIBILITY
 	// ============================================================================
+	function handleResize(): void {
+		if (!browser || !chart || !heroSection) return;
+
+		chart.applyOptions({
+			width: heroSection.clientWidth,
+			height: heroSection.clientHeight
+		});
+	}
 
 	function setupVisibilityObserver(): void {
 		if (!browser || !heroSection) return;
@@ -352,43 +467,54 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-
 	onMount(async () => {
 		if (!browser) return;
 
 		mounted = true;
+		currentSlide = 0;
+		previousSlide = -1;
 
-		// Setup resize observer on chart scene
-		if (chartSceneRef && typeof ResizeObserver !== 'undefined') {
+		if (heroSection && typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
-			resizeObserver.observe(chartSceneRef);
+			resizeObserver.observe(heroSection);
 		}
 
-		// Setup visibility observer
 		if (heroSection) {
 			setupVisibilityObserver();
 		}
 
-		// Initialize chart after a tick to ensure DOM is ready
-		await tick();
-		if (chartContainer) {
+		if (chartContainer && heroSection) {
 			initChart();
 		}
 
-		// Orchestrate entrance animation
-		orchestrateEntrance();
+		try {
+			const gsapModule = await import('gsap');
+			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
+			if (gsapLib) {
+				gsapLoaded = true;
+				animateSlideIn(currentSlide);
+			}
+		} catch (e) {
+			console.warn('GSAP failed to load:', e);
+		}
+
+		// Start slide rotation
+		slideInterval = setInterval(nextSlide, 7000);
+		startProgressTimer();
 	});
 
 	onDestroy(() => {
+		if (slideInterval) clearInterval(slideInterval);
 		if (replayInterval) clearInterval(replayInterval);
-		if (masterTimeline) masterTimeline.kill();
+		if (progressInterval) clearInterval(progressInterval);
+		if (timeline) timeline.kill();
 		if (chart) chart.remove();
 		if (resizeObserver) resizeObserver.disconnect();
 		if (visibilityObserver) visibilityObserver.disconnect();
 
 		chart = null;
 		series = null;
-		masterTimeline = null;
+		timeline = null;
 		mounted = false;
 	});
 </script>
@@ -399,41 +525,66 @@
 	class="hero-section"
 	class:hero-animating={isAnimating}
 >
-	<!-- Background Gradient Layers -->
-	<div class="hero-bg-gradient" aria-hidden="true"></div>
-	<div class="hero-bg-grid" aria-hidden="true"></div>
-
-	<!-- Main Content Container -->
-	<div class="hero-container">
-		<!-- Split Layout -->
-		<div class="hero-split">
-			<!-- Left: Content Zone -->
-			<div class="hero-content-zone">
-				<HeroContent bind:this={heroContentRef} />
-			</div>
-
-			<!-- Right: Chart Zone -->
-			<div class="hero-chart-zone" bind:this={chartSceneRef}>
-				<HeroChartScene
-					bind:chartContainer={chartContainer}
-					{chartReady}
-					{isVisible}
-					{currentPrice}
-					{priceChange}
-				/>
-			</div>
-		</div>
-
-		<!-- Bottom: Stats Strip -->
-		<div class="hero-stats-zone">
-			<HeroStatsStrip isVisible={statsVisible} />
-		</div>
+	<!-- Ambient Background Layers -->
+	<div class="hero-ambient" aria-hidden="true">
+		<div class="ambient-gradient"></div>
+		<div class="ambient-grid"></div>
+		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide].accentColor}"></div>
 	</div>
 
-	<!-- Scroll Indicator -->
-	<div class="scroll-indicator" aria-hidden="true">
-		<span class="scroll-indicator__line"></span>
-		<span class="scroll-indicator__text">Scroll</span>
+	<!-- Chart Background -->
+	<div
+		id="chart-bg"
+		bind:this={chartContainer}
+		class="hero-chart"
+		aria-hidden="true"
+	></div>
+
+	<!-- Vignette Overlay -->
+	<div class="hero-vignette" aria-hidden="true"></div>
+
+	<!-- Content Overlay -->
+	<div class="hero-content">
+		<div class="hero-slides" bind:this={slidesContainer}>
+			{#each SLIDES as slide, i (i)}
+				<article
+					data-slide={i}
+					class="slide"
+					class:slide--hidden={i !== currentSlide}
+					class:slide--active={i === currentSlide}
+					aria-hidden={i !== currentSlide}
+				>
+					<h1 class="slide__title">{slide.title}</h1>
+					<h2 class="slide__subtitle">{slide.subtitle}</h2>
+					<p class="slide__description">{slide.description}</p>
+					<div class="slide__actions">
+						<a href={slide.primaryCTA.href} class="cta cta--primary">
+							<span class="cta__text">{slide.primaryCTA.text}</span>
+							<span class="cta__glow"></span>
+						</a>
+						<a href={slide.secondaryCTA.href} class="cta cta--secondary">
+							<span class="cta__text">{slide.secondaryCTA.text}</span>
+						</a>
+					</div>
+				</article>
+			{/each}
+		</div>
+
+		<!-- Slide Indicators -->
+		<nav class="slide-indicators" aria-label="Slide navigation">
+			{#each SLIDES as _, i (i)}
+				<button
+					type="button"
+					class="slide-dot"
+					class:slide-dot--active={i === currentSlide}
+					aria-label="Go to slide {i + 1}"
+					aria-current={i === currentSlide ? 'true' : 'false'}
+					onclick={() => goToSlide(i)}
+				>
+					<span class="slide-dot__fill" style="--progress: {i === currentSlide ? slideProgress : 0}%"></span>
+				</button>
+			{/each}
+		</nav>
 	</div>
 </section>
 
@@ -442,12 +593,13 @@
 	 * CSS Custom Properties
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	:root {
-		--hero-bg: #0a0f1a;
+		--hero-bg: #050a12;
 		--hero-nav-height: 80px;
+		--hero-chart-opacity: 0.4;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Hero Section - Optimized Container
+	 * Hero Section Container
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.hero-section {
 		position: relative;
@@ -456,274 +608,363 @@
 		padding-block-start: var(--hero-nav-height);
 		background: var(--hero-bg);
 		display: flex;
-		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		overflow: hidden;
-
-		/* Performance */
 		contain: layout style paint;
 		content-visibility: auto;
 		contain-intrinsic-size: 100vw 100vh;
 	}
 
-	/* will-change only during animations */
-	.hero-animating .hero-content-zone,
-	.hero-animating .hero-chart-zone {
-		will-change: transform, opacity;
+	.hero-animating .hero-chart,
+	.hero-animating .slide {
+		will-change: transform, opacity, filter;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Background Layers
+	 * Ambient Background Layers
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-bg-gradient {
+	.hero-ambient {
 		position: absolute;
 		inset: 0;
 		z-index: 0;
-		background:
-			radial-gradient(ellipse 80% 50% at 80% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-			radial-gradient(ellipse 60% 40% at 20% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-			radial-gradient(ellipse 100% 100% at 50% 100%, rgba(15, 23, 42, 0.9) 0%, transparent 40%);
 		pointer-events: none;
 	}
 
-	.hero-bg-grid {
+	.ambient-gradient {
 		position: absolute;
 		inset: 0;
-		z-index: 0;
+		background:
+			radial-gradient(ellipse 120% 80% at 50% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+			radial-gradient(ellipse 80% 50% at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+			radial-gradient(ellipse 60% 40% at 20% 60%, rgba(52, 211, 153, 0.06) 0%, transparent 50%);
+	}
+
+	.ambient-grid {
+		position: absolute;
+		inset: 0;
 		background-image:
 			linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
 			linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-		background-size: 60px 60px;
-		mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, black 30%, transparent 70%);
-		-webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, black 30%, transparent 70%);
+		background-size: 80px 80px;
+		mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 70%);
+		-webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 70%);
+	}
+
+	.ambient-glow {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 100%;
+		height: 100%;
+		transform: translate(-50%, -50%);
+		background: radial-gradient(ellipse 60% 40% at 50% 50%, var(--accent-color, rgba(99, 102, 241, 0.15)) 0%, transparent 60%);
+		transition: background 1s ease;
+		mix-blend-mode: screen;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Chart Background
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.hero-chart {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		opacity: var(--hero-chart-opacity);
+		mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 10%,
+			black 90%,
+			transparent 100%
+		);
+		-webkit-mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 10%,
+			black 90%,
+			transparent 100%
+		);
+		contain: strict;
+		transform: translateZ(0);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Vignette Overlay
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.hero-vignette {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		background: radial-gradient(ellipse at center, transparent 0%, var(--hero-bg) 85%);
 		pointer-events: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Main Container
+	 * Content Layer
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-container {
+	.hero-content {
 		position: relative;
 		z-index: 10;
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
 		width: 100%;
-		max-width: 90rem;
+		max-width: 80rem;
 		margin-inline: auto;
 		padding-inline: 1.5rem;
-		padding-block: 2rem;
-		gap: 2rem;
+		padding-block: 4rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	@media (min-width: 640px) {
+		.hero-content {
+			padding-inline: 2rem;
+		}
 	}
 
 	@media (min-width: 1024px) {
-		.hero-container {
+		.hero-content {
 			padding-inline: 3rem;
-			padding-block: 3rem;
-			gap: 2.5rem;
+			padding-block: 5rem;
 		}
 	}
 
-	@media (min-width: 1440px) {
-		.hero-container {
-			padding-inline: 4rem;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Split Layout
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-split {
-		display: flex;
-		flex-direction: column;
-		gap: 2.5rem;
-		align-items: center;
-		flex: 1;
-	}
-
-	@media (min-width: 1024px) {
-		.hero-split {
-			flex-direction: row;
-			align-items: center;
-			justify-content: space-between;
-			gap: 4rem;
-		}
-	}
-
-	@media (min-width: 1280px) {
-		.hero-split {
-			gap: 5rem;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Content Zone (Left)
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-content-zone {
-		flex: 1;
-		max-width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	@media (min-width: 1024px) {
-		.hero-content-zone {
-			flex: 0 0 55%;
-			max-width: 55%;
-			justify-content: flex-start;
-		}
-	}
-
-	@media (min-width: 1280px) {
-		.hero-content-zone {
-			flex: 0 0 52%;
-			max-width: 52%;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Chart Zone (Right)
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-chart-zone {
-		flex: 1;
+	.hero-slides {
+		position: relative;
+		min-height: 22rem;
 		width: 100%;
-		max-width: 100%;
-		min-height: 280px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	@media (min-width: 768px) {
-		.hero-chart-zone {
-			min-height: 350px;
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.hero-chart-zone {
-			flex: 0 0 42%;
-			max-width: 42%;
-			min-height: 420px;
-		}
-	}
-
-	@media (min-width: 1280px) {
-		.hero-chart-zone {
-			flex: 0 0 45%;
-			max-width: 45%;
-			min-height: 480px;
-		}
-	}
-
-	@media (min-width: 1536px) {
-		.hero-chart-zone {
-			min-height: 520px;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Stats Zone (Bottom)
+	 * Slides
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.hero-stats-zone {
-		width: 100%;
-		max-width: 72rem;
+	.slide {
+		text-align: center;
+		max-width: 56rem;
 		margin-inline: auto;
+		opacity: 1;
+		transform: translateZ(0);
+	}
+
+	.slide--hidden {
+		display: none !important;
+		pointer-events: none;
+	}
+
+	.slide--active {
+		display: block !important;
+		pointer-events: auto;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Scroll Indicator
+	 * Typography
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	.scroll-indicator {
-		position: absolute;
-		bottom: 2rem;
-		left: 50%;
-		transform: translateX(-50%);
+	.slide__title {
+		font-family: var(--font-heading, system-ui);
+		font-size: clamp(2.5rem, 8vw, 5rem);
+		font-weight: 800;
+		line-height: 1.05;
+		color: white;
+		margin-block-end: 0.75rem;
+		letter-spacing: -0.02em;
+		text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+		transform: translateZ(0);
+	}
+
+	.slide__subtitle {
+		font-family: var(--font-heading, system-ui);
+		font-size: clamp(1.25rem, 4vw, 2rem);
+		font-weight: 600;
+		background: linear-gradient(135deg, #facc15 0%, #f59e0b 50%, #fbbf24 100%);
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		margin-block-end: 1.5rem;
+		transform: translateZ(0);
+	}
+
+	.slide__description {
+		font-size: clamp(1rem, 2.5vw, 1.25rem);
+		line-height: 1.7;
+		color: rgba(255, 255, 255, 0.8);
+		max-width: 42rem;
+		margin-inline: auto;
+		margin-block-end: 2.5rem;
+		transform: translateZ(0);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * CTA Buttons
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.slide__actions {
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
+		gap: 1rem;
+		justify-content: center;
+	}
+
+	.cta {
+		position: relative;
+		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		opacity: 0.5;
+		justify-content: center;
+		padding: 1rem 2.5rem;
+		font-family: var(--font-heading, system-ui);
+		font-size: 1rem;
+		font-weight: 600;
+		border-radius: 9999px;
+		text-decoration: none;
+		overflow: hidden;
+		cursor: pointer;
+		transform: translateY(0) translateZ(0);
+		transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+	}
+
+	.cta__text {
+		position: relative;
+		z-index: 2;
+	}
+
+	.cta--primary {
+		background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+		color: #1f2937;
+		box-shadow:
+			0 4px 20px rgba(250, 204, 21, 0.3),
+			0 0 0 1px rgba(250, 204, 21, 0.1);
+	}
+
+	.cta--primary .cta__glow {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, #fde047 0%, #facc15 100%);
+		opacity: 0;
 		transition: opacity 0.3s ease;
 	}
 
-	.scroll-indicator:hover {
-		opacity: 0.8;
+	.cta--primary:hover {
+		transform: translateY(-3px) translateZ(0);
+		box-shadow:
+			0 8px 30px rgba(250, 204, 21, 0.5),
+			0 0 0 1px rgba(250, 204, 21, 0.2);
 	}
 
-	.scroll-indicator__line {
-		width: 1px;
-		height: 2.5rem;
-		background: linear-gradient(to bottom, rgba(99, 102, 241, 0.6), transparent);
-		animation: scrollPulse 2s ease-in-out infinite;
+	.cta--primary:hover .cta__glow {
+		opacity: 1;
 	}
 
-	@keyframes scrollPulse {
-		0%, 100% {
-			opacity: 0.5;
-			height: 2.5rem;
-		}
-		50% {
-			opacity: 1;
-			height: 3rem;
-		}
+	.cta--primary:active {
+		transform: translateY(-1px) scale(0.98) translateZ(0);
 	}
 
-	.scroll-indicator__text {
-		font-family: var(--font-heading, system-ui);
-		font-size: 0.65rem;
-		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.5);
+	.cta--secondary {
+		background: rgba(255, 255, 255, 0.05);
+		color: white;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
 	}
 
-	/* Hide scroll indicator on short screens */
-	@media (max-height: 700px) {
-		.scroll-indicator {
-			display: none;
-		}
+	.cta--secondary:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.35);
+		transform: translateY(-3px) translateZ(0);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+	}
+
+	.cta:focus-visible {
+		outline: 2px solid #facc15;
+		outline-offset: 3px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Mobile Optimizations
+	 * Slide Indicators
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	.slide-indicators {
+		display: flex;
+		gap: 0.75rem;
+		margin-top: 3rem;
+	}
+
+	.slide-dot {
+		position: relative;
+		width: 40px;
+		height: 4px;
+		background: rgba(255, 255, 255, 0.2);
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		overflow: hidden;
+		transition: background 0.3s ease, transform 0.2s ease;
+	}
+
+	.slide-dot:hover {
+		background: rgba(255, 255, 255, 0.3);
+		transform: scaleY(1.5);
+	}
+
+	.slide-dot--active {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.slide-dot__fill {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: var(--progress, 0%);
+		background: linear-gradient(90deg, #facc15, #f59e0b);
+		border-radius: 4px;
+		transition: width 0.1s linear;
+	}
+
+	.slide-dot:focus-visible {
+		outline: 2px solid #facc15;
+		outline-offset: 2px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	 * Responsive
+	 * ═══════════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 768px) {
+		.cta {
+			padding: 0.875rem 2rem;
+			font-size: 0.9rem;
+		}
+
+		.hero-slides {
+			min-height: 20rem;
+		}
+	}
+
 	@media (max-width: 640px) {
 		.hero-section {
 			padding-block-start: 60px;
 		}
 
-		.hero-container {
-			padding-inline: 1rem;
-			padding-block: 1.5rem;
-			gap: 1.5rem;
+		.hero-content {
+			padding-block: 3rem;
 		}
 
-		.hero-split {
-			gap: 2rem;
+		.slide__actions {
+			flex-direction: column;
+			align-items: center;
 		}
 
-		.hero-chart-zone {
-			min-height: 240px;
-			order: -1; /* Chart first on mobile for visual impact */
+		.cta {
+			width: 100%;
+			max-width: 280px;
 		}
 
-		.scroll-indicator {
-			bottom: 1rem;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * Ultra-wide Optimizations
-	 * ═══════════════════════════════════════════════════════════════════════════════ */
-	@media (min-width: 2000px) {
-		.hero-container {
-			max-width: 100rem;
+		.hero-slides {
+			min-height: 24rem;
 		}
 
-		.hero-chart-zone {
-			min-height: 600px;
+		.slide-indicators {
+			margin-top: 2rem;
+		}
+
+		.slide-dot {
+			width: 32px;
 		}
 	}
 
@@ -731,12 +972,15 @@
 	 * Reduced Motion
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	@media (prefers-reduced-motion: reduce) {
-		.scroll-indicator__line {
-			animation: none;
+		.slide,
+		.cta,
+		.hero-chart,
+		.ambient-glow,
+		.slide-dot {
+			transition: none;
 		}
 
-		.hero-bg-gradient,
-		.hero-bg-grid {
+		.slide-dot__fill {
 			transition: none;
 		}
 	}
