@@ -8,21 +8,24 @@
 	 * - Floating price tickers
 	 * - Animated grid floor
 	 * - Subtle camera movement
+	 * - Testimonial carousel
 	 * - Performance optimized (low poly, lazy loaded)
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import gsap from 'gsap';
+	import TestimonialCarousel from './TestimonialCarousel.svelte';
 
 	// Props
 	interface Props {
 		showTickers?: boolean;
+		showTestimonials?: boolean;
 		animated?: boolean;
 	}
 
-	let { showTickers = true, animated = true }: Props = $props();
+	let { showTickers = true, showTestimonials = true, animated = true }: Props = $props();
 
 	// Refs
 	let containerRef: HTMLElement;
@@ -354,6 +357,13 @@
 				<span class="trust-label">Satisfaction</span>
 			</div>
 		</div>
+
+		<!-- Testimonial Carousel -->
+		{#if showTestimonials}
+			<div class="testimonial-section">
+				<TestimonialCarousel />
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -539,6 +549,11 @@
 		width: 1px;
 		height: 40px;
 		background: var(--auth-card-border, rgba(99, 102, 241, 0.15));
+	}
+
+	/* Testimonial Section */
+	.testimonial-section {
+		margin-top: 2rem;
 	}
 
 	/* Light Theme Adjustments */

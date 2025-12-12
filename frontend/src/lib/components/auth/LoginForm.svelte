@@ -5,7 +5,10 @@
 	 *
 	 * Features:
 	 * - Email & password fields with trading-themed icons
-	 * - Remember me checkbox
+	 * - Remember me checkbox with email persistence
+	 * - Typed.js dynamic headline
+	 * - Lottie success animation
+	 * - Google/Apple social login buttons
 	 * - Inline validation (blur + submit)
 	 * - Clear error messages
 	 * - Visual states: normal, focused, error, disabled, loading, success
@@ -13,7 +16,7 @@
 	 * - Full keyboard accessibility
 	 * - Light/dark theme support
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0
 	 */
 	import { goto } from '$app/navigation';
 	import { login } from '$lib/api/auth';
@@ -34,6 +37,14 @@
 		IconLoader2
 	} from '@tabler/icons-svelte';
 
+	// Import new components
+	import TypedHeadline from './TypedHeadline.svelte';
+	import LottieSuccess from './LottieSuccess.svelte';
+	import SocialLoginButtons from './SocialLoginButtons.svelte';
+
+	// --- Constants ---
+	const REMEMBERED_EMAIL_KEY = 'rtp_remembered_email';
+
 	// --- State ---
 	let email = $state('');
 	let password = $state('');
@@ -43,6 +54,7 @@
 	let generalError = $state('');
 	let isLoading = $state(false);
 	let isSuccess = $state(false);
+	let showLottie = $state(false);
 	let touched = $state<Record<string, boolean>>({ email: false, password: false });
 
 	// --- Refs ---
@@ -81,6 +93,33 @@
 	function handleBlur(field: 'email' | 'password') {
 		touched = { ...touched, [field]: true };
 		validateField(field);
+	}
+
+	// --- Email Persistence ---
+	function loadRememberedEmail() {
+		if (!browser) return;
+		try {
+			const savedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY);
+			if (savedEmail) {
+				email = savedEmail;
+				rememberMe = true;
+			}
+		} catch {
+			// localStorage not available
+		}
+	}
+
+	function saveRememberedEmail() {
+		if (!browser) return;
+		try {
+			if (rememberMe && email) {
+				localStorage.setItem(REMEMBERED_EMAIL_KEY, email);
+			} else {
+				localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+			}
+		} catch {
+			// localStorage not available
+		}
 	}
 
 	// --- Security ---
@@ -142,6 +181,9 @@
 	onMount(() => {
 		if (!browser) return;
 
+		// Load remembered email
+		loadRememberedEmail();
+
 		// Entrance animation
 		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
@@ -153,13 +195,23 @@
 		})
 			.from('.form-header', { opacity: 0, y: -20, duration: 0.5 }, '-=0.4')
 			.from('.form-field', { opacity: 0, x: -20, duration: 0.4, stagger: 0.1 }, '-=0.3')
+			.from('.social-login', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
 			.from('.form-actions', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
 
-		// Focus email input after animation
+		// Focus email input after animation (only if not pre-filled)
 		setTimeout(() => {
-			emailInputRef?.focus();
+			if (!email) {
+				emailInputRef?.focus();
+			}
 		}, 800);
 	});
+
+	// --- Lottie Complete Handler ---
+	function handleLottieComplete() {
+		const urlParams = new URLSearchParams(window.location.search);
+		const redirect = urlParams.get('redirect') || '/dashboard';
+		goto(validateRedirectUrl(redirect), { replaceState: true });
+	}
 
 	// --- Form Submit ---
 	async function handleSubmit(e: SubmitEvent) {
@@ -204,24 +256,20 @@
 		try {
 			await login({ email, password, remember: rememberMe });
 
-			// Success state
+			// Save/clear remembered email
+			saveRememberedEmail();
+
+			// Success state - show Lottie animation
 			isSuccess = true;
+			showLottie = true;
 			if (submitBtn) {
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
-			// Success animation then redirect
-			gsap.to(cardRef, {
+			// Fade out card content to show Lottie
+			gsap.to('.card-content > *:not(.success-overlay)', {
 				opacity: 0,
-				y: -20,
-				scale: 0.98,
-				duration: 0.4,
-				delay: 0.5,
-				onComplete: () => {
-					const urlParams = new URLSearchParams(window.location.search);
-					const redirect = urlParams.get('redirect') || '/dashboard';
-					goto(validateRedirectUrl(redirect), { replaceState: true });
-				}
+				duration: 0.3
 			});
 		} catch (error: unknown) {
 			// Error handling
@@ -260,165 +308,176 @@
 	<div class="card-glow" aria-hidden="true"></div>
 
 	<div class="card-content">
-		<!-- Header -->
-		<div class="form-header">
-			<div class="logo-wrapper">
-				<div class="logo-glow" aria-hidden="true"></div>
-				<div class="logo-icon">
-					<IconChartCandle size={32} stroke={1.5} />
-				</div>
+		<!-- Success Overlay with Lottie -->
+		{#if showLottie}
+			<div class="success-overlay" in:fade={{ duration: 300 }}>
+				<LottieSuccess size={140} onComplete={handleLottieComplete} />
+				<p class="success-message">Welcome back!</p>
+				<p class="success-submessage">Redirecting to your dashboard...</p>
 			</div>
-			<h1 class="form-title">Welcome Back</h1>
-			<p class="form-subtitle">Sign in to access your trading dashboard</p>
-		</div>
-
-		<!-- Error Banner -->
-		{#if generalError}
-			<div class="error-banner" in:fade={{ duration: 200 }} role="alert">
-				<IconAlertCircle size={20} />
-				<p>{generalError}</p>
-			</div>
-		{/if}
-
-		<!-- Success Banner -->
-		{#if isSuccess}
-			<div class="success-banner" in:fade={{ duration: 200 }} role="status">
-				<IconCheck size={20} />
-				<p>Sign in successful! Redirecting to your dashboard...</p>
-			</div>
-		{/if}
-
-		<!-- Form -->
-		<form bind:this={formRef} onsubmit={handleSubmit} class="login-form" novalidate>
-			<!-- Email Field -->
-			<div class="form-field">
-				<label for="email" class="field-label">Email Address</label>
-				<div class="input-wrapper" class:error={errors.email}>
-					<div class="input-icon">
-						<IconMail size={20} />
+		{:else}
+			<!-- Header -->
+			<div class="form-header">
+				<div class="logo-wrapper">
+					<div class="logo-glow" aria-hidden="true"></div>
+					<div class="logo-icon">
+						<IconChartCandle size={32} stroke={1.5} />
 					</div>
-					<input
-						bind:this={emailInputRef}
-						id="email"
-						type="email"
-						bind:value={email}
-						onblur={() => handleBlur('email')}
-						use:focusAnimation
-						required
-						class="form-input"
-						placeholder="trader@example.com"
-						autocomplete="email"
-						disabled={isLoading || isSuccess}
-						aria-invalid={!!errors.email}
-						aria-describedby={errors.email ? 'email-error' : undefined}
-					/>
 				</div>
-				{#if errors.email}
-					<p id="email-error" class="field-error" transition:slide={{ duration: 150 }}>
-						{errors.email[0]}
-					</p>
-				{/if}
+				<h1 class="form-title">
+					<TypedHeadline
+						strings={['Welcome Back, Trader', 'Ready to Trade?', 'Access Your Dashboard']}
+						typeSpeed={60}
+						backSpeed={40}
+						backDelay={2500}
+					/>
+				</h1>
+				<p class="form-subtitle">Sign in to your trading dashboard</p>
 			</div>
 
-			<!-- Password Field -->
-			<div class="form-field">
-				<label for="password" class="field-label">Password</label>
-				<div class="input-wrapper" class:error={errors.password}>
-					<div class="input-icon">
-						<IconLock size={20} />
+			<!-- Error Banner -->
+			{#if generalError}
+				<div class="error-banner" in:fade={{ duration: 200 }} role="alert">
+					<IconAlertCircle size={20} />
+					<p>{generalError}</p>
+				</div>
+			{/if}
+
+			<!-- Form -->
+			<form bind:this={formRef} onsubmit={handleSubmit} class="login-form" novalidate>
+				<!-- Email Field -->
+				<div class="form-field">
+					<label for="email" class="field-label">Email Address</label>
+					<div class="input-wrapper" class:error={errors.email}>
+						<div class="input-icon">
+							<IconMail size={20} />
+						</div>
+						<input
+							bind:this={emailInputRef}
+							id="email"
+							type="email"
+							bind:value={email}
+							onblur={() => handleBlur('email')}
+							use:focusAnimation
+							required
+							class="form-input"
+							placeholder="trader@example.com"
+							autocomplete="email"
+							disabled={isLoading || isSuccess}
+							aria-invalid={!!errors.email}
+							aria-describedby={errors.email ? 'email-error' : undefined}
+						/>
 					</div>
-					<input
-						id="password"
-						type={showPassword ? 'text' : 'password'}
-						bind:value={password}
-						onblur={() => handleBlur('password')}
-						use:focusAnimation
-						required
-						class="form-input has-toggle"
-						placeholder="Enter your password"
-						autocomplete="current-password"
-						disabled={isLoading || isSuccess}
-						aria-invalid={!!errors.password}
-						aria-describedby={errors.password ? 'password-error' : undefined}
-					/>
+					{#if errors.email}
+						<p id="email-error" class="field-error" transition:slide={{ duration: 150 }}>
+							{errors.email[0]}
+						</p>
+					{/if}
+				</div>
+
+				<!-- Password Field -->
+				<div class="form-field">
+					<label for="password" class="field-label">Password</label>
+					<div class="input-wrapper" class:error={errors.password}>
+						<div class="input-icon">
+							<IconLock size={20} />
+						</div>
+						<input
+							id="password"
+							type={showPassword ? 'text' : 'password'}
+							bind:value={password}
+							onblur={() => handleBlur('password')}
+							use:focusAnimation
+							required
+							class="form-input has-toggle"
+							placeholder="Enter your password"
+							autocomplete="current-password"
+							disabled={isLoading || isSuccess}
+							aria-invalid={!!errors.password}
+							aria-describedby={errors.password ? 'password-error' : undefined}
+						/>
+						<button
+							type="button"
+							class="password-toggle"
+							onclick={() => (showPassword = !showPassword)}
+							aria-label={showPassword ? 'Hide password' : 'Show password'}
+							tabindex={-1}
+							disabled={isLoading || isSuccess}
+						>
+							{#if showPassword}
+								<IconEyeOff size={20} />
+							{:else}
+								<IconEye size={20} />
+							{/if}
+						</button>
+					</div>
+					{#if errors.password}
+						<p id="password-error" class="field-error" transition:slide={{ duration: 150 }}>
+							{errors.password[0]}
+						</p>
+					{/if}
+				</div>
+
+				<!-- Remember Me & Forgot Password -->
+				<div class="form-row">
+					<label class="checkbox-wrapper">
+						<input
+							type="checkbox"
+							bind:checked={rememberMe}
+							disabled={isLoading || isSuccess}
+							class="checkbox-input"
+						/>
+						<span class="checkbox-custom"></span>
+						<span class="checkbox-label">Remember me</span>
+					</label>
+					<a href="/forgot-password" class="forgot-link">Forgot password?</a>
+				</div>
+
+				<!-- Submit Button -->
+				<div class="form-actions">
 					<button
-						type="button"
-						class="password-toggle"
-						onclick={() => (showPassword = !showPassword)}
-						aria-label={showPassword ? 'Hide password' : 'Show password'}
-						tabindex={-1}
+						type="submit"
+						class="submit-btn"
+						class:loading={isLoading}
+						class:success={isSuccess}
 						disabled={isLoading || isSuccess}
 					>
-						{#if showPassword}
-							<IconEyeOff size={20} />
-						{:else}
-							<IconEye size={20} />
-						{/if}
+						<span class="btn-content">
+							{#if isSuccess}
+								<IconCheck size={20} />
+								<span>Success!</span>
+							{:else if isLoading}
+								<IconLoader2 size={20} class="spin" />
+								<span>Signing in...</span>
+							{:else}
+								<IconTrendingUp size={20} />
+								<span>Sign In to Trade</span>
+								<IconArrowRight size={20} class="arrow-icon" />
+							{/if}
+						</span>
+						<div class="btn-glow" aria-hidden="true"></div>
 					</button>
 				</div>
-				{#if errors.password}
-					<p id="password-error" class="field-error" transition:slide={{ duration: 150 }}>
-						{errors.password[0]}
-					</p>
-				{/if}
+			</form>
+
+			<!-- Social Login -->
+			<SocialLoginButtons disabled={isLoading || isSuccess} />
+
+			<!-- Footer -->
+			<div class="form-footer">
+				<p class="footer-text">
+					New to Revolution Trading?
+					<a href="/register" class="footer-link">Create an account</a>
+				</p>
 			</div>
 
-			<!-- Remember Me & Forgot Password -->
-			<div class="form-row">
-				<label class="checkbox-wrapper">
-					<input
-						type="checkbox"
-						bind:checked={rememberMe}
-						disabled={isLoading || isSuccess}
-						class="checkbox-input"
-					/>
-					<span class="checkbox-custom"></span>
-					<span class="checkbox-label">Remember me</span>
-				</label>
-				<a href="/forgot-password" class="forgot-link">Forgot password?</a>
+			<!-- Back to Site -->
+			<div class="back-link-wrapper">
+				<a href="/" class="back-link">
+					<span>Back to main site</span>
+				</a>
 			</div>
-
-			<!-- Submit Button -->
-			<div class="form-actions">
-				<button
-					type="submit"
-					class="submit-btn"
-					class:loading={isLoading}
-					class:success={isSuccess}
-					disabled={isLoading || isSuccess}
-				>
-					<span class="btn-content">
-						{#if isSuccess}
-							<IconCheck size={20} />
-							<span>Success!</span>
-						{:else if isLoading}
-							<IconLoader2 size={20} class="spin" />
-							<span>Signing in...</span>
-						{:else}
-							<IconTrendingUp size={20} />
-							<span>Sign In to Trade</span>
-							<IconArrowRight size={20} class="arrow-icon" />
-						{/if}
-					</span>
-					<div class="btn-glow" aria-hidden="true"></div>
-				</button>
-			</div>
-		</form>
-
-		<!-- Footer -->
-		<div class="form-footer">
-			<p class="footer-text">
-				New to Revolution Trading?
-				<a href="/register" class="footer-link">Create an account</a>
-			</p>
-		</div>
-
-		<!-- Back to Site -->
-		<div class="back-link-wrapper">
-			<a href="/" class="back-link">
-				<span>Back to main site</span>
-			</a>
-		</div>
+		{/if}
 	</div>
 </div>
 
@@ -459,12 +518,39 @@
 	.card-content {
 		position: relative;
 		padding: 2.5rem 2rem;
+		min-height: 500px;
 	}
 
 	@media (min-width: 640px) {
 		.card-content {
 			padding: 3rem 2.5rem;
 		}
+	}
+
+	/* Success Overlay */
+	.success-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		z-index: 10;
+	}
+
+	.success-message {
+		font-family: var(--font-heading);
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--auth-success, #4ade80);
+		margin-top: 0.5rem;
+	}
+
+	.success-submessage {
+		font-family: var(--font-body);
+		font-size: 1rem;
+		color: var(--auth-muted, #64748b);
 	}
 
 	/* Header */
@@ -506,7 +592,7 @@
 
 	.form-title {
 		font-family: var(--font-heading);
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 800;
 		background: var(--auth-heading);
 		-webkit-background-clip: text;
@@ -514,6 +600,13 @@
 		color: transparent;
 		margin-bottom: 0.5rem;
 		letter-spacing: -0.02em;
+		min-height: 2.5rem;
+	}
+
+	@media (min-width: 640px) {
+		.form-title {
+			font-size: 2rem;
+		}
 	}
 
 	.form-subtitle {
@@ -539,24 +632,6 @@
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.4;
-	}
-
-	/* Success Banner */
-	.success-banner {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		background: var(--auth-success-bg);
-		border: 1px solid rgba(34, 197, 94, 0.3);
-		border-radius: 12px;
-		margin-bottom: 1.5rem;
-		color: var(--auth-success);
-	}
-
-	.success-banner p {
-		font-size: 0.875rem;
-		font-weight: 500;
 	}
 
 	/* Form */
@@ -842,8 +917,7 @@
 	.form-footer {
 		text-align: center;
 		padding-top: 1.5rem;
-		margin-top: 1.5rem;
-		border-top: 1px solid var(--auth-card-border);
+		margin-top: 0.5rem;
 	}
 
 	.footer-text {
