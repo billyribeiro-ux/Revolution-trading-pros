@@ -55,7 +55,9 @@ import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+const isDev = import.meta.env.DEV;
+const API_BASE_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api');
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
 const CDN_URL = import.meta.env.VITE_CDN_URL || 'https://cdn.revolutiontradingpros.com';
 
@@ -969,6 +971,13 @@ class EnterpriseApiClient {
 	private setupWebSocket(): void {
 		if (!this.token || this.wsConnection) return;
 
+		// ICT11+ Pattern: Skip WebSocket in dev if not configured
+		// WebSocket requires a separate server that may not be running in dev
+		if (isDev && !import.meta.env.VITE_WS_URL) {
+			console.debug('[ApiClient] WebSocket skipped in dev (no VITE_WS_URL configured)');
+			return;
+		}
+
 		try {
 			this.wsConnection = new WebSocket(`${WS_URL}/ws`);
 
@@ -982,20 +991,27 @@ class EnterpriseApiClient {
 			};
 
 			this.wsConnection.onerror = (error) => {
-				console.error('[ApiClient] WebSocket error:', error);
+				// Silent fail in dev - WebSocket server may not be running
+				if (!isDev) {
+					console.error('[ApiClient] WebSocket error:', error);
+				}
 			};
 
 			this.wsConnection.onclose = () => {
-				console.debug('[ApiClient] WebSocket disconnected');
+				if (!isDev) {
+					console.debug('[ApiClient] WebSocket disconnected');
+				}
 				this.wsConnection = undefined;
 
-				// Reconnect after delay if authenticated
-				if (this.token) {
+				// Reconnect after delay if authenticated (skip in dev)
+				if (this.token && !isDev) {
 					setTimeout(() => this.setupWebSocket(), 5000);
 				}
 			};
 		} catch (error) {
-			console.error('[ApiClient] Failed to setup WebSocket:', error);
+			if (!isDev) {
+				console.error('[ApiClient] Failed to setup WebSocket:', error);
+			}
 		}
 	}
 
@@ -1074,6 +1090,12 @@ class EnterpriseApiClient {
 	private setupSSE(): void {
 		if (!this.token) return;
 
+		// ICT11+ Pattern: Skip SSE in dev - endpoint may not exist
+		if (isDev) {
+			console.debug('[ApiClient] SSE skipped in dev (endpoint may not exist)');
+			return;
+		}
+
 		try {
 			// SECURITY: Use credentials for cookie-based auth instead of token in URL
 			// EventSource doesn't support custom headers, so we use withCredentials
@@ -1087,9 +1109,7 @@ class EnterpriseApiClient {
 			};
 
 			this.sseConnection.onerror = (error) => {
-				if (import.meta.env.DEV) {
-					console.error('[ApiClient] SSE error:', error);
-				}
+				console.error('[ApiClient] SSE error:', error);
 				// Attempt reconnection with exponential backoff
 				this.sseConnection?.close();
 				this.sseConnection = undefined;
@@ -1098,14 +1118,10 @@ class EnterpriseApiClient {
 
 			this.sseConnection.onopen = () => {
 				this.sseReconnectAttempts = 0; // Reset on successful connection
-				if (import.meta.env.DEV) {
-					console.debug('[ApiClient] SSE connected');
-				}
+				console.debug('[ApiClient] SSE connected');
 			};
 		} catch (error) {
-			if (import.meta.env.DEV) {
-				console.error('[ApiClient] Failed to setup SSE:', error);
-			}
+			console.error('[ApiClient] Failed to setup SSE:', error);
 		}
 	}
 
