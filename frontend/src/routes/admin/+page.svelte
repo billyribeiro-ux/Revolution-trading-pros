@@ -46,8 +46,23 @@
 		IconPlugConnected
 	} from '@tabler/icons-svelte';
 	import { browser } from '$app/environment';
-	import { api } from '$lib/api/config';
 	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
+
+	// Local fetch wrapper for SvelteKit API routes (avoids CORS issues)
+	async function localFetch<T = any>(endpoint: string): Promise<T> {
+		const response = await fetch(endpoint, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			credentials: 'include'
+		});
+		if (!response.ok) {
+			throw new Error(`HTTP ${response.status}`);
+		}
+		return response.json();
+	}
 
 	let isLoading = true;
 	let lastUpdated: Date | null = null;
@@ -122,13 +137,15 @@
 		seoConnected = true; // Platform has built-in SEO
 
 		try {
+			// Use local SvelteKit API routes to avoid CORS issues
+			// These routes proxy to Laravel backend server-side
 			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
-				api.get('/admin/members/stats'),
-				api.get('/admin/subscriptions/plans/stats'),
-				api.get('/admin/coupons'),
-				api.get('/admin/posts/stats'),
-				api.get('/admin/products/stats'),
-				api.get(`/admin/analytics/dashboard?period=${selectedPeriod}`) // Always try built-in analytics
+				localFetch('/api/admin/members/stats'),
+				localFetch('/api/admin/subscriptions/plans/stats'),
+				localFetch('/api/admin/coupons'),
+				localFetch('/api/admin/posts/stats'),
+				localFetch('/api/admin/products/stats'),
+				localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
 			]);
 
 			if (membersRes.status === 'fulfilled') {
