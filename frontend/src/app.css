@@ -68,6 +68,273 @@
 	--font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-body: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 	--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * LIGHT THEME - Apple/Netflix Premium Aesthetic
+ * Clean, crisp, professional with excellent contrast ratios
+ * ═══════════════════════════════════════════════════════════════════════════ */
+html.light,
+body.light,
+:root.light {
+	/* Surface Colors - Clean Apple-style whites */
+	--color-rtp-bg: #f5f5f7;                    /* Apple's signature off-white */
+	--color-rtp-bg-alt: #ffffff;                /* Pure white for cards */
+	--color-rtp-surface: #ffffff;               /* Clean white surfaces */
+	--color-rtp-surface-elevated: #ffffff;      /* Elevated cards with shadow */
+	--color-rtp-surface-overlay: rgba(255, 255, 255, 0.95);
+
+	/* Primary Brand - Deeper indigo for light backgrounds */
+	--color-rtp-primary: #4f46e5;               /* Vibrant indigo */
+	--color-rtp-primary-light: #6366f1;         /* Lighter for hovers */
+	--color-rtp-primary-dark: #4338ca;          /* Darker for active states */
+	--color-rtp-primary-soft: rgba(79, 70, 229, 0.1);
+
+	/* Secondary Colors */
+	--color-rtp-indigo: #4f46e5;
+	--color-rtp-violet: #7c3aed;
+	--color-rtp-blue: #2563eb;
+
+	/* Text Colors - Netflix-style high contrast */
+	--color-rtp-text: #1d1d1f;                  /* Apple's near-black */
+	--color-rtp-text-secondary: #424245;        /* Dark gray */
+	--color-rtp-muted: #6e6e73;                 /* Medium gray */
+	--color-rtp-placeholder: #86868b;           /* Light gray */
+
+	/* Border Colors - Subtle but visible */
+	--color-rtp-border: #d2d2d7;                /* Apple's border gray */
+	--color-rtp-border-light: #e8e8ed;          /* Lighter border */
+	--color-rtp-border-focus: #4f46e5;          /* Focus ring color */
+
+	/* Semantic Colors - Vibrant for visibility */
+	--color-rtp-success: #059669;               /* Emerald */
+	--color-rtp-success-soft: rgba(5, 150, 105, 0.1);
+	--color-rtp-warning: #d97706;               /* Amber */
+	--color-rtp-warning-soft: rgba(217, 119, 6, 0.1);
+	--color-rtp-error: #dc2626;                 /* Red */
+	--color-rtp-error-soft: rgba(220, 38, 38, 0.1);
+	--color-rtp-info: #2563eb;                  /* Blue */
+	--color-rtp-info-soft: rgba(37, 99, 235, 0.1);
+
+	/* Accent Colors */
+	--color-rtp-emerald: #059669;
+	--color-rtp-amber: #d97706;
+	--color-rtp-rose: #e11d48;
+	--color-rtp-cyan: #0891b2;
+	--color-rtp-purple: #7c3aed;
+
+	/* Shadows for light theme - More prominent */
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+	--shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+	--shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+	/* Focus ring for light mode */
+	--focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+/* Light theme specific overrides for admin components */
+html.light .admin-layout,
+body.light .admin-layout {
+	background: #f5f5f7;
+}
+
+html.light .admin-sidebar,
+body.light .admin-sidebar {
+	background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+	border-right: 1px solid #d2d2d7;
+}
+
+html.light .admin-header,
+body.light .admin-header {
+	background: #ffffff;
+	border-bottom: 1px solid #d2d2d7;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+html.light .nav-item,
+body.light .nav-item {
+	color: #6e6e73;
+}
+
+html.light .nav-item:hover,
+body.light .nav-item:hover {
+	background: rgba(79, 70, 229, 0.06);
+	color: #4f46e5;
+}
+
+html.light .nav-item.active,
+body.light .nav-item.active {
+	background: rgba(79, 70, 229, 0.1);
+	color: #4f46e5;
+	border: 1px solid rgba(79, 70, 229, 0.2);
+}
+
+html.light .nav-section-title,
+body.light .nav-section-title {
+	color: #86868b;
+}
+
+html.light .header-btn,
+body.light .header-btn {
+	background: #f5f5f7;
+	border-color: #d2d2d7;
+	color: #6e6e73;
+}
+
+html.light .header-btn:hover,
+body.light .header-btn:hover {
+	background: #e8e8ed;
+	border-color: #c7c7cc;
+	color: #4f46e5;
+}
+
+html.light .theme-toggle,
+body.light .theme-toggle {
+	background: #f5f5f7;
+	border-color: #d2d2d7;
+	color: #6e6e73;
+}
+
+html.light .theme-toggle:hover,
+body.light .theme-toggle:hover {
+	background: #e8e8ed;
+	border-color: #c7c7cc;
+	color: #4f46e5;
+}
+
+html.light .view-site-btn,
+body.light .view-site-btn {
+	background: rgba(79, 70, 229, 0.06);
+	color: #4f46e5;
+	border-color: rgba(79, 70, 229, 0.2);
+}
+
+html.light .view-site-btn:hover,
+body.light .view-site-btn:hover {
+	background: rgba(79, 70, 229, 0.12);
+	border-color: rgba(79, 70, 229, 0.3);
+}
+
+html.light .header-title h1,
+body.light .header-title h1 {
+	color: #1d1d1f;
+}
+
+html.light .user-info,
+body.light .user-info {
+	background: #f5f5f7;
+}
+
+html.light .user-name,
+body.light .user-name {
+	color: #1d1d1f;
+}
+
+html.light .user-role,
+body.light .user-role {
+	color: #6e6e73;
+}
+
+html.light .exit-btn,
+body.light .exit-btn {
+	border-color: rgba(220, 38, 38, 0.2);
+	color: #6e6e73;
+}
+
+html.light .exit-btn:hover,
+body.light .exit-btn:hover {
+	background: rgba(220, 38, 38, 0.08);
+	color: #dc2626;
+	border-color: rgba(220, 38, 38, 0.3);
+}
+
+html.light .kbd,
+body.light .kbd {
+	background: rgba(79, 70, 229, 0.08);
+	color: #4f46e5;
+}
+
+/* Light theme scrollbar */
+html.light ::-webkit-scrollbar-track,
+body.light ::-webkit-scrollbar-track {
+	background: #f5f5f7;
+}
+
+html.light ::-webkit-scrollbar-thumb,
+body.light ::-webkit-scrollbar-thumb {
+	background: #c7c7cc;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover,
+body.light ::-webkit-scrollbar-thumb:hover {
+	background: #a1a1a6;
+}
+
+/* Rate Limit Indicator light theme */
+html.light .rate-limit-btn,
+body.light .rate-limit-btn {
+	background: rgba(5, 150, 105, 0.08);
+	border-color: rgba(5, 150, 105, 0.2);
+	color: #059669;
+}
+
+html.light .rate-limit-btn:hover,
+body.light .rate-limit-btn:hover {
+	background: rgba(5, 150, 105, 0.15);
+}
+
+html.light .rate-limit-btn.warning,
+body.light .rate-limit-btn.warning {
+	background: rgba(217, 119, 6, 0.08);
+	border-color: rgba(217, 119, 6, 0.2);
+	color: #d97706;
+}
+
+html.light .rate-limit-btn.critical,
+body.light .rate-limit-btn.critical {
+	background: rgba(220, 38, 38, 0.08);
+	border-color: rgba(220, 38, 38, 0.2);
+	color: #dc2626;
+}
+
+html.light .rate-limit-btn.disconnected,
+body.light .rate-limit-btn.disconnected {
+	background: rgba(110, 110, 115, 0.08);
+	border-color: rgba(110, 110, 115, 0.2);
+	color: #6e6e73;
+}
+
+html.light .rate-limit-dropdown,
+body.light .rate-limit-dropdown {
+	background: #ffffff;
+	border-color: #d2d2d7;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+html.light .dropdown-header,
+body.light .dropdown-header {
+	border-bottom-color: #e8e8ed;
+}
+
+html.light .dropdown-header h4,
+body.light .dropdown-header h4 {
+	color: #1d1d1f;
+}
+
+html.light .dropdown-footer,
+body.light .dropdown-footer {
+	background: #f5f5f7;
+	border-top-color: #e8e8ed;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DARK THEME (Default) - Ensure consistent dark variables
+ * ═══════════════════════════════════════════════════════════════════════════ */
+html.dark,
+body.dark,
+:root.dark,
+:root {
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Revolution Trading Dashboard Colors (WordPress Reference)
@@ -1109,4 +1376,496 @@
 		orphans: 3;
 		widows: 3;
 	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * PREMIUM ANIMATIONS - Apple/Netflix Principal Engineer Level
+ * Micro-interactions, hover effects, and smooth transitions
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes scaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+@keyframes pulse {
+	0%, 100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes bounce {
+	0%, 100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-4px);
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes ripple {
+	0% {
+		transform: scale(0);
+		opacity: 0.5;
+	}
+	100% {
+		transform: scale(4);
+		opacity: 0;
+	}
+}
+
+/* Animation Utilities */
+.animate-fadeIn {
+	animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeInUp {
+	animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fadeInDown {
+	animation: fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scaleIn {
+	animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInRight {
+	animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse {
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+	animation: bounce 1s ease-in-out infinite;
+}
+
+.animate-spin {
+	animation: spin 1s linear infinite;
+}
+
+/* Stagger Animation Delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Loading Shimmer Effect */
+.skeleton {
+	background: linear-gradient(
+		90deg,
+		var(--color-rtp-surface) 0%,
+		var(--color-rtp-surface-elevated) 50%,
+		var(--color-rtp-surface) 100%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s ease-in-out infinite;
+	border-radius: var(--radius-md);
+}
+
+/* Premium Button Interactions */
+.btn-premium {
+	position: relative;
+	overflow: hidden;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	transform: translateZ(0);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.btn-premium:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-premium:active {
+	transform: translateY(0) scale(0.98);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ripple Effect */
+.btn-premium::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+	transform: scale(0);
+	opacity: 0;
+	transition: transform 0.5s, opacity 0.3s;
+	pointer-events: none;
+}
+
+.btn-premium:active::after {
+	transform: scale(2);
+	opacity: 1;
+	transition: 0s;
+}
+
+/* Premium Card Interactions */
+.card-premium {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transform: translateZ(0);
+}
+
+.card-premium:hover {
+	transform: translateY(-4px);
+	box-shadow:
+		0 12px 40px rgba(0, 0, 0, 0.12),
+		0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+/* Light theme card hover */
+html.light .card-premium:hover,
+body.light .card-premium:hover {
+	box-shadow:
+		0 12px 40px rgba(0, 0, 0, 0.08),
+		0 0 0 1px rgba(79, 70, 229, 0.15);
+}
+
+/* Interactive List Items */
+.list-item-interactive {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	border-radius: var(--radius-md);
+}
+
+.list-item-interactive:hover {
+	background: var(--color-rtp-surface-elevated);
+	transform: translateX(4px);
+}
+
+/* Focus States - Premium Ring */
+.focus-ring {
+	outline: none;
+	transition: box-shadow 0.2s ease;
+}
+
+.focus-ring:focus-visible {
+	box-shadow:
+		0 0 0 2px var(--color-rtp-bg),
+		0 0 0 4px var(--color-rtp-primary);
+}
+
+/* Glass Morphism */
+.glass {
+	background: rgba(30, 41, 59, 0.8);
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+	border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+html.light .glass,
+body.light .glass {
+	background: rgba(255, 255, 255, 0.85);
+	border: 1px solid rgba(79, 70, 229, 0.1);
+}
+
+/* Premium Input Focus */
+.input-premium {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	border: 1px solid var(--color-rtp-border);
+}
+
+.input-premium:focus {
+	border-color: var(--color-rtp-primary);
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+	outline: none;
+}
+
+html.light .input-premium:focus,
+body.light .input-premium:focus {
+	box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Hover Glow Effect */
+.hover-glow {
+	transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+	box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+html.light .hover-glow:hover,
+body.light .hover-glow:hover {
+	box-shadow: 0 0 20px rgba(79, 70, 229, 0.2);
+}
+
+/* Badge Pulse */
+.badge-pulse {
+	position: relative;
+}
+
+.badge-pulse::before {
+	content: '';
+	position: absolute;
+	inset: -2px;
+	border-radius: inherit;
+	background: inherit;
+	animation: pulse 2s ease-in-out infinite;
+	z-index: -1;
+}
+
+/* Progress Bar Animation */
+.progress-bar {
+	transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.progress-bar::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.2),
+		transparent
+	);
+	animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Tab Indicator Animation */
+.tab-indicator {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dropdown Animation */
+.dropdown-menu {
+	transform-origin: top center;
+	animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal Animation */
+.modal-overlay {
+	animation: fadeIn 0.2s ease-out forwards;
+}
+
+.modal-content {
+	animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Toast Notifications */
+.toast {
+	animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast.exit {
+	animation: fadeIn 0.2s ease-out reverse forwards;
+}
+
+/* Checkbox/Toggle Animation */
+.toggle-switch {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle-switch.active {
+	background: var(--color-rtp-primary);
+}
+
+.toggle-switch .toggle-knob {
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle-switch.active .toggle-knob {
+	transform: translateX(100%);
+}
+
+/* Icon Button Hover */
+.icon-btn {
+	transition: all 0.2s ease;
+	border-radius: var(--radius-md);
+}
+
+.icon-btn:hover {
+	background: var(--color-rtp-surface-elevated);
+	transform: scale(1.05);
+}
+
+.icon-btn:active {
+	transform: scale(0.95);
+}
+
+/* Link Underline Animation */
+.link-animated {
+	position: relative;
+	text-decoration: none;
+}
+
+.link-animated::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 0;
+	height: 2px;
+	background: var(--color-rtp-primary);
+	transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-animated:hover::after {
+	width: 100%;
+}
+
+/* Smooth Page Transitions */
+.page-transition-enter {
+	opacity: 0;
+	transform: translateY(8px);
+}
+
+.page-transition-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-transition-exit {
+	opacity: 1;
+}
+
+.page-transition-exit-active {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+/* Number Counter Animation */
+.counter {
+	font-variant-numeric: tabular-nums;
+	transition: all 0.3s ease;
+}
+
+/* Notification Dot */
+.notification-dot {
+	width: 8px;
+	height: 8px;
+	background: var(--color-rtp-error);
+	border-radius: 50%;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+/* Premium Status Indicator */
+.status-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	position: relative;
+}
+
+.status-dot.online::before {
+	content: '';
+	position: absolute;
+	inset: -3px;
+	border-radius: 50%;
+	background: var(--color-rtp-success);
+	animation: pulse 2s ease-in-out infinite;
+	z-index: -1;
+}
+
+/* Smooth Theme Transition */
+html, body {
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Admin-specific premium styles */
+.admin-layout {
+	transition: background-color 0.3s ease;
+}
+
+.admin-sidebar {
+	transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-header {
+	transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav-item {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header-btn,
+.theme-toggle,
+.view-site-btn {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ensure smooth color transitions on all admin elements */
+.admin-layout *:not(.animate-spin):not(.animate-pulse):not(.animate-bounce) {
+	transition-property: background-color, border-color, color, box-shadow;
+	transition-duration: 0.2s;
+	transition-timing-function: ease;
 }
