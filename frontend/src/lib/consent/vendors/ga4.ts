@@ -6,8 +6,17 @@
  * Architecture:
  *   - GA4 is configured with send_page_view: false to disable automatic tracking
  *   - Page views are tracked manually via SvelteKit's afterNavigate hook
+ *   - GA4 is loaded AFTER SvelteKit router initializes (requestIdleCallback)
  *   - This prevents GA4 from hooking into history.pushState/replaceState
  *   - Zero conflicts with SvelteKit's router
+ *
+ * Why requestIdleCallback?
+ *   SvelteKit patches history.pushState/replaceState during hydration.
+ *   If GA4 loads before SvelteKit finishes, GA4's monkey-patch triggers
+ *   SvelteKit's warning. By deferring GA4 to idle time, we ensure:
+ *   1. SvelteKit's router is fully initialized
+ *   2. GA4's internal history hooks don't conflict
+ *   3. Zero console warnings
  *
  * Configuration:
  *   Set PUBLIC_GA4_MEASUREMENT_ID in your environment (.env or .env.local):
@@ -19,7 +28,7 @@
  *   afterNavigate(() => trackPageView());
  *
  * @module consent/vendors/ga4
- * @version 2.0.0 - SvelteKit-native implementation
+ * @version 2.1.0 - SvelteKit-native implementation with deferred loading
  */
 
 import { browser } from '$app/environment';
@@ -31,6 +40,20 @@ import { consentStore } from '../store';
 
 // Use dynamic environment variable (optional at build time)
 const PUBLIC_GA4_MEASUREMENT_ID = env.PUBLIC_GA4_MEASUREMENT_ID || '';
+
+/**
+ * ICT11+ Deferred execution utility
+ * Uses requestIdleCallback with setTimeout fallback for Safari
+ * This ensures GA4 loads AFTER SvelteKit's router is fully initialized
+ */
+function deferToIdle(callback: () => void, timeout = 2000): void {
+	if (typeof requestIdleCallback === 'function') {
+		requestIdleCallback(callback, { timeout });
+	} else {
+		// Safari fallback - use setTimeout with a reasonable delay
+		setTimeout(callback, 100);
+	}
+}
 
 /**
  * Track if GA4 has been initialized.
@@ -160,57 +183,70 @@ export const ga4Vendor: VendorConfig = {
 			return;
 		}
 
-		try {
-			// Step 1: Initialize gtag function
-			initGtag();
+		// ICT11+ Pattern: Defer GA4 loading to idle time
+		// This ensures SvelteKit's router is fully initialized before GA4
+		// monkey-patches history.pushState/replaceState, preventing conflicts
+		return new Promise((resolve, reject) => {
+			deferToIdle(async () => {
+				try {
+					// Step 1: Initialize gtag function
+					initGtag();
 
-			// Step 2: Apply consent mode BEFORE loading gtag.js
-			// This ensures consent defaults are set before any data collection
-			const currentConsent = consentStore.getState();
-			applyConsentMode(currentConsent);
+					// Step 2: Apply consent mode BEFORE loading gtag.js
+					// This ensures consent defaults are set before any data collection
+					const currentConsent = consentStore.getState();
+					applyConsentMode(currentConsent);
 
-			// Step 3: Load the gtag.js script
-			await injectScript(
-				`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA4_MEASUREMENT_ID}`,
-				{
-					id: 'ga4-gtag',
-					async: true,
+					// Step 3: Load the gtag.js script
+					await injectScript(
+						`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA4_MEASUREMENT_ID}`,
+						{
+							id: 'ga4-gtag',
+							async: true,
+						}
+					);
+
+					// Step 4: Initialize gtag with measurement ID
+					window.gtag('js', new Date());
+
+					// Step 5: Configure GA4 - SvelteKit-native approach
+					// 
+					// ICT11+ Architecture Decision:
+					// - send_page_view: false - We handle page tracking via afterNavigate
+					// - No history hooks - SvelteKit owns the router, we just listen
+					// - Clean separation of concerns: GA4 collects, SvelteKit navigates
+					//
+					window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
+						// CRITICAL: Disable automatic page view tracking
+						// We track manually via SvelteKit's afterNavigate hook
+						send_page_view: false,
+
+						// CRITICAL: Disable page_view enhanced measurement
+						// This prevents GA4 from hooking into history.pushState/replaceState
+						// which conflicts with SvelteKit's router
+						page_view: false,
+
+						// Anonymize IP addresses (GDPR compliance)
+						anonymize_ip: true,
+
+						// Consent-dependent features
+						allow_google_signals: currentConsent.marketing,
+						allow_ad_personalization_signals: currentConsent.marketing,
+					});
+
+					ga4Initialized = true;
+
+					console.debug('[GA4] Initialized successfully with ID:', PUBLIC_GA4_MEASUREMENT_ID);
+
+					// Send initial page view
+					trackPageView();
+					resolve();
+				} catch (error) {
+					console.error('[GA4] Failed to initialize:', error);
+					reject(error);
 				}
-			);
-
-			// Step 4: Initialize gtag with measurement ID
-			window.gtag('js', new Date());
-
-			// Step 5: Configure GA4 - SvelteKit-native approach
-			// 
-			// ICT11+ Architecture Decision:
-			// - send_page_view: false - We handle page tracking via afterNavigate
-			// - No history hooks - SvelteKit owns the router, we just listen
-			// - Clean separation of concerns: GA4 collects, SvelteKit navigates
-			//
-			window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
-				// CRITICAL: Disable automatic page view tracking
-				// We track manually via SvelteKit's afterNavigate hook
-				send_page_view: false,
-
-				// Anonymize IP addresses (GDPR compliance)
-				anonymize_ip: true,
-
-				// Consent-dependent features
-				allow_google_signals: currentConsent.marketing,
-				allow_ad_personalization_signals: currentConsent.marketing,
 			});
-
-			ga4Initialized = true;
-
-			console.debug('[GA4] Initialized successfully with ID:', PUBLIC_GA4_MEASUREMENT_ID);
-
-			// Send initial page view
-			trackPageView();
-		} catch (error) {
-			console.error('[GA4] Failed to initialize:', error);
-			throw error;
-		}
+		});
 	},
 
 	onConsentRevoked(): void {
