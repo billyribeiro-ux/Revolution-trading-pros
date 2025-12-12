@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
-/* Exclude node_modules from Tailwind source scanning */
-/* Fixes "Invalid declaration: Snippet" error from @threlte/core */
-@source not "../node_modules";
+/* Explicitly define source paths for Tailwind to scan */
+/* This prevents scanning node_modules which causes "Invalid declaration: Snippet" error from @threlte/core */
+@source "../src/**/*.{html,js,ts,svelte}";
 
 /**
  * Revolution Trading Pros - Design System Tokens
