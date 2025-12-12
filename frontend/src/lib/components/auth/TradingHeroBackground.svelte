@@ -15,8 +15,10 @@
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import gsap from 'gsap';
 	import TestimonialCarousel from './TestimonialCarousel.svelte';
+
+	// GSAP loaded dynamically to prevent SSR blocking
+	let gsap: any = null;
 
 	// Props
 	interface Props {
@@ -27,10 +29,11 @@
 
 	let { showTickers = true, showTestimonials = true, animated = true }: Props = $props();
 
-	// Refs
-	let containerRef: HTMLElement;
-	let canvasRef: HTMLCanvasElement;
-	let animationId: number;
+	// Refs - Svelte 5 pattern: use $state for bind:this refs
+	let containerRef = $state<HTMLElement | null>(null);
+	let canvasRef = $state<HTMLCanvasElement | null>(null);
+	let animationId: number | null = null;
+	let gsapContext: any = null; // GSAP context for proper cleanup
 
 	// Candlestick data (simulated market movement)
 	interface Candle {
@@ -250,51 +253,65 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// Generate initial candles
+		// Generate initial candles (sync)
 		candles = generateCandles(25);
 
-		// Initialize canvas
+		// Initialize canvas (sync)
 		handleResize();
 		window.addEventListener('resize', handleResize);
 
-		// Start animation
+		// Start animation (sync)
 		if (animated) {
 			animationId = requestAnimationFrame(animate);
 		}
 
-		// Animate tickers in
-		if (showTickers && containerRef) {
-			const tickerCards = containerRef.querySelectorAll('.ticker-card');
-			if (tickerCards.length > 0) {
-				gsap.fromTo(
-					tickerCards,
-					{ opacity: 0, y: 20, scale: 0.9 },
-					{
-						opacity: 1,
-						y: 0,
-						scale: 1,
-						duration: 0.6,
-						stagger: 0.15,
-						ease: 'power3.out'
+		// Use IIFE pattern for async GSAP import - Svelte 5 pattern
+		(async () => {
+			// Dynamic import GSAP to prevent SSR blocking - ICT11+ pattern
+			const gsapModule = await import('gsap');
+			gsap = gsapModule.default;
+
+			// GSAP 3.12+ pattern: use gsap.context() for proper cleanup
+			if (showTickers && containerRef && gsap) {
+				gsapContext = gsap.context(() => {
+					const tickerCards = containerRef!.querySelectorAll('.ticker-card');
+					if (tickerCards.length > 0) {
+						gsap.fromTo(
+							tickerCards,
+							{ opacity: 0, y: 20, scale: 0.9 },
+							{
+								opacity: 1,
+								y: 0,
+								scale: 1,
+								duration: 0.6,
+								stagger: 0.15,
+								ease: 'power3.out'
+							}
+						);
+
+						// Floating animation
+						gsap.to(tickerCards, {
+							y: -8,
+							duration: 3,
+							ease: 'sine.inOut',
+							stagger: 0.4,
+							repeat: -1,
+							yoyo: true
+						});
 					}
-				);
-
-				// Floating animation
-				gsap.to(tickerCards, {
-					y: -8,
-					duration: 3,
-					ease: 'sine.inOut',
-					stagger: 0.4,
-					repeat: -1,
-					yoyo: true
-				});
+				}, containerRef);
 			}
-		}
+		})();
 
+		// Cleanup function (sync return)
 		return () => {
 			window.removeEventListener('resize', handleResize);
 			if (animationId) {
 				cancelAnimationFrame(animationId);
+			}
+			// GSAP 3.12+ cleanup pattern
+			if (gsapContext) {
+				gsapContext.revert();
 			}
 		};
 	});
@@ -302,6 +319,10 @@
 	onDestroy(() => {
 		if (animationId) {
 			cancelAnimationFrame(animationId);
+		}
+		// Ensure GSAP cleanup on destroy
+		if (gsapContext) {
+			gsapContext.revert();
 		}
 	});
 </script>

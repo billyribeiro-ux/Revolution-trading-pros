@@ -23,7 +23,10 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
-	import gsap from 'gsap';
+
+	// GSAP loaded dynamically to prevent SSR blocking
+	let gsap: any = null;
+	let gsapContext: any = null; // GSAP 3.12+ context for proper cleanup
 	import {
 		IconMail,
 		IconLock,
@@ -143,6 +146,7 @@
 	// --- GSAP Animations ---
 	function focusAnimation(node: HTMLElement) {
 		const onFocus = () => {
+			if (!gsap) return;
 			gsap.to(node, {
 				scale: 1.01,
 				duration: 0.2,
@@ -155,6 +159,7 @@
 		};
 
 		const onBlur = () => {
+			if (!gsap) return;
 			gsap.to(node, {
 				scale: 1,
 				duration: 0.2,
@@ -181,44 +186,61 @@
 	onMount(() => {
 		if (!browser || !cardRef) return;
 
-		// Load remembered email
+		// Load remembered email (sync)
 		loadRememberedEmail();
 
-		// Entrance animation - scope selectors to cardRef to avoid GSAP warnings
-		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+		// Use IIFE pattern for async GSAP import - Svelte 5 pattern
+		(async () => {
+			// Dynamic import GSAP to prevent SSR blocking - ICT11+ pattern
+			const gsapModule = await import('gsap');
+			gsap = gsapModule.default;
 
-		// Get scoped elements
-		const formHeader = cardRef.querySelector('.form-header');
-		const formFields = cardRef.querySelectorAll('.form-field');
-		const socialLogin = cardRef.querySelector('.social-login');
-		const formActions = cardRef.querySelector('.form-actions');
+			// GSAP 3.12+ pattern: use gsap.context() for proper cleanup
+			gsapContext = gsap.context(() => {
+				// Entrance animation - scope selectors to cardRef to avoid GSAP warnings
+				const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-		tl.from(cardRef, {
-			opacity: 0,
-			y: 40,
-			scale: 0.95,
-			duration: 0.8
-		});
+				// Get scoped elements
+				const formHeader = cardRef!.querySelector('.form-header');
+				const formFields = cardRef!.querySelectorAll('.form-field');
+				const socialLogin = cardRef!.querySelector('.social-login');
+				const formActions = cardRef!.querySelector('.form-actions');
 
-		if (formHeader) {
-			tl.from(formHeader, { opacity: 0, y: -20, duration: 0.5 }, '-=0.4');
-		}
-		if (formFields.length > 0) {
-			tl.from(formFields, { opacity: 0, x: -20, duration: 0.4, stagger: 0.1 }, '-=0.3');
-		}
-		if (socialLogin) {
-			tl.from(socialLogin, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
-		}
-		if (formActions) {
-			tl.from(formActions, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
-		}
+				tl.from(cardRef, {
+					opacity: 0,
+					y: 40,
+					scale: 0.95,
+					duration: 0.8
+				});
 
-		// Focus email input after animation (only if not pre-filled)
-		setTimeout(() => {
-			if (!email) {
-				emailInputRef?.focus();
+				if (formHeader) {
+					tl.from(formHeader, { opacity: 0, y: -20, duration: 0.5 }, '-=0.4');
+				}
+				if (formFields.length > 0) {
+					tl.from(formFields, { opacity: 0, x: -20, duration: 0.4, stagger: 0.1 }, '-=0.3');
+				}
+				if (socialLogin) {
+					tl.from(socialLogin, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
+				}
+				if (formActions) {
+					tl.from(formActions, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
+				}
+			}, cardRef);
+
+			// Focus email input after animation (only if not pre-filled)
+			setTimeout(() => {
+				if (!email) {
+					emailInputRef?.focus();
+				}
+			}, 800);
+		})();
+
+		// Return cleanup function (sync) - Svelte 5 pattern
+		return () => {
+			if (gsapContext) {
+				gsapContext.revert();
 			}
-		}, 800);
+		};
 	});
 
 	// --- Lottie Complete Handler ---
@@ -245,18 +267,20 @@
 			if (passwordError) errors.password = [passwordError];
 
 			// Shake animation
-			gsap.fromTo(
-				cardRef,
-				{ x: -8 },
-				{
-					x: 8,
-					duration: 0.08,
-					repeat: 5,
-					yoyo: true,
-					ease: 'power1.inOut',
-					onComplete: () => gsap.to(cardRef, { x: 0, duration: 0.1 })
-				}
-			);
+			if (gsap && cardRef) {
+				gsap.fromTo(
+					cardRef,
+					{ x: -8 },
+					{
+						x: 8,
+						duration: 0.08,
+						repeat: 5,
+						yoyo: true,
+						ease: 'power1.inOut',
+						onComplete: () => gsap.to(cardRef, { x: 0, duration: 0.1 })
+					}
+				);
+			}
 			return;
 		}
 
@@ -265,8 +289,8 @@
 		isLoading = true;
 
 		// Button press animation
-		const submitBtn = formRef.querySelector('.submit-btn');
-		if (submitBtn) gsap.to(submitBtn, { scale: 0.97, duration: 0.1 });
+		const submitBtn = formRef?.querySelector('.submit-btn');
+		if (gsap && submitBtn) gsap.to(submitBtn, { scale: 0.97, duration: 0.1 });
 
 		try {
 			await login({ email, password, remember: rememberMe });
@@ -277,13 +301,13 @@
 			// Success state - show Lottie animation
 			isSuccess = true;
 			showLottie = true;
-			if (submitBtn) {
+			if (gsap && submitBtn) {
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
 			// Fade out card content to show Lottie
 			const cardContent = cardRef?.querySelector('.card-content');
-			if (cardContent) {
+			if (gsap && cardContent) {
 				const elementsToFade = cardContent.querySelectorAll(':scope > *:not(.success-overlay)');
 				if (elementsToFade.length > 0) {
 					gsap.to(elementsToFade, { opacity: 0, duration: 0.3 });
@@ -291,21 +315,23 @@
 			}
 		} catch (error: unknown) {
 			// Error handling
-			if (submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
+			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 
 			// Shake animation
-			gsap.fromTo(
-				cardRef,
-				{ x: -8 },
-				{
-					x: 8,
-					duration: 0.08,
-					repeat: 5,
-					yoyo: true,
-					ease: 'power1.inOut',
-					onComplete: () => gsap.to(cardRef, { x: 0, duration: 0.1 })
-				}
-			);
+			if (gsap && cardRef) {
+				gsap.fromTo(
+					cardRef,
+					{ x: -8 },
+					{
+						x: 8,
+						duration: 0.08,
+						repeat: 5,
+						yoyo: true,
+						ease: 'power1.inOut',
+						onComplete: () => gsap.to(cardRef, { x: 0, duration: 0.1 })
+					}
+				);
+			}
 
 			if (error && typeof error === 'object' && 'errors' in error) {
 				errors = (error as { errors: Record<string, string[]> }).errors;

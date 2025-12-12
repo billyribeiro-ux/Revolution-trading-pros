@@ -4,12 +4,15 @@
 	 * Netflix L11+ Principal Engineer Grade
 	 *
 	 * Contains camera, lights, and 3D candlestick objects
+	 * 
+	 * NOTE: This component is dynamically imported by TradingScene3D.svelte
+	 * to prevent SSR issues. These imports are safe here because this
+	 * component only runs on the client.
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0
 	 */
 	import { T, useTask } from '@threlte/core';
 	import { OrbitControls, Float } from '@threlte/extras';
-	import { onMount } from 'svelte';
 	import * as THREE from 'three';
 
 	// Generate candlestick data
@@ -186,8 +189,8 @@
 		)}
 		<T.BufferAttribute
 			args={[positions, 3]}
-			attach={(parent, self) => {
-				parent.setAttribute('position', self);
+			attach={({ ref, parent }) => {
+				(parent as any).setAttribute('position', ref);
 			}}
 		/>
 	</T.BufferGeometry>
