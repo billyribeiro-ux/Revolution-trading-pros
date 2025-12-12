@@ -263,29 +263,32 @@
 		}
 
 		// Animate tickers in
-		if (showTickers) {
-			gsap.fromTo(
-				'.ticker-card',
-				{ opacity: 0, y: 20, scale: 0.9 },
-				{
-					opacity: 1,
-					y: 0,
-					scale: 1,
-					duration: 0.6,
-					stagger: 0.15,
-					ease: 'power3.out'
-				}
-			);
+		if (showTickers && containerRef) {
+			const tickerCards = containerRef.querySelectorAll('.ticker-card');
+			if (tickerCards.length > 0) {
+				gsap.fromTo(
+					tickerCards,
+					{ opacity: 0, y: 20, scale: 0.9 },
+					{
+						opacity: 1,
+						y: 0,
+						scale: 1,
+						duration: 0.6,
+						stagger: 0.15,
+						ease: 'power3.out'
+					}
+				);
 
-			// Floating animation
-			gsap.to('.ticker-card', {
-				y: -8,
-				duration: 3,
-				ease: 'sine.inOut',
-				stagger: 0.4,
-				repeat: -1,
-				yoyo: true
-			});
+				// Floating animation
+				gsap.to(tickerCards, {
+					y: -8,
+					duration: 3,
+					ease: 'sine.inOut',
+					stagger: 0.4,
+					repeat: -1,
+					yoyo: true
+				});
+			}
 		}
 
 		return () => {

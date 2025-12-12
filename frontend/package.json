@@ -57,6 +57,7 @@
 		"chart.js": "^4.5.1",
 		"d3": "^7.9.0",
 		"d3-shape": "^3.2.0",
+		"embla-carousel-autoplay": "^8.6.0",
 		"embla-carousel-svelte": "^8.6.0",
 		"framer-motion": "^12.23.26",
 		"gsap": "^3.14.1",

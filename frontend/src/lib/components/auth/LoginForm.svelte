@@ -34,7 +34,7 @@
 		IconEyeOff,
 		IconArrowRight,
 		IconCheck,
-		IconLoader2
+		IconLoader
 	} from '@tabler/icons-svelte';
 
 	// Import new components
@@ -58,9 +58,9 @@
 	let touched = $state<Record<string, boolean>>({ email: false, password: false });
 
 	// --- Refs ---
-	let formRef: HTMLFormElement;
-	let cardRef: HTMLElement;
-	let emailInputRef: HTMLInputElement;
+	let formRef = $state<HTMLFormElement | null>(null);
+	let cardRef = $state<HTMLElement | null>(null);
+	let emailInputRef = $state<HTMLInputElement | null>(null);
 
 	// --- Validation ---
 	function validateEmail(value: string): string | null {
@@ -179,24 +179,39 @@
 
 	// --- Lifecycle ---
 	onMount(() => {
-		if (!browser) return;
+		if (!browser || !cardRef) return;
 
 		// Load remembered email
 		loadRememberedEmail();
 
-		// Entrance animation
+		// Entrance animation - scope selectors to cardRef to avoid GSAP warnings
 		const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+		// Get scoped elements
+		const formHeader = cardRef.querySelector('.form-header');
+		const formFields = cardRef.querySelectorAll('.form-field');
+		const socialLogin = cardRef.querySelector('.social-login');
+		const formActions = cardRef.querySelector('.form-actions');
 
 		tl.from(cardRef, {
 			opacity: 0,
 			y: 40,
 			scale: 0.95,
 			duration: 0.8
-		})
-			.from('.form-header', { opacity: 0, y: -20, duration: 0.5 }, '-=0.4')
-			.from('.form-field', { opacity: 0, x: -20, duration: 0.4, stagger: 0.1 }, '-=0.3')
-			.from('.social-login', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
-			.from('.form-actions', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
+		});
+
+		if (formHeader) {
+			tl.from(formHeader, { opacity: 0, y: -20, duration: 0.5 }, '-=0.4');
+		}
+		if (formFields.length > 0) {
+			tl.from(formFields, { opacity: 0, x: -20, duration: 0.4, stagger: 0.1 }, '-=0.3');
+		}
+		if (socialLogin) {
+			tl.from(socialLogin, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
+		}
+		if (formActions) {
+			tl.from(formActions, { opacity: 0, y: 20, duration: 0.4 }, '-=0.2');
+		}
 
 		// Focus email input after animation (only if not pre-filled)
 		setTimeout(() => {
@@ -267,10 +282,13 @@
 			}
 
 			// Fade out card content to show Lottie
-			gsap.to('.card-content > *:not(.success-overlay)', {
-				opacity: 0,
-				duration: 0.3
-			});
+			const cardContent = cardRef?.querySelector('.card-content');
+			if (cardContent) {
+				const elementsToFade = cardContent.querySelectorAll(':scope > *:not(.success-overlay)');
+				if (elementsToFade.length > 0) {
+					gsap.to(elementsToFade, { opacity: 0, duration: 0.3 });
+				}
+			}
 		} catch (error: unknown) {
 			// Error handling
 			if (submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
@@ -447,7 +465,7 @@
 								<IconCheck size={20} />
 								<span>Success!</span>
 							{:else if isLoading}
-								<IconLoader2 size={20} class="spin" />
+								<IconLoader size={20} class="spin" />
 								<span>Signing in...</span>
 							{:else}
 								<IconTrendingUp size={20} />
