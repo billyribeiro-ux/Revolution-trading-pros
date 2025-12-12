@@ -639,6 +639,11 @@ body.dark,
 	color: var(--admin-error);
 }
 
+.admin-badge-info {
+	background: var(--admin-info-bg);
+	color: var(--admin-info);
+}
+
 /* Admin Text Utilities */
 .admin-text-primary {
 	color: var(--admin-text-primary);

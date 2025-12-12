@@ -589,9 +589,9 @@
 	}
 
 	function getSeoScoreColor(score: number): string {
-		if (score >= 80) return '#10b981';
-		if (score >= 60) return '#f59e0b';
-		return '#ef4444';
+		if (score >= 80) return 'var(--admin-success, #10b981)';
+		if (score >= 60) return 'var(--admin-warning, #f59e0b)';
+		return 'var(--admin-error, #ef4444)';
 	}
 
 	function showNotification(type: 'success' | 'error' | 'warning' | 'info', message: string) {
@@ -1337,8 +1337,9 @@
 		padding: 2rem;
 		max-width: 1600px;
 		margin: 0 auto;
-		background: #0f172a;
+		background: var(--admin-bg);
 		min-height: 100vh;
+		color: var(--admin-text-primary);
 	}
 
 	/* Notifications */
@@ -1395,12 +1396,12 @@
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--admin-text-primary);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #94a3b8;
+		color: var(--admin-text-muted);
 		font-size: 0.95rem;
 	}
 
@@ -1472,8 +1473,8 @@
 	}
 
 	.stat-card {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--admin-card-bg);
+		border: 1px solid var(--admin-card-border);
 		padding: 1.5rem;
 		border-radius: 12px;
 		display: flex;
@@ -1519,12 +1520,12 @@
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--admin-text-primary);
 		margin-bottom: 0.25rem;
 	}
 
 	.stat-label {
-		color: #94a3b8;
+		color: var(--admin-text-muted);
 		font-size: 0.9rem;
 	}
 
@@ -1532,7 +1533,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		color: #10b981;
+		color: var(--admin-success);
 		font-size: 0.85rem;
 		margin-top: 0.5rem;
 	}
