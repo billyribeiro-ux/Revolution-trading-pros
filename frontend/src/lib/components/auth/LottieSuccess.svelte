@@ -235,9 +235,8 @@
 
 		// Use IIFE for async lottie import - Svelte 5 pattern
 		(async () => {
-			// lottie-web uses named export, not default
-			const lottieModule = await import('lottie-web');
-			const lottie = lottieModule.default || lottieModule;
+			// lottie-web default export is the player
+			const lottie = (await import('lottie-web')).default;
 
 			animationInstance = lottie.loadAnimation({
 				container: containerRef!,
