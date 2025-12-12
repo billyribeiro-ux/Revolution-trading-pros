@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
+	import { connections, isEmailConnected } from '$lib/stores/connections';
+	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
+	let connectionLoading = $state(true);
 	let settings = {
 		provider: 'smtp',
 		host: '',
@@ -19,6 +22,9 @@
 	let testing = false;
 
 	onMount(async () => {
+		// Load connection status
+		await connections.load();
+		connectionLoading = false;
 		await loadSettings();
 	});
 
@@ -113,6 +119,11 @@
 			<p>Configure your email server settings for sending emails</p>
 		</div>
 	</div>
+
+	<!-- Connection Status Banner -->
+	{#if !connectionLoading && !$isEmailConnected}
+		<ServiceConnectionStatus feature="email" variant="banner" />
+	{/if}
 
 	{#if message}
 		<div class="alert alert-{messageType}">

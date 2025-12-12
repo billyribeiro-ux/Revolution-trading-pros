@@ -7,7 +7,10 @@
 		IconRefresh,
 		IconCalendar
 	} from '@tabler/icons-svelte';
+	import { connections, isSeoConnected } from '$lib/stores/connections';
+	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
+	let connectionLoading = $state(true);
 	let stats: any = null;
 	let topPages: any[] = [];
 	let comparison: any = null;
@@ -18,8 +21,15 @@
 		end: new Date().toISOString().split('T')[0]
 	};
 
-	onMount(() => {
-		loadData();
+	onMount(async () => {
+		// Load connection status first
+		await connections.load();
+		connectionLoading = false;
+
+		// Only load data if SEO is connected
+		if ($isSeoConnected) {
+			loadData();
+		}
 	});
 
 	async function loadData() {
@@ -99,20 +109,31 @@
 			<h1>SEO Analytics</h1>
 			<p>Track search performance and insights</p>
 		</div>
-		<button class="btn-secondary" onclick={loadData} disabled={loading}>
-			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-			Refresh
-		</button>
+		{#if $isSeoConnected}
+			<button class="btn-secondary" onclick={loadData} disabled={loading}>
+				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				Refresh
+			</button>
+		{/if}
 	</header>
 
-	<div class="date-range-picker">
-		<IconCalendar size={20} />
-		<input type="date" bind:value={dateRange.start} onchange={loadData} />
-		<span>to</span>
-		<input type="date" bind:value={dateRange.end} onchange={loadData} />
-	</div>
+	<!-- Connection Check -->
+	{#if connectionLoading}
+		<div class="loading-state">
+			<div class="spinner"></div>
+			<p>Loading...</p>
+		</div>
+	{:else if !$isSeoConnected}
+		<ServiceConnectionStatus feature="seo" variant="card" showFeatures={true} />
+	{:else}
+		<div class="date-range-picker">
+			<IconCalendar size={20} />
+			<input type="date" bind:value={dateRange.start} onchange={loadData} />
+			<span>to</span>
+			<input type="date" bind:value={dateRange.end} onchange={loadData} />
+		</div>
 
-	{#if stats}
+		{#if stats}
 		<div class="metrics-grid">
 			<div class="metric-card">
 				<div class="metric-label">Total Impressions</div>
@@ -196,13 +217,35 @@
 	{:else if !loading}
 		<div class="empty-state">
 			<h3>No analytics data available</h3>
-			<p>Connect Google Search Console or wait for data to accumulate</p>
-			<a href="/admin/seo/search-console" class="btn-primary"> Connect Search Console </a>
+			<p>Data will appear once search engines begin indexing your pages</p>
 		</div>
+	{/if}
 	{/if}
 </div>
 
 <style>
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem;
+		gap: 1rem;
+	}
+
+	.loading-state .spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e5e5;
+		border-top-color: #3b82f6;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	.loading-state p {
+		color: #666;
+	}
+
 	.analytics-page {
 		padding: 2rem;
 		max-width: 1400px;
