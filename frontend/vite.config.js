@@ -16,7 +16,11 @@ export default defineConfig({
 		},
 	},
 	plugins: [
-		tailwindcss(),
+		tailwindcss({
+			// Exclude node_modules from Tailwind CSS processing
+			// Fixes "Invalid declaration: Snippet" error from @threlte/core
+			exclude: ['**/node_modules/**']
+		}),
 		sveltekit(),
 		// Brotli compression (best compression)
 		viteCompression({
