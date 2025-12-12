@@ -305,7 +305,7 @@
 			const h1 = slide.querySelector('h1');
 			const h2 = slide.querySelector('h2');
 			const p = slide.querySelector('p');
-			const buttons = slide.querySelectorAll('a');
+			const buttons = slide.querySelectorAll('.cta');
 
 			const exitTL = gsapLib.timeline({ onComplete: resolve });
 
@@ -349,7 +349,7 @@
 	}
 
 	function animateSlideIn(slideIndex: number): void {
-		if (!browser || !gsapLib) return;
+		if (!browser) return;
 
 		const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
 		if (!slide) return;
@@ -357,7 +357,19 @@
 		const h1 = slide.querySelector('h1');
 		const h2 = slide.querySelector('h2');
 		const p = slide.querySelector('p');
-		const buttons = slide.querySelectorAll('a');
+		const buttons = slide.querySelectorAll('.cta');
+
+		// Fallback: If no GSAP, just make everything visible
+		if (!gsapLib) {
+			[h1, h2, p, ...buttons].forEach(el => {
+				if (el instanceof HTMLElement) {
+					el.style.opacity = '1';
+					el.style.visibility = 'visible';
+					el.style.transform = 'none';
+				}
+			});
+			return;
+		}
 
 		if (timeline) timeline.kill();
 
@@ -367,7 +379,16 @@
 		flashChart();
 
 		timeline = gsapLib.timeline({
-			onComplete: () => { isAnimating = false; }
+			onComplete: () => {
+				isAnimating = false;
+				// Ensure buttons are visible after animation completes
+				buttons.forEach(btn => {
+					if (btn instanceof HTMLElement) {
+						btn.style.opacity = '1';
+						btn.style.visibility = 'visible';
+					}
+				});
+			}
 		});
 
 		// Reset all elements
@@ -935,6 +956,13 @@
 		flex-wrap: wrap;
 		gap: 1.25rem;
 		justify-content: center;
+		margin-top: 0.5rem;
+	}
+
+	/* Ensure buttons are visible by default before GSAP takes over */
+	.slide--active .cta {
+		opacity: 1;
+		visibility: visible;
 	}
 
 	.cta {
@@ -953,6 +981,9 @@
 		transform: translateY(0) translateZ(0);
 		transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 		letter-spacing: 0.02em;
+		/* Ensure buttons render properly */
+		opacity: 1;
+		visibility: visible;
 	}
 
 	.cta__text {
