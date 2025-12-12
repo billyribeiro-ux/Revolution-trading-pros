@@ -4,19 +4,21 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * Shows API rate limit status for connected services.
+	 * Shows "No services connected" when nothing is connected instead of fake 100%.
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0 - Fixed misleading UX
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { connections, type ConnectionStatus } from '$lib/stores/connections';
 	import {
 		IconPlugConnected,
+		IconPlugConnectedX,
 		IconChevronDown,
 		IconAlertTriangle,
 		IconCircleCheck,
-		IconClock
+		IconClock,
+		IconPlug
 	} from '@tabler/icons-svelte';
 
 	interface RateLimitInfo {
@@ -30,11 +32,13 @@
 
 	let isOpen = $state(false);
 	let rateLimits = $state<RateLimitInfo[]>([]);
+	let isLoading = $state(true);
+	let hasConnectedServices = $state(false);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 
 	/**
 	 * Fetch real rate limit data from connected services
-	 * Falls back to cached/default values if API unavailable
+	 * Returns empty array if no services are connected
 	 */
 	async function fetchRateLimits(): Promise<RateLimitInfo[]> {
 		try {
@@ -47,8 +51,8 @@
 			});
 
 			if (!response.ok) {
-				console.warn('Rate limits API unavailable, using defaults');
-				return getDefaultRateLimits();
+				console.warn('Rate limits API unavailable');
+				return [];
 			}
 
 			const data = await response.json();
@@ -57,6 +61,7 @@
 			// Transform connection status to rate limit info
 			if (data.connections && Array.isArray(data.connections)) {
 				for (const conn of data.connections) {
+					// Only include services that are actually connected and have rate limit info
 					if (conn.status === 'connected' && conn.rate_limit) {
 						const limit = conn.rate_limit.limit || 1000;
 						const remaining = conn.rate_limit.remaining ?? limit;
@@ -77,38 +82,37 @@
 				}
 			}
 
-			return limits.length > 0 ? limits : getDefaultRateLimits();
+			// Update connected services flag
+			hasConnectedServices = limits.length > 0;
+			return limits;
 		} catch (error) {
 			console.warn('Failed to fetch rate limits:', error);
-			return getDefaultRateLimits();
+			hasConnectedServices = false;
+			return [];
 		}
 	}
 
-	/**
-	 * Default rate limits when API is unavailable
-	 * Shows healthy defaults to avoid false alarms
-	 */
-	function getDefaultRateLimits(): RateLimitInfo[] {
-		return [
-			{ service: 'API', limit: 1000, remaining: 1000, percentage: 100, status: 'ok', resetsAt: null }
-		];
-	}
+	// Calculate overall status - only if we have connected services
+	let overallStatus = $derived(() => {
+		if (!hasConnectedServices || rateLimits.length === 0) return 'none';
+		if (rateLimits.some(r => r.status === 'critical')) return 'critical';
+		if (rateLimits.some(r => r.status === 'warning')) return 'warning';
+		return 'ok';
+	});
 
-	let overallStatus = $derived(rateLimits.some(r => r.status === 'critical')
-		? 'critical'
-		: rateLimits.some(r => r.status === 'warning')
-		? 'warning'
-		: 'ok');
-
-	let lowestPercentage = $derived(rateLimits.length > 0
-		? Math.min(...rateLimits.map(r => r.percentage))
-		: 100);
+	// Calculate lowest percentage - only if we have connected services
+	let lowestPercentage = $derived(() => {
+		if (!hasConnectedServices || rateLimits.length === 0) return null;
+		return Math.min(...rateLimits.map(r => r.percentage));
+	});
 
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'critical': return '#ef4444';
 			case 'warning': return '#f59e0b';
-			default: return '#10b981';
+			case 'ok': return '#10b981';
+			case 'none': return '#6b7280';
+			default: return '#6b7280';
 		}
 	}
 
@@ -116,7 +120,8 @@
 		switch (status) {
 			case 'critical': return IconAlertTriangle;
 			case 'warning': return IconClock;
-			default: return IconCircleCheck;
+			case 'ok': return IconCircleCheck;
+			default: return IconPlugConnectedX;
 		}
 	}
 
@@ -138,7 +143,11 @@
 	}
 
 	onMount(async () => {
+		isLoading = true;
 		rateLimits = await fetchRateLimits();
+		isLoading = false;
+
+		// Refresh every minute
 		refreshInterval = setInterval(async () => {
 			rateLimits = await fetchRateLimits();
 		}, 60000);
@@ -154,20 +163,27 @@
 <div class="rate-limit-container">
 	<button
 		class="rate-limit-btn"
-		class:warning={overallStatus === 'warning'}
-		class:critical={overallStatus === 'critical'}
+		class:warning={overallStatus() === 'warning'}
+		class:critical={overallStatus() === 'critical'}
+		class:disconnected={overallStatus() === 'none'}
 		onclick={(e) => { e.stopPropagation(); toggle(); }}
 		title="API Rate Limits"
 	>
-		<IconPlugConnected size={18} />
-		<span class="limit-percentage">{Math.round(lowestPercentage)}%</span>
+		{#if hasConnectedServices}
+			<IconPlugConnected size={18} />
+			<span class="limit-percentage">{lowestPercentage() !== null ? Math.round(lowestPercentage()) : '--'}%</span>
+		{:else}
+			<IconPlugConnectedX size={18} />
+			<span class="limit-percentage">--</span>
+		{/if}
 		<span class="chevron" class:rotated={isOpen}>
 			<IconChevronDown size={14} />
 		</span>
 	</button>
 
 	{#if isOpen}
-		{@const StatusIcon = getStatusIcon(overallStatus)}
+		{@const status = overallStatus()}
+		{@const StatusIcon = getStatusIcon(status)}
 		<div
 			class="rate-limit-dropdown"
 			transition:scale={{ duration: 200, start: 0.95 }}
@@ -178,40 +194,73 @@
 		>
 			<div class="dropdown-header">
 				<h4>API Rate Limits</h4>
-				<span class="header-status" style="color: {getStatusColor(overallStatus)}">
+				<span class="header-status" style="color: {getStatusColor(status)}">
 					<StatusIcon size={14} />
-					{overallStatus === 'ok' ? 'All services healthy' : overallStatus === 'warning' ? 'Some limits low' : 'Critical limits reached'}
+					{#if status === 'none'}
+						No services connected
+					{:else if status === 'ok'}
+						All services healthy
+					{:else if status === 'warning'}
+						Some limits low
+					{:else}
+						Critical limits reached
+					{/if}
 				</span>
 			</div>
 
-			<div class="limits-list">
-				{#each rateLimits as limit}
-					<div class="limit-item">
-						<div class="limit-header">
-							<span class="service-name">{limit.service}</span>
-							<span class="limit-status" style="color: {getStatusColor(limit.status)}">
-								{limit.remaining.toLocaleString()} / {limit.limit.toLocaleString()}
-							</span>
-						</div>
-						<div class="limit-bar-container">
-							<div
-								class="limit-bar"
-								style="width: {limit.percentage}%; background: {getStatusColor(limit.status)}"
-							></div>
-						</div>
-						<div class="limit-footer">
-							<span class="reset-time">
-								<IconClock size={12} />
-								Resets in {formatTimeUntilReset(limit.resetsAt)}
-							</span>
-							<span class="percentage">{Math.round(limit.percentage)}% remaining</span>
-						</div>
+			{#if isLoading}
+				<div class="limits-loading">
+					<div class="loading-spinner"></div>
+					<span>Checking connections...</span>
+				</div>
+			{:else if !hasConnectedServices}
+				<!-- No services connected - show helpful message -->
+				<div class="no-services">
+					<div class="no-services-icon">
+						<IconPlug size={32} />
 					</div>
-				{/each}
-			</div>
+					<p class="no-services-title">No Services Connected</p>
+					<p class="no-services-desc">
+						Connect external services like Stripe, SendGrid, or OpenAI to monitor their API rate limits here.
+					</p>
+					<a href="/admin/connections" class="connect-btn">
+						Connect Services
+					</a>
+				</div>
+			{:else}
+				<div class="limits-list">
+					{#each rateLimits as limit}
+						<div class="limit-item">
+							<div class="limit-header">
+								<span class="service-name">{limit.service}</span>
+								<span class="limit-status" style="color: {getStatusColor(limit.status)}">
+									{limit.remaining.toLocaleString()} / {limit.limit.toLocaleString()}
+								</span>
+							</div>
+							<div class="limit-bar-container">
+								<div
+									class="limit-bar"
+									style="width: {limit.percentage}%; background: {getStatusColor(limit.status)}"
+								></div>
+							</div>
+							<div class="limit-footer">
+								<span class="reset-time">
+									<IconClock size={12} />
+									Resets in {formatTimeUntilReset(limit.resetsAt)}
+								</span>
+								<span class="percentage">{Math.round(limit.percentage)}% remaining</span>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
 
 			<div class="dropdown-footer">
-				<span class="footer-note">Rate limits refresh every minute</span>
+				{#if hasConnectedServices}
+					<span class="footer-note">Rate limits refresh every minute</span>
+				{:else}
+					<span class="footer-note">Connect services to monitor rate limits</span>
+				{/if}
 			</div>
 		</div>
 	{/if}
@@ -261,6 +310,16 @@
 		background: rgba(239, 68, 68, 0.2);
 	}
 
+	.rate-limit-btn.disconnected {
+		background: rgba(107, 114, 128, 0.1);
+		border-color: rgba(107, 114, 128, 0.2);
+		color: #6b7280;
+	}
+
+	.rate-limit-btn.disconnected:hover {
+		background: rgba(107, 114, 128, 0.2);
+	}
+
 	.chevron {
 		transition: transform 0.2s ease;
 	}
@@ -301,6 +360,85 @@
 		font-size: 0.75rem;
 	}
 
+	/* Loading State */
+	.limits-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 2rem;
+		gap: 0.75rem;
+		color: #64748b;
+		font-size: 0.8125rem;
+	}
+
+	.loading-spinner {
+		width: 24px;
+		height: 24px;
+		border: 2px solid rgba(99, 102, 241, 0.2);
+		border-top-color: #6366f1;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* No Services State */
+	.no-services {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		padding: 1.5rem;
+	}
+
+	.no-services-icon {
+		width: 56px;
+		height: 56px;
+		border-radius: 14px;
+		background: rgba(107, 114, 128, 0.1);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #6b7280;
+		margin-bottom: 1rem;
+	}
+
+	.no-services-title {
+		font-size: 0.9375rem;
+		font-weight: 600;
+		color: #e2e8f0;
+		margin: 0 0 0.5rem 0;
+	}
+
+	.no-services-desc {
+		font-size: 0.8125rem;
+		color: #64748b;
+		margin: 0 0 1rem 0;
+		line-height: 1.5;
+	}
+
+	.connect-btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.625rem 1.25rem;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		border-radius: 8px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.connect-btn:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+	}
+
+	/* Limits List */
 	.limits-list {
 		padding: 0.75rem;
 		max-height: 300px;
