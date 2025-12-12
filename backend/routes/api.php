@@ -169,6 +169,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/me/memberships', [MeController::class, 'memberships']);
     Route::get('/me/products', [MeController::class, 'products']);
     Route::get('/me/indicators', [MeController::class, 'indicators']);
+    
+    // Alias routes for frontend compatibility
+    Route::get('/user/memberships', [MeController::class, 'memberships']);
+    Route::get('/user/indicators', [MeController::class, 'indicators']);
     Route::get('/me/security-events', [AuthController::class, 'listSecurityEvents']);
     Route::get('/auth/check', [AuthController::class, 'check']);
     Route::post('/security/events', [AuthController::class, 'securityEvent']);

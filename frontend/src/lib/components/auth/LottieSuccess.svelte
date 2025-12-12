@@ -235,20 +235,35 @@
 
 		// Use IIFE for async lottie import - Svelte 5 pattern
 		(async () => {
-			// lottie-web ESM build has proper exports
-			const lottie = await import('lottie-web/build/player/esm/lottie_svg.min.js');
+			try {
+				// lottie-web: import the light SVG build for smaller bundle
+				const lottieModule = await import('lottie-web/build/player/lottie_light.min.js');
+				// UMD build - access via default or direct
+				const lottie = lottieModule.default ?? lottieModule;
+				
+				if (!lottie?.loadAnimation) {
+					console.error('[LottieSuccess] lottie.loadAnimation not available');
+					// Fallback: just trigger complete callback
+					setTimeout(() => onComplete?.(), 500);
+					return;
+				}
 
-			animationInstance = lottie.default.loadAnimation({
-				container: containerRef!,
-				renderer: 'svg',
-				loop: false,
-				autoplay: true,
-				animationData: successAnimationData
-			});
+				animationInstance = lottie.loadAnimation({
+					container: containerRef!,
+					renderer: 'svg',
+					loop: false,
+					autoplay: true,
+					animationData: successAnimationData
+				});
 
-			animationInstance.addEventListener('complete', () => {
-				onComplete?.();
-			});
+				animationInstance.addEventListener('complete', () => {
+					onComplete?.();
+				});
+			} catch (err) {
+				console.error('[LottieSuccess] Failed to load lottie:', err);
+				// Fallback: trigger complete callback
+				setTimeout(() => onComplete?.(), 500);
+			}
 		})();
 
 		return () => {
