@@ -19,6 +19,7 @@
 	import { quintOut, backOut, elasticOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast';
 	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// Types
 	interface ServiceField {
@@ -134,23 +135,16 @@
 	async function fetchServices() {
 		try {
 			isLoading = true;
-			const response = await fetch('/api/admin/connections');
-
-			if (response.ok) {
-				const data = await response.json();
-				allServices = data.connections || [];
-				categories = data.categories || {};
-				summary = data.summary || {
-					total_available: 0,
-					total_connected: 0,
-					total_disconnected: 0,
-					total_errors: 0,
-					needs_attention: 0
-				};
-			} else {
-				// API not available - use static service list
-				initializeStaticServices();
-			}
+			const data = await adminFetch('/api/admin/connections');
+			allServices = data.connections || [];
+			categories = data.categories || {};
+			summary = data.summary || {
+				total_available: 0,
+				total_connected: 0,
+				total_disconnected: 0,
+				total_errors: 0,
+				needs_attention: 0
+			};
 		} catch (error) {
 			console.error('Failed to fetch services:', error);
 			// Fallback to static services

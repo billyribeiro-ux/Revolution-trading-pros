@@ -19,7 +19,7 @@
 	import { spring, tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
-	import { getAuthToken } from '$lib/stores/auth';
+	import { adminFetch } from '$lib/utils/adminFetch';
 	import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
 	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
 	import IconShieldX from '@tabler/icons-svelte/icons/shield-x';
@@ -146,31 +146,11 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	async function loadHealthData() {
-		const token = getAuthToken();
-		if (!token) {
-			toastStore.error('Authentication required');
-			return;
-		}
-
 		try {
-			const response = await fetch('/api/admin/site-health', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				}
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				healthData = transformHealthData(data);
-				lastUpdated = new Date();
-				scoreDisplay.set(healthData.overallScore);
-			} else {
-				// If API not available, show placeholder state
-				healthData = getDefaultHealthData();
-				lastUpdated = new Date();
-				scoreDisplay.set(0);
-			}
+			const data = await adminFetch('/api/admin/site-health');
+			healthData = transformHealthData(data);
+			lastUpdated = new Date();
+			scoreDisplay.set(healthData.overallScore);
 		} catch (error) {
 			console.error('Failed to load health data:', error);
 			healthData = getDefaultHealthData();
@@ -248,37 +228,18 @@
 		isRunningTests = true;
 		toastStore.info('Running site health tests...');
 
-		const token = getAuthToken();
-		if (!token) {
-			toastStore.error('Authentication required');
-			isRunningTests = false;
-			return;
-		}
-
 		try {
-			const response = await fetch('/api/admin/site-health/run-tests', {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json'
-				}
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				healthData = transformHealthData(data);
-				lastUpdated = new Date();
-				scoreDisplay.set(healthData.overallScore);
-				toastStore.success('Health tests completed');
-			} else {
-				toastStore.error('Failed to run health tests');
-			}
+			const data = await adminFetch('/api/admin/site-health/run-tests', { method: 'POST' });
+			healthData = transformHealthData(data);
+			lastUpdated = new Date();
+			scoreDisplay.set(healthData.overallScore);
+			toastStore.success('Health tests completed');
 		} catch (error) {
 			console.error('Failed to run health tests:', error);
 			toastStore.error('Failed to run health tests');
+		} finally {
+			isRunningTests = false;
 		}
-
-		isRunningTests = false;
 	}
 
 	async function handleRefresh() {
