@@ -56,14 +56,17 @@
 		}
 	});
 
-	onMount(async () => {
+	onMount(() => {
 		// Mark as mounted FIRST to enable client-only derived values
 		mounted = true;
 		
 		if (browser) {
-			// ICT11+ Pattern: Restore auth session on page refresh
-			// This must run early to restore user state before protected routes check auth
-			await initializeAuth();
+			// ICT11+ Pattern: Non-blocking auth initialization
+			// Auth restoration runs in background - UI renders immediately
+			// Protected routes handle auth checks independently
+			initializeAuth().catch((err) => {
+				console.debug('[Layout] Auth init failed (non-critical):', err);
+			});
 			
 			registerServiceWorker();
 			initPerformanceMonitoring();

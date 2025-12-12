@@ -1324,11 +1324,11 @@ export const getSecurityEvents = () => authService.getSecurityEvents();
 /**
  * Initialize authentication on app startup
  * 
- * ICT11+ Pattern: Restore session on page refresh
+ * ICT11+ Pattern: Restore session on page refresh with timeout
  * 
  * This function should be called once on app mount to:
  * 1. Check if there's a stored session ID
- * 2. Attempt to refresh the token using httpOnly cookies
+ * 2. Attempt to refresh the token using httpOnly cookies (with timeout)
  * 3. Fetch user data if refresh succeeds
  * 4. Mark initialization as complete
  * 
@@ -1345,14 +1345,27 @@ export async function initializeAuth(): Promise<boolean> {
 		return false;
 	}
 
+	// ICT11+ Performance: Add timeout to prevent blocking UI
+	const AUTH_TIMEOUT = 5000; // 5 second timeout
+	
+	const timeoutPromise = new Promise<never>((_, reject) => {
+		setTimeout(() => reject(new Error('Auth initialization timeout')), AUTH_TIMEOUT);
+	});
+
 	try {
-		// Attempt to refresh token using httpOnly cookie
-		const refreshed = await authStore.refreshToken();
+		// Race between auth refresh and timeout
+		const refreshed = await Promise.race([
+			authStore.refreshToken(),
+			timeoutPromise
+		]);
 		
 		if (refreshed) {
-			// Token refreshed successfully, fetch user data
+			// Token refreshed successfully, fetch user data (also with timeout)
 			try {
-				await authService.getUser();
+				await Promise.race([
+					authService.getUser(),
+					timeoutPromise
+				]);
 				console.debug('[Auth] Session restored successfully');
 				return true;
 			} catch (userError) {
