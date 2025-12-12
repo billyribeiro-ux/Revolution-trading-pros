@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade, fly, slide, scale } from 'svelte/transition';
+	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
 		IconPlus,
 		IconSearch,
@@ -161,8 +162,7 @@
 			if (dateRange.start) params.append('date_from', dateRange.start);
 			if (dateRange.end) params.append('date_to', dateRange.end);
 
-			const response = await fetch(`/api/admin/posts?${params}`);
-			const data = await response.json();
+			const data = await adminFetch(`/api/admin/posts?${params}`);
 
 			// Enhance posts with additional data
 			posts = (data.data || []).map((post) => ({
@@ -181,8 +181,7 @@
 
 	async function loadStats() {
 		try {
-			const response = await fetch('/api/admin/posts/stats');
-			stats = await response.json();
+			stats = await adminFetch('/api/admin/posts/stats');
 		} catch (error) {
 			console.error('Failed to load stats:', error);
 		}
@@ -190,8 +189,7 @@
 
 	async function loadCategories() {
 		try {
-			const response = await fetch('/api/admin/categories');
-			const data = await response.json();
+			const data = await adminFetch('/api/admin/categories');
 			categories = data.data || [];
 		} catch (error) {
 			console.error('Failed to load categories:', error);
@@ -200,8 +198,7 @@
 
 	async function loadTags() {
 		try {
-			const response = await fetch('/api/admin/tags');
-			const data = await response.json();
+			const data = await adminFetch('/api/admin/tags');
 			tags = data.data || [];
 		} catch (error) {
 			console.error('Failed to load tags:', error);
@@ -300,19 +297,15 @@
 		if (!confirm(`Delete ${selectedPosts.size} posts? This cannot be undone.`)) return;
 
 		try {
-			const response = await fetch('/api/admin/posts/bulk-delete', {
+			await adminFetch('/api/admin/posts/bulk-delete', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ ids: [...selectedPosts] })
 			});
-
-			if (response.ok) {
-				loadPosts();
-				loadStats();
-				selectedPosts.clear();
-				selectAll = false;
-				showNotification('success', `Deleted ${selectedPosts.size} posts`);
-			}
+			loadPosts();
+			loadStats();
+			selectedPosts.clear();
+			selectAll = false;
+			showNotification('success', `Deleted ${selectedPosts.size} posts`);
 		} catch (error) {
 			console.error('Failed to bulk delete:', error);
 			showNotification('error', 'Failed to delete posts');
@@ -326,22 +319,15 @@
 		}
 
 		try {
-			const response = await fetch('/api/admin/posts/bulk-status', {
+			await adminFetch('/api/admin/posts/bulk-status', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					ids: [...selectedPosts],
-					status: newStatus
-				})
+				body: JSON.stringify({ ids: [...selectedPosts], status: newStatus })
 			});
-
-			if (response.ok) {
-				loadPosts();
-				loadStats();
-				selectedPosts.clear();
-				selectAll = false;
-				showNotification('success', `Updated ${selectedPosts.size} posts to ${newStatus}`);
-			}
+			loadPosts();
+			loadStats();
+			selectedPosts.clear();
+			selectAll = false;
+			showNotification('success', `Updated ${selectedPosts.size} posts to ${newStatus}`);
 		} catch (error) {
 			console.error('Failed to bulk update status:', error);
 			showNotification('error', 'Failed to update posts');
@@ -356,7 +342,7 @@
 		if (!confirm('Are you sure you want to delete this post?')) return;
 
 		try {
-			await fetch(`/api/admin/posts/${id}`, { method: 'DELETE' });
+			await adminFetch(`/api/admin/posts/${id}`, { method: 'DELETE' });
 			loadPosts();
 			loadStats();
 			showNotification('success', 'Post deleted');
@@ -368,7 +354,7 @@
 
 	async function duplicatePost(id: number) {
 		try {
-			await fetch(`/api/admin/posts/${id}/duplicate`, { method: 'POST' });
+			await adminFetch(`/api/admin/posts/${id}/duplicate`, { method: 'POST' });
 			loadPosts();
 			showNotification('success', 'Post duplicated');
 		} catch (error) {
@@ -381,18 +367,14 @@
 		const newStatus = post.status === 'published' ? 'draft' : 'published';
 
 		try {
-			const response = await fetch(`/api/admin/posts/${post.id}/status`, {
+			await adminFetch(`/api/admin/posts/${post.id}/status`, {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ status: newStatus })
 			});
-
-			if (response.ok) {
-				post.status = newStatus;
-				posts = posts;
-				loadStats();
-				showNotification('success', `Post ${newStatus}`);
-			}
+			post.status = newStatus;
+			posts = posts;
+			loadStats();
+			showNotification('success', `Post ${newStatus}`);
 		} catch (error) {
 			console.error('Failed to toggle status:', error);
 			showNotification('error', 'Failed to update status');
@@ -401,17 +383,13 @@
 
 	async function toggleFeatured(post: any) {
 		try {
-			const response = await fetch(`/api/admin/posts/${post.id}/featured`, {
+			await adminFetch(`/api/admin/posts/${post.id}/featured`, {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ featured: !post.featured })
 			});
-
-			if (response.ok) {
-				post.featured = !post.featured;
-				posts = posts;
-				showNotification('success', post.featured ? 'Post featured' : 'Post unfeatured');
-			}
+			post.featured = !post.featured;
+			posts = posts;
+			showNotification('success', post.featured ? 'Post featured' : 'Post unfeatured');
 		} catch (error) {
 			console.error('Failed to toggle featured:', error);
 			showNotification('error', 'Failed to update featured status');
@@ -430,7 +408,7 @@
 				params.append('ids', [...selectedPosts].join(','));
 			}
 
-			const response = await fetch(`/api/admin/posts/export?${params}`);
+			const response = await adminFetch<Response>(`/api/admin/posts/export?${params}`, { rawResponse: true });
 			const blob = await response.blob();
 
 			const a = document.createElement('a');
@@ -455,16 +433,13 @@
 		formData.append('file', file);
 
 		try {
-			const response = await fetch('/api/admin/posts/import', {
+			await adminFetch('/api/admin/posts/import', {
 				method: 'POST',
 				body: formData
 			});
-
-			if (response.ok) {
-				loadPosts();
-				loadStats();
-				showNotification('success', 'Posts imported successfully');
-			}
+			loadPosts();
+			loadStats();
+			showNotification('success', 'Posts imported successfully');
 		} catch (error) {
 			console.error('Failed to import posts:', error);
 			showNotification('error', 'Failed to import posts');
@@ -516,8 +491,7 @@
 		showAnalyticsModal = true;
 
 		try {
-			const response = await fetch(`/api/admin/posts/${post.id}/analytics`);
-			const data = await response.json();
+			const data = await adminFetch(`/api/admin/posts/${post.id}/analytics`);
 			analyticsPost = { ...analyticsPost, analytics: data };
 		} catch (error) {
 			console.error('Failed to load analytics:', error);
