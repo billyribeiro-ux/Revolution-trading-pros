@@ -235,10 +235,10 @@
 
 		// Use IIFE for async lottie import - Svelte 5 pattern
 		(async () => {
-			// lottie-web default export is the player
-			const lottie = (await import('lottie-web')).default;
+			// lottie-web ESM build has proper exports
+			const lottie = await import('lottie-web/build/player/esm/lottie_svg.min.js');
 
-			animationInstance = lottie.loadAnimation({
+			animationInstance = lottie.default.loadAnimation({
 				container: containerRef!,
 				renderer: 'svg',
 				loop: false,
