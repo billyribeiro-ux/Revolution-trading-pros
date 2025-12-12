@@ -5,7 +5,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "svelte-kit sync && vite dev",
+		"dev:fast": "vite dev",
 		"build": "vite build",
 		"build:cloudflare": "DEPLOY_TARGET=cloudflare vite build",
 		"build:vercel": "DEPLOY_TARGET=vercel vite build",
