@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Exclude node_modules from Tailwind source scanning */
+/* Fixes "Invalid declaration: Snippet" error from @threlte/core */
+@source not "../node_modules";
+
 /**
  * Revolution Trading Pros - Design System Tokens
  * Netflix E6 Level Architecture
