@@ -202,13 +202,13 @@
 	function getStatusColor(status: string): string {
 		switch (status) {
 			case 'active':
-				return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+				return 'status-active';
 			case 'trial':
-				return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+				return 'status-trial';
 			case 'churned':
-				return 'bg-red-500/20 text-red-400 border-red-500/30';
+				return 'status-churned';
 			default:
-				return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+				return 'status-default';
 		}
 	}
 
@@ -548,7 +548,7 @@
 							</td>
 							<td>
 								<div class="member-info">
-									<div class="member-avatar" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">
+									<div class="member-avatar">
 										{getMemberInitials(member)}
 									</div>
 									<div class="member-details">
@@ -754,27 +754,24 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-accent-secondary));
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		color: white;
-		box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 8px 32px var(--admin-accent-glow, rgba(99, 102, 241, 0.3));
 	}
 
 	.header-title h1 {
 		font-size: 2rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--admin-text-primary);
 		margin: 0;
 	}
 
 	.header-title p {
-		color: #64748b;
+		color: var(--admin-text-muted);
 		font-size: 0.9375rem;
 		margin: 0.25rem 0 0;
 	}
@@ -793,12 +790,12 @@
 	}
 
 	.stat-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: var(--admin-card-bg);
 		border-radius: 20px;
 		padding: 1.5rem;
 		position: relative;
 		overflow: hidden;
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid var(--admin-card-border);
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -825,7 +822,7 @@
 
 	.stat-label {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--admin-text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 600;
@@ -834,7 +831,7 @@
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 800;
-		color: #f1f5f9;
+		color: var(--admin-text-primary);
 	}
 
 	.stat-change {
@@ -845,9 +842,9 @@
 		font-weight: 500;
 	}
 
-	.stat-change.positive { color: #34d399; }
-	.stat-change.neutral { color: #94a3b8; }
-	.stat-change.negative { color: #f87171; }
+	.stat-change.positive { color: var(--admin-success); }
+	.stat-change.neutral { color: var(--admin-text-muted); }
+	.stat-change.negative { color: var(--admin-error); }
 
 	.stat-sparkline {
 		position: absolute;
@@ -1206,16 +1203,17 @@
 		font-weight: 700;
 		font-size: 0.875rem;
 		color: white;
+		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-accent-secondary));
 	}
 
 	.member-name {
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--admin-text-primary);
 	}
 
 	.member-email {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--admin-text-muted);
 	}
 
 	.status-badge {
@@ -1227,25 +1225,50 @@
 		border: 1px solid;
 	}
 
+	.status-badge.status-active {
+		background: var(--admin-success-bg);
+		color: var(--admin-success);
+		border-color: var(--admin-success-border);
+	}
+
+	.status-badge.status-trial {
+		background: var(--admin-info-bg);
+		color: var(--admin-info);
+		border-color: var(--admin-info-border);
+	}
+
+	.status-badge.status-churned {
+		background: var(--admin-error-bg);
+		color: var(--admin-error);
+		border-color: var(--admin-error-border);
+	}
+
+	.status-badge.status-default {
+		background: var(--admin-badge-default-bg, rgba(148, 163, 184, 0.15));
+		color: var(--admin-text-muted);
+		border-color: var(--admin-border-light);
+	}
+
 	.plan-name {
-		color: #a5b4fc;
+		color: var(--admin-accent-primary);
 	}
 
 	.spending {
 		font-weight: 600;
+		color: var(--admin-text-secondary);
 	}
 
 	.spending.whale {
-		color: #fbbf24;
+		color: var(--admin-warning);
 	}
 
 	.spending.high {
-		color: #34d399;
+		color: var(--admin-success);
 	}
 
 	.date {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--admin-text-muted);
 	}
 
 	.actions {
