@@ -1,20 +1,8 @@
-# Railway Nixpacks configuration for Laravel backend
-# This file tells Railway to use PHP instead of Node.js
-
-[phases.setup]
-nixPkgs = ["php83", "php83Extensions.pdo_pgsql", "php83Extensions.pgsql", "php83Extensions.redis", "php83Extensions.mbstring", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "php83Extensions.fileinfo"]
-aptPkgs = ["composer"]
+# Railway Nixpacks configuration - SIMPLE
+# No cache commands - they crash on Railway's limited memory
 
 [phases.install]
 cmds = ["cd backend && composer install --no-dev --optimize-autoloader --no-interaction"]
-
-[phases.build]
-cmds = [
-    "cd backend && php artisan key:generate --force || true",
-    "cd backend && php artisan config:cache",
-    "cd backend && php artisan route:cache",
-    "cd backend && php artisan view:cache"
-]
 
 [start]
 cmd = "cd backend && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
