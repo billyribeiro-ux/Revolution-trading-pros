@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 
-const API_URL = process.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = env.VITE_API_URL || 'http://localhost:8000/api';
 
 /**
  * Proxy auth refresh requests to Laravel backend

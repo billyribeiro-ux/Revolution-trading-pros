@@ -7,17 +7,18 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 
 // Default SMTP settings (in production, these would come from database/env)
 let emailSettings = {
 	provider: 'smtp',
-	host: process.env.SMTP_HOST || '',
-	port: parseInt(process.env.SMTP_PORT || '587'),
-	username: process.env.SMTP_USERNAME || '',
-	password: process.env.SMTP_PASSWORD || '',
-	encryption: process.env.SMTP_ENCRYPTION || 'tls',
-	from_address: process.env.SMTP_FROM_ADDRESS || '',
-	from_name: process.env.SMTP_FROM_NAME || 'Revolution Trading Pros'
+	host: env.SMTP_HOST || '',
+	port: parseInt(env.SMTP_PORT || '587'),
+	username: env.SMTP_USERNAME || '',
+	password: env.SMTP_PASSWORD || '',
+	encryption: env.SMTP_ENCRYPTION || 'tls',
+	from_address: env.SMTP_FROM_ADDRESS || '',
+	from_name: env.SMTP_FROM_NAME || 'Revolution Trading Pros'
 };
 
 export const GET: RequestHandler = async ({ locals }) => {
