@@ -1,40 +1,8 @@
 # Railway/Nixpacks configuration for Laravel backend
-# This config is used when Railway root directory is set to "backend"
-
-[phases.setup]
-# PHP 8.3 with all required extensions for Laravel + PostgreSQL + Redis
-nixPkgs = [
-    "php83",
-    "php83Extensions.pdo",
-    "php83Extensions.pdo_pgsql",
-    "php83Extensions.pgsql",
-    "php83Extensions.redis",
-    "php83Extensions.mbstring",
-    "php83Extensions.xml",
-    "php83Extensions.dom",
-    "php83Extensions.curl",
-    "php83Extensions.zip",
-    "php83Extensions.gd",
-    "php83Extensions.bcmath",
-    "php83Extensions.tokenizer",
-    "php83Extensions.fileinfo",
-    "php83Extensions.ctype",
-    "php83Extensions.openssl",
-    "php83Extensions.session",
-    "php83Extensions.filter"
-]
+# SIMPLE CONFIG - no build caching commands (they crash on Railway)
 
 [phases.install]
-# Skip dev dependencies (PHPUnit requires PHP 8.3 but we don't need it in production)
-cmds = ["composer install --no-dev --optimize-autoloader --no-interaction --no-progress"]
-
-[phases.build]
-cmds = [
-    "php artisan package:discover --ansi || true",
-    "php artisan config:cache || true",
-    "php artisan route:cache || true",
-    "php artisan view:cache || true"
-]
+cmds = ["composer install --no-dev --optimize-autoloader --no-interaction"]
 
 [start]
 cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
