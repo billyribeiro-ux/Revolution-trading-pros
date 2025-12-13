@@ -7,7 +7,12 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 [vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
 
-# Production environment
+# Production environment - UPDATE VITE_API_URL after Railway deployment
 [env.production.vars]
-VITE_API_URL = "https://revolution-trading-backend.fly.dev/api"
+VITE_API_URL = "https://your-railway-app.up.railway.app/api"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+
+# R2 Bucket binding (for direct R2 access from Workers if needed)
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "revolution-trading-pros"
