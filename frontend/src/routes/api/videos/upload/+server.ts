@@ -1,29 +1,25 @@
 /**
- * Video Upload API - Real File Upload Handler
+ * Video Upload API - Proxy to Backend
  *
- * Handles video file uploads with support for:
- * - Direct uploads
- * - Presigned URL generation for S3/cloud storage
- * - Thumbnail generation
- * - Progress tracking
+ * Handles video file uploads by proxying to the Laravel backend.
+ * The backend handles storage to Cloudflare R2.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - Serverless Compatible (Vercel/Cloudflare)
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
+import { env } from '$env/dynamic/private';
+
+// API Base URL
+const API_URL = env.VITE_API_URL || 'http://localhost:8000/api';
 
 // Upload configuration
-const UPLOAD_DIR = 'static/uploads/videos';
-const THUMBNAIL_DIR = 'static/uploads/thumbnails';
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
-// Upload tracking
+// In-memory upload tracking (for session-based uploads)
 interface UploadSession {
 	id: string;
 	filename: string;
@@ -39,12 +35,15 @@ interface UploadSession {
 const uploadSessions: Map<string, UploadSession> = new Map();
 
 // POST - Handle file upload or request presigned URL
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url, cookies }) => {
 	const action = url.searchParams.get('action');
+
+	// Get auth token from cookies
+	const token = cookies.get('auth_token');
 
 	// Request presigned URL for cloud upload
 	if (action === 'presign') {
-		return handlePresignRequest(request);
+		return handlePresignRequest(request, token);
 	}
 
 	// Request upload session
@@ -52,8 +51,8 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		return handleUploadInit(request);
 	}
 
-	// Direct file upload
-	return handleDirectUpload(request);
+	// Direct file upload - proxy to backend
+	return handleDirectUpload(request, token);
 };
 
 // GET - Check upload status
@@ -82,8 +81,8 @@ export const GET: RequestHandler = async ({ url }) => {
 	});
 };
 
-// Handle presigned URL request (for S3-compatible storage)
-async function handlePresignRequest(request: Request) {
+// Handle presigned URL request (for S3-compatible storage like R2)
+async function handlePresignRequest(request: Request, token?: string) {
 	try {
 		const body = await request.json();
 		const { filename, content_type, size } = body;
@@ -96,12 +95,25 @@ async function handlePresignRequest(request: Request) {
 			throw error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
 		}
 
-		// In production, generate actual presigned URL from S3/R2/etc
-		// For now, return a mock presigned URL structure
-		const uploadId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-		const key = `videos/${uploadId}/${filename}`;
+		// Request presigned URL from backend
+		const response = await fetch(`${API_URL}/videos/presign`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
+			},
+			body: JSON.stringify({ filename, content_type, size })
+		});
 
-		// Create upload session
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			throw error(response.status, errorData.message || 'Failed to get presigned URL');
+		}
+
+		const data = await response.json();
+
+		// Create local session for tracking
+		const uploadId = data.data?.upload_id || `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 		const session: UploadSession = {
 			id: uploadId,
 			filename,
@@ -112,22 +124,12 @@ async function handlePresignRequest(request: Request) {
 		};
 		uploadSessions.set(uploadId, session);
 
-		return json({
-			success: true,
-			data: {
-				upload_id: uploadId,
-				presigned_url: `/api/videos/upload?session_id=${uploadId}`,
-				key,
-				fields: {
-					'Content-Type': content_type
-				},
-				expires_in: 3600 // 1 hour
-			}
-		});
+		return json(data);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
+		console.error('Presign error:', err);
 		throw error(500, 'Failed to generate presigned URL');
 	}
 }
@@ -182,12 +184,12 @@ async function handleUploadInit(request: Request) {
 	}
 }
 
-// Handle direct file upload
-async function handleDirectUpload(request: Request) {
+// Handle direct file upload - proxy to backend
+async function handleDirectUpload(request: Request, token?: string) {
 	try {
 		const formData = await request.formData();
 		const file = formData.get('file') as File | null;
-		const type = formData.get('type') as string || 'video'; // 'video' or 'thumbnail'
+		const type = formData.get('type') as string || 'video';
 		const sessionId = formData.get('session_id') as string | null;
 
 		if (!file) {
@@ -205,20 +207,6 @@ async function handleDirectUpload(request: Request) {
 			throw error(400, `File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`);
 		}
 
-		// Determine upload directory
-		const uploadDir = type === 'thumbnail' ? THUMBNAIL_DIR : UPLOAD_DIR;
-
-		// Ensure directory exists
-		if (!existsSync(uploadDir)) {
-			await mkdir(uploadDir, { recursive: true });
-		}
-
-		// Generate unique filename
-		const ext = path.extname(file.name);
-		const uploadId = sessionId || `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-		const filename = `${uploadId}${ext}`;
-		const filePath = path.join(uploadDir, filename);
-
 		// Update session status
 		if (sessionId) {
 			const session = uploadSessions.get(sessionId);
@@ -228,40 +216,56 @@ async function handleDirectUpload(request: Request) {
 			}
 		}
 
-		// Convert file to buffer and write
-		const arrayBuffer = await file.arrayBuffer();
-		const buffer = Buffer.from(arrayBuffer);
-		await writeFile(filePath, buffer);
+		// Proxy upload to backend
+		const backendFormData = new FormData();
+		backendFormData.append('file', file);
+		backendFormData.append('type', type);
+		if (sessionId) {
+			backendFormData.append('session_id', sessionId);
+		}
 
-		// Generate public URL
-		const publicUrl = `/${uploadDir}/${filename}`;
+		const response = await fetch(`${API_URL}/videos/upload`, {
+			method: 'POST',
+			headers: {
+				...(token ? { Authorization: `Bearer ${token}` } : {})
+			},
+			body: backendFormData
+		});
 
-		// Update session
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+
+			// Update session with error
+			if (sessionId) {
+				const session = uploadSessions.get(sessionId);
+				if (session) {
+					session.status = 'error';
+					session.error = errorData.message || 'Upload failed';
+					uploadSessions.set(sessionId, session);
+				}
+			}
+
+			throw error(response.status, errorData.message || 'Upload failed');
+		}
+
+		const data = await response.json();
+
+		// Update session with success
 		if (sessionId) {
 			const session = uploadSessions.get(sessionId);
 			if (session) {
 				session.status = 'complete';
 				session.uploaded = file.size;
 				if (type === 'thumbnail') {
-					session.thumbnail_url = publicUrl;
+					session.thumbnail_url = data.data?.url;
 				} else {
-					session.video_url = publicUrl;
+					session.video_url = data.data?.url;
 				}
 				uploadSessions.set(sessionId, session);
 			}
 		}
 
-		return json({
-			success: true,
-			data: {
-				upload_id: uploadId,
-				filename,
-				size: file.size,
-				type: file.type,
-				url: publicUrl,
-				status: 'complete'
-			}
-		});
+		return json(data);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
