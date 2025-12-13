@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
  * - Find by field with caching
  * - Collection caching
  * - Automatic cache invalidation on model events
- * - Tag-based cache management
+ * - Tag-based cache management (when supported)
  *
  * Usage:
  * ```php
@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Collection;
  * }
  * ```
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @level ICT9+ Principal Engineer Grade
  */
 trait Cacheable
@@ -77,6 +77,42 @@ trait Cacheable
     }
 
     /**
+     * Check if cache driver supports tagging
+     */
+    protected static function cacheSupportsTagging(): bool
+    {
+        try {
+            $store = Cache::getStore();
+            return method_exists($store, 'tags');
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Get cache instance (with or without tags based on driver support)
+     */
+    protected static function getCacheInstance(): mixed
+    {
+        if (static::cacheSupportsTagging()) {
+            return Cache::tags([static::getCacheTag()]);
+        }
+        return Cache::store();
+    }
+
+    /**
+     * Get cache key with tag prefix for non-tagging drivers
+     */
+    protected static function getCacheKey(string $key): string
+    {
+        if (static::cacheSupportsTagging()) {
+            return $key;
+        }
+        // For non-tagging drivers, include tag in key for pseudo-namespacing
+        return static::getCacheTag() . ':' . $key;
+    }
+
+    /**
      * Find by ID with caching
      *
      * @param string|int $id
@@ -85,9 +121,9 @@ trait Cacheable
      */
     public static function findCached(string|int $id, array $relations = []): ?static
     {
-        $key = static::getCachePrefix() . ':' . $id;
+        $key = static::getCacheKey(static::getCachePrefix() . ':' . $id);
 
-        return Cache::tags([static::getCacheTag()])->remember(
+        return static::getCacheInstance()->remember(
             $key,
             static::getCacheTtl(),
             function () use ($id, $relations) {
@@ -110,9 +146,9 @@ trait Cacheable
      */
     public static function findByCached(string $field, mixed $value, array $relations = []): ?static
     {
-        $key = static::getCachePrefix() . ":{$field}:" . md5((string) $value);
+        $key = static::getCacheKey(static::getCachePrefix() . ":{$field}:" . md5((string) $value));
 
-        return Cache::tags([static::getCacheTag()])->remember(
+        return static::getCacheInstance()->remember(
             $key,
             static::getCacheTtl(),
             function () use ($field, $value, $relations) {
@@ -138,9 +174,9 @@ trait Cacheable
      */
     public static function allCached(array $relations = []): Collection
     {
-        $key = static::getCachePrefix() . ':all';
+        $key = static::getCacheKey(static::getCachePrefix() . ':all');
 
-        return Cache::tags([static::getCacheTag()])->remember(
+        return static::getCacheInstance()->remember(
             $key,
             static::getCacheTtl(),
             function () use ($relations) {
@@ -162,9 +198,9 @@ trait Cacheable
      */
     public static function scopeCached(string $scope, array $scopeArgs = [], array $relations = []): Collection
     {
-        $key = static::getCachePrefix() . ':scope:' . $scope . ':' . md5(serialize($scopeArgs));
+        $key = static::getCacheKey(static::getCachePrefix() . ':scope:' . $scope . ':' . md5(serialize($scopeArgs)));
 
-        return Cache::tags([static::getCacheTag()])->remember(
+        return static::getCacheInstance()->remember(
             $key,
             static::getCacheTtl(),
             function () use ($scope, $scopeArgs, $relations) {
@@ -182,9 +218,9 @@ trait Cacheable
      */
     public static function countCached(?string $scope = null, array $scopeArgs = []): int
     {
-        $key = static::getCachePrefix() . ':count' . ($scope ? ":{$scope}" : '');
+        $key = static::getCacheKey(static::getCachePrefix() . ':count' . ($scope ? ":{$scope}" : ''));
 
-        return Cache::tags([static::getCacheTag()])->remember(
+        return static::getCacheInstance()->remember(
             $key,
             static::getStatsCacheTtl(),
             function () use ($scope, $scopeArgs) {
@@ -202,9 +238,9 @@ trait Cacheable
      */
     public static function getAggregatedStatsCached(string $column, string $function = 'sum'): mixed
     {
-        $key = static::getCachePrefix() . ":stats:{$function}:{$column}";
+        $key = static::getCacheKey(static::getCachePrefix() . ":stats:{$function}:{$column}");
 
-        return Cache::tags([static::getCacheTag()])->remember(
+        return static::getCacheInstance()->remember(
             $key,
             static::getStatsCacheTtl(),
             fn () => static::query()->{$function}($column)
@@ -217,21 +253,34 @@ trait Cacheable
     public function clearModelCache(): void
     {
         $prefix = static::getCachePrefix();
-        $tag = static::getCacheTag();
 
-        // Clear by ID
-        Cache::tags([$tag])->forget($prefix . ':' . $this->getKey());
+        if (static::cacheSupportsTagging()) {
+            $tag = static::getCacheTag();
+            // Clear by ID
+            Cache::tags([$tag])->forget($prefix . ':' . $this->getKey());
 
-        // Clear by slug if exists
-        if (isset($this->slug)) {
-            Cache::tags([$tag])->forget($prefix . ':slug:' . md5($this->slug));
+            // Clear by slug if exists
+            if (isset($this->slug)) {
+                Cache::tags([$tag])->forget($prefix . ':slug:' . md5($this->slug));
+            }
+
+            // Clear all cached
+            Cache::tags([$tag])->forget($prefix . ':all');
+
+            // Clear counts
+            Cache::tags([$tag])->forget($prefix . ':count');
+        } else {
+            // For non-tagging drivers, forget individual keys
+            $tag = static::getCacheTag();
+            Cache::forget($tag . ':' . $prefix . ':' . $this->getKey());
+
+            if (isset($this->slug)) {
+                Cache::forget($tag . ':' . $prefix . ':slug:' . md5($this->slug));
+            }
+
+            Cache::forget($tag . ':' . $prefix . ':all');
+            Cache::forget($tag . ':' . $prefix . ':count');
         }
-
-        // Clear all cached
-        Cache::tags([$tag])->forget($prefix . ':all');
-
-        // Clear counts
-        Cache::tags([$tag])->forget($prefix . ':count');
     }
 
     /**
@@ -239,7 +288,17 @@ trait Cacheable
      */
     public static function clearAllModelCache(): void
     {
-        Cache::tags([static::getCacheTag()])->flush();
+        if (static::cacheSupportsTagging()) {
+            Cache::tags([static::getCacheTag()])->flush();
+        } else {
+            // For non-tagging drivers, we can't easily flush all keys
+            // This is a limitation of file/database cache drivers
+            // Best effort: clear common keys
+            $prefix = static::getCachePrefix();
+            $tag = static::getCacheTag();
+            Cache::forget($tag . ':' . $prefix . ':all');
+            Cache::forget($tag . ':' . $prefix . ':count');
+        }
     }
 
     /**
