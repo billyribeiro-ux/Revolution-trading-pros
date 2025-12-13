@@ -1,8 +1,0 @@
-# Railway/Nixpacks configuration for Laravel backend
-# SIMPLE CONFIG - no build caching commands (they crash on Railway)
-
-[phases.install]
-cmds = ["composer install --no-dev --optimize-autoloader --no-interaction"]
-
-[start]
-cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"

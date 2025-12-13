@@ -1,8 +1,0 @@
-# Railway Nixpacks configuration - SIMPLE
-# No cache commands - they crash on Railway's limited memory
-
-[phases.install]
-cmds = ["cd backend && composer install --no-dev --optimize-autoloader --no-interaction"]
-
-[start]
-cmd = "cd backend && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
