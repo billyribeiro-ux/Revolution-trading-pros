@@ -2,13 +2,10 @@
  * Revolution Trading Pros - SvelteKit Configuration
  * ⚡ LIGHTNING STACK - ICT 11+ Principal Engineer Configuration
  *
- * Optimized for Cloudflare Pages deployment with edge SSR.
- * - Global edge deployment (300+ locations)
- * - Sub-50ms TTFB worldwide
- * - Automatic static asset caching
- * - Edge-side rendering for dynamic content
+ * Default: Vercel (development) - simple deployment
+ * Production: Set DEPLOY_TARGET=cloudflare for maximum speed
  *
- * @version 3.0.0 - Lightning Stack Edition
+ * @version 3.1.0 - Lightning Stack Edition
  * @author Revolution Trading Pros
  */
 
@@ -18,8 +15,9 @@ import adapterStatic from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // Determine which adapter to use based on environment
+// Default: Vercel for easy development, switch to cloudflare for production
 const getAdapter = () => {
-	const target = process.env.DEPLOY_TARGET || 'cloudflare';
+	const target = process.env.DEPLOY_TARGET || 'vercel';
 
 	switch (target) {
 		case 'cloudflare':
