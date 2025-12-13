@@ -36,7 +36,7 @@ const getAdapter = () => {
 			});
 		case 'vercel':
 			return adapterVercel({
-				runtime: 'edge', // Use edge runtime for speed
+				runtime: 'nodejs22.x', // Node.js runtime for full compatibility
 				regions: ['iad1'], // Primary region
 				split: false
 			});
