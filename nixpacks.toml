@@ -2,11 +2,11 @@
 # This file tells Railway to use PHP instead of Node.js
 
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.pdo_pgsql", "php82Extensions.pgsql", "php82Extensions.redis", "php82Extensions.mbstring", "php82Extensions.xml", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.gd", "php82Extensions.bcmath", "php82Extensions.tokenizer", "php82Extensions.fileinfo"]
+nixPkgs = ["php83", "php83Extensions.pdo_pgsql", "php83Extensions.pgsql", "php83Extensions.redis", "php83Extensions.mbstring", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "php83Extensions.fileinfo"]
 aptPkgs = ["composer"]
 
 [phases.install]
-cmds = ["cd backend && composer install --no-dev --optimize-autoloader"]
+cmds = ["cd backend && composer install --no-dev --optimize-autoloader --no-interaction"]
 
 [phases.build]
 cmds = [
