@@ -1,75 +1,13 @@
-#===============================================================================
-# REVOLUTION TRADING PROS - CLOUDFLARE PAGES CONFIGURATION
-# ⚡ LIGHTNING STACK - ICT 11+ Principal Engineer Configuration
-#
-# This file configures Cloudflare Pages deployment for maximum performance.
-# Deploy with: npm run deploy:cloudflare
-#
-# @version 3.0.0 - Lightning Stack Edition
-#===============================================================================
-
+# Cloudflare Pages configuration for SvelteKit
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
-compatibility_flags = ["nodejs_compat"]
-
-#-------------------------------------------------------------------------------
-# Pages Configuration
-#-------------------------------------------------------------------------------
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
-#-------------------------------------------------------------------------------
-# Environment Variables (Non-sensitive defaults)
-#-------------------------------------------------------------------------------
+# Environment variables (set in Cloudflare dashboard for secrets)
 [vars]
-PUBLIC_APP_NAME = "Revolution Trading Pros"
-PUBLIC_APP_ENV = "production"
+VITE_SITE_NAME = "Revolution Trading Pros"
 
-#-------------------------------------------------------------------------------
-# Production Environment
-#-------------------------------------------------------------------------------
-[env.production]
-name = "revolution-trading-pros"
-
+# Production environment
 [env.production.vars]
-PUBLIC_APP_ENV = "production"
-
-#-------------------------------------------------------------------------------
-# Preview/Staging Environment
-#-------------------------------------------------------------------------------
-[env.preview]
-name = "revolution-trading-pros-preview"
-
-[env.preview.vars]
-PUBLIC_APP_ENV = "preview"
-
-#-------------------------------------------------------------------------------
-# R2 Bucket Bindings (Media Storage)
-#-------------------------------------------------------------------------------
-# Uncomment and configure after creating R2 bucket
-# [[r2_buckets]]
-# binding = "MEDIA_BUCKET"
-# bucket_name = "revolution-trading-media"
-# preview_bucket_name = "revolution-trading-media-preview"
-
-#-------------------------------------------------------------------------------
-# KV Namespace Bindings (Edge Caching)
-#-------------------------------------------------------------------------------
-# Uncomment and configure after creating KV namespace
-# [[kv_namespaces]]
-# binding = "CACHE"
-# id = "YOUR_KV_NAMESPACE_ID"
-# preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID"
-
-#-------------------------------------------------------------------------------
-# Build Configuration
-#-------------------------------------------------------------------------------
-[build]
-command = "npm run build:cloudflare"
-
-#-------------------------------------------------------------------------------
-# Custom Headers for Performance & Security
-#-------------------------------------------------------------------------------
-# These headers are applied to all responses
-
-# Note: Custom headers should be configured in _headers file or
-# Cloudflare Dashboard > Rules > Transform Rules > Modify Response Header
+VITE_API_URL = "https://revolution-trading-backend.fly.dev/api"
+VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
