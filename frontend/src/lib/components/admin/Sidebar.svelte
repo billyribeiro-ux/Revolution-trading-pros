@@ -72,13 +72,14 @@
 	<!-- Navigation -->
 	<nav class="sidebar-nav">
 		{#each navigation as item}
+			{@const IconComponent = item.icon}
 			<div class="nav-group">
 				<a
 					href={item.href}
 					class="nav-item"
 					class:active={isActive(item.href)}
 				>
-					<svelte:component this={item.icon} size={20} />
+					<IconComponent size={20} />
 					<span class="nav-label">{item.label}</span>
 				</a>
 

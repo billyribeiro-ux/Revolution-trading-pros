@@ -8,9 +8,9 @@
     import IconCheck from '@tabler/icons-svelte/icons/check';
 
     // --- Interaction Logic ---
-    let containerRef: HTMLElement;
-    let mouse = { x: 0, y: 0 };
-    let isVisible = false;
+    let containerRef = $state<HTMLElement | null>(null);
+    let mouse = $state({ x: 0, y: 0 });
+    let isVisible = $state(false);
 
     // Mouse tracking for subtle lighting effects
     const handleMouseMove = (e: MouseEvent) => {
@@ -54,7 +54,7 @@
 
 <section 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     class="relative py-32 px-6 bg-[#020202] overflow-hidden border-t border-white/10"
     aria-label="Account Creation Terminal"
 >

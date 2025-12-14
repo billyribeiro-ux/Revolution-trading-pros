@@ -50,8 +50,8 @@
         }
     ];
 
-    let isVisible = false;
-    let containerRef: HTMLElement;
+    let isVisible = $state(false);
+    let containerRef = $state<HTMLElement | null>(null);
 
     onMount(() => {
         const observer = new IntersectionObserver(
@@ -111,6 +111,7 @@
 
         <div class="grid md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50">
             {#each products as item, i}
+                {@const IconComponent = item.icon}
                 {#if isVisible}
                     <div 
                         in:heavySlide={{ delay: 300 + (i * 100) }}
@@ -179,7 +180,7 @@
 
                         <div class="relative z-10 flex justify-between items-start mb-8">
                             <div class="p-3 bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-md text-zinc-400 group-hover:text-white group-hover:border-zinc-600 transition-all duration-300">
-                                <svelte:component this={item.icon} size={24} stroke={1.25} />
+                                <IconComponent size={24} stroke={1.25} />
                             </div>
                             <span class="font-mono text-[10px] tracking-widest text-zinc-600 uppercase border border-zinc-800 bg-zinc-950/50 backdrop-blur px-2 py-1 rounded">
                                 {item.label}
@@ -191,7 +192,7 @@
                                 {item.title}
                             </h3>
                             
-                            <div class="flex items-center gap-2 mb-6 text-xs font-mono text-{item.accent}-400/80">
+                            <div class="flex items-center gap-2 mb-6 text-xs font-mono {item.accent === 'blue' ? 'text-blue-400/80' : item.accent === 'emerald' ? 'text-emerald-400/80' : 'text-indigo-400/80'}">
                                 <IconTerminal size={12} />
                                 <span>{item.metric}</span>
                             </div>
@@ -210,13 +211,13 @@
                             </div>
                         </div>
 
-                        <div class="relative z-20 mt-auto pt-6 border-t border-zinc-900 group-hover:border-{item.accent}-500/30 transition-colors duration-300 bg-zinc-950/20 backdrop-blur-sm">
+                        <div class="relative z-20 mt-auto pt-6 border-t border-zinc-900 transition-colors duration-300 bg-zinc-950/20 backdrop-blur-sm {item.accent === 'blue' ? 'group-hover:border-blue-500/30' : item.accent === 'emerald' ? 'group-hover:border-emerald-500/30' : 'group-hover:border-indigo-500/30'}">
                             <a 
                                 href={item.href} 
                                 class="flex items-center justify-between w-full text-sm font-medium text-zinc-300 transition-colors duration-300 group-hover:text-white"
                             >
                                 <span class="group-hover:translate-x-1 transition-transform duration-300">{item.cta}</span>
-                                <div class="p-1.5 rounded bg-zinc-900 group-hover:bg-{item.accent}-500 group-hover:text-white transition-colors duration-300">
+                                <div class="p-1.5 rounded bg-zinc-900 group-hover:text-white transition-colors duration-300 {item.accent === 'blue' ? 'group-hover:bg-blue-500' : item.accent === 'emerald' ? 'group-hover:bg-emerald-500' : 'group-hover:bg-indigo-500'}">
                                     <IconArrowUpRight size={16} />
                                 </div>
                             </a>

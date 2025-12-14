@@ -364,7 +364,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      TEMPLATE

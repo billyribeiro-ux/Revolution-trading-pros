@@ -52,6 +52,7 @@
 	aria-label="Notifications"
 >
 	{#each $toasts as toast (toast.id)}
+		{@const IconComponent = icons[toast.type]}
 		<div
 			class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 shadow-lg
 				min-w-[300px] max-w-md motion-safe:animate-slide-in motion-reduce:opacity-100
@@ -66,7 +67,7 @@
 				class:motion-safe:animate-spin={toast.type === 'loading'}
 				aria-hidden="true"
 			>
-				<svelte:component this={icons[toast.type]} size={20} />
+				<IconComponent size={20} />
 			</span>
 
 			<!-- Message -->

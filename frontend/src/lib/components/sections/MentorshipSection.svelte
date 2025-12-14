@@ -39,9 +39,9 @@
     ];
 
     // --- Interaction Logic ---
-    let containerRef: HTMLElement;
-    let mouse = { x: 0, y: 0 };
-    let isVisible = false;
+    let containerRef = $state<HTMLElement | null>(null);
+    let mouse = $state({ x: 0, y: 0 });
+    let isVisible = $state(false);
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -77,7 +77,7 @@
 
 <section 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     role="group"
     aria-label="Core Infrastructure Features"
     class="relative py-32 px-6 bg-[#050505] overflow-hidden border-b border-white/5"
@@ -113,6 +113,7 @@
             style="--x: {mouse.x}px; --y: {mouse.y}px;"
         >
             {#each features as feature, i}
+                {@const IconComponent = feature.icon}
                 {#if isVisible}
                     <div 
                         in:heavySlide={{ delay: 300 + (i * 150) }}
@@ -145,7 +146,7 @@
 
                         <div class="flex justify-between items-start mb-12 relative z-10">
                             <div class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 text-white group-hover/card:bg-amber-500 group-hover/card:text-black group-hover/card:border-amber-500 transition-all duration-300">
-                                <svelte:component this={feature.icon} size={24} stroke={1.5} />
+                                <IconComponent size={24} stroke={1.5} />
                             </div>
                             <span class="font-mono text-[10px] text-slate-600 uppercase tracking-widest">
                                 {feature.id}

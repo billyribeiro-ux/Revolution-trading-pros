@@ -172,8 +172,10 @@
 
     async function loadGSAP() {
         try {
-            const gsap = (await import('gsap')).default;
-            const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
+            const gsapModule = await import('gsap');
+            const scrollTriggerModule = await import('gsap/ScrollTrigger');
+            const gsap = gsapModule.gsap || gsapModule.default;
+            const ScrollTrigger = scrollTriggerModule.ScrollTrigger || scrollTriggerModule.default;
             gsap.registerPlugin(ScrollTrigger);
             gsapInstance = gsap;
             scrollTriggerInstance = ScrollTrigger;
@@ -223,7 +225,7 @@
     }
 </script>
 
-<svelte:window on:mousemove={handleMouseMove} />
+<svelte:window onmousemove={handleMouseMove} />
 
 <section
     bind:this={sectionRef}

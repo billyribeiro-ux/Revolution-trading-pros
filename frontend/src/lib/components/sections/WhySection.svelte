@@ -35,9 +35,9 @@
     ];
 
     // --- Interaction Logic ---
-    let containerRef: HTMLElement;
-    let mouse = { x: 0, y: 0 };
-    let isVisible = false;
+    let containerRef = $state<HTMLElement | null>(null);
+    let mouse = $state({ x: 0, y: 0 });
+    let isVisible = $state(false);
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -73,7 +73,7 @@
 
 <section 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     role="group"
     aria-label="Core Infrastructure Features"
     class="relative py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
@@ -112,6 +112,7 @@
             style="--x: {mouse.x}px; --y: {mouse.y}px;"
         >
             {#each features as feature, i}
+                {@const IconComponent = feature.icon}
                 {#if isVisible}
                     <div 
                         in:heavySlide={{ delay: 300 + (i * 150) }}
@@ -123,7 +124,7 @@
                         </div>
 
                         <!-- Technical SVG Backgrounds -->
-                        <div class="absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none text-{feature.accent}-500">
+                        <div class="absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none {feature.accent === 'cyan' ? 'text-cyan-500' : feature.accent === 'emerald' ? 'text-emerald-500' : 'text-indigo-500'}">
                             {#if feature.type === 'grid'}
                                 <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
                                     <path d="M10 10 H90 M10 30 H90 M10 50 H90 M10 70 H90 M10 90 H90 M10 10 V90 M30 10 V90 M50 10 V90 M70 10 V90 M90 10 V90" />
@@ -146,11 +147,11 @@
 
                         <!-- Icon Container -->
                         <div class="relative z-10 mb-8 inline-block">
-                            <div class="p-3 bg-zinc-900 border border-zinc-800 text-{feature.accent}-500 rounded-lg group-hover/card:border-{feature.accent}-500/30 group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1">
-                                <svelte:component this={feature.icon} size={28} stroke={1.5} />
+                            <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1 {feature.accent === 'cyan' ? 'text-cyan-500 group-hover/card:border-cyan-500/30' : feature.accent === 'emerald' ? 'text-emerald-500 group-hover/card:border-emerald-500/30' : 'text-indigo-500 group-hover/card:border-indigo-500/30'}">
+                                <IconComponent size={28} stroke={1.5} />
                             </div>
                             <!-- Connecting Line -->
-                            <div class="absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 group-hover/card:bg-{feature.accent}-500/50 transition-colors"></div>
+                            <div class="absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 transition-colors {feature.accent === 'cyan' ? 'group-hover/card:bg-cyan-500/50' : feature.accent === 'emerald' ? 'group-hover/card:bg-emerald-500/50' : 'group-hover/card:bg-indigo-500/50'}"></div>
                         </div>
 
                         <!-- Content -->
@@ -161,7 +162,7 @@
                                 </span>
                             </div>
                             
-                            <h3 class="text-xl font-medium text-white mb-4 group-hover/card:text-{feature.accent}-400 transition-colors">
+                            <h3 class="text-xl font-medium text-white mb-4 transition-colors {feature.accent === 'cyan' ? 'group-hover/card:text-cyan-400' : feature.accent === 'emerald' ? 'group-hover/card:text-emerald-400' : 'group-hover/card:text-indigo-400'}">
                                 {feature.title}
                             </h3>
                             
@@ -171,7 +172,7 @@
 
                             <!-- Micro Status Indicator -->
                             <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-600 border-t border-zinc-900 pt-4 group-hover/card:text-zinc-500 transition-colors">
-                                <IconCheck size={12} class="text-{feature.accent}-500" />
+                                <IconCheck size={12} class={feature.accent === 'cyan' ? 'text-cyan-500' : feature.accent === 'emerald' ? 'text-emerald-500' : 'text-indigo-500'} />
                                 <span>MODULE ACTIVE</span>
                             </div>
                         </div>

@@ -74,9 +74,9 @@
     ];
 
     // --- Animation Logic ---
-    let containerRef: HTMLElement;
-    let mouse = { x: 0, y: 0 };
-    let isVisible = false;
+    let containerRef = $state<HTMLElement | null>(null);
+    let mouse = $state({ x: 0, y: 0 });
+    let isVisible = $state(false);
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -119,7 +119,7 @@
 
 <section 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     class="relative py-32 px-6 bg-[#020202] overflow-hidden border-b border-white/5"
     aria-label="Client Performance Ledger"
 >

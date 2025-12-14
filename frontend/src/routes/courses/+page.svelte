@@ -436,6 +436,7 @@
 
         <div class="courses-grid px-4">
             {#each courses as course, index}
+                {@const IconComponent = course.icon}
                 <article
                     class="course-card group relative"
                     class:visible={cardsVisible[index]}
@@ -450,7 +451,7 @@
                             
                             <div class="relative z-10 flex justify-between items-start">
                                 <div class="card-icon p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                                    <svelte:component this={course.icon} size={32} stroke={1.5} class="text-white" />
+                                    <IconComponent size={32} stroke={1.5} class="text-white" />
                                 </div>
                                 <div class="card-badge shadow-lg">{course.level}</div>
                             </div>

@@ -61,6 +61,7 @@
 				</p>
 				<div class="social-links">
 					{#each socialLinks as social}
+						{@const IconComponent = social.icon}
 						<a 
 							href={social.href} 
 							target="_blank" 
@@ -68,7 +69,7 @@
 							class="social-link"
 							aria-label={social.label}
 						>
-							<svelte:component this={social.icon} size={20} />
+							<IconComponent size={20} />
 						</a>
 					{/each}
 				</div>

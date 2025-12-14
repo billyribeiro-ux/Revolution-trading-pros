@@ -35,6 +35,7 @@
 
 <div class="toast-container" aria-live="polite" aria-label="Notifications">
 	{#each $toasts as toast, index (toast.id)}
+		{@const IconComponent = getIcon(toast.type)}
 		<div
 			class="toast toast-{toast.type}"
 			animate:flip={{ duration: 300, easing: quintOut }}
@@ -54,7 +55,7 @@
 			{/if}
 
 			<div class="toast-icon" class:spinning={toast.type === 'loading'}>
-				<svelte:component this={getIcon(toast.type)} size={20} stroke={2} />
+				<IconComponent size={20} stroke={2} />
 			</div>
 			<div class="toast-content">
 				<span class="toast-message">{toast.message}</span>

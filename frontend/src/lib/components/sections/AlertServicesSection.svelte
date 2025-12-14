@@ -48,9 +48,9 @@
     ];
 
     // --- Interaction Logic ---
-    let containerRef: HTMLElement;
-    let mouse = { x: 0, y: 0 };
-    let isVisible = false;
+    let containerRef = $state<HTMLElement | null>(null);
+    let mouse = $state({ x: 0, y: 0 });
+    let isVisible = $state(false);
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -86,7 +86,7 @@
 
 <section 
     bind:this={containerRef}
-    on:mousemove={handleMouseMove}
+    onmousemove={handleMouseMove}
     role="group"
     aria-label="Alert Services"
     class="relative py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-zinc-950 overflow-hidden border-t border-zinc-900"
@@ -123,6 +123,7 @@
             style="--x: {mouse.x}px; --y: {mouse.y}px;"
         >
             {#each signals as item, i}
+                {@const IconComponent = item.icon}
                 {#if isVisible}
                     <div 
                         in:heavySlide={{ delay: 300 + (i * 150) }}
@@ -188,14 +189,14 @@
                             
                             <div class="flex justify-between items-start mb-6">
                                 <div class="flex items-center gap-3">
-                                    <div class="p-2 rounded bg-zinc-900 border border-zinc-800 text-{item.accent}-500">
-                                        <svelte:component this={item.icon} size={20} />
+                                    <div class="p-2 rounded bg-zinc-900 border border-zinc-800 {item.accent === 'amber' ? 'text-amber-500' : 'text-orange-500'}">
+                                        <IconComponent size={20} />
                                     </div>
                                     <div>
                                         <h3 class="text-xl font-medium text-white">{item.title}</h3>
                                         <div class="flex items-center gap-2 mt-1">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-{item.accent}-500 animate-pulse"></span>
-                                            <span class="text-[10px] font-mono uppercase tracking-wider text-{item.accent}-500/80">{item.badge}</span>
+                                            <span class="w-1.5 h-1.5 rounded-full animate-pulse {item.accent === 'amber' ? 'bg-amber-500' : 'bg-orange-500'}"></span>
+                                            <span class="text-[10px] font-mono uppercase tracking-wider {item.accent === 'amber' ? 'text-amber-500/80' : 'text-orange-500/80'}">{item.badge}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -220,10 +221,10 @@
 
                             <a 
                                 href={item.href} 
-                                class="group/btn relative w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-md text-sm font-medium text-zinc-300 transition-all duration-300 hover:text-white hover:border-{item.accent}-500/50 hover:bg-{item.accent}-500/10"
+                                class="group/btn relative w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-md text-sm font-medium text-zinc-300 transition-all duration-300 hover:text-white {item.accent === 'amber' ? 'hover:border-amber-500/50 hover:bg-amber-500/10' : 'hover:border-orange-500/50 hover:bg-orange-500/10'}"
                             >
                                 <span class="flex items-center gap-2">
-                                    <IconAntenna size={16} class="text-{item.accent}-500" />
+                                    <IconAntenna size={16} class={item.accent === 'amber' ? 'text-amber-500' : 'text-orange-500'} />
                                     <span>Subscribe to Feed</span>
                                 </span>
                                 <IconArrowUpRight size={16} class="text-zinc-500 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:text-white" />
