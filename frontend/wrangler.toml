@@ -1,18 +1,31 @@
 # Cloudflare Pages configuration for SvelteKit
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
-# Environment variables (set in Cloudflare dashboard for secrets)
+# Global environment variables
 [vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
-
-# Production environment - UPDATE VITE_API_URL after Railway deployment
-[env.production.vars]
-VITE_API_URL = "https://your-railway-app.up.railway.app/api"
+VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+ENVIRONMENT = "production"
 
-# R2 Bucket binding (for direct R2 access from Workers if needed)
-# [[r2_buckets]]
-# binding = "STORAGE"
-# bucket_name = "revolution-trading-pros"
+# Preview environment (for PR deployments)
+[env.preview]
+[env.preview.vars]
+VITE_SITE_NAME = "Revolution Trading Pros"
+VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
+VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+ENVIRONMENT = "preview"
+
+# Production environment
+[env.production]
+[env.production.vars]
+VITE_SITE_NAME = "Revolution Trading Pros"
+VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
+VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+ENVIRONMENT = "production"
