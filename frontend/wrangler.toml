@@ -12,12 +12,9 @@ VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
 
-# Preview environment (for PR deployments)
-[env.preview]
-[env.preview.vars]
-VITE_SITE_NAME = "Revolution Trading Pros"
+# Production environment - Synced with Railway backend
+[env.production.vars]
 VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
-VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "preview"
 

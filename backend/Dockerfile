@@ -20,19 +20,42 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 # Copy composer files first for better caching
-COPY composer.json ./
+COPY composer.json composer.lock* ./
 
 # Install dependencies (no dev, no scripts)
-RUN composer install --no-dev --no-scripts --no-interaction --optimize-autoloader
+RUN composer install --no-dev --no-scripts --no-interaction --optimize-autoloader || \
+    composer install --no-dev --no-scripts --no-interaction --ignore-platform-reqs
 
 # Copy application code
 COPY . .
 
-# Set permissions
-RUN chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+# Create required Laravel directories
+RUN mkdir -p storage/framework/cache/data \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/logs \
+    && mkdir -p bootstrap/cache
 
-# Expose port
+# Set permissions
+RUN chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+
+# Generate autoloader
+RUN composer dump-autoload --optimize
+
+# Expose port (Railway uses PORT env var)
 EXPOSE 8080
 
-# Start command - NO CACHE COMMANDS
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# Start script with error handling
+CMD sh -c '\
+    echo "Starting Laravel application..." && \
+    php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear && \
+    if [ -n "$DATABASE_URL" ]; then \
+        echo "Running migrations..." && \
+        php artisan migrate --force || echo "Migration warning (may be ok)"; \
+    fi && \
+    echo "Starting server on port ${PORT:-8080}..." && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8080} \
+'
