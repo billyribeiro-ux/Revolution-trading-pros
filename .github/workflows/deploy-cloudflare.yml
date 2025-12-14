@@ -1,0 +1,266 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# Revolution Trading Pros - Cloudflare Pages Deployment
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Apple Principal Engineer ICT11+ CI/CD Pipeline
+#
+# Triggers:
+# - Push to main: Deploy to production
+# - Push to develop: Deploy to staging
+# - Pull request: Deploy preview with comment
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: Deploy Frontend (Cloudflare Pages)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-cloudflare.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '20'
+  CLOUDFLARE_PROJECT_NAME: 'revolution-trading-pros'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # BUILD & TYPE CHECK
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  build:
+    name: Build & Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Type check
+        working-directory: frontend
+        run: npm run check
+        continue-on-error: true
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build for Cloudflare
+        working-directory: frontend
+        run: npm run build
+        env:
+          DEPLOY_TARGET: cloudflare
+          VITE_SITE_NAME: "Revolution Trading Pros"
+          VITE_SITE_URL: ${{ github.ref == 'refs/heads/main' && 'https://revolutiontradingpros.com' || 'https://staging.revolutiontradingpros.com' }}
+          # Production secrets are injected at runtime via Cloudflare Dashboard
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-build
+          path: frontend/.svelte-kit/cloudflare
+          retention-days: 1
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DEPLOY TO CLOUDFLARE PAGES
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 10
+
+    # Set environment based on branch/trigger
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
+
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
+      environment: ${{ steps.deploy.outputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-build
+          path: frontend/.svelte-kit/cloudflare
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: frontend
+          command: pages deploy .svelte-kit/cloudflare --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }} ${{ github.event_name == 'pull_request' && format('--branch=pr-{0}', github.event.pull_request.number) || (github.ref == 'refs/heads/develop' && '--branch=staging' || '') }}
+
+      - name: Output deployment URL
+        run: |
+          echo "## Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** ${{ steps.deploy.outputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event_name == 'pull_request' && 'Preview' || (github.ref == 'refs/heads/main' && 'Production' || 'Staging') }}" >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PR COMMENT (Preview Deployments)
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  comment:
+    name: Comment on PR
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Comment with deployment URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deploymentUrl = '${{ needs.deploy.outputs.deployment-url }}';
+
+            const body = `## Cloudflare Pages Preview
+
+            | Status | URL |
+            |--------|-----|
+            | Deployed | [${deploymentUrl}](${deploymentUrl}) |
+
+            ### Quick Links
+            - [Homepage](${deploymentUrl})
+            - [Dashboard](${deploymentUrl}/dashboard)
+            - [SEO Tool](${deploymentUrl}/seo)
+
+            ---
+            *Deployed via GitHub Actions*`;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.find(comment =>
+              comment.user.login === 'github-actions[bot]' &&
+              comment.body.includes('Cloudflare Pages Preview')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # LIGHTHOUSE AUDIT (Production Only)
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            ${{ needs.deploy.outputs.deployment-url }}
+            ${{ needs.deploy.outputs.deployment-url }}/pricing
+            ${{ needs.deploy.outputs.deployment-url }}/seo
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PURGE CLOUDFLARE CACHE (Production Only)
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  purge-cache:
+    name: Purge CDN Cache
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 5
+
+    steps:
+      - name: Purge Cloudflare cache
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
+        continue-on-error: true
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # NOTIFY ON FAILURE
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: failure() && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Send failure notification
+        run: |
+          echo "Deployment failed! Check GitHub Actions for details."
+          # Add Slack/Discord webhook here if needed
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"Frontend deployment failed!"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
