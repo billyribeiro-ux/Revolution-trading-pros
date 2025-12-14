@@ -43,25 +43,33 @@ return [
     */
     'data_sources' => [
         // Enable Google-only mode (disable all third-party providers)
-        'google_only' => env('SEO_GOOGLE_ONLY', true),
+        'google_only' => env('SEO_GOOGLE_ONLY', false),
 
         // Enable third-party fallbacks when Google data unavailable
-        'enable_third_party' => env('SEO_ENABLE_THIRD_PARTY', false),
+        'enable_third_party' => env('SEO_ENABLE_THIRD_PARTY', true),
 
         // Provider priority (lower = higher priority)
         'provider_priority' => [
             'google_search_console' => 10,  // Highest - YOUR site's authoritative data
             'google_keyword_planner' => 20, // Official search volume & CPC
             'google_trends' => 30,          // Trending topics & related queries
-            'serpapi' => 100,               // Third-party fallback (disabled by default)
+            'serpapi' => 40,                // Third-party SERP data (enabled)
+            'ahrefs' => 50,                 // Backlinks & DR (if enabled)
+            'moz' => 60,                    // Domain Authority (if enabled)
         ],
 
         // Data aggregation strategy
-        // Options: 'merge_highest_confidence', 'primary_only', 'average_all'
-        'aggregation_strategy' => env('SEO_AGGREGATION_STRATEGY', 'merge_highest_confidence'),
+        // Options: 'merge_highest_confidence', 'primary_only', 'average_all', 'weighted_merge'
+        'aggregation_strategy' => env('SEO_AGGREGATION_STRATEGY', 'weighted_merge'),
 
         // Cache aggregated results for better performance
         'cache_aggregated_results' => env('SEO_CACHE_AGGREGATED', true),
+
+        // Enable parallel provider queries for speed
+        'parallel_queries' => env('SEO_PARALLEL_QUERIES', true),
+
+        // Maximum providers to query per request
+        'max_providers_per_request' => env('SEO_MAX_PROVIDERS', 5),
     ],
 
     /*
@@ -350,41 +358,111 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Third-Party Providers (Optional Fallbacks)
+    | Third-Party Providers (ENABLED for Maximum Power)
     |--------------------------------------------------------------------------
     |
-    | These providers are DISABLED by default for Google-only compliance.
-    | Enable only if you need additional data not available from Google.
+    | These providers extend Google data with additional competitive intelligence.
+    | All providers are enabled by default for maximum SEO capabilities.
     |
     */
     'third_party' => [
-        // SerpAPI for SERP features analysis
+        // SerpAPI for comprehensive SERP analysis
         'serpapi' => [
-            'enabled' => env('SERPAPI_ENABLED', false),
+            'enabled' => env('SERPAPI_ENABLED', true),
             'api_key' => env('SERPAPI_API_KEY'),
-            'rate_limit' => env('SERPAPI_RATE_LIMIT', 10),
+            'rate_limit' => env('SERPAPI_RATE_LIMIT', 30),
             'search_engine' => 'google',
             'cache_ttl' => 21600, // 6 hours
+            'features' => [
+                'organic_results' => true,
+                'related_questions' => true,     // People Also Ask
+                'related_searches' => true,
+                'knowledge_graph' => true,
+                'featured_snippet' => true,
+                'local_pack' => true,
+                'shopping_results' => true,
+                'images' => true,
+                'videos' => true,
+                'news' => true,
+                'top_stories' => true,
+            ],
+            'locations' => [
+                'default' => 'United States',
+                'google_domain' => 'google.com',
+                'hl' => 'en',
+                'gl' => 'us',
+            ],
         ],
 
-        // DataForSEO (alternative SERP provider)
+        // DataForSEO (alternative SERP provider with more data points)
         'dataforseo' => [
-            'enabled' => env('DATAFORSEO_ENABLED', false),
+            'enabled' => env('DATAFORSEO_ENABLED', true),
             'login' => env('DATAFORSEO_LOGIN'),
             'password' => env('DATAFORSEO_PASSWORD'),
+            'features' => [
+                'serp_regular' => true,
+                'serp_live' => true,
+                'keyword_data' => true,
+                'competitor_data' => true,
+                'backlink_data' => true,
+            ],
         ],
 
-        // Ahrefs (backlink and keyword data)
+        // Ahrefs (backlink and keyword data - industry leader)
         'ahrefs' => [
-            'enabled' => env('AHREFS_ENABLED', false),
+            'enabled' => env('AHREFS_ENABLED', true),
             'api_token' => env('AHREFS_API_TOKEN'),
+            'features' => [
+                'domain_rating' => true,
+                'url_rating' => true,
+                'backlinks' => true,
+                'referring_domains' => true,
+                'organic_keywords' => true,
+                'organic_traffic' => true,
+                'keyword_difficulty' => true,
+            ],
+            'rate_limit' => env('AHREFS_RATE_LIMIT', 10),
         ],
 
-        // Moz (domain authority)
+        // Moz (domain authority - widely recognized metric)
         'moz' => [
-            'enabled' => env('MOZ_ENABLED', false),
+            'enabled' => env('MOZ_ENABLED', true),
             'access_id' => env('MOZ_ACCESS_ID'),
             'secret_key' => env('MOZ_SECRET_KEY'),
+            'features' => [
+                'domain_authority' => true,
+                'page_authority' => true,
+                'spam_score' => true,
+                'link_metrics' => true,
+            ],
+            'rate_limit' => env('MOZ_RATE_LIMIT', 10),
+        ],
+
+        // Majestic (Trust Flow / Citation Flow)
+        'majestic' => [
+            'enabled' => env('MAJESTIC_ENABLED', true),
+            'api_key' => env('MAJESTIC_API_KEY'),
+            'features' => [
+                'trust_flow' => true,
+                'citation_flow' => true,
+                'topical_trust_flow' => true,
+                'referring_domains' => true,
+            ],
+        ],
+
+        // SEMrush (comprehensive SEO data)
+        'semrush' => [
+            'enabled' => env('SEMRUSH_ENABLED', true),
+            'api_key' => env('SEMRUSH_API_KEY'),
+            'features' => [
+                'keyword_overview' => true,
+                'keyword_difficulty' => true,
+                'domain_overview' => true,
+                'backlinks' => true,
+                'organic_research' => true,
+                'position_tracking' => true,
+            ],
+            'rate_limit' => env('SEMRUSH_RATE_LIMIT', 10),
         ],
     ],
 

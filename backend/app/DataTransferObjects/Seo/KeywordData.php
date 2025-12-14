@@ -75,6 +75,42 @@ final class KeywordData implements Arrayable, JsonSerializable
         public readonly ?float $dataConfidence = null,
         public readonly array $metadata = [],
         public readonly ?\DateTimeImmutable $fetchedAt = null,
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // BACKLINK & AUTHORITY METRICS (Third-Party Data)
+        // ═══════════════════════════════════════════════════════════════════════
+
+        // Moz Metrics
+        public readonly ?int $domainAuthority = null,      // Moz DA (0-100)
+        public readonly ?int $pageAuthority = null,        // Moz PA (0-100)
+        public readonly ?float $spamScore = null,          // Moz Spam Score (0-17)
+
+        // Ahrefs Metrics
+        public readonly ?int $domainRating = null,         // Ahrefs DR (0-100)
+        public readonly ?int $urlRating = null,            // Ahrefs UR (0-100)
+        public readonly ?int $ahrefsRank = null,           // Ahrefs Rank
+
+        // Backlink Metrics
+        public readonly ?int $referringDomains = null,     // Total referring domains
+        public readonly ?int $backlinks = null,            // Total backlinks
+        public readonly ?int $dofollowBacklinks = null,    // Dofollow backlinks
+        public readonly ?int $nofollowBacklinks = null,    // Nofollow backlinks
+
+        // Majestic Metrics
+        public readonly ?int $trustFlow = null,            // Majestic TF (0-100)
+        public readonly ?int $citationFlow = null,         // Majestic CF (0-100)
+        public readonly ?float $trustRatio = null,         // TF/CF ratio
+
+        // Competitor Metrics
+        public readonly ?int $competitorCount = null,      // Number of competitors in top 20
+        public readonly ?float $avgCompetitorDA = null,    // Avg DA of top 10 competitors
+        public readonly ?float $avgCompetitorDR = null,    // Avg DR of top 10 competitors
+
+        // Related keyword for research
+        public readonly ?string $relatedTo = null,
+
+        // Position tracking (for SerpAPI)
+        public readonly ?int $position = null,             // Current SERP position
     ) {}
 
     /**

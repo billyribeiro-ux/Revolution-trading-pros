@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Services\Seo\SeoDataSourceManager;
 use App\Services\Seo\KeywordIntelligenceService;
 use App\Services\Seo\PredictiveSeoAnalyticsService;
+use App\Services\Seo\CompetitorAnalysisService;
 use App\Services\Seo\NlpIntelligenceService;
 use App\Services\Seo\SeoAnalyzerService;
 use App\Services\Seo\InternalLinkIntelligenceService;
@@ -17,6 +18,7 @@ use App\Services\Seo\SeoCacheService;
 use App\Services\Seo\Providers\GoogleSearchConsoleProvider;
 use App\Services\Seo\Providers\GoogleKeywordPlannerProvider;
 use App\Services\Seo\Providers\GoogleTrendsProvider;
+use App\Services\Seo\Providers\SerpApiProvider;
 use App\Services\CacheService;
 use App\Services\GoogleSearchConsoleService;
 use Illuminate\Support\ServiceProvider;
@@ -25,21 +27,23 @@ use Illuminate\Contracts\Foundation\Application;
 /**
  * SEO Service Provider
  *
- * Apple Principal Engineer ICT11+ Architecture
+ * Apple Principal Engineer ICT11+ Architecture - MAXIMUM POWER MODE
  * ══════════════════════════════════════════════════════════════════════════════
  *
- * Wires up all SEO services with proper dependency injection.
- * Implements Google-first data architecture with optional third-party fallbacks.
+ * Wires up ALL SEO services with proper dependency injection.
+ * Implements multi-source data architecture with Google + third-party providers.
  *
  * Services Registered:
  * - SeoDataSourceManager (orchestration layer)
  * - KeywordIntelligenceService (keyword research & analysis)
  * - PredictiveSeoAnalyticsService (traffic prediction & ROI)
+ * - CompetitorAnalysisService (competitor intelligence)
  * - GoogleSearchConsoleProvider (GSC data)
  * - GoogleKeywordPlannerProvider (GKP data)
  * - GoogleTrendsProvider (Trends data)
+ * - SerpApiProvider (Third-party SERP data)
  *
- * @version 2.0.0
+ * @version 3.0.0
  */
 class SeoServiceProvider extends ServiceProvider
 {
@@ -48,6 +52,10 @@ class SeoServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // ═══════════════════════════════════════════════════════════════════════
+        // GOOGLE PROVIDERS (Always Enabled)
+        // ═══════════════════════════════════════════════════════════════════════
+
         // Register Google Search Console Provider
         $this->app->singleton(GoogleSearchConsoleProvider::class, function (Application $app) {
             return new GoogleSearchConsoleProvider(
@@ -70,15 +78,46 @@ class SeoServiceProvider extends ServiceProvider
             );
         });
 
+        // ═══════════════════════════════════════════════════════════════════════
+        // THIRD-PARTY PROVIDERS (Enabled by Default)
+        // ═══════════════════════════════════════════════════════════════════════
+
+        // Register SerpAPI Provider
+        $this->app->singleton(SerpApiProvider::class, function (Application $app) {
+            return new SerpApiProvider(
+                $app->make(CacheService::class)
+            );
+        });
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // ORCHESTRATION LAYER
+        // ═══════════════════════════════════════════════════════════════════════
+
         // Register SEO Data Source Manager (orchestration layer)
         $this->app->singleton(SeoDataSourceManager::class, function (Application $app) {
+            $serpApiProvider = null;
+
+            // Try to get SerpAPI provider if enabled
+            if (config('seo.third_party.serpapi.enabled', true)) {
+                try {
+                    $serpApiProvider = $app->make(SerpApiProvider::class);
+                } catch (\Exception $e) {
+                    // SerpAPI not available, continue without it
+                }
+            }
+
             return new SeoDataSourceManager(
                 $app->make(GoogleSearchConsoleProvider::class),
                 $app->make(GoogleKeywordPlannerProvider::class),
                 $app->make(GoogleTrendsProvider::class),
-                $app->make(CacheService::class)
+                $app->make(CacheService::class),
+                $serpApiProvider
             );
         });
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // INTELLIGENCE SERVICES
+        // ═══════════════════════════════════════════════════════════════════════
 
         // Register Keyword Intelligence Service
         $this->app->singleton(KeywordIntelligenceService::class, function (Application $app) {
@@ -97,10 +136,34 @@ class SeoServiceProvider extends ServiceProvider
             );
         });
 
-        // Register aliases for backward compatibility
+        // Register Competitor Analysis Service
+        $this->app->singleton(CompetitorAnalysisService::class, function (Application $app) {
+            $serpApiProvider = null;
+
+            if (config('seo.third_party.serpapi.enabled', true)) {
+                try {
+                    $serpApiProvider = $app->make(SerpApiProvider::class);
+                } catch (\Exception $e) {
+                    // Continue without SerpAPI
+                }
+            }
+
+            return new CompetitorAnalysisService(
+                $app->make(SeoDataSourceManager::class),
+                $app->make(CacheService::class),
+                $serpApiProvider
+            );
+        });
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // ALIASES FOR CONVENIENCE
+        // ═══════════════════════════════════════════════════════════════════════
+
         $this->app->alias(SeoDataSourceManager::class, 'seo.data_sources');
         $this->app->alias(KeywordIntelligenceService::class, 'seo.keywords');
         $this->app->alias(PredictiveSeoAnalyticsService::class, 'seo.analytics');
+        $this->app->alias(CompetitorAnalysisService::class, 'seo.competitors');
+        $this->app->alias(SerpApiProvider::class, 'seo.serpapi');
     }
 
     /**
@@ -124,15 +187,26 @@ class SeoServiceProvider extends ServiceProvider
     public function provides(): array
     {
         return [
+            // Core Services
             SeoDataSourceManager::class,
             KeywordIntelligenceService::class,
             PredictiveSeoAnalyticsService::class,
+            CompetitorAnalysisService::class,
+
+            // Google Providers
             GoogleSearchConsoleProvider::class,
             GoogleKeywordPlannerProvider::class,
             GoogleTrendsProvider::class,
+
+            // Third-Party Providers
+            SerpApiProvider::class,
+
+            // Aliases
             'seo.data_sources',
             'seo.keywords',
             'seo.analytics',
+            'seo.competitors',
+            'seo.serpapi',
         ];
     }
 }
