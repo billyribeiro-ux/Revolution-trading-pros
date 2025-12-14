@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Revolution Trading Pros - Deployment Guide</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="/dev/null" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Revolution Trading Pros - Deployment Guide</h1>
+</header>
+<h1 id="revolution-trading-pros---deployment-guide">Revolution Trading
+Pros - Deployment Guide</h1>
+<h2 id="december-2025-stack-configuration">December 2025 Stack
+Configuration</h2>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#architecture-overview">Architecture Overview</a></li>
+<li><a href="#1-flyio---backend-hosting">Fly.io - Backend
+Hosting</a></li>
+<li><a href="#2-postmark---transactional-email">Postmark - Transactional
+Email</a></li>
+<li><a href="#3-stripe---payment-processing">Stripe - Payment
+Processing</a></li>
+<li><a href="#4-sentry---error-tracking">Sentry - Error
+Tracking</a></li>
+<li><a href="#5-already-configured-services">Already Configured
+Services</a></li>
+<li><a href="#6-deployment-steps">Deployment Steps</a></li>
+<li><a href="#7-environment-variables-reference">Environment Variables
+Reference</a></li>
+</ol>
+<hr />
+<h2 id="architecture-overview">Architecture Overview</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    REVOLUTION TRADING PROS                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────────┐         ┌──────────────────────────────┐  │
+│  │   FRONTEND       │         │   BACKEND                    │  │
+│  │   Cloudflare     │ ──────► │   Fly.io                     │  │
+│  │   Pages          │         │   Laravel 12 + FrankenPHP    │  │
+│  │   (FREE)         │         │   ($5-29/mo)                 │  │
+│  └──────────────────┘         └──────────────────────────────┘  │
+│           │                              │                       │
+│           │                              ├── Postgres (included) │
+│           │                              ├── Redis (included)    │
+│           │                              │                       │
+│           ▼                              ▼                       │
+│  ┌──────────────────┐         ┌──────────────────────────────┐  │
+│  │   STORAGE        │         │   SERVICES                   │  │
+│  │   Cloudflare R2  │         │   • Postmark (Email)         │  │
+│  │   (FREE 10GB)    │         │   • Stripe (Payments)        │  │
+│  └──────────────────┘         │   • Sentry (Monitoring)      │  │
+│                               └──────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="monthly-cost-estimate">Monthly Cost Estimate</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Service</th>
+<th>Free Tier</th>
+<th>Starter</th>
+<th>Growth</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fly.io</td>
+<td>-</td>
+<td>$5/mo</td>
+<td>$29/mo</td>
+</tr>
+<tr class="even">
+<td>Postmark</td>
+<td>100 emails</td>
+<td>$15/mo (10K)</td>
+<td>$50/mo (50K)</td>
+</tr>
+<tr class="odd">
+<td>Stripe</td>
+<td>-</td>
+<td>2.9% + $0.30/tx</td>
+<td>2.9% + $0.30/tx</td>
+</tr>
+<tr class="even">
+<td>Sentry</td>
+<td>5K errors</td>
+<td>$26/mo</td>
+<td>$80/mo</td>
+</tr>
+<tr class="odd">
+<td>Cloudflare Pages</td>
+<td>FREE</td>
+<td>FREE</td>
+<td>FREE</td>
+</tr>
+<tr class="even">
+<td>Cloudflare R2</td>
+<td>FREE (10GB)</td>
+<td>$0.015/GB</td>
+<td>$0.015/GB</td>
+</tr>
+<tr class="odd">
+<td><strong>TOTAL</strong></td>
+<td><strong>~$0</strong></td>
+<td><strong>~$46/mo</strong></td>
+<td><strong>~$159/mo</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="fly.io---backend-hosting">1. Fly.io - Backend Hosting</h2>
+<h3 id="what-it-does">What It Does</h3>
+<p>Hosts your Laravel backend with FrankenPHP for sub-millisecond
+response times. Includes managed Postgres database and Redis cache.</p>
+<h3 id="sign-up">Sign Up</h3>
+<p><strong>URL:</strong> https://fly.io/app/sign-up</p>
+<h3 id="pricing-tiers">Pricing Tiers</h3>
+<table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 20%" />
+<col style="width: 32%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Plan</th>
+<th>Price</th>
+<th>Resources</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Hobby</strong></td>
+<td>$5/mo</td>
+<td>1 shared CPU, 256MB RAM, 1GB storage</td>
+<td>Development/Testing</td>
+</tr>
+<tr class="even">
+<td><strong>Launch</strong></td>
+<td>$29/mo</td>
+<td>1 dedicated CPU, 2GB RAM, 10GB storage</td>
+<td>Production</td>
+</tr>
+<tr class="odd">
+<td><strong>Scale</strong></td>
+<td>$79/mo</td>
+<td>2 dedicated CPUs, 4GB RAM, 20GB storage</td>
+<td>High Traffic</td>
+</tr>
+</tbody>
+</table>
+<h3 id="included-with-all-plans">Included with All Plans</h3>
+<ul>
+<li><strong>Postgres Database</strong> - Managed, automatic backups</li>
+<li><strong>Redis Cache</strong> - For sessions, cache, queues</li>
+<li><strong>SSL Certificates</strong> - Automatic HTTPS</li>
+<li><strong>Global Deployment</strong> - 30+ regions</li>
+<li><strong>Volumes</strong> - Persistent storage</li>
+</ul>
+<h3 id="setup-instructions">Setup Instructions</h3>
+<h4 id="step-1-install-fly-cli">Step 1: Install Fly CLI</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># macOS</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install flyctl</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Linux</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-L</span> https://fly.io/install.sh <span class="kw">|</span> <span class="fu">sh</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Windows</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">powershell</span> <span class="at">-Command</span> <span class="st">&quot;iwr https://fly.io/install.ps1 -useb | iex&quot;</span></span></code></pre></div>
+<h4 id="step-2-login">Step 2: Login</h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> auth login</span></code></pre></div>
+<h4 id="step-3-run-setup-script">Step 3: Run Setup Script</h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x scripts/fly-deploy.sh</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/fly-deploy.sh</span> setup</span></code></pre></div>
+<p>This creates: - Fly.io app - Postgres database (1GB free tier) -
+Redis instance (256MB) - Persistent volume for storage</p>
+<h4 id="step-4-get-database-url">Step 4: Get Database URL</h4>
+<p>After setup, note these values:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> postgres connect <span class="at">-a</span> revolution-trading-pros-db</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Connection string will be shown</span></span></code></pre></div>
+<hr />
+<h2 id="postmark---transactional-email">2. Postmark - Transactional
+Email</h2>
+<h3 id="what-it-does-1">What It Does</h3>
+<p>Sends transactional emails (password resets, notifications, receipts)
+with 99%+ deliverability.</p>
+<h3 id="sign-up-1">Sign Up</h3>
+<p><strong>URL:</strong> https://postmarkapp.com/sign-up</p>
+<h3 id="pricing-tiers-1">Pricing Tiers</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Plan</th>
+<th>Price</th>
+<th>Emails/Month</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Free</strong></td>
+<td>$0</td>
+<td>100</td>
+<td>Testing only, Postmark branding</td>
+</tr>
+<tr class="even">
+<td><strong>Starter</strong></td>
+<td>$15/mo</td>
+<td>10,000</td>
+<td>No branding, dedicated IP optional</td>
+</tr>
+<tr class="odd">
+<td><strong>Standard</strong></td>
+<td>$50/mo</td>
+<td>50,000</td>
+<td>Priority support</td>
+</tr>
+<tr class="even">
+<td><strong>Plus</strong></td>
+<td>$115/mo</td>
+<td>125,000</td>
+<td>Dedicated IP included</td>
+</tr>
+<tr class="odd">
+<td><strong>Enterprise</strong></td>
+<td>Custom</td>
+<td>Unlimited</td>
+<td>SLA, dedicated support</td>
+</tr>
+</tbody>
+</table>
+<h3 id="setup-instructions-1">Setup Instructions</h3>
+<h4 id="step-1-create-account">Step 1: Create Account</h4>
+<ol type="1">
+<li>Go to https://postmarkapp.com/sign-up</li>
+<li>Verify your email address</li>
+<li>Complete account setup</li>
+</ol>
+<h4 id="step-2-create-server">Step 2: Create Server</h4>
+<ol type="1">
+<li>Click “Create Server”</li>
+<li>Name it: <code>Revolution Trading Pros</code></li>
+<li>Select “Live” for production (or “Test” for development)</li>
+</ol>
+<h4 id="step-3-get-api-token">Step 3: Get API Token</h4>
+<ol type="1">
+<li>Go to Server → API Tokens</li>
+<li>Click “Create Token”</li>
+<li>Copy the token (starts with
+<code>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code>)</li>
+</ol>
+<h4 id="step-4-verify-sender-domain">Step 4: Verify Sender Domain</h4>
+<ol type="1">
+<li>Go to Sender Signatures → Add Domain</li>
+<li>Add your domain: <code>revolutiontradingpros.com</code></li>
+<li>Add DNS records as shown:
+<ul>
+<li>DKIM record (TXT)</li>
+<li>Return-Path record (CNAME)</li>
+</ul></li>
+<li>Click “Verify”</li>
+</ol>
+<h4 id="step-5-set-environment-variable">Step 5: Set Environment
+Variable</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> secrets set POSTMARK_TOKEN=<span class="st">&quot;your-token-here&quot;</span></span></code></pre></div>
+<h3 id="configuration-already-done">Configuration (Already Done)</h3>
+<p>File: <code>backend/config/mail.php</code></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;default&#39;</span> =&gt; env(<span class="st">&#39;MAIL_MAILER&#39;</span><span class="ot">,</span> <span class="st">&#39;postmark&#39;</span>)<span class="ot">,</span></span></code></pre></div>
+<p>File: <code>backend/config/services.php</code></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;postmark&#39;</span> =&gt; [</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;token&#39;</span> =&gt; env(<span class="st">&#39;POSTMARK_TOKEN&#39;</span>)<span class="ot">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>]<span class="ot">,</span></span></code></pre></div>
+<hr />
+<h2 id="stripe---payment-processing">3. Stripe - Payment Processing</h2>
+<h3 id="what-it-does-2">What It Does</h3>
+<p>Processes credit card payments, subscriptions, and invoicing for your
+trading platform.</p>
+<h3 id="sign-up-2">Sign Up</h3>
+<p><strong>URL:</strong> https://dashboard.stripe.com/register</p>
+<h3 id="pricing">Pricing</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Fee</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Card Payments</strong></td>
+<td>2.9% + $0.30</td>
+<td>Per successful transaction</td>
+</tr>
+<tr class="even">
+<td><strong>International Cards</strong></td>
+<td>+1.5%</td>
+<td>Additional fee</td>
+</tr>
+<tr class="odd">
+<td><strong>Currency Conversion</strong></td>
+<td>+1%</td>
+<td>If converting currencies</td>
+</tr>
+<tr class="even">
+<td><strong>Disputes</strong></td>
+<td>$15</td>
+<td>Per chargeback (refunded if won)</td>
+</tr>
+<tr class="odd">
+<td><strong>Payouts</strong></td>
+<td>FREE</td>
+<td>To your bank account</td>
+</tr>
+</tbody>
+</table>
+<p><strong>No monthly fees. No setup fees. No minimums.</strong></p>
+<h3 id="setup-instructions-2">Setup Instructions</h3>
+<h4 id="step-1-create-account-1">Step 1: Create Account</h4>
+<ol type="1">
+<li>Go to https://dashboard.stripe.com/register</li>
+<li>Enter email and create password</li>
+<li>Verify email address</li>
+</ol>
+<h4 id="step-2-complete-business-profile">Step 2: Complete Business
+Profile</h4>
+<ol type="1">
+<li>Go to Settings → Business Settings</li>
+<li>Add:
+<ul>
+<li>Business name</li>
+<li>Business address</li>
+<li>Tax ID (EIN/SSN)</li>
+<li>Bank account for payouts</li>
+</ul></li>
+</ol>
+<h4 id="step-3-get-api-keys">Step 3: Get API Keys</h4>
+<ol type="1">
+<li>Go to Developers → API Keys</li>
+<li>Copy these keys:</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th>Key Type</th>
+<th>Format</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Publishable Key</td>
+<td><code>pk_live_xxx</code></td>
+<td>Frontend (public)</td>
+</tr>
+<tr class="even">
+<td>Secret Key</td>
+<td><code>sk_live_xxx</code></td>
+<td>Backend (secret)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>For Testing:</strong> Use <code>pk_test_xxx</code> and
+<code>sk_test_xxx</code> keys first.</p>
+<h4 id="step-4-create-webhook">Step 4: Create Webhook</h4>
+<ol type="1">
+<li>Go to Developers → Webhooks</li>
+<li>Click “Add endpoint”</li>
+<li>URL:
+<code>https://revolution-trading-pros.fly.dev/api/webhooks/stripe</code></li>
+<li>Select events:
+<ul>
+<li><code>payment_intent.succeeded</code></li>
+<li><code>payment_intent.payment_failed</code></li>
+<li><code>customer.subscription.created</code></li>
+<li><code>customer.subscription.updated</code></li>
+<li><code>customer.subscription.deleted</code></li>
+<li><code>invoice.paid</code></li>
+<li><code>invoice.payment_failed</code></li>
+</ul></li>
+<li>Click “Add endpoint”</li>
+<li>Copy the Webhook Signing Secret (<code>whsec_xxx</code>)</li>
+</ol>
+<h4 id="step-5-set-environment-variables">Step 5: Set Environment
+Variables</h4>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> secrets set <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  STRIPE_KEY=<span class="st">&quot;pk_live_xxxxxxxxxxxx&quot;</span> <span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  STRIPE_SECRET=<span class="st">&quot;sk_live_xxxxxxxxxxxx&quot;</span> <span class="dt">\</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  STRIPE_WEBHOOK_SECRET=<span class="st">&quot;whsec_xxxxxxxxxxxx&quot;</span></span></code></pre></div>
+<h3 id="configuration-already-done-1">Configuration (Already Done)</h3>
+<p>File: <code>backend/config/services.php</code></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;stripe&#39;</span> =&gt; [</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;key&#39;</span> =&gt; env(<span class="st">&#39;STRIPE_KEY&#39;</span>)<span class="ot">,</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;secret&#39;</span> =&gt; env(<span class="st">&#39;STRIPE_SECRET&#39;</span>)<span class="ot">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;webhook_secret&#39;</span> =&gt; env(<span class="st">&#39;STRIPE_WEBHOOK_SECRET&#39;</span>)<span class="ot">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>]<span class="ot">,</span></span></code></pre></div>
+<hr />
+<h2 id="sentry---error-tracking">4. Sentry - Error Tracking</h2>
+<h3 id="what-it-does-3">What It Does</h3>
+<p>Captures errors, exceptions, and performance issues in real-time.
+Shows stack traces, user context, and trends.</p>
+<h3 id="sign-up-3">Sign Up</h3>
+<p><strong>URL:</strong> https://sentry.io/signup/</p>
+<h3 id="pricing-tiers-2">Pricing Tiers</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Plan</th>
+<th>Price</th>
+<th>Errors/Month</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Developer</strong></td>
+<td>FREE</td>
+<td>5,000</td>
+<td>1 user, 30-day retention</td>
+</tr>
+<tr class="even">
+<td><strong>Team</strong></td>
+<td>$26/mo</td>
+<td>50,000</td>
+<td>Unlimited users, 90-day retention</td>
+</tr>
+<tr class="odd">
+<td><strong>Business</strong></td>
+<td>$80/mo</td>
+<td>100,000</td>
+<td>SSO, custom retention</td>
+</tr>
+<tr class="even">
+<td><strong>Enterprise</strong></td>
+<td>Custom</td>
+<td>Unlimited</td>
+<td>SLA, dedicated support</td>
+</tr>
+</tbody>
+</table>
+<h3 id="setup-instructions-3">Setup Instructions</h3>
+<h4 id="step-1-create-account-2">Step 1: Create Account</h4>
+<ol type="1">
+<li>Go to https://sentry.io/signup/</li>
+<li>Sign up with email or GitHub</li>
+<li>Verify email</li>
+</ol>
+<h4 id="step-2-create-project">Step 2: Create Project</h4>
+<ol type="1">
+<li>Click “Create Project”</li>
+<li>Select platform: <strong>Laravel</strong></li>
+<li>Name: <code>revolution-trading-pros</code></li>
+<li>Click “Create Project”</li>
+</ol>
+<h4 id="step-3-get-dsn">Step 3: Get DSN</h4>
+<ol type="1">
+<li>Go to Settings → Projects → revolution-trading-pros</li>
+<li>Click “Client Keys (DSN)”</li>
+<li>Copy the DSN (format:
+<code>https://xxx@xxx.ingest.sentry.io/xxx</code>)</li>
+</ol>
+<h4 id="step-4-set-environment-variable">Step 4: Set Environment
+Variable</h4>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> secrets set SENTRY_LARAVEL_DSN=<span class="st">&quot;https://xxx@xxx.ingest.sentry.io/xxx&quot;</span></span></code></pre></div>
+<h4 id="step-5-configure-alerts-optional">Step 5: Configure Alerts
+(Optional)</h4>
+<ol type="1">
+<li>Go to Alerts → Create Alert</li>
+<li>Set up alerts for:
+<ul>
+<li>New errors</li>
+<li>Error spike (&gt;10 in 1 hour)</li>
+<li>Performance degradation</li>
+</ul></li>
+</ol>
+<h3 id="configuration-already-done-2">Configuration (Already Done)</h3>
+<p>File: <code>backend/config/sentry.php</code></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode php"><code class="sourceCode php"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> [</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;dsn&#39;</span> =&gt; env(<span class="st">&#39;SENTRY_LARAVEL_DSN&#39;</span>)<span class="ot">,</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;traces_sample_rate&#39;</span> =&gt; <span class="fl">0.1</span><span class="ot">,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;profiles_sample_rate&#39;</span> =&gt; <span class="fl">0.1</span><span class="ot">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>]<span class="ot">;</span></span></code></pre></div>
+<hr />
+<h2 id="already-configured-services">5. Already Configured Services</h2>
+<p>These services are already set up and working:</p>
+<h3 id="cloudflare-pages-frontend">Cloudflare Pages (Frontend)</h3>
+<ul>
+<li><strong>URL:</strong> https://revolution-trading-pros.pages.dev</li>
+<li><strong>Status:</strong> Deployed and working</li>
+<li><strong>Cost:</strong> FREE</li>
+</ul>
+<h3 id="cloudflare-r2-storage">Cloudflare R2 (Storage)</h3>
+<ul>
+<li><strong>URL:</strong>
+https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev</li>
+<li><strong>Status:</strong> Created and working</li>
+<li><strong>Cost:</strong> FREE (first 10GB)</li>
+</ul>
+<hr />
+<h2 id="deployment-steps">6. Deployment Steps</h2>
+<h3 id="complete-deployment-checklist">Complete Deployment
+Checklist</h3>
+<pre><code>[ ] 1. Sign up for Fly.io
+[ ] 2. Sign up for Postmark
+[ ] 3. Sign up for Stripe
+[ ] 4. Sign up for Sentry
+[ ] 5. Install Fly CLI
+[ ] 6. Run setup script
+[ ] 7. Set all secrets
+[ ] 8. Deploy
+[ ] 9. Verify health endpoint
+[ ] 10. Test email sending
+[ ] 11. Test payment processing
+[ ] 12. Verify error tracking</code></pre>
+<h3 id="step-by-step-commands">Step-by-Step Commands</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Install Fly CLI</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-L</span> https://fly.io/install.sh <span class="kw">|</span> <span class="fu">sh</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Login to Fly.io</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> auth login</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Navigate to backend</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Run setup (creates Postgres, Redis, volumes)</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/fly-deploy.sh</span> setup</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Set all secrets at once</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="ex">fly</span> secrets set <span class="dt">\</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  APP_KEY=<span class="st">&quot;base64:</span><span class="va">$(</span><span class="ex">openssl</span> rand <span class="at">-base64</span> 32<span class="va">)</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  POSTMARK_TOKEN=<span class="st">&quot;your-postmark-token&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  STRIPE_KEY=<span class="st">&quot;pk_live_xxx&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  STRIPE_SECRET=<span class="st">&quot;sk_live_xxx&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  STRIPE_WEBHOOK_SECRET=<span class="st">&quot;whsec_xxx&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  SENTRY_LARAVEL_DSN=<span class="st">&quot;https://xxx@xxx.ingest.sentry.io/xxx&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  CLOUDFLARE_R2_ACCESS_KEY_ID=<span class="st">&quot;your-r2-key&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  CLOUDFLARE_R2_SECRET_ACCESS_KEY=<span class="st">&quot;your-r2-secret&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  CLOUDFLARE_R2_ENDPOINT=<span class="st">&quot;https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  CLOUDFLARE_R2_BUCKET=<span class="st">&quot;revolution-trading-media&quot;</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Deploy</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/fly-deploy.sh</span> deploy</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 7. Verify deployment</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> https://revolution-trading-pros.fly.dev/health</span></code></pre></div>
+<hr />
+<h2 id="environment-variables-reference">7. Environment Variables
+Reference</h2>
+<h3 id="required-variables">Required Variables</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Service</th>
+<th>How to Get</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>APP_KEY</code></td>
+<td>Laravel</td>
+<td><code>openssl rand -base64 32</code></td>
+</tr>
+<tr class="even">
+<td><code>POSTMARK_TOKEN</code></td>
+<td>Postmark</td>
+<td>Server → API Tokens</td>
+</tr>
+<tr class="odd">
+<td><code>STRIPE_KEY</code></td>
+<td>Stripe</td>
+<td>Developers → API Keys</td>
+</tr>
+<tr class="even">
+<td><code>STRIPE_SECRET</code></td>
+<td>Stripe</td>
+<td>Developers → API Keys</td>
+</tr>
+<tr class="odd">
+<td><code>STRIPE_WEBHOOK_SECRET</code></td>
+<td>Stripe</td>
+<td>Developers → Webhooks</td>
+</tr>
+<tr class="even">
+<td><code>SENTRY_LARAVEL_DSN</code></td>
+<td>Sentry</td>
+<td>Settings → Client Keys</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r2-storage-variables-already-have">R2 Storage Variables (Already
+Have)</h3>
+<table>
+<colgroup>
+<col style="width: 58%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>CLOUDFLARE_R2_ACCESS_KEY_ID</code></td>
+<td>From R2 dashboard</td>
+</tr>
+<tr class="even">
+<td><code>CLOUDFLARE_R2_SECRET_ACCESS_KEY</code></td>
+<td>From R2 dashboard</td>
+</tr>
+<tr class="odd">
+<td><code>CLOUDFLARE_R2_BUCKET</code></td>
+<td><code>revolution-trading-media</code></td>
+</tr>
+<tr class="even">
+<td><code>CLOUDFLARE_R2_URL</code></td>
+<td><code>https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="auto-set-by-fly.io">Auto-Set by Fly.io</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>DATABASE_URL</code></td>
+<td>Postgres connection string</td>
+</tr>
+<tr class="even">
+<td><code>REDIS_URL</code></td>
+<td>Redis connection string</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="support-links">Support Links</h2>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 45%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Service</th>
+<th>Documentation</th>
+<th>Support</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fly.io</td>
+<td>https://fly.io/docs</td>
+<td>https://community.fly.io</td>
+</tr>
+<tr class="even">
+<td>Postmark</td>
+<td>https://postmarkapp.com/developer</td>
+<td>support@postmarkapp.com</td>
+</tr>
+<tr class="odd">
+<td>Stripe</td>
+<td>https://stripe.com/docs</td>
+<td>https://support.stripe.com</td>
+</tr>
+<tr class="even">
+<td>Sentry</td>
+<td>https://docs.sentry.io</td>
+<td>https://sentry.io/support</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Document Version:</strong> 1.0 <strong>Last Updated:</strong>
+December 2025 <strong>Stack:</strong> Laravel 12 + FrankenPHP +
+Octane</p>
+</body>
+</html>
