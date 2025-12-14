@@ -14,8 +14,20 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Postmark Email Service
+    |--------------------------------------------------------------------------
+    |
+    | Transactional email service with excellent deliverability.
+    | Get your API key: https://postmarkapp.com
+    |
+    | Pricing: Free (100/mo) → $15/mo (10K emails)
+    |
+    */
     'postmark' => [
-        'key' => env('POSTMARK_API_KEY'),
+        'token' => env('POSTMARK_TOKEN'),
+        'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID', 'outbound'),
     ],
 
     'resend' => [
@@ -40,17 +52,50 @@ return [
     | Stripe Payment Gateway
     |--------------------------------------------------------------------------
     |
-    | Configuration for Stripe payment processing. Supports both test and
-    | live modes. Matches Fluent Cart Pro payment gateway features.
+    | Configuration for Stripe payment processing.
+    | Get your API keys: https://dashboard.stripe.com/apikeys
+    |
+    | Webhook endpoint: /api/webhooks/stripe
+    | Pricing: 2.9% + $0.30 per transaction
+    |
+    | Setup:
+    | 1. Get keys from Stripe Dashboard → Developers → API Keys
+    | 2. Create webhook at Developers → Webhooks → Add endpoint
+    | 3. Select events: payment_intent.*, customer.*, invoice.*
     |
     */
     'stripe' => [
-        'test_mode' => env('STRIPE_TEST_MODE', true),
-        'secret_key' => env('STRIPE_SECRET_KEY'),
-        'publishable_key' => env('STRIPE_PUBLISHABLE_KEY'),
-        'test_secret_key' => env('STRIPE_TEST_SECRET_KEY', env('STRIPE_SECRET_KEY')),
-        'test_publishable_key' => env('STRIPE_TEST_PUBLISHABLE_KEY', env('STRIPE_PUBLISHABLE_KEY')),
-        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'key' => env('STRIPE_KEY'),                    // pk_live_xxx or pk_test_xxx
+        'secret' => env('STRIPE_SECRET'),              // sk_live_xxx or sk_test_xxx
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'), // whsec_xxx
+
+        // Legacy keys (for backwards compatibility)
+        'test_mode' => env('STRIPE_TEST_MODE', false),
+        'secret_key' => env('STRIPE_SECRET'),
+        'publishable_key' => env('STRIPE_KEY'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sentry Error Tracking
+    |--------------------------------------------------------------------------
+    |
+    | Real-time error tracking and performance monitoring.
+    | Get your DSN: https://sentry.io
+    |
+    | Pricing: Free (5K errors/mo) → $26/mo (Team)
+    |
+    | Setup:
+    | 1. Create account at sentry.io
+    | 2. Create Laravel project
+    | 3. Copy DSN from Settings → Client Keys
+    |
+    */
+    'sentry' => [
+        'dsn' => env('SENTRY_LARAVEL_DSN'),
+        'traces_sample_rate' => env('SENTRY_TRACES_SAMPLE_RATE', 0.1),
+        'profiles_sample_rate' => env('SENTRY_PROFILES_SAMPLE_RATE', 0.1),
+        'send_default_pii' => env('SENTRY_SEND_DEFAULT_PII', false),
     ],
 
     /*

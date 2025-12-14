@@ -1,5 +1,9 @@
 # Cloudflare Pages configuration for SvelteKit
 # Revolution Trading Pros - December 2025
+#
+# Backend: Fly.io (revolution-trading-pros.fly.dev)
+# Frontend: Cloudflare Pages
+# Storage: Cloudflare R2
 
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
@@ -9,14 +13,14 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 # Global environment variables
 [vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
-VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_API_URL = "https://revolution-trading-pros.fly.dev/api"
 VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
 
-# Reverb WebSocket Configuration
+# Reverb WebSocket Configuration (Fly.io)
 VITE_REVERB_APP_KEY = "revolution-trading-key"
-VITE_REVERB_HOST = "revolution-trading-pros-production.up.railway.app"
+VITE_REVERB_HOST = "revolution-trading-pros.fly.dev"
 VITE_REVERB_PORT = "443"
 VITE_REVERB_SCHEME = "https"
 
@@ -24,20 +28,24 @@ VITE_REVERB_SCHEME = "https"
 [env.preview]
 [env.preview.vars]
 VITE_SITE_NAME = "Revolution Trading Pros (Preview)"
-VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_API_URL = "https://revolution-trading-pros.fly.dev/api"
 VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "preview"
+VITE_REVERB_APP_KEY = "revolution-trading-key"
+VITE_REVERB_HOST = "revolution-trading-pros.fly.dev"
+VITE_REVERB_PORT = "443"
+VITE_REVERB_SCHEME = "https"
 
 # Production environment
 [env.production]
 [env.production.vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
-VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_API_URL = "https://revolution-trading-pros.fly.dev/api"
 VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
-VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
+VITE_SITE_URL = "https://revolutiontradingpros.com"
 ENVIRONMENT = "production"
 VITE_REVERB_APP_KEY = "revolution-trading-key"
-VITE_REVERB_HOST = "revolution-trading-pros-production.up.railway.app"
+VITE_REVERB_HOST = "revolution-trading-pros.fly.dev"
 VITE_REVERB_PORT = "443"
 VITE_REVERB_SCHEME = "https"
