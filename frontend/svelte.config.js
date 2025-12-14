@@ -15,9 +15,9 @@ import adapterStatic from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // Determine which adapter to use based on environment
-// Default: Vercel for easy development, switch to cloudflare for production
+// Default: Cloudflare for production deployment
 const getAdapter = () => {
-	const target = process.env.DEPLOY_TARGET || 'vercel';
+	const target = process.env.DEPLOY_TARGET || 'cloudflare';
 
 	switch (target) {
 		case 'cloudflare':
