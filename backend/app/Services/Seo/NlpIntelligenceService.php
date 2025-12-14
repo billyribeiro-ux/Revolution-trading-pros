@@ -551,4 +551,157 @@ class NlpIntelligenceService
             ]
         );
     }
+
+    /**
+     * Extract expected entities for a keyword based on semantic analysis.
+     *
+     * Uses NLP to determine what entities should be covered in content
+     * targeting a specific keyword.
+     *
+     * @param string $keyword Target keyword
+     * @return array<string> List of expected entities
+     */
+    public function extractExpectedEntities(string $keyword): array
+    {
+        $cacheKey = self::CACHE_PREFIX . ":expected_entities:" . md5($keyword);
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($keyword) {
+            // Generate contextual text about the keyword to extract entities
+            $contextText = "Understanding {$keyword}: A comprehensive guide about {$keyword} including all important aspects, components, and related concepts.";
+
+            // Extract entities from context
+            $entities = $this->extractEntitiesLocal($contextText);
+
+            // Also add keyword-derived entities
+            $derivedEntities = $this->deriveEntitiesFromKeyword($keyword);
+
+            $allEntities = array_unique(array_merge(
+                array_column($entities, 'name'),
+                $derivedEntities
+            ));
+
+            return array_filter($allEntities, fn($e) => strlen($e) > 2);
+        });
+    }
+
+    /**
+     * Extract expected topics for a keyword based on semantic analysis.
+     *
+     * Determines what topics/subtopics should be covered for comprehensive
+     * content about a keyword.
+     *
+     * @param string $keyword Target keyword
+     * @return array<string> List of expected topics
+     */
+    public function extractExpectedTopics(string $keyword): array
+    {
+        $cacheKey = self::CACHE_PREFIX . ":expected_topics:" . md5($keyword);
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($keyword) {
+            // Generate topic suggestions based on keyword patterns
+            $topics = [];
+
+            // Intent-based topics
+            $intent = $this->classifyIntent($keyword);
+            $topics = array_merge($topics, $this->getIntentBasedTopics($intent));
+
+            // Question-based topics (People Also Ask style)
+            $topics = array_merge($topics, [
+                "What is {$keyword}",
+                "How does {$keyword} work",
+                "Benefits of {$keyword}",
+                "Types of {$keyword}",
+                "{$keyword} vs alternatives",
+                "Best practices for {$keyword}",
+                "Common mistakes with {$keyword}",
+                "Future of {$keyword}",
+            ]);
+
+            // Semantic expansions
+            $wordCount = str_word_count($keyword);
+            if ($wordCount === 1) {
+                // Single word - add more context topics
+                $topics[] = "{$keyword} definition";
+                $topics[] = "{$keyword} examples";
+                $topics[] = "{$keyword} guide";
+            }
+
+            return array_unique($topics);
+        });
+    }
+
+    /**
+     * Derive entities from keyword using linguistic analysis.
+     */
+    private function deriveEntitiesFromKeyword(string $keyword): array
+    {
+        $entities = [];
+
+        // Split into words and capitalize as potential entities
+        $words = explode(' ', $keyword);
+        foreach ($words as $word) {
+            if (strlen($word) > 3 && !$this->isStopWord($word)) {
+                $entities[] = ucfirst($word);
+            }
+        }
+
+        // Add the full keyword as entity if multi-word
+        if (count($words) > 1) {
+            $entities[] = ucwords($keyword);
+        }
+
+        return $entities;
+    }
+
+    /**
+     * Get topics based on content intent.
+     */
+    private function getIntentBasedTopics(string $intent): array
+    {
+        return match ($intent) {
+            'transactional' => [
+                'Pricing and costs',
+                'Where to buy',
+                'Discounts and deals',
+                'Return policy',
+                'Payment options',
+            ],
+            'commercial' => [
+                'Product comparison',
+                'Reviews and ratings',
+                'Pros and cons',
+                'Best options',
+                'Buying guide',
+            ],
+            'navigational' => [
+                'Official website',
+                'Login instructions',
+                'Contact information',
+                'Support resources',
+            ],
+            'informational' => [
+                'Definition',
+                'How it works',
+                'Benefits',
+                'Examples',
+                'Getting started',
+                'Best practices',
+                'Common questions',
+            ],
+            default => [
+                'Overview',
+                'Key features',
+                'Use cases',
+            ],
+        };
+    }
+
+    /**
+     * Check if word is a stop word.
+     */
+    private function isStopWord(string $word): bool
+    {
+        $stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'this', 'that', 'these', 'those', 'it', 'its', 'how', 'what', 'why', 'when', 'where', 'who', 'which'];
+        return in_array(strtolower($word), $stopWords);
+    }
 }
