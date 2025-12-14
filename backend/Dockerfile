@@ -1,5 +1,8 @@
 FROM php:8.2-cli
 
+# Cache-buster: Change this to force Railway to rebuild
+ARG CACHE_BUST=2025-12-14-v2
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -40,22 +43,14 @@ RUN mkdir -p storage/framework/cache/data \
 RUN chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
+
 # Generate autoloader
 RUN composer dump-autoload --optimize
 
 # Expose port (Railway uses PORT env var)
 EXPOSE 8080
 
-# Start script with error handling
-CMD sh -c '\
-    echo "Starting Laravel application..." && \
-    php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
-    if [ -n "$DATABASE_URL" ]; then \
-        echo "Running migrations..." && \
-        php artisan migrate --force || echo "Migration warning (may be ok)"; \
-    fi && \
-    echo "Starting server on port ${PORT:-8080}..." && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8080} \
-'
+# Use JSON CMD format with entrypoint script
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
