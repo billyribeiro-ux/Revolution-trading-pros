@@ -1,0 +1,256 @@
+################################################################################
+# REVOLUTION TRADING PROS - LOCAL DEVELOPMENT ENVIRONMENT
+#
+# Stack: Laravel 12 + Octane + FrankenPHP (December 2025)
+#
+# Usage:
+#   docker compose up -d              # Start all services
+#   docker compose up -d --build      # Rebuild and start
+#   docker compose logs -f app        # Follow app logs
+#   docker compose exec app sh        # Shell into container
+#   docker compose down               # Stop all services
+#   docker compose down -v            # Stop and remove volumes
+################################################################################
+
+name: revolution-trading-pros
+
+services:
+  #-----------------------------------------------------------------------------
+  # Laravel Application (FrankenPHP + Octane)
+  #-----------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: rtp-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - .:/app:cached
+      - vendor:/app/vendor
+      - storage:/app/storage
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_KEY=${APP_KEY}
+      - APP_URL=http://localhost:${APP_PORT:-8000}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-revolution_trading}
+      - DB_USERNAME=${DB_USERNAME:-laravel}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_STORE=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - OCTANE_SERVER=frankenphp
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - rtp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  #-----------------------------------------------------------------------------
+  # Laravel Horizon (Queue Workers)
+  #-----------------------------------------------------------------------------
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: rtp-horizon
+    restart: unless-stopped
+    command: ["php", "artisan", "horizon"]
+    volumes:
+      - .:/app:cached
+      - vendor:/app/vendor
+      - storage:/app/storage
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-revolution_trading}
+      - DB_USERNAME=${DB_USERNAME:-laravel}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - app
+      - redis
+    networks:
+      - rtp-network
+
+  #-----------------------------------------------------------------------------
+  # Laravel Reverb (WebSocket Server)
+  #-----------------------------------------------------------------------------
+  reverb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: rtp-reverb
+    restart: unless-stopped
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    ports:
+      - "${REVERB_PORT:-8080}:8080"
+    volumes:
+      - .:/app:cached
+      - vendor:/app/vendor
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_KEY=${APP_KEY}
+      - REVERB_HOST=0.0.0.0
+      - REVERB_PORT=8080
+      - REVERB_APP_ID=${REVERB_APP_ID:-app}
+      - REVERB_APP_KEY=${REVERB_APP_KEY:-key}
+      - REVERB_APP_SECRET=${REVERB_APP_SECRET:-secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - rtp-network
+
+  #-----------------------------------------------------------------------------
+  # Scheduler (Cron)
+  #-----------------------------------------------------------------------------
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: rtp-scheduler
+    restart: unless-stopped
+    command: >
+      sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
+    volumes:
+      - .:/app:cached
+      - vendor:/app/vendor
+      - storage:/app/storage
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_KEY=${APP_KEY}
+      - DB_HOST=postgres
+      - DB_DATABASE=${DB_DATABASE:-revolution_trading}
+      - DB_USERNAME=${DB_USERNAME:-laravel}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=redis
+    depends_on:
+      - app
+    networks:
+      - rtp-network
+
+  #-----------------------------------------------------------------------------
+  # PostgreSQL Database
+  #-----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: rtp-postgres
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_DB=${DB_DATABASE:-revolution_trading}
+      - POSTGRES_USER=${DB_USERNAME:-laravel}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rtp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-laravel} -d ${DB_DATABASE:-revolution_trading}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  #-----------------------------------------------------------------------------
+  # Redis (Cache, Queue, Sessions)
+  #-----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: rtp-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - rtp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  #-----------------------------------------------------------------------------
+  # Meilisearch (Full-text Search)
+  #-----------------------------------------------------------------------------
+  meilisearch:
+    image: getmeili/meilisearch:v1.11
+    container_name: rtp-meilisearch
+    restart: unless-stopped
+    ports:
+      - "${MEILISEARCH_PORT:-7700}:7700"
+    environment:
+      - MEILI_ENV=development
+      - MEILI_MASTER_KEY=${MEILISEARCH_KEY:-masterKey}
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - rtp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  #-----------------------------------------------------------------------------
+  # Mailpit (Email Testing)
+  #-----------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: rtp-mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAIL_PORT:-1025}:1025"      # SMTP
+      - "${MAIL_DASHBOARD:-8025}:8025"  # Web UI
+    networks:
+      - rtp-network
+
+#-----------------------------------------------------------------------------
+# Volumes
+#-----------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  meilisearch_data:
+    driver: local
+  vendor:
+    driver: local
+  storage:
+    driver: local
+
+#-----------------------------------------------------------------------------
+# Networks
+#-----------------------------------------------------------------------------
+networks:
+  rtp-network:
+    driver: bridge
