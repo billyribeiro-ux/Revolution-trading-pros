@@ -1,4 +1,6 @@
 # Cloudflare Pages configuration for SvelteKit
+# Revolution Trading Pros - December 2025
+
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
@@ -12,9 +14,18 @@ VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
 
-# Production environment - Synced with Railway backend
-[env.production.vars]
+# Reverb WebSocket Configuration
+VITE_REVERB_APP_KEY = "revolution-trading-key"
+VITE_REVERB_HOST = "revolution-trading-pros-production.up.railway.app"
+VITE_REVERB_PORT = "443"
+VITE_REVERB_SCHEME = "https"
+
+# Preview environment
+[env.preview]
+[env.preview.vars]
+VITE_SITE_NAME = "Revolution Trading Pros (Preview)"
 VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
+VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "preview"
 
@@ -26,3 +37,7 @@ VITE_API_URL = "https://revolution-trading-pros-production.up.railway.app/api"
 VITE_CDN_URL = "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
+VITE_REVERB_APP_KEY = "revolution-trading-key"
+VITE_REVERB_HOST = "revolution-trading-pros-production.up.railway.app"
+VITE_REVERB_PORT = "443"
+VITE_REVERB_SCHEME = "https"

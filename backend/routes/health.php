@@ -218,7 +218,7 @@ Route::get('/health', function (Request $request) {
     // Memory check
     $memoryUsage = memory_get_usage(true);
     $memoryLimit = ini_get('memory_limit');
-    $memoryLimitBytes = $memoryLimit === '-1' ? PHP_INT_MAX : $this->convertToBytes($memoryLimit);
+    $memoryLimitBytes = $memoryLimit === '-1' ? PHP_INT_MAX : convertToBytes($memoryLimit);
     $memoryPercent = ($memoryUsage / $memoryLimitBytes) * 100;
 
     $checks['memory'] = [
@@ -236,6 +236,13 @@ Route::get('/health', function (Request $request) {
         'debug_mode' => config('app.debug'),
         'timezone' => config('app.timezone'),
         'uptime_seconds' => round(microtime(true) - LARAVEL_START, 2)
+    ];
+
+    // Octane check (if running under Octane)
+    $checks['octane'] = [
+        'status' => class_exists(\Laravel\Octane\Octane::class) ? 'available' : 'not_installed',
+        'server' => env('OCTANE_SERVER', 'not_configured'),
+        'running' => isset($_SERVER['LARAVEL_OCTANE']) ? 'yes' : 'no'
     ];
 
     $totalTime = (microtime(true) - $startTime) * 1000;
