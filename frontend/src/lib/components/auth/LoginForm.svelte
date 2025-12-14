@@ -445,7 +445,7 @@
 							class="password-toggle"
 							onclick={() => (showPassword = !showPassword)}
 							aria-label={showPassword ? 'Hide password' : 'Show password'}
-							tabindex={-1}
+							tabindex={0}
 							disabled={isLoading || isSuccess}
 						>
 							{#if showPassword}
@@ -526,7 +526,7 @@
 </div>
 
 <style>
-	/* Card Container */
+	/* Card Container - ICT11+ Animation-First Architecture */
 	.login-card {
 		position: relative;
 		background: var(--auth-card-bg);
@@ -535,7 +535,11 @@
 		border-radius: 24px;
 		border: 1px solid var(--auth-card-border);
 		box-shadow: var(--auth-card-shadow);
-		overflow: hidden;
+		/* NOTE: overflow: visible allows card-glow (inset: -2px) to render properly */
+		/* The glow effect intentionally extends beyond card bounds with z-index: -1 */
+		overflow: visible;
+		/* ICT11+ Pattern: Create stacking context for proper z-index layering */
+		isolation: isolate;
 	}
 
 	.card-glass {
@@ -563,6 +567,11 @@
 		position: relative;
 		padding: 2.5rem 2rem;
 		min-height: 500px;
+		/* ICT11+ Pattern: Isolate stacking context for internal z-index management */
+		isolation: isolate;
+		/* Contain internal content while allowing parent glow to extend */
+		overflow: hidden;
+		border-radius: 24px;
 	}
 
 	@media (min-width: 640px) {

@@ -83,13 +83,15 @@
 </div>
 
 <style>
-	/* Main Layout */
+	/* Main Layout - ICT11+ Animation-First Architecture */
 	.login-layout {
 		position: relative;
 		min-height: 100vh;
 		display: grid;
 		grid-template-columns: 1fr;
-		overflow: hidden;
+		/* ICT11+ Pattern: Allow spotlight glow to extend beyond bounds */
+		overflow-x: hidden;
+		overflow-y: auto;
 		background: var(--auth-bg);
 	}
 

@@ -243,8 +243,8 @@
 				
 				if (!lottie?.loadAnimation) {
 					console.error('[LottieSuccess] lottie.loadAnimation not available');
-					// Fallback: just trigger complete callback
-					setTimeout(() => onComplete?.(), 500);
+					// ICT11+ Pattern: Fallback timeout must match animation duration (60fps @ 60 frames = 1000ms)
+					setTimeout(() => onComplete?.(), 1000);
 					return;
 				}
 
@@ -261,8 +261,8 @@
 				});
 			} catch (err) {
 				console.error('[LottieSuccess] Failed to load lottie:', err);
-				// Fallback: trigger complete callback
-				setTimeout(() => onComplete?.(), 500);
+				// ICT11+ Pattern: Fallback timeout must match animation duration (60fps @ 60 frames = 1000ms)
+				setTimeout(() => onComplete?.(), 1000);
 			}
 		})();
 

@@ -1,38 +1,47 @@
 <script lang="ts">
 	/**
 	 * SocialLoginButtons - OAuth Social Sign-In
-	 * Netflix L11+ Principal Engineer Grade
+	 * ICT11+ Principal Engineer Grade
 	 *
 	 * Google and Apple sign-in buttons with premium styling
+	 * Uses SvelteKit goto() for proper SPA navigation & error feedback
 	 *
-	 * @version 1.0.0
+	 * @version 1.1.0
 	 */
+	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { fade } from 'svelte/transition';
 
 	interface Props {
 		disabled?: boolean;
 		onGoogleClick?: () => void;
 		onAppleClick?: () => void;
+		onError?: (message: string) => void;
 	}
 
-	let { disabled = false, onGoogleClick, onAppleClick }: Props = $props();
+	let { disabled = false, onGoogleClick, onAppleClick, onError }: Props = $props();
 
 	let isGoogleLoading = $state(false);
 	let isAppleLoading = $state(false);
+	let error = $state('');
 
 	async function handleGoogleLogin() {
 		if (disabled || isGoogleLoading) return;
 		isGoogleLoading = true;
+		error = '';
 
 		try {
 			if (onGoogleClick) {
 				onGoogleClick();
 			} else {
-				// Default: redirect to Google OAuth endpoint
-				window.location.href = '/api/auth/google';
+				// ICT11+ Pattern: Use goto() for SPA navigation, preserves animation context
+				await goto('/api/auth/google', { replaceState: false });
 			}
-		} catch (error) {
-			console.error('Google login error:', error);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to sign in with Google';
+			error = message;
+			onError?.(message);
+			console.error('[SocialLogin] Google login error:', err);
 		} finally {
 			isGoogleLoading = false;
 		}
@@ -41,16 +50,20 @@
 	async function handleAppleLogin() {
 		if (disabled || isAppleLoading) return;
 		isAppleLoading = true;
+		error = '';
 
 		try {
 			if (onAppleClick) {
 				onAppleClick();
 			} else {
-				// Default: redirect to Apple OAuth endpoint
-				window.location.href = '/api/auth/apple';
+				// ICT11+ Pattern: Use goto() for SPA navigation, preserves animation context
+				await goto('/api/auth/apple', { replaceState: false });
 			}
-		} catch (error) {
-			console.error('Apple login error:', error);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to sign in with Apple';
+			error = message;
+			onError?.(message);
+			console.error('[SocialLogin] Apple login error:', err);
 		} finally {
 			isAppleLoading = false;
 		}
@@ -63,6 +76,13 @@
 		<span class="divider-text">or continue with</span>
 		<span class="divider-line"></span>
 	</div>
+
+	<!-- ICT11+ Pattern: User-visible error feedback -->
+	{#if error}
+		<div class="social-error" transition:fade={{ duration: 200 }} role="alert">
+			<span class="error-text">{error}</span>
+		</div>
+	{/if}
 
 	<div class="social-buttons">
 		<!-- Google Button -->
@@ -128,6 +148,25 @@
 <style>
 	.social-login {
 		margin-top: 1.5rem;
+	}
+
+	/* ICT11+ Pattern: Error feedback styling */
+	.social-error {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.625rem 1rem;
+		margin-bottom: 1rem;
+		background: var(--auth-error-bg, rgba(239, 68, 68, 0.1));
+		border: 1px solid var(--auth-error-border, rgba(239, 68, 68, 0.3));
+		border-radius: 8px;
+	}
+
+	.error-text {
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--auth-error, #f87171);
+		text-align: center;
 	}
 
 	/* Divider */

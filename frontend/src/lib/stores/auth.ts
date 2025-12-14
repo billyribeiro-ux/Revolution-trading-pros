@@ -418,7 +418,8 @@ function createAuthStore() {
 				invalidationReason: null
 			});
 
-			// Call API logout endpoint (fire and forget)
+			// Call API logout endpoint (fire and forget with timeout)
+			// ICT11+ Pattern: Prevent hanging on unresponsive server
 			if (token && browser) {
 				try {
 					const headers: Record<string, string> = {
@@ -430,13 +431,20 @@ function createAuthStore() {
 						headers['X-Session-ID'] = sessionId;
 					}
 
+					// ICT11+ Pattern: 5-second timeout prevents blocking on network issues
+					const controller = new AbortController();
+					const timeoutId = setTimeout(() => controller.abort(), 5000);
+
 					await fetch('/api/logout', {
 						method: 'POST',
 						headers,
-						credentials: 'include' // Clear httpOnly cookie
+						credentials: 'include', // Clear httpOnly cookie
+						signal: controller.signal
 					});
+
+					clearTimeout(timeoutId);
 				} catch (error) {
-					// Ignore API errors during logout
+					// Ignore API errors during logout (including timeout/abort)
 					if (import.meta.env.DEV) {
 						console.error('[Auth] Logout API error:', error);
 					}
