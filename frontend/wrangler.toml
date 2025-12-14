@@ -1,180 +1,22 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# Revolution Trading Pros - Cloudflare Pages Configuration
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# Apple Principal Engineer ICT11+ MAXIMUM POWER Configuration
-#
-# This configures Cloudflare Pages for global edge deployment with:
-# - SvelteKit SSR on Cloudflare Workers
-# - Edge caching and optimization
-# - R2 storage integration
-# - KV namespace for caching
-# - D1 for edge analytics (optional)
-#
-# ═══════════════════════════════════════════════════════════════════════════════
-
+# Cloudflare Pages configuration for SvelteKit
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# GLOBAL ENVIRONMENT VARIABLES
-# ═══════════════════════════════════════════════════════════════════════════════
-
+# Global environment variables
 [vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
-ENVIRONMENT = "development"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# PREVIEW ENVIRONMENT (Pull Request Deployments)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-[env.preview]
-name = "revolution-trading-pros-preview"
-
-[env.preview.vars]
-ENVIRONMENT = "preview"
-# Preview connects to staging backend
-# Set VITE_API_URL in Cloudflare Dashboard for each preview
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# STAGING ENVIRONMENT
-# ═══════════════════════════════════════════════════════════════════════════════
-
-[env.staging]
-name = "revolution-trading-pros-staging"
-
-[env.staging.vars]
-ENVIRONMENT = "staging"
-VITE_API_URL = "https://revolution-trading-staging.up.railway.app/api"
-VITE_SITE_URL = "https://staging.revolutiontradingpros.com"
-VITE_ANALYTICS_DEBUG = "true"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# PRODUCTION ENVIRONMENT
-# ═══════════════════════════════════════════════════════════════════════════════
-
-[env.production]
-name = "revolution-trading-pros"
-
-[env.production.vars]
 ENVIRONMENT = "production"
-VITE_SITE_URL = "https://revolutiontradingpros.com"
-VITE_ANALYTICS_DEBUG = "false"
 
-# IMPORTANT: Set these secrets in Cloudflare Dashboard > Pages > Settings > Environment Variables:
-# - VITE_API_URL (your Railway production URL, e.g., https://revolution-trading-backend.up.railway.app/api)
-# - VITE_GTM_ID (Google Tag Manager ID)
-# - VITE_GTAG_ID (Google Analytics ID)
-# - PUBLIC_GA4_MEASUREMENT_ID (GA4 Measurement ID)
-# - PUBLIC_META_PIXEL_ID (Facebook Pixel ID)
+# Preview environment (for PR deployments)
+[env.preview]
+[env.preview.vars]
+VITE_SITE_NAME = "Revolution Trading Pros"
+ENVIRONMENT = "preview"
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# KV NAMESPACES (Edge Caching)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# To create KV namespaces:
-# wrangler kv:namespace create "CACHE"
-# wrangler kv:namespace create "CACHE" --preview
-# wrangler kv:namespace create "SESSIONS"
-# wrangler kv:namespace create "SESSIONS" --preview
-#
-# Then uncomment and add the IDs below:
-
-# [[kv_namespaces]]
-# binding = "CACHE"
-# id = "your-kv-namespace-id"
-# preview_id = "your-preview-kv-namespace-id"
-
-# [[kv_namespaces]]
-# binding = "SESSIONS"
-# id = "your-sessions-kv-id"
-# preview_id = "your-sessions-preview-kv-id"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R2 STORAGE (Media & Assets)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# To create R2 bucket:
-# wrangler r2 bucket create revolution-trading-media
-#
-# Then uncomment below:
-
-# [[r2_buckets]]
-# binding = "MEDIA_BUCKET"
-# bucket_name = "revolution-trading-media"
-
-# [[r2_buckets]]
-# binding = "ASSETS_BUCKET"
-# bucket_name = "revolution-trading-assets"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# D1 DATABASE (Edge Analytics - Optional)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# To create D1 database for edge analytics:
-# wrangler d1 create revolution-analytics
-#
-# Then uncomment below:
-
-# [[d1_databases]]
-# binding = "ANALYTICS_DB"
-# database_name = "revolution-analytics"
-# database_id = "your-d1-database-id"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# DURABLE OBJECTS (Real-time Features - Optional)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# For real-time price updates or live notifications:
-#
-# [durable_objects]
-# bindings = [
-#   { name = "PRICE_TICKER", class_name = "PriceTicker" }
-# ]
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# ROUTES & CACHING RULES
-# ═══════════════════════════════════════════════════════════════════════════════
-
-# Custom headers for security and performance
-# Set these in Cloudflare Dashboard > Rules > Transform Rules
-
-# Cache-Control headers by path:
-# /_app/*         -> public, max-age=31536000, immutable (hashed assets)
-# /images/*       -> public, max-age=86400, stale-while-revalidate=604800
-# /api/*          -> no-store, private
-# /sitemap.xml    -> public, max-age=3600
-# /robots.txt     -> public, max-age=86400
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# BUILD CONFIGURATION
-# ═══════════════════════════════════════════════════════════════════════════════
-
-[build]
-command = "npm run build"
-
-[build.upload]
-format = "modules"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# TAIL WORKERS (Logging & Observability)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# To enable tail logging to external service:
-#
-# [[tail_consumers]]
-# service = "your-logging-worker"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# TRIGGERS (Cron Jobs - Optional)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# For scheduled tasks like sitemap regeneration:
-#
-# [triggers]
-# crons = [
-#   "0 */6 * * *",  # Every 6 hours - regenerate sitemap
-#   "0 0 * * 0"     # Weekly - cleanup old analytics
-# ]
+# Production environment
+[env.production]
+[env.production.vars]
+VITE_SITE_NAME = "Revolution Trading Pros"
+ENVIRONMENT = "production"
