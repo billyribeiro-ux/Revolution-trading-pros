@@ -2,16 +2,23 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Revolution Trading Pros - Enterprise Trading Platform",
+    "keywords": ["laravel", "framework", "trading", "fintech"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
+        "ext-pcntl": "*",
+        "ext-pdo": "*",
+        "ext-redis": "*",
         "intervention/image": "^3.11",
         "jenssegers/agent": "^2.6",
         "kalnoy/nestedset": "^6.0",
         "kornrunner/blurhash": "^1.2",
         "laravel/framework": "^12.0",
+        "laravel/horizon": "^5.29",
+        "laravel/octane": "^2.6",
+        "laravel/pulse": "^1.3",
+        "laravel/reverb": "^1.4",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
         "predis/predis": "^3.2",
@@ -46,16 +53,33 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
-            "npm install",
-            "npm run build"
+            "@php artisan octane:install --server=frankenphp --no-interaction",
+            "@php artisan horizon:install",
+            "@php artisan pulse:install"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#34d399\" \"php artisan octane:start --watch\" \"php artisan horizon\" \"php artisan pail --timeout=0\" \"php artisan reverb:start\" --names=octane,horizon,logs,reverb --kill-others"
+        ],
+        "dev:standard": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" --names=server,queue,logs --kill-others"
         ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "octane": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=8000"
+        ],
+        "octane:watch": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan octane:start --server=frankenphp --watch"
+        ],
+        "horizon": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan horizon"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
