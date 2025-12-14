@@ -43,7 +43,9 @@ import { browser } from '$app/environment';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = import.meta.env['VITE_API_URL'] || 'http://localhost:8000/api';
+// ICT11+ Pattern: Use relative path to ensure Vite proxy intercepts requests in development
+// Absolute URLs bypass the proxy, causing CORS issues and connection failures
+const API_BASE_URL = import.meta.env['VITE_API_URL'] || '/api';
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
