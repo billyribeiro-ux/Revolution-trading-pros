@@ -2,22 +2,21 @@
  * Revolution Trading Pros - SvelteKit Configuration
  * ⚡ LIGHTNING STACK - ICT 11+ Principal Engineer Configuration
  *
- * Default: Vercel (development) - simple deployment
- * Production: Set DEPLOY_TARGET=cloudflare for maximum speed
+ * Default: Cloudflare for maximum performance
+ * Alternative: Set DEPLOY_TARGET=static for static site generation
  *
- * @version 3.1.0 - Lightning Stack Edition
+ * @version 3.2.0 - Lightning Stack Edition (Cloudflare-first)
  * @author Revolution Trading Pros
  */
 
 import adapterCloudflare from '@sveltejs/adapter-cloudflare';
-import adapterVercel from '@sveltejs/adapter-vercel';
 import adapterStatic from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // Determine which adapter to use based on environment
-// Default: Vercel for easy development, switch to cloudflare for production
+// Default: Cloudflare for maximum edge performance
 const getAdapter = () => {
-	const target = process.env.DEPLOY_TARGET || 'vercel';
+	const target = process.env.DEPLOY_TARGET || 'cloudflare';
 
 	switch (target) {
 		case 'cloudflare':
@@ -33,12 +32,6 @@ const getAdapter = () => {
 					experimentalJsonConfig: false,
 					persist: false
 				}
-			});
-		case 'vercel':
-			return adapterVercel({
-				runtime: 'nodejs22.x', // Node.js runtime for full compatibility
-				regions: ['iad1'], // Primary region
-				split: false
 			});
 		case 'static':
 			return adapterStatic({
