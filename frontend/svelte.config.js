@@ -21,12 +21,10 @@ const getAdapter = () => {
 	switch (target) {
 		case 'cloudflare':
 			return adapterCloudflare({
-				// Enable edge SSR for dynamic pages
 				routes: {
 					include: ['/*'],
 					exclude: ['<all>']
 				},
-				// Platform-specific optimizations
 				platformProxy: {
 					configPath: 'wrangler.toml',
 					experimentalJsonConfig: false,
@@ -38,7 +36,7 @@ const getAdapter = () => {
 				pages: 'build',
 				assets: 'build',
 				fallback: 'index.html',
-				precompress: true, // Enable brotli/gzip
+				precompress: true,
 				strict: true
 			});
 		default:
@@ -50,14 +48,13 @@ const getAdapter = () => {
 const config = {
 	preprocess: vitePreprocess(),
 	onwarn: (warning, handler) => {
-		// ICT11+ Production Configuration - Suppress non-critical warnings
 		const suppressedCodes = [
 			'css_unused_selector',
-			'css_unknown_at_rule', // Tailwind @apply/@reference directives
-			'css_empty_rule', // Empty CSS rulesets used as placeholders
-			'state_referenced_locally', // Svelte 5 false positive for closures
-			'a11y_click_events_have_key_events', // Handled by component logic
-			'a11y_no_static_element_interactions' // Handled by component logic
+			'css_unknown_at_rule',
+			'css_empty_rule',
+			'state_referenced_locally',
+			'a11y_click_events_have_key_events',
+			'a11y_no_static_element_interactions'
 		];
 		if (suppressedCodes.includes(warning.code)) return;
 		handler(warning);
@@ -66,23 +63,18 @@ const config = {
 		adapter: getAdapter(),
 		prerender: {
 			handleHttpError: ({ status, path }) => {
-				// Ignore 404 errors for unimplemented routes
 				if (status === 404) {
 					return;
 				}
-				// Let other errors through
 				throw new Error(`${status} ${path}`);
 			},
-			handleMissingId: 'ignore', // Ignore missing anchor IDs (skip-to-content links)
+			handleMissingId: 'ignore',
 			handleUnseenRoutes: 'ignore',
-			// Concurrent prerendering for faster builds
-			concurrency: 8, // Increased from 4 for faster builds
-			crawl: true, // Auto-discover linked pages
+			concurrency: 8,
+			crawl: true,
 			entries: ['*', '/sitemap.xml', '/robots.txt']
 		},
-		// Inline small CSS files for faster initial render
-		inlineStyleThreshold: 2048, // Increased from 1024 for better FCP
-		// Content Security Policy - WCAG/OWASP compliant
+		inlineStyleThreshold: 2048,
 		csp: {
 			mode: 'auto',
 			directives: {
@@ -97,29 +89,20 @@ const config = {
 				'form-action': ['self']
 			}
 		},
-		// Alias for cleaner imports
 		alias: {
 			$components: 'src/lib/components',
 			$stores: 'src/lib/stores',
 			$utils: 'src/lib/utils',
 			$api: 'src/lib/api'
 		},
-		// Service worker for offline support and caching
 		serviceWorker: {
 			register: true
 		},
-		// Environment variable prefix
 		env: {
 			publicPrefix: 'PUBLIC_'
 		}
 	},
-	// Compile-time optimizations
-	compilerOptions: {
-		// CSS scoping - each component gets its own scoped styles
-		// This ensures complete design freedom per page/section
-		// Note: hydratable and immutable options removed in Svelte 5
-		// Components are always hydratable, and immutable has no effect in runes mode
-	}
+	compilerOptions: {}
 };
 
 export default config;

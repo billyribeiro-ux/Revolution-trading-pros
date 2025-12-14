@@ -1028,10 +1028,11 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DESIGN TOKENS
+	   ICT11+ Fix: Responsive navbar height for 11-13" laptops
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.navbar {
-		--nav-height: 104px;
-		--nav-padding-inline: 1.5rem;
+		--nav-height: 80px;
+		--nav-padding-inline: 1rem;
 		--nav-primary: #0E6AC4;
 		--nav-primary-dark: #0a4d8a;
 		--nav-primary-light: rgba(14, 106, 196, 0.1);
@@ -1129,14 +1130,36 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   LOGO
+	   ICT11+ Fix: Responsive logo sizing for 11-13" laptops
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.logo {
 		display: flex;
 		align-items: center;
 		flex-shrink: 0;
-		width: 200px;
-		height: 50px;
+		width: 140px;
+		height: 35px;
 		text-decoration: none;
+	}
+
+	@media (min-width: 1152px) {
+		.logo {
+			width: 160px;
+			height: 40px;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.logo {
+			width: 180px;
+			height: 45px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.logo {
+			width: 200px;
+			height: 50px;
+		}
 	}
 
 	.logo img {
@@ -1148,14 +1171,16 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DESKTOP NAV
+	   ICT11+ Fix: Responsive breakpoints for 11-13" laptops (1024-1440px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.desktop-nav {
 		display: none;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.25rem;
 		flex: 1;
 		justify-content: center;
-		padding-inline: 2rem;
+		padding-inline: 0.5rem;
+		min-width: 0; /* Allow flex item to shrink below content size */
 	}
 
 	@media (min-width: 1024px) {
@@ -1164,9 +1189,25 @@
 		}
 	}
 
+	/* ICT11+ Fix: Intermediate breakpoint for 11-13" laptops */
+	@media (min-width: 1152px) {
+		.desktop-nav {
+			gap: 0.375rem;
+			padding-inline: 1rem;
+		}
+	}
+
 	@media (min-width: 1280px) {
 		.desktop-nav {
+			gap: 0.5rem;
+			padding-inline: 1.5rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.desktop-nav {
 			gap: 0.75rem;
+			padding-inline: 2rem;
 		}
 	}
 
@@ -1174,14 +1215,14 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
-		height: 36px;
-		padding: 0 0.75rem;
+		gap: 0.125rem;
+		height: 32px;
+		padding: 0 0.5rem;
 		color: var(--nav-text);
-		font-size: 0.75rem;
+		font-size: 0.6875rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
-		letter-spacing: 0.02em;
+		letter-spacing: 0.01em;
 		text-decoration: none;
 		white-space: nowrap;
 		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
@@ -1192,7 +1233,26 @@
 		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
+	/* ICT11+ Fix: Progressive enhancement for larger screens */
+	@media (min-width: 1152px) {
+		.nav-link {
+			height: 34px;
+			padding: 0 0.625rem;
+			font-size: 0.7rem;
+		}
+	}
+
 	@media (min-width: 1280px) {
+		.nav-link {
+			height: 36px;
+			padding: 0 0.75rem;
+			font-size: 0.75rem;
+			gap: 0.25rem;
+			letter-spacing: 0.02em;
+		}
+	}
+
+	@media (min-width: 1440px) {
 		.nav-link {
 			height: 38px;
 			padding: 0 0.875rem;
@@ -1237,14 +1297,14 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
-		height: 36px;
-		padding: 0 0.75rem;
+		gap: 0.125rem;
+		height: 32px;
+		padding: 0 0.5rem;
 		color: var(--nav-text);
-		font-size: 0.75rem;
+		font-size: 0.6875rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
-		letter-spacing: 0.02em;
+		letter-spacing: 0.01em;
 		white-space: nowrap;
 		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
 		background-color: var(--nav-primary-light);
@@ -1254,9 +1314,27 @@
 		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
+	/* ICT11+ Fix: Progressive enhancement for larger screens */
+	@media (min-width: 1152px) {
+		.dropdown-trigger {
+			height: 34px;
+			padding: 0 0.625rem;
+			font-size: 0.7rem;
+		}
+	}
+
 	@media (min-width: 1280px) {
 		.dropdown-trigger {
 			gap: 0.25rem;
+			height: 36px;
+			padding: 0 0.75rem;
+			font-size: 0.75rem;
+			letter-spacing: 0.02em;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dropdown-trigger {
 			height: 38px;
 			padding: 0 0.875rem;
 			font-size: 0.8125rem;
@@ -1476,13 +1554,13 @@
 	.login-btn {
 		display: none;
 		align-items: center;
-		height: 36px;
-		padding-inline: 1rem;
+		height: 32px;
+		padding-inline: 0.75rem;
 		color: #ffffff;
-		font-size: 0.75rem;
+		font-size: 0.6875rem;
 		font-weight: 700;
 		font-family: var(--nav-font);
-		letter-spacing: 0.02em;
+		letter-spacing: 0.01em;
 		text-decoration: none;
 		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%);
 		background-color: var(--nav-primary-light);
@@ -1497,7 +1575,25 @@
 		}
 	}
 
+	/* ICT11+ Fix: Progressive enhancement for action buttons */
+	@media (min-width: 1152px) {
+		.login-btn {
+			height: 34px;
+			padding-inline: 0.875rem;
+			font-size: 0.7rem;
+		}
+	}
+
 	@media (min-width: 1280px) {
+		.login-btn {
+			height: 36px;
+			padding-inline: 1rem;
+			font-size: 0.75rem;
+			letter-spacing: 0.02em;
+		}
+	}
+
+	@media (min-width: 1440px) {
 		.login-btn {
 			height: 38px;
 			padding-inline: 1.125rem;
@@ -1521,13 +1617,13 @@
 	.cta-btn {
 		display: none;
 		align-items: center;
-		height: 36px;
-		padding-inline: 1rem;
+		height: 32px;
+		padding-inline: 0.75rem;
 		color: var(--nav-text);
-		font-size: 0.75rem;
+		font-size: 0.6875rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
-		letter-spacing: 0.02em;
+		letter-spacing: 0.01em;
 		text-decoration: none;
 		background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
 		border: none;
@@ -1541,7 +1637,25 @@
 		}
 	}
 
+	/* ICT11+ Fix: Progressive enhancement for CTA button */
+	@media (min-width: 1152px) {
+		.cta-btn {
+			height: 34px;
+			padding-inline: 0.875rem;
+			font-size: 0.7rem;
+		}
+	}
+
 	@media (min-width: 1280px) {
+		.cta-btn {
+			height: 36px;
+			padding-inline: 1rem;
+			font-size: 0.75rem;
+			letter-spacing: 0.02em;
+		}
+	}
+
+	@media (min-width: 1440px) {
 		.cta-btn {
 			height: 38px;
 			padding-inline: 1.125rem;
@@ -2047,8 +2161,32 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE - ICT11+ Progressive Enhancement
 	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Desktop: Larger screens get progressively larger navbar */
+	@media (min-width: 1152px) {
+		.navbar {
+			--nav-height: 88px;
+			--nav-padding-inline: 1.25rem;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.navbar {
+			--nav-height: 94px;
+			--nav-padding-inline: 1.5rem;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.navbar {
+			--nav-height: 104px;
+			--nav-padding-inline: 2rem;
+		}
+	}
+
+	/* Tablet/Small laptop: Show mobile menu */
 	@media (max-width: 1023px) {
 		.navbar {
 			--nav-height: 84px;
