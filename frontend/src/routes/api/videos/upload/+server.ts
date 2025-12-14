@@ -4,7 +4,7 @@
  * Handles video file uploads by proxying to the Laravel backend.
  * The backend handles storage to Cloudflare R2.
  *
- * @version 2.0.0 - Serverless Compatible (Vercel/Cloudflare)
+ * @version 2.0.0 - Serverless Compatible (Cloudflare)
  */
 
 import { json, error } from '@sveltejs/kit';

@@ -230,7 +230,7 @@
     class="relative py-20 sm:py-32 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
 >
     <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute inset-0 opacity-[0.03] mix-blend-overlay" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg');"></div>
+        <div class="absolute inset-0 opacity-[0.03] mix-blend-overlay" style="background-image: url('/textures/noise.svg');"></div>
         
         <div
             class="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-violet-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"

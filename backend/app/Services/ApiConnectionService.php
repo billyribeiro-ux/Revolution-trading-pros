@@ -673,21 +673,6 @@ class ApiConnectionService
                 ['key' => 'account_id', 'label' => 'Account ID', 'type' => 'text', 'required' => false],
             ],
         ],
-        'vercel' => [
-            'name' => 'Vercel',
-            'category' => 'hosting',
-            'description' => 'Frontend deployment and edge functions',
-            'icon' => 'triangle',
-            'color' => '#000000',
-            'docs_url' => 'https://vercel.com/docs',
-            'signup_url' => 'https://vercel.com/signup',
-            'pricing_url' => 'https://vercel.com/pricing',
-            'is_oauth' => true,
-            'fields' => [
-                ['key' => 'access_token', 'label' => 'Access Token', 'type' => 'password', 'required' => true],
-                ['key' => 'team_id', 'label' => 'Team ID', 'type' => 'text', 'required' => false],
-            ],
-        ],
     ];
 
     /**
@@ -957,8 +942,6 @@ class ApiConnectionService
                 // Storage
                 'cloudinary' => $this->verifyCloudinary($connection),
                 'cloudflare_cdn' => $this->verifyCloudflareCDN($connection),
-                // Hosting
-                'vercel' => $this->verifyVercel($connection),
                 // Default
                 default => $this->verifyGeneric($connection, $config),
             };
@@ -1318,28 +1301,6 @@ class ApiConnectionService
     }
 
     /**
-     * Verify Vercel connection
-     */
-    protected function verifyVercel(ApiConnection $connection): bool
-    {
-        $accessToken = $connection->getCredential('access_token');
-
-        if (!$accessToken) {
-            return false;
-        }
-
-        try {
-            $response = Http::withToken($accessToken)
-                ->get('https://api.vercel.com/v2/user');
-
-            return $response->successful();
-        } catch (\Exception $e) {
-            Log::error('Vercel verification failed', ['error' => $e->getMessage()]);
-            return false;
-        }
-    }
-
-    /**
      * Generic verification using verify_endpoint if defined
      */
     protected function verifyGeneric(ApiConnection $connection, array $config): bool
@@ -1405,8 +1366,6 @@ class ApiConnectionService
                 // Storage
                 'cloudinary' => $this->verifyCloudinary($tempConnection),
                 'cloudflare_cdn' => $this->verifyCloudflareCDN($tempConnection),
-                // Hosting
-                'vercel' => $this->verifyVercel($tempConnection),
                 // Pixels and others - validate credentials are present
                 default => !empty($credentials),
             };
