@@ -2,9 +2,10 @@
  * Revolution Trading Pros - SvelteKit Configuration
  * ⚡ LIGHTNING STACK - ICT 11+ Principal Engineer Configuration
  *
- * Cloudflare Pages deployment with edge SSR
+ * Default: Cloudflare for maximum performance
+ * Alternative: Set DEPLOY_TARGET=static for static site generation
  *
- * @version 3.2.0 - Cloudflare Edition
+ * @version 3.2.0 - Lightning Stack Edition (Cloudflare-first)
  * @author Revolution Trading Pros
  */
 
@@ -13,6 +14,7 @@ import adapterStatic from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // Determine which adapter to use based on environment
+// Default: Cloudflare for maximum edge performance
 const getAdapter = () => {
 	const target = process.env.DEPLOY_TARGET || 'cloudflare';
 
