@@ -704,12 +704,31 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CSS Custom Properties
+	 * CSS Custom Properties - ICT11+ Responsive Nav Height
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	:root {
 		--hero-bg: #050a12;
 		--hero-nav-height: 80px;
 		--hero-chart-opacity: 0.4;
+	}
+
+	/* ICT11+ Fix: Match responsive navbar heights */
+	@media (min-width: 1152px) {
+		:root {
+			--hero-nav-height: 88px;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		:root {
+			--hero-nav-height: 94px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		:root {
+			--hero-nav-height: 104px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
