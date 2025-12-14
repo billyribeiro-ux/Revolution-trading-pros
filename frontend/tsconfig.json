@@ -8,6 +8,14 @@
 		"allowImportingTsExtensions": true,
 		"allowArbitraryExtensions": true,
 		"skipLibCheck": true,
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {
+			"$lib": ["src/lib"],
+			"$lib/*": ["src/lib/*"],
+			"$env/*": ["node_modules/@sveltejs/kit/types/ambient.d.ts"],
+			"./$types": ["node_modules/@sveltejs/kit/types/ambient.d.ts"]
+		},
 
 		// ═══════════════════════════════════════════════════════════════════════════
 		// ENTERPRISE STRICT MODE CONFIGURATION

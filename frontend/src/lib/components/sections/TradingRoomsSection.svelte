@@ -50,21 +50,10 @@
         }
     ];
 
-    let isVisible = $state(false);
+    // ICT11+ Fix: Default to true since LazySection handles lazy loading
+    // The component only mounts when already in/near viewport
+    let isVisible = $state(true);
     let containerRef = $state<HTMLElement | null>(null);
-
-    onMount(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        if (containerRef) observer.observe(containerRef);
-    });
 
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
         return {

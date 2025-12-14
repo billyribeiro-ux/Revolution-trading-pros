@@ -10,7 +10,8 @@
     // --- Interaction Logic ---
     let containerRef = $state<HTMLElement | null>(null);
     let mouse = $state({ x: 0, y: 0 });
-    let isVisible = $state(false);
+    // ICT11+ Fix: Default to true since LazySection handles lazy loading
+    let isVisible = $state(true);
 
     // Mouse tracking for subtle lighting effects
     const handleMouseMove = (e: MouseEvent) => {
@@ -19,19 +20,6 @@
         mouse.x = e.clientX - rect.left;
         mouse.y = e.clientY - rect.top;
     };
-
-    onMount(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.15 }
-        );
-        if (containerRef) observer.observe(containerRef);
-    });
 
     // Heavy, expensive-feeling transition
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {

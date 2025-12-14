@@ -744,9 +744,7 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		contain: layout style paint;
-		content-visibility: auto;
-		contain-intrinsic-size: 100vw 100vh;
+		/* ICT11+ Fix: Removed content-visibility as it can break IntersectionObserver for subsequent sections */
 	}
 
 	.hero-animating .hero-chart,
@@ -1231,6 +1229,9 @@
 		);
 		background-size: 300% 300%;
 		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
 			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;

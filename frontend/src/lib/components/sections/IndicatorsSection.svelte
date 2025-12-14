@@ -76,7 +76,8 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
-	let isVisible = $state(false);
+	// ICT11+ Fix: Default to true since LazySection handles lazy loading
+	let isVisible = $state(true);
 	let isMounted = $state(false);
 	let activeIndicator = $state(0);
 	let gsapInstance: any = null;
@@ -238,23 +239,12 @@
 			});
 		});
 
-		// Intersection Observer for visibility - lower threshold for mobile
-		observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					isVisible = true;
-					observer?.disconnect();
-					// Start chart animation after visible
-					if (!prefersReducedMotion) {
-						animatechartProgress();
-					} else {
-						chartProgress = 1;
-					}
-				}
-			},
-			{ threshold: 0.1, rootMargin: '50px' }
-		);
-		if (sectionRef) observer.observe(sectionRef);
+		// Start chart animation immediately since LazySection handles visibility
+		if (!prefersReducedMotion) {
+			animatechartProgress();
+		} else {
+			chartProgress = 1;
+		}
 
 		// Load GSAP asynchronously
 		if (!prefersReducedMotion) {

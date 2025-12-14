@@ -118,7 +118,8 @@
     // ============================================================================
     let sectionRef = $state<HTMLElement | null>(null);
     let cardsRef = $state<HTMLElement | null>(null);
-    let isVisible = $state(false);
+    // ICT11+ Fix: Default to true since LazySection handles lazy loading
+    let isVisible = $state(true);
     let hoveredCard = $state<string | null>(null);
     let gsapInstance: any = null;
     let scrollTriggerInstance: any = null;
@@ -131,25 +132,11 @@
     // ============================================================================
     // LIFECYCLE
     // ============================================================================
-    let observer: IntersectionObserver | null = null;
-
     onMount(() => {
         if (!browser) return;
 
         // Check for reduced motion preference
         prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // Intersection Observer - lower threshold for mobile
-        observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer?.disconnect();
-                }
-            },
-            { threshold: 0.1, rootMargin: '50px' }
-        );
-        if (sectionRef) observer.observe(sectionRef);
 
         // Load GSAP asynchronously
         if (!prefersReducedMotion) {
@@ -157,7 +144,6 @@
         }
 
         return () => {
-            observer?.disconnect();
             if (scrollTriggerInstance) scrollTriggerInstance.killAll();
         };
     });

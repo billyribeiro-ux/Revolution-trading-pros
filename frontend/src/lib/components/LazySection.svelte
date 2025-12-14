@@ -112,6 +112,19 @@
 				isVisible = true;
 			}
 		}
+
+		// ICT11+ Fix: Force visibility after a short delay if still not visible
+		// This handles edge cases where IntersectionObserver doesn't fire
+		setTimeout(() => {
+			if (!isVisible && container) {
+				const rect = container.getBoundingClientRect();
+				const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+				// If element is anywhere near the viewport, show it
+				if (rect.top < viewportHeight * 2) {
+					isVisible = true;
+				}
+			}
+		}, 500);
 	});
 </script>
 
@@ -130,9 +143,10 @@
 
 <style>
 	.lazy-section {
-		/* ICT11+ Fix: Use content-visibility for performance without breaking IO */
-		content-visibility: auto;
-		contain-intrinsic-size: auto 400px;
+		/* ICT11+ Fix: Removed content-visibility as it breaks IntersectionObserver in some browsers */
+		/* The lazy loading is handled by the component logic instead */
+		display: block;
+		width: 100%;
 	}
 
 	.lazy-placeholder {
