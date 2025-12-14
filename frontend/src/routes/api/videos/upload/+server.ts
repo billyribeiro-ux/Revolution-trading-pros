@@ -7,12 +7,18 @@
  * @version 2.0.0 - Serverless Compatible (Cloudflare)
  */
 
-import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { json, error, type RequestEvent } from '@sveltejs/kit';
+
+// API Base URL - use environment variable or fallback
+const getApiUrl = () => {
+	if (typeof process !== 'undefined' && process.env?.VITE_API_URL) {
+		return process.env.VITE_API_URL;
+	}
+	return 'http://localhost:8000/api';
+};
 
 // API Base URL
-const API_URL = env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = getApiUrl();
 
 // Upload configuration
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
@@ -35,7 +41,7 @@ interface UploadSession {
 const uploadSessions: Map<string, UploadSession> = new Map();
 
 // POST - Handle file upload or request presigned URL
-export const POST: RequestHandler = async ({ request, url, cookies }) => {
+export const POST = async ({ request, url, cookies }: RequestEvent) => {
 	const action = url.searchParams.get('action');
 
 	// Get auth token from cookies
@@ -56,7 +62,7 @@ export const POST: RequestHandler = async ({ request, url, cookies }) => {
 };
 
 // GET - Check upload status
-export const GET: RequestHandler = async ({ url }) => {
+export const GET = async ({ url }: RequestEvent) => {
 	const sessionId = url.searchParams.get('session_id');
 
 	if (sessionId) {
