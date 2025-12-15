@@ -99,9 +99,9 @@ RUN mkdir -p \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Generate optimized autoloader
+# Install Composer and run full install with scripts
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
-RUN composer dump-autoload --optimize --classmap-authoritative
+RUN composer install --no-dev --optimize-autoloader --classmap-authoritative
 
 # Make entrypoint executable
 RUN chmod +x docker-entrypoint.sh
