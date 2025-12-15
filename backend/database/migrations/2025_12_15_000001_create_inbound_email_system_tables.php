@@ -33,7 +33,7 @@ return new class extends Migration
         if (!Schema::hasTable('email_conversations')) {
             Schema::create('email_conversations', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
-                $table->foreignId('contact_id')
+                $table->foreignUuid('contact_id')
                     ->constrained('contacts')
                     ->cascadeOnDelete();
                 $table->foreignId('assigned_to')
