@@ -54,7 +54,7 @@ async-stripe = { version = "0.39", features = ["runtime-tokio-hyper-rustls"] }
 meilisearch-sdk = "0.27"
 
 [profile.release]
-lto = "thin"
-codegen-units = 16
+lto = false
+opt-level = 2
 panic = "abort"
 strip = true
