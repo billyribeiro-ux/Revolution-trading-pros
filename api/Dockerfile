@@ -15,11 +15,29 @@ COPY Cargo.toml Cargo.lock* ./
 # Create dummy main.rs to cache dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 
-# Generate lock file and pin problematic crates to Rust 1.84 compatible versions
-# home v0.5.12+ requires edition2024 (Rust 1.88+), base64ct v1.7+ requires Rust 1.85
+# Generate lock file and pin ALL problematic crates to Rust 1.84 compatible versions
+# Many AWS SDK crates released after Nov 2024 require Rust 1.88 (edition2024)
 RUN cargo generate-lockfile && \
     cargo update -p home --precise 0.5.9 && \
-    cargo update -p base64ct --precise 1.6.0
+    cargo update -p base64ct --precise 1.6.0 && \
+    cargo update -p aws-config --precise 1.1.8 && \
+    cargo update -p aws-sdk-s3 --precise 1.21.0 && \
+    cargo update -p aws-sdk-sso --precise 1.15.0 && \
+    cargo update -p aws-sdk-ssooidc --precise 1.15.0 && \
+    cargo update -p aws-sdk-sts --precise 1.15.0 && \
+    cargo update -p aws-credential-types --precise 1.1.8 && \
+    cargo update -p aws-runtime --precise 1.1.8 && \
+    cargo update -p aws-sigv4 --precise 1.1.8 && \
+    cargo update -p aws-smithy-async --precise 1.1.8 && \
+    cargo update -p aws-smithy-eventstream --precise 0.60.4 && \
+    cargo update -p aws-smithy-http --precise 0.60.8 && \
+    cargo update -p aws-smithy-json --precise 0.60.7 && \
+    cargo update -p aws-smithy-query --precise 0.60.7 && \
+    cargo update -p aws-smithy-runtime --precise 1.1.8 && \
+    cargo update -p aws-smithy-runtime-api --precise 1.1.8 && \
+    cargo update -p aws-smithy-types --precise 1.1.8 && \
+    cargo update -p aws-smithy-xml --precise 0.60.8 && \
+    cargo update -p aws-types --precise 1.1.8
 
 # Build dependencies (cached layer)
 RUN cargo build --release && rm -rf src
