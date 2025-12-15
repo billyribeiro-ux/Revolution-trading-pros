@@ -135,9 +135,8 @@ return [
         'session',
         'session.store',
         'cookie',
-        'request',
         'translator',
-        'url',
+        // 'url' and 'request' removed - causes null request error
     ],
 
     /*

@@ -125,6 +125,7 @@ Route::get('/health/startup', function () {
 // ═══════════════════════════════════════════════════════════════════════════
 
 Route::get('/health', function (Request $request) {
+    try {
     $startTime = microtime(true);
     $checks = [];
     $healthy = true;
@@ -200,33 +201,54 @@ Route::get('/health', function (Request $request) {
     }
 
     // Disk space check
-    $diskFree = disk_free_space('/');
-    $diskTotal = disk_total_space('/');
-    $diskUsedPercent = (($diskTotal - $diskFree) / $diskTotal) * 100;
-    
-    $checks['disk'] = [
-        'status' => $diskUsedPercent < 90 ? 'healthy' : 'warning',
-        'used_percent' => round($diskUsedPercent, 2),
-        'free_gb' => round($diskFree / 1024 / 1024 / 1024, 2),
-        'total_gb' => round($diskTotal / 1024 / 1024 / 1024, 2)
-    ];
-
-    if ($diskUsedPercent >= 95) {
-        $healthy = false;
+    try {
+        $diskFree = @disk_free_space('/');
+        $diskTotal = @disk_total_space('/');
+        if ($diskFree !== false && $diskTotal !== false && $diskTotal > 0) {
+            $diskUsedPercent = (($diskTotal - $diskFree) / $diskTotal) * 100;
+            $checks['disk'] = [
+                'status' => $diskUsedPercent < 90 ? 'healthy' : 'warning',
+                'used_percent' => round($diskUsedPercent, 2),
+                'free_gb' => round($diskFree / 1024 / 1024 / 1024, 2),
+                'total_gb' => round($diskTotal / 1024 / 1024 / 1024, 2)
+            ];
+            if ($diskUsedPercent >= 95) {
+                $healthy = false;
+            }
+        } else {
+            $checks['disk'] = ['status' => 'unavailable', 'message' => 'Unable to read disk info'];
+        }
+    } catch (\Exception $e) {
+        $checks['disk'] = ['status' => 'error', 'message' => $e->getMessage()];
     }
 
     // Memory check
-    $memoryUsage = memory_get_usage(true);
-    $memoryLimit = ini_get('memory_limit');
-    $memoryLimitBytes = $memoryLimit === '-1' ? PHP_INT_MAX : convertToBytes($memoryLimit);
-    $memoryPercent = ($memoryUsage / $memoryLimitBytes) * 100;
+    try {
+        $memoryUsage = memory_get_usage(true);
+        $memoryLimit = ini_get('memory_limit');
+        // Inline convertToBytes logic
+        $memoryLimitBytes = PHP_INT_MAX;
+        if ($memoryLimit !== '-1' && $memoryLimit !== false) {
+            $number = (int) substr($memoryLimit, 0, -1);
+            $unit = strtoupper(substr($memoryLimit, -1));
+            $memoryLimitBytes = match($unit) {
+                'K' => $number * 1024,
+                'M' => $number * 1024 * 1024,
+                'G' => $number * 1024 * 1024 * 1024,
+                default => (int) $memoryLimit
+            };
+        }
+        $memoryPercent = $memoryLimitBytes > 0 ? ($memoryUsage / $memoryLimitBytes) * 100 : 0;
 
-    $checks['memory'] = [
-        'status' => $memoryPercent < 90 ? 'healthy' : 'warning',
-        'used_mb' => round($memoryUsage / 1024 / 1024, 2),
-        'limit' => $memoryLimit,
-        'used_percent' => round($memoryPercent, 2)
-    ];
+        $checks['memory'] = [
+            'status' => $memoryPercent < 90 ? 'healthy' : 'warning',
+            'used_mb' => round($memoryUsage / 1024 / 1024, 2),
+            'limit' => $memoryLimit,
+            'used_percent' => round($memoryPercent, 2)
+        ];
+    } catch (\Exception $e) {
+        $checks['memory'] = ['status' => 'error', 'message' => $e->getMessage()];
+    }
 
     // System info
     $checks['system'] = [
@@ -235,7 +257,7 @@ Route::get('/health', function (Request $request) {
         'environment' => app()->environment(),
         'debug_mode' => config('app.debug'),
         'timezone' => config('app.timezone'),
-        'uptime_seconds' => round(microtime(true) - LARAVEL_START, 2)
+        'uptime_seconds' => defined('LARAVEL_START') ? round(microtime(true) - LARAVEL_START, 2) : 0
     ];
 
     // Octane check (if running under Octane)
@@ -266,6 +288,14 @@ Route::get('/health', function (Request $request) {
     $status = $healthy ? 200 : 503;
 
     return response()->json($response, $status);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

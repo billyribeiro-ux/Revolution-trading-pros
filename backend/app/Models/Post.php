@@ -803,7 +803,7 @@ class Post extends Model
     /**
      * Create revision snapshot
      */
-    public function createRevision(string $reason = null): void
+    public function createRevision(?string $reason = null): void
     {
         PostRevision::create([
             'post_id' => $this->id,

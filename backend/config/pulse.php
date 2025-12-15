@@ -152,11 +152,7 @@ return [
     */
 
     'client' => [
-        'resolver' => function ($request) {
-            return $request->user()?->id
-                ?? $request->ip()
-                ?? 'anonymous';
-        },
+        'resolver' => null,
     ],
 
     /*
@@ -169,9 +165,7 @@ return [
     */
 
     'user' => [
-        'resolver' => function ($id) {
-            return \App\Models\User::find($id)?->only(['name', 'email']);
-        },
+        'resolver' => null,
     ],
 
 ];
