@@ -1,8 +1,8 @@
 # Revolution Trading Pros - Rust API
 # Multi-stage build for minimal image size
 
-# Build stage - Rust 1.92 (Latest stable, December 2025)
-FROM rust:1.92-alpine3.21 AS builder
+# Build stage - Rust 1.84 (December 2025)
+FROM rust:1.84-alpine3.21 AS builder
 
 # Install build dependencies
 RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig perl make
@@ -14,6 +14,11 @@ COPY Cargo.toml Cargo.lock* ./
 
 # Create dummy main.rs to cache dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
+
+# Generate lockfile first, then downgrade any crates that require newer Rust
+# The home crate v0.5.12+ requires edition2024 (Rust 1.88+)
+RUN cargo generate-lockfile && \
+    cargo update -p home --precise 0.5.9 || true
 
 # Build dependencies (cached layer)
 RUN cargo build --release && rm -rf src

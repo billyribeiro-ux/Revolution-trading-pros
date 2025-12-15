@@ -6,55 +6,56 @@ description = "Revolution Trading Pros API - Rust + Axum"
 authors = ["Revolution Trading Pros"]
 
 [dependencies]
-# Web Framework (Dec 2025 latest)
-axum = { version = "0.8", features = ["macros", "multipart"] }
-axum-extra = { version = "0.10", features = ["typed-header", "cookie"] }
-tower = "0.5"
-tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "limit"] }
+# Web Framework
+axum = { version = "0.7", features = ["macros", "multipart"] }
+axum-extra = { version = "0.9", features = ["typed-header", "cookie"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-gzip", "limit"] }
 
 # Async Runtime
-tokio = { version = "1.42", features = ["full"] }
+tokio = { version = "1.35", features = ["full"] }
 
 # Database (Neon PostgreSQL)
-sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono", "json"] }
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono", "json"] }
 
 # Redis (Upstash)
-redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
 
-# S3/R2 Storage (lightweight alternative to AWS SDK)
-rust-s3 = "0.35"
+# S3/R2 Storage
+aws-sdk-s3 = "1.12"
+aws-config = "1.1"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # Authentication
-jsonwebtoken = "9.3"
+jsonwebtoken = "9.2"
 argon2 = "0.5"
-rand = "0.9"
+rand = "0.8"
 
 # Utilities
-uuid = { version = "1.11", features = ["v4", "serde"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 dotenvy = "0.15"
-thiserror = "2.0"
+thiserror = "1.0"
 anyhow = "1.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
-validator = { version = "0.19", features = ["derive"] }
+validator = { version = "0.16", features = ["derive"] }
 slug = "0.1"
 
 # HTTP Client (for external APIs)
-reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
 
 # Stripe Payments
-async-stripe = { version = "0.39", features = ["runtime-tokio-hyper-rustls"] }
+async-stripe = { version = "0.34", features = ["runtime-tokio-hyper-rustls"] }
 
 # Search (Meilisearch)
-meilisearch-sdk = "0.27"
+meilisearch-sdk = "0.25"
 
 [profile.release]
-lto = false
-opt-level = 2
+lto = true
+codegen-units = 1
 panic = "abort"
 strip = true
