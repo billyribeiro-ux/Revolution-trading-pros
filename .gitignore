@@ -105,6 +105,9 @@ oauth*.json
 *_backup*
 *_bak*
 
+# Exception: Allow migration files
+!api/migrations/*.sql
+
 # AWS/Cloud credentials
 .aws/
 .azure/
