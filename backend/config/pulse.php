@@ -10,8 +10,6 @@ declare(strict_types=1);
  */
 
 use Laravel\Pulse\Http\Middleware\Authorize;
-use Laravel\Pulse\Pulse;
-use Laravel\Pulse\Recorders;
 
 return [
 
@@ -141,97 +139,7 @@ return [
     */
 
     'recorders' => [
-        // Application Performance
-        Recorders\Requests::class => [
-            'enabled' => env('PULSE_REQUESTS_ENABLED', true),
-            'sample_rate' => env('PULSE_REQUESTS_SAMPLE_RATE', 1),
-            'ignore' => [
-                '#^/pulse$#',
-                '#^/horizon#',
-                '#^/telescope#',
-                '#^/_debugbar#',
-                '#^/api/health#',
-            ],
-        ],
-
-        // Slow Queries
-        Recorders\SlowQueries::class => [
-            'enabled' => env('PULSE_SLOW_QUERIES_ENABLED', true),
-            'threshold' => env('PULSE_SLOW_QUERY_THRESHOLD', 100), // ms
-            'sample_rate' => env('PULSE_SLOW_QUERIES_SAMPLE_RATE', 1),
-            'ignore' => [
-                '/telescope/',
-                '/pulse/',
-            ],
-        ],
-
-        // Slow Jobs
-        Recorders\SlowJobs::class => [
-            'enabled' => env('PULSE_SLOW_JOBS_ENABLED', true),
-            'threshold' => env('PULSE_SLOW_JOB_THRESHOLD', 1000), // ms
-            'sample_rate' => 1,
-        ],
-
-        // Slow Outgoing Requests
-        Recorders\SlowOutgoingRequests::class => [
-            'enabled' => env('PULSE_SLOW_OUTGOING_ENABLED', true),
-            'threshold' => env('PULSE_SLOW_OUTGOING_THRESHOLD', 500), // ms
-            'sample_rate' => 1,
-            'groups' => [
-                '#https://api\.stripe\.com/#' => 'Stripe API',
-                '#https://api\.paypal\.com/#' => 'PayPal API',
-                '#https://.*\.sentry\.io/#' => 'Sentry',
-                '#https://api\.openai\.com/#' => 'OpenAI',
-                '#https://.*\.r2\.cloudflarestorage\.com/#' => 'Cloudflare R2',
-            ],
-        ],
-
-        // Exception Tracking
-        Recorders\Exceptions::class => [
-            'enabled' => env('PULSE_EXCEPTIONS_ENABLED', true),
-            'sample_rate' => 1,
-            'ignore' => [
-                '/Illuminate\\\\Auth\\\\AuthenticationException/',
-                '/Illuminate\\\\Validation\\\\ValidationException/',
-                '/Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException/',
-            ],
-        ],
-
-        // Queue Metrics
-        Recorders\Queues::class => [
-            'enabled' => env('PULSE_QUEUES_ENABLED', true),
-            'sample_rate' => 1,
-        ],
-
-        // Cache Statistics
-        Recorders\CacheInteractions::class => [
-            'enabled' => env('PULSE_CACHE_ENABLED', true),
-            'sample_rate' => env('PULSE_CACHE_SAMPLE_RATE', 0.1), // 10%
-            'groups' => [
-                '/^posts:/' => 'Posts Cache',
-                '/^users:/' => 'Users Cache',
-                '/^sessions:/' => 'Sessions',
-                '/^config:/' => 'Config Cache',
-            ],
-        ],
-
-        // Server Resources
-        Recorders\Servers::class => [
-            'enabled' => env('PULSE_SERVERS_ENABLED', true),
-            'sample_rate' => 1,
-        ],
-
-        // User Activity
-        Recorders\UserRequests::class => [
-            'enabled' => env('PULSE_USER_REQUESTS_ENABLED', true),
-            'sample_rate' => env('PULSE_USER_REQUESTS_SAMPLE_RATE', 1),
-        ],
-
-        // User Jobs
-        Recorders\UserJobs::class => [
-            'enabled' => env('PULSE_USER_JOBS_ENABLED', true),
-            'sample_rate' => 1,
-        ],
+        // Recorders are auto-discovered by Pulse
     ],
 
     /*
