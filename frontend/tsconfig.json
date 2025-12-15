@@ -52,9 +52,9 @@
 		// Disabled: env variables use index signatures
 		"noPropertyAccessFromIndexSignature": false,
 
-		// Declaration and source maps
-		"declaration": true,
-		"declarationMap": true,
+		// Source maps only - no declaration files needed with noEmit
 		"sourceMap": true
-	}
+	},
+	"include": ["src/**/*", "src/**/*.svelte"],
+	"exclude": ["node_modules", ".svelte-kit", "build", "dist"]
 }
