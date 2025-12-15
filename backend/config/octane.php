@@ -67,7 +67,7 @@ return [
         ],
 
         RequestReceived::class => [
-            ...Laravel\Octane\Listeners\PrepareApplicationForNextOperation::commonListeners(),
+            //
         ],
 
         RequestHandled::class => [
@@ -79,7 +79,7 @@ return [
         ],
 
         TaskReceived::class => [
-            ...Laravel\Octane\Listeners\PrepareApplicationForNextOperation::commonListeners(),
+            //
         ],
 
         TaskTerminated::class => [
