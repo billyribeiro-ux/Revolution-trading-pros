@@ -23,6 +23,7 @@ primary_region = "iad"  # US East (Virginia)
 
 [build]
   dockerfile = "Dockerfile"
+  target = "production"
 
 [deploy]
   strategy = "rolling"
