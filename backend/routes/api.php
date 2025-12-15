@@ -63,6 +63,25 @@ Route::prefix('health')->group(function () {
 });
 
 // ========================================
+// INBOUND EMAIL WEBHOOKS (No Auth - Signature Verified)
+// ========================================
+use App\Http\Controllers\Webhooks\InboundEmailWebhookController;
+
+Route::prefix('webhooks')->group(function () {
+    // Postmark inbound email webhook
+    Route::post('/postmark/inbound', [InboundEmailWebhookController::class, 'handlePostmark']);
+
+    // AWS SES inbound email webhook (via SNS)
+    Route::post('/ses/inbound', [InboundEmailWebhookController::class, 'handleSes']);
+
+    // SendGrid inbound email webhook
+    Route::post('/sendgrid/inbound', [InboundEmailWebhookController::class, 'handleSendGrid']);
+
+    // Health check for inbound email webhooks
+    Route::get('/inbound/health', [InboundEmailWebhookController::class, 'health']);
+});
+
+// ========================================
 // SITEMAP ENDPOINTS (SEO - Lightning Stack)
 // ========================================
 Route::prefix('sitemap')->group(function () {
@@ -375,6 +394,27 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::post('/email/webhooks/{id}/rotate-secret', [EmailWebhookController::class, 'rotateSecret']);
     Route::get('/email/webhooks/{id}/deliveries', [EmailWebhookController::class, 'deliveries']);
     Route::post('/email/webhooks/deliveries/{deliveryId}/retry', [EmailWebhookController::class, 'retryDelivery']);
+
+    // Email Conversations (Inbound Email CRM - ICT11+ Feature)
+    Route::get('/email/conversations', [\App\Http\Controllers\Admin\EmailConversationController::class, 'index']);
+    Route::get('/email/conversations/stats', [\App\Http\Controllers\Admin\EmailConversationController::class, 'stats']);
+    Route::get('/email/conversations/tags', [\App\Http\Controllers\Admin\EmailConversationController::class, 'allTags']);
+    Route::get('/email/conversations/{id}', [\App\Http\Controllers\Admin\EmailConversationController::class, 'show']);
+    Route::put('/email/conversations/{id}', [\App\Http\Controllers\Admin\EmailConversationController::class, 'update']);
+    Route::delete('/email/conversations/{id}', [\App\Http\Controllers\Admin\EmailConversationController::class, 'destroy']);
+    Route::post('/email/conversations/{id}/assign', [\App\Http\Controllers\Admin\EmailConversationController::class, 'assign']);
+    Route::post('/email/conversations/{id}/resolve', [\App\Http\Controllers\Admin\EmailConversationController::class, 'resolve']);
+    Route::post('/email/conversations/{id}/reopen', [\App\Http\Controllers\Admin\EmailConversationController::class, 'reopen']);
+    Route::post('/email/conversations/{id}/spam', [\App\Http\Controllers\Admin\EmailConversationController::class, 'markAsSpam']);
+    Route::post('/email/conversations/{id}/not-spam', [\App\Http\Controllers\Admin\EmailConversationController::class, 'markAsNotSpam']);
+    Route::post('/email/conversations/{id}/archive', [\App\Http\Controllers\Admin\EmailConversationController::class, 'archive']);
+    Route::post('/email/conversations/{id}/star', [\App\Http\Controllers\Admin\EmailConversationController::class, 'toggleStar']);
+    Route::post('/email/conversations/{id}/read', [\App\Http\Controllers\Admin\EmailConversationController::class, 'markAsRead']);
+    Route::post('/email/conversations/{id}/tags', [\App\Http\Controllers\Admin\EmailConversationController::class, 'addTags']);
+    Route::delete('/email/conversations/{id}/tags/{tag}', [\App\Http\Controllers\Admin\EmailConversationController::class, 'removeTag']);
+    Route::post('/email/conversations/{id}/merge', [\App\Http\Controllers\Admin\EmailConversationController::class, 'merge']);
+    Route::post('/email/conversations/bulk-update', [\App\Http\Controllers\Admin\EmailConversationController::class, 'bulkUpdate']);
+    Route::get('/email/conversations/{conversationId}/attachments/{attachmentId}/download', [\App\Http\Controllers\Admin\EmailConversationController::class, 'downloadAttachment']);
 
     // Newsletter Categories (Form-Newsletter Integration)
     Route::get('/newsletter/categories', [NewsletterCategoryController::class, 'index']);
