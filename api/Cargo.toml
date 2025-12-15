@@ -21,9 +21,8 @@ sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres",
 # Redis (Upstash)
 redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
 
-# S3/R2 Storage (Dec 2025 latest)
-aws-sdk-s3 = "1.68"
-aws-config = "1.5"
+# S3/R2 Storage (lightweight alternative to AWS SDK)
+rust-s3 = "0.35"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
