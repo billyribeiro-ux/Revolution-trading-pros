@@ -15,10 +15,11 @@ COPY Cargo.toml Cargo.lock* ./
 # Create dummy main.rs to cache dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 
-# Generate lockfile first, then downgrade any crates that require newer Rust
-# The home crate v0.5.12+ requires edition2024 (Rust 1.88+)
+# Generate lockfile first, then downgrade crates that require edition2024 (Rust 1.88+)
+# Evidence: home v0.5.12+ and base64ct v1.7+ require edition2024
 RUN cargo generate-lockfile && \
-    cargo update -p home --precise 0.5.9 || true
+    cargo update -p home --precise 0.5.9 && \
+    cargo update -p base64ct --precise 1.6.0
 
 # Build dependencies (cached layer)
 RUN cargo build --release && rm -rf src
