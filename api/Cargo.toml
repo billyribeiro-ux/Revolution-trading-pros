@@ -21,9 +21,9 @@ sqlx = { version = "0.7", features = ["runtime-tokio", "tls-rustls", "postgres",
 # Redis (Upstash)
 redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
 
-# S3/R2 Storage
-aws-sdk-s3 = "1.12"
-aws-config = "1.1"
+# S3/R2 Storage (pinned versions for Rust 1.84 compatibility)
+aws-sdk-s3 = "=1.65.0"
+aws-config = "=1.5.10"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -53,6 +53,9 @@ async-stripe = { version = "0.34", features = ["runtime-tokio-hyper-rustls"] }
 
 # Search (Meilisearch)
 meilisearch-sdk = "0.25"
+
+# Pin home crate to version compatible with Rust 1.84
+home = "=0.5.9"
 
 [profile.release]
 lto = true
