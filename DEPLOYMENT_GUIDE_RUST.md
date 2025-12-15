@@ -14,6 +14,7 @@
 | **Cache** | Upstash Redis | FREE tier |
 | **Storage** | Cloudflare R2 | FREE (10GB) |
 | **Queue** | PostgreSQL (built-in) | FREE |
+| **Search** | Meilisearch Cloud | FREE tier |
 
 **Total: $5-29/mo**
 
@@ -119,7 +120,47 @@ rediss://default:xxx@xxx.upstash.io:6379
 
 ---
 
-## 5. Fly.io (Deployment)
+## 5. Meilisearch Cloud (Search)
+
+### Sign Up
+**URL:** https://cloud.meilisearch.com
+
+### Pricing
+
+| Plan | Price | Documents | Searches |
+|------|-------|-----------|----------|
+| **Build** | $0 | 100K | 10K/mo |
+| **Pro** | $30/mo | 1M | 500K/mo |
+| **Premium** | $300/mo | 10M | Unlimited |
+
+### Setup
+
+1. Go to https://cloud.meilisearch.com
+2. Click "Create a project"
+3. Name: `revolution-trading-pros`
+4. Region: `US East` (closest to Fly.io)
+5. Click "Create"
+
+### Get API Keys
+
+1. Go to Project → Settings → API Keys
+2. Copy:
+   - Host URL: `https://ms-xxx.meilisearch.io`
+   - Master Key (for production): `xxx`
+
+### Search Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/search` | GET | Global search (courses + posts) |
+| `/api/search/courses` | GET | Search courses only |
+| `/api/search/posts` | GET | Search posts only |
+
+Query parameter: `?q=search+term&limit=10`
+
+---
+
+## 6. Fly.io (Deployment)
 
 ### Sign Up
 **URL:** https://fly.io/app/sign-up
@@ -194,6 +235,10 @@ FROM_EMAIL=noreply@revolutiontradingpros.com
 
 # CORS
 CORS_ORIGINS=https://revolution-trading-pros.pages.dev,https://revolutiontradingpros.com
+
+# Meilisearch
+MEILISEARCH_HOST=https://ms-xxx.meilisearch.io
+MEILISEARCH_API_KEY=your-master-key
 ```
 
 ---
@@ -205,12 +250,13 @@ CORS_ORIGINS=https://revolution-trading-pros.pages.dev,https://revolutiontrading
 [ ] 2. Create Upstash Redis database
 [ ] 3. Get Cloudflare R2 API keys
 [ ] 4. Get Stripe API keys
-[ ] 5. Install Fly CLI
-[ ] 6. Run ./scripts/deploy.sh setup
-[ ] 7. Create .env file with all values
-[ ] 8. Run ./scripts/deploy.sh secrets
-[ ] 9. Run ./scripts/deploy.sh deploy
-[ ] 10. Test: curl https://revolution-trading-pros-api.fly.dev/health
+[ ] 5. Create Meilisearch Cloud project
+[ ] 6. Install Fly CLI
+[ ] 7. Run ./scripts/deploy.sh setup
+[ ] 8. Create .env file with all values
+[ ] 9. Run ./scripts/deploy.sh secrets
+[ ] 10. Run ./scripts/deploy.sh deploy
+[ ] 11. Test: curl https://revolution-trading-pros-api.fly.dev/health
 ```
 
 ---
@@ -229,6 +275,9 @@ CORS_ORIGINS=https://revolution-trading-pros.pages.dev,https://revolutiontrading
 | `/api/courses/:slug` | GET | Get course |
 | `/api/payments/checkout` | POST | Create checkout |
 | `/api/payments/webhook` | POST | Stripe webhook |
+| `/api/search` | GET | Global search |
+| `/api/search/courses` | GET | Search courses |
+| `/api/search/posts` | GET | Search posts |
 
 ---
 

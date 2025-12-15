@@ -5,6 +5,7 @@ pub mod auth;
 pub mod users;
 pub mod courses;
 pub mod payments;
+pub mod search;
 
 use axum::Router;
 use crate::AppState;
@@ -16,4 +17,5 @@ pub fn api_router() -> Router<AppState> {
         .nest("/users", users::router())
         .nest("/courses", courses::router())
         .nest("/payments", payments::router())
+        .nest("/search", search::router())
 }
