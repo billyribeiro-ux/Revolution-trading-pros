@@ -15,6 +15,12 @@ COPY Cargo.toml Cargo.lock* ./
 # Create dummy main.rs to cache dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 
+# Generate lock file and pin problematic crates to Rust 1.84 compatible versions
+# home v0.5.12+ requires edition2024 (Rust 1.88+), base64ct v1.7+ requires Rust 1.85
+RUN cargo generate-lockfile && \
+    cargo update -p home --precise 0.5.9 && \
+    cargo update -p base64ct --precise 1.6.0
+
 # Build dependencies (cached layer)
 RUN cargo build --release && rm -rf src
 
