@@ -1,0 +1,26 @@
+# Build artifacts
+/target/
+debug/
+*.pdb
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cargo.lock is typically committed for binary projects
+# Uncomment if you want to ignore it:
+# Cargo.lock
