@@ -1,11 +1,11 @@
 # Revolution Trading Pros - Rust API
 # Multi-stage build for minimal image size
 
-# Build stage
-FROM rust:1.83-alpine AS builder
+# Build stage - Rust 1.84 (December 2025)
+FROM rust:1.84-alpine3.21 AS builder
 
 # Install build dependencies
-RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig
+RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig perl make
 
 WORKDIR /app
 
@@ -25,8 +25,8 @@ COPY migrations ./migrations
 # Build the actual application
 RUN touch src/main.rs && cargo build --release
 
-# Runtime stage
-FROM alpine:3.19 AS runtime
+# Runtime stage - Alpine 3.21 (December 2025)
+FROM alpine:3.21 AS runtime
 
 # Install runtime dependencies
 RUN apk add --no-cache ca-certificates tzdata
