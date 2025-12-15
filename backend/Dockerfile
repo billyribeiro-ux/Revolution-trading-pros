@@ -84,10 +84,7 @@ COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 # Set working directory
 WORKDIR /app
 
-# Copy Composer dependencies from builder
-COPY --from=composer /app/vendor ./vendor
-
-# Copy application code
+# Copy application code first
 COPY . .
 
 # Create required Laravel directories
@@ -99,9 +96,9 @@ RUN mkdir -p \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Install Composer and run full install with scripts
+# Install Composer and run fresh install with all dependencies
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader --classmap-authoritative
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Make entrypoint executable
 RUN chmod +x docker-entrypoint.sh
