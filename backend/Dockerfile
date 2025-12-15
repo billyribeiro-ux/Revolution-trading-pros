@@ -27,7 +27,7 @@ RUN composer install \
 # -----------------------------------------------------------------------------
 # Stage 2: Production Image with FrankenPHP
 # -----------------------------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.3-alpine AS production
+FROM dunglas/frankenphp:1-php8.4-alpine AS production
 
 # Labels for container registry
 LABEL maintainer="Revolution Trading Pros"
@@ -132,7 +132,7 @@ ENTRYPOINT ["/app/docker-entrypoint.sh"]
 # -----------------------------------------------------------------------------
 # Stage 3: Development Image (optional)
 # -----------------------------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.3-alpine AS development
+FROM dunglas/frankenphp:1-php8.4-alpine AS development
 
 # Install all dependencies including dev tools
 RUN apk add --no-cache \
