@@ -1,16 +1,23 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { browser } from '$app/environment';
     import { spring } from 'svelte/motion';
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+    import { TextPlugin } from 'gsap/dist/TextPlugin'; // Assuming available, otherwise standard opacity
     import SEOHead from '$lib/components/SEOHead.svelte';
 
     /**
-     * Data: Trading Rooms (Upgraded with Technical IDs for Custom Icons)
+     * Svelte 5 Runes & State
+     */
+    let mounted = $state(false);
+
+    /**
+     * Data: Trading Rooms (Preserved)
      */
     const rooms = [
         {
             id: 'day-trading',
-            iconType: 'volatility', // Triggers Candlestick Animation
+            iconType: 'volatility',
             name: 'Day Trading Command',
             tagline: 'Trade the Open with Professionals',
             description: 'High-velocity execution. Join expert traders for the opening bell, real-time scanners, and rapid-fire trade calls.',
@@ -28,7 +35,7 @@
         },
         {
             id: 'swing-trading',
-            iconType: 'trend', // Triggers Sine Wave Animation
+            iconType: 'trend',
             name: 'Swing Alpha Room',
             tagline: 'Catch Multi-Day Moves',
             description: 'Strategic positioning for 3-7 day holds. Perfect for those who cannot watch the screen all day but want institutional returns.',
@@ -46,7 +53,7 @@
         },
         {
             id: 'small-accounts',
-            iconType: 'growth', // Triggers Step-Chart Animation
+            iconType: 'growth',
             name: 'Growth Accelerator',
             tagline: 'Small Account → Big Future',
             description: 'The disciplined path to $25K and beyond. Learn risk management and compounding strategies specifically for smaller capital bases.',
@@ -65,33 +72,17 @@
     ];
 
     /**
-     * Data: Why Join Us (Upgraded with Technical IDs)
+     * Data: Benefits (Preserved)
      */
     const benefits = [
-        {
-            iconType: 'analysis',
-            title: 'Institutional Mentorship',
-            desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.'
-        },
-        {
-            iconType: 'radar',
-            title: 'Sub-Second Alerts',
-            desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.'
-        },
-        {
-            iconType: 'strategy',
-            title: 'Continuous Education',
-            desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.'
-        },
-        {
-            iconType: 'network',
-            title: 'Elite Community',
-            desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.'
-        }
+        { iconType: 'analysis', title: 'Institutional Mentorship', desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.' },
+        { iconType: 'radar', title: 'Sub-Second Alerts', desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.' },
+        { iconType: 'strategy', title: 'Continuous Education', desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.' },
+        { iconType: 'network', title: 'Elite Community', desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.' }
     ];
 
     /**
-     * Data: Ticker Symbols
+     * Data: Ticker Symbols (Preserved)
      */
     const symbols = [
         { sym: 'SPY', price: '478.22', change: '+0.45%', up: true },
@@ -128,97 +119,94 @@
         node.addEventListener('mousemove', handleMove);
         node.addEventListener('mouseleave', handleLeave);
 
-        return {
-            destroy() {
-                node.removeEventListener('mousemove', handleMove);
-                node.removeEventListener('mouseleave', handleLeave);
-                unsubX();
-                unsubY();
-            }
-        };
+        return { destroy() { node.removeEventListener('mousemove', handleMove); node.removeEventListener('mouseleave', handleLeave); unsubX(); unsubY(); } };
     }
+
+    /**
+     * Hero Chart Data Generation (For SVG Animation)
+     */
+    const chartPoints = Array.from({ length: 40 }, (_, i) => {
+        const x = i * 25;
+        // Simple random walk for visual flair
+        const y = 100 + Math.sin(i * 0.2) * 40 + (Math.random() - 0.5) * 30 - (i * 2); 
+        return `${x},${y}`;
+    }).join(' ');
 
     /**
      * Animation Controller
      */
-    let heroRef: HTMLElement;
+    let heroContainer: HTMLElement;
     let gridRef: HTMLElement;
     let benefitsRef: HTMLElement;
     let ctaRef: HTMLElement;
 
     onMount(() => {
-        if (!browser) return;
+        mounted = true;
+        gsap.registerPlugin(ScrollTrigger);
         
-        let ScrollTrigger: typeof import('gsap/dist/ScrollTrigger').ScrollTrigger;
+        const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+        // --- Cinematic Hero Sequence ---
         
-        // IIFE pattern for async operations with cleanup
-        (async () => {
-            // Dynamic GSAP import for SSR safety
-            const gsapModule = await import('gsap');
-            const scrollTriggerModule = await import('gsap/dist/ScrollTrigger');
-            const gsap = gsapModule.gsap;
-            ScrollTrigger = scrollTriggerModule.ScrollTrigger;
-            gsap.registerPlugin(ScrollTrigger);
-            
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        // 1. Initial State
+        gsap.set('.hero-line', { scaleX: 0, opacity: 0 });
+        gsap.set('.hero-grid-plane', { opacity: 0, rotateX: 60, y: 100 });
+        gsap.set('.hero-chart-path', { strokeDasharray: 2000, strokeDashoffset: 2000 });
+        gsap.set('.hero-floater', { opacity: 0, z: -500 });
 
-            // Hero Sequence
-            tl.fromTo('.hero-badge', 
-                { y: -20, opacity: 0, scale: 0.9 }, 
-                { y: 0, opacity: 1, scale: 1, duration: 0.8 }
-            )
-            .fromTo('.hero-title span', 
-                { y: 100, opacity: 0, rotateX: 20 }, 
-                { y: 0, opacity: 1, rotateX: 0, stagger: 0.1, duration: 1 }, 
-                '-=0.4'
-            )
-            .fromTo('.hero-desc', 
-                { y: 20, opacity: 0 }, 
-                { y: 0, opacity: 1, duration: 0.8 }, 
-                '-=0.6'
-            )
-            .fromTo(gridRef?.children || [], 
-                { y: 60, opacity: 0, filter: 'blur(10px)' }, 
-                { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.15, duration: 0.8 }, 
-                '-=0.4'
-            );
+        // 2. The "Power On" Effect
+        tl.to('.hero-line', { scaleX: 1, opacity: 1, duration: 1.2, ease: 'expo.inOut' })
+          .to('.hero-grid-plane', { opacity: 0.4, y: 0, duration: 1.5 }, '-=0.8')
+          
+          // 3. Text & Badge Reveal
+          .fromTo('.hero-badge', 
+              { y: -30, opacity: 0, filter: 'blur(10px)' }, 
+              { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.8 }, 
+              '-=1'
+          )
+          .fromTo('.hero-title-line', 
+              { y: 80, opacity: 0, rotateX: -20 }, 
+              { y: 0, opacity: 1, rotateX: 0, stagger: 0.15, duration: 1.2, ease: 'back.out(1.2)' }, 
+              '-=0.8'
+          )
+          .fromTo('.hero-desc', 
+              { opacity: 0, y: 20 }, 
+              { opacity: 1, y: 0, duration: 0.8 }, 
+              '-=0.8'
+          )
 
-            // Benefits Section Scroll Trigger
-            if (benefitsRef?.children) {
-                gsap.fromTo(benefitsRef.children, 
-                    { y: 40, opacity: 0 },
-                    {
-                        y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
-                        scrollTrigger: {
-                            trigger: benefitsRef,
-                            start: 'top 80%',
-                            toggleActions: 'play none none reverse'
-                        }
-                    }
-                );
-            }
+          // 4. Holographic Chart Draw
+          .to('.hero-chart-path', { strokeDashoffset: 0, duration: 2.5, ease: 'power2.inOut' }, '-=1.5')
+          
+          // 5. Floating Data Particles
+          .to('.hero-floater', { opacity: 0.6, z: 0, stagger: { amount: 1, from: "random" }, duration: 2 }, '-=2');
 
-            // Final CTA Scroll Trigger
-            if (ctaRef) {
-                gsap.fromTo(ctaRef,
-                    { scale: 0.95, opacity: 0 },
-                    {
-                        scale: 1, opacity: 1, duration: 0.8,
-                        scrollTrigger: {
-                            trigger: ctaRef,
-                            start: 'top 85%'
-                        }
-                    }
-                );
+        // --- Room Cards Entrance ---
+        gsap.fromTo(gridRef.children, 
+            { y: 100, opacity: 0 }, 
+            { 
+                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
+                scrollTrigger: { trigger: gridRef, start: 'top 85%' }
             }
-        })();
-        
-        // Cleanup on unmount
-        return () => {
-            if (ScrollTrigger) {
-                ScrollTrigger.getAll().forEach(t => t.kill());
+        );
+
+        // --- Benefits Entrance ---
+        gsap.fromTo(benefitsRef.children, 
+            { y: 40, opacity: 0 },
+            {
+                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
+                scrollTrigger: { trigger: benefitsRef, start: 'top 80%', toggleActions: 'play none none reverse' }
             }
-        };
+        );
+
+        // --- CTA Entrance ---
+        gsap.fromTo(ctaRef,
+            { scale: 0.95, opacity: 0 },
+            {
+                scale: 1, opacity: 1, duration: 0.8,
+                scrollTrigger: { trigger: ctaRef, start: 'top 85%' }
+            }
+        );
     });
 </script>
 
@@ -230,45 +218,85 @@
 <div class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans relative">
     
     <div class="fixed inset-0 pointer-events-none z-0">
-        <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
-        <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-emerald-900/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow" style="animation-delay: 2s"></div>
         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
     </div>
 
-    <div class="relative z-20 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden">
+    <div class="relative z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden">
         <div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
             {#each tickerItems as item}
                 <div class="flex items-center gap-3 text-xs font-mono select-none">
                     <span class="font-bold text-zinc-300">{item.sym}</span>
                     <span class="text-zinc-500">{item.price}</span>
-                    <span class={item.up ? 'text-emerald-400' : 'text-rose-400'}>
-                        {item.change}
-                    </span>
+                    <span class={item.up ? 'text-emerald-400' : 'text-rose-400'}>{item.change}</span>
                 </div>
             {/each}
         </div>
     </div>
 
-    <main class="relative z-10 pt-20 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
+    <main class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
         
-        <section bind:this={heroRef} class="text-center max-w-5xl mx-auto mb-24">
-            <div class="hero-badge inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-                <span class="relative flex h-2.5 w-2.5">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">Markets are Open</span>
+        <section bind:this={heroContainer} class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24">
+            
+            <div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
+                <div class="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] z-10"></div>
+                <div class="grid-lines w-full h-full"></div>
             </div>
 
-            <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">
-                <span class="block">Trade Together.</span>
-                <span class="block bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Win Together.</span>
-            </h1>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0 overflow-hidden">
+                <svg class="w-[120%] h-[600px] transform translate-y-20 blur-[1px]" viewBox="0 0 1000 300" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2"/>
+                            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d={`M0,300 ${chartPoints} L1000,300 Z`} fill="url(#chartGradient)" />
+                    <polyline class="hero-chart-path" points={chartPoints} fill="none" stroke="#60a5fa" stroke-width="2" vector-effect="non-scaling-stroke" />
+                </svg>
+            </div>
 
-            <p class="hero-desc text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-                Step inside our professional trading floors. Real-time data, rapid execution, and a community that wins together.
-            </p>
+            <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+                <div class="hero-floater absolute top-1/4 left-10 text-[10px] font-mono text-emerald-500/30 p-2 border border-emerald-500/20 rounded bg-emerald-900/10 backdrop-blur-sm">
+                    ORDER_FLOW: INSTITUTIONAL_BUY
+                </div>
+                <div class="hero-floater absolute bottom-1/3 right-20 text-[10px] font-mono text-blue-500/30 p-2 border border-blue-500/20 rounded bg-blue-900/10 backdrop-blur-sm">
+                    VOL: 24,000,392
+                </div>
+                <div class="hero-floater absolute top-20 right-1/4 text-[10px] font-mono text-zinc-600">
+                    <div class="flex gap-1"><div class="w-1 h-1 bg-zinc-500 rounded-full"></div> CONNECTED</div>
+                </div>
+            </div>
+
+            <div class="relative z-20 max-w-5xl mx-auto mt-12">
+                
+                <div class="hero-badge inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] hover:bg-white/[0.05] transition-colors cursor-default">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-mono uppercase tracking-widest text-zinc-300 font-bold">
+                        NY Session: <span class="text-emerald-400">Live</span>
+                    </span>
+                </div>
+
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] mb-10 text-white">
+                    <div class="hero-title-line overflow-hidden">
+                        <span class="block">Market</span>
+                    </div>
+                    <div class="hero-title-line overflow-hidden">
+                        <span class="inline-block bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent pb-4">Intelligence</span>
+                    </div>
+                </h1>
+
+                <p class="hero-desc text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light">
+                    Step inside the <span class="text-white font-medium">Command Center</span>. 
+                    Real-time data, institutional signals, and a community of professional traders.
+                </p>
+
+                <div class="hero-line w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-12 opacity-0"></div>
+            </div>
         </section>
+
 
         <div bind:this={gridRef} id="rooms-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32">
             {#each rooms as room}
@@ -279,22 +307,17 @@
                         ${room.accent === 'amber' ? 'from-amber-500/50' : ''}
                         to-transparent`}>
                     </div>
-
                     <div class="relative h-full flex flex-col bg-[#0A0A0A] border border-white/5 hover:border-white/10 rounded-3xl p-1 shadow-2xl overflow-hidden transition-colors duration-300">
                         <div class="flex-1 flex flex-col p-6 lg:p-8 rounded-[20px] bg-gradient-to-b from-white/[0.02] to-transparent">
-                            
                             {#if room.badge}
                                 <div class="absolute top-6 right-6">
                                     <span class={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border
                                         ${room.accent === 'cyan' ? 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20' : ''}
                                         ${room.accent === 'emerald' ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20' : ''}
                                         ${room.accent === 'amber' ? 'text-amber-300 bg-amber-500/10 border-amber-500/20' : ''}
-                                    `}>
-                                        {room.badge}
-                                    </span>
+                                    `}>{room.badge}</span>
                                 </div>
                             {/if}
-
                             <div class={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 ease-out border border-white/5
                                 ${room.accent === 'cyan' ? 'bg-cyan-500/5 text-cyan-400' : ''}
                                 ${room.accent === 'emerald' ? 'bg-emerald-500/5 text-emerald-400' : ''}
@@ -325,10 +348,8 @@
                                     </svg>
                                 {/if}
                             </div>
-
                             <h2 class="text-2xl font-bold text-white mb-2">{room.name}</h2>
                             <p class="text-sm font-medium text-zinc-400 mb-4">{room.tagline}</p>
-                            
                             <div class="flex items-center gap-2 mb-6 text-xs font-mono text-zinc-500">
                                 <span class="relative flex h-2 w-2">
                                     <span class={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75
@@ -344,9 +365,7 @@
                                 </span>
                                 {room.liveCount} Traders Online
                             </div>
-
                             <p class="text-sm leading-relaxed text-zinc-400 mb-8 border-t border-white/5 pt-6">{room.description}</p>
-
                             <ul class="space-y-3 mb-8 flex-1">
                                 {#each room.features as feature}
                                     <li class="flex items-start gap-3 text-sm text-zinc-300">
@@ -359,7 +378,6 @@
                                     </li>
                                 {/each}
                             </ul>
-
                             <div class="mt-auto">
                                 <div class="flex flex-col gap-1 mb-6">
                                     <div class="flex items-end gap-1">
@@ -371,7 +389,6 @@
                                         <span class="text-emerald-400 font-medium">Save 36%</span>
                                     </div>
                                 </div>
-                                
                                 <a href="/live-trading-rooms/{room.id}" class={`group/btn relative w-full flex items-center justify-center gap-2 py-4 rounded-xl text-black font-bold text-sm transition-all duration-300 overflow-hidden
                                         ${room.accent === 'cyan' ? 'bg-white hover:bg-cyan-400' : ''}
                                         ${room.accent === 'emerald' ? 'bg-white hover:bg-emerald-400' : ''}
@@ -390,7 +407,6 @@
 
         <section class="py-24 border-t border-white/5 relative">
             <div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
-            
             <div class="text-center mb-16 relative z-10">
                 <h2 class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
                     Why the Pros Choose Us
@@ -399,7 +415,6 @@
                     We don't just sell courses. We build institutional-grade traders through immersion, technology, and community.
                 </p>
             </div>
-
             <div bind:this={benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {#each benefits as item}
                     <div class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default">
@@ -430,7 +445,6 @@
                                 </svg>
                             {/if}
                         </div>
-
                         <h3 class="text-lg font-bold text-white mb-3">{item.title}</h3>
                         <p class="text-sm text-zinc-400 leading-relaxed">{item.desc}</p>
                     </div>
@@ -440,14 +454,12 @@
 
         <section bind:this={ctaRef} class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-gradient-to-b from-blue-900/20 to-black border border-white/10">
             <div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
-            
             <div class="relative z-10 max-w-3xl mx-auto px-4">
                 <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Level Up?</h2>
                 <p class="text-xl text-zinc-400 mb-10">
                     Join thousands of traders who have transformed their results. <br class="hidden md:block"/>
                     The market is waiting. Your desk is ready.
                 </p>
-                
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="#rooms-section" class="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)]">
                         Choose Your Room
@@ -473,23 +485,35 @@
 </div>
 
 <style>
-    /* 3D Physics */
+    /* --- Hero Specifics --- */
+    .perspective-hero {
+        perspective: 1000px;
+        overflow: hidden;
+    }
+
+    .hero-grid-plane {
+        transform-style: preserve-3d;
+        transform: rotateX(60deg) translateY(0);
+        transform-origin: 50% 50%;
+    }
+
+    .grid-lines {
+        background-size: 60px 60px;
+        background-image:
+            linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        mask-image: radial-gradient(circle at 50% 0%, black 0%, transparent 70%);
+    }
+
+    /* --- Shared 3D/Animation --- */
     .card-3d {
         transform-style: preserve-3d;
         transform: perspective(1000px) rotateX(var(--rotX, 0deg)) rotateY(var(--rotY, 0deg));
         will-change: transform;
     }
-
-    /* Ambient Animation */
-    .animate-pulse-slow {
-        animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    .perspective-container {
+        perspective: 2000px;
     }
-    @keyframes pulse {
-        0%, 100% { opacity: 0.1; }
-        50% { opacity: 0.2; }
-    }
-
-    /* Ticker Animation */
     .ticker-track {
         animation: scroll 60s linear infinite;
     }
@@ -501,20 +525,12 @@
         100% { transform: translateX(-50%); }
     }
 
-    /* Custom SVG Animations */
-    @keyframes draw-line {
-        to { stroke-dashoffset: 0; }
-    }
-    .animate-draw-line {
-        animation: draw-line 1s ease-out forwards;
-    }
+    /* SVG Keyframes */
+    @keyframes draw-line { to { stroke-dashoffset: 0; } }
+    .animate-draw-line { animation: draw-line 1s ease-out forwards; }
 
-    @keyframes spin-slow {
-        to { transform: rotate(360deg); transform-origin: center; }
-    }
-    .animate-spin-slow {
-        animation: spin-slow 8s linear infinite;
-    }
+    @keyframes spin-slow { to { transform: rotate(360deg); transform-origin: center; } }
+    .animate-spin-slow { animation: spin-slow 8s linear infinite; }
 
     /* Candle Animations */
     @keyframes candle-up {
@@ -525,17 +541,10 @@
     .animate-candle-body-2 { transform-origin: bottom; animation: candle-up 3s infinite ease-in-out 0.5s; }
     .animate-candle-body-3 { transform-origin: bottom; animation: candle-up 2.5s infinite ease-in-out 0.2s; }
 
-    /* Growth Bar Animations */
-    @keyframes grow-up {
-        from { transform: scaleY(0); }
-        to { transform: scaleY(1); }
-    }
+    /* Growth Animations */
+    @keyframes grow-up { from { transform: scaleY(0); } to { transform: scaleY(1); } }
     .animate-grow-1 { transform-origin: bottom; animation: grow-up 0.4s ease-out forwards; }
     .animate-grow-2 { transform-origin: bottom; animation: grow-up 0.4s ease-out 0.1s forwards; }
     .animate-grow-3 { transform-origin: bottom; animation: grow-up 0.4s ease-out 0.2s forwards; }
     .animate-grow-4 { transform-origin: bottom; animation: grow-up 0.4s ease-out 0.3s forwards; }
-
-    .perspective-container {
-        perspective: 2000px;
-    }
 </style>
