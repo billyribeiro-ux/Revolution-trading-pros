@@ -118,7 +118,7 @@
 							<div>
 								<span class="text-sm font-semibold text-rtp-muted">Member Since</span>
 								<p class="text-rtp-text mt-1">
-									{new Date($authStore.user.created_at).toLocaleDateString('en-US', {
+									{new Date($authStore.user?.created_at || Date.now()).toLocaleDateString('en-US', {
 										month: 'long',
 										year: 'numeric'
 									})}

@@ -113,10 +113,10 @@
 
 		// Pre-fill billing from user data
 		if ($user) {
-			const nameParts = ($user.name || '').split(' ');
+			const nameParts = ($user?.name || '').split(' ');
 			billing.firstName = nameParts[0] || '';
 			billing.lastName = nameParts.slice(1).join(' ') || '';
-			billing.email = $user.email || '';
+			billing.email = $user?.email || '';
 		}
 	});
 
