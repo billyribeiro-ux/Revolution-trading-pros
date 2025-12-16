@@ -10,6 +10,7 @@ use uuid::Uuid;
 use crate::models::Job;
 
 /// Enqueue a new job
+#[allow(dead_code)]
 pub async fn enqueue(
     pool: &PgPool,
     queue: &str,
@@ -40,6 +41,7 @@ pub async fn enqueue(
 }
 
 /// Enqueue a delayed job
+#[allow(dead_code)]
 pub async fn enqueue_delayed(
     pool: &PgPool,
     queue: &str,

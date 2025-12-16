@@ -23,6 +23,7 @@ fn default_limit() -> usize {
 
 /// Search response
 #[derive(Debug, Serialize)]
+#[allow(dead_code)]
 pub struct SearchResponse {
     pub courses: Vec<crate::services::search::SearchableCourse>,
     pub posts: Vec<crate::services::search::SearchablePost>,

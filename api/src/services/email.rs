@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde::Serialize;
 
 #[derive(Clone)]
+#[allow(dead_code)]
 pub struct EmailService {
     client: Client,
     token: String,
@@ -12,6 +13,7 @@ pub struct EmailService {
 }
 
 #[derive(Serialize)]
+#[allow(dead_code)]
 struct PostmarkEmail {
     #[serde(rename = "From")]
     from: String,
@@ -27,6 +29,7 @@ struct PostmarkEmail {
     message_stream: String,
 }
 
+#[allow(dead_code)]
 impl EmailService {
     pub fn new(token: &str, from_email: &str) -> Self {
         Self {
