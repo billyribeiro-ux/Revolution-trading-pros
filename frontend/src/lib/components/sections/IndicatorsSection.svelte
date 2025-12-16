@@ -227,20 +227,22 @@
 		isMounted = true;
 		
 		// Trigger entrance animations when section scrolls into viewport
-		if (sectionRef) {
-			const visibilityObserver = new IntersectionObserver(
-				(entries) => {
-					if (entries[0].isIntersecting) {
-						isVisible = true;
-						visibilityObserver.disconnect();
-					}
-				},
-				{ threshold: 0.1, rootMargin: '50px' }
-			);
-			visibilityObserver.observe(sectionRef);
-		} else {
-			isVisible = true;
-		}
+		queueMicrotask(() => {
+			if (sectionRef) {
+				const visibilityObserver = new IntersectionObserver(
+					(entries) => {
+						if (entries[0].isIntersecting) {
+							isVisible = true;
+							visibilityObserver.disconnect();
+						}
+					},
+					{ threshold: 0.1, rootMargin: '50px' }
+				);
+				visibilityObserver.observe(sectionRef);
+			} else {
+				isVisible = true;
+			}
+		});
 
 		// Setup canvas with resize observer (delayed to ensure DOM is ready)
 		// Use double rAF to ensure layout is complete

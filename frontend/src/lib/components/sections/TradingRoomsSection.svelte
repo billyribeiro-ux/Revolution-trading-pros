@@ -67,25 +67,35 @@
     }
 
     // Trigger entrance animations when section scrolls into viewport
+    let observer: IntersectionObserver | null = null;
+    
     onMount(() => {
-        if (!browser || !containerRef) {
-            isVisible = true; // Fallback for SSR
+        if (!browser) {
+            isVisible = true;
             return;
         }
         
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1, rootMargin: '50px' }
-        );
+        // Use queueMicrotask to ensure bind:this has completed
+        queueMicrotask(() => {
+            if (!containerRef) {
+                isVisible = true;
+                return;
+            }
+            
+            observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        isVisible = true;
+                        observer?.disconnect();
+                    }
+                },
+                { threshold: 0.1, rootMargin: '50px' }
+            );
+            
+            observer.observe(containerRef);
+        });
         
-        observer.observe(containerRef);
-        
-        return () => observer.disconnect();
+        return () => observer?.disconnect();
     });
 </script>
 
