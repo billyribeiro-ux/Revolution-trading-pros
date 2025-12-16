@@ -1,8 +1,8 @@
 # Revolution Trading Pros - Rust API
 # Multi-stage build for minimal image size
 
-# Build stage - Rust 1.92 (stable December 2025)
-FROM rust:1.92-alpine3.21 AS builder
+# Build stage - Rust 1.85 (supports edition2024)
+FROM rust:1.85-alpine3.21 AS builder
 
 # Install build dependencies
 RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig perl make
