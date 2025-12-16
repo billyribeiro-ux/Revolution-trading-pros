@@ -138,8 +138,10 @@
         // Check for reduced motion preference
         prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         
-        // Trigger entrance animations
-        isVisible = true;
+        // Trigger entrance animations with rAF for in: transitions
+        requestAnimationFrame(() => {
+            isVisible = true;
+        });
 
         // Load GSAP asynchronously
         if (!prefersReducedMotion) {

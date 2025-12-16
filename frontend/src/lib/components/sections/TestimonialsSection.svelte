@@ -97,9 +97,11 @@
         };
     }
 
-    // Trigger entrance animations after mount
+    // Trigger entrance animations after mount with delay for in: transitions
     onMount(() => {
-        isVisible = true;
+        requestAnimationFrame(() => {
+            isVisible = true;
+        });
     });
 
     // Ticker Tape Data

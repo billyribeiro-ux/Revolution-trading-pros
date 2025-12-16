@@ -226,8 +226,10 @@
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		isMounted = true;
 		
-		// Trigger entrance animations
-		isVisible = true;
+		// Trigger entrance animations with rAF for in: transitions
+		requestAnimationFrame(() => {
+			isVisible = true;
+		});
 
 		// Setup canvas with resize observer (delayed to ensure DOM is ready)
 		// Use double rAF to ensure layout is complete

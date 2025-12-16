@@ -50,7 +50,7 @@
         }
     ];
 
-    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
+    // ICT11+ Fix: Start false, set true after tick to trigger in: transitions
     let isVisible = $state(false);
     let containerRef = $state<HTMLElement | null>(null);
 
@@ -65,9 +65,12 @@
         };
     }
 
-    // Trigger entrance animations after mount
+    // Trigger entrance animations after mount with delay for in: transitions
     onMount(() => {
-        isVisible = true;
+        // Small delay ensures element is in DOM before transition triggers
+        requestAnimationFrame(() => {
+            isVisible = true;
+        });
     });
 </script>
 
