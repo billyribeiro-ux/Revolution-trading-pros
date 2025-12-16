@@ -13,8 +13,7 @@
 
 import type { PageLoad } from './$types';
 
-export const prerender = true;
-export const trailingSlash = 'never';
+export const prerender = false;
 export const ssr = true;
 export const csr = true;
 
