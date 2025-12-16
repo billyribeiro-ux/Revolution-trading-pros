@@ -77,7 +77,7 @@ async fn create_portal(
 
 /// Handle Stripe webhooks
 async fn webhook(
-    State(state): State<AppState>,
+    State(_state): State<AppState>,
     body: String,
 ) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
     // Parse and handle webhook event

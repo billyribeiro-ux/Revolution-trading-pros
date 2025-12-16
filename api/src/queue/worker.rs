@@ -1,6 +1,5 @@
 //! Background job worker
 
-use chrono::Utc;
 use tokio::time::{sleep, Duration};
 
 use crate::{db::Database, models::Job};
@@ -99,9 +98,9 @@ async fn process_job(job: &Job) -> anyhow::Result<()> {
         "send_email" => {
             let to = job.payload["to"].as_str().unwrap_or("");
             let subject = job.payload["subject"].as_str().unwrap_or("");
-            let body = job.payload["body"].as_str().unwrap_or("");
+            let _body = job.payload["body"].as_str().unwrap_or("");
             tracing::info!("Sending email to: {} - {}", to, subject);
-            // Actually send email here
+            // TODO: Actually send email here using EmailService
             Ok(())
         }
         "process_payment" => {

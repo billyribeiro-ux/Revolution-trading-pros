@@ -79,9 +79,9 @@ impl StripeService {
     }
 
     /// Verify webhook signature
-    pub fn verify_webhook(&self, payload: &[u8], signature: &str, secret: &str) -> Result<bool> {
-        // Simplified - in production use stripe-rust crate's webhook verification
-        // This is a placeholder
+    pub fn verify_webhook(&self, _payload: &[u8], _signature: &str, _secret: &str) -> Result<bool> {
+        // TODO: Implement proper webhook verification using stripe-rust crate
+        // This is a placeholder that should use HMAC-SHA256 to verify the signature
         Ok(true)
     }
 }
