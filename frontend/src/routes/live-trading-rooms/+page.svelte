@@ -1,11 +1,12 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { spring } from 'svelte/motion';
-    import { gsap } from 'gsap';
-    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-    import { TextPlugin } from 'gsap/dist/TextPlugin';
     import { browser } from '$app/environment';
     import type { PageData } from './$types';
+    
+    // GSAP types for TypeScript (actual imports are dynamic for SSR safety)
+    type GSAPInstance = typeof import('gsap').gsap;
+    type ScrollTriggerInstance = typeof import('gsap/ScrollTrigger').ScrollTrigger;
 
     /**
      * Svelte 5 Runes & SSR/SSG Pattern
@@ -66,111 +67,201 @@
     let benefitsRef: HTMLElement;
     let ctaRef: HTMLElement;
 
+    /**
+     * GSAP Animation Controller - Svelte 5 / Dec 2025 Pattern
+     * Uses dynamic imports for SSR safety and proper cleanup
+     */
     onMount(() => {
         mounted = true;
         
-        // SSR-safe pattern: Only initialize animations in browser
+        // SSR-safe guard - only run animations in browser
         if (!browser) return;
 
-        // Async GSAP initialization with proper cleanup
-        let cleanupAnimations = () => {};
+        // Store references for cleanup
+        let gsapInstance: GSAPInstance | null = null;
+        let scrollTriggerInstance: typeof import('gsap/ScrollTrigger').ScrollTrigger | null = null;
+        let animationContext: ReturnType<GSAPInstance['context']> | null = null;
         
+        // Async IIFE pattern for dynamic imports (Svelte 5 SSR-safe)
         (async () => {
             try {
-                // Dynamic imports for SSR safety
-                const gsapModule = await import('gsap');
-                const scrollTriggerModule = await import('gsap/dist/ScrollTrigger');
-                const textPluginModule = await import('gsap/dist/TextPlugin');
+                // Dynamic imports - required for SSR safety in SvelteKit
+                const [gsapModule, scrollTriggerModule] = await Promise.all([
+                    import('gsap'),
+                    import('gsap/ScrollTrigger')
+                ]);
                 
-                const gsap = gsapModule.gsap;
-                const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
-                const TextPlugin = textPluginModule.TextPlugin;
+                gsapInstance = gsapModule.gsap;
+                scrollTriggerInstance = scrollTriggerModule.ScrollTrigger;
                 
                 // Register plugins
-                gsap.registerPlugin(ScrollTrigger, TextPlugin);
+                gsapInstance.registerPlugin(scrollTriggerInstance);
                 
-                // Hero Timeline with better performance
-                const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-                tl.fromTo('.hero-title',
-                    { opacity: 0, y: 60 },
-                    { opacity: 1, y: 0, duration: 1.2 }
-                )
-                .fromTo('.hero-subtitle',
-                    { opacity: 0, y: 40 },
-                    { opacity: 1, y: 0, duration: 1 }, '-=0.8'
-                )
-                .fromTo('.hero-grid-plane',
-                    { opacity: 0 },
-                    { opacity: 0.4, duration: 2 }, '-=1.5'
-                )
-                .fromTo('.hero-chart',
-                    { opacity: 0, scale: 0.95 },
-                    { opacity: 0.6, scale: 1, duration: 1.5 }, '-=1'
-                );
-
-                // Floating Particles with performance optimization
-                gsap.fromTo('.particle',
-                    { opacity: 0, scale: 0 },
-                    { opacity: 0.8, scale: 1, duration: 1, stagger: 0.1 }
-                );
-
-                // Room Cards ScrollTrigger with intersection optimization
-                const roomCardsTrigger = ScrollTrigger.create({
-                    trigger: '.rooms-grid',
-                    start: 'top 80%',
-                    onEnter: () => {
-                        gsap.fromTo('.room-card',
-                            { opacity: 0, y: 80 },
-                            {
-                                opacity: 1, y: 0, duration: 0.8,
-                                stagger: 0.2, ease: 'power2.out'
-                            }
+                // Create GSAP context for proper cleanup (GSAP 3.12+ pattern)
+                animationContext = gsapInstance.context(() => {
+                    const gsap = gsapInstance!;
+                    const ScrollTrigger = scrollTriggerInstance!;
+                    
+                    // ===== HERO SECTION ANIMATIONS =====
+                    const heroTl = gsap.timeline({
+                        defaults: { ease: 'power3.out', duration: 1 }
+                    });
+                    
+                    // Set initial states to prevent flash of unstyled content
+                    gsap.set(['.hero-title', '.hero-subtitle', '.hero-grid-plane', '.hero-chart'], {
+                        opacity: 0
+                    });
+                    
+                    heroTl
+                        .fromTo('.hero-title',
+                            { opacity: 0, y: 60, filter: 'blur(10px)' },
+                            { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.2 }
+                        )
+                        .fromTo('.hero-subtitle',
+                            { opacity: 0, y: 40 },
+                            { opacity: 1, y: 0, duration: 1 },
+                            '-=0.8'
+                        )
+                        .fromTo('.hero-grid-plane',
+                            { opacity: 0, scale: 0.9 },
+                            { opacity: 0.4, scale: 1, duration: 2 },
+                            '-=1.5'
+                        )
+                        .fromTo('.hero-chart',
+                            { opacity: 0, scale: 0.95, y: 20 },
+                            { opacity: 0.6, scale: 1, y: 0, duration: 1.5 },
+                            '-=1'
                         );
+                    
+                    // ===== FLOATING PARTICLES =====
+                    gsap.fromTo('.particle',
+                        { opacity: 0, scale: 0, rotation: -180 },
+                        { 
+                            opacity: 0.8, 
+                            scale: 1, 
+                            rotation: 0,
+                            duration: 1.5, 
+                            stagger: { each: 0.1, from: 'random' },
+                            ease: 'back.out(1.7)'
+                        }
+                    );
+                    
+                    // Continuous floating animation for particles
+                    gsap.to('.particle', {
+                        y: 'random(-20, 20)',
+                        x: 'random(-10, 10)',
+                        duration: 'random(3, 5)',
+                        repeat: -1,
+                        yoyo: true,
+                        ease: 'sine.inOut',
+                        stagger: { each: 0.2, from: 'random' }
+                    });
+                    
+                    // ===== ROOM CARDS SCROLL ANIMATION =====
+                    ScrollTrigger.batch('.room-card', {
+                        start: 'top 85%',
+                        onEnter: (batch) => {
+                            gsap.fromTo(batch,
+                                { opacity: 0, y: 80, scale: 0.95 },
+                                {
+                                    opacity: 1,
+                                    y: 0,
+                                    scale: 1,
+                                    duration: 0.8,
+                                    stagger: 0.15,
+                                    ease: 'power2.out'
+                                }
+                            );
+                        },
+                        once: true
+                    });
+                    
+                    // ===== BENEFITS CARDS SCROLL ANIMATION =====
+                    ScrollTrigger.batch('.benefit-card', {
+                        start: 'top 90%',
+                        onEnter: (batch) => {
+                            gsap.fromTo(batch,
+                                { opacity: 0, y: 60, scale: 0.9 },
+                                {
+                                    opacity: 1,
+                                    y: 0,
+                                    scale: 1,
+                                    duration: 0.7,
+                                    stagger: 0.1,
+                                    ease: 'power2.out'
+                                }
+                            );
+                        },
+                        once: true
+                    });
+                    
+                    // ===== CTA SECTION SCROLL ANIMATION =====
+                    if (ctaRef) {
+                        ScrollTrigger.create({
+                            trigger: ctaRef,
+                            start: 'top 85%',
+                            onEnter: () => {
+                                gsap.fromTo(ctaRef,
+                                    { scale: 0.95, opacity: 0, y: 30 },
+                                    { 
+                                        scale: 1, 
+                                        opacity: 1, 
+                                        y: 0, 
+                                        duration: 0.8,
+                                        ease: 'power2.out'
+                                    }
+                                );
+                            },
+                            once: true
+                        });
                     }
-                });
-
-                // Benefits ScrollTrigger
-                const benefitsTrigger = ScrollTrigger.create({
-                    trigger: '.benefits-grid',
-                    start: 'top 85%',
-                    onEnter: () => {
-                        gsap.fromTo('.benefit-card',
-                            { opacity: 0, y: 60 },
-                            {
-                                opacity: 1, y: 0, duration: 0.8,
-                                stagger: 0.15, ease: 'power2.out'
-                            }
-                        );
+                    
+                    // ===== TICKER ANIMATION =====
+                    const tickerTrack = document.querySelector('.ticker-track');
+                    if (tickerTrack) {
+                        gsap.to(tickerTrack, {
+                            xPercent: -50,
+                            duration: 30,
+                            ease: 'none',
+                            repeat: -1
+                        });
                     }
-                });
-
-                // CTA ScrollTrigger
-                const ctaTrigger = ScrollTrigger.create({
-                    trigger: ctaRef,
-                    start: 'top 85%',
-                    onEnter: () => {
-                        gsap.fromTo(ctaRef,
-                            { scale: 0.95, opacity: 0 },
-                            { scale: 1, opacity: 1, duration: 0.8 }
-                        );
-                    }
-                });
-
-                // Cleanup function for proper hydration
-                cleanupAnimations = () => {
-                    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-                    gsap.killTweensOf('*');
-                };
+                    
+                    // ===== SECTION HEADERS ANIMATION =====
+                    gsap.utils.toArray('.section-header').forEach((header) => {
+                        ScrollTrigger.create({
+                            trigger: header as Element,
+                            start: 'top 85%',
+                            onEnter: () => {
+                                gsap.fromTo(header as Element,
+                                    { opacity: 0, y: 40 },
+                                    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
+                                );
+                            },
+                            once: true
+                        });
+                    });
+                    
+                }); // End of GSAP context
                 
             } catch (error) {
-                console.warn('[Live Trading Rooms] Animation initialization failed:', error);
+                console.warn('[Live Trading Rooms] GSAP initialization failed:', error);
             }
         })();
         
-        // Return cleanup function for proper unmounting
+        // Cleanup function - Svelte 5 pattern
         return () => {
-            cleanupAnimations();
+            // Use GSAP context revert for clean cleanup (GSAP 3.12+)
+            if (animationContext) {
+                animationContext.revert();
+            }
+            // Fallback cleanup
+            if (scrollTriggerInstance) {
+                scrollTriggerInstance.getAll().forEach(trigger => trigger.kill());
+            }
+            if (gsapInstance) {
+                gsapInstance.killTweensOf('*');
+            }
         };
     });
 </script>
