@@ -50,9 +50,8 @@
         }
     ];
 
-    // ICT11+ Fix: Default to true since LazySection handles lazy loading
-    // The component only mounts when already in/near viewport
-    let isVisible = $state(true);
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
+    let isVisible = $state(false);
     let containerRef = $state<HTMLElement | null>(null);
 
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
@@ -65,6 +64,11 @@
             }
         };
     }
+
+    // Trigger entrance animations after mount
+    onMount(() => {
+        isVisible = true;
+    });
 </script>
 
 <section 

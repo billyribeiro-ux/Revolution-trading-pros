@@ -76,8 +76,8 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
-	// ICT11+ Fix: Default to true since LazySection handles lazy loading
-	let isVisible = $state(true);
+	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
+	let isVisible = $state(false);
 	let isMounted = $state(false);
 	let activeIndicator = $state(0);
 	let gsapInstance: any = null;
@@ -225,6 +225,9 @@
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		isMounted = true;
+		
+		// Trigger entrance animations
+		isVisible = true;
 
 		// Setup canvas with resize observer (delayed to ensure DOM is ready)
 		// Use double rAF to ensure layout is complete

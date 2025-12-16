@@ -10,8 +10,8 @@
     // --- Interaction Logic ---
     let containerRef = $state<HTMLElement | null>(null);
     let mouse = $state({ x: 0, y: 0 });
-    // ICT11+ Fix: Default to true since LazySection handles lazy loading
-    let isVisible = $state(true);
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
+    let isVisible = $state(false);
 
     // Mouse tracking for subtle lighting effects
     const handleMouseMove = (e: MouseEvent) => {
@@ -32,6 +32,11 @@
             }
         };
     }
+
+    // Trigger entrance animations after mount
+    onMount(() => {
+        isVisible = true;
+    });
 
     // Mock data for the background "Depth of Market" animation
     const marketDepth = Array(20).fill(0).map((_, i) => ({

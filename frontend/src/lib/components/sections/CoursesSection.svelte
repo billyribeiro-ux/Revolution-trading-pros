@@ -118,8 +118,8 @@
     // ============================================================================
     let sectionRef = $state<HTMLElement | null>(null);
     let cardsRef = $state<HTMLElement | null>(null);
-    // ICT11+ Fix: Default to true since LazySection handles lazy loading
-    let isVisible = $state(true);
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
+    let isVisible = $state(false);
     let hoveredCard = $state<string | null>(null);
     let gsapInstance: any = null;
     let scrollTriggerInstance: any = null;
@@ -137,6 +137,9 @@
 
         // Check for reduced motion preference
         prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        // Trigger entrance animations
+        isVisible = true;
 
         // Load GSAP asynchronously
         if (!prefersReducedMotion) {

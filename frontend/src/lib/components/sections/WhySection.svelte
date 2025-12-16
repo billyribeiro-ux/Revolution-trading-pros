@@ -37,8 +37,8 @@
     // --- Interaction Logic ---
     let containerRef = $state<HTMLElement | null>(null);
     let mouse = $state({ x: 0, y: 0 });
-    // ICT11+ Fix: Default to true since LazySection handles lazy loading
-    let isVisible = $state(true);
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
+    let isVisible = $state(false);
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -57,6 +57,11 @@
             }
         };
     }
+
+    // Trigger entrance animations after mount
+    onMount(() => {
+        isVisible = true;
+    });
 </script>
 
 <section 

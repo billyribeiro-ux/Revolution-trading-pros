@@ -22,8 +22,8 @@
 
     // --- Animation Logic ---
     let containerRef: HTMLElement;
-    // Default to true for SSR - content should be visible immediately
-    let isVisible = $state(true);
+    // ICT11+ Fix: Start false, set true via IntersectionObserver to trigger in: transitions
+    let isVisible = $state(false);
     let mouse = $state({ x: 0, y: 0 });
 
     const handleMouseMove = (e: MouseEvent) => {
