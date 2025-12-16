@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
-	 * ICT11+ Performance: Uses streamed data for blog posts to eliminate TTFB blocking
+	 * ICT11+ Fix: Simplified data handling (removed streaming to fix hydration)
 	 */
 	import Hero from '$lib/components/sections/Hero.svelte';
 	import LazySection from '$lib/components/LazySection.svelte';
@@ -20,22 +20,8 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// ICT11+ Performance: Handle streamed posts data
-	let streamedPosts = $state<any[]>([]);
-	
-	// Update posts when streamed data arrives
-	$effect(() => {
-		if (data.streamed?.posts) {
-			data.streamed.posts.then((resolved: any[]) => {
-				if (resolved?.length > 0) {
-					streamedPosts = resolved;
-				}
-			});
-		}
-	});
-
-	// Derive posts from either streamed data or initial data
-	let posts = $derived(streamedPosts.length > 0 ? streamedPosts : (data.posts || []));
+	// Simple posts access - no streaming
+	let posts = $derived(data.posts || []);
 
 	const homepageSchema = [
 		{

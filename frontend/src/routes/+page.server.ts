@@ -2,23 +2,15 @@ import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 import type { PageServerLoad } from './$types';
 
 /**
- * ICT11+ Performance: Non-blocking server load
- * Returns immediately with empty posts, client fetches asynchronously
- * This eliminates TTFB delay from backend API calls
+ * ICT11+ Performance: Simple server load without streaming
+ * Streaming was causing hydration issues with __sveltekit variable
  */
 export const load: PageServerLoad = async ({ fetch }) => {
-	// ICT11+ Performance: Don't block SSR on API call
-	// Return empty posts immediately, let client hydrate with real data
-	// This reduces TTFB from 1000ms+ to <100ms
-	
-	// Start fetch but don't await - return promise for streaming
-	const postsPromise = fetchPosts(fetch);
+	// Fetch posts with timeout - don't block too long
+	const posts = await fetchPosts(fetch);
 	
 	return {
-		posts: [], // Immediate response
-		streamed: {
-			posts: postsPromise // Client will await this
-		}
+		posts
 	};
 };
 
