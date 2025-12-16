@@ -117,23 +117,20 @@
 
     <div class="relative max-w-7xl mx-auto z-10">
         
-        <div class="max-w-3xl mx-auto text-center mb-20">
+        <div class="max-w-4xl mx-auto text-center mb-24">
             {#if isVisible}
-                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center justify-center gap-2 mb-6">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                    </span>
-                    <span class="text-xs font-mono uppercase tracking-widest text-amber-500/80">Signal Feed Active</span>
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm">
+                    <IconBolt size={14} />
+                    Signal Intelligence
                 </div>
                 
-                <h2 in:heavySlide={{ delay: 100 }} class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6">
-                    Market Intelligence
+                <h2 in:heavySlide={{ delay: 100 }} class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+                    Alert <span class="text-slate-700">Systems.</span>
                 </h2>
                 
-                <p in:heavySlide={{ delay: 200 }} class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto">
-                    Algorithmic detection verified by human traders. 
-                    Receive fully contextualized trade plans with entry, stop, and target parameters.
+                <p in:heavySlide={{ delay: 200 }} class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+                    We don't send generic alerts. We deliver institutional-grade signal intelligence. 
+                    Verified by quantitative analysts and professional traders worldwide.
                 </p>
             {/if}
         </div>
