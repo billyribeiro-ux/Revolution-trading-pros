@@ -34,7 +34,7 @@ bucket_name = "revolution-trading-media"
 # KV Namespace for caching
 [[kv_namespaces]]
 binding = "CACHE"
-id = "revolution-cache"
+id = "9376cd18e04e43c8927ebf35aa8ed9ff"
 
 # D1 Database (optional, for edge-native SQL)
 # [[d1_databases]]
