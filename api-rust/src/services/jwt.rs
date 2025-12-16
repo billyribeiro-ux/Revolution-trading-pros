@@ -2,7 +2,7 @@
 //! 
 //! WASM-compatible JWT implementation using HMAC-SHA256
 
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
@@ -219,28 +219,32 @@ impl JwtService {
 mod tests {
     use super::*;
 
+    // Token generation tests require WASM runtime (js_sys::Date::now)
     #[test]
+    #[cfg(target_arch = "wasm32")]
     fn test_token_generation_and_validation() {
         let service = JwtService::new("test-secret-key-12345", "test-issuer", "test-audience");
-        
+
         let (token, _exp) = service
             .generate_access_token("user-123", "test@example.com", UserRole::User)
             .unwrap();
-        
+
         let claims = service.validate_access_token(&token).unwrap();
-        
+
         assert_eq!(claims.sub, "user-123");
         assert_eq!(claims.email, "test@example.com");
         assert_eq!(claims.role, UserRole::User);
     }
 
+    // Refresh token tests require WASM runtime (js_sys::Date::now)
     #[test]
+    #[cfg(target_arch = "wasm32")]
     fn test_refresh_token() {
         let service = JwtService::new("test-secret-key-12345", "test-issuer", "test-audience");
-        
+
         let (token, _exp) = service.generate_refresh_token("user-123").unwrap();
         let user_id = service.validate_refresh_token(&token).unwrap();
-        
+
         assert_eq!(user_id, "user-123");
     }
 

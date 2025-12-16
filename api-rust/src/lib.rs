@@ -46,7 +46,7 @@ fn log_request(req: &Request) {
 
 /// Create CORS preflight response
 fn cors_preflight() -> Result<Response> {
-    let mut headers = Headers::new();
+    let headers = Headers::new();
     headers.set("Access-Control-Allow-Origin", "*")?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")?;
@@ -329,7 +329,7 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .run(req, env)
         .await
         .map(|response| {
-            let mut headers = Headers::new();
+            let headers = Headers::new();
             let _ = headers.set("Access-Control-Allow-Origin", "*");
             let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");

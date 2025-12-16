@@ -146,3 +146,4 @@ phpunit.xml
 
 # IDE workspace settings (may contain paths/credentials)
 *.code-workspace
+api-rust/target/

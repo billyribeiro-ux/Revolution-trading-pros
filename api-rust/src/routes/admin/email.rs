@@ -79,7 +79,6 @@ pub async fn campaigns_list(req: Request, ctx: RouteContext<AppState>) -> worker
     if let Some(status) = &query.status {
         sql.push_str(&format!(" AND status = ${}", param_idx));
         params.push(serde_json::json!(status));
-        param_idx += 1;
     }
 
     // Count total
@@ -166,13 +165,11 @@ pub async fn subscribers_list(req: Request, ctx: RouteContext<AppState>) -> work
     if let Some(status) = &query.status {
         sql.push_str(&format!(" AND status = ${}", param_idx));
         params.push(serde_json::json!(status));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(" AND (email ILIKE ${} OR name ILIKE ${})", param_idx, param_idx));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total

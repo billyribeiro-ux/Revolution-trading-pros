@@ -21,24 +21,21 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
 
     let mut sql = String::from("SELECT * FROM media WHERE 1=1");
     let mut params: Vec<serde_json::Value> = vec![];
-    let mut param_idx = 1;
+    let param_idx = 1;
 
     if let Some(mime_type) = &query.mime_type {
         sql.push_str(&format!(" AND mime_type LIKE ${}", param_idx));
         params.push(serde_json::json!(format!("{}%", mime_type)));
-        param_idx += 1;
     }
 
     if let Some(folder) = &query.folder {
         sql.push_str(&format!(" AND folder = ${}", param_idx));
         params.push(serde_json::json!(folder));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(" AND (filename ILIKE ${} OR original_filename ILIKE ${})", param_idx, param_idx));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total
