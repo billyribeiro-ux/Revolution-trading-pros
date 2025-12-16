@@ -1,10 +1,9 @@
 <script lang="ts">
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
-	 * ICT11+ Fix: Simplified data handling (removed streaming to fix hydration)
+	 * ICT11+ Fix: Removed LazySection - render all sections directly for reliability
 	 */
 	import Hero from '$lib/components/sections/Hero.svelte';
-	import LazySection from '$lib/components/LazySection.svelte';
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
 	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
 	import IndicatorsSection from '$lib/components/sections/IndicatorsSection.svelte';
@@ -20,7 +19,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Simple posts access - no streaming
+	// Simple posts access
 	let posts = $derived(data.posts || []);
 
 	const homepageSchema = [
@@ -43,44 +42,13 @@
 />
 
 <Hero />
-
-<LazySection rootMargin="300px">
-	<TradingRoomsSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<AlertServicesSection />
-</LazySection>
-
-<!-- Professional Trading Indicators Section -->
-<LazySection rootMargin="300px">
-	<IndicatorsSection />
-</LazySection>
-
-<!-- Expert-Led Trading Courses Section -->
-<LazySection rootMargin="300px">
-	<CoursesSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<WhySection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<MentorshipSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<TestimonialsSection />
-</LazySection>
-
-<!-- Blog section renders immediately for SEO -->
+<TradingRoomsSection />
+<AlertServicesSection />
+<IndicatorsSection />
+<CoursesSection />
+<WhySection />
+<MentorshipSection />
+<TestimonialsSection />
 <LatestBlogsSection posts={posts} />
-
-<LazySection rootMargin="300px">
-	<CTASection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<SocialMediaSection />
-</LazySection>
+<CTASection />
+<SocialMediaSection />
