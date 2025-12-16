@@ -37,21 +37,23 @@
 		children
 	}: Props = $props();
 
-	let isVisible = $state(false);
+	// ICT11+ Fix: Start visible on SSR, let client handle lazy loading
+	// This ensures content renders even if JS fails
+	let isVisible = $state(!browser);
 	let container = $state<HTMLElement | null>(null);
 	let observer: IntersectionObserver | null = null;
 	let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
-	// ICT11+ Fix: Use onMount for IntersectionObserver setup
-	// $effect runs before bindings are established during SSR hydration
 	onMount(() => {
 		if (!browser) return;
 
-		// Use microtask to ensure binding is complete
-		queueMicrotask(() => {
+		// Reset to false on client, then check visibility
+		isVisible = false;
+
+		// Use requestAnimationFrame to ensure DOM is ready
+		requestAnimationFrame(() => {
 			if (!container) {
-				console.warn('[LazySection] Container ref not bound');
-				isVisible = true; // Fallback: show content
+				isVisible = true;
 				return;
 			}
 
@@ -87,7 +89,7 @@
 
 			observer.observe(container);
 
-			// Fallback timeout for edge cases where IO doesn't fire
+			// Fallback timeout - show content after timeout regardless
 			if (fallbackTimeout > 0) {
 				fallbackTimer = setTimeout(() => {
 					if (!isVisible) {

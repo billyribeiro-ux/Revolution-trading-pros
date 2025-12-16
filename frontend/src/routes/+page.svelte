@@ -1,9 +1,10 @@
 <script lang="ts">
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
-	 * ICT11+ Fix: Removed LazySection - render all sections directly for reliability
+	 * ICT11+ Fix: LazySection restored with SSR-first rendering
 	 */
 	import Hero from '$lib/components/sections/Hero.svelte';
+	import LazySection from '$lib/components/LazySection.svelte';
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
 	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
 	import IndicatorsSection from '$lib/components/sections/IndicatorsSection.svelte';
@@ -42,13 +43,41 @@
 />
 
 <Hero />
-<TradingRoomsSection />
-<AlertServicesSection />
-<IndicatorsSection />
-<CoursesSection />
-<WhySection />
-<MentorshipSection />
-<TestimonialsSection />
+
+<LazySection rootMargin="300px">
+	<TradingRoomsSection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<AlertServicesSection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<IndicatorsSection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<CoursesSection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<WhySection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<MentorshipSection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<TestimonialsSection />
+</LazySection>
+
 <LatestBlogsSection posts={posts} />
-<CTASection />
-<SocialMediaSection />
+
+<LazySection rootMargin="300px">
+	<CTASection />
+</LazySection>
+
+<LazySection rootMargin="300px">
+	<SocialMediaSection />
+</LazySection>
