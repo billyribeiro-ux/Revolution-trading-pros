@@ -44,9 +44,24 @@ fn log_request(req: &Request) {
     );
 }
 
+/// Create CORS preflight response
+fn cors_preflight() -> Result<Response> {
+    let mut headers = Headers::new();
+    headers.set("Access-Control-Allow-Origin", "*")?;
+    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")?;
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")?;
+    headers.set("Access-Control-Max-Age", "86400")?;
+    Ok(Response::empty()?.with_headers(headers).with_status(204))
+}
+
 #[event(fetch)]
 pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     log_request(&req);
+
+    // Handle CORS preflight requests
+    if req.method() == Method::Options {
+        return cors_preflight();
+    }
 
     // Initialize panic hook for better error messages
     console_error_panic_hook::set_once();
@@ -313,4 +328,11 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .run(req, env)
         .await
+        .map(|response| {
+            let mut headers = Headers::new();
+            let _ = headers.set("Access-Control-Allow-Origin", "*");
+            let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+            response.with_headers(headers)
+        })
 }

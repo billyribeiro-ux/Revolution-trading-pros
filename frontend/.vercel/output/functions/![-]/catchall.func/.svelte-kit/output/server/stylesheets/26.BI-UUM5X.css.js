@@ -1,2 +1,0 @@
-// 26.BI-UUM5X.css
-export default "@keyframes svelte-1mkregq-slide-up{0%{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:translateY(0)}}.animate-slide-up{animation:svelte-1mkregq-slide-up .3s ease-out}.line-clamp-2.svelte-1mkregq{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.service-card.svelte-1mkregq{min-height:320px}.connection-info-container.svelte-1mkregq{min-height:90px}.service-card.svelte-1mkregq>:where(.svelte-1mkregq):last-child{margin-top:auto}\n";

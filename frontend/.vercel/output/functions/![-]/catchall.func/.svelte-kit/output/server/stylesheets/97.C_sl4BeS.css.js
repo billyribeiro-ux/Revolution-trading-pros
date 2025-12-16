@@ -1,2 +1,0 @@
-// 97.C_sl4BeS.css
-export default ".overflow-x-auto.svelte-1v4qcr5::-webkit-scrollbar{height:8px}.overflow-x-auto.svelte-1v4qcr5::-webkit-scrollbar-track{background:#0f172a;border-radius:4px}.overflow-x-auto.svelte-1v4qcr5::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}.overflow-x-auto.svelte-1v4qcr5::-webkit-scrollbar-thumb:hover{background:#64748b}\n";

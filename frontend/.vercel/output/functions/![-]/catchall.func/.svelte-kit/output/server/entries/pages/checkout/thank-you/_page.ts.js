@@ -1,1 +1,0 @@
-const n=!1,o=!0,c=async({url:e})=>{const s=e.searchParams.get("order"),t=e.searchParams.get("product"),a=e.searchParams.get("payment_intent"),r=e.searchParams.get("session_id");return{orderNumber:s,productName:t,paymentId:a,sessionId:r,purchaseTimestamp:Date.now()}};export{c as load,n as prerender,o as ssr};

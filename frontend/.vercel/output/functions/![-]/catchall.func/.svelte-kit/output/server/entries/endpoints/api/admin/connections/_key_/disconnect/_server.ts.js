@@ -1,1 +1,0 @@
-import{error as t,json as r}from"@sveltejs/kit";const o=new Map,i=async({params:c})=>{const{key:e}=c;try{if(!o.get(e))throw t(404,`No connection found for service '${e}'`);return o.delete(e),r({success:!0,data:{service_key:e,disconnected_at:new Date().toISOString()}})}catch(n){throw n instanceof Error&&"status"in n?n:t(500,"Failed to disconnect service")}};export{i as POST};
