@@ -13,7 +13,7 @@
 		IconInbox,
 		IconEye,
 		IconEyeOff
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
@@ -40,66 +40,68 @@
 	let particleAnimations: any[] = [];
 	let gsapLib: any = null;
 
-	onMount(async () => {
+	onMount(() => {
 		if (!browser) return;
 
-		// Dynamic GSAP import for SSR safety
-		const gsapModule = await import('gsap');
-		gsapLib = gsapModule.gsap || gsapModule.default;
+		// Dynamic GSAP import for SSR safety - use IIFE to handle async
+		(async () => {
+			const gsapModule = await import('gsap');
+			gsapLib = gsapModule.gsap || gsapModule.default;
 
-		// GSAP Timeline for entrance animations
-		mainTimeline = gsapLib.timeline({ defaults: { ease: 'power3.out' } });
+			// GSAP Timeline for entrance animations
+			mainTimeline = gsapLib.timeline({ defaults: { ease: 'power3.out' } });
 
-		if (cardRef) {
-			mainTimeline
-				.from(cardRef, {
-					opacity: 0,
-					y: 80,
-					scale: 0.85,
-					rotation: -5,
-					duration: 1.4,
-					ease: 'back.out(1.4)'
-				})
-				.from(
-					'.register-header',
-					{
+			if (cardRef) {
+				mainTimeline
+					.from(cardRef, {
 						opacity: 0,
-						y: -40,
-						duration: 0.9
-					},
-					'-=0.8'
-				)
-				.from(
-					'.form-field',
-					{
-						opacity: 0,
-						x: -50,
-						duration: 0.7,
-						stagger: 0.12
-					},
-					'-=0.5'
-				)
-				.from(
-					'.register-footer',
-					{
-						opacity: 0,
-						scale: 0.9,
-						duration: 0.6
-					},
-					'-=0.4'
-				);
-		}
+						y: 80,
+						scale: 0.85,
+						rotation: -5,
+						duration: 1.4,
+						ease: 'back.out(1.4)'
+					})
+					.from(
+						'.register-header',
+						{
+							opacity: 0,
+							y: -40,
+							duration: 0.9
+						},
+						'-=0.8'
+					)
+					.from(
+						'.form-field',
+						{
+							opacity: 0,
+							x: -50,
+							duration: 0.7,
+							stagger: 0.12
+						},
+						'-=0.5'
+					)
+					.from(
+						'.register-footer',
+						{
+							opacity: 0,
+							scale: 0.9,
+							duration: 0.6
+						},
+						'-=0.4'
+					);
+			}
 
-		// Create floating emerald particles
-		createEmeraldParticles();
+			// Create floating emerald particles
+			createEmeraldParticles();
 
-		// Sparkle effect on icon - tracked for cleanup
-		sparkleTimeline = gsapLib.timeline({ repeat: -1 });
-		sparkleTimeline.to('.sparkle-icon', {
-			rotation: 360,
-			duration: 3,
-			ease: 'none'
-		});
+			// Sparkle effect on icon - tracked for cleanup
+			sparkleTimeline = gsapLib.timeline({ repeat: -1 });
+			sparkleTimeline.to('.sparkle-icon', {
+				rotation: 360,
+				duration: 3,
+				ease: 'none'
+			});
+		})();
 
 		return cleanup;
 	});

@@ -212,10 +212,10 @@ export class PopupHeatmapTracker {
 		const formElements = this.popupElement.querySelectorAll('input, textarea, select');
 
 		formElements.forEach((element) => {
-			element.addEventListener('focus', this.handleFormFocus.bind(this));
-			element.addEventListener('blur', this.handleFormBlur.bind(this));
-			element.addEventListener('input', this.handleFormInput.bind(this));
-			element.addEventListener('change', this.handleFormChange.bind(this));
+			element.addEventListener('focus', this.handleFormFocus.bind(this) as EventListener);
+			element.addEventListener('blur', this.handleFormBlur.bind(this) as EventListener);
+			element.addEventListener('input', this.handleFormInput.bind(this) as EventListener);
+			element.addEventListener('change', this.handleFormChange.bind(this) as EventListener);
 		});
 	}
 
@@ -236,10 +236,10 @@ export class PopupHeatmapTracker {
 		// Remove form listeners
 		const formElements = this.popupElement.querySelectorAll('input, textarea, select');
 		formElements.forEach((element) => {
-			element.removeEventListener('focus', this.handleFormFocus.bind(this));
-			element.removeEventListener('blur', this.handleFormBlur.bind(this));
-			element.removeEventListener('input', this.handleFormInput.bind(this));
-			element.removeEventListener('change', this.handleFormChange.bind(this));
+			element.removeEventListener('focus', this.handleFormFocus.bind(this) as EventListener);
+			element.removeEventListener('blur', this.handleFormBlur.bind(this) as EventListener);
+			element.removeEventListener('input', this.handleFormInput.bind(this) as EventListener);
+			element.removeEventListener('change', this.handleFormChange.bind(this) as EventListener);
 		});
 	}
 

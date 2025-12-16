@@ -9,7 +9,7 @@
 		IconPlus,
 		IconTrash,
 		IconEdit
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let videos = $state<any[]>([]);

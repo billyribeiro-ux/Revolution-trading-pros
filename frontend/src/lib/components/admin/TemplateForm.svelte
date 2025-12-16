@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { emailTemplatesApi, AdminApiError } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
-	import { IconDeviceFloppy, IconX } from '@tabler/icons-svelte';
+	import { IconDeviceFloppy, IconX } from '$lib/icons';
 
 	interface Props {
 		template?: any;

@@ -11,7 +11,7 @@
 		error
 	} from '$lib/stores/crm';
 	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
-	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '@tabler/icons-svelte';
+	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
 
 	let forecastPeriod = 'this_month';
 	let forecast: { commit: number; best_case: number; pipeline: number; worst_case: number } | null =

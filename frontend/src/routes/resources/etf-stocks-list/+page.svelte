@@ -23,7 +23,7 @@
 		IconCheck,
 		IconX,
 		IconExternalLink
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Featured ETFs with full descriptions
 	const featuredETFs = [

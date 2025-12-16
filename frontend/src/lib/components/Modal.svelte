@@ -5,7 +5,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import { IconX } from '@tabler/icons-svelte';
+	import { IconX } from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;

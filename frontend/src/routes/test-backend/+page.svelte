@@ -3,7 +3,7 @@
 	import { submitForm, type Form } from '$lib/api/forms';
 	import { popupsApi, recordPopupImpression, recordPopupConversion } from '$lib/api/popups';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { IconMail, IconUser, IconCheck, IconAlertCircle } from '@tabler/icons-svelte';
+	import { IconMail, IconUser, IconCheck, IconAlertCircle } from '$lib/icons';
 
 	// Form state
 	let formData = {

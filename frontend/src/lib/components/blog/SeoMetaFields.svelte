@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconPlus } from '@tabler/icons-svelte';
+	import { IconX, IconPlus } from '$lib/icons';
 	
 	interface Props {
 		meta: any;

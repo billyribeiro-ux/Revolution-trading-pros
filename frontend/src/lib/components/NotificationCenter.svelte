@@ -32,7 +32,7 @@
 		IconAlertCircle,
 		IconSettings,
 		IconChevronRight
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Props {
 		isOpen?: boolean;

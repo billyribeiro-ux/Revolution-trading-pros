@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { couponsApi, AdminApiError } from '$lib/api/admin';
-	import { IconPlus, IconTicket, IconEdit, IconTrash } from '@tabler/icons-svelte';
+	import { IconPlus, IconTicket, IconEdit, IconTrash } from '$lib/icons';
 
 	let loading = true;
 	let coupons: any[] = [];

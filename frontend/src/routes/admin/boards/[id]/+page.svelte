@@ -34,7 +34,7 @@
 		IconPlayerPlay,
 		IconPlayerStop,
 		IconSubtask
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Get board ID from URL
 	const boardId = $derived($page.params.id);
@@ -104,8 +104,8 @@
 		return result;
 	});
 
-	onMount(async () => {
-		await loadBoard();
+	onMount(() => {
+		loadBoard();
 
 		// Check for task in URL query
 		const taskId = $page.url.searchParams.get('task');

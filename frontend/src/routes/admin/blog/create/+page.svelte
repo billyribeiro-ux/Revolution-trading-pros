@@ -177,28 +177,29 @@
 	// Convert blocks to HTML for backward compatibility
 	function blocksToHtml(blocks: Block[]): string {
 		return blocks.map(block => {
+			const content = block.content as any; // Type assertion for flexible content access
 			switch (block.type) {
 				case 'paragraph':
-					return `<p>${block.content.text || ''}</p>`;
+					return `<p>${content.text || ''}</p>`;
 				case 'heading':
-					const level = block.content.level || 2;
-					return `<h${level}>${block.content.text || ''}</h${level}>`;
+					const level = content.level || 2;
+					return `<h${level}>${content.text || ''}</h${level}>`;
 				case 'quote':
-					return `<blockquote>${block.content.text || ''}</blockquote>`;
+					return `<blockquote>${content.text || ''}</blockquote>`;
 				case 'list':
-					const items = block.content.items || [];
-					const listType = block.content.listType === 'ordered' ? 'ol' : 'ul';
+					const items = content.items || [];
+					const listType = content.listType === 'ordered' ? 'ol' : 'ul';
 					return `<${listType}>${items.map((item: string) => `<li>${item}</li>`).join('')}</${listType}>`;
 				case 'image':
-					return `<figure><img src="${block.content.src || ''}" alt="${block.content.alt || ''}" />${block.content.caption ? `<figcaption>${block.content.caption}</figcaption>` : ''}</figure>`;
+					return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
 				case 'code':
-					return `<pre><code class="language-${block.content.language || 'text'}">${block.content.code || ''}</code></pre>`;
+					return `<pre><code class="language-${content.language || 'text'}">${content.code || ''}</code></pre>`;
 				case 'separator':
 					return '<hr />';
 				case 'html':
-					return block.content.html || '';
+					return content.html || '';
 				default:
-					return block.content.text ? `<p>${block.content.text}</p>` : '';
+					return content.text ? `<p>${content.text}</p>` : '';
 			}
 		}).join('\n');
 	}

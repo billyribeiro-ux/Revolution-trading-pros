@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { resetPassword } from '$lib/api/auth';
-	import { IconLock, IconAlertCircle, IconCheck, IconShieldCheck, IconEye, IconEyeOff } from '@tabler/icons-svelte';
+	import { IconLock, IconAlertCircle, IconCheck, IconShieldCheck, IconEye, IconEyeOff } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 

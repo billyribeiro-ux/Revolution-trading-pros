@@ -19,7 +19,7 @@
 		IconArrowBackUp,
 		IconArrowForwardUp,
 		IconChevronDown
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Props {
 		content?: string;

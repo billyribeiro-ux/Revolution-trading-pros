@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { popupsApi } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups';
-	import { IconX } from '@tabler/icons-svelte';
+	import { IconX } from '$lib/icons';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	interface Props {

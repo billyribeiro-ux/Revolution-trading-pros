@@ -27,8 +27,8 @@
 
 	let stats = $state({
 		total: 0,
-		byLevel: {} as Record<string, number>,
-		byCategory: {} as Record<string, number>
+		by_level: {} as Record<string, number>,
+		by_category: {} as Record<string, number>
 	});
 
 	async function loadLogs() {
@@ -167,7 +167,7 @@
 				<IconAlertCircle size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{(stats.byLevel?.error || 0).toLocaleString()}</span>
+				<span class="stat-value">{(stats.by_level?.error || 0).toLocaleString()}</span>
 				<span class="stat-label">Errors</span>
 			</div>
 		</div>
@@ -176,7 +176,7 @@
 				<IconAlertTriangle size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{(stats.byLevel?.warning || 0).toLocaleString()}</span>
+				<span class="stat-value">{(stats.by_level?.warning || 0).toLocaleString()}</span>
 				<span class="stat-label">Warnings</span>
 			</div>
 		</div>
@@ -185,7 +185,7 @@
 				<IconExclamationCircle size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{(stats.byLevel?.critical || 0).toLocaleString()}</span>
+				<span class="stat-value">{(stats.by_level?.critical || 0).toLocaleString()}</span>
 				<span class="stat-label">Critical</span>
 			</div>
 		</div>

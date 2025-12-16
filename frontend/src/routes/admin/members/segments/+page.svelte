@@ -21,7 +21,7 @@
 		IconCurrencyDollar,
 		IconCalendar,
 		IconTrendingUp
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let loading = true;

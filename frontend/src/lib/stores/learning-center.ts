@@ -175,7 +175,7 @@ function createLearningCenterStore() {
 		/**
 		 * Load a specific lesson with context
 		 */
-		async loadLesson(lessonId: number) {
+		async loadLesson(lessonId: string) {
 			update((state) => ({ ...state, isLoading: true, error: null }));
 
 			try {
@@ -195,7 +195,7 @@ function createLearningCenterStore() {
 					...state,
 					currentLesson: data.lesson,
 					currentCourse: data.course,
-					currentModule: data.module,
+					currentModule: data.module as CourseModule | null,
 					previousLesson: data.previousLesson,
 					nextLesson: data.nextLesson,
 					isLoading: false
@@ -212,7 +212,7 @@ function createLearningCenterStore() {
 		/**
 		 * Set the current lesson from local data (faster than API call)
 		 */
-		setCurrentLesson(lessonId: number) {
+		setCurrentLesson(lessonId: string) {
 			update((state) => {
 				const lesson = state.allLessons.find((l) => l.id === lessonId);
 				if (!lesson) return state;
@@ -251,7 +251,7 @@ function createLearningCenterStore() {
 		/**
 		 * Update lesson watch progress
 		 */
-		async updateProgress(lessonId: number, watchedSeconds: number) {
+		async updateProgress(lessonId: string, watchedSeconds: number) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -281,7 +281,7 @@ function createLearningCenterStore() {
 		/**
 		 * Mark a lesson as complete
 		 */
-		async markComplete(lessonId: number) {
+		async markComplete(lessonId: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -341,7 +341,7 @@ function createLearningCenterStore() {
 		/**
 		 * Mark a lesson as incomplete
 		 */
-		async markIncomplete(lessonId: number) {
+		async markIncomplete(lessonId: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -428,7 +428,7 @@ function createLearningCenterStore() {
 		/**
 		 * Record a video view
 		 */
-		async recordView(videoId: number) {
+		async recordView(videoId: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -458,7 +458,7 @@ function createLearningCenterStore() {
 		/**
 		 * Save notes for current lesson
 		 */
-		async saveNotes(lessonId: number, notes: string) {
+		async saveNotes(lessonId: string, notes: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;

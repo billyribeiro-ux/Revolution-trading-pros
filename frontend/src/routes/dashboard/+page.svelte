@@ -27,7 +27,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { IconUsers, IconRefresh, IconAlertTriangle, IconArrowRight } from '@tabler/icons-svelte';
+	import { IconUsers, IconRefresh, IconAlertTriangle, IconArrowRight } from '$lib/icons';
 	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
 	import {

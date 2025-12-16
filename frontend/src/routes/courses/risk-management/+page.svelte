@@ -9,7 +9,7 @@
 		IconCheck,
 		IconBolt,
 		IconTrendingUp
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let heroVisible = false;
 

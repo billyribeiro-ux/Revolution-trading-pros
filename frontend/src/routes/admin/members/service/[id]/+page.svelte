@@ -20,7 +20,7 @@
 		IconSend,
 		IconCrown,
 		IconChartBar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let serviceId = $derived(Number($page.params.id));
 

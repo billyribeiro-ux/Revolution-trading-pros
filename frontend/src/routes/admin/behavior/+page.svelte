@@ -3,8 +3,8 @@
 	import {
 		IconEye,
 		IconClick,
-		IconCursorText,
-		IconMouse,
+		IconCursor,
+		IconPointer,
 		IconDevices,
 		IconWorld,
 		IconClock,
@@ -13,10 +13,9 @@
 		IconRefresh,
 		IconCalendar,
 		IconArrowUpRight,
-		IconArrowDownRight,
-		IconPlayerPlay,
+		IconPlay,
 		IconFilter
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, isBehaviorConnected } from '$lib/stores/connections';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
@@ -184,7 +183,7 @@
 
 		<div class="metric-card">
 			<div class="metric-icon green">
-				<IconMouse size={24} />
+				<IconPointer size={24} />
 			</div>
 			<div class="metric-content">
 				<span class="metric-value">{metrics.scrollDepth}%</span>
@@ -205,14 +204,14 @@
 				<span class="metric-label">Click Rate</span>
 			</div>
 			<div class="metric-trend negative">
-				<IconArrowDownRight size={14} />
+				<IconArrowUpRight size={14} />
 				<span>1.2%</span>
 			</div>
 		</div>
 
 		<div class="metric-card">
 			<div class="metric-icon pink">
-				<IconCursorText size={24} />
+				<IconCursor size={24} />
 			</div>
 			<div class="metric-content">
 				<span class="metric-value">{metrics.heatmapViews.toLocaleString()}</span>
@@ -263,14 +262,14 @@
 		<div class="panel">
 			<div class="panel-header">
 				<h3>
-					<IconMouse size={20} />
+					<IconPointer size={20} />
 					Scroll Depth by Page
 				</h3>
 			</div>
 			<div class="panel-content">
 				{#if topScrolls.length === 0}
 					<div class="empty-state">
-						<IconMouse size={32} />
+						<IconPointer size={32} />
 						<p>No scroll data available yet</p>
 					</div>
 				{:else}
@@ -296,7 +295,7 @@
 		<div class="panel full-width">
 			<div class="panel-header">
 				<h3>
-					<IconPlayerPlay size={20} />
+					<IconPlay size={20} />
 					Recent Session Recordings
 				</h3>
 				<a href="/admin/analytics/recordings" class="panel-link">View All</a>
@@ -304,7 +303,7 @@
 			<div class="panel-content">
 				{#if recordings.length === 0}
 					<div class="empty-state">
-						<IconPlayerPlay size={32} />
+						<IconPlay size={32} />
 						<p>No session recordings available</p>
 						<span class="empty-hint">Session recordings help you understand user behavior</span>
 					</div>
@@ -313,7 +312,7 @@
 						{#each recordings as recording}
 							<div class="recording-card">
 								<div class="recording-preview">
-									<IconPlayerPlay size={24} />
+									<IconPlay size={24} />
 								</div>
 								<div class="recording-info">
 									<span class="recording-duration">{recording.duration}</span>
@@ -321,7 +320,7 @@
 									<span class="recording-date">{recording.date}</span>
 								</div>
 								<button class="btn-play">
-									<IconPlayerPlay size={16} />
+									<IconPlay size={16} />
 									Watch
 								</button>
 							</div>

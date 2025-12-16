@@ -14,7 +14,7 @@
 		IconAlertTriangle,
 		IconBulb,
 		IconTarget
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Insight {
 		id: string;

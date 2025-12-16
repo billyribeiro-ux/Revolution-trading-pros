@@ -12,7 +12,7 @@
 		IconClick,
 		IconChartBar,
 		IconExternalLink
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
 

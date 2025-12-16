@@ -12,7 +12,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { getAuthStoreToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth';
 
 	interface Props {
 		formId?: number;
@@ -65,7 +65,7 @@
 		exporting = true;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const params = new URLSearchParams({
 				format: exportFormat,
 				type: exportType,
@@ -108,7 +108,7 @@
 		importResult = null;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const formData = new FormData();
 			formData.append('file', importFile);
 			formData.append('source', importSource);
@@ -152,7 +152,7 @@
 		if (!templateName) return;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/export?format=template`, {
 				method: 'POST',
 				headers: {
@@ -230,7 +230,7 @@
 								class="format-btn"
 								class:selected={exportFormat === format.value}
 								onclick={() => (exportFormat = format.value)}
-								disabled={(exportType === 'submissions' || exportType === 'all') && format.value === 'json' && exportType !== 'form'}
+								disabled={exportType !== 'form' && format.value === 'json'}
 							>
 								<span class="format-icon">{format.icon}</span>
 								<span class="format-label">{format.label}</span>

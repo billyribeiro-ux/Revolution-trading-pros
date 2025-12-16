@@ -19,7 +19,7 @@
 		IconChevronDown,
 		IconCheck,
 		IconLoader
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast';
 
 	interface Props {

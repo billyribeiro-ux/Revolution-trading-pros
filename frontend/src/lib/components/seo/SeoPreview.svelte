@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconSearch, IconBrandGoogle } from '@tabler/icons-svelte';
+	import { IconSearch, IconBrandGoogle } from '$lib/icons';
 
 	interface Props {
 		title?: string;

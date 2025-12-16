@@ -12,7 +12,7 @@
 		IconFilter,
 		IconDownload,
 		IconRefresh
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let timeEntries = $state<TimeEntry[]>([]);

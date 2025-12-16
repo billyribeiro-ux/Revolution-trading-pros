@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconInbox, IconPlus } from '@tabler/icons-svelte';
+	import { IconInbox, IconPlus } from '$lib/icons';
 
 	interface Props {
 		title: string;

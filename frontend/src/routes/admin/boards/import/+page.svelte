@@ -13,7 +13,7 @@
 		IconX,
 		IconLoader,
 		IconAlertCircle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let selectedSource = $state<ImportSource | null>(null);

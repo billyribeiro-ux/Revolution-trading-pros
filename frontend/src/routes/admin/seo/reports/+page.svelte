@@ -11,7 +11,7 @@
 		IconCheck,
 		IconX,
 		IconDownload
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		reportTemplates,
 		generatedReports,

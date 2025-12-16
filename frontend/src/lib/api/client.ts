@@ -125,6 +125,7 @@ export interface RequestConfig {
 	batch?: boolean;
 	optimistic?: boolean;
 	transform?: (data: any) => any;
+	responseType?: 'json' | 'blob' | 'text' | 'arraybuffer';
 }
 
 export interface RetryConfig {

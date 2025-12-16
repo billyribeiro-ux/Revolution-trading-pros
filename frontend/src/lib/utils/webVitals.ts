@@ -352,7 +352,7 @@ function observeINP(options: WebVitalsOptions): void {
 		}
 	});
 
-	observer.observe({ type: 'event', buffered: true, durationThreshold: 40 });
+	observer.observe({ type: 'event', buffered: true, durationThreshold: 40 } as PerformanceObserverInit);
 
 	// Report on page hide
 	const reportINP = () => {

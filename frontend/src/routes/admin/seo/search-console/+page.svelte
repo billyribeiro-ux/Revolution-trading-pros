@@ -6,7 +6,7 @@
 		IconDownload,
 		IconPlugConnected,
 		IconPlugConnectedX
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let status: any = null;
 	let sites: any[] = [];

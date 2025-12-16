@@ -38,7 +38,7 @@
 		IconArrowRight,
 		IconCheck,
 		IconLoader
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Import new components
 	import TypedHeadline from './TypedHeadline.svelte';

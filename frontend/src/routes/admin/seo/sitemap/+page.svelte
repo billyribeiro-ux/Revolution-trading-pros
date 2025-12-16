@@ -7,7 +7,7 @@
 		IconFileText,
 		IconCheck,
 		IconX
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let stats: any = null;
 	let generating = false;

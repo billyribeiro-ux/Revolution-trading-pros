@@ -25,7 +25,7 @@
 		IconX,
 		IconSend,
 		IconUpload
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { membersApi } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast';
 

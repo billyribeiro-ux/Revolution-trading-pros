@@ -25,7 +25,7 @@
 		IconBriefcase,
 		IconSend,
 		IconLoader
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	import type { EditorState, AIWritingRequest } from './types';
 

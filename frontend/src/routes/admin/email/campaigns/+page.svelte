@@ -25,7 +25,7 @@
 		IconCopy,
 		IconTrendingUp,
 		IconArrowLeft
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		getCampaigns,
 		getCampaignStats,

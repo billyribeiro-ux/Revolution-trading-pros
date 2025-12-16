@@ -77,15 +77,15 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Normalize product type
-	let normalizedType = $derived((): MembershipType => {
+	let normalizedType = $derived.by((): MembershipType => {
 		if (productType === 'membership' || productType === 'alert-service') {
 			return 'alert-service';
 		}
 		return productType as MembershipType;
 	});
 
-	// Check if item is already in cart
-	let isInCart = $derived(cartStore.hasItem(productId, interval));
+	// Check if item is already in cart (filter out 'lifetime' as cart doesn't support it)
+	let isInCart = $derived(cartStore.hasItem(productId, interval === 'lifetime' ? undefined : interval));
 
 	// Determine button state
 	let isDisabled = $derived(
@@ -176,6 +176,9 @@
 						? 'membership'
 						: 'alert-service';
 
+		// Filter out 'lifetime' interval as cart store only supports monthly/quarterly/yearly
+		const cartInterval = interval === 'lifetime' ? undefined : interval;
+
 		const added = cartStore.addItem({
 			id: productId,
 			name: productName,
@@ -184,7 +187,7 @@
 			type: cartType,
 			thumbnail,
 			image,
-			interval,
+			interval: cartInterval,
 			productSlug
 		});
 

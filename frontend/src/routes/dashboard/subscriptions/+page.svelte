@@ -16,7 +16,7 @@
 		IconX,
 		IconChevronRight,
 		IconAlertCircle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Redirect if not authenticated
 	onMount(() => {

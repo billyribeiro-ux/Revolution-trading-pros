@@ -14,7 +14,7 @@
 	import { browser } from '$app/environment';
 	import { log } from '$lib/api/enterprise/tracing';
 	import { getUserFriendlyMessage, serializeError } from '$lib/api/enterprise/errors';
-	import { IconAlertTriangle, IconRefresh } from '@tabler/icons-svelte';
+	import { IconAlertTriangle, IconRefresh } from '$lib/icons';
 
 	// Props
 	interface Props {

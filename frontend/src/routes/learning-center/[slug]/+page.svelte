@@ -23,7 +23,7 @@
 		IconBookmark,
 		IconDownload,
 		IconArrowLeft
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════

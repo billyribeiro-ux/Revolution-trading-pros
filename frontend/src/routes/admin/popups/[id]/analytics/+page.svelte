@@ -12,7 +12,7 @@
 		IconClick,
 		IconDevices,
 		IconCalendar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	const popupId = parseInt($page.params.id);
 

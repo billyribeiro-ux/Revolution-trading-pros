@@ -34,7 +34,7 @@
 		IconTarget,
 		IconBrain,
 		IconAlertTriangle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let selectedTab: 'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue' =
 		'overview';

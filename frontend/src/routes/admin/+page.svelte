@@ -27,7 +27,6 @@
 		IconClick,
 		IconClock,
 		IconArrowUpRight,
-		IconArrowDownRight,
 		IconWorld,
 		IconBrandGoogle,
 		IconLink,
@@ -40,11 +39,9 @@
 		IconDevices,
 		IconBrowser,
 		IconDeviceMobile,
-		IconDeviceDesktopAnalytics,
-		IconFileAnalytics,
 		IconExternalLink,
 		IconPlugConnected
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { browser } from '$app/environment';
 	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
 
@@ -403,11 +400,7 @@
 								</span>
 								{#if metric.value !== null && metric.change !== 0}
 									<div class="metric-trend" class:positive={metric.trend === 'up'} class:negative={metric.trend === 'down'}>
-										{#if metric.trend === 'up'}
-											<IconArrowUpRight size={14} />
-										{:else}
-											<IconArrowDownRight size={14} />
-										{/if}
+										<IconArrowUpRight size={14} />
 										<span>{Math.abs(metric.change).toFixed(1)}%</span>
 									</div>
 								{/if}
@@ -544,11 +537,7 @@
 						<div class="seo-metric-value">{seoMetrics.avgPosition.value !== null ? seoMetrics.avgPosition.value.toFixed(1) : '—'}</div>
 						{#if seoMetrics.avgPosition.value !== null && seoMetrics.avgPosition.change !== 0}
 							<div class="seo-metric-change" class:positive={seoMetrics.avgPosition.change < 0} class:negative={seoMetrics.avgPosition.change > 0}>
-								{#if seoMetrics.avgPosition.change < 0}
-									<IconArrowUpRight size={12} />
-								{:else}
-									<IconArrowDownRight size={12} />
-								{/if}
+								<IconArrowUpRight size={12} />
 								{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
 							</div>
 						{/if}

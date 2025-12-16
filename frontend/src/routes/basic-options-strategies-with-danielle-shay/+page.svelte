@@ -18,7 +18,7 @@
 		IconArrowRight,
 		IconChevronRight,
 		IconStar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import '$lib/styles/st-icons.css';
 
 	// Course data

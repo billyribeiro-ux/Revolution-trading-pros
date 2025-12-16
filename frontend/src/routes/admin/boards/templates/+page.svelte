@@ -15,7 +15,7 @@
 		IconRocket,
 		IconBook,
 		IconChartBar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let templates = $state<BoardTemplate[]>([]);
@@ -192,7 +192,7 @@
 		}
 	}
 
-	let filteredTemplates = $derived(() => {
+	let filteredTemplates = $derived.by(() => {
 		return templates.filter(t => {
 			if (searchQuery) {
 				const query = searchQuery.toLowerCase();

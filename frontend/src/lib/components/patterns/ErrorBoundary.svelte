@@ -5,7 +5,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { IconAlertTriangle, IconRefresh } from '@tabler/icons-svelte';
+	import { IconAlertTriangle, IconRefresh } from '$lib/icons';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

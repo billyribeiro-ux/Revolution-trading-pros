@@ -19,7 +19,7 @@
 		IconExternalLink,
 		IconChartBar,
 		IconBuildingSkyscraper
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Major Stock Indexes with detailed info
 	const majorIndexes = [

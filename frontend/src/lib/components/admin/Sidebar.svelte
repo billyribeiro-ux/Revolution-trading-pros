@@ -9,7 +9,7 @@
 		IconError404,
 		IconSettings,
 		IconLogout
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { authStore } from '$lib/stores/auth';
 	import { goto } from '$app/navigation';
 

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { IconCheck, IconX, IconUser } from '@tabler/icons-svelte';
+	import { IconCheck, IconX, IconUser } from '$lib/icons';
 
 	let loading = $state(true);
 	let saving = $state(false);

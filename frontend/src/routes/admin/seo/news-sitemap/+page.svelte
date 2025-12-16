@@ -7,7 +7,7 @@
 		IconCheck,
 		IconX,
 		IconClock
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let articles = $state<any[]>([]);

@@ -63,7 +63,7 @@
 		IconHistory,
 		IconDownload,
 		IconUpload
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	import type {
 		Block,
@@ -170,6 +170,9 @@
 
 	// AI State
 	let aiPanelOpen = $state(false);
+
+	// Revisions State
+	let revisions = $state<Revision[]>([]);
 
 	// Refs
 	let editorContainer: HTMLDivElement;
@@ -770,10 +773,11 @@
 			issues,
 			suggestions,
 			keywordDensity,
-			readabilityScore: Math.round(readabilityScore),
-			readabilityGrade,
+			readabilityScore: readabilityGrade,
+			readabilityGrade: Math.round(readabilityScore),
 			wordCount: words.length,
 			estimatedReadTime: readTime,
+			readingTime: readTime,
 			headingStructure: [],
 			linksCount: { internal: 0, external: 0 },
 			imagesWithoutAlt
@@ -1088,11 +1092,11 @@
 					/>
 				{:else if editorState.sidebarTab === 'seo'}
 					<SEOAnalyzer
-						analysis={seoAnalysis}
-						{postTitle}
+						title={postTitle}
+						content={getPlainTextContent(editorState.blocks)}
 						{metaDescription}
 						{focusKeyword}
-						onrefresh={runSEOAnalysis}
+						slug={postSlug}
 					/>
 				{/if}
 			</div>
@@ -1199,7 +1203,7 @@
 									{block}
 									isSelected={block.id === editorState.selectedBlockId}
 									isEditing={editorState.viewMode === 'edit'}
-									onupdate={(updates) => updateBlock(block.id, updates)}
+									onUpdate={(updates) => updateBlock(block.id, updates)}
 								/>
 
 								<!-- Add Block Between Button -->
@@ -1227,7 +1231,7 @@
 	<BlockInserter
 		isModal={true}
 		position={inserterPosition}
-		searchQuery={searchQuery}
+		{searchQuery}
 		oninsert={(type) => {
 			addBlock(type, inserterIndex);
 			showBlockInserter = false;
@@ -1238,19 +1242,19 @@
 
 <!-- Keyboard Shortcuts Modal -->
 {#if showKeyboardHelp}
-	<KeyboardShortcuts onclose={() => showKeyboardHelp = false} />
+	<KeyboardShortcuts isOpen={showKeyboardHelp} onClose={() => showKeyboardHelp = false} />
 {/if}
 
 <!-- Revision History Modal -->
 {#if showRevisions}
 	<RevisionHistory
-		blocks={editorState.blocks}
-		onrestore={(blocks) => {
+		currentBlocks={editorState.blocks}
+		{revisions}
+		onRestore={(revision) => {
 			pushToHistory();
-			editorState.blocks = blocks;
+			editorState.blocks = revision.blocks;
 			showRevisions = false;
 		}}
-		onclose={() => showRevisions = false}
 	/>
 {/if}
 

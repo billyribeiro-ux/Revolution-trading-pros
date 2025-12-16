@@ -11,7 +11,7 @@
 		IconBrandYoutube,
 		IconBrandLinkedin,
 		IconBrandDiscord
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	const currentYear = new Date().getFullYear();
 

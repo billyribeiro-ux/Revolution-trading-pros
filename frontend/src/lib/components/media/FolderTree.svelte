@@ -8,7 +8,7 @@
 <script lang="ts">
 	import { mediaStore, currentFolders } from '$lib/stores/media';
 	import type { MediaFolder } from '$lib/api/media';
-	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '@tabler/icons-svelte';
+	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
 
 	interface Props {
 		currentFolderId?: string | null;

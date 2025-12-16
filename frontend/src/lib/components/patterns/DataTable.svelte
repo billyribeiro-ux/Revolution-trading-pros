@@ -11,7 +11,7 @@
 		IconSortDescending,
 		IconArrowLeft,
 		IconArrowRight
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 
 	interface Column {

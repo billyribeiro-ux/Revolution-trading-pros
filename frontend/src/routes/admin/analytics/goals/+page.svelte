@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconTarget, IconPlus, IconEdit, IconTrash, IconTrendingUp, IconCheck } from '@tabler/icons-svelte';
+	import { IconTarget, IconPlus, IconEdit, IconTrash, IconTrendingUp, IconCheck } from '$lib/icons';
 
 	let goals: any[] = [];
 </script>
