@@ -3,97 +3,23 @@
     import { spring } from 'svelte/motion';
     import { gsap } from 'gsap';
     import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-    import { TextPlugin } from 'gsap/dist/TextPlugin'; // Assuming available, otherwise standard opacity
-    import SEOHead from '$lib/components/SEOHead.svelte';
+    import { TextPlugin } from 'gsap/dist/TextPlugin';
+    import { browser } from '$app/environment';
+    import type { PageData } from './$types';
 
     /**
-     * Svelte 5 Runes & State
+     * Svelte 5 Runes & SSR/SSG Pattern
      */
+    let { data }: { data: PageData } = $props();
     let mounted = $state(false);
-
-    /**
-     * Data: Trading Rooms (Preserved)
-     */
-    const rooms = [
-        {
-            id: 'day-trading',
-            iconType: 'volatility',
-            name: 'Day Trading Command',
-            tagline: 'Trade the Open with Professionals',
-            description: 'High-velocity execution. Join expert traders for the opening bell, real-time scanners, and rapid-fire trade calls.',
-            liveCount: 842,
-            features: [
-                'Daily Live Session (9:30 AM - 12:00 PM ET)',
-                'Institutional Order Flow Analysis',
-                'Screen Share & Voice Comms',
-                'Gap Scanner & Pre-Market Prep',
-                'Private Discord Community'
-            ],
-            price: { monthly: 247, quarterly: 597, annual: 1897 },
-            accent: 'cyan',
-            badge: 'MOST POPULAR'
-        },
-        {
-            id: 'swing-trading',
-            iconType: 'trend',
-            name: 'Swing Alpha Room',
-            tagline: 'Catch Multi-Day Moves',
-            description: 'Strategic positioning for 3-7 day holds. Perfect for those who cannot watch the screen all day but want institutional returns.',
-            liveCount: 1250,
-            features: [
-                'Weekly Deep-Dive Strategy Session',
-                'Sunday Night Watchlist Blueprint',
-                'Risk/Reward Position Sizing',
-                'Private Analyst Chat',
-                'Weekend Market Prep'
-            ],
-            price: { monthly: 197, quarterly: 497, annual: 1497 },
-            accent: 'emerald',
-            badge: ''
-        },
-        {
-            id: 'small-accounts',
-            iconType: 'growth',
-            name: 'Growth Accelerator',
-            tagline: 'Small Account → Big Future',
-            description: 'The disciplined path to $25K and beyond. Learn risk management and compounding strategies specifically for smaller capital bases.',
-            liveCount: 430,
-            features: [
-                'Under $25K Specific Strategies',
-                'Strict Risk Management Rules',
-                'Account Builder Roadmap',
-                'Live Mentorship Q&A',
-                'Community Support'
-            ],
-            price: { monthly: 147, quarterly: 397, annual: 1197 },
-            accent: 'amber',
-            badge: 'BEGINNER FRIENDLY'
-        }
-    ];
-
-    /**
-     * Data: Benefits (Preserved)
-     */
-    const benefits = [
-        { iconType: 'analysis', title: 'Institutional Mentorship', desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.' },
-        { iconType: 'radar', title: 'Sub-Second Alerts', desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.' },
-        { iconType: 'strategy', title: 'Continuous Education', desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.' },
-        { iconType: 'network', title: 'Elite Community', desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.' }
-    ];
-
-    /**
-     * Data: Ticker Symbols (Preserved)
-     */
-    const symbols = [
-        { sym: 'SPY', price: '478.22', change: '+0.45%', up: true },
-        { sym: 'QQQ', price: '408.12', change: '+0.82%', up: true },
-        { sym: 'IWM', price: '198.40', change: '-0.12%', up: false },
-        { sym: 'NVDA', price: '492.11', change: '+2.30%', up: true },
-        { sym: 'TSLA', price: '245.50', change: '-1.20%', up: false },
-        { sym: 'AMD', price: '138.00', change: '+1.05%', up: true },
-        { sym: 'BTC', price: '42,100', change: '+1.2%', up: true },
-    ];
-    const tickerItems = [...symbols, ...symbols, ...symbols, ...symbols];
+    
+    // Use server-loaded data for SSR/SSG
+    let rooms = $derived(data.rooms);
+    let benefits = $derived(data.benefits);
+    let symbols = $derived(data.symbols);
+    let seo = $derived(data.seo);
+    let structuredData = $derived(data.structuredData);
+    let tickerItems = $derived([...symbols, ...symbols, ...symbols, ...symbols]);
 
     /**
      * Action: 3D Tilt Effect
@@ -142,78 +68,210 @@
 
     onMount(() => {
         mounted = true;
-        gsap.registerPlugin(ScrollTrigger);
         
-        const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+        // SSR-safe pattern: Only initialize animations in browser
+        if (!browser) return;
 
-        // --- Cinematic Hero Sequence ---
+        // Async GSAP initialization with proper cleanup
+        let cleanupAnimations = () => {};
         
-        // 1. Initial State
-        gsap.set('.hero-line', { scaleX: 0, opacity: 0 });
-        gsap.set('.hero-grid-plane', { opacity: 0, rotateX: 60, y: 100 });
-        gsap.set('.hero-chart-path', { strokeDasharray: 2000, strokeDashoffset: 2000 });
-        gsap.set('.hero-floater', { opacity: 0, z: -500 });
+        (async () => {
+            try {
+                // Dynamic imports for SSR safety
+                const gsapModule = await import('gsap');
+                const scrollTriggerModule = await import('gsap/dist/ScrollTrigger');
+                const textPluginModule = await import('gsap/dist/TextPlugin');
+                
+                const gsap = gsapModule.gsap;
+                const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+                const TextPlugin = textPluginModule.TextPlugin;
+                
+                // Register plugins
+                gsap.registerPlugin(ScrollTrigger, TextPlugin);
+                
+                // Hero Timeline with better performance
+                const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-        // 2. The "Power On" Effect
-        tl.to('.hero-line', { scaleX: 1, opacity: 1, duration: 1.2, ease: 'expo.inOut' })
-          .to('.hero-grid-plane', { opacity: 0.4, y: 0, duration: 1.5 }, '-=0.8')
-          
-          // 3. Text & Badge Reveal
-          .fromTo('.hero-badge', 
-              { y: -30, opacity: 0, filter: 'blur(10px)' }, 
-              { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.8 }, 
-              '-=1'
-          )
-          .fromTo('.hero-title-line', 
-              { y: 80, opacity: 0, rotateX: -20 }, 
-              { y: 0, opacity: 1, rotateX: 0, stagger: 0.15, duration: 1.2, ease: 'back.out(1.2)' }, 
-              '-=0.8'
-          )
-          .fromTo('.hero-desc', 
-              { opacity: 0, y: 20 }, 
-              { opacity: 1, y: 0, duration: 0.8 }, 
-              '-=0.8'
-          )
+                tl.fromTo('.hero-title',
+                    { opacity: 0, y: 60 },
+                    { opacity: 1, y: 0, duration: 1.2 }
+                )
+                .fromTo('.hero-subtitle',
+                    { opacity: 0, y: 40 },
+                    { opacity: 1, y: 0, duration: 1 }, '-=0.8'
+                )
+                .fromTo('.hero-grid-plane',
+                    { opacity: 0 },
+                    { opacity: 0.4, duration: 2 }, '-=1.5'
+                )
+                .fromTo('.hero-chart',
+                    { opacity: 0, scale: 0.95 },
+                    { opacity: 0.6, scale: 1, duration: 1.5 }, '-=1'
+                );
 
-          // 4. Holographic Chart Draw
-          .to('.hero-chart-path', { strokeDashoffset: 0, duration: 2.5, ease: 'power2.inOut' }, '-=1.5')
-          
-          // 5. Floating Data Particles
-          .to('.hero-floater', { opacity: 0.6, z: 0, stagger: { amount: 1, from: "random" }, duration: 2 }, '-=2');
+                // Floating Particles with performance optimization
+                gsap.fromTo('.particle',
+                    { opacity: 0, scale: 0 },
+                    { opacity: 0.8, scale: 1, duration: 1, stagger: 0.1 }
+                );
 
-        // --- Room Cards Entrance ---
-        gsap.fromTo(gridRef.children, 
-            { y: 100, opacity: 0 }, 
-            { 
-                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
-                scrollTrigger: { trigger: gridRef, start: 'top 85%' }
+                // Room Cards ScrollTrigger with intersection optimization
+                const roomCardsTrigger = ScrollTrigger.create({
+                    trigger: '.rooms-grid',
+                    start: 'top 80%',
+                    onEnter: () => {
+                        gsap.fromTo('.room-card',
+                            { opacity: 0, y: 80 },
+                            {
+                                opacity: 1, y: 0, duration: 0.8,
+                                stagger: 0.2, ease: 'power2.out'
+                            }
+                        );
+                    }
+                });
+
+                // Benefits ScrollTrigger
+                const benefitsTrigger = ScrollTrigger.create({
+                    trigger: '.benefits-grid',
+                    start: 'top 85%',
+                    onEnter: () => {
+                        gsap.fromTo('.benefit-card',
+                            { opacity: 0, y: 60 },
+                            {
+                                opacity: 1, y: 0, duration: 0.8,
+                                stagger: 0.15, ease: 'power2.out'
+                            }
+                        );
+                    }
+                });
+
+                // CTA ScrollTrigger
+                const ctaTrigger = ScrollTrigger.create({
+                    trigger: ctaRef,
+                    start: 'top 85%',
+                    onEnter: () => {
+                        gsap.fromTo(ctaRef,
+                            { scale: 0.95, opacity: 0 },
+                            { scale: 1, opacity: 1, duration: 0.8 }
+                        );
+                    }
+                });
+
+                // Cleanup function for proper hydration
+                cleanupAnimations = () => {
+                    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                    gsap.killTweensOf('*');
+                };
+                
+            } catch (error) {
+                console.warn('[Live Trading Rooms] Animation initialization failed:', error);
             }
-        );
-
-        // --- Benefits Entrance ---
-        gsap.fromTo(benefitsRef.children, 
-            { y: 40, opacity: 0 },
-            {
-                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
-                scrollTrigger: { trigger: benefitsRef, start: 'top 80%', toggleActions: 'play none none reverse' }
-            }
-        );
-
-        // --- CTA Entrance ---
-        gsap.fromTo(ctaRef,
-            { scale: 0.95, opacity: 0 },
-            {
-                scale: 1, opacity: 1, duration: 0.8,
-                scrollTrigger: { trigger: ctaRef, start: 'top 85%' }
-            }
-        );
+        })();
+        
+        // Return cleanup function for proper unmounting
+        return () => {
+            cleanupAnimations();
+        };
     });
 </script>
 
-<SEOHead
-    title="Live Trading Rooms | Revolution Trading Pros"
-    description="Join our live trading rooms. Day trading, swing trading, and small account strategies with real-time alerts."
-/>
+<svelte:head>
+    <!-- Language & Locale -->
+    <html lang="en"></html>
+    <meta charset="UTF-8" />
+    <meta name="geo.region" content="US" />
+    <meta name="geo.placename" content="United States" />
+    
+    <!-- Basic Meta Tags - Using server-loaded SEO data -->
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <meta name="keywords" content={seo.keywords} />
+    <meta name="author" content="Revolution Trading Pros" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={seo.canonical} />
+    
+    <!-- Open Graph Meta Tags - Using server-loaded data -->
+    <meta property="og:title" content={seo.openGraph.title} />
+    <meta property="og:description" content={seo.openGraph.description} />
+    <meta property="og:type" content={seo.openGraph.type} />
+    <meta property="og:url" content={seo.openGraph.url} />
+    <meta property="og:site_name" content={seo.openGraph.siteName} />
+    <meta property="og:image" content={seo.openGraph.images[0].url} />
+    <meta property="og:image:width" content={seo.openGraph.images[0].width} />
+    <meta property="og:image:height" content={seo.openGraph.images[0].height} />
+    <meta property="og:image:alt" content={seo.openGraph.images[0].alt} />
+    
+    <!-- Twitter Card Meta Tags - Using server-loaded data -->
+    <meta name="twitter:card" content={seo.twitter.card} />
+    <meta name="twitter:title" content={seo.twitter.title} />
+    <meta name="twitter:description" content={seo.twitter.description} />
+    <meta name="twitter:image" content={seo.twitter.images[0]} />
+    <meta name="twitter:site" content={seo.twitter.site} />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#050505" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Performance & Security - Google December 2025 Requirements -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()" />
+    
+    <!-- Google December 2025 E-E-A-T Signals -->
+    <meta name="author" content={seo.author} />
+    <meta name="publisher" content={seo.publisher} />
+    <meta name="article:author" content={seo.openGraph.article.author} />
+    <meta name="article:published_time" content={seo.openGraph.article.publishedTime} />
+    <meta name="article:modified_time" content={seo.openGraph.article.modifiedTime} />
+    <meta name="article:section" content={seo.openGraph.article.section} />
+    <meta name="article:tag" content={seo.openGraph.article.tag} />
+    
+    <!-- Expertise Signals -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    
+    <!-- Trust Signals -->
+    <link rel="alternate" hreflang="en" href="https://revolution-trading-pros.com/live-trading-rooms" />
+    <link rel="me" href="https://twitter.com/revolutiontrading" type="text/html" />
+    <link rel="me" href="mailto:support@revolution-trading-pros.com" />
+    
+    <!-- Content Classification -->
+    <meta name="rating" content="general" />
+    <meta name="distribution" content="global" />
+    <meta name="language" content="en" />
+    
+    <!-- Preconnect for Performance - Google December 2025 Core Web Vitals -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="//www.google-analytics.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+    
+    <!-- Critical Resource Preloading for LCP < 2.0s -->
+    <link rel="preload" href="/images/live-trading-rooms-hero.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/images/live-trading-rooms-hero.jpg" as="image" type="image/jpeg" />
+    
+    <!-- Resource Hints for INP < 150ms -->
+    <link rel="modulepreload" href="/src/routes/live-trading-rooms/+page.svelte" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <!-- JSON-LD Structured Data - Using server-loaded data -->
+    <script type="application/ld+json">
+        {@html JSON.stringify(structuredData)}
+    </script>
+</svelte:head>
 
 <div class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans relative">
     

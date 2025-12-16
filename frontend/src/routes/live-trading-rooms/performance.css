@@ -1,0 +1,274 @@
+/**
+ * Google December 2025 Core Web Vitals Optimization
+ * Live Trading Rooms Page Performance Enhancements
+ * 
+ * Targets LCP < 2.0s, INP < 150ms, CLS < 0.1
+ * Implements modern CSS performance patterns
+ */
+
+/* Critical CSS for LCP optimization - Inline this */
+@layer critical {
+  /* Hero section - above fold content */
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.6;
+    color: #94a3b8;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  /* Prevent layout shifts - CLS optimization */
+  .hero-container {
+    min-height: 85vh;
+    contain: layout style paint;
+  }
+
+  .room-card {
+    aspect-ratio: 16/10;
+    min-height: 400px;
+    contain: layout style paint;
+  }
+
+  /* Image optimization for LCP */
+  .hero-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    background: linear-gradient(45deg, #050505, #1a1a1a);
+    transform: translateZ(0); /* GPU acceleration */
+  }
+
+  /* Font loading optimization */
+  .font-display {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-display: swap;
+  }
+}
+
+/* Non-critical CSS - Load after LCP */
+@layer non-critical {
+  /* Animations and transitions for INP optimization */
+  .room-card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
+  }
+
+  .room-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Optimized animations for better INP */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Particle animations - GPU accelerated */
+  .particle {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateZ(0); }
+    50% { transform: translateY(-20px) translateZ(0); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+/* Responsive images for LCP */
+@layer responsive {
+  picture {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* Modern image formats with fallbacks */
+  .hero-image-webp {
+    display: block;
+  }
+
+  .hero-image-jpeg {
+    display: none;
+  }
+
+  @supports not (picture) {
+    .hero-image-webp {
+      display: none;
+    }
+    .hero-image-jpeg {
+      display: block;
+    }
+  }
+}
+
+/* Loading states for better perceived performance */
+@layer loading {
+  .skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .loading-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+}
+
+/* Print and reduced motion optimizations */
+@layer accessibility {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  @media print {
+    * {
+      background: white !important;
+      color: black !important;
+    }
+    
+    .hero-title,
+    .hero-subtitle {
+      color: black !important;
+      -webkit-text-fill-color: black !important;
+    }
+  }
+}
+
+/* Container queries for responsive design */
+@layer container {
+  @container (min-width: 768px) {
+    .room-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @container (min-width: 1024px) {
+    .room-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+/* Performance monitoring utilities */
+@layer monitoring {
+  .performance-marker {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Core Web Vitals visual indicators for development */
+  .lcp-indicator::before {
+    content: "LCP";
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #10b981;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 9999;
+  }
+
+  .inp-indicator::before {
+    content: "INP";
+    position: fixed;
+    top: 40px;
+    right: 10px;
+    background: #3b82f6;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 9999;
+  }
+
+  .cls-indicator::before {
+    content: "CLS";
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    background: #f59e0b;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 9999;
+  }
+}
+
+/* Critical font loading */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-regular.woff2') format('woff2'),
+       url('/fonts/inter-regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/inter-bold.woff2') format('woff2'),
+       url('/fonts/inter-bold.woff') format('woff');
+}
