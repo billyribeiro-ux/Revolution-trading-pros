@@ -1,13 +1,15 @@
 //! Meilisearch search service
+//!
+//! WASM-compatible Meilisearch client using worker fetch
 
 use serde::{Deserialize, Serialize};
 use crate::error::ApiError;
 
 /// Meilisearch service for full-text search
+#[derive(Clone)]
 pub struct SearchService {
     url: String,
     api_key: String,
-    http_client: reqwest::Client,
 }
 
 impl SearchService {
@@ -15,7 +17,6 @@ impl SearchService {
         Self {
             url: url.trim_end_matches('/').to_string(),
             api_key: api_key.to_string(),
-            http_client: reqwest::Client::new(),
         }
     }
 
@@ -41,22 +42,23 @@ impl SearchService {
         self.post(&format!("/indexes/{}/search", index), &payload).await
     }
 
-    /// Index a document
+    /// Index a single document
     pub async fn index_document<T: Serialize>(
         &self,
         index: &str,
         document: &T,
     ) -> Result<TaskInfo, ApiError> {
-        self.post(&format!("/indexes/{}/documents", index), &[document]).await
+        let docs = vec![document];
+        self.post_json(&format!("/indexes/{}/documents", index), &docs).await
     }
 
     /// Index multiple documents
     pub async fn index_documents<T: Serialize>(
         &self,
         index: &str,
-        documents: &[T],
+        documents: Vec<T>,
     ) -> Result<TaskInfo, ApiError> {
-        self.post(&format!("/indexes/{}/documents", index), documents).await
+        self.post_json(&format!("/indexes/{}/documents", index), &documents).await
     }
 
     /// Delete a document
@@ -65,8 +67,8 @@ impl SearchService {
     }
 
     /// Delete multiple documents
-    pub async fn delete_documents(&self, index: &str, ids: &[String]) -> Result<TaskInfo, ApiError> {
-        self.post(&format!("/indexes/{}/documents/delete-batch", index), ids).await
+    pub async fn delete_documents(&self, index: &str, ids: Vec<String>) -> Result<TaskInfo, ApiError> {
+        self.post_json(&format!("/indexes/{}/documents/delete-batch", index), &ids).await
     }
 
     /// Create an index
@@ -88,70 +90,132 @@ impl SearchService {
         self.get(&format!("/tasks/{}", task_uid)).await
     }
 
+    /// Make a GET request using worker fetch
     async fn get<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
-        let response = self.http_client
-            .get(format!("{}{}", self.url, path))
-            .header("Authorization", format!("Bearer {}", self.api_key))
+        let url = format!("{}{}", self.url, path);
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Get);
+        init.with_headers(headers);
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Make a POST request using worker fetch
     async fn post<T: for<'de> Deserialize<'de>, B: Serialize>(
         &self,
         path: &str,
         body: &B,
     ) -> Result<T, ApiError> {
-        let response = self.http_client
-            .post(format!("{}{}", self.url, path))
-            .header("Authorization", format!("Bearer {}", self.api_key))
-            .header("Content-Type", "application/json")
-            .json(body)
-            .send()
-            .await
-            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {}", e)))?;
-
-        self.handle_response(response).await
+        self.post_json(path, body).await
     }
 
+    /// Make a POST request with JSON body using worker fetch
+    async fn post_json<T: for<'de> Deserialize<'de>, B: Serialize + ?Sized>(
+        &self,
+        path: &str,
+        body: &B,
+    ) -> Result<T, ApiError> {
+        let url = format!("{}{}", self.url, path);
+        let body_json = serde_json::to_string(body)
+            .map_err(|e| ApiError::Internal(format!("Failed to serialize body: {}", e)))?;
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
+        headers.set("Content-Type", "application/json").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body_json)));
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
+            .send()
+            .await
+            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
+    }
+
+    /// Make a PATCH request using worker fetch
     async fn patch<T: for<'de> Deserialize<'de>, B: Serialize>(
         &self,
         path: &str,
         body: &B,
     ) -> Result<T, ApiError> {
-        let response = self.http_client
-            .patch(format!("{}{}", self.url, path))
-            .header("Authorization", format!("Bearer {}", self.api_key))
-            .header("Content-Type", "application/json")
-            .json(body)
+        let url = format!("{}{}", self.url, path);
+        let body_json = serde_json::to_string(body)
+            .map_err(|e| ApiError::Internal(format!("Failed to serialize body: {}", e)))?;
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
+        headers.set("Content-Type", "application/json").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Patch);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body_json)));
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Make a DELETE request using worker fetch
     async fn delete<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
-        let response = self.http_client
-            .delete(format!("{}{}", self.url, path))
-            .header("Authorization", format!("Bearer {}", self.api_key))
+        let url = format!("{}{}", self.url, path);
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Delete);
+        init.with_headers(headers);
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Meilisearch request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Handle API response
     async fn handle_response<T: for<'de> Deserialize<'de>>(
         &self,
-        response: reqwest::Response,
+        response: &mut worker::Response,
     ) -> Result<T, ApiError> {
-        if !response.status().is_success() {
-            let error: MeilisearchError = response.json().await
+        let status = response.status_code();
+        let text = response.text().await
+            .map_err(|e| ApiError::ExternalService(format!("Failed to read response: {:?}", e)))?;
+        
+        if status >= 400 {
+            let error: MeilisearchError = serde_json::from_str(&text)
                 .unwrap_or(MeilisearchError {
-                    message: "Unknown Meilisearch error".to_string(),
+                    message: text.clone(),
                     code: "unknown".to_string(),
                 });
             return Err(ApiError::ExternalService(format!(
@@ -160,7 +224,7 @@ impl SearchService {
             )));
         }
 
-        response.json().await
+        serde_json::from_str(&text)
             .map_err(|e| ApiError::ExternalService(format!("Failed to parse Meilisearch response: {}", e)))
     }
 }

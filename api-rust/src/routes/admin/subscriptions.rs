@@ -94,7 +94,7 @@ pub async fn plans(req: Request, ctx: RouteContext<AppState>) -> worker::Result<
 pub async fn metrics(req: Request, ctx: RouteContext<AppState>) -> worker::Result<Response> {
     require_admin(&req, &ctx).await?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
     let month_start = now.format("%Y-%m-01").to_string();
 
     // Active subscriptions

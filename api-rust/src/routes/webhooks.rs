@@ -19,7 +19,7 @@ pub async fn stripe(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     let stripe = &ctx.data.services.stripe;
     let event = stripe.verify_webhook(&body, &signature)?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     // Handle different event types
     match event.event_type.as_str() {
@@ -159,7 +159,7 @@ pub async fn postmark_inbound(mut req: Request, ctx: RouteContext<AppState>) -> 
     let email: InboundEmail = req.json().await
         .map_err(|e| ApiError::BadRequest(format!("Invalid inbound email: {}", e)))?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
     let conversation_id = uuid::Uuid::new_v4();
     let message_id = uuid::Uuid::new_v4();
 
@@ -237,7 +237,7 @@ pub async fn postmark_inbound(mut req: Request, ctx: RouteContext<AppState>) -> 
 
 /// Handle successful checkout
 async fn handle_checkout_completed(ctx: &RouteContext<AppState>, session_id: &str) -> Result<(), ApiError> {
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     // Find order by payment intent
     let order: Option<OrderInfo> = ctx.data.db.query_one(

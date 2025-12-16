@@ -1,6 +1,7 @@
 //! Upstash Redis cache via HTTP
 //! 
 //! Edge-compatible Redis client using Upstash's REST API
+//! WASM-compatible using worker::Fetch
 
 use serde::{Deserialize, Serialize};
 use crate::error::ApiError;
@@ -10,7 +11,6 @@ use crate::error::ApiError;
 pub struct Cache {
     url: String,
     token: String,
-    http_client: reqwest::Client,
 }
 
 #[derive(Deserialize)]
@@ -27,11 +27,7 @@ impl Cache {
         // Format: redis://default:TOKEN@HOST:PORT or https://HOST with separate token
         let (url, token) = Self::parse_url(redis_url)?;
         
-        Ok(Self {
-            url,
-            token,
-            http_client: reqwest::Client::new(),
-        })
+        Ok(Self { url, token })
     }
 
     fn parse_url(redis_url: &str) -> Result<(String, String), ApiError> {
@@ -86,8 +82,9 @@ impl Cache {
         let json = serde_json::to_string(value)
             .map_err(|e| ApiError::Database(format!("Cache serialize error: {}", e)))?;
         
-        let cmd = match ttl_seconds {
-            Some(ttl) => vec!["SET", key, &json, "EX", &ttl.to_string()],
+        let ttl_str = ttl_seconds.map(|t| t.to_string());
+        let cmd: Vec<&str> = match &ttl_str {
+            Some(ttl) => vec!["SET", key, &json, "EX", ttl],
             None => vec!["SET", key, &json],
         };
         
@@ -115,27 +112,42 @@ impl Cache {
 
     /// Set expiration on a key
     pub async fn expire(&self, key: &str, seconds: u64) -> Result<(), ApiError> {
-        let _: UpstashResponse<i64> = self.command(&["EXPIRE", key, &seconds.to_string()]).await?;
+        let secs = seconds.to_string();
+        let _: UpstashResponse<i64> = self.command(&["EXPIRE", key, &secs]).await?;
         Ok(())
     }
 
-    /// Execute a Redis command
+    /// Execute a Redis command using worker::Fetch
     async fn command<T: for<'de> Deserialize<'de>>(&self, args: &[&str]) -> Result<UpstashResponse<T>, ApiError> {
-        let response = self.http_client
-            .post(&self.url)
-            .header("Authorization", format!("Bearer {}", self.token))
-            .header("Content-Type", "application/json")
-            .json(&args)
+        let body = serde_json::to_string(&args)
+            .map_err(|e| ApiError::Database(format!("Failed to serialize command: {}", e)))?;
+
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.token)).ok();
+        headers.set("Content-Type", "application/json").ok();
+
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body)));
+
+        let request = worker::Request::new_with_init(&self.url, &init)
+            .map_err(|e| ApiError::Database(format!("Failed to create request: {:?}", e)))?;
+
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::Database(format!("Redis HTTP error: {}", e)))?;
+            .map_err(|e| ApiError::Database(format!("Redis HTTP error: {:?}", e)))?;
 
-        if !response.status().is_success() {
-            let text = response.text().await.unwrap_or_default();
+        let status = response.status_code();
+        let text = response.text().await
+            .map_err(|e| ApiError::Database(format!("Failed to read response: {:?}", e)))?;
+
+        if status >= 400 {
             return Err(ApiError::Database(format!("Redis error: {}", text)));
         }
 
-        response.json().await
+        serde_json::from_str(&text)
             .map_err(|e| ApiError::Database(format!("Redis parse error: {}", e)))
     }
 }
@@ -162,7 +174,9 @@ impl RateLimiter {
         
         let allowed = (count as u64) <= limit;
         let remaining = if allowed { limit - count as u64 } else { 0 };
-        let reset_at = chrono::Utc::now().timestamp() as u64 + window_seconds;
+        // Use js_sys for time in WASM
+        let now_ms = js_sys::Date::now() as u64;
+        let reset_at = (now_ms / 1000) + window_seconds;
         
         Ok((allowed, remaining, reset_at))
     }

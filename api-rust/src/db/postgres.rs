@@ -1,6 +1,7 @@
 //! Neon PostgreSQL database connection via HTTP
 //! 
 //! Uses Neon's serverless driver for edge-compatible database access
+//! WASM-compatible using worker::Fetch
 
 use serde::{Deserialize, Serialize};
 use crate::error::ApiError;
@@ -9,7 +10,7 @@ use crate::error::ApiError;
 #[derive(Clone)]
 pub struct Database {
     connection_string: String,
-    http_client: reqwest::Client,
+    endpoint: String,
 }
 
 #[derive(Serialize)]
@@ -33,10 +34,30 @@ struct NeonError {
 impl Database {
     /// Create a new database connection
     pub fn new(connection_string: &str) -> Self {
+        let endpoint = Self::parse_endpoint(connection_string)
+            .unwrap_or_else(|_| "https://neon.tech/sql".to_string());
+        
         Self {
             connection_string: connection_string.to_string(),
-            http_client: reqwest::Client::new(),
+            endpoint,
         }
+    }
+
+    /// Parse the HTTP endpoint from connection string
+    fn parse_endpoint(connection_string: &str) -> Result<String, ApiError> {
+        // Extract host from postgres://user:pass@host/db
+        let parts: Vec<&str> = connection_string.split('@').collect();
+        if parts.len() != 2 {
+            return Err(ApiError::Database("Invalid connection string".to_string()));
+        }
+        
+        let host_db: Vec<&str> = parts[1].split('/').collect();
+        if host_db.is_empty() {
+            return Err(ApiError::Database("Invalid connection string".to_string()));
+        }
+        
+        let host = host_db[0];
+        Ok(format!("https://{}/sql", host))
     }
 
     /// Execute a query and return rows
@@ -76,54 +97,49 @@ impl Database {
         Ok(response.row_count.unwrap_or(0))
     }
 
-    /// Internal query execution
+    /// Internal query execution using worker::Fetch
     async fn execute_query(
         &self,
         sql: &str,
         params: Vec<serde_json::Value>,
     ) -> Result<NeonResponse, ApiError> {
-        // Parse connection string to get the HTTP endpoint
-        let endpoint = self.get_http_endpoint()?;
-        
         let query = NeonQuery {
             query: sql.to_string(),
             params,
         };
 
-        let response = self.http_client
-            .post(&endpoint)
-            .header("Content-Type", "application/json")
-            .header("Neon-Connection-String", &self.connection_string)
-            .json(&query)
+        let body = serde_json::to_string(&query)
+            .map_err(|e| ApiError::Database(format!("Failed to serialize query: {}", e)))?;
+
+        let mut headers = worker::Headers::new();
+        headers.set("Content-Type", "application/json").ok();
+        headers.set("Neon-Connection-String", &self.connection_string).ok();
+
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body)));
+
+        let request = worker::Request::new_with_init(&self.endpoint, &init)
+            .map_err(|e| ApiError::Database(format!("Failed to create request: {:?}", e)))?;
+
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::Database(format!("HTTP error: {}", e)))?;
+            .map_err(|e| ApiError::Database(format!("HTTP error: {:?}", e)))?;
 
-        if !response.status().is_success() {
-            let error: NeonError = response.json().await
-                .unwrap_or(NeonError { message: "Unknown database error".to_string() });
+        let status = response.status_code();
+        let text = response.text().await
+            .map_err(|e| ApiError::Database(format!("Failed to read response: {:?}", e)))?;
+
+        if status >= 400 {
+            let error: NeonError = serde_json::from_str(&text)
+                .unwrap_or(NeonError { message: text.clone() });
             return Err(ApiError::Database(error.message));
         }
 
-        response.json().await
+        serde_json::from_str(&text)
             .map_err(|e| ApiError::Database(format!("Failed to parse response: {}", e)))
-    }
-
-    /// Get the Neon HTTP endpoint from connection string
-    fn get_http_endpoint(&self) -> Result<String, ApiError> {
-        // Extract host from postgres://user:pass@host/db
-        let parts: Vec<&str> = self.connection_string.split('@').collect();
-        if parts.len() != 2 {
-            return Err(ApiError::Database("Invalid connection string".to_string()));
-        }
-        
-        let host_db: Vec<&str> = parts[1].split('/').collect();
-        if host_db.is_empty() {
-            return Err(ApiError::Database("Invalid connection string".to_string()));
-        }
-        
-        let host = host_db[0];
-        Ok(format!("https://{}/sql", host))
     }
 
     /// Begin a transaction

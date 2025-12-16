@@ -3,7 +3,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use crate::error::ApiError;
 
 /// Product entity (courses, indicators, memberships)
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -180,15 +180,13 @@ pub struct CourseProgress {
 }
 
 /// Create product request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreateProductRequest {
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
     pub slug: Option<String>,
     pub description: Option<String>,
     pub short_description: Option<String>,
     pub product_type: ProductType,
-    #[validate(range(min = 0, message = "Price must be positive"))]
     pub price: i64,
     pub compare_price: Option<i64>,
     pub currency: Option<String>,
@@ -201,6 +199,18 @@ pub struct CreateProductRequest {
     pub download_url: Option<String>,
     pub meta_title: Option<String>,
     pub meta_description: Option<String>,
+}
+
+impl CreateProductRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        if self.price < 0 {
+            return Err(ApiError::Validation("Price must be positive".to_string()));
+        }
+        Ok(())
+    }
 }
 
 /// Update product request
@@ -278,7 +288,7 @@ pub struct CartItem {
 }
 
 /// Checkout request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CheckoutRequest {
     pub items: Vec<CartItem>,
     pub coupon_code: Option<String>,

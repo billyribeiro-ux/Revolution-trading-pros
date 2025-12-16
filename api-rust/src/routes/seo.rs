@@ -31,7 +31,7 @@ pub async fn sitemap_index(_req: Request, ctx: RouteContext<AppState>) -> worker
   </sitemap>"#,
             site_url,
             page,
-            chrono::Utc::now().format("%Y-%m-%d")
+            crate::utils::now().format("%Y-%m-%d")
         ));
     }
 
@@ -42,7 +42,7 @@ pub async fn sitemap_index(_req: Request, ctx: RouteContext<AppState>) -> worker
     <lastmod>{}</lastmod>
   </sitemap>"#,
         site_url,
-        chrono::Utc::now().format("%Y-%m-%d")
+        crate::utils::now().format("%Y-%m-%d")
     ));
 
     xml.push_str("\n</sitemapindex>");

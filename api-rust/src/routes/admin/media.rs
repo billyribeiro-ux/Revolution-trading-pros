@@ -97,7 +97,7 @@ pub async fn upload(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     let upload_result = r2.upload(&key, data.clone(), content_type).await?;
 
     // Get image dimensions if applicable
-    let (width, height) = if content_type.starts_with("image/") {
+    let (width, height): (Option<i32>, Option<i32>) = if content_type.starts_with("image/") {
         // In production, use an image processing library
         (None, None)
     } else {
@@ -106,7 +106,7 @@ pub async fn upload(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
 
     // Save to database
     let media_id = uuid::Uuid::new_v4();
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         r#"

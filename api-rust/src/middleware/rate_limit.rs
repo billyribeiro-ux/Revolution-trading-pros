@@ -78,7 +78,7 @@ impl RateLimitResult {
         let body = serde_json::json!({
             "error": "rate_limited",
             "message": "Too many requests. Please try again later.",
-            "retry_after": self.reset_at - chrono::Utc::now().timestamp() as u64
+            "retry_after": self.reset_at - crate::utils::now().timestamp() as u64
         });
 
         Response::from_json(&body)
@@ -89,7 +89,7 @@ impl RateLimitResult {
                 headers.set("X-RateLimit-Limit", &self.limit.to_string()).ok();
                 headers.set("X-RateLimit-Remaining", "0").ok();
                 headers.set("X-RateLimit-Reset", &self.reset_at.to_string()).ok();
-                headers.set("Retry-After", &(self.reset_at - chrono::Utc::now().timestamp() as u64).to_string()).ok();
+                headers.set("Retry-After", &(self.reset_at - crate::utils::now().timestamp() as u64).to_string()).ok();
                 headers
             })
     }

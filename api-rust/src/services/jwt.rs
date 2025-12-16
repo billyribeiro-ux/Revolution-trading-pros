@@ -1,11 +1,35 @@
 //! JWT authentication service
+//! 
+//! WASM-compatible JWT implementation using HMAC-SHA256
 
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
+use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
+use serde::{Deserialize, Serialize};
 use crate::error::ApiError;
 use crate::models::user::{Claims, UserRole};
 
+type HmacSha256 = Hmac<Sha256>;
+
+/// JWT Header
+#[derive(Serialize)]
+struct JwtHeader {
+    alg: &'static str,
+    typ: &'static str,
+}
+
+impl Default for JwtHeader {
+    fn default() -> Self {
+        Self {
+            alg: "HS256",
+            typ: "JWT",
+        }
+    }
+}
+
 /// JWT service for token generation and validation
+#[derive(Clone)]
 pub struct JwtService {
     secret: String,
     issuer: String,
@@ -25,6 +49,56 @@ impl JwtService {
         }
     }
 
+    /// Encode a JWT token
+    fn encode_jwt<T: Serialize>(&self, claims: &T) -> Result<String, ApiError> {
+        let header = JwtHeader::default();
+        
+        let header_json = serde_json::to_string(&header)
+            .map_err(|e| ApiError::Internal(format!("Failed to serialize header: {}", e)))?;
+        let claims_json = serde_json::to_string(claims)
+            .map_err(|e| ApiError::Internal(format!("Failed to serialize claims: {}", e)))?;
+        
+        let header_b64 = URL_SAFE_NO_PAD.encode(header_json.as_bytes());
+        let claims_b64 = URL_SAFE_NO_PAD.encode(claims_json.as_bytes());
+        
+        let message = format!("{}.{}", header_b64, claims_b64);
+        
+        let mut mac = HmacSha256::new_from_slice(self.secret.as_bytes())
+            .map_err(|e| ApiError::Internal(format!("HMAC error: {}", e)))?;
+        mac.update(message.as_bytes());
+        let signature = mac.finalize().into_bytes();
+        let signature_b64 = URL_SAFE_NO_PAD.encode(&signature);
+        
+        Ok(format!("{}.{}", message, signature_b64))
+    }
+
+    /// Decode and verify a JWT token
+    fn decode_jwt<T: for<'de> Deserialize<'de>>(&self, token: &str) -> Result<T, ApiError> {
+        let parts: Vec<&str> = token.split('.').collect();
+        if parts.len() != 3 {
+            return Err(ApiError::Unauthorized("Invalid token format".to_string()));
+        }
+        
+        let message = format!("{}.{}", parts[0], parts[1]);
+        let signature = URL_SAFE_NO_PAD.decode(parts[2])
+            .map_err(|_| ApiError::Unauthorized("Invalid token signature encoding".to_string()))?;
+        
+        // Verify signature
+        let mut mac = HmacSha256::new_from_slice(self.secret.as_bytes())
+            .map_err(|e| ApiError::Internal(format!("HMAC error: {}", e)))?;
+        mac.update(message.as_bytes());
+        mac.verify_slice(&signature)
+            .map_err(|_| ApiError::Unauthorized("Invalid token signature".to_string()))?;
+        
+        // Decode claims
+        let claims_json = URL_SAFE_NO_PAD.decode(parts[1])
+            .map_err(|_| ApiError::Unauthorized("Invalid token claims encoding".to_string()))?;
+        let claims: T = serde_json::from_slice(&claims_json)
+            .map_err(|e| ApiError::Unauthorized(format!("Invalid token claims: {}", e)))?;
+        
+        Ok(claims)
+    }
+
     /// Generate an access token for a user
     pub fn generate_access_token(
         &self,
@@ -32,7 +106,7 @@ impl JwtService {
         email: &str,
         role: UserRole,
     ) -> Result<(String, i64), ApiError> {
-        let now = Utc::now();
+        let now = crate::utils::now();
         let exp = now + self.access_token_duration;
 
         let claims = Claims {
@@ -45,89 +119,90 @@ impl JwtService {
             aud: self.audience.clone(),
         };
 
-        let token = encode(
-            &Header::default(),
-            &claims,
-            &EncodingKey::from_secret(self.secret.as_bytes()),
-        )
-        .map_err(|e| ApiError::Internal(format!("Failed to generate token: {}", e)))?;
-
+        let token = self.encode_jwt(&claims)?;
         Ok((token, exp.timestamp()))
     }
 
     /// Generate a refresh token
     pub fn generate_refresh_token(&self, user_id: &str) -> Result<(String, i64), ApiError> {
-        let now = Utc::now();
+        let now = crate::utils::now();
         let exp = now + self.refresh_token_duration;
 
-        // Refresh token has minimal claims
-        let claims = serde_json::json!({
-            "sub": user_id,
-            "type": "refresh",
-            "iat": now.timestamp(),
-            "exp": exp.timestamp(),
-            "iss": self.issuer,
-        });
+        #[derive(Serialize)]
+        struct RefreshClaims {
+            sub: String,
+            #[serde(rename = "type")]
+            token_type: String,
+            iat: i64,
+            exp: i64,
+            iss: String,
+        }
 
-        let token = encode(
-            &Header::default(),
-            &claims,
-            &EncodingKey::from_secret(self.secret.as_bytes()),
-        )
-        .map_err(|e| ApiError::Internal(format!("Failed to generate refresh token: {}", e)))?;
+        let claims = RefreshClaims {
+            sub: user_id.to_string(),
+            token_type: "refresh".to_string(),
+            iat: now.timestamp(),
+            exp: exp.timestamp(),
+            iss: self.issuer.clone(),
+        };
 
+        let token = self.encode_jwt(&claims)?;
         Ok((token, exp.timestamp()))
     }
 
     /// Validate and decode an access token
     pub fn validate_access_token(&self, token: &str) -> Result<Claims, ApiError> {
-        let mut validation = Validation::default();
-        validation.set_issuer(&[&self.issuer]);
-        validation.set_audience(&[&self.audience]);
-
-        let token_data = decode::<Claims>(
-            token,
-            &DecodingKey::from_secret(self.secret.as_bytes()),
-            &validation,
-        )
-        .map_err(|e| match e.kind() {
-            jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
-                ApiError::Unauthorized("Token expired".to_string())
-            }
-            jsonwebtoken::errors::ErrorKind::InvalidToken => {
-                ApiError::Unauthorized("Invalid token".to_string())
-            }
-            _ => ApiError::Unauthorized(format!("Token validation failed: {}", e)),
-        })?;
-
-        Ok(token_data.claims)
+        let claims: Claims = self.decode_jwt(token)?;
+        
+        // Check expiration
+        let now = crate::utils::now_timestamp();
+        if claims.exp < now {
+            return Err(ApiError::Unauthorized("Token expired".to_string()));
+        }
+        
+        // Check issuer
+        if claims.iss != self.issuer {
+            return Err(ApiError::Unauthorized("Invalid token issuer".to_string()));
+        }
+        
+        // Check audience
+        if claims.aud != self.audience {
+            return Err(ApiError::Unauthorized("Invalid token audience".to_string()));
+        }
+        
+        Ok(claims)
     }
 
     /// Validate a refresh token and return the user_id
     pub fn validate_refresh_token(&self, token: &str) -> Result<String, ApiError> {
-        let mut validation = Validation::default();
-        validation.set_issuer(&[&self.issuer]);
-        // Refresh tokens don't have audience
-
-        #[derive(serde::Deserialize)]
+        #[derive(Deserialize)]
         struct RefreshClaims {
             sub: String,
             #[serde(rename = "type")]
             token_type: String,
+            exp: i64,
+            iss: String,
         }
 
-        let token_data = decode::<RefreshClaims>(
-            token,
-            &DecodingKey::from_secret(self.secret.as_bytes()),
-            &validation,
-        )
-        .map_err(|e| ApiError::Unauthorized(format!("Invalid refresh token: {}", e)))?;
-
-        if token_data.claims.token_type != "refresh" {
+        let claims: RefreshClaims = self.decode_jwt(token)?;
+        
+        // Check expiration
+        let now = crate::utils::now_timestamp();
+        if claims.exp < now {
+            return Err(ApiError::Unauthorized("Refresh token expired".to_string()));
+        }
+        
+        // Check issuer
+        if claims.iss != self.issuer {
+            return Err(ApiError::Unauthorized("Invalid token issuer".to_string()));
+        }
+        
+        // Check token type
+        if claims.token_type != "refresh" {
             return Err(ApiError::Unauthorized("Invalid token type".to_string()));
         }
 
-        Ok(token_data.claims.sub)
+        Ok(claims.sub)
     }
 
     /// Extract token from Authorization header

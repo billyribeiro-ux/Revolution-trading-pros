@@ -5,6 +5,7 @@ use crate::AppState;
 use crate::error::ApiError;
 use crate::models::user::{ChangePasswordRequest, UserPublic, SessionInfo, UserMembership};
 use crate::services::{JwtService, PasswordService};
+use crate::utils;
 
 /// GET /api/me - Get current user profile
 pub async fn me(req: Request, ctx: RouteContext<AppState>) -> worker::Result<Response> {
@@ -66,7 +67,7 @@ pub async fn sessions(req: Request, ctx: RouteContext<AppState>) -> worker::Resu
         "#,
         vec![
             serde_json::json!(user.id.to_string()),
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
         ]
     ).await?;
 
@@ -111,7 +112,7 @@ pub async fn change_password(mut req: Request, ctx: RouteContext<AppState>) -> w
         "UPDATE users SET password_hash = $1, updated_at = $2 WHERE id = $3",
         vec![
             serde_json::json!(new_hash),
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
             serde_json::json!(user.id.to_string()),
         ]
     ).await?;
@@ -137,7 +138,7 @@ pub async fn enable_mfa(req: Request, ctx: RouteContext<AppState>) -> worker::Re
         "UPDATE users SET mfa_secret = $1, updated_at = $2 WHERE id = $3",
         vec![
             serde_json::json!(secret),
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
             serde_json::json!(user.id.to_string()),
         ]
     ).await?;
@@ -174,7 +175,7 @@ pub async fn disable_mfa(mut req: Request, ctx: RouteContext<AppState>) -> worke
     ctx.data.db.execute(
         "UPDATE users SET mfa_enabled = false, mfa_secret = NULL, updated_at = $1 WHERE id = $2",
         vec![
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
             serde_json::json!(user.id.to_string()),
         ]
     ).await?;

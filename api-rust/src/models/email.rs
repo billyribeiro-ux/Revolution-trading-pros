@@ -3,7 +3,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use crate::error::ApiError;
 
 /// Email template entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -255,21 +255,35 @@ pub struct NewsletterCategory {
 }
 
 /// Newsletter subscription request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct NewsletterSubscribeRequest {
-    #[validate(email(message = "Invalid email address"))]
     pub email: String,
     pub name: Option<String>,
     pub categories: Option<Vec<Uuid>>,
     pub source: Option<String>,
 }
 
+impl NewsletterSubscribeRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if !is_valid_email(&self.email) {
+            return Err(ApiError::Validation("Invalid email address".to_string()));
+        }
+        Ok(())
+    }
+}
+
+fn is_valid_email(email: &str) -> bool {
+    let email = email.trim();
+    if email.is_empty() { return false; }
+    let parts: Vec<&str> = email.split('@').collect();
+    if parts.len() != 2 { return false; }
+    !parts[0].is_empty() && !parts[1].is_empty() && parts[1].contains('.')
+}
+
 /// Create campaign request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreateCampaignRequest {
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
-    #[validate(length(min = 1, message = "Subject is required"))]
     pub subject: String,
     pub preview_text: Option<String>,
     pub from_name: Option<String>,
@@ -283,20 +297,44 @@ pub struct CreateCampaignRequest {
     pub scheduled_at: Option<DateTime<Utc>>,
 }
 
+impl CreateCampaignRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        if self.subject.trim().is_empty() {
+            return Err(ApiError::Validation("Subject is required".to_string()));
+        }
+        Ok(())
+    }
+}
+
 /// Create template request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreateTemplateRequest {
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
     pub slug: Option<String>,
-    #[validate(length(min = 1, message = "Subject is required"))]
     pub subject: String,
-    #[validate(length(min = 1, message = "HTML content is required"))]
     pub html_content: String,
     pub text_content: Option<String>,
     pub template_type: Option<EmailTemplateType>,
     pub variables: Option<Vec<String>>,
     pub is_active: Option<bool>,
+}
+
+impl CreateTemplateRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        if self.subject.trim().is_empty() {
+            return Err(ApiError::Validation("Subject is required".to_string()));
+        }
+        if self.html_content.trim().is_empty() {
+            return Err(ApiError::Validation("HTML content is required".to_string()));
+        }
+        Ok(())
+    }
 }
 
 /// Email metrics

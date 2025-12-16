@@ -84,7 +84,7 @@ pub async fn create(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
         None
     };
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
     let subscription_id = uuid::Uuid::new_v4();
     
     let period_end = if let Some(trial_days) = plan.trial_days {
@@ -200,7 +200,7 @@ pub async fn cancel(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     ).await?
     .ok_or_else(|| ApiError::NotFound("Subscription not found".to_string()))?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
     let cancel_immediately = body.cancel_immediately.unwrap_or(false);
 
     // Cancel in Stripe if applicable
@@ -255,7 +255,7 @@ pub async fn pause(req: Request, ctx: RouteContext<AppState>) -> worker::Result<
     let id = ctx.param("id")
         .ok_or_else(|| ApiError::BadRequest("Missing subscription id".to_string()))?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         r#"
@@ -281,7 +281,7 @@ pub async fn resume(req: Request, ctx: RouteContext<AppState>) -> worker::Result
     let id = ctx.param("id")
         .ok_or_else(|| ApiError::BadRequest("Missing subscription id".to_string()))?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         r#"

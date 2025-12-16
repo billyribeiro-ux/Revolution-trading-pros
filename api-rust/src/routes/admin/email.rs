@@ -27,7 +27,7 @@ pub async fn templates_create(mut req: Request, ctx: RouteContext<AppState>) -> 
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
     let template_id = uuid::Uuid::new_v4();
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
     let slug = body.slug.unwrap_or_else(|| slug::slugify(&body.name));
 
     ctx.data.db.execute(
@@ -110,7 +110,7 @@ pub async fn campaigns_create(mut req: Request, ctx: RouteContext<AppState>) -> 
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
     let campaign_id = uuid::Uuid::new_v4();
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         r#"

@@ -17,6 +17,9 @@ pub struct Config {
     pub meilisearch_url: String,
     pub meilisearch_api_key: String,
     pub cors_origins: Vec<String>,
+    pub site_url: String,
+    pub from_email: String,
+    pub from_name: String,
 }
 
 impl Config {
@@ -39,6 +42,9 @@ impl Config {
                 "https://revolutiontradingpros.com".to_string(),
                 "http://localhost:5173".to_string(),
             ],
+            site_url: env.var("SITE_URL").map(|v| v.to_string()).unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string()),
+            from_email: env.var("FROM_EMAIL").map(|v| v.to_string()).unwrap_or_else(|_| "noreply@revolutiontradingpros.com".to_string()),
+            from_name: env.var("FROM_NAME").map(|v| v.to_string()).unwrap_or_else(|_| "Revolution Trading Pros".to_string()),
         })
     }
 

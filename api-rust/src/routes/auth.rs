@@ -8,6 +8,7 @@ use crate::models::user::{
     ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, UserPublic
 };
 use crate::services::{JwtService, PasswordService};
+use crate::utils;
 
 /// POST /api/register - Register a new user
 pub async fn register(mut req: Request, ctx: RouteContext<AppState>) -> worker::Result<Response> {
@@ -33,7 +34,7 @@ pub async fn register(mut req: Request, ctx: RouteContext<AppState>) -> worker::
 
     // Create user
     let user_id = uuid::Uuid::new_v4();
-    let now = chrono::Utc::now();
+    let now = utils::now();
 
     ctx.data.db.execute(
         r#"
@@ -75,7 +76,7 @@ pub async fn register(mut req: Request, ctx: RouteContext<AppState>) -> worker::
         },
         token,
         refresh_token: None,
-        expires_at: chrono::DateTime::from_timestamp(expires_at, 0).unwrap_or(now),
+        expires_at: chrono::DateTime::from_timestamp(expires_at, 0).unwrap_or_else(|| utils::now()),
         mfa_required: false,
     };
 
@@ -135,7 +136,7 @@ pub async fn login(mut req: Request, ctx: RouteContext<AppState>) -> worker::Res
     ctx.data.db.execute(
         "UPDATE users SET last_login_at = $1 WHERE id = $2",
         vec![
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
             serde_json::json!(user.id.to_string()),
         ]
     ).await?;
@@ -147,7 +148,7 @@ pub async fn login(mut req: Request, ctx: RouteContext<AppState>) -> worker::Res
         user: user.clone().into(),
         token,
         refresh_token: Some(refresh_token),
-        expires_at: chrono::DateTime::from_timestamp(expires_at, 0).unwrap_or(chrono::Utc::now()),
+        expires_at: chrono::DateTime::from_timestamp(expires_at, 0).unwrap_or_else(|| utils::now()),
         mfa_required: false,
     };
 
@@ -168,7 +169,7 @@ pub async fn login_mfa(mut req: Request, ctx: RouteContext<AppState>) -> worker:
 
     // Verify MFA code (TOTP)
     // In production, use a proper TOTP library
-    let mfa_secret = user.mfa_secret
+    let mfa_secret = user.mfa_secret.clone()
         .ok_or_else(|| ApiError::BadRequest("MFA not enabled".to_string()))?;
 
     // TODO: Implement proper TOTP verification
@@ -195,7 +196,7 @@ pub async fn login_mfa(mut req: Request, ctx: RouteContext<AppState>) -> worker:
         user: user.into(),
         token,
         refresh_token: Some(refresh_token),
-        expires_at: chrono::DateTime::from_timestamp(expires_at, 0).unwrap_or(chrono::Utc::now()),
+        expires_at: chrono::DateTime::from_timestamp(expires_at, 0).unwrap_or_else(|| utils::now()),
         mfa_required: false,
     };
 
@@ -277,7 +278,7 @@ pub async fn forgot_password(mut req: Request, ctx: RouteContext<AppState>) -> w
         // Generate reset token
         let token = PasswordService::generate_token();
         let token_hash = PasswordService::hash_token(&token);
-        let expires_at = chrono::Utc::now() + chrono::Duration::hours(1);
+        let expires_at = utils::now() + chrono::Duration::hours(1);
 
         // Store reset token
         ctx.data.db.execute(
@@ -290,7 +291,7 @@ pub async fn forgot_password(mut req: Request, ctx: RouteContext<AppState>) -> w
                 serde_json::json!(user.id.to_string()),
                 serde_json::json!(token_hash),
                 serde_json::json!(expires_at.to_rfc3339()),
-                serde_json::json!(chrono::Utc::now().to_rfc3339()),
+                serde_json::json!(utils::now_iso()),
             ]
         ).await?;
 
@@ -325,7 +326,7 @@ pub async fn reset_password(mut req: Request, ctx: RouteContext<AppState>) -> wo
         "#,
         vec![
             serde_json::json!(token_hash),
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
         ]
     ).await?
     .ok_or_else(|| ApiError::BadRequest("Invalid or expired reset token".to_string()))?;
@@ -338,7 +339,7 @@ pub async fn reset_password(mut req: Request, ctx: RouteContext<AppState>) -> wo
         "UPDATE users SET password_hash = $1, updated_at = $2 WHERE id = $3",
         vec![
             serde_json::json!(password_hash),
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
             serde_json::json!(reset.user_id.to_string()),
         ]
     ).await?;
@@ -347,7 +348,7 @@ pub async fn reset_password(mut req: Request, ctx: RouteContext<AppState>) -> wo
     ctx.data.db.execute(
         "UPDATE password_resets SET used_at = $1 WHERE id = $2",
         vec![
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
             serde_json::json!(reset.id.to_string()),
         ]
     ).await?;
@@ -407,7 +408,7 @@ async fn log_security_event(
             serde_json::json!(event_type),
             serde_json::json!(ip),
             serde_json::json!(user_agent),
-            serde_json::json!(chrono::Utc::now().to_rfc3339()),
+            serde_json::json!(utils::now_iso()),
         ]
     ).await;
 }

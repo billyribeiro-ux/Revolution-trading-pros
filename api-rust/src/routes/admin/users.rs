@@ -117,7 +117,7 @@ pub async fn ban(mut req: Request, ctx: RouteContext<AppState>) -> worker::Resul
     let body: BanRequest = req.json().await.unwrap_or(BanRequest { reason: None });
 
     // Can't ban yourself
-    if id == admin.id.to_string() {
+    if *id == admin.id.to_string() {
         return Err(ApiError::BadRequest("You cannot ban yourself".to_string()).into());
     }
 
@@ -133,7 +133,7 @@ pub async fn ban(mut req: Request, ctx: RouteContext<AppState>) -> worker::Resul
         }
     }
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         "UPDATE users SET banned_at = $1, ban_reason = $2, updated_at = $1 WHERE id = $3",
@@ -162,7 +162,7 @@ pub async fn unban(req: Request, ctx: RouteContext<AppState>) -> worker::Result<
     let id = ctx.param("id")
         .ok_or_else(|| ApiError::BadRequest("Missing user id".to_string()))?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         "UPDATE users SET banned_at = NULL, ban_reason = NULL, updated_at = $1 WHERE id = $2",

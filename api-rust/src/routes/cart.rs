@@ -37,7 +37,7 @@ pub async fn checkout(mut req: Request, ctx: RouteContext<AppState>) -> worker::
             "#,
             vec![
                 serde_json::json!(coupon_code.to_uppercase()),
-                serde_json::json!(chrono::Utc::now().to_rfc3339()),
+                serde_json::json!(crate::utils::now().to_rfc3339()),
             ]
         ).await?;
 
@@ -77,8 +77,8 @@ pub async fn checkout(mut req: Request, ctx: RouteContext<AppState>) -> worker::
 
     // Create order
     let order_id = uuid::Uuid::new_v4();
-    let order_number = format!("RTP-{}", chrono::Utc::now().format("%Y%m%d%H%M%S"));
-    let now = chrono::Utc::now();
+    let order_number = format!("RTP-{}", crate::utils::now().format("%Y%m%d%H%M%S"));
+    let now = crate::utils::now();
 
     ctx.data.db.execute(
         r#"

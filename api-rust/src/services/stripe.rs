@@ -1,13 +1,15 @@
 //! Stripe payment service
+//!
+//! WASM-compatible Stripe API client using fetch
 
 use serde::{Deserialize, Serialize};
 use crate::error::ApiError;
 
 /// Stripe service for payment processing
+#[derive(Clone)]
 pub struct StripeService {
     secret_key: String,
     webhook_secret: String,
-    http_client: reqwest::Client,
     base_url: String,
 }
 
@@ -16,7 +18,6 @@ impl StripeService {
         Self {
             secret_key: secret_key.to_string(),
             webhook_secret: webhook_secret.to_string(),
-            http_client: reqwest::Client::new(),
             base_url: "https://api.stripe.com/v1".to_string(),
         }
     }
@@ -29,24 +30,24 @@ impl StripeService {
         customer_id: Option<&str>,
         metadata: Option<serde_json::Value>,
     ) -> Result<PaymentIntent, ApiError> {
-        let mut params = vec![
-            ("amount", amount.to_string()),
-            ("currency", currency.to_string()),
+        let mut params: Vec<(String, String)> = vec![
+            ("amount".to_string(), amount.to_string()),
+            ("currency".to_string(), currency.to_string()),
         ];
 
         if let Some(cid) = customer_id {
-            params.push(("customer", cid.to_string()));
+            params.push(("customer".to_string(), cid.to_string()));
         }
 
         if let Some(meta) = metadata {
             if let Some(obj) = meta.as_object() {
                 for (k, v) in obj {
-                    params.push((&format!("metadata[{}]", k), v.to_string()));
+                    params.push((format!("metadata[{}]", k), v.to_string()));
                 }
             }
         }
 
-        self.post("/payment_intents", &params).await
+        self.post_owned("/payment_intents", params).await
     }
 
     /// Create a customer
@@ -56,21 +57,21 @@ impl StripeService {
         name: Option<&str>,
         metadata: Option<serde_json::Value>,
     ) -> Result<Customer, ApiError> {
-        let mut params = vec![("email", email.to_string())];
+        let mut params: Vec<(String, String)> = vec![("email".to_string(), email.to_string())];
 
         if let Some(n) = name {
-            params.push(("name", n.to_string()));
+            params.push(("name".to_string(), n.to_string()));
         }
 
         if let Some(meta) = metadata {
             if let Some(obj) = meta.as_object() {
                 for (k, v) in obj {
-                    params.push((&format!("metadata[{}]", k), v.to_string()));
+                    params.push((format!("metadata[{}]", k), v.to_string()));
                 }
             }
         }
 
-        self.post("/customers", &params).await
+        self.post_owned("/customers", params).await
     }
 
     /// Create a subscription
@@ -171,13 +172,17 @@ impl StripeService {
     }
 
     fn compute_hmac(secret: &str, payload: &str) -> String {
-        use std::collections::hash_map::DefaultHasher;
-        use std::hash::{Hash, Hasher};
+        use hmac::{Hmac, Mac};
+        use sha2::Sha256;
+        use base64::{Engine as _, engine::general_purpose::STANDARD};
         
-        let mut hasher = DefaultHasher::new();
-        secret.hash(&mut hasher);
-        payload.hash(&mut hasher);
-        format!("{:x}", hasher.finish())
+        type HmacSha256 = Hmac<Sha256>;
+        
+        let mut mac = HmacSha256::new_from_slice(secret.as_bytes())
+            .expect("HMAC can take key of any size");
+        mac.update(payload.as_bytes());
+        let result = mac.finalize();
+        hex::encode(result.into_bytes())
     }
 
     fn secure_compare(a: &str, b: &str) -> bool {
@@ -187,53 +192,126 @@ impl StripeService {
         a.bytes().zip(b.bytes()).fold(0, |acc, (x, y)| acc | (x ^ y)) == 0
     }
 
+    /// Make a GET request to Stripe API using worker fetch
     async fn get<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
-        let response = self.http_client
-            .get(format!("{}{}", self.base_url, path))
-            .header("Authorization", format!("Bearer {}", self.secret_key))
+        let url = format!("{}{}", self.base_url, path);
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
+        headers.set("Content-Type", "application/x-www-form-urlencoded").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Get);
+        init.with_headers(headers);
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Make a POST request to Stripe API using worker fetch (owned params)
+    async fn post_owned<T: for<'de> Deserialize<'de>>(
+        &self,
+        path: &str,
+        params: Vec<(String, String)>,
+    ) -> Result<T, ApiError> {
+        let url = format!("{}{}", self.base_url, path);
+        let params_ref: Vec<(&str, &str)> = params.iter().map(|(k, v)| (k.as_str(), v.as_str())).collect();
+        let body = serde_urlencoded::to_string(&params_ref)
+            .map_err(|e| ApiError::Internal(format!("Failed to encode params: {}", e)))?;
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
+        headers.set("Content-Type", "application/x-www-form-urlencoded").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body)));
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
+            .send()
+            .await
+            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
+    }
+
+    /// Make a POST request to Stripe API using worker fetch
     async fn post<T: for<'de> Deserialize<'de>>(
         &self,
         path: &str,
         params: &[(&str, String)],
     ) -> Result<T, ApiError> {
-        let response = self.http_client
-            .post(format!("{}{}", self.base_url, path))
-            .header("Authorization", format!("Bearer {}", self.secret_key))
-            .form(params)
+        let url = format!("{}{}", self.base_url, path);
+        let body = serde_urlencoded::to_string(params)
+            .map_err(|e| ApiError::Internal(format!("Failed to encode params: {}", e)))?;
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
+        headers.set("Content-Type", "application/x-www-form-urlencoded").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body)));
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Make a DELETE request to Stripe API using worker fetch
     async fn delete<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
-        let response = self.http_client
-            .delete(format!("{}{}", self.base_url, path))
-            .header("Authorization", format!("Bearer {}", self.secret_key))
+        let url = format!("{}{}", self.base_url, path);
+        
+        let mut headers = worker::Headers::new();
+        headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Delete);
+        init.with_headers(headers);
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Stripe request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Handle Stripe API response
     async fn handle_response<T: for<'de> Deserialize<'de>>(
         &self,
-        response: reqwest::Response,
+        response: &mut worker::Response,
     ) -> Result<T, ApiError> {
-        if !response.status().is_success() {
-            let error: StripeError = response.json().await
+        let status = response.status_code();
+        let text = response.text().await
+            .map_err(|e| ApiError::ExternalService(format!("Failed to read response: {:?}", e)))?;
+        
+        if status >= 400 {
+            let error: StripeError = serde_json::from_str(&text)
                 .unwrap_or(StripeError {
                     error: StripeErrorDetail {
-                        message: "Unknown Stripe error".to_string(),
+                        message: text.clone(),
                         code: None,
                     },
                 });
@@ -243,7 +321,7 @@ impl StripeService {
             )));
         }
 
-        response.json().await
+        serde_json::from_str(&text)
             .map_err(|e| ApiError::ExternalService(format!("Failed to parse Stripe response: {}", e)))
     }
 }

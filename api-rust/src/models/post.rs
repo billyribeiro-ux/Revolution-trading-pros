@@ -3,7 +3,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use crate::error::ApiError;
 
 /// Blog post entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -105,13 +105,11 @@ pub struct Tag {
 }
 
 /// Create post request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreatePostRequest {
-    #[validate(length(min = 1, message = "Title is required"))]
     pub title: String,
     pub slug: Option<String>,
     pub excerpt: Option<String>,
-    #[validate(length(min = 1, message = "Content is required"))]
     pub content: String,
     pub featured_image: Option<String>,
     pub category_id: Option<Uuid>,
@@ -123,8 +121,20 @@ pub struct CreatePostRequest {
     pub meta_description: Option<String>,
 }
 
+impl CreatePostRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.title.trim().is_empty() {
+            return Err(ApiError::Validation("Title is required".to_string()));
+        }
+        if self.content.trim().is_empty() {
+            return Err(ApiError::Validation("Content is required".to_string()));
+        }
+        Ok(())
+    }
+}
+
 /// Update post request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct UpdatePostRequest {
     pub title: Option<String>,
     pub slug: Option<String>,
@@ -141,9 +151,8 @@ pub struct UpdatePostRequest {
 }
 
 /// Create category request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreateCategoryRequest {
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
     pub slug: Option<String>,
     pub description: Option<String>,
@@ -155,14 +164,31 @@ pub struct CreateCategoryRequest {
     pub meta_description: Option<String>,
 }
 
+impl CreateCategoryRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        Ok(())
+    }
+}
+
 /// Create tag request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreateTagRequest {
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
     pub slug: Option<String>,
     pub description: Option<String>,
     pub is_visible: Option<bool>,
+}
+
+impl CreateTagRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        Ok(())
+    }
 }
 
 /// Post list query parameters

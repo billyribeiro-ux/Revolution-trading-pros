@@ -1,12 +1,14 @@
 //! Postmark email service
+//!
+//! WASM-compatible Postmark API client using worker fetch
 
 use serde::{Deserialize, Serialize};
 use crate::error::ApiError;
 
 /// Postmark service for sending emails
+#[derive(Clone)]
 pub struct PostmarkService {
     api_key: String,
-    http_client: reqwest::Client,
     base_url: String,
     from_email: String,
     from_name: String,
@@ -16,7 +18,6 @@ impl PostmarkService {
     pub fn new(api_key: &str, from_email: &str, from_name: &str) -> Self {
         Self {
             api_key: api_key.to_string(),
-            http_client: reqwest::Client::new(),
             base_url: "https://api.postmarkapp.com".to_string(),
             from_email: from_email.to_string(),
             from_name: from_name.to_string(),
@@ -91,45 +92,74 @@ impl PostmarkService {
         self.get(&format!("/bounces?count={}&offset={}", count, offset)).await
     }
 
+    /// Make a GET request using worker fetch
     async fn get<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
-        let response = self.http_client
-            .get(format!("{}{}", self.base_url, path))
-            .header("X-Postmark-Server-Token", &self.api_key)
-            .header("Accept", "application/json")
+        let url = format!("{}{}", self.base_url, path);
+        
+        let mut headers = worker::Headers::new();
+        headers.set("X-Postmark-Server-Token", &self.api_key).ok();
+        headers.set("Accept", "application/json").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Get);
+        init.with_headers(headers);
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Postmark request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Postmark request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Make a POST request using worker fetch
     async fn post<T: for<'de> Deserialize<'de>, B: Serialize>(
         &self,
         path: &str,
         body: &B,
     ) -> Result<T, ApiError> {
-        let response = self.http_client
-            .post(format!("{}{}", self.base_url, path))
-            .header("X-Postmark-Server-Token", &self.api_key)
-            .header("Accept", "application/json")
-            .header("Content-Type", "application/json")
-            .json(body)
+        let url = format!("{}{}", self.base_url, path);
+        let body_json = serde_json::to_string(body)
+            .map_err(|e| ApiError::Internal(format!("Failed to serialize body: {}", e)))?;
+        
+        let mut headers = worker::Headers::new();
+        headers.set("X-Postmark-Server-Token", &self.api_key).ok();
+        headers.set("Accept", "application/json").ok();
+        headers.set("Content-Type", "application/json").ok();
+        
+        let mut init = worker::RequestInit::new();
+        init.with_method(worker::Method::Post);
+        init.with_headers(headers);
+        init.with_body(Some(wasm_bindgen::JsValue::from_str(&body_json)));
+        
+        let request = worker::Request::new_with_init(&url, &init)
+            .map_err(|e| ApiError::ExternalService(format!("Failed to create request: {:?}", e)))?;
+        
+        let mut response = worker::Fetch::Request(request)
             .send()
             .await
-            .map_err(|e| ApiError::ExternalService(format!("Postmark request failed: {}", e)))?;
-
-        self.handle_response(response).await
+            .map_err(|e| ApiError::ExternalService(format!("Postmark request failed: {:?}", e)))?;
+        
+        self.handle_response(&mut response).await
     }
 
+    /// Handle API response
     async fn handle_response<T: for<'de> Deserialize<'de>>(
         &self,
-        response: reqwest::Response,
+        response: &mut worker::Response,
     ) -> Result<T, ApiError> {
-        if !response.status().is_success() {
-            let error: PostmarkError = response.json().await
+        let status = response.status_code();
+        let text = response.text().await
+            .map_err(|e| ApiError::ExternalService(format!("Failed to read response: {:?}", e)))?;
+        
+        if status >= 400 {
+            let error: PostmarkError = serde_json::from_str(&text)
                 .unwrap_or(PostmarkError {
-                    error_code: 0,
-                    message: "Unknown Postmark error".to_string(),
+                    error_code: status as i32,
+                    message: text.clone(),
                 });
             return Err(ApiError::ExternalService(format!(
                 "Postmark error {}: {}",
@@ -137,7 +167,7 @@ impl PostmarkService {
             )));
         }
 
-        response.json().await
+        serde_json::from_str(&text)
             .map_err(|e| ApiError::ExternalService(format!("Failed to parse Postmark response: {}", e)))
     }
 }

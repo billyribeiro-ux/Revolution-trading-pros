@@ -12,7 +12,7 @@ pub async fn subscribe(mut req: Request, ctx: RouteContext<AppState>) -> worker:
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
     let email = body.email.to_lowercase();
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     // Check if already subscribed
     let existing: Option<crate::models::email::EmailSubscriber> = ctx.data.db.query_one(
@@ -116,7 +116,7 @@ pub async fn confirm(req: Request, ctx: RouteContext<AppState>) -> worker::Resul
         .ok_or_else(|| ApiError::BadRequest("Missing email".to_string()))?;
 
     let token_hash = PasswordService::hash_token(token);
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     // Verify token
     let confirmation: Option<EmailConfirmation> = ctx.data.db.query_one(
@@ -179,7 +179,7 @@ pub async fn unsubscribe(req: Request, ctx: RouteContext<AppState>) -> worker::R
         return Err(ApiError::BadRequest("Invalid unsubscribe link".to_string()).into());
     }
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     // Unsubscribe
     ctx.data.db.execute(

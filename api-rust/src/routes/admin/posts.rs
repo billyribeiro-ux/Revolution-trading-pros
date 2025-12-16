@@ -85,7 +85,7 @@ pub async fn create(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
     let post_id = uuid::Uuid::new_v4();
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
     
     // Generate slug from title if not provided
     let slug = body.slug.unwrap_or_else(|| slug::slugify(&body.title));
@@ -203,7 +203,7 @@ pub async fn update(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     let body: UpdatePostRequest = req.json().await
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
-    let now = chrono::Utc::now();
+    let now = crate::utils::now();
 
     // Build dynamic update query
     let mut updates = vec!["updated_at = $1".to_string()];

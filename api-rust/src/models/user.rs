@@ -1,9 +1,11 @@
 //! User model and related types
+//!
+//! Manual validation instead of validator crate for WASM compatibility
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use crate::error::ApiError;
 
 /// User entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -53,23 +55,44 @@ impl UserRole {
 }
 
 /// Registration request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct RegisterRequest {
-    #[validate(email(message = "Invalid email address"))]
     pub email: String,
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
     pub password: String,
 }
 
+impl RegisterRequest {
+    /// Validate the registration request
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if !is_valid_email(&self.email) {
+            return Err(ApiError::Validation("Invalid email address".to_string()));
+        }
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        if self.password.len() < 8 {
+            return Err(ApiError::Validation("Password must be at least 8 characters".to_string()));
+        }
+        Ok(())
+    }
+}
+
 /// Login request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct LoginRequest {
-    #[validate(email(message = "Invalid email address"))]
     pub email: String,
     pub password: String,
     pub remember: Option<bool>,
+}
+
+impl LoginRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if !is_valid_email(&self.email) {
+            return Err(ApiError::Validation("Invalid email address".to_string()));
+        }
+        Ok(())
+    }
 }
 
 /// MFA login request
@@ -81,30 +104,78 @@ pub struct MfaLoginRequest {
 }
 
 /// Password reset request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct ForgotPasswordRequest {
-    #[validate(email(message = "Invalid email address"))]
     pub email: String,
 }
 
+impl ForgotPasswordRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if !is_valid_email(&self.email) {
+            return Err(ApiError::Validation("Invalid email address".to_string()));
+        }
+        Ok(())
+    }
+}
+
 /// Password reset submission
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct ResetPasswordRequest {
     pub token: String,
-    #[validate(email(message = "Invalid email address"))]
     pub email: String,
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
     pub password: String,
     pub password_confirmation: String,
 }
 
+impl ResetPasswordRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if !is_valid_email(&self.email) {
+            return Err(ApiError::Validation("Invalid email address".to_string()));
+        }
+        if self.password.len() < 8 {
+            return Err(ApiError::Validation("Password must be at least 8 characters".to_string()));
+        }
+        if self.password != self.password_confirmation {
+            return Err(ApiError::Validation("Passwords do not match".to_string()));
+        }
+        Ok(())
+    }
+}
+
 /// Change password request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct ChangePasswordRequest {
     pub current_password: String,
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
     pub new_password: String,
     pub new_password_confirmation: String,
+}
+
+impl ChangePasswordRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.new_password.len() < 8 {
+            return Err(ApiError::Validation("Password must be at least 8 characters".to_string()));
+        }
+        if self.new_password != self.new_password_confirmation {
+            return Err(ApiError::Validation("Passwords do not match".to_string()));
+        }
+        Ok(())
+    }
+}
+
+/// Simple email validation (basic check)
+fn is_valid_email(email: &str) -> bool {
+    let email = email.trim();
+    if email.is_empty() {
+        return false;
+    }
+    // Basic check: contains @ and has parts before and after
+    let parts: Vec<&str> = email.split('@').collect();
+    if parts.len() != 2 {
+        return false;
+    }
+    let local = parts[0];
+    let domain = parts[1];
+    !local.is_empty() && !domain.is_empty() && domain.contains('.')
 }
 
 /// Auth response with tokens

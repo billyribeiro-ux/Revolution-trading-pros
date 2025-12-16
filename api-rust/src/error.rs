@@ -1,8 +1,11 @@
 //! Error types for the API
+//!
+//! Using thiserror 2.0 syntax
 
 use serde::Serialize;
 use worker::Response;
 
+/// API Error types with automatic Display implementation
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
     #[error("Not found: {0}")]
@@ -45,6 +48,7 @@ struct ErrorResponse {
 }
 
 impl ApiError {
+    /// Convert error to HTTP Response
     pub fn to_response(&self) -> Response {
         let (status, error_type) = match self {
             ApiError::NotFound(_) => (404, "not_found"),
@@ -89,8 +93,9 @@ impl From<serde_json::Error> for ApiError {
     }
 }
 
-impl From<jsonwebtoken::errors::Error> for ApiError {
-    fn from(err: jsonwebtoken::errors::Error) -> Self {
-        ApiError::Unauthorized(format!("Token error: {}", err))
+/// Convert ApiError to worker::Error for route handlers
+impl From<ApiError> for worker::Error {
+    fn from(err: ApiError) -> Self {
+        worker::Error::RustError(err.to_string())
     }
 }

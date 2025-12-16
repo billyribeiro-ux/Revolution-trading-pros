@@ -3,7 +3,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use crate::error::ApiError;
 
 /// Subscription plan entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -97,7 +97,7 @@ pub struct SubscriptionWithPlan {
 }
 
 /// Create subscription request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreateSubscriptionRequest {
     pub plan_id: Uuid,
     pub payment_method_id: Option<String>,
@@ -205,14 +205,12 @@ pub struct SubscriptionListQuery {
 }
 
 /// Create subscription plan request
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize)]
 pub struct CreatePlanRequest {
-    #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
     pub slug: Option<String>,
     pub description: Option<String>,
     pub product_id: Uuid,
-    #[validate(range(min = 0, message = "Price must be positive"))]
     pub price: i64,
     pub currency: Option<String>,
     pub interval: BillingInterval,
@@ -221,6 +219,18 @@ pub struct CreatePlanRequest {
     pub features: Option<Vec<String>>,
     pub is_active: Option<bool>,
     pub is_featured: Option<bool>,
+}
+
+impl CreatePlanRequest {
+    pub fn validate(&self) -> Result<(), ApiError> {
+        if self.name.trim().is_empty() {
+            return Err(ApiError::Validation("Name is required".to_string()));
+        }
+        if self.price < 0 {
+            return Err(ApiError::Validation("Price must be positive".to_string()));
+        }
+        Ok(())
+    }
 }
 
 /// Update subscription plan request
