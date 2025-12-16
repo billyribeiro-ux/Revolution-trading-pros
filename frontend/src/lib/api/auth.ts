@@ -636,7 +636,7 @@ class AuthenticationService {
 
 			// Track successful login
 			this.trackEvent('user_logged_in', {
-				email: fullUser.email,
+				email: fullUser?.email || 'unknown',
 				method: 'password'
 			});
 
@@ -676,7 +676,7 @@ class AuthenticationService {
 
 		// Track biometric login
 		this.trackEvent('user_logged_in', {
-			email: response.user.email,
+			email: response.user?.email || 'unknown',
 			method: 'biometric'
 		});
 
@@ -694,7 +694,7 @@ class AuthenticationService {
 
 			// Track logout
 			const user = get(authStore).user;
-			if (user) {
+			if (user?.email) {
 				this.trackEvent('user_logged_out', { email: user.email });
 			}
 		} catch (error) {
@@ -743,7 +743,7 @@ class AuthenticationService {
 		authStore.setUser(user);
 
 		// Track profile update
-		this.trackEvent('profile_updated', { email: user.email });
+		this.trackEvent('profile_updated', { email: user?.email || 'unknown' });
 
 		return user;
 	}
