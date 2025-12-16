@@ -10,6 +10,7 @@
 	 * - Removed aggressive CSS containment that broke observer
 	 * - Added fallback timeout for browsers with IO issues
 	 * - SSR-safe with proper hydration handling
+	 * - PRODUCTION FIX: Always render content on SSR for SEO, lazy load animations only
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount, tick } from 'svelte';
@@ -32,14 +33,15 @@
 	let {
 		rootMargin = '200px',
 		threshold = 0,
-		fallbackTimeout = 3000,
+		fallbackTimeout = 2000,
 		placeholderHeight = '400px',
 		children
 	}: Props = $props();
 
-	// ICT11+ Fix: Start visible on SSR, let client handle lazy loading
-	// This ensures content renders even if JS fails
-	let isVisible = $state(!browser);
+	// ICT11+ PRODUCTION FIX: Always start visible for SSR/SEO
+	// Content is always rendered, only animations are deferred
+	let isVisible = $state(true);
+	let hasAnimated = $state(false);
 	let container = $state<HTMLElement | null>(null);
 	let observer: IntersectionObserver | null = null;
 	let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
@@ -47,32 +49,29 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// Reset to false on client, then check visibility
-		isVisible = false;
-
 		// Use requestAnimationFrame to ensure DOM is ready
 		requestAnimationFrame(() => {
 			if (!container) {
-				isVisible = true;
+				hasAnimated = true;
 				return;
 			}
 
-			// Check if element is already in viewport
+			// Check if element is already in viewport - trigger animations immediately
 			const rect = container.getBoundingClientRect();
 			const margin = parseInt(rootMargin) || 200;
 			const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
 			if (rect.top < viewportHeight + margin) {
-				isVisible = true;
+				hasAnimated = true;
 				return;
 			}
 
-			// Create IntersectionObserver
+			// Create IntersectionObserver for animation triggering
 			observer = new IntersectionObserver(
 				(entries) => {
 					const entry = entries[0];
-					if (entry?.isIntersecting) {
-						isVisible = true;
+					if (entry?.isIntersecting && !hasAnimated) {
+						hasAnimated = true;
 						observer?.disconnect();
 						observer = null;
 						if (fallbackTimer) {
@@ -89,11 +88,11 @@
 
 			observer.observe(container);
 
-			// Fallback timeout - show content after timeout regardless
+			// Fallback timeout - trigger animations after timeout regardless
 			if (fallbackTimeout > 0) {
 				fallbackTimer = setTimeout(() => {
-					if (!isVisible) {
-						isVisible = true;
+					if (!hasAnimated) {
+						hasAnimated = true;
 						observer?.disconnect();
 						observer = null;
 					}
@@ -113,17 +112,8 @@
 	});
 </script>
 
-<div bind:this={container} class="lazy-section">
-	{#if isVisible}
-		{@render children?.()}
-	{:else}
-		<!-- Placeholder maintains layout stability without hiding from observers -->
-		<div
-			class="lazy-placeholder"
-			style="min-height: {placeholderHeight};"
-			aria-hidden="true"
-		></div>
-	{/if}
+<div bind:this={container} class="lazy-section" data-animated={hasAnimated}>
+	{@render children?.()}
 </div>
 
 <style>
@@ -132,12 +122,5 @@
 		/* The lazy loading is handled by the component logic instead */
 		display: block;
 		width: 100%;
-	}
-
-	.lazy-placeholder {
-		/* ICT11+ Fix: Use transparent background instead of opacity:0 */
-		/* This ensures the element takes up space and triggers IntersectionObserver */
-		background: transparent;
-		pointer-events: none;
 	}
 </style>
