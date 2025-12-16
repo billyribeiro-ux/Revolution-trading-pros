@@ -1,15 +1,17 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { browser } from '$app/environment';
     import { spring } from 'svelte/motion';
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
     /**
-     * Data: Trading Rooms (Preserved & Enhanced)
+     * Data: Trading Rooms (Upgraded with Technical IDs for Custom Icons)
      */
     const rooms = [
         {
             id: 'day-trading',
+            iconType: 'volatility', // Triggers Candlestick Animation
             name: 'Day Trading Command',
             tagline: 'Trade the Open with Professionals',
             description: 'High-velocity execution. Join expert traders for the opening bell, real-time scanners, and rapid-fire trade calls.',
@@ -27,6 +29,7 @@
         },
         {
             id: 'swing-trading',
+            iconType: 'trend', // Triggers Sine Wave Animation
             name: 'Swing Alpha Room',
             tagline: 'Catch Multi-Day Moves',
             description: 'Strategic positioning for 3-7 day holds. Perfect for those who cannot watch the screen all day but want institutional returns.',
@@ -44,6 +47,7 @@
         },
         {
             id: 'small-accounts',
+            iconType: 'growth', // Triggers Step-Chart Animation
             name: 'Growth Accelerator',
             tagline: 'Small Account → Big Future',
             description: 'The disciplined path to $25K and beyond. Learn risk management and compounding strategies specifically for smaller capital bases.',
@@ -62,26 +66,26 @@
     ];
 
     /**
-     * Data: Why Join Us (Restored)
+     * Data: Why Join Us (Upgraded with Technical IDs)
      */
     const benefits = [
         {
-            icon: '👨‍🏫',
+            iconType: 'analysis',
             title: 'Institutional Mentorship',
             desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.'
         },
         {
-            icon: '⚡',
+            iconType: 'radar',
             title: 'Sub-Second Alerts',
             desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.'
         },
         {
-            icon: '🎓',
+            iconType: 'strategy',
             title: 'Continuous Education',
             desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.'
         },
         {
-            icon: '🤝',
+            iconType: 'network',
             title: 'Elite Community',
             desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.'
         }
@@ -99,7 +103,7 @@
         { sym: 'AMD', price: '138.00', change: '+1.05%', up: true },
         { sym: 'BTC', price: '42,100', change: '+1.2%', up: true },
     ];
-    const tickerItems = [...symbols, ...symbols, ...symbols, ...symbols]; // Infinite loop buffer
+    const tickerItems = [...symbols, ...symbols, ...symbols, ...symbols];
 
     /**
      * Action: 3D Tilt Effect
@@ -113,7 +117,6 @@
 
         function handleMove(e: MouseEvent) {
             const rect = node.getBoundingClientRect();
-            // Max tilt 3 degrees for subtle effect
             x.set(((e.clientY - rect.top - rect.height / 2) / rect.height) * -3);
             y.set(((e.clientX - rect.left - rect.width / 2) / rect.width) * 3);
         }
@@ -144,17 +147,11 @@
     let benefitsRef: HTMLElement;
     let ctaRef: HTMLElement;
 
-    onMount(async () => {
-        if (!browser) return;
-        
-        // Dynamic GSAP import for SSR safety
-        const { gsap } = await import('gsap');
-        const { ScrollTrigger } = await import('gsap/dist/ScrollTrigger');
+    onMount(() => {
         gsap.registerPlugin(ScrollTrigger);
-        
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-        // 1. Hero Sequence
+        // Hero Sequence
         tl.fromTo('.hero-badge', 
             { y: -20, opacity: 0, scale: 0.9 }, 
             { y: 0, opacity: 1, scale: 1, duration: 0.8 }
@@ -169,40 +166,36 @@
             { y: 0, opacity: 1, duration: 0.8 }, 
             '-=0.6'
         )
-        .fromTo(gridRef?.children || [], 
+        .fromTo(gridRef.children, 
             { y: 60, opacity: 0, filter: 'blur(10px)' }, 
             { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.15, duration: 0.8 }, 
             '-=0.4'
         );
 
-        // 2. Benefits Section Scroll Trigger
-        if (benefitsRef?.children) {
-            gsap.fromTo(benefitsRef.children, 
-                { y: 40, opacity: 0 },
-                {
-                    y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
-                    scrollTrigger: {
-                        trigger: benefitsRef,
-                        start: 'top 80%',
-                        toggleActions: 'play none none reverse'
-                    }
+        // Benefits Section Scroll Trigger
+        gsap.fromTo(benefitsRef.children, 
+            { y: 40, opacity: 0 },
+            {
+                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
+                scrollTrigger: {
+                    trigger: benefitsRef,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
                 }
-            );
-        }
+            }
+        );
 
-        // 3. Final CTA Scroll Trigger
-        if (ctaRef) {
-            gsap.fromTo(ctaRef,
-                { scale: 0.95, opacity: 0 },
-                {
-                    scale: 1, opacity: 1, duration: 0.8,
-                    scrollTrigger: {
-                        trigger: ctaRef,
-                        start: 'top 85%'
-                    }
+        // Final CTA Scroll Trigger
+        gsap.fromTo(ctaRef,
+            { scale: 0.95, opacity: 0 },
+            {
+                scale: 1, opacity: 1, duration: 0.8,
+                scrollTrigger: {
+                    trigger: ctaRef,
+                    start: 'top 85%'
                 }
-            );
-        }
+            }
+        );
     });
 </script>
 
@@ -221,7 +214,7 @@
 
     <div class="relative z-20 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden">
         <div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
-            {#each tickerItems as item, i}
+            {#each tickerItems as item}
                 <div class="flex items-center gap-3 text-xs font-mono select-none">
                     <span class="font-bold text-zinc-300">{item.sym}</span>
                     <span class="text-zinc-500">{item.price}</span>
@@ -279,17 +272,34 @@
                                 </div>
                             {/if}
 
-                            <div class={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ease-out
-                                ${room.accent === 'cyan' ? 'bg-cyan-500/10 text-cyan-400' : ''}
-                                ${room.accent === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' : ''}
-                                ${room.accent === 'amber' ? 'bg-amber-500/10 text-amber-400' : ''}
+                            <div class={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 ease-out border border-white/5
+                                ${room.accent === 'cyan' ? 'bg-cyan-500/5 text-cyan-400' : ''}
+                                ${room.accent === 'emerald' ? 'bg-emerald-500/5 text-emerald-400' : ''}
+                                ${room.accent === 'amber' ? 'bg-amber-500/5 text-amber-400' : ''}
                             `}>
-                                {#if room.id === 'day-trading'}
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                                {:else if room.id === 'swing-trading'}
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-2-2-4 4"/></svg>
-                                {:else}
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                {#if room.iconType === 'volatility'}
+                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path class="group-hover:animate-candle-1" d="M6 6v12" stroke-linecap="round"/>
+                                        <rect class="group-hover:animate-candle-body-1" x="4" y="9" width="4" height="6" fill="currentColor" fill-opacity="0.2"/>
+                                        <path class="group-hover:animate-candle-2" d="M12 4v16" stroke-linecap="round"/>
+                                        <rect class="group-hover:animate-candle-body-2" x="10" y="7" width="4" height="10" fill="currentColor" fill-opacity="0.2"/>
+                                        <path class="group-hover:animate-candle-3" d="M18 8v8" stroke-linecap="round"/>
+                                        <rect class="group-hover:animate-candle-body-3" x="16" y="10" width="4" height="4" fill="currentColor" fill-opacity="0.2"/>
+                                    </svg>
+                                {:else if room.iconType === 'trend'}
+                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path class="group-hover:animate-draw-line" stroke-dasharray="30" stroke-dashoffset="30" d="M3 12c0-3 3-6 6-6s6 3 6 6 3 6 6 6" stroke-linecap="round"/>
+                                        <circle cx="21" cy="18" r="2" fill="currentColor" class="opacity-0 group-hover:opacity-100 transition-opacity delay-300"/>
+                                    </svg>
+                                {:else if room.iconType === 'growth'}
+                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M3 20h18" stroke-linecap="round"/>
+                                        <path class="group-hover:animate-grow-1" d="M5 20v-4" stroke-linecap="round"/>
+                                        <path class="group-hover:animate-grow-2" d="M9 20v-8" stroke-linecap="round"/>
+                                        <path class="group-hover:animate-grow-3" d="M13 20v-12" stroke-linecap="round"/>
+                                        <path class="group-hover:animate-grow-4" d="M17 20v-16" stroke-linecap="round"/>
+                                        <path d="M17 4l2 2" stroke-linecap="round"/>
+                                    </svg>
                                 {/if}
                             </div>
 
@@ -317,11 +327,11 @@
                             <ul class="space-y-3 mb-8 flex-1">
                                 {#each room.features as feature}
                                     <li class="flex items-start gap-3 text-sm text-zinc-300">
-                                        <svg class={`w-5 h-5 shrink-0 mt-[-2px] 
+                                        <svg class={`w-4 h-4 shrink-0 mt-[3px] 
                                             ${room.accent === 'cyan' ? 'text-cyan-500/80' : ''}
                                             ${room.accent === 'emerald' ? 'text-emerald-500/80' : ''}
                                             ${room.accent === 'amber' ? 'text-amber-500/80' : ''}
-                                        `} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        `} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                         {feature}
                                     </li>
                                 {/each}
@@ -369,8 +379,35 @@
 
             <div bind:this={benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {#each benefits as item}
-                    <div class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group">
-                        <div class="text-4xl mb-6 transform group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default">
+                        <div class="mx-auto w-12 h-12 mb-6 text-zinc-400 group-hover:text-blue-400 transition-colors duration-300">
+                            {#if item.iconType === 'analysis'}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10" stroke-dasharray="4 4" class="group-hover:animate-spin-slow"/>
+                                    <path d="M12 2v20M2 12h20" class="opacity-30"/>
+                                    <circle cx="12" cy="12" r="3" class="group-hover:scale-125 transition-transform"/>
+                                </svg>
+                            {:else if item.iconType === 'radar'}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    <path class="group-hover:animate-pulse" d="M12 8v4l3 3" stroke-linecap="round"/>
+                                </svg>
+                            {:else if item.iconType === 'strategy'}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                    <path class="group-hover:animate-draw-line" stroke-dasharray="10" stroke-dashoffset="10" d="M9 8h6M9 12h4" stroke-linecap="round"/>
+                                </svg>
+                            {:else if item.iconType === 'network'}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="5" r="2" class="group-hover:fill-current"/>
+                                    <circle cx="5" cy="19" r="2" class="group-hover:fill-current transition-colors delay-100"/>
+                                    <circle cx="19" cy="19" r="2" class="group-hover:fill-current transition-colors delay-200"/>
+                                    <path d="M12 7l-7 12M12 7l7 12M5 19h14" class="opacity-50"/>
+                                </svg>
+                            {/if}
+                        </div>
+
                         <h3 class="text-lg font-bold text-white mb-3">{item.title}</h3>
                         <p class="text-sm text-zinc-400 leading-relaxed">{item.desc}</p>
                     </div>
@@ -440,6 +477,40 @@
         0% { transform: translateX(0); }
         100% { transform: translateX(-50%); }
     }
+
+    /* Custom SVG Animations */
+    @keyframes draw-line {
+        to { stroke-dashoffset: 0; }
+    }
+    .animate-draw-line {
+        animation: draw-line 1s ease-out forwards;
+    }
+
+    @keyframes spin-slow {
+        to { transform: rotate(360deg); transform-origin: center; }
+    }
+    .animate-spin-slow {
+        animation: spin-slow 8s linear infinite;
+    }
+
+    /* Candle Animations */
+    @keyframes candle-up {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(1.2); }
+    }
+    .animate-candle-body-1 { transform-origin: bottom; animation: candle-up 2s infinite ease-in-out; }
+    .animate-candle-body-2 { transform-origin: bottom; animation: candle-up 3s infinite ease-in-out 0.5s; }
+    .animate-candle-body-3 { transform-origin: bottom; animation: candle-up 2.5s infinite ease-in-out 0.2s; }
+
+    /* Growth Bar Animations */
+    @keyframes grow-up {
+        from { transform: scaleY(0); }
+        to { transform: scaleY(1); }
+    }
+    .animate-grow-1 { transform-origin: bottom; animation: grow-up 0.4s ease-out forwards; }
+    .animate-grow-2 { transform-origin: bottom; animation: grow-up 0.4s ease-out 0.1s forwards; }
+    .animate-grow-3 { transform-origin: bottom; animation: grow-up 0.4s ease-out 0.2s forwards; }
+    .animate-grow-4 { transform-origin: bottom; animation: grow-up 0.4s ease-out 0.3s forwards; }
 
     .perspective-container {
         perspective: 2000px;
