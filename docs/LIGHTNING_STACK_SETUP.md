@@ -469,23 +469,22 @@ Edit `.env` with your credentials from steps 4-8.
 ### 9.2 Recommended Backend Hosting Options
 
 | Provider | Price | Best For |
-|----------|-------|----------|
-| **Railway** | $5/mo | Simplest deployment |
+|----------|-------|---------|
+| **Fly.io** | $0-10/mo | Edge deployment (Recommended) |
 | **Render** | $7/mo | Good free tier |
 | **DigitalOcean App Platform** | $12/mo | Reliable, scalable |
 | **Laravel Forge + DO** | $12/mo | Most control |
-| **Fly.io** | $0-10/mo | Edge deployment |
 
-### 9.3 Deploy to Railway (Recommended)
+### 9.3 Deploy to Fly.io (Recommended)
 
-**Link:** https://railway.app
+**Link:** https://fly.io
 
-1. Go to https://railway.app
-2. Click **New Project** → **Deploy from GitHub**
-3. Select your repository
-4. Set root directory: `backend`
-5. Add environment variables from your `.env`
-6. Deploy!
+1. Install Fly CLI: `curl -L https://fly.io/install.sh | sh`
+2. Login: `fly auth login`
+3. Navigate to backend: `cd backend`
+4. Launch app: `fly launch --no-deploy`
+5. Set secrets: `fly secrets set APP_KEY=... DATABASE_URL=...`
+6. Deploy: `fly deploy`
 
 ### 9.4 Deploy Sharp Service
 
@@ -508,11 +507,11 @@ services:
       - R2_ENDPOINT=${R2_ENDPOINT}
 ```
 
-**Option B: Separate Service (Railway)**
-1. Create a new Railway project for Sharp service
+**Option B: Separate Service (Fly.io)**
+1. Create a new Fly.io app for Sharp service
 2. Point it to `backend/services/sharp-image-processor`
-3. Add R2 environment variables
-4. Update `SHARP_SERVICE_URL` in your Laravel `.env`
+3. Add R2 secrets via `fly secrets set`
+4. Update `SHARP_SERVICE_URL` in your Laravel secrets
 
 ### 9.5 Run Migrations
 
@@ -546,7 +545,7 @@ php artisan view:cache
 |------|------|---------|-------|
 | CNAME | @ | revolution-trading-pros.pages.dev | ✅ |
 | CNAME | www | revolution-trading-pros.pages.dev | ✅ |
-| CNAME | api | your-backend-url.railway.app | ✅ |
+| CNAME | api | revolution-trading-pros.fly.dev | ✅ |
 | CNAME | media | pub-xxx.r2.dev | ✅ |
 
 ### 10.3 Enable Security Features
