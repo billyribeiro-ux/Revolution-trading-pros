@@ -1,42 +1,18 @@
 /**
  * Live Trading Rooms - Page Configuration
- * 
- * Configures prerendering and SSG behavior for optimal performance:
- * - Static generation with server-side data loading
- * - SEO optimization for search engines
- * - Performance enhancements for edge deployment
- * 
+ *
+ * ARCHITECTURE NOTE: This parent page uses SSR (not prerender) because:
+ * 1. Child routes (/day-trading, /swing-trading, /small-accounts) are prerendered
+ * 2. SvelteKit cannot create both /live-trading-rooms.html AND /live-trading-rooms/ directory
+ * 3. SSR with caching headers (set in +page.server.ts) provides equivalent performance
+ * 4. The +page.server.ts already sets Cache-Control for edge caching
+ *
  * @see https://kit.svelte.dev/docs/page-options
  * @module routes/live-trading-rooms/+page
- * @version 1.0.0
+ * @version 1.0.1
  */
 
-import type { PageLoad } from './$types';
-
+// SSR parent page - child routes prerender into /live-trading-rooms/ directory
 export const prerender = false;
 export const ssr = true;
 export const csr = true;
-
-// Configure page metadata for SSG
-export const config = {
-    // Enable static generation with revalidation
-    isr: {
-        expiration: 300, // 5 minutes
-        bypassToken: process.env.ISR_BYPASS_TOKEN
-    },
-    
-    // SEO configuration
-    seo: {
-        indexable: true,
-        followable: true,
-        priority: 0.8,
-        changeFrequency: 'weekly'
-    },
-    
-    // Performance optimization
-    performance: {
-        enableCompression: true,
-        enableCaching: true,
-        enableStreaming: true
-    }
-};

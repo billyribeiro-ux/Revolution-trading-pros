@@ -104,24 +104,16 @@ const tickerSymbols = [
 
 export const load: PageServerLoad = async ({ url, setHeaders }) => {
 	// Set caching headers for Google December 2025 Core Web Vitals compliance
+	// Note: Content-Encoding is handled by the server/CDN at runtime, not during prerender
 	setHeaders({
 		'Cache-Control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=60',
 		'Vary': 'Accept-Encoding, Accept',
-		'Content-Type': 'text/html; charset=utf-8',
 		// Performance headers for LCP < 2.0s
 		'X-DNS-Prefetch-Control': 'on',
 		// Security headers for trustworthiness signals
-		'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
 		'X-Content-Type-Options': 'nosniff',
 		'X-Frame-Options': 'DENY',
-		'X-XSS-Protection': '1; mode=block',
-		'Referrer-Policy': 'strict-origin-when-cross-origin',
-		'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
-		// E-E-A-T signals
-		'Last-Modified': new Date().toUTCString(),
-		'ETag': `"${Date.now()}"`,
-		// Content compression for faster delivery
-		'Content-Encoding': 'gzip'
+		'Referrer-Policy': 'strict-origin-when-cross-origin'
 	});
 
 	// Generate SEO metadata aligned with Google December 2025 updates
