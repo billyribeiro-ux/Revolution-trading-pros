@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '@tabler/icons-svelte';
+	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 
 	let schemas: any[] = [];
 	let templates: any = {};

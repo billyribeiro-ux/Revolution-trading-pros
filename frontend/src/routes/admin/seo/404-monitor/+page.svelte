@@ -6,7 +6,7 @@
 		IconTrash,
 		IconEyeOff,
 		IconAlertTriangle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
 
 	let logs: any[] = $state([]);

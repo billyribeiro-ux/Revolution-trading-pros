@@ -2,7 +2,7 @@
  * Revolution Trading Pros - Admin Authentication E2E Tests
  *
  * Apple ICT11+ Principal Engineer Grade Tests
- * 
+ *
  * Comprehensive E2E tests for admin authentication:
  * - Admin login flow
  * - Admin API calls with authentication
@@ -10,10 +10,14 @@
  * - Token-based API requests
  * - Session management
  *
+ * Note: Tests requiring backend API are automatically skipped when
+ * backend is not available (e.g., in CI environments).
+ *
  * @version 1.0.0
  */
 
 import { test, expect, type Page, type ConsoleMessage } from '@playwright/test';
+import { shouldSkipBackendTests, getBackendSkipReason } from '../helpers';
 
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
 const API_URL = process.env.E2E_API_URL || 'http://localhost:8000/api';
@@ -52,6 +56,9 @@ test.describe('Admin Authentication Flow', () => {
 
 	test.describe('Admin API Responses', () => {
 		test('admin API returns 401 JSON for unauthenticated requests', async ({ request }) => {
+			// Skip if backend not available
+			test.skip(shouldSkipBackendTests(), getBackendSkipReason());
+
 			const response = await request.get(`${API_URL}/admin/posts`, {
 				headers: {
 					'Accept': 'application/json'
@@ -59,7 +66,7 @@ test.describe('Admin Authentication Flow', () => {
 			});
 
 			expect(response.status()).toBe(401);
-			
+
 			const contentType = response.headers()['content-type'];
 			expect(contentType).toContain('application/json');
 
@@ -68,6 +75,9 @@ test.describe('Admin Authentication Flow', () => {
 		});
 
 		test('admin API returns 401 JSON for invalid token', async ({ request }) => {
+			// Skip if backend not available
+			test.skip(shouldSkipBackendTests(), getBackendSkipReason());
+
 			const response = await request.get(`${API_URL}/admin/posts`, {
 				headers: {
 					'Accept': 'application/json',
@@ -76,7 +86,7 @@ test.describe('Admin Authentication Flow', () => {
 			});
 
 			expect(response.status()).toBe(401);
-			
+
 			const contentType = response.headers()['content-type'];
 			expect(contentType).toContain('application/json');
 		});
@@ -156,7 +166,13 @@ test.describe('Admin Authentication Flow', () => {
 });
 
 test.describe('Admin Authenticated Flow', () => {
-	test.skip(!ADMIN_PASSWORD, 'Skipping authenticated tests - no admin password configured');
+	// Skip entire describe block if backend not available or no admin password
+	test.skip(
+		shouldSkipBackendTests() || !ADMIN_PASSWORD,
+		shouldSkipBackendTests()
+			? getBackendSkipReason()
+			: 'Skipping authenticated tests - no admin password configured'
+	);
 
 	test.describe('Login and Access', () => {
 		test('admin can login successfully', async ({ page }) => {

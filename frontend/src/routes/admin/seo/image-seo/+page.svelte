@@ -7,7 +7,7 @@
 		IconCheck,
 		IconAlertTriangle,
 		IconSettings
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		imageSeoSettings,
 		processImages,

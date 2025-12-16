@@ -6,7 +6,7 @@
 		IconEye,
 		IconDeviceFloppy,
 		IconRefresh
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
 	import SeoAnalyzer from '$lib/components/seo/SeoAnalyzer.svelte';
 

@@ -10,7 +10,7 @@
 		IconRefresh,
 		IconEye,
 		IconCode
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
 

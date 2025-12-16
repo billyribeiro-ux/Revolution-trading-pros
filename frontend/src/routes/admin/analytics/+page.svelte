@@ -24,7 +24,7 @@
 	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
-	import { IconChartBar, IconPlugConnected, IconRefresh, IconArrowRight } from '@tabler/icons-svelte';
+	import { IconChartBar, IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
 
 	// State
 	let dashboardData: DashboardData | null = $state(null);

@@ -12,7 +12,7 @@
 		IconPhone,
 		IconMail,
 		IconWorld
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		locations,
 		activeLocations,

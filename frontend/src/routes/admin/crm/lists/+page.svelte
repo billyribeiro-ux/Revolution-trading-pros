@@ -12,7 +12,7 @@
 		IconMail,
 		IconWorld,
 		IconLock
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactList } from '$lib/crm/types';
 

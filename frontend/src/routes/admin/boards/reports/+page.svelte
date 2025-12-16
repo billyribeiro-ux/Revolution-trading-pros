@@ -13,7 +13,7 @@
 		IconClock,
 		IconUsers,
 		IconCalendar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);

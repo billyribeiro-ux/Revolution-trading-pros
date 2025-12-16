@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated, authStore } from '$lib/stores/auth';
-	import { IconTicket, IconCopy, IconCheck, IconClock, IconGift } from '@tabler/icons-svelte';
+	import { IconTicket, IconCopy, IconCheck, IconClock, IconGift } from '$lib/icons';
 
 	onMount(() => {
 		if (!$isAuthenticated && !$authStore.isInitializing) {

@@ -17,7 +17,7 @@
 		IconFileText,
 		IconRocket,
 		IconBolt
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		'campaigns';

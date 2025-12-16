@@ -14,7 +14,7 @@
 		IconCalendar,
 		IconFilter,
 		IconSettings
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Analytics data
 	let loading = true;

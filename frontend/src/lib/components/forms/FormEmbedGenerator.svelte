@@ -13,7 +13,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { getAuthStoreToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth';
 
 	interface Props {
 		formId: number;
@@ -63,7 +63,7 @@
 	async function generateEmbed() {
 		loading = true;
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/embed`, {
 				method: 'POST',
 				headers: {
@@ -93,7 +93,7 @@
 	// Generate shareable link
 	async function generateShareLink() {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/share`, {
 				method: 'POST',
 				headers: {

@@ -18,7 +18,7 @@
 		IconChartLine,
 		IconShield,
 		IconTrophy
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Module {
 		week: number;

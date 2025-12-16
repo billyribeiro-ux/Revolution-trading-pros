@@ -103,7 +103,7 @@
 		IconX,
 		IconChevronDown,
 		IconUser
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
 	import { logout as logoutApi } from '$lib/api/auth';

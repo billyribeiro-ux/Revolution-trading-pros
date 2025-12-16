@@ -46,7 +46,7 @@
 		IconShield,
 		IconDevices,
 		IconChevronDown
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
 
 	// ═══════════════════════════════════════════════════════════════════════════

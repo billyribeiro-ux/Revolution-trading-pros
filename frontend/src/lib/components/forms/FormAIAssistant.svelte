@@ -12,7 +12,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { getAuthStoreToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth';
 
 	interface Props {
 		formId?: number;
@@ -62,7 +62,7 @@
 		error = '';
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch('/api/forms/ai/generate', {
 				method: 'POST',
 				headers: {
@@ -101,7 +101,7 @@
 		error = '';
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/ai/suggest`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
@@ -125,7 +125,7 @@
 		error = '';
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/ai/analyze`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});

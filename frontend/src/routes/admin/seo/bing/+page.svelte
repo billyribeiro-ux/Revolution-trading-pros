@@ -16,7 +16,7 @@
 		IconWorld,
 		IconSearch,
 		IconFileText
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		bingSeoApi,
 		type BingSeoStats,

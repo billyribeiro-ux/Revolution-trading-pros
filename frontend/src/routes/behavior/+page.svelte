@@ -9,7 +9,7 @@
 		IconTrendingUp,
 		IconUsers,
 		IconChartBar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let selectedPeriod = '7d';
 

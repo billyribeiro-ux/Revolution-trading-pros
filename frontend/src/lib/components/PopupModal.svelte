@@ -58,7 +58,7 @@
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '@tabler/icons-svelte';
+	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';

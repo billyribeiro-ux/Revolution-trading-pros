@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconPlayerPlay, IconRefresh, IconFilter, IconTrash } from '@tabler/icons-svelte';
+	import { IconPlayerPlay, IconRefresh, IconFilter, IconTrash } from '$lib/icons';
 
 	let recordings: any[] = [];
 	let isLoading = false;

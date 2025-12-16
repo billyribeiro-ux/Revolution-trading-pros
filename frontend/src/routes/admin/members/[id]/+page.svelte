@@ -31,7 +31,7 @@
 		IconDownload,
 		IconExternalLink,
 		IconFileText
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let memberId = $derived(Number($page.params.id));
 

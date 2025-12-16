@@ -3,7 +3,7 @@
 	import { Card, Button, Badge, Table } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type Error404 } from '$lib/api/seo';
-	import { IconAlertCircle, IconTrash } from '@tabler/icons-svelte';
+	import { IconAlertCircle, IconTrash } from '$lib/icons';
 
 	let errors: Error404[] = [];
 	let loading = true;

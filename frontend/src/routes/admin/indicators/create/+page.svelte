@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { IconPhoto, IconX, IconSparkles, IconCheck } from '@tabler/icons-svelte';
+	import { IconPhoto, IconX, IconSparkles, IconCheck } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	let indicator = {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { forgotPassword } from '$lib/api/auth';
-	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '@tabler/icons-svelte';
+	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 

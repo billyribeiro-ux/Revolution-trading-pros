@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { IconArrowRight, IconX, IconCheck } from '@tabler/icons-svelte';
+	import { IconArrowRight, IconX, IconCheck } from '$lib/icons';
 
 	interface JourneyStep {
 		step: string;

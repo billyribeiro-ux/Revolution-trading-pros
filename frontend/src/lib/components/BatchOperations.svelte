@@ -19,7 +19,7 @@
 		IconX,
 		IconCheck,
 		IconLoader
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface BatchAction {
 		id: string;

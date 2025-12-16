@@ -16,7 +16,7 @@
 		IconInfoCircle,
 		IconRefresh,
 		IconX
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		isApiError,
 		getUserFriendlyMessage,

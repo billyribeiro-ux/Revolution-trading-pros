@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { IconTrendingUp, IconTrendingDown, IconMinus } from '@tabler/icons-svelte';
+	import { IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
 
 	interface RevenueData {
 		mrr: number;

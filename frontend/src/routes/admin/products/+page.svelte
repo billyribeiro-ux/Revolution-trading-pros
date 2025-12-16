@@ -10,7 +10,7 @@
 		IconChartLine,
 		IconCrown,
 		IconShoppingCart
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let loading = $state(true);
 	let products = $state<any[]>([]);

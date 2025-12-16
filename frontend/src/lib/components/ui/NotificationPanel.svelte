@@ -19,7 +19,7 @@
 		IconCircleCheck,
 		IconAlertTriangle,
 		IconSettings
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		notificationStore,
 		notifications,

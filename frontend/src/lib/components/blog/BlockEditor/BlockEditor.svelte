@@ -63,7 +63,7 @@
 		IconHistory,
 		IconDownload,
 		IconUpload
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	import type {
 		Block,

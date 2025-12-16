@@ -10,7 +10,7 @@
 		IconEyeOff,
 		IconChartBar,
 		IconSettings
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups';
 

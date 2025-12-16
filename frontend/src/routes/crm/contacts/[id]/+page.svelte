@@ -10,7 +10,7 @@
 		IconPhone,
 		IconActivity,
 		IconUserCircle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);

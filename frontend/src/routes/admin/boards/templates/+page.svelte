@@ -15,7 +15,7 @@
 		IconRocket,
 		IconBook,
 		IconChartBar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let templates = $state<BoardTemplate[]>([]);

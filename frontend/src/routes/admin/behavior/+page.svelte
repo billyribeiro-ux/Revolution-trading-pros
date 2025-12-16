@@ -16,7 +16,7 @@
 		IconArrowDownRight,
 		IconPlayerPlay,
 		IconFilter
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, isBehaviorConnected } from '$lib/stores/connections';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';

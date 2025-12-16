@@ -14,7 +14,7 @@
 		IconCheck,
 		IconAlertCircle,
 		IconRefresh
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let settings = $state<BoardsSettings>({

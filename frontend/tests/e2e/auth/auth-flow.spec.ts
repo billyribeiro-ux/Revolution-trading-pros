@@ -10,6 +10,9 @@
  * - Session management
  *
  * Netflix L11+ Standard: Cover all critical auth paths
+ *
+ * Note: Tests that require backend API are automatically skipped when
+ * backend is not available (e.g., in CI environments).
  */
 
 import { test, expect } from '@playwright/test';
@@ -21,7 +24,9 @@ import {
 	loginViaAPI,
 	logout,
 	registerViaUI,
-	generateTestEmail
+	generateTestEmail,
+	shouldSkipBackendTests,
+	getBackendSkipReason
 } from '../helpers';
 import { TEST_PASSWORDS, createTestUser } from '../helpers/test-data.helper';
 
@@ -92,6 +97,9 @@ test.describe('Authentication Flow', () => {
 		});
 
 		test('shows error for wrong credentials', async ({ page }) => {
+			// Skip if backend not available - this test requires API validation
+			test.skip(shouldSkipBackendTests(), getBackendSkipReason());
+
 			const loginPage = new LoginPage(page);
 			await loginPage.goto();
 
@@ -109,12 +117,14 @@ test.describe('Authentication Flow', () => {
 	});
 
 	test.describe('Successful Login', () => {
-		test.skip('logs in with valid credentials', async ({ page }) => {
-			// Skip if no test credentials configured
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('logs in with valid credentials', async ({ page }) => {
+			// Skip if backend not available or no test credentials configured
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+			);
 
 			const loginPage = new LoginPage(page);
 			await loginPage.goto();
@@ -126,11 +136,14 @@ test.describe('Authentication Flow', () => {
 			expect(success).toBe(true);
 		});
 
-		test.skip('redirects to dashboard after login', async ({ page }) => {
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('redirects to dashboard after login', async ({ page }) => {
+			// Skip if backend not available or no test credentials configured
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+			);
 
 			await loginViaUI(page, TEST_USER);
 
@@ -138,11 +151,14 @@ test.describe('Authentication Flow', () => {
 			await expect(page).toHaveURL(/dashboard|account|member/);
 		});
 
-		test.skip('shows user menu after login', async ({ page }) => {
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('shows user menu after login', async ({ page }) => {
+			// Skip if backend not available or no test credentials configured
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+			);
 
 			await loginViaUI(page, TEST_USER);
 
@@ -154,11 +170,14 @@ test.describe('Authentication Flow', () => {
 	});
 
 	test.describe('Logout', () => {
-		test.skip('logout clears session', async ({ page }) => {
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('logout clears session', async ({ page }) => {
+			// Skip if backend not available or no test credentials configured
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+			);
 
 			// Login first
 			await loginViaUI(page, TEST_USER);
@@ -297,11 +316,14 @@ test.describe('Authentication Flow', () => {
 	});
 
 	test.describe('Session Persistence', () => {
-		test.skip('session persists across page navigations', async ({ page }) => {
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('session persists across page navigations', async ({ page }) => {
+			// Skip if backend not available or no test credentials configured
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+			);
 
 			await loginViaUI(page, TEST_USER);
 
@@ -318,12 +340,14 @@ test.describe('Authentication Flow', () => {
 	});
 
 	test.describe('MFA Flow', () => {
-		test.skip('MFA page displays when required', async ({ page }) => {
-			// This test requires a user with MFA enabled
-			if (!process.env.E2E_MFA_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('MFA page displays when required', async ({ page }) => {
+			// Skip if backend not available or no MFA user configured
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_MFA_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No MFA user configured (E2E_MFA_USER_EMAIL)'
+			);
 
 			await page.goto('/login');
 			await page.locator('input[type="email"]').fill(process.env.E2E_MFA_USER_EMAIL!);
@@ -340,8 +364,10 @@ test.describe('Authentication Flow', () => {
 });
 
 test.describe('Authentication Security', () => {
-	test.skip('login page uses HTTPS in production', async ({ page }) => {
+	test('login page uses HTTPS in production', async ({ page }) => {
 		// Skip - only relevant in production environment
+		test.skip(!process.env.PRODUCTION, 'Only relevant in production environment');
+
 		await page.goto('/login');
 		expect(page.url()).toMatch(/^https:/);
 	});

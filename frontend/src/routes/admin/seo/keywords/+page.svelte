@@ -8,7 +8,7 @@
 		IconMinus,
 		IconTrash,
 		IconRefresh
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let keywords: any[] = $state([]);
 	let stats: any = $state(null);

@@ -27,7 +27,7 @@
 		IconChartBar,
 		IconUsers,
 		IconExternalLink
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast';
 
 	// State

@@ -44,7 +44,7 @@
 		IconFileAnalytics,
 		IconExternalLink,
 		IconPlugConnected
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { browser } from '$app/environment';
 	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
 

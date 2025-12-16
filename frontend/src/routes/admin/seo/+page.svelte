@@ -46,7 +46,7 @@
 		IconCheck,
 		IconClock,
 		IconTarget
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		connections,
 		isSeoConnected,

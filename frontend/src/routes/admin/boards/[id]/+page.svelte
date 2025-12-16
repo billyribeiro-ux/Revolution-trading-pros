@@ -34,7 +34,7 @@
 		IconPlayerPlay,
 		IconPlayerStop,
 		IconSubtask
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Get board ID from URL
 	const boardId = $derived($page.params.id);
