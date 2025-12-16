@@ -177,6 +177,41 @@ function generateErrorId(): string {
 }
 
 /**
+ * Check if error is a stale chunk/module loading error
+ * This happens when Cloudflare Pages serves old cached HTML pointing to deleted chunks
+ */
+function isStaleChunkError(error: unknown): boolean {
+	if (!(error instanceof Error)) return false;
+	const message = error.message.toLowerCase();
+	return (
+		message.includes('failed to fetch dynamically imported module') ||
+		message.includes('loading chunk') ||
+		message.includes('loading css chunk') ||
+		(message.includes('failed to fetch') && message.includes('immutable'))
+	);
+}
+
+/**
+ * Force reload the page to get fresh chunks
+ * Uses a sessionStorage flag to prevent infinite reload loops
+ */
+function forceReloadForFreshChunks(): void {
+	const RELOAD_KEY = 'rtp_chunk_reload';
+	const lastReload = sessionStorage.getItem(RELOAD_KEY);
+	const now = Date.now();
+	
+	// Prevent reload loop - only reload once per 30 seconds
+	if (lastReload && now - parseInt(lastReload, 10) < 30000) {
+		console.warn('[ChunkError] Already reloaded recently, not reloading again');
+		return;
+	}
+	
+	sessionStorage.setItem(RELOAD_KEY, now.toString());
+	console.info('[ChunkError] Stale chunks detected, forcing page reload...');
+	window.location.reload();
+}
+
+/**
  * Client-side error handler
  *
  * This function is called when an error is thrown during:
@@ -186,6 +221,17 @@ function generateErrorId(): string {
  */
 export const handleError: HandleClientError = async ({ error, event, status, message }) => {
 	const errorId = generateErrorId();
+
+	// ICT11+ Pattern: Handle stale chunk errors from Cloudflare Pages cache
+	// When a new deployment happens, old HTML may reference chunks that no longer exist
+	if (typeof window !== 'undefined' && isStaleChunkError(error)) {
+		forceReloadForFreshChunks();
+		// Return a friendly message while reload happens
+		return {
+			message: 'Updating to latest version...',
+			errorId
+		};
+	}
 
 	// Build error metadata
 	const metadata: ErrorMetadata = {
@@ -224,6 +270,14 @@ if (typeof window !== 'undefined') {
 	window.addEventListener('unhandledrejection', (event) => {
 		const errorId = generateErrorId();
 		const error = event.reason;
+
+		// ICT11+ Pattern: Handle stale chunk errors in unhandled promise rejections
+		// This catches dynamic import failures that happen outside SvelteKit's error boundary
+		if (isStaleChunkError(error)) {
+			event.preventDefault(); // Prevent console error spam
+			forceReloadForFreshChunks();
+			return;
+		}
 
 		const metadata: ErrorMetadata = {
 			severity: getErrorSeverity(error),
