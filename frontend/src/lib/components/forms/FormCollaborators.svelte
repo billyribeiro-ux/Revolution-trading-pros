@@ -13,7 +13,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { getAuthStoreToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth';
 
 	interface Props {
 		formId: number;
@@ -58,7 +58,7 @@
 	// Fetch collaborators
 	async function fetchCollaborators() {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/collaborators`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
@@ -74,7 +74,7 @@
 	// Fetch active users (presence)
 	async function fetchActiveUsers() {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/presence`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
@@ -90,7 +90,7 @@
 	// Fetch activity feed
 	async function fetchActivities() {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/activity`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
@@ -109,7 +109,7 @@
 
 		inviting = true;
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/collaborators`, {
 				method: 'POST',
 				headers: {
@@ -136,7 +136,7 @@
 	// Update collaborator role
 	async function updateRole(userId: number, newRole: string) {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			await fetch(`/api/forms/${formId}/collaborators/${userId}`, {
 				method: 'PATCH',
 				headers: {
@@ -157,7 +157,7 @@
 		if (!confirm('Are you sure you want to remove this collaborator?')) return;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			await fetch(`/api/forms/${formId}/collaborators/${userId}`, {
 				method: 'DELETE',
 				headers: { Authorization: `Bearer ${token}` }

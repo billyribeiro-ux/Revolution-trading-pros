@@ -6,7 +6,7 @@
 		IconCircleX,
 		IconRefresh,
 		IconTrendingUp
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Props {
 		content?: string;

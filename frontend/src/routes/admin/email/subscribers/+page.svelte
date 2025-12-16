@@ -19,7 +19,7 @@
 		IconDotsVertical,
 		IconUserPlus,
 		IconChartBar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { emailApi, type EmailSubscriber } from '$lib/api/email';
 
 	// State

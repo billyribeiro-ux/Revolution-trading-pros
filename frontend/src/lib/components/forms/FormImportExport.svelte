@@ -12,7 +12,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { getAuthStoreToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth';
 
 	interface Props {
 		formId?: number;
@@ -65,7 +65,7 @@
 		exporting = true;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const params = new URLSearchParams({
 				format: exportFormat,
 				type: exportType,
@@ -108,7 +108,7 @@
 		importResult = null;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const formData = new FormData();
 			formData.append('file', importFile);
 			formData.append('source', importSource);
@@ -152,7 +152,7 @@
 		if (!templateName) return;
 
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/export?format=template`, {
 				method: 'POST',
 				headers: {

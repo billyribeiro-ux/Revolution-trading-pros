@@ -18,7 +18,7 @@
 		IconPlus,
 		IconX,
 		IconGripVertical
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	import type { Block, BlockContent, BlockSettings } from './types';
 

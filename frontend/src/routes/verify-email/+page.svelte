@@ -16,7 +16,7 @@
 		IconMail,
 		IconRefresh,
 		IconLogin
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { verifyEmail, sendEmailVerification } from '$lib/api/auth';
 
 	let status: 'loading' | 'success' | 'error' | 'expired' = 'loading';

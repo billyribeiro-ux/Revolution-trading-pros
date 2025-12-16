@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { IconDeviceFloppy, IconEye, IconArrowLeft } from '@tabler/icons-svelte';
+	import { IconDeviceFloppy, IconEye, IconArrowLeft } from '$lib/icons';
 	import { createPopup } from '$lib/api/popups';
 	import {
 		defaultPopupConfig,

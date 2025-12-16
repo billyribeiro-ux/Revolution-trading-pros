@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconDeviceFloppy } from '@tabler/icons-svelte';
+	import { IconX, IconDeviceFloppy } from '$lib/icons';
 
 	interface Props {
 		redirect?: any;

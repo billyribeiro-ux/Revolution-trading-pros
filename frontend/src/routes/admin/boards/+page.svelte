@@ -28,7 +28,7 @@
 		IconCopy,
 		IconEdit,
 		IconEye
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// State
 	let boards = $state<Board[]>([]);

@@ -17,7 +17,7 @@
 		IconShield,
 		IconTrophy,
 		IconCalendarEvent
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Module {
 		week: number;

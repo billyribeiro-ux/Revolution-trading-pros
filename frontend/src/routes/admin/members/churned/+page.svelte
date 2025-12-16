@@ -21,7 +21,7 @@
 		IconTrendingDown,
 		IconSparkles,
 		IconRefresh
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Store state
 	let members = $derived($churnedStore.members);

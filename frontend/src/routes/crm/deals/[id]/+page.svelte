@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Deal } from '$lib/crm/types';
-	import { IconArrowLeft, IconCurrencyDollar, IconActivity } from '@tabler/icons-svelte';
+	import { IconArrowLeft, IconCurrencyDollar, IconActivity } from '$lib/icons';
 
 	let deal = $state<Deal | null>(null);
 	let loading = $state(true);

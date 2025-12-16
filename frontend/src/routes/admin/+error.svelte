@@ -23,7 +23,7 @@
 		IconHome,
 		IconRefresh,
 		IconArrowLeft
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	// Error details from SvelteKit
 	let status = $derived($page.status);

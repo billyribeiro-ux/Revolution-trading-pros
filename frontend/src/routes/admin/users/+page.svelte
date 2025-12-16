@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '@tabler/icons-svelte';
+	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
 
 	let loading = true;
 	let users: any[] = [];

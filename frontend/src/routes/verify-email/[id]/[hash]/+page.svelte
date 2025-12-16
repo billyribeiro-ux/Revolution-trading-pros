@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { IconCircleCheck, IconAlertCircle, IconMail } from '@tabler/icons-svelte';
+	import { IconCircleCheck, IconAlertCircle, IconMail } from '$lib/icons';
 
 	let verifying = true;
 	let success = false;

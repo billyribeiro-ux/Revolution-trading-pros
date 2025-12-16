@@ -19,7 +19,7 @@
 		IconBell,
 		IconSettings,
 		IconChevronDown
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	interface Props {
 		roomName?: string;

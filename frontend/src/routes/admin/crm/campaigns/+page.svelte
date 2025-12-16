@@ -24,7 +24,7 @@
 		IconClock,
 		IconCheck,
 		IconX
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════

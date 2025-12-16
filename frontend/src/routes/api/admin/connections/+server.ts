@@ -28,6 +28,7 @@ interface ServiceDefinition {
 	color: string;
 	docs_url?: string;
 	is_oauth: boolean;
+	is_builtin?: boolean;
 	fields: ServiceField[];
 	environments?: string[];
 }

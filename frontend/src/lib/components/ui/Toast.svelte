@@ -17,7 +17,7 @@
 		IconAlertCircle,
 		IconInfoCircle,
 		IconLoader
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { toasts, removeToast, type Toast, type ToastType } from '$lib/stores/toast';
 
 	const icons: Record<ToastType, typeof IconCheck> = {

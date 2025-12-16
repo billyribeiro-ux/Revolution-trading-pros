@@ -10,15 +10,14 @@
 
 import { apiClient } from './client';
 import type {
-	Course,
-	CourseModule,
+	TradingRoom,
+	LessonModule,
 	Lesson,
-	LessonData,
+	LessonWithRelations,
 	LearningCenterData,
-	CourseProgress,
-	LessonProgress,
-	VideoArchiveData,
-	ArchivedVideo
+	UserRoomProgress,
+	UserLessonProgress,
+	PaginatedLessons
 } from '$lib/types/learning-center';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -39,20 +38,20 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific course by ID
 	 */
-	async getCourse(membershipSlug: string, courseId: string): Promise<Course> {
+	async getCourse(membershipSlug: string, courseId: string): Promise<TradingRoom> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/courses/${courseId}`
-		)) as { data: Course };
+		)) as { data: TradingRoom };
 		return response.data;
 	},
 
 	/**
 	 * Get course modules
 	 */
-	async getCourseModules(membershipSlug: string, courseId: string): Promise<CourseModule[]> {
+	async getCourseModules(membershipSlug: string, courseId: string): Promise<LessonModule[]> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/courses/${courseId}/modules`
-		)) as { data: CourseModule[] };
+		)) as { data: LessonModule[] };
 		return response.data;
 	},
 
@@ -63,10 +62,10 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific lesson with navigation context
 	 */
-	async getLesson(membershipSlug: string, lessonId: number): Promise<LessonData> {
+	async getLesson(membershipSlug: string, lessonId: number): Promise<LessonWithRelations> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/lessons/${lessonId}`
-		)) as { data: LessonData };
+		)) as { data: LessonWithRelations };
 		return response.data;
 	},
 
@@ -87,10 +86,10 @@ export const learningCenterApi = {
 	/**
 	 * Get user's course progress
 	 */
-	async getCourseProgress(membershipSlug: string, courseId: string): Promise<CourseProgress> {
+	async getCourseProgress(membershipSlug: string, courseId: string): Promise<UserRoomProgress> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/courses/${courseId}/progress`
-		)) as { data: CourseProgress };
+		)) as { data: UserRoomProgress };
 		return response.data;
 	},
 
@@ -101,31 +100,31 @@ export const learningCenterApi = {
 		membershipSlug: string,
 		lessonId: number,
 		watchedSeconds: number
-	): Promise<LessonProgress> {
+	): Promise<UserLessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/progress`,
 			{ watchedSeconds }
-		)) as { data: LessonProgress };
+		)) as { data: UserLessonProgress };
 		return response.data;
 	},
 
 	/**
 	 * Mark a lesson as complete
 	 */
-	async markLessonComplete(membershipSlug: string, lessonId: number): Promise<LessonProgress> {
+	async markLessonComplete(membershipSlug: string, lessonId: number): Promise<UserLessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/complete`
-		)) as { data: LessonProgress };
+		)) as { data: UserLessonProgress };
 		return response.data;
 	},
 
 	/**
 	 * Mark a lesson as incomplete
 	 */
-	async markLessonIncomplete(membershipSlug: string, lessonId: number): Promise<LessonProgress> {
+	async markLessonIncomplete(membershipSlug: string, lessonId: number): Promise<UserLessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/incomplete`
-		)) as { data: LessonProgress };
+		)) as { data: UserLessonProgress };
 		return response.data;
 	},
 
@@ -152,7 +151,7 @@ export const learningCenterApi = {
 			month?: string;
 			category?: string;
 		} = {}
-	): Promise<VideoArchiveData> {
+	): Promise<PaginatedLessons> {
 		const params = new URLSearchParams();
 		if (options.page) params.append('page', options.page.toString());
 		if (options.limit) params.append('limit', options.limit.toString());
@@ -162,17 +161,17 @@ export const learningCenterApi = {
 
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/archive?${params.toString()}`
-		)) as { data: VideoArchiveData };
+		)) as { data: PaginatedLessons };
 		return response.data;
 	},
 
 	/**
 	 * Get a specific archived video
 	 */
-	async getArchivedVideo(membershipSlug: string, videoId: number): Promise<ArchivedVideo> {
+	async getArchivedVideo(membershipSlug: string, videoId: number): Promise<LessonWithRelations> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/archive/${videoId}`
-		)) as { data: ArchivedVideo };
+		)) as { data: LessonWithRelations };
 		return response.data;
 	},
 

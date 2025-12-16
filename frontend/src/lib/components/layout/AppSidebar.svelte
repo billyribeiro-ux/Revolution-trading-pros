@@ -16,7 +16,7 @@
 		IconUser,
 		IconLogout,
 		IconX
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconDeviceFloppy, IconRefresh } from '@tabler/icons-svelte';
+	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
 
 	let settings: any = {};
 	let loading = false;

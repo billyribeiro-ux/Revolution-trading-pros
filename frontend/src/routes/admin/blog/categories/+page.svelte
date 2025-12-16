@@ -24,7 +24,7 @@
 		IconEye,
 		IconEyeOff,
 		IconCopy
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
 
 	// State

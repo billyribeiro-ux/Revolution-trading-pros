@@ -938,24 +938,28 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 
 export interface SEOAnalysis {
 	score: number;
-	grade: 'A' | 'B' | 'C' | 'D' | 'F';
+	grade?: 'A' | 'B' | 'C' | 'D' | 'F';
 	issues: SEOIssue[];
 	suggestions: string[];
 	keywordDensity: number;
-	readabilityScore: number;
-	readabilityGrade: string;
+	readabilityScore: string;
+	readabilityGrade: number;
 	wordCount: number;
-	estimatedReadTime: number;
-	headingStructure: HeadingNode[];
-	linksCount: { internal: number; external: number };
-	imagesWithoutAlt: number;
+	readingTime: number;
+	estimatedReadTime?: number;
+	headingStructure?: HeadingNode[];
+	linksCount?: { internal: number; external: number };
+	imagesWithoutAlt?: number;
+	titleScore?: number;
+	metaScore?: number;
+	contentScore?: number;
 }
 
 export interface SEOIssue {
-	type: 'error' | 'warning' | 'info';
-	category: 'title' | 'description' | 'content' | 'headings' | 'images' | 'links' | 'keywords';
+	type: 'error' | 'warning' | 'info' | 'success';
+	category: 'title' | 'description' | 'content' | 'headings' | 'images' | 'links' | 'keywords' | 'meta' | 'readability' | 'keyword' | 'slug' | 'structure';
 	message: string;
-	impact: 'high' | 'medium' | 'low';
+	impact?: 'high' | 'medium' | 'low';
 }
 
 export interface HeadingNode {

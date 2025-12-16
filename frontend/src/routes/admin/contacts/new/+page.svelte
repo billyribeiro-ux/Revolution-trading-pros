@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { IconUserPlus, IconArrowLeft } from '@tabler/icons-svelte';
+	import { IconUserPlus, IconArrowLeft } from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 
 	let formData = $state({

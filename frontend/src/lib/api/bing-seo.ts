@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
@@ -123,7 +123,7 @@ class BingSeoAPI {
 		params?: Record<string, any>
 	): Promise<T> {
 		// Use secure auth store token (memory-only, not localStorage)
-		const token = getAuthStoreToken();
+		const token = getAuthToken();
 
 		const url = new URL(`${API_BASE}${endpoint}`);
 		if (params) {

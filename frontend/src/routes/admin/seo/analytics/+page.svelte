@@ -6,7 +6,7 @@
 		IconMinus,
 		IconRefresh,
 		IconCalendar
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { connections, isSeoConnected } from '$lib/stores/connections';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 

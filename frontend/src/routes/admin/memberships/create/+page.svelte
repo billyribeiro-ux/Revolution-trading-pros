@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { IconCrown, IconPlus, IconX, IconCheck } from '@tabler/icons-svelte';
+	import { IconCrown, IconPlus, IconX, IconCheck } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	let membership = {

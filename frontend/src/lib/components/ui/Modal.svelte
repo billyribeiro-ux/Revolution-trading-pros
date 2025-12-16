@@ -13,7 +13,7 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import type { Snippet } from 'svelte';
-	import { IconX } from '@tabler/icons-svelte';
+	import { IconX } from '$lib/icons';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 

@@ -11,7 +11,7 @@
 		IconFilter,
 		IconTrendingUp,
 		IconAlertTriangle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let localSearch = $state('');
 	let localStatus = $state<ContactStatus | 'all'>('all');

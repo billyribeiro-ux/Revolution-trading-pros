@@ -16,7 +16,7 @@
 		IconChartBar,
 		IconClock,
 		IconFlame
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import {
 		bingSeoApi,
 		type PerformanceDashboard,

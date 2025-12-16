@@ -9,12 +9,20 @@
  * - Member-only access controls
  *
  * Netflix L11+ Standard: Test core product features
+ *
+ * Note: Tests requiring backend API are automatically skipped when
+ * backend is not available (e.g., in CI environments).
  */
 
 import { test, expect } from '@playwright/test';
 import { TradingRoomPage, createTradingRoomPage } from '../pages';
 import { KNOWN_TEST_DATA } from '../helpers/test-data.helper';
-import { loginViaUI, TEST_USER } from '../helpers';
+import {
+	loginViaUI,
+	TEST_USER,
+	shouldSkipBackendTests,
+	getBackendSkipReason
+} from '../helpers';
 
 test.describe('Trading Rooms', () => {
 	test.describe('Trading Rooms Listing', () => {
@@ -177,12 +185,14 @@ test.describe('Trading Rooms', () => {
 			expect(hasCta || hasInfo).toBe(true);
 		});
 
-		test.skip('authenticated member sees stream content', async ({ page }) => {
-			// Skip if no test credentials
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
+		test('authenticated member sees stream content', async ({ page }) => {
+			// Skip if backend not available or no test credentials
+			test.skip(
+				shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+				shouldSkipBackendTests()
+					? getBackendSkipReason()
+					: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+			);
 
 			// Login first
 			await loginViaUI(page, TEST_USER);
@@ -283,13 +293,17 @@ test.describe('Trading Rooms', () => {
 });
 
 test.describe('Trading Room Features', () => {
-	test.describe.skip('Chat Functionality', () => {
+	test.describe('Chat Functionality', () => {
+		// Skip if backend not available or no test credentials
+		test.skip(
+			shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+			shouldSkipBackendTests()
+				? getBackendSkipReason()
+				: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+		);
+
 		// These tests require authenticated user with room access
 		test.beforeEach(async ({ page }) => {
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
 			await loginViaUI(page, TEST_USER);
 		});
 

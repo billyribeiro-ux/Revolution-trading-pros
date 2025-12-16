@@ -49,7 +49,7 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -125,6 +125,7 @@ export interface RequestConfig {
 	batch?: boolean;
 	optimistic?: boolean;
 	transform?: (data: any) => any;
+	responseType?: 'json' | 'blob' | 'text' | 'arraybuffer';
 }
 
 export interface RetryConfig {
@@ -452,7 +453,7 @@ class EnterpriseApiClient {
 	private loadTokens(): void {
 		if (typeof window !== 'undefined') {
 			// First try to get token from the secure auth store (memory-only)
-			const storeToken = getAuthStoreToken();
+			const storeToken = getAuthToken();
 			if (storeToken) {
 				this.token = storeToken;
 			} else {
@@ -487,7 +488,7 @@ class EnterpriseApiClient {
 
 	getToken(): string | null {
 		// Always prefer the auth store's secure token
-		const storeToken = getAuthStoreToken();
+		const storeToken = getAuthToken();
 		if (storeToken) {
 			this.token = storeToken;
 		}
@@ -614,8 +615,25 @@ class EnterpriseApiClient {
 					throw error;
 				}
 
-				// Parse successful response
-				const data = await response.json();
+				// Parse successful response based on responseType
+				let data: any;
+				const responseType = config.responseType || 'json';
+
+				switch (responseType) {
+					case 'blob':
+						data = await response.blob();
+						break;
+					case 'text':
+						data = await response.text();
+						break;
+					case 'arraybuffer':
+						data = await response.arrayBuffer();
+						break;
+					case 'json':
+					default:
+						data = await response.json();
+						break;
+				}
 
 				// Update metrics
 				this.updateMetrics({

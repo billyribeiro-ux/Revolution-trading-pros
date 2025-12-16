@@ -24,7 +24,7 @@
 		IconCheck,
 		IconX,
 		IconRefresh
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);

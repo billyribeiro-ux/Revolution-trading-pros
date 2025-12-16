@@ -31,7 +31,7 @@
 		IconDownload,
 		IconTag,
 		IconSparkles
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let showUploadModal = false;
 	let showCreateFolderModal = false;

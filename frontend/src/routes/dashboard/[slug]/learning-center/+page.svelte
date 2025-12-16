@@ -132,6 +132,9 @@
 		return grouped;
 	});
 
+	// Get uncategorized lessons
+	let uncategorizedLessons = $derived(lessonsByModule.get('uncategorized') || []);
+
 	// Get module progress
 	let moduleProgress = $derived.by(() => {
 		return userProgress?.moduleProgress || [];
@@ -344,7 +347,7 @@
 						{/each}
 
 						<!-- Uncategorized lessons -->
-						{#if (uncategorizedLessons = lessonsByModule.get('uncategorized') || []).length > 0}
+						{#if uncategorizedLessons.length > 0}
 							<ModuleAccordion
 								module={{
 									id: 'uncategorized',

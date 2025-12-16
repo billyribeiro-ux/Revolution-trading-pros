@@ -9,7 +9,7 @@
 		IconBolt,
 		IconChartLine,
 		IconTarget
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 
 	let heroVisible = false;
 

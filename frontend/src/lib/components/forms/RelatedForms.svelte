@@ -12,7 +12,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { getAuthStoreToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth';
 
 	interface Props {
 		formId: number;
@@ -41,7 +41,7 @@
 	// Fetch related forms
 	async function fetchRelatedForms() {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${formId}/related?limit=${limit}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});
@@ -57,7 +57,7 @@
 	// Fetch trending forms
 	async function fetchTrendingForms() {
 		try {
-			const token = getAuthStoreToken();
+			const token = getAuthToken();
 			const response = await fetch(`/api/forms/trending?limit=${limit}`, {
 				headers: { Authorization: `Bearer ${token}` }
 			});

@@ -9,7 +9,7 @@
 		type Form,
 		type FormEntry
 	} from '$lib/api/forms';
-	import { IconDownload, IconEye } from '@tabler/icons-svelte';
+	import { IconDownload, IconEye } from '$lib/icons';
 
 	let forms = $state<Form[]>([]);
 	let entries = $state<FormEntry[]>([]);

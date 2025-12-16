@@ -46,7 +46,7 @@
 		IconSparkles,
 		IconCheck,
 		IconAlertTriangle
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import { toastStore } from '$lib/stores/toast';
 	import type { PastMembersPageData } from './+page';
 

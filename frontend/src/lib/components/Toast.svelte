@@ -15,7 +15,7 @@
 	import { flip } from 'svelte/animate';
 	import { toasts, toastStore } from '$lib/stores/toast';
 	import type { Toast } from '$lib/stores/toast';
-	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '@tabler/icons-svelte';
+	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
 
 	function getIcon(type: Toast['type']) {
 		switch (type) {

@@ -10,7 +10,7 @@
 		IconDownload,
 		IconUpload,
 		IconChartLine
-	} from '@tabler/icons-svelte';
+	} from '$lib/icons';
 	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
 
 	let redirects: any[] = $state([]);

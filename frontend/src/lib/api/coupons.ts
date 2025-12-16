@@ -50,7 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -504,7 +504,7 @@ class CouponManagementService {
 	 */
 	private getAuthToken(): string {
 		if (!browser) return '';
-		return getAuthStoreToken() || '';
+		return getAuthToken() || '';
 	}
 
 	/**
