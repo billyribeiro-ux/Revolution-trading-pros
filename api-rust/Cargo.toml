@@ -1,0 +1,67 @@
+[package]
+name = "revolution-api"
+version = "1.0.0"
+edition = "2021"
+description = "Revolution Trading Pros API - Rust + Cloudflare Workers"
+authors = ["Revolution Trading Pros"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Cloudflare Workers
+worker = "0.3"
+worker-macros = "0.3"
+
+# Async Runtime
+tokio = { version = "1", features = ["rt", "macros"] }
+futures = "0.3"
+
+# Web Framework (Axum-like routing for Workers)
+axum = { version = "0.7", default-features = false, features = ["json", "query", "matched-path"] }
+tower-service = "0.3"
+
+# Database (Neon PostgreSQL via HTTP)
+reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Authentication
+jsonwebtoken = "9"
+argon2 = "0.5"
+rand = "0.8"
+base64 = "0.21"
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde", "js"] }
+chrono = { version = "0.4", features = ["serde", "wasmbind"] }
+thiserror = "1.0"
+anyhow = "1.0"
+validator = { version = "0.16", features = ["derive"] }
+slug = "0.1"
+regex = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# WASM compatibility
+getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+console_error_panic_hook = "0.1"
+
+# URL encoding
+urlencoding = "2.1"
+serde_urlencoded = "0.7"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
