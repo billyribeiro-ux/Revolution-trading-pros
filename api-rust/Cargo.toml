@@ -21,17 +21,18 @@ futures = "0.3"
 axum = { version = "0.7", default-features = false, features = ["json", "query", "matched-path"] }
 tower-service = "0.3"
 
-# Database (Neon PostgreSQL via HTTP)
-reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+# HTTP Client (WASM compatible)
+reqwest = { version = "0.11", default-features = false, features = ["json"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-# Authentication
-jsonwebtoken = "9"
-argon2 = "0.5"
-rand = "0.8"
+# Authentication (WASM compatible - no ring dependency)
+hmac = "0.12"
+sha2 = "0.10"
+pbkdf2 = { version = "0.12", features = ["simple"] }
+rand = { version = "0.8", features = ["std_rng"] }
 base64 = "0.21"
 
 # Utilities
@@ -39,9 +40,7 @@ uuid = { version = "1", features = ["v4", "serde", "js"] }
 chrono = { version = "0.4", features = ["serde", "wasmbind"] }
 thiserror = "1.0"
 anyhow = "1.0"
-validator = { version = "0.16", features = ["derive"] }
 slug = "0.1"
-regex = "1"
 
 # Logging
 tracing = "0.1"
