@@ -206,8 +206,8 @@ export function isSuperadminEmail(email: string | null | undefined): boolean {
 export function isSuperadmin(user: { email?: string; roles?: string[] } | null | undefined): boolean {
 	if (!user) return false;
 	
-	// Check email first (highest priority)
-	if (isSuperadminEmail(user.email)) return true;
+	// Check email first (highest priority) - with null check
+	if (user.email && isSuperadminEmail(user.email)) return true;
 	
 	// Check roles
 	if (user.roles?.some(role => 
@@ -331,8 +331,8 @@ export function getUserPermissions(
 export function getHighestRole(user: { email?: string; roles?: string[] } | null | undefined): RoleType {
 	if (!user) return ROLES.USER;
 	
-	// Superadmin email always gets superadmin role
-	if (isSuperadminEmail(user.email)) return ROLES.SUPERADMIN;
+	// Superadmin email always gets superadmin role - with null check
+	if (user.email && isSuperadminEmail(user.email)) return ROLES.SUPERADMIN;
 	
 	if (!user.roles || user.roles.length === 0) return ROLES.USER;
 	
