@@ -136,7 +136,9 @@
                                 <div class="relative">
                                     <input 
                                         type="email" 
-                                        id="email-access" 
+                                        id="email-access"
+                                        name="email"
+                                        autocomplete="email"
                                         placeholder="trader@fund.com" 
                                         class="w-full bg-[#020202] border border-white/10 text-white font-mono text-sm px-4 py-3 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-all placeholder:text-slate-700"
                                     />
