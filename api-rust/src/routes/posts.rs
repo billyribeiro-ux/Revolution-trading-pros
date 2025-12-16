@@ -3,7 +3,7 @@
 use worker::{Request, Response, RouteContext};
 use crate::AppState;
 use crate::error::ApiError;
-use crate::models::post::{PostWithRelations, PostListQuery, PaginatedResponse, PaginationMeta};
+use crate::models::post::{Post, PostWithRelations, PostListQuery, PaginatedResponse, PaginationMeta};
 
 /// GET /api/posts - List published posts
 pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<Response> {
@@ -15,16 +15,14 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
     let per_page = query.per_page();
     let offset = query.offset();
 
-    // Build query with filters
+    // Build query with filters - simplified query without joins for now
     let mut sql = String::from(
         r#"
-        SELECT p.*, 
-               json_build_object('id', u.id, 'name', u.name, 'avatar_url', u.avatar_url) as author,
-               json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
-        FROM posts p
-        LEFT JOIN users u ON u.id = p.author_id
-        LEFT JOIN categories c ON c.id = p.category_id
-        WHERE p.status = 'published'
+        SELECT id, title, slug, excerpt, content, featured_image, author_id, category_id, 
+               status, visibility, published_at, meta_title, meta_description, reading_time, 
+               view_count, created_at, updated_at
+        FROM posts
+        WHERE status = 'published'
         "#
     );
 
@@ -32,14 +30,14 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
     let mut param_idx = 1;
 
     if let Some(category_id) = &query.category_id {
-        sql.push_str(&format!(" AND p.category_id = ${}", param_idx));
+        sql.push_str(&format!(" AND category_id = ${}", param_idx));
         params.push(serde_json::json!(category_id.to_string()));
         param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(
-            " AND (p.title ILIKE ${} OR p.content ILIKE ${})",
+            " AND (title ILIKE ${} OR content ILIKE ${})",
             param_idx, param_idx
         ));
         params.push(serde_json::json!(format!("%{}%", search)));
@@ -48,8 +46,8 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
 
     // Count total
     let count_sql = format!(
-        "SELECT COUNT(*) as count FROM posts p WHERE p.status = 'published' {}",
-        if query.category_id.is_some() { "AND p.category_id = $1" } else { "" }
+        "SELECT COUNT(*) as count FROM posts WHERE status = 'published' {}",
+        if query.category_id.is_some() { "AND category_id = $1" } else { "" }
     );
     
     let total: i64 = ctx.data.db.query_one::<CountResult>(&count_sql, params.clone())
@@ -60,10 +58,16 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
     // Add sorting and pagination
     let sort_by = query.sort_by.as_deref().unwrap_or("published_at");
     let sort_order = query.sort_order.as_deref().unwrap_or("desc");
-    sql.push_str(&format!(" ORDER BY p.{} {}", sort_by, sort_order));
+    sql.push_str(&format!(" ORDER BY {} {}", sort_by, sort_order));
     sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
 
-    let posts: Vec<PostWithRelations> = ctx.data.db.query(&sql, params).await?;
+    let posts: Vec<Post> = match ctx.data.db.query(&sql, params).await {
+        Ok(p) => p,
+        Err(e) => {
+            worker::console_log!("Posts query error: {:?}", e);
+            return Err(e.into());
+        }
+    };
 
     let response = PaginatedResponse {
         data: posts,

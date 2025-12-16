@@ -68,13 +68,18 @@ impl Database {
     ) -> Result<Vec<T>, ApiError> {
         let response = self.execute_query(sql, params).await?;
         
-        let rows: Vec<T> = response.rows
-            .into_iter()
-            .map(|row| serde_json::from_value(row))
-            .collect::<Result<Vec<T>, _>>()
-            .map_err(|e| ApiError::Database(format!("Failed to deserialize: {}", e)))?;
+        let mut results = Vec::new();
+        for (i, row) in response.rows.into_iter().enumerate() {
+            match serde_json::from_value::<T>(row.clone()) {
+                Ok(item) => results.push(item),
+                Err(e) => {
+                    worker::console_log!("Row {} deserialize error: {} - Row data: {}", i, e, row);
+                    return Err(ApiError::Database(format!("Failed to deserialize row {}: {}", i, e)));
+                }
+            }
+        }
         
-        Ok(rows)
+        Ok(results)
     }
 
     /// Execute a query and return a single row

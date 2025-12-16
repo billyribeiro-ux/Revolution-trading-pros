@@ -1,9 +1,61 @@
 //! Post/Blog model and related types
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, NaiveDateTime};
 use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
 use crate::error::ApiError;
+
+/// Deserialize DateTime from Postgres timestamp format
+fn deserialize_datetime<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+    let s: String = String::deserialize(deserializer)?;
+    
+    // Try parsing various formats
+    if let Ok(dt) = DateTime::parse_from_rfc3339(&s) {
+        return Ok(dt.with_timezone(&Utc));
+    }
+    
+    // Postgres format: "2025-12-06 13:37:36+00"
+    if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%#z") {
+        return Ok(dt.with_timezone(&Utc));
+    }
+    
+    // Without timezone
+    if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S") {
+        return Ok(DateTime::from_naive_utc_and_offset(naive, Utc));
+    }
+    
+    Err(Error::custom(format!("Cannot parse datetime: {}", s)))
+}
+
+/// Deserialize optional DateTime
+fn deserialize_option_datetime<'de, D>(deserializer: D) -> Result<Option<DateTime<Utc>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+    
+    let opt: Option<String> = Option::deserialize(deserializer)?;
+    match opt {
+        None => Ok(None),
+        Some(s) if s.is_empty() => Ok(None),
+        Some(s) => {
+            if let Ok(dt) = DateTime::parse_from_rfc3339(&s) {
+                return Ok(Some(dt.with_timezone(&Utc)));
+            }
+            if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%#z") {
+                return Ok(Some(dt.with_timezone(&Utc)));
+            }
+            if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S") {
+                return Ok(Some(DateTime::from_naive_utc_and_offset(naive, Utc)));
+            }
+            Err(Error::custom(format!("Cannot parse datetime: {}", s)))
+        }
+    }
+}
 
 /// Deserialize i64 from either number or string (Neon returns BIGINT as string)
 fn deserialize_i64_from_string<'de, D>(deserializer: D) -> Result<i64, D::Error>
@@ -38,13 +90,16 @@ pub struct Post {
     pub category_id: Option<Uuid>,
     pub status: PostStatus,
     pub visibility: PostVisibility,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub published_at: Option<DateTime<Utc>>,
     pub meta_title: Option<String>,
     pub meta_description: Option<String>,
     pub reading_time: Option<i32>,
     #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub view_count: i64,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub created_at: DateTime<Utc>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub updated_at: DateTime<Utc>,
 }
 
@@ -83,14 +138,23 @@ pub struct PostWithRelations {
     #[serde(flatten)]
     pub post: Post,
     pub author: Option<PostAuthor>,
-    pub category: Option<Category>,
+    pub category: Option<PostCategory>,
+    #[serde(default)]
     pub tags: Vec<Tag>,
+}
+
+/// Minimal category for post responses
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PostCategory {
+    pub id: Option<Uuid>,
+    pub name: Option<String>,
+    pub slug: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PostAuthor {
-    pub id: Uuid,
-    pub name: String,
+    pub id: Option<Uuid>,
+    pub name: Option<String>,
     pub avatar_url: Option<String>,
 }
 
