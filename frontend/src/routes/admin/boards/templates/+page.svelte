@@ -192,7 +192,7 @@
 		}
 	}
 
-	let filteredTemplates = $derived(() => {
+	let filteredTemplates = $derived.by(() => {
 		return templates.filter(t => {
 			if (searchQuery) {
 				const query = searchQuery.toLowerCase();

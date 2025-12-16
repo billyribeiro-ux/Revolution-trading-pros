@@ -62,7 +62,7 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific lesson with navigation context
 	 */
-	async getLesson(membershipSlug: string, lessonId: number): Promise<LessonWithRelations> {
+	async getLesson(membershipSlug: string, lessonId: string): Promise<LessonData> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/lessons/${lessonId}`
 		)) as { data: LessonWithRelations };
@@ -98,7 +98,7 @@ export const learningCenterApi = {
 	 */
 	async updateLessonProgress(
 		membershipSlug: string,
-		lessonId: number,
+		lessonId: string,
 		watchedSeconds: number
 	): Promise<UserLessonProgress> {
 		const response = (await apiClient.post(
@@ -111,7 +111,7 @@ export const learningCenterApi = {
 	/**
 	 * Mark a lesson as complete
 	 */
-	async markLessonComplete(membershipSlug: string, lessonId: number): Promise<UserLessonProgress> {
+	async markLessonComplete(membershipSlug: string, lessonId: string): Promise<LessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/complete`
 		)) as { data: UserLessonProgress };
@@ -121,7 +121,7 @@ export const learningCenterApi = {
 	/**
 	 * Mark a lesson as incomplete
 	 */
-	async markLessonIncomplete(membershipSlug: string, lessonId: number): Promise<UserLessonProgress> {
+	async markLessonIncomplete(membershipSlug: string, lessonId: string): Promise<LessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/incomplete`
 		)) as { data: UserLessonProgress };
@@ -168,7 +168,7 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific archived video
 	 */
-	async getArchivedVideo(membershipSlug: string, videoId: number): Promise<LessonWithRelations> {
+	async getArchivedVideo(membershipSlug: string, videoId: string): Promise<ArchivedVideo> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/archive/${videoId}`
 		)) as { data: LessonWithRelations };
@@ -178,7 +178,7 @@ export const learningCenterApi = {
 	/**
 	 * Increment video view count
 	 */
-	async recordVideoView(membershipSlug: string, videoId: number): Promise<void> {
+	async recordVideoView(membershipSlug: string, videoId: string): Promise<void> {
 		await apiClient.post(`/memberships/${membershipSlug}/archive/${videoId}/view`);
 	},
 
@@ -191,7 +191,7 @@ export const learningCenterApi = {
 	 */
 	async saveLessonNotes(
 		membershipSlug: string,
-		lessonId: number,
+		lessonId: string,
 		notes: string
 	): Promise<{ notes: string }> {
 		const response = (await apiClient.post(
@@ -204,7 +204,7 @@ export const learningCenterApi = {
 	/**
 	 * Get user notes for a lesson
 	 */
-	async getLessonNotes(membershipSlug: string, lessonId: number): Promise<{ notes: string }> {
+	async getLessonNotes(membershipSlug: string, lessonId: string): Promise<{ notes: string }> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/notes`
 		)) as { data: { notes: string } };
@@ -214,14 +214,14 @@ export const learningCenterApi = {
 	/**
 	 * Bookmark a lesson
 	 */
-	async bookmarkLesson(membershipSlug: string, lessonId: number): Promise<void> {
+	async bookmarkLesson(membershipSlug: string, lessonId: string): Promise<void> {
 		await apiClient.post(`/memberships/${membershipSlug}/lessons/${lessonId}/bookmark`);
 	},
 
 	/**
 	 * Remove lesson bookmark
 	 */
-	async removeBookmark(membershipSlug: string, lessonId: number): Promise<void> {
+	async removeBookmark(membershipSlug: string, lessonId: string): Promise<void> {
 		await apiClient.delete(`/memberships/${membershipSlug}/lessons/${lessonId}/bookmark`);
 	},
 

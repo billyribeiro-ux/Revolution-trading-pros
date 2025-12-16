@@ -3,13 +3,13 @@
 	import { Card, Button, Badge, Table, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
-	import type { Contact } from '$lib/crm/types';
+	import type { Contact, ContactStatus } from '$lib/crm/types';
 	import { IconPlus, IconSearch, IconMail, IconPhone } from '$lib/icons';
 
 	let contacts = $state<Contact[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
-	let statusFilter = $state('');
+	let statusFilter = $state<ContactStatus | ''>('');
 	let pagination = $state<{ current_page: number; last_page: number; total: number }>({
 		current_page: 1,
 		last_page: 1,

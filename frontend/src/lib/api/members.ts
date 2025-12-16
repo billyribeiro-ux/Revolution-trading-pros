@@ -32,6 +32,8 @@ export interface Member {
 	last_plan?: string;
 	churn_reason?: string | null;
 	days_since_churn?: number | null;
+	// Tags
+	tags?: string[];
 }
 
 export interface Subscription {

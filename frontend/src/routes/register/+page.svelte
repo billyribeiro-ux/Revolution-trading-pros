@@ -43,7 +43,7 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// Dynamic GSAP import for SSR safety
+		// Dynamic GSAP import for SSR safety - use IIFE to handle async
 		(async () => {
 			const gsapModule = await import('gsap');
 			gsapLib = gsapModule.gsap || gsapModule.default;

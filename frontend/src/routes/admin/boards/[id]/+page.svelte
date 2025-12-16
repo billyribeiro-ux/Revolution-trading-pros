@@ -104,8 +104,8 @@
 		return result;
 	});
 
-	onMount(async () => {
-		await loadBoard();
+	onMount(() => {
+		loadBoard();
 
 		// Check for task in URL query
 		const taskId = $page.url.searchParams.get('task');

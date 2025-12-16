@@ -945,14 +945,14 @@ export interface SEOAnalysis {
 	readabilityScore: string;
 	readabilityGrade: number;
 	wordCount: number;
-	readingTime: number;
 	estimatedReadTime?: number;
-	headingStructure?: HeadingNode[];
-	linksCount?: { internal: number; external: number };
-	imagesWithoutAlt?: number;
+	readingTime: number;
 	titleScore?: number;
 	metaScore?: number;
 	contentScore?: number;
+	headingStructure?: HeadingNode[];
+	linksCount?: { internal: number; external: number };
+	imagesWithoutAlt?: number;
 }
 
 export interface SEOIssue {

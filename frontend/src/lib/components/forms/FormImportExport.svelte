@@ -230,7 +230,7 @@
 								class="format-btn"
 								class:selected={exportFormat === format.value}
 								onclick={() => (exportFormat = format.value)}
-								disabled={(exportType === 'submissions' || exportType === 'all') && format.value === 'json' && exportType !== 'form'}
+								disabled={exportType !== 'form' && format.value === 'json'}
 							>
 								<span class="format-icon">{format.icon}</span>
 								<span class="format-label">{format.label}</span>

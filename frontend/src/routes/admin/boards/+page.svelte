@@ -71,7 +71,7 @@
 	});
 
 	// Filtered boards
-	let filteredBoards = $derived(() => {
+	let filteredBoards = $derived.by(() => {
 		let result = boards;
 
 		if (searchQuery) {
@@ -94,7 +94,7 @@
 	});
 
 	// Favorite boards
-	let favoriteBoards = $derived(() => boards.filter(b => b.is_favorite && !b.is_archived));
+	let favoriteBoards = $derived.by(() => boards.filter(b => b.is_favorite && !b.is_archived));
 
 	onMount(async () => {
 		await loadData();

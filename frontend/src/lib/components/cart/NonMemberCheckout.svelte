@@ -89,7 +89,11 @@
 		errorMessage = '';
 
 		try {
-			await login(loginEmail, loginPassword, rememberMe);
+			await login({
+				email: loginEmail,
+				password: loginPassword,
+				remember: rememberMe
+			});
 			goto('/checkout');
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
@@ -117,7 +121,8 @@
 			await register({
 				name: `${registerFirstName.trim()} ${registerLastName.trim()}`,
 				email: registerEmail.trim(),
-				password: registerPassword
+				password: registerPassword,
+				password_confirmation: registerPassword
 			});
 			successMessage = 'Account created successfully! Redirecting to checkout...';
 			setTimeout(() => goto('/checkout'), 1500);

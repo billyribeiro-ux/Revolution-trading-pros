@@ -169,7 +169,7 @@ function createLearningCenterStore() {
 		/**
 		 * Load a specific lesson with context
 		 */
-		async loadLesson(lessonId: number) {
+		async loadLesson(lessonId: string) {
 			update((state) => ({ ...state, isLoading: true, error: null }));
 
 			try {
@@ -185,22 +185,15 @@ function createLearningCenterStore() {
 
 				const data = await learningCenterApi.getLesson(membershipSlug, lessonId);
 
-				// API now returns LessonWithRelations directly
-				// Navigation (previous/next) needs to be computed client-side
-				update((state) => {
-					const currentIndex = state.allLessons.findIndex((l) => l.id === data.id);
-					const previousLesson = currentIndex > 0 ? state.allLessons[currentIndex - 1] : null;
-					const nextLesson = currentIndex < state.allLessons.length - 1 ? state.allLessons[currentIndex + 1] : null;
-
-					return {
-						...state,
-						currentLesson: data,
-						currentModule: data.module || null,
-						previousLesson,
-						nextLesson,
-						isLoading: false
-					};
-				});
+				update((state) => ({
+					...state,
+					currentLesson: data.lesson,
+					currentCourse: data.course,
+					currentModule: data.module as CourseModule | null,
+					previousLesson: data.previousLesson,
+					nextLesson: data.nextLesson,
+					isLoading: false
+				}));
 			} catch (error: any) {
 				update((state) => ({
 					...state,
@@ -213,7 +206,7 @@ function createLearningCenterStore() {
 		/**
 		 * Set the current lesson from local data (faster than API call)
 		 */
-		setCurrentLesson(lessonId: number) {
+		setCurrentLesson(lessonId: string) {
 			update((state) => {
 				const lesson = state.allLessons.find((l) => l.id === lessonId);
 				if (!lesson) return state;
@@ -243,7 +236,7 @@ function createLearningCenterStore() {
 		/**
 		 * Update lesson watch progress
 		 */
-		async updateProgress(lessonId: number, watchedSeconds: number) {
+		async updateProgress(lessonId: string, watchedSeconds: number) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -273,7 +266,7 @@ function createLearningCenterStore() {
 		/**
 		 * Mark a lesson as complete
 		 */
-		async markComplete(lessonId: number) {
+		async markComplete(lessonId: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -333,7 +326,7 @@ function createLearningCenterStore() {
 		/**
 		 * Mark a lesson as incomplete
 		 */
-		async markIncomplete(lessonId: number) {
+		async markIncomplete(lessonId: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -420,7 +413,7 @@ function createLearningCenterStore() {
 		/**
 		 * Record a video view
 		 */
-		async recordView(videoId: number) {
+		async recordView(videoId: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;
@@ -450,7 +443,7 @@ function createLearningCenterStore() {
 		/**
 		 * Save notes for current lesson
 		 */
-		async saveNotes(lessonId: number, notes: string) {
+		async saveNotes(lessonId: string, notes: string) {
 			let membershipSlug: string | null = null;
 			const unsubscribe = subscribe((state) => {
 				membershipSlug = state.membershipSlug;

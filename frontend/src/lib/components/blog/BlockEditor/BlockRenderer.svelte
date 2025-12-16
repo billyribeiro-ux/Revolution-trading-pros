@@ -30,14 +30,14 @@
 		block: Block;
 		isSelected?: boolean;
 		isEditing?: boolean;
-		onupdate: (updates: Partial<Block>) => void;
+		onUpdate: (updates: Partial<Block>) => void;
 	}
 
 	let {
 		block,
 		isSelected = false,
 		isEditing = true,
-		onupdate
+		onUpdate
 	}: Props = $props();
 
 	// ==========================================================================
@@ -52,7 +52,7 @@
 	// ==========================================================================
 
 	function updateContent(updates: Partial<BlockContent>) {
-		onupdate({
+		onUpdate({
 			content: { ...block.content, ...updates }
 		});
 	}
@@ -159,7 +159,7 @@
 							type="button"
 							class="level-btn"
 							class:active={level === lvl}
-							onclick={() => onupdate({ settings: { ...block.settings, level: lvl } })}
+							onclick={() => onUpdate({ settings: { ...block.settings, level: lvl as 1 | 2 | 3 | 4 | 5 | 6 } })}
 							title="Heading {lvl}"
 						>
 							H{lvl}
