@@ -1,10 +1,11 @@
 <script lang="ts">
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced
-	 * ICT11+ Fix: LazySection restored with SSR-first rendering
+	 * ICT11+ Fix: Client-side posts fetch fallback for production
 	 */
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import Hero from '$lib/components/sections/Hero.svelte';
-	import LazySection from '$lib/components/LazySection.svelte';
 	import TradingRoomsSection from '$lib/components/sections/TradingRoomsSection.svelte';
 	import AlertServicesSection from '$lib/components/sections/AlertServicesSection.svelte';
 	import IndicatorsSection from '$lib/components/sections/IndicatorsSection.svelte';
@@ -18,10 +19,27 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
 
+	const API_URL = 'https://revolution-trading-pros-api.billy-ribeiro.workers.dev';
+
 	let { data }: { data: PageData } = $props();
 
-	// Simple posts access
-	let posts = $derived(data.posts || []);
+	// Posts state - use SSR data or fetch client-side
+	let posts = $state(data.posts || []);
+
+	// Client-side fallback fetch if SSR returned empty
+	onMount(async () => {
+		if (posts.length === 0 && browser) {
+			try {
+				const res = await fetch(`${API_URL}/api/posts?per_page=6`);
+				if (res.ok) {
+					const json = await res.json();
+					posts = json.data || [];
+				}
+			} catch (e) {
+				console.error('Failed to fetch posts:', e);
+			}
+		}
+	});
 
 	const homepageSchema = [
 		{
@@ -43,41 +61,13 @@
 />
 
 <Hero />
-
-<LazySection rootMargin="300px">
-	<TradingRoomsSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<AlertServicesSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<IndicatorsSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<CoursesSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<WhySection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<MentorshipSection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<TestimonialsSection />
-</LazySection>
-
-<LatestBlogsSection posts={posts} />
-
-<LazySection rootMargin="300px">
-	<CTASection />
-</LazySection>
-
-<LazySection rootMargin="300px">
-	<SocialMediaSection />
-</LazySection>
+<TradingRoomsSection />
+<AlertServicesSection />
+<IndicatorsSection />
+<CoursesSection />
+<WhySection />
+<MentorshipSection />
+<TestimonialsSection />
+<LatestBlogsSection {posts} />
+<CTASection />
+<SocialMediaSection />

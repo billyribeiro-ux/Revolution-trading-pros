@@ -1,582 +1,438 @@
 <script lang="ts">
-	/**
-	 * Live Trading Rooms Index Page
-	 * ═══════════════════════════════════════════════════════════════════════════
-	 *
-	 * Lists all available live trading rooms with pricing comparison.
-	 * Matches Revolution Trading's product listing style.
-	 *
-	 * @version 1.0.0 (December 2025)
-	 */
+    import { onMount } from 'svelte';
+    import { spring } from 'svelte/motion';
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+    import SEOHead from '$lib/components/SEOHead.svelte';
 
-	import { onMount } from 'svelte';
-	import { fade, fly } from 'svelte/transition';
-	import SEOHead from '$lib/components/SEOHead.svelte';
+    /**
+     * Data: Trading Rooms (Preserved & Enhanced)
+     */
+    const rooms = [
+        {
+            id: 'day-trading',
+            name: 'Day Trading Command',
+            tagline: 'Trade the Open with Professionals',
+            description: 'High-velocity execution. Join expert traders for the opening bell, real-time scanners, and rapid-fire trade calls.',
+            liveCount: 842,
+            features: [
+                'Daily Live Session (9:30 AM - 12:00 PM ET)',
+                'Institutional Order Flow Analysis',
+                'Screen Share & Voice Comms',
+                'Gap Scanner & Pre-Market Prep',
+                'Private Discord Community'
+            ],
+            price: { monthly: 247, quarterly: 597, annual: 1897 },
+            accent: 'cyan',
+            badge: 'MOST POPULAR'
+        },
+        {
+            id: 'swing-trading',
+            name: 'Swing Alpha Room',
+            tagline: 'Catch Multi-Day Moves',
+            description: 'Strategic positioning for 3-7 day holds. Perfect for those who cannot watch the screen all day but want institutional returns.',
+            liveCount: 1250,
+            features: [
+                'Weekly Deep-Dive Strategy Session',
+                'Sunday Night Watchlist Blueprint',
+                'Risk/Reward Position Sizing',
+                'Private Analyst Chat',
+                'Weekend Market Prep'
+            ],
+            price: { monthly: 197, quarterly: 497, annual: 1497 },
+            accent: 'emerald',
+            badge: ''
+        },
+        {
+            id: 'small-accounts',
+            name: 'Growth Accelerator',
+            tagline: 'Small Account → Big Future',
+            description: 'The disciplined path to $25K and beyond. Learn risk management and compounding strategies specifically for smaller capital bases.',
+            liveCount: 430,
+            features: [
+                'Under $25K Specific Strategies',
+                'Strict Risk Management Rules',
+                'Account Builder Roadmap',
+                'Live Mentorship Q&A',
+                'Community Support'
+            ],
+            price: { monthly: 147, quarterly: 397, annual: 1197 },
+            accent: 'amber',
+            badge: 'BEGINNER FRIENDLY'
+        }
+    ];
 
-	// Trading Rooms Data
-	const tradingRooms = [
-		{
-			id: 'day-trading',
-			name: 'Day Trading Room',
-			tagline: 'Trade the Open with Professionals',
-			description: 'Join our expert traders live every market day. Real-time analysis, trade calls, and market commentary.',
-			features: [
-				'Live Trading Sessions (M-F 9:30 AM - 12:00 PM ET)',
-				'Real-time Trade Alerts',
-				'Screen Share & Live Commentary',
-				'Private Discord Community',
-				'Trade Replay Archive'
-			],
-			price: { monthly: 247, quarterly: 597, annual: 1897 },
-			color: 'blue',
-			icon: '📈',
-			href: '/live-trading-rooms/day-trading'
-		},
-		{
-			id: 'swing-trading',
-			name: 'Swing Trading Room',
-			tagline: 'Catch Multi-Day Moves',
-			description: 'Focus on 3-7 day swing trades with weekly analysis sessions and detailed trade plans.',
-			features: [
-				'Weekly Swing Trade Ideas',
-				'Technical Analysis Sessions',
-				'Position Management Guidance',
-				'Private Discord Community',
-				'Weekend Market Prep'
-			],
-			price: { monthly: 197, quarterly: 497, annual: 1497 },
-			color: 'emerald',
-			icon: '🎯',
-			href: '/live-trading-rooms/swing-trading'
-		},
-		{
-			id: 'small-accounts',
-			name: 'Small Accounts Room',
-			tagline: 'Grow Your Account Strategically',
-			description: 'Specialized strategies for traders with accounts under $25K. Risk-focused approach to consistent growth.',
-			features: [
-				'Small Account Strategies',
-				'Risk-First Trade Selection',
-				'Live Trading Sessions',
-				'Account Growth Plans',
-				'Community Support'
-			],
-			price: { monthly: 147, quarterly: 397, annual: 1197 },
-			color: 'amber',
-			icon: '🚀',
-			href: '/live-trading-rooms/small-accounts'
-		}
-	];
+    /**
+     * Data: Why Join Us (Restored)
+     */
+    const benefits = [
+        {
+            icon: '👨‍🏫',
+            title: 'Institutional Mentorship',
+            desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.'
+        },
+        {
+            icon: '⚡',
+            title: 'Sub-Second Alerts',
+            desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.'
+        },
+        {
+            icon: '🎓',
+            title: 'Continuous Education',
+            desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.'
+        },
+        {
+            icon: '🤝',
+            title: 'Elite Community',
+            desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.'
+        }
+    ];
 
-	// --- Apple ICT9+ Scroll Animations ---
-	let mounted = $state(false);
-	
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
-		
-		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-			return;
-		}
-		
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
-		
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-						setTimeout(() => { node.style.willChange = 'auto'; }, 800 + delay);
-						observer.unobserve(node);
-					}
-				});
-			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
-		
-		observer.observe(node);
-		
-		return {
-			destroy() {
-				observer.disconnect();
-			}
-		};
-	}
-	
-	onMount(() => {
-		mounted = true;
-	});
+    /**
+     * Data: Ticker Symbols
+     */
+    const symbols = [
+        { sym: 'SPY', price: '478.22', change: '+0.45%', up: true },
+        { sym: 'QQQ', price: '408.12', change: '+0.82%', up: true },
+        { sym: 'IWM', price: '198.40', change: '-0.12%', up: false },
+        { sym: 'NVDA', price: '492.11', change: '+2.30%', up: true },
+        { sym: 'TSLA', price: '245.50', change: '-1.20%', up: false },
+        { sym: 'AMD', price: '138.00', change: '+1.05%', up: true },
+        { sym: 'BTC', price: '42,100', change: '+1.2%', up: true },
+    ];
+    const tickerItems = [...symbols, ...symbols, ...symbols, ...symbols]; // Infinite loop buffer
+
+    /**
+     * Action: 3D Tilt Effect
+     */
+    function tilt(node: HTMLElement) {
+        const x = spring(0, { stiffness: 0.05, damping: 0.25 });
+        const y = spring(0, { stiffness: 0.05, damping: 0.25 });
+
+        const unsubX = x.subscribe(v => node.style.setProperty('--rotX', `${v}deg`));
+        const unsubY = y.subscribe(v => node.style.setProperty('--rotY', `${v}deg`));
+
+        function handleMove(e: MouseEvent) {
+            const rect = node.getBoundingClientRect();
+            // Max tilt 3 degrees for subtle effect
+            x.set(((e.clientY - rect.top - rect.height / 2) / rect.height) * -3);
+            y.set(((e.clientX - rect.left - rect.width / 2) / rect.width) * 3);
+        }
+
+        function handleLeave() {
+            x.set(0);
+            y.set(0);
+        }
+
+        node.addEventListener('mousemove', handleMove);
+        node.addEventListener('mouseleave', handleLeave);
+
+        return {
+            destroy() {
+                node.removeEventListener('mousemove', handleMove);
+                node.removeEventListener('mouseleave', handleLeave);
+                unsubX();
+                unsubY();
+            }
+        };
+    }
+
+    /**
+     * Animation Controller
+     */
+    let heroRef: HTMLElement;
+    let gridRef: HTMLElement;
+    let benefitsRef: HTMLElement;
+    let ctaRef: HTMLElement;
+
+    onMount(() => {
+        gsap.registerPlugin(ScrollTrigger);
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+        // 1. Hero Sequence
+        tl.fromTo('.hero-badge', 
+            { y: -20, opacity: 0, scale: 0.9 }, 
+            { y: 0, opacity: 1, scale: 1, duration: 0.8 }
+        )
+        .fromTo('.hero-title span', 
+            { y: 100, opacity: 0, rotateX: 20 }, 
+            { y: 0, opacity: 1, rotateX: 0, stagger: 0.1, duration: 1 }, 
+            '-=0.4'
+        )
+        .fromTo('.hero-desc', 
+            { y: 20, opacity: 0 }, 
+            { y: 0, opacity: 1, duration: 0.8 }, 
+            '-=0.6'
+        )
+        .fromTo(gridRef.children, 
+            { y: 60, opacity: 0, filter: 'blur(10px)' }, 
+            { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.15, duration: 0.8 }, 
+            '-=0.4'
+        );
+
+        // 2. Benefits Section Scroll Trigger
+        gsap.fromTo(benefitsRef.children, 
+            { y: 40, opacity: 0 },
+            {
+                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
+                scrollTrigger: {
+                    trigger: benefitsRef,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                }
+            }
+        );
+
+        // 3. Final CTA Scroll Trigger
+        gsap.fromTo(ctaRef,
+            { scale: 0.95, opacity: 0 },
+            {
+                scale: 1, opacity: 1, duration: 0.8,
+                scrollTrigger: {
+                    trigger: ctaRef,
+                    start: 'top 85%'
+                }
+            }
+        );
+    });
 </script>
 
 <SEOHead
-	title="Live Trading Rooms | Revolution Trading Pros"
-	description="Join our live trading rooms and trade alongside professional traders. Day trading, swing trading, and small account strategies with real-time alerts and analysis."
-	canonical="/live-trading-rooms"
-	ogType="website"
-	keywords={['live trading room', 'day trading', 'swing trading', 'trading community', 'real-time alerts', 'trading education']}
+    title="Live Trading Rooms | Revolution Trading Pros"
+    description="Join our live trading rooms. Day trading, swing trading, and small account strategies with real-time alerts."
 />
 
-<main class="live-trading-rooms">
-	<!-- Hero Section -->
-	<section class="hero">
-		<div class="hero-bg"></div>
-		<div class="hero-content">
-			<span class="hero-badge" use:reveal={{ delay: 0 }}>
-				<span class="badge-dot"></span>
-				Live Trading Rooms
-			</span>
-			<h1 use:reveal={{ delay: 100 }}>
-				Trade <span class="gradient-text">Together.</span><br />
-				Win Together.
-			</h1>
-			<p use:reveal={{ delay: 200 }}>
-				Join our community of traders and learn from professionals in real-time.
-				Pick the room that matches your trading style.
-			</p>
-		</div>
-	</section>
+<div class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans relative">
+    
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-emerald-900/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow" style="animation-delay: 2s"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+    </div>
 
-	<!-- Trading Rooms Grid -->
-	<section class="rooms-section">
-		<div class="rooms-grid">
-			{#each tradingRooms as room, i}
-				<article
-					class="room-card room-card--{room.color}"
-					use:reveal={{ delay: i * 100 }}
-				>
-					<div class="room-header">
-						<span class="room-icon">{room.icon}</span>
-						<div>
-							<h2>{room.name}</h2>
-							<p class="tagline">{room.tagline}</p>
-						</div>
-					</div>
+    <div class="relative z-20 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md h-10 flex items-center overflow-hidden">
+        <div class="ticker-track flex items-center gap-12 whitespace-nowrap px-4">
+            {#each tickerItems as item, i}
+                <div class="flex items-center gap-3 text-xs font-mono select-none">
+                    <span class="font-bold text-zinc-300">{item.sym}</span>
+                    <span class="text-zinc-500">{item.price}</span>
+                    <span class={item.up ? 'text-emerald-400' : 'text-rose-400'}>
+                        {item.change}
+                    </span>
+                </div>
+            {/each}
+        </div>
+    </div>
 
-					<p class="room-description">{room.description}</p>
+    <main class="relative z-10 pt-20 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <section bind:this={heroRef} class="text-center max-w-5xl mx-auto mb-24">
+            <div class="hero-badge inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">Markets are Open</span>
+            </div>
 
-					<ul class="room-features">
-						{#each room.features as feature}
-							<li>
-								<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-								</svg>
-								{feature}
-							</li>
-						{/each}
-					</ul>
+            <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">
+                <span class="block">Trade Together.</span>
+                <span class="block bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Win Together.</span>
+            </h1>
 
-					<div class="room-pricing">
-						<div class="price-row">
-							<span>Monthly</span>
-							<span class="price">${room.price.monthly}<span class="period">/mo</span></span>
-						</div>
-						<div class="price-row">
-							<span>Quarterly</span>
-							<span class="price">${room.price.quarterly}<span class="period">/qtr</span></span>
-						</div>
-						<div class="price-row highlight">
-							<span>Annual <span class="savings">(Best Value)</span></span>
-							<span class="price">${room.price.annual}<span class="period">/yr</span></span>
-						</div>
-					</div>
+            <p class="hero-desc text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                Step inside our professional trading floors. Real-time data, rapid execution, and a community that wins together.
+            </p>
+        </section>
 
-					<a href={room.href} class="room-cta">
-						Learn More & Join
-						<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-						</svg>
-					</a>
-				</article>
-			{/each}
-		</div>
-	</section>
+        <div bind:this={gridRef} id="rooms-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32">
+            {#each rooms as room}
+                <article use:tilt class="group relative h-full card-3d" role="region" aria-label={room.name}>
+                    <div class={`absolute -inset-[1px] rounded-3xl bg-gradient-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
+                        ${room.accent === 'cyan' ? 'from-cyan-500/50' : ''}
+                        ${room.accent === 'emerald' ? 'from-emerald-500/50' : ''}
+                        ${room.accent === 'amber' ? 'from-amber-500/50' : ''}
+                        to-transparent`}>
+                    </div>
 
-	<!-- Why Join Section -->
-	<section class="why-section">
-		<div class="why-content">
-			<h2 use:reveal>Why Trade With Us?</h2>
-			<div class="why-grid">
-				<div class="why-item" use:reveal={{ delay: 0 }}>
-					<div class="why-icon">👨‍🏫</div>
-					<h3>Expert Traders</h3>
-					<p>Learn from professionals with decades of combined experience in the markets.</p>
-				</div>
-				<div class="why-item" use:reveal={{ delay: 100 }}>
-					<div class="why-icon">⚡</div>
-					<h3>Real-Time Alerts</h3>
-					<p>Get trade alerts as they happen via SMS, email, and Discord notifications.</p>
-				</div>
-				<div class="why-item" use:reveal={{ delay: 200 }}>
-					<div class="why-icon">🎓</div>
-					<h3>Continuous Learning</h3>
-					<p>Access educational content, strategy breakdowns, and market analysis.</p>
-				</div>
-				<div class="why-item" use:reveal={{ delay: 300 }}>
-					<div class="why-icon">🤝</div>
-					<h3>Supportive Community</h3>
-					<p>Join thousands of traders who help each other succeed every day.</p>
-				</div>
-			</div>
-		</div>
-	</section>
+                    <div class="relative h-full flex flex-col bg-[#0A0A0A] border border-white/5 hover:border-white/10 rounded-3xl p-1 shadow-2xl overflow-hidden transition-colors duration-300">
+                        <div class="flex-1 flex flex-col p-6 lg:p-8 rounded-[20px] bg-gradient-to-b from-white/[0.02] to-transparent">
+                            
+                            {#if room.badge}
+                                <div class="absolute top-6 right-6">
+                                    <span class={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border
+                                        ${room.accent === 'cyan' ? 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20' : ''}
+                                        ${room.accent === 'emerald' ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20' : ''}
+                                        ${room.accent === 'amber' ? 'text-amber-300 bg-amber-500/10 border-amber-500/20' : ''}
+                                    `}>
+                                        {room.badge}
+                                    </span>
+                                </div>
+                            {/if}
 
-	<!-- CTA Section -->
-	<section class="cta-section">
-		<div class="cta-content">
-			<h2>Ready to Level Up Your Trading?</h2>
-			<p>Join thousands of traders who've transformed their results with our live rooms.</p>
-			<a href="#rooms-section" class="cta-button">
-				Choose Your Room
-			</a>
-		</div>
-	</section>
-</main>
+                            <div class={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ease-out
+                                ${room.accent === 'cyan' ? 'bg-cyan-500/10 text-cyan-400' : ''}
+                                ${room.accent === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' : ''}
+                                ${room.accent === 'amber' ? 'bg-amber-500/10 text-amber-400' : ''}
+                            `}>
+                                {#if room.id === 'day-trading'}
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                                {:else if room.id === 'swing-trading'}
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-2-2-4 4"/></svg>
+                                {:else}
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                {/if}
+                            </div>
+
+                            <h2 class="text-2xl font-bold text-white mb-2">{room.name}</h2>
+                            <p class="text-sm font-medium text-zinc-400 mb-4">{room.tagline}</p>
+                            
+                            <div class="flex items-center gap-2 mb-6 text-xs font-mono text-zinc-500">
+                                <span class="relative flex h-2 w-2">
+                                    <span class={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75
+                                        ${room.accent === 'cyan' ? 'bg-cyan-400' : ''}
+                                        ${room.accent === 'emerald' ? 'bg-emerald-400' : ''}
+                                        ${room.accent === 'amber' ? 'bg-amber-400' : ''}
+                                    `}></span>
+                                    <span class={`relative inline-flex rounded-full h-2 w-2 
+                                        ${room.accent === 'cyan' ? 'bg-cyan-500' : ''}
+                                        ${room.accent === 'emerald' ? 'bg-emerald-500' : ''}
+                                        ${room.accent === 'amber' ? 'bg-amber-500' : ''}
+                                    `}></span>
+                                </span>
+                                {room.liveCount} Traders Online
+                            </div>
+
+                            <p class="text-sm leading-relaxed text-zinc-400 mb-8 border-t border-white/5 pt-6">{room.description}</p>
+
+                            <ul class="space-y-3 mb-8 flex-1">
+                                {#each room.features as feature}
+                                    <li class="flex items-start gap-3 text-sm text-zinc-300">
+                                        <svg class={`w-5 h-5 shrink-0 mt-[-2px] 
+                                            ${room.accent === 'cyan' ? 'text-cyan-500/80' : ''}
+                                            ${room.accent === 'emerald' ? 'text-emerald-500/80' : ''}
+                                            ${room.accent === 'amber' ? 'text-amber-500/80' : ''}
+                                        `} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        {feature}
+                                    </li>
+                                {/each}
+                            </ul>
+
+                            <div class="mt-auto">
+                                <div class="flex flex-col gap-1 mb-6">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-3xl font-bold text-white">${room.price.monthly}</span>
+                                        <span class="text-zinc-500 text-sm mb-1">/ month</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-xs text-zinc-500 mt-2">
+                                        <span>Annual: ${room.price.annual}/yr</span>
+                                        <span class="text-emerald-400 font-medium">Save 36%</span>
+                                    </div>
+                                </div>
+                                
+                                <a href="/live-trading-rooms/{room.id}" class={`group/btn relative w-full flex items-center justify-center gap-2 py-4 rounded-xl text-black font-bold text-sm transition-all duration-300 overflow-hidden
+                                        ${room.accent === 'cyan' ? 'bg-white hover:bg-cyan-400' : ''}
+                                        ${room.accent === 'emerald' ? 'bg-white hover:bg-emerald-400' : ''}
+                                        ${room.accent === 'amber' ? 'bg-white hover:bg-amber-400' : ''}
+                                        hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]
+                                    `}>
+                                    <span class="relative z-10">Access Room</span>
+                                    <svg class="w-4 h-4 relative z-10 transition-transform group-hover/btn:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {/each}
+        </div>
+
+        <section class="py-24 border-t border-white/5 relative">
+            <div class="absolute inset-0 bg-blue-500/5 blur-[100px] pointer-events-none"></div>
+            
+            <div class="text-center mb-16 relative z-10">
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+                    Why the Pros Choose Us
+                </h2>
+                <p class="text-zinc-400 max-w-2xl mx-auto">
+                    We don't just sell courses. We build institutional-grade traders through immersion, technology, and community.
+                </p>
+            </div>
+
+            <div bind:this={benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {#each benefits as item}
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group">
+                        <div class="text-4xl mb-6 transform group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
+                        <h3 class="text-lg font-bold text-white mb-3">{item.title}</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">{item.desc}</p>
+                    </div>
+                {/each}
+            </div>
+        </section>
+
+        <section bind:this={ctaRef} class="py-24 pb-32 text-center relative overflow-hidden rounded-3xl my-12 bg-gradient-to-b from-blue-900/20 to-black border border-white/10">
+            <div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
+            
+            <div class="relative z-10 max-w-3xl mx-auto px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Level Up?</h2>
+                <p class="text-xl text-zinc-400 mb-10">
+                    Join thousands of traders who have transformed their results. <br class="hidden md:block"/>
+                    The market is waiting. Your desk is ready.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#rooms-section" class="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+                        Choose Your Room
+                    </a>
+                    <a href="/about" class="px-8 py-4 bg-transparent border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 hover:border-white/40 transition-all duration-300">
+                        Talk to an Advisor
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="text-center border-t border-white/5 pt-16 pb-8">
+            <h3 class="text-zinc-600 text-xs font-mono uppercase tracking-[0.2em] mb-8">Trusted by 10,000+ Traders Worldwide</h3>
+            <div class="flex flex-wrap justify-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="h-6 w-20 bg-white/20 rounded-sm"></div>
+                <div class="h-6 w-20 bg-white/20 rounded-sm"></div>
+                <div class="h-6 w-20 bg-white/20 rounded-sm"></div>
+                <div class="h-6 w-20 bg-white/20 rounded-sm"></div>
+            </div>
+        </div>
+
+    </main>
+</div>
 
 <style>
-	.live-trading-rooms {
-		background: #0f172a;
-		color: #e2e8f0;
-		min-height: 100vh;
-	}
+    /* 3D Physics */
+    .card-3d {
+        transform-style: preserve-3d;
+        transform: perspective(1000px) rotateX(var(--rotX, 0deg)) rotateY(var(--rotY, 0deg));
+        will-change: transform;
+    }
 
-	/* Hero */
-	.hero {
-		position: relative;
-		padding: 120px 24px 80px;
-		text-align: center;
-		overflow: hidden;
-	}
+    /* Ambient Animation */
+    .animate-pulse-slow {
+        animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.2; }
+    }
 
-	.hero-bg {
-		position: absolute;
-		inset: 0;
-		background:
-			radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-			radial-gradient(ellipse at 70% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-	}
+    /* Ticker Animation */
+    .ticker-track {
+        animation: scroll 60s linear infinite;
+    }
+    .ticker-track:hover {
+        animation-play-state: paused;
+    }
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
 
-	.hero-content {
-		position: relative;
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
-	.hero-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		background: rgba(59, 130, 246, 0.1);
-		border: 1px solid rgba(59, 130, 246, 0.3);
-		padding: 8px 16px;
-		border-radius: 24px;
-		font-size: 14px;
-		font-weight: 600;
-		color: #60a5fa;
-		margin-bottom: 24px;
-	}
-
-	.badge-dot {
-		width: 8px;
-		height: 8px;
-		background: #22c55e;
-		border-radius: 50%;
-		animation: pulse 2s infinite;
-	}
-
-	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
-	}
-
-	.hero h1 {
-		font-size: clamp(2.5rem, 6vw, 4rem);
-		font-weight: 800;
-		line-height: 1.1;
-		margin-bottom: 24px;
-		color: #fff;
-	}
-
-	.gradient-text {
-		background: linear-gradient(135deg, #60a5fa, #34d399);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.hero p {
-		font-size: 1.25rem;
-		color: #94a3b8;
-		max-width: 600px;
-		margin: 0 auto;
-		line-height: 1.7;
-	}
-
-	/* Rooms Section */
-	.rooms-section {
-		padding: 80px 24px;
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.rooms-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-		gap: 32px;
-	}
-
-	/* Room Card */
-	.room-card {
-		background: #1e293b;
-		border-radius: 24px;
-		padding: 32px;
-		border: 1px solid #334155;
-		transition: all 0.3s ease;
-	}
-
-	.room-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
-	}
-
-	.room-card--blue:hover { border-color: rgba(59, 130, 246, 0.5); }
-	.room-card--emerald:hover { border-color: rgba(16, 185, 129, 0.5); }
-	.room-card--amber:hover { border-color: rgba(245, 158, 11, 0.5); }
-
-	.room-header {
-		display: flex;
-		align-items: flex-start;
-		gap: 16px;
-		margin-bottom: 20px;
-	}
-
-	.room-icon {
-		font-size: 2.5rem;
-		line-height: 1;
-	}
-
-	.room-header h2 {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: #fff;
-		margin: 0;
-	}
-
-	.tagline {
-		font-size: 14px;
-		color: #94a3b8;
-		margin: 4px 0 0;
-	}
-
-	.room-description {
-		color: #94a3b8;
-		line-height: 1.6;
-		margin-bottom: 24px;
-	}
-
-	.room-features {
-		list-style: none;
-		padding: 0;
-		margin: 0 0 24px;
-	}
-
-	.room-features li {
-		display: flex;
-		align-items: flex-start;
-		gap: 12px;
-		padding: 8px 0;
-		font-size: 14px;
-		color: #cbd5e1;
-	}
-
-	.check-icon {
-		width: 18px;
-		height: 18px;
-		flex-shrink: 0;
-		color: #22c55e;
-	}
-
-	/* Pricing */
-	.room-pricing {
-		background: #0f172a;
-		border-radius: 12px;
-		padding: 16px;
-		margin-bottom: 24px;
-	}
-
-	.price-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 8px 0;
-		font-size: 14px;
-		color: #94a3b8;
-	}
-
-	.price-row.highlight {
-		background: rgba(16, 185, 129, 0.1);
-		margin: 8px -8px -8px;
-		padding: 12px 8px;
-		border-radius: 8px;
-	}
-
-	.price {
-		font-weight: 700;
-		color: #fff;
-		font-size: 16px;
-	}
-
-	.period {
-		font-weight: 400;
-		color: #64748b;
-		font-size: 12px;
-	}
-
-	.savings {
-		color: #22c55e;
-		font-size: 12px;
-	}
-
-	/* CTA Button */
-	.room-cta {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		width: 100%;
-		padding: 16px 24px;
-		background: linear-gradient(135deg, #3b82f6, #2563eb);
-		color: #fff;
-		font-weight: 600;
-		font-size: 16px;
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.2s ease;
-	}
-
-	.room-card--emerald .room-cta {
-		background: linear-gradient(135deg, #10b981, #059669);
-	}
-
-	.room-card--amber .room-cta {
-		background: linear-gradient(135deg, #f59e0b, #d97706);
-	}
-
-	.room-cta:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
-	}
-
-	.arrow-icon {
-		width: 20px;
-		height: 20px;
-		transition: transform 0.2s ease;
-	}
-
-	.room-cta:hover .arrow-icon {
-		transform: translateX(4px);
-	}
-
-	/* Why Section */
-	.why-section {
-		background: #1e293b;
-		padding: 80px 24px;
-	}
-
-	.why-content {
-		max-width: 1000px;
-		margin: 0 auto;
-		text-align: center;
-	}
-
-	.why-content h2 {
-		font-size: 2rem;
-		font-weight: 700;
-		color: #fff;
-		margin-bottom: 48px;
-	}
-
-	.why-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 32px;
-	}
-
-	.why-item {
-		padding: 24px;
-	}
-
-	.why-icon {
-		font-size: 2.5rem;
-		margin-bottom: 16px;
-	}
-
-	.why-item h3 {
-		font-size: 1.125rem;
-		font-weight: 600;
-		color: #fff;
-		margin-bottom: 8px;
-	}
-
-	.why-item p {
-		font-size: 14px;
-		color: #94a3b8;
-		line-height: 1.6;
-	}
-
-	/* CTA Section */
-	.cta-section {
-		padding: 80px 24px;
-		text-align: center;
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
-	}
-
-	.cta-content {
-		max-width: 600px;
-		margin: 0 auto;
-	}
-
-	.cta-content h2 {
-		font-size: 2rem;
-		font-weight: 700;
-		color: #fff;
-		margin-bottom: 16px;
-	}
-
-	.cta-content p {
-		color: #94a3b8;
-		margin-bottom: 32px;
-	}
-
-	.cta-button {
-		display: inline-block;
-		padding: 16px 32px;
-		background: #fff;
-		color: #0f172a;
-		font-weight: 600;
-		font-size: 16px;
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.2s ease;
-	}
-
-	.cta-button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px -4px rgba(255, 255, 255, 0.2);
-	}
-
-	/* Responsive */
-	@media (max-width: 768px) {
-		.hero {
-			padding: 80px 16px 60px;
-		}
-
-		.rooms-grid {
-			grid-template-columns: 1fr;
-		}
-	}
+    .perspective-container {
+        perspective: 2000px;
+    }
 </style>
