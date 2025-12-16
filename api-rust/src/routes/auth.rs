@@ -169,7 +169,7 @@ pub async fn login_mfa(mut req: Request, ctx: RouteContext<AppState>) -> worker:
 
     // Verify MFA code (TOTP)
     // In production, use a proper TOTP library
-    let mfa_secret = user.mfa_secret.clone()
+    let _mfa_secret = user.mfa_secret.clone()
         .ok_or_else(|| ApiError::BadRequest("MFA not enabled".to_string()))?;
 
     // TODO: Implement proper TOTP verification

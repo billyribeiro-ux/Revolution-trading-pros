@@ -4,7 +4,7 @@
  * Enhanced with better type safety and error handling
  */
 
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
 // This prevents CORS issues by routing all API calls through the same origin
@@ -193,7 +193,7 @@ export async function apiFetch<T>(
 	}
 
 	// Get auth token from secure auth store (memory-only, not localStorage)
-	const token = typeof window !== 'undefined' ? getAuthStoreToken() : null;
+	const token = typeof window !== 'undefined' ? getAuthToken() : null;
 
 	// Merge headers
 	const headers: Record<string, string> = {

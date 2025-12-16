@@ -27,12 +27,11 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
     );
 
     let mut params: Vec<serde_json::Value> = vec![];
-    let mut param_idx = 1;
+    let param_idx = 1;
 
     if let Some(category_id) = &query.category_id {
         sql.push_str(&format!(" AND category_id = ${}", param_idx));
         params.push(serde_json::json!(category_id.to_string()));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
@@ -41,7 +40,6 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
             param_idx, param_idx
         ));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total

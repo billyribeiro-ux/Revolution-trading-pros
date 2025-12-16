@@ -88,9 +88,9 @@ impl StorageService {
     }
 
     /// Generate a presigned URL for direct upload
-    pub async fn presigned_upload_url(&self, key: &str, content_type: &str) -> Result<String> {
+    pub async fn presigned_upload_url(&self, key: &str, _content_type: &str) -> Result<String> {
         // Note: For R2, you might want to use Cloudflare's direct upload API
-        // This is a simplified version
+        // This is a simplified version - content_type would be used in a full implementation
         Ok(format!("{}/{}", self.public_url, key))
     }
 }

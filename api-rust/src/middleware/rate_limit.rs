@@ -65,7 +65,7 @@ pub struct RateLimitResult {
 impl RateLimitResult {
     /// Add rate limit headers to response
     pub fn add_headers(&self, response: Response) -> Response {
-        let mut headers = response.headers().clone();
+        let headers = response.headers().clone();
         headers.set("X-RateLimit-Limit", &self.limit.to_string()).ok();
         headers.set("X-RateLimit-Remaining", &self.remaining.to_string()).ok();
         headers.set("X-RateLimit-Reset", &self.reset_at.to_string()).ok();
@@ -85,7 +85,7 @@ impl RateLimitResult {
             .unwrap_or_else(|_| Response::error("Rate limited", 429).unwrap())
             .with_status(429)
             .with_headers({
-                let mut headers = worker::Headers::new();
+                let headers = worker::Headers::new();
                 headers.set("X-RateLimit-Limit", &self.limit.to_string()).ok();
                 headers.set("X-RateLimit-Remaining", "0").ok();
                 headers.set("X-RateLimit-Reset", &self.reset_at.to_string()).ok();

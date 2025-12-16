@@ -7,5 +7,6 @@ pub mod job;
 
 pub use user::*;
 pub use course::*;
+#[allow(unused_imports)]
 pub use membership::*;
 pub use job::*;

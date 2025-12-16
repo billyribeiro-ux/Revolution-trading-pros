@@ -50,7 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -1197,7 +1197,7 @@ class BannedEmailManagementService {
 	private getAuthToken(): string {
 		if (!browser) return '';
 		// Use secure auth store token (memory-only, not localStorage)
-		return getAuthStoreToken() || '';
+		return getAuthToken() || '';
 	}
 
 	private getFromCache(key: string): any {

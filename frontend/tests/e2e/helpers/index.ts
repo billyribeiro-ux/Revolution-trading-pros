@@ -13,3 +13,6 @@ export * from './api.helper';
 
 // Test data helpers
 export * from './test-data.helper';
+
+// Backend availability check helpers
+export * from './backend-check.helper';

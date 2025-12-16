@@ -132,6 +132,9 @@
 		return grouped;
 	});
 
+	// Get uncategorized lessons
+	let uncategorizedLessons = $derived(lessonsByModule.get('uncategorized') || []);
+
 	// Get module progress
 	let moduleProgress = $derived.by(() => {
 		return userProgress?.moduleProgress || [];

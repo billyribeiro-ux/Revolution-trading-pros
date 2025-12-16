@@ -3,7 +3,7 @@
 use worker::{Request, Response, RouteContext};
 use crate::AppState;
 use crate::error::ApiError;
-use crate::models::product::{CheckoutRequest, CartItem, Order, OrderItem, OrderStatus};
+use crate::models::product::{CheckoutRequest, CartItem};
 use crate::services::JwtService;
 
 /// POST /api/cart/checkout - Process checkout
@@ -132,7 +132,7 @@ pub async fn checkout(mut req: Request, ctx: RouteContext<AppState>) -> worker::
 }
 
 /// POST /api/cart/calculate-tax - Calculate tax for cart
-pub async fn calculate_tax(mut req: Request, ctx: RouteContext<AppState>) -> worker::Result<Response> {
+pub async fn calculate_tax(mut req: Request, _ctx: RouteContext<AppState>) -> worker::Result<Response> {
     #[derive(serde::Deserialize)]
     struct TaxRequest {
         items: Vec<CartItem>,
