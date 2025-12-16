@@ -6,7 +6,7 @@
 	 * Reduces initial bundle size and improves Time to Interactive (TTI)
 	 *
 	 * ICT11+ Fixes (December 2025):
-	 * - Uses $effect for reliable IntersectionObserver setup
+	 * - Uses onMount for IntersectionObserver (NOT $effect - bindings not ready)
 	 * - Removed aggressive CSS containment that broke observer
 	 * - Added fallback timeout for browsers with IO issues
 	 * - SSR-safe with proper hydration handling
@@ -42,48 +42,64 @@
 	let observer: IntersectionObserver | null = null;
 	let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
-	// ICT11+ Fix: Use $effect for reliable observer setup after binding
-	$effect(() => {
-		if (!browser || !container || isVisible) return;
+	// ICT11+ Fix: Use onMount for IntersectionObserver setup
+	// $effect runs before bindings are established during SSR hydration
+	onMount(() => {
+		if (!browser) return;
 
-		// Clean up any existing observer
-		observer?.disconnect();
-		if (fallbackTimer) clearTimeout(fallbackTimer);
-
-		// Create new IntersectionObserver
-		observer = new IntersectionObserver(
-			(entries) => {
-				const entry = entries[0];
-				if (entry?.isIntersecting) {
-					isVisible = true;
-					observer?.disconnect();
-					observer = null;
-					if (fallbackTimer) {
-						clearTimeout(fallbackTimer);
-						fallbackTimer = null;
-					}
-				}
-			},
-			{
-				rootMargin,
-				threshold
+		// Use microtask to ensure binding is complete
+		queueMicrotask(() => {
+			if (!container) {
+				console.warn('[LazySection] Container ref not bound');
+				isVisible = true; // Fallback: show content
+				return;
 			}
-		);
 
-		observer.observe(container);
+			// Check if element is already in viewport
+			const rect = container.getBoundingClientRect();
+			const margin = parseInt(rootMargin) || 200;
+			const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-		// ICT11+ Fix: Fallback timeout for edge cases where IO doesn't fire
-		if (fallbackTimeout > 0) {
-			fallbackTimer = setTimeout(() => {
-				if (!isVisible) {
-					isVisible = true;
-					observer?.disconnect();
-					observer = null;
+			if (rect.top < viewportHeight + margin) {
+				isVisible = true;
+				return;
+			}
+
+			// Create IntersectionObserver
+			observer = new IntersectionObserver(
+				(entries) => {
+					const entry = entries[0];
+					if (entry?.isIntersecting) {
+						isVisible = true;
+						observer?.disconnect();
+						observer = null;
+						if (fallbackTimer) {
+							clearTimeout(fallbackTimer);
+							fallbackTimer = null;
+						}
+					}
+				},
+				{
+					rootMargin,
+					threshold
 				}
-			}, fallbackTimeout);
-		}
+			);
 
-		// Cleanup function
+			observer.observe(container);
+
+			// Fallback timeout for edge cases where IO doesn't fire
+			if (fallbackTimeout > 0) {
+				fallbackTimer = setTimeout(() => {
+					if (!isVisible) {
+						isVisible = true;
+						observer?.disconnect();
+						observer = null;
+					}
+				}, fallbackTimeout);
+			}
+		});
+
+		// Cleanup
 		return () => {
 			observer?.disconnect();
 			observer = null;
@@ -92,39 +108,6 @@
 				fallbackTimer = null;
 			}
 		};
-	});
-
-	// ICT11+ Fix: Immediate visibility check for elements already in viewport
-	onMount(async () => {
-		if (!browser) return;
-
-		// Wait for binding to complete
-		await tick();
-
-		// Check if element is already in viewport (handles fast scrollers)
-		if (container && !isVisible) {
-			const rect = container.getBoundingClientRect();
-			const margin = parseInt(rootMargin) || 200;
-			const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-			// Element is in or near viewport
-			if (rect.top < viewportHeight + margin) {
-				isVisible = true;
-			}
-		}
-
-		// ICT11+ Fix: Force visibility after a short delay if still not visible
-		// This handles edge cases where IntersectionObserver doesn't fire
-		setTimeout(() => {
-			if (!isVisible && container) {
-				const rect = container.getBoundingClientRect();
-				const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-				// If element is anywhere near the viewport, show it
-				if (rect.top < viewportHeight * 2) {
-					isVisible = true;
-				}
-			}
-		}, 500);
 	});
 </script>
 

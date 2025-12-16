@@ -588,6 +588,9 @@
 		currentSlide = 0;
 		previousSlide = -1;
 
+		// Wait for DOM bindings to be ready
+		await tick();
+
 		if (heroSection && typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
 			resizeObserver.observe(heroSection);
@@ -606,6 +609,8 @@
 			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
 			if (gsapLib) {
 				gsapLoaded = true;
+				// Wait another tick to ensure slide elements are in DOM
+				await tick();
 				animateSlideIn(currentSlide);
 			}
 		} catch (e) {

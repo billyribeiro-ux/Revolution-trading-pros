@@ -34,16 +34,32 @@
     };
 
     onMount(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        if (containerRef) observer.observe(containerRef);
+        // Use queueMicrotask to ensure binding is complete
+        queueMicrotask(() => {
+            if (!containerRef) {
+                isVisible = true; // Fallback: show content
+                return;
+            }
+            
+            // Check if already in viewport
+            const rect = containerRef.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            if (rect.top < viewportHeight + 200) {
+                isVisible = true;
+                return;
+            }
+            
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        isVisible = true;
+                        observer.disconnect();
+                    }
+                },
+                { threshold: 0.1 }
+            );
+            observer.observe(containerRef);
+        });
     });
 
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
