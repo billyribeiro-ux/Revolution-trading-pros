@@ -204,7 +204,7 @@ class InventoryReservationService
     /**
      * Extend reservation TTL
      */
-    public function extend(string $reservationId, int $additionalSeconds = null): bool
+    public function extend(string $reservationId, ?int $additionalSeconds = null): bool
     {
         $additionalSeconds = $additionalSeconds ?? self::DEFAULT_RESERVATION_TTL;
 

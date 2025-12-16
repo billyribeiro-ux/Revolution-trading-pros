@@ -27,7 +27,7 @@ RUN composer install \
 # -----------------------------------------------------------------------------
 # Stage 2: Production Image with FrankenPHP
 # -----------------------------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.3-alpine AS production
+FROM dunglas/frankenphp:1-php8.4-alpine AS production
 
 # Labels for container registry
 LABEL maintainer="Revolution Trading Pros"
@@ -84,10 +84,7 @@ COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 # Set working directory
 WORKDIR /app
 
-# Copy Composer dependencies from builder
-COPY --from=composer /app/vendor ./vendor
-
-# Copy application code
+# Copy application code first
 COPY . .
 
 # Create required Laravel directories
@@ -99,9 +96,9 @@ RUN mkdir -p \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Generate optimized autoloader
+# Install Composer and run fresh install with all dependencies
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
-RUN composer dump-autoload --optimize --classmap-authoritative
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Make entrypoint executable
 RUN chmod +x docker-entrypoint.sh
@@ -129,62 +126,4 @@ ENV LOG_CHANNEL=stderr
 # Use entrypoint script
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
-# -----------------------------------------------------------------------------
-# Stage 3: Development Image (optional)
-# -----------------------------------------------------------------------------
-FROM dunglas/frankenphp:1-php8.3-alpine AS development
-
-# Install all dependencies including dev tools
-RUN apk add --no-cache \
-    git \
-    curl \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    libwebp-dev \
-    libzip-dev \
-    libxml2-dev \
-    postgresql-dev \
-    icu-dev \
-    oniguruma-dev \
-    linux-headers \
-    nodejs \
-    npm \
-    $PHPIZE_DEPS
-
-# Configure and install PHP extensions
-RUN docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
-        --with-webp \
-    && docker-php-ext-install -j$(nproc) \
-        pdo \
-        pdo_pgsql \
-        pgsql \
-        mbstring \
-        xml \
-        bcmath \
-        gd \
-        zip \
-        intl \
-        pcntl \
-        opcache \
-        sockets
-
-# Install Redis and Xdebug for development
-RUN pecl install redis xdebug \
-    && docker-php-ext-enable redis xdebug
-
-WORKDIR /app
-
-# Install Composer
-COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
-
-# Default to development mode
-ENV APP_ENV=local
-ENV APP_DEBUG=true
-ENV OCTANE_SERVER=frankenphp
-
-EXPOSE 8000
-
-CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000", "--watch"]
+# Development stage removed - use production for deployments

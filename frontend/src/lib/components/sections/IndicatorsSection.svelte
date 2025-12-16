@@ -76,6 +76,7 @@
 	// ============================================================================
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
+	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
 	let isMounted = $state(false);
 	let activeIndicator = $state(0);
@@ -224,6 +225,24 @@
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		isMounted = true;
+		
+		// Trigger entrance animations when section scrolls into viewport
+		queueMicrotask(() => {
+			if (sectionRef) {
+				const visibilityObserver = new IntersectionObserver(
+					(entries) => {
+						if (entries[0].isIntersecting) {
+							isVisible = true;
+							visibilityObserver.disconnect();
+						}
+					},
+					{ threshold: 0.1, rootMargin: '50px' }
+				);
+				visibilityObserver.observe(sectionRef);
+			} else {
+				isVisible = true;
+			}
+		});
 
 		// Setup canvas with resize observer (delayed to ensure DOM is ready)
 		// Use double rAF to ensure layout is complete
@@ -238,23 +257,12 @@
 			});
 		});
 
-		// Intersection Observer for visibility - lower threshold for mobile
-		observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					isVisible = true;
-					observer?.disconnect();
-					// Start chart animation after visible
-					if (!prefersReducedMotion) {
-						animatechartProgress();
-					} else {
-						chartProgress = 1;
-					}
-				}
-			},
-			{ threshold: 0.1, rootMargin: '50px' }
-		);
-		if (sectionRef) observer.observe(sectionRef);
+		// Start chart animation immediately since LazySection handles visibility
+		if (!prefersReducedMotion) {
+			animatechartProgress();
+		} else {
+			chartProgress = 1;
+		}
 
 		// Load GSAP asynchronously
 		if (!prefersReducedMotion) {

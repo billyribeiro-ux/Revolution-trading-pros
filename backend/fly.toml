@@ -23,10 +23,10 @@ primary_region = "iad"  # US East (Virginia)
 
 [build]
   dockerfile = "Dockerfile"
+  target = "production"
 
 [deploy]
   strategy = "rolling"
-  release_command = "php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
 
 #------------------------------------------------------------------------------
 # Environment Variables (non-secrets)
@@ -110,7 +110,7 @@ primary_region = "iad"  # US East (Virginia)
     grace_period = "30s"
     interval = "30s"
     method = "GET"
-    path = "/api/health"
+    path = "/health/live"
     timeout = "10s"
 
 #------------------------------------------------------------------------------

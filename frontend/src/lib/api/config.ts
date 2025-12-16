@@ -11,10 +11,15 @@ import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 // In production, use the full API URL from environment variables
 const isDev = import.meta.env.DEV;
 
+// ICT11+ PRODUCTION FIX: Hardcode the production API URL since Cloudflare Pages
+// secrets are not available via import.meta.env on server-side
+// The VITE_API_URL secret is only for client-side code
+const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.billy-ribeiro.workers.dev';
+
 // Get API base URL - empty string in dev (uses Vite proxy), full URL in production
 export const API_BASE_URL = isDev 
 	? '' 
-	: (import.meta.env['VITE_API_URL'] || 'http://localhost:8000');
+	: (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
 
 export const CDN_URL = import.meta.env['VITE_CDN_URL'] || 'http://localhost:8000/storage';
 export const WS_URL = import.meta.env['VITE_WS_URL'] || 'ws://localhost:8000';

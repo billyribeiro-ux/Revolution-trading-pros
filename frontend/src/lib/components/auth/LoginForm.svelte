@@ -399,6 +399,7 @@
 						<input
 							bind:this={emailInputRef}
 							id="email"
+							name="email"
 							type="email"
 							bind:value={email}
 							onblur={() => handleBlur('email')}
@@ -428,6 +429,7 @@
 						</div>
 						<input
 							id="password"
+							name="password"
 							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							onblur={() => handleBlur('password')}

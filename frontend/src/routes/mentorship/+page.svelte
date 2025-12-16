@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
-	import { gsap } from 'gsap'; // Leveraging your library
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	// Note: If you have ScrollTrigger, uncomment lines below.
-	// For safety/paste-ability, I am using a lightweight IntersectionObserver to trigger GSAP animations.
 
 	// --- ICONS (Inline for Zero-Dependency Safety) ---
 	const Icons = {
@@ -32,55 +30,33 @@
 	let heroGraphic: HTMLElement;
 
 	// --- MOTION ENGINE ---
-	onMount(() => {
+	onMount(async () => {
+		if (!browser) return;
+		
+		// Dynamic GSAP import for SSR safety
+		const { gsap } = await import('gsap');
+		
 		// 1. Hero Sequence (Timeline)
-		// This creates that expensive "load in" feel
 		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-		tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 })
-			.fromTo(
-				heroTitle,
-				{ y: 40, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
-				'-=0.8'
-			)
-			.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8')
-			.fromTo(
-				heroMetrics,
-				{ opacity: 0, scale: 0.98 },
-				{ opacity: 1, scale: 1, duration: 1.2 },
-				'-=0.6'
-			)
-			.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+		if (heroBadge) tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+		if (heroTitle) tl.fromTo(heroTitle, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, '-=0.8');
+		if (heroDesc) tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
+		if (heroMetrics) tl.fromTo(heroMetrics, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
+		if (heroGraphic) tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
-		// 2. Scroll Reveal Logic (Using IntersectionObserver to trigger GSAP)
+		// 2. Scroll Reveal Logic
 		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						const target = entry.target as HTMLElement;
-						// Animate children if they exist, or the element itself
 						const children = target.querySelectorAll('.gsap-reveal-item');
 
 						if (children.length > 0) {
-							gsap.fromTo(
-								children,
-								{ y: 30, opacity: 0 },
-								{
-									y: 0,
-									opacity: 1,
-									duration: 0.8,
-									stagger: 0.1,
-									ease: 'power2.out',
-									overwrite: true
-								}
-							);
+							gsap.fromTo(children, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power2.out', overwrite: true });
 						} else {
-							gsap.fromTo(
-								target,
-								{ y: 30, opacity: 0 },
-								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
-							);
+							gsap.fromTo(target, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true });
 						}
 						observer.unobserve(target);
 					}

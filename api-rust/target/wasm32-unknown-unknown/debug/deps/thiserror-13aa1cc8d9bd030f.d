@@ -1,0 +1,14 @@
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/deps/thiserror-13aa1cc8d9bd030f.d: /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs /Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/thiserror-1c3df44be3ca4f2c/out/private.rs
+
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/deps/libthiserror-13aa1cc8d9bd030f.rlib: /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs /Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/thiserror-1c3df44be3ca4f2c/out/private.rs
+
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/deps/libthiserror-13aa1cc8d9bd030f.rmeta: /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs /Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/thiserror-1c3df44be3ca4f2c/out/private.rs
+
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/lib.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/aserror.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/display.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/var.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.17/src/private.rs:
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/thiserror-1c3df44be3ca4f2c/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/thiserror-1c3df44be3ca4f2c/out

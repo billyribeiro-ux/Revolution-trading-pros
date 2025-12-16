@@ -19,10 +19,10 @@
 │                     │                                                  │     │
 │                     ▼                                                  ▼     │
 │    ┌──────────────────────────────┐       ┌──────────────────────────────┐ │
-│    │  Cloudflare Pages (Frontend) │       │    Railway (Backend API)     │ │
-│    │  • SvelteKit SSR             │◀─────▶│    • Laravel PHP 8.2         │ │
-│    │  • Edge rendering            │  API  │    • Redis queues            │ │
-│    │  • Static optimization       │       │    • Job workers             │ │
+│    │  Cloudflare Pages (Frontend) │       │      Fly.io (Backend API)    │ │
+│    │  • SvelteKit SSR             │◀─────▶│    • Laravel PHP 8.3         │ │
+│    │  • Edge rendering            │  API  │    • FrankenPHP + Octane     │ │
+│    │  • Static optimization       │       │    • Redis queues            │ │
 │    └──────────────────────────────┘       └──────────────┬───────────────┘ │
 │                                                          │                  │
 │                     ┌────────────────────────────────────┼──────────────┐   │
@@ -44,11 +44,12 @@
 
 ```bash
 # Install CLIs
-npm install -g wrangler @railway/cli
+npm install -g wrangler
+curl -L https://fly.io/install.sh | sh
 
 # Login to services
 wrangler login
-railway login
+fly auth login
 ```
 
 ### 2. Environment Setup
@@ -67,8 +68,8 @@ cp backend/.env.example backend/.env
 # Frontend (Cloudflare Pages)
 cd frontend && npm run build && wrangler pages deploy
 
-# Backend (Railway)
-cd backend && railway up
+# Backend (Fly.io)
+cd backend && fly deploy
 ```
 
 ---
@@ -122,7 +123,7 @@ wrangler pages deploy .svelte-kit/cloudflare \
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `https://revolution-trading-backend.up.railway.app/api` |
+| `VITE_API_URL` | Backend API URL | `https://revolution-trading-pros.fly.dev/api` |
 | `VITE_SITE_URL` | Production URL | `https://revolutiontradingpros.com` |
 | `VITE_GTM_ID` | Google Tag Manager | `GTM-XXXXXXX` |
 | `VITE_GTAG_ID` | Google Analytics | `G-XXXXXXXXXX` |
@@ -131,68 +132,70 @@ wrangler pages deploy .svelte-kit/cloudflare \
 
 ---
 
-## Backend Deployment (Railway)
+## Backend Deployment (Fly.io)
 
-### Option A: GitHub Integration (Recommended)
+### Option A: Fly.io CLI (Recommended)
 
-1. **Create Project**
-   - Go to [Railway Dashboard](https://railway.app)
-   - New Project → Deploy from GitHub repo
-   - Select repository and `backend` directory
-
-2. **Add Services**
-   ```
-   Backend Service: revolution-trading-backend
-   Root Directory: backend
-   Build Command: (auto-detected from Dockerfile)
+1. **Initialize App**
+   ```bash
+   cd backend
+   fly launch --no-deploy
    ```
 
-3. **Add Database (Neon PostgreSQL)**
+2. **Set Secrets**
+   ```bash
+   fly secrets set \
+     APP_KEY="base64:..." \
+     DATABASE_URL="postgres://..." \
+     REDIS_URL="rediss://..." \
+     STRIPE_SECRET="sk_live_..." \
+     POSTMARK_TOKEN="..."
+   ```
+
+3. **Deploy**
+   ```bash
+   fly deploy
+   ```
+
+4. **Run Migrations**
+   ```bash
+   fly ssh console -C "php artisan migrate --force"
+   ```
+
+### Option B: GitHub Actions (CI/CD)
+
+The `.github/workflows/deploy-cloudflare.yml` handles automatic deployments on push to main.
+
+### Required Services
+
+1. **Neon PostgreSQL**
    - Go to [Neon Console](https://console.neon.tech)
    - Create database: `revolution_trading_prod`
    - Copy connection string
 
-4. **Add Redis (Upstash)**
+2. **Upstash Redis**
    - Go to [Upstash Console](https://console.upstash.com)
    - Create Redis database
    - Copy connection URL
 
-5. **Set Environment Variables**
-   ```bash
-   # Required
-   APP_KEY=base64:... (run php artisan key:generate --show)
-   APP_ENV=production
-   APP_DEBUG=false
-   APP_URL=https://revolution-trading-backend.up.railway.app
+### Fly.io Configuration
 
-   # Database (Neon)
-   DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require
+The `backend/fly.toml` contains the deployment configuration:
 
-   # Cache (Upstash)
-   REDIS_URL=redis://default:xxx@xxx.upstash.io:6379
+```toml
+app = "revolution-trading-pros"
+primary_region = "iad"
 
-   # CORS
-   SANCTUM_STATEFUL_DOMAINS=revolutiontradingpros.com,www.revolutiontradingpros.com
-   CORS_ALLOWED_ORIGINS=https://revolutiontradingpros.com
-   ```
+[build]
+  dockerfile = "Dockerfile"
 
-### Option B: Railway CLI
+[env]
+  APP_ENV = "production"
+  LOG_CHANNEL = "stderr"
 
-```bash
-cd backend
-
-# Link to project
-railway link
-
-# Deploy
-railway up
-
-# Run migrations
-railway run php artisan migrate --force
-
-# Cache config
-railway run php artisan config:cache
-railway run php artisan route:cache
+[http_service]
+  internal_port = 8080
+  force_https = true
 ```
 
 ---
@@ -203,8 +206,7 @@ railway run php artisan route:cache
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| `deploy-cloudflare.yml` | Push to main/develop | Deploy frontend |
-| `deploy-railway.yml` | Push to main/develop | Deploy backend |
+| `deploy-cloudflare.yml` | Push to main/develop | Deploy frontend + backend |
 | `e2e.yml` | PR/Push to main | E2E tests |
 
 ### Required Secrets (GitHub)
@@ -215,9 +217,8 @@ CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
 CLOUDFLARE_ZONE_ID
 
-# Railway
-RAILWAY_TOKEN
-RAILWAY_PROJECT_ID
+# Fly.io
+FLY_API_TOKEN
 
 # Optional
 LHCI_GITHUB_APP_TOKEN (Lighthouse CI)
@@ -230,9 +231,9 @@ LHCI_GITHUB_APP_TOKEN (Lighthouse CI)
    - Create Token → Edit Cloudflare Workers
    - Add permissions: `Pages:Edit`, `Zone:Cache Purge`
 
-2. **Railway Token**
-   - Railway Dashboard → Account Settings → Tokens
-   - Create new token
+2. **Fly.io Token**
+   - Run `fly tokens create deploy`
+   - Copy the token
 
 ---
 
@@ -282,10 +283,9 @@ R2_PUBLIC_URL=https://pub-xxx.r2.dev
 ### Cloudflare DNS Setup
 
 ```
-Type    Name    Content                               Proxy
-CNAME   @       revolution-trading-pros.pages.dev    Proxied
-CNAME   www     revolution-trading-pros.pages.dev    Proxied
-CNAME   api     revolution-trading-backend.up.railway.app   DNS Only
+Type    Name    Content                                    Proxy
+CNAME   @       revolution-trading-pros.pages.dev         Proxied
+CNAME   www     revolution-trading-pros.pages.dev         Proxied
 ```
 
 ### SSL/TLS Configuration
@@ -323,9 +323,8 @@ CNAME   api     revolution-trading-backend.up.railway.app   DNS Only
 | Tool | Purpose | Setup |
 |------|---------|-------|
 | Cloudflare Analytics | Frontend metrics | Built-in |
-| Railway Observability | Backend logs | Built-in |
+| Fly.io Metrics | Backend logs | Built-in |
 | Sentry | Error tracking | Add `SENTRY_DSN` env var |
-| Upstash QStash | Job scheduling | Webhook triggers |
 
 ---
 
@@ -344,9 +343,11 @@ wrangler pages deployments rollback --project-name=revolution-trading-pros <depl
 ### Backend Rollback
 
 ```bash
-# Railway Dashboard → Deployments → Click on previous deployment → Rollback
-# Or via CLI:
-railway rollback
+# List releases
+fly releases list
+
+# Rollback to previous release
+fly deploy --image registry.fly.io/revolution-trading-pros:v<version>
 ```
 
 ---
@@ -363,7 +364,7 @@ railway rollback
 2. **API connection fails**
    - Verify `VITE_API_URL` is correct
    - Check CORS settings in Laravel
-   - Ensure Railway service is running
+   - Ensure Fly.io service is running
 
 3. **Database connection issues**
    - Verify `DATABASE_URL` format
@@ -377,10 +378,10 @@ railway rollback
 curl https://revolutiontradingpros.com
 
 # Backend API
-curl https://revolution-trading-backend.up.railway.app/api/health/live
+curl https://revolution-trading-pros.fly.dev/api/health/live
 
 # Database
-curl https://revolution-trading-backend.up.railway.app/api/health/ready
+curl https://revolution-trading-pros.fly.dev/api/health/ready
 ```
 
 ---

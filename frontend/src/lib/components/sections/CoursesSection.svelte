@@ -118,6 +118,7 @@
     // ============================================================================
     let sectionRef = $state<HTMLElement | null>(null);
     let cardsRef = $state<HTMLElement | null>(null);
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
     let isVisible = $state(false);
     let hoveredCard = $state<string | null>(null);
     let gsapInstance: any = null;
@@ -131,25 +132,29 @@
     // ============================================================================
     // LIFECYCLE
     // ============================================================================
-    let observer: IntersectionObserver | null = null;
-
     onMount(() => {
         if (!browser) return;
 
         // Check for reduced motion preference
         prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // Intersection Observer - lower threshold for mobile
-        observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer?.disconnect();
-                }
-            },
-            { threshold: 0.1, rootMargin: '50px' }
-        );
-        if (sectionRef) observer.observe(sectionRef);
+        
+        // Trigger entrance animations when section scrolls into viewport
+        queueMicrotask(() => {
+            if (sectionRef) {
+                const visibilityObserver = new IntersectionObserver(
+                    (entries) => {
+                        if (entries[0].isIntersecting) {
+                            isVisible = true;
+                            visibilityObserver.disconnect();
+                        }
+                    },
+                    { threshold: 0.1, rootMargin: '50px' }
+                );
+                visibilityObserver.observe(sectionRef);
+            } else {
+                isVisible = true;
+            }
+        });
 
         // Load GSAP asynchronously
         if (!prefersReducedMotion) {
@@ -157,7 +162,6 @@
         }
 
         return () => {
-            observer?.disconnect();
             if (scrollTriggerInstance) scrollTriggerInstance.killAll();
         };
     });

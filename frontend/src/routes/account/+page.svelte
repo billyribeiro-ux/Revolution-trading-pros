@@ -57,7 +57,7 @@
 				<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 					<div>
 						<h1 class="text-3xl font-heading font-bold text-rtp-text mb-2">My Account</h1>
-						<p class="text-rtp-muted">Welcome back, {$authStore.user.name}!</p>
+						<p class="text-rtp-muted">Welcome back, {$authStore.user?.name || 'User'}!</p>
 					</div>
 					<button
 						onclick={handleLogout}
@@ -77,16 +77,16 @@
 						<div class="space-y-4">
 							<div>
 								<span class="text-sm font-semibold text-rtp-muted">Full Name</span>
-								<p class="text-rtp-text mt-1">{$authStore.user.name}</p>
+								<p class="text-rtp-text mt-1">{$authStore.user?.name || ''}</p>
 							</div>
 							<div>
 								<span class="text-sm font-semibold text-rtp-muted">Email Address</span>
-								<p class="text-rtp-text mt-1">{$authStore.user.email}</p>
+								<p class="text-rtp-text mt-1">{$authStore.user?.email || ''}</p>
 							</div>
 							<div>
 								<span class="text-sm font-semibold text-rtp-muted">Account Status</span>
 								<p class="mt-1">
-									{#if $authStore.user.email_verified_at}
+									{#if $authStore.user?.email_verified_at}
 										<span
 											class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800"
 										>

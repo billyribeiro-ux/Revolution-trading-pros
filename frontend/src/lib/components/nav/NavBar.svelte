@@ -895,8 +895,8 @@
 			<div class="mobile-user">
 				<div class="mobile-avatar" aria-hidden="true">{userInitial}</div>
 				<div class="mobile-user-info">
-					<span class="mobile-user-name">{$user.name || 'User'}</span>
-					<span class="mobile-user-email">{$user.email || ''}</span>
+					<span class="mobile-user-name">{$user?.name || 'User'}</span>
+					<span class="mobile-user-email">{$user?.email || ''}</span>
 				</div>
 			</div>
 		{/if}

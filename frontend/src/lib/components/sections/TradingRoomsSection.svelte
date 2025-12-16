@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { cubicOut } from 'svelte/easing';
     import IconActivity from '@tabler/icons-svelte/icons/activity';
     import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
@@ -50,21 +51,9 @@
         }
     ];
 
+    // ICT11+ Fix: IntersectionObserver triggers animations when section scrolls into view
     let isVisible = $state(false);
     let containerRef = $state<HTMLElement | null>(null);
-
-    onMount(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        if (containerRef) observer.observe(containerRef);
-    });
 
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
         return {
@@ -76,6 +65,38 @@
             }
         };
     }
+
+    // Trigger entrance animations when section scrolls into viewport
+    let observer: IntersectionObserver | null = null;
+    
+    onMount(() => {
+        if (!browser) {
+            isVisible = true;
+            return;
+        }
+        
+        // Use queueMicrotask to ensure bind:this has completed
+        queueMicrotask(() => {
+            if (!containerRef) {
+                isVisible = true;
+                return;
+            }
+            
+            observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        isVisible = true;
+                        observer?.disconnect();
+                    }
+                },
+                { threshold: 0.1, rootMargin: '50px' }
+            );
+            
+            observer.observe(containerRef);
+        });
+        
+        return () => observer?.disconnect();
+    });
 </script>
 
 <section 

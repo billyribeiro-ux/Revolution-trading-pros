@@ -588,6 +588,9 @@
 		currentSlide = 0;
 		previousSlide = -1;
 
+		// Wait for DOM bindings to be ready
+		await tick();
+
 		if (heroSection && typeof ResizeObserver !== 'undefined') {
 			resizeObserver = new ResizeObserver(handleResize);
 			resizeObserver.observe(heroSection);
@@ -606,6 +609,8 @@
 			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
 			if (gsapLib) {
 				gsapLoaded = true;
+				// Wait another tick to ensure slide elements are in DOM
+				await tick();
 				animateSlideIn(currentSlide);
 			}
 		} catch (e) {
@@ -744,9 +749,7 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		contain: layout style paint;
-		content-visibility: auto;
-		contain-intrinsic-size: 100vw 100vh;
+		/* ICT11+ Fix: Removed content-visibility as it can break IntersectionObserver for subsequent sections */
 	}
 
 	.hero-animating .hero-chart,
@@ -1231,6 +1234,9 @@
 		);
 		background-size: 300% 300%;
 		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
 			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;

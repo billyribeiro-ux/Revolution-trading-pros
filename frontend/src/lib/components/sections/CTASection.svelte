@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { cubicOut } from 'svelte/easing';
     import IconLockSquare from '@tabler/icons-svelte/icons/lock-square';
     import IconActivity from '@tabler/icons-svelte/icons/activity';
@@ -10,6 +11,7 @@
     // --- Interaction Logic ---
     let containerRef = $state<HTMLElement | null>(null);
     let mouse = $state({ x: 0, y: 0 });
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
     let isVisible = $state(false);
 
     // Mouse tracking for subtle lighting effects
@@ -19,19 +21,6 @@
         mouse.x = e.clientX - rect.left;
         mouse.y = e.clientY - rect.top;
     };
-
-    onMount(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.15 }
-        );
-        if (containerRef) observer.observe(containerRef);
-    });
 
     // Heavy, expensive-feeling transition
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
@@ -44,6 +33,37 @@
             }
         };
     }
+
+    // Trigger entrance animations when section scrolls into viewport
+    let observer: IntersectionObserver | null = null;
+    
+    onMount(() => {
+        if (!browser) {
+            isVisible = true;
+            return;
+        }
+        
+        queueMicrotask(() => {
+            if (!containerRef) {
+                isVisible = true;
+                return;
+            }
+            
+            observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        isVisible = true;
+                        observer?.disconnect();
+                    }
+                },
+                { threshold: 0.1, rootMargin: '50px' }
+            );
+            
+            observer.observe(containerRef);
+        });
+        
+        return () => observer?.disconnect();
+    });
 
     // Mock data for the background "Depth of Market" animation
     const marketDepth = Array(20).fill(0).map((_, i) => ({
@@ -126,7 +146,9 @@
                                 <div class="relative">
                                     <input 
                                         type="email" 
-                                        id="email-access" 
+                                        id="email-access"
+                                        name="email"
+                                        autocomplete="email"
                                         placeholder="trader@fund.com" 
                                         class="w-full bg-[#020202] border border-white/10 text-white font-mono text-sm px-4 py-3 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-all placeholder:text-slate-700"
                                     />

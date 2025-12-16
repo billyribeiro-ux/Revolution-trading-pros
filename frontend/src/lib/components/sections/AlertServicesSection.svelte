@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { cubicOut } from 'svelte/easing';
     import IconBolt from '@tabler/icons-svelte/icons/bolt';
     import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
@@ -50,6 +51,7 @@
     // --- Interaction Logic ---
     let containerRef = $state<HTMLElement | null>(null);
     let mouse = $state({ x: 0, y: 0 });
+    // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
     let isVisible = $state(false);
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -58,19 +60,6 @@
         mouse.x = e.clientX - rect.left;
         mouse.y = e.clientY - rect.top;
     };
-
-    onMount(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    isVisible = true;
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        if (containerRef) observer.observe(containerRef);
-    });
 
     function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
         return {
@@ -82,6 +71,37 @@
             }
         };
     }
+
+    // Trigger entrance animations when section scrolls into viewport
+    let observer: IntersectionObserver | null = null;
+    
+    onMount(() => {
+        if (!browser) {
+            isVisible = true;
+            return;
+        }
+        
+        queueMicrotask(() => {
+            if (!containerRef) {
+                isVisible = true;
+                return;
+            }
+            
+            observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        isVisible = true;
+                        observer?.disconnect();
+                    }
+                },
+                { threshold: 0.1, rootMargin: '50px' }
+            );
+            
+            observer.observe(containerRef);
+        });
+        
+        return () => observer?.disconnect();
+    });
 </script>
 
 <section 

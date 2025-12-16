@@ -43,8 +43,8 @@ return new class extends Migration
         }
 
         // Rank Tracking table
-        if (!Schema::hasTable('rank_tracking')) {
-            Schema::create('rank_tracking', function (Blueprint $table) {
+        if (!Schema::hasTable('rank_trackings')) {
+            Schema::create('rank_trackings', function (Blueprint $table) {
                 $table->id();
                 $table->string('keyword');
                 $table->string('url');
@@ -63,7 +63,7 @@ return new class extends Migration
         if (!Schema::hasTable('rank_histories')) {
             Schema::create('rank_histories', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('rank_tracking_id')->constrained('rank_tracking')->onDelete('cascade');
+                $table->foreignId('rank_tracking_id')->constrained('rank_trackings')->onDelete('cascade');
                 $table->integer('position');
                 $table->date('date');
                 $table->timestamps();
@@ -128,7 +128,7 @@ return new class extends Migration
         Schema::dropIfExists('seo_settings');
         Schema::dropIfExists('backlinks');
         Schema::dropIfExists('rank_histories');
-        Schema::dropIfExists('rank_tracking');
+        Schema::dropIfExists('rank_trackings');
         Schema::dropIfExists('seo_analytics');
         Schema::dropIfExists('redirects');
     }

@@ -160,7 +160,7 @@ Click **Add variable** for each of these:
 
 | Variable | Value | Encrypt? |
 |----------|-------|----------|
-| `VITE_API_URL` | `https://YOUR-RAILWAY-APP.up.railway.app/api` | No |
+| `VITE_API_URL` | `https://revolution-trading-pros.fly.dev/api` | No |
 | `VITE_SITE_URL` | `https://revolutiontradingpros.com` | No |
 | `VITE_SITE_NAME` | `Revolution Trading Pros` | No |
 
@@ -180,8 +180,8 @@ Cloudflare lets you set different values for Production vs Preview:
 1. Click on a variable
 2. Choose **Specify a different value for Preview**
 3. Set preview to point to staging backend:
-   - Production: `https://revolution-trading-backend.up.railway.app/api`
-   - Preview: `https://revolution-trading-staging.up.railway.app/api`
+   - Production: `https://revolution-trading-pros.fly.dev/api`
+   - Preview: `https://revolution-trading-pros.fly.dev/api`
 
 ### 4.5 Screenshot Reference
 
@@ -192,7 +192,7 @@ Cloudflare lets you set different values for Production vs Preview:
 │ Production                           Preview                 │
 │ ─────────────────────────────────────────────────────────── │
 │ VITE_API_URL                                                │
-│ Value: https://revolution-trading-backend.up.railway.app/api│
+│ Value: https://revolution-trading-pros.fly.dev/api         │
 │ [ ] Encrypt                                                 │
 │                                                             │
 │ VITE_SITE_URL                                               │
@@ -368,9 +368,9 @@ R2 is for storing user uploads, images, and media files.
    Endpoint: https://ACCOUNT_ID.r2.cloudflarestorage.com
    ```
 
-### 8.4 Add R2 Credentials to Railway
+### 8.4 Add R2 Credentials to Fly.io
 
-In your Railway backend environment variables:
+In your Fly.io backend secrets (via `fly secrets set`):
 
 ```
 R2_ACCESS_KEY_ID=your-access-key-id
@@ -455,7 +455,7 @@ Visit these URLs and verify they work:
 1. Open browser developer tools (F12)
 2. Go to **Network** tab
 3. Navigate around your site
-4. Look for API calls to your Railway backend
+4. Look for API calls to your Fly.io backend
 5. Verify they return 200 status
 
 ### 10.4 Test Preview Deployments
@@ -491,7 +491,7 @@ DEPLOY_TARGET=cloudflare
 
 ### API Calls Fail (CORS Error)
 
-**Solution**: In your Railway backend `.env`:
+**Solution**: In your Fly.io backend secrets:
 ```
 CORS_ALLOWED_ORIGINS=https://revolutiontradingpros.com,https://www.revolutiontradingpros.com
 SANCTUM_STATEFUL_DOMAINS=revolutiontradingpros.com,www.revolutiontradingpros.com

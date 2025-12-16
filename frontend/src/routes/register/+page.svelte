@@ -16,8 +16,6 @@
 	} from '@tabler/icons-svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import gsap from 'gsap';
-	import confetti from 'canvas-confetti';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	let name = '';
@@ -37,59 +35,66 @@
 	let formRef: HTMLElement;
 
 	// Track GSAP animations for cleanup to prevent memory leaks
-	let mainTimeline: gsap.core.Timeline | null = null;
-	let sparkleTimeline: gsap.core.Timeline | null = null;
-	let particleAnimations: gsap.core.Tween[] = [];
+	let mainTimeline: any = null;
+	let sparkleTimeline: any = null;
+	let particleAnimations: any[] = [];
+	let gsapLib: any = null;
 
-	onMount(() => {
+	onMount(async () => {
 		if (!browser) return;
 
-		// GSAP Timeline for entrance animations
-		mainTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+		// Dynamic GSAP import for SSR safety
+		const gsapModule = await import('gsap');
+		gsapLib = gsapModule.gsap || gsapModule.default;
 
-		mainTimeline
-			.from(cardRef, {
-				opacity: 0,
-				y: 80,
-				scale: 0.85,
-				rotation: -5,
-				duration: 1.4,
-				ease: 'back.out(1.4)'
-			})
-			.from(
-				'.register-header',
-				{
+		// GSAP Timeline for entrance animations
+		mainTimeline = gsapLib.timeline({ defaults: { ease: 'power3.out' } });
+
+		if (cardRef) {
+			mainTimeline
+				.from(cardRef, {
 					opacity: 0,
-					y: -40,
-					duration: 0.9
-				},
-				'-=0.8'
-			)
-			.from(
-				'.form-field',
-				{
-					opacity: 0,
-					x: -50,
-					duration: 0.7,
-					stagger: 0.12
-				},
-				'-=0.5'
-			)
-			.from(
-				'.register-footer',
-				{
-					opacity: 0,
-					scale: 0.9,
-					duration: 0.6
-				},
-				'-=0.4'
-			);
+					y: 80,
+					scale: 0.85,
+					rotation: -5,
+					duration: 1.4,
+					ease: 'back.out(1.4)'
+				})
+				.from(
+					'.register-header',
+					{
+						opacity: 0,
+						y: -40,
+						duration: 0.9
+					},
+					'-=0.8'
+				)
+				.from(
+					'.form-field',
+					{
+						opacity: 0,
+						x: -50,
+						duration: 0.7,
+						stagger: 0.12
+					},
+					'-=0.5'
+				)
+				.from(
+					'.register-footer',
+					{
+						opacity: 0,
+						scale: 0.9,
+						duration: 0.6
+					},
+					'-=0.4'
+				);
+		}
 
 		// Create floating emerald particles
 		createEmeraldParticles();
 
 		// Sparkle effect on icon - tracked for cleanup
-		sparkleTimeline = gsap.timeline({ repeat: -1 });
+		sparkleTimeline = gsapLib.timeline({ repeat: -1 });
 		sparkleTimeline.to('.sparkle-icon', {
 			rotation: 360,
 			duration: 3,
@@ -125,14 +130,16 @@
 		}
 
 		// Kill all GSAP animations on this component
-		gsap.killTweensOf([
-			cardRef,
-			formRef,
-			'.register-header',
-			'.form-field',
-			'.register-footer',
-			'.sparkle-icon'
-		]);
+		if (gsapLib) {
+			gsapLib.killTweensOf([
+				cardRef,
+				formRef,
+				'.register-header',
+				'.form-field',
+				'.register-footer',
+				'.sparkle-icon'
+			]);
+		}
 	}
 
 	onDestroy(() => {
@@ -162,17 +169,19 @@
 			particlesRef.appendChild(particle);
 
 			// Track animation for cleanup
-			const anim = gsap.to(particle, {
-				y: -150,
-				x: `+=${Math.random() * 120 - 60}`,
-				opacity: 0,
-				rotation: 360,
-				duration: duration,
-				delay: delay,
-				repeat: -1,
-				ease: 'none'
-			});
-			particleAnimations.push(anim);
+			if (gsapLib) {
+				const anim = gsapLib.to(particle, {
+					y: -150,
+					x: `+=${Math.random() * 120 - 60}`,
+					opacity: 0,
+					rotation: 360,
+					duration: duration,
+					delay: delay,
+					repeat: -1,
+					ease: 'none'
+				});
+				particleAnimations.push(anim);
+			}
 		}
 	}
 
@@ -183,14 +192,16 @@
 		isLoading = true;
 
 		const btn = (e.target as HTMLFormElement).querySelector('button[type="submit"]');
-		if (btn) {
-			gsap.to(btn, { scale: 0.95, duration: 0.2 });
+		if (btn && gsapLib) {
+			gsapLib.to(btn, { scale: 0.95, duration: 0.2 });
 		}
 
 		try {
 			const message = await register({ name, email, password, password_confirmation });
 
-			// Success confetti!
+			// Success confetti! (dynamic import)
+			const confettiModule = await import('canvas-confetti');
+			const confetti = confettiModule.default;
 			confetti({
 				particleCount: 150,
 				spread: 100,
@@ -203,8 +214,8 @@
 			successMessage = message;
 
 			// Animate form out and success message in
-			if (formRef) {
-				gsap.to(formRef, {
+			if (formRef && gsapLib) {
+				gsapLib.to(formRef, {
 					opacity: 0,
 					y: -20,
 					duration: 0.5
@@ -212,8 +223,8 @@
 			}
 		} catch (error) {
 			// Error shake
-			if (formRef) {
-				gsap.fromTo(
+			if (formRef && gsapLib) {
+				gsapLib.fromTo(
 					formRef,
 					{ x: -12 },
 					{ x: 12, duration: 0.08, repeat: 6, yoyo: true, ease: 'power1.inOut' }
@@ -229,8 +240,8 @@
 			}
 		} finally {
 			isLoading = false;
-			if (btn) {
-				gsap.to(btn, { scale: 1, duration: 0.2 });
+			if (btn && gsapLib) {
+				gsapLib.to(btn, { scale: 1, duration: 0.2 });
 			}
 		}
 	}
