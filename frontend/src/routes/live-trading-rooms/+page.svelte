@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { spring } from 'svelte/motion';
-    import { gsap } from 'gsap';
-    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
     /**
@@ -148,54 +147,78 @@
     let ctaRef: HTMLElement;
 
     onMount(() => {
-        gsap.registerPlugin(ScrollTrigger);
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        if (!browser) return;
+        
+        let ScrollTrigger: typeof import('gsap/dist/ScrollTrigger').ScrollTrigger;
+        
+        // IIFE pattern for async operations with cleanup
+        (async () => {
+            // Dynamic GSAP import for SSR safety
+            const gsapModule = await import('gsap');
+            const scrollTriggerModule = await import('gsap/dist/ScrollTrigger');
+            const gsap = gsapModule.gsap;
+            ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+            gsap.registerPlugin(ScrollTrigger);
+            
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-        // Hero Sequence
-        tl.fromTo('.hero-badge', 
-            { y: -20, opacity: 0, scale: 0.9 }, 
-            { y: 0, opacity: 1, scale: 1, duration: 0.8 }
-        )
-        .fromTo('.hero-title span', 
-            { y: 100, opacity: 0, rotateX: 20 }, 
-            { y: 0, opacity: 1, rotateX: 0, stagger: 0.1, duration: 1 }, 
-            '-=0.4'
-        )
-        .fromTo('.hero-desc', 
-            { y: 20, opacity: 0 }, 
-            { y: 0, opacity: 1, duration: 0.8 }, 
-            '-=0.6'
-        )
-        .fromTo(gridRef.children, 
-            { y: 60, opacity: 0, filter: 'blur(10px)' }, 
-            { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.15, duration: 0.8 }, 
-            '-=0.4'
-        );
+            // Hero Sequence
+            tl.fromTo('.hero-badge', 
+                { y: -20, opacity: 0, scale: 0.9 }, 
+                { y: 0, opacity: 1, scale: 1, duration: 0.8 }
+            )
+            .fromTo('.hero-title span', 
+                { y: 100, opacity: 0, rotateX: 20 }, 
+                { y: 0, opacity: 1, rotateX: 0, stagger: 0.1, duration: 1 }, 
+                '-=0.4'
+            )
+            .fromTo('.hero-desc', 
+                { y: 20, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.8 }, 
+                '-=0.6'
+            )
+            .fromTo(gridRef?.children || [], 
+                { y: 60, opacity: 0, filter: 'blur(10px)' }, 
+                { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.15, duration: 0.8 }, 
+                '-=0.4'
+            );
 
-        // Benefits Section Scroll Trigger
-        gsap.fromTo(benefitsRef.children, 
-            { y: 40, opacity: 0 },
-            {
-                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
-                scrollTrigger: {
-                    trigger: benefitsRef,
-                    start: 'top 80%',
-                    toggleActions: 'play none none reverse'
-                }
+            // Benefits Section Scroll Trigger
+            if (benefitsRef?.children) {
+                gsap.fromTo(benefitsRef.children, 
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
+                        scrollTrigger: {
+                            trigger: benefitsRef,
+                            start: 'top 80%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    }
+                );
             }
-        );
 
-        // Final CTA Scroll Trigger
-        gsap.fromTo(ctaRef,
-            { scale: 0.95, opacity: 0 },
-            {
-                scale: 1, opacity: 1, duration: 0.8,
-                scrollTrigger: {
-                    trigger: ctaRef,
-                    start: 'top 85%'
-                }
+            // Final CTA Scroll Trigger
+            if (ctaRef) {
+                gsap.fromTo(ctaRef,
+                    { scale: 0.95, opacity: 0 },
+                    {
+                        scale: 1, opacity: 1, duration: 0.8,
+                        scrollTrigger: {
+                            trigger: ctaRef,
+                            start: 'top 85%'
+                        }
+                    }
+                );
             }
-        );
+        })();
+        
+        // Cleanup on unmount
+        return () => {
+            if (ScrollTrigger) {
+                ScrollTrigger.getAll().forEach(t => t.kill());
+            }
+        };
     });
 </script>
 
