@@ -112,8 +112,30 @@ pub async fn show(_req: Request, ctx: RouteContext<AppState>) -> worker::Result<
     }
 }
 
+/// Deserialize i64 from either number or string (Neon returns BIGINT as string)
+fn deserialize_i64_from_string<'de, D>(deserializer: D) -> Result<i64, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    use serde::de::Error;
+    use serde::Deserialize;
+    
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum StringOrInt {
+        String(String),
+        Int(i64),
+    }
+    
+    match StringOrInt::deserialize(deserializer)? {
+        StringOrInt::String(s) => s.parse::<i64>().map_err(Error::custom),
+        StringOrInt::Int(i) => Ok(i),
+    }
+}
+
 #[derive(serde::Deserialize)]
 struct CountResult {
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     count: i64,
 }
 

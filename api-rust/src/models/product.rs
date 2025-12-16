@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::error::ApiError;
+use crate::utils::{deserialize_i64_from_string, deserialize_option_i64_from_string};
 
 /// Product entity (courses, indicators, memberships)
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14,7 +15,9 @@ pub struct Product {
     pub description: Option<String>,
     pub short_description: Option<String>,
     pub product_type: ProductType,
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub price: i64,  // cents
+    #[serde(default, deserialize_with = "deserialize_option_i64_from_string")]
     pub compare_price: Option<i64>,
     pub currency: String,
     pub image_url: Option<String>,
@@ -67,7 +70,9 @@ pub struct Indicator {
     pub video_url: Option<String>,
     pub documentation_url: Option<String>,
     pub download_url: Option<String>,
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub price: i64,
+    #[serde(default, deserialize_with = "deserialize_option_i64_from_string")]
     pub compare_price: Option<i64>,
     pub is_active: bool,
     pub is_featured: bool,

@@ -1,9 +1,29 @@
 //! Post/Blog model and related types
 
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
 use crate::error::ApiError;
+
+/// Deserialize i64 from either number or string (Neon returns BIGINT as string)
+fn deserialize_i64_from_string<'de, D>(deserializer: D) -> Result<i64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+    
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum StringOrInt {
+        String(String),
+        Int(i64),
+    }
+    
+    match StringOrInt::deserialize(deserializer)? {
+        StringOrInt::String(s) => s.parse::<i64>().map_err(Error::custom),
+        StringOrInt::Int(i) => Ok(i),
+    }
+}
 
 /// Blog post entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,6 +42,7 @@ pub struct Post {
     pub meta_title: Option<String>,
     pub meta_description: Option<String>,
     pub reading_time: Option<i32>,
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub view_count: i64,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -82,6 +103,7 @@ pub struct Category {
     pub description: Option<String>,
     pub parent_id: Option<Uuid>,
     pub image_url: Option<String>,
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub post_count: i64,
     pub is_visible: bool,
     pub sort_order: i32,
@@ -98,6 +120,7 @@ pub struct Tag {
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub post_count: i64,
     pub is_visible: bool,
     pub created_at: DateTime<Utc>,
