@@ -1,8 +1,61 @@
 //! Background job worker
 
+use anyhow::Result;
+use reqwest::Client;
+use serde::Serialize;
 use tokio::time::{sleep, Duration};
 
 use crate::{db::Database, models::Job};
+
+/// Postmark email payload
+#[derive(Serialize)]
+struct PostmarkEmail {
+    #[serde(rename = "From")]
+    from: String,
+    #[serde(rename = "To")]
+    to: String,
+    #[serde(rename = "Subject")]
+    subject: String,
+    #[serde(rename = "HtmlBody")]
+    html_body: String,
+    #[serde(rename = "MessageStream")]
+    message_stream: String,
+}
+
+/// Send an email via Postmark API
+async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<()> {
+    let postmark_token = std::env::var("POSTMARK_API_KEY")
+        .unwrap_or_else(|_| "".to_string());
+    let from_email = std::env::var("FROM_EMAIL")
+        .unwrap_or_else(|_| "noreply@revolutiontradingpros.com".to_string());
+
+    if postmark_token.is_empty() {
+        tracing::warn!("POSTMARK_API_KEY not set, skipping email send");
+        return Ok(());
+    }
+
+    let email = PostmarkEmail {
+        from: from_email,
+        to: to.to_string(),
+        subject: subject.to_string(),
+        html_body: body.to_string(),
+        message_stream: "outbound".to_string(),
+    };
+
+    let client = Client::new();
+    client
+        .post("https://api.postmarkapp.com/email")
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .header("X-Postmark-Server-Token", &postmark_token)
+        .json(&email)
+        .send()
+        .await?
+        .error_for_status()?;
+
+    tracing::info!("Email sent successfully to: {}", to);
+    Ok(())
+}
 
 /// Run the job worker loop
 pub async fn run(db: Database) {
@@ -98,10 +151,14 @@ async fn process_job(job: &Job) -> anyhow::Result<()> {
         "send_email" => {
             let to = job.payload["to"].as_str().unwrap_or("");
             let subject = job.payload["subject"].as_str().unwrap_or("");
-            let _body = job.payload["body"].as_str().unwrap_or("");
+            let body = job.payload["body"].as_str().unwrap_or("");
+
+            if to.is_empty() {
+                return Err(anyhow::anyhow!("Email 'to' field is required"));
+            }
+
             tracing::info!("Sending email to: {} - {}", to, subject);
-            // TODO: Actually send email here using EmailService
-            Ok(())
+            send_email_via_postmark(to, subject, body).await
         }
         "process_payment" => {
             let user_id = job.payload["user_id"].as_str().unwrap_or("");

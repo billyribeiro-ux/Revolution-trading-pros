@@ -10,7 +10,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
-    models::{Course, CreateCourse, Lesson},
+    models::{Course, CreateCourse, Lesson, User},
     AppState,
 };
 
@@ -74,14 +74,23 @@ async fn get_lessons(
     Ok(Json(lessons))
 }
 
-/// Create a new course (instructor/admin only)
+/// Create a new course (instructor/admin only - requires authentication)
 async fn create_course(
     State(state): State<AppState>,
+    user: User, // Extracted by auth middleware - requires valid JWT
     Json(input): Json<CreateCourse>,
 ) -> Result<Json<Course>, (StatusCode, Json<serde_json::Value>)> {
+    // Verify user has instructor or admin role
+    if user.role != "instructor" && user.role != "admin" {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only instructors and admins can create courses"})),
+        ));
+    }
+
     let slug = slug::slugify(&input.title);
     let id = Uuid::new_v4();
-    let instructor_id = Uuid::new_v4(); // TODO: Get from auth
+    let instructor_id = user.id; // Use authenticated user's ID
 
     let course: Course = sqlx::query_as(
         r#"
