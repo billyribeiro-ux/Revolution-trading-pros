@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
+	import { browser } from '$app/environment';
 	import {
 		IconPlus,
 		IconEdit,
@@ -20,7 +20,16 @@
 
 	onMount(async () => {
 		await loadPopups();
-		animateCards();
+		if (browser) {
+			const { gsap } = await import('gsap');
+			gsap.from('.popup-card', {
+				opacity: 0,
+				y: 20,
+				duration: 0.5,
+				stagger: 0.1,
+				ease: 'power3.out'
+			});
+		}
 	});
 
 	async function loadPopups() {
@@ -33,16 +42,6 @@
 		} finally {
 			loading = false;
 		}
-	}
-
-	function animateCards() {
-		gsap.from('.popup-card', {
-			opacity: 0,
-			y: 20,
-			duration: 0.5,
-			stagger: 0.1,
-			ease: 'power3.out'
-		});
 	}
 
 	async function handleToggleStatus(popup: Popup) {

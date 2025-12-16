@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { spring } from 'svelte/motion';
-    import { gsap } from 'gsap';
-    import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
     /**
@@ -145,8 +144,14 @@
     let benefitsRef: HTMLElement;
     let ctaRef: HTMLElement;
 
-    onMount(() => {
+    onMount(async () => {
+        if (!browser) return;
+        
+        // Dynamic GSAP import for SSR safety
+        const { gsap } = await import('gsap');
+        const { ScrollTrigger } = await import('gsap/dist/ScrollTrigger');
         gsap.registerPlugin(ScrollTrigger);
+        
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
         // 1. Hero Sequence
@@ -164,36 +169,40 @@
             { y: 0, opacity: 1, duration: 0.8 }, 
             '-=0.6'
         )
-        .fromTo(gridRef.children, 
+        .fromTo(gridRef?.children || [], 
             { y: 60, opacity: 0, filter: 'blur(10px)' }, 
             { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.15, duration: 0.8 }, 
             '-=0.4'
         );
 
         // 2. Benefits Section Scroll Trigger
-        gsap.fromTo(benefitsRef.children, 
-            { y: 40, opacity: 0 },
-            {
-                y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
-                scrollTrigger: {
-                    trigger: benefitsRef,
-                    start: 'top 80%',
-                    toggleActions: 'play none none reverse'
+        if (benefitsRef?.children) {
+            gsap.fromTo(benefitsRef.children, 
+                { y: 40, opacity: 0 },
+                {
+                    y: 0, opacity: 1, stagger: 0.1, duration: 0.8,
+                    scrollTrigger: {
+                        trigger: benefitsRef,
+                        start: 'top 80%',
+                        toggleActions: 'play none none reverse'
+                    }
                 }
-            }
-        );
+            );
+        }
 
         // 3. Final CTA Scroll Trigger
-        gsap.fromTo(ctaRef,
-            { scale: 0.95, opacity: 0 },
-            {
-                scale: 1, opacity: 1, duration: 0.8,
-                scrollTrigger: {
-                    trigger: ctaRef,
-                    start: 'top 85%'
+        if (ctaRef) {
+            gsap.fromTo(ctaRef,
+                { scale: 0.95, opacity: 0 },
+                {
+                    scale: 1, opacity: 1, duration: 0.8,
+                    scrollTrigger: {
+                        trigger: ctaRef,
+                        start: 'top 85%'
+                    }
                 }
-            }
-        );
+            );
+        }
     });
 </script>
 
