@@ -215,7 +215,7 @@
 
 			// Use centralized admin check
 			const result = checkIsAdmin(currentUser);
-			console.debug('[AdminToolbar] Admin check for:', currentUser.email, 'isSuperadmin:', isSuperadminUser, 'isAdmin:', result);
+			console.debug('[AdminToolbar] Admin check for:', currentUser?.email || 'unknown', 'isSuperadmin:', isSuperadminUser, 'isAdmin:', result);
 			return result;
 		})()
 	);
