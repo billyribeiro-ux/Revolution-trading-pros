@@ -1,0 +1,1 @@
+import"clsx";const e={version:"1.0.0",publishedAt:"2024-01-01T00:00:00Z"};function n(t){return new Date(t.publishedAt).toLocaleDateString(void 0,{year:"numeric",month:"long",day:"numeric"})}function r(){return{version:e.version,publishedAt:e.publishedAt,formattedDate:n(e)}}export{r as g};

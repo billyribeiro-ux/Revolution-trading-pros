@@ -1,0 +1,2 @@
+// 49.u8VxYO-N.css
+export default ".new-template-page.svelte-1p2cm1q{max-width:1000px;margin:0 auto;padding:2rem}.alert-error.svelte-1p2cm1q{background:#ef44441a;color:#ef4444;padding:.75rem 1rem;border-radius:6px;margin-bottom:1rem}\n";

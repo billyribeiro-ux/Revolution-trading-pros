@@ -1,0 +1,2 @@
+// 48.J_DeB9Dt.css
+export default ".edit-template-page.svelte-15964cm{max-width:1000px;margin:0 auto;padding:2rem}.text-muted.svelte-15964cm{color:#94a3b8}.alert-error.svelte-15964cm{background:#ef44441a;color:#ef4444;padding:.75rem 1rem;border-radius:6px;margin-bottom:1rem}\n";
