@@ -2,7 +2,7 @@
 //! 
 //! WASM-compatible JWT implementation using HMAC-SHA256
 
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};

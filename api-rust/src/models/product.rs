@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::error::ApiError;
-use crate::utils::{deserialize_i64_from_string, deserialize_option_i64_from_string, deserialize_datetime, deserialize_option_datetime};
+use crate::utils::{deserialize_i64_from_string, deserialize_option_i64_from_string, deserialize_datetime};
 
 /// Product entity (courses, indicators, memberships)
 #[derive(Debug, Clone, Serialize, Deserialize)]

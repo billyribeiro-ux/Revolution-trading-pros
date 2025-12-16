@@ -139,30 +139,50 @@ impl StripeService {
         self.post("/checkout/sessions", &params).await
     }
 
-    /// Verify webhook signature
+    /// Verify webhook signature with timestamp validation
+    /// Prevents replay attacks by checking timestamp within 5-minute tolerance
     pub fn verify_webhook(&self, payload: &str, signature: &str) -> Result<WebhookEvent, ApiError> {
-        // Parse the signature header
-        let parts: std::collections::HashMap<&str, &str> = signature
-            .split(',')
-            .filter_map(|part| {
-                let mut split = part.split('=');
-                Some((split.next()?, split.next()?))
-            })
-            .collect();
+        // Parse the signature header - support multiple v1 signatures
+        let mut timestamp: Option<&str> = None;
+        let mut signatures: Vec<&str> = Vec::new();
 
-        let timestamp = parts
-            .get("t")
-            .ok_or_else(|| ApiError::BadRequest("Missing timestamp".to_string()))?;
-        let sig = parts
-            .get("v1")
-            .ok_or_else(|| ApiError::BadRequest("Missing signature".to_string()))?;
+        for part in signature.split(',') {
+            let mut split = part.splitn(2, '=');
+            if let (Some(key), Some(value)) = (split.next(), split.next()) {
+                match key {
+                    "t" => timestamp = Some(value),
+                    "v1" => signatures.push(value),
+                    _ => {} // Ignore unknown keys
+                }
+            }
+        }
+
+        let timestamp = timestamp
+            .ok_or_else(|| ApiError::BadRequest("Missing timestamp in signature header".to_string()))?;
+
+        if signatures.is_empty() {
+            return Err(ApiError::BadRequest("No v1 signature found in header".to_string()));
+        }
+
+        // Validate timestamp is within 5-minute tolerance (prevent replay attacks)
+        let timestamp_i64: i64 = timestamp.parse()
+            .map_err(|_| ApiError::BadRequest("Invalid timestamp format".to_string()))?;
+        let now_ms = js_sys::Date::now();
+        let now_secs = (now_ms / 1000.0) as i64;
+        const TOLERANCE_SECONDS: i64 = 300; // 5 minutes
+
+        if (now_secs - timestamp_i64).abs() > TOLERANCE_SECONDS {
+            return Err(ApiError::Unauthorized("Webhook timestamp outside tolerance window".to_string()));
+        }
 
         // Compute expected signature
         let signed_payload = format!("{}.{}", timestamp, payload);
         let expected = Self::compute_hmac(&self.webhook_secret, &signed_payload);
 
-        // Constant-time comparison
-        if !Self::secure_compare(sig, &expected) {
+        // Check all provided signatures (constant-time comparison)
+        let valid = signatures.iter().any(|sig| Self::secure_compare(sig, &expected));
+
+        if !valid {
             return Err(ApiError::Unauthorized("Invalid webhook signature".to_string()));
         }
 
@@ -174,7 +194,7 @@ impl StripeService {
     fn compute_hmac(secret: &str, payload: &str) -> String {
         use hmac::{Hmac, Mac};
         use sha2::Sha256;
-        use base64::{Engine as _, engine::general_purpose::STANDARD};
+        
         
         type HmacSha256 = Hmac<Sha256>;
         
@@ -196,7 +216,7 @@ impl StripeService {
     async fn get<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
         let url = format!("{}{}", self.base_url, path);
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
         headers.set("Content-Type", "application/x-www-form-urlencoded").ok();
         
@@ -226,7 +246,7 @@ impl StripeService {
         let body = serde_urlencoded::to_string(&params_ref)
             .map_err(|e| ApiError::Internal(format!("Failed to encode params: {}", e)))?;
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
         headers.set("Content-Type", "application/x-www-form-urlencoded").ok();
         
@@ -256,7 +276,7 @@ impl StripeService {
         let body = serde_urlencoded::to_string(params)
             .map_err(|e| ApiError::Internal(format!("Failed to encode params: {}", e)))?;
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
         headers.set("Content-Type", "application/x-www-form-urlencoded").ok();
         
@@ -280,7 +300,7 @@ impl StripeService {
     async fn delete<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
         let url = format!("{}{}", self.base_url, path);
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.secret_key)).ok();
         
         let mut init = worker::RequestInit::new();

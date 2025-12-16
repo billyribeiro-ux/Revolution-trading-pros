@@ -3,7 +3,7 @@
 use worker::{Request, Response, RouteContext};
 use crate::AppState;
 use crate::error::ApiError;
-use crate::models::post::{Category, CreateCategoryRequest, PaginatedResponse, PaginationMeta};
+use crate::models::post::{Category, CreateCategoryRequest};
 use crate::middleware::auth::require_admin;
 
 /// GET /api/admin/categories - List all categories

@@ -116,7 +116,7 @@ impl Database {
         let body = serde_json::to_string(&query)
             .map_err(|e| ApiError::Database(format!("Failed to serialize query: {}", e)))?;
 
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Content-Type", "application/json").ok();
         headers.set("Neon-Connection-String", &self.connection_string).ok();
 
