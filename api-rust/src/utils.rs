@@ -26,6 +26,58 @@ pub fn now_millis() -> i64 {
     js_sys::Date::now() as i64
 }
 
+/// Deserialize DateTime from Postgres timestamp format
+pub fn deserialize_datetime<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+    let s: String = String::deserialize(deserializer)?;
+    
+    // Try parsing various formats
+    if let Ok(dt) = DateTime::parse_from_rfc3339(&s) {
+        return Ok(dt.with_timezone(&Utc));
+    }
+    
+    // Postgres format: "2025-12-06 13:37:36+00"
+    if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%#z") {
+        return Ok(dt.with_timezone(&Utc));
+    }
+    
+    // Without timezone
+    if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S") {
+        return Ok(DateTime::from_naive_utc_and_offset(naive, Utc));
+    }
+    
+    Err(Error::custom(format!("Cannot parse datetime: {}", s)))
+}
+
+/// Deserialize optional DateTime from Postgres timestamp format
+pub fn deserialize_option_datetime<'de, D>(deserializer: D) -> Result<Option<DateTime<Utc>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+    
+    let opt: Option<String> = Option::deserialize(deserializer)?;
+    match opt {
+        None => Ok(None),
+        Some(s) if s.is_empty() => Ok(None),
+        Some(s) => {
+            if let Ok(dt) = DateTime::parse_from_rfc3339(&s) {
+                return Ok(Some(dt.with_timezone(&Utc)));
+            }
+            if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%#z") {
+                return Ok(Some(dt.with_timezone(&Utc)));
+            }
+            if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S") {
+                return Ok(Some(DateTime::from_naive_utc_and_offset(naive, Utc)));
+            }
+            Err(Error::custom(format!("Cannot parse datetime: {}", s)))
+        }
+    }
+}
+
 /// Deserialize i64 from either number or string (Neon returns BIGINT as string)
 pub fn deserialize_i64_from_string<'de, D>(deserializer: D) -> Result<i64, D::Error>
 where

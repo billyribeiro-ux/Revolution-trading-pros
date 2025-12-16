@@ -6,6 +6,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::error::ApiError;
+use crate::utils::{deserialize_datetime, deserialize_option_datetime};
 
 /// User entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15,16 +16,21 @@ pub struct User {
     pub name: String,
     #[serde(skip_serializing)]
     pub password_hash: String,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub email_verified_at: Option<DateTime<Utc>>,
     pub role: UserRole,
     pub avatar_url: Option<String>,
     pub mfa_enabled: bool,
     #[serde(skip_serializing)]
     pub mfa_secret: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub banned_at: Option<DateTime<Utc>>,
     pub ban_reason: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub last_login_at: Option<DateTime<Utc>>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub created_at: DateTime<Utc>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub updated_at: DateTime<Utc>,
 }
 

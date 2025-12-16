@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::error::ApiError;
+use crate::utils::{deserialize_datetime, deserialize_option_datetime, deserialize_i64_from_string};
 
 /// Subscription plan entity
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13,6 +14,7 @@ pub struct SubscriptionPlan {
     pub slug: String,
     pub description: Option<String>,
     pub product_id: Uuid,
+    #[serde(deserialize_with = "deserialize_i64_from_string")]
     pub price: i64,  // cents
     pub currency: String,
     pub interval: BillingInterval,
@@ -23,7 +25,9 @@ pub struct SubscriptionPlan {
     pub is_active: bool,
     pub is_featured: bool,
     pub sort_order: i32,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub created_at: DateTime<Utc>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub updated_at: DateTime<Utc>,
 }
 
@@ -52,15 +56,24 @@ pub struct UserSubscription {
     pub status: SubscriptionStatus,
     pub stripe_subscription_id: Option<String>,
     pub stripe_customer_id: Option<String>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub current_period_start: DateTime<Utc>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub current_period_end: DateTime<Utc>,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub trial_ends_at: Option<DateTime<Utc>>,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub cancelled_at: Option<DateTime<Utc>>,
     pub cancel_at_period_end: bool,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub paused_at: Option<DateTime<Utc>>,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub resume_at: Option<DateTime<Utc>>,
+    #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub ended_at: Option<DateTime<Utc>>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub created_at: DateTime<Utc>,
+    #[serde(deserialize_with = "deserialize_datetime")]
     pub updated_at: DateTime<Utc>,
 }
 
