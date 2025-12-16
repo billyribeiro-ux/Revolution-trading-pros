@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { cubicOut } from 'svelte/easing';
     import IconActivity from '@tabler/icons-svelte/icons/activity';
     import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
@@ -50,7 +51,7 @@
         }
     ];
 
-    // ICT11+ Fix: Start false, set true after tick to trigger in: transitions
+    // ICT11+ Fix: IntersectionObserver triggers animations when section scrolls into view
     let isVisible = $state(false);
     let containerRef = $state<HTMLElement | null>(null);
 
@@ -65,12 +66,26 @@
         };
     }
 
-    // Trigger entrance animations after mount with delay for in: transitions
+    // Trigger entrance animations when section scrolls into viewport
     onMount(() => {
-        // Small delay ensures element is in DOM before transition triggers
-        requestAnimationFrame(() => {
-            isVisible = true;
-        });
+        if (!browser || !containerRef) {
+            isVisible = true; // Fallback for SSR
+            return;
+        }
+        
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1, rootMargin: '50px' }
+        );
+        
+        observer.observe(containerRef);
+        
+        return () => observer.disconnect();
     });
 </script>
 
