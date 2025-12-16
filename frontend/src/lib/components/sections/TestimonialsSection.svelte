@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
     import { cubicOut } from 'svelte/easing';
     import IconQuote from '@tabler/icons-svelte/icons/quote';
     import IconCircleCheckFilled from '@tabler/icons-svelte/icons/circle-check-filled';
@@ -97,11 +98,25 @@
         };
     }
 
-    // Trigger entrance animations after mount with delay for in: transitions
+    // Trigger entrance animations when section scrolls into viewport
     onMount(() => {
-        requestAnimationFrame(() => {
+        if (!browser || !containerRef) {
             isVisible = true;
-        });
+            return;
+        }
+        
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    isVisible = true;
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1, rootMargin: '50px' }
+        );
+        
+        observer.observe(containerRef);
+        return () => observer.disconnect();
     });
 
     // Ticker Tape Data
