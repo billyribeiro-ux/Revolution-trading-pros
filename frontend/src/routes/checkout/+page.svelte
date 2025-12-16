@@ -1167,12 +1167,7 @@
 		flex-shrink: 0;
 	}
 
-	.product-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
+	
 	.product-placeholder {
 		width: 100%;
 		height: 100%;
@@ -1197,12 +1192,7 @@
 		color: var(--checkout-primary);
 	}
 
-	.product-qty {
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--checkout-text-muted);
-	}
-
+	
 	.product-total {
 		font-weight: 700;
 		font-size: 14px;
