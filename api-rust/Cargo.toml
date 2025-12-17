@@ -30,6 +30,7 @@ sha2 = "0.10"
 pbkdf2 = { version = "0.12", features = ["hmac"] }
 base64 = "0.22"
 hex = "0.4"
+bcrypt = { version = "0.17", default-features = false, features = ["alloc"] }
 
 # Utilities
 uuid = { version = "1.11", features = ["v4", "serde", "js"] }

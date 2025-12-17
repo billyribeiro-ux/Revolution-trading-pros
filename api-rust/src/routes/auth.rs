@@ -117,7 +117,17 @@ pub async fn login(mut req: Request, ctx: RouteContext<AppState>) -> worker::Res
     }
 
     // Verify password
-    let valid = PasswordService::verify(&body.password, &user.password_hash)?;
+    worker::console_log!("[LOGIN] Verifying password against hash: {}...", &user.password_hash[..20]);
+    let valid = match PasswordService::verify(&body.password, &user.password_hash) {
+        Ok(v) => {
+            worker::console_log!("[LOGIN] Password verification result: {}", v);
+            v
+        },
+        Err(e) => {
+            worker::console_error!("[LOGIN] Password verification error: {:?}", e);
+            return Err(e.into());
+        }
+    };
     if !valid {
         // Log failed attempt
         log_security_event(&ctx, &user.id, "login_failed", &req).await;
