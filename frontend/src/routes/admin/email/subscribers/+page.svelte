@@ -401,7 +401,7 @@
 							<td>
 								<div class="subscriber-info">
 									<div class="subscriber-avatar">
-										{(subscriber.first_name?.[0] || subscriber.email?.[0] || '?').toUpperCase()}
+										{(subscriber.first_name?.[0] || subscriber.email?.[0] || 'U').toUpperCase()}
 									</div>
 									<div>
 										<div class="subscriber-name">
