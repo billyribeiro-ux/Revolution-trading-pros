@@ -15,7 +15,7 @@ const isDev = import.meta.env.DEV;
 // secrets are not available via import.meta.env on server-side
 // The VITE_API_URL secret is only for client-side code
 // Backend is deployed on Fly.io (Laravel)
-const PRODUCTION_API_URL = 'https://revolution-trading-pros.fly.dev/api';
+const PRODUCTION_API_URL = 'https://revolution-trading-pros.fly.dev';
 
 // Get API base URL - empty string in dev (uses Vite proxy), full URL in production
 export const API_BASE_URL = isDev 
