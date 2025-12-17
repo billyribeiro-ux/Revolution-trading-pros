@@ -29,18 +29,22 @@ import {
 // =============================================================================
 
 export interface User {
-	id: number;
+	id: string | number;  // UUID from Rust API or number from Laravel
 	name: string;
 	first_name?: string;
 	last_name?: string;
 	email: string;
-	email_verified_at: string | null;
+	email_verified_at?: string | null;  // Laravel format
+	email_verified?: boolean;  // Rust API format
 	created_at: string;
-	updated_at: string;
+	updated_at?: string;  // Optional - Rust API doesn't send this
 	roles?: string[];
 	permissions?: string[];
+	role?: string;  // Rust API sends single role
 	is_admin?: boolean;
 	avatar?: string;
+	avatar_url?: string;  // Rust API format
+	mfa_enabled?: boolean;  // Rust API
 }
 
 export interface UserSession {
@@ -76,9 +80,11 @@ interface AuthState {
 /**
  * SECURITY: Tokens stored in memory only - not accessible via XSS
  * This closure prevents direct access to tokens from global scope
+ * ICT11+ Principal Engineer: Both access and refresh tokens in memory
  */
 const createSecureTokenStorage = () => {
 	let accessToken: string | null = null;
+	let refreshToken: string | null = null;
 
 	return {
 		setAccessToken: (token: string | null): void => {
@@ -87,8 +93,15 @@ const createSecureTokenStorage = () => {
 		getAccessToken: (): string | null => {
 			return accessToken;
 		},
+		setRefreshToken: (token: string | null): void => {
+			refreshToken = token;
+		},
+		getRefreshToken: (): string | null => {
+			return refreshToken;
+		},
 		clearTokens: (): void => {
 			accessToken = null;
+			refreshToken = null;
 		}
 	};
 };
@@ -175,16 +188,41 @@ function createAuthStore() {
 
 		/**
 		 * Set authenticated user and token with session
-		 * @security Access token stored in memory only
+		 * @security ICT11+ Principal Engineer: Both tokens stored in memory only
 		 */
 		setAuth: (
 			user: User,
 			token: string,
 			sessionId?: string | null,
-			expiresInSeconds?: number
+			expiresInSeconds?: number,
+			refreshToken?: string | null
 		): void => {
-			// SECURITY: Store access token in memory only
+			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
+			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
+			const safeUser: User = {
+				id: user?.id ?? '',
+				name: user?.name ?? '',
+				email: user?.email ?? '',
+				email_verified_at: user?.email_verified_at ?? null,
+				email_verified: user?.email_verified,
+				created_at: user?.created_at ?? '',
+				updated_at: user?.updated_at,
+				first_name: user?.first_name,
+				last_name: user?.last_name,
+				roles: user?.roles ?? (user?.role ? [user.role] : []),
+				role: user?.role,
+				permissions: user?.permissions ?? [],
+				is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
+				avatar: user?.avatar ?? user?.avatar_url,
+				avatar_url: user?.avatar_url,
+				mfa_enabled: user?.mfa_enabled
+			};
+
+			// SECURITY: Store tokens in memory only (XSS-resistant)
 			secureTokens.setAccessToken(token);
+			if (refreshToken) {
+				secureTokens.setRefreshToken(refreshToken);
+			}
 
 			let tokenExpiry: number | null = null;
 			if (expiresInSeconds) {
@@ -199,7 +237,7 @@ function createAuthStore() {
 
 			update((state) => ({
 				...state,
-				user,
+				user: safeUser,
 				sessionId: sessionId ?? state.sessionId,
 				tokenExpiry,
 				isAuthenticated: true,
@@ -234,9 +272,30 @@ function createAuthStore() {
 		 * Also sets isAuthenticated to true since we have valid user data
 		 */
 		setUser: (user: User): void => {
+			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
+			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
+			const safeUser: User = {
+				id: user?.id ?? '',
+				name: user?.name ?? '',
+				email: user?.email ?? '',
+				email_verified_at: user?.email_verified_at ?? null,
+				email_verified: user?.email_verified,
+				created_at: user?.created_at ?? '',
+				updated_at: user?.updated_at,
+				first_name: user?.first_name,
+				last_name: user?.last_name,
+				roles: user?.roles ?? (user?.role ? [user.role] : []),
+				role: user?.role,
+				permissions: user?.permissions ?? [],
+				is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
+				avatar: user?.avatar ?? user?.avatar_url,
+				avatar_url: user?.avatar_url,
+				mfa_enabled: user?.mfa_enabled
+			};
+
 			update((state) => ({
 				...state,
-				user,
+				user: safeUser,
 				isAuthenticated: true, // User data means we're authenticated
 				isInitializing: false  // Done initializing
 			}));
@@ -339,7 +398,7 @@ function createAuthStore() {
 
 		/**
 		 * Refresh access token with race condition prevention
-		 * @security Uses httpOnly cookie for refresh token (server-side)
+		 * @security ICT11+ Principal Engineer: Sends refresh_token in body as backend expects
 		 */
 		refreshToken: async (): Promise<boolean> => {
 			// Prevent multiple concurrent refresh attempts
@@ -350,14 +409,22 @@ function createAuthStore() {
 
 			refreshPromise = (async () => {
 				try {
+					const currentRefreshToken = secureTokens.getRefreshToken();
+					
+					// If no refresh token in memory, we can't refresh
+					if (!currentRefreshToken) {
+						throw new Error('No refresh token available');
+					}
+
 					const response = await fetch('/api/auth/refresh', {
 						method: 'POST',
-						credentials: 'include', // Include httpOnly cookies
+						credentials: 'include',
 						headers: {
 							'Content-Type': 'application/json',
 							'Accept': 'application/json',
 							'X-Session-ID': safeLocalStorage('get', SESSION_ID_KEY) || ''
-						}
+						},
+						body: JSON.stringify({ refresh_token: currentRefreshToken })
 					});
 
 					if (!response.ok) {
@@ -368,6 +435,11 @@ function createAuthStore() {
 
 					if (data.token) {
 						secureTokens.setAccessToken(data.token);
+
+						// Update refresh token if a new one is provided (token rotation)
+						if (data.refresh_token) {
+							secureTokens.setRefreshToken(data.refresh_token);
+						}
 
 						if (data.expires_in) {
 							const tokenExpiry = Date.now() + data.expires_in * 1000;
@@ -467,7 +539,17 @@ function createAuthStore() {
 export const authStore = createAuthStore();
 
 // Derived stores for convenience
-export const user = derived(authStore, ($auth) => $auth.user);
+// DEFENSIVE: Ensure user object has required properties when accessed via derived store
+export const user = derived(authStore, ($auth) => {
+	if (!$auth.user) return null;
+	return {
+		...$auth.user,
+		email: $auth.user.email ?? '',
+		name: $auth.user.name ?? '',
+		roles: $auth.user.roles ?? [],
+		permissions: $auth.user.permissions ?? []
+	};
+});
 export const isAuthenticated = derived(authStore, ($auth) => $auth.isAuthenticated);
 export const isLoading = derived(authStore, ($auth) => $auth.isLoading);
 export const isInitializing = derived(authStore, ($auth) => $auth.isInitializing);
@@ -476,16 +558,27 @@ export const sessionInvalidated = derived(authStore, ($auth) => $auth.sessionInv
 export const invalidationReason = derived(authStore, ($auth) => $auth.invalidationReason);
 
 // Role-based derived stores
-export const isSuperAdmin = derived(authStore, ($auth) => isSuperadmin($auth.user));
-export const isAdminUser = derived(authStore, ($auth) => checkIsAdmin($auth.user));
-export const userRole = derived(authStore, ($auth) => getHighestRole($auth.user));
-export const userPermissions = derived(authStore, ($auth) => getUserPermissions($auth.user));
+// DEFENSIVE: Ensure user object has email property before passing to role functions
+const getSafeUser = (user: User | null) => {
+	if (!user) return null;
+	return {
+		...user,
+		email: user.email ?? '',
+		roles: user.roles ?? [],
+		permissions: user.permissions ?? []
+	};
+};
+
+export const isSuperAdmin = derived(authStore, ($auth) => isSuperadmin(getSafeUser($auth.user)));
+export const isAdminUser = derived(authStore, ($auth) => checkIsAdmin(getSafeUser($auth.user)));
+export const userRole = derived(authStore, ($auth) => getHighestRole(getSafeUser($auth.user)));
+export const userPermissions = derived(authStore, ($auth) => getUserPermissions(getSafeUser($auth.user)));
 
 /**
  * Create a derived store that checks for a specific permission
  */
 export function createPermissionStore(permission: PermissionType | string) {
-	return derived(authStore, ($auth) => checkHasPermission($auth.user, permission));
+	return derived(authStore, ($auth) => checkHasPermission(getSafeUser($auth.user), permission));
 }
 
 // Export function to get token (for use in API clients)

@@ -31,6 +31,7 @@ pub struct SearchablePost {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SearchResult<T> {
     pub hits: Vec<T>,
     pub query: String,

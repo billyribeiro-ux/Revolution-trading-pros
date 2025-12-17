@@ -39,9 +39,19 @@ where
         return Ok(dt.with_timezone(&Utc));
     }
     
-    // Postgres format: "2025-12-06 13:37:36+00"
+    // Postgres format with milliseconds: "2025-12-17 11:07:48.179+00"
+    if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%.f%#z") {
+        return Ok(dt.with_timezone(&Utc));
+    }
+    
+    // Postgres format without milliseconds: "2025-12-06 13:37:36+00"
     if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%#z") {
         return Ok(dt.with_timezone(&Utc));
+    }
+    
+    // Without timezone but with milliseconds
+    if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%.f") {
+        return Ok(DateTime::from_naive_utc_and_offset(naive, Utc));
     }
     
     // Without timezone
@@ -67,8 +77,14 @@ where
             if let Ok(dt) = DateTime::parse_from_rfc3339(&s) {
                 return Ok(Some(dt.with_timezone(&Utc)));
             }
+            if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%.f%#z") {
+                return Ok(Some(dt.with_timezone(&Utc)));
+            }
             if let Ok(dt) = DateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%#z") {
                 return Ok(Some(dt.with_timezone(&Utc)));
+            }
+            if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S%.f") {
+                return Ok(Some(DateTime::from_naive_utc_and_offset(naive, Utc)));
             }
             if let Ok(naive) = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S") {
                 return Ok(Some(DateTime::from_naive_utc_and_offset(naive, Utc)));

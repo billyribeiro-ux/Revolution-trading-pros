@@ -2,7 +2,6 @@
 
 use worker::{Request, Response, RouteContext};
 use crate::AppState;
-use crate::error::ApiError;
 
 /// GET /api/sitemap - Sitemap index
 pub async fn sitemap_index(_req: Request, ctx: RouteContext<AppState>) -> worker::Result<Response> {
@@ -49,7 +48,7 @@ pub async fn sitemap_index(_req: Request, ctx: RouteContext<AppState>) -> worker
 
     Response::ok(xml)
         .map(|r| r.with_headers({
-            let mut headers = worker::Headers::new();
+            let headers = worker::Headers::new();
             headers.set("Content-Type", "application/xml").ok();
             headers.set("Cache-Control", "public, max-age=3600").ok();
             headers
@@ -98,7 +97,7 @@ pub async fn sitemap_posts(_req: Request, ctx: RouteContext<AppState>) -> worker
 
     Response::ok(xml)
         .map(|r| r.with_headers({
-            let mut headers = worker::Headers::new();
+            let headers = worker::Headers::new();
             headers.set("Content-Type", "application/xml").ok();
             headers.set("Cache-Control", "public, max-age=3600").ok();
             headers
@@ -140,7 +139,7 @@ Crawl-delay: 1
 
     Response::ok(robots)
         .map(|r| r.with_headers({
-            let mut headers = worker::Headers::new();
+            let headers = worker::Headers::new();
             headers.set("Content-Type", "text/plain").ok();
             headers.set("Cache-Control", "public, max-age=86400").ok();
             headers

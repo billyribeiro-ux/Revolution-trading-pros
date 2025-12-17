@@ -200,7 +200,7 @@
 						<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
 						<polyline points="22,6 12,13 2,6"></polyline>
 					</svg>
-					<span>{maskEmail(email || data.email)}</span>
+					<span>{maskEmail(email || data?.email || '')}</span>
 				</div>
 
 				{#if data.status === 'sent' && data.expiresAt}
@@ -280,7 +280,7 @@
 
 	<!-- Hidden inputs for form state -->
 	<input type="hidden" name="double_opt_in_status" value={data.status} />
-	<input type="hidden" name="double_opt_in_email" value={email || data.email} />
+	<input type="hidden" name="double_opt_in_email" value={email || data?.email || ''} />
 
 	{#if error || localError}
 		<div class="error-message">

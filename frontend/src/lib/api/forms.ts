@@ -51,7 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import type { FormTheme } from '$lib/data/formTemplates';
-import { getAuthToken as getAuthStoreToken, getSessionId as getAuthSessionId } from '$lib/stores/auth';
+import { getAuthToken, getSessionId as getAuthSessionId } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -472,7 +472,7 @@ class FormsService {
 	private getAuthToken(): string {
 		if (!browser) return '';
 		// Use the auth store's secure token getter (memory-only, not localStorage)
-		return getAuthStoreToken() || '';
+		return getAuthToken() || '';
 	}
 
 	/**
@@ -1517,7 +1517,7 @@ export const updateSubmissionStatus = async (
 	submissionId: number | string,
 	status: string
 ) => {
-	const token = getAuthStoreToken();
+	const token = getAuthToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}/status`, {
 		method: 'PUT',
 		headers: {
@@ -1531,7 +1531,7 @@ export const updateSubmissionStatus = async (
 };
 
 export const deleteSubmission = async (formId: number, submissionId: number | string) => {
-	const token = getAuthStoreToken();
+	const token = getAuthToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}`, {
 		method: 'DELETE',
 		headers: {
@@ -1547,7 +1547,7 @@ export const bulkUpdateSubmissionStatus = async (
 	submissionIds: (number | string)[],
 	status: string
 ) => {
-	const token = getAuthStoreToken();
+	const token = getAuthToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-update-status`, {
 		method: 'POST',
 		headers: {
@@ -1561,7 +1561,7 @@ export const bulkUpdateSubmissionStatus = async (
 };
 
 export const bulkDeleteSubmissions = async (formId: number, submissionIds: (number | string)[]) => {
-	const token = getAuthStoreToken();
+	const token = getAuthToken();
 	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-delete`, {
 		method: 'POST',
 		headers: {

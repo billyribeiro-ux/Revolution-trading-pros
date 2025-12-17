@@ -7,7 +7,7 @@ use crate::models::user::{
     RegisterRequest, LoginRequest, MfaLoginRequest, 
     ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, UserPublic
 };
-use crate::services::{JwtService, PasswordService};
+use crate::services::{JwtService, PasswordService, TotpService};
 use crate::utils;
 
 /// POST /api/register - Register a new user
@@ -89,11 +89,27 @@ pub async fn login(mut req: Request, ctx: RouteContext<AppState>) -> worker::Res
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
     // Find user by email
-    let user = ctx.data.db.query_one::<crate::models::User>(
+    worker::console_log!("[LOGIN] Attempting login for: {}", body.email);
+    
+    let user_result = ctx.data.db.query_one::<crate::models::User>(
         "SELECT * FROM users WHERE email = $1",
         vec![serde_json::json!(body.email.to_lowercase())]
-    ).await?
-    .ok_or_else(|| ApiError::Unauthorized("Invalid credentials".to_string()))?;
+    ).await;
+    
+    let user = match user_result {
+        Ok(Some(u)) => {
+            worker::console_log!("[LOGIN] User found: {}", u.email);
+            u
+        },
+        Ok(None) => {
+            worker::console_log!("[LOGIN] User not found");
+            return Err(ApiError::Unauthorized("Invalid credentials".to_string()).into());
+        },
+        Err(e) => {
+            worker::console_error!("[LOGIN] Database error: {:?}", e);
+            return Err(ApiError::Database(format!("Query failed: {}", e)).into());
+        }
+    };
 
     // Check if banned
     if user.banned_at.is_some() {
@@ -101,7 +117,17 @@ pub async fn login(mut req: Request, ctx: RouteContext<AppState>) -> worker::Res
     }
 
     // Verify password
-    let valid = PasswordService::verify(&body.password, &user.password_hash)?;
+    worker::console_log!("[LOGIN] Verifying password against hash: {}...", &user.password_hash[..20]);
+    let valid = match PasswordService::verify(&body.password, &user.password_hash) {
+        Ok(v) => {
+            worker::console_log!("[LOGIN] Password verification result: {}", v);
+            v
+        },
+        Err(e) => {
+            worker::console_error!("[LOGIN] Password verification error: {:?}", e);
+            return Err(e.into());
+        }
+    };
     if !valid {
         // Log failed attempt
         log_security_event(&ctx, &user.id, "login_failed", &req).await;
@@ -167,15 +193,22 @@ pub async fn login_mfa(mut req: Request, ctx: RouteContext<AppState>) -> worker:
     ).await?
     .ok_or_else(|| ApiError::Unauthorized("Invalid credentials".to_string()))?;
 
-    // Verify MFA code (TOTP)
-    // In production, use a proper TOTP library
+    // Verify MFA code (TOTP) - ICT11+ Principal Engineer Implementation
     let mfa_secret = user.mfa_secret.clone()
         .ok_or_else(|| ApiError::BadRequest("MFA not enabled".to_string()))?;
 
-    // TODO: Implement proper TOTP verification
-    if body.code != "000000" { // Placeholder
+    // Verify TOTP code using RFC 6238 compliant implementation
+    let is_valid = TotpService::verify(&mfa_secret, &body.code)
+        .map_err(|e| ApiError::Internal(format!("MFA verification error: {}", e)))?;
+
+    if !is_valid {
+        // Log failed MFA attempt
+        log_security_event(&ctx, &user.id, "mfa_failed", &req).await;
         return Err(ApiError::Unauthorized("Invalid MFA code".to_string()).into());
     }
+
+    // Log successful MFA verification
+    log_security_event(&ctx, &user.id, "mfa_verified", &req).await;
 
     // Generate tokens
     let jwt = JwtService::new(

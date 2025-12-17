@@ -2,8 +2,7 @@
 
 use worker::{Request, Response, RouteContext};
 use crate::AppState;
-use crate::error::ApiError;
-use crate::models::subscription::{SubscriptionPlan, SubscriptionWithPlan, SubscriptionMetrics};
+use crate::models::subscription::{SubscriptionPlan, SubscriptionMetrics};
 use crate::models::post::{PaginatedResponse, PaginationMeta};
 use crate::middleware::auth::require_admin;
 
@@ -34,18 +33,16 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
     );
 
     let mut params: Vec<serde_json::Value> = vec![];
-    let mut param_idx = 1;
+    let param_idx = 1;
 
     if let Some(status) = &query.status {
         sql.push_str(&format!(" AND us.status = ${}", param_idx));
         params.push(serde_json::json!(status));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(" AND (u.email ILIKE ${} OR u.name ILIKE ${})", param_idx, param_idx));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total

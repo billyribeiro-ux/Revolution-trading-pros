@@ -71,7 +71,7 @@
 	<div class="sidebar-footer">
 		<div class="user-info">
 			<div class="user-avatar">
-				{$user?.name?.charAt(0).toUpperCase() || 'U'}
+				{$user?.name?.[0]?.toUpperCase() || 'U'}
 			</div>
 			<div class="user-details">
 				<span class="user-name">{$user?.name || 'User'}</span>

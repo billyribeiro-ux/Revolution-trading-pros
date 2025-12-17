@@ -77,6 +77,7 @@ export async function loginViaUI(
 /**
  * Logs in via API directly (faster, for setup)
  * Returns auth token for API requests
+ * Returns null if backend is not available
  */
 export async function loginViaAPI(
 	page: Page,
@@ -84,12 +85,19 @@ export async function loginViaAPI(
 ): Promise<string | null> {
 	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
 
+	// Skip if backend is not available
+	if (process.env.BACKEND_AVAILABLE === 'false') {
+		console.log('Skipping API login - backend not available');
+		return null;
+	}
+
 	try {
 		const response = await page.request.post(`${apiUrl}/login`, {
 			data: {
 				email: credentials.email,
 				password: credentials.password
-			}
+			},
+			timeout: 5000
 		});
 
 		if (response.ok()) {
@@ -110,22 +118,26 @@ export async function loginViaAPI(
 		console.warn(`Login API returned ${response.status()}`);
 		return null;
 	} catch (error) {
-		console.warn('API login failed, falling back to UI login:', error);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.warn('API login failed:', errorMessage);
 		return null;
 	}
 }
 
 /**
  * Logs out the current user
+ * Works even if backend is not available
  */
 export async function logout(page: Page): Promise<void> {
-	// Try API logout first
-	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+	// Try API logout first if backend is available
+	if (process.env.BACKEND_AVAILABLE !== 'false') {
+		const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
 
-	try {
-		await page.request.post(`${apiUrl}/logout`);
-	} catch {
-		// API might not be available
+		try {
+			await page.request.post(`${apiUrl}/logout`, { timeout: 3000 });
+		} catch {
+			// API might not be available - continue with client-side cleanup
+		}
 	}
 
 	// Clear local storage
@@ -206,12 +218,18 @@ export async function registerViaUI(
 
 /**
  * Registers a new user via API
+ * Returns success: false if backend is not available
  */
 export async function registerViaAPI(
 	page: Page,
 	credentials: TestUserCredentials
 ): Promise<{ success: boolean; userId?: number; message?: string }> {
 	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+
+	// Skip if backend is not available
+	if (process.env.BACKEND_AVAILABLE === 'false') {
+		return { success: false, message: 'Backend not available' };
+	}
 
 	try {
 		const response = await page.request.post(`${apiUrl}/register`, {
@@ -220,7 +238,8 @@ export async function registerViaAPI(
 				email: credentials.email,
 				password: credentials.password,
 				password_confirmation: credentials.password
-			}
+			},
+			timeout: 5000
 		});
 
 		const data = await response.json();

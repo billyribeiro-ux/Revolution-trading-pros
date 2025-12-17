@@ -18,13 +18,17 @@ pub struct User {
     pub password_hash: String,
     #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub email_verified_at: Option<DateTime<Utc>>,
+    #[serde(default, deserialize_with = "deserialize_role")]
     pub role: UserRole,
+    #[serde(default)]
     pub avatar_url: Option<String>,
+    #[serde(default)]
     pub mfa_enabled: bool,
-    #[serde(skip_serializing)]
+    #[serde(default, skip_serializing)]
     pub mfa_secret: Option<String>,
     #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub banned_at: Option<DateTime<Utc>>,
+    #[serde(default)]
     pub ban_reason: Option<String>,
     #[serde(default, deserialize_with = "deserialize_option_datetime")]
     pub last_login_at: Option<DateTime<Utc>>,
@@ -34,21 +38,37 @@ pub struct User {
     pub updated_at: DateTime<Utc>,
 }
 
+/// Custom deserializer for role that handles string values
+fn deserialize_role<'de, D>(deserializer: D) -> Result<UserRole, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    use serde::de::Error;
+    let s: String = serde::Deserialize::deserialize(deserializer)?;
+    match s.to_lowercase().as_str() {
+        "user" => Ok(UserRole::User),
+        "member" => Ok(UserRole::Member),
+        "admin" => Ok(UserRole::Admin),
+        "super_admin" | "superadmin" | "super-admin" => Ok(UserRole::SuperAdmin),
+        _ => Err(D::Error::custom(format!("Unknown role: {}", s))),
+    }
+}
+
 /// User role enum
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum UserRole {
+    #[default]
+    #[serde(alias = "user")]
     User,
+    #[serde(alias = "member")]
     Member,
+    #[serde(alias = "admin")]
     Admin,
+    #[serde(alias = "super_admin", alias = "superadmin")]
     SuperAdmin,
 }
 
-impl Default for UserRole {
-    fn default() -> Self {
-        Self::User
-    }
-}
 
 impl UserRole {
     pub fn is_admin(&self) -> bool {

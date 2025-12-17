@@ -94,7 +94,7 @@ impl SearchService {
     async fn get<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
         let url = format!("{}{}", self.url, path);
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
         
         let mut init = worker::RequestInit::new();
@@ -131,7 +131,7 @@ impl SearchService {
         let body_json = serde_json::to_string(body)
             .map_err(|e| ApiError::Internal(format!("Failed to serialize body: {}", e)))?;
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
         headers.set("Content-Type", "application/json").ok();
         
@@ -161,7 +161,7 @@ impl SearchService {
         let body_json = serde_json::to_string(body)
             .map_err(|e| ApiError::Internal(format!("Failed to serialize body: {}", e)))?;
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
         headers.set("Content-Type", "application/json").ok();
         
@@ -185,7 +185,7 @@ impl SearchService {
     async fn delete<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
         let url = format!("{}{}", self.url, path);
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.api_key)).ok();
         
         let mut init = worker::RequestInit::new();

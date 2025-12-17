@@ -6,7 +6,7 @@ const API_URL = env.VITE_API_URL || 'http://localhost:8000/api';
 
 /**
  * Proxy auth refresh requests to Laravel backend
- * This allows the frontend to use relative URLs while the backend handles auth
+ * ICT11+ Principal Engineer: Forwards refresh_token in body as backend expects
  */
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	try {
@@ -14,6 +14,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		
 		// Forward all cookies to backend
 		const cookieHeader = request.headers.get('cookie') || '';
+		
+		// Parse request body to get refresh_token
+		let body: { refresh_token?: string } = {};
+		try {
+			body = await request.json();
+		} catch {
+			// Empty body is acceptable for cookie-based refresh
+		}
 		
 		const response = await fetch(`${API_URL}/auth/refresh`, {
 			method: 'POST',
@@ -23,7 +31,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				'X-Session-ID': sessionId,
 				'Cookie': cookieHeader
 			},
-			credentials: 'include'
+			credentials: 'include',
+			body: JSON.stringify(body)
 		});
 
 		const data = await response.json();

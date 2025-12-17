@@ -21,18 +21,16 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
 
     let mut sql = String::from("SELECT * FROM products WHERE 1=1");
     let mut params: Vec<serde_json::Value> = vec![];
-    let mut param_idx = 1;
+    let param_idx = 1;
 
     if let Some(product_type) = &query.product_type {
         sql.push_str(&format!(" AND product_type = ${}", param_idx));
         params.push(serde_json::json!(format!("{:?}", product_type).to_lowercase()));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(" AND (name ILIKE ${} OR description ILIKE ${})", param_idx, param_idx));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total
@@ -133,54 +131,46 @@ pub async fn update(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     // Build dynamic update query
     let mut updates = vec!["updated_at = $1".to_string()];
     let mut params: Vec<serde_json::Value> = vec![serde_json::json!(now.to_rfc3339())];
-    let mut param_idx = 2;
+    let param_idx = 2;
 
     if let Some(name) = &body.name {
         updates.push(format!("name = ${}", param_idx));
         params.push(serde_json::json!(name));
-        param_idx += 1;
     }
 
     if let Some(slug) = &body.slug {
         updates.push(format!("slug = ${}", param_idx));
         params.push(serde_json::json!(slug));
-        param_idx += 1;
     }
 
     if let Some(description) = &body.description {
         updates.push(format!("description = ${}", param_idx));
         params.push(serde_json::json!(description));
-        param_idx += 1;
     }
 
     if let Some(price) = body.price {
         updates.push(format!("price = ${}", param_idx));
         params.push(serde_json::json!(price));
-        param_idx += 1;
     }
 
     if let Some(compare_price) = body.compare_price {
         updates.push(format!("compare_price = ${}", param_idx));
         params.push(serde_json::json!(compare_price));
-        param_idx += 1;
     }
 
     if let Some(image_url) = &body.image_url {
         updates.push(format!("image_url = ${}", param_idx));
         params.push(serde_json::json!(image_url));
-        param_idx += 1;
     }
 
     if let Some(is_active) = body.is_active {
         updates.push(format!("is_active = ${}", param_idx));
         params.push(serde_json::json!(is_active));
-        param_idx += 1;
     }
 
     if let Some(is_featured) = body.is_featured {
         updates.push(format!("is_featured = ${}", param_idx));
         params.push(serde_json::json!(is_featured));
-        param_idx += 1;
     }
 
     params.push(serde_json::json!(id));

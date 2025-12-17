@@ -119,7 +119,7 @@
 		formData = {
 			name: template.name,
 			frequency: template.frequency,
-			recipients: template.recipients.map((r) => r.email).join(', '),
+			recipients: template.recipients?.map((r) => r?.email || '').join(', ') || '',
 			dayOfWeek: template.schedule.dayOfWeek || 1,
 			dayOfMonth: template.schedule.dayOfMonth || 1,
 			hour: template.schedule.hour,

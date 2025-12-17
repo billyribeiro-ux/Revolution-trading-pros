@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Rules\StrongPassword;
 
 /**
  * Revolution Trading Pros - AuthController
@@ -87,7 +88,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', new StrongPassword],
         ]);
 
         $user = User::create([
@@ -361,7 +362,7 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', new StrongPassword],
         ]);
 
         $status = Password::reset(
@@ -394,7 +395,7 @@ class AuthController extends Controller
 
         $request->validate([
             'current_password' => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', new StrongPassword],
         ]);
 
         if (! Hash::check($request->current_password, $user->password)) {
@@ -691,34 +692,119 @@ class AuthController extends Controller
 
     /**
      * Verify WebAuthn assertion
+     * ICT11+ Principal Engineer: Full FIDO2/WebAuthn signature verification
      */
     private function verifyWebAuthnAssertion(array $credentialData, array $storedCredential, string $challenge): bool
     {
         try {
+            // 1. Decode and verify client data
             $clientDataJSON = base64_decode($credentialData['response']['clientDataJSON'] ?? '');
+            if (!$clientDataJSON) {
+                Log::warning('WebAuthn: Invalid clientDataJSON encoding');
+                return false;
+            }
+            
             $clientData = json_decode($clientDataJSON, true);
+            if (!$clientData) {
+                Log::warning('WebAuthn: Invalid clientDataJSON format');
+                return false;
+            }
 
             // Verify challenge matches
             if (($clientData['challenge'] ?? '') !== $challenge) {
+                Log::warning('WebAuthn: Challenge mismatch');
                 return false;
             }
 
             // Verify type is webauthn.get
             if (($clientData['type'] ?? '') !== 'webauthn.get') {
+                Log::warning('WebAuthn: Invalid type', ['type' => $clientData['type'] ?? 'null']);
                 return false;
             }
 
             // Verify origin
             $expectedOrigin = config('app.url');
             if (!str_starts_with($clientData['origin'] ?? '', $expectedOrigin)) {
+                Log::warning('WebAuthn: Origin mismatch', [
+                    'expected' => $expectedOrigin,
+                    'received' => $clientData['origin'] ?? 'null'
+                ]);
                 return false;
             }
 
-            // In a full implementation, you would also:
-            // 1. Verify the authenticator data
-            // 2. Verify the signature using the stored public key
-            // 3. Check and update the sign count
+            // 2. Decode authenticator data
+            $authenticatorData = base64_decode($credentialData['response']['authenticatorData'] ?? '');
+            if (!$authenticatorData || strlen($authenticatorData) < 37) {
+                Log::warning('WebAuthn: Invalid authenticatorData');
+                return false;
+            }
 
+            // Verify RP ID hash (first 32 bytes)
+            $rpIdHash = substr($authenticatorData, 0, 32);
+            $expectedRpId = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
+            $expectedRpIdHash = hash('sha256', $expectedRpId, true);
+            
+            if (!hash_equals($expectedRpIdHash, $rpIdHash)) {
+                Log::warning('WebAuthn: RP ID hash mismatch');
+                return false;
+            }
+
+            // Verify flags (byte 32)
+            $flags = ord($authenticatorData[32]);
+            $userPresent = ($flags & 0x01) !== 0;
+            
+            if (!$userPresent) {
+                Log::warning('WebAuthn: User presence flag not set');
+                return false;
+            }
+
+            // 3. Verify sign count to prevent replay attacks (bytes 33-36)
+            $signCount = unpack('N', substr($authenticatorData, 33, 4))[1];
+            $storedSignCount = $storedCredential['sign_count'] ?? 0;
+            
+            if ($signCount !== 0 && $signCount <= $storedSignCount) {
+                Log::warning('WebAuthn: Sign count regression detected (possible cloned authenticator)', [
+                    'stored' => $storedSignCount,
+                    'received' => $signCount
+                ]);
+                return false;
+            }
+
+            // 4. Verify signature using stored public key
+            $signature = base64_decode($credentialData['response']['signature'] ?? '');
+            if (!$signature) {
+                Log::warning('WebAuthn: Missing signature');
+                return false;
+            }
+
+            $publicKeyPem = $storedCredential['public_key'] ?? null;
+            if (!$publicKeyPem) {
+                Log::warning('WebAuthn: Missing stored public key');
+                return false;
+            }
+
+            // Construct the signed data: authenticatorData + SHA256(clientDataJSON)
+            $clientDataHash = hash('sha256', $clientDataJSON, true);
+            $signedData = $authenticatorData . $clientDataHash;
+
+            // Verify signature with public key
+            $publicKey = openssl_pkey_get_public($publicKeyPem);
+            if (!$publicKey) {
+                Log::warning('WebAuthn: Invalid public key format');
+                return false;
+            }
+
+            // WebAuthn uses ECDSA with SHA-256 for ES256 algorithm
+            $verified = openssl_verify($signedData, $signature, $publicKey, OPENSSL_ALGO_SHA256);
+            
+            if ($verified !== 1) {
+                Log::warning('WebAuthn: Signature verification failed', [
+                    'openssl_error' => openssl_error_string()
+                ]);
+                return false;
+            }
+
+            Log::info('WebAuthn: Assertion verified successfully');
             return true;
 
         } catch (\Exception $e) {

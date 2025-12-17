@@ -7,13 +7,26 @@
  * - Response format validation
  *
  * Netflix L11+ Standard: Verify infrastructure health
+ *
+ * Note: All tests in this file require backend API and will be skipped
+ * when backend is not available (e.g., in CI environments).
  */
 
 import { test, expect } from '@playwright/test';
-import { createApiHelper, API_ENDPOINTS, isApiAvailable, waitForApi } from '../helpers';
+import {
+	createApiHelper,
+	API_ENDPOINTS,
+	isApiAvailable,
+	waitForApi,
+	shouldSkipBackendTests,
+	getBackendSkipReason
+} from '../helpers';
 
 // These tests run against the API directly, no browser needed
+// Skip all API tests if backend is not available
 test.describe('API Health Checks', () => {
+	test.skip(shouldSkipBackendTests(), getBackendSkipReason());
+
 	const api = createApiHelper();
 
 	test.describe('Health Endpoints', () => {

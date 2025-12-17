@@ -6,6 +6,7 @@ use sqlx::FromRow;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct Membership {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -19,6 +20,7 @@ pub struct Membership {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct CourseEnrollment {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -29,6 +31,7 @@ pub struct CourseEnrollment {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct CreateCheckoutSession {
     pub price_id: String,
     pub success_url: String,

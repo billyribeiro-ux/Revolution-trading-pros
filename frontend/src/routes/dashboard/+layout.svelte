@@ -47,7 +47,7 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const userName = $derived($user?.name || $user?.email?.split('@')[0] || 'My Account');
+	const userName = $derived($user?.name || ($user?.email ? $user.email.split('@')[0] : null) || 'My Account');
 	const userAvatar = $derived($user?.avatar || '');
 	const currentPath = $derived($page.url.pathname);
 

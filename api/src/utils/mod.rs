@@ -67,6 +67,7 @@ pub fn verify_jwt(token: &str, secret: &str) -> Result<Claims> {
 }
 
 /// Generate a random token (for password reset, etc.)
+#[allow(dead_code)]
 pub fn generate_token() -> String {
     use rand::Rng;
     let mut rng = rand::thread_rng();

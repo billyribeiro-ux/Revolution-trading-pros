@@ -18,7 +18,7 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const userName = $derived($user?.name || $user?.email?.split('@')[0] || 'Guest');
+	const userName = $derived($user?.name || ($user?.email ? $user.email.split('@')[0] : null) || 'Guest');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS

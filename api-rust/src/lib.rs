@@ -44,12 +44,39 @@ fn log_request(req: &Request) {
     );
 }
 
+/// CORS allowed origins (exact matches)
+const CORS_ORIGINS: &[&str] = &[
+    "https://revolutiontradingpros.com",
+    "https://www.revolutiontradingpros.com",
+    "https://revolution-trading-pros.pages.dev",
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:5173",
+];
+
+/// Check if origin is allowed
+fn is_origin_allowed(origin: &str) -> bool {
+    // Exact match
+    if CORS_ORIGINS.iter().any(|&o| o == origin) {
+        return true;
+    }
+    // Allow all Cloudflare Pages preview deployments
+    if origin.ends_with(".revolution-trading-pros.pages.dev") {
+        return true;
+    }
+    false
+}
+
 /// Create CORS preflight response
-fn cors_preflight() -> Result<Response> {
-    let mut headers = Headers::new();
-    headers.set("Access-Control-Allow-Origin", "*")?;
-    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")?;
-    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")?;
+fn cors_preflight(origin: Option<&str>) -> Result<Response> {
+    let headers = Headers::new();
+    let allowed_origin = origin
+        .filter(|o| is_origin_allowed(o))
+        .unwrap_or("https://revolutiontradingpros.com");
+    headers.set("Access-Control-Allow-Origin", allowed_origin)?;
+    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")?;
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, X-Session-Fingerprint, X-Client-Version, X-Client-Platform, X-API-Version, X-CSRF-Token, Accept")?;
+    headers.set("Access-Control-Allow-Credentials", "true")?;
     headers.set("Access-Control-Max-Age", "86400")?;
     Ok(Response::empty()?.with_headers(headers).with_status(204))
 }
@@ -58,9 +85,13 @@ fn cors_preflight() -> Result<Response> {
 pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     log_request(&req);
 
+    // Get origin for CORS
+    let origin = req.headers().get("Origin").ok().flatten();
+    let origin_str = origin.as_deref();
+
     // Handle CORS preflight requests
     if req.method() == Method::Options {
-        return cors_preflight();
+        return cors_preflight(origin_str);
     }
 
     // Initialize panic hook for better error messages
@@ -147,6 +178,16 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .get_async("/api/indicators/:slug", |req, ctx| async move {
             routes::products::indicator_show(req, ctx).await
+        })
+        
+        // Debug route to check raw user data
+        .get_async("/api/debug/user/:email", |req, ctx| async move {
+            let email = ctx.param("email").map_or("", |v| v).to_string();
+            let rows: Vec<serde_json::Value> = ctx.data.db.query(
+                "SELECT * FROM users WHERE email = $1",
+                vec![serde_json::json!(email)]
+            ).await.map_err(|e| worker::Error::RustError(e.to_string()))?;
+            Response::from_json(&rows)
         })
         
         // Auth routes
@@ -329,10 +370,16 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .run(req, env)
         .await
         .map(|response| {
-            let mut headers = Headers::new();
-            let _ = headers.set("Access-Control-Allow-Origin", "*");
-            let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+            // Add CORS headers to all responses
+            let mut headers = response.headers().clone();
+            let allowed_origin = origin_str
+                .filter(|o| is_origin_allowed(o))
+                .unwrap_or("https://revolutiontradingpros.com");
+            let _ = headers.set("Access-Control-Allow-Origin", allowed_origin);
+            let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, X-Session-Fingerprint, X-Client-Version, X-Client-Platform, X-API-Version, X-CSRF-Token, Accept");
+            let _ = headers.set("Access-Control-Allow-Credentials", "true");
+            let _ = headers.set("Access-Control-Expose-Headers", "X-Session-ID, Set-Cookie");
             response.with_headers(headers)
         })
 }

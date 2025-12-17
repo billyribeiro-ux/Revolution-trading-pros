@@ -424,22 +424,19 @@
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Section Header -->
 		{#if isVisible}
-			<div class="text-center mb-10 sm:mb-16 lg:mb-20" in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}>
-				<div class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4 sm:mb-6">
-					<IconSparkles class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
-					<span class="text-xs sm:text-sm font-medium text-blue-400 tracking-wide">Professional Tools</span>
+			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}>
+				<div class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm">
+					<IconSparkles class="w-3.5 h-3.5" />
+					Technical Edge
 				</div>
 
-				<h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
-					Trading Indicators
-					<span class="block mt-1 sm:mt-2 bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-						That Actually Work
-					</span>
+				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+					Indicator <span class="text-slate-700">Suite.</span>
 				</h2>
 
-				<p class="text-base sm:text-lg lg:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-					Institutional-grade technical analysis tools. Built by traders, for traders.
-					No fluff—just edge.
+				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+					We don't offer retail indicators. We provide institutional-grade analysis tools. 
+					Verified by quantitative funds and professional trading desks.
 				</p>
 			</div>
 		{/if}

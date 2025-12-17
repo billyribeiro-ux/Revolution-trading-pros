@@ -50,7 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 import type { CartItem } from '$lib/stores/cart';
 import { websocketService, type CartUpdatePayload } from '$lib/services/websocket';
 
@@ -470,7 +470,7 @@ class CheckoutCartService {
 	 */
 	private getAuthToken(): string {
 		if (!browser) return '';
-		return getAuthStoreToken() || '';
+		return getAuthToken() || '';
 	}
 
 	/**

@@ -252,25 +252,19 @@
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         {#if isVisible}
-            <div class="text-center mb-12 sm:mb-20" in:slideUp={{ delay: 0, duration: 1000 }}>
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md shadow-lg shadow-black/20"
-                >
-                    <IconSchool class="w-4 h-4 text-violet-400" />
-                    <span class="text-xs font-semibold text-violet-100 tracking-widest uppercase">Trading Academy</span>
+            <div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
+                <div class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm">
+                    <IconSchool class="w-4 h-4" />
+                    Professional Education
                 </div>
 
-                <h2 class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
-                    Master the Markets<br />
-                    <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400"
-                    >
-                        With Institutional Edge.
-                    </span>
+                <h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+                    Trading <span class="text-slate-700">Curriculum.</span>
                 </h2>
 
-                <p class="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light">
-                    Structured curriculum designed by proprietary traders. <br class="hidden sm:block"/>Learn at your pace with lifetime access and real-time mentorship.
+                <p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+                    We don't sell courses. We provide institutional-grade trading education. 
+                    Verified by funded traders and prop firm graduates worldwide.
                 </p>
 
                 <div

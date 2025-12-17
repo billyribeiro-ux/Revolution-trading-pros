@@ -68,12 +68,15 @@ impl Database {
     ) -> Result<Vec<T>, ApiError> {
         let response = self.execute_query(sql, params).await?;
         
+        worker::console_log!("[DB] Query returned {} rows", response.rows.len());
+        
         let mut results = Vec::new();
         for (i, row) in response.rows.into_iter().enumerate() {
+            worker::console_log!("[DB] Row {}: {}", i, row);
             match serde_json::from_value::<T>(row.clone()) {
                 Ok(item) => results.push(item),
                 Err(e) => {
-                    worker::console_log!("Row {} deserialize error: {} - Row data: {}", i, e, row);
+                    worker::console_error!("[DB] Row {} deserialize error: {} - Row data: {}", i, e, row);
                     return Err(ApiError::Database(format!("Failed to deserialize row {}: {}", i, e)));
                 }
             }
@@ -116,7 +119,7 @@ impl Database {
         let body = serde_json::to_string(&query)
             .map_err(|e| ApiError::Database(format!("Failed to serialize query: {}", e)))?;
 
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Content-Type", "application/json").ok();
         headers.set("Neon-Connection-String", &self.connection_string).ok();
 
@@ -192,7 +195,7 @@ mod tests {
     #[test]
     fn test_http_endpoint_extraction() {
         let db = Database::new("postgres://user:pass@ep-cool-name-123456.us-east-2.aws.neon.tech/neondb");
-        let endpoint = db.get_http_endpoint().unwrap();
-        assert_eq!(endpoint, "https://ep-cool-name-123456.us-east-2.aws.neon.tech/sql");
+        // The endpoint is parsed from the connection string
+        assert_eq!(db.endpoint, "https://ep-cool-name-123456.us-east-2.aws.neon.tech/sql");
     }
 }

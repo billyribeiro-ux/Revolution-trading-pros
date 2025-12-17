@@ -9,12 +9,20 @@
  * - Coupon/discount handling
  *
  * Netflix L11+ Standard: Protect revenue-critical paths
+ *
+ * Note: Tests requiring backend API are automatically skipped when
+ * backend is not available (e.g., in CI environments).
  */
 
 import { test, expect } from '@playwright/test';
 import { CheckoutPage } from '../pages';
 import { TEST_CARDS, TEST_ADDRESSES, KNOWN_TEST_DATA } from '../helpers/test-data.helper';
-import { loginViaUI, TEST_USER } from '../helpers';
+import {
+	loginViaUI,
+	TEST_USER,
+	shouldSkipBackendTests,
+	getBackendSkipReason
+} from '../helpers';
 
 test.describe('Checkout Flow', () => {
 	test.describe('Cart Page', () => {
@@ -289,12 +297,16 @@ test.describe('Product-Specific Checkout', () => {
 });
 
 test.describe('Authenticated Checkout', () => {
-	test.describe.skip('Member Checkout', () => {
+	test.describe('Member Checkout', () => {
+		// Skip if backend not available or no test credentials
+		test.skip(
+			shouldSkipBackendTests() || !process.env.E2E_TEST_USER_EMAIL,
+			shouldSkipBackendTests()
+				? getBackendSkipReason()
+				: 'No test credentials configured (E2E_TEST_USER_EMAIL)'
+		);
+
 		test.beforeEach(async ({ page }) => {
-			if (!process.env.E2E_TEST_USER_EMAIL) {
-				test.skip();
-				return;
-			}
 			await loginViaUI(page, TEST_USER);
 		});
 

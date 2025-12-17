@@ -22,6 +22,7 @@ pub struct Job {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub enum JobType {
     SendEmail { to: String, subject: String, body: String },
     ProcessPayment { user_id: Uuid, amount_cents: i32 },
@@ -31,6 +32,7 @@ pub enum JobType {
 }
 
 impl Job {
+    #[allow(dead_code)]
     pub fn new(queue: &str, job_type: &str, payload: serde_json::Value) -> Self {
         Self {
             id: Uuid::new_v4(),

@@ -11,14 +11,13 @@
 import { writable, derived } from 'svelte/store';
 import { learningCenterApi } from '$lib/api/learning-center';
 import type {
-	Course,
-	CourseModule,
+	TradingRoom,
+	LessonModule,
 	Lesson,
-	LessonData,
+	LessonWithRelations,
 	LearningCenterData,
-	LearningCategory,
-	ArchivedVideo,
-	VideoArchiveData
+	LessonCategory,
+	PaginatedLessons
 } from '$lib/types/learning-center';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -26,27 +25,27 @@ import type {
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface LearningCenterState {
-	// Course data
-	courses: Course[];
-	currentCourse: Course | null;
-	categories: LearningCategory[];
+	// Course data (now TradingRoom)
+	courses: TradingRoom[];
+	currentCourse: TradingRoom | null;
+	categories: LessonCategory[];
 
 	// Lesson data
-	currentLesson: Lesson | null;
-	currentModule: CourseModule | null;
-	previousLesson: Lesson | null;
-	nextLesson: Lesson | null;
-	allLessons: Lesson[];
+	currentLesson: LessonWithRelations | null;
+	currentModule: LessonModule | null;
+	previousLesson: LessonWithRelations | null;
+	nextLesson: LessonWithRelations | null;
+	allLessons: LessonWithRelations[];
 
 	// Video archive
-	archivedVideos: ArchivedVideo[];
+	archivedVideos: LessonWithRelations[];
 	archiveTotalCount: number;
 	archiveCurrentPage: number;
 	archiveTotalPages: number;
 
 	// Progress
 	overallProgress: number;
-	recentlyWatched: Lesson[];
+	recentlyWatched: LessonWithRelations[];
 
 	// UI state
 	isLoading: boolean;
@@ -104,20 +103,15 @@ function createLearningCenterStore() {
 			try {
 				const data = await learningCenterApi.getCourses(membershipSlug);
 
-				// Extract all lessons from all courses
-				const allLessons: Lesson[] = [];
-				data.courses.forEach((course) => {
-					course.modules.forEach((module) => {
-						allLessons.push(...module.lessons);
-					});
-				});
+				// LearningCenterData now has a flat structure with lessons already extracted
+				const allLessons = data.lessons || [];
 
 				update((state) => ({
 					...state,
-					courses: data.courses,
+					courses: data.tradingRoom ? [data.tradingRoom] : [],
 					categories: data.categories,
-					overallProgress: data.overallProgress,
-					recentlyWatched: data.recentlyWatched,
+					overallProgress: data.userProgress?.progressPercent || 0,
+					recentlyWatched: [], // TODO: Add recently watched logic if needed
 					allLessons,
 					isLoading: false,
 					lastRefresh: new Date()
@@ -222,17 +216,8 @@ function createLearningCenterStore() {
 				const nextLesson =
 					currentIndex < state.allLessons.length - 1 ? state.allLessons[currentIndex + 1] : null;
 
-				// Find the module for this lesson
-				let currentModule: CourseModule | null = null;
-				for (const course of state.courses) {
-					for (const module of course.modules) {
-						if (module.lessons.some((l) => l.id === lessonId)) {
-							currentModule = module;
-							break;
-						}
-					}
-					if (currentModule) break;
-				}
+				// Module is already included in LessonWithRelations
+				const currentModule = lesson.module || null;
 
 				return {
 					...state,
@@ -410,9 +395,9 @@ function createLearningCenterStore() {
 
 				update((state) => ({
 					...state,
-					archivedVideos: data.videos,
-					archiveTotalCount: data.totalCount,
-					archiveCurrentPage: data.currentPage,
+					archivedVideos: data.lessons,
+					archiveTotalCount: data.total,
+					archiveCurrentPage: data.page,
 					archiveTotalPages: data.totalPages,
 					isLoading: false
 				}));
@@ -537,7 +522,7 @@ export const coursesByCategory = derived(learningCenterStore, ($store) => {
  * Get incomplete lessons
  */
 export const incompleteLessons = derived(learningCenterStore, ($store) =>
-	$store.allLessons.filter((lesson) => !lesson.completed && !lesson.locked)
+	$store.allLessons.filter((lesson) => !lesson.userProgress?.isCompleted)
 );
 
 /**
@@ -547,11 +532,11 @@ export const nextLessonToContinue = derived(learningCenterStore, ($store) => {
 	// First check recently watched
 	if ($store.recentlyWatched.length > 0) {
 		const recent = $store.recentlyWatched[0];
-		if (!recent.completed) return recent;
+		if (!recent.userProgress?.isCompleted) return recent;
 	}
 
 	// Otherwise find first incomplete lesson
-	return $store.allLessons.find((lesson) => !lesson.completed && !lesson.locked) || null;
+	return $store.allLessons.find((lesson) => !lesson.userProgress?.isCompleted) || null;
 });
 
 /**
@@ -563,7 +548,7 @@ export const moduleProgress = derived(learningCenterStore, ($store) => {
 	const moduleLessons = $store.allLessons.filter(
 		(l) => l.moduleId === $store.currentModule?.id
 	);
-	const completed = moduleLessons.filter((l) => l.completed).length;
+	const completed = moduleLessons.filter((l) => l.userProgress?.isCompleted).length;
 
 	return moduleLessons.length > 0 ? Math.round((completed / moduleLessons.length) * 100) : 0;
 });

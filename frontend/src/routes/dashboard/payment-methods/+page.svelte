@@ -79,7 +79,7 @@
 								<p class="payment-card__detail">Expires {method.expMonth}/{method.expYear}</p>
 							{:else}
 								<p class="payment-card__title">PayPal</p>
-								<p class="payment-card__detail">{method.email}</p>
+								<p class="payment-card__detail">{method.email || ''}</p>
 							{/if}
 							{#if method.isDefault}
 								<span class="default-badge">

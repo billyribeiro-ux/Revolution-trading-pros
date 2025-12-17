@@ -122,7 +122,7 @@ impl Cache {
         let body = serde_json::to_string(&args)
             .map_err(|e| ApiError::Database(format!("Failed to serialize command: {}", e)))?;
 
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Authorization", &format!("Bearer {}", self.token)).ok();
         headers.set("Content-Type", "application/json").ok();
 

@@ -1,9 +1,9 @@
 //! Password hashing service
 //!
 //! WASM-compatible password hashing using PBKDF2-SHA256
+//! Also supports legacy bcrypt hashes from Laravel for backward compatibility
 
 use sha2::Sha256;
-use hmac::Hmac;
 use pbkdf2::pbkdf2_hmac;
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use crate::error::ApiError;
@@ -17,7 +17,7 @@ const SALT_LENGTH: usize = 16;
 const HASH_LENGTH: usize = 32;
 
 impl PasswordService {
-    /// Hash a password using PBKDF2-SHA256
+    /// Hash a password using PBKDF2-SHA256 (for new passwords)
     pub fn hash(password: &str) -> Result<String, ApiError> {
         // Generate random salt
         let mut salt = [0u8; SALT_LENGTH];
@@ -39,8 +39,41 @@ impl PasswordService {
         Ok(encoded)
     }
 
-    /// Verify a password against a hash
+    /// Check if a hash is a bcrypt hash (from Laravel)
+    fn is_bcrypt_hash(hash: &str) -> bool {
+        hash.starts_with("$2y$") || hash.starts_with("$2a$") || hash.starts_with("$2b$")
+    }
+
+    /// Verify a password against a hash (supports both PBKDF2 and bcrypt)
     pub fn verify(password: &str, stored_hash: &str) -> Result<bool, ApiError> {
+        // Check if this is a legacy bcrypt hash from Laravel
+        if Self::is_bcrypt_hash(stored_hash) {
+            return Self::verify_bcrypt(password, stored_hash);
+        }
+        
+        // Otherwise, use PBKDF2 verification
+        Self::verify_pbkdf2(password, stored_hash)
+    }
+
+    /// Verify against bcrypt hash (legacy Laravel passwords)
+    fn verify_bcrypt(password: &str, stored_hash: &str) -> Result<bool, ApiError> {
+        worker::console_log!("[PASSWORD] Starting bcrypt verification");
+        
+        // Laravel uses $2y$ prefix, bcrypt crate handles $2a$, $2b$, $2y$
+        match bcrypt::verify(password, stored_hash) {
+            Ok(valid) => {
+                worker::console_log!("[PASSWORD] bcrypt verify completed: {}", valid);
+                Ok(valid)
+            },
+            Err(e) => {
+                worker::console_error!("[PASSWORD] bcrypt verification error: {:?}", e);
+                Err(ApiError::Internal(format!("Bcrypt verification failed: {:?}", e)))
+            }
+        }
+    }
+
+    /// Verify against PBKDF2 hash (new passwords)
+    fn verify_pbkdf2(password: &str, stored_hash: &str) -> Result<bool, ApiError> {
         let parts: Vec<&str> = stored_hash.split('$').collect();
         if parts.len() != 3 {
             return Err(ApiError::Internal("Invalid hash format".to_string()));
@@ -59,6 +92,11 @@ impl PasswordService {
         
         // Constant-time comparison
         Ok(Self::secure_compare(&computed, &stored))
+    }
+    
+    /// Check if a stored hash needs migration to PBKDF2
+    pub fn needs_rehash(stored_hash: &str) -> bool {
+        Self::is_bcrypt_hash(stored_hash)
     }
 
     /// Constant-time comparison to prevent timing attacks

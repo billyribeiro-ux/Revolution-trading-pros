@@ -26,9 +26,9 @@ impl RedisService {
     pub async fn set(&self, key: &str, value: &str, expire_seconds: Option<u64>) -> Result<()> {
         let mut conn = self.conn.clone();
         if let Some(seconds) = expire_seconds {
-            conn.set_ex(key, value, seconds).await?;
+            let _: () = conn.set_ex(key, value, seconds).await?;
         } else {
-            conn.set(key, value).await?;
+            let _: () = conn.set(key, value).await?;
         }
         Ok(())
     }
@@ -36,7 +36,7 @@ impl RedisService {
     /// Delete a key from cache
     pub async fn delete(&self, key: &str) -> Result<()> {
         let mut conn = self.conn.clone();
-        conn.del(key).await?;
+        let _: () = conn.del(key).await?;
         Ok(())
     }
 

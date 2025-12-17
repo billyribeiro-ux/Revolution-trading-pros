@@ -107,7 +107,6 @@ async fn login(
 
 /// Get current user (requires auth)
 async fn me(
-    State(state): State<AppState>,
     user: User, // Extracted by auth middleware
 ) -> Json<UserResponse> {
     Json(user.into())
@@ -117,5 +116,5 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
         .route("/login", post(login))
-        // .route("/me", get(me).layer(auth_layer))
+        .route("/me", axum::routing::get(me))
 }

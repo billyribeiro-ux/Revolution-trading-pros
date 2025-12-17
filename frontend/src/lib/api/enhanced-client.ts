@@ -14,7 +14,7 @@
  */
 
 import { browser } from '$app/environment';
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 import { getCircuitBreaker, type CircuitBreaker } from '../resilience/circuit-breaker';
 import { retryNetworkRequest, withIdempotency, generateIdempotencyKey } from '../resilience/retry';
 import {
@@ -516,7 +516,7 @@ export class EnhancedApiClient {
 		if (!browser) return {};
 
 		// Use secure auth store token (memory-only, not localStorage)
-		const token = getAuthStoreToken();
+		const token = getAuthToken();
 		if (!token) return {};
 
 		return {

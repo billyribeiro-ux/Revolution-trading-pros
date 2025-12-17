@@ -12,6 +12,8 @@ frontend/dist/
 .env.local
 .env.*.local
 backend/.env
+frontend/.env.e2e
+!frontend/.env.production
 
 # Logs
 *.log
@@ -146,3 +148,4 @@ phpunit.xml
 
 # IDE workspace settings (may contain paths/credentials)
 *.code-workspace
+api-rust/target/

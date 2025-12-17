@@ -7,6 +7,7 @@
     import IconCpu from '@tabler/icons-svelte/icons/cpu';
     import IconCheck from '@tabler/icons-svelte/icons/check';
     import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
+    import IconBuilding from '@tabler/icons-svelte/icons/building';
 
     const features = [
         {
@@ -106,22 +107,20 @@
     <div class="relative max-w-7xl mx-auto z-10">
         
         <!-- Header -->
-        <div class="max-w-3xl mx-auto text-center mb-20">
+        <div class="max-w-4xl mx-auto text-center mb-24">
             {#if isVisible}
-                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center justify-center gap-2 mb-6">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-zinc-500"></span>
-                    </span>
-                    <span class="text-xs font-mono uppercase tracking-widest text-zinc-500">System Architecture</span>
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center gap-3 px-4 py-1.5 border border-zinc-800/30 bg-zinc-900/10 text-zinc-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm">
+                    <IconBuilding size={14} />
+                    System Design
                 </div>
                 
-                <h2 in:heavySlide={{ delay: 100 }} class="text-3xl md:text-5xl font-medium tracking-tight text-white mb-6">
-                    Core Infrastructure
+                <h2 in:heavySlide={{ delay: 100 }} class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+                    Trading <span class="text-slate-700">Framework.</span>
                 </h2>
                 
-                <p in:heavySlide={{ delay: 200 }} class="text-base md:text-lg text-zinc-500 leading-relaxed font-light max-w-2xl mx-auto">
-                    We replaced hype with engineering. Our ecosystem combines structured education, strict risk controls, and professional data tools.
+                <p in:heavySlide={{ delay: 200 }} class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+                    We don't build retail platforms. We engineer institutional trading systems. 
+                    Verified by quantitative funds and proprietary trading desks.
                 </p>
             {/if}
         </div>

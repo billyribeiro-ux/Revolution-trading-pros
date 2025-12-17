@@ -17,36 +17,35 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import {
-		IconArrowLeft,
-		IconMail,
-		IconPhone,
-		IconActivity,
-		IconUserCircle,
-		IconEdit,
-		IconTrash,
-		IconTag,
-		IconListDetails,
-		IconSend,
-		IconNote,
-		IconPlus,
-		IconX,
-		IconCheck,
-		IconClock,
-		IconChartBar,
-		IconTrendingUp,
-		IconCurrencyDollar,
-		IconMailForward,
-		IconEye,
-		IconMailOpened,
-		IconClick,
-		IconWorld,
-		IconBuilding,
-		IconBriefcase,
-		IconCalendar,
-		IconRefresh,
-		IconDotsVertical
-	} from '$lib/icons';
+	// Svelte 5 individual icon imports (Dec 2025 pattern)
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconMail from '@tabler/icons-svelte/icons/mail';
+	import IconPhone from '@tabler/icons-svelte/icons/phone';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconUserCircle from '@tabler/icons-svelte/icons/user-circle';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconTag from '@tabler/icons-svelte/icons/tag';
+	import IconList from '@tabler/icons-svelte/icons/list';
+	import IconSend from '@tabler/icons-svelte/icons/send';
+	import IconNotes from '@tabler/icons-svelte/icons/notes';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
+	import IconMailFast from '@tabler/icons-svelte/icons/mail-fast';
+	import IconEye from '@tabler/icons-svelte/icons/eye';
+	import IconMailOpen from '@tabler/icons-svelte/icons/mail-opened';
+	import IconClick from '@tabler/icons-svelte/icons/click';
+	import IconWorld from '@tabler/icons-svelte/icons/world';
+	import IconBuilding from '@tabler/icons-svelte/icons/building';
+	import IconBriefcase from '@tabler/icons-svelte/icons/briefcase';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import IconDotsVertical from '@tabler/icons-svelte/icons/dots-vertical';
 	import { api } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -445,7 +444,7 @@
 				</div>
 			</div>
 			<div class="stat-box">
-				<IconMailOpened size={20} class="stat-icon cyan" />
+				<IconMailOpen size={20} class="stat-icon cyan" />
 				<div class="stat-info">
 					<span class="stat-value">{contact.email_opens}</span>
 					<span class="stat-label">Email Opens</span>
@@ -478,7 +477,7 @@
 				Emails ({emailHistory.length})
 			</button>
 			<button class="tab-btn" class:active={activeTab === 'notes'} onclick={() => activeTab = 'notes'}>
-				<IconNote size={18} />
+				<IconNotes size={18} />
 				Notes ({notes.length})
 			</button>
 			<button class="tab-btn" class:active={activeTab === 'activity'} onclick={() => activeTab = 'activity'}>
@@ -499,7 +498,7 @@
 								<IconMail size={16} />
 								<div>
 									<span class="info-label">Email</span>
-									<a href="mailto:{contact.email}" class="info-value link">{contact.email}</a>
+									<a href="mailto:{contact.email || ''}" class="info-value link">{contact.email || ''}</a>
 								</div>
 							</div>
 							{#if contact.phone}
@@ -607,7 +606,7 @@
 					<div class="info-card">
 						<div class="card-header">
 							<h3>
-								<IconListDetails size={18} />
+								<IconList size={18} />
 								Lists
 							</h3>
 							<button class="btn-add" onclick={() => showAddListModal = true}>
@@ -619,7 +618,7 @@
 							{#if contact.lists && contact.lists.length > 0}
 								{#each contact.lists as list}
 									<div class="list-item">
-										<IconListDetails size={16} />
+										<IconList size={16} />
 										<span>{list.name}</span>
 										<button class="list-remove" onclick={() => removeFromList(list.id)}>
 											<IconX size={12} />
@@ -715,7 +714,7 @@
 					</div>
 					{#if notes.length === 0}
 						<div class="empty-state">
-							<IconNote size={48} />
+							<IconNotes size={48} />
 							<h3>No notes yet</h3>
 							<p>Add notes to keep track of important information about this contact</p>
 						</div>
@@ -778,10 +777,11 @@
 
 <!-- Add Tag Modal -->
 {#if showAddTagModal}
-	<div class="modal-overlay" onclick={() => showAddTagModal = false}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => showAddTagModal = false} onkeydown={(e) => e.key === 'Escape' && (showAddTagModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-tag-title" tabindex="-1">
+		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<div class="modal-header">
-				<h3>Add Tag</h3>
+				<h3 id="add-tag-title">Add Tag</h3>
 				<button class="modal-close" onclick={() => showAddTagModal = false}>
 					<IconX size={20} />
 				</button>
@@ -806,10 +806,11 @@
 
 <!-- Add List Modal -->
 {#if showAddListModal}
-	<div class="modal-overlay" onclick={() => showAddListModal = false}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div class="modal-overlay" onclick={() => showAddListModal = false} onkeydown={(e) => e.key === 'Escape' && (showAddListModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-list-title" tabindex="-1">
+		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<div class="modal-header">
-				<h3>Add to List</h3>
+				<h3 id="add-list-title">Add to List</h3>
 				<button class="modal-close" onclick={() => showAddListModal = false}>
 					<IconX size={20} />
 				</button>
@@ -821,7 +822,7 @@
 					<div class="list-options">
 						{#each availableLists as list}
 							<button class="list-option" onclick={() => addToList(list.id)}>
-								<IconListDetails size={16} />
+								<IconList size={16} />
 								{list.name}
 							</button>
 						{/each}
@@ -834,10 +835,11 @@
 
 <!-- Add Note Modal -->
 {#if showAddNoteModal}
-	<div class="modal-overlay" onclick={() => showAddNoteModal = false}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => showAddNoteModal = false} onkeydown={(e) => e.key === 'Escape' && (showAddNoteModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-note-title" tabindex="-1">
+		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<div class="modal-header">
-				<h3>Add Note</h3>
+				<h3 id="add-note-title">Add Note</h3>
 				<button class="modal-close" onclick={() => showAddNoteModal = false}>
 					<IconX size={20} />
 				</button>

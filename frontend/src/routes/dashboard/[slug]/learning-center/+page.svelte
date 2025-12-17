@@ -132,13 +132,13 @@
 		return grouped;
 	});
 
+	// Get uncategorized lessons
+	let uncategorizedLessons = $derived(lessonsByModule.get('uncategorized') || []);
+
 	// Get module progress
 	let moduleProgress = $derived.by(() => {
 		return userProgress?.moduleProgress || [];
 	});
-
-	// Get uncategorized lessons
-	let uncategorizedLessons = $derived(lessonsByModule.get('uncategorized') || []);
 
 	// Featured lessons (for sidebar)
 	let featuredLessons = $derived(roomLessons.filter(l => l.isFeatured).slice(0, 3));
@@ -763,6 +763,7 @@
 		line-height: 1.4;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

@@ -94,7 +94,7 @@
 						<div class="mt-4 grid gap-3 text-xs text-slate-300 md:grid-cols-2">
 							<div class="flex items-center gap-2">
 								<IconMail size={14} class="text-slate-400" />
-								<a href={`mailto:${contact.email}`} class="hover:underline">{contact.email}</a>
+								<a href={`mailto:${contact.email || ''}`} class="hover:underline">{contact.email || ''}</a>
 							</div>
 							{#if contact.phone}
 								<div class="flex items-center gap-2">
