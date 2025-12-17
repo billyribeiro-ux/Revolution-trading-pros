@@ -339,10 +339,12 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .run(req, env)
         .await
         .map(|response| {
-            let headers = Headers::new();
+            // Add CORS headers to all responses
+            let mut headers = response.headers().clone();
             let _ = headers.set("Access-Control-Allow-Origin", "*");
             let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+            let _ = headers.set("Access-Control-Allow-Credentials", "true");
             response.with_headers(headers)
         })
 }
