@@ -618,6 +618,10 @@ class AuthenticationService {
 
 		// Store auth data with session_id for single-session auth
 		// Note: refresh_token is now handled via httpOnly cookies for security
+		// DEFENSIVE: Ensure response.user exists before setting auth
+		if (!response.user) {
+			throw new Error('Login response missing user data');
+		}
 		authStore.setAuth(
 			response.user,
 			response.token,
