@@ -9,7 +9,6 @@
 
 use hmac::{Hmac, Mac};
 use sha1::Sha1;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use crate::error::ApiError;
 
 type HmacSha1 = Hmac<Sha1>;
@@ -157,10 +156,9 @@ impl TotpService {
     }
 
     /// Generate a random byte using crypto-safe random
+    /// Uses js_sys::Math::random() for WASM compatibility
     fn random_byte() -> u8 {
-        let mut buf = [0u8; 1];
-        getrandom::getrandom(&mut buf).expect("Failed to generate random bytes");
-        buf[0]
+        (js_sys::Math::random() * 256.0) as u8
     }
 
     /// Verify a backup code against a list of hashed codes
