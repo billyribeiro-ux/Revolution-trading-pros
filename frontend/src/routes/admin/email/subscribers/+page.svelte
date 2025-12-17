@@ -418,11 +418,11 @@
 							</td>
 							<td>
 								<div class="tags-list">
-									{#each subscriber.tags.slice(0, 3) as tag}
+									{#each (subscriber.tags || []).slice(0, 3) as tag}
 										<span class="tag">{tag}</span>
 									{/each}
-									{#if subscriber.tags.length > 3}
-										<span class="tag more">+{subscriber.tags.length - 3}</span>
+									{#if (subscriber.tags || []).length > 3}
+										<span class="tag more">+{(subscriber.tags || []).length - 3}</span>
 									{/if}
 								</div>
 							</td>
