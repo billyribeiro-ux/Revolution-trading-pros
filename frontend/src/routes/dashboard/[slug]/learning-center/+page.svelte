@@ -140,9 +140,6 @@
 		return userProgress?.moduleProgress || [];
 	});
 
-	// Get uncategorized lessons
-	let uncategorizedLessons = $derived(lessonsByModule.get('uncategorized') || []);
-
 	// Featured lessons (for sidebar)
 	let featuredLessons = $derived(roomLessons.filter(l => l.isFeatured).slice(0, 3));
 
