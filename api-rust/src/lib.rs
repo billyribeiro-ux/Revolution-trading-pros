@@ -44,12 +44,31 @@ fn log_request(req: &Request) {
     );
 }
 
+/// CORS allowed origins
+const CORS_ORIGINS: &[&str] = &[
+    "https://revolutiontradingpros.com",
+    "https://www.revolutiontradingpros.com",
+    "https://revolution-trading-pros.pages.dev",
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:5173",
+];
+
+/// Check if origin is allowed
+fn is_origin_allowed(origin: &str) -> bool {
+    CORS_ORIGINS.iter().any(|&o| o == origin)
+}
+
 /// Create CORS preflight response
-fn cors_preflight() -> Result<Response> {
+fn cors_preflight(origin: Option<&str>) -> Result<Response> {
     let headers = Headers::new();
-    headers.set("Access-Control-Allow-Origin", "*")?;
-    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")?;
-    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")?;
+    let allowed_origin = origin
+        .filter(|o| is_origin_allowed(o))
+        .unwrap_or("https://revolutiontradingpros.com");
+    headers.set("Access-Control-Allow-Origin", allowed_origin)?;
+    headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")?;
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, Accept")?;
+    headers.set("Access-Control-Allow-Credentials", "true")?;
     headers.set("Access-Control-Max-Age", "86400")?;
     Ok(Response::empty()?.with_headers(headers).with_status(204))
 }
@@ -58,9 +77,13 @@ fn cors_preflight() -> Result<Response> {
 pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     log_request(&req);
 
+    // Get origin for CORS
+    let origin = req.headers().get("Origin").ok().flatten();
+    let origin_str = origin.as_deref();
+
     // Handle CORS preflight requests
     if req.method() == Method::Options {
-        return cors_preflight();
+        return cors_preflight(origin_str);
     }
 
     // Initialize panic hook for better error messages
@@ -341,10 +364,14 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .map(|response| {
             // Add CORS headers to all responses
             let mut headers = response.headers().clone();
-            let _ = headers.set("Access-Control-Allow-Origin", "*");
-            let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+            let allowed_origin = origin_str
+                .filter(|o| is_origin_allowed(o))
+                .unwrap_or("https://revolutiontradingpros.com");
+            let _ = headers.set("Access-Control-Allow-Origin", allowed_origin);
+            let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, Accept");
             let _ = headers.set("Access-Control-Allow-Credentials", "true");
+            let _ = headers.set("Access-Control-Expose-Headers", "X-Session-ID, Set-Cookie");
             response.with_headers(headers)
         })
 }
