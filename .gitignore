@@ -11,7 +11,6 @@ frontend/dist/
 .env
 .env.local
 .env.*.local
-backend/.env
 frontend/.env.e2e
 !frontend/.env.production
 
@@ -34,28 +33,9 @@ Thumbs.db
 *.swo
 *~
 
-# Laravel specific
-backend/vendor/
-backend/storage/*.key
-backend/storage/framework/cache/*
-backend/storage/framework/sessions/*
-backend/storage/framework/views/*
-backend/storage/logs/*
-backend/bootstrap/cache/*
-!backend/storage/.gitkeep
-!backend/storage/framework/.gitkeep
-!backend/storage/framework/cache/.gitkeep
-!backend/storage/framework/sessions/.gitkeep
-!backend/storage/framework/views/.gitkeep
-!backend/storage/logs/.gitkeep
-
 # Database
 *.sqlite
 *.sqlite-journal
-backend/database/*.sqlite
-
-# Composer
-backend/composer.lock
 
 # Package locks (optional - uncomment if you want to ignore)
 # package-lock.json
@@ -137,10 +117,6 @@ frontend/playwright/.cache/
 # E2E test environment and auth state
 frontend/.env.e2e
 frontend/tests/e2e/.auth/*.json
-
-# Laravel-specific sensitive files
-backend/storage/oauth-*.key
-backend/.scribe/
 
 # Test configuration with real credentials
 phpunit.xml

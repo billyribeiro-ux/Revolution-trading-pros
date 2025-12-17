@@ -14,8 +14,8 @@ const isDev = import.meta.env.DEV;
 // ICT11+ PRODUCTION FIX: Hardcode the production API URL since Cloudflare Pages
 // secrets are not available via import.meta.env on server-side
 // The VITE_API_URL secret is only for client-side code
-// Backend is deployed on Fly.io (Laravel)
-const PRODUCTION_API_URL = 'https://revolution-trading-pros.fly.dev';
+// Backend is deployed on Fly.io (Rust + Axum)
+const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
 // Get API base URL - empty string in dev (uses Vite proxy), full URL in production
 export const API_BASE_URL = isDev 

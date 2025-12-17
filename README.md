@@ -19,7 +19,7 @@ High-performance trading platform built with Rust + Axum.
 
 ```
 .
-├── api/                    # Rust + Axum Backend (PRIMARY)
+├── api/                    # Rust + Axum Backend
 │   ├── src/
 │   │   ├── main.rs         # Entry point
 │   │   ├── config/         # Configuration
@@ -29,8 +29,8 @@ High-performance trading platform built with Rust + Axum.
 │   │   ├── services/       # Business logic
 │   │   └── middleware/     # Auth, rate limiting
 │   └── migrations/         # SQL migrations
-├── api-rust/               # Cloudflare Workers variant (Edge)
-├── frontend/               # SvelteKit frontend
+├── frontend/               # SvelteKit 5 frontend
+├── image-service/          # Node.js image processing microservice
 └── DEPLOYMENT_GUIDE_RUST.md
 ```
 
