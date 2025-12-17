@@ -365,8 +365,8 @@
 										{getMemberInitials(member)}
 									</div>
 									<div class="member-details">
-										<div class="member-name">{member.name}</div>
-										<div class="member-email">{member.email}</div>
+										<div class="member-name">{member.name || ''}</div>
+										<div class="member-email">{member.email || ''}</div>
 									</div>
 								</div>
 							</td>

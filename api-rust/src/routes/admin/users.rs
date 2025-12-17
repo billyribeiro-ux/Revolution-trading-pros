@@ -21,18 +21,16 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
 
     let mut sql = String::from("SELECT * FROM users WHERE 1=1");
     let mut params: Vec<serde_json::Value> = vec![];
-    let mut param_idx = 1;
+    let param_idx = 1;
 
     if let Some(role) = &query.role {
         sql.push_str(&format!(" AND role = ${}", param_idx));
         params.push(serde_json::json!(role));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(" AND (email ILIKE ${} OR name ILIKE ${})", param_idx, param_idx));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total

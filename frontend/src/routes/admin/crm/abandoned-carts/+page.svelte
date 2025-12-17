@@ -308,7 +308,7 @@
 									{/if}
 									<div class="customer-info">
 										<span class="customer-name">{cart.full_name || 'Unknown'}</span>
-										<span class="customer-email">{cart.email}</span>
+										<span class="customer-email">{cart.email || ''}</span>
 									</div>
 								</div>
 							</td>

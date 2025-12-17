@@ -269,11 +269,11 @@
 				{#each collaborators as collab}
 					<div class="collaborator-item">
 						<div class="collab-avatar" class:online={isOnline(collab.id)} style="background-color: {getAvatarColor(collab.id)}">
-							{collab.name.charAt(0).toUpperCase()}
+							{(collab.name || '?').charAt(0).toUpperCase()}
 						</div>
 						<div class="collab-info">
-							<div class="collab-name">{collab.name}</div>
-							<div class="collab-email">{collab.email}</div>
+							<div class="collab-name">{collab.name || ''}</div>
+							<div class="collab-email">{collab.email || ''}</div>
 							<div class="collab-meta">
 								{#if isOnline(collab.id)}
 									<span class="status online">Online</span>

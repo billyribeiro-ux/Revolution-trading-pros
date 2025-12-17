@@ -1,7 +1,7 @@
 //! Authentication middleware
 
 use axum::{
-    extract::{FromRequestParts, State},
+    extract::FromRequestParts,
     http::{request::Parts, StatusCode},
     RequestPartsExt,
 };
@@ -44,6 +44,7 @@ impl FromRequestParts<AppState> for User {
 }
 
 /// Optional user extractor (for routes that work with or without auth)
+#[allow(dead_code)]
 pub struct OptionalUser(pub Option<User>);
 
 #[axum::async_trait]

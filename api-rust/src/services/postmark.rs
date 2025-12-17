@@ -96,7 +96,7 @@ impl PostmarkService {
     async fn get<T: for<'de> Deserialize<'de>>(&self, path: &str) -> Result<T, ApiError> {
         let url = format!("{}{}", self.base_url, path);
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("X-Postmark-Server-Token", &self.api_key).ok();
         headers.set("Accept", "application/json").ok();
         
@@ -125,7 +125,7 @@ impl PostmarkService {
         let body_json = serde_json::to_string(body)
             .map_err(|e| ApiError::Internal(format!("Failed to serialize body: {}", e)))?;
         
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("X-Postmark-Server-Token", &self.api_key).ok();
         headers.set("Accept", "application/json").ok();
         headers.set("Content-Type", "application/json").ok();

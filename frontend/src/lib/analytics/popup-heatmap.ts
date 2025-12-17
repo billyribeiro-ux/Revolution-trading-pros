@@ -101,9 +101,29 @@ export class PopupHeatmapTracker {
 	private isTracking: boolean = false;
 	private mouseThrottleTimer: number | null = null;
 
+	// Store bound event handlers for proper cleanup
+	private boundHandleClick: (event: MouseEvent) => void;
+	private boundHandleTouch: (event: TouchEvent) => void;
+	private boundHandleScroll: (event: Event) => void;
+	private boundHandleMouseMove: (event: MouseEvent) => void;
+	private boundHandleFormFocus: (event: FocusEvent) => void;
+	private boundHandleFormBlur: (event: FocusEvent) => void;
+	private boundHandleFormInput: (event: Event) => void;
+	private boundHandleFormChange: (event: Event) => void;
+
 	constructor(popupId: string, sessionId?: string) {
 		this.popupId = popupId;
 		this.sessionId = sessionId || this.generateSessionId();
+
+		// Bind event handlers once for proper cleanup
+		this.boundHandleClick = this.handleClick.bind(this);
+		this.boundHandleTouch = this.handleTouch.bind(this);
+		this.boundHandleScroll = this.handleScroll.bind(this);
+		this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+		this.boundHandleFormFocus = this.handleFormFocus.bind(this);
+		this.boundHandleFormBlur = this.handleFormBlur.bind(this);
+		this.boundHandleFormInput = this.handleFormInput.bind(this);
+		this.boundHandleFormChange = this.handleFormChange.bind(this);
 	}
 
 	/**
@@ -191,8 +211,8 @@ export class PopupHeatmapTracker {
 	private attachClickListener(): void {
 		if (!this.popupElement) return;
 
-		this.popupElement.addEventListener('click', this.handleClick.bind(this), true);
-		this.popupElement.addEventListener('touchend', this.handleTouch.bind(this), true);
+		this.popupElement.addEventListener('click', this.boundHandleClick, true);
+		this.popupElement.addEventListener('touchend', this.boundHandleTouch, true);
 	}
 
 	private attachScrollListener(): void {
@@ -203,7 +223,7 @@ export class PopupHeatmapTracker {
 			this.popupElement.querySelector('.popup-content') ||
 			this.popupElement;
 
-		scrollContainer.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+		scrollContainer.addEventListener('scroll', this.boundHandleScroll, { passive: true });
 	}
 
 	private attachFormListeners(): void {
@@ -222,16 +242,16 @@ export class PopupHeatmapTracker {
 	private attachMouseMoveListener(): void {
 		if (!this.popupElement) return;
 
-		this.popupElement.addEventListener('mousemove', this.handleMouseMove.bind(this), { passive: true });
+		this.popupElement.addEventListener('mousemove', this.boundHandleMouseMove, { passive: true });
 	}
 
 	private removeEventListeners(): void {
 		if (!this.popupElement) return;
 
-		this.popupElement.removeEventListener('click', this.handleClick.bind(this), true);
-		this.popupElement.removeEventListener('touchend', this.handleTouch.bind(this), true);
-		this.popupElement.removeEventListener('scroll', this.handleScroll.bind(this));
-		this.popupElement.removeEventListener('mousemove', this.handleMouseMove.bind(this));
+		this.popupElement.removeEventListener('click', this.boundHandleClick, true);
+		this.popupElement.removeEventListener('touchend', this.boundHandleTouch, true);
+		this.popupElement.removeEventListener('scroll', this.boundHandleScroll);
+		this.popupElement.removeEventListener('mousemove', this.boundHandleMouseMove);
 
 		// Remove form listeners
 		const formElements = this.popupElement.querySelectorAll('input, textarea, select');

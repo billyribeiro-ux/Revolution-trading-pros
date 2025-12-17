@@ -42,6 +42,7 @@ pub struct CreateCourse {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct UpdateCourse {
     pub title: Option<String>,
     pub description: Option<String>,

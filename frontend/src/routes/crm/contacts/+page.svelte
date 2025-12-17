@@ -238,7 +238,7 @@
 									<td class="px-4 py-3">
 										<div class="flex flex-col">
 											<span class="font-medium text-slate-50">{contact.full_name}</span>
-											<span class="text-xs text-slate-400">{contact.email}</span>
+											<span class="text-xs text-slate-400">{contact.email || ''}</span>
 										</div>
 									</td>
 									<td class="px-4 py-3 text-xs">

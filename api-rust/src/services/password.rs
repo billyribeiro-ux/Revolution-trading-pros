@@ -3,7 +3,6 @@
 //! WASM-compatible password hashing using PBKDF2-SHA256
 
 use sha2::Sha256;
-use hmac::Hmac;
 use pbkdf2::pbkdf2_hmac;
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use crate::error::ApiError;

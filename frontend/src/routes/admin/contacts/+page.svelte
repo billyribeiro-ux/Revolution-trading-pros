@@ -169,11 +169,11 @@
 						</td>
 						<td>
 							<a
-								href="mailto:{contact.email}"
+								href="mailto:{contact.email || ''}"
 								class="contact-link"
 							>
 								<IconMail size={16} />
-								{contact.email}
+								{contact.email || ''}
 							</a>
 						</td>
 						<td>

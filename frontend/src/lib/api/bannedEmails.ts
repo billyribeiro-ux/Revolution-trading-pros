@@ -50,7 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -449,7 +449,7 @@ class BannedEmailManagementService {
 
 	private handleEmailBanned(email: EnhancedBannedEmail): void {
 		this.bannedEmails.update((emails) => [...emails, email]);
-		this.showNotification(`Email banned: ${email.email}`, 'warning');
+		this.showNotification(`Email banned: ${email?.email || 'unknown'}`, 'warning');
 	}
 
 	private handleEmailUnbanned(data: { id: number }): void {
@@ -613,11 +613,11 @@ class BannedEmailManagementService {
 		try {
 			// Check for similar emails if requested
 			if (request.block_similar) {
-				const similar = await this.findSimilarEmails(request.email);
+				const similar = await this.findSimilarEmails(request.email || '');
 				if (similar.length > 0) {
 					await this.bulkBanEmails({
 						emails: similar,
-						reason: `Similar to banned email: ${request.email}`,
+						reason: `Similar to banned email: ${request.email || 'unknown'}`,
 						cascade: request.cascade
 					});
 				}
@@ -652,7 +652,7 @@ class BannedEmailManagementService {
 
 			// Track event
 			this.trackEvent('email_banned', {
-				email: request.email,
+				email: request.email || '',
 				reason: request.reason,
 				cascade: request.cascade
 			});
@@ -1197,7 +1197,7 @@ class BannedEmailManagementService {
 	private getAuthToken(): string {
 		if (!browser) return '';
 		// Use secure auth store token (memory-only, not localStorage)
-		return getAuthStoreToken() || '';
+		return getAuthToken() || '';
 	}
 
 	private getFromCache(key: string): any {

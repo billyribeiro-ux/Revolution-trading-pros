@@ -31,24 +31,21 @@ pub async fn list(req: Request, ctx: RouteContext<AppState>) -> worker::Result<R
     );
 
     let mut params: Vec<serde_json::Value> = vec![];
-    let mut param_idx = 1;
+    let param_idx = 1;
 
     if let Some(status) = &query.status {
         sql.push_str(&format!(" AND p.status = ${}", param_idx));
         params.push(serde_json::json!(format!("{:?}", status).to_lowercase()));
-        param_idx += 1;
     }
 
     if let Some(category_id) = &query.category_id {
         sql.push_str(&format!(" AND p.category_id = ${}", param_idx));
         params.push(serde_json::json!(category_id.to_string()));
-        param_idx += 1;
     }
 
     if let Some(search) = &query.search {
         sql.push_str(&format!(" AND (p.title ILIKE ${} OR p.content ILIKE ${})", param_idx, param_idx));
         params.push(serde_json::json!(format!("%{}%", search)));
-        param_idx += 1;
     }
 
     // Count total
@@ -208,79 +205,67 @@ pub async fn update(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     // Build dynamic update query
     let mut updates = vec!["updated_at = $1".to_string()];
     let mut params: Vec<serde_json::Value> = vec![serde_json::json!(now.to_rfc3339())];
-    let mut param_idx = 2;
+    let param_idx = 2;
 
     if let Some(title) = &body.title {
         updates.push(format!("title = ${}", param_idx));
         params.push(serde_json::json!(title));
-        param_idx += 1;
     }
 
     if let Some(slug) = &body.slug {
         updates.push(format!("slug = ${}", param_idx));
         params.push(serde_json::json!(slug));
-        param_idx += 1;
     }
 
     if let Some(content) = &body.content {
         updates.push(format!("content = ${}", param_idx));
         params.push(serde_json::json!(content));
-        param_idx += 1;
 
         // Update reading time
         let word_count = content.split_whitespace().count();
         let reading_time = ((word_count as f32) / 200.0).ceil() as i32;
         updates.push(format!("reading_time = ${}", param_idx));
         params.push(serde_json::json!(reading_time));
-        param_idx += 1;
     }
 
     if let Some(excerpt) = &body.excerpt {
         updates.push(format!("excerpt = ${}", param_idx));
         params.push(serde_json::json!(excerpt));
-        param_idx += 1;
     }
 
     if let Some(featured_image) = &body.featured_image {
         updates.push(format!("featured_image = ${}", param_idx));
         params.push(serde_json::json!(featured_image));
-        param_idx += 1;
     }
 
     if let Some(category_id) = &body.category_id {
         updates.push(format!("category_id = ${}", param_idx));
         params.push(serde_json::json!(category_id.to_string()));
-        param_idx += 1;
     }
 
     if let Some(status) = &body.status {
         updates.push(format!("status = ${}", param_idx));
         params.push(serde_json::json!(format!("{:?}", status).to_lowercase()));
-        param_idx += 1;
     }
 
     if let Some(visibility) = &body.visibility {
         updates.push(format!("visibility = ${}", param_idx));
         params.push(serde_json::json!(format!("{:?}", visibility).to_lowercase()));
-        param_idx += 1;
     }
 
     if let Some(published_at) = &body.published_at {
         updates.push(format!("published_at = ${}", param_idx));
         params.push(serde_json::json!(published_at.to_rfc3339()));
-        param_idx += 1;
     }
 
     if let Some(meta_title) = &body.meta_title {
         updates.push(format!("meta_title = ${}", param_idx));
         params.push(serde_json::json!(meta_title));
-        param_idx += 1;
     }
 
     if let Some(meta_description) = &body.meta_description {
         updates.push(format!("meta_description = ${}", param_idx));
         params.push(serde_json::json!(meta_description));
-        param_idx += 1;
     }
 
     params.push(serde_json::json!(id));

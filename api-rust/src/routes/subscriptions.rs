@@ -4,10 +4,8 @@ use worker::{Request, Response, RouteContext};
 use crate::AppState;
 use crate::error::ApiError;
 use crate::models::subscription::{
-    UserSubscription, SubscriptionWithPlan, CreateSubscriptionRequest, 
-    CancelSubscriptionRequest, SubscriptionListQuery
+    UserSubscription, SubscriptionWithPlan, CreateSubscriptionRequest, CancelSubscriptionRequest
 };
-use crate::models::post::{PaginatedResponse, PaginationMeta};
 use crate::services::JwtService;
 
 /// GET /api/my/subscriptions - List user's subscriptions
@@ -69,7 +67,7 @@ pub async fn create(mut req: Request, ctx: RouteContext<AppState>) -> worker::Re
     }
 
     // Create Stripe subscription if payment method provided
-    let stripe_subscription = if let Some(payment_method_id) = &body.payment_method_id {
+    let stripe_subscription = if let Some(_payment_method_id) = &body.payment_method_id {
         // Get or create Stripe customer
         let customer_id = get_or_create_stripe_customer(&ctx, &user).await?;
         

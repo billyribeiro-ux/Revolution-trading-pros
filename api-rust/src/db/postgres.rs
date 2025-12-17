@@ -116,7 +116,7 @@ impl Database {
         let body = serde_json::to_string(&query)
             .map_err(|e| ApiError::Database(format!("Failed to serialize query: {}", e)))?;
 
-        let mut headers = worker::Headers::new();
+        let headers = worker::Headers::new();
         headers.set("Content-Type", "application/json").ok();
         headers.set("Neon-Connection-String", &self.connection_string).ok();
 
@@ -192,7 +192,7 @@ mod tests {
     #[test]
     fn test_http_endpoint_extraction() {
         let db = Database::new("postgres://user:pass@ep-cool-name-123456.us-east-2.aws.neon.tech/neondb");
-        let endpoint = db.get_http_endpoint().unwrap();
-        assert_eq!(endpoint, "https://ep-cool-name-123456.us-east-2.aws.neon.tech/sql");
+        // The endpoint is parsed from the connection string
+        assert_eq!(db.endpoint, "https://ep-cool-name-123456.us-east-2.aws.neon.tech/sql");
     }
 }

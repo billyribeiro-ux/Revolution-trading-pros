@@ -177,7 +177,7 @@
 						</div>
 						<div class="manager-info">
 							<h3>{manager.name}</h3>
-							<p class="manager-email">{manager.email}</p>
+							<p class="manager-email">{manager.email || ''}</p>
 						</div>
 						<div class="manager-role">
 							<span class="role-badge">

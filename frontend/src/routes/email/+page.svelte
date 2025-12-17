@@ -81,7 +81,7 @@
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Emails Sent</div>
-					<div class="stat-value">{formatNumber($emailStore.analytics.emails_sent)}</div>
+					<div class="stat-value">{formatNumber($emailStore?.analytics?.emails_sent || 0)}</div>
 					<div class="stat-change positive">+12.5% vs last month</div>
 				</div>
 			</div>
@@ -259,7 +259,7 @@
 								<div class="sequence-info">
 									<div class="info-item">
 										<span class="info-label">Emails</span>
-										<span class="info-value">{sequence.emails.length}</span>
+										<span class="info-value">{sequence.emails?.length || 0}</span>
 									</div>
 									<div class="info-item">
 										<span class="info-label">Subscribers</span>

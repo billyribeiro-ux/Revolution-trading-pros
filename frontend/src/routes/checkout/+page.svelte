@@ -111,12 +111,12 @@
 			return;
 		}
 
-		// Pre-fill billing from user data
+		// Pre-fill billing from user data (with defensive null checks)
 		if ($user) {
-			const nameParts = ($user.name || '').split(' ');
+			const nameParts = ($user?.name || '').split(' ');
 			billing.firstName = nameParts[0] || '';
 			billing.lastName = nameParts.slice(1).join(' ') || '';
-			billing.email = $user.email || '';
+			billing.email = $user?.email || '';
 		}
 	});
 
@@ -1167,12 +1167,7 @@
 		flex-shrink: 0;
 	}
 
-	.product-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
+	
 	.product-placeholder {
 		width: 100%;
 		height: 100%;
@@ -1197,12 +1192,7 @@
 		color: var(--checkout-primary);
 	}
 
-	.product-qty {
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--checkout-text-muted);
-	}
-
+	
 	.product-total {
 		font-weight: 700;
 		font-size: 14px;

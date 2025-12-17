@@ -99,28 +99,22 @@
 
     <div class="relative max-w-[1600px] mx-auto z-10">
         
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 border-b border-white/10 pb-8">
-            <div class="max-w-2xl">
-                {#if isVisible}
-                    <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center gap-3 mb-6">
-                        <div class="flex items-center gap-2 px-3 py-1 border border-amber-900/30 bg-amber-900/10 text-amber-500 text-[10px] font-bold tracking-[0.2em] uppercase rounded-sm">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                            Live Wire
-                        </div>
-                    </div>
-                    <h2 in:heavySlide={{ delay: 100 }} class="text-4xl md:text-6xl font-serif text-white tracking-tight">
-                        Market <span class="text-slate-700">Intelligence.</span>
-                    </h2>
-                {/if}
-            </div>
-            <div class="max-w-xs text-right">
-                {#if isVisible}
-                    <a href="/blog" in:heavySlide={{ delay: 200 }} class="group inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-slate-500 hover:text-white transition-colors">
-                        <span>Archive Access</span>
-                        <IconArrowRight size={16} class="group-hover:translate-x-1 transition-transform" />
-                    </a>
-                {/if}
-            </div>
+        <div class="max-w-4xl mx-auto text-center mb-24">
+            {#if isVisible}
+                <div in:heavySlide={{ delay: 0, duration: 1000 }} class="inline-flex items-center gap-3 px-4 py-1.5 border border-amber-900/30 bg-amber-950/10 text-amber-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm">
+                    <IconNews size={14} />
+                    Intelligence Wire
+                </div>
+                
+                <h2 in:heavySlide={{ delay: 100 }} class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+                    Market <span class="text-slate-700">Analysis.</span>
+                </h2>
+                
+                <p in:heavySlide={{ delay: 200 }} class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+                    We don't publish retail content. We deliver institutional-grade market intelligence. 
+                    Verified by quantitative analysts and professional trading desks worldwide.
+                </p>
+            {/if}
         </div>
 
         {#if posts.length > 0}
