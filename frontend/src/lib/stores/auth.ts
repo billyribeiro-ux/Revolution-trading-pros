@@ -183,6 +183,22 @@ function createAuthStore() {
 			sessionId?: string | null,
 			expiresInSeconds?: number
 		): void => {
+			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
+			const safeUser: User = {
+				id: user?.id ?? 0,
+				name: user?.name ?? '',
+				email: user?.email ?? '',
+				email_verified_at: user?.email_verified_at ?? null,
+				created_at: user?.created_at ?? '',
+				updated_at: user?.updated_at ?? '',
+				first_name: user?.first_name,
+				last_name: user?.last_name,
+				roles: user?.roles ?? [],
+				permissions: user?.permissions ?? [],
+				is_admin: user?.is_admin,
+				avatar: user?.avatar
+			};
+
 			// SECURITY: Store access token in memory only
 			secureTokens.setAccessToken(token);
 
@@ -199,7 +215,7 @@ function createAuthStore() {
 
 			update((state) => ({
 				...state,
-				user,
+				user: safeUser,
 				sessionId: sessionId ?? state.sessionId,
 				tokenExpiry,
 				isAuthenticated: true,
@@ -234,9 +250,25 @@ function createAuthStore() {
 		 * Also sets isAuthenticated to true since we have valid user data
 		 */
 		setUser: (user: User): void => {
+			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
+			const safeUser: User = {
+				id: user?.id ?? 0,
+				name: user?.name ?? '',
+				email: user?.email ?? '',
+				email_verified_at: user?.email_verified_at ?? null,
+				created_at: user?.created_at ?? '',
+				updated_at: user?.updated_at ?? '',
+				first_name: user?.first_name,
+				last_name: user?.last_name,
+				roles: user?.roles ?? [],
+				permissions: user?.permissions ?? [],
+				is_admin: user?.is_admin,
+				avatar: user?.avatar
+			};
+
 			update((state) => ({
 				...state,
-				user,
+				user: safeUser,
 				isAuthenticated: true, // User data means we're authenticated
 				isInitializing: false  // Done initializing
 			}));
