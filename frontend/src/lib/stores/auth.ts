@@ -538,7 +538,7 @@ export const userPermissions = derived(authStore, ($auth) => getUserPermissions(
  * Create a derived store that checks for a specific permission
  */
 export function createPermissionStore(permission: PermissionType | string) {
-	return derived(authStore, ($auth) => checkHasPermission($auth.user, permission));
+	return derived(authStore, ($auth) => checkHasPermission(getSafeUser($auth.user), permission));
 }
 
 // Export function to get token (for use in API clients)

@@ -334,7 +334,9 @@
 			}
 
 			if (error && typeof error === 'object' && 'errors' in error) {
-				errors = (error as { errors: Record<string, string[]> }).errors;
+				// DEFENSIVE: Ensure errors is always an object, never undefined
+				const errorObj = (error as { errors: Record<string, string[]> }).errors;
+				errors = errorObj ?? {};
 			} else if (error instanceof Error) {
 				generalError = error.message;
 			} else {
