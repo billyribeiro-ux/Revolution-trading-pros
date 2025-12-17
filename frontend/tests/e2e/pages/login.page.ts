@@ -30,14 +30,9 @@ export class LoginPage extends BasePage {
 	constructor(page: Page) {
 		super(page);
 
-		// Form elements - using multiple selector strategies for resilience
-		// Prioritize placeholder-based selection for Revolution Trading Pros login form
-		this.emailInput = page.getByPlaceholder(/trader@example\.com/i).or(
-			page.locator('input[type="email"], input[name="email"], input[id="email"], [data-testid="email-input"]').first()
-		);
-		this.passwordInput = page.getByPlaceholder(/••••••••/i).or(
-			page.locator('input[type="password"], input[name="password"], input[id="password"], [data-testid="password-input"]').first()
-		);
+		// Form elements - using ID-based selection for reliability
+		this.emailInput = page.locator('#email');
+		this.passwordInput = page.locator('#password');
 		this.submitButton = page.locator('button[type="submit"].submit-btn').or(
 			page.getByRole('button', { name: /sign in to trade/i })
 		).first();
@@ -73,6 +68,7 @@ export class LoginPage extends BasePage {
 	 * Fills in the login form
 	 */
 	async fillForm(email: string, password: string): Promise<void> {
+		await this.emailInput.waitFor({ state: 'visible', timeout: 10000 });
 		await this.emailInput.fill(email);
 		await this.passwordInput.fill(password);
 	}
@@ -81,7 +77,10 @@ export class LoginPage extends BasePage {
 	 * Submits the login form
 	 */
 	async submit(): Promise<void> {
+		await this.submitButton.waitFor({ state: 'visible', timeout: 10000 });
 		await this.submitButton.click();
+		// Wait for form submission to start processing
+		await this.page.waitForTimeout(1000);
 	}
 
 	/**

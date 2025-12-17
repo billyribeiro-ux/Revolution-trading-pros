@@ -390,7 +390,7 @@
 			{/if}
 
 			<!-- Form -->
-			<form bind:this={formRef} onsubmit={handleSubmit} class="login-form" novalidate>
+			<form bind:this={formRef} onsubmit={handleSubmit} method="post" class="login-form" novalidate>
 				<!-- Email Field -->
 				<div class="form-field">
 					<label for="email" class="field-label">Email Address</label>

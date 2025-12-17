@@ -156,7 +156,8 @@ test.describe('Auth Smoke Test', () => {
 		
 		if (await registerLink.isVisible()) {
 			await registerLink.click();
-			await page.waitForLoadState('domcontentloaded');
+			// Wait for navigation to complete
+			await page.waitForURL(/register|signup/, { timeout: 10000 });
 			
 			// Should be on register page
 			const url = page.url();
@@ -218,8 +219,29 @@ test.describe('Auth Smoke Test - With Credentials', () => {
 			process.env.E2E_TEST_USER_PASSWORD!
 		);
 
+		// Wait longer for login to complete (backend may be slow)
+		await page.waitForTimeout(5000);
+
 		// Should redirect away from login
 		const success = await loginPage.isLoginSuccessful();
+		
+		// If login failed, check for error message and current state
+		if (!success) {
+			const errorMsg = await loginPage.getErrorMessage();
+			const currentUrl = page.url();
+			console.log('Login failed. Error message:', errorMsg);
+			console.log('Current URL:', currentUrl);
+			
+			// Check if we're still on login page with success animation (slow redirect)
+			const isOnLogin = currentUrl.includes('/login');
+			if (isOnLogin) {
+				// Wait a bit more and check again
+				await page.waitForTimeout(3000);
+				const newUrl = page.url();
+				console.log('After additional wait, URL:', newUrl);
+			}
+		}
+		
 		expect(success).toBe(true);
 	});
 
