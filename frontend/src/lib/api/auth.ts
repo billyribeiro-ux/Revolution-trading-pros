@@ -617,7 +617,7 @@ class AuthenticationService {
 		}
 
 		// Store auth data with session_id for single-session auth
-		// Note: refresh_token is now handled via httpOnly cookies for security
+		// ICT11+ Principal Engineer: Store refresh_token in memory for token refresh
 		// DEFENSIVE: Ensure response.user exists before setting auth
 		if (!response.user) {
 			throw new Error('Login response missing user data');
@@ -626,7 +626,8 @@ class AuthenticationService {
 			response.user,
 			response.token,
 			response.session_id,
-			response.expires_in
+			response.expires_in,
+			response.refresh_token
 		);
 
 		// Schedule token refresh
@@ -666,12 +667,13 @@ class AuthenticationService {
 			skipAuth: true
 		});
 
-		// Note: refresh_token is now handled via httpOnly cookies for security
+		// ICT11+ Principal Engineer: Store refresh_token in memory for token refresh
 		authStore.setAuth(
 			response.user,
 			response.token,
 			response.session_id,
-			response.expires_in
+			response.expires_in,
+			response.refresh_token
 		);
 
 		if (response.expires_in) {
@@ -907,12 +909,13 @@ class AuthenticationService {
 		});
 
 		// Store auth data with session_id
-		// Note: refresh_token is now handled via httpOnly cookies for security
+		// ICT11+ Principal Engineer: Store refresh_token in memory for token refresh
 		authStore.setAuth(
 			response.user,
 			response.token,
 			response.session_id,
-			response.expires_in
+			response.expires_in,
+			response.refresh_token
 		);
 
 		// Schedule token refresh

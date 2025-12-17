@@ -80,9 +80,11 @@ interface AuthState {
 /**
  * SECURITY: Tokens stored in memory only - not accessible via XSS
  * This closure prevents direct access to tokens from global scope
+ * ICT11+ Principal Engineer: Both access and refresh tokens in memory
  */
 const createSecureTokenStorage = () => {
 	let accessToken: string | null = null;
+	let refreshToken: string | null = null;
 
 	return {
 		setAccessToken: (token: string | null): void => {
@@ -91,8 +93,15 @@ const createSecureTokenStorage = () => {
 		getAccessToken: (): string | null => {
 			return accessToken;
 		},
+		setRefreshToken: (token: string | null): void => {
+			refreshToken = token;
+		},
+		getRefreshToken: (): string | null => {
+			return refreshToken;
+		},
 		clearTokens: (): void => {
 			accessToken = null;
+			refreshToken = null;
 		}
 	};
 };
@@ -179,13 +188,14 @@ function createAuthStore() {
 
 		/**
 		 * Set authenticated user and token with session
-		 * @security Access token stored in memory only
+		 * @security ICT11+ Principal Engineer: Both tokens stored in memory only
 		 */
 		setAuth: (
 			user: User,
 			token: string,
 			sessionId?: string | null,
-			expiresInSeconds?: number
+			expiresInSeconds?: number,
+			refreshToken?: string | null
 		): void => {
 			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
 			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
@@ -208,8 +218,11 @@ function createAuthStore() {
 				mfa_enabled: user?.mfa_enabled
 			};
 
-			// SECURITY: Store access token in memory only
+			// SECURITY: Store tokens in memory only (XSS-resistant)
 			secureTokens.setAccessToken(token);
+			if (refreshToken) {
+				secureTokens.setRefreshToken(refreshToken);
+			}
 
 			let tokenExpiry: number | null = null;
 			if (expiresInSeconds) {
@@ -385,7 +398,7 @@ function createAuthStore() {
 
 		/**
 		 * Refresh access token with race condition prevention
-		 * @security Uses httpOnly cookie for refresh token (server-side)
+		 * @security ICT11+ Principal Engineer: Sends refresh_token in body as backend expects
 		 */
 		refreshToken: async (): Promise<boolean> => {
 			// Prevent multiple concurrent refresh attempts
@@ -396,14 +409,22 @@ function createAuthStore() {
 
 			refreshPromise = (async () => {
 				try {
+					const currentRefreshToken = secureTokens.getRefreshToken();
+					
+					// If no refresh token in memory, we can't refresh
+					if (!currentRefreshToken) {
+						throw new Error('No refresh token available');
+					}
+
 					const response = await fetch('/api/auth/refresh', {
 						method: 'POST',
-						credentials: 'include', // Include httpOnly cookies
+						credentials: 'include',
 						headers: {
 							'Content-Type': 'application/json',
 							'Accept': 'application/json',
 							'X-Session-ID': safeLocalStorage('get', SESSION_ID_KEY) || ''
-						}
+						},
+						body: JSON.stringify({ refresh_token: currentRefreshToken })
 					});
 
 					if (!response.ok) {
@@ -414,6 +435,11 @@ function createAuthStore() {
 
 					if (data.token) {
 						secureTokens.setAccessToken(data.token);
+
+						// Update refresh token if a new one is provided (token rotation)
+						if (data.refresh_token) {
+							secureTokens.setRefreshToken(data.refresh_token);
+						}
 
 						if (data.expires_in) {
 							const tokenExpiry = Date.now() + data.expires_in * 1000;

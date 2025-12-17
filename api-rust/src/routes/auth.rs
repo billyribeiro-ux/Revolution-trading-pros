@@ -7,7 +7,7 @@ use crate::models::user::{
     RegisterRequest, LoginRequest, MfaLoginRequest, 
     ForgotPasswordRequest, ResetPasswordRequest, AuthResponse, UserPublic
 };
-use crate::services::{JwtService, PasswordService};
+use crate::services::{JwtService, PasswordService, TotpService};
 use crate::utils;
 
 /// POST /api/register - Register a new user
@@ -193,15 +193,22 @@ pub async fn login_mfa(mut req: Request, ctx: RouteContext<AppState>) -> worker:
     ).await?
     .ok_or_else(|| ApiError::Unauthorized("Invalid credentials".to_string()))?;
 
-    // Verify MFA code (TOTP)
-    // In production, use a proper TOTP library
-    let _mfa_secret = user.mfa_secret.clone()
+    // Verify MFA code (TOTP) - ICT11+ Principal Engineer Implementation
+    let mfa_secret = user.mfa_secret.clone()
         .ok_or_else(|| ApiError::BadRequest("MFA not enabled".to_string()))?;
 
-    // TODO: Implement proper TOTP verification
-    if body.code != "000000" { // Placeholder
+    // Verify TOTP code using RFC 6238 compliant implementation
+    let is_valid = TotpService::verify(&mfa_secret, &body.code)
+        .map_err(|e| ApiError::Internal(format!("MFA verification error: {}", e)))?;
+
+    if !is_valid {
+        // Log failed MFA attempt
+        log_security_event(&ctx, &user.id, "mfa_failed", &req).await;
         return Err(ApiError::Unauthorized("Invalid MFA code".to_string()).into());
     }
+
+    // Log successful MFA verification
+    log_security_event(&ctx, &user.id, "mfa_verified", &req).await;
 
     // Generate tokens
     let jwt = JwtService::new(
