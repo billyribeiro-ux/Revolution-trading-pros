@@ -149,6 +149,16 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             routes::products::indicator_show(req, ctx).await
         })
         
+        // Debug route to check raw user data
+        .get_async("/api/debug/user/:email", |req, ctx| async move {
+            let email = ctx.param("email").map_or("", |v| v).to_string();
+            let rows: Vec<serde_json::Value> = ctx.data.db.query(
+                "SELECT * FROM users WHERE email = $1",
+                vec![serde_json::json!(email)]
+            ).await.map_err(|e| worker::Error::RustError(e.to_string()))?;
+            Response::from_json(&rows)
+        })
+        
         // Auth routes
         .post_async("/api/register", |req, ctx| async move {
             routes::auth::register(req, ctx).await
