@@ -29,18 +29,22 @@ import {
 // =============================================================================
 
 export interface User {
-	id: number;
+	id: string | number;  // UUID from Rust API or number from Laravel
 	name: string;
 	first_name?: string;
 	last_name?: string;
 	email: string;
-	email_verified_at: string | null;
+	email_verified_at?: string | null;  // Laravel format
+	email_verified?: boolean;  // Rust API format
 	created_at: string;
-	updated_at: string;
+	updated_at?: string;  // Optional - Rust API doesn't send this
 	roles?: string[];
 	permissions?: string[];
+	role?: string;  // Rust API sends single role
 	is_admin?: boolean;
 	avatar?: string;
+	avatar_url?: string;  // Rust API format
+	mfa_enabled?: boolean;  // Rust API
 }
 
 export interface UserSession {
@@ -184,19 +188,24 @@ function createAuthStore() {
 			expiresInSeconds?: number
 		): void => {
 			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
+			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
 			const safeUser: User = {
-				id: user?.id ?? 0,
+				id: user?.id ?? '',
 				name: user?.name ?? '',
 				email: user?.email ?? '',
 				email_verified_at: user?.email_verified_at ?? null,
+				email_verified: user?.email_verified,
 				created_at: user?.created_at ?? '',
-				updated_at: user?.updated_at ?? '',
+				updated_at: user?.updated_at,
 				first_name: user?.first_name,
 				last_name: user?.last_name,
-				roles: user?.roles ?? [],
+				roles: user?.roles ?? (user?.role ? [user.role] : []),
+				role: user?.role,
 				permissions: user?.permissions ?? [],
-				is_admin: user?.is_admin,
-				avatar: user?.avatar
+				is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
+				avatar: user?.avatar ?? user?.avatar_url,
+				avatar_url: user?.avatar_url,
+				mfa_enabled: user?.mfa_enabled
 			};
 
 			// SECURITY: Store access token in memory only
@@ -251,19 +260,24 @@ function createAuthStore() {
 		 */
 		setUser: (user: User): void => {
 			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
+			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
 			const safeUser: User = {
-				id: user?.id ?? 0,
+				id: user?.id ?? '',
 				name: user?.name ?? '',
 				email: user?.email ?? '',
 				email_verified_at: user?.email_verified_at ?? null,
+				email_verified: user?.email_verified,
 				created_at: user?.created_at ?? '',
-				updated_at: user?.updated_at ?? '',
+				updated_at: user?.updated_at,
 				first_name: user?.first_name,
 				last_name: user?.last_name,
-				roles: user?.roles ?? [],
+				roles: user?.roles ?? (user?.role ? [user.role] : []),
+				role: user?.role,
 				permissions: user?.permissions ?? [],
-				is_admin: user?.is_admin,
-				avatar: user?.avatar
+				is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
+				avatar: user?.avatar ?? user?.avatar_url,
+				avatar_url: user?.avatar_url,
+				mfa_enabled: user?.mfa_enabled
 			};
 
 			update((state) => ({
