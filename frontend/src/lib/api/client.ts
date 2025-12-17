@@ -59,7 +59,7 @@ import { getAuthToken as getAuthStoreToken } from '$lib/stores/auth';
 const isDev = import.meta.env.DEV;
 const API_BASE_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api');
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
-const CDN_URL = import.meta.env.VITE_CDN_URL || 'https://cdn.revolutiontradingpros.com';
+const CDN_URL = import.meta.env.VITE_CDN_URL || '';
 
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;

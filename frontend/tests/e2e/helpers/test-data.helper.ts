@@ -19,7 +19,7 @@ export function generateUniqueId(prefix: string = 'test'): string {
 
 /** Generates a unique email for test user */
 export function generateTestEmail(prefix: string = 'e2e'): string {
-	return `${prefix}+${generateUniqueId()}@test.revolutiontradingpros.com`;
+	return `${prefix}+${generateUniqueId()}@test.example.com`;
 }
 
 /** Generates a unique username */

@@ -184,7 +184,7 @@
         name: 'Revolution Trading Pros',
         description: 'Professional trading community and mentorship program.',
         foundingDate: '2018',
-        url: 'https://revolutiontradingpros.com',
+        url: 'https://revolution-trading-pros.pages.dev',
         sameAs: ['https://twitter.com/revolutiontradingpros'] // Example
     };
     

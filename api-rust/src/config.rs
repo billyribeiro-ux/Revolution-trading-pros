@@ -39,10 +39,10 @@ impl Config {
             meilisearch_api_key: env.secret("MEILISEARCH_API_KEY")?.to_string(),
             cors_origins: vec![
                 "https://revolution-trading-pros.pages.dev".to_string(),
-                "https://revolutiontradingpros.com".to_string(),
+                "https://revolution-trading-pros.pages.dev".to_string(),
                 "http://localhost:5173".to_string(),
             ],
-            site_url: env.var("SITE_URL").map(|v| v.to_string()).unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string()),
+            site_url: env.var("SITE_URL").map(|v| v.to_string()).unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string()),
             from_email: env.var("FROM_EMAIL").map(|v| v.to_string()).unwrap_or_else(|_| "noreply@revolutiontradingpros.com".to_string()),
             from_name: env.var("FROM_NAME").map(|v| v.to_string()).unwrap_or_else(|_| "Revolution Trading Pros".to_string()),
         })

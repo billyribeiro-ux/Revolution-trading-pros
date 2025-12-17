@@ -205,13 +205,13 @@
 		'@type': 'Blog',
 		name: 'Revolution Trading Pros Blog',
 		description: 'Expert trading insights, tutorials, and market analysis',
-		url: 'https://revolutiontradingpros.com/blog',
+		url: 'https://revolution-trading-pros.pages.dev/blog',
 		publisher: {
 			'@type': 'Organization',
 			name: 'Revolution Trading Pros',
 			logo: {
 				'@type': 'ImageObject',
-				url: 'https://revolutiontradingpros.com/revolution-trading-pros.png'
+				url: 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png'
 			}
 		}
 	};

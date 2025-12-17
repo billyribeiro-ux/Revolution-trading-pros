@@ -83,7 +83,8 @@ jobs:
         env:
           DEPLOY_TARGET: cloudflare
           VITE_SITE_NAME: "Revolution Trading Pros"
-          VITE_SITE_URL: ${{ github.ref == 'refs/heads/main' && 'https://revolutiontradingpros.com' || 'https://staging.revolutiontradingpros.com' }}
+          # VITE_SITE_URL will use Cloudflare Pages URL - configure custom domain in Cloudflare Dashboard when ready
+          VITE_SITE_URL: ${{ vars.SITE_URL || 'https://revolution-trading-pros.pages.dev' }}
           # Production secrets are injected at runtime via Cloudflare Dashboard
 
       - name: Upload build artifacts

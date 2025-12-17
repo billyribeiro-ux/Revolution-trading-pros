@@ -41,13 +41,15 @@
 		}
 	});
 
+	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+
 	const homepageSchema = [
 		{
 			'@context': 'https://schema.org',
 			'@type': 'FinancialService',
 			name: 'Revolution Trading Pros',
 			description: 'Professional trading education platform',
-			url: 'https://revolutiontradingpros.com'
+			url: siteUrl
 		}
 	];
 </script>

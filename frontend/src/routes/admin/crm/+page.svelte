@@ -78,7 +78,7 @@
 		{ name: 'Contact Segments', href: '/admin/crm/segments', icon: IconListDetails },
 		{ name: 'Recurring Campaigns', href: '/admin/crm/recurring-campaigns', icon: IconRepeat },
 		{ name: 'Email Sequences', href: '/admin/crm/sequences', icon: IconMailForward },
-		{ name: 'Documentations', href: 'https://docs.revolutiontradingpros.com', icon: IconBook, external: true },
+		{ name: 'Documentations', href: '#', icon: IconBook, external: true },
 		{ name: 'Video Tutorials (Free)', href: '/tutorials', icon: IconPlayerPlay }
 	];
 

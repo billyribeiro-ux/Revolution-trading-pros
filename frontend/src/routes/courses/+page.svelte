@@ -205,7 +205,7 @@
     const coursesSchema = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
-        '@id': 'https://revolutiontradingpros.com/courses/#courselist',
+        '@id': 'https://revolution-trading-pros.pages.dev/courses/#courselist',
         name: 'Professional Trading Education Catalog',
         description: 'Institutional-grade trading education from Revolution Trading Pros.',
         numberOfItems: courses.length,
@@ -219,7 +219,7 @@
                 provider: {
                     '@type': 'Organization',
                     name: 'Revolution Trading Pros',
-                    sameAs: 'https://revolutiontradingpros.com'
+                    sameAs: 'https://revolution-trading-pros.pages.dev'
                 },
                 educationalLevel: course.level,
                 offers: {

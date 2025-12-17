@@ -142,7 +142,7 @@
 			'@type': 'Article',
 			headline: post.title,
 			description: post.excerpt || post.meta_description || '',
-			image: post.featured_image || 'https://revolutiontradingpros.com/revolution-trading-pros.png',
+			image: post.featured_image || 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png',
 			datePublished: post.published_at,
 			dateModified: post.published_at,
 			author: {
@@ -154,12 +154,12 @@
 				name: 'Revolution Trading Pros',
 				logo: {
 					'@type': 'ImageObject',
-					url: 'https://revolutiontradingpros.com/revolution-trading-pros.png'
+					url: 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png'
 				}
 			},
 			mainEntityOfPage: {
 				'@type': 'WebPage',
-				'@id': `https://revolutiontradingpros.com/blog/${post.slug}`
+				'@id': `https://revolution-trading-pros.pages.dev/blog/${post.slug}`
 			}
 		})
 	);
@@ -376,7 +376,7 @@
 				<!-- Social Share Section -->
 				<div class="share-section">
 					<SocialShare
-						url={`https://revolutiontradingpros.com/blog/${post.slug}`}
+						url={`https://revolution-trading-pros.pages.dev/blog/${post.slug}`}
 						title={post.title}
 						description={post.excerpt || post.meta_description || ''}
 						hashtags="trading,forex,stocks"

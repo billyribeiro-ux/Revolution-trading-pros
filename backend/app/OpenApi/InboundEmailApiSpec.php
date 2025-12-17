@@ -20,17 +20,17 @@ namespace App\OpenApi;
  *     ),
  *     @OA\License(
  *         name="Proprietary",
- *         url="https://revolutiontradingpros.com/license"
+ *         url="https://revolution-trading-pros.pages.dev/license"
  *     )
  * )
  *
  * @OA\Server(
- *     url="https://api.revolutiontradingpros.com",
+ *     url="https://revolution-trading-pros.fly.dev",
  *     description="Production API Server"
  * )
  *
  * @OA\Server(
- *     url="https://staging-api.revolutiontradingpros.com",
+ *     url="https://revolution-trading-pros-staging.fly.dev",
  *     description="Staging API Server"
  * )
  *

@@ -45,7 +45,7 @@ class TradingRoomSSOController extends Controller
     public function __construct()
     {
         $this->jwtSecret = config('services.trading_room.jwt_secret', env('TRADING_ROOM_JWT_SECRET', 'your-secret-key'));
-        $this->tradingRoomBaseUrl = config('services.trading_room.base_url', env('TRADING_ROOM_BASE_URL', 'https://room.revolutiontradingpros.com'));
+        $this->tradingRoomBaseUrl = config('services.trading_room.base_url', env('TRADING_ROOM_BASE_URL', '#'));
     }
 
     /**

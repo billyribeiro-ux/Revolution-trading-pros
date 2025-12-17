@@ -162,13 +162,13 @@
                     '@type': 'Brand',
                     name: 'Revolution Trading Pros'
                 },
-                image: 'https://revolutiontradingpros.com/images/og-swings.jpg',
+                image: 'https://revolution-trading-pros.pages.dev/images/og-swings.jpg',
                 offers: {
                     '@type': 'Offer',
                     priceCurrency: 'USD',
                     price: '97',
                     availability: 'https://schema.org/InStock',
-                    url: 'https://revolutiontradingpros.com/alerts/explosive-swings'
+                    url: 'https://revolution-trading-pros.pages.dev/alerts/explosive-swings'
                 },
                 aggregateRating: {
                     '@type': 'AggregateRating',

@@ -146,7 +146,7 @@
 		'@type': 'WebPage',
 		name: 'Backend Test Page',
 		description: 'Testing forms, popups, and SEO integration with Laravel backend',
-		url: 'https://revolutiontradingpros.com/test-backend'
+		url: 'https://revolution-trading-pros.pages.dev/test-backend'
 	};
 </script>
 

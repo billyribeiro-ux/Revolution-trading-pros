@@ -32,14 +32,14 @@ export interface AuthState {
 
 /** Default test user (configurable via environment) */
 export const TEST_USER: TestUserCredentials = {
-	email: process.env.E2E_TEST_USER_EMAIL || 'test@revolutiontradingpros.com',
+	email: process.env.E2E_TEST_USER_EMAIL || 'test@example.com',
 	password: process.env.E2E_TEST_USER_PASSWORD || 'TestPassword123!',
 	name: process.env.E2E_TEST_USER_NAME || 'E2E Test User'
 };
 
 /** Admin test user */
 export const ADMIN_USER: TestUserCredentials = {
-	email: process.env.E2E_ADMIN_EMAIL || 'admin@revolutiontradingpros.com',
+	email: process.env.E2E_ADMIN_EMAIL || 'admin@example.com',
 	password: process.env.E2E_ADMIN_PASSWORD || 'AdminPassword123!',
 	name: 'Admin User'
 };
@@ -257,5 +257,5 @@ export async function requestPasswordReset(page: Page, email: string): Promise<v
 export function generateTestEmail(prefix: string = 'test'): string {
 	const timestamp = Date.now();
 	const random = Math.random().toString(36).substring(7);
-	return `${prefix}-${timestamp}-${random}@test.revolutiontradingpros.com`;
+	return `${prefix}-${timestamp}-${random}@test.example.com`;
 }

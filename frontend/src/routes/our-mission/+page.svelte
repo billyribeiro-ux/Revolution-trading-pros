@@ -102,8 +102,8 @@
 			{
 				'@type': 'Organization',
 				name: 'Revolution Trading Pros',
-				url: 'https://revolutiontradingpros.com',
-				logo: 'https://revolutiontradingpros.com/logo.png',
+				url: 'https://revolution-trading-pros.pages.dev',
+				logo: 'https://revolution-trading-pros.pages.dev/logo.png',
 				foundingDate: '2023',
 				founder: { '@type': 'Person', name: 'Billy Ribeiro' },
 				sameAs: ['https://twitter.com/RevTradingPros'],
@@ -131,7 +131,7 @@
 				author: { '@type': 'Organization', name: 'Revolution Trading Pros' },
 				publisher: { '@type': 'Organization', name: 'Revolution Trading Pros' },
 				datePublished: '2024-01-01',
-				image: 'https://revolutiontradingpros.com/images/retail-trap.jpg'
+				image: 'https://revolution-trading-pros.pages.dev/images/retail-trap.jpg'
 			},
 			{
 				'@type': 'FAQPage',
