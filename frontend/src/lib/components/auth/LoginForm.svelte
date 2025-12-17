@@ -298,21 +298,16 @@
 			// Save/clear remembered email
 			saveRememberedEmail();
 
-			// Success state - show Lottie animation
+			// Success - redirect immediately
 			isSuccess = true;
-			showLottie = true;
 			if (gsap && submitBtn) {
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
-			// Fade out card content to show Lottie
-			const cardContent = cardRef?.querySelector('.card-content');
-			if (gsap && cardContent) {
-				const elementsToFade = cardContent.querySelectorAll(':scope > *:not(.success-overlay)');
-				if (elementsToFade.length > 0) {
-					gsap.to(elementsToFade, { opacity: 0, duration: 0.3 });
-				}
-			}
+			// Redirect to dashboard
+			const urlParams = new URLSearchParams(window.location.search);
+			const redirect = urlParams.get('redirect') || '/dashboard';
+			goto(validateRedirectUrl(redirect), { replaceState: true });
 		} catch (error: unknown) {
 			// Error handling
 			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
