@@ -1,32 +1,29 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount } from 'svelte';
     import { browser } from '$app/environment';
-    import { slide, fade, fly } from 'svelte/transition';
-    import { spring, tweened } from 'svelte/motion';
-    import { cubicOut, elasticOut } from 'svelte/easing';
-    
-    // Icon Imports
+    import { cubicOut } from 'svelte/easing';
+    import { slide } from 'svelte/transition';
+    import gsap from 'gsap';
+
+    // --- ICONS ---
     import IconSchool from '@tabler/icons-svelte/icons/school';
     import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
     import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-    import IconClock from '@tabler/icons-svelte/icons/clock';
-    import IconUsers from '@tabler/icons-svelte/icons/users';
-    import IconCertificate from '@tabler/icons-svelte/icons/certificate';
     import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
     import IconBrain from '@tabler/icons-svelte/icons/brain';
     import IconShield from '@tabler/icons-svelte/icons/shield';
     import IconRocket from '@tabler/icons-svelte/icons/rocket';
-    import IconStar from '@tabler/icons-svelte/icons/star';
     import IconCheck from '@tabler/icons-svelte/icons/check';
     import IconX from '@tabler/icons-svelte/icons/x';
     import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
-    import IconHelp from '@tabler/icons-svelte/icons/help';
     import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
     import IconActivity from '@tabler/icons-svelte/icons/activity';
-    import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
+    import IconBolt from '@tabler/icons-svelte/icons/bolt';
+    
+    // Assumed existing component based on your snippet
     import SEOHead from '$lib/components/SEOHead.svelte';
 
-    // --- DATA MODELS ---
+    // --- TYPES ---
 
     interface Course {
         id: string;
@@ -41,7 +38,13 @@
         price: string;
         icon: any;
         features: string[];
-        gradient: string;
+        // Pre-computed Tailwind classes to avoid JIT interpolation issues
+        colorClasses: {
+            bg: string;
+            border: string;
+            text: string;
+            icon: string;
+        };
     }
 
     interface FaqItem {
@@ -49,165 +52,279 @@
         answer: string;
     }
 
-    // --- CONTENT DATA ---
+    // --- DATA ---
 
     const courses: Course[] = [
         {
             id: '1',
             title: 'Day Trading Masterclass',
             slug: 'day-trading-masterclass',
-            description:
-                'Stop chasing alerts. Learn to read the raw price action. This masterclass decodes institutional order flow, Level 2 data, and volume analysis to help you execute sniper-like entries in real-time.',
-            targetAudience: 'For active traders wanting daily cash flow',
-            level: 'Intermediate to Advanced',
+            description: 'Decode institutional order flow, Level 2 data, and volume analysis to execute sniper-like entries.',
+            targetAudience: 'Active Cash Flow',
+            level: 'Advanced',
             duration: '8 Weeks',
-            students: '2,847',
+            students: '2.8k+',
             rating: 4.9,
             price: '$497',
             icon: IconChartCandle,
-            features: [
-                'Live tape reading & order flow analysis',
-                'Pre-market planning routines',
-                'Gap-and-go & reversal strategies',
-                'Scaling in/out mechanics',
-                'Handling emotional tilt in real-time'
-            ],
-            gradient: 'linear-gradient(135deg, #2e8eff 0%, #1e5cb8 100%)'
+            features: ['Tape Reading', 'L2 Analysis', 'Gap Strategies'],
+            colorClasses: {
+                bg: 'bg-blue-500/10',
+                border: 'border-blue-500/20',
+                text: 'text-blue-400',
+                icon: 'text-blue-500'
+            }
         },
         {
             id: '2',
             title: 'Swing Trading Pro',
             slug: 'swing-trading-pro',
-            description:
-                'Capture major market moves without being glued to your screen. We teach you how to identify macro trends and execute low-stress setups that compound wealth over days and weeks.',
-            targetAudience: 'For part-time traders with full-time jobs',
-            level: 'Beginner to Intermediate',
+            description: 'Capture major market moves. Identify macro trends and execute low-stress setups.',
+            targetAudience: 'Wealth Compounding',
+            level: 'Beginner',
             duration: '6 Weeks',
-            students: '3,421',
+            students: '3.4k+',
             rating: 4.8,
             price: '$397',
             icon: IconChartLine,
-            features: [
-                'Weekly timeframe context mastery',
-                'Trendline & supply/demand zones',
-                'Setting "Set & Forget" orders',
-                'Portfolio rotation strategies',
-                'Swing trading psychology'
-            ],
-            gradient: 'linear-gradient(135deg, #34d399 0%, #059669 100%)'
+            features: ['Macro Trends', 'Supply/Demand', 'Portfolio Rotation'],
+            colorClasses: {
+                bg: 'bg-emerald-500/10',
+                border: 'border-emerald-500/20',
+                text: 'text-emerald-400',
+                icon: 'text-emerald-500'
+            }
         },
         {
             id: '3',
-            title: 'Options Trading Fundamentals',
+            title: 'Options Tactics',
             slug: 'options-trading',
-            description:
-                'Leverage is a double-edged sword. We teach you how to handle it safely. Move beyond simple calls and puts into defined-risk spreads that profit even if the market goes nowhere.',
-            targetAudience: 'For traders seeking income & hedging',
+            description: 'Defined-risk spreads that profit even if the market goes nowhere. Handle leverage safely.',
+            targetAudience: 'Income & Hedging',
             level: 'Intermediate',
             duration: '10 Weeks',
-            students: '1,892',
+            students: '1.9k+',
             rating: 4.9,
             price: '$597',
             icon: IconBrain,
-            features: [
-                'The Greeks decoded (Delta, Theta, Vega)',
-                'Income generation (Credit Spreads/Iron Condors)',
-                'Hedging your long-term portfolio',
-                'Implied Volatility crush setups',
-                'Zero-DTE risk management'
-            ],
-            gradient: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)'
+            features: ['The Greeks', 'Iron Condors', 'Volatility Crush'],
+            colorClasses: {
+                bg: 'bg-violet-500/10',
+                border: 'border-violet-500/20',
+                text: 'text-violet-400',
+                icon: 'text-violet-500'
+            }
         },
         {
             id: '4',
-            title: 'Risk Management Mastery',
+            title: 'Risk Protocol',
             slug: 'risk-management',
-            description:
-                'The only difference between a gambler and a professional is risk management. Learn the mathematical framework used by proprietary desks to ensure you never blow up your account.',
-            targetAudience: 'Essential for EVERY trader',
+            description: 'The mathematical framework used by proprietary desks to ensure you never blow up.',
+            targetAudience: 'Mandatory Foundation',
             level: 'All Levels',
             duration: '4 Weeks',
-            students: '4,156',
+            students: '4.1k+',
             rating: 5.0,
             price: '$297',
             icon: IconShield,
-            features: [
-                'The 1% Rule & Position Sizing math',
-                'R-Multiples and Expectancy',
-                'Drawdown recovery protocols',
-                'Building a mechanical trading plan',
-                'Account growth modeling'
-            ],
-            gradient: 'linear-gradient(135deg, #fb923c 0%, #ea580c 100%)'
+            features: ['Position Sizing', 'R-Multiples', 'Drawdown Protocols'],
+            colorClasses: {
+                bg: 'bg-orange-500/10',
+                border: 'border-orange-500/20',
+                text: 'text-orange-400',
+                icon: 'text-orange-500'
+            }
         }
     ];
 
     const faqs: FaqItem[] = [
         {
-            question: "I'm a complete beginner. Which course should I start with?",
-            answer: "We recommend starting with 'Swing Trading Pro' combined with 'Risk Management Mastery'. Swing trading allows you more time to think and analyze without the high-pressure environment of day trading, while the risk management course ensures you protect your capital while you learn."
+            question: "Where do I start as a beginner?",
+            answer: "Start with 'Swing Trading Pro' combined with 'Risk Management Mastery'. This combination builds the foundation of capital preservation and trend identification without the stress of intraday execution."
         },
         {
-            question: "Is this just pre-recorded videos or is there live help?",
-            answer: "It is a hybrid ecosystem. While the core curriculum is high-definition on-demand video (so you can learn at your pace), our value comes from the community. You get access to our Discord where mentors clarify concepts, and we host weekly live Q&A sessions for students."
+            question: "Is there live mentorship?",
+            answer: "Yes. It's a hybrid ecosystem. Core curriculum is on-demand video, but our Discord provides daily mentor access, trade reviews, and weekly live Q&A sessions."
         },
         {
-            question: "Do I need a large account to start?",
-            answer: "Absolutely not. In fact, we strongly encourage starting with a paper trading account (simulated money) or a very small micro-account. Our Risk Management course specifically teaches you how to grow a small account using percentage-based risk, rather than dollar-based risk."
+            question: "Do I need a large account?",
+            answer: "No. We enforce starting with a simulator or micro-account. Our Risk Protocol teaches you to scale based on percentage performance, not dollar amount."
         },
         {
-            question: "How is this different from other 'gurus'?",
-            answer: "Most 'gurus' sell signals so you become dependent on them. We teach you to fish. We focus heavily on risk management and psychology—the two things that actually determine longevity. We don't show off Lamborghinis; we show off consistent equity curves and disciplined execution."
-        },
-        {
-            question: "Do I get lifetime access?",
-            answer: "Yes. Once you purchase a course, you have lifetime access to the materials, including all future updates. Markets evolve, and so does our curriculum—you won't be charged extra for version 2.0 updates."
+            question: "Lifetime access?",
+            answer: "Guaranteed. You get all future updates for version 2.0, 3.0, and beyond at no extra cost. Markets evolve, and so does our content."
         }
     ];
 
-    // --- STATE MANAGEMENT ---
+    // --- SVELTE 5 RUNES STATE ---
 
-    let heroVisible = false;
-    let cardsVisible: boolean[] = new Array(courses.length).fill(false);
-    let openFaqIndex: number | null = null;
+    let scrollY = $state(0);
+    let innerHeight = $state(0);
+    let innerWidth = $state(0);
+    let mounted = $state(false);
     
-    // NEW: Motion State
-    let scrollY = 0;
-    let innerHeight = 0;
-    let mouseX = 0;
-    let mouseY = 0;
+    // Mouse tracking for spotlight effects
+    let mouseX = $state(0);
+    let mouseY = $state(0);
 
-    // Animated Counters
-    const studentCount = tweened(0, { duration: 2000, easing: cubicOut });
-    const ratingCount = tweened(0, { duration: 2000, easing: cubicOut });
+    // Accordion State
+    let openFaqIndex = $state<number | null>(0);
 
-    function toggleFaq(index: number) {
-        openFaqIndex = openFaqIndex === index ? null : index;
+    // Canvas Ref
+    let canvasRef: HTMLCanvasElement;
+
+    // --- PARTICLE CLASS (moved to top level to avoid nested class warning) ---
+    
+    interface ParticleData {
+        x: number;
+        y: number;
+        size: number;
+        speedX: number;
+        speedY: number;
+        opacity: number;
     }
+
+    function createParticle(width: number, height: number): ParticleData {
+        return {
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 2,
+            speedX: (Math.random() - 0.5) * 0.3,
+            speedY: (Math.random() - 0.5) * 0.3,
+            opacity: Math.random() * 0.5
+        };
+    }
+
+    function updateParticle(p: ParticleData, width: number, height: number): void {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x > width) p.x = 0;
+        if (p.x < 0) p.x = width;
+        if (p.y > height) p.y = 0;
+        if (p.y < 0) p.y = height;
+    }
+
+    function drawParticle(ctx: CanvasRenderingContext2D, p: ParticleData): void {
+        ctx.fillStyle = `rgba(100, 116, 139, ${p.opacity})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // --- ACTIONS & UTILS ---
 
     function handleMouseMove(e: MouseEvent) {
         mouseX = e.clientX;
         mouseY = e.clientY;
         
-        // Update CSS variables for spotlight effects globally or per container
-        const cards = document.querySelectorAll('.course-card');
+        // Update CSS props for high-performance spotlights on specific containers
+        const cards = document.querySelectorAll('.spotlight-card');
         cards.forEach((card) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            (card as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
-            (card as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+             const rect = card.getBoundingClientRect();
+             const x = e.clientX - rect.left;
+             const y = e.clientY - rect.top;
+             (card as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+             (card as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
         });
     }
 
-    // --- SCHEMA MARKUP ---
+    function toggleFaq(index: number) {
+        if (openFaqIndex === index) {
+            openFaqIndex = null;
+        } else {
+            openFaqIndex = index;
+        }
+    }
 
-    const coursesSchema = {
+    // --- ANIMATION EFFECTS ---
+
+    // Animated Numbers Helper
+    function createCounter(target: number, duration: number = 2) {
+        let current = $state(0);
+        $effect(() => {
+            if (mounted) {
+                gsap.to((val: number) => current = val, {
+                    duration,
+                    val: target,
+                    ease: "power2.out",
+                    onUpdate: function() { current = Math.round(this.targets()[0].val * 10) / 10 }
+                });
+            }
+        });
+        return {
+            get value() { return current; }
+        };
+    }
+
+    const studentCounter = createCounter(12000);
+
+    // Canvas Particle System (The "Order Flow" Background)
+    function initCanvas() {
+        if (!canvasRef) return;
+        const ctx = canvasRef.getContext('2d');
+        if (!ctx) return;
+
+        const particles: ParticleData[] = [];
+        const particleCount = innerWidth < 768 ? 30 : 60;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(createParticle(innerWidth, innerHeight));
+        }
+
+        function animate() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < particles.length; i++) {
+                updateParticle(particles[i], innerWidth, innerHeight);
+                drawParticle(ctx, particles[i]);
+                
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    }
+
+    onMount(() => {
+        mounted = true;
+        initCanvas();
+
+        // GSAP Entrance Timeline
+        const tl = gsap.timeline();
+        
+        tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+          .from('.hero-title-line', { y: 50, opacity: 0, duration: 1, stagger: 0.15, ease: 'power4.out' }, '-=0.4')
+          .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+          .from('.hero-stats', { scale: 0.95, opacity: 0, duration: 0.8, ease: 'back.out(1.7)' }, '-=0.6')
+          .from('.ticker-bar', { opacity: 0, y: 100, duration: 1 }, '-=0.8');
+
+        return () => {
+            // Cleanup handled by Svelte
+        };
+    });
+
+    // Schema for SEO
+    const schema = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
         '@id': 'https://revolutiontradingpros.com/courses/#courselist',
         name: 'Professional Trading Education Catalog',
-        description: 'Institutional-grade trading education from Revolution Trading Pros.',
         numberOfItems: courses.length,
         itemListElement: courses.map((course, index) => ({
             '@type': 'ListItem',
@@ -216,876 +333,301 @@
                 '@type': 'Course',
                 name: course.title,
                 description: course.description,
-                provider: {
-                    '@type': 'Organization',
-                    name: 'Revolution Trading Pros',
-                    sameAs: 'https://revolutiontradingpros.com'
-                },
+                provider: { '@type': 'Organization', name: 'Revolution Trading Pros' },
                 educationalLevel: course.level,
-                offers: {
-                    '@type': 'Offer',
-                    price: course.price.replace('$', ''),
-                    priceCurrency: 'USD',
-                    availability: 'https://schema.org/InStock'
-                }
+                offers: { '@type': 'Offer', price: course.price.replace('$', ''), priceCurrency: 'USD' }
             }
         }))
     };
-
-    // --- LIFECYCLE ---
-
-    onMount(() => {
-        if (!browser) return;
-
-        // Trigger Counter Animation
-        setTimeout(() => {
-            studentCount.set(10000);
-            ratingCount.set(4.9);
-        }, 500);
-
-        // Hero animation
-        const heroObserver = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        heroVisible = true;
-                    }
-                });
-            },
-            { threshold: 0.2 }
-        );
-
-        const heroElement = document.querySelector('.hero-section');
-        if (heroElement) heroObserver.observe(heroElement);
-
-        // Card animations
-        const cardObserver = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = parseInt(entry.target.getAttribute('data-index') || '0');
-                        cardsVisible[index] = true;
-                    }
-                });
-            },
-            { threshold: 0.1 }
-        );
-
-        const cardElements = document.querySelectorAll('.course-card');
-        cardElements.forEach((card) => cardObserver.observe(card));
-
-        return () => {
-            heroObserver.disconnect();
-            cardObserver.disconnect();
-        };
-    });
 </script>
 
-<svelte:window bind:scrollY bind:innerHeight onmousemove={handleMouseMove} />
+<svelte:window bind:scrollY bind:innerHeight bind:innerWidth />
 
 <SEOHead
-    title="Professional Trading Courses | Day, Swing & Options Mentorship"
-    description="Stop trading alone. Join 10,000+ students in a supportive ecosystem. Learn real risk management, institutional strategies, and disciplined execution."
+    title="Trading Courses & Mentorship | Revolution Trading Pros"
+    description="Institutional-grade trading education. Learn to read order flow, manage risk, and execute with precision. Join the top 1% of disciplined traders."
     canonical="/courses"
-    ogType="website"
-    ogImage="/og-image-courses.webp"
-    schema={coursesSchema}
+    schema={schema}
     schemaType="Course"
 />
 
-<div class="courses-page antialiased selection:bg-blue-500/30 selection:text-blue-200">
+<div 
+    class="bg-black text-slate-200 min-h-screen font-sans selection:bg-blue-500/30 selection:text-white overflow-x-hidden"
+    onmousemove={handleMouseMove}
+    role="main"
+>
     
-    <section class="hero-section relative w-full overflow-hidden" class:visible={heroVisible}>
-        <div class="hero-background absolute inset-0 z-0">
-            <div class="perspective-grid" style="transform: translateY({scrollY * 0.5}px) rotateX(60deg);"></div>
-            
-            <div class="glow-orb glow-orb-1"></div>
-            <div class="glow-orb glow-orb-2"></div>
-            
-            <div class="noise-overlay absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
-            <div class="grid-overlay"></div>
+    <section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0 opacity-40">
+            <canvas bind:this={canvasRef} width={innerWidth} height={innerHeight} class="w-full h-full"></canvas>
         </div>
 
-        <div class="hero-content relative z-10 flex flex-col items-center justify-center min-h-[90vh] px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-20">
+        <div class="absolute inset-0 z-0 bg-gradient-to-b from-black/0 via-black/50 to-black pointer-events-none"></div>
+        <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black/0 to-black pointer-events-none"></div>
+
+        <div class="relative z-10 container mx-auto px-6 flex flex-col items-center text-center">
             
-            <div class="flex flex-col items-center text-center space-y-8" 
-                 style="transform: translateY({heroVisible ? 0 : 30}px); opacity: {heroVisible ? 1 : 0}; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);">
-                
-                <div class="hero-badge animate-pulse-soft">
-                    <IconCertificate size={16} stroke={2} />
-                    <span class="tracking-wide text-xs uppercase font-bold">Certified Trading Education</span>
-                </div>
+            <div class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 shadow-[0_0_15px_rgba(56,189,248,0.15)]">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Live Market Admissions Open</span>
+            </div>
 
-                <h1 class="hero-title max-w-4xl mx-auto">
-                    Stop Guessing. Start Trading With<br />
-                    <span class="gradient-text relative inline-block">
-                        Institutional Precision.
-                        <svg class="absolute -bottom-2 left-0 w-full h-2 text-blue-500/50" viewBox="0 0 100 10" preserveAspectRatio="none">
-                            <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="2" fill="none" />
-                        </svg>
+            <h1 class="max-w-5xl mx-auto mb-8 leading-[0.9]">
+                <span class="hero-title-line block text-[13vw] md:text-[6rem] lg:text-[7.5rem] font-black tracking-tighter text-white mix-blend-overlay opacity-90">
+                    EXECUTION
+                </span>
+                <span class="hero-title-line block text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-white tracking-tight -mt-2 md:-mt-6">
+                    OVER OPINION
+                </span>
+            </h1>
+
+            <p class="hero-desc max-w-2xl text-lg md:text-xl text-slate-400 leading-relaxed mb-12 font-light">
+                The market transfers money from the <span class="text-red-400 font-medium">impatient</span> to the <span class="text-emerald-400 font-medium">disciplined</span>. 
+                Stop gambling on signals. Start trading with institutional edge.
+            </p>
+
+            <div class="hero-stats flex flex-col md:flex-row items-center gap-6 md:gap-12 p-2">
+                <a href="#curriculum" class="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg tracking-tight overflow-hidden transition-transform hover:scale-105 active:scale-95">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <span class="relative flex items-center gap-2">
+                        View Curriculum
+                        <IconArrowRight size={20} class="transition-transform group-hover:translate-x-1" />
                     </span>
-                </h1>
+                </a>
 
-                <p class="hero-description text-lg md:text-xl md:leading-relaxed max-w-2xl mx-auto text-slate-400">
-                    The market is an efficient machine designed to transfer money from the undisciplined to the disciplined. 
-                    Our curriculum bridges the gap between "retail gambling" and professional consistency through 
-                    <strong class="text-white">real mentorship</strong>, <strong class="text-white">proven edge</strong>, and <strong class="text-white">uncompromising risk management</strong>.
-                </p>
-
-                <div class="hero-stats grid grid-cols-1 md:grid-cols-3 gap-8 py-8 w-full max-w-3xl border-y border-white/5 bg-white/[0.01] backdrop-blur-sm rounded-2xl">
-                    <div class="stat-item flex flex-col items-center justify-center p-4">
-                        <div class="flex items-center gap-3 mb-2 text-blue-400">
-                            <IconUsers size={28} stroke={1.5} />
-                        </div>
-                        <div class="stat-content text-center">
-                            <div class="stat-value text-3xl font-bold tabular-nums tracking-tight">
-                                {Math.floor($studentCount).toLocaleString()}+
-                            </div>
-                            <div class="stat-label text-sm text-slate-500 font-medium uppercase tracking-wider">Community Members</div>
-                        </div>
+                <div class="flex items-center gap-8 text-sm font-medium text-slate-500 uppercase tracking-widest">
+                    <div class="flex flex-col items-center">
+                        <span class="text-white text-2xl font-bold tracking-tight normal-case">{Math.floor(studentCounter.value).toLocaleString()}+</span>
+                        <span>Traders</span>
                     </div>
-                    <div class="stat-item flex flex-col items-center justify-center p-4 border-t md:border-t-0 md:border-l border-white/5">
-                        <div class="flex items-center gap-3 mb-2 text-emerald-400">
-                            <IconStar size={28} stroke={1.5} />
-                        </div>
-                        <div class="stat-content text-center">
-                            <div class="stat-value text-3xl font-bold tabular-nums tracking-tight">
-                                {$ratingCount.toFixed(1)}/5.0
-                            </div>
-                            <div class="stat-label text-sm text-slate-500 font-medium uppercase tracking-wider">Student Rating</div>
-                        </div>
+                    <div class="w-px h-8 bg-white/10"></div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-white text-2xl font-bold tracking-tight normal-case">4.9/5</span>
+                        <span>Rating</span>
                     </div>
-                    <div class="stat-item flex flex-col items-center justify-center p-4 border-t md:border-t-0 md:border-l border-white/5">
-                        <div class="flex items-center gap-3 mb-2 text-purple-400">
-                            <IconRocket size={28} stroke={1.5} />
-                        </div>
-                        <div class="stat-content text-center">
-                            <div class="stat-value text-3xl font-bold tabular-nums tracking-tight">24/7</div>
-                            <div class="stat-label text-sm text-slate-500 font-medium uppercase tracking-wider">Mentor Support</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hero-cta flex flex-col sm:flex-row gap-4 w-full justify-center pt-4">
-                    <a href="#courses" class="cta-button primary group relative overflow-hidden">
-                        <span class="relative z-10 flex items-center gap-2">
-                            View The Curriculum
-                            <IconSchool size={20} stroke={2} class="group-hover:translate-x-1 transition-transform" />
-                        </span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </a>
-                    <a href="/mentorship" class="cta-button secondary group">
-                        <span class="flex items-center gap-2">
-                            How Mentorship Works
-                            <IconArrowRight size={18} class="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                        </span>
-                    </a>
                 </div>
             </div>
+
         </div>
-        
-        <div class="absolute bottom-0 w-full overflow-hidden py-3 bg-black/20 border-t border-white/5 backdrop-blur-md">
-            <div class="ticker-wrap flex whitespace-nowrap">
-                {#each Array(10) as _, i}
-                    <div class="ticker-item flex gap-8 px-4 text-xs font-mono text-slate-500 opacity-70">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> SPY $542.30</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> QQQ $460.12</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> NVDA $135.40</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-500"></span> VIX 12.45</span>
+
+        <div class="ticker-bar absolute bottom-0 left-0 w-full border-t border-white/10 bg-black/40 backdrop-blur-md overflow-hidden py-3 z-20">
+            <div class="flex animate-marquee whitespace-nowrap">
+                {#each Array(8) as _}
+                    <div class="flex items-center gap-8 px-4">
+                        <span class="flex items-center gap-2 text-xs font-mono text-emerald-400"><IconTrendingUp size={14}/> SPY $542.30 +1.2%</span>
+                        <span class="flex items-center gap-2 text-xs font-mono text-red-400"><IconActivity size={14}/> VIX 13.45 -2.1%</span>
+                        <span class="flex items-center gap-2 text-xs font-mono text-emerald-400"><IconBolt size={14}/> NVDA $135.20 +3.4%</span>
+                        <span class="flex items-center gap-2 text-xs font-mono text-slate-400">BTC $92,430 +0.1%</span>
+                        <span class="text-xs font-mono text-slate-600">|</span>
                     </div>
                 {/each}
             </div>
         </div>
     </section>
 
-    <section class="reality-section relative z-10">
-        <div class="reality-content container mx-auto px-4 md:px-8">
-            <h2 class="section-title small">The Reality of Trading</h2>
-            <div class="reality-grid gap-8">
-                <div class="reality-card negative group" style="transform: translateY({scrollY * -0.05}px);">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <IconActivity size={120} />
-                    </div>
-                    <div class="icon-wrap error relative z-10"><IconX size={28} /></div>
-                    <h3 class="relative z-10">Why 90% Fail</h3>
-                    <p class="relative z-10">Most traders treat the market like a casino. They chase alerts, ignore risk, trade with emotion, and eventually blow up accounts due to a lack of structure.</p>
-                </div>
-                <div class="reality-card positive group" style="transform: translateY({scrollY * 0.02}px);"> <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <IconLayoutGrid size={120} />
-                    </div>
-                    <div class="icon-wrap success relative z-10"><IconCheck size={28} /></div>
-                    <h3 class="relative z-10">How Our Students Succeed</h3>
-                    <p class="relative z-10">We treat trading as a business. You will learn to protect your capital first, master one setup at a time, and rely on data—not feelings—to make decisions.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section class="courses-section relative z-10" id="courses">
-        <div class="absolute top-1/4 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
-        
-        <div class="section-header relative">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-widest mb-4 border border-blue-500/20">
-                Pathways to Profitability
-            </div>
-            <h2 class="section-title">Institutional-Grade Curriculum</h2>
-            <p class="section-description">
-                Comprehensive training pathways designed to take you from "unconscious incompetence" to "unconscious competence."
-            </p>
-        </div>
-
-        <div class="courses-grid px-4">
-            {#each courses as course, index}
-                {@const IconComponent = course.icon}
-                <article
-                    class="course-card group relative"
-                    class:visible={cardsVisible[index]}
-                    data-index={index}
-                    style="--delay: {index * 0.1}s;"
-                >
-                    <div class="spotlight-glow" aria-hidden="true"></div>
+    <section class="py-32 relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
+                        The <span class="text-blue-500">Retail</span> Trap.
+                    </h2>
+                    <p class="text-xl text-slate-400 leading-relaxed">
+                        90% of traders fail because they treat the market like a casino. They chase alerts, lack a risk model, and trade their P&L instead of the chart.
+                    </p>
                     
-                    <div class="card-inner relative z-10 h-full flex flex-col bg-[#0a0f1e] rounded-[20px] overflow-hidden">
-                        <div class="card-header relative overflow-hidden" style="background: {course.gradient}">
-                            <div class="absolute inset-0 opacity-20 mix-blend-overlay" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDQwTDQwIDBIOjB2NDB6bTQwIDBWMHjwIDQweiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L2c+PC9zdmc+');"></div>
-                            
-                            <div class="relative z-10 flex justify-between items-start">
-                                <div class="card-icon p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                                    <IconComponent size={32} stroke={1.5} class="text-white" />
-                                </div>
-                                <div class="card-badge shadow-lg">{course.level}</div>
-                            </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
+                            <IconX class="text-red-500 mb-4" size={32} />
+                            <h3 class="text-white font-bold mb-2">Gambling</h3>
+                            <p class="text-sm text-slate-400">Entry based on "feeling" rather than statistical edge.</p>
                         </div>
-
-                        <div class="card-content flex-grow">
-                            <h3 class="card-title group-hover:text-blue-400 transition-colors">{course.title}</h3>
-                            <p class="card-audience">
-                                <IconUsers size={14} class="inline mr-1" />
-                                {course.targetAudience}
-                            </p>
-                            <div class="h-[1px] w-12 bg-white/10 my-4"></div>
-                            <p class="card-description">{course.description}</p>
-
-                            <div class="card-meta bg-white/[0.03] rounded-lg p-3 border border-white/5">
-                                <div class="meta-item">
-                                    <IconClock size={16} stroke={2} class="text-blue-400" />
-                                    <span>{course.duration}</span>
-                                </div>
-                                <div class="w-[1px] h-4 bg-white/10"></div>
-                                <div class="meta-item">
-                                    <IconUsers size={16} stroke={2} class="text-emerald-400" />
-                                    <span>{course.students}</span>
-                                </div>
-                            </div>
-
-                            <div class="mt-6">
-                                <div class="features-label flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                    What You'll Master:
-                                </div>
-                                <ul class="card-features">
-                                    {#each course.features as feature}
-                                        <li>
-                                            <IconTrendingUp size={16} stroke={2} />
-                                            <span>{feature}</span>
-                                        </li>
-                                    {/each}
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="card-footer">
-                            <div class="card-price">
-                                <span class="price-label">Investment</span>
-                                <span class="price-value">{course.price}</span>
-                            </div>
-                            <a href="/courses/{course.slug}" class="card-button group/btn">
-                                <span>Start Learning</span>
-                                <IconArrowRight size={18} stroke={2} class="group-hover/btn:translate-x-1 transition-transform" />
-                            </a>
+                        <div class="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                            <IconCheck class="text-emerald-500 mb-4" size={32} />
+                            <h3 class="text-white font-bold mb-2">Business</h3>
+                            <p class="text-sm text-slate-400">Execution based on a pre-defined, backtested playbook.</p>
                         </div>
                     </div>
-                </article>
-            {/each}
-        </div>
-    </section>
-
-    <div class="marquee-background py-4 opacity-5 bg-white/5 border-y border-white/5 overflow-hidden rotate-1 scale-110 pointer-events-none">
-        <div class="flex whitespace-nowrap text-6xl font-black text-transparent stroke-text">
-            RISK MANAGEMENT • DISCIPLINE • EDGE • EXECUTION • PATIENCE • RISK MANAGEMENT • DISCIPLINE • EDGE • EXECUTION • PATIENCE • 
-        </div>
-    </div>
-
-    <section class="why-choose-section relative">
-        <div class="why-choose-content">
-            <h2 class="section-title">More Than Just Videos</h2>
-            <p class="section-subtitle">We don't just sell you a course and disappear. We built the ecosystem we wished we had when we started.</p>
-
-            <div class="benefits-grid">
-                <div class="benefit-card group hover:bg-white/[0.06]">
-                    <div class="benefit-icon group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <IconChartCandle size={32} stroke={1.5} />
-                    </div>
-                    <h3>Real, Verified Strategies</h3>
-                    <p>
-                        No hindsight trading. We teach strategies that we actually trade in our own accounts. You see the wins, the losses, and the logic behind every move.
-                    </p>
                 </div>
-
-                <div class="benefit-card group hover:bg-white/[0.06]">
-                    <div class="benefit-icon group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <IconUsers size={32} stroke={1.5} />
+                
+                <div class="relative aspect-square md:aspect-video lg:aspect-square rounded-3xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl">
+                    <div class="absolute inset-0 bg-[url('https://assets.codepen.io/907368/noise.svg')] opacity-20"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="relative w-3/4 h-3/4 border border-white/10 bg-black/50 backdrop-blur-xl rounded-xl p-6 flex flex-col">
+                            <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                                </div>
+                                <div class="text-[10px] font-mono text-slate-500 uppercase">System: Active</div>
+                            </div>
+                            <div class="flex-1 flex items-end gap-1">
+                                {#each Array(20) as _, i}
+                                    <div 
+                                        class="flex-1 bg-blue-500/50 rounded-t-sm animate-pulse"
+                                        style="height: {30 + Math.random() * 60}%; animation-delay: {i * 0.1}s; opacity: {0.3 + Math.random() * 0.7}"
+                                    ></div>
+                                {/each}
+                            </div>
+                        </div>
                     </div>
-                    <h3>Supportive Community</h3>
-                    <p>
-                        Trading is lonely. Join a community of serious individuals who share charts, review trades, and lift each other up. No toxicity allowed.
-                    </p>
-                </div>
-
-                <div class="benefit-card group hover:bg-white/[0.06]">
-                    <div class="benefit-icon group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <IconBrain size={32} stroke={1.5} />
-                    </div>
-                    <h3>Psychology First</h3>
-                    <p>
-                        Strategy is 20%; psychology is 80%. We provide mental frameworks to help you stop self-sabotaging and stick to your plan.
-                    </p>
-                </div>
-
-                <div class="benefit-card group hover:bg-white/[0.06]">
-                    <div class="benefit-icon group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <IconCertificate size={32} stroke={1.5} />
-                    </div>
-                    <h3>Lifetime Updates</h3>
-                    <p>
-                        Markets change. Our courses are living documents. You get free updates whenever we refine our strategies or when market conditions shift.
-                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="faq-section relative">
-        <div class="faq-container">
-            <h2 class="section-title text-center">Common Questions</h2>
-            <div class="faq-grid">
-                {#each faqs as faq, i}
-                    <div class="faq-item group" class:active={openFaqIndex === i}>
-                        <button class="faq-question focus:outline-none" onclick={() => toggleFaq(i)} aria-expanded={openFaqIndex === i}>
-                            <span class="question-text group-hover:text-blue-300 transition-colors">{faq.question}</span>
-                            <span class="chevron w-8 h-8 flex items-center justify-center rounded-full bg-white/5" class:rotated={openFaqIndex === i}>
-                                <IconChevronDown size={20} />
-                            </span>
-                        </button>
-                        {#if openFaqIndex === i}
-                            <div class="faq-answer" transition:slide={{ duration: 300, easing: cubicOut }}>
-                                <div class="answer-content">
-                                    {faq.answer}
+
+    <section id="curriculum" class="py-32 relative z-10 bg-slate-950/50 border-y border-white/5">
+        <div class="container mx-auto px-6">
+            
+            <div class="text-center max-w-3xl mx-auto mb-20">
+                <span class="text-blue-500 font-mono text-xs uppercase tracking-[0.3em] mb-4 block">Classified Intel</span>
+                <h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white mb-6">Master The Setup.</h2>
+                <p class="text-slate-400 text-lg">Four specialized pathways designed to take you from unconscious incompetence to unconscious competence.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
+                {#each courses as course}
+                    {@const Icon = course.icon}
+                    {@const colors = course.colorClasses}
+                    <div 
+                        class="spotlight-card group relative h-full bg-black border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-colors duration-500"
+                    >
+                        <div 
+                            class="absolute pointer-events-none -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                            style="
+                                background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+                            "
+                        ></div>
+
+                        <div class="relative z-10 p-8 md:p-10 flex flex-col h-full bg-black/40 backdrop-blur-sm">
+                            <div class="flex justify-between items-start mb-8">
+                                <div class={`p-3 rounded-2xl ${colors.bg} ${colors.border} border ${colors.text}`}>
+                                    <Icon size={32} stroke={1.5} />
                                 </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300">
+                                    {course.level}
+                                </span>
+                            </div>
+
+                            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{course.title}</h3>
+                            <p class="text-sm font-mono text-slate-500 mb-6">{course.targetAudience}</p>
+                            
+                            <div class="h-px w-full bg-white/5 mb-6"></div>
+                            
+                            <p class="text-slate-400 leading-relaxed mb-8 flex-grow">{course.description}</p>
+
+                            <div class="space-y-3 mb-8">
+                                {#each course.features as feature}
+                                    <div class="flex items-center gap-3 text-sm text-slate-300">
+                                        <IconCheck size={16} class={colors.icon} />
+                                        {feature}
+                                    </div>
+                                {/each}
+                            </div>
+
+                            <div class="flex items-center justify-between pt-6 border-t border-white/5">
+                                <div>
+                                    <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Investment</div>
+                                    <div class="text-xl font-bold text-white">{course.price}</div>
+                                </div>
+                                <a 
+                                    href={`/courses/${course.slug}`} 
+                                    class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black font-semibold text-sm hover:bg-slate-200 transition-colors"
+                                >
+                                    Start <IconArrowRight size={16} />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {/each}
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="py-32 relative z-10 bg-black">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">Protocol FAQ</h2>
+            
+            <div class="space-y-4">
+                {#each faqs as faq, i}
+                    <button 
+                        onclick={() => toggleFaq(i)}
+                        class="w-full text-left group bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 rounded-xl transition-all duration-300 overflow-hidden"
+                    >
+                        <div class="p-6 flex items-center justify-between">
+                            <span class="text-lg font-medium text-slate-200 group-hover:text-white transition-colors">{faq.question}</span>
+                            <IconChevronDown 
+                                size={20} 
+                                class={`text-slate-500 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-400' : ''}`}
+                            />
+                        </div>
+                        
+                        {#if openFaqIndex === i}
+                            <div 
+                                transition:slide={{ duration: 300, easing: cubicOut }}
+                                class="px-6 pb-6"
+                            >
+                                <p class="text-slate-400 leading-relaxed pt-2 border-t border-white/5">
+                                    {faq.answer}
+                                </p>
                             </div>
                         {/if}
-                    </div>
+                    </button>
                 {/each}
             </div>
         </div>
     </section>
 
-    <section class="final-cta">
-        <div class="cta-content group">
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+    <section class="relative py-40 overflow-hidden">
+        <div class="absolute inset-0 bg-blue-600/5 blur-[100px]"></div>
+        
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <IconRocket size={48} stroke={1} class="mx-auto text-blue-500 mb-8 animate-bounce" />
+            <h2 class="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8">
+                Market Opens In... Now.
+            </h2>
+            <p class="text-xl text-slate-400 mb-12 max-w-xl mx-auto">
+                Join 10,000+ disciplined traders building wealth through logic, not luck.
+            </p>
             
-            <h2 class="cta-title">Ready to Treat Trading Like a Business?</h2>
-            <p class="cta-text">Join the waitlist for our next intake or start a self-paced course today.</p>
-            <a href="#courses" class="cta-button primary large shadow-2xl shadow-blue-500/20 group/btn relative overflow-hidden">
-                <span class="relative z-10 flex items-center gap-2">
-                    Find Your Course
-                    <IconArrowRight size={24} class="group-hover/btn:translate-x-1 transition-transform duration-300" />
-                </span>
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+            <a href="#curriculum" class="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:shadow-[0_0_60px_rgba(37,99,235,0.5)]">
+                <IconSchool size={24} />
+                Enroll Now
             </a>
         </div>
     </section>
+
 </div>
 
 <style>
-    /* While we use Tailwind for structure, these complex visual effects 
-       ensure the "Apple/Netflix" quality regardless of the Tailwind config 
-    */
-
-    /* Base Styles */
-    :global(html) {
-        scroll-behavior: smooth;
-    }
-
-    .courses-page {
-        min-height: 100vh;
-        background: #050812; /* Deepest Navy/Black */
-        color: white;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        overflow-x: hidden;
-    }
-
-    /* Cinematic Hero */
-    .hero-section {
-        perspective: 1000px;
-    }
-
-    .perspective-grid {
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background-image: 
-            linear-gradient(rgba(46, 142, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(46, 142, 255, 0.1) 1px, transparent 1px);
-        background-size: 80px 80px;
-        opacity: 0.15;
-        mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
-    }
-
-    .hero-background {
-        background: radial-gradient(circle at 50% 0%, #111827 0%, #050812 100%);
-    }
-
-    .glow-orb {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(100px);
-        opacity: 0.4;
-        animation: pulse 6s ease-in-out infinite alternate;
-        will-change: transform, opacity;
-    }
-
-    .glow-orb-1 {
-        width: 800px;
-        height: 800px;
-        background: radial-gradient(circle, rgba(46, 142, 255, 0.4) 0%, transparent 70%);
-        top: -300px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .glow-orb-2 {
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(52, 211, 153, 0.3) 0%, transparent 70%);
-        bottom: -200px;
-        left: 10%;
-        animation-delay: -3s;
-    }
-
-    @keyframes pulse {
-        0% { transform: translateX(-50%) scale(1); opacity: 0.3; }
-        100% { transform: translateX(-50%) scale(1.1); opacity: 0.5; }
-    }
-
-    .hero-title {
-        font-size: clamp(2.5rem, 5vw, 5rem);
-        font-weight: 800;
-        line-height: 1.05;
-        letter-spacing: -0.03em;
-        text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .gradient-text {
-        background: linear-gradient(135deg, #60a5fa 0%, #34d399 50%, #fff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .hero-cta .cta-button {
-        padding: 1rem 2rem;
-        border-radius: 99px; /* Pill shape */
-        font-weight: 600;
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .cta-button.primary {
-        background: #2e8eff;
-        color: white;
-        box-shadow: 0 0 0 0 rgba(46, 142, 255, 0.7);
-    }
-
-    .cta-button.primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px -5px rgba(46, 142, 255, 0.5);
-    }
-
-    .cta-button.secondary {
-        background: rgba(255, 255, 255, 0.05);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-    }
+    /* Custom Tailwind-compatible utilities for specific animations */
     
-    .cta-button.secondary:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Reality Section */
-    .reality-section {
-        padding: 8rem 0;
-        background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5), transparent);
-    }
-
-    .section-title.small {
-        font-size: 1rem;
-        font-weight: 700;
-        text-align: center;
-        color: #94a3b8;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        margin-bottom: 3rem;
-    }
-
-    .reality-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
-
-    .reality-card {
-        padding: 3rem;
-        border-radius: 24px;
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(255,255,255,0.05);
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.1s linear; /* Smooth parallax */
-    }
-
-    .reality-card.negative { 
-        border-color: rgba(239, 68, 68, 0.2);
-        background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.05), transparent 70%);
-    }
-    .reality-card.positive { 
-        border-color: rgba(34, 197, 94, 0.2);
-        background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.05), transparent 70%);
-    }
-
-    .icon-wrap {
-        display: inline-flex;
-        padding: 1rem;
-        border-radius: 16px;
-        margin-bottom: 1.5rem;
-    }
-    .icon-wrap.error { color: #f87171; background: rgba(239, 68, 68, 0.1); }
-    .icon-wrap.success { color: #4ade80; background: rgba(34, 197, 94, 0.1); }
-
-    .reality-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: white; }
-    .reality-card p { font-size: 1.05rem; color: #cbd5e1; line-height: 1.7; }
-
-    /* Courses Section with Spotlight */
-    .courses-section {
-        padding: 6rem 0;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .section-title {
-        font-size: clamp(2.5rem, 4vw, 3.5rem);
-        font-weight: 800;
-        margin-bottom: 1rem;
-        letter-spacing: -0.02em;
-        text-align: center;
-    }
-    
-    .section-description {
-        text-align: center;
-        font-size: 1.125rem;
-        color: #94a3b8;
-        max-width: 600px;
-        margin: 0 auto 4rem;
-        line-height: 1.6;
-    }
-
-    .courses-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-        gap: 2.5rem;
-    }
-
-    .course-card {
-        transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        opacity: 0;
-        transform: translateY(40px);
-        background: transparent; /* Wrapper is transparent, inner has color */
-    }
-
-    .course-card.visible {
-        opacity: 1;
-        transform: translateY(0);
-        transition-delay: var(--delay);
-    }
-    
-    .course-card:hover {
-        transform: translateY(-5px);
-    }
-
-    /* SPOTLIGHT EFFECT */
-    .spotlight-glow {
-        position: absolute;
-        inset: -1px;
-        border-radius: 21px; /* Outer radius */
-        background: radial-gradient(
-            600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-            rgba(255, 255, 255, 0.15),
-            transparent 40%
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-        pointer-events: none;
-        z-index: 0;
-    }
-    
-    .course-card:hover .spotlight-glow {
-        opacity: 1;
-    }
-
-    .card-header {
-        padding: 2.5rem 2rem;
-    }
-
-    .card-badge {
-        padding: 0.4rem 1rem;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: white;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
-
-    .card-content {
-        padding: 2rem;
-    }
-
-    .card-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        line-height: 1.2;
-    }
-    
-    .card-audience {
-        font-size: 0.9rem;
-        color: #60a5fa; /* Blue-400 */
-        font-weight: 500;
-    }
-
-    .card-description {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #94a3b8;
-    }
-
-    .card-meta {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-        color: #cbd5e1;
-        font-weight: 500;
-    }
-
-    .features-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #64748b;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .card-features {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .card-features li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding: 0.6rem 0;
-        font-size: 0.95rem;
-        color: #e2e8f0;
-    }
-
-    .card-features li :global(svg) {
-        color: #34d399; /* Emerald */
-        flex-shrink: 0;
-        margin-top: 3px;
-    }
-
-    .card-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem 2rem;
-        background: rgba(0,0,0,0.2);
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .price-label {
-        display: block;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #64748b;
-        margin-bottom: 2px;
-    }
-
-    .price-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: white;
-    }
-
-    .card-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1.5rem;
-        background: white;
-        color: #0f172a;
-        text-decoration: none;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-    }
-
-    .card-button:hover {
-        background: #f1f5f9;
-        transform: translateY(-1px);
-    }
-
-    /* Benefits */
-    .why-choose-section {
-        padding: 8rem 2rem;
-    }
-
-    .why-choose-content { max-width: 1200px; margin: 0 auto; }
-
-    .benefit-card {
-        padding: 2.5rem;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-    }
-
-    .benefit-icon {
-        width: 64px;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 16px;
-        margin-bottom: 1.5rem;
-        color: #38bdf8;
-        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-    }
-
-    .benefit-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: white; }
-    .benefit-card p { font-size: 1rem; color: #94a3b8; line-height: 1.6; }
-
-    /* FAQ */
-    .faq-section { padding: 6rem 2rem; }
-    .faq-container { max-width: 800px; margin: 0 auto; }
-    
-    .faq-grid { display: flex; flex-direction: column; gap: 1rem; margin-top: 3rem; }
-
-    .faq-item {
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        background: rgba(255,255,255,0.02);
-        overflow: hidden;
-    }
-
-    .faq-item.active { 
-        border-color: #2e8eff; 
-        background: rgba(46, 142, 255, 0.03); 
-    }
-
-    .faq-question {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem 2rem;
-        color: white;
-        font-size: 1.1rem;
-        font-weight: 600;
-        text-align: left;
-    }
-    
-    .chevron.rotated { transform: rotate(180deg); color: #2e8eff; background: rgba(46,142,255,0.1); }
-
-    .answer-content {
-        padding: 0 2rem 2rem;
-        color: #cbd5e1;
-        line-height: 1.7;
-    }
-
-    /* Final CTA */
-    .final-cta { padding: 8rem 2rem; text-align: center; }
-    
-    .cta-content {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 5rem 2rem;
-        background: linear-gradient(180deg, rgba(46,142,255,0.08) 0%, rgba(5,8,18,0) 100%);
-        border: 1px solid rgba(46,142,255,0.15);
-        border-radius: 32px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .cta-title {
-        font-size: clamp(2rem, 4vw, 3rem);
-        font-weight: 800;
-        margin-bottom: 1.5rem;
-        line-height: 1.1;
-    }
-    
-    .cta-text { font-size: 1.25rem; color: #94a3b8; margin-bottom: 3rem; }
-
-    /* Stroke Text */
-    .stroke-text {
-        -webkit-text-stroke: 1px rgba(255,255,255,0.1);
-        color: transparent;
-    }
-
-    /* Ticker Animation */
     @keyframes marquee {
         0% { transform: translateX(0); }
         100% { transform: translateX(-50%); }
     }
     
-    .ticker-wrap { animation: marquee 30s linear infinite; }
-    .marquee-background .flex { animation: marquee 120s linear infinite; }
+    .animate-marquee {
+        animation: marquee 40s linear infinite;
+    }
 
-    /* Mobile Adjustments */
-    @media (max-width: 768px) {
-        .hero-stats { grid-template-columns: 1fr; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; }
-        .stat-item { border: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 1.5rem; }
-        .stat-item:last-child { border-bottom: none; }
-        .card-footer { flex-direction: column; gap: 1rem; align-items: stretch; text-align: center; }
-        .card-button { justify-content: center; }
-        .reality-grid { grid-template-columns: 1fr; }
+    /* Smooth Scroll Behavior Override */
+    :global(html) {
+        scroll-behavior: smooth;
+    }
+    
+    /* Font rendering fix for dark mode */
+    :global(body) {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: black;
     }
 </style>
