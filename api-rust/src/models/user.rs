@@ -35,20 +35,20 @@ pub struct User {
 }
 
 /// User role enum
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum UserRole {
+    #[default]
+    #[serde(alias = "user")]
     User,
+    #[serde(alias = "member")]
     Member,
+    #[serde(alias = "admin")]
     Admin,
+    #[serde(alias = "super_admin", alias = "superadmin")]
     SuperAdmin,
 }
 
-impl Default for UserRole {
-    fn default() -> Self {
-        Self::User
-    }
-}
 
 impl UserRole {
     pub fn is_admin(&self) -> bool {
