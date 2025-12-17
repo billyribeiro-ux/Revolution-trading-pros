@@ -223,7 +223,7 @@
 	}: Props = $props();
 
 	// Site Configuration
-	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
+	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 	const siteName = import.meta.env.VITE_SITE_NAME || 'Revolution Trading Pros';
 	const siteDescription =
 		import.meta.env.VITE_SITE_DESCRIPTION ||

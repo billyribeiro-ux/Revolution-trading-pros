@@ -74,7 +74,7 @@
         name: 'Live SPX Day Trading Room',
         description:
             'Professional day trading community specializing in SPX 0DTE options. Features live voice commentary, 1080p screen sharing, and real-time trade alerts.',
-        image: 'https://revolutiontradingpros.com/images/og-live-room.jpg',
+        image: 'https://revolution-trading-pros.pages.dev/images/og-live-room.jpg',
         brand: {
             '@type': 'Organization',
             name: 'Revolution Trading Pros'

@@ -323,7 +323,7 @@
     const schema = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
-        '@id': 'https://revolutiontradingpros.com/courses/#courselist',
+        '@id': 'https://revolution-trading-pros.pages.dev/courses/#courselist',
         name: 'Professional Trading Education Catalog',
         numberOfItems: courses.length,
         itemListElement: courses.map((course, index) => ({
@@ -333,7 +333,11 @@
                 '@type': 'Course',
                 name: course.title,
                 description: course.description,
-                provider: { '@type': 'Organization', name: 'Revolution Trading Pros' },
+                provider: {
+                    '@type': 'Organization',
+                    name: 'Revolution Trading Pros',
+                    sameAs: 'https://revolution-trading-pros.pages.dev'
+                },
                 educationalLevel: course.level,
                 offers: { '@type': 'Offer', price: course.price.replace('$', ''), priceCurrency: 'USD' }
             }

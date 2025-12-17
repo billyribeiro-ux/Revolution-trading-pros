@@ -15,7 +15,8 @@
 
 import type { RequestHandler } from './$types';
 
-const SITE_URL = 'https://revolutiontradingpros.com';
+// Use environment variable - configure VITE_SITE_URL for your domain
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 const PUBLICATION_NAME = 'Revolution Trading Pros';
 const PUBLICATION_LANGUAGE = 'en';
 

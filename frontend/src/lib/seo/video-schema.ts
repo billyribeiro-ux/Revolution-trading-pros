@@ -253,8 +253,8 @@ const DEFAULT_OPTIONS: VideoSchemaOptions = {
 	includePublisher: true,
 	defaultPublisher: {
 		name: 'Revolution Trading Pros',
-		logo: 'https://revolutiontradingpros.com/logo.png',
-		url: 'https://revolutiontradingpros.com'
+		logo: 'https://revolution-trading-pros.pages.dev/logo.png',
+		url: 'https://revolution-trading-pros.pages.dev'
 	}
 };
 

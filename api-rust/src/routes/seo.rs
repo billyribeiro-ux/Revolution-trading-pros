@@ -109,7 +109,7 @@ pub async fn robots(_req: Request, ctx: RouteContext<AppState>) -> worker::Resul
     let site_url = &ctx.data.config.site_url;
     
     let robots = format!(r#"# Revolution Trading Pros
-# https://revolutiontradingpros.com
+# https://revolution-trading-pros.pages.dev
 
 User-agent: *
 Allow: /

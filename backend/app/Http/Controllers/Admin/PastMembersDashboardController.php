@@ -868,7 +868,7 @@ final class PastMembersDashboardController extends Controller
                 <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin: 0;">Use code: <strong style="font-size: 18px;">{$code}</strong></p>
             </div>
             <div style="text-align: center; margin: 32px 0;">
-                <a href="https://revolutiontradingpros.com/reactivate?code={$code}" style="display: inline-block; background: linear-gradient(135deg, #0984ae, #076787); color: white; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 17px; box-shadow: 0 4px 14px rgba(9, 132, 174, 0.4);">Claim Your Free Month</a>
+                <a href="https://revolution-trading-pros.pages.dev/reactivate?code={$code}" style="display: inline-block; background: linear-gradient(135deg, #0984ae, #076787); color: white; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 17px; box-shadow: 0 4px 14px rgba(9, 132, 174, 0.4);">Claim Your Free Month</a>
             </div>
             <p style="color: #86868b; font-size: 14px; text-align: center; margin: 0;">No strings attached. Your satisfaction is our priority.</p>
         </div>
@@ -890,7 +890,7 @@ final class PastMembersDashboardController extends Controller
                 <p style="color: #424245; font-size: 15px; margin: 0;">Your next month with code: <strong>{$code}</strong></p>
             </div>
             <div style="text-align: center; margin: 32px 0;">
-                <a href="https://revolutiontradingpros.com/reactivate?code={$code}" style="display: inline-block; background: #1d1d1f; color: white; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 17px;">Reactivate Now</a>
+                <a href="https://revolution-trading-pros.pages.dev/reactivate?code={$code}" style="display: inline-block; background: #1d1d1f; color: white; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 17px;">Reactivate Now</a>
             </div>
         </div>
         HTML;
@@ -913,7 +913,7 @@ final class PastMembersDashboardController extends Controller
             </ul>
             <p style="color: #424245; font-size: 17px; line-height: 1.6;">Come back and see what you've been missing!</p>
             <div style="text-align: center; margin: 32px 0;">
-                <a href="https://revolutiontradingpros.com/dashboard" style="display: inline-block; background: linear-gradient(135deg, #0984ae, #076787); color: white; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 17px; box-shadow: 0 4px 14px rgba(9, 132, 174, 0.4);">Explore What's New</a>
+                <a href="https://revolution-trading-pros.pages.dev/dashboard" style="display: inline-block; background: linear-gradient(135deg, #0984ae, #076787); color: white; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 17px; box-shadow: 0 4px 14px rgba(9, 132, 174, 0.4);">Explore What's New</a>
             </div>
         </div>
         HTML;

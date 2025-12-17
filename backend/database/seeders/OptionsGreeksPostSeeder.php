@@ -44,7 +44,7 @@ class OptionsGreeksPostSeeder extends Seeder
             'indexable' => true,
             
             // Images
-            'featured_image' => 'https://revolutiontradingpros.com/wp-content/uploads/2025/08/ChatGPT-Image-Aug-28-2025-04_19_20-AM-1024x683.png',
+            'featured_image' => 'https://revolution-trading-pros.pages.dev/wp-content/uploads/2025/08/ChatGPT-Image-Aug-28-2025-04_19_20-AM-1024x683.png',
             'twitter_card' => 'summary_large_image',
             
             // SEO
@@ -82,10 +82,10 @@ class OptionsGreeksPostSeeder extends Seeder
     <span style="color: #333333;">The Ultimate Guide to Options Greeks</span>
 </h1>
 
-<img class="wp-image-44962 aligncenter" src="https://revolutiontradingpros.com/wp-content/uploads/2025/08/ChatGPT-Image-Aug-28-2025-04_19_20-AM-1024x683.png" alt="The Ultimate Guide to Greeks Graph" width="1388" height="926" style="max-width: 100%; height: auto; display: block; margin: 20px auto;" />
+<img class="wp-image-44962 aligncenter" src="https://revolution-trading-pros.pages.dev/wp-content/uploads/2025/08/ChatGPT-Image-Aug-28-2025-04_19_20-AM-1024x683.png" alt="The Ultimate Guide to Greeks Graph" width="1388" height="926" style="max-width: 100%; height: auto; display: block; margin: 20px auto;" />
 
 <div style="display: flex; align-items: center; margin-top: 25px; margin-bottom: 25px;">
-    <img style="width: 80px; height: 80px; border-radius: 50%; margin-right: 15px;" src="https://revolutiontradingpros.com/wp-content/uploads/2025/05/Billy-no-grey-768x768.png.webp" alt="Photo of Billy Ribeiro" />
+    <img style="width: 80px; height: 80px; border-radius: 50%; margin-right: 15px;" src="https://revolution-trading-pros.pages.dev/wp-content/uploads/2025/05/Billy-no-grey-768x768.png.webp" alt="Photo of Billy Ribeiro" />
     <span style="font-style: italic; color: #333333;"><strong>By Billy Ribeiro | Globally Recognized Trader & Market Strategist</strong></span>
 </div>
 

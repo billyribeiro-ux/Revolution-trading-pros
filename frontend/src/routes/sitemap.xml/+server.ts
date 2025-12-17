@@ -17,7 +17,8 @@
 import type { RequestHandler } from './$types';
 
 // Site configuration
-const SITE_URL = 'https://revolutiontradingpros.com';
+// Use environment variable - configure VITE_SITE_URL for your domain
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 const CURRENT_DATE = new Date().toISOString().split('T')[0];
 
 // Calculate dates for different content freshness levels
