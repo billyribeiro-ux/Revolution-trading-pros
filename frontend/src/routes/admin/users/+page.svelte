@@ -124,7 +124,7 @@
 									</div>
 								</div>
 							</td>
-							<td class="email">{user.email}</td>
+							<td class="email">{user.email || ''}</td>
 							<td>
 								<div class="roles">
 									{#if user.roles && user.roles.length > 0}

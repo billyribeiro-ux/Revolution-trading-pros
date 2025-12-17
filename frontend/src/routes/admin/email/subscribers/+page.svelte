@@ -401,13 +401,13 @@
 							<td>
 								<div class="subscriber-info">
 									<div class="subscriber-avatar">
-										{(subscriber.first_name?.[0] || subscriber.email[0]).toUpperCase()}
+										{(subscriber.first_name?.[0] || subscriber.email?.[0] || '?').toUpperCase()}
 									</div>
 									<div>
 										<div class="subscriber-name">
 											{subscriber.first_name || ''} {subscriber.last_name || ''}
 										</div>
-										<div class="subscriber-email">{subscriber.email}</div>
+										<div class="subscriber-email">{subscriber.email || ''}</div>
 									</div>
 								</div>
 							</td>

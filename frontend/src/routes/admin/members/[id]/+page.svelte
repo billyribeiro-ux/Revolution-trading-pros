@@ -360,7 +360,7 @@
 								{member.status_label}
 							</span>
 						</div>
-						<p class="member-email">{member.email}</p>
+						<p class="member-email">{member.email || ''}</p>
 						<div class="member-tags">
 							{#each tags as tag}
 								<span class="tag">
@@ -513,7 +513,7 @@
 							<div class="detail-row">
 								<span class="detail-label">Email</span>
 								<span class="detail-value">
-									{member.email}
+									{member.email || ''}
 									{#if member.email_verified}
 										<IconCheck size={14} class="verified-icon" />
 									{/if}
