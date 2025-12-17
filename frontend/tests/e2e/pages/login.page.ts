@@ -38,9 +38,9 @@ export class LoginPage extends BasePage {
 		this.passwordInput = page.getByPlaceholder(/••••••••/i).or(
 			page.locator('input[type="password"], input[name="password"], input[id="password"], [data-testid="password-input"]').first()
 		);
-		this.submitButton = page.getByRole('button', { name: /sign in/i }).or(
-			page.locator('button[type="submit"], button:has-text("Log In"), button:has-text("Login")').first()
-		);
+		this.submitButton = page.locator('button[type="submit"].submit-btn').or(
+			page.getByRole('button', { name: /sign in to trade/i })
+		).first();
 		this.rememberMeCheckbox = page.locator(
 			'input[type="checkbox"][name="remember"], [data-testid="remember-me"]'
 		);

@@ -284,8 +284,8 @@
 	});
 
 	const userInitial = $derived(
-		$user?.name?.charAt(0).toUpperCase() || 
-		$user?.email?.charAt(0).toUpperCase() || 
+		$user?.name?.[0]?.toUpperCase() || 
+		$user?.email?.[0]?.toUpperCase() || 
 		'U'
 	);
 

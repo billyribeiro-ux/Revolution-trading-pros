@@ -292,7 +292,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 	const primaryEmail = location.contacts.find(
 		(c) => c.type === 'email' && c.isPrimary
 	);
-	if (primaryEmail) {
+	if (primaryEmail?.value) {
 		schema.email = primaryEmail.value;
 	}
 

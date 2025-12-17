@@ -911,7 +911,7 @@ class BannedEmailManagementService {
 		const emails = get(this.bannedEmails);
 
 		// Analyze patterns in banned emails
-		const patterns = this.patternEngine?.analyzePatterns(emails.map((e) => e.email));
+		const patterns = this.patternEngine?.analyzePatterns(emails.map((e) => e?.email || ''));
 
 		if (patterns && patterns.length > 0) {
 			// Send patterns to server for ML training
@@ -1096,13 +1096,13 @@ class BannedEmailManagementService {
 				const enhanced: EnhancedBannedEmail = { ...email };
 
 				// Calculate risk score
-				enhanced.risk_score = await this.calculateRiskScore(email.email);
+				enhanced.risk_score = await this.calculateRiskScore(email?.email || '');
 
 				// Detect patterns
-				enhanced.patterns = await this.detectPatterns(email.email);
+				enhanced.patterns = await this.detectPatterns(email?.email || '');
 
 				// Get domain info
-				enhanced.domain_info = await this.checkDomain(email.email);
+				enhanced.domain_info = await this.checkDomain(email?.email || '');
 
 				return enhanced;
 			})

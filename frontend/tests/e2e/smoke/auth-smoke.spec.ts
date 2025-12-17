@@ -30,7 +30,8 @@ test.describe('Auth Smoke Test', () => {
 		});
 
 		await page.goto('/login');
-		await page.waitForLoadState('networkidle');
+		await page.waitForLoadState('domcontentloaded');
+		await page.waitForTimeout(2000); // Allow time for hydration
 
 		// Verify page loaded
 		await expect(page).toHaveURL(/login/);
@@ -116,7 +117,8 @@ test.describe('Auth Smoke Test', () => {
 
 		// Navigate to login
 		await page.goto('/login');
-		await page.waitForLoadState('networkidle');
+		await page.waitForLoadState('domcontentloaded');
+		await page.waitForTimeout(2000); // Allow hydration
 
 		// Fill form and attempt login (will fail without valid creds, but shouldn't crash)
 		const loginPage = new LoginPage(page);
@@ -125,6 +127,11 @@ test.describe('Auth Smoke Test', () => {
 
 		// Wait for any async operations
 		await page.waitForTimeout(3000);
+
+		// Log errors for debugging
+		if (undefinedEmailErrors.length > 0) {
+			console.error('Undefined email errors found:', undefinedEmailErrors);
+		}
 
 		// Check for the specific undefined email error
 		expect(undefinedEmailErrors.length).toBe(0);
