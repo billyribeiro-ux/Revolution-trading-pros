@@ -68,12 +68,15 @@ impl Database {
     ) -> Result<Vec<T>, ApiError> {
         let response = self.execute_query(sql, params).await?;
         
+        worker::console_log!("[DB] Query returned {} rows", response.rows.len());
+        
         let mut results = Vec::new();
         for (i, row) in response.rows.into_iter().enumerate() {
+            worker::console_log!("[DB] Row {}: {}", i, row);
             match serde_json::from_value::<T>(row.clone()) {
                 Ok(item) => results.push(item),
                 Err(e) => {
-                    worker::console_log!("Row {} deserialize error: {} - Row data: {}", i, e, row);
+                    worker::console_error!("[DB] Row {} deserialize error: {} - Row data: {}", i, e, row);
                     return Err(ApiError::Database(format!("Failed to deserialize row {}: {}", i, e)));
                 }
             }
