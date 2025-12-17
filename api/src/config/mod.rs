@@ -77,7 +77,7 @@ impl Config {
                 .collect(),
 
             postmark_token: std::env::var("POSTMARK_TOKEN").ok(),
-            from_email: std::env::var("FROM_EMAIL").unwrap_or_else(|_| "noreply@revolutiontradingpros.com".to_string()),
+            from_email: std::env::var("FROM_EMAIL").unwrap_or_else(|_| "noreply@example.com".to_string()),
 
             meilisearch_host: std::env::var("MEILISEARCH_HOST")
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),
