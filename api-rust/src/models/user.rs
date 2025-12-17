@@ -49,7 +49,7 @@ where
         "user" => Ok(UserRole::User),
         "member" => Ok(UserRole::Member),
         "admin" => Ok(UserRole::Admin),
-        "super_admin" | "superadmin" => Ok(UserRole::SuperAdmin),
+        "super_admin" | "superadmin" | "super-admin" => Ok(UserRole::SuperAdmin),
         _ => Err(D::Error::custom(format!("Unknown role: {}", s))),
     }
 }
