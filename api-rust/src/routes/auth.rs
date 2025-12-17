@@ -89,11 +89,27 @@ pub async fn login(mut req: Request, ctx: RouteContext<AppState>) -> worker::Res
         .map_err(|e| ApiError::BadRequest(format!("Invalid request body: {}", e)))?;
 
     // Find user by email
-    let user = ctx.data.db.query_one::<crate::models::User>(
+    worker::console_log!("[LOGIN] Attempting login for: {}", body.email);
+    
+    let user_result = ctx.data.db.query_one::<crate::models::User>(
         "SELECT * FROM users WHERE email = $1",
         vec![serde_json::json!(body.email.to_lowercase())]
-    ).await?
-    .ok_or_else(|| ApiError::Unauthorized("Invalid credentials".to_string()))?;
+    ).await;
+    
+    let user = match user_result {
+        Ok(Some(u)) => {
+            worker::console_log!("[LOGIN] User found: {}", u.email);
+            u
+        },
+        Ok(None) => {
+            worker::console_log!("[LOGIN] User not found");
+            return Err(ApiError::Unauthorized("Invalid credentials".to_string()).into());
+        },
+        Err(e) => {
+            worker::console_error!("[LOGIN] Database error: {:?}", e);
+            return Err(ApiError::Database(format!("Query failed: {}", e)).into());
+        }
+    };
 
     // Check if banned
     if user.banned_at.is_some() {
