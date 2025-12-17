@@ -44,7 +44,7 @@ fn log_request(req: &Request) {
     );
 }
 
-/// CORS allowed origins
+/// CORS allowed origins (exact matches)
 const CORS_ORIGINS: &[&str] = &[
     "https://revolutiontradingpros.com",
     "https://www.revolutiontradingpros.com",
@@ -56,7 +56,15 @@ const CORS_ORIGINS: &[&str] = &[
 
 /// Check if origin is allowed
 fn is_origin_allowed(origin: &str) -> bool {
-    CORS_ORIGINS.iter().any(|&o| o == origin)
+    // Exact match
+    if CORS_ORIGINS.iter().any(|&o| o == origin) {
+        return true;
+    }
+    // Allow all Cloudflare Pages preview deployments
+    if origin.ends_with(".revolution-trading-pros.pages.dev") {
+        return true;
+    }
+    false
 }
 
 /// Create CORS preflight response
@@ -67,7 +75,7 @@ fn cors_preflight(origin: Option<&str>) -> Result<Response> {
         .unwrap_or("https://revolutiontradingpros.com");
     headers.set("Access-Control-Allow-Origin", allowed_origin)?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")?;
-    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, Accept")?;
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, X-Session-Fingerprint, X-Client-Version, X-Client-Platform, X-API-Version, X-CSRF-Token, Accept")?;
     headers.set("Access-Control-Allow-Credentials", "true")?;
     headers.set("Access-Control-Max-Age", "86400")?;
     Ok(Response::empty()?.with_headers(headers).with_status(204))
@@ -369,7 +377,7 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 .unwrap_or("https://revolutiontradingpros.com");
             let _ = headers.set("Access-Control-Allow-Origin", allowed_origin);
             let _ = headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, Accept");
+            let _ = headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Session-ID, X-Session-Fingerprint, X-Client-Version, X-Client-Platform, X-API-Version, X-CSRF-Token, Accept");
             let _ = headers.set("Access-Control-Allow-Credentials", "true");
             let _ = headers.set("Access-Control-Expose-Headers", "X-Session-ID, Set-Cookie");
             response.with_headers(headers)
