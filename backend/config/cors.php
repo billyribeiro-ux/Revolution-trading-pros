@@ -11,9 +11,14 @@
 $allowedOrigins = env('CORS_ALLOWED_ORIGINS')
     ? array_map('trim', explode(',', env('CORS_ALLOWED_ORIGINS')))
     : [
-        env('FRONTEND_URL', 'http://localhost:5173'),
+        env('FRONTEND_URL', 'https://revolution-trading-pros.pages.dev'),
+        'https://revolution-trading-pros.pages.dev',
+        'https://revolutiontradingpros.com',
+        'https://www.revolutiontradingpros.com',
         'http://localhost:5173',
-        'http://localhost:5174'
+        'http://localhost:5174',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174'
     ];
 
 return [
