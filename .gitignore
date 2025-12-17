@@ -12,6 +12,8 @@ frontend/dist/
 .env.local
 .env.*.local
 backend/.env
+frontend/.env.e2e
+!frontend/.env.production
 
 # Logs
 *.log
