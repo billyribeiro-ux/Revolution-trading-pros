@@ -233,7 +233,7 @@
 	const userInitial = $derived(
 		(() => {
 			if (!currentUser?.name) return 'A';
-			return currentUser.name.charAt(0).toUpperCase();
+			return currentUser.name[0]?.toUpperCase() || 'A';
 		})()
 	);
 
