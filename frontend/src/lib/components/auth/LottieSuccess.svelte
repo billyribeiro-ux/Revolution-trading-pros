@@ -233,6 +233,19 @@
 	onMount(() => {
 		if (!browser || !containerRef) return;
 
+		let hasCompleted = false;
+		let fallbackTimeout: ReturnType<typeof setTimeout>;
+
+		// ICT11+ Pattern: Always set a fallback timeout to ensure redirect happens
+		// Animation is 60 frames @ 60fps = 1000ms, add 500ms buffer
+		fallbackTimeout = setTimeout(() => {
+			if (!hasCompleted) {
+				console.log('[LottieSuccess] Fallback timeout triggered');
+				hasCompleted = true;
+				onComplete?.();
+			}
+		}, 1500);
+
 		// Use IIFE for async lottie import - Svelte 5 pattern
 		(async () => {
 			try {
@@ -243,9 +256,7 @@
 				
 				if (!lottie?.loadAnimation) {
 					console.error('[LottieSuccess] lottie.loadAnimation not available');
-					// ICT11+ Pattern: Fallback timeout must match animation duration (60fps @ 60 frames = 1000ms)
-					setTimeout(() => onComplete?.(), 1000);
-					return;
+					return; // Fallback timeout will handle redirect
 				}
 
 				animationInstance = lottie.loadAnimation({
@@ -257,16 +268,20 @@
 				});
 
 				animationInstance.addEventListener('complete', () => {
-					onComplete?.();
+					if (!hasCompleted) {
+						hasCompleted = true;
+						clearTimeout(fallbackTimeout);
+						onComplete?.();
+					}
 				});
 			} catch (err) {
 				console.error('[LottieSuccess] Failed to load lottie:', err);
-				// ICT11+ Pattern: Fallback timeout must match animation duration (60fps @ 60 frames = 1000ms)
-				setTimeout(() => onComplete?.(), 1000);
+				// Fallback timeout will handle redirect
 			}
 		})();
 
 		return () => {
+			clearTimeout(fallbackTimeout);
 			if (animationInstance) {
 				animationInstance.destroy();
 			}
