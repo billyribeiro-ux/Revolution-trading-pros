@@ -499,7 +499,17 @@ function createAuthStore() {
 export const authStore = createAuthStore();
 
 // Derived stores for convenience
-export const user = derived(authStore, ($auth) => $auth.user);
+// DEFENSIVE: Ensure user object has required properties when accessed via derived store
+export const user = derived(authStore, ($auth) => {
+	if (!$auth.user) return null;
+	return {
+		...$auth.user,
+		email: $auth.user.email ?? '',
+		name: $auth.user.name ?? '',
+		roles: $auth.user.roles ?? [],
+		permissions: $auth.user.permissions ?? []
+	};
+});
 export const isAuthenticated = derived(authStore, ($auth) => $auth.isAuthenticated);
 export const isLoading = derived(authStore, ($auth) => $auth.isLoading);
 export const isInitializing = derived(authStore, ($auth) => $auth.isInitializing);
@@ -508,10 +518,21 @@ export const sessionInvalidated = derived(authStore, ($auth) => $auth.sessionInv
 export const invalidationReason = derived(authStore, ($auth) => $auth.invalidationReason);
 
 // Role-based derived stores
-export const isSuperAdmin = derived(authStore, ($auth) => isSuperadmin($auth.user));
-export const isAdminUser = derived(authStore, ($auth) => checkIsAdmin($auth.user));
-export const userRole = derived(authStore, ($auth) => getHighestRole($auth.user));
-export const userPermissions = derived(authStore, ($auth) => getUserPermissions($auth.user));
+// DEFENSIVE: Ensure user object has email property before passing to role functions
+const getSafeUser = (user: User | null) => {
+	if (!user) return null;
+	return {
+		...user,
+		email: user.email ?? '',
+		roles: user.roles ?? [],
+		permissions: user.permissions ?? []
+	};
+};
+
+export const isSuperAdmin = derived(authStore, ($auth) => isSuperadmin(getSafeUser($auth.user)));
+export const isAdminUser = derived(authStore, ($auth) => checkIsAdmin(getSafeUser($auth.user)));
+export const userRole = derived(authStore, ($auth) => getHighestRole(getSafeUser($auth.user)));
+export const userPermissions = derived(authStore, ($auth) => getUserPermissions(getSafeUser($auth.user)));
 
 /**
  * Create a derived store that checks for a specific permission
