@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 
 // ICT11+ PRODUCTION FIX: Hardcode API URL for server-side fetch
 // Cloudflare Pages secrets not available via import.meta.env on server
-const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.billy-ribeiro.workers.dev';
+const PRODUCTION_API_URL = 'https://revolution-trading-pros.fly.dev';
 
 /**
  * ICT11+ Performance: Simple server load without streaming

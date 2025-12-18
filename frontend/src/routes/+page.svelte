@@ -19,7 +19,7 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
 
-	const API_URL = 'https://revolution-trading-pros-api.billy-ribeiro.workers.dev';
+	const API_URL = 'https://revolution-trading-pros.fly.dev';
 
 	let { data }: { data: PageData } = $props();
 
