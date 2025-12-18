@@ -15,8 +15,15 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_stripe_customer_id ON users(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+-- Add stripe_customer_id column if it doesn't exist
+DO $$ BEGIN
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'user';
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+CREATE INDEX IF NOT EXISTS idx_users_stripe_customer_id ON users(stripe_customer_id);
 
 -- Courses table
 CREATE TABLE IF NOT EXISTS courses (
@@ -32,9 +39,9 @@ CREATE TABLE IF NOT EXISTS courses (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_courses_slug ON courses(slug);
-CREATE INDEX idx_courses_instructor ON courses(instructor_id);
-CREATE INDEX idx_courses_published ON courses(is_published);
+CREATE INDEX IF NOT EXISTS idx_courses_slug ON courses(slug);
+CREATE INDEX IF NOT EXISTS idx_courses_instructor ON courses(instructor_id);
+CREATE INDEX IF NOT EXISTS idx_courses_published ON courses(is_published);
 
 -- Lessons table
 CREATE TABLE IF NOT EXISTS lessons (
@@ -52,7 +59,7 @@ CREATE TABLE IF NOT EXISTS lessons (
     UNIQUE(course_id, slug)
 );
 
-CREATE INDEX idx_lessons_course ON lessons(course_id);
+CREATE INDEX IF NOT EXISTS idx_lessons_course ON lessons(course_id);
 
 -- Memberships table
 CREATE TABLE IF NOT EXISTS memberships (
@@ -67,8 +74,8 @@ CREATE TABLE IF NOT EXISTS memberships (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_memberships_user ON memberships(user_id);
-CREATE INDEX idx_memberships_stripe ON memberships(stripe_subscription_id);
+CREATE INDEX IF NOT EXISTS idx_memberships_user ON memberships(user_id);
+CREATE INDEX IF NOT EXISTS idx_memberships_stripe ON memberships(stripe_subscription_id);
 
 -- Course enrollments
 CREATE TABLE IF NOT EXISTS course_enrollments (
@@ -81,8 +88,8 @@ CREATE TABLE IF NOT EXISTS course_enrollments (
     UNIQUE(user_id, course_id)
 );
 
-CREATE INDEX idx_enrollments_user ON course_enrollments(user_id);
-CREATE INDEX idx_enrollments_course ON course_enrollments(course_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_user ON course_enrollments(user_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_course ON course_enrollments(course_id);
 
 -- Jobs table (PostgreSQL queue)
 CREATE TABLE IF NOT EXISTS jobs (
@@ -100,10 +107,10 @@ CREATE TABLE IF NOT EXISTS jobs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_jobs_status ON jobs(status);
-CREATE INDEX idx_jobs_queue ON jobs(queue);
-CREATE INDEX idx_jobs_run_at ON jobs(run_at);
-CREATE INDEX idx_jobs_pending ON jobs(status, run_at) WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
+CREATE INDEX IF NOT EXISTS idx_jobs_queue ON jobs(queue);
+CREATE INDEX IF NOT EXISTS idx_jobs_run_at ON jobs(run_at);
+CREATE INDEX IF NOT EXISTS idx_jobs_pending ON jobs(status, run_at) WHERE status = 'pending';
 
 -- Blog posts
 CREATE TABLE IF NOT EXISTS posts (
@@ -120,9 +127,9 @@ CREATE TABLE IF NOT EXISTS posts (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_posts_slug ON posts(slug);
-CREATE INDEX idx_posts_author ON posts(author_id);
-CREATE INDEX idx_posts_published ON posts(is_published, published_at);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id);
+CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(is_published, published_at);
 
 -- Password reset tokens
 CREATE TABLE IF NOT EXISTS password_resets (
@@ -133,5 +140,5 @@ CREATE TABLE IF NOT EXISTS password_resets (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_password_resets_email ON password_resets(email);
-CREATE INDEX idx_password_resets_token ON password_resets(token);
+CREATE INDEX IF NOT EXISTS idx_password_resets_email ON password_resets(email);
+CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets(token);

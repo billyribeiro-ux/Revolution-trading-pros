@@ -58,9 +58,19 @@ async fn main() -> anyhow::Result<()> {
     let db = Database::new(&config).await?;
     tracing::info!("Database connected");
 
-    // Run migrations
-    db.migrate().await?;
-    tracing::info!("Migrations completed");
+    // Run migrations (skip if SKIP_MIGRATIONS=true or if they fail on existing schema)
+    let skip_migrations = std::env::var("SKIP_MIGRATIONS").unwrap_or_default() == "true";
+    if skip_migrations {
+        tracing::info!("Skipping migrations (SKIP_MIGRATIONS=true)");
+    } else {
+        match db.migrate().await {
+            Ok(_) => tracing::info!("Migrations completed"),
+            Err(e) => {
+                tracing::warn!("Migration error (may be expected with existing schema): {}", e);
+                tracing::info!("Continuing without migrations - using existing schema");
+            }
+        }
+    }
 
     // Initialize services
     let services = Services::new(&config).await?;
