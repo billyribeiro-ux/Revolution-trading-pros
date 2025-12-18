@@ -32,115 +32,138 @@ export const API_VERSION = 'v1';
 
 /**
  * API endpoints with type-safe builders
+ * Updated for Rust API - December 2025
  */
 export const API_ENDPOINTS = {
-	// Authentication - Routes match backend api.php (no /auth prefix)
+	// Authentication - Rust API routes
 	auth: {
-		login: '/api/login',
-		register: '/api/register',
-		logout: '/api/logout',
+		login: '/api/auth/login',
+		register: '/api/auth/register',
+		logout: '/api/auth/logout',
 		refresh: '/api/auth/refresh',
-		me: '/api/me',
-		forgotPassword: '/api/forgot-password',
-		resetPassword: '/api/reset-password'
+		me: '/api/auth/me',
+		forgotPassword: '/api/auth/forgot-password',
+		resetPassword: '/api/auth/reset-password'
 	},
 
-	// Posts
+	// Posts/Blog - Rust API
 	posts: {
 		list: '/api/posts',
 		single: (slug: string) => `/api/posts/${slug}`,
 		create: '/api/posts',
 		update: (id: number) => `/api/posts/${id}`,
-		delete: (id: number) => `/api/posts/${id}`,
-		like: (id: number) => `/api/posts/${id}/like`,
-		unlike: (id: number) => `/api/posts/${id}/unlike`
+		delete: (id: number) => `/api/posts/${id}`
 	},
 
-	// Products/Indicators
+	// Products - Rust API
 	products: {
 		list: '/api/products',
 		single: (slug: string) => `/api/products/${slug}`,
-		categories: '/api/products/categories'
+		my: '/api/products/my',
+		create: '/api/products',
+		update: (slug: string) => `/api/products/${slug}`,
+		delete: (slug: string) => `/api/products/${slug}`
 	},
 
+	// Indicators - Rust API
 	indicators: {
 		list: '/api/indicators',
 		single: (slug: string) => `/api/indicators/${slug}`,
-		download: (slug: string, downloadId: string) =>
-			`/api/indicators/${slug}/download/${downloadId}`,
-		purchased: '/api/indicators/purchased'
+		my: '/api/indicators/my',
+		download: (id: number) => `/api/indicators/${id}/download`,
+		create: '/api/indicators'
 	},
 
-	// Memberships
-	memberships: {
-		plans: '/api/memberships/plans',
-		current: '/api/memberships/current',
-		subscribe: '/api/memberships/subscribe',
-		cancel: '/api/memberships/cancel',
-		update: '/api/memberships/update'
+	// Courses - Rust API
+	courses: {
+		list: '/api/courses',
+		single: (slug: string) => `/api/courses/${slug}`,
+		lessons: (id: string) => `/api/courses/${id}/lessons`,
+		create: '/api/courses'
 	},
 
-	// User
+	// Subscriptions/Memberships - Rust API
+	subscriptions: {
+		plans: '/api/subscriptions/plans',
+		planBySlug: (slug: string) => `/api/subscriptions/plans/${slug}`,
+		my: '/api/subscriptions/my',
+		active: '/api/subscriptions/my/active',
+		create: '/api/subscriptions',
+		cancel: (id: number) => `/api/subscriptions/${id}/cancel`,
+		metrics: '/api/subscriptions/metrics'
+	},
+
+	// User - Rust API
 	user: {
-		profile: '/api/user/profile',
-		update: '/api/user/profile',
-		memberships: '/api/user/memberships',
-		products: '/api/user/products',
-		notifications: '/api/user/notifications',
-		preferences: '/api/user/preferences'
+		profile: '/api/users/me',
+		update: '/api/users/me',
+		products: '/api/products/my',
+		indicators: '/api/indicators/my',
+		subscriptions: '/api/subscriptions/my'
 	},
 
-	// Newsletter
+	// Newsletter - Rust API
 	newsletter: {
 		subscribe: '/api/newsletter/subscribe',
-		unsubscribe: '/api/newsletter/unsubscribe'
+		confirm: '/api/newsletter/confirm',
+		unsubscribe: '/api/newsletter/unsubscribe',
+		subscribers: '/api/newsletter/subscribers',
+		stats: '/api/newsletter/stats'
 	},
 
-	// Cart/Checkout
-	cart: {
-		checkout: '/api/cart/checkout',
-		add: '/api/cart/add',
-		remove: '/api/cart/remove',
-		clear: '/api/cart/clear'
+	// Checkout - Rust API
+	checkout: {
+		create: '/api/checkout',
+		calculateTax: '/api/checkout/calculate-tax',
+		orders: '/api/checkout/orders',
+		order: (orderNumber: string) => `/api/checkout/orders/${orderNumber}`
 	},
 
-	// Trading Room
-	tradingRoom: {
-		sessions: '/api/trading-room/sessions',
-		join: (id: string) => `/api/trading-room/sessions/${id}/join`,
-		leave: (id: string) => `/api/trading-room/sessions/${id}/leave`,
-		signals: '/api/trading-room/signals'
+	// Videos - Rust API
+	videos: {
+		list: '/api/videos',
+		single: (id: number) => `/api/videos/${id}`,
+		track: (id: number) => `/api/videos/${id}/track`
 	},
 
-	// Analytics
+	// Analytics - Rust API
 	analytics: {
-		dashboard: '/api/analytics/dashboard',
+		track: '/api/analytics/track',
+		reading: '/api/analytics/reading',
 		performance: '/api/analytics/performance',
-		trades: '/api/analytics/trades'
+		overview: '/api/analytics/overview'
 	},
 
-	// Admin
+	// Contacts/CRM - Rust API
+	contacts: {
+		list: '/api/contacts',
+		single: (id: number) => `/api/contacts/${id}`,
+		create: '/api/contacts',
+		update: (id: number) => `/api/contacts/${id}`,
+		delete: (id: number) => `/api/contacts/${id}`,
+		stats: '/api/contacts/stats'
+	},
+
+	// Admin - Rust API
 	admin: {
+		dashboard: '/api/admin/dashboard',
 		users: '/api/admin/users',
-		stats: '/api/admin/stats',
-		settings: '/api/admin/settings'
+		userStats: '/api/admin/users/stats',
+		user: (id: number) => `/api/admin/users/${id}`,
+		banUser: (id: number) => `/api/admin/users/${id}/ban`,
+		unbanUser: (id: number) => `/api/admin/users/${id}/unban`,
+		coupons: '/api/admin/coupons',
+		coupon: (id: number) => `/api/admin/coupons/${id}`,
+		validateCoupon: (code: string) => `/api/admin/coupons/validate/${code}`,
+		settings: '/api/admin/settings',
+		setting: (key: string) => `/api/admin/settings/${key}`
 	},
 
-	// Upload
-	upload: '/api/upload',
-
-	// Search
+	// Search - Rust API
 	search: '/api/search',
 
-	// Time
-	time: {
-		now: '/api/time/now'
-	},
-
-	// Timers
-	timers: {
-		events: '/api/timers/events'
-	}
+	// Health
+	health: '/api/health'
 } as const;
 
 /**

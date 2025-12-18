@@ -86,25 +86,23 @@ export interface PaginatedResponse<T> {
 // API ENDPOINTS
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Updated for Rust API - December 2025
 const ENDPOINTS = {
-	// Public (store) routes
+	// Public (store) routes - Rust API
 	list: '/api/indicators',
 	single: (slug: string) => `/api/indicators/${slug}`,
-	categories: '/api/indicators/categories',
 
-	// User routes (purchased indicators)
-	purchased: '/api/user/indicators/purchased',
-	download: (slug: string, downloadId: string) => `/api/indicators/${slug}/download/${downloadId}`,
+	// User routes (purchased indicators) - Rust API
+	my: '/api/indicators/my',
+	download: (id: number) => `/api/indicators/${id}/download`,
 
-	// Admin routes
+	// Admin routes - Rust API
 	admin: {
-		list: '/api/admin/indicators',
-		single: (id: number) => `/api/admin/indicators/${id}`,
-		create: '/api/admin/indicators',
-		update: (id: number) => `/api/admin/indicators/${id}`,
-		delete: (id: number) => `/api/admin/indicators/${id}`,
-		downloads: (id: number) => `/api/admin/indicators/${id}/downloads`,
-		uploadVersion: (id: number) => `/api/admin/indicators/${id}/versions`
+		list: '/api/indicators',
+		single: (slug: string) => `/api/indicators/${slug}`,
+		create: '/api/indicators',
+		update: (slug: string) => `/api/indicators/${slug}`,
+		delete: (slug: string) => `/api/indicators/${slug}`
 	}
 };
 
@@ -133,16 +131,10 @@ export const indicatorsApi = {
 		return api.get(ENDPOINTS.single(slug));
 	},
 
-	/**
-	 * Get indicator categories
-	 */
-	getCategories: async (): Promise<ApiResponse<string[]>> => {
-		return api.get(ENDPOINTS.categories);
-	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// USER/PURCHASED INDICATORS API
+// USER/PURCHASED INDICATORS API - Updated for Rust API
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const userIndicatorsApi = {
@@ -154,17 +146,18 @@ export const userIndicatorsApi = {
 		status?: 'active' | 'expiring' | 'expired';
 		search?: string;
 	}): Promise<ApiResponse<PurchasedIndicator[]>> => {
-		return api.get(ENDPOINTS.purchased, params);
+		return api.get(ENDPOINTS.my, params);
 	},
 
 	/**
 	 * Get download URL for an indicator
 	 */
-	getDownload: async (slug: string, downloadId: string): Promise<ApiResponse<{
+	getDownload: async (indicatorId: number): Promise<ApiResponse<{
 		download_url: string;
-		expires_at: string;
+		documentation_url: string;
+		version: string;
 	}>> => {
-		return api.get(ENDPOINTS.download(slug, downloadId));
+		return api.get(ENDPOINTS.download(indicatorId));
 	},
 
 	/**
@@ -174,12 +167,12 @@ export const userIndicatorsApi = {
 		download_url: string;
 		expires_in: number;
 	}>> => {
-		return api.post(`/api/user/indicators/${indicatorId}/request-download`);
+		return api.get(ENDPOINTS.download(indicatorId));
 	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ADMIN API
+// ADMIN API - Updated for Rust API
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const adminIndicatorsApi = {
@@ -199,8 +192,8 @@ export const adminIndicatorsApi = {
 	/**
 	 * Get a single indicator (admin)
 	 */
-	get: async (id: number): Promise<ApiResponse<Indicator>> => {
-		return api.get(ENDPOINTS.admin.single(id));
+	get: async (slug: string): Promise<ApiResponse<Indicator>> => {
+		return api.get(ENDPOINTS.admin.single(slug));
 	},
 
 	/**
@@ -213,40 +206,15 @@ export const adminIndicatorsApi = {
 	/**
 	 * Update an indicator (admin)
 	 */
-	update: async (id: number, data: Partial<Indicator>): Promise<ApiResponse<Indicator>> => {
-		return api.put(ENDPOINTS.admin.update(id), data);
+	update: async (slug: string, data: Partial<Indicator>): Promise<ApiResponse<Indicator>> => {
+		return api.put(ENDPOINTS.admin.update(slug), data);
 	},
 
 	/**
 	 * Delete an indicator (admin)
 	 */
-	delete: async (id: number): Promise<ApiResponse<void>> => {
-		return api.delete(ENDPOINTS.admin.delete(id));
-	},
-
-	/**
-	 * Get downloads/versions for an indicator (admin)
-	 */
-	getDownloads: async (id: number): Promise<ApiResponse<IndicatorDownload[]>> => {
-		return api.get(ENDPOINTS.admin.downloads(id));
-	},
-
-	/**
-	 * Upload a new version (admin)
-	 */
-	uploadVersion: async (id: number, data: {
-		version: string;
-		platform: string;
-		file: File;
-		release_notes?: string;
-	}): Promise<ApiResponse<IndicatorDownload>> => {
-		const formData = new FormData();
-		formData.append('version', data.version);
-		formData.append('platform', data.platform);
-		formData.append('file', data.file);
-		if (data.release_notes) formData.append('release_notes', data.release_notes);
-
-		return api.post(ENDPOINTS.admin.uploadVersion(id), formData);
+	delete: async (slug: string): Promise<ApiResponse<void>> => {
+		return api.delete(ENDPOINTS.admin.delete(slug));
 	}
 };
 
