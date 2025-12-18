@@ -210,62 +210,22 @@ test.describe('Auth Smoke Test - With Credentials', () => {
 	const TEST_PASSWORD = 'TestPassword123!';
 
 	test('9. Login with valid credentials succeeds', async ({ page }) => {
-		// Debug: Log all network requests
-		const requests: string[] = [];
-		const responses: { url: string; status: number; body?: string }[] = [];
+		// Go to login page
+		await page.goto('/login');
+		await page.waitForLoadState('networkidle');
 
-		page.on('request', (request) => {
-			if (request.url().includes('login') || request.url().includes('auth')) {
-				requests.push(`${request.method()} ${request.url()}`);
-			}
-		});
+		// Fill form directly
+		await page.locator('#email').fill(TEST_EMAIL);
+		await page.locator('#password').fill(TEST_PASSWORD);
 
-		page.on('response', async (response) => {
-			if (response.url().includes('login') || response.url().includes('auth')) {
-				let body = '';
-				try {
-					body = await response.text();
-				} catch { /* ignore */ }
-				responses.push({ url: response.url(), status: response.status(), body: body.substring(0, 200) });
-			}
-		});
+		// Click submit button
+		await page.locator('button.submit-btn').click();
 
-		const loginPage = new LoginPage(page);
-		await loginPage.goto();
+		// Wait for redirect to dashboard
+		await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 20000 });
 
-		await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-
-		// Wait for login to complete (backend may be slow)
-		await page.waitForTimeout(5000);
-
-		// Debug output
-		console.log('=== Network Requests ===');
-		requests.forEach(r => console.log(r));
-		console.log('=== Network Responses ===');
-		responses.forEach(r => console.log(`${r.status} ${r.url}`, r.body));
-		console.log('=== Current URL ===', page.url());
-
-		// Should redirect away from login
-		const success = await loginPage.isLoginSuccessful();
-		
-		// If login failed, check for error message and current state
-		if (!success) {
-			const errorMsg = await loginPage.getErrorMessage();
-			const currentUrl = page.url();
-			console.log('Login failed. Error message:', errorMsg);
-			console.log('Current URL:', currentUrl);
-			
-			// Check if we're still on login page with success animation (slow redirect)
-			const isOnLogin = currentUrl.includes('/login');
-			if (isOnLogin) {
-				// Wait a bit more and check again
-				await page.waitForTimeout(3000);
-				const newUrl = page.url();
-				console.log('After additional wait, URL:', newUrl);
-			}
-		}
-		
-		expect(success).toBe(true);
+		// Verify we're not on login page
+		expect(page.url()).not.toContain('/login');
 	});
 
 	test('10. User data loads without undefined email error', async ({ page }) => {

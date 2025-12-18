@@ -33,7 +33,7 @@ export class LoginPage extends BasePage {
 		// Form elements - using ID-based selection for reliability
 		this.emailInput = page.locator('#email');
 		this.passwordInput = page.locator('#password');
-		this.submitButton = page.locator('button[type="submit"].submit-btn').or(
+		this.submitButton = page.locator('button.submit-btn').or(
 			page.getByRole('button', { name: /sign in to trade/i })
 		).first();
 		this.rememberMeCheckbox = page.locator(

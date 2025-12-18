@@ -77,11 +77,7 @@ export default defineConfig({
 		// Base URL for all tests
 		baseURL: BASE_URL,
 
-		// Extra HTTP headers for API requests
-		extraHTTPHeaders: {
-			Accept: 'application/json',
-			'X-Requested-With': 'Playwright'
-		},
+		// Extra HTTP headers removed - custom headers cause CORS failures with Rust API
 
 		// Collect trace on first retry (Netflix: balance debugging vs speed)
 		trace: CI ? 'on-first-retry' : 'retain-on-failure',
