@@ -8,7 +8,12 @@
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth';
 
-const API_BASE = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
+// Updated for Rust API - December 2025
+const isDev = import.meta.env.DEV;
+const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev/api';
+const API_BASE = browser 
+	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || PRODUCTION_API_URL))
+	: '';
 
 export interface StripeConfig {
 	publishable_key: string;
