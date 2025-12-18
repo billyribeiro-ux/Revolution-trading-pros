@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "lightweight-charts": "^5.0.9"
+    "lightweight-charts": "^5.0.9",
+    "pg": "^8.16.3"
   }
 }

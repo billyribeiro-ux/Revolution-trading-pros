@@ -1,34 +1,38 @@
 -- Revolution Trading Pros - Full Database Schema
 -- Apple ICT 11+ Principal Engineer Grade - December 2025
--- PostgreSQL (Neon)
+-- PostgreSQL (Neon/Fly Postgres)
+-- Note: Users table already exists from Laravel migration
 
--- ═══════════════════════════════════════════════════════════════════════════
--- USERS & AUTH
--- ═══════════════════════════════════════════════════════════════════════════
+-- Add missing columns to users table if they don't exist
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='role') THEN
+        ALTER TABLE users ADD COLUMN role VARCHAR(50) DEFAULT 'user';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='is_active') THEN
+        ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT true;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='last_login_at') THEN
+        ALTER TABLE users ADD COLUMN last_login_at TIMESTAMP;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='last_login_ip') THEN
+        ALTER TABLE users ADD COLUMN last_login_ip VARCHAR(45);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='avatar_url') THEN
+        ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='timezone') THEN
+        ALTER TABLE users ADD COLUMN timezone VARCHAR(50) DEFAULT 'UTC';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='locale') THEN
+        ALTER TABLE users ADD COLUMN locale VARCHAR(10) DEFAULT 'en';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='metadata') THEN
+        ALTER TABLE users ADD COLUMN metadata JSONB;
+    END IF;
+END $$;
 
-CREATE TABLE IF NOT EXISTS users (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) DEFAULT 'user',
-    is_active BOOLEAN DEFAULT true,
-    email_verified_at TIMESTAMP,
-    last_login_at TIMESTAMP,
-    last_login_ip VARCHAR(45),
-    two_factor_secret VARCHAR(255),
-    two_factor_enabled BOOLEAN DEFAULT false,
-    avatar_url VARCHAR(500),
-    timezone VARCHAR(50) DEFAULT 'UTC',
-    locale VARCHAR(10) DEFAULT 'en',
-    metadata JSONB,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_active ON users(is_active);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- PRODUCTS
