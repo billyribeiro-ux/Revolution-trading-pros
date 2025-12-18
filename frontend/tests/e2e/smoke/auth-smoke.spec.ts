@@ -210,6 +210,26 @@ test.describe('Auth Smoke Test - With Credentials', () => {
 	const TEST_PASSWORD = 'TestPassword123!';
 
 	test('9. Login with valid credentials succeeds', async ({ page }) => {
+		// Debug: Log all network requests
+		const requests: string[] = [];
+		const responses: { url: string; status: number; body?: string }[] = [];
+
+		page.on('request', (request) => {
+			if (request.url().includes('login') || request.url().includes('auth')) {
+				requests.push(`${request.method()} ${request.url()}`);
+			}
+		});
+
+		page.on('response', async (response) => {
+			if (response.url().includes('login') || response.url().includes('auth')) {
+				let body = '';
+				try {
+					body = await response.text();
+				} catch { /* ignore */ }
+				responses.push({ url: response.url(), status: response.status(), body: body.substring(0, 200) });
+			}
+		});
+
 		const loginPage = new LoginPage(page);
 		await loginPage.goto();
 
@@ -217,6 +237,13 @@ test.describe('Auth Smoke Test - With Credentials', () => {
 
 		// Wait for login to complete (backend may be slow)
 		await page.waitForTimeout(5000);
+
+		// Debug output
+		console.log('=== Network Requests ===');
+		requests.forEach(r => console.log(r));
+		console.log('=== Network Responses ===');
+		responses.forEach(r => console.log(`${r.status} ${r.url}`, r.body));
+		console.log('=== Current URL ===', page.url());
 
 		// Should redirect away from login
 		const success = await loginPage.isLoginSuccessful();
