@@ -582,7 +582,7 @@ class AuthenticationService {
 		// Validate password strength
 		this.validatePasswordStrength(data.password);
 
-		const response = await this.apiRequest<AuthResponse>('/auth/register', {
+		const response = await this.apiRequest<AuthResponse>('/register', {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -607,7 +607,7 @@ class AuthenticationService {
 			device_fingerprint: this.sessionFingerprint
 		};
 
-		const response = await this.apiRequest<AuthResponse>('/auth/login', {
+		const response = await this.apiRequest<AuthResponse>('/login', {
 			method: 'POST',
 			body: JSON.stringify(loginData),
 			skipAuth: true
@@ -696,7 +696,7 @@ class AuthenticationService {
 	 */
 	async logout(): Promise<void> {
 		try {
-			await this.apiRequest<MessageResponse>('/auth/logout', {
+			await this.apiRequest<MessageResponse>('/logout', {
 				method: 'POST'
 			});
 
@@ -717,7 +717,7 @@ class AuthenticationService {
 	 * Get current user
 	 */
 	async getUser(): Promise<User> {
-		const user = await this.apiRequest<User>('/auth/me');
+		const user = await this.apiRequest<User>('/me');
 		authStore.setUser(user);
 		return user;
 	}
@@ -743,7 +743,7 @@ class AuthenticationService {
 		// NOTE: Do NOT set Content-Type header manually for FormData
 		// The browser MUST set it automatically with the boundary parameter
 		// Setting it manually breaks multipart form parsing on the server
-		const user = await this.apiRequest<User>('/auth/me', {
+		const user = await this.apiRequest<User>('/me', {
 			method: 'PUT',
 			body: formData
 		});
@@ -1120,7 +1120,7 @@ class AuthenticationService {
 		if (!token) return;
 
 		try {
-			await this.apiRequest<{ valid: boolean }>('/auth/check');
+			await this.apiRequest<{ valid: boolean }>('/me');
 		} catch (error) {
 			if (error instanceof UnauthorizedError) {
 				console.warn('[AuthService] Session invalid, clearing auth');

@@ -1,11 +1,13 @@
 # Revolution Trading Pros - Rust API
 # Multi-stage build for minimal image size
 
-# Build stage - Rust 1.85 (supports edition2024)
-FROM rust:1.85-alpine3.21 AS builder
+# Build stage - Rust latest (AWS SDK requires 1.88+)
+FROM rust:latest AS builder
 
-# Install build dependencies
-RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig perl make
+# Install build dependencies (Debian-based image)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    pkg-config libssl-dev perl make \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
