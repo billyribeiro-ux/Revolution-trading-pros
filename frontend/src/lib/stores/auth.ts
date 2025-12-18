@@ -421,8 +421,7 @@ function createAuthStore() {
 						credentials: 'include',
 						headers: {
 							'Content-Type': 'application/json',
-							'Accept': 'application/json',
-							'X-Session-ID': safeLocalStorage('get', SESSION_ID_KEY) || ''
+							'Accept': 'application/json'
 						},
 						body: JSON.stringify({ refresh_token: currentRefreshToken })
 					});
@@ -507,7 +506,7 @@ function createAuthStore() {
 					const controller = new AbortController();
 					const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-					await fetch('/api/logout', {
+					await fetch('/api/auth/logout', {
 						method: 'POST',
 						headers,
 						credentials: 'include', // Clear httpOnly cookie

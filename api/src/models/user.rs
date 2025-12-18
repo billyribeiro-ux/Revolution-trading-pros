@@ -37,6 +37,7 @@ pub struct LoginUser {
 pub struct AuthResponse {
     pub token: String,
     pub user: UserResponse,
+    pub expires_in: i64,  // Token expiration in seconds
 }
 
 #[derive(Debug, Serialize)]

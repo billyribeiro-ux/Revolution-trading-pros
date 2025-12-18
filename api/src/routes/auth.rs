@@ -66,6 +66,7 @@ async fn register(
     Ok(Json(AuthResponse {
         token,
         user: user.into(),
+        expires_in: state.config.jwt_expires_in * 3600, // Convert hours to seconds
     }))
 }
 
@@ -102,6 +103,7 @@ async fn login(
     Ok(Json(AuthResponse {
         token,
         user: user.into(),
+        expires_in: state.config.jwt_expires_in * 3600, // Convert hours to seconds
     }))
 }
 
@@ -112,9 +114,17 @@ async fn me(
     Json(user.into())
 }
 
+/// Logout user (invalidates token on client side)
+async fn logout() -> Json<serde_json::Value> {
+    // JWT tokens are stateless - logout is handled client-side
+    // In a production app, you might want to add token to a blacklist in Redis
+    Json(json!({"message": "Logged out successfully"}))
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
         .route("/login", post(login))
         .route("/me", axum::routing::get(me))
+        .route("/logout", post(logout))
 }

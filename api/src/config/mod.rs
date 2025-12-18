@@ -71,7 +71,7 @@ impl Config {
             stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_default(),
 
             cors_origins: std::env::var("CORS_ORIGINS")
-                .unwrap_or_else(|_| "http://localhost:5173,https://revolution-trading-pros.pages.dev".to_string())
+                .unwrap_or_else(|_| "http://localhost:5173,http://localhost:5174,https://revolution-trading-pros.pages.dev".to_string())
                 .split(',')
                 .map(|s| s.trim().to_string())
                 .collect(),

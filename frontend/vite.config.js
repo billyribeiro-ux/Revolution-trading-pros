@@ -51,16 +51,16 @@ export default defineConfig({
 			port: 5174,
 			overlay: true // Enable overlay to see errors clearly
 		},
-		// Proxy API requests to Laravel backend
+		// Proxy API requests to Rust backend
 		proxy: {
 			'/api': {
-				target: 'http://localhost:8000',
+				target: 'http://localhost:8080',
 				changeOrigin: true,
 				secure: false
 			},
 			// ICT11+ Pattern: Proxy admin routes to prevent CORS
 			'/admin': {
-				target: 'http://localhost:8000',
+				target: 'http://localhost:8080',
 				changeOrigin: true,
 				secure: false
 			}
