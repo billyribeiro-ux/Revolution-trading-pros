@@ -118,7 +118,7 @@
             icon: IconBroadcast,
             title: 'Live Trading Floor',
             subtitle: 'Not just alerts. Real-time education.',
-            description: 'We don’t just post a ticker and disappear. We share our screens, talk through the setup via voice chat, and explain the "Why" before the trade happens. You see the wins, the losses, and the management in real-time.'
+            description: `We don't just post a ticker and disappear. We share our screens, talk through the setup via voice chat, and explain the "Why" before the trade happens. You see the wins, the losses, and the management in real-time.`
         },
         {
             icon: IconSchool,
@@ -136,25 +136,25 @@
 
     const team = [
         {
-            name: 'Michael Rodriguez',
-            role: 'Head Trader & Mentor',
-            id: 'DESK-LEAD',
-            specialties: ['Live Calling', 'Psychology'],
-            bio: 'Michael isn’t just an ex-Goldman trader; he’s a teacher. He leads the morning voice session every day, guiding members through volatility with a calm, professional demeanor focused on risk management.'
+            name: 'Billy Ribeiro',
+            role: 'Founder & Head Trader',
+            id: 'FOUNDER',
+            specialties: ['Price Action', 'Market Calls'],
+            bio: 'Billy Ribeiro is a globally recognized trader and market strategist, personally mentored by Mark McGoldrick—"Goldfinger"—Goldman Sachs\'s most successful investor in history. McGoldrick called Billy "The Future of Trading." Creator of the revolutionary "Move Prior to The Move" system, Billy famously called the Covid top and bottom, the 2022 market top and bottom, and the breakout to new highs in 2024 and 2025.'
         },
         {
-            name: 'Sarah Chen',
-            role: 'Quant Strategist',
-            id: 'QUANT-01',
-            specialties: ['Data Analysis', 'Systems'],
-            bio: 'Sarah translates complex institutional data into actionable levels for our members. She builds the tools that help you see where the "Smart Money" is hiding.'
+            name: 'Freddie Ferber',
+            role: 'Co-Founder & Chart Master',
+            id: 'CO-FOUNDER',
+            specialties: ['Options Strategies', 'Technical Analysis'],
+            bio: 'Freddie holds a distinction no one else can claim: he is Billy Ribeiro\'s only private student—ever. For three years, he trained one-on-one with Billy, mastering the art of price action and market structure. Today, Freddie is a stock and options expert known for turning low-cost options plays into outsized returns. He studies the market relentlessly, every single day.'
         },
         {
-            name: 'David Thompson',
-            role: 'Education Director',
-            id: 'EDU-LEAD',
-            specialties: ['Curriculum', 'Market Structure'],
-            bio: 'David specializes in fixing bad habits. His "Retail Rehab" sessions help traders unlearn the mistakes taught by fake gurus and replace them with professional process.'
+            name: 'Shao Wen',
+            role: 'Mentor & Chart Master',
+            id: 'MENTOR',
+            specialties: ['East-West Fusion', 'Precision Charting'],
+            bio: 'Shao Wen is one of Revolution\'s best-kept secrets. After mastering "The Move Prior to The Move" system, she developed her own unique approach—blending Western price action with Chinese trading strategies. Mentored by Freddie Ferber, Shao Wen\'s knowledge, discipline, and passion have made her one of the most respected female traders in the world.'
         }
     ];
 
@@ -480,7 +480,7 @@
                         <div>
                             <h2 class="text-4xl font-serif text-white mb-4">Meet Your Mentors.</h2>
                             <p class="text-slate-400 max-w-2xl font-light text-lg">
-                                We aren't anonymous admins. We are real people who are in the chat every day.
+                                We aren't anonymous admins hiding behind screens. We're real traders in the chat with you every single day—calling moves, answering questions, and helping you grow.
                             </p>
                         </div>
                         <div class="hidden md:flex gap-2">
@@ -565,7 +565,7 @@
                                  {#each Array(5) as _}<IconScale size={12} class="fill-current" />{/each}
                              </div>
                             <p class="text-lg text-slate-300 font-light italic mb-8 leading-relaxed">
-                                "The morning voice chat is a game changer. Hearing Michael explain his thought process in real-time kept me out of so many bad trades. It's like having a risk manager over your shoulder."
+                                "The morning voice chat is a game changer. Hearing Billy explain his thought process in real-time kept me out of so many bad trades. It's like having a risk manager over your shoulder."
                             </p>
                             <div class="flex items-center gap-4 border-t border-white/5 pt-6">
                                 <div class="w-10 h-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-full flex items-center justify-center text-xs font-bold text-white border border-white/10">JT</div>
