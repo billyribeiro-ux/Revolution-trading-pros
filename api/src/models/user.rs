@@ -7,17 +7,16 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    pub id: Uuid,
+    pub id: i64,
     pub email: String,
     #[serde(skip_serializing)]
+    #[sqlx(rename = "password")]
     pub password_hash: String,
     pub name: String,
-    pub role: String, // "user", "admin", "instructor"
-    pub avatar_url: Option<String>,
-    pub stripe_customer_id: Option<String>,
-    pub email_verified_at: Option<DateTime<Utc>>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    #[sqlx(default)]
+    pub email_verified_at: Option<chrono::NaiveDateTime>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 #[derive(Debug, Deserialize)]
@@ -42,12 +41,10 @@ pub struct AuthResponse {
 
 #[derive(Debug, Serialize)]
 pub struct UserResponse {
-    pub id: Uuid,
+    pub id: i64,
     pub email: String,
     pub name: String,
-    pub role: String,
-    pub avatar_url: Option<String>,
-    pub created_at: DateTime<Utc>,
+    pub created_at: chrono::NaiveDateTime,
 }
 
 impl From<User> for UserResponse {
@@ -56,8 +53,6 @@ impl From<User> for UserResponse {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role,
-            avatar_url: user.avatar_url,
             created_at: user.created_at,
         }
     }

@@ -80,13 +80,9 @@ async fn create_course(
     user: User, // Extracted by auth middleware - requires valid JWT
     Json(input): Json<CreateCourse>,
 ) -> Result<Json<Course>, (StatusCode, Json<serde_json::Value>)> {
-    // Verify user has instructor or admin role
-    if user.role != "instructor" && user.role != "admin" {
-        return Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Only instructors and admins can create courses"})),
-        ));
-    }
+    // For now, allow any authenticated user to create courses
+    // TODO: Add role-based access control when role column is added to users table
+    let _ = &user; // Use the user variable to avoid unused warning
 
     let slug = slug::slugify(&input.title);
     let id = Uuid::new_v4();

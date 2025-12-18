@@ -27,7 +27,7 @@ COPY migrations ./migrations
 # Build the actual application
 RUN touch src/main.rs && cargo build --release
 
-# Runtime stage - Use rust base to ensure glibc/OpenSSL compatibility
+# Runtime stage - Use same base as builder for glibc/OpenSSL compatibility
 FROM rust:latest AS runtime
 
 # Install runtime dependencies

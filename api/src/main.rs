@@ -13,13 +13,13 @@ mod services;
 mod utils;
 
 use axum::{
-    http::{HeaderValue, Method},
+    http::{header, HeaderValue, Method},
     Router,
 };
 use std::net::SocketAddr;
 use tower_http::{
     compression::CompressionLayer,
-    cors::{Any, CorsLayer},
+    cors::CorsLayer,
     trace::TraceLayer,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -90,7 +90,7 @@ async fn main() -> anyhow::Result<()> {
         config: config.clone(),
     };
 
-    // Build CORS layer
+    // Build CORS layer - explicit headers required when using credentials
     let cors = CorsLayer::new()
         .allow_origin(
             config
@@ -99,8 +99,16 @@ async fn main() -> anyhow::Result<()> {
                 .map(|o| o.parse::<HeaderValue>().unwrap())
                 .collect::<Vec<_>>(),
         )
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::PATCH])
-        .allow_headers(Any)
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::PATCH, Method::OPTIONS])
+        .allow_headers([
+            header::CONTENT_TYPE,
+            header::AUTHORIZATION,
+            header::ACCEPT,
+            header::ORIGIN,
+            header::COOKIE,
+            header::SET_COOKIE,
+        ])
+        .expose_headers([header::SET_COOKIE])
         .allow_credentials(true);
 
     // Build router

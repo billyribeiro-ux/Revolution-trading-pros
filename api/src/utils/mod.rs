@@ -8,12 +8,10 @@ use argon2::{
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-
 /// JWT claims
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub sub: Uuid,      // Subject (user ID)
+    pub sub: i64,       // Subject (user ID)
     pub exp: i64,       // Expiration time
     pub iat: i64,       // Issued at
 }
@@ -38,10 +36,10 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
 }
 
 /// Create a JWT token
-pub fn create_jwt(user_id: &Uuid, secret: &str, expires_in_hours: i64) -> Result<String> {
+pub fn create_jwt(user_id: i64, secret: &str, expires_in_hours: i64) -> Result<String> {
     let now = Utc::now();
     let claims = Claims {
-        sub: *user_id,
+        sub: user_id,
         iat: now.timestamp(),
         exp: (now + Duration::hours(expires_in_hours)).timestamp(),
     };
