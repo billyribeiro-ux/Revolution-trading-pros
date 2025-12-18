@@ -28,8 +28,7 @@ pub struct Product {
     pub product_type: String,
     pub description: Option<String>,
     pub long_description: Option<String>,
-    #[serde(with = "rust_decimal::serde::float")]
-    pub price: rust_decimal::Decimal,
+    pub price: f64,
     pub is_active: bool,
     pub metadata: Option<serde_json::Value>,
     pub thumbnail: Option<String>,
