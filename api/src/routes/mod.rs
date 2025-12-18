@@ -13,6 +13,7 @@ pub mod posts;
 pub mod subscriptions;
 pub mod newsletter;
 pub mod admin;
+pub mod checkout;
 
 use axum::Router;
 use crate::AppState;
@@ -31,4 +32,5 @@ pub fn api_router() -> Router<AppState> {
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
         .nest("/admin", admin::router())
+        .nest("/checkout", checkout::router())
 }
