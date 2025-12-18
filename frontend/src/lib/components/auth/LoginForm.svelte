@@ -251,8 +251,7 @@
 	}
 
 	// --- Form Submit ---
-	async function handleSubmit(e: SubmitEvent) {
-		e.preventDefault();
+	async function handleSubmit() {
 
 		// Mark all fields as touched
 		touched = { email: true, password: true };
@@ -385,7 +384,7 @@
 			{/if}
 
 			<!-- Form -->
-			<form bind:this={formRef} onsubmit={handleSubmit} class="login-form" novalidate>
+			<form bind:this={formRef} class="login-form" novalidate>
 				<!-- Email Field -->
 				<div class="form-field">
 					<label for="email" class="field-label">Email Address</label>
@@ -479,11 +478,12 @@
 				<!-- Submit Button -->
 				<div class="form-actions">
 					<button
-						type="submit"
+						type="button"
 						class="submit-btn"
 						class:loading={isLoading}
 						class:success={isSuccess}
 						disabled={isLoading || isSuccess}
+						onclick={handleSubmit}
 					>
 						<span class="btn-content">
 							{#if isSuccess}
