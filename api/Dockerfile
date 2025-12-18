@@ -27,14 +27,16 @@ COPY migrations ./migrations
 # Build the actual application
 RUN touch src/main.rs && cargo build --release
 
-# Runtime stage - Alpine 3.21 (December 2025)
-FROM alpine:3.21 AS runtime
+# Runtime stage - Use rust base to ensure glibc/OpenSSL compatibility
+FROM rust:latest AS runtime
 
 # Install runtime dependencies
-RUN apk add --no-cache ca-certificates tzdata
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
-RUN addgroup -g 1000 app && adduser -u 1000 -G app -h /app -D app
+RUN groupadd -g 1000 app && useradd -u 1000 -g app -d /app -m app
 
 WORKDIR /app
 
@@ -50,9 +52,9 @@ USER app
 # Expose port
 EXPOSE 8080
 
-# Health check
+# Health check (using curl on Debian)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -q --spider http://localhost:8080/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
 # Run
 ENV RUST_LOG=info
