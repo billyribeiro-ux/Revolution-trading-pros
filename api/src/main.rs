@@ -13,7 +13,7 @@ mod services;
 mod utils;
 
 use axum::{
-    http::{header, HeaderValue, Method},
+    http::{header, HeaderName, HeaderValue, Method},
     Router,
 };
 use std::net::SocketAddr;
@@ -107,6 +107,8 @@ async fn main() -> anyhow::Result<()> {
             header::ORIGIN,
             header::COOKIE,
             header::SET_COOKIE,
+            HeaderName::from_static("x-api-version"),
+            HeaderName::from_static("x-session-id"),
         ])
         .expose_headers([header::SET_COOKIE])
         .allow_credentials(true);
