@@ -54,11 +54,7 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000; // 1 second
 const TOKEN_REFRESH_THRESHOLD = 300000; // 5 minutes before expiry
 const SESSION_CHECK_INTERVAL = 60000; // 1 minute
-const SECURITY_HEADERS = {
-	'X-Requested-With': 'XMLHttpRequest',
-	'X-Client-Version': '2.0.0',
-	'X-Client-Platform': 'web'
-};
+// Custom headers removed - Rust API CORS only allows standard headers
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions
@@ -330,14 +326,6 @@ class AuthenticationService {
 			// Build headers
 			const headers = await this.buildHeaders(skipAuth, options.headers);
 
-			// Add security headers
-			Object.assign(headers, SECURITY_HEADERS);
-
-			// Add session fingerprint
-			if (this.sessionFingerprint) {
-				headers['X-Session-Fingerprint'] = this.sessionFingerprint;
-			}
-
 			// Make request
 			const response = await fetch(`${API_BASE_URL}${endpoint}`, {
 				...options,
@@ -390,17 +378,7 @@ class AuthenticationService {
 				headers['Authorization'] = `Bearer ${token}`;
 			}
 
-			// Add session ID for single-session validation
-			const sessionId = authStore.getSessionId();
-			if (sessionId) {
-				headers['X-Session-ID'] = sessionId;
-			}
-		}
-
-		// Add CSRF token if available
-		const csrfToken = this.getCSRFToken();
-		if (csrfToken) {
-			headers['X-CSRF-Token'] = csrfToken;
+			// Session ID sent via cookie, not header (CORS compatibility)
 		}
 
 		return headers;
