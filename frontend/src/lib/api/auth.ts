@@ -375,8 +375,7 @@ class AuthenticationService {
 	): Promise<Record<string, string>> {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			'X-API-Version': API_VERSION
+			Accept: 'application/json'
 		};
 
 		// Add custom headers
