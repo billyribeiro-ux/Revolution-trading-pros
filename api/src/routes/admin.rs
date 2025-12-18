@@ -1,0 +1,555 @@
+//! Admin routes - Revolution Trading Pros
+//! Apple ICT 11+ Principal Engineer Grade - December 2025
+
+use axum::{
+    extract::{Path, Query, State},
+    http::StatusCode,
+    routing::{get, post, put, delete},
+    Json, Router,
+};
+use serde::Deserialize;
+use serde_json::json;
+
+use crate::{
+    models::User,
+    AppState,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// USER MANAGEMENT (Admin Staff)
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+pub struct AdminUserRow {
+    pub id: i64,
+    pub name: String,
+    pub email: String,
+    pub role: Option<String>,
+    pub is_active: bool,
+    pub email_verified_at: Option<chrono::NaiveDateTime>,
+    pub last_login_at: Option<chrono::NaiveDateTime>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UserListQuery {
+    pub page: Option<i64>,
+    pub per_page: Option<i64>,
+    pub role: Option<String>,
+    pub search: Option<String>,
+    pub is_active: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateUserRequest {
+    pub name: String,
+    pub email: String,
+    pub password: String,
+    pub role: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateUserRequest {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub role: Option<String>,
+    pub is_active: Option<bool>,
+}
+
+/// List all users (admin)
+async fn list_users(
+    State(state): State<AppState>,
+    _user: User,
+    Query(query): Query<UserListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let page = query.page.unwrap_or(1).max(1);
+    let per_page = query.per_page.unwrap_or(50).min(100);
+    let offset = (page - 1) * per_page;
+
+    let mut conditions = vec!["1=1".to_string()];
+
+    if let Some(ref role) = query.role {
+        conditions.push(format!("role = '{}'", role));
+    }
+    if let Some(is_active) = query.is_active {
+        conditions.push(format!("is_active = {}", is_active));
+    }
+    if let Some(ref search) = query.search {
+        conditions.push(format!("(name ILIKE '%{}%' OR email ILIKE '%{}%')", search, search));
+    }
+
+    let where_clause = conditions.join(" AND ");
+    let sql = format!(
+        "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE {} ORDER BY created_at DESC LIMIT {} OFFSET {}",
+        where_clause, per_page, offset
+    );
+    let count_sql = format!("SELECT COUNT(*) FROM users WHERE {}", where_clause);
+
+    let users: Vec<AdminUserRow> = sqlx::query_as(&sql)
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let total: (i64,) = sqlx::query_as(&count_sql)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({
+        "data": users,
+        "meta": {
+            "current_page": page,
+            "per_page": per_page,
+            "total": total.0,
+            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+        }
+    })))
+}
+
+/// Get user by ID (admin)
+async fn get_user(
+    State(state): State<AppState>,
+    _user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
+    let user: AdminUserRow = sqlx::query_as(
+        "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE id = $1"
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "User not found"}))))?;
+
+    Ok(Json(user))
+}
+
+/// Create user (admin)
+async fn create_user(
+    State(state): State<AppState>,
+    _user: User,
+    Json(input): Json<CreateUserRequest>,
+) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
+    let password_hash = crate::utils::hash_password(&input.password)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let role = input.role.unwrap_or_else(|| "user".to_string());
+
+    let user: AdminUserRow = sqlx::query_as(
+        r#"
+        INSERT INTO users (name, email, password, role, is_active, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, true, NOW(), NOW())
+        RETURNING id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at
+        "#
+    )
+    .bind(&input.name)
+    .bind(&input.email)
+    .bind(&password_hash)
+    .bind(&role)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        if e.to_string().contains("duplicate") {
+            (StatusCode::CONFLICT, Json(json!({"error": "Email already exists"})))
+        } else {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        }
+    })?;
+
+    Ok(Json(user))
+}
+
+/// Update user (admin)
+async fn update_user(
+    State(state): State<AppState>,
+    _user: User,
+    Path(id): Path<i64>,
+    Json(input): Json<UpdateUserRequest>,
+) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
+    let mut set_clauses = Vec::new();
+    
+    if let Some(ref name) = input.name {
+        set_clauses.push(format!("name = '{}'", name.replace("'", "''")));
+    }
+    if let Some(ref email) = input.email {
+        set_clauses.push(format!("email = '{}'", email.replace("'", "''")));
+    }
+    if let Some(ref role) = input.role {
+        set_clauses.push(format!("role = '{}'", role));
+    }
+    if let Some(is_active) = input.is_active {
+        set_clauses.push(format!("is_active = {}", is_active));
+    }
+
+    set_clauses.push("updated_at = NOW()".to_string());
+
+    let sql = format!(
+        "UPDATE users SET {} WHERE id = $1 RETURNING id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at",
+        set_clauses.join(", ")
+    );
+
+    let user: AdminUserRow = sqlx::query_as(&sql)
+        .bind(id)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(user))
+}
+
+/// Delete user (admin)
+async fn delete_user(
+    State(state): State<AppState>,
+    _user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    sqlx::query("DELETE FROM users WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({"message": "User deleted successfully"})))
+}
+
+/// Ban user (admin)
+async fn ban_user(
+    State(state): State<AppState>,
+    _user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({"message": "User banned successfully"})))
+}
+
+/// Unban user (admin)
+async fn unban_user(
+    State(state): State<AppState>,
+    _user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    sqlx::query("UPDATE users SET is_active = true, updated_at = NOW() WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({"message": "User unbanned successfully"})))
+}
+
+/// User stats (admin)
+async fn user_stats(
+    State(state): State<AppState>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let active: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users WHERE is_active = true")
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let verified: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users WHERE email_verified_at IS NOT NULL")
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let admins: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users WHERE role IN ('admin', 'super-admin')")
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({
+        "total": total.0,
+        "active": active.0,
+        "verified": verified.0,
+        "admins": admins.0
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COUPON MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+pub struct CouponRow {
+    pub id: i64,
+    pub code: String,
+    pub description: Option<String>,
+    pub discount_type: String,
+    pub discount_value: f64,
+    pub min_purchase: Option<f64>,
+    pub max_discount: Option<f64>,
+    pub usage_limit: Option<i32>,
+    pub usage_count: i32,
+    pub is_active: bool,
+    pub starts_at: Option<chrono::NaiveDateTime>,
+    pub expires_at: Option<chrono::NaiveDateTime>,
+    pub applicable_products: Option<serde_json::Value>,
+    pub applicable_plans: Option<serde_json::Value>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateCouponRequest {
+    pub code: String,
+    pub description: Option<String>,
+    pub discount_type: String,
+    pub discount_value: f64,
+    pub min_purchase: Option<f64>,
+    pub max_discount: Option<f64>,
+    pub usage_limit: Option<i32>,
+    pub is_active: Option<bool>,
+    pub starts_at: Option<chrono::NaiveDateTime>,
+    pub expires_at: Option<chrono::NaiveDateTime>,
+    pub applicable_products: Option<serde_json::Value>,
+    pub applicable_plans: Option<serde_json::Value>,
+}
+
+/// List coupons (admin)
+async fn list_coupons(
+    State(state): State<AppState>,
+    _user: User,
+) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
+    let coupons: Vec<CouponRow> = sqlx::query_as(
+        "SELECT * FROM coupons ORDER BY created_at DESC"
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(coupons))
+}
+
+/// Create coupon (admin)
+async fn create_coupon(
+    State(state): State<AppState>,
+    _user: User,
+    Json(input): Json<CreateCouponRequest>,
+) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
+    let coupon: CouponRow = sqlx::query_as(
+        r#"
+        INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount, usage_limit, usage_count, is_active, starts_at, expires_at, applicable_products, applicable_plans, created_at, updated_at)
+        VALUES (UPPER($1), $2, $3, $4, $5, $6, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
+        RETURNING *
+        "#
+    )
+    .bind(&input.code)
+    .bind(&input.description)
+    .bind(&input.discount_type)
+    .bind(input.discount_value)
+    .bind(input.min_purchase)
+    .bind(input.max_discount)
+    .bind(input.usage_limit)
+    .bind(input.is_active.unwrap_or(true))
+    .bind(&input.starts_at)
+    .bind(&input.expires_at)
+    .bind(&input.applicable_products)
+    .bind(&input.applicable_plans)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        if e.to_string().contains("duplicate") {
+            (StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"})))
+        } else {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        }
+    })?;
+
+    Ok(Json(coupon))
+}
+
+/// Delete coupon (admin)
+async fn delete_coupon(
+    State(state): State<AppState>,
+    _user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    sqlx::query("DELETE FROM coupons WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({"message": "Coupon deleted successfully"})))
+}
+
+/// Validate coupon (public)
+async fn validate_coupon(
+    State(state): State<AppState>,
+    Path(code): Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let coupon: Option<CouponRow> = sqlx::query_as(
+        "SELECT * FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"
+    )
+    .bind(&code)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    match coupon {
+        Some(c) => {
+            // Check expiry
+            if let Some(expires_at) = c.expires_at {
+                if expires_at < chrono::Utc::now().naive_utc() {
+                    return Ok(Json(json!({"valid": false, "error": "Coupon has expired"})));
+                }
+            }
+            // Check usage limit
+            if let Some(limit) = c.usage_limit {
+                if c.usage_count >= limit {
+                    return Ok(Json(json!({"valid": false, "error": "Coupon usage limit reached"})));
+                }
+            }
+            Ok(Json(json!({
+                "valid": true,
+                "coupon": c
+            })))
+        }
+        None => Ok(Json(json!({"valid": false, "error": "Invalid coupon code"}))),
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SETTINGS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+pub struct SettingRow {
+    pub id: i64,
+    pub key: String,
+    pub value: Option<serde_json::Value>,
+    pub group_name: Option<String>,
+    pub description: Option<String>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+/// Get all settings (admin)
+async fn get_settings(
+    State(state): State<AppState>,
+    _user: User,
+) -> Result<Json<Vec<SettingRow>>, (StatusCode, Json<serde_json::Value>)> {
+    let settings: Vec<SettingRow> = sqlx::query_as(
+        "SELECT * FROM application_settings ORDER BY group_name, key"
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(settings))
+}
+
+/// Get setting by key (admin)
+async fn get_setting(
+    State(state): State<AppState>,
+    _user: User,
+    Path(key): Path<String>,
+) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
+    let setting: SettingRow = sqlx::query_as(
+        "SELECT * FROM application_settings WHERE key = $1"
+    )
+    .bind(&key)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Setting not found"}))))?;
+
+    Ok(Json(setting))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateSettingRequest {
+    pub value: serde_json::Value,
+}
+
+/// Update setting (admin)
+async fn update_setting(
+    State(state): State<AppState>,
+    _user: User,
+    Path(key): Path<String>,
+    Json(input): Json<UpdateSettingRequest>,
+) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
+    let setting: SettingRow = sqlx::query_as(
+        "UPDATE application_settings SET value = $1, updated_at = NOW() WHERE key = $2 RETURNING *"
+    )
+    .bind(&input.value)
+    .bind(&key)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(setting))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DASHBOARD STATS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Dashboard overview (admin)
+async fn dashboard_overview(
+    State(state): State<AppState>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let total_users: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let active_subscriptions: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    let total_products: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = true")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    let total_posts: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'published'")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    let newsletter_subscribers: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    Ok(Json(json!({
+        "total_users": total_users.0,
+        "active_subscriptions": active_subscriptions.0,
+        "total_products": total_products.0,
+        "total_posts": total_posts.0,
+        "newsletter_subscribers": newsletter_subscribers.0
+    })))
+}
+
+pub fn router() -> Router<AppState> {
+    Router::new()
+        // Dashboard
+        .route("/dashboard", get(dashboard_overview))
+        // Users
+        .route("/users", get(list_users).post(create_user))
+        .route("/users/stats", get(user_stats))
+        .route("/users/:id", get(get_user).put(update_user).delete(delete_user))
+        .route("/users/:id/ban", post(ban_user))
+        .route("/users/:id/unban", post(unban_user))
+        // Coupons
+        .route("/coupons", get(list_coupons).post(create_coupon))
+        .route("/coupons/:id", delete(delete_coupon))
+        .route("/coupons/validate/:code", get(validate_coupon))
+        // Settings
+        .route("/settings", get(get_settings))
+        .route("/settings/:key", get(get_setting).put(update_setting))
+}
