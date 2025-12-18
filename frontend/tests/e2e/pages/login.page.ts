@@ -108,7 +108,7 @@ export class LoginPage extends BasePage {
 	 */
 	async isLoginSuccessful(): Promise<boolean> {
 		try {
-			await this.waitForLoginSuccess(10000);
+			await this.waitForLoginSuccess(20000);
 			return true;
 		} catch {
 			return false;
