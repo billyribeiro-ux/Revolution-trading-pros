@@ -108,10 +108,10 @@ async fn list_users(
         query_builder = query_builder.bind(is_active);
         count_builder = count_builder.bind(is_active);
     }
-    if let Some(ref search) = query.search {
-        let search_pattern = format!("%{}%", search);
-        query_builder = query_builder.bind(&search_pattern);
-        count_builder = count_builder.bind(&search_pattern);
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    if let Some(ref pattern) = search_pattern {
+        query_builder = query_builder.bind(pattern);
+        count_builder = count_builder.bind(pattern);
     }
     
     query_builder = query_builder.bind(per_page).bind(offset);

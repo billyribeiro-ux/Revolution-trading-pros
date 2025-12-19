@@ -81,9 +81,7 @@ async fn main() -> anyhow::Result<()> {
     let job_db = db.clone();
     tokio::spawn(async move {
         tracing::info!("Starting background job worker");
-        if let Err(e) = queue::worker::run(job_db).await {
-            tracing::error!("Job worker error: {}", e);
-        }
+        queue::worker::run(job_db).await;
     });
     tracing::info!("Job queue worker started");
 
