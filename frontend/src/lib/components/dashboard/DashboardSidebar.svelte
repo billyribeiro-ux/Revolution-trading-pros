@@ -34,7 +34,6 @@
 		memberships?: UserMembership[];
 		isMobileOpen?: boolean;
 		onCloseMobile?: () => void;
-		userAvatar?: string;
 		userName?: string;
 		subscriptionInfo?: SubscriptionInfo;
 	}
@@ -47,7 +46,6 @@
 		memberships = [],
 		isMobileOpen = $bindable(false),
 		onCloseMobile,
-		userAvatar = '',
 		userName = 'My Account',
 		subscriptionInfo
 	}: Props = $props();
@@ -171,11 +169,6 @@
 		class:is-account-active={isAccountSection}
 		aria-current={isAccountSection ? 'page' : undefined}
 	>
-		<span
-			class="dashboard__profile-photo"
-			style:background-image={userAvatar ? `url(${userAvatar})` : undefined}
-			aria-hidden="true"
-		></span>
 		<span class="dashboard__profile-name">{userName}</span>
 	</a>
 
@@ -457,10 +450,6 @@
 		color: #5bc0de;
 	}
 
-	.dashboard__profile-nav-item.is-account-active .dashboard__profile-photo {
-		border-color: #5bc0de;
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   SUBSCRIPTION INFO BOX (Simpler Trading style)
 	   ═══════════════════════════════════════════════════════════════════════════ */
@@ -493,18 +482,6 @@
 		color: var(--sidebar-text);
 		font-size: 12px;
 		margin: 0;
-	}
-
-	.dashboard__profile-photo {
-		display: block;
-		width: 34px;
-		height: 34px;
-		border: 2px solid #fff;
-		border-radius: 50%;
-		background: url('https://secure.gravatar.com/avatar/?s=32&d=mm&r=g') no-repeat center;
-		background-size: cover;
-		flex-shrink: 0;
-		transition: var(--sidebar-transition);
 	}
 
 	.dashboard__profile-name {
@@ -658,8 +635,7 @@
 	@media (prefers-reduced-motion: reduce) {
 		.dashboard__profile-nav-item,
 		.dash_main_links a,
-		.dashboard__nav-item-icon,
-		.dashboard__profile-photo {
+		.dashboard__nav-item-icon {
 			transition: none;
 		}
 	}
