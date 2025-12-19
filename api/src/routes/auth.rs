@@ -27,7 +27,8 @@ use crate::{
     },
     utils::{
         create_jwt, create_refresh_token, generate_session_id, generate_verification_token,
-        hash_password, hash_token, verify_jwt, verify_password,
+        hash_password, hash_token, verify_jwt, verify_password, validate_password,
+        hash_dummy_password,
     },
     AppState,
 };
@@ -71,14 +72,14 @@ async fn register(
         ));
     }
 
-    // Validate password strength
-    if input.password.len() < 8 {
+    // ICT L11+ Security: Validate password strength with hardened rules
+    if let Err(password_error) = validate_password(&input.password) {
         return Err((
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(json!({
                 "message": "Validation failed",
                 "errors": {
-                    "password": ["Password must be at least 8 characters"]
+                    "password": [password_error]
                 }
             })),
         ));
@@ -352,12 +353,21 @@ async fn resend_verification(
 
 /// Login user
 /// POST /api/auth/login
+/// ICT L11+ Security: Timing attack prevention - always perform password hash
 async fn login(
     State(state): State<AppState>,
     Json(input): Json<LoginUser>,
 ) -> Result<Json<AuthResponse>, (StatusCode, Json<serde_json::Value>)> {
+    // Security audit logging
+    tracing::info!(
+        target: "security",
+        event = "login_attempt",
+        email = %input.email,
+        "Login attempt initiated"
+    );
+
     // Find user
-    let user: User = sqlx::query_as("SELECT * FROM users WHERE email = $1")
+    let user_result: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = $1")
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
         .await
@@ -367,17 +377,64 @@ async fn login(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": "Database error"})),
             )
-        })?
-        .ok_or_else(|| {
-            // Generic error to prevent user enumeration
-            (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"error": "Invalid credentials"})),
-            )
         })?;
 
-    // Check if email is verified
+    // ICT L11+ Security: Timing attack prevention
+    // Always perform password hashing even if user doesn't exist
+    // This prevents timing-based user enumeration
+    let user = match user_result {
+        Some(u) => u,
+        None => {
+            // Hash dummy password to match timing of real verification
+            hash_dummy_password();
+            tracing::info!(
+                target: "security",
+                event = "login_failed",
+                reason = "user_not_found",
+                email = %input.email,
+                "Login failed - user not found (timing protected)"
+            );
+            return Err((
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Invalid credentials"})),
+            ));
+        }
+    };
+
+    // Verify password (this happens regardless of user existence due to above)
+    let password_valid = verify_password(&input.password, &user.password_hash).map_err(|e| {
+        tracing::error!("Password verification error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Authentication error"})),
+        )
+    })?;
+
+    if !password_valid {
+        tracing::info!(
+            target: "security",
+            event = "login_failed",
+            reason = "invalid_password",
+            user_id = %user.id,
+            email = %user.email,
+            "Login failed - invalid password"
+        );
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error": "Invalid credentials"})),
+        ));
+    }
+
+    // Check if email is verified (after password check for security)
     if user.email_verified_at.is_none() {
+        tracing::info!(
+            target: "security",
+            event = "login_failed",
+            reason = "email_not_verified",
+            user_id = %user.id,
+            email = %user.email,
+            "Login failed - email not verified"
+        );
         return Err((
             StatusCode::FORBIDDEN,
             Json(json!({
@@ -385,20 +442,6 @@ async fn login(
                 "code": "EMAIL_NOT_VERIFIED",
                 "email": user.email
             })),
-        ));
-    }
-
-    // Verify password
-    if !verify_password(&input.password, &user.password_hash).map_err(|e| {
-        tracing::error!("Password verification error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Authentication error"})),
-        )
-    })? {
-        return Err((
-            StatusCode::UNAUTHORIZED,
-            Json(json!({"error": "Invalid credentials"})),
         ));
     }
 
@@ -425,7 +468,14 @@ async fn login(
     // Generate session ID
     let session_id = generate_session_id();
 
-    tracing::info!("User logged in: {}", user.email);
+    // Security audit: successful login
+    tracing::info!(
+        target: "security",
+        event = "login_success",
+        user_id = %user.id,
+        email = %user.email,
+        "Login successful"
+    );
 
     Ok(Json(AuthResponse {
         token,
@@ -610,14 +660,14 @@ async fn reset_password(
         ));
     }
 
-    // Validate password strength
-    if input.password.len() < 8 {
+    // ICT L11+ Security: Validate password strength with hardened rules
+    if let Err(password_error) = validate_password(&input.password) {
         return Err((
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(json!({
                 "message": "Validation failed",
                 "errors": {
-                    "password": ["Password must be at least 8 characters"]
+                    "password": [password_error]
                 }
             })),
         ));

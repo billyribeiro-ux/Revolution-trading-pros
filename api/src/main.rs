@@ -21,6 +21,7 @@ use tower_http::{
     compression::CompressionLayer,
     cors::CorsLayer,
     trace::TraceLayer,
+    set_header::SetResponseHeaderLayer,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -116,10 +117,52 @@ async fn main() -> anyhow::Result<()> {
         .expose_headers([header::SET_COOKIE])
         .allow_credentials(true);
 
-    // Build router
+    // ICT L11+ Security Headers
+    // These headers protect against XSS, clickjacking, MIME sniffing, and enforce HTTPS
+    let security_headers = tower::ServiceBuilder::new()
+        // Prevent MIME type sniffing
+        .layer(SetResponseHeaderLayer::overriding(
+            header::X_CONTENT_TYPE_OPTIONS,
+            HeaderValue::from_static("nosniff"),
+        ))
+        // Prevent clickjacking
+        .layer(SetResponseHeaderLayer::overriding(
+            header::X_FRAME_OPTIONS,
+            HeaderValue::from_static("DENY"),
+        ))
+        // XSS Protection (legacy browsers)
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("x-xss-protection"),
+            HeaderValue::from_static("1; mode=block"),
+        ))
+        // Referrer Policy
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("referrer-policy"),
+            HeaderValue::from_static("strict-origin-when-cross-origin"),
+        ))
+        // Content Security Policy
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("content-security-policy"),
+            HeaderValue::from_static("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://revolution-trading-pros-api.fly.dev wss://revolution-trading-pros-api.fly.dev"),
+        ))
+        // Strict Transport Security (HSTS) - 1 year, include subdomains
+        .layer(SetResponseHeaderLayer::overriding(
+            header::STRICT_TRANSPORT_SECURITY,
+            HeaderValue::from_static("max-age=31536000; includeSubDomains; preload"),
+        ))
+        // Permissions Policy (disable sensitive features)
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("permissions-policy"),
+            HeaderValue::from_static("accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"),
+        ));
+
+    tracing::info!("Security headers configured");
+
+    // Build router with security layers
     let app = Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
+        .layer(security_headers)
         .layer(cors)
         .layer(CompressionLayer::new())
         .layer(TraceLayer::new_for_http())

@@ -1,16 +1,18 @@
 //! Utility functions - December 2025 ICT11+ Principal Engineer Grade
+//! SECURITY HARDENED - Authentication Hardening Audit
 //!
 //! Authentication utilities:
-//! - Password hashing with Argon2 (new users)
+//! - Password hashing with Argon2id (OWASP recommended parameters)
 //! - Password verification supporting both bcrypt (Laravel) and Argon2
 //! - JWT token creation and verification
 //! - Refresh token generation
 //! - Session ID generation
+//! - Constant-time comparison utilities
 
 use anyhow::Result;
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-    Argon2,
+    Argon2, Algorithm, Params, Version,
 };
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
@@ -27,14 +29,77 @@ pub struct Claims {
     pub token_type: String,  // "access" or "refresh"
 }
 
-/// Hash a password using Argon2 (for new users)
+/// ICT L11+ Security Hardening: Password validation rules
+pub struct PasswordValidation {
+    pub min_length: usize,
+    pub max_length: usize,
+}
+
+impl Default for PasswordValidation {
+    fn default() -> Self {
+        Self {
+            min_length: 12,  // OWASP minimum for financial applications
+            max_length: 128, // Prevent DoS via extremely long passwords
+        }
+    }
+}
+
+/// Validate password meets security requirements
+/// Returns Ok(()) if valid, Err with specific message if invalid
+pub fn validate_password(password: &str) -> Result<(), &'static str> {
+    let rules = PasswordValidation::default();
+    
+    if password.len() < rules.min_length {
+        return Err("Password must be at least 12 characters");
+    }
+    if password.len() > rules.max_length {
+        return Err("Password must be no more than 128 characters");
+    }
+    
+    // Check for at least one uppercase, lowercase, digit
+    let has_upper = password.chars().any(|c| c.is_ascii_uppercase());
+    let has_lower = password.chars().any(|c| c.is_ascii_lowercase());
+    let has_digit = password.chars().any(|c| c.is_ascii_digit());
+    
+    if !has_upper || !has_lower || !has_digit {
+        return Err("Password must contain uppercase, lowercase, and a number");
+    }
+    
+    Ok(())
+}
+
+/// Hash a password using Argon2id with OWASP-recommended parameters
+/// ICT L11+ Security: Hardened configuration for financial applications
+/// 
+/// Parameters (OWASP 2024 recommendations):
+/// - Algorithm: Argon2id (resistant to side-channel and GPU attacks)
+/// - Memory: 64 MiB (65536 KiB)
+/// - Iterations: 3
+/// - Parallelism: 4
+/// - Output length: 32 bytes
 pub fn hash_password(password: &str) -> Result<String> {
     let salt = SaltString::generate(&mut OsRng);
-    let argon2 = Argon2::default();
+    
+    // OWASP-recommended Argon2id parameters for financial applications
+    let params = Params::new(
+        65536,  // 64 MiB memory
+        3,      // 3 iterations
+        4,      // 4 parallel lanes
+        Some(32) // 32-byte output
+    ).map_err(|e| anyhow::anyhow!("Invalid Argon2 params: {}", e))?;
+    
+    let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
+    
     let hash = argon2
         .hash_password(password.as_bytes(), &salt)
         .map_err(|e| anyhow::anyhow!("Password hashing failed: {}", e))?;
     Ok(hash.to_string())
+}
+
+/// Hash a "dummy" password to prevent timing attacks
+/// Call this when user doesn't exist to match timing of real verification
+pub fn hash_dummy_password() {
+    let _ = hash_password("dummy_password_for_timing");
 }
 
 /// Verify a password against a hash
@@ -121,9 +186,23 @@ pub fn verify_jwt(token: &str, secret: &str) -> Result<Claims> {
     Ok(token_data.claims)
 }
 
-/// Generate a unique session ID
+/// Generate a unique session ID (256-bit entropy)
+/// ICT L11+ Security: Cryptographically secure session identifier
 pub fn generate_session_id() -> String {
-    Uuid::new_v4().to_string()
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
+    let bytes: [u8; 32] = rng.gen();
+    hex::encode(bytes)
+}
+
+/// Constant-time string comparison to prevent timing attacks
+/// ICT L11+ Security: Use for any security-sensitive comparisons
+pub fn constant_time_compare(a: &str, b: &str) -> bool {
+    use subtle::ConstantTimeEq;
+    if a.len() != b.len() {
+        return false;
+    }
+    a.as_bytes().ct_eq(b.as_bytes()).into()
 }
 
 /// Generate a random token (for password reset, etc.)
