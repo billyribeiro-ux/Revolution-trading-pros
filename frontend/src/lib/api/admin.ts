@@ -1007,71 +1007,71 @@ export const emailTemplatesApi = {
 export const formsApi = {
 	async list(params?: PaginationParams & FilterParams): Promise<ApiResponse<Form[]>> {
 		const query = params ? buildQueryString(params) : '';
-		return makeRequest<Form[]>(`/forms${query}`);
+		return makeRequest<Form[]>(`/admin/forms${query}`);
 	},
 
 	async get(id: number): Promise<ApiResponse<Form>> {
-		return makeRequest<Form>(`/forms/${id}`);
+		return makeRequest<Form>(`/admin/forms/${id}`);
 	},
 
 	async create(data: Partial<Form>): Promise<ApiResponse<Form>> {
-		const response = await makeRequest<Form>('/forms', {
+		const response = await makeRequest<Form>('/admin/forms', {
 			method: 'POST',
 			body: JSON.stringify(data)
 		});
-		requestManager.clearCache('/forms');
+		requestManager.clearCache('/admin/forms');
 		return response;
 	},
 
 	async update(id: number, data: Partial<Form>): Promise<ApiResponse<Form>> {
-		const response = await makeRequest<Form>(`/forms/${id}`, {
+		const response = await makeRequest<Form>(`/admin/forms/${id}`, {
 			method: 'PUT',
 			body: JSON.stringify(data)
 		});
-		requestManager.clearCache('/forms');
+		requestManager.clearCache('/admin/forms');
 		return response;
 	},
 
 	async delete(id: number): Promise<ApiResponse<void>> {
-		const response = await makeRequest<void>(`/forms/${id}`, {
+		const response = await makeRequest<void>(`/admin/forms/${id}`, {
 			method: 'DELETE'
 		});
-		requestManager.clearCache('/forms');
+		requestManager.clearCache('/admin/forms');
 		return response;
 	},
 
 	async publish(id: number): Promise<ApiResponse<Form>> {
-		const response = await makeRequest<Form>(`/forms/${id}/publish`, {
+		const response = await makeRequest<Form>(`/admin/forms/${id}/publish`, {
 			method: 'POST'
 		});
-		requestManager.clearCache('/forms');
+		requestManager.clearCache('/admin/forms');
 		return response;
 	},
 
 	async unpublish(id: number): Promise<ApiResponse<Form>> {
-		const response = await makeRequest<Form>(`/forms/${id}/unpublish`, {
+		const response = await makeRequest<Form>(`/admin/forms/${id}/unpublish`, {
 			method: 'POST'
 		});
-		requestManager.clearCache('/forms');
+		requestManager.clearCache('/admin/forms');
 		return response;
 	},
 
 	async duplicate(id: number): Promise<ApiResponse<Form>> {
-		const response = await makeRequest<Form>(`/forms/${id}/duplicate`, {
+		const response = await makeRequest<Form>(`/admin/forms/${id}/duplicate`, {
 			method: 'POST'
 		});
-		requestManager.clearCache('/forms');
+		requestManager.clearCache('/admin/forms');
 		return response;
 	},
 
 	async stats(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/forms/stats', {
+		return makeRequest<Record<string, any>>('/admin/forms/stats', {
 			cacheTTL: 60000
 		});
 	},
 
 	async fieldTypes(): Promise<ApiResponse<Record<string, any>>> {
-		return makeRequest<Record<string, any>>('/forms/field-types', {
+		return makeRequest<Record<string, any>>('/admin/forms/field-types', {
 			cacheTTL: 3600000 // Cache for 1 hour
 		});
 	},
@@ -1082,18 +1082,18 @@ export const formsApi = {
 		params?: PaginationParams
 	): Promise<ApiResponse<FormSubmission[]>> {
 		const query = params ? buildQueryString(params) : '';
-		return makeRequest<FormSubmission[]>(`/forms/${formId}/submissions${query}`);
+		return makeRequest<FormSubmission[]>(`/admin/forms/${formId}/submissions${query}`);
 	},
 
 	async getSubmission(formId: number, submissionId: number): Promise<ApiResponse<FormSubmission>> {
-		return makeRequest<FormSubmission>(`/forms/${formId}/submissions/${submissionId}`);
+		return makeRequest<FormSubmission>(`/admin/forms/${formId}/submissions/${submissionId}`);
 	},
 
 	async deleteSubmission(formId: number, submissionId: number): Promise<ApiResponse<void>> {
-		const response = await makeRequest<void>(`/forms/${formId}/submissions/${submissionId}`, {
+		const response = await makeRequest<void>(`/admin/forms/${formId}/submissions/${submissionId}`, {
 			method: 'DELETE'
 		});
-		requestManager.clearCache(`/forms/${formId}/submissions`);
+		requestManager.clearCache(`/admin/forms/${formId}/submissions`);
 		return response;
 	},
 
@@ -1101,7 +1101,7 @@ export const formsApi = {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
 		const response = await fetch(
-			`${API_BASE_URL}/forms/${formId}/submissions/export?format=${format}`,
+			`${API_BASE_URL}/admin/forms/${formId}/submissions/export?format=${format}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`
