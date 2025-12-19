@@ -9,7 +9,6 @@
 	 * @version 2.0.0 - Added animated numbers
 	 */
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import type { KpiValue } from '$lib/api/analytics';
 	import AnimatedNumber from '$lib/components/ui/AnimatedNumber.svelte';
@@ -49,18 +48,6 @@
 				entries.forEach((entry) => {
 					if (entry.isIntersecting && !isVisible) {
 						isVisible = true;
-						gsap.fromTo(
-							cardRef,
-							{ opacity: 0, y: 20, scale: 0.95 },
-							{
-								opacity: 1,
-								y: 0,
-								scale: 1,
-								duration: 0.6,
-								delay: animationDelay,
-								ease: 'power3.out'
-							}
-						);
 					}
 				});
 			},
@@ -141,7 +128,8 @@
 	bind:this={cardRef}
 	class="relative rounded-xl border {colorClasses[kpi.color || 'blue']} {sizeClasses}
 		transition-all duration-200 {clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg' : ''}
-		{animateOnMount ? 'opacity-0' : ''}"
+		{animateOnMount && !isVisible ? 'kpi-enter' : ''} {animateOnMount && isVisible ? 'kpi-enter-active' : ''}"
+	style={animateOnMount ? `transition-delay: ${animationDelay}s` : undefined}
 	class:ring-2={kpi.is_anomaly}
 	class:ring-red-500={kpi.is_anomaly}
 >
@@ -169,7 +157,20 @@
 	<!-- Value -->
 	<div class="flex items-end gap-3">
 		<span class="{valueSizeClasses} font-bold tracking-tight">
-			{kpi.formatted_value}
+			{#if isVisible}
+				<AnimatedNumber
+					value={kpi.value}
+					format={kpi.format as any}
+					decimals={kpi.decimals ?? 0}
+					prefix={kpi.prefix ?? ''}
+					suffix={kpi.suffix ?? ''}
+					duration={1.1}
+					delay={animationDelay}
+					easing="power2.out"
+				/>
+			{:else}
+				{kpi.formatted_value}
+			{/if}
 		</span>
 
 		<!-- Change Indicator -->
@@ -216,3 +217,14 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.kpi-enter {
+		opacity: 0;
+		transform: translateY(20px) scale(0.95);
+	}
+	.kpi-enter-active {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+</style>

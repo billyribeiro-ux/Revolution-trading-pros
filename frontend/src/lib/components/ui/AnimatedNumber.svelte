@@ -8,8 +8,8 @@
 	 * @level L8 Principal Engineer
 	 */
 	import { onMount, onDestroy } from 'svelte';
-	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
+	import { cubicOut } from 'svelte/easing';
 
 	interface Props {
 		value: number;
@@ -39,7 +39,23 @@
 
 	let displayValue = $state(0);
 	let element: HTMLSpanElement;
-	let tween: gsap.core.Tween | null = null;
+	let rafId: number | null = null;
+
+	function resolveEasingFn(name: string): (t: number) => number {
+		// GSAP-like names mapped to a small set of lightweight easing functions.
+		// We intentionally keep this small to avoid pulling in any heavy easing deps.
+		switch (name) {
+			case 'linear':
+			case 'none':
+				return (t) => t;
+			case 'power1.out':
+			case 'power2.out':
+			case 'power3.out':
+			case 'power4.out':
+			default:
+				return cubicOut;
+		}
+	}
 
 	function formatValue(val: number): string {
 		let formatted: string;
@@ -79,27 +95,46 @@
 	}
 
 	function animate(targetValue: number) {
-		if (!browser) return;
-
-		// Kill any existing tween
-		if (tween) {
-			tween.kill();
+		if (!browser) {
+			displayValue = targetValue;
+			return;
 		}
 
-		// Create the counting animation
-		const obj = { val: displayValue };
-		tween = gsap.to(obj, {
-			val: targetValue,
-			duration,
-			delay,
-			ease: easing,
-			onUpdate: () => {
-				displayValue = obj.val;
-			},
-			onComplete: () => {
-				displayValue = targetValue;
+		if (rafId !== null) {
+			cancelAnimationFrame(rafId);
+			rafId = null;
+		}
+
+		const ease = resolveEasingFn(easing);
+		const startValue = displayValue;
+		const durationMs = Math.max(0, duration) * 1000;
+		const delayMs = Math.max(0, delay) * 1000;
+		const scheduledStart = performance.now() + delayMs;
+
+		const tick = (now: number) => {
+			if (now < scheduledStart) {
+				rafId = requestAnimationFrame(tick);
+				return;
 			}
-		});
+
+			if (durationMs === 0) {
+				displayValue = targetValue;
+				rafId = null;
+				return;
+			}
+
+			const t = Math.min((now - scheduledStart) / durationMs, 1);
+			displayValue = startValue + (targetValue - startValue) * ease(t);
+
+			if (t < 1) {
+				rafId = requestAnimationFrame(tick);
+			} else {
+				displayValue = targetValue;
+				rafId = null;
+			}
+		};
+
+		rafId = requestAnimationFrame(tick);
 	}
 
 	onMount(() => {
@@ -109,9 +144,8 @@
 	});
 
 	onDestroy(() => {
-		if (tween) {
-			tween.kill();
-		}
+		if (rafId !== null) cancelAnimationFrame(rafId);
+		rafId = null;
 	});
 
 	// Reactively animate when value changes
