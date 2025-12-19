@@ -940,10 +940,11 @@
 		padding: 12px 16px;
 		border: 1px solid var(--checkout-border);
 		border-radius: 5px;
-		font-size: 15px;
+		font-size: 16px;
 		font-weight: 600;
 		color: var(--checkout-text-dark);
 		transition: var(--checkout-transition);
+		min-height: 44px;
 	}
 
 	.input-text:focus {
@@ -1100,8 +1101,9 @@
 	}
 
 	.btn-xs {
-		padding: 6px 12px;
-		font-size: 12px;
+		padding: 10px 16px;
+		font-size: 13px;
+		min-height: 44px;
 	}
 
 	:global(.spin) {
@@ -1303,11 +1305,12 @@
 	.checkout_coupon input {
 		flex: 1;
 		min-width: 120px;
-		padding: 10px 12px;
+		padding: 12px 14px;
 		border: 1px solid var(--checkout-border);
 		border-radius: 5px;
-		font-size: 13px;
+		font-size: 16px;
 		text-transform: uppercase;
+		min-height: 44px;
 	}
 
 	.checkout_coupon input:focus {
@@ -1404,6 +1407,36 @@
 	@media screen and (max-width: 480px) {
 		.woocommerce-checkout {
 			padding: 20px 0;
+		}
+
+		.checkout-cart-contents {
+			padding: 16px;
+		}
+
+		.coupon-section {
+			padding: 12px 16px;
+		}
+
+		.checkout-order-total {
+			font-size: 16px;
+		}
+	}
+
+	@media screen and (max-width: 360px) {
+		.container {
+			padding: 0 12px;
+		}
+
+		.card-body {
+			padding: 16px;
+		}
+
+		.card-footer {
+			padding: 12px 16px;
+		}
+
+		.page-title {
+			font-size: 24px;
 		}
 	}
 </style>

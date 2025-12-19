@@ -70,13 +70,13 @@
 	keywords={['trading signup', 'create trading account', 'join revolution trading pros', 'trading membership']}
 />
 
-<div class="min-h-[calc(100vh-120px)] flex items-center justify-center bg-rtp-bg px-4 py-12">
+<div class="min-h-[calc(100vh-120px)] flex items-center justify-center bg-rtp-bg px-4 sm:px-6 py-8 sm:py-12">
 	<div class="w-full max-w-md">
 		<!-- Card -->
-		<div class="bg-rtp-surface rounded-2xl shadow-xl p-8 border border-rtp-border">
+		<div class="bg-rtp-surface rounded-2xl shadow-xl p-6 sm:p-8 border border-rtp-border">
 			<!-- Logo/Header -->
-			<div class="text-center mb-8">
-				<h1 class="text-3xl font-heading font-bold text-rtp-text mb-2">Join Revolution Trading</h1>
+			<div class="text-center mb-6 sm:mb-8">
+				<h1 class="text-2xl sm:text-3xl font-heading font-bold text-rtp-text mb-2">Join Revolution Trading</h1>
 				<p class="text-rtp-muted">Start your trading journey today</p>
 			</div>
 
@@ -109,7 +109,7 @@
 						bind:value={name}
 						required
 						disabled={isLoading}
-						class="w-full px-4 py-3 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="John Doe"
 					/>
 					{#if validationErrors.name}
@@ -128,7 +128,7 @@
 						bind:value={email}
 						required
 						disabled={isLoading}
-						class="w-full px-4 py-3 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="you@example.com"
 					/>
 					{#if validationErrors.email}
@@ -148,7 +148,7 @@
 						required
 						minlength="8"
 						disabled={isLoading}
-						class="w-full px-4 py-3 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="••••••••"
 					/>
 					<p class="mt-1 text-xs text-rtp-muted">Minimum 8 characters</p>
@@ -169,20 +169,20 @@
 						required
 						minlength="8"
 						disabled={isLoading}
-						class="w-full px-4 py-3 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+						class="w-full px-4 py-3.5 border border-rtp-border rounded-lg focus:ring-2 focus:ring-rtp-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base min-h-[44px]"
 						placeholder="••••••••"
 					/>
 				</div>
 
 				<!-- Terms Checkbox -->
 				<div>
-					<label class="flex items-start">
+					<label class="flex items-start cursor-pointer p-2 -m-2 rounded-lg hover:bg-rtp-border/10">
 						<input
 							type="checkbox"
 							required
-							class="w-4 h-4 mt-1 text-rtp-primary border-rtp-border rounded focus:ring-rtp-primary"
+							class="w-5 h-5 mt-0.5 text-rtp-primary border-rtp-border rounded focus:ring-rtp-primary min-w-[20px]"
 						/>
-						<span class="ml-2 text-sm text-rtp-muted">
+						<span class="ml-3 text-sm text-rtp-muted">
 							I agree to the
 							<a href="/terms" class="text-rtp-primary hover:underline">Terms of Service</a>
 							and
@@ -195,7 +195,7 @@
 				<button
 					type="submit"
 					disabled={isLoading}
-					class="w-full py-3 px-4 bg-gradient-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+					class="w-full py-4 px-4 bg-gradient-to-r from-rtp-primary to-rtp-blue text-white font-bold rounded-lg hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-h-[48px] text-base"
 				>
 					{#if isLoading}
 						<span class="inline-flex items-center">
@@ -247,7 +247,7 @@
 		</div>
 
 		<!-- Benefits -->
-		<div class="mt-8 grid grid-cols-3 gap-4 text-center">
+		<div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
 			<div>
 				<div class="text-2xl font-bold text-rtp-primary">10K+</div>
 				<div class="text-xs text-rtp-muted mt-1">Active Traders</div>

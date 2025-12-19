@@ -471,8 +471,8 @@
 		max-width: 1200px;
 		margin: 0 auto;
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-		gap: 2rem;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+		gap: 1.5rem;
 	}
 
 	.post-card {
