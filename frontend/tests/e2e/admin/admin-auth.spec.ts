@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Revolution Trading Pros - Admin Authentication E2E Tests
  *
@@ -17,6 +18,13 @@
  */
 
 import { test, expect, type Page, type ConsoleMessage } from '@playwright/test';
+
+declare global {
+	interface Window {
+		gtag: (...args: unknown[]) => void;
+		dataLayer: unknown[];
+	}
+}
 import { shouldSkipBackendTests, getBackendSkipReason } from '../helpers';
 
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
@@ -282,7 +290,7 @@ test.describe('GA4 Integration', () => {
 		await page.waitForTimeout(3000);
 
 		const hasGtag = await page.evaluate(() => {
-			return typeof window.gtag === 'function';
+			return typeof (window as Window).gtag === 'function';
 		});
 
 		// gtag should be available (even if GA4 ID is not configured, the stub should exist)
@@ -296,7 +304,7 @@ test.describe('GA4 Integration', () => {
 		await page.waitForTimeout(3000);
 
 		const hasDataLayer = await page.evaluate(() => {
-			return Array.isArray(window.dataLayer);
+			return Array.isArray((window as Window).dataLayer);
 		});
 
 		expect(hasDataLayer).toBe(true);

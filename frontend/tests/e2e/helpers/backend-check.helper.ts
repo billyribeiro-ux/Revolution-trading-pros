@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Revolution Trading Pros - Backend Availability Check Helper
  *

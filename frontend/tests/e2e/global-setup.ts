@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Revolution Trading Pros - Global E2E Test Setup
  *

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Revolution Trading Pros - API Helper
  *
@@ -149,10 +150,7 @@ export function createApiHelper(baseUrl?: string) {
 					data: data ? JSON.stringify(data) : undefined
 				});
 
-				const responseHeaders: Record<string, string> = {};
-				response.headers().forEach((value, key) => {
-					responseHeaders[key] = value;
-				});
+				const responseHeaders: Record<string, string> = response.headers();
 
 				if (response.ok()) {
 					const responseData = await response.json().catch(() => null);
