@@ -16,6 +16,7 @@ pub struct Services {
     pub storage: storage::StorageService,
     pub stripe: stripe::StripeService,
     pub search: search::SearchService,
+    pub email: Option<email::EmailService>,
 }
 
 impl Services {
@@ -30,11 +31,22 @@ impl Services {
             }
         });
 
+        // Initialize email service (optional - requires POSTMARK_TOKEN)
+        let email = config.postmark_token.as_ref().map(|token| {
+            tracing::info!("Email service initialized with Postmark");
+            email::EmailService::new(token, &config.from_email, &config.app_url)
+        });
+
+        if email.is_none() {
+            tracing::warn!("Email service not initialized (POSTMARK_TOKEN not set)");
+        }
+
         Ok(Self {
             redis: redis::RedisService::new(&config.redis_url).await?,
             storage: storage::StorageService::new(config).await?,
             stripe: stripe::StripeService::new(&config.stripe_secret_key),
             search,
+            email,
         })
     }
 }

@@ -151,3 +151,35 @@ pub fn generate_password_reset_token() -> String {
         })
         .collect()
 }
+
+/// Generate a verification token and its hash
+/// Returns (raw_token, hashed_token)
+/// The raw token is sent to the user, the hashed token is stored in the database
+pub fn generate_verification_token() -> (String, String) {
+    use rand::Rng;
+    use sha2::{Digest, Sha256};
+    
+    let mut rng = rand::thread_rng();
+    let raw_token: String = (0..64)
+        .map(|_| {
+            let idx = rng.gen_range(0..62);
+            match idx {
+                0..=9 => (b'0' + idx) as char,
+                10..=35 => (b'a' + idx - 10) as char,
+                36..=61 => (b'A' + idx - 36) as char,
+                _ => unreachable!(),
+            }
+        })
+        .collect();
+    
+    let hashed_token = hash_token(&raw_token);
+    (raw_token, hashed_token)
+}
+
+/// Hash a token using SHA256 (for storing verification/reset tokens)
+pub fn hash_token(token: &str) -> String {
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(token.as_bytes());
+    hex::encode(hasher.finalize())
+}

@@ -55,6 +55,7 @@
 	let showPassword = $state(false);
 	let errors = $state<Record<string, string[]>>({});
 	let generalError = $state('');
+	let emailNotVerified = $state(false);  // ICT 11+: Track email verification error
 	let isLoading = $state(false);
 	let isSuccess = $state(false);
 	let showLottie = $state(false);
@@ -327,10 +328,20 @@
 				);
 			}
 
-			if (error && typeof error === 'object' && 'errors' in error) {
-				// DEFENSIVE: Ensure errors is always an object, never undefined
-				const errorObj = (error as { errors: Record<string, string[]> }).errors;
-				errors = errorObj ?? {};
+			// ICT 11+: Handle EMAIL_NOT_VERIFIED error specifically
+			if (error && typeof error === 'object') {
+				const errorObj = error as any;
+				if (errorObj.code === 'EMAIL_NOT_VERIFIED' || errorObj.message?.includes('verify your email')) {
+					emailNotVerified = true;
+					generalError = '';
+				} else if ('errors' in errorObj) {
+					// DEFENSIVE: Ensure errors is always an object, never undefined
+					errors = errorObj.errors ?? {};
+				} else if (errorObj.message) {
+					generalError = errorObj.message;
+				} else {
+					generalError = 'Unable to sign in. Please check your credentials and try again.';
+				}
 			} else if (error instanceof Error) {
 				generalError = error.message;
 			} else {
@@ -374,6 +385,18 @@
 				</h1>
 				<p class="form-subtitle">Sign in to your trading dashboard</p>
 			</div>
+
+			<!-- Email Not Verified Banner -->
+			{#if emailNotVerified}
+				<div class="verification-banner" in:fade={{ duration: 200 }} role="alert">
+					<IconMail size={20} />
+					<div class="verification-content">
+						<p class="verification-title">Email Not Verified</p>
+						<p class="verification-text">Please check your inbox and click the verification link to activate your account.</p>
+						<a href="/verify-email" class="verification-link">Resend verification email →</a>
+					</div>
+				</div>
+			{/if}
 
 			<!-- Error Banner -->
 			{#if generalError}
@@ -665,6 +688,51 @@
 		font-family: var(--font-body);
 		font-size: 1rem;
 		color: var(--auth-subheading);
+	}
+
+	/* Verification Banner - ICT 11+ */
+	.verification-banner {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		padding: 1rem;
+		background: rgba(251, 191, 36, 0.1);
+		border: 1px solid rgba(251, 191, 36, 0.3);
+		border-radius: 12px;
+		margin-bottom: 1.5rem;
+		color: #fbbf24;
+	}
+
+	.verification-content {
+		flex: 1;
+	}
+
+	.verification-title {
+		font-size: 0.9375rem;
+		font-weight: 700;
+		margin-bottom: 0.25rem;
+		color: #fbbf24;
+	}
+
+	.verification-text {
+		font-size: 0.8125rem;
+		font-weight: 500;
+		line-height: 1.4;
+		color: rgba(251, 191, 36, 0.9);
+		margin-bottom: 0.5rem;
+	}
+
+	.verification-link {
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: #fbbf24;
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.verification-link:hover {
+		color: #fcd34d;
+		text-decoration: underline;
 	}
 
 	/* Error Banner */

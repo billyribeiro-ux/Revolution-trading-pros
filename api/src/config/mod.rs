@@ -36,6 +36,7 @@ pub struct Config {
     // Email (Postmark)
     pub postmark_token: Option<String>,
     pub from_email: String,
+    pub app_url: String,  // Frontend URL for email links
 
     // Meilisearch
     pub meilisearch_host: String,
@@ -78,6 +79,8 @@ impl Config {
 
             postmark_token: std::env::var("POSTMARK_TOKEN").ok(),
             from_email: std::env::var("FROM_EMAIL").unwrap_or_else(|_| "noreply@example.com".to_string()),
+            app_url: std::env::var("APP_URL")
+                .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string()),
 
             meilisearch_host: std::env::var("MEILISEARCH_HOST")
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),

@@ -58,9 +58,9 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_products_slug ON products(slug);
-CREATE INDEX idx_products_type ON products(type);
-CREATE INDEX idx_products_active ON products(is_active);
+CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
+CREATE INDEX IF NOT EXISTS idx_products_type ON products(type);
+CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
 
 CREATE TABLE IF NOT EXISTS user_products (
     id BIGSERIAL PRIMARY KEY,
@@ -99,8 +99,8 @@ CREATE TABLE IF NOT EXISTS indicators (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_indicators_slug ON indicators(slug);
-CREATE INDEX idx_indicators_platform ON indicators(platform);
+CREATE INDEX IF NOT EXISTS idx_indicators_slug ON indicators(slug);
+CREATE INDEX IF NOT EXISTS idx_indicators_platform ON indicators(platform);
 
 CREATE TABLE IF NOT EXISTS user_indicators (
     id BIGSERIAL PRIMARY KEY,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS lessons (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_lessons_course ON lessons(course_id);
+CREATE INDEX IF NOT EXISTS idx_lessons_course ON lessons(course_id);
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- BLOG/POSTS
@@ -176,9 +176,9 @@ CREATE TABLE IF NOT EXISTS posts (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_posts_slug ON posts(slug);
-CREATE INDEX idx_posts_status ON posts(status);
-CREATE INDEX idx_posts_published ON posts(status, published_at);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
+CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(status, published_at);
 
 CREATE TABLE IF NOT EXISTS categories (
     id BIGSERIAL PRIMARY KEY,
@@ -257,8 +257,8 @@ CREATE TABLE IF NOT EXISTS user_memberships (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_user_memberships_user ON user_memberships(user_id);
-CREATE INDEX idx_user_memberships_status ON user_memberships(status);
+CREATE INDEX IF NOT EXISTS idx_user_memberships_user ON user_memberships(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_memberships_status ON user_memberships(status);
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- ORDERS & PAYMENTS
@@ -289,9 +289,9 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_orders_user ON orders(user_id);
-CREATE INDEX idx_orders_number ON orders(order_number);
-CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_number ON orders(order_number);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 
 CREATE TABLE IF NOT EXISTS order_items (
     id BIGSERIAL PRIMARY KEY,
@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS coupons (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_coupons_code ON coupons(code);
+CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);
 
 CREATE TABLE IF NOT EXISTS invoices (
     id BIGSERIAL PRIMARY KEY,
@@ -368,8 +368,8 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_newsletter_email ON newsletter_subscribers(email);
-CREATE INDEX idx_newsletter_status ON newsletter_subscribers(status);
+CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email);
+CREATE INDEX IF NOT EXISTS idx_newsletter_status ON newsletter_subscribers(status);
 
 CREATE TABLE IF NOT EXISTS email_templates (
     id BIGSERIAL PRIMARY KEY,
@@ -475,9 +475,9 @@ CREATE TABLE IF NOT EXISTS analytics_events (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_analytics_user ON analytics_events(user_id);
-CREATE INDEX idx_analytics_type ON analytics_events(event_type);
-CREATE INDEX idx_analytics_created ON analytics_events(created_at);
+CREATE INDEX IF NOT EXISTS idx_analytics_user ON analytics_events(user_id);
+CREATE INDEX IF NOT EXISTS idx_analytics_type ON analytics_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at);
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- CONTACTS (CRM)
@@ -501,8 +501,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_contacts_email ON contacts(email);
-CREATE INDEX idx_contacts_status ON contacts(status);
+CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
+CREATE INDEX IF NOT EXISTS idx_contacts_status ON contacts(status);
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- JOBS QUEUE
@@ -524,9 +524,9 @@ CREATE TABLE IF NOT EXISTS jobs (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE INDEX idx_jobs_queue ON jobs(queue, available_at);
-CREATE INDEX idx_jobs_status ON jobs(status);
-CREATE INDEX idx_jobs_pending ON jobs(status, available_at) WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS idx_jobs_queue ON jobs(queue, available_at);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
+CREATE INDEX IF NOT EXISTS idx_jobs_pending ON jobs(status, available_at) WHERE status = 'pending';
 
 CREATE TABLE IF NOT EXISTS failed_jobs (
     id BIGSERIAL PRIMARY KEY,

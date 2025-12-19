@@ -789,7 +789,7 @@ class AuthenticationService {
 	}
 
 	/**
-	 * Send email verification
+	 * Send email verification (legacy - use resendVerificationEmail instead)
 	 */
 	async sendEmailVerification(): Promise<string> {
 		const response = await this.apiRequest<MessageResponse>('/auth/email/verification-notification', {
@@ -800,21 +800,36 @@ class AuthenticationService {
 	}
 
 	/**
-	 * Verify email
+	 * Verify email with token
+	 * ICT 11+ Principal Engineer: New token-based verification
 	 */
-	async verifyEmail(id: string, hash: string, signature: string): Promise<string> {
+	async verifyEmail(token: string): Promise<string> {
 		const response = await this.apiRequest<MessageResponse>(
-			`/email/verify/${id}/${hash}?signature=${signature}`,
+			`/auth/verify-email?token=${encodeURIComponent(token)}`,
 			{
-				method: 'GET'
+				method: 'GET',
+				skipAuth: true
 			}
 		);
 
-		// Refresh user data
-		await this.getUser();
-
 		// Track email verification
 		this.trackEvent('email_verified');
+
+		return response.message;
+	}
+
+	/**
+	 * Resend verification email
+	 * ICT 11+ Principal Engineer: New endpoint for resending verification
+	 */
+	async resendVerificationEmail(email: string): Promise<string> {
+		const response = await this.apiRequest<MessageResponse>('/auth/resend-verification', {
+			method: 'POST',
+			body: JSON.stringify({ email }),
+			skipAuth: true
+		});
+
+		this.trackEvent('verification_email_resent', { email });
 
 		return response.message;
 	}
@@ -1302,8 +1317,8 @@ export const changePassword = (data: ChangePasswordData) => authService.changePa
 export const forgotPassword = (data: ForgotPasswordData) => authService.forgotPassword(data);
 export const resetPassword = (data: ResetPasswordData) => authService.resetPassword(data);
 export const sendEmailVerification = () => authService.sendEmailVerification();
-export const verifyEmail = (id: string, hash: string, signature: string) =>
-	authService.verifyEmail(id, hash, signature);
+export const verifyEmail = (token: string) => authService.verifyEmail(token);
+export const resendVerificationEmail = (email: string) => authService.resendVerificationEmail(email);
 export const enableMFA = () => authService.enableMFA();
 export const verifyMFA = (code: string) => authService.verifyMFA(code);
 export const disableMFA = (password: string) => authService.disableMFA(password);
