@@ -18,15 +18,13 @@
 		// Level: ICT11+ Principal Engineer - Production Ready
 		// ═══════════════════════════════════════════════════════════════════════════
 
-		// Core strict settings - Production Ready
+		// Core strict settings - Production Ready - ICT11+ FULL STRICT MODE
 		"strict": true,
-		// Disabled: Too many false positives with optional chaining patterns
-		"strictNullChecks": false,
+		"strictNullChecks": true,  // ENABLED: Catch null/undefined errors
 		"strictFunctionTypes": true,
 		"strictBindCallApply": true,
-		"strictPropertyInitialization": false,
-		// Disabled: Svelte event handlers in templates don't need explicit types
-		"noImplicitAny": false,
+		"strictPropertyInitialization": true,  // ENABLED: Ensure class properties initialized
+		"noImplicitAny": true,  // ENABLED: No implicit any types allowed
 		"noImplicitThis": true,
 
 		// Additional strict checks

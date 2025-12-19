@@ -58,6 +58,7 @@ pub struct UpdateUserRequest {
 }
 
 /// List all users (admin)
+/// SECURITY: Uses parameterized queries to prevent SQL injection
 async fn list_users(
     State(state): State<AppState>,
     _user: User,
@@ -67,34 +68,63 @@ async fn list_users(
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut conditions = vec!["1=1".to_string()];
+    // Build query with parameterized conditions
+    let mut sql = String::from("SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE 1=1");
+    let mut count_sql = String::from("SELECT COUNT(*) FROM users WHERE 1=1");
+    
+    if query.role.is_some() {
+        sql.push_str(" AND role = $1");
+        count_sql.push_str(" AND role = $1");
+    }
+    if query.is_active.is_some() {
+        let param_num = if query.role.is_some() { "$2" } else { "$1" };
+        sql.push_str(&format!(" AND is_active = {}", param_num));
+        count_sql.push_str(&format!(" AND is_active = {}", param_num));
+    }
+    if query.search.is_some() {
+        let param_num = match (query.role.is_some(), query.is_active.is_some()) {
+            (true, true) => "$3",
+            (true, false) | (false, true) => "$2",
+            (false, false) => "$1",
+        };
+        sql.push_str(&format!(" AND (name ILIKE {} OR email ILIKE {})", param_num, param_num));
+        count_sql.push_str(&format!(" AND (name ILIKE {} OR email ILIKE {})", param_num, param_num));
+    }
+    
+    sql.push_str(" ORDER BY created_at DESC LIMIT $");
+    sql.push_str(&(1 + [query.role.is_some(), query.is_active.is_some(), query.search.is_some()].iter().filter(|&&x| x).count()).to_string());
+    sql.push_str(" OFFSET $");
+    sql.push_str(&(2 + [query.role.is_some(), query.is_active.is_some(), query.search.is_some()].iter().filter(|&&x| x).count()).to_string());
 
+    // Bind parameters dynamically
+    let mut query_builder = sqlx::query_as::<_, AdminUserRow>(&sql);
+    let mut count_builder = sqlx::query_as::<_, (i64,)>(&count_sql);
+    
     if let Some(ref role) = query.role {
-        conditions.push(format!("role = '{}'", role));
+        query_builder = query_builder.bind(role);
+        count_builder = count_builder.bind(role);
     }
     if let Some(is_active) = query.is_active {
-        conditions.push(format!("is_active = {}", is_active));
+        query_builder = query_builder.bind(is_active);
+        count_builder = count_builder.bind(is_active);
     }
     if let Some(ref search) = query.search {
-        conditions.push(format!("(name ILIKE '%{}%' OR email ILIKE '%{}%')", search, search));
+        let search_pattern = format!("%{}%", search);
+        query_builder = query_builder.bind(&search_pattern);
+        count_builder = count_builder.bind(&search_pattern);
     }
+    
+    query_builder = query_builder.bind(per_page).bind(offset);
 
-    let where_clause = conditions.join(" AND ");
-    let sql = format!(
-        "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE {} ORDER BY created_at DESC LIMIT {} OFFSET {}",
-        where_clause, per_page, offset
-    );
-    let count_sql = format!("SELECT COUNT(*) FROM users WHERE {}", where_clause);
-
-    let users: Vec<AdminUserRow> = sqlx::query_as(&sql)
+    let users = query_builder
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+    let total = count_builder
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
 
     Ok(Json(json!({
         "data": users,
@@ -161,39 +191,64 @@ async fn create_user(
 }
 
 /// Update user (admin)
+/// SECURITY: Uses parameterized queries to prevent SQL injection
 async fn update_user(
     State(state): State<AppState>,
     _user: User,
     Path(id): Path<i64>,
     Json(input): Json<UpdateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
+    // Build UPDATE query with parameterized values
     let mut set_clauses = Vec::new();
+    let mut param_count = 1;
     
-    if let Some(ref name) = input.name {
-        set_clauses.push(format!("name = '{}'", name.replace("'", "''")));
+    if input.name.is_some() {
+        param_count += 1;
+        set_clauses.push(format!("name = ${}", param_count));
     }
-    if let Some(ref email) = input.email {
-        set_clauses.push(format!("email = '{}'", email.replace("'", "''")));
+    if input.email.is_some() {
+        param_count += 1;
+        set_clauses.push(format!("email = ${}", param_count));
     }
-    if let Some(ref role) = input.role {
-        set_clauses.push(format!("role = '{}'", role));
+    if input.role.is_some() {
+        param_count += 1;
+        set_clauses.push(format!("role = ${}", param_count));
     }
-    if let Some(is_active) = input.is_active {
-        set_clauses.push(format!("is_active = {}", is_active));
+    if input.is_active.is_some() {
+        param_count += 1;
+        set_clauses.push(format!("is_active = ${}", param_count));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());
+
+    if set_clauses.len() == 1 {
+        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+    }
 
     let sql = format!(
         "UPDATE users SET {} WHERE id = $1 RETURNING id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at",
         set_clauses.join(", ")
     );
 
-    let user: AdminUserRow = sqlx::query_as(&sql)
-        .bind(id)
+    let mut query_builder = sqlx::query_as::<_, AdminUserRow>(&sql).bind(id);
+    
+    if let Some(ref name) = input.name {
+        query_builder = query_builder.bind(name);
+    }
+    if let Some(ref email) = input.email {
+        query_builder = query_builder.bind(email);
+    }
+    if let Some(ref role) = input.role {
+        query_builder = query_builder.bind(role);
+    }
+    if let Some(is_active) = input.is_active {
+        query_builder = query_builder.bind(is_active);
+    }
+
+    let user = query_builder
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
 
     Ok(Json(user))
 }
