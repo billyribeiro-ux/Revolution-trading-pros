@@ -4,6 +4,7 @@
 pub mod health;
 pub mod auth;
 pub mod users;
+pub mod user;  // Singular /user routes for frontend compatibility
 pub mod courses;
 pub mod payments;
 pub mod search;
@@ -26,6 +27,7 @@ pub fn api_router() -> Router<AppState> {
     Router::new()
         .nest("/auth", auth::router())
         .nest("/users", users::router())
+        .nest("/user", user::router())  // Singular /user routes for frontend
         .nest("/courses", courses::router())
         .nest("/payments", payments::router())
         .nest("/search", search::router())

@@ -127,11 +127,14 @@ async fn get_overview(
 }
 
 /// Performance tracking (public - for frontend)
+/// Accepts any content type to avoid 415 errors from beacon API
 async fn track_performance(
-    Json(_input): Json<serde_json::Value>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Placeholder for performance tracking
-    Ok(Json(json!({"status": "ok"})))
+    body: Option<axum::body::Bytes>,
+) -> Json<serde_json::Value> {
+    // Placeholder for performance tracking - accepts any content type
+    // The frontend uses navigator.sendBeacon which may send different content types
+    let _ = body; // Ignore body for now
+    Json(json!({"status": "ok"}))
 }
 
 pub fn router() -> Router<AppState> {
