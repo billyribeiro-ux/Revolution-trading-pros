@@ -56,9 +56,14 @@ import { api, type ApiResponse } from './client';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
-const AI_API = import.meta.env.VITE_AI_API_URL || 'http://localhost:8001/api';
+// Production fallbacks - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_WS = 'wss://revolution-backend.fly.dev';
+const PROD_AI = 'https://revolution-backend.fly.dev/api/ai';
+
+const API_BASE = import.meta.env.VITE_API_URL || PROD_API;
+const WS_BASE = import.meta.env.VITE_WS_URL || PROD_WS;
+const AI_API = import.meta.env.VITE_AI_API_URL || PROD_AI;
 
 const CACHE_TTL = 300000; // 5 minutes
 const ANALYSIS_DEBOUNCE = 2000; // 2 seconds

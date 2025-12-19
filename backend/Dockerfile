@@ -87,6 +87,9 @@ WORKDIR /app
 # Copy application code first
 COPY . .
 
+# Copy vendor directory from composer stage (already optimized)
+COPY --from=composer /app/vendor ./vendor
+
 # Create required Laravel directories
 RUN mkdir -p \
     storage/framework/cache/data \
@@ -96,9 +99,11 @@ RUN mkdir -p \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Install Composer and run fresh install with all dependencies
+# Copy Composer for any artisan commands that might need it
 COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Run post-autoload scripts (package discovery)
+RUN composer dump-autoload --optimize --no-dev
 
 # Make entrypoint executable
 RUN chmod +x docker-entrypoint.sh

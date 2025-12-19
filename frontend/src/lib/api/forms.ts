@@ -58,12 +58,17 @@ import { getAuthToken, getSessionId as getAuthSessionId } from '$lib/stores/auth
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+// Production fallbacks - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_WS = 'wss://revolution-backend.fly.dev';
+const PROD_AI = 'https://revolution-backend.fly.dev/api/ai';
+
 const isDev = import.meta.env.DEV;
 const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')) 
+	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || PROD_API)) 
 	: '';
-const WS_BASE = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
-const AI_API = browser ? import.meta.env.VITE_AI_API_URL || 'http://localhost:8001/api' : '';
+const WS_BASE = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
+const AI_API = browser ? import.meta.env.VITE_AI_API_URL || PROD_AI : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const DEBOUNCE_DELAY = 500;

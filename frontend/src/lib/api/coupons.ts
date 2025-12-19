@@ -56,9 +56,14 @@ import { getAuthToken } from '$lib/stores/auth';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_URL = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
-const WS_URL = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
-const ML_API = browser ? import.meta.env.VITE_ML_API || 'http://localhost:8001/api' : '';
+// Production fallbacks - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_WS = 'wss://revolution-backend.fly.dev';
+const PROD_ML = 'https://revolution-backend.fly.dev/api/ml';
+
+const API_URL = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
+const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
+const ML_API = browser ? import.meta.env.VITE_ML_API || PROD_ML : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const VALIDATION_CACHE_TTL = 60000; // 1 minute
@@ -564,7 +569,7 @@ class CouponManagementService {
 		if (!browser) return;
 		
 		// Skip WebSocket in development if not configured
-		if (!WS_URL || WS_URL === 'ws://localhost:8000') {
+		if (!WS_URL || import.meta.env.DEV) {
 			console.debug('[CouponService] WebSocket not configured, using polling fallback');
 			return;
 		}

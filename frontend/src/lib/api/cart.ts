@@ -58,9 +58,14 @@ import { websocketService, type CartUpdatePayload } from '$lib/services/websocke
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_URL = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
-const WS_URL = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
-const ML_API = browser ? import.meta.env.VITE_ML_API || 'http://localhost:8001/api' : '';
+// Production fallbacks - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_WS = 'wss://revolution-backend.fly.dev';
+const PROD_ML = 'https://revolution-backend.fly.dev/api/ml';
+
+const API_URL = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
+const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
+const ML_API = browser ? import.meta.env.VITE_ML_API || PROD_ML : '';
 
 const CART_SYNC_INTERVAL = 30000; // 30 seconds
 const CART_PERSISTENCE_KEY = 'rtp_cart';

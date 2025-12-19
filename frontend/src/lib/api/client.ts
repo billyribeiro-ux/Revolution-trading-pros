@@ -56,10 +56,15 @@ import { getAuthToken } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+// Production fallbacks - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_WS = 'wss://revolution-backend.fly.dev';
+const PROD_CDN = 'https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev';
+
 const isDev = import.meta.env.DEV;
-const API_BASE_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api');
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
-const CDN_URL = import.meta.env.VITE_CDN_URL || '';
+const API_BASE_URL = isDev ? '/api' : (import.meta.env.VITE_API_URL || PROD_API);
+const WS_URL = import.meta.env.VITE_WS_URL || PROD_WS;
+const CDN_URL = import.meta.env.VITE_CDN_URL || PROD_CDN;
 
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;

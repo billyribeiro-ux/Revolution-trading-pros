@@ -564,7 +564,9 @@ export class RateLimitError extends Error {
 // Default Instance
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = browser ? import.meta.env.VITE_API_URL || 'http://localhost:8000/api' : '';
+// Production fallback - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const API_BASE_URL = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
 
 export const apiClient = new EnhancedApiClient(API_BASE_URL);
 

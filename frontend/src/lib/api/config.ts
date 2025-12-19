@@ -11,19 +11,36 @@ import { getAuthToken } from '$lib/stores/auth';
 // In production, use the full API URL from environment variables
 const isDev = import.meta.env.DEV;
 
-// ICT11+ PRODUCTION FIX: Hardcode the production API URL since Cloudflare Pages
+// ICT11+ PRODUCTION FIX: Hardcode production URLs since Cloudflare Pages
 // secrets are not available via import.meta.env on server-side
-// The VITE_API_URL secret is only for client-side code
 // Backend is deployed on Fly.io (Rust + Axum)
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const PRODUCTION_CDN_URL = 'https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev';
+const PRODUCTION_WS_URL = 'wss://revolution-trading-pros-api.fly.dev';
+const PRODUCTION_LARAVEL_URL = 'https://revolution-backend.fly.dev';
 
 // Get API base URL - empty string in dev (uses Vite proxy), full URL in production
 export const API_BASE_URL = isDev 
 	? '' 
 	: (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
 
-export const CDN_URL = import.meta.env['VITE_CDN_URL'] || 'http://localhost:8000/storage';
-export const WS_URL = import.meta.env['VITE_WS_URL'] || 'ws://localhost:8000';
+export const CDN_URL = isDev
+	? 'http://localhost:8000/storage'
+	: (import.meta.env['VITE_CDN_URL'] || PRODUCTION_CDN_URL);
+
+export const WS_URL = isDev
+	? 'ws://localhost:8000'
+	: (import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL);
+
+// Laravel backend URL (for routes still using Laravel)
+export const BACKEND_URL = isDev
+	? 'http://localhost:8000'
+	: (import.meta.env['VITE_LARAVEL_URL'] || PRODUCTION_LARAVEL_URL);
+
+// ML/AI API URL
+export const ML_API_URL = isDev
+	? 'http://localhost:8001/api'
+	: (import.meta.env['VITE_ML_API'] || `${PRODUCTION_API_URL}/ml`);
 
 /**
  * API Version

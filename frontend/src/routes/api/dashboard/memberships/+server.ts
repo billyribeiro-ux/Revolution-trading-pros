@@ -10,7 +10,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+// Production fallback - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const BACKEND_URL = import.meta.env.VITE_API_URL || PROD_API;
 
 /**
  * Get authorization headers from request

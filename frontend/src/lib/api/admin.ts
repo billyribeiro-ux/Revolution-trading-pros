@@ -45,7 +45,9 @@ import type { User } from '$lib/stores/auth';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || 'http://localhost:8000/api';
+// Production fallback - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;

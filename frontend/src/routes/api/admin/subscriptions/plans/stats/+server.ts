@@ -7,7 +7,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
-const BACKEND_URL = env.BACKEND_URL || env.LARAVEL_API_URL || 'http://localhost:8000';
+// Production fallback - NEVER use localhost in production
+const PROD_BACKEND = 'https://revolution-backend.fly.dev';
+const BACKEND_URL = env.BACKEND_URL || env.LARAVEL_API_URL || PROD_BACKEND;
 
 export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	try {

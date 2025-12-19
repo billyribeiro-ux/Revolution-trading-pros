@@ -11,9 +11,12 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
+// Production fallback - NEVER use localhost in production
+const PROD_BACKEND = 'https://revolution-backend.fly.dev';
+
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const backendUrl = env.BACKEND_URL || 'http://localhost:8000';
+	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
 
 	try {
 		const response = await fetch(`${backendUrl}/api${endpoint}`, {

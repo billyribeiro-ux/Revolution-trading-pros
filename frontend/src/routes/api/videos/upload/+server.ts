@@ -9,12 +9,15 @@
 
 import { json, error, type RequestEvent } from '@sveltejs/kit';
 
-// API Base URL - use environment variable or fallback
+// Production fallback - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+
+// API Base URL - use environment variable or fallback to production
 const getApiUrl = () => {
 	if (typeof process !== 'undefined' && process.env?.VITE_API_URL) {
 		return process.env.VITE_API_URL;
 	}
-	return 'http://localhost:8000/api';
+	return PROD_API;
 };
 
 // API Base URL

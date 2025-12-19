@@ -64,11 +64,15 @@ import type {
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
+// Production fallbacks - NEVER use localhost in production
+const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_WS = 'wss://revolution-backend.fly.dev';
+
 const isDev = import.meta.env.DEV;
 const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')) 
+	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || PROD_API)) 
 	: '';
-const WS_BASE = browser ? import.meta.env.VITE_WS_URL || 'ws://localhost:8000' : '';
+const WS_BASE = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
 // Analytics API - only enable if explicitly configured (microservice is optional)
 const ANALYTICS_API = browser && import.meta.env.VITE_ANALYTICS_API
 	? import.meta.env.VITE_ANALYTICS_API
@@ -576,7 +580,7 @@ class SubscriptionService {
 		if (!browser || !this.getAuthToken()) return;
 
 		// Skip WebSocket in development if not configured
-		if (!WS_BASE || WS_BASE === 'ws://localhost:8000') {
+		if (!WS_BASE || isDev) {
 			console.debug('[SubscriptionService] WebSocket not configured, using polling fallback');
 			return;
 		}
