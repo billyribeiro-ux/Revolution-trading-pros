@@ -7,7 +7,7 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` : PROD_API);
 
 /**
- * Proxy auth refresh requests to Laravel backend
+ * Proxy auth refresh requests to Rust API backend
  * ICT11+ Principal Engineer: Forwards refresh_token in body as backend expects
  */
 export const POST: RequestHandler = async ({ request, cookies }) => {

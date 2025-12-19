@@ -1,7 +1,7 @@
 /**
  * Learning Center API - Proxy to Backend
  *
- * Proxies learning center content requests to the Laravel backend.
+ * Proxies learning center content requests to the Rust API backend.
  * Uses the products API with type filtering for educational content.
  *
  * @version 2.0.0 - December 2025 - Connected to real backend

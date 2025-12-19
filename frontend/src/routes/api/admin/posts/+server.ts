@@ -2,7 +2,7 @@
  * Posts API Endpoint
  *
  * Handles blog post management including listing, creating, updating, and deleting posts.
- * Connects to Laravel backend with fallback to mock data for development.
+ * Connects to Rust API backend with fallback to mock data for development.
  *
  * @version 2.0.0 - December 2025
  */

@@ -1,7 +1,7 @@
 /**
  * Dashboard Memberships API - Proxy to Backend
  *
- * Proxies membership requests to the Laravel backend.
+ * Proxies membership requests to the Rust API backend.
  * Handles user memberships, access levels, and subscription status.
  *
  * @version 2.0.0 - December 2025 - Connected to real backend

@@ -1,7 +1,7 @@
 /**
  * CRM Deals API - Proxy to Backend
  *
- * Proxies deals/opportunities management requests to the Laravel backend.
+ * Proxies deals/opportunities management requests to the Rust API backend.
  * Handles deal CRUD operations for the RevolutionCRM Pro system.
  *
  * @version 2.0.0 - December 2025 - Connected to real backend

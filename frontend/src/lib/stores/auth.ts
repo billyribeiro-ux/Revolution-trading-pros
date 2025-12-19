@@ -29,15 +29,15 @@ import {
 // =============================================================================
 
 export interface User {
-	id: string | number;  // UUID from Rust API or number from Laravel
+	id: number;  // Rust API uses i64 (number in TypeScript)
 	name: string;
 	first_name?: string;
 	last_name?: string;
 	email: string;
-	email_verified_at?: string | null;  // Laravel format
-	email_verified?: boolean;  // Rust API format
+	email_verified_at?: string | null;  // ISO timestamp or null
+	email_verified?: boolean;  // Computed from email_verified_at
 	created_at: string;
-	updated_at?: string;  // Optional - Rust API doesn't send this
+	updated_at?: string;
 	roles?: string[];
 	permissions?: string[];
 	role?: string;  // Rust API sends single role
@@ -198,9 +198,8 @@ function createAuthStore() {
 			refreshToken?: string | null
 		): void => {
 			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
-			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
 			const safeUser: User = {
-				id: user?.id ?? '',
+				id: user?.id ?? 0,
 				name: user?.name ?? '',
 				email: user?.email ?? '',
 				email_verified_at: user?.email_verified_at ?? null,
@@ -273,9 +272,8 @@ function createAuthStore() {
 		 */
 		setUser: (user: User): void => {
 			// DEFENSIVE: Ensure user object has required properties to prevent runtime errors
-			// Support both Rust API (UUID, role, email_verified) and Laravel (number id, roles, email_verified_at)
 			const safeUser: User = {
-				id: user?.id ?? '',
+				id: user?.id ?? 0,
 				name: user?.name ?? '',
 				email: user?.email ?? '',
 				email_verified_at: user?.email_verified_at ?? null,

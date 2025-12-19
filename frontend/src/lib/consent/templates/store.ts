@@ -157,7 +157,7 @@ function applyCustomization(
 
 /**
  * Backend template format (different from frontend BannerTemplate)
- * This is the format returned by the Laravel API
+ * This is the format returned by the Rust API
  */
 interface BackendBannerTemplate {
 	id: string;

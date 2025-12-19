@@ -1,7 +1,7 @@
 /**
  * Consent Settings API Client
  *
- * API client for managing consent settings from the Laravel backend.
+ * API client for managing consent settings from the Rust backend.
  * Mirrors Consent Magic Pro WordPress plugin functionality.
  *
  * @module api/consent-settings

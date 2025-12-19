@@ -14,11 +14,7 @@ $allowedOrigins = env('CORS_ALLOWED_ORIGINS')
         env('FRONTEND_URL', 'https://revolution-trading-pros.pages.dev'),
         'https://revolution-trading-pros.pages.dev',
         'https://revolutiontradingpros.com',
-        'https://www.revolutiontradingpros.com',
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:5174'
+        'https://www.revolutiontradingpros.com'
     ];
 
 return [

@@ -10,7 +10,7 @@ const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` 
  * Logout Proxy Endpoint - ICT11+ Principal Engineer Grade
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * Proxies logout requests to Laravel backend with proper cookie handling.
+ * Proxies logout requests to Rust API backend with proper cookie handling.
  *
  * SECURITY:
  * - Forwards Authorization header for token validation
@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		const sessionId = request.headers.get('X-Session-ID') || '';
 		const cookieHeader = request.headers.get('cookie') || '';
 
-		// Forward request to Laravel backend
+		// Forward request to Rust API backend
 		const response = await fetch(`${API_URL}/logout`, {
 			method: 'POST',
 			headers: {

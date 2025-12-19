@@ -6,41 +6,23 @@
 
 import { getAuthToken } from '$lib/stores/auth';
 
-// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
-// This prevents CORS issues by routing all API calls through the same origin
-// In production, use the full API URL from environment variables
-const isDev = import.meta.env.DEV;
-
-// ICT11+ PRODUCTION FIX: Hardcode production URLs since Cloudflare Pages
-// secrets are not available via import.meta.env on server-side
+// ICT11+ PRODUCTION DEPLOYMENT: Always use deployed URLs
 // Backend is deployed on Fly.io (Rust + Axum)
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
 const PRODUCTION_CDN_URL = 'https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev';
 const PRODUCTION_WS_URL = 'wss://revolution-trading-pros-api.fly.dev';
-const PRODUCTION_LARAVEL_URL = 'https://revolution-trading-pros-api.fly.dev';
 
-// Get API base URL - empty string in dev (uses Vite proxy), full URL in production
-export const API_BASE_URL = isDev 
-	? '' 
-	: (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
+// Always use production URLs - no localhost
+export const API_BASE_URL = import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL;
 
-export const CDN_URL = isDev
-	? 'http://localhost:8000/storage'
-	: (import.meta.env['VITE_CDN_URL'] || PRODUCTION_CDN_URL);
+export const CDN_URL = import.meta.env['VITE_CDN_URL'] || PRODUCTION_CDN_URL;
 
-export const WS_URL = isDev
-	? 'ws://localhost:8000'
-	: (import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL);
+export const WS_URL = import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL;
 
-// Laravel backend URL (for routes still using Laravel)
-export const BACKEND_URL = isDev
-	? 'http://localhost:8000'
-	: (import.meta.env['VITE_LARAVEL_URL'] || PRODUCTION_LARAVEL_URL);
+// Deprecated: Use API_BASE_URL instead (kept for backward compatibility)
+export const BACKEND_URL = API_BASE_URL;
 
-// ML/AI API URL
-export const ML_API_URL = isDev
-	? 'http://localhost:8001/api'
-	: (import.meta.env['VITE_ML_API'] || `${PRODUCTION_API_URL}/ml`);
+export const ML_API_URL = import.meta.env['VITE_ML_API'] || `${PRODUCTION_API_URL}/ml`;
 
 /**
  * API Version

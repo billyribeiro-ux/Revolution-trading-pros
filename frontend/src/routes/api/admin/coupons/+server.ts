@@ -1,6 +1,6 @@
 /**
  * Coupons API Proxy
- * Routes requests to Laravel backend to avoid CORS issues
+ * Routes requests to Rust API backend to avoid CORS issues
  */
 
 import { json } from '@sveltejs/kit';

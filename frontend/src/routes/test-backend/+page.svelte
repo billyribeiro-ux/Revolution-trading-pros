@@ -75,7 +75,7 @@
 		newsletterMessage = '';
 
 		try {
-			const response = await fetch('http://localhost:8000/api/newsletter/subscribe', {
+			const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -106,7 +106,7 @@
 		popupMessage = '';
 
 		try {
-			const response = await fetch('http://localhost:8000/api/newsletter/subscribe', {
+			const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -173,7 +173,7 @@
 					<IconCheck size={24} />
 				</div>
 				<h3>Backend Connected</h3>
-				<p>Laravel API running on localhost:8000</p>
+				<p>API running on revolution-trading-pros-api.fly.dev</p>
 			</div>
 
 			<div class="status-card">

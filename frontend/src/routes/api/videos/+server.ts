@@ -1,7 +1,7 @@
 /**
  * Videos API - Proxy to Backend
  *
- * Proxies video management requests to the Laravel backend.
+ * Proxies video management requests to the Rust API backend.
  * Handles video CRUD operations, listing, and filtering.
  *
  * @version 2.0.0 - December 2025 - Connected to real backend

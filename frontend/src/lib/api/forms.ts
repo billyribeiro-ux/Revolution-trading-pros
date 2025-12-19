@@ -897,13 +897,13 @@ class FormsService {
 
 			const response = await this.authFetch<any>(`${API_BASE}/forms?${params}`);
 
-			// Handle Laravel paginated response: { success: true, data: { data: [...], total: N, per_page: N } }
+			// Handle paginated response: { success: true, data: { data: [...], total: N, per_page: N } }
 			let forms: Form[] = [];
 			let total = 0;
 			let responsePerPage = perPage;
 
 			if (response?.data?.data) {
-				// Laravel paginated response
+				// Paginated response
 				forms = response.data.data;
 				total = response.data.total || forms.length;
 				responsePerPage = response.data.per_page || perPage;

@@ -1,7 +1,7 @@
 /**
  * Video Upload API - Proxy to Backend
  *
- * Handles video file uploads by proxying to the Laravel backend.
+ * Handles video file uploads by proxying to the Rust API backend.
  * The backend handles storage to Cloudflare R2.
  *
  * @version 2.0.0 - Serverless Compatible (Cloudflare)

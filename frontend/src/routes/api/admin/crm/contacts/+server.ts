@@ -1,7 +1,7 @@
 /**
  * CRM Contacts API - Proxy to Backend
  *
- * Proxies contact management requests to the Laravel backend.
+ * Proxies contact management requests to the Rust API backend.
  * Handles contact CRUD operations for the RevolutionCRM Pro system.
  *
  * @version 2.0.0 - December 2025 - Connected to real backend
