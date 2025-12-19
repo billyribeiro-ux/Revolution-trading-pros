@@ -789,7 +789,7 @@
 							<div class="dropdown-divider" role="separator"></div>
 							<button
 								class="dropdown-item"
-								onclick={() => navigateTo('/admin/profile')}
+								onclick={() => navigateTo('/account')}
 								role="menuitem"
 								tabindex={showDropdown ? 0 : -1}
 							>
@@ -1069,8 +1069,8 @@
 		top: calc(100% + 0.5rem);
 		left: 0;
 		min-width: 220px;
-		background: var(--toolbar-bg-start);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 		padding: 0.5rem;
@@ -1098,7 +1098,7 @@
 
 	.dropdown-header {
 		padding: 0.75rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border);
 		margin-bottom: 0.5rem;
 	}
 

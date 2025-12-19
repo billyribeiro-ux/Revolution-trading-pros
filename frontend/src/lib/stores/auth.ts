@@ -95,13 +95,28 @@ const createSecureTokenStorage = () => {
 		},
 		setRefreshToken: (token: string | null): void => {
 			refreshToken = token;
+			// ICT11+ Fix: Persist refresh token to survive page navigation
+			if (token) {
+				safeLocalStorage('set', REFRESH_TOKEN_KEY, token);
+			} else {
+				safeLocalStorage('remove', REFRESH_TOKEN_KEY);
+			}
 		},
 		getRefreshToken: (): string | null => {
-			return refreshToken;
+			// ICT11+ Fix: Try memory first, fallback to localStorage
+			if (refreshToken) return refreshToken;
+			const stored = safeLocalStorage<string>('get', REFRESH_TOKEN_KEY);
+			if (stored) {
+				refreshToken = stored; // Restore to memory
+				return stored;
+			}
+			return null;
 		},
 		clearTokens: (): void => {
 			accessToken = null;
 			refreshToken = null;
+			// ICT11+ Fix: Clear persisted refresh token
+			safeLocalStorage('remove', REFRESH_TOKEN_KEY);
 		}
 	};
 };
@@ -114,6 +129,7 @@ const secureTokens = createSecureTokenStorage();
 
 const SESSION_ID_KEY = 'rtp_session_id';
 const TOKEN_EXPIRY_KEY = 'rtp_token_expiry';
+const REFRESH_TOKEN_KEY = 'rtp_refresh_token';
 
 /**
  * Safe localStorage access with error handling
