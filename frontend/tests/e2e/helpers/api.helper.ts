@@ -64,7 +64,7 @@ export const API_ENDPOINTS = {
  * Creates an API helper instance with base URL configuration
  */
 export function createApiHelper(baseUrl?: string) {
-	const apiUrl = baseUrl || process.env.E2E_API_URL || 'http://localhost:8000/api';
+	const apiUrl = baseUrl || process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 	return {
 		baseUrl: apiUrl,

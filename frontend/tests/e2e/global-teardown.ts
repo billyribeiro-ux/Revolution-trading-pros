@@ -24,7 +24,7 @@ async function globalTeardown(_config: FullConfig): Promise<void> {
 	}
 
 	// Clean up any test data created during tests
-	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+	const apiUrl = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 	// Only attempt cleanup if we're in a dev/staging environment
 	if (process.env.E2E_CLEANUP_TEST_DATA === 'true') {

@@ -15,7 +15,7 @@ async function globalSetup(): Promise<void> {
 	console.log('========================================\n');
 
 	const baseUrl = process.env.E2E_BASE_URL || 'http://localhost:5174';
-	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+	const apiUrl = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 	const isCI = !!process.env.CI;
 
 	console.log(`Frontend URL: ${baseUrl}`);

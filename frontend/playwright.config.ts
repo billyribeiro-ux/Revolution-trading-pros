@@ -18,7 +18,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 // Environment configuration with sensible defaults
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
-const API_URL = process.env.E2E_API_URL || 'http://localhost:8000/api';
+const API_URL = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 const CI = !!process.env.CI;
 const DEBUG = process.env.E2E_DEBUG === 'true';
 

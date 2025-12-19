@@ -871,7 +871,7 @@ class SubscriptionService {
 
 		try {
 			const params = this.buildFilterParams(filters);
-			const endpoint = isAdmin ? `${API_BASE}/admin/subscriptions` : `${API_BASE}/my/subscriptions`;
+			const endpoint = isAdmin ? `${API_BASE}/admin/subscriptions` : `${API_BASE}/subscriptions/my`;
 			const response = await this.authFetch<{ subscriptions: EnhancedSubscription[]; data?: EnhancedSubscription[] }>(
 				`${endpoint}?${params}`
 			);
@@ -893,7 +893,7 @@ class SubscriptionService {
 
 		try {
 			const subscription = await this.authFetch<EnhancedSubscription>(
-				`${API_BASE}/my/subscriptions/${id}`
+				`${API_BASE}/subscriptions/${id}`
 			);
 
 			this.currentSubscription.set(subscription);
@@ -912,7 +912,7 @@ class SubscriptionService {
 
 		try {
 			const subscription = await this.authFetch<EnhancedSubscription>(
-				`${API_BASE}/my/subscriptions`,
+				`${API_BASE}/subscriptions`,
 				{
 					method: 'POST',
 					body: JSON.stringify(data),
@@ -948,7 +948,7 @@ class SubscriptionService {
 
 		try {
 			const subscription = await this.authFetch<EnhancedSubscription>(
-				`${API_BASE}/my/subscriptions/${id}`,
+				`${API_BASE}/subscriptions/${id}`,
 				{
 					method: 'PATCH',
 					body: JSON.stringify(updates),
@@ -1004,7 +1004,7 @@ class SubscriptionService {
 
 		try {
 			const subscription = await this.authFetch<EnhancedSubscription>(
-				`${API_BASE}/my/subscriptions/${id}/cancel`,
+				`${API_BASE}/subscriptions/${id}/cancel`,
 				{
 					method: 'PUT',
 					body: JSON.stringify({ status, ...metadata }),
@@ -1040,7 +1040,7 @@ class SubscriptionService {
 
 		try {
 			const payment = await this.authFetch<PaymentHistory>(
-				`${API_BASE}/my/subscriptions/${subscriptionId}/charge`,
+				`${API_BASE}/subscriptions/${subscriptionId}/charge`,
 				{
 					method: 'POST',
 					body: JSON.stringify({ amount }),
@@ -1071,7 +1071,7 @@ class SubscriptionService {
 
 	async retryPayment(subscriptionId: string, paymentId: string): Promise<PaymentHistory> {
 		return this.authFetch<PaymentHistory>(
-			`${API_BASE}/my/subscriptions/${subscriptionId}/retry-payment`,
+			`${API_BASE}/subscriptions/${subscriptionId}/retry-payment`,
 			{
 				method: 'POST',
 				skipCache: true
@@ -1084,7 +1084,7 @@ class SubscriptionService {
 		paymentMethod: PaymentMethod
 	): Promise<EnhancedSubscription> {
 		return this.authFetch<EnhancedSubscription>(
-			`${API_BASE}/my/subscriptions/${subscriptionId}/payment-method`,
+			`${API_BASE}/subscriptions/${subscriptionId}/payment-method`,
 			{
 				method: 'PUT',
 				body: JSON.stringify({ paymentMethod }),
@@ -1095,7 +1095,7 @@ class SubscriptionService {
 
 	async getPaymentHistory(subscriptionId: string): Promise<PaymentHistory[]> {
 		const response = await this.authFetch<{ payments: PaymentHistory[] }>(
-			`${API_BASE}/my/subscriptions/${subscriptionId}/payments`
+			`${API_BASE}/subscriptions/${subscriptionId}/payments`
 		);
 		return response.payments;
 	}
@@ -1104,7 +1104,7 @@ class SubscriptionService {
 	 * Analytics & Insights
 	 */
 	async getStats(): Promise<SubscriptionStats> {
-		return this.authFetch<SubscriptionStats>(`${API_BASE}/my/subscriptions/metrics`);
+		return this.authFetch<SubscriptionStats>(`${API_BASE}/subscriptions/metrics`);
 	}
 
 	async getRevenueMetrics(): Promise<RevenueMetrics | null> {
@@ -1160,7 +1160,7 @@ class SubscriptionService {
 	}
 
 	async pauseDunning(subscriptionId: string): Promise<void> {
-		await this.authFetch(`${API_BASE}/my/subscriptions/${subscriptionId}/dunning/pause`, {
+		await this.authFetch(`${API_BASE}/subscriptions/${subscriptionId}/dunning/pause`, {
 			method: 'POST',
 			skipCache: true
 		});
@@ -1171,7 +1171,7 @@ class SubscriptionService {
 	 */
 	async generateInvoice(subscriptionId: string): Promise<Invoice> {
 		return this.authFetch<Invoice>(
-			`${API_BASE}/my/subscriptions/${subscriptionId}/invoices/generate`,
+			`${API_BASE}/subscriptions/${subscriptionId}/invoices/generate`,
 			{
 				method: 'POST',
 				skipCache: true
@@ -1181,7 +1181,7 @@ class SubscriptionService {
 
 	async getInvoices(subscriptionId: string): Promise<Invoice[]> {
 		const response = await this.authFetch<{ invoices: Invoice[] }>(
-			`${API_BASE}/my/subscriptions/${subscriptionId}/invoices`
+			`${API_BASE}/subscriptions/${subscriptionId}/invoices`
 		);
 		return response.invoices;
 	}

@@ -83,7 +83,7 @@ export async function loginViaAPI(
 	page: Page,
 	credentials: TestUserCredentials = TEST_USER
 ): Promise<string | null> {
-	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+	const apiUrl = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 	// Skip if backend is not available
 	if (process.env.BACKEND_AVAILABLE === 'false') {
@@ -131,7 +131,7 @@ export async function loginViaAPI(
 export async function logout(page: Page): Promise<void> {
 	// Try API logout first if backend is available
 	if (process.env.BACKEND_AVAILABLE !== 'false') {
-		const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+		const apiUrl = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 		try {
 			await page.request.post(`${apiUrl}/logout`, { timeout: 3000 });
@@ -224,7 +224,7 @@ export async function registerViaAPI(
 	page: Page,
 	credentials: TestUserCredentials
 ): Promise<{ success: boolean; userId?: number; message?: string }> {
-	const apiUrl = process.env.E2E_API_URL || 'http://localhost:8000/api';
+	const apiUrl = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 	// Skip if backend is not available
 	if (process.env.BACKEND_AVAILABLE === 'false') {

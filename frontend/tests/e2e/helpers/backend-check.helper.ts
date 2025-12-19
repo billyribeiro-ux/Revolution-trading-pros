@@ -16,15 +16,18 @@ import { request } from '@playwright/test';
  * Checks if the backend API is available and responding
  */
 export async function isBackendAvailable(apiUrl?: string): Promise<boolean> {
-	const url = apiUrl || process.env.E2E_API_URL || 'http://localhost:8000/api';
+	const url = apiUrl || process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 	try {
 		const context = await request.newContext();
+		
+		// Extract base URL (remove /api suffix for health check)
+		const baseUrl = url.replace(/\/api\/?$/, '');
 
-		// Try health endpoint first
+		// Try health endpoint first (Rust API uses /health at root, not under /api)
 		try {
-			const response = await context.get(`${url}/health/live`, {
-				timeout: 3000,
+			const response = await context.get(`${baseUrl}/health`, {
+				timeout: 5000,
 				ignoreHTTPSErrors: true
 			});
 
@@ -33,13 +36,13 @@ export async function isBackendAvailable(apiUrl?: string): Promise<boolean> {
 				return true;
 			}
 		} catch {
-			// Health endpoint may not exist, try root
+			// Health endpoint may not exist, try API root
 		}
 
-		// Try root API endpoint as fallback
+		// Try API root endpoint as fallback
 		try {
 			const response = await context.get(url, {
-				timeout: 3000,
+				timeout: 5000,
 				ignoreHTTPSErrors: true
 			});
 

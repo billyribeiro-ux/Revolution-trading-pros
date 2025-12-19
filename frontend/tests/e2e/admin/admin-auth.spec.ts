@@ -20,7 +20,7 @@ import { test, expect, type Page, type ConsoleMessage } from '@playwright/test';
 import { shouldSkipBackendTests, getBackendSkipReason } from '../helpers';
 
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
-const API_URL = process.env.E2E_API_URL || 'http://localhost:8000/api';
+const API_URL = process.env.E2E_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 // Admin credentials from environment
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'welberribeirodrums@gmail.com';
