@@ -76,12 +76,13 @@ async fn main() -> anyhow::Result<()> {
     let services = Services::new(&config).await?;
     tracing::info!("Services initialized");
 
-    // Start background job processor
-    let job_db = db.clone();
-    tokio::spawn(async move {
-        queue::worker::run(job_db).await;
-    });
-    tracing::info!("Job queue worker started");
+    // Background job processor disabled until schema is migrated
+    // TODO: Re-enable after jobs table schema is fully migrated
+    // let job_db = db.clone();
+    // tokio::spawn(async move {
+    //     queue::worker::run(job_db).await;
+    // });
+    tracing::info!("Job queue worker disabled (schema migration pending)");
 
     // Create app state
     let state = AppState {
