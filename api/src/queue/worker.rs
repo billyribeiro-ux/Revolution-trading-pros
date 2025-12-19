@@ -79,15 +79,15 @@ pub async fn run(db: Database) {
 }
 
 /// Fetch and process the next available job
-async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid>> {
+async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
     // Fetch next job using SELECT FOR UPDATE SKIP LOCKED
     let job: Option<Job> = sqlx::query_as(
         r#"
         SELECT * FROM jobs
         WHERE status = 'pending'
-          AND run_at <= NOW()
+          AND available_at <= NOW()
           AND attempts < max_attempts
-        ORDER BY run_at ASC
+        ORDER BY available_at ASC
         LIMIT 1
         FOR UPDATE SKIP LOCKED
         "#,

@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Job {
-    pub id: Uuid,
+    pub id: i64,
     pub queue: String,
     pub job_type: String,
     pub payload: serde_json::Value,
@@ -15,7 +15,8 @@ pub struct Job {
     pub attempts: i32,
     pub max_attempts: i32,
     pub error: Option<String>,
-    pub run_at: DateTime<Utc>,
+    pub available_at: DateTime<Utc>,
+    pub reserved_at: Option<DateTime<Utc>>,
     pub started_at: Option<DateTime<Utc>>,
     pub completed_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
@@ -35,7 +36,7 @@ impl Job {
     #[allow(dead_code)]
     pub fn new(queue: &str, job_type: &str, payload: serde_json::Value) -> Self {
         Self {
-            id: Uuid::new_v4(),
+            id: 0, // Will be assigned by database
             queue: queue.to_string(),
             job_type: job_type.to_string(),
             payload,
@@ -43,7 +44,8 @@ impl Job {
             attempts: 0,
             max_attempts: 3,
             error: None,
-            run_at: Utc::now(),
+            available_at: Utc::now(),
+            reserved_at: None,
             started_at: None,
             completed_at: None,
             created_at: Utc::now(),

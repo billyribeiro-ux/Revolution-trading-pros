@@ -5,7 +5,6 @@ pub mod worker;
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
-use uuid::Uuid;
 
 use crate::models::Job;
 
@@ -16,28 +15,28 @@ pub async fn enqueue(
     queue: &str,
     job_type: &str,
     payload: serde_json::Value,
-) -> Result<Uuid> {
+) -> Result<i64> {
     let job = Job::new(queue, job_type, payload);
 
-    sqlx::query(
+    let result = sqlx::query_scalar::<_, i64>(
         r#"
-        INSERT INTO jobs (id, queue, job_type, payload, status, attempts, max_attempts, run_at, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO jobs (queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id
         "#,
     )
-    .bind(job.id)
     .bind(&job.queue)
     .bind(&job.job_type)
     .bind(&job.payload)
     .bind(&job.status)
     .bind(job.attempts)
     .bind(job.max_attempts)
-    .bind(job.run_at)
+    .bind(job.available_at)
     .bind(job.created_at)
-    .execute(pool)
+    .fetch_one(pool)
     .await?;
 
-    Ok(job.id)
+    Ok(result)
 }
 
 /// Enqueue a delayed job
@@ -48,27 +47,27 @@ pub async fn enqueue_delayed(
     job_type: &str,
     payload: serde_json::Value,
     run_at: DateTime<Utc>,
-) -> Result<Uuid> {
+) -> Result<i64> {
     let mut job = Job::new(queue, job_type, payload);
-    job.run_at = run_at;
+    job.available_at = run_at;
 
-    sqlx::query(
+    let result = sqlx::query_scalar::<_, i64>(
         r#"
-        INSERT INTO jobs (id, queue, job_type, payload, status, attempts, max_attempts, run_at, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO jobs (queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id
         "#,
     )
-    .bind(job.id)
     .bind(&job.queue)
     .bind(&job.job_type)
     .bind(&job.payload)
     .bind(&job.status)
     .bind(job.attempts)
     .bind(job.max_attempts)
-    .bind(job.run_at)
+    .bind(job.available_at)
     .bind(job.created_at)
-    .execute(pool)
+    .fetch_one(pool)
     .await?;
 
-    Ok(job.id)
+    Ok(result)
 }
