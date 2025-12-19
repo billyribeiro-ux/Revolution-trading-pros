@@ -11,8 +11,8 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
-// Production fallback - NEVER use localhost in production
-const PROD_BACKEND = 'https://revolution-backend.fly.dev';
+// Production fallback - Rust API on Fly.io
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {

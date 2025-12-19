@@ -10,8 +10,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-// Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
+// Production fallback - Rust API on Fly.io
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const BACKEND_URL = import.meta.env.VITE_API_URL || PROD_API;
 
 /**

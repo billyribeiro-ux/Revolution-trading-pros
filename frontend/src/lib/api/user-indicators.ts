@@ -16,7 +16,7 @@ import { apiCache, buildCacheKey, invalidateCache } from './cache';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const API_BASE = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
 const CACHE_TTL = 3 * 60 * 1000; // 3 minutes
 

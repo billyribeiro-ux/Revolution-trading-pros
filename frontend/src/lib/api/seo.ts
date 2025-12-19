@@ -57,9 +57,9 @@ import { api, type ApiResponse } from './client';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
-const PROD_WS = 'wss://revolution-backend.fly.dev';
-const PROD_AI = 'https://revolution-backend.fly.dev/api/ai';
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
+const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/api/ai';
 
 const API_BASE = import.meta.env.VITE_API_URL || PROD_API;
 const WS_BASE = import.meta.env.VITE_WS_URL || PROD_WS;

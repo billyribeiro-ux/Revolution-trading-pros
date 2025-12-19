@@ -15,7 +15,7 @@ import { authStore } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
 
 // ═══════════════════════════════════════════════════════════════════════════

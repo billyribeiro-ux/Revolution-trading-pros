@@ -61,8 +61,8 @@ export type { Popup } from '$lib/stores/popups';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-const PROD_WS = 'wss://revolution-backend.fly.dev';
-const PROD_ML = 'https://revolution-backend.fly.dev/api/ml';
+const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
+const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
 
 const API_BASE = '/api';
 const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';

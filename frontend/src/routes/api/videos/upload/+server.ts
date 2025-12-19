@@ -9,8 +9,8 @@
 
 import { json, error, type RequestEvent } from '@sveltejs/kit';
 
-// Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
+// Production fallback - Rust API on Fly.io
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 
 // API Base URL - use environment variable or fallback to production
 const getApiUrl = () => {

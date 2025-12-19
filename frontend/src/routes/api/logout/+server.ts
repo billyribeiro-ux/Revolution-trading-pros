@@ -2,9 +2,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
-// Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
-const API_URL = env.VITE_API_URL || env.BACKEND_URL ? `${env.BACKEND_URL}/api` : PROD_API;
+// Production fallback - Rust API on Fly.io
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` : PROD_API);
 
 /**
  * Logout Proxy Endpoint - ICT11+ Principal Engineer Grade

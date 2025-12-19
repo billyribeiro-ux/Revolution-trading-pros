@@ -57,9 +57,9 @@ import { getAuthToken } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-const PROD_API = 'https://revolution-backend.fly.dev/api';
-const PROD_WS = 'wss://revolution-backend.fly.dev';
-const PROD_ML = 'https://revolution-backend.fly.dev/api/ml';
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
+const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
 
 const API_BASE = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
 const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
