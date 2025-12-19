@@ -10,6 +10,11 @@
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
+// API URL for analytics - use Fly.io backend in production
+const API_BASE = import.meta.env.DEV 
+	? '/api' 
+	: (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev/api');
+
 export interface PerformanceMetric {
 	name: string;
 	value: number;
@@ -42,8 +47,8 @@ function reportMetric(metric: PerformanceMetric): void {
 			});
 		}
 
-		// Example: Send to custom analytics endpoint
-		navigator.sendBeacon?.('/api/analytics/performance', JSON.stringify(metric));
+		// Send to custom analytics endpoint on Fly.io backend
+		navigator.sendBeacon?.(`${API_BASE}/analytics/performance`, JSON.stringify(metric));
 	}
 }
 

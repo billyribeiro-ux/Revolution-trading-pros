@@ -511,15 +511,22 @@ CREATE INDEX idx_contacts_status ON contacts(status);
 CREATE TABLE IF NOT EXISTS jobs (
     id BIGSERIAL PRIMARY KEY,
     queue VARCHAR(255) NOT NULL DEFAULT 'default',
-    payload JSONB NOT NULL,
+    job_type VARCHAR(100) NOT NULL DEFAULT 'default',
+    payload JSONB NOT NULL DEFAULT '{}',
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
     attempts INTEGER DEFAULT 0,
     max_attempts INTEGER DEFAULT 3,
+    error TEXT,
     available_at TIMESTAMP NOT NULL DEFAULT NOW(),
     reserved_at TIMESTAMP,
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE INDEX idx_jobs_queue ON jobs(queue, available_at);
+CREATE INDEX idx_jobs_status ON jobs(status);
+CREATE INDEX idx_jobs_pending ON jobs(status, available_at) WHERE status = 'pending';
 
 CREATE TABLE IF NOT EXISTS failed_jobs (
     id BIGSERIAL PRIMARY KEY,
