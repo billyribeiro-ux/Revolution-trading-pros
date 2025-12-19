@@ -51,18 +51,19 @@ export default defineConfig({
 			port: 5174,
 			overlay: true // Enable overlay to see errors clearly
 		},
-		// Proxy API requests to Rust backend
+		// Proxy API requests to deployed Rust API on Fly.io
 		proxy: {
 			'/api': {
-				target: 'http://localhost:8080',
+				target: 'https://revolution-trading-pros-api.fly.dev',
 				changeOrigin: true,
-				secure: false
+				secure: true,
+				rewrite: (path) => path // Keep path as-is
 			},
 			// ICT11+ Pattern: Proxy admin routes to prevent CORS
 			'/admin': {
-				target: 'http://localhost:8080',
+				target: 'https://revolution-trading-pros-api.fly.dev',
 				changeOrigin: true,
-				secure: false
+				secure: true
 			}
 		}
 	},

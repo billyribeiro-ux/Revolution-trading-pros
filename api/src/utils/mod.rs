@@ -1,7 +1,8 @@
 //! Utility functions - December 2025 ICT11+ Principal Engineer Grade
 //!
 //! Authentication utilities:
-//! - Password hashing with Argon2
+//! - Password hashing with Argon2 (new users)
+//! - Password verification supporting both bcrypt (Laravel) and Argon2
 //! - JWT token creation and verification
 //! - Refresh token generation
 //! - Session ID generation
@@ -26,7 +27,7 @@ pub struct Claims {
     pub token_type: String,  // "access" or "refresh"
 }
 
-/// Hash a password using Argon2
+/// Hash a password using Argon2 (for new users)
 pub fn hash_password(password: &str) -> Result<String> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
@@ -37,12 +38,38 @@ pub fn hash_password(password: &str) -> Result<String> {
 }
 
 /// Verify a password against a hash
+/// Supports both bcrypt (Laravel legacy) and Argon2 (new Rust API)
+/// ICT11+ Principal Engineer: Backward compatibility with Laravel bcrypt hashes
 pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
-    let parsed_hash = PasswordHash::new(hash)
-        .map_err(|e| anyhow::anyhow!("Invalid password hash: {}", e))?;
-    Ok(Argon2::default()
-        .verify_password(password.as_bytes(), &parsed_hash)
-        .is_ok())
+    // Check if it's a bcrypt hash (Laravel uses $2y$ prefix, bcrypt crate uses $2b$)
+    if hash.starts_with("$2y$") || hash.starts_with("$2b$") || hash.starts_with("$2a$") {
+        // Normalize Laravel's $2y$ to bcrypt's $2b$ for compatibility
+        let normalized_hash = if hash.starts_with("$2y$") {
+            hash.replacen("$2y$", "$2b$", 1)
+        } else {
+            hash.to_string()
+        };
+        
+        // Verify using bcrypt
+        match bcrypt::verify(password, &normalized_hash) {
+            Ok(valid) => Ok(valid),
+            Err(e) => {
+                tracing::warn!("Bcrypt verification error: {}", e);
+                Err(anyhow::anyhow!("Password verification failed: {}", e))
+            }
+        }
+    } else if hash.starts_with("$argon2") {
+        // Argon2 hash (new Rust API users)
+        let parsed_hash = PasswordHash::new(hash)
+            .map_err(|e| anyhow::anyhow!("Invalid Argon2 hash: {}", e))?;
+        Ok(Argon2::default()
+            .verify_password(password.as_bytes(), &parsed_hash)
+            .is_ok())
+    } else {
+        // Unknown hash format
+        tracing::error!("Unknown password hash format: {}", &hash[..hash.len().min(10)]);
+        Err(anyhow::anyhow!("Unknown password hash format"))
+    }
 }
 
 /// Create a JWT access token
