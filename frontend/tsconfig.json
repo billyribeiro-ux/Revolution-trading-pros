@@ -48,6 +48,6 @@
 		// Source maps only - no declaration files needed with noEmit
 		"sourceMap": true
 	},
-	"include": ["src/**/*", "src/**/*.svelte"],
-	"exclude": ["node_modules", ".svelte-kit", "build", "dist"]
+	"include": ["src/**/*", "src/**/*.svelte", ".svelte-kit/ambient.d.ts", ".svelte-kit/non-ambient.d.ts"],
+	"exclude": ["node_modules", "build", "dist"]
 }
