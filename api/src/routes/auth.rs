@@ -353,7 +353,7 @@ async fn resend_verification(
 
 /// Login user
 /// POST /api/auth/login
-/// ICT L11+ Security: Timing attack prevention - always perform password hash
+/// ICT L11+ Security: Rate limiting, timing attack prevention, session management
 async fn login(
     State(state): State<AppState>,
     Json(input): Json<LoginUser>,
@@ -365,6 +365,32 @@ async fn login(
         email = %input.email,
         "Login attempt initiated"
     );
+
+    // ICT L11+ Security: Check rate limit BEFORE any processing
+    let rate_limit = state.services.redis
+        .check_login_rate_limit(&input.email)
+        .await
+        .map_err(|e| {
+            tracing::error!("Rate limit check error: {}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Service unavailable"})))
+        })?;
+
+    if !rate_limit.allowed {
+        let error_msg = if rate_limit.locked {
+            "Account temporarily locked due to too many failed attempts"
+        } else {
+            "Too many login attempts. Please wait before trying again"
+        };
+        
+        return Err((
+            StatusCode::TOO_MANY_REQUESTS,
+            Json(json!({
+                "error": error_msg,
+                "retry_after": rate_limit.retry_after,
+                "locked": rate_limit.locked
+            })),
+        ));
+    }
 
     // Find user
     let user_result: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = $1")
@@ -411,6 +437,9 @@ async fn login(
     })?;
 
     if !password_valid {
+        // Record failed attempt for rate limiting
+        let _ = state.services.redis.record_failed_login(&input.email).await;
+        
         tracing::info!(
             target: "security",
             event = "login_failed",
@@ -424,6 +453,9 @@ async fn login(
             Json(json!({"error": "Invalid credentials"})),
         ));
     }
+
+    // Clear failed login attempts on successful authentication
+    let _ = state.services.redis.clear_login_attempts(&input.email).await;
 
     // Check if email is verified (after password check for security)
     if user.email_verified_at.is_none() {
@@ -465,8 +497,17 @@ async fn login(
         )
     })?;
 
-    // Generate session ID
+    // Generate session ID and store in Redis
     let session_id = generate_session_id();
+    
+    // ICT L11+ Security: Create server-side session in Redis
+    if let Err(e) = state.services.redis
+        .create_session(&session_id, user.id, &user.email, None, None)
+        .await
+    {
+        tracing::error!("Failed to create session in Redis: {}", e);
+        // Continue anyway - JWT still works without Redis session
+    }
 
     // Security audit: successful login
     tracing::info!(
@@ -474,7 +515,8 @@ async fn login(
         event = "login_success",
         user_id = %user.id,
         email = %user.email,
-        "Login successful"
+        session_id = %session_id,
+        "Login successful"    
     );
 
     Ok(Json(AuthResponse {
@@ -559,15 +601,68 @@ async fn me(user: User) -> Json<UserResponse> {
     Json(user.into())
 }
 
-/// Logout user (invalidates token on client side)
+/// Logout request with session ID
+#[derive(Debug, Deserialize)]
+struct LogoutRequest {
+    session_id: Option<String>,
+}
+
+/// Logout user - ICT L11+ Security: Proper session invalidation
 /// POST /api/auth/logout
-async fn logout() -> Json<MessageResponse> {
-    // JWT tokens are stateless - logout is handled client-side
-    // In a production app with Redis, you might want to add the token to a blacklist
-    Json(MessageResponse {
+async fn logout(
+    State(state): State<AppState>,
+    user: User,
+    Json(input): Json<LogoutRequest>,
+) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
+    // Invalidate session in Redis if session_id provided
+    if let Some(session_id) = input.session_id {
+        if let Err(e) = state.services.redis.invalidate_session(&session_id).await {
+            tracing::warn!("Failed to invalidate session: {}", e);
+        }
+    }
+
+    tracing::info!(
+        target: "security",
+        event = "logout",
+        user_id = %user.id,
+        email = %user.email,
+        "User logged out"
+    );
+
+    Ok(Json(MessageResponse {
         message: "Logged out successfully".to_string(),
         success: Some(true),
-    })
+    }))
+}
+
+/// Logout from all devices - ICT L11+ Security: Force logout everywhere
+/// POST /api/auth/logout-all
+async fn logout_all(
+    State(state): State<AppState>,
+    user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let count = state.services.redis
+        .invalidate_all_user_sessions(user.id)
+        .await
+        .map_err(|e| {
+            tracing::error!("Failed to invalidate all sessions: {}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to logout from all devices"})))
+        })?;
+
+    tracing::info!(
+        target: "security",
+        event = "logout_all",
+        user_id = %user.id,
+        email = %user.email,
+        sessions_invalidated = %count,
+        "User logged out from all devices"
+    );
+
+    Ok(Json(json!({
+        "message": format!("Logged out from {} device(s)", count),
+        "sessions_invalidated": count,
+        "success": true
+    })))
 }
 
 /// Request password reset
@@ -765,6 +860,7 @@ pub fn router() -> Router<AppState> {
         .route("/refresh", post(refresh))
         .route("/me", get(me))
         .route("/logout", post(logout))
+        .route("/logout-all", post(logout_all))  // ICT L11+ Security: Force logout everywhere
         .route("/forgot-password", post(forgot_password))
         .route("/reset-password", post(reset_password))
         .route("/verify-email", get(verify_email))
