@@ -101,8 +101,7 @@
 		IconShoppingCart,
 		IconMenu2,
 		IconX,
-		IconChevronDown,
-		IconUser
+		IconChevronDown
 	} from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
@@ -812,17 +811,6 @@
 				{#if !$isAuthenticated}
 					<a href="/get-started" class="cta-btn">Get Started</a>
 					<a href="/login" class="login-btn">Login</a>
-				{:else}
-					<button 
-						class="user-btn"
-						onclick={() => toggleDropdown('user-menu')}
-						aria-label="User menu for {$user?.name || 'User'}"
-						aria-expanded={activeDropdown === 'user-menu'}
-						aria-haspopup="menu"
-						type="button"
-					>
-						<span class="user-avatar" aria-hidden="true">{userInitial}</span>
-					</button>
 				{/if}
 			{/if}
 		</div>
@@ -1504,51 +1492,6 @@
 		text-align: center;
 		border-radius: 10px;
 		pointer-events: none;
-	}
-
-	.user-btn {
-		display: none;
-		align-items: center;
-		justify-content: center;
-		width: 44px;
-		height: 44px;
-		padding: 0;
-		background: transparent;
-		border: 2px solid rgba(14, 106, 196, 0.3);
-		border-radius: 50%;
-		cursor: pointer;
-		transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-	}
-
-	@media (min-width: 1024px) {
-		.user-btn {
-			display: flex;
-		}
-	}
-
-	.user-btn:hover,
-	.user-btn:focus-visible {
-		border-color: var(--nav-primary);
-		transform: scale(1.05);
-	}
-
-	.user-btn:focus-visible {
-		outline: 3px solid var(--nav-primary);
-		outline-offset: 2px;
-	}
-
-	.user-avatar {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-dark));
-		color: var(--nav-text);
-		font-size: 0.875rem;
-		font-weight: 700;
-		font-family: var(--nav-font);
-		border-radius: 50%;
 	}
 
 	.login-btn {
