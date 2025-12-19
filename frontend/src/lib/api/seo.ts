@@ -754,7 +754,7 @@ class SeoManagementService {
 
 	private async checkRankings(): Promise<void> {
 		try {
-			const rankings = await api.get<{ rankings: RankTracking[] }>('/seo/rankings/check');
+			const rankings = await api.get<{ rankings: RankTracking[] }>('/admin/seo/rankings/check');
 			this.rankings.set(rankings.rankings);
 		} catch (error) {
 			console.error('[SeoService] Failed to check rankings:', error);
@@ -775,7 +775,7 @@ class SeoManagementService {
 
 	private async checkAlerts(): Promise<void> {
 		try {
-			const alerts = await api.get<{ alerts: SeoAlert[] }>('/seo/alerts/check');
+			const alerts = await api.get<{ alerts: SeoAlert[] }>('/admin/seo/alerts/check');
 
 			// Process new alerts
 			alerts.alerts.forEach((alert) => {
@@ -924,7 +924,7 @@ class SeoManagementService {
 		contentId: number,
 		focusKeyword?: string
 	): Promise<SeoAnalysis> {
-		const response = await api.post<{ analysis: SeoAnalysis }>('/seo/analyze', {
+		const response = await api.post<{ analysis: SeoAnalysis }>('/admin/seo/analyze', {
 			content_type: contentType,
 			content_id: contentId,
 			focus_keyword: focusKeyword
@@ -935,7 +935,7 @@ class SeoManagementService {
 	private async analyzeCompetitors(keyword?: string): Promise<CompetitorAnalysis | null> {
 		if (!keyword) return null;
 
-		const response = await api.post<{ analysis: CompetitorAnalysis }>('/seo/competitors/analyze', {
+		const response = await api.post<{ analysis: CompetitorAnalysis }>('/admin/seo/competitors/analyze', {
 			keyword
 		});
 		return response.analysis;
@@ -952,7 +952,7 @@ class SeoManagementService {
 	private async analyzeContentGaps(keyword?: string): Promise<ContentGap[] | null> {
 		if (!keyword) return null;
 
-		const response = await api.post<{ gaps: ContentGap[] }>('/seo/content/gaps', { keyword });
+		const response = await api.post<{ gaps: ContentGap[] }>('/admin/seo/content/gaps', { keyword });
 		return response.gaps;
 	}
 
@@ -960,7 +960,7 @@ class SeoManagementService {
 		contentType: string,
 		contentId: number
 	): Promise<{ issues: TechnicalIssue[] } | null> {
-		const response = await api.post<{ issues: TechnicalIssue[] }>('/seo/technical/audit', {
+		const response = await api.post<{ issues: TechnicalIssue[] }>('/admin/seo/technical/audit', {
 			content_type: contentType,
 			content_id: contentId
 		});
@@ -1058,7 +1058,7 @@ class SeoManagementService {
 		contentId: number,
 		issues: string[]
 	): Promise<{ fixed: string[]; failed: string[] }> {
-		const response = await api.post<{ fixed: string[]; failed: string[] }>('/seo/auto-fix', {
+		const response = await api.post<{ fixed: string[]; failed: string[] }>('/admin/seo/auto-fix', {
 			content_type: contentType,
 			content_id: contentId,
 			issues
@@ -1075,13 +1075,13 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async loadRedirects(params?: any): Promise<Redirect[]> {
-		const response = await api.get<ApiResponse<Redirect[]>>('/redirects', { params });
+		const response = await api.get<ApiResponse<Redirect[]>>('/admin/redirects', { params });
 		this.redirects.set(response.data);
 		return response.data;
 	}
 
 	async createRedirect(data: Partial<Redirect>): Promise<Redirect> {
-		const response = await api.post<{ redirect: Redirect }>('/redirects', data);
+		const response = await api.post<{ redirect: Redirect }>('/admin/redirects', data);
 
 		this.redirects.update((redirects) => [...redirects, response.redirect]);
 
@@ -1112,7 +1112,7 @@ class SeoManagementService {
 	}
 
 	async detectRedirectChains(): Promise<RedirectChain[]> {
-		const response = await api.get<{ chains: RedirectChain[] }>('/redirects/chains');
+		const response = await api.get<{ chains: RedirectChain[] }>('/admin/redirects/chains');
 		return response.chains;
 	}
 
@@ -1137,7 +1137,7 @@ class SeoManagementService {
 	}
 
 	async exportRedirects(): Promise<Blob> {
-		const response = await api.get<Blob>('/redirects/export');
+		const response = await api.get<Blob>('/admin/redirects/export');
 		return response;
 	}
 
@@ -1146,7 +1146,7 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async load404Errors(params?: any): Promise<Error404[]> {
-		const response = await api.get<ApiResponse<Error404[]>>('/404-errors', { params });
+		const response = await api.get<ApiResponse<Error404[]>>('/admin/404-errors', { params });
 		this.errors404.set(response.data);
 		return response.data;
 	}
@@ -1184,7 +1184,7 @@ class SeoManagementService {
 		resolvedOnly: boolean,
 		olderThanDays?: number
 	): Promise<{ deleted: number }> {
-		const response = await api.post<{ deleted: number }>('/404-errors/bulk-delete', {
+		const response = await api.post<{ deleted: number }>('/admin/404-errors/bulk-delete', {
 			resolved_only: resolvedOnly,
 			older_than_days: olderThanDays
 		});
@@ -1196,7 +1196,7 @@ class SeoManagementService {
 	}
 
 	async findSimilarPages(url: string): Promise<string[]> {
-		const response = await api.post<{ suggestions: string[] }>('/404-errors/find-similar', { url });
+		const response = await api.post<{ suggestions: string[] }>('/admin/404-errors/find-similar', { url });
 		return response.suggestions;
 	}
 
@@ -1205,7 +1205,7 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async loadRankings(keywords?: string[]): Promise<RankTracking[]> {
-		const response = await api.get<{ rankings: RankTracking[] }>('/seo/rankings', {
+		const response = await api.get<{ rankings: RankTracking[] }>('/admin/seo/rankings', {
 			params: { keywords }
 		});
 		this.rankings.set(response.rankings);
@@ -1217,7 +1217,7 @@ class SeoManagementService {
 		url: string,
 		options?: TrackingOptions
 	): Promise<RankTracking> {
-		const response = await api.post<{ tracking: RankTracking }>('/seo/rankings/track', {
+		const response = await api.post<{ tracking: RankTracking }>('/admin/seo/rankings/track', {
 			keyword,
 			url,
 			...options
@@ -1229,7 +1229,7 @@ class SeoManagementService {
 	}
 
 	async updateRankings(): Promise<RankTracking[]> {
-		const response = await api.post<{ rankings: RankTracking[] }>('/seo/rankings/update');
+		const response = await api.post<{ rankings: RankTracking[] }>('/admin/seo/rankings/update');
 		this.rankings.set(response.rankings);
 		return response.rankings;
 	}
@@ -1247,18 +1247,18 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async loadBacklinks(): Promise<BacklinkProfile> {
-		const response = await api.get<{ profile: BacklinkProfile }>('/seo/backlinks');
+		const response = await api.get<{ profile: BacklinkProfile }>('/admin/seo/backlinks');
 		this.backlinks.set(response.profile);
 		return response.profile;
 	}
 
 	async checkNewBacklinks(): Promise<Backlink[]> {
-		const response = await api.get<{ backlinks: Backlink[] }>('/seo/backlinks/new');
+		const response = await api.get<{ backlinks: Backlink[] }>('/admin/seo/backlinks/new');
 		return response.backlinks;
 	}
 
 	async analyzeToxicBacklinks(): Promise<Backlink[]> {
-		const response = await api.get<{ toxic: Backlink[] }>('/seo/backlinks/toxic');
+		const response = await api.get<{ toxic: Backlink[] }>('/admin/seo/backlinks/toxic');
 		return response.toxic;
 	}
 
@@ -1289,7 +1289,7 @@ class SeoManagementService {
 	}
 
 	async generateSitemap(): Promise<string> {
-		const response = await api.post<{ url: string }>('/seo/sitemap/generate');
+		const response = await api.post<{ url: string }>('/admin/seo/sitemap/generate');
 		return response.url;
 	}
 
@@ -1303,7 +1303,7 @@ class SeoManagementService {
 	}
 
 	async generateSchema(type: string, data: any): Promise<string> {
-		const response = await api.post<{ schema: string }>('/seo/schema/generate', {
+		const response = await api.post<{ schema: string }>('/admin/seo/schema/generate', {
 			type,
 			data
 		});
@@ -1343,7 +1343,7 @@ class SeoManagementService {
 
 	private async loadTechnicalIssues(): Promise<void> {
 		try {
-			const response = await api.get<{ issues: TechnicalIssue[] }>('/seo/technical/issues');
+			const response = await api.get<{ issues: TechnicalIssue[] }>('/admin/seo/technical/issues');
 
 			// Update current analysis with new issues
 			this.currentAnalysis.update((analysis) => {
