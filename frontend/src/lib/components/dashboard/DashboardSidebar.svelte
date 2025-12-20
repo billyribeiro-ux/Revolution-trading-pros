@@ -312,33 +312,41 @@
 		{/if}
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
-		     MASTERY SECTION
+		     MASTERY SECTION (WordPress EXACT)
 		     ═══════════════════════════════════════════════════════════════════════ -->
-		{#if hasCourses}
-			<ul>
-				<li><p class="dashboard__nav-category">mastery</p></li>
-			</ul>
-			<ul class="dash_main_links">
-				{#each courses as course (course.id)}
-					<li
-						class="{course.slug}-mp"
-						class:is-active={isActive(`/dashboard/${course.slug}`)}
-					>
-						<a href="/dashboard/{course.slug}">
-							<span class="dashboard__nav-item-icon st-icon-moxie">
-								{#if course.icon}
-									<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
-								{/if}
-							</span>
-							<span class="dashboard__nav-item-text">{course.name}</span>
-						</a>
-					</li>
-				{/each}
-			</ul>
-		{/if}
+		<ul>
+			<li><p class="dashboard__nav-category">mastery</p></li>
+		</ul>
+		<ul class="dash_main_links">
+			{#each courses as course (course.id)}
+				<li
+					class="{course.slug}-mp"
+					class:is-active={isActive(`/dashboard/${course.slug}`)}
+				>
+					<a href="/dashboard/{course.slug}">
+						<span class="dashboard__nav-item-icon st-icon-moxie">
+							{#if course.icon}
+								<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
+							{/if}
+						</span>
+						<span class="dashboard__nav-item-text">{course.name}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
-		     TOOLS SECTION (Simpler Trading EXACT - Always shown)
+		     PREMIUM REPORTS SECTION (WordPress EXACT - Category always shown)
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		<ul>
+			<li><p class="dashboard__nav-category">premium reports</p></li>
+		</ul>
+		<ul class="dash_main_links">
+			<!-- Premium reports would be populated dynamically -->
+		</ul>
+
+		<!-- ═══════════════════════════════════════════════════════════════════════
+		     TOOLS SECTION (WordPress EXACT - Always shown)
 		     ═══════════════════════════════════════════════════════════════════════ -->
 		<ul>
 			<li><p class="dashboard__nav-category">tools</p></li>
