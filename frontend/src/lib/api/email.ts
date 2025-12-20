@@ -12,7 +12,8 @@ import { get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth';
 
 // Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+// NOTE: No /api suffix - endpoints already include /api prefix
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || PROD_API;
 
 // ═══════════════════════════════════════════════════════════════════════════

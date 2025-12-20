@@ -45,9 +45,10 @@ import { browser } from '$app/environment';
 
 // ICT11+ Pattern: Use relative path in dev (Vite proxy), absolute URL in production
 // Cloudflare Pages doesn't expose VITE_* env vars at runtime, so we hardcode production URL
+// NOTE: No /api suffix - endpoints already include /api prefix
 const isDev = import.meta.env.DEV;
-const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev/api';
-const API_BASE_URL = isDev ? '/api' : (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
+const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+const API_BASE_URL = isDev ? '' : (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;

@@ -46,7 +46,8 @@ import type { User } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallback - NEVER use localhost in production
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+// NOTE: No /api suffix - endpoints already include /api prefix
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
