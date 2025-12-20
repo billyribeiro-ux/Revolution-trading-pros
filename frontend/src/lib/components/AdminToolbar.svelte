@@ -592,7 +592,7 @@
 				isLoading = true;
 				try {
 					await getUser();
-					console.debug('[AdminToolbar] User loaded:', $userStore?.email);
+					console.debug('[AdminToolbar] User loaded:', (currentUser as AdminUser | null)?.email);
 				} catch (error) {
 					console.error('[AdminToolbar] Failed to load user:', error);
 					errorState.hasError = true;
@@ -605,158 +605,47 @@
 				isLoading = false;
 			}
 
-			// Start session monitoring
-			sessionCheckInterval = window.setInterval(checkSession, CONSTANTS.SESSION_CHECK_INTERVAL);
+	// ...
 
-			// Monitor page visibility for session checks
-			visibilityChangeHandler = () => {
-				if (!document.hidden) {
-					checkSession();
-				}
-			};
-			document.addEventListener('visibilitychange', visibilityChangeHandler);
+			<!-- Quick Access Menu -->
+			<div class="quick-menu">
+				<button
+					bind:this={quickMenuTriggerRef}
+					class="quick-menu-trigger"
+					onclick={(e: MouseEvent) => {
+						e.stopPropagation();
+						toggleQuickMenu();
+					}}
+					onkeydown={(e: KeyboardEvent) => handleKeyDown(e, 'quick')}
+					aria-expanded={showQuickMenu}
+					aria-haspopup="true"
+					aria-controls="quick-menu-dropdown"
+					disabled={isLoading}
+				>
+					<!-- ... -->
 
-			// Add global keyboard listener for escape
-			const handleGlobalEscape = (e: KeyboardEvent) => {
-				if (e.key === KEYBOARD_KEYS.ESCAPE) {
-					closeAllDropdowns();
-				}
-			};
-			document.addEventListener('keydown', handleGlobalEscape, { signal });
+			<!-- User Menu -->
+			<div class="user-menu">
+				<button
+					bind:this={userMenuTriggerRef}
+					class="user-menu-trigger"
+					onclick={(e: MouseEvent) => {
+						e.stopPropagation();
+						toggleUserMenu();
+					}}
+					onkeydown={(e: KeyboardEvent) => handleKeyDown(e, 'user')}
+					aria-expanded={showDropdown}
+					aria-haspopup="true"
+					aria-controls="user-menu-dropdown"
+					aria-label="User menu for {displayName}"
+					disabled={isLoading}
+				>
+					<!-- ... -->
 
-			// Track toolbar load
-			trackEvent('toolbar_loaded', { isAdmin });
-		} catch (error) {
-			console.error('[AdminToolbar] Mount error:', error);
-			errorState.hasError = true;
-		}
-	});
-
-	onDestroy(() => {
-		if (!browser) return;
-
-		console.debug('[AdminToolbar] Unmounting...');
-
-		// Cleanup
-		abortController.abort();
-
-		if (sessionCheckInterval !== null) {
-			clearInterval(sessionCheckInterval);
-		}
-
-		if (visibilityChangeHandler) {
-			document.removeEventListener('visibilitychange', visibilityChangeHandler);
-		}
-
-		if (clickOutsideTimeout) {
-			clearTimeout(clickOutsideTimeout);
-		}
-	});
+	// ...
 </script>
 
-<!-- Global click handler -->
-<svelte:window onclick={handleClickOutside} />
-
-<!-- Admin Toolbar -->
-{#if isAdmin}
-	<div class="admin-toolbar" role="navigation" aria-label="Admin navigation toolbar">
-		<div class="toolbar-container">
-			<!-- Left Section -->
-			<div class="toolbar-left">
-				<!-- Dashboard Link -->
-				<button
-					class="toolbar-logo"
-					onclick={() => navigateTo('/admin')}
-					title="Admin Dashboard"
-					aria-label="Go to admin dashboard"
-					disabled={isLoading}
-				>
-					<IconDashboard size={20} aria-hidden="true" />
-					<span class="logo-text">Admin</span>
-				</button>
-
-				<div class="toolbar-divider" role="separator" aria-hidden="true"></div>
-
-				<!-- Quick Access Menu -->
-				<div class="quick-menu">
-					<button
-						bind:this={quickMenuTriggerRef}
-						class="quick-menu-trigger"
-						onclick={(e) => {
-							e.stopPropagation();
-							toggleQuickMenu();
-						}}
-						onkeydown={(e) => handleKeyDown(e, 'quick')}
-						aria-expanded={showQuickMenu}
-						aria-haspopup="true"
-						aria-controls="quick-menu-dropdown"
-						disabled={isLoading}
-					>
-						<span>Quick Access</span>
-						<IconChevronDown size={16} class={showQuickMenu ? 'rotate' : ''} aria-hidden="true" />
-					</button>
-
-					{#if showQuickMenu}
-						<div
-							bind:this={quickMenuRef}
-							id="quick-menu-dropdown"
-							class="dropdown-menu"
-							role="menu"
-							aria-labelledby="quick-menu-trigger"
-						>
-							{#each filteredQuickMenuItems as item (item.id)}
-								{@const Icon = item.icon}
-								<button
-									class="dropdown-item"
-									class:disabled={item.disabled}
-									onclick={() => !item.disabled && navigateTo(item.path)}
-									role="menuitem"
-									disabled={item.disabled}
-									tabindex={showQuickMenu ? 0 : -1}
-								>
-									<Icon size={18} aria-hidden="true" />
-									<span>{item.label}</span>
-									{#if item.badge}
-										<span class="badge">{item.badge}</span>
-									{/if}
-								</button>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			</div>
-
-			<!-- Right Section -->
-			<div class="toolbar-right">
-				<!-- View Site Button -->
-				<button
-					class="toolbar-button"
-					onclick={() => navigateTo('/')}
-					title="View public site"
-					aria-label="View public site"
-					disabled={isLoading}
-				>
-					<IconEye size={18} aria-hidden="true" />
-					<span class="button-text">View Site</span>
-				</button>
-
-				<div class="toolbar-divider" role="separator" aria-hidden="true"></div>
-
-				<!-- User Menu -->
-				<div class="user-menu">
-					<button
-						bind:this={userMenuTriggerRef}
-						class="user-menu-trigger"
-						onclick={(e) => {
-							e.stopPropagation();
-							toggleUserMenu();
-						}}
-						onkeydown={(e) => handleKeyDown(e, 'user')}
-						aria-expanded={showDropdown}
-						aria-haspopup="true"
-						aria-controls="user-menu-dropdown"
-						aria-label="User menu for {displayName}"
-						disabled={isLoading}
+<!-- ... -->
 					>
 						<div class="user-avatar" aria-hidden="true">
 							{userInitial}
