@@ -532,9 +532,12 @@
 		background: var(--sidebar-bg-hover);
 	}
 
+	/* WordPress EXACT: Active state with left cyan border */
 	.dash_main_links li.is-active a {
 		color: var(--sidebar-text-active);
 		background: var(--sidebar-accent);
+		border-left: 3px solid #5bc0de;
+		margin-left: -3px;
 	}
 
 	.dash_main_links a:focus-visible {

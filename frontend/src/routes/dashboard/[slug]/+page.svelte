@@ -190,24 +190,30 @@
 
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<!-- Breadcrumb -->
-		<nav class="dashboard__breadcrumb" aria-label="Breadcrumb">
-			<a href="/dashboard">Dashboard</a>
-			<span class="separator">/</span>
-			<span class="current">{membershipData.name}</span>
-		</nav>
-		<h1 class="dashboard__page-title">
-			<span class="icon icon--lg {membershipData.icon}"></span>
-			{membershipData.name}
-		</h1>
+		<h1 class="dashboard__page-title">{membershipData.name} Dashboard</h1>
+	</div>
+	<div class="dashboard__header-center">
+		<a href="/dashboard/{slug}/getting-started" class="new-start-link">New? Start Here</a>
 	</div>
 	<div class="dashboard__header-right">
 		{#if membershipData.tradingRoomUrl}
 			<a href={membershipData.tradingRoomUrl} class="btn btn-orange btn-tradingroom" target="_blank" rel="nofollow">
-				<IconPlayerPlay size={18} />
-				<strong>Enter Trading Room</strong>
+				<strong>Enter a Trading Room</strong>
 			</a>
 		{/if}
+		<!-- Trading Room Rules -->
+		<div class="trading-room-rules">
+			<a
+				href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
+				target="_blank"
+				class="trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</p>
+		</div>
 	</div>
 </header>
 
@@ -378,34 +384,59 @@
 	<aside class="dashboard__content-sidebar">
 		<!-- Trading Room Schedule - WordPress: .content-sidebar__section -->
 		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">
-				Trading Room Schedule
-				<p class="pssubject">Schedule is subject to change.</p>
-			</h4>
+			<h4 class="content-sidebar__heading">TRADING ROOM SCHEDULE</h4>
+			<p class="pssubject">Schedule is subject to change.</p>
 			<div class="room-sched">
 				<div class="schedule-item">
-					<h4>Morning Session</h4>
-					<span>9:00 AM - 11:30 AM ET</span>
+					<a href="#" class="schedule-item__name">Taylor Horton</a>
+					<span class="schedule-item__time">Dec 22, 2025, 9:20 AM EST</span>
 				</div>
 				<div class="schedule-item">
-					<h4>Afternoon Session</h4>
-					<span>1:00 PM - 4:00 PM ET</span>
+					<a href="#" class="schedule-item__name">Sam Shames</a>
+					<span class="schedule-item__time">Dec 22, 2025, 10:30 AM EST</span>
+				</div>
+				<div class="schedule-item">
+					<a href="#" class="schedule-item__name">Neil Yeager</a>
+					<span class="schedule-item__time">Dec 22, 2025, 11:30 AM EST</span>
+				</div>
+				<div class="schedule-item">
+					<a href="#" class="schedule-item__name">Bruce Marshall</a>
+					<span class="schedule-item__time">Dec 22, 2025, 2:00 PM EST</span>
+				</div>
+				<div class="schedule-item">
+					<a href="#" class="schedule-item__name">Henry Gambell</a>
+					<span class="schedule-item__time">Dec 22, 2025, 3:00 PM EST</span>
+				</div>
+				<div class="schedule-item">
+					<a href="#" class="schedule-item__name">Henry Gambell</a>
+					<span class="schedule-item__time">Dec 23, 2025, 9:15 AM EST</span>
+				</div>
+				<div class="schedule-item">
+					<a href="#" class="schedule-item__name">Raghee Horner</a>
+					<span class="schedule-item__time">Dec 23, 2025, 10:30 AM EST</span>
+				</div>
+				<div class="schedule-item">
+					<a href="#" class="schedule-item__name">David Starr</a>
+					<span class="schedule-item__time">Dec 23, 2025, 11:30 AM EST</span>
 				</div>
 			</div>
 		</section>
 
 		<!-- Quick Links - WordPress: .content-sidebar__section -->
 		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Quick Links</h4>
+			<h4 class="content-sidebar__heading">QUICK LINKS</h4>
 			<ul class="link-list">
 				<li>
-					<a href="/dashboard/support" target="_blank">Support</a>
+					<span class="link-arrow">›</span>
+					<a href="https://intercom.help/simpler-trading/en/" target="_blank">Support</a>
 				</li>
 				<li>
+					<span class="link-arrow">›</span>
 					<a href="/tutorials" target="_blank">Platform Tutorials</a>
 				</li>
 				<li>
-					<a href="/blog" target="_blank">Revolution Blog</a>
+					<span class="link-arrow">›</span>
+					<a href="/blog" target="_blank">Simpler Blog</a>
 				</li>
 			</ul>
 		</section>
@@ -428,50 +459,30 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		gap: 16px;
 	}
 
-	.dashboard__header-left,
-	.dashboard__header-right {
+	.dashboard__header-left {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 	}
 
-	.dashboard__header-left {
-		flex-direction: column;
+	.dashboard__header-center {
+		display: flex;
+		align-items: center;
+	}
+
+	.dashboard__header-right {
+		display: flex;
 		align-items: flex-start;
-		gap: 8px;
-	}
-
-	.dashboard__breadcrumb {
-		font-size: 13px;
-		color: var(--st-text-muted, #64748b);
-	}
-
-	.dashboard__breadcrumb a {
-		color: var(--st-link-color, #1e73be);
-		text-decoration: none;
-	}
-
-	.dashboard__breadcrumb a:hover {
-		text-decoration: underline;
-	}
-
-	.dashboard__breadcrumb .separator {
-		margin: 0 8px;
-		color: #999;
-	}
-
-	.dashboard__breadcrumb .current {
-		color: var(--st-text-color, #333);
+		gap: 16px;
+		flex-direction: column;
+		align-items: flex-end;
 	}
 
 	.dashboard__page-title {
-		display: flex;
-		align-items: center;
-		gap: 12px;
 		color: var(--st-text-color, #333);
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 32px;
@@ -480,9 +491,41 @@
 		line-height: 1.2;
 	}
 
-	.dashboard__page-title .icon {
-		font-size: 36px;
+	.new-start-link {
 		color: var(--st-primary, #0984ae);
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 14px;
+	}
+
+	.new-start-link:hover {
+		text-decoration: underline;
+	}
+
+	/* Trading Room Rules - WordPress EXACT */
+	.trading-room-rules {
+		text-align: right;
+		max-width: 220px;
+	}
+
+	.trading-room-rules__link {
+		display: block;
+		font-weight: 700;
+		color: var(--st-primary, #0984ae);
+		text-decoration: none;
+		font-size: 14px;
+		margin-bottom: 4px;
+	}
+
+	.trading-room-rules__link:hover {
+		text-decoration: underline;
+	}
+
+	.trading-room-rules__disclaimer {
+		font-size: 11px;
+		color: var(--st-text-muted, #6b7280);
+		line-height: 1.3;
+		margin: 0;
 	}
 
 	.btn-tradingroom {
@@ -883,32 +926,42 @@
 		color: var(--st-text-muted, #64748b);
 	}
 
-	/* WordPress: .room-sched */
+	/* WordPress: .room-sched - Schedule with trader names */
 	.room-sched {
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
+		gap: 0;
 	}
 
-	.room-sched .schedule-item {
+	.schedule-item {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		padding: 12px 0;
+		border-bottom: 1px solid #eee;
 	}
 
-	.room-sched .schedule-item h4 {
+	.schedule-item:last-child {
+		border-bottom: none;
+	}
+
+	.schedule-item__name {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--st-text-color, #333);
-		margin: 0;
+		color: var(--st-primary, #0984ae);
+		text-decoration: none;
+		margin-bottom: 4px;
 	}
 
-	.room-sched .schedule-item span {
-		font-size: 13px;
+	.schedule-item__name:hover {
+		text-decoration: underline;
+	}
+
+	.schedule-item__time {
+		font-size: 12px;
 		color: var(--st-text-muted, #64748b);
 	}
 
-	/* WordPress: .link-list */
+	/* WordPress: .link-list - Quick Links section */
 	.link-list {
 		list-style: none;
 		margin: 0;
@@ -916,23 +969,31 @@
 	}
 
 	.link-list li {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 		padding: 8px 0;
-		border-bottom: 1px solid var(--st-border-color, #dbdbdb);
+		border-bottom: 1px solid #eee;
 	}
 
 	.link-list li:last-child {
 		border-bottom: none;
 	}
 
+	.link-arrow {
+		color: var(--st-primary, #0984ae);
+		font-weight: 700;
+		font-size: 16px;
+	}
+
 	.link-list a {
-		color: var(--st-link-color, #1e73be);
+		color: var(--st-primary, #0984ae);
 		text-decoration: none;
 		font-size: 14px;
 		transition: color 0.15s ease;
 	}
 
 	.link-list a:hover {
-		color: var(--st-primary, #0984ae);
 		text-decoration: underline;
 	}
 

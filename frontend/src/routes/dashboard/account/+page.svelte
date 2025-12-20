@@ -3,9 +3,8 @@
 	 * Dashboard - My Account Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Exact match of Simpler Trading's WooCommerce My Account page.
-	 * Shows greeting and links to account sections.
-	 * Sidebar is handled by DashboardSidebar component (shows account nav when on account pages).
+	 * Exact match of Simpler Trading's WooCommerce Account Details page.
+	 * Shows personal details form and password change section.
 	 *
 	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
 	 */
@@ -15,10 +14,18 @@
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE
+	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const userName = $derived($user?.name || ($user?.email ? $user.email.split('@')[0] : null) || 'Guest');
+	let firstName = $state('');
+	let lastName = $state('');
+	let displayName = $state('');
+	let email = $state('');
+	let currentPassword = $state('');
+	let newPassword = $state('');
+	let confirmPassword = $state('');
+	let isSaving = $state(false);
+	let message = $state<{ type: 'success' | 'error'; text: string } | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -30,13 +37,35 @@
 		}
 	});
 
+	// Initialize form with user data
+	$effect(() => {
+		if ($user) {
+			const nameParts = ($user.name || '').split(' ');
+			firstName = nameParts[0] || '';
+			lastName = nameParts.slice(1).join(' ') || '';
+			displayName = $user.name || '';
+			email = $user.email || '';
+		}
+	});
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function handleLogout(): void {
-		authStore.logout();
-		goto('/', { replaceState: true });
+	async function handleSubmit(e: Event): Promise<void> {
+		e.preventDefault();
+		isSaving = true;
+		message = null;
+
+		try {
+			// TODO: Implement actual API call
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			message = { type: 'success', text: 'Account details updated successfully.' };
+		} catch (err) {
+			message = { type: 'error', text: 'Failed to update account details.' };
+		} finally {
+			isSaving = false;
+		}
 	}
 </script>
 
@@ -66,20 +95,141 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			<!-- WooCommerce: .woocommerce-MyAccount-content -->
-			<div class="woocommerce-MyAccount-content">
-				<!-- Content Box - Simpler Trading Style -->
-				<div class="content-box content-box--centered">
-					<div class="content-box__section">
-						<p>
-							Hello <strong>{userName}</strong> (not <strong>{userName}</strong>? <button class="link-button" onclick={handleLogout}>Log out</button>)
-						</p>
+			<!-- WooCommerce: Account Details Form -->
+			<div class="account-details-form">
+				<h2 class="form-title">Account Details</h2>
 
-						<p class="u--margin-bottom-0">
-							From your account dashboard you can view your <a href="/dashboard/orders">recent orders</a>, manage your <a href="/dashboard/addresses">billing address</a>, and <a href="/dashboard/account/edit">edit your password and account details</a>.
-						</p>
+				{#if message}
+					<div class="message message--{message.type}">
+						{message.text}
 					</div>
-				</div>
+				{/if}
+
+				<form onsubmit={handleSubmit}>
+					<!-- Personal Details Section -->
+					<div class="form-section">
+						<h3 class="form-section-title">PERSONAL DETAILS</h3>
+
+						<div class="form-row form-row--two-columns">
+							<div class="form-group">
+								<label for="firstName" class="form-label">
+									First name <span class="required">*</span>
+								</label>
+								<input
+									type="text"
+									id="firstName"
+									class="form-input"
+									bind:value={firstName}
+									required
+								/>
+							</div>
+							<div class="form-group">
+								<label for="lastName" class="form-label">
+									Last name <span class="required">*</span>
+								</label>
+								<input
+									type="text"
+									id="lastName"
+									class="form-input"
+									bind:value={lastName}
+									required
+								/>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="displayName" class="form-label">
+								Display name <span class="required">*</span>
+							</label>
+							<input
+								type="text"
+								id="displayName"
+								class="form-input"
+								bind:value={displayName}
+								required
+							/>
+							<p class="form-help">
+								<em>This will be how your name will be displayed in the account section and in reviews</em>
+							</p>
+						</div>
+
+						<div class="form-group">
+							<label for="email" class="form-label">
+								Email address <span class="required">*</span>
+							</label>
+							<input
+								type="email"
+								id="email"
+								class="form-input"
+								bind:value={email}
+								required
+							/>
+						</div>
+					</div>
+
+					<!-- Password Change Section -->
+					<div class="form-section">
+						<h3 class="form-section-title">PASSWORD CHANGE</h3>
+
+						<div class="form-group">
+							<label for="currentPassword" class="form-label">
+								Current password (leave blank to leave unchanged)
+							</label>
+							<div class="password-input-wrapper">
+								<input
+									type="password"
+									id="currentPassword"
+									class="form-input"
+									bind:value={currentPassword}
+								/>
+								<button type="button" class="password-toggle" aria-label="Toggle password visibility">
+									<span class="password-toggle-icon">👁</span>
+								</button>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="newPassword" class="form-label">
+								New password (leave blank to leave unchanged)
+							</label>
+							<div class="password-input-wrapper">
+								<input
+									type="password"
+									id="newPassword"
+									class="form-input"
+									bind:value={newPassword}
+								/>
+								<button type="button" class="password-toggle" aria-label="Toggle password visibility">
+									<span class="password-toggle-icon">👁</span>
+								</button>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="confirmPassword" class="form-label">
+								Confirm new password
+							</label>
+							<div class="password-input-wrapper">
+								<input
+									type="password"
+									id="confirmPassword"
+									class="form-input"
+									bind:value={confirmPassword}
+								/>
+								<button type="button" class="password-toggle" aria-label="Toggle password visibility">
+									<span class="password-toggle-icon">👁</span>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Submit Button -->
+					<div class="form-actions">
+						<button type="submit" class="btn btn-orange" disabled={isSaving}>
+							{isSaving ? 'Saving...' : 'Save changes'}
+						</button>
+					</div>
+				</form>
 			</div>
 		</section>
 	</div>
@@ -129,11 +279,8 @@
 
 	.dashboard__content-main {
 		width: 100%;
+		max-width: 800px;
 	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTENT BOX - WooCommerce Style (Simpler Trading EXACT)
-	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content-section {
 		background: #fff;
@@ -141,69 +288,165 @@
 		padding: 30px;
 	}
 
-	.woocommerce-MyAccount-content {
-		max-width: 800px;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCOUNT DETAILS FORM - WordPress/WooCommerce Style
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.account-details-form {
+		width: 100%;
 	}
 
-	.content-box {
-		background: #fafafa;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-	}
-
-	.content-box--centered {
-		text-align: left;
-	}
-
-	.content-box__section {
-		padding: 30px;
-	}
-
-	.content-box__section p {
-		color: #333;
-		font-size: 16px;
-		line-height: 1.7;
-		margin: 0 0 15px;
-	}
-
-	.content-box__section p:last-child {
-		margin-bottom: 0;
-	}
-
-	.content-box__section strong {
+	.form-title {
+		font-size: 24px;
 		font-weight: 700;
+		color: #333;
+		margin: 0 0 24px;
+		font-family: 'Open Sans Condensed', sans-serif;
 	}
 
-	.content-box__section a {
+	.form-section {
+		margin-bottom: 32px;
+	}
+
+	.form-section-title {
+		font-size: 14px;
+		font-weight: 700;
 		color: #0984ae;
-		text-decoration: none;
-		transition: color 0.15s ease;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin: 0 0 20px;
+		padding-bottom: 10px;
+		border-bottom: 2px solid #0984ae;
 	}
 
-	.content-box__section a:hover {
-		color: #076787;
-		text-decoration: underline;
+	.form-row {
+		display: flex;
+		gap: 20px;
 	}
 
-	.link-button {
+	.form-row--two-columns {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	.form-label {
+		display: block;
+		font-size: 14px;
+		font-weight: 400;
+		color: #333;
+		margin-bottom: 8px;
+	}
+
+	.required {
+		color: #e74c3c;
+	}
+
+	.form-input {
+		width: 100%;
+		padding: 12px 16px;
+		font-size: 14px;
+		color: #333;
+		background: #fff;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	}
+
+	.form-input:focus {
+		outline: none;
+		border-color: #0984ae;
+		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.1);
+	}
+
+	.form-help {
+		font-size: 13px;
+		color: #666;
+		margin: 8px 0 0;
+	}
+
+	.form-help em {
+		font-style: italic;
+	}
+
+	/* Password Input with Toggle */
+	.password-input-wrapper {
+		position: relative;
+	}
+
+	.password-input-wrapper .form-input {
+		padding-right: 48px;
+	}
+
+	.password-toggle {
+		position: absolute;
+		right: 12px;
+		top: 50%;
+		transform: translateY(-50%);
 		background: none;
 		border: none;
-		padding: 0;
-		color: #0984ae;
-		font-size: inherit;
-		font-family: inherit;
+		padding: 4px;
 		cursor: pointer;
-		text-decoration: none;
-		transition: color 0.15s ease;
+		color: #666;
 	}
 
-	.link-button:hover {
-		color: #076787;
-		text-decoration: underline;
+	.password-toggle:hover {
+		color: #333;
 	}
 
-	.u--margin-bottom-0 {
-		margin-bottom: 0 !important;
+	.password-toggle-icon {
+		font-size: 16px;
+	}
+
+	/* Form Actions */
+	.form-actions {
+		margin-top: 24px;
+	}
+
+	.btn-orange {
+		display: inline-block;
+		padding: 12px 24px;
+		font-size: 14px;
+		font-weight: 700;
+		color: #fff;
+		background: #f99e31;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+
+	.btn-orange:hover:not(:disabled) {
+		background: #dc7309;
+	}
+
+	.btn-orange:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	/* Messages */
+	.message {
+		padding: 12px 16px;
+		border-radius: 4px;
+		margin-bottom: 20px;
+		font-size: 14px;
+	}
+
+	.message--success {
+		background: #d4edda;
+		color: #155724;
+		border: 1px solid #c3e6cb;
+	}
+
+	.message--error {
+		background: #f8d7da;
+		color: #721c24;
+		border: 1px solid #f5c6cb;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -227,12 +470,8 @@
 			padding: 20px;
 		}
 
-		.content-box__section {
-			padding: 20px;
-		}
-
-		.content-box__section p {
-			font-size: 14px;
+		.form-row--two-columns {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
