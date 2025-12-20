@@ -114,25 +114,26 @@
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE
+     TEMPLATE - WordPress EXACT Match
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<div class="trading-room-dropdown">
-	<button
-		class="dropdown-trigger"
-		onclick={toggleDropdown}
+<!-- WordPress: .dropdown.display-inline-block -->
+<div class="dropdown display-inline-block">
+	<!-- WordPress: .btn.btn-xs.btn-orange.btn-tradingroom.dropdown-toggle -->
+	<a
+		href="#"
+		class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+		id="dLabel"
+		role="button"
 		aria-expanded={isOpen}
-		aria-haspopup="listbox"
+		onclick={(e) => { e.preventDefault(); toggleDropdown(); }}
 	>
-		<IconDoorEnter size={18} />
-		<span>Enter a Trading Room</span>
-		<span class="chevron" class:rotated={isOpen}>
-			<IconChevronDown size={16} />
-		</span>
-	</button>
+		<strong>Enter a Trading Room</strong>
+	</a>
 
+	<!-- WordPress: .dropdown-menu.dropdown-menu--full-width -->
 	{#if isOpen}
-		<div class="dropdown-menu" role="listbox">
+		<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 			{#if isLoading}
 				<div class="dropdown-loading">
 					<IconLoader size={20} class="spin" />
@@ -149,91 +150,152 @@
 					<span>No trading rooms available</span>
 				</div>
 			{:else}
-				<ul class="room-list">
+				<!-- WordPress: ul.dropdown-menu__menu -->
+				<ul class="dropdown-menu__menu">
 					{#each rooms as room (room.id)}
 						<li>
-							<button
-								class="room-item"
-								class:has-access={room.has_access}
+							<!-- WordPress EXACT: room link with icon -->
+							<a
+								href={room.room_url || '#'}
+								target="_blank"
+								rel="nofollow"
 								class:no-access={!room.has_access}
-								onclick={() => handleEnterRoom(room)}
-								disabled={!room.has_access || enteringRoom === room.slug}
+								onclick={(e) => { if (room.has_access) { e.preventDefault(); handleEnterRoom(room); } else { e.preventDefault(); } }}
 							>
-								<span class="room-name">{room.name}</span>
-								{#if room.has_access}
-									{#if enteringRoom === room.slug}
-										<span class="spin"><IconLoader size={14} /></span>
-									{:else}
-										<span class="membership-badge {room.membership_status}">
-											{getMembershipStatusLabel(room.membership_status)}
-										</span>
-									{/if}
-								{:else}
-									<IconLock size={14} />
+								<span class="st-icon-{room.slug || 'mastering-the-trade'} icon icon--md"></span>
+								{room.name}
+								{#if enteringRoom === room.slug}
+									<span class="entering-indicator">...</span>
 								{/if}
-							</button>
+							</a>
 						</li>
 					{/each}
 				</ul>
-				{#if accessibleRooms.length > 0}
-					<div class="dropdown-footer">
-						<span>{accessibleRooms.length} room{accessibleRooms.length > 1 ? 's' : ''} available</span>
-					</div>
-				{/if}
 			{/if}
-		</div>
+		</nav>
 	{/if}
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES
+     STYLES - WordPress EXACT Match
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
-	.trading-room-dropdown {
+	/* WordPress: .dropdown.display-inline-block */
+	.dropdown {
 		position: relative;
 	}
 
-	.dropdown-trigger {
+	.display-inline-block {
+		display: inline-block;
+	}
+
+	/* WordPress EXACT: .btn.btn-xs.btn-orange.btn-tradingroom.dropdown-toggle */
+	.btn-orange {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: var(--st-orange, #f99e31);
+		background: #f99e31;
 		color: #fff;
-		font-weight: 700;
 		font-size: 14px;
 		padding: 12px 20px;
 		border-radius: 5px;
 		border: none;
 		cursor: pointer;
+		text-decoration: none;
 		transition: background-color 0.15s ease;
 	}
 
-	.dropdown-trigger:hover {
-		background: var(--st-orange-hover, #dc7309);
+	.btn-orange:hover {
+		background: #dc7309;
+		color: #fff;
 	}
 
-	.dropdown-trigger .chevron {
-		transition: transform 0.15s ease;
+	.btn-orange strong {
+		font-weight: 700;
 	}
 
-	.dropdown-trigger .chevron.rotated {
-		transform: rotate(180deg);
+	.btn-tradingroom {
+		white-space: nowrap;
 	}
 
+	/* WordPress EXACT: .dropdown-menu.dropdown-menu--full-width */
 	.dropdown-menu {
 		position: absolute;
-		top: calc(100% + 8px);
+		top: calc(100% + 4px);
 		right: 0;
 		min-width: 280px;
-		max-width: 320px;
 		background: #fff;
-		border-radius: 8px;
+		border-radius: 5px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-		z-index: 100;
+		z-index: 1000;
 		overflow: hidden;
+		padding: 10px 0;
 	}
 
+	.dropdown-menu--full-width {
+		min-width: 100%;
+	}
+
+	/* WordPress EXACT: .dropdown-menu__menu */
+	.dropdown-menu__menu {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		max-height: 400px;
+		overflow-y: auto;
+	}
+
+	.dropdown-menu__menu li {
+		margin: 0;
+		padding: 0;
+	}
+
+	.dropdown-menu__menu a {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 20px;
+		color: #333;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 500;
+		transition: background-color 0.1s ease, color 0.1s ease;
+	}
+
+	.dropdown-menu__menu a:hover {
+		background: #f4f4f4;
+		color: #0984ae;
+	}
+
+	.dropdown-menu__menu a.no-access {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* WordPress: icon styles */
+	.dropdown-menu__menu .icon {
+		font-family: 'StIcons', system-ui, sans-serif;
+		font-style: normal;
+		font-weight: normal;
+		width: 24px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #0984ae;
+	}
+
+	.icon--md {
+		font-size: 20px;
+	}
+
+	.entering-indicator {
+		margin-left: auto;
+		color: #0984ae;
+	}
+
+	/* Loading, error, empty states */
 	.dropdown-loading,
 	.dropdown-error,
 	.dropdown-empty {
@@ -242,7 +304,7 @@
 		justify-content: center;
 		gap: 8px;
 		padding: 20px;
-		color: var(--st-text-muted, #64748b);
+		color: #64748b;
 		font-size: 14px;
 	}
 
@@ -253,7 +315,7 @@
 
 	.retry-btn {
 		padding: 6px 12px;
-		background: var(--st-primary, #0984ae);
+		background: #0984ae;
 		color: #fff;
 		border: none;
 		border-radius: 4px;
@@ -261,85 +323,8 @@
 		cursor: pointer;
 	}
 
-	.room-list {
-		list-style: none;
-		margin: 0;
-		padding: 8px 0;
-		max-height: 300px;
-		overflow-y: auto;
-	}
-
-	.room-item {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: 12px 16px;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		transition: background-color 0.1s ease;
-		text-align: left;
-	}
-
-	.room-item.has-access:hover {
-		background: #f4f4f4;
-	}
-
-	.room-item.no-access {
-		cursor: not-allowed;
-		opacity: 0.6;
-	}
-
-	.room-name {
-		font-size: 14px;
-		font-weight: 500;
-		color: var(--st-text-color, #333);
-	}
-
-	.room-item.no-access .room-name {
-		color: var(--st-text-muted, #64748b);
-	}
-
-	.membership-badge {
-		padding: 2px 8px;
-		border-radius: 10px;
-		font-size: 11px;
-		font-weight: 600;
-		text-transform: uppercase;
-	}
-
-	.membership-badge.active {
-		background: #dcfce7;
-		color: #166534;
-	}
-
-	.membership-badge.trial {
-		background: #dbeafe;
-		color: #1e40af;
-	}
-
-	.membership-badge.expiring {
-		background: #fef3c7;
-		color: #92400e;
-	}
-
-	.membership-badge.paused {
-		background: #f3f4f6;
-		color: #4b5563;
-	}
-
-	.membership-badge.complimentary {
-		background: #f3e8ff;
-		color: #7c3aed;
-	}
-
-	.dropdown-footer {
-		padding: 10px 16px;
-		border-top: 1px solid #e5e7eb;
-		font-size: 12px;
-		color: var(--st-text-muted, #64748b);
-		text-align: center;
+	.retry-btn:hover {
+		background: #076787;
 	}
 
 	/* Animation for loading spinner */
@@ -355,18 +340,20 @@
 
 	/* Responsive */
 	@media (max-width: 576px) {
-		.dropdown-trigger {
-			padding: 10px 16px;
+		.btn-orange {
+			padding: 10px 14px;
 			font-size: 13px;
 		}
 
-		.dropdown-trigger span:not(.chevron) {
-			display: none;
-		}
-
 		.dropdown-menu {
-			min-width: 240px;
-			right: -10px;
+			min-width: 260px;
+			right: 0;
+		}
+	}
+
+	@media (max-width: 430px) {
+		.btn-orange strong {
+			font-size: 12px;
 		}
 	}
 </style>

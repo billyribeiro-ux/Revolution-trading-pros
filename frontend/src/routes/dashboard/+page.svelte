@@ -27,7 +27,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { IconUsers, IconRefresh, IconAlertTriangle, IconArrowRight } from '$lib/icons';
+	import { IconUsers, IconArrowRight } from '$lib/icons';
 	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
 	import {
@@ -174,34 +174,28 @@
      TEMPLATE
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<!-- WordPress: .dashboard__header -->
+<!-- WordPress EXACT: .dashboard__header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
-		{#if stats}
-			<div class="dashboard__stats">
-				<span class="stat-item">
-					<strong>{stats.totalActive}</strong> active memberships
-				</span>
-				{#if hasExpiringMemberships}
-					<span class="stat-item stat-warning">
-						<IconAlertTriangle size={14} />
-						<strong>{stats.expiringCount}</strong> expiring soon
-					</span>
-				{/if}
-			</div>
-		{/if}
 	</div>
 	<div class="dashboard__header-right">
-		<button
-			class="refresh-btn"
-			onclick={refreshMemberships}
-			disabled={isRefreshing}
-			aria-label="Refresh memberships"
-		>
-			<IconRefresh size={18} class={isRefreshing ? 'spin' : ''} />
-		</button>
-		<!-- Trading Room Dropdown with JWT SSO -->
+		<!-- WordPress EXACT: Trading Room Rules (ultradingroom) -->
+		<ul class="ultradingroom">
+			<li class="litradingroom">
+				<a
+					href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
+					target="_blank"
+					class="btn btn-xs btn-link"
+				>
+					Trading Room Rules
+				</a>
+			</li>
+			<li class="litradingroomhind btn btn-xs btn-link">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</li>
+		</ul>
+		<!-- WordPress EXACT: Enter a Trading Room dropdown -->
 		<TradingRoomDropdown />
 	</div>
 </header>
@@ -367,34 +361,33 @@
 				</section>
 			{/if}
 
-			<!-- WordPress EXACT: Weekly Watchlist Featured Section -->
-			{#if weeklyWatchlist.length > 0}
-				<div class="dashboard__content-section u--background-color-white">
-					<section>
-						<div class="row">
-							<div class="col-sm-6 col-lg-5">
-								<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-								<!-- Mobile Image -->
-								<div class="hidden-lg">
-									<a href="/watchlist">
-										<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist" class="u--border-radius" />
-									</a>
-								</div>
-								<h4 class="h5 u--font-weight-bold">Weekly Watchlist with Our Experts</h4>
-								<div class="u--hide-read-more">
-									<p>Get the latest weekly stock picks and market analysis.</p>
-								</div>
-								<a href="/watchlist" class="btn btn-tiny btn-default">Watch Now</a>
-							</div>
-							<div class="col-sm-6 col-lg-7 hidden-mobile">
-								<a href="/watchlist">
-									<img src="/images/weekly-watchlist.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+			<!-- WordPress EXACT: Weekly Watchlist Featured Section (Always shown) -->
+			<div class="dashboard__content-section u--background-color-white">
+				<section>
+					<div class="row">
+						<div class="col-sm-6 col-lg-5">
+							<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+							<!-- Mobile Image (WordPress: hidden-md d-lg-none pb-2) -->
+							<div class="hidden-md d-lg-none pb-2">
+								<a href="/dashboard/ww">
+									<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
 								</a>
 							</div>
+							<h4 class="h5 u--font-weight-bold">Weekly Watchlist with Our Experts</h4>
+							<div class="u--hide-read-more">
+								<p>Get the latest weekly stock picks and market analysis from our team of expert traders.</p>
+							</div>
+							<a href="/dashboard/ww" class="btn btn-tiny btn-default">Watch Now</a>
 						</div>
-					</section>
-				</div>
-			{/if}
+						<!-- Desktop Image (WordPress: hidden-xs hidden-sm d-none d-lg-block) -->
+						<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+							<a href="/dashboard/ww">
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+							</a>
+						</div>
+					</div>
+				</section>
+			</div>
 		{:else}
 			<!-- Empty State -->
 			<div class="empty-state">
@@ -429,12 +422,12 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER (WordPress: .dashboard__header)
+	   DASHBOARD HEADER (WordPress EXACT: .dashboard__header)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__header {
 		background-color: #fff;
-		border-bottom: 1px solid var(--st-border-color);
+		border-bottom: 1px solid var(--st-border-color, #e9ebed);
 		max-width: 100%;
 		padding: 20px 30px;
 		display: flex;
@@ -444,15 +437,21 @@
 		gap: 16px;
 	}
 
-	.dashboard__header-left,
-	.dashboard__header-right {
+	.dashboard__header-left {
 		display: flex;
 		align-items: center;
 		gap: 12px;
 	}
 
+	.dashboard__header-right {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		text-align: right;
+	}
+
 	.dashboard__page-title {
-		color: var(--st-text-color);
+		color: var(--st-text-color, #333);
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
@@ -460,87 +459,47 @@
 		line-height: 1.2;
 	}
 
-	.dashboard__stats {
-		display: flex;
-		gap: 16px;
-		margin-left: 16px;
-	}
-
-	.stat-item {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		font-size: 14px;
-		color: var(--st-text-muted);
-	}
-
-	.stat-item strong {
-		color: var(--st-text-color);
-	}
-
-	.stat-warning {
-		color: var(--st-warning);
-	}
-
-	.stat-warning strong {
-		color: var(--st-warning);
-	}
-
-	/* Trading Room Dropdown (WordPress Reference) */
-	.trading-room-dropdown {
-		position: relative;
-	}
-
-	.trading-room-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		background: var(--st-orange);
-		color: #fff;
-		font-weight: 700;
-		font-size: 14px;
-		padding: 12px 20px;
-		border-radius: 5px;
-		text-decoration: none;
-		transition: var(--st-transition);
-		border: none;
-		cursor: pointer;
-	}
-
-	.trading-room-btn:hover {
-		background: var(--st-orange-hover);
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   REFRESH BUTTON
+	   TRADING ROOM RULES (WordPress EXACT: .ultradingroom)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.refresh-btn {
+	.ultradingroom {
+		text-align: right;
+		list-style: none;
+		margin: 0;
+		padding: 0;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		border: 1px solid var(--st-border-color);
-		border-radius: 8px;
-		background: #fff;
-		color: var(--st-text-muted);
-		cursor: pointer;
-		transition: var(--st-transition);
+		flex-direction: column;
+		align-items: flex-end;
 	}
 
-	.refresh-btn:hover:not(:disabled) {
-		border-color: var(--st-primary);
-		color: var(--st-primary);
+	.litradingroom a {
+		font-weight: 700 !important;
+		color: var(--st-primary, #0984ae);
+		text-decoration: none;
+		font-size: 13px;
 	}
 
-	.refresh-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
+	.litradingroom a:hover {
+		text-decoration: underline;
 	}
 
-	:global(.refresh-btn .spin) {
-		animation: spin 1s linear infinite;
+	.litradingroomhind {
+		font-size: 11px;
+		color: var(--st-text-muted, #6b7280);
+		max-width: 300px;
+		line-height: 1.3;
+	}
+
+	.btn-link {
+		background: transparent;
+		border: none;
+		padding: 4px 8px;
+	}
+
+	.btn-xs {
+		padding: 4px 8px;
+		font-size: 12px;
 	}
 
 
@@ -875,22 +834,51 @@
 		}
 	}
 
-	/* Responsive visibility classes */
-	.hidden-lg {
+	/* WordPress: Bootstrap-style responsive visibility classes */
+	.hidden-xs,
+	.hidden-sm,
+	.d-none {
+		display: none !important;
+	}
+
+	.hidden-md,
+	.d-lg-none {
 		display: block;
 	}
 
-	.hidden-mobile {
+	.d-lg-block {
 		display: none;
 	}
 
+	.pb-2 {
+		padding-bottom: 0.5rem;
+	}
+
+	/* Show on large screens */
 	@media (min-width: 992px) {
-		.hidden-lg {
-			display: none;
+		.d-lg-block {
+			display: block !important;
 		}
 
-		.hidden-mobile {
-			display: block;
+		.d-lg-none {
+			display: none !important;
+		}
+
+		.hidden-md {
+			display: none;
+		}
+	}
+
+	/* Hide on small screens */
+	@media (max-width: 576px) {
+		.hidden-xs {
+			display: none !important;
+		}
+	}
+
+	@media (min-width: 577px) and (max-width: 767px) {
+		.hidden-sm {
+			display: none !important;
 		}
 	}
 
@@ -910,17 +898,27 @@
 		}
 	}
 
+	/* WordPress: Hide Trading Room Rules on small screens */
+	@media screen and (max-width: 768px) {
+		.ultradingroom {
+			display: none;
+		}
+	}
+
 	@media screen and (max-width: 576px) {
 		.dashboard__header {
 			padding: 16px;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.dashboard__header-right {
+			width: 100%;
+			justify-content: flex-end;
 		}
 
 		.dashboard__page-title {
 			font-size: 28px;
-		}
-
-		.dashboard__stats {
-			display: none;
 		}
 
 		.dashboard__content {
@@ -929,11 +927,6 @@
 
 		.section-title {
 			font-size: 20px;
-		}
-
-		.trading-room-btn {
-			padding: 10px 16px;
-			font-size: 13px;
 		}
 
 		.membership-cards {
