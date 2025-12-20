@@ -12,6 +12,8 @@
    FONT FACE DEFINITION
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* NOTE: st-icons font files not available - using CSS/image fallbacks instead
+   The icon classes below use background images from WordPress CDN as fallback
 @font-face {
 	font-family: 'StIcons';
 	src: url('/fonts/st-icons.woff2') format('woff2'),
@@ -19,8 +21,9 @@
 		 url('/fonts/st-icons.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
-	font-display: swap;
+	font-display: optional;
 }
+*/
 
 /* ═══════════════════════════════════════════════════════════════════════════
    BASE ICON STYLES
