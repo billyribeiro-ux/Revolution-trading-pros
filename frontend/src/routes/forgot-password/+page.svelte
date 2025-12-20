@@ -49,19 +49,19 @@
 />
 
 <div
-	class="forgot-password-page min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden relative"
+	class="forgot-password-page min-h-screen flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 overflow-hidden relative"
 >
 	<!-- Animated gradient background -->
 	<div
 		class="absolute inset-0 bg-gradient-to-br from-slate-950 via-amber-950/30 to-slate-950"
 	></div>
 
-	<!-- Floating orbs -->
+	<!-- Floating orbs - hidden on small screens to save space -->
 	<div
-		class="absolute top-20 left-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl animate-float"
+		class="hidden sm:block absolute top-20 left-10 w-64 sm:w-96 h-64 sm:h-96 bg-amber-500/10 rounded-full blur-3xl animate-float"
 	></div>
 	<div
-		class="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl animate-float-delayed"
+		class="hidden sm:block absolute bottom-20 right-10 w-64 sm:w-96 h-64 sm:h-96 bg-yellow-500/10 rounded-full blur-3xl animate-float-delayed"
 	></div>
 
 	<!-- Forgot password card -->
@@ -75,19 +75,20 @@
 		></div>
 
 		<div
-			class="relative bg-slate-900/90 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-10 shadow-2xl"
+			class="relative bg-slate-900/90 backdrop-blur-xl border border-amber-500/20 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl"
 		>
 			<!-- Header -->
-			<div class="text-center mb-8">
+			<div class="text-center mb-6 sm:mb-8">
 				<div
-					class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 p-0.5 mb-6"
+					class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 p-0.5 mb-4 sm:mb-6"
 				>
-					<div class="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
-						<IconMail size={40} class="text-amber-400" />
+					<div class="w-full h-full bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center">
+						<IconMail size={32} class="text-amber-400 sm:hidden" />
+						<IconMail size={40} class="text-amber-400 hidden sm:block" />
 					</div>
 				</div>
 				<h1
-					class="text-4xl font-heading font-bold mb-3 bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent"
+					class="text-2xl sm:text-4xl font-heading font-bold mb-2 sm:mb-3 bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent"
 				>
 					Forgot Password?
 				</h1>
@@ -130,7 +131,7 @@
 							type="email"
 							bind:value={email}
 							required
-							class="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300"
+							class="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-base placeholder-slate-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300 min-h-[44px]"
 							class:border-red-500={errors.email}
 							placeholder="you@example.com"
 						/>
@@ -164,10 +165,10 @@
 			</form>
 
 			<!-- Back to login link -->
-			<div class="mt-8 text-center">
+			<div class="mt-6 sm:mt-8 text-center">
 				<a
 					href="/login"
-					class="text-amber-400 hover:text-amber-300 font-semibold transition-colors duration-300 flex items-center justify-center gap-2"
+					class="text-amber-400 hover:text-amber-300 font-semibold transition-colors duration-300 inline-flex items-center justify-center gap-2 min-h-[44px] px-4"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path

@@ -738,10 +738,13 @@
 		margin-top: 20px;
 		padding-top: 16px;
 		border-top: 1px solid #eeeeee;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	.cart-table {
 		width: 100%;
+		min-width: 280px;
 	}
 
 	.cart-table th,
@@ -802,12 +805,13 @@
 
 	.input-group .form-control {
 		flex: 1;
-		padding: 10px 12px;
+		padding: 12px 14px;
 		border: 1px solid var(--st-border);
 		border-radius: 5px 0 0 5px;
-		font-size: 14px;
+		font-size: 16px;
 		text-transform: uppercase;
 		font-weight: 600;
+		min-height: 44px;
 	}
 
 	.input-group .form-control:focus {
@@ -870,8 +874,9 @@
 	}
 
 	.btn-xs {
-		padding: 6px 12px;
-		font-size: 12px;
+		padding: 10px 16px;
+		font-size: 13px;
+		min-height: 44px;
 	}
 
 	.btn-block {

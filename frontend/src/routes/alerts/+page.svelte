@@ -376,7 +376,7 @@
 
 	.services-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
 		gap: 32px;
 	}
 
@@ -730,6 +730,33 @@
 			display: flex;
 			justify-content: space-between;
 			text-align: left;
+		}
+
+		.service-card {
+			padding: 24px;
+		}
+
+		.service-features li {
+			font-size: 15px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.hero {
+			padding: 60px 12px 40px;
+		}
+
+		.section {
+			padding: 40px 12px;
+		}
+
+		.service-card {
+			padding: 20px;
+			border-radius: 16px;
+		}
+
+		.service-header h3 {
+			font-size: 1.25rem;
 		}
 	}
 </style>

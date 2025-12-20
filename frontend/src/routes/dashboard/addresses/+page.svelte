@@ -209,7 +209,7 @@
 
 	.edit-form { max-width: 600px; }
 	.edit-form h3 { margin: 0 0 24px; font-size: 20px; color: #333; }
-	.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+	.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 16px; }
 	.form-group { margin-bottom: 16px; }
 	.form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #333; }
 	.form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #dbdbdb; border-radius: 6px; font-size: 14px; color: #333; background: #fff; }
