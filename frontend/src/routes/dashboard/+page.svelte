@@ -180,23 +180,21 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<!-- WordPress EXACT: Trading Room Rules (ultradingroom) -->
-		<ul class="ultradingroom">
-			<li class="litradingroom">
-				<a
-					href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
-					target="_blank"
-					class="btn btn-xs btn-link"
-				>
-					Trading Room Rules
-				</a>
-			</li>
-			<li class="litradingroomhind btn btn-xs btn-link">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</li>
-		</ul>
-		<!-- WordPress EXACT: Enter a Trading Room dropdown -->
+		<!-- WordPress EXACT: Enter a Trading Room dropdown (comes first) -->
 		<TradingRoomDropdown />
+		<!-- WordPress EXACT: Trading Room Rules (ultradingroom) -->
+		<div class="trading-room-rules">
+			<a
+				href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
+				target="_blank"
+				class="trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</p>
+		</div>
 	</div>
 </header>
 
@@ -460,46 +458,32 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   TRADING ROOM RULES (WordPress EXACT: .ultradingroom)
+	   TRADING ROOM RULES (WordPress EXACT)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.ultradingroom {
+	.trading-room-rules {
 		text-align: right;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
+		max-width: 220px;
 	}
 
-	.litradingroom a {
-		font-weight: 700 !important;
+	.trading-room-rules__link {
+		display: block;
+		font-weight: 700;
 		color: var(--st-primary, #0984ae);
 		text-decoration: none;
-		font-size: 13px;
+		font-size: 14px;
+		margin-bottom: 4px;
 	}
 
-	.litradingroom a:hover {
+	.trading-room-rules__link:hover {
 		text-decoration: underline;
 	}
 
-	.litradingroomhind {
+	.trading-room-rules__disclaimer {
 		font-size: 11px;
 		color: var(--st-text-muted, #6b7280);
-		max-width: 300px;
 		line-height: 1.3;
-	}
-
-	.btn-link {
-		background: transparent;
-		border: none;
-		padding: 4px 8px;
-	}
-
-	.btn-xs {
-		padding: 4px 8px;
-		font-size: 12px;
+		margin: 0;
 	}
 
 
@@ -900,7 +884,7 @@
 
 	/* WordPress: Hide Trading Room Rules on small screens */
 	@media screen and (max-width: 768px) {
-		.ultradingroom {
+		.trading-room-rules {
 			display: none;
 		}
 	}
