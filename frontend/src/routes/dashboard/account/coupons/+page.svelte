@@ -1,25 +1,18 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Orders Page - Simpler Trading EXACT
+	 * Dashboard - Coupons Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/orders
-	 * Shows user's order history with Order, Date, Actions columns
+	 * URL: /dashboard/account/coupons
+	 * Shows available coupons and store credits
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 1.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { IconDotsVertical, IconEye } from '$lib/icons';
 	import Footer from '$lib/components/sections/Footer.svelte';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let openDropdownId = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -27,21 +20,7 @@
 
 	$effect(() => {
 		if (browser && !$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/orders', { replaceState: true });
-		}
-	});
-
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (browser && openDropdownId) {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					openDropdownId = null;
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
+			goto('/login?redirect=/dashboard/account/coupons', { replaceState: true });
 		}
 	});
 
@@ -49,43 +28,16 @@
 	// DATA (would come from API)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Order {
+	interface Coupon {
 		id: string;
-		orderNumber: string;
-		date: string;
-		viewUrl: string;
+		code: string;
+		description: string;
+		discount: string;
+		expiresAt: string | null;
 	}
 
-	// Sample orders data
-	const orders: Order[] = [
-		{
-			id: '2176654',
-			orderNumber: '#2176654',
-			date: 'December 3, 2025',
-			viewUrl: '/dashboard/orders/2176654'
-		},
-		{
-			id: '2173014',
-			orderNumber: '#2173014',
-			date: 'November 17, 2025',
-			viewUrl: '/dashboard/orders/2173014'
-		},
-		{
-			id: '2132732',
-			orderNumber: '#2132732',
-			date: 'July 18, 2025',
-			viewUrl: '/dashboard/orders/2132732'
-		}
-	];
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	function toggleDropdown(orderId: string, e: MouseEvent): void {
-		e.stopPropagation();
-		openDropdownId = openDropdownId === orderId ? null : orderId;
-	}
+	// Sample coupons data (empty for now as shown in screenshot)
+	const coupons: Coupon[] = [];
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -93,7 +45,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>My Orders | Revolution Trading Pros</title>
+	<title>Coupons | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -111,58 +63,29 @@
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Orders Table -->
-		<div class="orders-table-wrapper">
-			<table class="orders-table">
-				<thead>
-					<tr>
-						<th class="col-order">Order</th>
-						<th class="col-date">Date</th>
-						<th class="col-actions">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each orders as order (order.id)}
-						<tr>
-							<td class="col-order">
-								<a href={order.viewUrl} class="order-link">
-									{order.orderNumber}
-								</a>
-							</td>
-							<td class="col-date">
-								<time>{order.date}</time>
-							</td>
-							<td class="col-actions">
-								<div class="dropdown">
-									<button
-										type="button"
-										class="dropdown-toggle"
-										onclick={(e) => toggleDropdown(order.id, e)}
-										aria-expanded={openDropdownId === order.id}
-										aria-haspopup="true"
-									>
-										<IconDotsVertical size={18} />
-									</button>
-									{#if openDropdownId === order.id}
-										<div class="dropdown-menu">
-											<a href={order.viewUrl} class="dropdown-item">
-												<IconEye size={14} />
-												View
-											</a>
-										</div>
-									{/if}
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+		<!-- Info Box -->
+		<div class="info-box">
+			<p>
+				List of coupons which are valid & available for use. Click on the coupon to use it.
+				The coupon discount will be visible only when at least one product is present in the cart.
+			</p>
 		</div>
 
-		<!-- Empty State (when no orders) -->
-		{#if orders.length === 0}
-			<div class="empty-state">
-				<p>No orders found.</p>
+		<!-- Coupons List -->
+		{#if coupons.length > 0}
+			<div class="coupons-list">
+				{#each coupons as coupon (coupon.id)}
+					<button type="button" class="coupon-card" onclick={() => {}}>
+						<div class="coupon-code">{coupon.code}</div>
+						<div class="coupon-discount">{coupon.discount}</div>
+						{#if coupon.description}
+							<div class="coupon-description">{coupon.description}</div>
+						{/if}
+						{#if coupon.expiresAt}
+							<div class="coupon-expires">Expires: {coupon.expiresAt}</div>
+						{/if}
+					</button>
+				{/each}
 			</div>
 		{/if}
 	</div>
@@ -213,138 +136,82 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ORDERS TABLE - Simpler Trading EXACT
+	   INFO BOX - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.orders-table-wrapper {
+	.info-box {
+		background: #f8f9fa;
 		border: 1px solid #e9ebed;
 		border-radius: 4px;
-		overflow: hidden;
+		padding: 20px 24px;
+		margin-bottom: 24px;
 	}
 
-	.orders-table {
-		width: 100%;
-		border-collapse: collapse;
+	.info-box p {
+		margin: 0;
 		font-size: 14px;
-	}
-
-	.orders-table thead {
-		background: #f8f9fa;
-	}
-
-	.orders-table th {
-		padding: 12px 16px;
-		text-align: left;
-		font-weight: 600;
 		color: #333;
-		border-bottom: 1px solid #e9ebed;
-	}
-
-	.orders-table td {
-		padding: 16px;
-		border-bottom: 1px solid #e9ebed;
-		color: #333;
-	}
-
-	.orders-table tr:last-child td {
-		border-bottom: none;
-	}
-
-	/* Column widths */
-	.col-order {
-		width: 30%;
-	}
-
-	.col-date {
-		width: 50%;
-	}
-
-	.col-actions {
-		width: 20%;
-		text-align: right !important;
-	}
-
-	/* Order link */
-	.order-link {
-		color: #1e73be;
-		text-decoration: none;
-		font-weight: 400;
-	}
-
-	.order-link:hover {
-		text-decoration: underline;
-	}
-
-	/* Date */
-	.orders-table time {
-		color: #333;
+		line-height: 1.6;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DROPDOWN MENU - Simpler Trading EXACT
+	   COUPONS LIST
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dropdown {
-		position: relative;
-		display: inline-block;
+	.coupons-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px;
 	}
 
-	.dropdown-toggle {
+	.coupon-card {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
+		flex-direction: column;
+		align-items: flex-start;
+		min-width: 200px;
+		max-width: 280px;
+		padding: 20px;
 		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		color: #666;
+		border: 2px dashed #ddd;
+		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.15s ease;
-		margin-left: auto;
+		text-align: left;
 	}
 
-	.dropdown-toggle:hover {
-		background: #f5f5f5;
+	.coupon-card:hover {
+		border-color: #1e73be;
+		border-style: solid;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		transform: translateY(-2px);
+	}
+
+	.coupon-code {
+		font-family: 'Courier New', monospace;
+		font-size: 16px;
+		font-weight: 700;
+		color: #1e73be;
+		letter-spacing: 0.5px;
+		margin-bottom: 8px;
+	}
+
+	.coupon-discount {
+		font-size: 20px;
+		font-weight: 700;
 		color: #333;
+		margin-bottom: 8px;
 	}
 
-	.dropdown-menu {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 4px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		min-width: 120px;
-		z-index: 100;
-	}
-
-	.dropdown-item {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 16px;
-		color: #333;
-		text-decoration: none;
+	.coupon-description {
 		font-size: 13px;
-		transition: background 0.15s ease;
-	}
-
-	.dropdown-item:hover {
-		background: #f5f5f5;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.empty-state {
-		padding: 40px;
-		text-align: center;
 		color: #666;
+		line-height: 1.4;
+		margin-bottom: 8px;
+	}
+
+	.coupon-expires {
+		font-size: 12px;
+		color: #999;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -364,32 +231,17 @@
 			padding: 20px;
 		}
 
-		.orders-table th,
-		.orders-table td {
-			padding: 12px;
+		.info-box {
+			padding: 16px 20px;
 		}
 
-		.col-order {
-			width: 35%;
+		.coupons-list {
+			gap: 16px;
 		}
 
-		.col-date {
-			width: 45%;
-		}
-
-		.col-actions {
-			width: 20%;
-		}
-	}
-
-	@media screen and (max-width: 480px) {
-		.orders-table {
-			font-size: 13px;
-		}
-
-		.orders-table th,
-		.orders-table td {
-			padding: 10px 8px;
+		.coupon-card {
+			min-width: 100%;
+			max-width: 100%;
 		}
 	}
 </style>

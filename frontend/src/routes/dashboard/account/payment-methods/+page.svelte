@@ -1,25 +1,18 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Orders Page - Simpler Trading EXACT
+	 * Dashboard - Payment Methods Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/orders
-	 * Shows user's order history with Order, Date, Actions columns
+	 * URL: /dashboard/account/payment-methods
+	 * Shows saved payment methods with ability to add/delete
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 1.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { IconDotsVertical, IconEye } from '$lib/icons';
 	import Footer from '$lib/components/sections/Footer.svelte';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let openDropdownId = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -27,21 +20,7 @@
 
 	$effect(() => {
 		if (browser && !$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/orders', { replaceState: true });
-		}
-	});
-
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (browser && openDropdownId) {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					openDropdownId = null;
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
+			goto('/login?redirect=/dashboard/account/payment-methods', { replaceState: true });
 		}
 	});
 
@@ -49,42 +28,51 @@
 	// DATA (would come from API)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Order {
+	interface PaymentMethod {
 		id: string;
-		orderNumber: string;
-		date: string;
-		viewUrl: string;
+		type: 'visa' | 'mastercard' | 'amex' | 'discover' | 'paypal';
+		lastFour: string;
+		details?: string;
+		expiresMonth: string;
+		expiresYear: string;
+		isDefault: boolean;
+		subscriptions?: string[];
 	}
 
-	// Sample orders data
-	const orders: Order[] = [
+	// Sample payment methods data
+	const paymentMethods: PaymentMethod[] = [
 		{
-			id: '2176654',
-			orderNumber: '#2176654',
-			date: 'December 3, 2025',
-			viewUrl: '/dashboard/orders/2176654'
-		},
-		{
-			id: '2173014',
-			orderNumber: '#2173014',
-			date: 'November 17, 2025',
-			viewUrl: '/dashboard/orders/2173014'
-		},
-		{
-			id: '2132732',
-			orderNumber: '#2132732',
-			date: 'July 18, 2025',
-			viewUrl: '/dashboard/orders/2132732'
+			id: 'pm_1',
+			type: 'visa',
+			lastFour: '9396',
+			expiresMonth: '09',
+			expiresYear: '29',
+			isDefault: true
 		}
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
+	// HELPERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function toggleDropdown(orderId: string, e: MouseEvent): void {
-		e.stopPropagation();
-		openDropdownId = openDropdownId === orderId ? null : orderId;
+	function getMethodLabel(method: PaymentMethod): string {
+		const typeLabels: Record<string, string> = {
+			visa: 'Visa',
+			mastercard: 'Mastercard',
+			amex: 'American Express',
+			discover: 'Discover',
+			paypal: 'PayPal'
+		};
+		return `${typeLabels[method.type] || method.type} ending in ${method.lastFour}`;
+	}
+
+	function formatExpiry(method: PaymentMethod): string {
+		return `${method.expiresMonth}/${method.expiresYear}`;
+	}
+
+	function handleDelete(methodId: string): void {
+		// TODO: Implement delete functionality
+		console.log('Delete payment method:', methodId);
 	}
 </script>
 
@@ -93,7 +81,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>My Orders | Revolution Trading Pros</title>
+	<title>Payment Methods | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -111,47 +99,50 @@
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Orders Table -->
-		<div class="orders-table-wrapper">
-			<table class="orders-table">
+		<!-- Add Payment Method Link -->
+		<div class="add-method-wrapper">
+			<a href="/dashboard/account/add-payment-method" class="add-method-link">
+				Add payment method
+			</a>
+		</div>
+
+		<!-- Payment Methods Table -->
+		<div class="payment-methods-table-wrapper">
+			<table class="payment-methods-table">
 				<thead>
 					<tr>
-						<th class="col-order">Order</th>
-						<th class="col-date">Date</th>
-						<th class="col-actions">Actions</th>
+						<th>Method</th>
+						<th>Details</th>
+						<th>Expires</th>
+						<th>Default?</th>
+						<th>Subscriptions</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each orders as order (order.id)}
+					{#each paymentMethods as method (method.id)}
 						<tr>
-							<td class="col-order">
-								<a href={order.viewUrl} class="order-link">
-									{order.orderNumber}
-								</a>
+							<td class="col-method">{getMethodLabel(method)}</td>
+							<td class="col-details">{method.details || ''}</td>
+							<td class="col-expires">{formatExpiry(method)}</td>
+							<td class="col-default">
+								{#if method.isDefault}
+									<span class="default-badge">DEFAULT</span>
+								{/if}
 							</td>
-							<td class="col-date">
-								<time>{order.date}</time>
+							<td class="col-subscriptions">
+								{#if method.subscriptions && method.subscriptions.length > 0}
+									{method.subscriptions.join(', ')}
+								{/if}
 							</td>
 							<td class="col-actions">
-								<div class="dropdown">
-									<button
-										type="button"
-										class="dropdown-toggle"
-										onclick={(e) => toggleDropdown(order.id, e)}
-										aria-expanded={openDropdownId === order.id}
-										aria-haspopup="true"
-									>
-										<IconDotsVertical size={18} />
-									</button>
-									{#if openDropdownId === order.id}
-										<div class="dropdown-menu">
-											<a href={order.viewUrl} class="dropdown-item">
-												<IconEye size={14} />
-												View
-											</a>
-										</div>
-									{/if}
-								</div>
+								<button
+									type="button"
+									class="btn-delete"
+									onclick={() => handleDelete(method.id)}
+								>
+									Delete
+								</button>
 							</td>
 						</tr>
 					{/each}
@@ -159,10 +150,10 @@
 			</table>
 		</div>
 
-		<!-- Empty State (when no orders) -->
-		{#if orders.length === 0}
+		<!-- Empty State -->
+		{#if paymentMethods.length === 0}
 			<div class="empty-state">
-				<p>No orders found.</p>
+				<p>No payment methods saved.</p>
 			</div>
 		{/if}
 	</div>
@@ -213,26 +204,44 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ORDERS TABLE - Simpler Trading EXACT
+	   ADD PAYMENT METHOD LINK
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.orders-table-wrapper {
+	.add-method-wrapper {
+		margin-bottom: 20px;
+	}
+
+	.add-method-link {
+		color: #1e73be;
+		font-size: 14px;
+		text-decoration: none;
+	}
+
+	.add-method-link:hover {
+		text-decoration: underline;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAYMENT METHODS TABLE - Simpler Trading EXACT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.payment-methods-table-wrapper {
 		border: 1px solid #e9ebed;
 		border-radius: 4px;
 		overflow: hidden;
 	}
 
-	.orders-table {
+	.payment-methods-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 14px;
 	}
 
-	.orders-table thead {
+	.payment-methods-table thead {
 		background: #f8f9fa;
 	}
 
-	.orders-table th {
+	.payment-methods-table th {
 		padding: 12px 16px;
 		text-align: left;
 		font-weight: 600;
@@ -240,101 +249,80 @@
 		border-bottom: 1px solid #e9ebed;
 	}
 
-	.orders-table td {
+	.payment-methods-table td {
 		padding: 16px;
 		border-bottom: 1px solid #e9ebed;
 		color: #333;
+		vertical-align: middle;
 	}
 
-	.orders-table tr:last-child td {
+	.payment-methods-table tr:last-child td {
 		border-bottom: none;
 	}
 
-	/* Column widths */
-	.col-order {
-		width: 30%;
+	/* Column styles */
+	.col-method {
+		width: 25%;
 	}
 
-	.col-date {
-		width: 50%;
+	.col-details {
+		width: 15%;
+	}
+
+	.col-expires {
+		width: 12%;
+	}
+
+	.col-default {
+		width: 12%;
+	}
+
+	.col-subscriptions {
+		width: 20%;
 	}
 
 	.col-actions {
-		width: 20%;
-		text-align: right !important;
-	}
-
-	/* Order link */
-	.order-link {
-		color: #1e73be;
-		text-decoration: none;
-		font-weight: 400;
-	}
-
-	.order-link:hover {
-		text-decoration: underline;
-	}
-
-	/* Date */
-	.orders-table time {
-		color: #333;
+		width: 16%;
+		text-align: right;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DROPDOWN MENU - Simpler Trading EXACT
+	   DEFAULT BADGE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dropdown {
-		position: relative;
+	.default-badge {
 		display: inline-block;
+		padding: 3px 8px;
+		font-size: 11px;
+		font-weight: 600;
+		color: #333;
+		background: #e9ebed;
+		border: 1px solid #ddd;
+		border-radius: 3px;
+		text-transform: uppercase;
+		letter-spacing: 0.3px;
 	}
 
-	.dropdown-toggle {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DELETE BUTTON
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.btn-delete {
+		display: inline-block;
+		padding: 6px 14px;
 		background: #fff;
 		border: 1px solid #ddd;
+		color: #333;
+		font-size: 12px;
+		font-weight: 600;
 		border-radius: 4px;
-		color: #666;
 		cursor: pointer;
 		transition: all 0.15s ease;
-		margin-left: auto;
 	}
 
-	.dropdown-toggle:hover {
+	.btn-delete:hover {
 		background: #f5f5f5;
-		color: #333;
-	}
-
-	.dropdown-menu {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 4px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		min-width: 120px;
-		z-index: 100;
-	}
-
-	.dropdown-item {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 16px;
-		color: #333;
-		text-decoration: none;
-		font-size: 13px;
-		transition: background 0.15s ease;
-	}
-
-	.dropdown-item:hover {
-		background: #f5f5f5;
+		border-color: #ccc;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -351,6 +339,16 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	@media screen and (max-width: 1024px) {
+		.payment-methods-table-wrapper {
+			overflow-x: auto;
+		}
+
+		.payment-methods-table {
+			min-width: 650px;
+		}
+	}
+
 	@media screen and (max-width: 768px) {
 		.dashboard__header {
 			padding: 16px 20px;
@@ -364,31 +362,19 @@
 			padding: 20px;
 		}
 
-		.orders-table th,
-		.orders-table td {
+		.payment-methods-table th,
+		.payment-methods-table td {
 			padding: 12px;
-		}
-
-		.col-order {
-			width: 35%;
-		}
-
-		.col-date {
-			width: 45%;
-		}
-
-		.col-actions {
-			width: 20%;
 		}
 	}
 
 	@media screen and (max-width: 480px) {
-		.orders-table {
+		.payment-methods-table {
 			font-size: 13px;
 		}
 
-		.orders-table th,
-		.orders-table td {
+		.payment-methods-table th,
+		.payment-methods-table td {
 			padding: 10px 8px;
 		}
 	}

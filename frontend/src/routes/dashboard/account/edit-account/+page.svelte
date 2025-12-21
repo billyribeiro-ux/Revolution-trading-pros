@@ -1,12 +1,12 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Account Page - Simpler Trading EXACT
+	 * Dashboard - Account Details Edit Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/account
+	 * URL: /dashboard/account/edit-account
 	 * Shows personal details form and password change section.
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 1.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
@@ -19,10 +19,10 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let firstName = $state('');
-	let lastName = $state('');
-	let displayName = $state('');
-	let email = $state('');
+	let firstName = $state('Zack');
+	let lastName = $state('Stambowski');
+	let displayName = $state('Zack Stambowski');
+	let email = $state('welberribeirodrums@gmail.com');
 	let currentPassword = $state('');
 	let newPassword = $state('');
 	let confirmPassword = $state('');
@@ -40,7 +40,7 @@
 
 	$effect(() => {
 		if (browser && !$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/account', { replaceState: true });
+			goto('/login?redirect=/dashboard/account/edit-account', { replaceState: true });
 		}
 	});
 
@@ -48,10 +48,10 @@
 	$effect(() => {
 		if ($user) {
 			const nameParts = ($user.name || '').split(' ');
-			firstName = nameParts[0] || '';
-			lastName = nameParts.slice(1).join(' ') || '';
-			displayName = $user.name || '';
-			email = $user.email || '';
+			firstName = nameParts[0] || 'Zack';
+			lastName = nameParts.slice(1).join(' ') || 'Stambowski';
+			displayName = $user.name || 'Zack Stambowski';
+			email = $user.email || 'welberribeirodrums@gmail.com';
 		}
 	});
 
@@ -87,7 +87,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>My Account | Revolution Trading Pros</title>
+	<title>Account Details | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
