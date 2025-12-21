@@ -37,33 +37,10 @@
 	let { children }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// MOCK DATA - Initialize sidebar with memberships immediately
+	// STATE (Svelte 5 Runes) - Start empty, load from API
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const mockMemberships: UserMembership[] = [
-		{
-			id: '1',
-			name: 'Mastering the Trade',
-			slug: 'mastering-the-trade',
-			type: 'trading-room',
-			status: 'active',
-			roomLabel: 'Trading Room'
-		},
-		{
-			id: '2',
-			name: 'Simpler Showcase',
-			slug: 'simpler-showcase',
-			type: 'trading-room',
-			status: 'active',
-			roomLabel: 'Breakout Room'
-		}
-	];
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE (Svelte 5 Runes) - Initialize with mock data so sidebar shows immediately
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let memberships = $state<UserMembership[]>(mockMemberships);
+	let memberships = $state<UserMembership[]>([]);
 	let isLoading = $state(true);
 	let isSidebarOpen = $state(false);
 	let error = $state<string | null>(null);
@@ -179,11 +156,11 @@
 
 		try {
 			const data = await getUserMemberships();
-			memberships = data.memberships.length > 0 ? data.memberships : mockMemberships;
+			memberships = data.memberships || [];
 		} catch (e) {
 			console.error('Failed to load memberships:', e);
-			// Use mock data as fallback instead of showing error
-			memberships = mockMemberships;
+			// Keep empty - user has no memberships or API failed
+			memberships = [];
 		} finally {
 			isLoading = false;
 		}

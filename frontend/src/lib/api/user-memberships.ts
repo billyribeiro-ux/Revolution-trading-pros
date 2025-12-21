@@ -251,13 +251,10 @@ export async function getUserMemberships(options?: {
 	} catch (error) {
 		console.error('[UserMemberships] Error fetching memberships:', error);
 
-		// Return mock data for development/demo
-		if (import.meta.env.DEV) {
-			const mock = getMockMemberships();
-			return categorizeMemberships(enhanceMemberships(mock.memberships));
-		}
-
-		throw error;
+		// Return mock data for development/demo/preview
+		// Enable in all environments until real API is connected
+		const mock = getMockMemberships();
+		return categorizeMemberships(enhanceMemberships(mock.memberships));
 	}
 }
 
@@ -357,84 +354,37 @@ export async function preloadMembershipData(): Promise<void> {
 function getMockMemberships(): UserMembershipsResponse {
 	const tradingRooms: UserMembership[] = [
 		{
-			id: 'day-trading',
-			name: 'Day Trading Room',
+			id: 'mastering-the-trade',
+			name: 'Mastering the Trade',
 			type: 'trading-room',
-			slug: 'day-trading',
+			slug: 'mastering-the-trade',
 			status: 'active',
 			membershipType: 'active',
-			icon: 'day-trading',
 			startDate: '2024-01-15',
 			nextBillingDate: '2025-01-15',
 			price: 197,
 			interval: 'monthly',
+			roomLabel: 'Trading Room',
 			features: ['Live Trading Sessions', 'Discord Access', 'Trade Alerts']
 		},
 		{
-			id: 'swing-trading',
-			name: 'Swing Trading Room',
+			id: 'simpler-showcase',
+			name: 'Simpler Showcase',
 			type: 'trading-room',
-			slug: 'swing-trading',
+			slug: 'simpler-showcase',
 			status: 'active',
 			membershipType: 'trial',
-			icon: 'swing-trading',
 			startDate: '2024-03-01',
 			nextBillingDate: '2025-03-01',
 			price: 147,
 			interval: 'monthly',
+			roomLabel: 'Breakout Room',
 			features: ['Weekly Analysis', 'Discord Access', 'Swing Alerts']
-		},
-		{
-			id: 'small-accounts',
-			name: 'Small Accounts Room',
-			type: 'trading-room',
-			slug: 'small-accounts',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'small-accounts',
-			startDate: '2024-06-01',
-			nextBillingDate: '2025-06-01',
-			price: 97,
-			interval: 'monthly',
-			features: ['Beginner Friendly', 'Small Position Sizing', 'Discord Access']
 		}
 	];
 
-	const alertServices: UserMembership[] = [
-		{
-			id: 'spx-profit-pulse',
-			name: 'SPX Profit Pulse',
-			type: 'alert-service',
-			slug: 'spx-profit-pulse',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'spx-profit-pulse',
-			startDate: '2024-02-01',
-			nextBillingDate: '2025-02-01',
-			price: 297,
-			interval: 'monthly',
-			features: ['Real-time SPX Alerts', 'Options Strategies', 'Entry/Exit Points']
-		},
-		{
-			id: 'explosive-swings',
-			name: 'Explosive Swings',
-			type: 'alert-service',
-			slug: 'explosive-swings',
-			status: 'expiring',
-			membershipType: 'active',
-			icon: 'explosive-swings',
-			startDate: '2024-04-15',
-			nextBillingDate: '2024-12-10',
-			daysUntilExpiry: 4,
-			price: 197,
-			interval: 'monthly',
-			features: ['High-Impact Swing Trades', 'Technical Analysis', 'Risk Management']
-		}
-	];
-
-	const allMemberships = [...tradingRooms, ...alertServices];
-
-	return categorizeMemberships(allMemberships);
+	// Only trading rooms for demo - matches WordPress reference
+	return categorizeMemberships(tradingRooms);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
