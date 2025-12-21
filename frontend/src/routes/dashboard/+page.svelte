@@ -13,7 +13,6 @@
 	import { IconUsers, IconArrowRight, IconAlertTriangle } from '$lib/icons';
 	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
-	import Footer from '$lib/components/sections/Footer.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -236,12 +235,6 @@
 		{/if}
 	</div>
 </div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     FOOTER
-     ═══════════════════════════════════════════════════════════════════════════ -->
-
-<Footer />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES - Simpler Trading EXACT

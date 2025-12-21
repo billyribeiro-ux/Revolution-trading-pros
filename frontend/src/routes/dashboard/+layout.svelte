@@ -23,6 +23,7 @@
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import SecondaryNav from '$lib/components/dashboard/SecondaryNav.svelte';
 	import { NavBar } from '$lib/components/nav';
+	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -267,6 +268,10 @@
 			{/if}
 		</main>
 	</div>
+
+	<!-- WordPress EXACT: Footer is OUTSIDE dashboard, full width -->
+	<!-- Sidebar ends where footer starts -->
+	<Footer />
 {:else}
 	<div class="dashboard-loading" aria-busy="true">
 		<div class="loading-spinner"></div>

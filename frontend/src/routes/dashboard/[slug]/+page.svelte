@@ -17,7 +17,6 @@
 	import { page } from '$app/stores';
 	import Breadcrumb from '$lib/components/dashboard/Breadcrumb.svelte';
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
-	import Footer from '$lib/components/sections/Footer.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ROUTE PARAMS
@@ -334,9 +333,6 @@
 		</section>
 	</aside>
 </div>
-
-<!-- Footer -->
-<Footer />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES - WordPress EXACT
