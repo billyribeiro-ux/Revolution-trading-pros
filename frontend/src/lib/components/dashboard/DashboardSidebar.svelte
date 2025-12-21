@@ -331,6 +331,16 @@
 		{/if}
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
+		     PREMIUM REPORTS SECTION (WordPress EXACT - Category always shown, empty if no reports)
+		     ═══════════════════════════════════════════════════════════════════════ -->
+		<ul>
+			<li><p class="dashboard__nav-category">premium reports</p></li>
+		</ul>
+		<ul class="dash_main_links">
+			<!-- Premium reports will be dynamically added here when user has subscriptions -->
+		</ul>
+
+		<!-- ═══════════════════════════════════════════════════════════════════════
 		     TOOLS SECTION (WordPress EXACT - Always shown)
 		     ═══════════════════════════════════════════════════════════════════════ -->
 		<ul>
