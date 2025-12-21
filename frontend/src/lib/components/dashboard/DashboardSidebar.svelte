@@ -454,13 +454,68 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   COLLAPSED STATE (WordPress EXACT: .dashboard__nav-primary.is-collapsed)
 	   When viewing account or membership pages - shows icons only, narrow width
+	   HOVER: Expands to full width and shows text labels
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-primary.is-collapsed {
 		width: 60px;
+		transition: width 0.2s ease-in-out;
 	}
 
-	/* Hide profile name when collapsed */
+	/* WordPress EXACT: Expand on hover to show names */
+	@media screen and (min-width: 1280px) {
+		.dashboard__nav-primary.is-collapsed:hover {
+			width: var(--sidebar-width);
+			box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+			z-index: 100015;
+		}
+
+		/* Show profile name on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dashboard__profile-name {
+			display: block;
+		}
+
+		/* Restore profile layout on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dashboard__profile-nav-item {
+			padding-left: 80px;
+			padding-right: 20px;
+			justify-content: flex-start;
+		}
+
+		/* Restore profile photo position on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dashboard__profile-photo {
+			position: absolute;
+			left: 30px;
+			top: 50%;
+			margin-top: -17px;
+		}
+
+		/* Show nav text on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dashboard__nav-item-text {
+			display: block;
+		}
+
+		/* Show category headers on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dashboard__nav-category {
+			display: block;
+		}
+
+		/* Restore link padding on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dash_main_links a {
+			padding: 0 20px 0 80px;
+			justify-content: flex-start;
+		}
+
+		/* Restore icon position on hover */
+		.dashboard__nav-primary.is-collapsed:hover .dashboard__nav-item-icon {
+			position: absolute;
+			left: 30px;
+			top: 50%;
+			margin-top: -12px;
+		}
+	}
+
+	/* Hide profile name when collapsed (default) */
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
 		display: none;
 	}
