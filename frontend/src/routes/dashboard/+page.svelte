@@ -30,14 +30,14 @@
 			id: '1',
 			name: 'Mastering the Trade',
 			slug: 'mastering-the-trade',
-			type: 'options',
+			type: 'trading-room',
 			roomLabel: 'Trading Room'
 		},
 		{
 			id: '2',
 			name: 'Simpler Showcase',
 			slug: 'simpler-showcase',
-			type: 'foundation',
+			type: 'trading-room',
 			roomLabel: 'Breakout Room'
 		}
 	];
