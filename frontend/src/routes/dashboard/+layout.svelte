@@ -48,6 +48,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const userName = $derived($user?.name || ($user?.email ? $user.email.split('@')[0] : null) || 'My Account');
+	const userEmail = $derived($user?.email || '');
+	const userAvatar = $derived($user?.avatar || '');
 	const currentPath = $derived($page.url.pathname);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -147,6 +149,8 @@
 				bind:isMobileOpen={isSidebarOpen}
 				onCloseMobile={closeSidebar}
 				{userName}
+				{userEmail}
+				{userAvatar}
 			/>
 		</aside>
 
