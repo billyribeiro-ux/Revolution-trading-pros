@@ -21,6 +21,7 @@
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
+	import SecondaryNav from '$lib/components/dashboard/SecondaryNav.svelte';
 	import type { Snippet } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -50,6 +51,51 @@
 	const userEmail = $derived($user?.email || '');
 	const userAvatar = $derived($user?.avatar || '');
 	const currentPath = $derived($page.url.pathname);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TWO-PANEL NAVIGATION STATE
+	// Determines when to show collapsed primary + secondary nav
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Check if we're on an account page (shows account secondary nav)
+	const isAccountSection = $derived(
+		currentPath.startsWith('/dashboard/account') ||
+		currentPath.startsWith('/dashboard/orders') ||
+		currentPath.startsWith('/dashboard/subscriptions') ||
+		currentPath.startsWith('/dashboard/coupons') ||
+		currentPath.startsWith('/dashboard/addresses') ||
+		currentPath.startsWith('/dashboard/payment-methods')
+	);
+
+	// Check if we're on a membership dashboard (shows membership secondary nav)
+	// Matches /dashboard/[slug] but NOT /dashboard, /dashboard/account, /dashboard/courses, etc.
+	const staticRoutes = ['account', 'orders', 'subscriptions', 'coupons', 'addresses', 'payment-methods', 'courses', 'indicators', 'ww', 'support', 'logout', 'watchlist'];
+
+	const membershipSlug = $derived.by(() => {
+		const match = currentPath.match(/^\/dashboard\/([^/]+)/);
+		if (!match) return null;
+		const slug = match[1];
+		if (staticRoutes.includes(slug)) return null;
+		return slug;
+	});
+
+	const isMembershipSection = $derived(membershipSlug !== null);
+
+	// Get the membership name from the memberships list
+	const currentMembership = $derived(
+		membershipSlug ? memberships.find(m => m.slug === membershipSlug) : null
+	);
+	const membershipName = $derived(currentMembership?.name || '');
+
+	// Sidebar should be collapsed when in account or membership section
+	const isSidebarCollapsed = $derived(isAccountSection || isMembershipSection);
+
+	// Determine which secondary nav section to show
+	const secondaryNavSection = $derived.by((): 'account' | 'membership' | null => {
+		if (isAccountSection) return 'account';
+		if (isMembershipSection) return 'membership';
+		return null;
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -142,7 +188,8 @@
 	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
 		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, and overlay -->
-		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen}>
+		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen} class:has-secondary={secondaryNavSection !== null}>
+			<!-- Primary Nav (full or collapsed) -->
 			<DashboardSidebar
 				{memberships}
 				bind:isMobileOpen={isSidebarOpen}
@@ -150,10 +197,21 @@
 				{userName}
 				{userEmail}
 				{userAvatar}
+				isCollapsed={isSidebarCollapsed}
 			/>
 
+			<!-- Secondary Nav (when in account or membership section) -->
+			{#if secondaryNavSection}
+				<SecondaryNav
+					section={secondaryNavSection}
+					membershipSlug={membershipSlug || ''}
+					{membershipName}
+					{memberships}
+				/>
+			{/if}
+
 			<!-- WordPress EXACT: .dashboard__toggle (footer inside sidebar) -->
-			<footer class="dashboard__toggle">
+			<footer class="dashboard__toggle" class:is-collapsed={isSidebarCollapsed}>
 				<button
 					class="dashboard__toggle-button"
 					onclick={toggleSidebar}
@@ -359,6 +417,19 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
+	}
+
+	/* WordPress EXACT: Toggle collapsed state - narrower when two-panel nav is showing */
+	.dashboard__toggle.is-collapsed {
+		/* Toggle still spans full width on mobile */
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TWO-PANEL SIDEBAR (when has-secondary class is applied)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__sidebar.has-secondary {
+		/* Sidebar contains both panels in a row */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
