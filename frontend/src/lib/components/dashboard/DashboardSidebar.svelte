@@ -246,13 +246,13 @@
 			<li class:is-active={isActive('/dashboard/courses')}>
 				<a href="/dashboard/courses">
 					<span class="dashboard__nav-item-icon"><IconVideo size={24} /></span>
-					<span class="dashboard__nav-item-text" style="font-weight:600;color:#fff;">My Classes</span>
+					<span class="dashboard__nav-item-text">My Classes</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/indicators')}>
 				<a href="/dashboard/indicators">
 					<span class="dashboard__nav-item-icon"><IconChartCandle size={24} /></span>
-					<span class="dashboard__nav-item-text" style="font-weight:600;color:#fff;">My Indicators</span>
+					<span class="dashboard__nav-item-text">My Indicators</span>
 				</a>
 			</li>
 		</ul>
@@ -303,40 +303,32 @@
 		{/if}
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
-		     MASTERY SECTION (WordPress EXACT)
+		     MASTERY SECTION (WordPress EXACT - Only show when courses exist)
 		     ═══════════════════════════════════════════════════════════════════════ -->
-		<ul>
-			<li><p class="dashboard__nav-category">mastery</p></li>
-		</ul>
-		<ul class="dash_main_links">
-			{#each courses as course (course.id)}
-				<li
-					class="{course.slug}-mp"
-					class:is-active={isActive(`/dashboard/${course.slug}`)}
-				>
-					<a href="/dashboard/{course.slug}">
-						<span class="dashboard__nav-item-icon">
-							{#if course.icon}
-								<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
-							{:else}
-								<IconBook size={24} />
-							{/if}
-						</span>
-						<span class="dashboard__nav-item-text">{course.name}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-
-		<!-- ═══════════════════════════════════════════════════════════════════════
-		     PREMIUM REPORTS SECTION (WordPress EXACT - Category always shown)
-		     ═══════════════════════════════════════════════════════════════════════ -->
-		<ul>
-			<li><p class="dashboard__nav-category">premium reports</p></li>
-		</ul>
-		<ul class="dash_main_links">
-			<!-- Premium reports would be populated dynamically -->
-		</ul>
+		{#if hasCourses}
+			<ul>
+				<li><p class="dashboard__nav-category">mastery</p></li>
+			</ul>
+			<ul class="dash_main_links">
+				{#each courses as course (course.id)}
+					<li
+						class="{course.slug}-mp"
+						class:is-active={isActive(`/dashboard/${course.slug}`)}
+					>
+						<a href="/dashboard/{course.slug}">
+							<span class="dashboard__nav-item-icon">
+								{#if course.icon}
+									<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
+								{:else}
+									<IconBook size={24} />
+								{/if}
+							</span>
+							<span class="dashboard__nav-item-text">{course.name}</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
 		     TOOLS SECTION (WordPress EXACT - Always shown)

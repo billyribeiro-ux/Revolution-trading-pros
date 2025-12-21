@@ -306,6 +306,7 @@
 		display: flex;
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
+		flex-shrink: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -315,6 +316,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-width: 0;
+		min-height: 100vh;
 		background-color: var(--dashboard-bg);
 	}
 
@@ -426,10 +428,19 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   TWO-PANEL SIDEBAR (when has-secondary class is applied)
+	   WordPress EXACT: Primary nav collapses to 60px, secondary nav is 220px
+	   Total sidebar width: 280px (60 + 220)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar.has-secondary {
-		/* Sidebar contains both panels in a row */
+		/* Contains collapsed primary (60px) + secondary nav (220px) = 280px total */
+		width: 280px;
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__sidebar.has-secondary {
+			width: auto; /* Let children determine width on desktop */
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
