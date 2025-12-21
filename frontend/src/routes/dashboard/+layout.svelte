@@ -191,6 +191,14 @@
 	<!-- Revolution Trading Pros NavBar always at top -->
 	<NavBar />
 
+	<!-- DEBUG: Remove after fixing -->
+	<div style="position: fixed; top: 60px; right: 10px; background: red; color: white; padding: 10px; z-index: 99999; font-size: 12px;">
+		Path: {currentPath}<br>
+		Slug: {membershipSlug || 'null'}<br>
+		Collapsed: {isSidebarCollapsed}<br>
+		Secondary: {secondaryNavSection || 'null'}
+	</div>
+
 	<!-- WordPress EXACT: .dashboard (root container) -->
 	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
