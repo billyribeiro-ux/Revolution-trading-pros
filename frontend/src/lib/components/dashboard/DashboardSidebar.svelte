@@ -12,13 +12,36 @@
 	 *
 	 * Routes to local services instead of WordPress endpoints.
 	 *
-	 * @version 4.0.0 (WordPress-exact / December 2025)
+	 * @version 5.0.0 (Tabler Icons / December 2025)
 	 */
 
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import type { UserMembership } from '$lib/api/user-memberships';
-	import '$lib/styles/st-icons.css';
+
+	// Tabler Icons - Using proper SVG icons
+	import IconHome from '@tabler/icons-svelte/icons/home';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconLogout from '@tabler/icons-svelte/icons/logout';
+	import IconHelp from '@tabler/icons-svelte/icons/help-circle';
+	import IconUser from '@tabler/icons-svelte/icons/user';
+	import IconReceipt from '@tabler/icons-svelte/icons/receipt';
+	import IconCreditCard from '@tabler/icons-svelte/icons/credit-card';
+	import IconDiscount from '@tabler/icons-svelte/icons/discount';
+	import IconMapPin from '@tabler/icons-svelte/icons/map-pin';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconFlame from '@tabler/icons-svelte/icons/flame';
+	import IconTarget from '@tabler/icons-svelte/icons/target';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconListCheck from '@tabler/icons-svelte/icons/list-check';
+	import IconHeadset from '@tabler/icons-svelte/icons/headset';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -134,17 +157,6 @@
 		return currentPath === href || currentPath.startsWith(href + '/');
 	}
 
-	function getServiceIconClass(slug: string): string {
-		const iconMap: Record<string, string> = {
-			'day-trading': 'st-icon-day-trading',
-			'small-accounts': 'st-icon-small-accounts',
-			'spx-profit-pulse': 'st-icon-spx-profit-pulse',
-			'explosive-swings': 'st-icon-explosive-swings',
-			'swing-trading': 'st-icon-swing-trading'
-		};
-		return iconMap[slug] || 'st-icon-chart';
-	}
-
 	// Close mobile menu on route change
 	$effect(() => {
 		if (browser && isMobileOpen && currentPath) {
@@ -197,43 +209,43 @@
 		<ul class="dash_main_links">
 			<li class:is-active={isActive('/dashboard/orders')}>
 				<a href="/dashboard/orders">
-					<span class="dashboard__nav-item-icon st-icon-home"></span>
+					<span class="dashboard__nav-item-icon"><IconReceipt size={24} /></span>
 					<span class="dashboard__nav-item-text">My Orders</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/subscriptions')}>
 				<a href="/dashboard/subscriptions">
-					<span class="dashboard__nav-item-icon st-icon-courses"></span>
+					<span class="dashboard__nav-item-icon"><IconCalendar size={24} /></span>
 					<span class="dashboard__nav-item-text">My Subscriptions</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/coupons')}>
 				<a href="/dashboard/coupons">
-					<span class="dashboard__nav-item-icon st-icon-indicators"></span>
+					<span class="dashboard__nav-item-icon"><IconDiscount size={24} /></span>
 					<span class="dashboard__nav-item-text">Coupons</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/addresses')}>
 				<a href="/dashboard/addresses">
-					<span class="dashboard__nav-item-icon st-icon-chart"></span>
+					<span class="dashboard__nav-item-icon"><IconMapPin size={24} /></span>
 					<span class="dashboard__nav-item-text">Billing Address</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/payment-methods')}>
 				<a href="/dashboard/payment-methods">
-					<span class="dashboard__nav-item-icon st-icon-chart"></span>
+					<span class="dashboard__nav-item-icon"><IconCreditCard size={24} /></span>
 					<span class="dashboard__nav-item-text">Payment Methods</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/account')}>
 				<a href="/dashboard/account">
-					<span class="dashboard__nav-item-icon st-icon-settings"></span>
+					<span class="dashboard__nav-item-icon"><IconUser size={24} /></span>
 					<span class="dashboard__nav-item-text">Account Details</span>
 				</a>
 			</li>
 			<li>
 				<a href="/logout">
-					<span class="dashboard__nav-item-icon st-icon-logout"></span>
+					<span class="dashboard__nav-item-icon"><IconLogout size={24} /></span>
 					<span class="dashboard__nav-item-text">Log out</span>
 				</a>
 			</li>
@@ -270,19 +282,19 @@
 		<ul class="dash_main_links">
 			<li class:is-active={isActive('/dashboard')}>
 				<a href="/dashboard">
-					<span class="dashboard__nav-item-icon st-icon-home"></span>
+					<span class="dashboard__nav-item-icon"><IconHome size={24} /></span>
 					<span class="dashboard__nav-item-text">Member Dashboard</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/courses')}>
 				<a href="/dashboard/courses">
-					<span class="dashboard__nav-item-icon st-icon-courses"></span>
+					<span class="dashboard__nav-item-icon"><IconVideo size={24} /></span>
 					<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/indicators')}>
 				<a href="/dashboard/indicators">
-					<span class="dashboard__nav-item-icon st-icon-indicators"></span>
+					<span class="dashboard__nav-item-icon"><IconChartCandle size={24} /></span>
 					<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
 				</a>
 			</li>
@@ -302,9 +314,11 @@
 						class:is-active={isActive(`/dashboard/${room.slug}`)}
 					>
 						<a href="/dashboard/{room.slug}">
-							<span class="dashboard__nav-item-icon st-icon-mastering-the-trade">
+							<span class="dashboard__nav-item-icon">
 								{#if room.icon}
 									<img src={room.icon} alt="" class="service-icon-img" loading="lazy" />
+								{:else}
+									<IconUsers size={24} />
 								{/if}
 							</span>
 							<span class="dashboard__nav-item-text">{room.name}</span>
@@ -317,9 +331,11 @@
 						class:is-active={isActive(`/dashboard/${alert.slug}`)}
 					>
 						<a href="/dashboard/{alert.slug}">
-							<span class="dashboard__nav-item-icon {getServiceIconClass(alert.slug)}">
+							<span class="dashboard__nav-item-icon">
 								{#if alert.icon}
 									<img src={alert.icon} alt="" class="service-icon-img" loading="lazy" />
+								{:else}
+									<IconBell size={24} />
 								{/if}
 							</span>
 							<span class="dashboard__nav-item-text">{alert.name}</span>
@@ -342,9 +358,11 @@
 					class:is-active={isActive(`/dashboard/${course.slug}`)}
 				>
 					<a href="/dashboard/{course.slug}">
-						<span class="dashboard__nav-item-icon st-icon-moxie">
+						<span class="dashboard__nav-item-icon">
 							{#if course.icon}
 								<img src={course.icon} alt="" class="service-icon-img" loading="lazy" />
+							{:else}
+								<IconBook size={24} />
 							{/if}
 						</span>
 						<span class="dashboard__nav-item-text">{course.name}</span>
@@ -372,13 +390,13 @@
 		<ul class="dash_main_links">
 			<li class:is-active={isActive('/dashboard/ww')}>
 				<a href="/dashboard/ww">
-					<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+					<span class="dashboard__nav-item-icon"><IconListCheck size={24} /></span>
 					<span class="dashboard__nav-item-text">Weekly Watchlist</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/support')}>
 				<a href="https://intercom.help/simpler-trading/en/" target="_blank">
-					<span class="dashboard__nav-item-icon st-icon-support"></span>
+					<span class="dashboard__nav-item-icon"><IconHeadset size={24} /></span>
 					<span class="dashboard__nav-item-text">Support</span>
 				</a>
 			</li>
@@ -393,7 +411,7 @@
 		<ul class="dash_main_links">
 			<li class:is-active={isActive('/dashboard/account')}>
 				<a href="/dashboard/account">
-					<span class="dashboard__nav-item-icon st-icon-settings"></span>
+					<span class="dashboard__nav-item-icon"><IconSettings size={24} /></span>
 					<span class="dashboard__nav-item-text">My Account</span>
 				</a>
 			</li>
@@ -679,14 +697,23 @@
 		position: absolute;
 		top: 50%;
 		left: 30px;
-		margin-top: -16px;
-		width: 32px;
-		height: 32px;
-		font-size: 32px;
-		line-height: 32px;
+		margin-top: -12px;
+		width: 24px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		color: var(--sidebar-icon-color);
 		transform: scale(1);
 		transition: var(--sidebar-transition);
+	}
+
+	/* SVG icons inside the container */
+	.dashboard__nav-item-icon :global(svg) {
+		width: 24px;
+		height: 24px;
+		stroke: currentColor;
+		stroke-width: 1.5;
 	}
 
 	/* WordPress EXACT: Icon hover - scale and color change */
@@ -697,18 +724,6 @@
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
 		color: var(--sidebar-text-active);
-	}
-
-	/* StIcon specific styles - smaller icons for some types */
-	.dashboard__nav-item-icon.st-icon-home::before,
-	.dashboard__nav-item-icon.st-icon-learning-center::before,
-	.dashboard__nav-item-icon.st-icon-handle-stick::before,
-	.dashboard__nav-item-icon.st-icon-settings::before,
-	.dashboard__nav-item-icon.st-icon-logout::before,
-	.dashboard__nav-item-icon.st-icon-chart::before,
-	.dashboard__nav-item-icon.st-icon-support::before {
-		font-size: 24px;
-		line-height: 32px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
