@@ -1,30 +1,16 @@
 <script lang="ts">
 	/**
-	 * Shopping Cart Page - Simpler Trading Style (EXACT MATCH)
+	 * Shopping Cart Page - WordPress EXACT REPLICA
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 *
-	 * Matches the Simpler Trading cart layout exactly with card-based products
-	 * Reference: SimplerCart file
-	 *
-	 * Features:
-	 * - Card-based product layout (not table)
-	 * - Cart sidebar with totals
-	 * - Coupon input in sidebar
-	 * - NonMemberCheckout for unauthenticated users
-	 *
-	 * @version 6.0.0 (Simpler Trading EXACT Match / December 2025)
+	 * Pixel-perfect conversion from WordPress cart HTML
+	 * @version 7.0.0 (WordPress IDENTICAL / December 2025)
 	 */
 
 	import { goto } from '$app/navigation';
 	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import { isAuthenticated } from '$lib/stores/auth';
-	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
-	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
-	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
 	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -34,6 +20,7 @@
 	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
+	let cartNonce = $state('31d89a8fba');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
