@@ -7,8 +7,9 @@
 	 * - Collapsed primary sidebar (icon-only vertical bar)
 	 * - Secondary sidebar with membership-specific navigation
 	 * - Main content area
+	 * - Mobile-optimized with hamburger menu
 	 *
-	 * @version 1.0.0 (December 2025)
+	 * @version 2.0.0 (December 2025)
 	 */
 
 	import { page } from '$app/stores';
@@ -22,13 +23,14 @@
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconStar from '@tabler/icons-svelte/icons/star';
 	import IconBook from '@tabler/icons-svelte/icons/book';
 	import IconArchive from '@tabler/icons-svelte/icons/archive';
 	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag';
 	import IconPresentation from '@tabler/icons-svelte/icons/presentation';
+	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
+	import IconX from '@tabler/icons-svelte/icons/x';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -46,6 +48,21 @@
 
 	const slug = $derived($page.params.slug);
 	const currentPath = $derived($page.url.pathname);
+	let mobileMenuOpen = $state(false);
+
+	// Close menu on route change
+	$effect(() => {
+		if (browser && currentPath) {
+			mobileMenuOpen = false;
+		}
+	});
+
+	// Handle escape key
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && mobileMenuOpen) {
+			mobileMenuOpen = false;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MEMBERSHIP DATA
@@ -172,11 +189,42 @@
 	}
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+
 <!-- ═══════════════════════════════════════════════════════════════════════════
      MEMBERSHIP DASHBOARD LAYOUT - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<div class="membership-dashboard">
+<div class="membership-dashboard" class:menu-open={mobileMenuOpen}>
+	<!-- Mobile Header -->
+	<header class="mobile-header">
+		<button
+			class="mobile-menu-btn"
+			onclick={() => mobileMenuOpen = !mobileMenuOpen}
+			aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+			aria-expanded={mobileMenuOpen}
+		>
+			{#if mobileMenuOpen}
+				<IconX size={24} />
+			{:else}
+				<IconMenu2 size={24} />
+			{/if}
+		</button>
+		<span class="mobile-title">{membershipData.name}</span>
+		<a href="/dashboard/account" class="mobile-settings" aria-label="Settings">
+			<IconSettings size={20} />
+		</a>
+	</header>
+
+	<!-- Mobile Overlay -->
+	{#if mobileMenuOpen}
+		<button
+			class="mobile-overlay"
+			onclick={() => mobileMenuOpen = false}
+			aria-label="Close menu"
+		></button>
+	{/if}
+
 	<!-- Collapsed Primary Sidebar (Icon-only vertical bar) -->
 	<nav class="primary-sidebar" aria-label="Main navigation">
 		<ul class="primary-nav">
@@ -227,16 +275,44 @@
 				</li>
 			{/each}
 		</ul>
+
+		<!-- Back to Dashboard link on mobile -->
+		<div class="sidebar-footer">
+			<a href="/dashboard" class="back-link">
+				<IconHome size={18} />
+				<span>Back to Member Dashboard</span>
+			</a>
+		</div>
 	</nav>
 
 	<!-- Main Content Area -->
 	<main class="membership-main">
 		{@render children()}
 	</main>
+
+	<!-- Mobile Bottom Navigation -->
+	<nav class="mobile-bottom-nav" aria-label="Quick navigation">
+		<a href="/dashboard" class="bottom-nav-item" class:active={currentPath === '/dashboard'}>
+			<IconHome size={20} />
+			<span>Dashboard</span>
+		</a>
+		<a href="/dashboard/{slug}/daily-videos" class="bottom-nav-item" class:active={currentPath.includes('daily-videos')}>
+			<IconPlayerPlay size={20} />
+			<span>Videos</span>
+		</a>
+		<a href="/dashboard/{slug}/learning-center" class="bottom-nav-item" class:active={currentPath.includes('learning-center')}>
+			<IconBook size={20} />
+			<span>Learn</span>
+		</a>
+		<a href="/dashboard/{slug}/archive" class="bottom-nav-item" class:active={currentPath.includes('archive')}>
+			<IconArchive size={20} />
+			<span>Archive</span>
+		</a>
+	</nav>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Simpler Trading EXACT
+     STYLES - Simpler Trading EXACT + Full Device Optimization
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
@@ -251,6 +327,87 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	   MOBILE HEADER (Hidden on desktop)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.mobile-header {
+		display: none;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 56px;
+		background: #0f2d41;
+		color: #fff;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 16px;
+		z-index: 1000;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	}
+
+	.mobile-menu-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		background: none;
+		border: none;
+		color: #fff;
+		cursor: pointer;
+		border-radius: 8px;
+		transition: background 0.15s ease;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.mobile-menu-btn:hover,
+	.mobile-menu-btn:focus {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.mobile-title {
+		font-size: 16px;
+		font-weight: 600;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 200px;
+	}
+
+	.mobile-settings {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		color: rgba(255, 255, 255, 0.7);
+		text-decoration: none;
+		border-radius: 8px;
+		transition: all 0.15s ease;
+	}
+
+	.mobile-settings:hover {
+		color: #fff;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MOBILE OVERLAY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.mobile-overlay {
+		display: none;
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 998;
+		border: none;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	   PRIMARY SIDEBAR - Collapsed Icon-only Bar (Simpler Trading EXACT)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -262,6 +419,8 @@
 		justify-content: space-between;
 		padding: 20px 0;
 		flex-shrink: 0;
+		position: relative;
+		z-index: 999;
 	}
 
 	.primary-nav {
@@ -355,12 +514,17 @@
 		padding: 20px 0;
 		flex-shrink: 0;
 		overflow-y: auto;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		z-index: 999;
 	}
 
 	.secondary-nav {
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		flex: 1;
 	}
 
 	.secondary-nav li {
@@ -378,6 +542,7 @@
 		font-weight: 400;
 		transition: all 0.15s ease-in-out;
 		position: relative;
+		min-height: 44px;
 	}
 
 	.secondary-nav li a:hover {
@@ -407,6 +572,7 @@
 		width: 20px;
 		color: inherit;
 		opacity: 0.8;
+		flex-shrink: 0;
 	}
 
 	.nav-label {
@@ -425,6 +591,27 @@
 		flex-shrink: 0;
 	}
 
+	.sidebar-footer {
+		display: none;
+		padding: 16px 20px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		margin-top: auto;
+	}
+
+	.back-link {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		color: rgba(255, 255, 255, 0.6);
+		text-decoration: none;
+		font-size: 13px;
+		padding: 10px 0;
+	}
+
+	.back-link:hover {
+		color: #fff;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   MAIN CONTENT AREA
 	   ═══════════════════════════════════════════════════════════════════════════ */
@@ -438,20 +625,168 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   MOBILE BOTTOM NAVIGATION (Hidden on desktop)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 1279px) {
+	.mobile-bottom-nav {
+		display: none;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 64px;
+		background: #0f2d41;
+		justify-content: space-around;
+		align-items: center;
+		padding: 0 8px;
+		z-index: 1000;
+		box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+	}
+
+	.bottom-nav-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		padding: 8px 12px;
+		color: rgba(255, 255, 255, 0.6);
+		text-decoration: none;
+		font-size: 10px;
+		border-radius: 8px;
+		transition: all 0.15s ease;
+		min-width: 60px;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.bottom-nav-item:hover,
+	.bottom-nav-item.active {
+		color: #fff;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.bottom-nav-item.active {
+		color: #0984ae;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - TABLET (768px - 1279px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 1279px) and (min-width: 768px) {
+		.membership-dashboard {
+			padding-top: 56px;
+		}
+
+		.mobile-header {
+			display: flex;
+		}
+
+		.primary-sidebar {
+			position: fixed;
+			left: 0;
+			top: 56px;
+			bottom: 0;
+			transform: translateX(-100%);
+			transition: transform 0.3s ease-in-out;
+		}
+
+		.secondary-sidebar {
+			position: fixed;
+			left: 60px;
+			top: 56px;
+			bottom: 0;
+			transform: translateX(-100%);
+			transition: transform 0.3s ease-in-out;
+			width: 240px;
+		}
+
+		.menu-open .primary-sidebar,
+		.menu-open .secondary-sidebar {
+			transform: translateX(0);
+		}
+
+		.menu-open .mobile-overlay {
+			display: block;
+		}
+
+		.sidebar-footer {
+			display: block;
+		}
+
+		.membership-main {
+			width: 100%;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - MOBILE (< 768px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 767px) {
+		.membership-dashboard {
+			padding-top: 56px;
+			padding-bottom: 64px;
+		}
+
+		.mobile-header {
+			display: flex;
+		}
+
+		.mobile-bottom-nav {
+			display: flex;
+		}
+
 		.primary-sidebar {
 			display: none;
 		}
 
 		.secondary-sidebar {
-			display: none;
+			position: fixed;
+			left: 0;
+			top: 56px;
+			bottom: 64px;
+			width: 280px;
+			transform: translateX(-100%);
+			transition: transform 0.3s ease-in-out;
+			border-left: none;
+		}
+
+		.menu-open .secondary-sidebar {
+			transform: translateX(0);
+		}
+
+		.menu-open .mobile-overlay {
+			display: block;
+		}
+
+		.sidebar-footer {
+			display: block;
 		}
 
 		.membership-main {
 			width: 100%;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SMALL MOBILE (< 375px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 374px) {
+		.mobile-title {
+			font-size: 14px;
+			max-width: 140px;
+		}
+
+		.bottom-nav-item {
+			min-width: 50px;
+			padding: 8px 8px;
+			font-size: 9px;
+		}
+
+		.secondary-sidebar {
+			width: 260px;
 		}
 	}
 
@@ -462,8 +797,50 @@
 	@media (prefers-reduced-motion: reduce) {
 		.primary-nav li a,
 		.secondary-nav li a,
-		.primary-nav-footer a {
+		.primary-nav-footer a,
+		.primary-sidebar,
+		.secondary-sidebar,
+		.mobile-menu-btn,
+		.bottom-nav-item {
 			transition: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TOUCH DEVICE OPTIMIZATIONS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (hover: none) and (pointer: coarse) {
+		.primary-nav li a,
+		.secondary-nav li a,
+		.bottom-nav-item {
+			min-height: 48px;
+		}
+
+		.secondary-nav li a {
+			padding: 14px 20px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LANDSCAPE MOBILE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-height: 500px) and (orientation: landscape) {
+		.mobile-bottom-nav {
+			height: 52px;
+		}
+
+		.bottom-nav-item {
+			padding: 4px 12px;
+		}
+
+		.secondary-sidebar {
+			bottom: 52px;
+		}
+
+		.membership-dashboard {
+			padding-bottom: 52px;
 		}
 	}
 </style>
