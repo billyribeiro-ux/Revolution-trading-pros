@@ -13,7 +13,7 @@
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { IconEye, IconEyeOff } from '$lib/icons';
-	import DashboardFooter from '$lib/components/dashboard/DashboardFooter.svelte';
+	import Footer from '$lib/components/sections/Footer.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -274,7 +274,7 @@
      FOOTER
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<DashboardFooter />
+<Footer />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES - Simpler Trading EXACT

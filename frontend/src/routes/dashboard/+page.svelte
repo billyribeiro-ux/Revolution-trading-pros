@@ -15,7 +15,7 @@
 	import { IconUsers, IconArrowRight, IconAlertTriangle } from '$lib/icons';
 	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
-	import DashboardFooter from '$lib/components/dashboard/DashboardFooter.svelte';
+	import Footer from '$lib/components/sections/Footer.svelte';
 	import {
 		getUserMemberships,
 		invalidateMembershipCache,
@@ -339,7 +339,7 @@
      FOOTER - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<DashboardFooter />
+<Footer />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES
