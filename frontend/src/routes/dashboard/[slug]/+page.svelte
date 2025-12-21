@@ -1,34 +1,22 @@
 <script lang="ts">
 	/**
-	 * Individual Membership Dashboard Page - WordPress Revolution Trading Exact
+	 * Membership Dashboard Page - Simpler Trading EXACT Clone
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * This is the page shown when clicking "Dashboard" on a membership card.
-	 * URL: /dashboard/mastering-the-trade, /dashboard/moxie, etc.
+	 * Exact match of Simpler Trading's "Mastering the Trade Dashboard" page:
+	 * - Breadcrumb navigation
+	 * - Header with title, "New? Start Here" badge, and "Enter Trading Room" button
+	 * - Trading Room Rules link
+	 * - Featured video player
+	 * - Trading Room Schedule sidebar
+	 * - Quick Links sidebar
+	 * - Latest Updates video cards
+	 * - Weekly Watchlist section
 	 *
-	 * WordPress Structure:
-	 * - dashboard__header with page title and "Enter Trading Room" button
-	 * - dashboard__nav-secondary with subpage links
-	 * - dashboard__content with sections for videos, resources, etc.
-	 *
-	 * @version 1.0.0 (December 2025)
+	 * @version 2.0.0 (December 2025)
 	 */
 
 	import { page } from '$app/stores';
-	import { browser } from '$app/environment';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconBook from '@tabler/icons-svelte/icons/book';
-	import IconArchive from '@tabler/icons-svelte/icons/archive';
-	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
-	import IconMessage from '@tabler/icons-svelte/icons/message';
-	import IconInbox from '@tabler/icons-svelte/icons/inbox';
-	import '$lib/styles/st-icons.css';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ROUTE PARAMS
@@ -37,209 +25,162 @@
 	const slug = $derived($page.params.slug);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// MEMBERSHIP DATA (Mock - will be fetched from API)
+	// MEMBERSHIP DATA
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface MembershipDetail {
 		name: string;
 		slug: string;
-		type: 'trading-room' | 'course' | 'indicator' | 'alert' | 'mastery';
-		description: string;
-		icon: string;
-		tradingRoomUrl?: string;
-		hasLearningCenter: boolean;
-		hasArchive: boolean;
-		hasDiscord: boolean;
+		tradingRoomUrl: string;
 	}
 
-	// Mock membership details based on slug
 	const membershipData = $derived.by((): MembershipDetail => {
 		const memberships: Record<string, MembershipDetail> = {
 			'mastering-the-trade': {
 				name: 'Mastering the Trade',
 				slug: 'mastering-the-trade',
-				type: 'trading-room',
-				description: 'Live trading room with professional traders sharing real-time analysis and trade ideas.',
-				icon: 'st-icon-mastering-the-trade',
-				tradingRoomUrl: '/trading-room/mastering-the-trade',
-				hasLearningCenter: true,
-				hasArchive: true,
-				hasDiscord: true
+				tradingRoomUrl: '/trading-room/mastering-the-trade'
 			},
-			'revolution-showcase': {
-				name: 'Revolution Showcase',
-				slug: 'revolution-showcase',
-				type: 'trading-room',
-				description: 'Exclusive showcase of trading strategies from our top educators.',
-				icon: 'st-icon-revolution-showcase',
-				tradingRoomUrl: '/trading-room/revolution-showcase',
-				hasLearningCenter: true,
-				hasArchive: true,
-				hasDiscord: true
+			'simpler-showcase': {
+				name: 'Simpler Showcase',
+				slug: 'simpler-showcase',
+				tradingRoomUrl: '/trading-room/simpler-showcase'
 			},
 			'mm': {
 				name: 'Moxie Indicator™ Mastery',
 				slug: 'mm',
-				type: 'mastery',
-				description: 'Master the Moxie Indicator with comprehensive training and live sessions.',
-				icon: 'st-icon-moxie',
-				tradingRoomUrl: '/trading-room/moxie-mastery',
-				hasLearningCenter: true,
-				hasArchive: true,
-				hasDiscord: false
-			},
-			'ww': {
-				name: 'Weekly Watchlist',
-				slug: 'ww',
-				type: 'alert',
-				description: 'Weekly curated stock watchlist with detailed analysis and entry points.',
-				icon: 'st-icon-trade-of-the-week',
-				hasLearningCenter: false,
-				hasArchive: true,
-				hasDiscord: false
-			},
-			'day-trading': {
-				name: 'Day Trading Room',
-				slug: 'day-trading',
-				type: 'trading-room',
-				description: 'Real-time day trading with focus on intraday opportunities.',
-				icon: 'st-icon-day-trading',
-				tradingRoomUrl: '/trading-room/day-trading',
-				hasLearningCenter: true,
-				hasArchive: true,
-				hasDiscord: true
-			},
-			'swing-trading': {
-				name: 'Swing Trading Room',
-				slug: 'swing-trading',
-				type: 'trading-room',
-				description: 'Multi-day swing trade setups and analysis.',
-				icon: 'st-icon-swing-trading',
-				tradingRoomUrl: '/trading-room/swing-trading',
-				hasLearningCenter: true,
-				hasArchive: true,
-				hasDiscord: true
+				tradingRoomUrl: '/trading-room/moxie-mastery'
 			}
 		};
 
 		return memberships[slug] || {
 			name: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
 			slug,
-			type: 'trading-room',
-			description: 'Access your membership content and resources.',
-			icon: 'st-icon-options',
-			tradingRoomUrl: `/trading-room/${slug}`,
-			hasLearningCenter: true,
-			hasArchive: true,
-			hasDiscord: false
+			tradingRoomUrl: `/trading-room/${slug}`
 		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// RECENT VIDEOS (Dynamic per room - will be fetched from API)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	const recentVideos = $derived.by(() => {
-		// Videos would be fetched per room from API
-		// For now, return mock data that would differ per room
-		return [
-			{
-				id: 1,
-				title: `${membershipData.name} - Morning Analysis`,
-				duration: '1:23:45',
-				date: 'Dec 6, 2025',
-				thumbnail: '/images/videos/thumb1.jpg'
-			},
-			{
-				id: 2,
-				title: `${membershipData.name} - Trade Breakdown`,
-				duration: '45:30',
-				date: 'Dec 5, 2025',
-				thumbnail: '/images/videos/thumb2.jpg'
-			},
-			{
-				id: 3,
-				title: `${membershipData.name} - Weekly Recap`,
-				duration: '58:12',
-				date: 'Dec 4, 2025',
-				thumbnail: '/images/videos/thumb3.jpg'
-			}
-		];
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// TRADING ROOM SCHEDULE (Dynamic per room - will be fetched from API)
+	// TRADING ROOM SCHEDULE
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface ScheduleItem {
-		id: number;
 		traderName: string;
-		traderSlug: string;
 		dateTime: string;
 	}
 
-	// Schedule data per room (would be fetched from API)
-	const roomSchedules: Record<string, ScheduleItem[]> = {
-		'mastering-the-trade': [
-			{ id: 1, traderName: 'Taylor Horton', traderSlug: 'taylor-horton', dateTime: 'Dec 22, 2025, 9:20 AM EST' },
-			{ id: 2, traderName: 'Sam Shames', traderSlug: 'sam-shames', dateTime: 'Dec 22, 2025, 10:30 AM EST' },
-			{ id: 3, traderName: 'Neil Yeager', traderSlug: 'neil-yeager', dateTime: 'Dec 22, 2025, 11:30 AM EST' },
-			{ id: 4, traderName: 'Bruce Marshall', traderSlug: 'bruce-marshall', dateTime: 'Dec 22, 2025, 2:00 PM EST' },
-			{ id: 5, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 22, 2025, 3:00 PM EST' },
-			{ id: 6, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 23, 2025, 9:15 AM EST' },
-			{ id: 7, traderName: 'Raghee Horner', traderSlug: 'raghee-horner', dateTime: 'Dec 23, 2025, 10:30 AM EST' },
-			{ id: 8, traderName: 'David Starr', traderSlug: 'david-starr', dateTime: 'Dec 23, 2025, 11:30 AM EST' }
-		],
-		'day-trading': [
-			{ id: 1, traderName: 'John Carter', traderSlug: 'john-carter', dateTime: 'Dec 22, 2025, 9:00 AM EST' },
-			{ id: 2, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 22, 2025, 10:00 AM EST' },
-			{ id: 3, traderName: 'Allison Ostrander', traderSlug: 'allison-ostrander', dateTime: 'Dec 22, 2025, 11:00 AM EST' },
-			{ id: 4, traderName: 'John Carter', traderSlug: 'john-carter', dateTime: 'Dec 23, 2025, 9:00 AM EST' },
-			{ id: 5, traderName: 'Bruce Marshall', traderSlug: 'bruce-marshall', dateTime: 'Dec 23, 2025, 10:00 AM EST' }
-		],
-		'swing-trading': [
-			{ id: 1, traderName: 'Bruce Marshall', traderSlug: 'bruce-marshall', dateTime: 'Dec 22, 2025, 2:00 PM EST' },
-			{ id: 2, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 22, 2025, 3:00 PM EST' },
-			{ id: 3, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 23, 2025, 2:00 PM EST' },
-			{ id: 4, traderName: 'Sam Shames', traderSlug: 'sam-shames', dateTime: 'Dec 23, 2025, 3:00 PM EST' }
-		],
-		'revolution-showcase': [
-			{ id: 1, traderName: 'John Carter', traderSlug: 'john-carter', dateTime: 'Dec 22, 2025, 9:30 AM EST' },
-			{ id: 2, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 22, 2025, 11:00 AM EST' },
-			{ id: 3, traderName: 'Raghee Horner', traderSlug: 'raghee-horner', dateTime: 'Dec 23, 2025, 9:30 AM EST' }
-		],
-		'mm': [
-			{ id: 1, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 22, 2025, 10:00 AM EST' },
-			{ id: 2, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 23, 2025, 10:00 AM EST' },
-			{ id: 3, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 24, 2025, 10:00 AM EST' }
-		]
-	};
-
-	// Get schedule for current room
-	const roomSchedule = $derived.by((): ScheduleItem[] => {
-		return roomSchedules[slug] || roomSchedules['mastering-the-trade'] || [];
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// QUICK RESOURCES (Same structure for all rooms)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	const quickResources = [
-		{ title: 'Trading Room Rules', icon: IconBook, href: '#rules' },
-		{ title: 'Getting Started Guide', icon: IconChevronRight, href: '#getting-started' },
-		{ title: 'Platform Setup', icon: IconDownload, href: '#platform' },
-		{ title: 'Community Discord', icon: IconMessage, href: '#discord' }
+	const schedule: ScheduleItem[] = [
+		{ traderName: 'Taylor Horton', dateTime: 'Dec 22, 2025, 9:20 AM EST' },
+		{ traderName: 'Sam Shames', dateTime: 'Dec 22, 2025, 10:30 AM EST' },
+		{ traderName: 'Neil Yeager', dateTime: 'Dec 22, 2025, 11:30 AM EST' },
+		{ traderName: 'Bruce Marshall', dateTime: 'Dec 22, 2025, 2:00 PM EST' },
+		{ traderName: 'Henry Gambell', dateTime: 'Dec 22, 2025, 3:00 PM EST' },
+		{ traderName: 'Henry Gambell', dateTime: 'Dec 23, 2025, 9:15 AM EST' },
+		{ traderName: 'Raghee Horner', dateTime: 'Dec 23, 2025, 10:30 AM EST' },
+		{ traderName: 'David Starr', dateTime: 'Dec 23, 2025, 11:30 AM EST' },
+		{ traderName: 'Heather Vanek', dateTime: 'Dec 23, 2025, 2:00 PM EST' },
+		{ traderName: 'Danielle Shay', dateTime: 'Dec 23, 2025, 3:00 PM EST' }
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// QUICK LINKS (Same for all rooms)
+	// QUICK LINKS
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const quickLinks = [
-		{ title: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
-		{ title: 'Platform Tutorials', href: '/tutorials', external: true },
-		{ title: 'Simpler Blog', href: '/blog', external: true }
+		{ title: 'Support', href: 'https://intercom.help/simpler-trading/en/' },
+		{ title: 'Platform Tutorials', href: '/tutorials' },
+		{ title: 'Simpler Blog', href: '/blog' }
 	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// LATEST UPDATES (Videos)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface VideoUpdate {
+		id: number;
+		type: 'daily-video' | 'weekly-watchlist';
+		typeLabel: string;
+		title: string;
+		description: string;
+		date: string;
+		traderName: string;
+		thumbnail: string;
+	}
+
+	const latestUpdates: VideoUpdate[] = [
+		{
+			id: 1,
+			type: 'daily-video',
+			typeLabel: 'DAILY VIDEO',
+			title: 'Holiday Weekend Market Review',
+			description: 'Indexes continue to churn sideways as we approach next week\'s holiday trade. Bulls usually take over in low volume. Can they do it again?',
+			date: 'December 19, 2025 with Sam',
+			traderName: 'Sam Shames',
+			thumbnail: 'https://cdn.simplertrading.com/images/traders/sam-shames.jpg'
+		},
+		{
+			id: 2,
+			type: 'daily-video',
+			typeLabel: 'DAILY VIDEO',
+			title: 'December 19, 2025',
+			description: 'With Henry Gambell',
+			date: 'December 19, 2025',
+			traderName: 'Henry Gambell',
+			thumbnail: 'https://cdn.simplertrading.com/images/traders/henry-gambell.jpg'
+		},
+		{
+			id: 3,
+			type: 'daily-video',
+			typeLabel: 'DAILY VIDEO',
+			title: 'Ho Ho Whoa!',
+			description: 'In this video, Bruce discusses today\'s market action and the outlook for the end of the year. After CPI this morning, we got a nice bounce and relief rally after a long and messy chop phase since Thanksgiving.',
+			date: 'December 18, 2025 with Bruce Marshall',
+			traderName: 'Bruce Marshall',
+			thumbnail: 'https://cdn.simplertrading.com/images/traders/bruce-marshall.jpg'
+		},
+		{
+			id: 4,
+			type: 'daily-video',
+			typeLabel: 'DAILY VIDEO',
+			title: 'December 18, 2025',
+			description: 'With Henry Gambell',
+			date: 'December 18, 2025',
+			traderName: 'Henry Gambell',
+			thumbnail: 'https://cdn.simplertrading.com/images/traders/henry-gambell.jpg'
+		},
+		{
+			id: 5,
+			type: 'daily-video',
+			typeLabel: 'DAILY VIDEO',
+			title: 'A Moment For The VIX',
+			description: 'Today\'s action in stocks wasn\'t just out of the blue. We\'d been seeing weakness across the board, but it really came through today after the VIX expiration.',
+			date: 'December 17, 2025 with HG',
+			traderName: 'Henry Gambell',
+			thumbnail: 'https://cdn.simplertrading.com/images/traders/henry-gambell.jpg'
+		},
+		{
+			id: 6,
+			type: 'daily-video',
+			typeLabel: 'DAILY VIDEO',
+			title: 'December 17, 2025',
+			description: 'With John F. Carter',
+			date: 'December 17, 2025',
+			traderName: 'John Carter',
+			thumbnail: 'https://cdn.simplertrading.com/images/traders/john-carter.jpg'
+		}
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// WEEKLY WATCHLIST
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const weeklyWatchlist = {
+		title: 'Weekly Watchlist with Allison Ostrander',
+		date: 'Week of December 15, 2025',
+		traderName: 'Allison Ostrander',
+		traderTitle: 'Director of Risk Tolerance',
+		thumbnail: 'https://cdn.simplertrading.com/images/traders/allison-ostrander.jpg'
+	};
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -247,37 +188,40 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>{membershipData.name} | Dashboard | Revolution Trading Pros</title>
+	<title>{membershipData.name} Dashboard | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     DASHBOARD HEADER - WordPress: .dashboard__header
+     BREADCRUMB - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<header class="dashboard__header">
-	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">{membershipData.name} Dashboard</h1>
+<nav class="breadcrumb" aria-label="Breadcrumb">
+	<ol>
+		<li><a href="/">Home</a></li>
+		<li><a href="/dashboard">Member Dashboard</a></li>
+		<li><span>{membershipData.name} Dashboard</span></li>
+	</ol>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DASHBOARD HEADER - Simpler Trading EXACT
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<header class="dashboard-header">
+	<div class="dashboard-header__left">
+		<h1 class="dashboard-header__title">{membershipData.name} Dashboard</h1>
+		<a href="/dashboard/{slug}/getting-started" class="new-badge">New? Start Here</a>
 	</div>
-	<div class="dashboard__header-center">
-		<a href="/dashboard/{slug}/getting-started" class="new-start-link">New? Start Here</a>
-	</div>
-	<div class="dashboard__header-right">
-		{#if membershipData.tradingRoomUrl}
-			<a href={membershipData.tradingRoomUrl} class="btn btn-orange btn-tradingroom" target="_blank" rel="nofollow">
-				<strong>Enter a Trading Room</strong>
-			</a>
-		{/if}
-		<!-- Trading Room Rules -->
-		<div class="trading-room-rules">
-			<a
-				href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
-				target="_blank"
-				class="trading-room-rules__link"
-			>
+	<div class="dashboard-header__right">
+		<a href={membershipData.tradingRoomUrl} class="btn-enter-room" target="_blank" rel="nofollow">
+			Enter a Trading Room ›
+		</a>
+		<div class="trading-rules">
+			<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="trading-rules__link">
 				Trading Room Rules
 			</a>
-			<p class="trading-room-rules__disclaimer">
+			<p class="trading-rules__text">
 				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
 			</p>
 		</div>
@@ -285,204 +229,120 @@
 </header>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SECONDARY NAVIGATION - WordPress: .dashboard__nav-secondary
+     MAIN CONTENT WITH SIDEBAR - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<nav class="dashboard__nav-secondary">
-	<ul class="nav-menu">
-		<li class="nav-item is-active">
-			<a href="/dashboard/{slug}">
-				<span class="st-icon-dashboard nav-icon"></span>
-				<span class="nav-text">{membershipData.name} Dashboard</span>
-			</a>
-		</li>
-		<li class="nav-item">
-			<a href="/dashboard/{slug}/daily-videos">
-				<span class="st-icon-daily-videos nav-icon"></span>
-				<span class="nav-text">Premium Daily Videos</span>
-			</a>
-		</li>
-		{#if membershipData.hasLearningCenter}
-			<li class="nav-item">
-				<a href="/dashboard/{slug}/learning-center">
-					<span class="st-icon-learning-center nav-icon"></span>
-					<span class="nav-text">Learning Center</span>
-				</a>
-			</li>
-		{/if}
-		{#if membershipData.hasArchive}
-			<li class="nav-item">
-				<a href="/dashboard/{slug}/archive">
-					<span class="st-icon-chatroom-archive nav-icon"></span>
-					<span class="nav-text">Trading Room Archives</span>
-				</a>
-			</li>
-		{/if}
-		{#if membershipData.tradingRoomUrl}
-			<li class="nav-item">
-				<a href={membershipData.tradingRoomUrl} target="_blank" rel="nofollow">
-					<span class="st-icon-training-room nav-icon"></span>
-					<span class="nav-text">Trading Room</span>
-					<IconExternalLink size={14} class="external-icon" />
-				</a>
-			</li>
-		{/if}
-	</ul>
-</nav>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     DASHBOARD CONTENT - WordPress: .dashboard__content
-     ═══════════════════════════════════════════════════════════════════════════ -->
-
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-		<!-- Description Section -->
-		<section class="dashboard__content-section">
-			<div class="membership-intro">
-				<p>{membershipData.description}</p>
+<div class="dashboard-content">
+	<div class="dashboard-content__main">
+		<!-- Featured Video Player -->
+		<section class="featured-video">
+			<div class="video-wrapper">
+				<div class="video-placeholder">
+					<div class="video-branding">
+						<span class="brand-icon">◎</span>
+						<span class="brand-text">SIMPLER</span><span class="brand-text-bold">TRADING</span><span class="brand-tm">®</span>
+					</div>
+					<h2 class="video-title">Welcome to<br/>Simpler Trading!</h2>
+				</div>
+				<div class="video-controls">
+					<button class="play-btn" aria-label="Play video">▶</button>
+					<span class="video-time">0:00 / 5:32</span>
+					<div class="video-controls-right">
+						<button aria-label="Previous">⏮</button>
+						<button aria-label="Next">⏭</button>
+						<button aria-label="Fullscreen">⛶</button>
+						<button aria-label="More">⋮</button>
+					</div>
+				</div>
 			</div>
 		</section>
 
-		<!-- Quick Actions Section -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Quick Access</h2>
-			<div class="quick-actions row">
-				{#if membershipData.tradingRoomUrl}
-					<div class="col-sm-6 col-lg-3">
-						<a href={membershipData.tradingRoomUrl} class="action-card action-card--primary" target="_blank">
-							<div class="action-card__icon">
-								<IconPlayerPlay size={28} />
-							</div>
-							<div class="action-card__content">
-								<h3>Enter Trading Room</h3>
-								<p>Join the live session</p>
-							</div>
-						</a>
-					</div>
-				{/if}
-				{#if membershipData.hasLearningCenter}
-					<div class="col-sm-6 col-lg-3">
-						<a href="/dashboard/{slug}/learning-center" class="action-card">
-							<div class="action-card__icon">
-								<IconBook size={28} />
-							</div>
-							<div class="action-card__content">
-								<h3>Learning Center</h3>
-								<p>Courses & tutorials</p>
-							</div>
-						</a>
-					</div>
-				{/if}
-				{#if membershipData.hasArchive}
-					<div class="col-sm-6 col-lg-3">
-						<a href="/dashboard/{slug}/archive" class="action-card">
-							<div class="action-card__icon">
-								<IconInbox size={28} />
-							</div>
-							<div class="action-card__content">
-								<h3>Video Archive</h3>
-								<p>Past recordings</p>
-							</div>
-						</a>
-					</div>
-				{/if}
-				{#if membershipData.hasDiscord}
-					<div class="col-sm-6 col-lg-3">
-						<a href="#discord" class="action-card">
-							<div class="action-card__icon">
-								<IconMessage size={28} />
-							</div>
-							<div class="action-card__content">
-								<h3>Community</h3>
-								<p>Join Discord</p>
-							</div>
-						</a>
-					</div>
-				{/if}
-			</div>
-		</section>
-
-		<!-- Recent Videos Section -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Recent Videos</h2>
-			<div class="videos-grid row">
-				{#each recentVideos as video (video.id)}
-					<div class="col-sm-6 col-xl-4">
-						<a href="/dashboard/{slug}/archive/{video.id}" class="video-card">
-							<div class="video-card__thumbnail">
-								<div class="video-card__placeholder">
-									<IconVideo size={48} />
+		<!-- Latest Updates Section -->
+		<section class="latest-updates">
+			<h2 class="section-title">Latest Updates</h2>
+			<div class="updates-grid">
+				{#each latestUpdates as video (video.id)}
+					<article class="video-card">
+						<div class="video-card__thumbnail">
+							<div class="video-card__badge">{membershipData.name.toUpperCase()}</div>
+							<div class="video-card__overlay">
+								<div class="video-card__branding">
+									<span class="brand-icon-sm">◎</span>
+									<span>SIMPLER</span><span class="bold">TRADING</span><span class="tm">®</span>
 								</div>
-								<span class="video-card__duration">{video.duration}</span>
-								<div class="video-card__play">
-									<IconPlayerPlay size={32} />
-								</div>
+								{#if video.traderName}
+									<div class="video-card__trader">
+										<span class="trader-label">SIMPLER<span class="highlight">TRADING</span></span>
+										<span class="trader-name">{video.traderName.toUpperCase()}</span>
+										{#if video.id === 1}
+											<span class="trader-title">Vice President of Options</span>
+										{:else if video.id === 3}
+											<span class="trader-title">Senior Director of Options & Income Trading</span>
+										{/if}
+									</div>
+								{/if}
 							</div>
-							<div class="video-card__content">
-								<h3 class="video-card__title">{video.title}</h3>
-								<div class="video-card__meta">
-									<IconCalendar size={14} />
-									{video.date}
-								</div>
-							</div>
-						</a>
-					</div>
+						</div>
+						<div class="video-card__content">
+							<span class="video-card__type">{video.typeLabel}</span>
+							<h3 class="video-card__title">{video.title}</h3>
+							<p class="video-card__date">{video.date}</p>
+							{#if video.description && video.id !== 2 && video.id !== 4 && video.id !== 6}
+								<p class="video-card__desc">{video.description}</p>
+							{/if}
+							<a href="/dashboard/{slug}/videos/{video.id}" class="video-card__link">Watch Now</a>
+						</div>
+					</article>
 				{/each}
 			</div>
-			<div class="section-footer">
-				<a href="/dashboard/{slug}/archive" class="btn btn-link">
-					View All Videos
-					<IconChevronRight size={16} />
-				</a>
-			</div>
 		</section>
 
-		<!-- Resources Section -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Resources</h2>
-			<div class="resources-list">
-				{#each quickResources as resource}
-					{@const ResourceIcon = resource.icon}
-					<a href={resource.href} class="resource-item">
-						<ResourceIcon size={20} />
-						<span>{resource.title}</span>
-						<IconChevronRight size={16} class="chevron" />
-					</a>
-				{/each}
+		<!-- Weekly Watchlist Section -->
+		<section class="weekly-watchlist">
+			<div class="watchlist-content">
+				<span class="watchlist-label">WEEKLY WATCHLIST</span>
+				<h3 class="watchlist-title">{weeklyWatchlist.title}</h3>
+				<p class="watchlist-date">{weeklyWatchlist.date}</p>
+				<a href="/dashboard/ww" class="watchlist-link">Watch Now</a>
+			</div>
+			<div class="watchlist-image">
+				<div class="watchlist-badge">WEEKLY WATCHLIST</div>
+				<div class="watchlist-trader">
+					<div class="watchlist-branding">
+						<span class="brand-icon-sm">◎</span>
+						<span>SIMPLER</span><span class="bold">TRADING</span><span class="tm">®</span>
+					</div>
+					<span class="watchlist-trader-name">{weeklyWatchlist.traderName.toUpperCase()}</span>
+					<span class="watchlist-trader-title">{weeklyWatchlist.traderTitle}</span>
+				</div>
 			</div>
 		</section>
 	</div>
 
-	<!-- Sidebar - Same structure for ALL trading rooms/alerts -->
-	<aside class="dashboard__content-sidebar">
-		<!-- Trading Room Schedule - Dynamic per room -->
-		{#if roomSchedule.length > 0}
-			<section class="content-sidebar__section">
-				<h4 class="content-sidebar__heading">{membershipData.name.toUpperCase()} SCHEDULE</h4>
-				<p class="pssubject">Schedule is subject to change.</p>
-				<div class="room-sched">
-					{#each roomSchedule as item (item.id)}
-						<div class="schedule-item">
-							<a href="/traders/{item.traderSlug}" class="schedule-item__name">{item.traderName}</a>
-							<span class="schedule-item__time">{item.dateTime}</span>
-						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
+	<!-- Right Sidebar -->
+	<aside class="dashboard-sidebar">
+		<!-- Trading Room Schedule -->
+		<section class="sidebar-section schedule-section">
+			<h4 class="sidebar-title">TRADING ROOM SCHEDULE</h4>
+			<p class="schedule-note">Schedule is subject to change.</p>
+			<ul class="schedule-list">
+				{#each schedule as item}
+					<li class="schedule-item">
+						<a href="/traders/{item.traderName.toLowerCase().replace(' ', '-')}" class="schedule-name">{item.traderName}</a>
+						<span class="schedule-time">{item.dateTime}</span>
+					</li>
+				{/each}
+			</ul>
+		</section>
 
-		<!-- Quick Links - Same for ALL rooms -->
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">QUICK LINKS</h4>
-			<ul class="link-list">
+		<!-- Quick Links -->
+		<section class="sidebar-section">
+			<h4 class="sidebar-title">QUICK LINKS</h4>
+			<ul class="quick-links">
 				{#each quickLinks as link}
 					<li>
 						<span class="link-arrow">›</span>
-						{#if link.external}
-							<a href={link.href} target="_blank" rel="noopener">{link.title}</a>
-						{:else}
-							<a href={link.href}>{link.title}</a>
-						{/if}
+						<a href={link.href} target="_blank">{link.title}</a>
 					</li>
 				{/each}
 			</ul>
@@ -491,642 +351,699 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES
+     STYLES - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER - WordPress: .dashboard__header
+	   BREADCRUMB
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__header {
-		background-color: #fff;
-		border-bottom: 1px solid var(--st-border-color, #dbdbdb);
-		padding: 20px 30px;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 16px;
-	}
-
-	.dashboard__header-left {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.dashboard__header-center {
-		display: flex;
-		align-items: center;
-	}
-
-	.dashboard__header-right {
-		display: flex;
-		align-items: flex-start;
-		gap: 16px;
-		flex-direction: column;
-		align-items: flex-end;
-	}
-
-	.dashboard__page-title {
-		color: var(--st-text-color, #333);
-		font-family: 'Open Sans Condensed', sans-serif;
-		font-size: 32px;
-		font-weight: 700;
-		margin: 0;
-		line-height: 1.2;
-	}
-
-	.new-start-link {
-		color: var(--st-primary, #0984ae);
-		text-decoration: none;
-		font-weight: 600;
-		font-size: 14px;
-	}
-
-	.new-start-link:hover {
-		text-decoration: underline;
-	}
-
-	/* Trading Room Rules - WordPress EXACT */
-	.trading-room-rules {
-		text-align: right;
-		max-width: 220px;
-	}
-
-	.trading-room-rules__link {
-		display: block;
-		font-weight: 700;
-		color: var(--st-primary, #0984ae);
-		text-decoration: none;
-		font-size: 14px;
-		margin-bottom: 4px;
-	}
-
-	.trading-room-rules__link:hover {
-		text-decoration: underline;
-	}
-
-	.trading-room-rules__disclaimer {
-		font-size: 11px;
-		color: var(--st-text-muted, #6b7280);
-		line-height: 1.3;
-		margin: 0;
-	}
-
-	.btn-tradingroom {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		background: var(--st-orange, #f99e31);
-		color: #fff;
-		font-size: 14px;
-		padding: 12px 20px;
-		border-radius: 5px;
-		text-decoration: none;
-		transition: all 0.15s ease-in-out;
-		border: none;
-		cursor: pointer;
-	}
-
-	.btn-tradingroom:hover {
-		background: var(--st-orange-hover, #dc7309);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECONDARY NAVIGATION - WordPress: .dashboard__nav-secondary
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__nav-secondary {
+	.breadcrumb {
 		background: #fff;
-		border-bottom: 1px solid var(--st-border-color, #dbdbdb);
-		padding: 0 30px;
+		padding: 12px 30px;
+		border-bottom: 1px solid #e5e7eb;
+		font-size: 12px;
 	}
 
-	.nav-menu {
-		display: flex;
+	.breadcrumb ol {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		gap: 0;
-		overflow-x: auto;
-	}
-
-	.nav-item a {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		padding: 16px 20px;
-		color: var(--st-text-muted, #64748b);
+	}
+
+	.breadcrumb li {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.breadcrumb li:not(:last-child)::after {
+		content: '/';
+		color: #9ca3af;
+	}
+
+	.breadcrumb a {
+		color: #6b7280;
 		text-decoration: none;
-		font-size: 14px;
+	}
+
+	.breadcrumb a:hover {
+		color: #0984ae;
+		text-decoration: underline;
+	}
+
+	.breadcrumb span {
+		color: #374151;
 		font-weight: 500;
-		border-bottom: 3px solid transparent;
-		transition: all 0.15s ease-in-out;
-		white-space: nowrap;
-	}
-
-	.nav-item a:hover {
-		color: var(--st-primary, #0984ae);
-		background: rgba(9, 132, 174, 0.05);
-	}
-
-	.nav-item.is-active a {
-		color: var(--st-primary, #0984ae);
-		border-bottom-color: var(--st-primary, #0984ae);
-	}
-
-	.nav-icon {
-		font-size: 18px;
-	}
-
-	:global(.external-icon) {
-		opacity: 0.5;
-		margin-left: 4px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT - WordPress: .dashboard__content
+	   DASHBOARD HEADER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__content {
+	.dashboard-header {
+		background: #fff;
+		padding: 20px 30px;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		flex-wrap: wrap;
+		gap: 16px;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.dashboard-header__left {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	.dashboard-header__title {
+		font-family: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+		font-size: 28px;
+		font-weight: 700;
+		color: #1f2937;
+		margin: 0;
+	}
+
+	.new-badge {
+		display: inline-block;
+		padding: 6px 12px;
+		background: #e5e7eb;
+		border-radius: 4px;
+		font-size: 12px;
+		font-weight: 600;
+		color: #374151;
+		text-decoration: none;
+	}
+
+	.new-badge:hover {
+		background: #d1d5db;
+	}
+
+	.dashboard-header__right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 12px;
+	}
+
+	.btn-enter-room {
+		display: inline-block;
+		padding: 12px 24px;
+		background: #f99e31;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: background 0.15s ease;
+	}
+
+	.btn-enter-room:hover {
+		background: #e8890f;
+	}
+
+	.trading-rules {
+		text-align: right;
+		max-width: 200px;
+	}
+
+	.trading-rules__link {
+		display: block;
+		color: #0984ae;
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+		margin-bottom: 4px;
+	}
+
+	.trading-rules__link:hover {
+		text-decoration: underline;
+	}
+
+	.trading-rules__text {
+		font-size: 10px;
+		color: #6b7280;
+		line-height: 1.4;
+		margin: 0;
+		font-style: italic;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT LAYOUT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard-content {
 		display: flex;
 		gap: 30px;
 		padding: 30px;
-		background: #f8f9fa;
-		min-height: calc(100vh - 200px);
+		background: #f4f4f4;
 	}
 
-	.dashboard__content-main {
+	.dashboard-content__main {
 		flex: 1;
 		min-width: 0;
 	}
 
-	.dashboard__content-sidebar {
-		width: 300px;
+	.dashboard-sidebar {
+		width: 280px;
 		flex-shrink: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTENT SECTIONS - WordPress: .dashboard__content-section
+	   FEATURED VIDEO
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__content-section {
-		background: #fff;
+	.featured-video {
+		margin-bottom: 30px;
+	}
+
+	.video-wrapper {
+		background: #0a1628;
 		border-radius: 8px;
-		padding: 24px;
-		margin-bottom: 24px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+		overflow: hidden;
+		aspect-ratio: 16 / 9;
+		position: relative;
+	}
+
+	.video-placeholder {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: calc(100% - 40px);
+		color: #fff;
+		text-align: center;
+		padding: 40px;
+		background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
+	}
+
+	.video-branding {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 14px;
+		margin-bottom: 20px;
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.brand-icon {
+		font-size: 18px;
+		color: #0984ae;
+	}
+
+	.brand-text {
+		font-weight: 300;
+	}
+
+	.brand-text-bold {
+		font-weight: 700;
+	}
+
+	.brand-tm {
+		font-size: 10px;
+		vertical-align: super;
+	}
+
+	.video-title {
+		font-family: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+		font-size: 42px;
+		font-weight: 300;
+		line-height: 1.2;
+		margin: 0;
+	}
+
+	.video-controls {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 8px 16px;
+		background: #1a1a1a;
+		color: #fff;
+		font-size: 12px;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.play-btn {
+		background: none;
+		border: none;
+		color: #fff;
+		font-size: 16px;
+		cursor: pointer;
+		padding: 4px 8px;
+	}
+
+	.video-time {
+		color: #9ca3af;
+	}
+
+	.video-controls-right {
+		margin-left: auto;
+		display: flex;
+		gap: 8px;
+	}
+
+	.video-controls-right button {
+		background: none;
+		border: none;
+		color: #9ca3af;
+		font-size: 14px;
+		cursor: pointer;
+		padding: 4px;
+	}
+
+	.video-controls-right button:hover {
+		color: #fff;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LATEST UPDATES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.latest-updates {
+		margin-bottom: 30px;
 	}
 
 	.section-title {
-		color: var(--st-text-color, #333);
+		font-family: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+		font-size: 24px;
 		font-weight: 700;
-		font-size: 20px;
-		font-family: 'Open Sans Condensed', sans-serif;
-		margin: 0 0 20px 0;
-		padding-bottom: 10px;
-		border-bottom: 2px solid var(--st-primary, #0984ae);
+		color: #1f2937;
+		margin: 0 0 20px;
 	}
 
-	.section-footer {
-		text-align: center;
-		padding-top: 16px;
-		border-top: 1px solid #eee;
-		margin-top: 20px;
-	}
-
-	.btn-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		color: var(--st-link-color, #1e73be);
-		text-decoration: none;
-		font-weight: 600;
-		font-size: 14px;
-	}
-
-	.btn-link:hover {
-		color: var(--st-primary, #0984ae);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP INTRO
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.membership-intro p {
-		font-size: 16px;
-		color: var(--st-text-muted, #64748b);
-		line-height: 1.6;
-		margin: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   QUICK ACTIONS - Bootstrap Grid
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.quick-actions {
-		display: flex;
-		flex-wrap: wrap;
-		margin: -10px;
-	}
-
-	.quick-actions > [class*="col-"] {
-		padding: 10px;
-	}
-
-	.action-card {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		padding: 20px;
-		background: #f8f9fa;
-		border: 1px solid #e5e7eb;
-		border-radius: 8px;
-		text-decoration: none;
-		transition: all 0.2s ease;
-		height: 100%;
-	}
-
-	.action-card:hover {
-		border-color: var(--st-primary, #0984ae);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	.action-card--primary {
-		background: var(--st-primary, #0984ae);
-		border-color: var(--st-primary, #0984ae);
-		color: #fff;
-	}
-
-	.action-card--primary:hover {
-		background: #076787;
-		border-color: #076787;
-	}
-
-	.action-card--primary .action-card__icon {
-		background: rgba(255, 255, 255, 0.2);
-		color: #fff;
-	}
-
-	.action-card--primary h3,
-	.action-card--primary p {
-		color: #fff;
-	}
-
-	.action-card__icon {
-		width: 56px;
-		height: 56px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: #e0f2fe;
-		border-radius: 12px;
-		color: var(--st-primary, #0984ae);
-		flex-shrink: 0;
-	}
-
-	.action-card__content h3 {
-		font-size: 16px;
-		font-weight: 600;
-		color: var(--st-text-color, #333);
-		margin: 0 0 4px;
-	}
-
-	.action-card__content p {
-		font-size: 13px;
-		color: var(--st-text-muted, #64748b);
-		margin: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEOS GRID - Bootstrap Grid
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.videos-grid {
-		display: flex;
-		flex-wrap: wrap;
-		margin: -10px;
-	}
-
-	.videos-grid > [class*="col-"] {
-		padding: 10px;
+	.updates-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
 	}
 
 	.video-card {
-		display: block;
 		background: #fff;
-		border: 1px solid #e5e7eb;
 		border-radius: 8px;
 		overflow: hidden;
-		text-decoration: none;
-		transition: all 0.2s ease;
-	}
-
-	.video-card:hover {
-		border-color: var(--st-primary, #0984ae);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	.video-card:hover .video-card__play {
-		opacity: 1;
-		transform: translate(-50%, -50%) scale(1);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
 	.video-card__thumbnail {
 		position: relative;
-		height: 140px;
-		background: linear-gradient(135deg, #1e293b, #334155);
+		aspect-ratio: 16 / 10;
+		background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
+		overflow: hidden;
 	}
 
-	.video-card__placeholder {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-		color: #64748b;
-	}
-
-	.video-card__duration {
+	.video-card__badge {
 		position: absolute;
-		bottom: 8px;
-		right: 8px;
+		top: 10px;
+		left: 10px;
 		padding: 4px 8px;
-		background: rgba(0, 0, 0, 0.8);
-		border-radius: 4px;
-		font-size: 12px;
-		font-weight: 600;
+		background: #0984ae;
+		color: #fff;
+		font-size: 9px;
+		font-weight: 700;
+		border-radius: 3px;
+		letter-spacing: 0.5px;
+		z-index: 2;
+	}
+
+	.video-card__overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 40px 15px 15px;
+	}
+
+	.video-card__branding {
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		font-size: 11px;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.brand-icon-sm {
+		font-size: 14px;
+		color: #0984ae;
+	}
+
+	.video-card__branding .bold {
+		font-weight: 700;
+	}
+
+	.video-card__branding .tm {
+		font-size: 8px;
+		vertical-align: super;
+	}
+
+	.video-card__trader {
+		display: flex;
+		flex-direction: column;
 		color: #fff;
 	}
 
-	.video-card__play {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%) scale(0.9);
-		width: 56px;
-		height: 56px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--st-primary, #0984ae);
-		border-radius: 50%;
-		color: #fff;
-		opacity: 0.8;
-		transition: all 0.2s ease;
+	.trader-label {
+		font-size: 10px;
+		color: rgba(255, 255, 255, 0.7);
+		letter-spacing: 1px;
+	}
+
+	.trader-label .highlight {
+		color: #0984ae;
+	}
+
+	.trader-name {
+		font-family: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+		font-size: 22px;
+		font-weight: 700;
+		line-height: 1.1;
+		margin-top: 4px;
+	}
+
+	.trader-title {
+		font-size: 9px;
+		color: rgba(255, 255, 255, 0.7);
+		margin-top: 2px;
 	}
 
 	.video-card__content {
 		padding: 16px;
 	}
 
+	.video-card__type {
+		display: inline-block;
+		font-size: 10px;
+		font-weight: 700;
+		color: #dc2626;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-bottom: 8px;
+	}
+
 	.video-card__title {
-		font-size: 14px;
-		font-weight: 600;
-		color: var(--st-text-color, #333);
+		font-size: 16px;
+		font-weight: 700;
+		color: #1f2937;
+		margin: 0 0 6px;
+		line-height: 1.3;
+	}
+
+	.video-card__date {
+		font-size: 13px;
+		color: #6b7280;
 		margin: 0 0 8px;
-		line-height: 1.4;
+	}
+
+	.video-card__desc {
+		font-size: 13px;
+		color: #6b7280;
+		line-height: 1.5;
+		margin: 0 0 12px;
 		display: -webkit-box;
-		line-clamp: 2;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
+		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
 
-	.video-card__meta {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12px;
-		color: var(--st-text-muted, #64748b);
+	.video-card__link {
+		display: inline-block;
+		color: #0984ae;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.video-card__link:hover {
+		text-decoration: underline;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESOURCES LIST
+	   WEEKLY WATCHLIST
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.resources-list {
+	.weekly-watchlist {
 		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.resource-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px 16px;
-		background: #f8f9fa;
+		gap: 30px;
+		background: #fff;
 		border-radius: 8px;
-		color: var(--st-text-color, #333);
-		text-decoration: none;
-		font-weight: 500;
-		transition: all 0.15s ease;
+		padding: 30px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
-	.resource-item:hover {
-		background: #e0f2fe;
-		color: var(--st-primary, #0984ae);
-	}
-
-	.resource-item span {
+	.watchlist-content {
 		flex: 1;
 	}
 
-	:global(.resource-item .chevron) {
-		color: #999;
+	.watchlist-label {
+		display: inline-block;
+		font-size: 11px;
+		font-weight: 700;
+		color: #dc2626;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-bottom: 8px;
+	}
+
+	.watchlist-title {
+		font-size: 20px;
+		font-weight: 700;
+		color: #1f2937;
+		margin: 0 0 6px;
+	}
+
+	.watchlist-date {
+		font-size: 14px;
+		color: #6b7280;
+		margin: 0 0 16px;
+	}
+
+	.watchlist-link {
+		display: inline-block;
+		color: #0984ae;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.watchlist-link:hover {
+		text-decoration: underline;
+	}
+
+	.watchlist-image {
+		width: 300px;
+		aspect-ratio: 16 / 10;
+		background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
+		border-radius: 8px;
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		padding: 20px;
+	}
+
+	.watchlist-badge {
+		position: absolute;
+		top: 15px;
+		right: 15px;
+		padding: 6px 12px;
+		background: #10b981;
+		color: #fff;
+		font-size: 10px;
+		font-weight: 700;
+		border-radius: 4px;
+		letter-spacing: 0.5px;
+	}
+
+	.watchlist-trader {
+		display: flex;
+		flex-direction: column;
+		color: #fff;
+	}
+
+	.watchlist-branding {
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		font-size: 10px;
+		color: rgba(255, 255, 255, 0.7);
+		margin-bottom: 8px;
+	}
+
+	.watchlist-branding .bold {
+		font-weight: 700;
+	}
+
+	.watchlist-branding .tm {
+		font-size: 7px;
+		vertical-align: super;
+	}
+
+	.watchlist-trader-name {
+		font-family: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
+		font-size: 24px;
+		font-weight: 700;
+		line-height: 1.1;
+	}
+
+	.watchlist-trader-title {
+		font-size: 11px;
+		color: rgba(255, 255, 255, 0.7);
+		margin-top: 4px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - WordPress RevolutionInsideDashboard EXACT
+	   SIDEBAR
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* WordPress: .content-sidebar__section */
-	.content-sidebar__section {
+	.sidebar-section {
 		background: #fff;
 		border-radius: 8px;
 		padding: 20px;
 		margin-bottom: 20px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
-	/* WordPress: .content-sidebar__heading */
-	.content-sidebar__heading {
-		font-size: 16px;
+	.sidebar-title {
+		font-size: 14px;
 		font-weight: 700;
-		color: var(--st-text-color, #333);
+		color: #1f2937;
 		margin: 0 0 16px;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
-	/* WordPress: .pssubject */
-	.pssubject {
-		font-size: 10px;
-		margin-top: 15px;
-		text-transform: initial;
-		font-weight: 400;
-		color: var(--st-text-muted, #64748b);
+	.schedule-note {
+		font-size: 11px;
+		color: #9ca3af;
+		font-style: italic;
+		margin: 0 0 16px;
 	}
 
-	/* WordPress: .room-sched - Schedule with trader names */
-	.room-sched {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
+	.schedule-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	.schedule-item {
 		display: flex;
 		flex-direction: column;
-		padding: 12px 0;
-		border-bottom: 1px solid #eee;
+		padding: 10px 0;
+		border-bottom: 1px solid #f3f4f6;
 	}
 
 	.schedule-item:last-child {
 		border-bottom: none;
 	}
 
-	.schedule-item__name {
+	.schedule-name {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--st-primary, #0984ae);
+		color: #0984ae;
 		text-decoration: none;
-		margin-bottom: 4px;
 	}
 
-	.schedule-item__name:hover {
+	.schedule-name:hover {
 		text-decoration: underline;
 	}
 
-	.schedule-item__time {
+	.schedule-time {
 		font-size: 12px;
-		color: var(--st-text-muted, #64748b);
+		color: #6b7280;
+		margin-top: 2px;
 	}
 
-	/* WordPress: .link-list - Quick Links section */
-	.link-list {
+	.quick-links {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.link-list li {
+	.quick-links li {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		padding: 8px 0;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid #f3f4f6;
 	}
 
-	.link-list li:last-child {
+	.quick-links li:last-child {
 		border-bottom: none;
 	}
 
 	.link-arrow {
-		color: var(--st-primary, #0984ae);
+		color: #0984ae;
 		font-weight: 700;
-		font-size: 16px;
-	}
-
-	.link-list a {
-		color: var(--st-primary, #0984ae);
-		text-decoration: none;
 		font-size: 14px;
-		transition: color 0.15s ease;
 	}
 
-	.link-list a:hover {
+	.quick-links a {
+		color: #0984ae;
+		font-size: 14px;
+		text-decoration: none;
+	}
+
+	.quick-links a:hover {
 		text-decoration: underline;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   BOOTSTRAP GRID UTILITIES
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	[class*="col-"] {
-		width: 100%;
-	}
-
-	@media (min-width: 576px) {
-		.col-sm-6 {
-			width: 50%;
-		}
-	}
-
-	@media (min-width: 992px) {
-		.col-lg-3 {
-			width: 25%;
-		}
-	}
-
-	@media (min-width: 1200px) {
-		.col-xl-4 {
-			width: 33.333333%;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	@media (max-width: 1200px) {
+		.updates-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
 	@media (max-width: 992px) {
-		.dashboard__content {
+		.dashboard-content {
 			flex-direction: column;
 		}
 
-		.dashboard__content-sidebar {
+		.dashboard-sidebar {
+			width: 100%;
+		}
+
+		.weekly-watchlist {
+			flex-direction: column;
+		}
+
+		.watchlist-image {
 			width: 100%;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.dashboard__header {
-			padding: 16px;
+		.breadcrumb,
+		.dashboard-header,
+		.dashboard-content {
+			padding-left: 16px;
+			padding-right: 16px;
 		}
 
-		.dashboard__page-title {
-			font-size: 24px;
+		.dashboard-header__title {
+			font-size: 22px;
 		}
 
-		.dashboard__nav-secondary {
-			padding: 0 16px;
+		.updates-grid {
+			grid-template-columns: 1fr;
 		}
 
-		.dashboard__content {
-			padding: 16px;
-		}
-
-		.dashboard__content-section {
-			padding: 16px;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   REDUCED MOTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media (prefers-reduced-motion: reduce) {
-		.action-card,
-		.video-card,
-		.resource-item,
-		.btn-tradingroom,
-		.nav-item a {
-			transition: none;
-		}
-
-		.video-card__play {
-			opacity: 1;
-			transform: translate(-50%, -50%);
+		.video-title {
+			font-size: 28px;
 		}
 	}
 </style>
