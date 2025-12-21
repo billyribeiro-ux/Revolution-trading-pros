@@ -443,15 +443,16 @@
 		background: rgba(255,255,255,0.3);
 	}
 
-	/* WordPress EXACT: Desktop state (min-width 1280px) - no footer, full height */
+	/* WordPress EXACT: Desktop state (min-width 1280px) */
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-primary {
 			display: block;
 			position: static;
 			opacity: 1;
 			visibility: visible;
-			bottom: 0; /* Full height on desktop - no footer */
-			min-height: 100vh;
+			bottom: 0;
+			min-height: auto; /* Let parent determine height - stops at footer */
+			height: 100%; /* Fill parent container only */
 		}
 	}
 
@@ -481,7 +482,8 @@
 			position: relative;
 			opacity: 1;
 			visibility: visible;
-			min-height: 100vh;
+			min-height: auto; /* Let parent determine height */
+			height: 100%;
 			flex-shrink: 0;
 		}
 

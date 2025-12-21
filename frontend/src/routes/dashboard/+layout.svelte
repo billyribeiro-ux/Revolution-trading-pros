@@ -311,6 +311,7 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD SIDEBAR (WordPress EXACT: .dashboard__sidebar)
+	   Sidebar ends where footer starts - does NOT extend into footer
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar {
@@ -318,6 +319,7 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		flex-shrink: 0;
+		align-self: stretch; /* Match height of content, not extend into footer */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -327,7 +329,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-width: 0;
-		min-height: 100vh;
+		min-height: auto; /* Content determines height, stops at footer */
 		background-color: var(--dashboard-bg);
 	}
 
