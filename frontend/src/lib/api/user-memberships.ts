@@ -48,13 +48,14 @@ export interface UserMembership {
 	status: MembershipStatus;
 	membershipType?: MembershipSubscriptionType;
 	icon?: string;
-	startDate: string;
+	startDate?: string;
 	nextBillingDate?: string;
 	expiresAt?: string;
 	price?: number;
 	interval?: BillingInterval;
 	daysUntilExpiry?: number;
 	accessUrl?: string;
+	roomLabel?: string;
 	features?: string[];
 }
 
