@@ -332,6 +332,11 @@
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
 		scrollbar-color: rgba(255,255,255,0.2) transparent;
+		/* Ensure visibility on desktop by default */
+		display: block;
+		opacity: 1;
+		visibility: visible;
+		flex-shrink: 0;
 	}
 
 	.dashboard__nav-secondary::-webkit-scrollbar {
@@ -491,10 +496,14 @@
 
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-secondary {
+			/* WordPress EXACT: Desktop - visible, positioned in flex layout */
 			display: block;
-			position: static;
+			position: relative;
 			opacity: 1;
 			visibility: visible;
+			width: 220px;
+			min-height: 100vh;
+			flex-shrink: 0;
 		}
 	}
 
@@ -509,14 +518,15 @@
 			visibility: hidden;
 			transition: all 0.3s ease-in-out;
 		}
+	}
 
+	/* WordPress EXACT: Show secondary nav when mobile menu is open (mobile only) */
+	/* Using :global() to match parent component's class */
+	@media screen and (max-width: 1279px) {
 		:global(.dashboard--menu-open) .dashboard__nav-secondary {
 			opacity: 1;
 			visibility: visible;
 		}
-
-		/* WordPress EXACT: When secondary nav is visible, primary is always collapsed (60px) */
-		/* The parent layout handles collapsing primary nav when secondary is shown */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

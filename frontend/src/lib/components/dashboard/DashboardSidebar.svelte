@@ -470,14 +470,29 @@
 	.dashboard__nav-primary.is-collapsed {
 		width: 60px;
 		transition: width 0.2s ease-in-out;
+		overflow: visible; /* Allow hover expansion to show */
 	}
 
 	/* WordPress EXACT: Expand on hover to show names */
 	@media screen and (min-width: 1280px) {
+		/* Collapsed state - ensure it's visible and properly positioned */
+		.dashboard__nav-primary.is-collapsed {
+			display: block;
+			position: relative;
+			opacity: 1;
+			visibility: visible;
+			min-height: 100vh;
+			flex-shrink: 0;
+		}
+
 		.dashboard__nav-primary.is-collapsed:hover {
 			width: var(--sidebar-width);
 			box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
-			z-index: 100015;
+			z-index: 100020;
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
 		}
 
 		/* Show profile name on hover */
