@@ -641,7 +641,7 @@
 		padding: 0 20px 0 80px;
 		color: var(--sidebar-text);
 		text-decoration: none;
-		font-weight: 300;
+		font-weight: 400;
 		font-size: 15px;
 		transition: var(--sidebar-transition);
 	}
