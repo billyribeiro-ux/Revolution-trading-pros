@@ -443,6 +443,8 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   PRIMARY NAVIGATION (WordPress EXACT: .dashboard__nav-primary)
+	   On mobile: fixed position, ends where toggle footer starts (bottom: 50px)
+	   On desktop: static position, full height
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-primary {
@@ -451,7 +453,7 @@
 		font-size: 16px;
 		background-color: var(--sidebar-bg-primary);
 		position: fixed;
-		bottom: var(--toggle-height);
+		bottom: var(--toggle-height); /* Ends where the full-width footer starts */
 		left: 0;
 		top: 0;
 		opacity: 0;
@@ -483,14 +485,15 @@
 		background: rgba(255,255,255,0.3);
 	}
 
-	/* WordPress EXACT: Desktop state (min-width 1280px) */
+	/* WordPress EXACT: Desktop state (min-width 1280px) - no footer, full height */
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-primary {
 			display: block;
 			position: static;
 			opacity: 1;
 			visibility: visible;
-			bottom: auto;
+			bottom: 0; /* Full height on desktop - no footer */
+			min-height: 100vh;
 		}
 	}
 

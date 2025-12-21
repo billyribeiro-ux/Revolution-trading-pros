@@ -290,6 +290,7 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD TOGGLE FOOTER (WordPress EXACT: .dashboard__toggle)
+	   Full-width footer at bottom - sidebar ends where this starts
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__toggle {
@@ -299,7 +300,7 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		z-index: 100010;
+		z-index: 100011; /* Above sidebar (100010) so footer is on top */
 	}
 
 	/* WordPress EXACT: .dashboard__toggle-button */
