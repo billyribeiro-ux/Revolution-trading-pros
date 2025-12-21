@@ -407,30 +407,58 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES (WordPress Reference)
+	   CSS CUSTOM PROPERTIES (WordPress EXACT)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
 		--sidebar-bg-primary: #0f2d41;
-		--sidebar-bg-secondary: #153e59;
+		--sidebar-toggle-bg: #0d2532;
 		--sidebar-bg-hover: rgba(255, 255, 255, 0.05);
 		--sidebar-text: hsla(0, 0%, 100%, 0.5);
 		--sidebar-text-active: #fff;
 		--sidebar-accent: #0984ae;
-		--sidebar-accent-hover: #076787;
 		--sidebar-icon-color: #8796A0;
 		--sidebar-transition: all 0.15s ease-in-out;
+		--sidebar-width: 280px;
+		--toggle-height: 50px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PRIMARY NAVIGATION (WordPress: .dashboard__nav-primary)
+	   PRIMARY NAVIGATION (WordPress EXACT: .dashboard__nav-primary)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-primary {
-		display: block;
-		padding: 30px;
+		width: var(--sidebar-width);
+		padding-bottom: 30px;
 		font-size: 16px;
-		width: 100%;
+		background-color: var(--sidebar-bg-primary);
+		position: fixed;
+		bottom: var(--toggle-height);
+		left: 0;
+		top: 0;
+		opacity: 0;
+		visibility: hidden;
+		overflow-x: hidden;
+		overflow-y: auto;
+		z-index: 100010;
+		transition: all 0.3s ease-in-out;
+	}
+
+	/* WordPress EXACT: Desktop state (min-width 1280px) */
+	@media screen and (min-width: 1280px) {
+		.dashboard__nav-primary {
+			display: block;
+			position: static;
+			opacity: 1;
+			visibility: visible;
+			bottom: auto;
+		}
+	}
+
+	/* WordPress EXACT: Mobile open state */
+	:global(.dashboard--menu-open) .dashboard__nav-primary {
+		opacity: 1;
+		visibility: visible;
 	}
 
 	.dashboard__nav-primary ul {
@@ -446,16 +474,17 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PROFILE SECTION (WordPress: .dashboard__profile-nav-item)
+	   PROFILE SECTION (WordPress EXACT: .dashboard__profile-nav-item)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__profile-nav-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		height: 50px;
-		margin-top: 20px;
-		margin-bottom: 30px;
+		display: block;
+		position: relative;
+		height: auto;
+		line-height: 1.4;
+		padding-top: 32px;
+		padding-bottom: 28px;
+		padding-left: 76px;
 		text-decoration: none;
 		transition: var(--sidebar-transition);
 	}
@@ -466,21 +495,23 @@
 
 	/* WordPress EXACT: .dashboard__profile-photo */
 	.dashboard__profile-photo {
-		width: 32px;
-		height: 32px;
+		position: absolute;
+		top: 50%;
+		left: 30px;
+		margin-top: -17px;
+		width: 34px;
+		height: 34px;
+		border: 2px solid #fff;
 		border-radius: 50%;
-		background-size: cover;
+		background-size: 32px;
 		background-position: center;
 		background-repeat: no-repeat;
-		flex-shrink: 0;
+		transition: var(--sidebar-transition);
 	}
 
 	/* Lighter blue highlight when on account section */
 	.dashboard__profile-nav-item.is-account-active {
 		background: rgba(9, 132, 174, 0.15);
-		border-radius: 8px;
-		padding: 10px 12px;
-		margin: 20px -12px 30px;
 	}
 
 	.dashboard__profile-nav-item.is-account-active .dashboard__profile-name {
@@ -532,26 +563,26 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN LINKS (WordPress: .dash_main_links)
+	   MAIN LINKS (WordPress EXACT: .dash_main_links)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dash_main_links {
-		margin-bottom: 10px;
+		margin: 0;
+		padding: 0;
 	}
 
 	.dash_main_links li {
-		margin-bottom: 2px;
+		margin: 0;
+		padding: 0;
 	}
 
 	.dash_main_links a {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 10px 12px;
+		display: block;
+		position: relative;
+		padding: 15px 30px 15px 76px;
 		color: var(--sidebar-text);
 		text-decoration: none;
-		border-radius: 8px;
-		font-weight: 300;
+		font-weight: 400;
 		font-size: 15px;
 		transition: var(--sidebar-transition);
 	}
@@ -566,7 +597,6 @@
 		color: var(--sidebar-text-active);
 		background: var(--sidebar-accent);
 		border-left: 3px solid #5bc0de;
-		margin-left: -3px;
 	}
 
 	.dash_main_links a:focus-visible {
@@ -575,33 +605,33 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CATEGORY HEADERS (WordPress: .dashboard__nav-category)
+	   CATEGORY HEADERS (WordPress EXACT: .dashboard__nav-category)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-category {
-		color: var(--sidebar-text-active);
 		font-weight: 700;
+		padding: 30px 30px 0;
+		color: #fff;
+		text-transform: uppercase;
 		font-size: 11px;
 		letter-spacing: 0.5px;
-		text-transform: uppercase;
-		margin: 25px 0 10px;
-		padding: 0 12px;
-		opacity: 0.7;
+		margin: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   NAV ITEM ICONS (WordPress: .dashboard__nav-item-icon)
+	   NAV ITEM ICONS (WordPress EXACT: .dashboard__nav-item-icon)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-item-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
+		position: absolute;
+		top: 50%;
+		left: 30px;
+		margin-top: -16px;
+		width: 32px;
+		height: 32px;
+		font-size: 32px;
+		line-height: 32px;
 		color: var(--sidebar-icon-color);
-		font-size: 18px;
-		flex-shrink: 0;
 		transition: var(--sidebar-transition);
 	}
 
@@ -617,8 +647,8 @@
 	.dashboard__nav-item-icon.st-icon-settings::before,
 	.dashboard__nav-item-icon.st-icon-logout::before,
 	.dashboard__nav-item-icon.st-icon-chart::before {
-		font-size: 20px;
-		line-height: 24px;
+		font-size: 24px;
+		line-height: 32px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

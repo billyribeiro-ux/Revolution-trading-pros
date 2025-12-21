@@ -21,7 +21,6 @@
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
-	import MobileToggle from '$lib/components/dashboard/MobileToggle.svelte';
 	import type { Snippet } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -139,10 +138,10 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if $isAuthenticated || $authStore.isInitializing}
-	<!-- WordPress: .dashboard (root container) -->
+	<!-- WordPress EXACT: .dashboard (root container) -->
 	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
-		<!-- WordPress: .dashboard__sidebar (aside) -->
+		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, and overlay -->
 		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen}>
 			<DashboardSidebar
 				{memberships}
@@ -152,9 +151,39 @@
 				{userEmail}
 				{userAvatar}
 			/>
+
+			<!-- WordPress EXACT: .dashboard__toggle (footer inside sidebar) -->
+			<footer class="dashboard__toggle">
+				<button
+					class="dashboard__toggle-button"
+					onclick={toggleSidebar}
+					data-toggle-dashboard-menu
+					aria-label={isSidebarOpen ? 'Close Dashboard Menu' : 'Open Dashboard Menu'}
+					aria-expanded={isSidebarOpen}
+				>
+					<div class="dashboard__toggle-button-icon">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<span class="framework__toggle-button-label">Dashboard Menu</span>
+				</button>
+			</footer>
+
+			<!-- WordPress EXACT: .dashboard__overlay (inside sidebar) -->
+			<div
+				class="dashboard__overlay"
+				class:is-visible={isSidebarOpen}
+				onclick={closeSidebar}
+				onkeydown={(e) => e.key === 'Enter' && closeSidebar()}
+				role="button"
+				tabindex={isSidebarOpen ? 0 : -1}
+				aria-label="Close navigation"
+				data-toggle-dashboard-menu
+			></div>
 		</aside>
 
-		<!-- WordPress: .dashboard__main -->
+		<!-- WordPress EXACT: .dashboard__main -->
 		<main class="dashboard__main" aria-label="Dashboard content">
 			{#if isLoading}
 				<div class="dashboard-loading" aria-busy="true" aria-label="Loading dashboard">
@@ -173,26 +202,6 @@
 				{@render children()}
 			{/if}
 		</main>
-
-		<!-- WordPress: .dashboard__overlay -->
-		{#if isSidebarOpen}
-			<button
-				class="dashboard__overlay"
-				onclick={closeSidebar}
-				aria-label="Close navigation"
-				tabindex="-1"
-				data-toggle-dashboard-menu
-			></button>
-		{/if}
-
-		<!-- WordPress: .dashboard__toggle (footer positioned) -->
-		<footer class="dashboard__toggle">
-			<MobileToggle
-				bind:isOpen={isSidebarOpen}
-				onToggle={toggleSidebar}
-				position="left"
-			/>
-		</footer>
 	</div>
 {:else}
 	<div class="dashboard-loading" aria-busy="true">
@@ -210,61 +219,49 @@
 	   CSS CUSTOM PROPERTIES (WordPress Reference)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* WordPress EXACT: CSS Custom Properties */
 	:root {
 		--dashboard-bg: #f4f4f4;
 		--dashboard-sidebar-bg: #0f2d41;
+		--dashboard-toggle-bg: #0d2532;
 		--dashboard-sidebar-width: 280px;
-		--dashboard-header-height: 80px;
-		--dashboard-content-min-height: calc(100vh - var(--dashboard-header-height));
-		--dashboard-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		--dashboard-toggle-height: 50px;
+		--dashboard-transition: all 0.3s ease-in-out;
 		--loading-color: #0984ae;
 		--error-color: #ef4444;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD ROOT (WordPress: .dashboard)
+	   DASHBOARD ROOT (WordPress EXACT: .dashboard)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard {
 		display: flex;
 		flex-flow: row nowrap;
-		min-height: 100vh;
-		background: var(--dashboard-bg);
-		position: relative;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD SIDEBAR (WordPress: .dashboard__sidebar)
+	   DASHBOARD SIDEBAR (WordPress EXACT: .dashboard__sidebar)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar {
-		flex: 0 0 var(--dashboard-sidebar-width);
-		width: var(--dashboard-sidebar-width);
-		background-color: var(--dashboard-sidebar-bg);
-		min-height: 100vh;
-		position: sticky;
-		top: 0;
-		z-index: 100;
-		transition: var(--dashboard-transition);
-		overflow-y: auto;
-		overflow-x: hidden;
+		display: flex;
+		flex: 0 0 auto;
+		flex-flow: row nowrap;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD MAIN (WordPress: .dashboard__main)
+	   DASHBOARD MAIN (WordPress EXACT: .dashboard__main)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__main {
 		flex: 1 1 auto;
-		width: calc(100% - var(--dashboard-sidebar-width));
-		min-height: var(--dashboard-content-min-height);
-		background: var(--dashboard-bg);
-		position: relative;
-		transition: var(--dashboard-transition);
+		min-width: 0;
+		background-color: var(--dashboard-bg);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD OVERLAY (WordPress: .dashboard__overlay)
+	   DASHBOARD OVERLAY (WordPress EXACT: .dashboard__overlay)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__overlay {
@@ -277,11 +274,14 @@
 		z-index: 100009;
 		border: none;
 		cursor: pointer;
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-		transition: opacity 0.3s ease-in-out;
-		display: none;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+	}
+
+	.dashboard__overlay.is-visible {
+		opacity: 1;
+		visibility: visible;
 	}
 
 	.dashboard__overlay:focus {
@@ -289,16 +289,75 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD TOGGLE FOOTER (WordPress: .dashboard__toggle)
+	   DASHBOARD TOGGLE FOOTER (WordPress EXACT: .dashboard__toggle)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__toggle {
-		display: none;
+		background-color: var(--dashboard-toggle-bg);
+		height: var(--dashboard-toggle-height);
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		right: 0;
-		z-index: 100008;
+		z-index: 100010;
+	}
+
+	/* WordPress EXACT: .dashboard__toggle-button */
+	.dashboard__toggle-button {
+		background: none;
+		color: #fff;
+		height: var(--dashboard-toggle-height);
+		padding: 0 20px 0 60px;
+		position: relative;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+	}
+
+	/* WordPress EXACT: .dashboard__toggle-button-icon (hamburger) */
+	.dashboard__toggle-button-icon {
+		position: absolute;
+		top: 50%;
+		left: 20px;
+		margin-top: -9px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 24px;
+		height: 18px;
+	}
+
+	.dashboard__toggle-button-icon span {
+		display: block;
+		width: 100%;
+		height: 2px;
+		background: #fff;
+		border-radius: 1px;
+		transition: var(--dashboard-transition);
+	}
+
+	/* Animate to X when open */
+	.dashboard--menu-open .dashboard__toggle-button-icon span:nth-child(1) {
+		transform: translateY(8px) rotate(45deg);
+	}
+
+	.dashboard--menu-open .dashboard__toggle-button-icon span:nth-child(2) {
+		opacity: 0;
+	}
+
+	.dashboard--menu-open .dashboard__toggle-button-icon span:nth-child(3) {
+		transform: translateY(-8px) rotate(-45deg);
+	}
+
+	/* WordPress EXACT: .framework__toggle-button-label */
+	.framework__toggle-button-label {
+		font-size: 14px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -391,48 +450,28 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - MOBILE (WordPress Reference: max-width 980px)
+	   RESPONSIVE - DESKTOP (WordPress EXACT: min-width 1280px)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 980px) {
-		.dashboard__sidebar {
-			position: fixed;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			width: 70%;
-			max-width: 280px;
-			transform: translateX(-100%);
-			opacity: 0;
-			visibility: hidden;
-			z-index: 100010;
-		}
-
-		.dashboard__sidebar.is-open {
-			transform: translateX(0);
-			opacity: 1;
-			visibility: visible;
-		}
-
-		.dashboard__main {
-			width: 100%;
-			padding-bottom: 70px; /* Space for mobile toggle */
-		}
-
-		.dashboard__overlay {
-			display: block;
-		}
-
+	@media screen and (min-width: 1280px) {
+		/* Hide toggle on desktop */
 		.dashboard__toggle {
-			display: block;
+			display: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - MOBILE (WordPress EXACT: below 1280px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 1279px) {
+		.dashboard__main {
+			padding-bottom: var(--dashboard-toggle-height);
 		}
 	}
 
 	@media screen and (max-width: 480px) {
-		.dashboard__sidebar {
-			width: 85%;
-			max-width: none;
-		}
+		/* Mobile-specific adjustments if needed */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -455,6 +494,8 @@
 		.dashboard__sidebar,
 		.dashboard__main,
 		.dashboard__overlay,
+		.dashboard__toggle-button,
+		.dashboard__toggle-button-icon span,
 		.loading-spinner {
 			transition: none;
 			animation: none;
