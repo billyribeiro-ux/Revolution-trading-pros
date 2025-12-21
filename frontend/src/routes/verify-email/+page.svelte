@@ -134,9 +134,7 @@
 			{:else if status === 'expired' || status === 'error' || status === 'no-token'}
 				<div class="text-center">
 					<div
-						class="mx-auto flex h-20 w-20 items-center justify-center rounded-full"
-						class:bg-yellow-500/20={status === 'expired'}
-						class:bg-red-500/20={status === 'error' || status === 'no-token'}
+						class="mx-auto flex h-20 w-20 items-center justify-center rounded-full {status === 'expired' ? 'bg-yellow-500/20' : 'bg-red-500/20'}"
 					>
 						{#if status === 'expired'}
 							<IconMail class="h-10 w-10 text-yellow-400" />
