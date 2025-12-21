@@ -35,6 +35,8 @@
 		isMobileOpen?: boolean;
 		onCloseMobile?: () => void;
 		userName?: string;
+		userEmail?: string;
+		userAvatar?: string;
 		subscriptionInfo?: SubscriptionInfo;
 	}
 
@@ -47,8 +49,20 @@
 		isMobileOpen = $bindable(false),
 		onCloseMobile,
 		userName = 'My Account',
+		userEmail = '',
+		userAvatar = '',
 		subscriptionInfo
 	}: Props = $props();
+
+	// Generate gravatar URL from email if no avatar provided
+	function getGravatarUrl(email: string): string {
+		if (!email) return '';
+		// Simple hash for gravatar - in production use proper MD5
+		const hash = email.toLowerCase().trim();
+		return `https://secure.gravatar.com/avatar/${hash}?s=32&d=mm&r=g`;
+	}
+
+	const profilePhotoUrl = $derived(userAvatar || (userEmail ? getGravatarUrl(userEmail) : ''));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPER FUNCTIONS
@@ -162,6 +176,7 @@
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     PROFILE SECTION (WordPress: .dashboard__profile-nav-item)
+	     Simpler Trading EXACT structure with photo and name
 	     ═══════════════════════════════════════════════════════════════════════ -->
 	<a
 		href="/dashboard/account"
@@ -169,6 +184,9 @@
 		class:is-account-active={isAccountSection}
 		aria-current={isAccountSection ? 'page' : undefined}
 	>
+		{#if profilePhotoUrl}
+			<span class="dashboard__profile-photo" style="background-image: url({profilePhotoUrl});"></span>
+		{/if}
 		<span class="dashboard__profile-name">{userName}</span>
 	</a>
 
@@ -444,6 +462,17 @@
 
 	.dashboard__profile-nav-item:hover .dashboard__profile-name {
 		color: var(--sidebar-text-active);
+	}
+
+	/* WordPress EXACT: .dashboard__profile-photo */
+	.dashboard__profile-photo {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		flex-shrink: 0;
 	}
 
 	/* Lighter blue highlight when on account section */
