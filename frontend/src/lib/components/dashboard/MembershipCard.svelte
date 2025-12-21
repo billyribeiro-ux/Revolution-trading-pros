@@ -232,11 +232,10 @@
 
 	.mem_div {
 		white-space: normal;
-		width: calc(100% - 60px);
+		width: calc(100% - 43px);
 		font-size: 17px;
 		font-family: 'Open Sans', system-ui, sans-serif;
 		line-height: 1.3;
-		margin-left: 12px;
 	}
 
 	.membership-card__icon {
