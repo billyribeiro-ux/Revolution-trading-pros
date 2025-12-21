@@ -246,13 +246,13 @@
 			<li class:is-active={isActive('/dashboard/courses')}>
 				<a href="/dashboard/courses">
 					<span class="dashboard__nav-item-icon"><IconVideo size={24} /></span>
-					<span class="dashboard__nav-item-text">My Classes</span>
+					<span class="dashboard__nav-item-text" style="font-weight:bold;color:white;">My Classes</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/indicators')}>
 				<a href="/dashboard/indicators">
 					<span class="dashboard__nav-item-icon"><IconChartCandle size={24} /></span>
-					<span class="dashboard__nav-item-text">My Indicators</span>
+					<span class="dashboard__nav-item-text" style="font-weight:bold;color:white;">My Indicators</span>
 				</a>
 			</li>
 		</ul>

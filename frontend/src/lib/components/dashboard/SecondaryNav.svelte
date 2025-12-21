@@ -26,8 +26,8 @@
 	import IconVideo from '@tabler/icons-svelte/icons/video'; // st-icon-daily-videos
 	import IconBook from '@tabler/icons-svelte/icons/book'; // st-icon-learning-center
 	import IconArchive from '@tabler/icons-svelte/icons/archive'; // st-icon-chatroom-archive
-	import IconUsers from '@tabler/icons-svelte/icons/users'; // st-icon-forum (Meet the Traders)
-	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag'; // st-icon-training-room (Trader Store)
+	import IconUsers from '@tabler/icons-svelte/icons/users'; // st-icon-forum (Meet the Traders, Trader Store)
+	import IconBuildingStore from '@tabler/icons-svelte/icons/building-store'; // st-icon-training-room (Simpler Showcase)
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -166,21 +166,31 @@
 			{
 				href: '#',
 				label: 'Trader Store',
-				icon: IconShoppingBag, // st-icon-forum (same icon in WP)
+				icon: IconUsers, // st-icon-forum (WordPress uses same icon as Meet the Traders)
 				cursorDefault: true,
 				children: [
-					{ href: `${basePath}/john-carter/trader-store`, label: 'John Carter', noIcon: true },
+					// WordPress EXACT URLs: /trader-name/trader-name-trader-store/
+					{ href: `${basePath}/john-carter/john-carter-trader-store`, label: 'John Carter', noIcon: true },
 					{ href: `${basePath}/henry-gambell/trader-store`, label: 'Henry Gambell', noIcon: true },
-					{ href: `${basePath}/taylor-horton/trader-store`, label: 'Taylor Horton', noIcon: true },
-					{ href: `${basePath}/bruce-marshall/trader-store`, label: 'Bruce Marshall', noIcon: true },
-					{ href: `${basePath}/danielle-shay/trader-store`, label: 'Danielle Shay', noIcon: true },
-					{ href: `${basePath}/allison-ostrander/trader-store`, label: 'Allison Ostrander', noIcon: true },
-					{ href: `${basePath}/sam-shames/trader-store`, label: 'Sam Shames', noIcon: true },
-					{ href: `${basePath}/kody-ashmore/trader-store`, label: 'Kody Ashmore', noIcon: true },
-					{ href: `${basePath}/raghee-horner/trader-store`, label: 'Raghee Horner', noIcon: true }
+					{ href: `${basePath}/taylor-horton/taylor-horton-trader-store`, label: 'Taylor Horton', noIcon: true },
+					{ href: `${basePath}/bruce-marshall/bruce-marshall-trader-store`, label: 'Bruce Marshall', noIcon: true },
+					{ href: `${basePath}/danielle-shay/danielle-shay-trader-store`, label: 'Danielle Shay', noIcon: true },
+					{ href: `${basePath}/allison-ostrander/allison-ostrander-trader-store`, label: 'Allison Ostrander', noIcon: true },
+					{ href: `${basePath}/sam-shames/sam-shames-trader-store`, label: 'Sam Shames', noIcon: true },
+					{ href: `${basePath}/kody-ashmore/kody-ashmore-trader-store`, label: 'Kody Ashmore', noIcon: true },
+					{ href: `${basePath}/raghee-horner/raghee-horner-trader-store`, label: 'Raghee Horner', noIcon: true }
 				]
 			}
 		];
+
+		// Simpler Trading EXACT: Add Simpler Showcase link for mastering-the-trade membership
+		if (membershipSlug === 'mastering-the-trade') {
+			items.push({
+				href: '/dashboard/simpler-showcase',
+				label: 'Simpler Showcase',
+				icon: IconBuildingStore // st-icon-training-room
+			});
+		}
 
 		return items;
 	});
@@ -388,12 +398,12 @@
 		background: var(--secondary-active-bg);
 	}
 
-	/* Active indicator bar (WordPress EXACT - right border) */
-	.dashboard__nav-secondary > ul > li.is-active > a::after {
+	/* Active indicator bar (Simpler Trading EXACT - LEFT border) */
+	.dashboard__nav-secondary > ul > li.is-active > a::before {
 		content: '';
 		position: absolute;
 		top: 0;
-		right: 0;
+		left: 0;
 		bottom: 0;
 		width: 4px;
 		background-color: var(--secondary-accent);
