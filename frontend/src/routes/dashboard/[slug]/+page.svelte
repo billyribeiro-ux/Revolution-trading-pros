@@ -999,51 +999,320 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE - LARGE DESKTOP (1280px+)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1200px) {
+	@media (min-width: 1280px) {
 		.updates-grid {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	@media (max-width: 992px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - DESKTOP (992px - 1279px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: 1279px) and (min-width: 992px) {
+		.updates-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.watchlist-image {
+			width: 260px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - TABLET (768px - 991px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: 991px) and (min-width: 768px) {
 		.dashboard-content {
 			flex-direction: column;
+			gap: 20px;
 		}
 
 		.dashboard-sidebar {
 			width: 100%;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 20px;
+		}
+
+		.sidebar-section {
+			margin-bottom: 0;
+		}
+
+		.updates-grid {
+			grid-template-columns: repeat(2, 1fr);
 		}
 
 		.weekly-watchlist {
-			flex-direction: column;
+			flex-direction: row;
+			align-items: center;
 		}
 
 		.watchlist-image {
-			width: 100%;
+			width: 280px;
+			flex-shrink: 0;
 		}
 	}
 
-	@media (max-width: 768px) {
-		.breadcrumb,
-		.dashboard-header,
-		.dashboard-content {
-			padding-left: 16px;
-			padding-right: 16px;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - MOBILE (< 768px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: 767px) {
+		.breadcrumb {
+			padding: 10px 16px;
+			font-size: 11px;
+		}
+
+		.breadcrumb ol {
+			gap: 6px;
+		}
+
+		.dashboard-header {
+			padding: 16px;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+		}
+
+		.dashboard-header__left {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 10px;
+			width: 100%;
 		}
 
 		.dashboard-header__title {
 			font-size: 22px;
 		}
 
-		.updates-grid {
-			grid-template-columns: 1fr;
+		.dashboard-header__right {
+			width: 100%;
+			align-items: stretch;
+		}
+
+		.btn-enter-room {
+			width: 100%;
+			text-align: center;
+			padding: 14px 20px;
+		}
+
+		.trading-rules {
+			text-align: left;
+			max-width: 100%;
+		}
+
+		.dashboard-content {
+			flex-direction: column;
+			padding: 16px;
+			gap: 16px;
+		}
+
+		.dashboard-sidebar {
+			width: 100%;
+		}
+
+		.sidebar-section {
+			margin-bottom: 16px;
+		}
+
+		.featured-video {
+			margin-bottom: 20px;
+		}
+
+		.video-wrapper {
+			border-radius: 6px;
+		}
+
+		.video-placeholder {
+			padding: 20px;
 		}
 
 		.video-title {
-			font-size: 28px;
+			font-size: 24px;
+		}
+
+		.video-branding {
+			font-size: 12px;
+		}
+
+		.latest-updates {
+			margin-bottom: 20px;
+		}
+
+		.section-title {
+			font-size: 20px;
+			margin-bottom: 16px;
+		}
+
+		.updates-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+
+		.video-card__thumbnail {
+			aspect-ratio: 16 / 9;
+		}
+
+		.video-card__content {
+			padding: 14px;
+		}
+
+		.video-card__title {
+			font-size: 15px;
+		}
+
+		.weekly-watchlist {
+			flex-direction: column;
+			padding: 20px;
+			gap: 20px;
+		}
+
+		.watchlist-image {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+		}
+
+		.watchlist-title {
+			font-size: 18px;
+		}
+
+		.schedule-item {
+			padding: 12px 0;
+		}
+
+		.schedule-name {
+			font-size: 15px;
+		}
+
+		.schedule-time {
+			font-size: 13px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - SMALL MOBILE (< 375px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: 374px) {
+		.dashboard-header__title {
+			font-size: 20px;
+		}
+
+		.new-badge {
+			font-size: 11px;
+			padding: 5px 10px;
+		}
+
+		.btn-enter-room {
+			font-size: 13px;
+			padding: 12px 16px;
+		}
+
+		.video-title {
+			font-size: 20px;
+		}
+
+		.section-title {
+			font-size: 18px;
+		}
+
+		.video-card__title {
+			font-size: 14px;
+		}
+
+		.trader-name {
+			font-size: 18px;
+		}
+
+		.watchlist-trader-name {
+			font-size: 20px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TOUCH DEVICE OPTIMIZATIONS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (hover: none) and (pointer: coarse) {
+		.btn-enter-room,
+		.new-badge,
+		.video-card__link,
+		.watchlist-link,
+		.schedule-name,
+		.quick-links a {
+			min-height: 44px;
+			display: inline-flex;
+			align-items: center;
+		}
+
+		.video-card {
+			-webkit-tap-highlight-color: transparent;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LANDSCAPE MOBILE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-height: 500px) and (orientation: landscape) {
+		.dashboard-content {
+			padding: 12px;
+		}
+
+		.featured-video {
+			margin-bottom: 16px;
+		}
+
+		.video-wrapper {
+			max-height: 50vh;
+		}
+
+		.video-placeholder {
+			padding: 16px;
+		}
+
+		.video-title {
+			font-size: 20px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   REDUCED MOTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.video-card,
+		.btn-enter-room,
+		.new-badge,
+		.video-card__link,
+		.watchlist-link,
+		.schedule-name,
+		.quick-links a,
+		.trading-rules__link {
+			transition: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HIGH CONTRAST MODE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-contrast: high) {
+		.video-card {
+			border: 2px solid #1f2937;
+		}
+
+		.btn-enter-room {
+			border: 2px solid #fff;
+		}
+
+		.sidebar-section {
+			border: 1px solid #1f2937;
 		}
 	}
 </style>
