@@ -88,13 +88,16 @@
 	);
 	const membershipName = $derived(currentMembership?.name || '');
 
-	// Sidebar should be collapsed when in account or membership section
-	const isSidebarCollapsed = $derived(isAccountSection || isMembershipSection);
+	// Sidebar should be collapsed ONLY for account section
+	// Membership pages have horizontal tabs so they don't need collapsed sidebar
+	const isSidebarCollapsed = $derived(isAccountSection);
 
 	// Determine which secondary nav section to show
+	// Only account section shows the vertical secondary nav panel
+	// Membership pages have their own horizontal nav tabs
 	const secondaryNavSection = $derived.by((): 'account' | 'membership' | null => {
 		if (isAccountSection) return 'account';
-		if (isMembershipSection) return 'membership';
+		// NO secondary nav for membership - it uses horizontal tabs in the page
 		return null;
 	});
 
