@@ -4,12 +4,22 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * 100% EXACT match to Simpler Trading WordPress structure
+	 * Uses Tabler SVG icons (StIcons font not available)
 	 *
-	 * @version 6.0.0 (Simpler Trading EXACT / December 2025)
+	 * @version 7.0.0 (SVG Icons / December 2025)
 	 */
 
-	import '$lib/styles/st-icons.css';
 	import { enterTradingRoom } from '$lib/api/trading-room-sso';
+
+	// Tabler SVG Icons
+	import IconBrain from '@tabler/icons-svelte/icons/brain';
+	import IconUser from '@tabler/icons-svelte/icons/user';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconFlame from '@tabler/icons-svelte/icons/flame';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -79,20 +89,6 @@
 	// Is this the Simpler Showcase card (needs special icon styling)
 	const isShowcase = $derived(slug === 'simpler-showcase');
 
-	// Icon class based on slug
-	const iconClass = $derived.by(() => {
-		const iconMap: Record<string, string> = {
-			'mastering-the-trade': 'st-icon-mastering-the-trade',
-			'simpler-showcase': 'st-icon-simpler-showcase',
-			'ww': 'st-icon-trade-of-the-week',
-			'moxie': 'st-icon-moxie'
-		};
-		return iconMap[slug] || `st-icon-${slug}`;
-	});
-
-	// Icon size class
-	const iconSizeClass = $derived(slug === 'ww' || type === 'ww' ? 'icon--md' : 'icon--lg');
-
 	// Dashboard URL
 	const finalDashboardUrl = $derived(dashboardUrl || `/dashboard/${slug}`);
 
@@ -152,7 +148,23 @@
 		<a href={finalDashboardUrl} class="membership-card__header">
 			<span class="mem_icon">
 				<span class="membership-card__icon" class:simpler-showcase-icon={isShowcase}>
-					<span class="icon {iconSizeClass} {iconClass}"></span>
+					{#if slug === 'mastering-the-trade'}
+						<IconBrain size={28} stroke={1.5} />
+					{:else if slug === 'simpler-showcase'}
+						<IconUser size={28} stroke={1.5} />
+					{:else if slug === 'ww' || type === 'ww'}
+						<IconSettings size={24} stroke={1.5} />
+					{:else if slug === 'moxie' || type === 'moxie'}
+						<IconFlame size={28} stroke={1.5} />
+					{:else if type === 'course'}
+						<IconBook size={28} stroke={1.5} />
+					{:else if type === 'indicator'}
+						<IconChartCandle size={28} stroke={1.5} />
+					{:else if type === 'alert'}
+						<IconBell size={28} stroke={1.5} />
+					{:else}
+						<IconUsers size={28} stroke={1.5} />
+					{/if}
 				</span>
 			</span>
 			<span class="mem_div">{name}</span>
@@ -266,22 +278,15 @@
 		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
 	}
 
-	/* Icon inside */
-	.icon {
-		font-family: 'StIcons', system-ui, sans-serif;
-		font-style: normal;
-		font-weight: normal;
+	/* SVG Icons inside */
+	.membership-card__icon :global(svg) {
 		color: #fff;
+		stroke: currentColor;
 	}
 
-	.icon--lg {
-		font-size: 24px;
-		line-height: 24px;
-	}
-
-	.icon--md {
-		font-size: 20px;
-		line-height: 20px;
+	/* Simpler Showcase icon color override */
+	.membership-card__icon.simpler-showcase-icon :global(svg) {
+		color: #f99e31;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
