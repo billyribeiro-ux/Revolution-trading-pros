@@ -442,6 +442,27 @@
 		overflow-y: auto;
 		z-index: 100010;
 		transition: all 0.3s ease-in-out;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(255,255,255,0.2) transparent;
+	}
+
+	/* WordPress EXACT: Custom scrollbar for webkit browsers */
+	.dashboard__nav-primary::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.dashboard__nav-primary::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.dashboard__nav-primary::-webkit-scrollbar-thumb {
+		background: rgba(255,255,255,0.2);
+		border-radius: 3px;
+	}
+
+	.dashboard__nav-primary::-webkit-scrollbar-thumb:hover {
+		background: rgba(255,255,255,0.3);
 	}
 
 	/* WordPress EXACT: Desktop state (min-width 1280px) */
@@ -484,9 +505,14 @@
 		line-height: 1.4;
 		padding-top: 32px;
 		padding-bottom: 28px;
-		padding-left: 76px;
+		padding-left: 80px;
+		padding-right: 20px;
 		text-decoration: none;
 		transition: var(--sidebar-transition);
+	}
+
+	.dashboard__profile-nav-item:hover {
+		background: var(--sidebar-bg-hover);
 	}
 
 	.dashboard__profile-nav-item:hover .dashboard__profile-name {
@@ -509,6 +535,11 @@
 		transition: var(--sidebar-transition);
 	}
 
+	/* WordPress EXACT: Profile photo hover - border changes to cyan */
+	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+		border-color: var(--sidebar-accent);
+	}
+
 	/* Lighter blue highlight when on account section */
 	.dashboard__profile-nav-item.is-account-active {
 		background: rgba(9, 132, 174, 0.15);
@@ -516,6 +547,10 @@
 
 	.dashboard__profile-nav-item.is-account-active .dashboard__profile-name {
 		color: #5bc0de;
+	}
+
+	.dashboard__profile-nav-item.is-account-active .dashboard__profile-photo {
+		border-color: var(--sidebar-accent);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -576,31 +611,50 @@
 		padding: 0;
 	}
 
+	/* WordPress EXACT: Link styles - height 50px, flex, padding 0 20px 0 80px */
 	.dash_main_links a {
-		display: block;
+		display: flex;
+		align-items: center;
 		position: relative;
-		padding: 15px 30px 15px 76px;
+		height: 50px;
+		padding: 0 20px 0 80px;
 		color: var(--sidebar-text);
 		text-decoration: none;
-		font-weight: 400;
+		font-weight: 300;
 		font-size: 15px;
+		transition: var(--sidebar-transition);
+	}
+
+	/* WordPress EXACT: ::after pseudo-element for active indicator */
+	.dash_main_links a::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 5px;
+		background: transparent;
+		transform: scaleX(1);
+		transform-origin: 100% 50%;
 		transition: var(--sidebar-transition);
 	}
 
 	.dash_main_links a:hover {
 		color: var(--sidebar-text-active);
-		background: var(--sidebar-bg-hover);
 	}
 
-	/* WordPress EXACT: Active state with cyan background */
+	/* WordPress EXACT: Active state with cyan right border indicator */
 	.dash_main_links li.is-active a {
 		color: var(--sidebar-text-active);
+	}
+
+	.dash_main_links li.is-active a::after {
 		background-color: var(--sidebar-accent);
 	}
 
 	.dash_main_links a:focus-visible {
 		outline: 2px solid var(--sidebar-accent);
-		outline-offset: 2px;
+		outline-offset: -2px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -631,21 +685,28 @@
 		font-size: 32px;
 		line-height: 32px;
 		color: var(--sidebar-icon-color);
+		transform: scale(1);
 		transition: var(--sidebar-transition);
 	}
 
-	.dash_main_links a:hover .dashboard__nav-item-icon,
+	/* WordPress EXACT: Icon hover - scale and color change */
+	.dash_main_links a:hover .dashboard__nav-item-icon {
+		color: var(--sidebar-text-active);
+		transform: scale(0.95);
+	}
+
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
 		color: var(--sidebar-text-active);
 	}
 
-	/* StIcon specific styles */
+	/* StIcon specific styles - smaller icons for some types */
 	.dashboard__nav-item-icon.st-icon-home::before,
 	.dashboard__nav-item-icon.st-icon-learning-center::before,
 	.dashboard__nav-item-icon.st-icon-handle-stick::before,
 	.dashboard__nav-item-icon.st-icon-settings::before,
 	.dashboard__nav-item-icon.st-icon-logout::before,
-	.dashboard__nav-item-icon.st-icon-chart::before {
+	.dashboard__nav-item-icon.st-icon-chart::before,
+	.dashboard__nav-item-icon.st-icon-support::before {
 		font-size: 24px;
 		line-height: 32px;
 	}
