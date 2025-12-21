@@ -152,7 +152,13 @@
 		<li class="nav-item">
 			<a href="/dashboard/{slug}">
 				<span class="st-icon-dashboard nav-icon"></span>
-				<span class="nav-text">Dashboard</span>
+				<span class="nav-text">{slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} Dashboard</span>
+			</a>
+		</li>
+		<li class="nav-item">
+			<a href="/dashboard/{slug}/daily-videos">
+				<span class="st-icon-daily-videos nav-icon"></span>
+				<span class="nav-text">Premium Daily Videos</span>
 			</a>
 		</li>
 		<li class="nav-item">
@@ -164,7 +170,7 @@
 		<li class="nav-item is-active">
 			<a href="/dashboard/{slug}/archive">
 				<span class="st-icon-chatroom-archive nav-icon"></span>
-				<span class="nav-text">Video Archive</span>
+				<span class="nav-text">Trading Room Archives</span>
 			</a>
 		</li>
 	</ul>
