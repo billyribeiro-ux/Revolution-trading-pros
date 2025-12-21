@@ -1,30 +1,36 @@
 <script lang="ts">
 	/**
-	 * Membership Dashboard Page - EXACT Match to Screenshot
+	 * Membership Dashboard Page - WordPress EXACT Clone
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Layout:
-	 * - Header with title, "New? Start Here", "Enter a Trading Room" button
-	 * - Horizontal secondary nav tabs
-	 * - Main content with Quick Access, Recent Videos, Resources
-	 * - Right sidebar with Schedule and Quick Links
+	 * Matches frontend/dashboardmasteringthetrade EXACTLY:
+	 * - Header with title, "New? Start Here", Trading Room Rules, Enter a Trading Room dropdown
+	 * - Video player section
+	 * - "Latest Updates" with 6 article cards
+	 * - "Weekly Watchlist" section
+	 * - Right sidebar: Trading Room Schedule + Quick Links
 	 *
-	 * @version 3.0.0 (December 2025)
+	 * @version 4.0.0 (WordPress EXACT - December 2025)
 	 */
 
 	import { page } from '$app/stores';
 
-	// Tabler Icons
-	import IconHome from '@tabler/icons-svelte/icons/home';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconBook from '@tabler/icons-svelte/icons/book';
-	import IconArchive from '@tabler/icons-svelte/icons/archive';
-	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
-	import IconMessage from '@tabler/icons-svelte/icons/message';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DROPDOWN STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let dropdownOpen = $state(false);
+
+	function toggleDropdown() {
+		dropdownOpen = !dropdownOpen;
+	}
+
+	function handleClickOutside(event: MouseEvent) {
+		const target = event.target as HTMLElement;
+		if (!target.closest('.dropdown')) {
+			dropdownOpen = false;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ROUTE PARAMS
@@ -39,168 +45,117 @@
 	interface MembershipDetail {
 		name: string;
 		slug: string;
-		tradingRoomUrl: string;
-		description: string;
 	}
 
 	const membershipData = $derived.by((): MembershipDetail => {
 		const memberships: Record<string, MembershipDetail> = {
 			'mastering-the-trade': {
 				name: 'Mastering the Trade',
-				slug: 'mastering-the-trade',
-				tradingRoomUrl: 'https://chat.protradingroom.com',
-				description: 'Live trading room with professional traders sharing real-time analysis and trade ideas.'
+				slug: 'mastering-the-trade'
 			},
 			'simpler-showcase': {
 				name: 'Simpler Showcase',
-				slug: 'simpler-showcase',
-				tradingRoomUrl: 'https://chat.protradingroom.com/simpler-showcase',
-				description: 'Watch our traders showcase their strategies and trade setups in real-time.'
+				slug: 'simpler-showcase'
 			}
 		};
 
 		return memberships[slug] || {
 			name: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-			slug,
-			tradingRoomUrl: `/trading-room/${slug}`,
-			description: 'Access your membership dashboard and resources.'
+			slug
 		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// SECONDARY NAV TABS
+	// TRADING ROOMS (WordPress EXACT - dropdown items)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const currentPath = $derived($page.url.pathname);
-
-	const navTabs = $derived([
+	const tradingRooms = [
 		{
-			href: `/dashboard/${slug}`,
-			label: `${membershipData.name} Dashboard`,
-			icon: IconHome,
-			isActive: currentPath === `/dashboard/${slug}`
+			name: 'Mastering The Trade Room',
+			href: 'https://chat.protradingroom.com',
+			icon: 'st-icon-mastering-the-trade'
 		},
 		{
-			href: `/dashboard/${slug}/daily-videos`,
-			label: 'Premium Daily Videos',
-			icon: IconVideo,
-			isActive: currentPath.includes('/daily-videos')
-		},
-		{
-			href: `/dashboard/${slug}/learning-center`,
-			label: 'Learning Center',
-			icon: IconBook,
-			isActive: currentPath.includes('/learning-center')
-		},
-		{
-			href: `/dashboard/${slug}/trading-room-archive`,
-			label: 'Trading Room Archives',
-			icon: IconArchive,
-			isActive: currentPath.includes('/trading-room-archive')
-		},
-		{
-			href: membershipData.tradingRoomUrl,
-			label: 'Trading Room',
-			icon: IconExternalLink,
-			isExternal: true,
-			isActive: false
+			name: 'Simpler Showcase Room',
+			href: 'https://chat.protradingroom.com/simpler-showcase',
+			icon: 'st-icon-simpler-showcase'
 		}
-	]);
+	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// QUICK ACCESS CARDS
+	// LATEST UPDATES (WordPress EXACT - 6 article cards)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const quickAccessCards = $derived([
-		{
-			title: 'Enter Trading Room',
-			subtitle: 'Join the live room',
-			href: membershipData.tradingRoomUrl,
-			icon: IconPlayerPlay,
-			color: 'teal',
-			isExternal: true
-		},
-		{
-			title: 'Learning Center',
-			subtitle: 'Courses & tutorials',
-			href: `/dashboard/${slug}/learning-center`,
-			icon: IconBook,
-			color: 'default'
-		},
-		{
-			title: 'Video Archive',
-			subtitle: 'Past recordings',
-			href: `/dashboard/${slug}/trading-room-archive`,
-			icon: IconArchive,
-			color: 'default'
-		},
-		{
-			title: 'Community',
-			subtitle: 'Join Discord',
-			href: 'https://discord.gg/simplertrading',
-			icon: IconMessage,
-			color: 'default',
-			isExternal: true
-		}
-	]);
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// RECENT VIDEOS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	const recentVideos = [
+	const latestUpdates = [
 		{
 			id: 1,
-			title: 'Mastering the Trade - Morning Analysis',
-			date: 'Dec 6, 2025',
-			duration: '1:23:45',
-			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'
+			type: 'Daily Video',
+			title: 'Holiday Weekend Market Review',
+			date: 'December 19, 2025 with Sam',
+			description: 'Indexes continue to churn sideways as we approach next week\'s holiday trade. Bulls usually take over in low volume. Can they do it again?',
+			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg',
+			href: '/daily/mastering-the-trade/holiday-weekend-market-review'
 		},
 		{
 			id: 2,
-			title: 'Mastering the Trade - Trade Breakdown',
-			date: 'Dec 5, 2025',
-			duration: '45:30',
-			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'
+			type: 'Trading Room Archive',
+			title: 'December 19, 2025',
+			date: 'December 19, 2025',
+			description: 'With Henry Gambell',
+			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			href: '/chatroom-archive/mastering-the-trade/12192025'
 		},
 		{
 			id: 3,
-			title: 'Mastering the Trade - Weekly Recap',
-			date: 'Dec 4, 2025',
-			duration: '58:12',
-			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'
+			type: 'Daily Video',
+			title: 'Ho Ho Whoa!',
+			date: 'December 18, 2025 with Bruce Marshall',
+			description: 'In this video, Bruce discusses today\'s market action and the outlook for the end of the year. After CPI this morning, we got a nice bounce and relief rally after a long and messy chop phase since Thanksgiving.',
+			thumbnail: 'https://cdn.simplertrading.com/2025/04/07135027/SimplerCentral_BM.jpg',
+			href: '/daily/mastering-the-trade/ho-ho-whoa'
+		},
+		{
+			id: 4,
+			type: 'Trading Room Archive',
+			title: 'December 18, 2025',
+			date: 'December 18, 2025',
+			description: 'With Henry Gambell',
+			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			href: '/chatroom-archive/mastering-the-trade/12182025'
+		},
+		{
+			id: 5,
+			type: 'Daily Video',
+			title: 'A Moment For The VIX',
+			date: 'December 17, 2025 with HG',
+			description: 'Today\'s action in stocks wasn\'t just out of the blue. We\'d been seeing weakness across the board, but it really came through today after the VIX expiration.',
+			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			href: '/daily/mastering-the-trade/a-moment-for-the-vix'
+		},
+		{
+			id: 6,
+			type: 'Trading Room Archive',
+			title: 'December 17, 2025',
+			date: 'December 17, 2025',
+			description: 'With John F. Carter',
+			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			href: '/chatroom-archive/mastering-the-trade/12172025'
 		}
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// RESOURCES
+	// WEEKLY WATCHLIST (WordPress EXACT)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const resources = [
-		{
-			title: 'Trading Room Rules',
-			href: 'https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf',
-			icon: IconBook
-		},
-		{
-			title: 'Getting Started Guide',
-			href: `/dashboard/${slug}/getting-started`,
-			icon: IconChevronRight
-		},
-		{
-			title: 'Platform Setup',
-			href: '/tutorials/platform-setup',
-			icon: IconDownload
-		},
-		{
-			title: 'Community Discord',
-			href: 'https://discord.gg/simplertrading',
-			icon: IconMessage
-		}
-	];
+	const weeklyWatchlist = {
+		title: 'Weekly Watchlist with Allison Ostrander',
+		date: 'Week of December 15, 2025.',
+		href: '/watchlist/12152025-allison-ostrander',
+		image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg'
+	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// TRADING ROOM SCHEDULE
+	// TRADING ROOM SCHEDULE (WordPress EXACT - Google Calendar API data)
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const schedule = [
@@ -215,7 +170,7 @@
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// QUICK LINKS
+	// QUICK LINKS (WordPress EXACT)
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const quickLinks = [
@@ -230,156 +185,158 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<!-- Close dropdown when clicking outside -->
+<svelte:window onclick={handleClickOutside} />
+
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     HEADER
+     HEADER - WordPress EXACT: .dashboard__header
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<header class="membership-header">
-	<div class="header-left">
-		<h1 class="page-title">{membershipData.name} Dashboard</h1>
-	</div>
-	<div class="header-right">
-		<a href="/dashboard/{slug}/getting-started" class="new-link">New? Start Here</a>
-		<a href={membershipData.tradingRoomUrl} class="btn-trading-room" target="_blank" rel="nofollow">
-			Enter a Trading Room
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">{membershipData.name} Dashboard</h1>
+		<a href="/dashboard/{slug}/start-here" class="btn btn-xs btn-default">
+			New? Start Here
 		</a>
+	</div>
+
+	<div class="dashboard__header-right">
+		<!-- Trading Room Rules - WordPress EXACT -->
+		<ul class="ultradingroom">
+			<li class="litradingroom">
+				<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link trading-rules-link">
+					Trading Room Rules
+				</a>
+			</li>
+			<li class="litradingroomhint">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</li>
+		</ul>
+
+		<!-- Enter a Trading Room Dropdown - WordPress EXACT -->
+		<div class="dropdown display-inline-block">
+			<button
+				class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+				onclick={toggleDropdown}
+				aria-expanded={dropdownOpen}
+			>
+				<strong>Enter a Trading Room</strong>
+			</button>
+
+			<nav class="dropdown-menu dropdown-menu--full-width" class:show={dropdownOpen}>
+				<ul class="dropdown-menu__menu">
+					{#each tradingRooms as room (room.name)}
+						<li>
+							<a href={room.href} target="_blank" rel="nofollow">
+								<span class="{room.icon} icon icon--md"></span>
+								{room.name}
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</nav>
+		</div>
 	</div>
 </header>
 
-<div class="trading-rules-bar">
-	<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="trading-rules-link">
-		Trading Room Rules
-	</a>
-	<span class="trading-rules-text">
-		By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-	</span>
-</div>
-
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SECONDARY NAV TABS (Horizontal)
+     MAIN CONTENT - WordPress EXACT: .dashboard__content
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<nav class="secondary-nav-tabs">
-	{#each navTabs as tab (tab.href)}
-		<a
-			href={tab.href}
-			class="nav-tab"
-			class:is-active={tab.isActive}
-			target={tab.isExternal ? '_blank' : undefined}
-			rel={tab.isExternal ? 'nofollow' : undefined}
-		>
-			<svelte:component this={tab.icon} size={18} />
-			<span>{tab.label}</span>
-			{#if tab.isExternal}
-				<IconExternalLink size={14} class="external-icon" />
-			{/if}
-		</a>
-	{/each}
-</nav>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MAIN CONTENT WITH SIDEBAR
-     ═══════════════════════════════════════════════════════════════════════════ -->
-
-<div class="content-wrapper">
-	<main class="main-content">
-		<!-- Description -->
-		<p class="membership-description">{membershipData.description}</p>
-
-		<!-- Quick Access -->
-		<section class="section">
-			<h2 class="section-title">Quick Access</h2>
-			<div class="quick-access-grid">
-				{#each quickAccessCards as card (card.title)}
-					<a
-						href={card.href}
-						class="quick-access-card"
-						class:is-teal={card.color === 'teal'}
-						target={card.isExternal ? '_blank' : undefined}
-						rel={card.isExternal ? 'nofollow' : undefined}
-					>
-						<div class="card-icon">
-							<svelte:component this={card.icon} size={32} />
-						</div>
-						<div class="card-content">
-							<h3 class="card-title">{card.title}</h3>
-							<p class="card-subtitle">{card.subtitle}</p>
-						</div>
-					</a>
-				{/each}
-			</div>
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<!-- Video Player Section - WordPress EXACT -->
+		<section class="dashboard__content-section-member">
+			<video
+				controls
+				width="100%"
+				poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg"
+				style="aspect-ratio: 2 / 1;"
+			>
+				<source src="https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4" type="video/mp4" />
+				Your browser does not support the video tag.
+			</video>
 		</section>
 
-		<!-- Recent Videos -->
-		<section class="section">
-			<h2 class="section-title">Recent Videos</h2>
-			<div class="videos-grid">
-				{#each recentVideos as video (video.id)}
-					<a href="/dashboard/{slug}/daily-videos/{video.id}" class="video-card">
-						<div class="video-thumbnail" style="background-image: url({video.thumbnail});">
-							<div class="play-button">
-								<IconPlayerPlay size={24} />
+		<!-- Latest Updates Section - WordPress EXACT -->
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Latest Updates</h2>
+			<div class="article-cards row flex-grid">
+				{#each latestUpdates as video (video.id)}
+					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+						<article class="article-card">
+							<figure class="article-card__image" style="background-image: url({video.thumbnail});">
+								<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt={video.title} />
+							</figure>
+							{#if video.type === 'Daily Video'}
+								<div class="article-card__type">
+									<span class="label label--info">Daily Video</span>
+								</div>
+							{/if}
+							<h4 class="h5 article-card__title">
+								<a href={video.href}>{video.title}</a>
+							</h4>
+							<span class="article-card__meta"><small>{video.date}</small></span>
+							<div class="article-card__excerpt">
+								<p>{video.description}</p>
 							</div>
-							<span class="video-duration">{video.duration}</span>
-						</div>
-						<h4 class="video-title">{video.title}</h4>
-						<p class="video-date">
-							<IconCalendar size={14} />
-							{video.date}
-						</p>
-					</a>
+							<a href={video.href} class="btn btn-tiny btn-default">Watch Now</a>
+						</article>
+					</div>
 				{/each}
 			</div>
-			<a href="/dashboard/{slug}/daily-videos" class="view-all-link">
-				View All Videos <IconChevronRight size={16} />
-			</a>
 		</section>
 
-		<!-- Resources -->
-		<section class="section resources-section">
-			<h2 class="section-title">Resources</h2>
-			<ul class="resources-list">
-				{#each resources as resource (resource.title)}
-					<li>
-						<a href={resource.href} class="resource-link" target={resource.href.startsWith('http') ? '_blank' : undefined}>
-							<svelte:component this={resource.icon} size={18} />
-							<span>{resource.title}</span>
-							<IconChevronRight size={16} class="chevron" />
+		<!-- Weekly Watchlist Section - WordPress EXACT -->
+		<div class="dashboard__content-section u--background-color-white">
+			<section>
+				<div class="row">
+					<div class="col-sm-6 col-lg-5">
+						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+						<div class="watchlist-mobile-image">
+							<a href={weeklyWatchlist.href}>
+								<img src={weeklyWatchlist.image} alt="Weekly Watchlist image" class="u--border-radius" />
+							</a>
+						</div>
+						<h4 class="h5 u--font-weight-bold">{weeklyWatchlist.title}</h4>
+						<div class="watchlist-date">
+							<p>{weeklyWatchlist.date}</p>
+						</div>
+						<a href={weeklyWatchlist.href} class="btn btn-tiny btn-default">Watch Now</a>
+					</div>
+					<div class="col-sm-6 col-lg-7 watchlist-desktop-image">
+						<a href={weeklyWatchlist.href}>
+							<img src={weeklyWatchlist.image} alt="Weekly Watchlist image" class="u--border-radius" />
 						</a>
-					</li>
-				{/each}
-			</ul>
-		</section>
-	</main>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
 
-	<!-- Right Sidebar -->
-	<aside class="right-sidebar">
-		<!-- Schedule -->
-		<section class="sidebar-section">
-			<h3 class="sidebar-title">{membershipData.name.toUpperCase()} SCHEDULE</h3>
-			<p class="schedule-note">Schedule is subject to change.</p>
-			<ul class="schedule-list">
+	<!-- Right Sidebar - WordPress EXACT: .dashboard__content-sidebar -->
+	<aside class="dashboard__content-sidebar">
+		<!-- Trading Room Schedule -->
+		<section class="content-sidebar__section">
+			<h4 class="content-sidebar__heading">
+				Trading Room Schedule
+				<p class="pssubject">Schedule is subject to change.</p>
+			</h4>
+			<div class="room-sched">
 				{#each schedule as item (item.traderName + item.dateTime)}
-					<li class="schedule-item">
-						<a href="/traders/{item.traderName.toLowerCase().replace(/ /g, '-')}" class="trader-name">
-							{item.traderName}
-						</a>
-						<span class="schedule-time">{item.dateTime}</span>
-					</li>
+					<h4>{item.traderName}</h4>
+					<span>{item.dateTime}</span>
 				{/each}
-			</ul>
+			</div>
 		</section>
 
 		<!-- Quick Links -->
-		<section class="sidebar-section">
-			<h3 class="sidebar-title">QUICK LINKS</h3>
-			<ul class="quick-links-list">
+		<section class="content-sidebar__section">
+			<h4 class="content-sidebar__heading">Quick Links</h4>
+			<ul class="link-list">
 				{#each quickLinks as link (link.title)}
 					<li>
-						<a href={link.href} target="_blank">
-							<IconChevronRight size={14} />
-							{link.title}
-						</a>
+						<a href={link.href} target="_blank">{link.title}</a>
 					</li>
 				{/each}
 			</ul>
@@ -387,156 +344,213 @@
 	</aside>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES - WordPress EXACT CSS
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   HEADER
+	   HEADER - WordPress EXACT: .dashboard__header
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.membership-header {
+	.dashboard__header {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		padding: 20px 30px;
 		background: #fff;
 		border-bottom: 1px solid #e5e7eb;
+		flex-wrap: wrap;
+		gap: 16px;
 	}
 
-	.page-title {
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	.dashboard__page-title {
 		font-size: 24px;
 		font-weight: 600;
 		color: #1f2937;
 		margin: 0;
 	}
 
-	.header-right {
+	.dashboard__header-right {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 20px;
+		flex-wrap: wrap;
 	}
 
-	.new-link {
-		color: #0984ae;
-		font-size: 14px;
-		font-weight: 500;
-		text-decoration: none;
+	/* Trading Room Rules - WordPress EXACT */
+	.ultradingroom {
+		text-align: right;
+		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
 
-	.new-link:hover {
-		text-decoration: underline;
-	}
-
-	.btn-trading-room {
-		display: inline-block;
-		padding: 10px 20px;
-		background: #f99e31;
-		color: #fff;
-		font-size: 14px;
-		font-weight: 600;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: background 0.15s ease;
-	}
-
-	.btn-trading-room:hover {
-		background: #e8890f;
-	}
-
-	/* Trading Rules Bar */
-	.trading-rules-bar {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		gap: 10px;
-		padding: 8px 30px;
-		background: #fff;
-		border-bottom: 1px solid #e5e7eb;
-		font-size: 11px;
+	.litradingroom {
+		margin-bottom: 4px;
 	}
 
 	.trading-rules-link {
+		font-weight: 700 !important;
 		color: #0984ae;
-		font-weight: 600;
 		text-decoration: none;
 	}
 
-	.trading-rules-text {
+	.litradingroomhint {
+		font-size: 11px;
 		color: #6b7280;
+		max-width: 200px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECONDARY NAV TABS
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.secondary-nav-tabs {
-		display: flex;
-		gap: 0;
-		padding: 0 30px;
-		background: #fff;
-		border-bottom: 1px solid #e5e7eb;
-		overflow-x: auto;
-	}
-
-	.nav-tab {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 16px 20px;
-		color: #6b7280;
-		font-size: 14px;
-		font-weight: 500;
+	/* Buttons - WordPress EXACT */
+	.btn {
+		display: inline-block;
+		padding: 6px 12px;
+		font-size: 12px;
+		font-weight: 400;
+		line-height: 1.5;
+		text-align: center;
 		text-decoration: none;
-		border-bottom: 2px solid transparent;
-		white-space: nowrap;
+		border-radius: 4px;
+		cursor: pointer;
 		transition: all 0.15s ease;
 	}
 
-	.nav-tab:hover {
+	.btn-xs {
+		padding: 4px 8px;
+		font-size: 11px;
+	}
+
+	.btn-default {
+		background: #f3f4f6;
+		color: #374151;
+		border: 1px solid #d1d5db;
+	}
+
+	.btn-default:hover {
+		background: #e5e7eb;
+	}
+
+	.btn-link {
+		background: transparent;
+		border: none;
+		padding: 0;
+	}
+
+	.btn-orange {
+		background: #f99e31;
+		color: #fff;
+		border: none;
+	}
+
+	.btn-orange:hover {
+		background: #e8890f;
+	}
+
+	.btn-tiny {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+
+	/* Dropdown - WordPress EXACT */
+	.dropdown {
+		position: relative;
+	}
+
+	.display-inline-block {
+		display: inline-block;
+	}
+
+	.dropdown-toggle {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 4px;
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 4px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		min-width: 260px;
+		z-index: 1000;
+	}
+
+	.dropdown-menu.show {
+		display: block;
+	}
+
+	.dropdown-menu__menu {
+		list-style: none;
+		margin: 0;
+		padding: 8px 0;
+	}
+
+	.dropdown-menu__menu li a {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 16px;
+		color: #374151;
+		text-decoration: none;
+		font-size: 14px;
+		transition: background 0.15s ease;
+	}
+
+	.dropdown-menu__menu li a:hover {
+		background: #f3f4f6;
 		color: #0984ae;
 	}
 
-	.nav-tab.is-active {
-		color: #0984ae;
-		border-bottom-color: #0984ae;
-	}
-
-	.nav-tab :global(.external-icon) {
-		opacity: 0.5;
+	/* Icon placeholders */
+	.icon--md {
+		width: 20px;
+		height: 20px;
+		display: inline-block;
+		background: #0984ae;
+		border-radius: 50%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTENT WRAPPER
+	   CONTENT - WordPress EXACT: .dashboard__content
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.content-wrapper {
+	.dashboard__content {
 		display: flex;
 		gap: 30px;
 		padding: 30px;
 		background: #f4f4f4;
-		min-height: calc(100vh - 200px);
 	}
 
-	.main-content {
+	.dashboard__content-main {
 		flex: 1;
 		min-width: 0;
 	}
 
-	.membership-description {
-		color: #4b5563;
-		font-size: 14px;
-		line-height: 1.6;
-		margin: 0 0 30px;
+	.dashboard__content-section-member {
+		margin-bottom: 30px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECTIONS
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.section {
-		background: #fff;
+	.dashboard__content-section-member video {
+		width: 100%;
 		border-radius: 8px;
-		padding: 24px;
-		margin-bottom: 24px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		background: #0a1628;
+	}
+
+	.dashboard__content-section {
+		margin-bottom: 30px;
 	}
 
 	.section-title {
@@ -544,222 +558,212 @@
 		font-weight: 600;
 		color: #1f2937;
 		margin: 0 0 20px;
+	}
+
+	/* Article Cards Grid - WordPress EXACT */
+	.article-cards {
+		display: flex;
+		flex-wrap: wrap;
+		margin: -10px;
+	}
+
+	.flex-grid-item {
+		padding: 10px;
+	}
+
+	.col-xs-12 { width: 100%; }
+
+	@media (min-width: 576px) {
+		.col-sm-6 { width: 50%; }
+	}
+
+	@media (min-width: 768px) {
+		.col-md-6 { width: 50%; }
+	}
+
+	@media (min-width: 1200px) {
+		.col-xl-4 { width: 33.333%; }
+	}
+
+	/* Article Card - WordPress EXACT */
+	.article-card {
+		background: #fff;
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.article-card__image {
+		position: relative;
+		aspect-ratio: 16 / 9;
+		background-size: cover;
+		background-position: center;
+		margin: 0;
+	}
+
+	.article-card__image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+	}
+
+	.article-card__type {
+		padding: 12px 16px 0;
+	}
+
+	.label {
+		display: inline-block;
+		padding: 2px 8px;
+		font-size: 10px;
+		font-weight: 600;
+		text-transform: uppercase;
+		border-radius: 4px;
+	}
+
+	.label--info {
+		background: #0984ae;
+		color: #fff;
+	}
+
+	.article-card__title {
+		padding: 8px 16px 0;
+		margin: 0;
+		font-size: 16px;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.article-card__title a {
+		color: #1f2937;
+		text-decoration: none;
+	}
+
+	.article-card__title a:hover {
+		color: #0984ae;
+	}
+
+	.article-card__meta {
+		padding: 4px 16px;
+		color: #6b7280;
+		font-size: 12px;
+	}
+
+	.article-card__excerpt {
+		padding: 0 16px;
+		flex: 1;
+	}
+
+	.article-card__excerpt p {
+		font-size: 13px;
+		color: #4b5563;
+		line-height: 1.5;
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.article-card .btn {
+		margin: 12px 16px 16px;
+		align-self: flex-start;
+	}
+
+	/* Weekly Watchlist Section - WordPress EXACT */
+	.u--background-color-white {
+		background: #fff;
+		border-radius: 8px;
+		padding: 24px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	}
+
+	.section-title-alt {
+		font-size: 18px;
+		font-weight: 600;
+		color: #1f2937;
+		margin: 0 0 16px;
+	}
+
+	.section-title-alt--underline {
 		padding-bottom: 12px;
 		border-bottom: 2px solid #f99e31;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   QUICK ACCESS CARDS
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.quick-access-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 16px;
+	.u--font-weight-bold {
+		font-weight: 700;
 	}
 
-	.quick-access-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 24px 16px;
-		background: #f9fafb;
-		border: 1px solid #e5e7eb;
-		border-radius: 8px;
-		text-decoration: none;
-		text-align: center;
-		transition: all 0.15s ease;
+	.h5 {
+		font-size: 16px;
+		margin: 0 0 8px;
 	}
 
-	.quick-access-card:hover {
-		border-color: #0984ae;
-		box-shadow: 0 4px 12px rgba(9, 132, 174, 0.15);
-	}
-
-	.quick-access-card.is-teal {
-		background: linear-gradient(135deg, #0984ae 0%, #076787 100%);
-		border-color: #0984ae;
-		color: #fff;
-	}
-
-	.quick-access-card.is-teal:hover {
-		box-shadow: 0 4px 12px rgba(9, 132, 174, 0.4);
-	}
-
-	.card-icon {
-		margin-bottom: 12px;
-		color: #0984ae;
-	}
-
-	.quick-access-card.is-teal .card-icon {
-		color: #fff;
-	}
-
-	.card-title {
-		font-size: 14px;
-		font-weight: 600;
-		color: #1f2937;
-		margin: 0 0 4px;
-	}
-
-	.quick-access-card.is-teal .card-title {
-		color: #fff;
-	}
-
-	.card-subtitle {
-		font-size: 12px;
-		color: #6b7280;
-		margin: 0;
-	}
-
-	.quick-access-card.is-teal .card-subtitle {
-		color: rgba(255, 255, 255, 0.8);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEOS GRID
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.videos-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 20px;
-		margin-bottom: 20px;
-	}
-
-	.video-card {
-		text-decoration: none;
-		transition: transform 0.15s ease;
-	}
-
-	.video-card:hover {
-		transform: translateY(-4px);
-	}
-
-	.video-thumbnail {
-		position: relative;
-		aspect-ratio: 16 / 9;
-		background-color: #1f2937;
-		background-size: cover;
-		background-position: center;
-		border-radius: 8px;
-		overflow: hidden;
+	.watchlist-date {
 		margin-bottom: 12px;
 	}
 
-	.play-button {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 48px;
-		height: 48px;
-		background: rgba(9, 132, 174, 0.9);
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #fff;
-		opacity: 0;
-		transition: opacity 0.15s ease;
-	}
-
-	.video-card:hover .play-button {
-		opacity: 1;
-	}
-
-	.video-duration {
-		position: absolute;
-		bottom: 8px;
-		right: 8px;
-		background: rgba(0, 0, 0, 0.8);
-		color: #fff;
-		font-size: 12px;
-		font-weight: 500;
-		padding: 2px 6px;
-		border-radius: 4px;
-	}
-
-	.video-title {
-		font-size: 14px;
-		font-weight: 600;
-		color: #1f2937;
-		margin: 0 0 6px;
-		line-height: 1.4;
-	}
-
-	.video-date {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12px;
+	.watchlist-date p {
+		margin: 0;
 		color: #6b7280;
-		margin: 0;
-	}
-
-	.view-all-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		color: #0984ae;
 		font-size: 14px;
-		font-weight: 500;
-		text-decoration: none;
 	}
 
-	.view-all-link:hover {
-		text-decoration: underline;
+	.u--border-radius {
+		border-radius: 8px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESOURCES
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.resources-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.resources-list li {
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	.resources-list li:last-child {
-		border-bottom: none;
-	}
-
-	.resource-link {
+	.row {
 		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 16px 0;
-		color: #1f2937;
-		font-size: 14px;
-		text-decoration: none;
-		transition: color 0.15s ease;
+		flex-wrap: wrap;
+		margin: -15px;
 	}
 
-	.resource-link:hover {
-		color: #0984ae;
+	.row > div {
+		padding: 15px;
 	}
 
-	.resource-link .chevron {
-		margin-left: auto;
-		color: #9ca3af;
+	.watchlist-mobile-image {
+		display: block;
+		margin-bottom: 16px;
+	}
+
+	.watchlist-desktop-image {
+		display: none;
+	}
+
+	.watchlist-desktop-image img,
+	.watchlist-mobile-image img {
+		width: 100%;
+		height: auto;
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-5 { width: 41.666%; }
+		.col-lg-7 { width: 58.333%; }
+
+		.watchlist-mobile-image {
+			display: none;
+		}
+
+		.watchlist-desktop-image {
+			display: block;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RIGHT SIDEBAR
+	   RIGHT SIDEBAR - WordPress EXACT: .dashboard__content-sidebar
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.right-sidebar {
+	.dashboard__content-sidebar {
 		width: 280px;
 		flex-shrink: 0;
 	}
 
-	.sidebar-section {
+	.content-sidebar__section {
 		background: #fff;
 		border-radius: 8px;
 		padding: 20px;
@@ -767,77 +771,60 @@
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
-	.sidebar-title {
-		font-size: 12px;
-		font-weight: 700;
+	.content-sidebar__heading {
+		font-size: 14px;
+		font-weight: 600;
 		color: #1f2937;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
 		margin: 0 0 16px;
 	}
 
-	.schedule-note {
-		font-size: 11px;
+	.pssubject {
+		font-size: 10px;
+		margin-top: 8px;
+		text-transform: initial;
 		color: #6b7280;
-		margin: 0 0 16px;
+		font-weight: 400;
 	}
 
-	.schedule-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
+	.room-sched {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 	}
 
-	.schedule-item {
-		margin-bottom: 16px;
-	}
-
-	.schedule-item:last-child {
-		margin-bottom: 0;
-	}
-
-	.trader-name {
-		display: block;
-		color: #0984ae;
+	.room-sched h4 {
 		font-size: 14px;
 		font-weight: 500;
-		text-decoration: none;
-		margin-bottom: 2px;
+		color: #0984ae;
+		margin: 0;
 	}
 
-	.trader-name:hover {
-		text-decoration: underline;
-	}
-
-	.schedule-time {
+	.room-sched span {
 		font-size: 12px;
 		color: #6b7280;
 	}
 
-	.quick-links-list {
+	.link-list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.quick-links-list li {
+	.link-list li {
 		margin-bottom: 12px;
 	}
 
-	.quick-links-list li:last-child {
+	.link-list li:last-child {
 		margin-bottom: 0;
 	}
 
-	.quick-links-list a {
-		display: flex;
-		align-items: center;
-		gap: 6px;
+	.link-list a {
 		color: #0984ae;
 		font-size: 14px;
 		text-decoration: none;
 	}
 
-	.quick-links-list a:hover {
+	.link-list a:hover {
 		text-decoration: underline;
 	}
 
@@ -845,64 +832,33 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 1200px) {
-		.quick-access-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-
-		.videos-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
 	@media screen and (max-width: 1024px) {
-		.content-wrapper {
+		.dashboard__content {
 			flex-direction: column;
 		}
 
-		.right-sidebar {
+		.dashboard__content-sidebar {
 			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			gap: 20px;
-		}
-
-		.sidebar-section {
-			margin-bottom: 0;
 		}
 	}
 
 	@media screen and (max-width: 768px) {
-		.membership-header {
+		.dashboard__header {
 			flex-direction: column;
 			align-items: flex-start;
-			gap: 16px;
 		}
 
-		.header-right {
+		.dashboard__header-right {
 			width: 100%;
-			justify-content: space-between;
+			flex-direction: column;
 		}
 
-		.quick-access-grid {
-			grid-template-columns: 1fr;
+		.ultradingroom {
+			text-align: left;
 		}
 
-		.videos-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.right-sidebar {
-			grid-template-columns: 1fr;
-		}
-
-		.secondary-nav-tabs {
-			padding: 0 16px;
-		}
-
-		.nav-tab {
-			padding: 12px 16px;
-			font-size: 13px;
+		.litradingroomhint {
+			max-width: none;
 		}
 	}
 </style>
