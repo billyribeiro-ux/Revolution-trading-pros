@@ -61,6 +61,7 @@
 		userEmail?: string;
 		userAvatar?: string;
 		subscriptionInfo?: SubscriptionInfo;
+		isCollapsed?: boolean;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -74,7 +75,8 @@
 		userName = 'My Account',
 		userEmail = '',
 		userAvatar = '',
-		subscriptionInfo
+		subscriptionInfo,
+		isCollapsed = false
 	}: Props = $props();
 
 	// Generate gravatar URL from email if no avatar provided
@@ -183,8 +185,12 @@
      TEMPLATE - WordPress Exact Structure
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<!-- WordPress: .dashboard__nav-primary -->
-<nav class="dashboard__nav-primary" aria-label="Dashboard navigation">
+<!-- WordPress: .dashboard__nav-primary / .dashboard__nav-primary.is-collapsed -->
+<nav
+	class="dashboard__nav-primary"
+	class:is-collapsed={isCollapsed}
+	aria-label="Dashboard navigation"
+>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     PROFILE SECTION (WordPress: .dashboard__profile-nav-item)
@@ -202,59 +208,10 @@
 		<span class="dashboard__profile-name">{userName}</span>
 	</a>
 
-	{#if isAccountSection}
-		<!-- ═══════════════════════════════════════════════════════════════════════
-		     ACCOUNT NAVIGATION (When on My Account pages - Simpler Trading EXACT)
-		     ═══════════════════════════════════════════════════════════════════════ -->
-		<ul class="dash_main_links">
-			<li class:is-active={isActive('/dashboard/orders')}>
-				<a href="/dashboard/orders">
-					<span class="dashboard__nav-item-icon"><IconReceipt size={24} /></span>
-					<span class="dashboard__nav-item-text">My Orders</span>
-				</a>
-			</li>
-			<li class:is-active={isActive('/dashboard/subscriptions')}>
-				<a href="/dashboard/subscriptions">
-					<span class="dashboard__nav-item-icon"><IconCalendar size={24} /></span>
-					<span class="dashboard__nav-item-text">My Subscriptions</span>
-				</a>
-			</li>
-			<li class:is-active={isActive('/dashboard/coupons')}>
-				<a href="/dashboard/coupons">
-					<span class="dashboard__nav-item-icon"><IconDiscount size={24} /></span>
-					<span class="dashboard__nav-item-text">Coupons</span>
-				</a>
-			</li>
-			<li class:is-active={isActive('/dashboard/addresses')}>
-				<a href="/dashboard/addresses">
-					<span class="dashboard__nav-item-icon"><IconMapPin size={24} /></span>
-					<span class="dashboard__nav-item-text">Billing Address</span>
-				</a>
-			</li>
-			<li class:is-active={isActive('/dashboard/payment-methods')}>
-				<a href="/dashboard/payment-methods">
-					<span class="dashboard__nav-item-icon"><IconCreditCard size={24} /></span>
-					<span class="dashboard__nav-item-text">Payment Methods</span>
-				</a>
-			</li>
-			<li class:is-active={isActive('/dashboard/account')}>
-				<a href="/dashboard/account">
-					<span class="dashboard__nav-item-icon"><IconUser size={24} /></span>
-					<span class="dashboard__nav-item-text">Account Details</span>
-				</a>
-			</li>
-			<li>
-				<a href="/logout">
-					<span class="dashboard__nav-item-icon"><IconLogout size={24} /></span>
-					<span class="dashboard__nav-item-text">Log out</span>
-				</a>
-			</li>
-		</ul>
-	{:else}
-		<!-- ═══════════════════════════════════════════════════════════════════════
-		     MEMBER SUBSCRIPTION INFO (Simpler Trading style)
-		     ═══════════════════════════════════════════════════════════════════════ -->
-		{#if hasSubscriptionInfo}
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     MEMBER SUBSCRIPTION INFO (Simpler Trading style) - Hidden when collapsed
+	     ═══════════════════════════════════════════════════════════════════════ -->
+	{#if hasSubscriptionInfo && !isCollapsed}
 			<div class="subscription-info-box">
 				<p class="subscription-info-title">Member Subscription Info</p>
 				{#if subscriptionInfo?.nextChargeDate && subscriptionInfo?.nextChargeAmount}
@@ -416,7 +373,6 @@
 				</a>
 			</li>
 		</ul>
-	{/if}
 </nav>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -501,6 +457,76 @@
 	:global(.dashboard--menu-open) .dashboard__nav-primary {
 		opacity: 1;
 		visibility: visible;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COLLAPSED STATE (WordPress EXACT: .dashboard__nav-primary.is-collapsed)
+	   When viewing account or membership pages - shows icons only, narrow width
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__nav-primary.is-collapsed {
+		width: 60px;
+	}
+
+	/* Hide profile name when collapsed */
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		display: none;
+	}
+
+	/* Adjust profile section padding when collapsed */
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
+		padding-left: 0;
+		padding-right: 0;
+		display: flex;
+		justify-content: center;
+	}
+
+	/* Center the profile photo when collapsed */
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
+		position: relative;
+		left: auto;
+		top: auto;
+		margin-top: 0;
+	}
+
+	/* Hide nav text when collapsed */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text {
+		display: none;
+	}
+
+	/* Hide category headers when collapsed */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-category {
+		display: none;
+	}
+
+	/* Hide subscription info when collapsed */
+	.dashboard__nav-primary.is-collapsed .subscription-info-box {
+		display: none;
+	}
+
+	/* Adjust link padding to center icons when collapsed */
+	.dashboard__nav-primary.is-collapsed .dash_main_links a {
+		padding: 0;
+		justify-content: center;
+		height: 50px;
+	}
+
+	/* Center icons when collapsed */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
+		position: relative;
+		left: auto;
+		top: auto;
+		margin-top: 0;
+	}
+
+	/* WordPress EXACT: Text color in collapsed state */
+	.dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text {
+		color: var(--sidebar-accent) !important;
+	}
+
+	/* Active indicator still shows on right */
+	.dashboard__nav-primary.is-collapsed .dash_main_links li.is-active a::after {
+		background-color: var(--sidebar-accent);
 	}
 
 	.dashboard__nav-primary ul {
