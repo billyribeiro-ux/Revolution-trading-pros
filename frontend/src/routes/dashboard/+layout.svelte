@@ -22,6 +22,7 @@
 	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import SecondaryNav from '$lib/components/dashboard/SecondaryNav.svelte';
+	import { NavBar } from '$lib/components/nav';
 	import type { Snippet } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -184,6 +185,9 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if $isAuthenticated || $authStore.isInitializing}
+	<!-- Revolution Trading Pros NavBar always at top -->
+	<NavBar />
+
 	<!-- WordPress EXACT: .dashboard (root container) -->
 	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
