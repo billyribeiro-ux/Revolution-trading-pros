@@ -19,6 +19,23 @@
 	import { page } from '$app/stores';
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// DROPDOWN STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let dropdownOpen = $state(false);
+
+	function toggleDropdown() {
+		dropdownOpen = !dropdownOpen;
+	}
+
+	function handleClickOutside(event: MouseEvent) {
+		const target = event.target as HTMLElement;
+		if (!target.closest('.trading-room-dropdown')) {
+			dropdownOpen = false;
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// ROUTE PARAMS
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -192,6 +209,9 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<!-- Close dropdown when clicking outside -->
+<svelte:window onclick={handleClickOutside} />
+
 <!-- ═══════════════════════════════════════════════════════════════════════════
      BREADCRUMB - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
@@ -214,9 +234,28 @@
 		<a href="/dashboard/{slug}/getting-started" class="new-badge">New? Start Here</a>
 	</div>
 	<div class="dashboard-header__right">
-		<a href={membershipData.tradingRoomUrl} class="btn-enter-room" target="_blank" rel="nofollow">
-			Enter a Trading Room ›
-		</a>
+		<!-- WordPress EXACT: Dropdown for multiple trading rooms -->
+		<div class="trading-room-dropdown">
+			<button class="btn-enter-room" onclick={toggleDropdown}>
+				<strong>Enter a Trading Room</strong>
+			</button>
+			<nav class="dropdown-menu" class:show={dropdownOpen}>
+				<ul>
+					<li>
+						<a href="https://chat.protradingroom.com" target="_blank" rel="nofollow">
+							<span class="room-icon">◎</span>
+							Mastering The Trade Room
+						</a>
+					</li>
+					<li>
+						<a href="https://chat.protradingroom.com/simpler-showcase" target="_blank" rel="nofollow">
+							<span class="room-icon">◎</span>
+							Simpler Showcase Room
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
 		<div class="trading-rules">
 			<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="trading-rules__link">
 				Trading Room Rules
@@ -234,27 +273,17 @@
 
 <div class="dashboard-content">
 	<div class="dashboard-content__main">
-		<!-- Featured Video Player -->
+		<!-- Featured Video Player - WordPress EXACT -->
 		<section class="featured-video">
-			<div class="video-wrapper">
-				<div class="video-placeholder">
-					<div class="video-branding">
-						<span class="brand-icon">◎</span>
-						<span class="brand-text">SIMPLER</span><span class="brand-text-bold">TRADING</span><span class="brand-tm">®</span>
-					</div>
-					<h2 class="video-title">Welcome to<br/>Simpler Trading!</h2>
-				</div>
-				<div class="video-controls">
-					<button class="play-btn" aria-label="Play video">▶</button>
-					<span class="video-time">0:00 / 5:32</span>
-					<div class="video-controls-right">
-						<button aria-label="Previous">⏮</button>
-						<button aria-label="Next">⏭</button>
-						<button aria-label="Fullscreen">⛶</button>
-						<button aria-label="More">⋮</button>
-					</div>
-				</div>
-			</div>
+			<video
+				controls
+				width="100%"
+				poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg"
+				style="aspect-ratio: 2 / 1; border-radius: 8px;"
+			>
+				<source src="https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4" type="video/mp4" />
+				Your browser does not support the video tag.
+			</video>
 		</section>
 
 		<!-- Latest Updates Section -->
@@ -461,12 +490,64 @@
 		font-size: 14px;
 		font-weight: 700;
 		text-decoration: none;
+		border: none;
 		border-radius: 4px;
+		cursor: pointer;
 		transition: background 0.15s ease;
 	}
 
 	.btn-enter-room:hover {
 		background: #e8890f;
+	}
+
+	/* Trading Room Dropdown - WordPress EXACT */
+	.trading-room-dropdown {
+		position: relative;
+	}
+
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 4px;
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 4px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		min-width: 260px;
+		z-index: 100;
+	}
+
+	.dropdown-menu.show {
+		display: block;
+	}
+
+	.dropdown-menu ul {
+		list-style: none;
+		margin: 0;
+		padding: 8px 0;
+	}
+
+	.dropdown-menu li a {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 16px;
+		color: #374151;
+		text-decoration: none;
+		font-size: 14px;
+		transition: background 0.15s ease;
+	}
+
+	.dropdown-menu li a:hover {
+		background: #f3f4f6;
+		color: #0984ae;
+	}
+
+	.room-icon {
+		color: #0984ae;
+		font-size: 16px;
 	}
 
 	.trading-rules {
@@ -517,112 +598,17 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   FEATURED VIDEO
+	   FEATURED VIDEO - WordPress EXACT (native HTML5 video)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.featured-video {
 		margin-bottom: 30px;
 	}
 
-	.video-wrapper {
+	.featured-video video {
+		width: 100%;
+		display: block;
 		background: #0a1628;
-		border-radius: 8px;
-		overflow: hidden;
-		aspect-ratio: 16 / 9;
-		position: relative;
-	}
-
-	.video-placeholder {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: calc(100% - 40px);
-		color: #fff;
-		text-align: center;
-		padding: 40px;
-		background: linear-gradient(135deg, #0a1628 0%, #1a365d 100%);
-	}
-
-	.video-branding {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		font-size: 14px;
-		margin-bottom: 20px;
-		color: rgba(255, 255, 255, 0.9);
-	}
-
-	.brand-icon {
-		font-size: 18px;
-		color: #0984ae;
-	}
-
-	.brand-text {
-		font-weight: 300;
-	}
-
-	.brand-text-bold {
-		font-weight: 700;
-	}
-
-	.brand-tm {
-		font-size: 10px;
-		vertical-align: super;
-	}
-
-	.video-title {
-		font-family: 'Open Sans Condensed', 'Arial Narrow', sans-serif;
-		font-size: 42px;
-		font-weight: 300;
-		line-height: 1.2;
-		margin: 0;
-	}
-
-	.video-controls {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 8px 16px;
-		background: #1a1a1a;
-		color: #fff;
-		font-size: 12px;
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-	}
-
-	.play-btn {
-		background: none;
-		border: none;
-		color: #fff;
-		font-size: 16px;
-		cursor: pointer;
-		padding: 4px 8px;
-	}
-
-	.video-time {
-		color: #9ca3af;
-	}
-
-	.video-controls-right {
-		margin-left: auto;
-		display: flex;
-		gap: 8px;
-	}
-
-	.video-controls-right button {
-		background: none;
-		border: none;
-		color: #9ca3af;
-		font-size: 14px;
-		cursor: pointer;
-		padding: 4px;
-	}
-
-	.video-controls-right button:hover {
-		color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
