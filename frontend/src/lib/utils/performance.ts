@@ -11,9 +11,10 @@
  */
 
 // API URL for analytics - use Fly.io backend in production
+// NOTE: No /api suffix - endpoints already include /api prefix
 const API_BASE = import.meta.env.DEV 
-	? '/api' 
-	: (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev/api');
+	? '' 
+	: (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev');
 
 export interface PerformanceMetric {
 	name: string;

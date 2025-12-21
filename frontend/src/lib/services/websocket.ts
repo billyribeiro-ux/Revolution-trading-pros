@@ -309,8 +309,9 @@ class WebSocketService {
 	}
 }
 
-// Create singleton instance
-const wsUrl = browser ? `ws://${window.location.host}/ws` : '';
+// Create singleton instance - use wss:// in production to avoid Mixed Content errors
+const wsProtocol = browser && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const wsUrl = browser ? `${wsProtocol}//${window.location.host}/ws` : '';
 export const websocketService = new WebSocketService(wsUrl);
 
 // Auto-connect in browser

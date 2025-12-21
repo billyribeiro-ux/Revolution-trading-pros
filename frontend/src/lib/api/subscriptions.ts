@@ -65,7 +65,8 @@ import type {
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
 // Production fallbacks - NEVER use localhost in production
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+// NOTE: No /api suffix - endpoints already include /api prefix
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 
 const isDev = import.meta.env.DEV;
@@ -521,8 +522,6 @@ class SubscriptionService {
 					'Content-Type': 'application/json',
 					Accept: 'application/json',
 					Authorization: `Bearer ${this.getAuthToken()}`,
-					'X-Request-ID': this.generateRequestId(),
-					'X-Idempotency-Key': this.generateIdempotencyKey(url, options),
 					...options.headers
 				},
 				credentials: 'include',

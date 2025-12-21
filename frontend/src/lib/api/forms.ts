@@ -59,13 +59,14 @@ import { getAuthToken, getSessionId as getAuthSessionId } from '$lib/stores/auth
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
 // Production fallbacks - NEVER use localhost in production
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+// NOTE: No /api suffix - endpoints already include /api prefix
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/api/ai';
+const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
 const isDev = import.meta.env.DEV;
 const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || PROD_API)) 
+	? (isDev ? '' : (import.meta.env.VITE_API_URL || PROD_API)) 
 	: '';
 const WS_BASE = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
 const AI_API = browser ? import.meta.env.VITE_AI_API_URL || PROD_AI : '';

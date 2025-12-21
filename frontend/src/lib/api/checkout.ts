@@ -9,10 +9,11 @@ import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth';
 
 // Updated for Rust API - December 2025
+// NOTE: No /api suffix - endpoints already include /api prefix
 const isDev = import.meta.env.DEV;
-const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev/api';
+const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
 const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || PRODUCTION_API_URL))
+	? (isDev ? '' : (import.meta.env.VITE_API_URL || PRODUCTION_API_URL))
 	: '';
 
 export interface StripeConfig {

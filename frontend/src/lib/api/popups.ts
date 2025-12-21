@@ -61,10 +61,11 @@ export type { Popup } from '$lib/stores/popups';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
+// NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
+const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
-const API_BASE = '/api';
+const API_BASE = '';
 const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
 const ML_API = browser ? import.meta.env.VITE_ML_API || PROD_ML : '';
 

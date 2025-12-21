@@ -563,8 +563,6 @@ async function makeRequest<T = any>(
 						'Content-Type': 'application/json',
 						Accept: 'application/json',
 						Authorization: `Bearer ${token}`,
-						'X-API-Version': API_VERSION,
-						'X-Request-ID': generateRequestId(),
 						...fetchOptions.headers
 					}
 				},

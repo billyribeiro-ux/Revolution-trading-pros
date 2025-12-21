@@ -59,9 +59,10 @@ import { websocketService, type CartUpdatePayload } from '$lib/services/websocke
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+// NOTE: No /api suffix - endpoints already include /api prefix
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
+const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
 const API_URL = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
 const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
