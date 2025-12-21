@@ -3,15 +3,17 @@
 	 * Dashboard - My Account Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Exact match of Simpler Trading's WooCommerce Account Details page.
+	 * URL: /dashboard/account
 	 * Shows personal details form and password change section.
 	 *
-	 * @version 4.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
+	import { IconEye, IconEyeOff } from '$lib/icons';
+	import DashboardFooter from '$lib/components/dashboard/DashboardFooter.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -26,6 +28,11 @@
 	let confirmPassword = $state('');
 	let isSaving = $state(false);
 	let message = $state<{ type: 'success' | 'error'; text: string } | null>(null);
+
+	// Password visibility toggles
+	let showCurrentPassword = $state(false);
+	let showNewPassword = $state(false);
+	let showConfirmPassword = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -67,6 +74,12 @@
 			isSaving = false;
 		}
 	}
+
+	function togglePasswordVisibility(field: 'current' | 'new' | 'confirm'): void {
+		if (field === 'current') showCurrentPassword = !showCurrentPassword;
+		if (field === 'new') showNewPassword = !showNewPassword;
+		if (field === 'confirm') showConfirmPassword = !showConfirmPassword;
+	}
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -79,188 +92,208 @@
 </svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     DASHBOARD HEADER - WordPress: .dashboard__header
+     HEADER
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <header class="dashboard__header">
-	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">My Account</h1>
-	</div>
+	<h1 class="dashboard__page-title">My Account</h1>
 </header>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     DASHBOARD CONTENT - WordPress: .dashboard__content
+     MAIN CONTENT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<section class="dashboard__content-section">
-			<!-- WooCommerce: Account Details Form -->
-			<div class="account-details-form">
-				<h2 class="form-title">Account Details</h2>
+		<div class="account-details-card">
+			<h2 class="card-title">Account Details</h2>
 
-				{#if message}
-					<div class="message message--{message.type}">
-						{message.text}
-					</div>
-				{/if}
+			{#if message}
+				<div class="message message--{message.type}">
+					{message.text}
+				</div>
+			{/if}
 
-				<form onsubmit={handleSubmit}>
-					<!-- Personal Details Section -->
-					<div class="form-section">
-						<h3 class="form-section-title">PERSONAL DETAILS</h3>
+			<form onsubmit={handleSubmit}>
+				<!-- PERSONAL DETAILS Section -->
+				<div class="form-section">
+					<h3 class="form-section-title">PERSONAL DETAILS</h3>
 
-						<div class="form-row form-row--two-columns">
-							<div class="form-group">
-								<label for="firstName" class="form-label">
-									First name <span class="required">*</span>
-								</label>
-								<input
-									type="text"
-									id="firstName"
-									class="form-input"
-									bind:value={firstName}
-									required
-								/>
-							</div>
-							<div class="form-group">
-								<label for="lastName" class="form-label">
-									Last name <span class="required">*</span>
-								</label>
-								<input
-									type="text"
-									id="lastName"
-									class="form-input"
-									bind:value={lastName}
-									required
-								/>
-							</div>
-						</div>
-
+					<div class="form-row-two">
 						<div class="form-group">
-							<label for="displayName" class="form-label">
-								Display name <span class="required">*</span>
+							<label for="firstName" class="form-label">
+								First name <span class="required">*</span>
 							</label>
 							<input
 								type="text"
-								id="displayName"
+								id="firstName"
 								class="form-input"
-								bind:value={displayName}
+								bind:value={firstName}
 								required
 							/>
-							<p class="form-help">
-								<em>This will be how your name will be displayed in the account section and in reviews</em>
-							</p>
 						</div>
-
 						<div class="form-group">
-							<label for="email" class="form-label">
-								Email address <span class="required">*</span>
+							<label for="lastName" class="form-label">
+								Last name <span class="required">*</span>
 							</label>
 							<input
-								type="email"
-								id="email"
+								type="text"
+								id="lastName"
 								class="form-input"
-								bind:value={email}
+								bind:value={lastName}
 								required
 							/>
 						</div>
 					</div>
 
-					<!-- Password Change Section -->
-					<div class="form-section">
-						<h3 class="form-section-title">PASSWORD CHANGE</h3>
+					<div class="form-group">
+						<label for="displayName" class="form-label">
+							Display name <span class="required">*</span>
+						</label>
+						<input
+							type="text"
+							id="displayName"
+							class="form-input"
+							bind:value={displayName}
+							required
+						/>
+						<p class="form-help">
+							<em>This will be how your name will be displayed in the account section and in reviews</em>
+						</p>
+					</div>
 
-						<div class="form-group">
-							<label for="currentPassword" class="form-label">
-								Current password (leave blank to leave unchanged)
-							</label>
-							<div class="password-input-wrapper">
-								<input
-									type="password"
-									id="currentPassword"
-									class="form-input"
-									bind:value={currentPassword}
-								/>
-								<button type="button" class="password-toggle" aria-label="Toggle password visibility">
-									<span class="password-toggle-icon">👁</span>
-								</button>
-							</div>
-						</div>
+					<div class="form-group">
+						<label for="email" class="form-label">
+							Email address <span class="required">*</span>
+						</label>
+						<input
+							type="email"
+							id="email"
+							class="form-input"
+							bind:value={email}
+							required
+						/>
+					</div>
+				</div>
 
-						<div class="form-group">
-							<label for="newPassword" class="form-label">
-								New password (leave blank to leave unchanged)
-							</label>
-							<div class="password-input-wrapper">
-								<input
-									type="password"
-									id="newPassword"
-									class="form-input"
-									bind:value={newPassword}
-								/>
-								<button type="button" class="password-toggle" aria-label="Toggle password visibility">
-									<span class="password-toggle-icon">👁</span>
-								</button>
-							</div>
-						</div>
+				<!-- PASSWORD CHANGE Section -->
+				<div class="form-section">
+					<h3 class="form-section-title">PASSWORD CHANGE</h3>
 
-						<div class="form-group">
-							<label for="confirmPassword" class="form-label">
-								Confirm new password
-							</label>
-							<div class="password-input-wrapper">
-								<input
-									type="password"
-									id="confirmPassword"
-									class="form-input"
-									bind:value={confirmPassword}
-								/>
-								<button type="button" class="password-toggle" aria-label="Toggle password visibility">
-									<span class="password-toggle-icon">👁</span>
-								</button>
-							</div>
+					<div class="form-group">
+						<label for="currentPassword" class="form-label">
+							Current password (leave blank to leave unchanged)
+						</label>
+						<div class="password-wrapper">
+							<input
+								type={showCurrentPassword ? 'text' : 'password'}
+								id="currentPassword"
+								class="form-input"
+								bind:value={currentPassword}
+							/>
+							<button
+								type="button"
+								class="password-toggle"
+								onclick={() => togglePasswordVisibility('current')}
+								aria-label="Toggle password visibility"
+							>
+								{#if showCurrentPassword}
+									<IconEyeOff size={18} />
+								{:else}
+									<IconEye size={18} />
+								{/if}
+							</button>
 						</div>
 					</div>
 
-					<!-- Submit Button -->
-					<div class="form-actions">
-						<button type="submit" class="btn btn-orange" disabled={isSaving}>
-							{isSaving ? 'Saving...' : 'Save changes'}
-						</button>
+					<div class="form-group">
+						<label for="newPassword" class="form-label">
+							New password (leave blank to leave unchanged)
+						</label>
+						<div class="password-wrapper">
+							<input
+								type={showNewPassword ? 'text' : 'password'}
+								id="newPassword"
+								class="form-input"
+								bind:value={newPassword}
+							/>
+							<button
+								type="button"
+								class="password-toggle"
+								onclick={() => togglePasswordVisibility('new')}
+								aria-label="Toggle password visibility"
+							>
+								{#if showNewPassword}
+									<IconEyeOff size={18} />
+								{:else}
+									<IconEye size={18} />
+								{/if}
+							</button>
+						</div>
 					</div>
-				</form>
-			</div>
-		</section>
+
+					<div class="form-group">
+						<label for="confirmPassword" class="form-label">
+							Confirm new password
+						</label>
+						<div class="password-wrapper">
+							<input
+								type={showConfirmPassword ? 'text' : 'password'}
+								id="confirmPassword"
+								class="form-input"
+								bind:value={confirmPassword}
+							/>
+							<button
+								type="button"
+								class="password-toggle"
+								onclick={() => togglePasswordVisibility('confirm')}
+								aria-label="Toggle password visibility"
+							>
+								{#if showConfirmPassword}
+									<IconEyeOff size={18} />
+								{:else}
+									<IconEye size={18} />
+								{/if}
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Save Button -->
+				<div class="form-actions">
+					<button type="submit" class="btn-save" disabled={isSaving}>
+						{isSaving ? 'Saving...' : 'Save changes'}
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Simpler Trading EXACT CSS
+     FOOTER
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<DashboardFooter />
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER - WordPress: .dashboard__header
+	   HEADER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__header {
-		background-color: #fff;
-		border-bottom: 1px solid #dbdbdb;
+		background: #fff;
+		border-bottom: 1px solid #e9ebed;
 		padding: 20px 30px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.dashboard__header-left {
-		display: flex;
-		align-items: center;
 	}
 
 	.dashboard__page-title {
 		color: #333;
-		font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
+		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 36px;
 		font-weight: 700;
 		margin: 0;
@@ -268,35 +301,31 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT - WordPress: .dashboard__content
+	   CONTENT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
 		padding: 30px;
-		background: #f4f4f4;
-		min-height: calc(100vh - 80px);
+		background: #fff;
+		min-height: 500px;
 	}
 
 	.dashboard__content-main {
-		width: 100%;
-		max-width: 800px;
+		max-width: 700px;
 	}
 
-	.dashboard__content-section {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCOUNT DETAILS CARD
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.account-details-card {
 		background: #fff;
+		border: 1px solid #e9ebed;
 		border-radius: 4px;
 		padding: 30px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   ACCOUNT DETAILS FORM - WordPress/WooCommerce Style
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.account-details-form {
-		width: 100%;
-	}
-
-	.form-title {
+	.card-title {
 		font-size: 24px;
 		font-weight: 700;
 		color: #333;
@@ -304,27 +333,28 @@
 		font-family: 'Open Sans Condensed', sans-serif;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FORM SECTIONS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.form-section {
 		margin-bottom: 32px;
 	}
 
 	.form-section-title {
-		font-size: 14px;
+		font-size: 13px;
 		font-weight: 700;
-		color: #0984ae;
+		color: #d4a017;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		margin: 0 0 20px;
-		padding-bottom: 10px;
-		border-bottom: 2px solid #0984ae;
 	}
 
-	.form-row {
-		display: flex;
-		gap: 20px;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FORM FIELDS
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.form-row--two-columns {
+	.form-row-two {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 20px;
@@ -373,12 +403,15 @@
 		font-style: italic;
 	}
 
-	/* Password Input with Toggle */
-	.password-input-wrapper {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PASSWORD FIELD WITH TOGGLE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.password-wrapper {
 		position: relative;
 	}
 
-	.password-input-wrapper .form-input {
+	.password-wrapper .form-input {
 		padding-right: 48px;
 	}
 
@@ -392,22 +425,24 @@
 		padding: 4px;
 		cursor: pointer;
 		color: #666;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.password-toggle:hover {
 		color: #333;
 	}
 
-	.password-toggle-icon {
-		font-size: 16px;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SAVE BUTTON
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Form Actions */
 	.form-actions {
 		margin-top: 24px;
 	}
 
-	.btn-orange {
+	.btn-save {
 		display: inline-block;
 		padding: 12px 24px;
 		font-size: 14px;
@@ -420,16 +455,19 @@
 		transition: background-color 0.15s ease;
 	}
 
-	.btn-orange:hover:not(:disabled) {
+	.btn-save:hover:not(:disabled) {
 		background: #dc7309;
 	}
 
-	.btn-orange:disabled {
+	.btn-save:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
 
-	/* Messages */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MESSAGES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.message {
 		padding: 12px 16px;
 		border-radius: 4px;
@@ -466,11 +504,11 @@
 			padding: 20px;
 		}
 
-		.dashboard__content-section {
+		.account-details-card {
 			padding: 20px;
 		}
 
-		.form-row--two-columns {
+		.form-row-two {
 			grid-template-columns: 1fr;
 		}
 	}
