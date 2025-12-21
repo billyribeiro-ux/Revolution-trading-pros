@@ -136,35 +136,92 @@
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// RECENT VIDEOS (Mock data)
+	// RECENT VIDEOS (Dynamic per room - will be fetched from API)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const recentVideos = [
-		{
-			id: 1,
-			title: 'Morning Market Analysis - December 6, 2025',
-			duration: '1:23:45',
-			date: 'Dec 6, 2025',
-			thumbnail: '/images/videos/thumb1.jpg'
-		},
-		{
-			id: 2,
-			title: 'SPY Options Trade Breakdown',
-			duration: '45:30',
-			date: 'Dec 5, 2025',
-			thumbnail: '/images/videos/thumb2.jpg'
-		},
-		{
-			id: 3,
-			title: 'Weekly Recap & Planning Session',
-			duration: '58:12',
-			date: 'Dec 4, 2025',
-			thumbnail: '/images/videos/thumb3.jpg'
-		}
-	];
+	const recentVideos = $derived.by(() => {
+		// Videos would be fetched per room from API
+		// For now, return mock data that would differ per room
+		return [
+			{
+				id: 1,
+				title: `${membershipData.name} - Morning Analysis`,
+				duration: '1:23:45',
+				date: 'Dec 6, 2025',
+				thumbnail: '/images/videos/thumb1.jpg'
+			},
+			{
+				id: 2,
+				title: `${membershipData.name} - Trade Breakdown`,
+				duration: '45:30',
+				date: 'Dec 5, 2025',
+				thumbnail: '/images/videos/thumb2.jpg'
+			},
+			{
+				id: 3,
+				title: `${membershipData.name} - Weekly Recap`,
+				duration: '58:12',
+				date: 'Dec 4, 2025',
+				thumbnail: '/images/videos/thumb3.jpg'
+			}
+		];
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// QUICK RESOURCES (Mock data)
+	// TRADING ROOM SCHEDULE (Dynamic per room - will be fetched from API)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	interface ScheduleItem {
+		id: number;
+		traderName: string;
+		traderSlug: string;
+		dateTime: string;
+	}
+
+	// Schedule data per room (would be fetched from API)
+	const roomSchedules: Record<string, ScheduleItem[]> = {
+		'mastering-the-trade': [
+			{ id: 1, traderName: 'Taylor Horton', traderSlug: 'taylor-horton', dateTime: 'Dec 22, 2025, 9:20 AM EST' },
+			{ id: 2, traderName: 'Sam Shames', traderSlug: 'sam-shames', dateTime: 'Dec 22, 2025, 10:30 AM EST' },
+			{ id: 3, traderName: 'Neil Yeager', traderSlug: 'neil-yeager', dateTime: 'Dec 22, 2025, 11:30 AM EST' },
+			{ id: 4, traderName: 'Bruce Marshall', traderSlug: 'bruce-marshall', dateTime: 'Dec 22, 2025, 2:00 PM EST' },
+			{ id: 5, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 22, 2025, 3:00 PM EST' },
+			{ id: 6, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 23, 2025, 9:15 AM EST' },
+			{ id: 7, traderName: 'Raghee Horner', traderSlug: 'raghee-horner', dateTime: 'Dec 23, 2025, 10:30 AM EST' },
+			{ id: 8, traderName: 'David Starr', traderSlug: 'david-starr', dateTime: 'Dec 23, 2025, 11:30 AM EST' }
+		],
+		'day-trading': [
+			{ id: 1, traderName: 'John Carter', traderSlug: 'john-carter', dateTime: 'Dec 22, 2025, 9:00 AM EST' },
+			{ id: 2, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 22, 2025, 10:00 AM EST' },
+			{ id: 3, traderName: 'Allison Ostrander', traderSlug: 'allison-ostrander', dateTime: 'Dec 22, 2025, 11:00 AM EST' },
+			{ id: 4, traderName: 'John Carter', traderSlug: 'john-carter', dateTime: 'Dec 23, 2025, 9:00 AM EST' },
+			{ id: 5, traderName: 'Bruce Marshall', traderSlug: 'bruce-marshall', dateTime: 'Dec 23, 2025, 10:00 AM EST' }
+		],
+		'swing-trading': [
+			{ id: 1, traderName: 'Bruce Marshall', traderSlug: 'bruce-marshall', dateTime: 'Dec 22, 2025, 2:00 PM EST' },
+			{ id: 2, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 22, 2025, 3:00 PM EST' },
+			{ id: 3, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 23, 2025, 2:00 PM EST' },
+			{ id: 4, traderName: 'Sam Shames', traderSlug: 'sam-shames', dateTime: 'Dec 23, 2025, 3:00 PM EST' }
+		],
+		'revolution-showcase': [
+			{ id: 1, traderName: 'John Carter', traderSlug: 'john-carter', dateTime: 'Dec 22, 2025, 9:30 AM EST' },
+			{ id: 2, traderName: 'Henry Gambell', traderSlug: 'henry-gambell', dateTime: 'Dec 22, 2025, 11:00 AM EST' },
+			{ id: 3, traderName: 'Raghee Horner', traderSlug: 'raghee-horner', dateTime: 'Dec 23, 2025, 9:30 AM EST' }
+		],
+		'mm': [
+			{ id: 1, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 22, 2025, 10:00 AM EST' },
+			{ id: 2, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 23, 2025, 10:00 AM EST' },
+			{ id: 3, traderName: 'Danielle Shay', traderSlug: 'danielle-shay', dateTime: 'Dec 24, 2025, 10:00 AM EST' }
+		]
+	};
+
+	// Get schedule for current room
+	const roomSchedule = $derived.by((): ScheduleItem[] => {
+		return roomSchedules[slug] || roomSchedules['mastering-the-trade'] || [];
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// QUICK RESOURCES (Same structure for all rooms)
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const quickResources = [
@@ -172,6 +229,16 @@
 		{ title: 'Getting Started Guide', icon: IconChevronRight, href: '#getting-started' },
 		{ title: 'Platform Setup', icon: IconDownload, href: '#platform' },
 		{ title: 'Community Discord', icon: IconMessage, href: '#discord' }
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// QUICK LINKS (Same for all rooms)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const quickLinks = [
+		{ title: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
+		{ title: 'Platform Tutorials', href: '/tutorials', external: true },
+		{ title: 'Simpler Blog', href: '/blog', external: true }
 	];
 </script>
 
@@ -226,7 +293,13 @@
 		<li class="nav-item is-active">
 			<a href="/dashboard/{slug}">
 				<span class="st-icon-dashboard nav-icon"></span>
-				<span class="nav-text">Dashboard</span>
+				<span class="nav-text">{membershipData.name} Dashboard</span>
+			</a>
+		</li>
+		<li class="nav-item">
+			<a href="/dashboard/{slug}/daily-videos">
+				<span class="st-icon-daily-videos nav-icon"></span>
+				<span class="nav-text">Premium Daily Videos</span>
 			</a>
 		</li>
 		{#if membershipData.hasLearningCenter}
@@ -241,7 +314,7 @@
 			<li class="nav-item">
 				<a href="/dashboard/{slug}/archive">
 					<span class="st-icon-chatroom-archive nav-icon"></span>
-					<span class="nav-text">Video Archive</span>
+					<span class="nav-text">Trading Room Archives</span>
 				</a>
 			</li>
 		{/if}
@@ -380,64 +453,38 @@
 		</section>
 	</div>
 
-	<!-- Sidebar - WordPress RevolutionInsideDashboard EXACT -->
+	<!-- Sidebar - Same structure for ALL trading rooms/alerts -->
 	<aside class="dashboard__content-sidebar">
-		<!-- Trading Room Schedule - WordPress: .content-sidebar__section -->
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">TRADING ROOM SCHEDULE</h4>
-			<p class="pssubject">Schedule is subject to change.</p>
-			<div class="room-sched">
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Taylor Horton</a>
-					<span class="schedule-item__time">Dec 22, 2025, 9:20 AM EST</span>
+		<!-- Trading Room Schedule - Dynamic per room -->
+		{#if roomSchedule.length > 0}
+			<section class="content-sidebar__section">
+				<h4 class="content-sidebar__heading">{membershipData.name.toUpperCase()} SCHEDULE</h4>
+				<p class="pssubject">Schedule is subject to change.</p>
+				<div class="room-sched">
+					{#each roomSchedule as item (item.id)}
+						<div class="schedule-item">
+							<a href="/traders/{item.traderSlug}" class="schedule-item__name">{item.traderName}</a>
+							<span class="schedule-item__time">{item.dateTime}</span>
+						</div>
+					{/each}
 				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Sam Shames</a>
-					<span class="schedule-item__time">Dec 22, 2025, 10:30 AM EST</span>
-				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Neil Yeager</a>
-					<span class="schedule-item__time">Dec 22, 2025, 11:30 AM EST</span>
-				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Bruce Marshall</a>
-					<span class="schedule-item__time">Dec 22, 2025, 2:00 PM EST</span>
-				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Henry Gambell</a>
-					<span class="schedule-item__time">Dec 22, 2025, 3:00 PM EST</span>
-				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Henry Gambell</a>
-					<span class="schedule-item__time">Dec 23, 2025, 9:15 AM EST</span>
-				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">Raghee Horner</a>
-					<span class="schedule-item__time">Dec 23, 2025, 10:30 AM EST</span>
-				</div>
-				<div class="schedule-item">
-					<a href="#" class="schedule-item__name">David Starr</a>
-					<span class="schedule-item__time">Dec 23, 2025, 11:30 AM EST</span>
-				</div>
-			</div>
-		</section>
+			</section>
+		{/if}
 
-		<!-- Quick Links - WordPress: .content-sidebar__section -->
+		<!-- Quick Links - Same for ALL rooms -->
 		<section class="content-sidebar__section">
 			<h4 class="content-sidebar__heading">QUICK LINKS</h4>
 			<ul class="link-list">
-				<li>
-					<span class="link-arrow">›</span>
-					<a href="https://intercom.help/simpler-trading/en/" target="_blank">Support</a>
-				</li>
-				<li>
-					<span class="link-arrow">›</span>
-					<a href="/tutorials" target="_blank">Platform Tutorials</a>
-				</li>
-				<li>
-					<span class="link-arrow">›</span>
-					<a href="/blog" target="_blank">Simpler Blog</a>
-				</li>
+				{#each quickLinks as link}
+					<li>
+						<span class="link-arrow">›</span>
+						{#if link.external}
+							<a href={link.href} target="_blank" rel="noopener">{link.title}</a>
+						{:else}
+							<a href={link.href}>{link.title}</a>
+						{/if}
+					</li>
+				{/each}
 			</ul>
 		</section>
 	</aside>
