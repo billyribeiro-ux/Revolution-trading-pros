@@ -60,10 +60,7 @@
 		title: 'Weekly Watchlist with Allison Ostrander',
 		subtitle: 'Week of December 15, 2025.',
 		watchNowLink: '/dashboard/ww',
-		image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
-		traderName: 'ALLISON OSTRANDER',
-		traderTitle: 'Director of Risk Tolerance',
-		badge: 'WEEKLY WATCHLIST'
+		image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg'
 	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -193,30 +190,24 @@
 			     WEEKLY WATCHLIST FEATURED - Simpler Trading EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
 			<section class="weekly-watchlist-section">
-				<div class="ww-content">
-					<h3 class="ww-header">Weekly Watchlist</h3>
-					<!-- Mobile Image -->
-					<div class="ww-mobile-image">
+				<div class="row">
+					<div class="col-sm-6 col-lg-5">
+						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+						<!-- Mobile Image -->
+						<div class="ww-mobile-image">
+							<a href={weeklyWatchlist.watchNowLink}>
+								<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image u--border-radius" />
+							</a>
+						</div>
+						<h4 class="ww-title">{weeklyWatchlist.title}</h4>
+						<p class="ww-subtitle">{weeklyWatchlist.subtitle}</p>
+						<a href={weeklyWatchlist.watchNowLink} class="btn btn-tiny btn-default">Watch Now</a>
+					</div>
+					<div class="col-sm-6 col-lg-7 ww-desktop-image">
 						<a href={weeklyWatchlist.watchNowLink}>
-							<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image" />
+							<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image u--border-radius" />
 						</a>
 					</div>
-					<h4 class="ww-title">{weeklyWatchlist.title}</h4>
-					<p class="ww-subtitle">{weeklyWatchlist.subtitle}</p>
-					<a href={weeklyWatchlist.watchNowLink} class="ww-btn">Watch Now</a>
-				</div>
-				<div class="ww-image-container">
-					<a href={weeklyWatchlist.watchNowLink}>
-						<div class="ww-image-wrapper">
-							<span class="ww-badge">{weeklyWatchlist.badge}</span>
-							<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image" />
-							<div class="ww-overlay">
-								<p class="ww-brand"><span class="ww-brand-icon">@</span> SIMPLER<span class="ww-brand-bold">TRADING</span></p>
-								<h5 class="ww-trader-name">{weeklyWatchlist.traderName}</h5>
-								<p class="ww-trader-title">{weeklyWatchlist.traderTitle}</p>
-							</div>
-						</div>
-					</a>
 				</div>
 			</section>
 		{:else}
@@ -385,29 +376,21 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.weekly-watchlist-section {
-		display: flex;
-		gap: 30px;
 		margin-top: 20px;
 	}
 
-	.ww-content {
-		flex: 0 0 35%;
-		max-width: 35%;
-	}
-
-	.ww-image-container {
-		flex: 0 0 65%;
-		max-width: 65%;
-	}
-
-	/* Header - Gold underline */
-	.ww-header {
+	/* Section Title Alt - Simpler Trading EXACT */
+	.section-title-alt {
 		color: #d4a017;
 		font-size: 14px;
 		font-weight: 700;
 		letter-spacing: 0.5px;
 		text-transform: uppercase;
 		margin: 0 0 8px 0;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.section-title-alt--underline {
 		padding-bottom: 8px;
 		border-bottom: 2px solid #d4a017;
 		display: inline-block;
@@ -433,30 +416,30 @@
 		margin: 0 0 16px 0;
 	}
 
-	/* Watch Now Button - Simpler Trading EXACT */
-	.ww-btn {
+	/* Button Styles - Simpler Trading EXACT */
+	.btn {
 		display: inline-block;
-		padding: 8px 16px;
+		text-decoration: none;
+		transition: all 0.15s ease;
+		cursor: pointer;
+	}
+
+	.btn-tiny {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+
+	.btn-default {
 		background: #f8f9fa;
 		border: 1px solid #ddd;
 		border-radius: 4px;
 		color: #333;
-		font-size: 13px;
 		font-weight: 600;
-		text-decoration: none;
-		transition: all 0.15s ease;
 	}
 
-	.ww-btn:hover {
+	.btn-default:hover {
 		background: #e9ecef;
 		border-color: #ccc;
-	}
-
-	/* Image Wrapper with Overlay */
-	.ww-image-wrapper {
-		position: relative;
-		border-radius: 8px;
-		overflow: hidden;
 	}
 
 	.ww-image {
@@ -465,62 +448,49 @@
 		display: block;
 	}
 
-	/* Badge - Top Right */
-	.ww-badge {
-		position: absolute;
-		top: 12px;
-		right: 12px;
-		background: #0984ae;
-		color: #fff;
-		font-size: 10px;
-		font-weight: 700;
-		padding: 4px 10px;
-		border-radius: 4px;
-		z-index: 2;
-		letter-spacing: 0.5px;
+	.u--border-radius {
+		border-radius: 8px;
 	}
 
-	/* Overlay - Bottom Gradient */
-	.ww-overlay {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: linear-gradient(to top, rgba(0, 80, 130, 0.95) 0%, rgba(0, 80, 130, 0.8) 60%, transparent 100%);
-		padding: 60px 20px 20px;
-		text-align: center;
+	/* Bootstrap Grid Columns - Simpler Trading EXACT */
+	.col-sm-6,
+	.col-lg-5,
+	.col-lg-7 {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
 	}
 
-	.ww-brand {
-		color: #fff;
-		font-size: 11px;
-		font-weight: 400;
-		letter-spacing: 2px;
-		margin: 0 0 4px 0;
+	@media (min-width: 576px) {
+		.col-sm-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
 	}
 
-	.ww-brand-icon {
-		font-style: normal;
+	@media (min-width: 992px) {
+		.col-lg-5 {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
+		.col-lg-7 {
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+		}
 	}
 
-	.ww-brand-bold {
-		font-weight: 700;
+	.ww-desktop-image {
+		display: none;
 	}
 
-	.ww-trader-name {
-		color: #fff;
-		font-size: 24px;
-		font-weight: 700;
-		margin: 0 0 4px 0;
-		font-family: 'Open Sans Condensed', sans-serif;
-		letter-spacing: 1px;
-	}
-
-	.ww-trader-title {
-		color: rgba(255, 255, 255, 0.8);
-		font-size: 12px;
-		font-weight: 400;
-		margin: 0;
+	@media (min-width: 992px) {
+		.ww-desktop-image {
+			display: block;
+		}
+		.ww-mobile-image {
+			display: none;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -629,18 +599,8 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 992px) {
-		.weekly-watchlist-section {
-			flex-direction: column;
-		}
-
-		.ww-content,
-		.ww-image-container {
-			flex: none;
-			max-width: 100%;
-		}
-
-		.ww-image-container {
+	@media screen and (max-width: 991px) {
+		.ww-desktop-image {
 			display: none;
 		}
 
