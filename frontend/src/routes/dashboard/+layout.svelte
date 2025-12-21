@@ -37,10 +37,33 @@
 	let { children }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE (Svelte 5 Runes)
+	// MOCK DATA - Initialize sidebar with memberships immediately
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let memberships = $state<UserMembership[]>([]);
+	const mockMemberships: UserMembership[] = [
+		{
+			id: '1',
+			name: 'Mastering the Trade',
+			slug: 'mastering-the-trade',
+			type: 'trading-room',
+			status: 'active',
+			roomLabel: 'Trading Room'
+		},
+		{
+			id: '2',
+			name: 'Simpler Showcase',
+			slug: 'simpler-showcase',
+			type: 'trading-room',
+			status: 'active',
+			roomLabel: 'Breakout Room'
+		}
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE (Svelte 5 Runes) - Initialize with mock data so sidebar shows immediately
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let memberships = $state<UserMembership[]>(mockMemberships);
 	let isLoading = $state(true);
 	let isSidebarOpen = $state(false);
 	let error = $state<string | null>(null);
@@ -147,26 +170,6 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Mock memberships for demo/fallback - matches types expected by sidebar
-	const mockMemberships: UserMembership[] = [
-		{
-			id: '1',
-			name: 'Mastering the Trade',
-			slug: 'mastering-the-trade',
-			type: 'trading-room',
-			status: 'active',
-			roomLabel: 'Trading Room'
-		},
-		{
-			id: '2',
-			name: 'Simpler Showcase',
-			slug: 'simpler-showcase',
-			type: 'trading-room',
-			status: 'active',
-			roomLabel: 'Breakout Room'
-		}
-	];
 
 	async function loadMemberships(): Promise<void> {
 		if (!$isAuthenticated) return;
