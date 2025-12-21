@@ -98,18 +98,18 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<!-- WordPress EXACT: .ultradingroom (Trading Room Rules - shown first) -->
+		<!-- WordPress EXACT: .ultradingroom (Trading Room Rules) -->
 		<ul class="ultradingroom">
 			<li class="litradingroom">
 				<a
 					href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
 					target="_blank"
-					class="btn btn-xs btn-link"
+					rel="noopener noreferrer"
 				>
 					Trading Room Rules
 				</a>
 			</li>
-			<li class="litradingroomhind btn btn-xs btn-link">
+			<li class="litradingroomhind">
 				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
 			</li>
 		</ul>
@@ -304,6 +304,7 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		max-width: 300px;
 	}
 
 	.ultradingroom .litradingroom {
@@ -311,7 +312,7 @@
 	}
 
 	.ultradingroom .litradingroom a {
-		font-weight: 700 !important;
+		font-weight: 700;
 		color: #1e73be;
 		text-decoration: none;
 		font-size: 14px;
@@ -325,21 +326,6 @@
 		font-size: 11px;
 		color: #6b7280;
 		line-height: 1.3;
-	}
-
-	/* WordPress EXACT: .btn-xs .btn-link */
-	.btn-xs {
-		padding: 1px 5px;
-		font-size: 12px;
-		line-height: 1.5;
-		border-radius: 3px;
-	}
-
-	.btn-link {
-		color: inherit;
-		text-decoration: none;
-		background: transparent;
-		border: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -673,10 +659,44 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE - Desktop XL (1440px+)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 768px) {
+	@media screen and (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+
+		.dashboard__content {
+			padding: 40px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Desktop (1280px+)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Tablet (768px - 1279px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 1279px) {
+		.dashboard__page-title {
+			font-size: 30px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile (below 768px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 767px) {
 		.ultradingroom {
 			display: none;
 		}
@@ -686,7 +706,7 @@
 		}
 
 		.dashboard__page-title {
-			font-size: 28px;
+			font-size: 26px;
 		}
 
 		.dashboard__content {
@@ -694,19 +714,56 @@
 		}
 	}
 
-	@media screen and (max-width: 576px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Small Mobile (below 576px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 575px) {
 		.dashboard__header {
 			flex-direction: column;
 			align-items: flex-start;
+			gap: 12px;
 		}
 
 		.dashboard__header-right {
 			width: 100%;
-			justify-content: flex-end;
+			justify-content: flex-start;
+		}
+
+		.dashboard__page-title {
+			font-size: 24px;
 		}
 
 		.section-title {
 			font-size: 20px;
+		}
+
+		.dashboard__content {
+			padding: 16px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Very Small Mobile (below 430px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media screen and (max-width: 429px) {
+		.dashboard__header {
+			padding: 12px 16px;
+		}
+
+		.dashboard__page-title {
+			font-size: 22px;
+		}
+
+		.membership-cards {
+			margin-left: -10px;
+			margin-right: -10px;
+		}
+
+		.membership-cards > .col-sm-6 {
+			padding-left: 10px;
+			padding-right: 10px;
 		}
 	}
 </style>
