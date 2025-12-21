@@ -28,6 +28,7 @@
 	import IconArchive from '@tabler/icons-svelte/icons/archive'; // st-icon-chatroom-archive
 	import IconUsers from '@tabler/icons-svelte/icons/users'; // st-icon-forum (Meet the Traders)
 	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag'; // st-icon-training-room (Trader Store)
+	import IconPresentation from '@tabler/icons-svelte/icons/presentation'; // Simpler Showcase
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -181,6 +182,15 @@
 				]
 			}
 		];
+
+		// Simpler Trading EXACT: Add Simpler Showcase link for mastering-the-trade membership
+		if (membershipSlug === 'mastering-the-trade') {
+			items.push({
+				href: '/dashboard/simpler-showcase',
+				label: 'Simpler Showcase',
+				icon: IconPresentation
+			});
+		}
 
 		return items;
 	});
@@ -388,12 +398,12 @@
 		background: var(--secondary-active-bg);
 	}
 
-	/* Active indicator bar (WordPress EXACT - right border) */
-	.dashboard__nav-secondary > ul > li.is-active > a::after {
+	/* Active indicator bar (Simpler Trading EXACT - LEFT border) */
+	.dashboard__nav-secondary > ul > li.is-active > a::before {
 		content: '';
 		position: absolute;
 		top: 0;
-		right: 0;
+		left: 0;
 		bottom: 0;
 		width: 4px;
 		background-color: var(--secondary-accent);
