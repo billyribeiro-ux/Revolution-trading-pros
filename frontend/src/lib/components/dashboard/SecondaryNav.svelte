@@ -491,7 +491,7 @@
 	@media screen and (max-width: 1279px) {
 		.dashboard__nav-secondary {
 			position: fixed;
-			left: 60px; /* After collapsed primary nav */
+			left: 60px; /* After collapsed primary nav (60px) */
 			top: 0;
 			bottom: 50px; /* Above mobile toggle */
 			z-index: 100010;
@@ -504,6 +504,9 @@
 			opacity: 1;
 			visibility: visible;
 		}
+
+		/* WordPress EXACT: When secondary nav is visible, primary is always collapsed (60px) */
+		/* The parent layout handles collapsing primary nav when secondary is shown */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

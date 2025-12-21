@@ -336,7 +336,7 @@
 		display: flex;
 		flex-flow: row nowrap;
 		padding: 30px;
-		background: #fff;
+		background: #f4f4f4; /* WordPress EXACT: Light gray background */
 		min-height: 400px;
 	}
 
