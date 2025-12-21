@@ -41,6 +41,7 @@
 	let pathname = $derived(page.url.pathname);
 	let isAdminArea = $derived(pathname.startsWith('/admin'));
 	let isEmbedArea = $derived(pathname.startsWith('/embed'));
+	let isDashboardArea = $derived(pathname.startsWith('/dashboard'));
 	
 	// ICT9+ Hydration-Safe Pattern: 
 	// Auth state is ONLY read client-side to prevent SSR/client mismatch
@@ -85,7 +86,7 @@
 	<meta name="theme-color" content="#0a101c" />
 </svelte:head>
 
-{#if isAdminArea || isEmbedArea}
+{#if isAdminArea || isEmbedArea || isDashboardArea}
 	{@render children()}
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
