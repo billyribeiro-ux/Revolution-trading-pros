@@ -321,8 +321,6 @@
 
 	.dashboard__nav-secondary {
 		width: 220px;
-		min-height: auto; /* Let parent determine height - stops at footer */
-		height: 100%; /* Fill parent container only */
 		background-color: var(--secondary-bg);
 		padding: 20px 0;
 		font-family: var(--font-family);
@@ -333,11 +331,12 @@
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
 		scrollbar-color: rgba(255,255,255,0.2) transparent;
-		/* Ensure visibility on desktop by default */
+		/* WordPress EXACT: Visible on desktop */
 		display: block;
 		opacity: 1;
 		visibility: visible;
 		flex-shrink: 0;
+		/* Sidebar sizes to content, ends where footer starts */
 	}
 
 	.dashboard__nav-secondary::-webkit-scrollbar {
@@ -503,9 +502,8 @@
 			opacity: 1;
 			visibility: visible;
 			width: 220px;
-			min-height: auto; /* Stops at footer */
-			height: 100%;
 			flex-shrink: 0;
+			/* Sidebar sizes to content, ends where footer starts */
 		}
 	}
 

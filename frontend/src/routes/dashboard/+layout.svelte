@@ -194,9 +194,9 @@
 	<!-- WordPress EXACT: .dashboard (root container) -->
 	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
-		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, and overlay -->
+		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, overlay, then secondary nav -->
 		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen} class:has-secondary={secondaryNavSection !== null}>
-			<!-- Primary Nav (full or collapsed) -->
+			<!-- Primary Nav (full or collapsed) - WordPress: .dashboard__nav-primary / .dashboard__nav-primary.is-collapsed -->
 			<DashboardSidebar
 				{memberships}
 				bind:isMobileOpen={isSidebarOpen}
@@ -207,17 +207,7 @@
 				isCollapsed={isSidebarCollapsed}
 			/>
 
-			<!-- Secondary Nav (when in account or membership section) -->
-			{#if secondaryNavSection}
-				<SecondaryNav
-					section={secondaryNavSection}
-					membershipSlug={membershipSlug || ''}
-					{membershipName}
-					{memberships}
-				/>
-			{/if}
-
-			<!-- WordPress EXACT: .dashboard__toggle (footer inside sidebar) -->
+			<!-- WordPress EXACT: .dashboard__toggle (comes BEFORE secondary nav) -->
 			<footer class="dashboard__toggle" class:is-collapsed={isSidebarCollapsed}>
 				<button
 					class="dashboard__toggle-button"
@@ -235,7 +225,7 @@
 				</button>
 			</footer>
 
-			<!-- WordPress EXACT: .dashboard__overlay (inside sidebar) -->
+			<!-- WordPress EXACT: .dashboard__overlay (comes BEFORE secondary nav) -->
 			<div
 				class="dashboard__overlay"
 				class:is-visible={isSidebarOpen}
@@ -246,6 +236,16 @@
 				aria-label="Close navigation"
 				data-toggle-dashboard-menu
 			></div>
+
+			<!-- WordPress EXACT: .dashboard__nav-secondary (LAST in sidebar, after toggle and overlay) -->
+			{#if secondaryNavSection}
+				<SecondaryNav
+					section={secondaryNavSection}
+					membershipSlug={membershipSlug || ''}
+					{membershipName}
+					{memberships}
+				/>
+			{/if}
 		</aside>
 
 		<!-- WordPress EXACT: .dashboard__main -->
@@ -361,9 +361,16 @@
 		outline: none;
 	}
 
+	/* WordPress EXACT: Overlay only visible on mobile */
+	@media screen and (min-width: 1280px) {
+		.dashboard__overlay {
+			display: none;
+		}
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD TOGGLE FOOTER (WordPress EXACT: .dashboard__toggle)
-	   Full-width footer at bottom - sidebar ends where this starts
+	   Mobile-only toggle bar at bottom - HIDDEN on desktop (1280px+)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__toggle {
@@ -373,7 +380,14 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		z-index: 100011; /* Above sidebar (100010) so footer is on top */
+		z-index: 100011;
+	}
+
+	/* WordPress EXACT: Hide toggle on desktop - only visible on mobile */
+	@media screen and (min-width: 1280px) {
+		.dashboard__toggle {
+			display: none;
+		}
 	}
 
 	/* WordPress EXACT: .dashboard__toggle-button */

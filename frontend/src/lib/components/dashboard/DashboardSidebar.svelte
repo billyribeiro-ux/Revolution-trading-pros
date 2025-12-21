@@ -450,9 +450,7 @@
 			position: static;
 			opacity: 1;
 			visibility: visible;
-			bottom: 0;
-			min-height: auto; /* Let parent determine height - stops at footer */
-			height: 100%; /* Fill parent container only */
+			/* WordPress EXACT: Sidebar sizes to content, ends where footer starts */
 		}
 	}
 
@@ -482,9 +480,8 @@
 			position: relative;
 			opacity: 1;
 			visibility: visible;
-			min-height: auto; /* Let parent determine height */
-			height: 100%;
 			flex-shrink: 0;
+			/* WordPress EXACT: Sidebar sizes to content, ends where footer starts */
 		}
 
 		.dashboard__nav-primary.is-collapsed:hover {
