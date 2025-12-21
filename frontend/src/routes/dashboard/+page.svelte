@@ -92,24 +92,29 @@
      HEADER - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
+<!-- WordPress EXACT: .dashboard__header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<TradingRoomDropdown />
-		<div class="trading-room-rules">
-			<a
-				href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
-				target="_blank"
-				class="trading-room-rules__link"
-			>
-				Trading Room Rules
-			</a>
-			<p class="trading-room-rules__disclaimer">
+		<!-- WordPress EXACT: .ultradingroom (Trading Room Rules - shown first) -->
+		<ul class="ultradingroom">
+			<li class="litradingroom">
+				<a
+					href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf"
+					target="_blank"
+					class="btn btn-xs btn-link"
+				>
+					Trading Room Rules
+				</a>
+			</li>
+			<li class="litradingroomhind btn btn-xs btn-link">
 				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</p>
-		</div>
+			</li>
+		</ul>
+		<!-- WordPress EXACT: Trading Room Dropdown -->
+		<TradingRoomDropdown />
 	</div>
 </header>
 
@@ -187,29 +192,34 @@
 			{/if}
 
 			<!-- ═══════════════════════════════════════════════════════════════
-			     WEEKLY WATCHLIST FEATURED - Simpler Trading EXACT
+			     WEEKLY WATCHLIST FEATURED - WordPress EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
-			<section class="weekly-watchlist-section">
-				<div class="row">
-					<div class="col-sm-6 col-lg-5">
-						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-						<!-- Mobile Image -->
-						<div class="ww-mobile-image">
+			<div class="dashboard__content-section u--background-color-white">
+				<section>
+					<div class="row">
+						<div class="col-sm-6 col-lg-5">
+							<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+							<!-- Mobile Image (hidden-md d-lg-none) -->
+							<div class="hidden-md d-lg-none pb-2">
+								<a href={weeklyWatchlist.watchNowLink}>
+									<img src={weeklyWatchlist.image} alt="Weekly Watchlist image" class="u--border-radius" />
+								</a>
+							</div>
+							<h4 class="h5 u--font-weight-bold">{weeklyWatchlist.title}</h4>
+							<div class="u--hide-read-more">
+								<p>{weeklyWatchlist.subtitle}</p>
+							</div>
+							<a href={weeklyWatchlist.watchNowLink} class="btn btn-tiny btn-default">Watch Now</a>
+						</div>
+						<!-- Desktop Image (hidden-xs hidden-sm d-none d-lg-block) -->
+						<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 							<a href={weeklyWatchlist.watchNowLink}>
-								<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image u--border-radius" />
+								<img src={weeklyWatchlist.image} alt="Weekly Watchlist image" class="u--border-radius" />
 							</a>
 						</div>
-						<h4 class="ww-title">{weeklyWatchlist.title}</h4>
-						<p class="ww-subtitle">{weeklyWatchlist.subtitle}</p>
-						<a href={weeklyWatchlist.watchNowLink} class="btn btn-tiny btn-default">Watch Now</a>
 					</div>
-					<div class="col-sm-6 col-lg-7 ww-desktop-image">
-						<a href={weeklyWatchlist.watchNowLink}>
-							<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image u--border-radius" />
-						</a>
-					</div>
-				</div>
-			</section>
+				</section>
+			</div>
 		{:else}
 			<!-- Empty State -->
 			<div class="empty-state">
@@ -242,15 +252,30 @@
 	   DASHBOARD HEADER - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* WordPress EXACT: .dashboard__header */
 	.dashboard__header {
 		background-color: #fff;
-		border-bottom: 1px solid #e9ebed;
-		padding: 20px 30px;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		max-width: 1700px;
+		padding: 20px;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: center;
 		gap: 16px;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 
 	.dashboard__header-left {
@@ -273,44 +298,65 @@
 		line-height: 1.2;
 	}
 
-	/* Trading Room Rules - Simpler Trading EXACT */
-	.trading-room-rules {
+	/* WordPress EXACT: .ultradingroom (Trading Room Rules) */
+	.ultradingroom {
 		text-align: right;
-		max-width: 220px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
 
-	.trading-room-rules__link {
-		display: block;
-		font-weight: 700;
+	.ultradingroom .litradingroom {
+		margin-bottom: 2px;
+	}
+
+	.ultradingroom .litradingroom a {
+		font-weight: 700 !important;
 		color: #1e73be;
 		text-decoration: none;
 		font-size: 14px;
-		margin-bottom: 4px;
 	}
 
-	.trading-room-rules__link:hover {
+	.ultradingroom .litradingroom a:hover {
 		text-decoration: underline;
 	}
 
-	.trading-room-rules__disclaimer {
+	.ultradingroom .litradingroomhind {
 		font-size: 11px;
 		color: #6b7280;
 		line-height: 1.3;
-		margin: 0;
+	}
+
+	/* WordPress EXACT: .btn-xs .btn-link */
+	.btn-xs {
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	.btn-link {
+		color: inherit;
+		text-decoration: none;
+		background: transparent;
+		border: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT
+	   DASHBOARD CONTENT (WordPress EXACT)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
+		display: flex;
+		flex-flow: row nowrap;
 		padding: 30px;
 		background: #fff;
 		min-height: 400px;
 	}
 
 	.dashboard__content-main {
-		max-width: 100%;
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -372,14 +418,15 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   WEEKLY WATCHLIST SECTION - Simpler Trading EXACT
+	   WEEKLY WATCHLIST SECTION - WordPress EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.weekly-watchlist-section {
-		margin-top: 20px;
+	/* WordPress EXACT: .u--background-color-white */
+	.u--background-color-white {
+		background-color: #fff;
 	}
 
-	/* Section Title Alt - Simpler Trading EXACT */
+	/* Section Title Alt - WordPress EXACT */
 	.section-title-alt {
 		color: #d4a017;
 		font-size: 14px;
@@ -396,12 +443,8 @@
 		display: inline-block;
 	}
 
-	.ww-mobile-image {
-		display: none;
-		margin: 16px 0;
-	}
-
-	.ww-title {
+	/* WordPress EXACT: Bootstrap utility classes */
+	.h5 {
 		color: #333;
 		font-size: 18px;
 		font-weight: 700;
@@ -410,10 +453,50 @@
 		line-height: 1.4;
 	}
 
-	.ww-subtitle {
+	.u--font-weight-bold {
+		font-weight: 700 !important;
+	}
+
+	.u--hide-read-more p {
 		color: #666;
 		font-size: 14px;
 		margin: 0 0 16px 0;
+	}
+
+	.pb-2 {
+		padding-bottom: 0.5rem !important;
+	}
+
+	/* WordPress EXACT: Bootstrap visibility classes */
+	.hidden-md {
+		display: block;
+	}
+
+	.d-lg-none {
+		display: block;
+	}
+
+	.hidden-xs,
+	.hidden-sm {
+		display: block;
+	}
+
+	.d-none {
+		display: none !important;
+	}
+
+	.d-lg-block {
+		display: none;
+	}
+
+	@media (min-width: 992px) {
+		.hidden-md.d-lg-none {
+			display: none !important;
+		}
+
+		.d-lg-block {
+			display: block !important;
+		}
 	}
 
 	/* Button Styles - Simpler Trading EXACT */
@@ -480,17 +563,11 @@
 		}
 	}
 
-	.ww-desktop-image {
-		display: none;
-	}
-
-	@media (min-width: 992px) {
-		.ww-desktop-image {
-			display: block;
-		}
-		.ww-mobile-image {
-			display: none;
-		}
+	/* WordPress EXACT: Image sizing in watchlist */
+	.dashboard__content-section img {
+		width: 100%;
+		height: auto;
+		display: block;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -599,18 +676,8 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 991px) {
-		.ww-desktop-image {
-			display: none;
-		}
-
-		.ww-mobile-image {
-			display: block;
-		}
-	}
-
 	@media screen and (max-width: 768px) {
-		.trading-room-rules {
+		.ultradingroom {
 			display: none;
 		}
 
