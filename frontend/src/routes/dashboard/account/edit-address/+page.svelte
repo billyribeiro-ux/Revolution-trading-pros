@@ -1,25 +1,19 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Orders Page - Simpler Trading EXACT
+	 * Dashboard - Billing Address Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/orders
-	 * Shows user's order history with Order, Date, Actions columns
+	 * URL: /dashboard/account/edit-address
+	 * Shows billing and shipping addresses with edit links
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 1.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { IconDotsVertical, IconEye } from '$lib/icons';
+	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
+	import { IconUser } from '$lib/icons';
 	import Footer from '$lib/components/sections/Footer.svelte';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let openDropdownId = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -27,21 +21,7 @@
 
 	$effect(() => {
 		if (browser && !$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/orders', { replaceState: true });
-		}
-	});
-
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (browser && openDropdownId) {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					openDropdownId = null;
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
+			goto('/login?redirect=/dashboard/account/edit-address', { replaceState: true });
 		}
 	});
 
@@ -49,43 +29,35 @@
 	// DATA (would come from API)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Order {
-		id: string;
-		orderNumber: string;
-		date: string;
-		viewUrl: string;
+	interface Address {
+		firstName: string;
+		lastName: string;
+		email: string;
+		phone?: string;
+		address1: string;
+		address2?: string;
+		city: string;
+		state: string;
+		postcode: string;
+		country: string;
 	}
 
-	// Sample orders data
-	const orders: Order[] = [
-		{
-			id: '2176654',
-			orderNumber: '#2176654',
-			date: 'December 3, 2025',
-			viewUrl: '/dashboard/orders/2176654'
-		},
-		{
-			id: '2173014',
-			orderNumber: '#2173014',
-			date: 'November 17, 2025',
-			viewUrl: '/dashboard/orders/2173014'
-		},
-		{
-			id: '2132732',
-			orderNumber: '#2132732',
-			date: 'July 18, 2025',
-			viewUrl: '/dashboard/orders/2132732'
-		}
-	];
+	// Sample billing address data
+	const billingAddress: Address = {
+		firstName: 'Zack',
+		lastName: 'Stambowski',
+		email: 'welberribeirodrums@gmail.com',
+		phone: '801-721-0940',
+		address1: '2417 S KIHEI RD',
+		address2: '',
+		city: 'KIHEI',
+		state: 'HI',
+		postcode: '96753-8624',
+		country: 'US'
+	};
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	function toggleDropdown(orderId: string, e: MouseEvent): void {
-		e.stopPropagation();
-		openDropdownId = openDropdownId === orderId ? null : orderId;
-	}
+	// Shipping address (empty in this example)
+	const shippingAddress: Address | null = null;
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -93,7 +65,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>My Orders | Revolution Trading Pros</title>
+	<title>Billing Address | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -111,60 +83,61 @@
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Orders Table -->
-		<div class="orders-table-wrapper">
-			<table class="orders-table">
-				<thead>
-					<tr>
-						<th class="col-order">Order</th>
-						<th class="col-date">Date</th>
-						<th class="col-actions">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each orders as order (order.id)}
-						<tr>
-							<td class="col-order">
-								<a href={order.viewUrl} class="order-link">
-									{order.orderNumber}
-								</a>
-							</td>
-							<td class="col-date">
-								<time>{order.date}</time>
-							</td>
-							<td class="col-actions">
-								<div class="dropdown">
-									<button
-										type="button"
-										class="dropdown-toggle"
-										onclick={(e) => toggleDropdown(order.id, e)}
-										aria-expanded={openDropdownId === order.id}
-										aria-haspopup="true"
-									>
-										<IconDotsVertical size={18} />
-									</button>
-									{#if openDropdownId === order.id}
-										<div class="dropdown-menu">
-											<a href={order.viewUrl} class="dropdown-item">
-												<IconEye size={14} />
-												View
-											</a>
-										</div>
-									{/if}
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+		<!-- Billing Address Card -->
+		<div class="address-card">
+			<div class="address-content">
+				<div class="address-avatar">
+					<IconUser size={32} />
+				</div>
+				<div class="address-details">
+					{#if billingAddress}
+						<p class="address-name">
+							<strong>{billingAddress.firstName} {billingAddress.lastName}</strong>
+						</p>
+						<p class="address-email">{billingAddress.email}</p>
+						<div class="address-lines">
+							<p>{billingAddress.address1}</p>
+							{#if billingAddress.address2}
+								<p>{billingAddress.address2}</p>
+							{/if}
+							<p>{billingAddress.city}, {billingAddress.state} {billingAddress.postcode}</p>
+						</div>
+					{:else}
+						<p class="address-empty">No billing address set.</p>
+					{/if}
+				</div>
+			</div>
+			<a href="/dashboard/account/edit-address/billing" class="address-edit-link">Edit</a>
 		</div>
 
-		<!-- Empty State (when no orders) -->
-		{#if orders.length === 0}
-			<div class="empty-state">
-				<p>No orders found.</p>
+		<!-- Shipping Address Card -->
+		<div class="address-card">
+			<div class="address-content">
+				<div class="address-avatar">
+					<IconUser size={32} />
+				</div>
+				<div class="address-details">
+					{#if shippingAddress}
+						<p class="address-name">
+							<strong>{shippingAddress.firstName} {shippingAddress.lastName}</strong>
+						</p>
+						{#if shippingAddress.email}
+							<p class="address-email">{shippingAddress.email}</p>
+						{/if}
+						<div class="address-lines">
+							<p>{shippingAddress.address1}</p>
+							{#if shippingAddress.address2}
+								<p>{shippingAddress.address2}</p>
+							{/if}
+							<p>{shippingAddress.city}, {shippingAddress.state} {shippingAddress.postcode}</p>
+						</div>
+					{:else}
+						<p class="address-empty"></p>
+					{/if}
+				</div>
 			</div>
-		{/if}
+			<a href="/dashboard/account/edit-address/shipping" class="address-edit-link">Edit</a>
+		</div>
 	</div>
 </div>
 
@@ -209,142 +182,90 @@
 	}
 
 	.dashboard__content-main {
-		max-width: 100%;
+		max-width: 600px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ORDERS TABLE - Simpler Trading EXACT
+	   ADDRESS CARD - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.orders-table-wrapper {
+	.address-card {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding: 20px 24px;
+		background: #fff;
 		border: 1px solid #e9ebed;
 		border-radius: 4px;
-		overflow: hidden;
+		margin-bottom: 16px;
 	}
 
-	.orders-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 14px;
+	.address-content {
+		display: flex;
+		gap: 16px;
 	}
 
-	.orders-table thead {
-		background: #f8f9fa;
-	}
-
-	.orders-table th {
-		padding: 12px 16px;
-		text-align: left;
-		font-weight: 600;
-		color: #333;
-		border-bottom: 1px solid #e9ebed;
-	}
-
-	.orders-table td {
-		padding: 16px;
-		border-bottom: 1px solid #e9ebed;
-		color: #333;
-	}
-
-	.orders-table tr:last-child td {
-		border-bottom: none;
-	}
-
-	/* Column widths */
-	.col-order {
-		width: 30%;
-	}
-
-	.col-date {
-		width: 50%;
-	}
-
-	.col-actions {
-		width: 20%;
-		text-align: right !important;
-	}
-
-	/* Order link */
-	.order-link {
-		color: #1e73be;
-		text-decoration: none;
-		font-weight: 400;
-	}
-
-	.order-link:hover {
-		text-decoration: underline;
-	}
-
-	/* Date */
-	.orders-table time {
-		color: #333;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DROPDOWN MENU - Simpler Trading EXACT
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dropdown {
-		position: relative;
-		display: inline-block;
-	}
-
-	.dropdown-toggle {
+	.address-avatar {
+		width: 48px;
+		height: 48px;
+		background: #e9ebed;
+		border-radius: 4px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		color: #666;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		margin-left: auto;
+		color: #999;
+		flex-shrink: 0;
 	}
 
-	.dropdown-toggle:hover {
-		background: #f5f5f5;
-		color: #333;
-	}
-
-	.dropdown-menu {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 4px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		min-width: 120px;
-		z-index: 100;
-	}
-
-	.dropdown-item {
+	.address-details {
 		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 16px;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.address-name {
+		margin: 0;
+		font-size: 14px;
 		color: #333;
+	}
+
+	.address-name strong {
+		font-weight: 600;
+	}
+
+	.address-email {
+		margin: 0;
+		font-size: 14px;
+		color: #333;
+	}
+
+	.address-lines {
+		margin-top: 8px;
+	}
+
+	.address-lines p {
+		margin: 0;
+		font-size: 14px;
+		color: #333;
+		line-height: 1.5;
+	}
+
+	.address-empty {
+		margin: 0;
+		font-size: 14px;
+		color: #999;
+		font-style: italic;
+	}
+
+	.address-edit-link {
+		color: #1e73be;
+		font-size: 14px;
 		text-decoration: none;
-		font-size: 13px;
-		transition: background 0.15s ease;
+		flex-shrink: 0;
 	}
 
-	.dropdown-item:hover {
-		background: #f5f5f5;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.empty-state {
-		padding: 40px;
-		text-align: center;
-		color: #666;
+	.address-edit-link:hover {
+		text-decoration: underline;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -364,32 +285,28 @@
 			padding: 20px;
 		}
 
-		.orders-table th,
-		.orders-table td {
-			padding: 12px;
+		.address-card {
+			padding: 16px 20px;
 		}
 
-		.col-order {
-			width: 35%;
+		.address-content {
+			gap: 12px;
 		}
 
-		.col-date {
-			width: 45%;
-		}
-
-		.col-actions {
-			width: 20%;
+		.address-avatar {
+			width: 40px;
+			height: 40px;
 		}
 	}
 
 	@media screen and (max-width: 480px) {
-		.orders-table {
-			font-size: 13px;
+		.address-card {
+			flex-direction: column;
+			gap: 16px;
 		}
 
-		.orders-table th,
-		.orders-table td {
-			padding: 10px 8px;
+		.address-edit-link {
+			align-self: flex-end;
 		}
 	}
 </style>

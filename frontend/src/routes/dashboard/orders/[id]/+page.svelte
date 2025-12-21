@@ -1,25 +1,26 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Orders Page - Simpler Trading EXACT
+	 * Dashboard - View Order Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/orders
-	 * Shows user's order history with Order, Date, Actions columns
+	 * URL: /dashboard/orders/[id]
+	 * Shows detailed order information including products, totals, and customer info
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 1.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
+	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { IconDotsVertical, IconEye } from '$lib/icons';
+	import { IconPhone, IconMail } from '$lib/icons';
 	import Footer from '$lib/components/sections/Footer.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
+	// ROUTE PARAMS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let openDropdownId = $state<string | null>(null);
+	const orderId = $derived($page.params.id);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -31,60 +32,85 @@
 		}
 	});
 
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (browser && openDropdownId) {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					openDropdownId = null;
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
-		}
-	});
-
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DATA (would come from API)
+	// DATA (would come from API based on orderId)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Order {
+	interface OrderProduct {
+		name: string;
+		quantity: number;
+		total: number;
+	}
+
+	interface OrderSubscription {
 		id: string;
-		orderNumber: string;
-		date: string;
+		status: string;
+		nextPayment: string | null;
+		total: number;
 		viewUrl: string;
 	}
 
-	// Sample orders data
-	const orders: Order[] = [
-		{
-			id: '2176654',
-			orderNumber: '#2176654',
-			date: 'December 3, 2025',
-			viewUrl: '/dashboard/orders/2176654'
-		},
-		{
-			id: '2173014',
-			orderNumber: '#2173014',
-			date: 'November 17, 2025',
-			viewUrl: '/dashboard/orders/2173014'
-		},
-		{
-			id: '2132732',
-			orderNumber: '#2132732',
-			date: 'July 18, 2025',
-			viewUrl: '/dashboard/orders/2132732'
+	interface CustomerInfo {
+		name: string;
+		address: string[];
+		phone: string;
+		email: string;
+	}
+
+	interface OrderDetails {
+		id: string;
+		orderNumber: string;
+		date: string;
+		status: string;
+		products: OrderProduct[];
+		subtotal: number;
+		discount: number;
+		tax: number;
+		paymentMethod: string;
+		total: number;
+		subscriptions: OrderSubscription[];
+		customer: CustomerInfo;
+	}
+
+	// Sample order data (would come from API)
+	const order: OrderDetails = {
+		id: '2176654',
+		orderNumber: '#2176654',
+		date: 'December 3, 2025',
+		status: 'Completed',
+		products: [
+			{ name: 'Mastering the Trade Room (1 Month Trial)', quantity: 1, total: 247.00 }
+		],
+		subtotal: 247.00,
+		discount: -240.00,
+		tax: 0.00,
+		paymentMethod: 'Credit Card (Stripe)',
+		total: 7.00,
+		subscriptions: [
+			{
+				id: '2176655',
+				status: 'Pending Cancellation',
+				nextPayment: null,
+				total: 197.00,
+				viewUrl: '/dashboard/subscriptions/2176655'
+			}
+		],
+		customer: {
+			name: 'Zack Stambowski',
+			address: ['2417 S KIHEI RD', 'KIHEI, HI 96753-8624'],
+			phone: '801-721-0940',
+			email: 'welberribeirodrums@gmail.com'
 		}
-	];
+	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
+	// HELPERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function toggleDropdown(orderId: string, e: MouseEvent): void {
-		e.stopPropagation();
-		openDropdownId = openDropdownId === orderId ? null : orderId;
+	function formatCurrency(amount: number): string {
+		const prefix = amount < 0 ? '-' : '';
+		const absAmount = Math.abs(amount);
+		return `${prefix}$${absAmount.toFixed(2)}`;
 	}
 </script>
 
@@ -93,7 +119,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>My Orders | Revolution Trading Pros</title>
+	<title>Order {order.orderNumber} | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -111,60 +137,104 @@
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Orders Table -->
-		<div class="orders-table-wrapper">
-			<table class="orders-table">
+		<!-- Order Summary -->
+		<div class="order-summary">
+			<p>
+				Order # <a href="/dashboard/orders/{order.id}" class="order-link">{order.id}</a>
+				was placed on
+				<a href="/dashboard/orders/{order.id}" class="order-link">{order.date}</a>
+				and is currently
+				<span class="order-status order-status--{order.status.toLowerCase()}">{order.status}</span>.
+			</p>
+		</div>
+
+		<!-- Products Table -->
+		<div class="order-table-wrapper">
+			<table class="order-table">
 				<thead>
 					<tr>
-						<th class="col-order">Order</th>
-						<th class="col-date">Date</th>
-						<th class="col-actions">Actions</th>
+						<th class="col-product">Product</th>
+						<th class="col-total">Total</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each orders as order (order.id)}
+					{#each order.products as product}
 						<tr>
-							<td class="col-order">
-								<a href={order.viewUrl} class="order-link">
-									{order.orderNumber}
-								</a>
-							</td>
-							<td class="col-date">
-								<time>{order.date}</time>
-							</td>
-							<td class="col-actions">
-								<div class="dropdown">
-									<button
-										type="button"
-										class="dropdown-toggle"
-										onclick={(e) => toggleDropdown(order.id, e)}
-										aria-expanded={openDropdownId === order.id}
-										aria-haspopup="true"
-									>
-										<IconDotsVertical size={18} />
-									</button>
-									{#if openDropdownId === order.id}
-										<div class="dropdown-menu">
-											<a href={order.viewUrl} class="dropdown-item">
-												<IconEye size={14} />
-												View
-											</a>
-										</div>
-									{/if}
-								</div>
-							</td>
+							<td class="col-product">{product.name} &times; {product.quantity}</td>
+							<td class="col-total">{formatCurrency(product.total)}</td>
 						</tr>
 					{/each}
+					<tr class="summary-row">
+						<td class="col-product"><strong>Subtotal:</strong></td>
+						<td class="col-total">{formatCurrency(order.subtotal)}</td>
+					</tr>
+					<tr class="summary-row">
+						<td class="col-product"><strong>Discount:</strong></td>
+						<td class="col-total">{formatCurrency(order.discount)}</td>
+					</tr>
+					<tr class="summary-row">
+						<td class="col-product"><strong>Tax:</strong></td>
+						<td class="col-total">{formatCurrency(order.tax)}</td>
+					</tr>
+					<tr class="summary-row">
+						<td class="col-product"><strong>Payment method:</strong></td>
+						<td class="col-total">{order.paymentMethod}</td>
+					</tr>
+					<tr class="summary-row total-row">
+						<td class="col-product"><strong>Total:</strong></td>
+						<td class="col-total"><strong>{formatCurrency(order.total)}</strong></td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
 
-		<!-- Empty State (when no orders) -->
-		{#if orders.length === 0}
-			<div class="empty-state">
-				<p>No orders found.</p>
+		<!-- Subscriptions Table -->
+		{#if order.subscriptions.length > 0}
+			<div class="order-table-wrapper">
+				<table class="order-table subscriptions-table">
+					<thead>
+						<tr>
+							<th>Subscription</th>
+							<th>Status</th>
+							<th>Next payment</th>
+							<th>Total</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each order.subscriptions as sub}
+							<tr>
+								<td>
+									<a href={sub.viewUrl} class="order-link">#{sub.id}</a>
+								</td>
+								<td>{sub.status}</td>
+								<td>{sub.nextPayment || '-'}</td>
+								<td>{formatCurrency(sub.total)}</td>
+								<td>
+									<a href={sub.viewUrl} class="btn-view">View</a>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			</div>
 		{/if}
+
+		<!-- Customer Details -->
+		<div class="customer-details">
+			<p class="customer-name">{order.customer.name}</p>
+			{#each order.customer.address as line}
+				<p class="customer-address">{line}</p>
+			{/each}
+			<p class="customer-contact">
+				<IconPhone size={14} />
+				<span>{order.customer.phone}</span>
+			</p>
+			<p class="customer-contact">
+				<IconMail size={14} />
+				<span>{order.customer.email}</span>
+			</p>
+		</div>
 	</div>
 </div>
 
@@ -209,30 +279,79 @@
 	}
 
 	.dashboard__content-main {
-		max-width: 100%;
+		max-width: 800px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ORDERS TABLE - Simpler Trading EXACT
+	   ORDER SUMMARY
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.orders-table-wrapper {
+	.order-summary {
+		margin-bottom: 24px;
+		padding: 16px 20px;
+		background: #f8f9fa;
+		border: 1px solid #e9ebed;
+		border-radius: 4px;
+	}
+
+	.order-summary p {
+		margin: 0;
+		font-size: 14px;
+		color: #333;
+	}
+
+	.order-link {
+		color: #1e73be;
+		text-decoration: none;
+	}
+
+	.order-link:hover {
+		text-decoration: underline;
+	}
+
+	.order-status {
+		font-weight: 600;
+	}
+
+	.order-status--completed {
+		color: #166534;
+	}
+
+	.order-status--processing {
+		color: #92400e;
+	}
+
+	.order-status--pending {
+		color: #3730a3;
+	}
+
+	.order-status--cancelled,
+	.order-status--refunded {
+		color: #991b1b;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ORDER TABLE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.order-table-wrapper {
+		margin-bottom: 24px;
 		border: 1px solid #e9ebed;
 		border-radius: 4px;
 		overflow: hidden;
 	}
 
-	.orders-table {
+	.order-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 14px;
 	}
 
-	.orders-table thead {
+	.order-table thead {
 		background: #f8f9fa;
 	}
 
-	.orders-table th {
+	.order-table th {
 		padding: 12px 16px;
 		text-align: left;
 		font-weight: 600;
@@ -240,111 +359,103 @@
 		border-bottom: 1px solid #e9ebed;
 	}
 
-	.orders-table td {
-		padding: 16px;
+	.order-table td {
+		padding: 12px 16px;
 		border-bottom: 1px solid #e9ebed;
 		color: #333;
 	}
 
-	.orders-table tr:last-child td {
+	.order-table tr:last-child td {
 		border-bottom: none;
 	}
 
-	/* Column widths */
-	.col-order {
+	.col-product {
+		width: 70%;
+	}
+
+	.col-total {
 		width: 30%;
-	}
-
-	.col-date {
-		width: 50%;
-	}
-
-	.col-actions {
-		width: 20%;
 		text-align: right !important;
 	}
 
-	/* Order link */
-	.order-link {
-		color: #1e73be;
-		text-decoration: none;
-		font-weight: 400;
+	.order-table th.col-total {
+		text-align: right;
 	}
 
-	.order-link:hover {
-		text-decoration: underline;
+	.summary-row td {
+		background: #fafafa;
 	}
 
-	/* Date */
-	.orders-table time {
-		color: #333;
+	.total-row td {
+		background: #f0f0f0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DROPDOWN MENU - Simpler Trading EXACT
+	   SUBSCRIPTIONS TABLE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dropdown {
-		position: relative;
+	.subscriptions-table th,
+	.subscriptions-table td {
+		text-align: left;
+	}
+
+	.subscriptions-table th:last-child,
+	.subscriptions-table td:last-child {
+		text-align: right;
+		width: 80px;
+	}
+
+	.btn-view {
 		display: inline-block;
-	}
-
-	.dropdown-toggle {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		background: #fff;
-		border: 1px solid #ddd;
+		padding: 6px 12px;
+		background: #6b7280;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 600;
 		border-radius: 4px;
-		color: #666;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		margin-left: auto;
-	}
-
-	.dropdown-toggle:hover {
-		background: #f5f5f5;
-		color: #333;
-	}
-
-	.dropdown-menu {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 4px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		min-width: 120px;
-		z-index: 100;
-	}
-
-	.dropdown-item {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 16px;
-		color: #333;
 		text-decoration: none;
-		font-size: 13px;
 		transition: background 0.15s ease;
 	}
 
-	.dropdown-item:hover {
-		background: #f5f5f5;
+	.btn-view:hover {
+		background: #4b5563;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
+	   CUSTOMER DETAILS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.empty-state {
-		padding: 40px;
-		text-align: center;
-		color: #666;
+	.customer-details {
+		padding: 20px;
+		background: #f8f9fa;
+		border: 1px solid #e9ebed;
+		border-radius: 4px;
+	}
+
+	.customer-name {
+		font-weight: 600;
+		color: #333;
+		margin: 0 0 8px;
+		font-size: 14px;
+	}
+
+	.customer-address {
+		color: #333;
+		margin: 0 0 4px;
+		font-size: 14px;
+	}
+
+	.customer-contact {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: #333;
+		margin: 8px 0 0;
+		font-size: 14px;
+	}
+
+	.customer-contact:first-of-type {
+		margin-top: 12px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -364,32 +475,28 @@
 			padding: 20px;
 		}
 
-		.orders-table th,
-		.orders-table td {
-			padding: 12px;
+		.order-table th,
+		.order-table td {
+			padding: 10px 12px;
 		}
 
-		.col-order {
-			width: 35%;
+		.col-product {
+			width: 60%;
 		}
 
-		.col-date {
-			width: 45%;
-		}
-
-		.col-actions {
-			width: 20%;
+		.col-total {
+			width: 40%;
 		}
 	}
 
 	@media screen and (max-width: 480px) {
-		.orders-table {
+		.order-table {
 			font-size: 13px;
 		}
 
-		.orders-table th,
-		.orders-table td {
-			padding: 10px 8px;
+		.subscriptions-table {
+			display: block;
+			overflow-x: auto;
 		}
 	}
 </style>

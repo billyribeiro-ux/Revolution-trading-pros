@@ -1,25 +1,18 @@
 <script lang="ts">
 	/**
-	 * Dashboard - My Orders Page - Simpler Trading EXACT
+	 * Dashboard - My Subscriptions Page - Simpler Trading EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * URL: /dashboard/orders
-	 * Shows user's order history with Order, Date, Actions columns
+	 * URL: /dashboard/account/subscriptions
+	 * Shows user's active and past subscriptions
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 1.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { authStore, isAuthenticated } from '$lib/stores/auth';
-	import { IconDotsVertical, IconEye } from '$lib/icons';
 	import Footer from '$lib/components/sections/Footer.svelte';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let openDropdownId = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -27,21 +20,7 @@
 
 	$effect(() => {
 		if (browser && !$isAuthenticated && !$authStore.isInitializing) {
-			goto('/login?redirect=/dashboard/orders', { replaceState: true });
-		}
-	});
-
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (browser && openDropdownId) {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					openDropdownId = null;
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
+			goto('/login?redirect=/dashboard/account/subscriptions', { replaceState: true });
 		}
 	});
 
@@ -49,42 +28,77 @@
 	// DATA (would come from API)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface Order {
+	type SubscriptionStatus = 'active' | 'pending-cancellation' | 'cancelled' | 'on-hold' | 'expired';
+
+	interface Subscription {
 		id: string;
-		orderNumber: string;
-		date: string;
+		status: SubscriptionStatus;
+		statusLabel: string;
+		product: string;
+		nextPayment: string | null;
+		paymentMethod?: string;
+		total: number;
+		recurring: boolean;
 		viewUrl: string;
 	}
 
-	// Sample orders data
-	const orders: Order[] = [
+	// Sample subscriptions data matching screenshot
+	const subscriptions: Subscription[] = [
 		{
-			id: '2176654',
-			orderNumber: '#2176654',
-			date: 'December 3, 2025',
-			viewUrl: '/dashboard/orders/2176654'
+			id: '2176655',
+			status: 'pending-cancellation',
+			statusLabel: 'Pending Cancellation',
+			product: 'Mastering the Trade Room (1 Month Trial)',
+			nextPayment: null,
+			total: 197.00,
+			recurring: false,
+			viewUrl: '/dashboard/account/view-subscription/2176655'
 		},
 		{
-			id: '2173014',
-			orderNumber: '#2173014',
-			date: 'November 17, 2025',
-			viewUrl: '/dashboard/orders/2173014'
+			id: '2173015',
+			status: 'cancelled',
+			statusLabel: 'Cancelled',
+			product: 'Moxie Indicator™ Mastery Monthly (Trial)',
+			nextPayment: null,
+			total: 247.00,
+			recurring: false,
+			viewUrl: '/dashboard/account/view-subscription/2173015'
 		},
 		{
-			id: '2132732',
-			orderNumber: '#2132732',
-			date: 'July 18, 2025',
-			viewUrl: '/dashboard/orders/2132732'
+			id: '2132733',
+			status: 'cancelled',
+			statusLabel: 'Cancelled',
+			product: 'Mastering the Trade Room (1 Month Trial)',
+			nextPayment: null,
+			total: 247.00,
+			recurring: true,
+			viewUrl: '/dashboard/account/view-subscription/2132733'
 		}
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
+	// HELPERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function toggleDropdown(orderId: string, e: MouseEvent): void {
-		e.stopPropagation();
-		openDropdownId = openDropdownId === orderId ? null : orderId;
+	function formatCurrency(amount: number): string {
+		return `$${amount.toFixed(2)}`;
+	}
+
+	function getStatusClass(status: SubscriptionStatus): string {
+		switch (status) {
+			case 'active':
+				return 'status--active';
+			case 'pending-cancellation':
+				return 'status--pending';
+			case 'cancelled':
+				return 'status--cancelled';
+			case 'on-hold':
+				return 'status--on-hold';
+			case 'expired':
+				return 'status--expired';
+			default:
+				return '';
+		}
 	}
 </script>
 
@@ -93,7 +107,7 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <svelte:head>
-	<title>My Orders | Revolution Trading Pros</title>
+	<title>My Subscriptions | Revolution Trading Pros</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -111,47 +125,37 @@
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Orders Table -->
-		<div class="orders-table-wrapper">
-			<table class="orders-table">
+		<!-- Subscriptions Table -->
+		<div class="subscriptions-table-wrapper">
+			<table class="subscriptions-table">
 				<thead>
 					<tr>
-						<th class="col-order">Order</th>
-						<th class="col-date">Date</th>
-						<th class="col-actions">Actions</th>
+						<th>Subscription</th>
+						<th>Status</th>
+						<th>Product</th>
+						<th>Next Payment</th>
+						<th>Total</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each orders as order (order.id)}
+					{#each subscriptions as sub (sub.id)}
 						<tr>
-							<td class="col-order">
-								<a href={order.viewUrl} class="order-link">
-									{order.orderNumber}
-								</a>
+							<td class="col-subscription">
+								<a href={sub.viewUrl} class="subscription-link">#{sub.id}</a>
 							</td>
-							<td class="col-date">
-								<time>{order.date}</time>
+							<td class="col-status">
+								<span class="status-badge {getStatusClass(sub.status)}">
+									{sub.statusLabel.toUpperCase()}
+								</span>
+							</td>
+							<td class="col-product">{sub.product}</td>
+							<td class="col-next-payment">{sub.nextPayment || '-'}</td>
+							<td class="col-total">
+								{formatCurrency(sub.total)}{#if sub.recurring} / month{/if}
 							</td>
 							<td class="col-actions">
-								<div class="dropdown">
-									<button
-										type="button"
-										class="dropdown-toggle"
-										onclick={(e) => toggleDropdown(order.id, e)}
-										aria-expanded={openDropdownId === order.id}
-										aria-haspopup="true"
-									>
-										<IconDotsVertical size={18} />
-									</button>
-									{#if openDropdownId === order.id}
-										<div class="dropdown-menu">
-											<a href={order.viewUrl} class="dropdown-item">
-												<IconEye size={14} />
-												View
-											</a>
-										</div>
-									{/if}
-								</div>
+								<a href={sub.viewUrl} class="btn-view">View</a>
 							</td>
 						</tr>
 					{/each}
@@ -159,10 +163,10 @@
 			</table>
 		</div>
 
-		<!-- Empty State (when no orders) -->
-		{#if orders.length === 0}
+		<!-- Empty State -->
+		{#if subscriptions.length === 0}
 			<div class="empty-state">
-				<p>No orders found.</p>
+				<p>You have no active subscriptions.</p>
 			</div>
 		{/if}
 	</div>
@@ -213,26 +217,26 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ORDERS TABLE - Simpler Trading EXACT
+	   SUBSCRIPTIONS TABLE - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.orders-table-wrapper {
+	.subscriptions-table-wrapper {
 		border: 1px solid #e9ebed;
 		border-radius: 4px;
 		overflow: hidden;
 	}
 
-	.orders-table {
+	.subscriptions-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 14px;
 	}
 
-	.orders-table thead {
+	.subscriptions-table thead {
 		background: #f8f9fa;
 	}
 
-	.orders-table th {
+	.subscriptions-table th {
 		padding: 12px 16px;
 		text-align: left;
 		font-weight: 600;
@@ -240,101 +244,114 @@
 		border-bottom: 1px solid #e9ebed;
 	}
 
-	.orders-table td {
+	.subscriptions-table td {
 		padding: 16px;
 		border-bottom: 1px solid #e9ebed;
 		color: #333;
+		vertical-align: middle;
 	}
 
-	.orders-table tr:last-child td {
+	.subscriptions-table tr:last-child td {
 		border-bottom: none;
 	}
 
-	/* Column widths */
-	.col-order {
+	/* Column styles */
+	.col-subscription {
+		width: 15%;
+	}
+
+	.col-status {
+		width: 18%;
+	}
+
+	.col-product {
 		width: 30%;
 	}
 
-	.col-date {
-		width: 50%;
+	.col-next-payment {
+		width: 15%;
+	}
+
+	.col-total {
+		width: 12%;
 	}
 
 	.col-actions {
-		width: 20%;
-		text-align: right !important;
+		width: 10%;
+		text-align: right;
 	}
 
-	/* Order link */
-	.order-link {
+	/* Subscription link */
+	.subscription-link {
 		color: #1e73be;
 		text-decoration: none;
 		font-weight: 400;
 	}
 
-	.order-link:hover {
+	.subscription-link:hover {
 		text-decoration: underline;
 	}
 
-	/* Date */
-	.orders-table time {
-		color: #333;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   STATUS BADGES - Simpler Trading EXACT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.status-badge {
+		display: inline-block;
+		padding: 4px 10px;
+		font-size: 11px;
+		font-weight: 600;
+		border-radius: 3px;
+		text-transform: uppercase;
+		letter-spacing: 0.3px;
+		white-space: nowrap;
+	}
+
+	.status--active {
+		background: #d4edda;
+		color: #155724;
+	}
+
+	.status--pending {
+		background: #d1ecf1;
+		color: #0c5460;
+	}
+
+	.status--cancelled {
+		background: #f8d7da;
+		color: #721c24;
+	}
+
+	.status--on-hold {
+		background: #fff3cd;
+		color: #856404;
+	}
+
+	.status--expired {
+		background: #e2e3e5;
+		color: #383d41;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DROPDOWN MENU - Simpler Trading EXACT
+	   VIEW BUTTON
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dropdown {
-		position: relative;
+	.btn-view {
 		display: inline-block;
-	}
-
-	.dropdown-toggle {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
+		padding: 6px 14px;
 		background: #fff;
 		border: 1px solid #ddd;
-		border-radius: 4px;
-		color: #666;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		margin-left: auto;
-	}
-
-	.dropdown-toggle:hover {
-		background: #f5f5f5;
 		color: #333;
-	}
-
-	.dropdown-menu {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 4px;
-		background: #fff;
-		border: 1px solid #ddd;
+		font-size: 12px;
+		font-weight: 600;
 		border-radius: 4px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		min-width: 120px;
-		z-index: 100;
-	}
-
-	.dropdown-item {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 16px;
-		color: #333;
 		text-decoration: none;
-		font-size: 13px;
-		transition: background 0.15s ease;
+		transition: all 0.15s ease;
 	}
 
-	.dropdown-item:hover {
+	.btn-view:hover {
 		background: #f5f5f5;
+		border-color: #ccc;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -351,6 +368,16 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	@media screen and (max-width: 1024px) {
+		.subscriptions-table-wrapper {
+			overflow-x: auto;
+		}
+
+		.subscriptions-table {
+			min-width: 700px;
+		}
+	}
+
 	@media screen and (max-width: 768px) {
 		.dashboard__header {
 			padding: 16px 20px;
@@ -364,32 +391,25 @@
 			padding: 20px;
 		}
 
-		.orders-table th,
-		.orders-table td {
+		.subscriptions-table th,
+		.subscriptions-table td {
 			padding: 12px;
-		}
-
-		.col-order {
-			width: 35%;
-		}
-
-		.col-date {
-			width: 45%;
-		}
-
-		.col-actions {
-			width: 20%;
 		}
 	}
 
 	@media screen and (max-width: 480px) {
-		.orders-table {
+		.subscriptions-table {
 			font-size: 13px;
 		}
 
-		.orders-table th,
-		.orders-table td {
+		.subscriptions-table th,
+		.subscriptions-table td {
 			padding: 10px 8px;
+		}
+
+		.status-badge {
+			font-size: 10px;
+			padding: 3px 6px;
 		}
 	}
 </style>
