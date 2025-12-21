@@ -4,85 +4,59 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * URL: /dashboard
-	 * Displays user's memberships, tools, and weekly watchlist
-	 * EXACT clone of Simpler Trading dashboard
+	 * 100% EXACT clone of Simpler Trading dashboard
 	 *
-	 * @version 6.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 7.0.0 (Simpler Trading EXACT / December 2025)
 	 */
 
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { IconUsers, IconArrowRight, IconAlertTriangle } from '$lib/icons';
 	import MembershipCard from '$lib/components/dashboard/MembershipCard.svelte';
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
 	import Footer from '$lib/components/sections/Footer.svelte';
-	import {
-		getUserMemberships,
-		invalidateMembershipCache,
-		type UserMembership,
-		type UserMembershipsResponse
-	} from '$lib/api/user-memberships';
-	import type { DashboardPageData } from './+page';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PAGE DATA
+	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const data = $derived($page.data as DashboardPageData);
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE (Svelte 5 Runes)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let isLoading = $state(true);
-	let isRefreshing = $state(false);
 	let error = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MOCK DATA - Simpler Trading EXACT (Remove when API is connected)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const mockMemberships: UserMembership[] = [
+	const memberships = [
 		{
 			id: '1',
 			name: 'Mastering the Trade',
 			slug: 'mastering-the-trade',
-			type: 'trading-room',
-			status: 'active',
-			accessUrl: '/dashboard/mastering-the-trade/room',
-			icon: 'st-icon-mastering-the-trade'
+			type: 'options',
+			roomLabel: 'Trading Room'
 		},
 		{
 			id: '2',
 			name: 'Simpler Showcase',
 			slug: 'simpler-showcase',
-			type: 'trading-room',
-			status: 'active',
-			accessUrl: '/dashboard/simpler-showcase/room',
-			icon: 'st-icon-simpler-showcase',
+			type: 'foundation',
 			roomLabel: 'Breakout Room'
 		}
 	];
 
-	const mockTools: UserMembership[] = [
+	const tools = [
 		{
 			id: '3',
 			name: 'Weekly Watchlist',
 			slug: 'ww',
-			type: 'weekly-watchlist',
-			status: 'active',
-			accessUrl: '/dashboard/ww',
-			icon: 'st-icon-trade-of-the-week'
+			type: 'ww'
 		}
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// WEEKLY WATCHLIST CONFIG (Editable)
+	// WEEKLY WATCHLIST CONFIG - Simpler Trading EXACT
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const weeklyWatchlistConfig = {
+	const weeklyWatchlist = {
 		title: 'Weekly Watchlist with Allison Ostrander',
 		subtitle: 'Week of December 15, 2025.',
 		watchNowLink: '/dashboard/ww',
@@ -96,10 +70,7 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Use mock data for now - replace with API data when connected
-	const tradingRooms = $derived(mockMemberships);
-	const tools = $derived(mockTools);
-	const hasMemberships = $derived(tradingRooms.length > 0 || tools.length > 0);
+	const hasMemberships = $derived(memberships.length > 0 || tools.length > 0);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -107,19 +78,8 @@
 
 	$effect(() => {
 		if (!browser) return;
-		// Set loading to false immediately since we're using mock data
 		isLoading = false;
 	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	function handleMembershipClick(membership: UserMembership): void {
-		if (membership.accessUrl) {
-			goto(membership.accessUrl);
-		}
-	}
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -189,26 +149,18 @@
 			<!-- ═══════════════════════════════════════════════════════════════
 			     MEMBERSHIPS SECTION - Simpler Trading EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
-			{#if tradingRooms.length > 0}
+			{#if memberships.length > 0}
 				<section class="dashboard__content-section">
 					<h2 class="section-title">Memberships</h2>
 					<div class="membership-cards row">
-						{#each tradingRooms as room (room.id)}
+						{#each memberships as item (item.id)}
 							<div class="col-sm-6 col-xl-4">
 								<MembershipCard
-									id={room.id}
-									name={room.name}
-									type={room.type}
-									slug={room.slug}
-									icon={room.icon}
-									dashboardUrl="/dashboard/{room.slug}"
-									roomUrl={room.accessUrl}
-									roomLabel={room.roomLabel}
-									status={room.status}
-									membershipType={room.membershipType}
-									daysUntilExpiry={room.daysUntilExpiry}
-									useSSO={true}
-									onclick={() => handleMembershipClick(room)}
+									id={item.id}
+									name={item.name}
+									type={item.type}
+									slug={item.slug}
+									roomLabel={item.roomLabel}
 								/>
 							</div>
 						{/each}
@@ -223,18 +175,13 @@
 				<section class="dashboard__content-section">
 					<h2 class="section-title">Tools</h2>
 					<div class="membership-cards row">
-						{#each tools as tool (tool.id)}
+						{#each tools as item (item.id)}
 							<div class="col-sm-6 col-xl-4">
 								<MembershipCard
-									id={tool.id}
-									name={tool.name}
-									type="ww"
-									slug={tool.slug}
-									icon={tool.icon}
-									dashboardUrl="/dashboard/{tool.slug}"
-									status={tool.status}
-									daysUntilExpiry={tool.daysUntilExpiry}
-									onclick={() => handleMembershipClick(tool)}
+									id={item.id}
+									name={item.name}
+									type={item.type}
+									slug={item.slug}
 								/>
 							</div>
 						{/each}
@@ -243,32 +190,32 @@
 			{/if}
 
 			<!-- ═══════════════════════════════════════════════════════════════
-			     WEEKLY WATCHLIST FEATURED SECTION - Simpler Trading EXACT
+			     WEEKLY WATCHLIST FEATURED - Simpler Trading EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
 			<section class="weekly-watchlist-section">
-				<div class="ww-section__left">
-					<h3 class="ww-section__header">Weekly Watchlist</h3>
+				<div class="ww-content">
+					<h3 class="ww-header">Weekly Watchlist</h3>
 					<!-- Mobile Image -->
-					<div class="ww-section__mobile-image">
-						<a href={weeklyWatchlistConfig.watchNowLink}>
-							<img
-								src={weeklyWatchlistConfig.image}
-								alt="Weekly Watchlist"
-								class="ww-image"
-							/>
+					<div class="ww-mobile-image">
+						<a href={weeklyWatchlist.watchNowLink}>
+							<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image" />
 						</a>
 					</div>
-					<h4 class="ww-section__title">{weeklyWatchlistConfig.title}</h4>
-					<p class="ww-section__subtitle">{weeklyWatchlistConfig.subtitle}</p>
-					<a href={weeklyWatchlistConfig.watchNowLink} class="ww-section__btn">Watch Now</a>
+					<h4 class="ww-title">{weeklyWatchlist.title}</h4>
+					<p class="ww-subtitle">{weeklyWatchlist.subtitle}</p>
+					<a href={weeklyWatchlist.watchNowLink} class="ww-btn">Watch Now</a>
 				</div>
-				<div class="ww-section__right">
-					<a href={weeklyWatchlistConfig.watchNowLink}>
-						<img
-							src={weeklyWatchlistConfig.image}
-							alt="Weekly Watchlist"
-							class="ww-image"
-						/>
+				<div class="ww-image-container">
+					<a href={weeklyWatchlist.watchNowLink}>
+						<div class="ww-image-wrapper">
+							<span class="ww-badge">{weeklyWatchlist.badge}</span>
+							<img src={weeklyWatchlist.image} alt="Weekly Watchlist" class="ww-image" />
+							<div class="ww-overlay">
+								<p class="ww-brand"><span class="ww-brand-icon">@</span> SIMPLER<span class="ww-brand-bold">TRADING</span></p>
+								<h5 class="ww-trader-name">{weeklyWatchlist.traderName}</h5>
+								<p class="ww-trader-title">{weeklyWatchlist.traderTitle}</p>
+							</div>
+						</div>
 					</a>
 				</div>
 			</section>
@@ -443,17 +390,18 @@
 		margin-top: 20px;
 	}
 
-	.ww-section__left {
-		flex: 0 0 40%;
-		max-width: 40%;
+	.ww-content {
+		flex: 0 0 35%;
+		max-width: 35%;
 	}
 
-	.ww-section__right {
-		flex: 0 0 60%;
-		max-width: 60%;
+	.ww-image-container {
+		flex: 0 0 65%;
+		max-width: 65%;
 	}
 
-	.ww-section__header {
+	/* Header - Gold underline */
+	.ww-header {
 		color: #d4a017;
 		font-size: 14px;
 		font-weight: 700;
@@ -465,12 +413,12 @@
 		display: inline-block;
 	}
 
-	.ww-section__mobile-image {
+	.ww-mobile-image {
 		display: none;
-		margin-bottom: 16px;
+		margin: 16px 0;
 	}
 
-	.ww-section__title {
+	.ww-title {
 		color: #333;
 		font-size: 18px;
 		font-weight: 700;
@@ -479,13 +427,14 @@
 		line-height: 1.4;
 	}
 
-	.ww-section__subtitle {
+	.ww-subtitle {
 		color: #666;
 		font-size: 14px;
 		margin: 0 0 16px 0;
 	}
 
-	.ww-section__btn {
+	/* Watch Now Button - Simpler Trading EXACT */
+	.ww-btn {
 		display: inline-block;
 		padding: 8px 16px;
 		background: #f8f9fa;
@@ -498,16 +447,80 @@
 		transition: all 0.15s ease;
 	}
 
-	.ww-section__btn:hover {
+	.ww-btn:hover {
 		background: #e9ecef;
 		border-color: #ccc;
+	}
+
+	/* Image Wrapper with Overlay */
+	.ww-image-wrapper {
+		position: relative;
+		border-radius: 8px;
+		overflow: hidden;
 	}
 
 	.ww-image {
 		width: 100%;
 		height: auto;
-		border-radius: 8px;
 		display: block;
+	}
+
+	/* Badge - Top Right */
+	.ww-badge {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		background: #0984ae;
+		color: #fff;
+		font-size: 10px;
+		font-weight: 700;
+		padding: 4px 10px;
+		border-radius: 4px;
+		z-index: 2;
+		letter-spacing: 0.5px;
+	}
+
+	/* Overlay - Bottom Gradient */
+	.ww-overlay {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: linear-gradient(to top, rgba(0, 80, 130, 0.95) 0%, rgba(0, 80, 130, 0.8) 60%, transparent 100%);
+		padding: 60px 20px 20px;
+		text-align: center;
+	}
+
+	.ww-brand {
+		color: #fff;
+		font-size: 11px;
+		font-weight: 400;
+		letter-spacing: 2px;
+		margin: 0 0 4px 0;
+	}
+
+	.ww-brand-icon {
+		font-style: normal;
+	}
+
+	.ww-brand-bold {
+		font-weight: 700;
+	}
+
+	.ww-trader-name {
+		color: #fff;
+		font-size: 24px;
+		font-weight: 700;
+		margin: 0 0 4px 0;
+		font-family: 'Open Sans Condensed', sans-serif;
+		letter-spacing: 1px;
+	}
+
+	.ww-trader-title {
+		color: rgba(255, 255, 255, 0.8);
+		font-size: 12px;
+		font-weight: 400;
+		margin: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -621,17 +634,17 @@
 			flex-direction: column;
 		}
 
-		.ww-section__left,
-		.ww-section__right {
+		.ww-content,
+		.ww-image-container {
 			flex: none;
 			max-width: 100%;
 		}
 
-		.ww-section__right {
+		.ww-image-container {
 			display: none;
 		}
 
-		.ww-section__mobile-image {
+		.ww-mobile-image {
 			display: block;
 		}
 	}

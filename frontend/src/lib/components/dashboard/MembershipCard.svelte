@@ -1,25 +1,11 @@
 <script lang="ts">
 	/**
-	 * Membership Card Component - Revolution Trading Exact Match
+	 * Membership Card Component - Simpler Trading EXACT Match
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * 100% match to WordPress Revolution Trading structure:
-	 * <article class="membership-card membership-card--{type}">
-	 *   <a class="membership-card__header">
-	 *     <span class="mem_icon">
-	 *       <span class="membership-card__icon">
-	 *         <span class="icon icon--lg st-icon-{name}"></span>
-	 *       </span>
-	 *     </span>
-	 *     <span class="mem_div">{name}</span>
-	 *   </a>
-	 *   <div class="membership-card__actions">
-	 *     <a>Dashboard</a>
-	 *     <a>Trading Room</a>
-	 *   </div>
-	 * </article>
+	 * 100% EXACT match to Simpler Trading WordPress structure
 	 *
-	 * @version 5.0.0 (JWT SSO + Membership Types / December 2025)
+	 * @version 6.0.0 (Simpler Trading EXACT / December 2025)
 	 */
 
 	import '$lib/styles/st-icons.css';
@@ -29,22 +15,13 @@
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Card display types (for CSS modifiers)
 	type CardType = 'options' | 'foundation' | 'moxie' | 'ww' | 'trading-room' | 'alert' | 'course' | 'indicator';
-
-	// API types that need normalization
-	type ApiType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
-
-	// Membership status from API
 	type MembershipStatusType = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
-
-	// Membership type (subscription type)
-	type MembershipType = 'trial' | 'active' | 'paused' | 'complimentary' | null;
 
 	interface Props {
 		id?: string;
 		name: string;
-		type?: CardType | ApiType | string;
+		type?: CardType | string;
 		slug: string;
 		icon?: string;
 		dashboardUrl?: string;
@@ -52,7 +29,6 @@
 		roomLabel?: string;
 		skeleton?: boolean;
 		status?: MembershipStatusType;
-		membershipType?: MembershipType;
 		daysUntilExpiry?: number;
 		accessUrl?: string;
 		useSSO?: boolean;
@@ -60,7 +36,7 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PROPS (Svelte 5 Runes)
+	// PROPS
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let {
@@ -74,7 +50,6 @@
 		roomLabel,
 		skeleton = false,
 		status = 'active',
-		membershipType = null,
 		daysUntilExpiry,
 		accessUrl,
 		useSSO = true,
@@ -91,56 +66,32 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Normalize API types to display types
-	const normalizedType = $derived.by((): CardType => {
-		const typeMap: Record<string, CardType> = {
-			// API types → Display types
-			'alert-service': 'alert',
-			'weekly-watchlist': 'ww',
-			// Slug-based mappings for specific services
-			'mastering-the-trade': 'options',
-			'revolution-showcase': 'options',
-			// Pass-through types
-			'trading-room': 'trading-room',
-			'options': 'options',
-			'foundation': 'foundation',
-			'moxie': 'moxie',
-			'ww': 'ww',
-			'alert': 'alert',
-			'course': 'course',
-			'indicator': 'indicator'
-		};
-
-		// First check if the slug has a specific type mapping
-		if (slug && typeMap[slug]) {
-			return typeMap[slug];
-		}
-
-		// Then check the type prop
-		return typeMap[type ?? ''] || (type as CardType) || 'options';
+	// Card modifier class - Simpler Trading uses membership-card--options, membership-card--foundation, etc.
+	const cardModifier = $derived.by((): string => {
+		// Map slugs to card types
+		if (slug === 'mastering-the-trade') return 'membership-card--options';
+		if (slug === 'simpler-showcase') return 'membership-card--foundation';
+		if (slug === 'ww' || type === 'ww') return 'membership-card--ww';
+		if (slug === 'moxie' || type === 'moxie') return 'membership-card--moxie';
+		return `membership-card--${type}`;
 	});
 
-	// Card modifier class (WordPress: membership-card--options, membership-card--moxie, etc.)
-	const cardModifier = $derived(`membership-card--${normalizedType}`);
+	// Is this the Simpler Showcase card (needs special icon styling)
+	const isShowcase = $derived(slug === 'simpler-showcase');
 
 	// Icon class based on slug
 	const iconClass = $derived.by(() => {
 		const iconMap: Record<string, string> = {
-			'day-trading': 'st-icon-day-trading',
-			'swing-trading': 'st-icon-swing-trading',
-			'small-accounts': 'st-icon-small-accounts',
-			'spx-profit-pulse': 'st-icon-spx-profit-pulse',
-			'explosive-swings': 'st-icon-explosive-swings',
 			'mastering-the-trade': 'st-icon-mastering-the-trade',
-			'revolution-showcase': 'st-icon-revolution-showcase',
-			'moxie': 'st-icon-moxie',
-			'weekly-watchlist': 'st-icon-trade-of-the-week'
+			'simpler-showcase': 'st-icon-simpler-showcase',
+			'ww': 'st-icon-trade-of-the-week',
+			'moxie': 'st-icon-moxie'
 		};
 		return iconMap[slug] || `st-icon-${slug}`;
 	});
 
-	// Icon size class (Weekly Watchlist uses smaller icon)
-	const iconSizeClass = $derived(normalizedType === 'ww' ? 'icon--md' : 'icon--lg');
+	// Icon size class
+	const iconSizeClass = $derived(slug === 'ww' || type === 'ww' ? 'icon--md' : 'icon--lg');
 
 	// Dashboard URL
 	const finalDashboardUrl = $derived(dashboardUrl || `/dashboard/${slug}`);
@@ -148,51 +99,22 @@
 	// Room/Access URL
 	const finalRoomUrl = $derived(roomUrl || accessUrl || `/dashboard/${slug}/room`);
 
-	// Room label based on normalized type
+	// Room label
 	const finalRoomLabel = $derived.by(() => {
 		if (roomLabel) return roomLabel;
-		switch (normalizedType) {
-			case 'trading-room':
-			case 'options':
-			case 'foundation':
-			case 'moxie':
-				return 'Trading Room';
-			case 'alert':
-				return 'Alerts';
-			case 'course':
-				return 'Course';
-			case 'indicator':
-				return 'Indicator';
-			case 'ww':
-				return null; // Weekly watchlist has no second link
-			default:
-				return 'Trading Room';
-		}
+		if (slug === 'ww' || type === 'ww') return null;
+		return 'Trading Room';
 	});
 
-	// Show room link (Weekly Watchlist has no Trading Room link)
-	const showRoomLink = $derived(normalizedType !== 'ww' && finalRoomLabel !== null);
-
-	// Membership type label
-	const membershipTypeLabel = $derived.by(() => {
-		const labels: Record<string, string> = {
-			trial: 'trial',
-			active: 'active',
-			paused: 'paused',
-			complimentary: 'complimentary'
-		};
-		return membershipType ? labels[membershipType] : null;
-	});
+	// Show room link
+	const showRoomLink = $derived(finalRoomLabel !== null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function handleEnterRoom(event: MouseEvent): Promise<void> {
-		// Only intercept if using SSO and it's a trading room type
-		if (!useSSO || normalizedType === 'ww' || normalizedType === 'course' || normalizedType === 'indicator') {
-			return; // Let default link behavior handle it
-		}
+		if (!useSSO || slug === 'ww' || type === 'ww') return;
 
 		event.preventDefault();
 		isEnteringRoom = true;
@@ -201,7 +123,6 @@
 			await enterTradingRoom(slug);
 		} catch (e) {
 			console.error('[MembershipCard] Failed to enter trading room:', e);
-			// Fallback to direct navigation
 			window.open(finalRoomUrl, '_blank', 'noopener,noreferrer');
 		} finally {
 			isEnteringRoom = false;
@@ -210,11 +131,10 @@
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE - Matches Revolution Trading WordPress exactly
+     TEMPLATE - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if skeleton}
-	<!-- Skeleton Loading State -->
 	<article class="membership-card skeleton" aria-busy="true">
 		<div class="membership-card__header">
 			<span class="mem_icon">
@@ -228,35 +148,15 @@
 		</div>
 	</article>
 {:else}
-	<!-- WordPress: <article class="membership-card membership-card--options"> -->
-	<article class="membership-card {cardModifier}" class:is-expiring={status === 'expiring'} class:is-expired={status === 'expired'} class:is-entering={isEnteringRoom}>
-		<!-- Status Badge -->
-		{#if status === 'expiring' && daysUntilExpiry !== undefined}
-			<span class="status-badge status-expiring">{daysUntilExpiry}d</span>
-		{:else if status === 'expired'}
-			<span class="status-badge status-expired">Expired</span>
-		{/if}
-
-		<!-- WordPress: <a href="..." class="membership-card__header"> -->
-		<a href={finalRoomUrl} class="membership-card__header" onclick={onclick}>
-			<!-- WordPress: <span class="mem_icon"> -->
+	<article class="membership-card {cardModifier}">
+		<a href={finalDashboardUrl} class="membership-card__header">
 			<span class="mem_icon">
-				<!-- WordPress: <span class="membership-card__icon"> -->
-				<span class="membership-card__icon {slug}-icon">
-					<!-- WordPress: <span class="icon icon--lg st-icon-mastering-the-trade"></span> -->
+				<span class="membership-card__icon" class:simpler-showcase-icon={isShowcase}>
 					<span class="icon {iconSizeClass} {iconClass}"></span>
 				</span>
 			</span>
-			<!-- WordPress: <span class="mem_div">Mastering the Trade</span> -->
-			<span class="mem_div">
-				{name}
-				{#if membershipTypeLabel}
-					<span class="membership-type membership-type--{membershipType}">Membership: {membershipTypeLabel}</span>
-				{/if}
-			</span>
+			<span class="mem_div">{name}</span>
 		</a>
-
-		<!-- WordPress: <div class="membership-card__actions"> -->
 		<div class="membership-card__actions">
 			<a href={finalDashboardUrl}>Dashboard</a>
 			{#if showRoomLink}
@@ -279,12 +179,12 @@
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Matches Revolution Trading CSS exactly
+     STYLES - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP CARD - WordPress Revolution Trading Exact
+	   MEMBERSHIP CARD - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card {
@@ -301,85 +201,8 @@
 		box-shadow: 0 10px 40px rgb(0 0 0 / 15%);
 	}
 
-	.membership-card.is-expiring {
-		border: 2px solid #f59e0b;
-	}
-
-	.membership-card.is-expired {
-		border: 2px solid #ef4444;
-		opacity: 0.7;
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   STATUS BADGE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.status-badge {
-		position: absolute;
-		top: 10px;
-		right: 10px;
-		padding: 2px 8px;
-		border-radius: 10px;
-		font-size: 11px;
-		font-weight: 700;
-		color: #fff;
-		z-index: 1;
-	}
-
-	.status-expiring {
-		background: #f59e0b;
-	}
-
-	.status-expired {
-		background: #ef4444;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP TYPE LABEL (Simpler Trading style)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.membership-type {
-		display: block;
-		font-size: 12px;
-		font-weight: 400;
-		color: var(--st-text-muted, #64748b);
-		margin-top: 4px;
-		text-transform: capitalize;
-	}
-
-	.membership-type--trial {
-		color: #1e40af;
-	}
-
-	.membership-type--active {
-		color: #166534;
-	}
-
-	.membership-type--paused {
-		color: #6b7280;
-	}
-
-	.membership-type--complimentary {
-		color: #7c3aed;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   LOADING STATE (SSO in progress)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.membership-card.is-entering {
-		pointer-events: none;
-		opacity: 0.8;
-	}
-
-	.membership-card__actions a.is-loading {
-		background-color: #f4f4f4;
-		color: #0984ae;
-		cursor: wait;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   HEADER - WordPress: .membership-card__header
+	   HEADER - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card__header {
@@ -398,7 +221,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ICON WRAPPER - WordPress: .mem_icon, .membership-card__icon
+	   ICON - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.mem_icon,
@@ -423,12 +246,20 @@
 		width: 50px;
 		height: 50px;
 		line-height: 50px;
-		color: #000;
 		text-align: center;
 		border-radius: 50%;
 		transition: all 0.15s ease-in-out;
 		background-color: #0984ae;
 		box-shadow: 0 10px 20px rgba(12, 36, 52, 0.25);
+	}
+
+	/* Simpler Showcase Icon - BLACK background with ORANGE icon */
+	.membership-card__icon.simpler-showcase-icon {
+		background: #000 !important;
+	}
+
+	.membership-card__icon.simpler-showcase-icon .icon {
+		color: #f99e31 !important;
 	}
 
 	.membership-card:hover .membership-card__icon {
@@ -455,7 +286,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ACTIONS - WordPress: .membership-card__actions
+	   ACTIONS - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card__actions {
@@ -489,10 +320,17 @@
 		border-left: 1px solid #ededed;
 	}
 
-	/* Single action (no room link) */
+	/* Single action (no room link) - Weekly Watchlist */
 	.membership-card__actions a:only-child {
 		flex-basis: 100%;
 		width: 100%;
+	}
+
+	/* Loading state */
+	.membership-card__actions a.is-loading {
+		background-color: #f4f4f4;
+		color: #0984ae;
+		cursor: wait;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -561,25 +399,6 @@
 		.membership-card__actions a {
 			padding: 12px;
 			font-size: 13px;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   REDUCED MOTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media (prefers-reduced-motion: reduce) {
-		.membership-card,
-		.membership-card__icon,
-		.membership-card__actions a {
-			transition: none;
-		}
-
-		.skeleton-icon,
-		.skeleton-text,
-		.skeleton-button {
-			animation: none;
-			background: #e0e0e0;
 		}
 	}
 </style>
