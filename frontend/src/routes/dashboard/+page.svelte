@@ -5,8 +5,9 @@
 	 *
 	 * URL: /dashboard
 	 * Displays user's memberships, tools, and weekly watchlist
+	 * EXACT clone of Simpler Trading dashboard
 	 *
-	 * @version 5.0.0 (Simpler Trading Exact / December 2025)
+	 * @version 6.0.0 (Simpler Trading Exact / December 2025)
 	 */
 
 	import { page } from '$app/stores';
@@ -40,10 +41,47 @@
 	let error = $state<string | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// MOCK DATA - Simpler Trading EXACT (Remove when API is connected)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const mockMemberships: UserMembership[] = [
+		{
+			id: '1',
+			name: 'Mastering the Trade',
+			slug: 'mastering-the-trade',
+			type: 'trading-room',
+			status: 'active',
+			accessUrl: '/dashboard/mastering-the-trade/room',
+			icon: 'st-icon-mastering-the-trade'
+		},
+		{
+			id: '2',
+			name: 'Simpler Showcase',
+			slug: 'simpler-showcase',
+			type: 'trading-room',
+			status: 'active',
+			accessUrl: '/dashboard/simpler-showcase/room',
+			icon: 'st-icon-simpler-showcase',
+			roomLabel: 'Breakout Room'
+		}
+	];
+
+	const mockTools: UserMembership[] = [
+		{
+			id: '3',
+			name: 'Weekly Watchlist',
+			slug: 'ww',
+			type: 'weekly-watchlist',
+			status: 'active',
+			accessUrl: '/dashboard/ww',
+			icon: 'st-icon-trade-of-the-week'
+		}
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// WEEKLY WATCHLIST CONFIG (Editable)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// This data would typically come from a CMS or API
 	const weeklyWatchlistConfig = {
 		title: 'Weekly Watchlist with Allison Ostrander',
 		subtitle: 'Week of December 15, 2025.',
@@ -58,15 +96,10 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const tradingRooms = $derived(membershipsData?.tradingRooms ?? []);
-	const alertServices = $derived(membershipsData?.alertServices ?? []);
-	const courses = $derived(membershipsData?.courses ?? []);
-	const indicators = $derived(membershipsData?.indicators ?? []);
-	const weeklyWatchlist = $derived(membershipsData?.weeklyWatchlist ?? []);
-	const allMemberships = $derived(membershipsData?.memberships ?? []);
-	const stats = $derived(membershipsData?.stats);
-
-	const hasMemberships = $derived(allMemberships.length > 0);
+	// Use mock data for now - replace with API data when connected
+	const tradingRooms = $derived(mockMemberships);
+	const tools = $derived(mockTools);
+	const hasMemberships = $derived(tradingRooms.length > 0 || tools.length > 0);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS
@@ -74,67 +107,13 @@
 
 	$effect(() => {
 		if (!browser) return;
-
-		if (data?.authError) {
-			error = 'Session expired. Please log in again.';
-			isLoading = false;
-			return;
-		}
-
-		if (data?.needsRefresh) {
-			refreshMemberships();
-			return;
-		}
-
-		if (data?.memberships) {
-			membershipsData = data.memberships;
-			isLoading = false;
-		} else {
-			loadMemberships();
-		}
+		// Set loading to false immediately since we're using mock data
+		isLoading = false;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	async function loadMemberships(): Promise<void> {
-		isLoading = true;
-		error = null;
-
-		try {
-			membershipsData = await getUserMemberships();
-		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to load memberships';
-			console.error('[Dashboard] Error loading memberships:', e);
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	async function refreshMemberships(): Promise<void> {
-		isRefreshing = true;
-		error = null;
-
-		try {
-			invalidateMembershipCache();
-			membershipsData = await getUserMemberships({ skipCache: true });
-		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to refresh memberships';
-			console.error('[Dashboard] Error refreshing memberships:', e);
-		} finally {
-			isRefreshing = false;
-			isLoading = false;
-		}
-	}
-
-	function handleRetry(): void {
-		if (error?.includes('Session expired')) {
-			goto('/login?redirect=/dashboard');
-		} else {
-			refreshMemberships();
-		}
-	}
 
 	function handleMembershipClick(membership: UserMembership): void {
 		if (membership.accessUrl) {
@@ -186,21 +165,13 @@
 		{#if isLoading}
 			<!-- Skeleton Loading State -->
 			<section class="dashboard__content-section">
-				<h2 class="section-title skeleton-text">Memberships</h2>
+				<h2 class="section-title">Memberships</h2>
 				<div class="membership-cards row">
 					{#each Array(2) as _, i}
 						<div class="col-sm-6 col-xl-4">
 							<MembershipCard skeleton slug="loading-{i}" name="Loading..." />
 						</div>
 					{/each}
-				</div>
-			</section>
-			<section class="dashboard__content-section">
-				<h2 class="section-title skeleton-text">Tools</h2>
-				<div class="membership-cards row">
-					<div class="col-sm-6 col-xl-4">
-						<MembershipCard skeleton slug="loading-tools" name="Loading..." />
-					</div>
 				</div>
 			</section>
 		{:else if error}
@@ -210,13 +181,13 @@
 					<IconAlertTriangle size={48} />
 				</div>
 				<p class="error-message">{error}</p>
-				<button class="btn btn-primary" onclick={handleRetry}>
-					{error.includes('Session expired') ? 'Log In' : 'Try Again'}
+				<button class="btn btn-primary" onclick={() => location.reload()}>
+					Try Again
 				</button>
 			</div>
 		{:else if hasMemberships}
 			<!-- ═══════════════════════════════════════════════════════════════
-			     MEMBERSHIPS SECTION - Trading Rooms
+			     MEMBERSHIPS SECTION - Simpler Trading EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
 			{#if tradingRooms.length > 0}
 				<section class="dashboard__content-section">
@@ -232,6 +203,7 @@
 									icon={room.icon}
 									dashboardUrl="/dashboard/{room.slug}"
 									roomUrl={room.accessUrl}
+									roomLabel={room.roomLabel}
 									status={room.status}
 									membershipType={room.membershipType}
 									daysUntilExpiry={room.daysUntilExpiry}
@@ -245,39 +217,24 @@
 			{/if}
 
 			<!-- ═══════════════════════════════════════════════════════════════
-			     TOOLS SECTION - Weekly Watchlist + Alert Services
+			     TOOLS SECTION - Simpler Trading EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
-			{#if weeklyWatchlist.length > 0 || alertServices.length > 0}
+			{#if tools.length > 0}
 				<section class="dashboard__content-section">
 					<h2 class="section-title">Tools</h2>
 					<div class="membership-cards row">
-						{#each weeklyWatchlist as ww (ww.id)}
+						{#each tools as tool (tool.id)}
 							<div class="col-sm-6 col-xl-4">
 								<MembershipCard
-									id={ww.id}
-									name={ww.name}
+									id={tool.id}
+									name={tool.name}
 									type="ww"
-									slug={ww.slug}
-									icon={ww.icon}
-									dashboardUrl="/dashboard/{ww.slug}"
-									status={ww.status}
-									daysUntilExpiry={ww.daysUntilExpiry}
-									onclick={() => handleMembershipClick(ww)}
-								/>
-							</div>
-						{/each}
-						{#each alertServices as alert (alert.id)}
-							<div class="col-sm-6 col-xl-4">
-								<MembershipCard
-									id={alert.id}
-									name={alert.name}
-									type="ww"
-									slug={alert.slug}
-									icon={alert.icon}
-									dashboardUrl="/dashboard/{alert.slug}"
-									status={alert.status}
-									daysUntilExpiry={alert.daysUntilExpiry}
-									onclick={() => handleMembershipClick(alert)}
+									slug={tool.slug}
+									icon={tool.icon}
+									dashboardUrl="/dashboard/{tool.slug}"
+									status={tool.status}
+									daysUntilExpiry={tool.daysUntilExpiry}
+									onclick={() => handleMembershipClick(tool)}
 								/>
 							</div>
 						{/each}
@@ -288,28 +245,30 @@
 			<!-- ═══════════════════════════════════════════════════════════════
 			     WEEKLY WATCHLIST FEATURED SECTION - Simpler Trading EXACT
 			     ═══════════════════════════════════════════════════════════════ -->
-			<section class="weekly-watchlist-featured">
-				<div class="ww-featured__content">
-					<h3 class="ww-featured__header">WEEKLY WATCHLIST</h3>
-					<h4 class="ww-featured__title">{weeklyWatchlistConfig.title}</h4>
-					<p class="ww-featured__subtitle">{weeklyWatchlistConfig.subtitle}</p>
-					<a href={weeklyWatchlistConfig.watchNowLink} class="ww-featured__link">Watch Now</a>
-				</div>
-				<div class="ww-featured__image-container">
-					<a href={weeklyWatchlistConfig.watchNowLink}>
-						<div class="ww-featured__image-wrapper">
-							<span class="ww-featured__badge">{weeklyWatchlistConfig.badge}</span>
+			<section class="weekly-watchlist-section">
+				<div class="ww-section__left">
+					<h3 class="ww-section__header">Weekly Watchlist</h3>
+					<!-- Mobile Image -->
+					<div class="ww-section__mobile-image">
+						<a href={weeklyWatchlistConfig.watchNowLink}>
 							<img
 								src={weeklyWatchlistConfig.image}
 								alt="Weekly Watchlist"
-								class="ww-featured__image"
+								class="ww-image"
 							/>
-							<div class="ww-featured__overlay">
-								<p class="ww-featured__brand">REVOLUTION<span>TRADING</span></p>
-								<h5 class="ww-featured__trader-name">{weeklyWatchlistConfig.traderName}</h5>
-								<p class="ww-featured__trader-title">{weeklyWatchlistConfig.traderTitle}</p>
-							</div>
-						</div>
+						</a>
+					</div>
+					<h4 class="ww-section__title">{weeklyWatchlistConfig.title}</h4>
+					<p class="ww-section__subtitle">{weeklyWatchlistConfig.subtitle}</p>
+					<a href={weeklyWatchlistConfig.watchNowLink} class="ww-section__btn">Watch Now</a>
+				</div>
+				<div class="ww-section__right">
+					<a href={weeklyWatchlistConfig.watchNowLink}>
+						<img
+							src={weeklyWatchlistConfig.image}
+							alt="Weekly Watchlist"
+							class="ww-image"
+						/>
 					</a>
 				</div>
 			</section>
@@ -328,26 +287,21 @@
 			</div>
 		{/if}
 	</div>
-
-	<!-- Sidebar (empty on main dashboard - matches Simpler Trading) -->
-	<aside class="dashboard__content-sidebar">
-		<!-- Empty sidebar on main dashboard page -->
-	</aside>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     FOOTER - Simpler Trading EXACT
+     FOOTER
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <Footer />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES
+     STYLES - Simpler Trading EXACT
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER
+	   DASHBOARD HEADER - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__header {
@@ -381,7 +335,7 @@
 		line-height: 1.2;
 	}
 
-	/* Trading Room Rules */
+	/* Trading Room Rules - Simpler Trading EXACT */
 	.trading-room-rules {
 		text-align: right;
 		max-width: 220px;
@@ -412,25 +366,17 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
-		display: flex;
-		gap: 30px;
 		padding: 30px;
 		background: #fff;
 		min-height: 400px;
 	}
 
 	.dashboard__content-main {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.dashboard__content-sidebar {
-		width: 280px;
-		flex-shrink: 0;
+		max-width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTENT SECTIONS
+	   CONTENT SECTIONS - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content-section {
@@ -448,7 +394,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP CARDS GRID
+	   MEMBERSHIP CARDS GRID - Simpler Trading EXACT
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-cards {
@@ -488,141 +434,80 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   WEEKLY WATCHLIST FEATURED SECTION - Simpler Trading EXACT
-	   ═══════════════════════════════════════════════════════════════════════════ -->
+	   WEEKLY WATCHLIST SECTION - Simpler Trading EXACT
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.weekly-watchlist-featured {
+	.weekly-watchlist-section {
 		display: flex;
 		gap: 30px;
-		padding: 0;
 		margin-top: 20px;
 	}
 
-	.ww-featured__content {
+	.ww-section__left {
 		flex: 0 0 40%;
 		max-width: 40%;
 	}
 
-	.ww-featured__header {
+	.ww-section__right {
+		flex: 0 0 60%;
+		max-width: 60%;
+	}
+
+	.ww-section__header {
 		color: #d4a017;
 		font-size: 14px;
 		font-weight: 700;
 		letter-spacing: 0.5px;
-		margin: 0 0 16px 0;
+		text-transform: uppercase;
+		margin: 0 0 8px 0;
 		padding-bottom: 8px;
 		border-bottom: 2px solid #d4a017;
 		display: inline-block;
 	}
 
-	.ww-featured__title {
-		color: #333;
-		font-size: 20px;
-		font-weight: 700;
-		margin: 0 0 8px 0;
-		font-family: 'Open Sans', sans-serif;
+	.ww-section__mobile-image {
+		display: none;
+		margin-bottom: 16px;
 	}
 
-	.ww-featured__subtitle {
+	.ww-section__title {
+		color: #333;
+		font-size: 18px;
+		font-weight: 700;
+		margin: 16px 0 8px 0;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
+	}
+
+	.ww-section__subtitle {
 		color: #666;
 		font-size: 14px;
 		margin: 0 0 16px 0;
 	}
 
-	.ww-featured__link {
-		color: #dc7309;
-		font-size: 14px;
+	.ww-section__btn {
+		display: inline-block;
+		padding: 8px 16px;
+		background: #f8f9fa;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		color: #333;
+		font-size: 13px;
 		font-weight: 600;
 		text-decoration: none;
+		transition: all 0.15s ease;
 	}
 
-	.ww-featured__link:hover {
-		text-decoration: underline;
+	.ww-section__btn:hover {
+		background: #e9ecef;
+		border-color: #ccc;
 	}
 
-	.ww-featured__image-container {
-		flex: 0 0 60%;
-		max-width: 60%;
-	}
-
-	.ww-featured__image-wrapper {
-		position: relative;
-		border-radius: 8px;
-		overflow: hidden;
-		background: linear-gradient(135deg, #0a2540 0%, #1e4d7b 100%);
-	}
-
-	.ww-featured__badge {
-		position: absolute;
-		top: 12px;
-		right: 12px;
-		background: #0984ae;
-		color: #fff;
-		font-size: 10px;
-		font-weight: 700;
-		padding: 4px 10px;
-		border-radius: 4px;
-		z-index: 2;
-	}
-
-	.ww-featured__image {
+	.ww-image {
 		width: 100%;
 		height: auto;
+		border-radius: 8px;
 		display: block;
-		object-fit: cover;
-	}
-
-	.ww-featured__overlay {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: linear-gradient(transparent, rgba(0, 80, 130, 0.95));
-		padding: 40px 20px 20px;
-		text-align: center;
-	}
-
-	.ww-featured__brand {
-		color: #fff;
-		font-size: 10px;
-		font-weight: 400;
-		letter-spacing: 2px;
-		margin: 0 0 4px 0;
-	}
-
-	.ww-featured__brand span {
-		font-weight: 700;
-	}
-
-	.ww-featured__trader-name {
-		color: #fff;
-		font-size: 22px;
-		font-weight: 700;
-		margin: 0 0 4px 0;
-		font-family: 'Open Sans Condensed', sans-serif;
-	}
-
-	.ww-featured__trader-title {
-		color: rgba(255, 255, 255, 0.8);
-		font-size: 12px;
-		font-weight: 400;
-		margin: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SKELETON LOADING
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.skeleton-text {
-		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
-		color: transparent !important;
-	}
-
-	@keyframes shimmer {
-		0% { background-position: -200% 0; }
-		100% { background-position: 200% 0; }
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -732,22 +617,22 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media screen and (max-width: 992px) {
-		.dashboard__content {
+		.weekly-watchlist-section {
 			flex-direction: column;
 		}
 
-		.dashboard__content-sidebar {
+		.ww-section__left,
+		.ww-section__right {
+			flex: none;
+			max-width: 100%;
+		}
+
+		.ww-section__right {
 			display: none;
 		}
 
-		.weekly-watchlist-featured {
-			flex-direction: column;
-		}
-
-		.ww-featured__content,
-		.ww-featured__image-container {
-			flex: none;
-			max-width: 100%;
+		.ww-section__mobile-image {
+			display: block;
 		}
 	}
 
@@ -757,11 +642,15 @@
 		}
 
 		.dashboard__header {
-			padding: 16px;
+			padding: 16px 20px;
 		}
 
 		.dashboard__page-title {
 			font-size: 28px;
+		}
+
+		.dashboard__content {
+			padding: 20px;
 		}
 	}
 
@@ -776,22 +665,8 @@
 			justify-content: flex-end;
 		}
 
-		.dashboard__content {
-			padding: 16px;
-		}
-
 		.section-title {
 			font-size: 20px;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   REDUCED MOTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media (prefers-reduced-motion: reduce) {
-		.skeleton-text {
-			animation: none;
 		}
 	}
 </style>
