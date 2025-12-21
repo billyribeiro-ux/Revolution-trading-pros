@@ -592,11 +592,10 @@
 		background: var(--sidebar-bg-hover);
 	}
 
-	/* WordPress EXACT: Active state with left cyan border */
+	/* WordPress EXACT: Active state with cyan background */
 	.dash_main_links li.is-active a {
 		color: var(--sidebar-text-active);
-		background: var(--sidebar-accent);
-		border-left: 3px solid #5bc0de;
+		background-color: var(--sidebar-accent);
 	}
 
 	.dash_main_links a:focus-visible {
@@ -681,20 +680,9 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media screen and (max-width: 980px) {
+	@media screen and (max-width: 1279px) {
 		.dashboard__nav-primary {
-			padding: 20px;
 			padding-bottom: 100px; /* Space for mobile toggle */
-		}
-	}
-
-	@media screen and (max-width: 480px) {
-		.dashboard__nav-primary {
-			padding: 16px;
-		}
-
-		.dash_main_links a {
-			padding: 12px 10px;
 		}
 	}
 

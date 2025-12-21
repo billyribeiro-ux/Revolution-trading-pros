@@ -57,6 +57,10 @@
 .st-icon-learning-center::before { content: "\E94D"; font-size: 24px; line-height: 24px; }
 .st-icon-chatroom-archive::before { content: "\E942"; font-size: 24px; line-height: 24px; }
 .st-icon-forum::before { content: "\E949"; font-size: 24px; line-height: 24px; }
+.st-icon-courses::before { content: "\E94D"; font-size: 32px; line-height: 32px; color: #8796A0; }
+.st-icon-indicators::before { content: "\E948"; font-size: 32px; line-height: 32px; color: #8796A0; }
+.st-icon-support::before { content: "\E95B"; font-size: 32px; line-height: 32px; color: #8796A0; }
+.st-icon-simpler-showcase::before { content: "\E912"; font-size: 32px; line-height: 32px; color: #f99e31; }
 
 /* Trading Room Icons */
 .st-icon-explosive-swings::before { content: "\E902"; font-size: 32px; line-height: 32px; }
