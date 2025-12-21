@@ -445,7 +445,21 @@
 
 	@media screen and (min-width: 1280px) {
 		.dashboard__sidebar.has-secondary {
-			width: auto; /* Let children determine width on desktop */
+			/* WordPress EXACT: On desktop, show both panels side by side */
+			width: auto;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			position: relative; /* Needed for absolute positioning of hover state */
+		}
+
+		/* Ensure children participate in flex layout */
+		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary) {
+			flex: 0 0 60px; /* Collapsed primary nav width */
+		}
+
+		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-secondary) {
+			flex: 0 0 220px; /* Secondary nav panel width */
 		}
 	}
 
