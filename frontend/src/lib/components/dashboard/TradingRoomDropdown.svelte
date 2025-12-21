@@ -13,6 +13,10 @@
 	import IconDoorEnter from '@tabler/icons-svelte/icons/door-enter';
 	import IconLock from '@tabler/icons-svelte/icons/lock';
 	import IconLoader from '@tabler/icons-svelte/icons/loader';
+	import IconBrain from '@tabler/icons-svelte/icons/brain';
+	import IconUser from '@tabler/icons-svelte/icons/user';
+	import IconFlame from '@tabler/icons-svelte/icons/flame';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
 	import {
 		getAccessibleRooms,
 		enterTradingRoom,
@@ -162,7 +166,17 @@
 								class:no-access={!room.has_access}
 								onclick={(e) => { if (room.has_access) { e.preventDefault(); handleEnterRoom(room); } else { e.preventDefault(); } }}
 							>
-								<span class="st-icon-{room.slug || 'mastering-the-trade'} icon icon--md"></span>
+								<span class="room-icon">
+									{#if room.slug === 'mastering-the-trade'}
+										<IconBrain size={20} stroke={1.5} />
+									{:else if room.slug === 'simpler-showcase'}
+										<IconUser size={20} stroke={1.5} />
+									{:else if room.slug === 'moxie'}
+										<IconFlame size={20} stroke={1.5} />
+									{:else}
+										<IconUsers size={20} stroke={1.5} />
+									{/if}
+								</span>
 								{room.name}
 								{#if enteringRoom === room.slug}
 									<span class="entering-indicator">...</span>
@@ -273,21 +287,19 @@
 		cursor: not-allowed;
 	}
 
-	/* WordPress: icon styles */
-	.dropdown-menu__menu .icon {
-		font-family: 'StIcons', system-ui, sans-serif;
-		font-style: normal;
-		font-weight: normal;
+	/* Room icon styles */
+	.room-icon {
 		width: 24px;
 		height: 24px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		color: #0984ae;
+		flex-shrink: 0;
 	}
 
-	.icon--md {
-		font-size: 20px;
+	.room-icon :global(svg) {
+		stroke: currentColor;
 	}
 
 	.entering-indicator {
