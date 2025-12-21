@@ -574,10 +574,10 @@ class EnterpriseApiClient {
 		const url = this.buildUrl(endpoint, config.params);
 
 		// Build headers - removed X-Request-ID (not allowed by backend CORS)
-		const headers: HeadersInit = {
+		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
-			...config.headers
+			...(config.headers as Record<string, string>)
 		};
 
 		if (this.token) {
