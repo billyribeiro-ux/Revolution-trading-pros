@@ -289,13 +289,13 @@
 			<li class:is-active={isActive('/dashboard/courses')}>
 				<a href="/dashboard/courses">
 					<span class="dashboard__nav-item-icon"><IconVideo size={24} /></span>
-					<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
+					<span class="dashboard__nav-item-text" style="font-weight:600;color:#fff;">My Classes</span>
 				</a>
 			</li>
 			<li class:is-active={isActive('/dashboard/indicators')}>
 				<a href="/dashboard/indicators">
 					<span class="dashboard__nav-item-icon"><IconChartCandle size={24} /></span>
-					<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
+					<span class="dashboard__nav-item-text" style="font-weight:600;color:#fff;">My Indicators</span>
 				</a>
 			</li>
 		</ul>
@@ -642,7 +642,7 @@
 		color: var(--sidebar-text);
 		text-decoration: none;
 		font-weight: 300;
-		font-size: 15px;
+		font-size: 14px;
 		transition: var(--sidebar-transition);
 	}
 
@@ -683,11 +683,11 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-category {
-		font-weight: 700;
+		font-weight: 600;
 		padding: 30px 30px 0;
-		color: #fff;
+		color: hsla(0, 0%, 100%, 0.7);
 		text-transform: uppercase;
-		font-size: 11px;
+		font-size: 10px;
 		letter-spacing: 0.5px;
 		margin: 0;
 	}
