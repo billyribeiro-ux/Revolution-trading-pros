@@ -304,7 +304,7 @@
 	.dashboard {
 		display: flex;
 		flex-flow: row nowrap;
-		min-height: calc(100vh - 80px); /* Account for navbar height, stops at footer */
+		position: relative;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -317,9 +317,6 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		flex-shrink: 0;
-		align-self: flex-start; /* Start at top, don't stretch into footer */
-		height: 100%; /* Match parent height only */
-		max-height: 100%; /* Don't exceed parent container */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

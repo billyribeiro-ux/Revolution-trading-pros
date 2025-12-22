@@ -443,11 +443,11 @@
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-primary {
 			display: block;
-			position: static;
+			position: sticky;
+			top: 0;
 			opacity: 1;
 			visibility: visible;
-			height: 100%; /* Constrain to parent container height */
-			max-height: 100%; /* Don't exceed parent height */
+			max-height: 100vh; /* Don't exceed viewport height */
 			/* WordPress EXACT: Sidebar sizes to content, ends where footer starts */
 		}
 	}

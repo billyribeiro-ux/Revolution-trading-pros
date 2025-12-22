@@ -338,6 +338,9 @@
 		opacity: 1;
 		visibility: visible;
 		flex-shrink: 0;
+		position: sticky;
+		top: 0;
+		max-height: 100vh;
 		/* Sidebar sizes to content, ends where footer starts */
 	}
 
