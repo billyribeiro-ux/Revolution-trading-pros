@@ -305,6 +305,7 @@
 		display: flex;
 		flex-flow: row nowrap;
 		position: relative;
+		min-height: 100vh;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
