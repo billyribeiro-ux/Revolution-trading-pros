@@ -328,14 +328,10 @@
 		{/if}
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
-		     PREMIUM REPORTS SECTION (WordPress EXACT - Category always shown, empty if no reports)
+		     PREMIUM REPORTS SECTION (WordPress EXACT - Hidden when empty)
+		     Only show when user has premium report subscriptions
 		     ═══════════════════════════════════════════════════════════════════════ -->
-		<ul>
-			<li><p class="dashboard__nav-category">premium reports</p></li>
-		</ul>
-		<ul class="dash_main_links">
-			<!-- Premium reports will be dynamically added here when user has subscriptions -->
-		</ul>
+		<!-- Premium reports section intentionally hidden until user has subscriptions -->
 
 		<!-- ═══════════════════════════════════════════════════════════════════════
 		     TOOLS SECTION (WordPress EXACT - Always shown)
