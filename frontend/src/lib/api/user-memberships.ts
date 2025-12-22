@@ -233,7 +233,7 @@ export async function getUserMemberships(options?: {
 	}
 
 	try {
-		return await apiCache.getOrFetch<UserMembershipsResponse>(
+		const result = await apiCache.getOrFetch<UserMembershipsResponse>(
 			cacheKey,
 			async () => {
 				const response = await fetch(url, {
@@ -248,13 +248,20 @@ export async function getUserMemberships(options?: {
 			},
 			{ ttl: CACHE_TTL.memberships, persist: true }
 		);
+
+		// If API returns empty data, use mock data instead (for demo purposes)
+		if (!result.memberships || result.memberships.length === 0) {
+			console.log('[UserMemberships] API returned empty, using mock data');
+			return getMockMemberships();
+		}
+
+		return result;
 	} catch (error) {
 		console.error('[UserMemberships] Error fetching memberships:', error);
 
 		// Return mock data for development/demo/preview
 		// Enable in all environments until real API is connected
-		const mock = getMockMemberships();
-		return categorizeMemberships(enhanceMemberships(mock.memberships));
+		return getMockMemberships();
 	}
 }
 
