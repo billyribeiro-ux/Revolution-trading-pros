@@ -247,12 +247,13 @@
 						href={item.href}
 						class:no-icon={item.noIcon}
 						style={item.cursorDefault ? 'cursor: default;' : ''}
-						onclick={(e) => toggleSubmenu(item.label, e)}
+						onclick={(e: MouseEvent) => toggleSubmenu(item.label, e)}
 						aria-expanded={expandedMenus.has(item.label) || hasActiveChild(item)}
 					>
 						{#if item.icon && !item.noIcon}
+							{@const Icon = item.icon}
 							<span class="dashboard__nav-item-icon">
-								<svelte:component this={item.icon} size={18} stroke={1.5} />
+								<Icon size={18} stroke={1.5} />
 							</span>
 						{/if}
 						<span class="dashboard__nav-item-text">{item.label}</span>
@@ -278,8 +279,9 @@
 						aria-current={isActive(item.href) ? 'page' : undefined}
 					>
 						{#if item.icon && !item.noIcon}
+							{@const Icon = item.icon}
 							<span class="dashboard__nav-item-icon">
-								<svelte:component this={item.icon} size={18} stroke={1.5} />
+								<Icon size={18} stroke={1.5} />
 							</span>
 						{/if}
 						<span class="dashboard__nav-item-text">{item.label}</span>
@@ -287,8 +289,8 @@
 				{/if}
 			</li>
 		{/each}
-	</ul>
-</nav>
+			</ul>
+		</nav>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      STYLES - WordPress EXACT CSS
