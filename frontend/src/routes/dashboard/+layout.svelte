@@ -461,6 +461,15 @@
 		width: 280px;
 	}
 
+	/* Mobile: Force primary nav to 60px width when has secondary panel */
+	@media screen and (max-width: 1279px) {
+		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary) {
+			width: 60px !important;
+			min-width: 60px !important;
+			max-width: 60px !important;
+		}
+	}
+
 	@media screen and (min-width: 1280px) {
 		.dashboard__sidebar.has-secondary {
 			/* WordPress EXACT: On desktop, show both panels side by side */
@@ -472,8 +481,21 @@
 		}
 
 		/* Ensure children participate in flex layout */
+		/* CRITICAL: Must use !important to override component's scoped width */
 		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary) {
-			flex: 0 0 60px; /* Collapsed primary nav width */
+			flex: 0 0 60px !important; /* Collapsed primary nav width */
+			width: 60px !important; /* Explicit width override */
+			min-width: 60px !important;
+			max-width: 60px !important;
+		}
+
+		/* Allow primary nav to expand on hover */
+		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary:hover) {
+			width: 280px !important;
+			max-width: 280px !important;
+			flex: 0 0 280px !important;
+			z-index: 100020;
+			box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
 		}
 
 		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-secondary) {
