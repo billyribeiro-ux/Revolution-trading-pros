@@ -186,6 +186,7 @@
 	class="dashboard__nav-primary"
 	class:is-collapsed={isCollapsed}
 	aria-label="Dashboard navigation"
+	style="position: sticky; top: 0; max-height: 100vh; bottom: auto;"
 >
 
 	<!-- ═══════════════════════════════════════════════════════════════════════

@@ -232,7 +232,7 @@
      TEMPLATE - WordPress EXACT Structure
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<nav class="dashboard__nav-secondary" aria-label="Secondary navigation">
+<nav class="dashboard__nav-secondary" aria-label="Secondary navigation" style="position: sticky; top: 0; max-height: 100vh;">
 	<ul>
 		{#each navItems as item (item.href + item.label)}
 			<li
