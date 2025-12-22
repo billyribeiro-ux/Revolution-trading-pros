@@ -319,6 +319,7 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   SECONDARY NAVIGATION (WordPress EXACT: .dashboard__nav-secondary)
+	   Mobile-first cascade - Apple HIG 11+ style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-secondary {
@@ -333,21 +334,16 @@
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
 		scrollbar-color: rgba(255,255,255,0.2) transparent;
-		/* WordPress EXACT: Visible on desktop */
-		display: block;
-		opacity: 1;
-		visibility: visible;
 		flex-shrink: 0;
-		/* Sidebar sizes to content, ends where footer starts */
-	}
-
-	@media screen and (min-width: 1280px) {
-		.dashboard__nav-secondary {
-			position: sticky !important;
-			top: 0 !important;
-			max-height: 100vh !important;
-			height: auto !important;
-		}
+		/* Mobile: hidden by default, shown on menu open */
+		position: fixed;
+		left: 60px;
+		top: 0;
+		bottom: 50px;
+		z-index: 100010;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 	}
 
 	.dashboard__nav-secondary::-webkit-scrollbar {
@@ -502,41 +498,28 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE (WordPress EXACT breakpoints)
+	   RESPONSIVE - Mobile-first cascade (Apple HIG 11+ style)
+	   Mobile styles in base, desktop overrides below
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Mobile: Show secondary nav when menu is open */
+	:global(.dashboard--menu-open) .dashboard__nav-secondary {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	/* Desktop: Always visible, static positioning in flex layout */
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-secondary {
-			/* WordPress EXACT: Desktop - visible, positioned in flex layout */
-			display: block;
-			position: relative;
-			opacity: 1;
-			visibility: visible;
-			width: 220px;
-			flex-shrink: 0;
-			/* Sidebar sizes to content, ends where footer starts */
-		}
-	}
-
-	@media screen and (max-width: 1279px) {
-		.dashboard__nav-secondary {
-			position: fixed;
-			left: 60px; /* After collapsed primary nav (60px) */
+			position: sticky;
 			top: 0;
-			bottom: 50px; /* Above mobile toggle */
-			z-index: 100010;
-			opacity: 0;
-			visibility: hidden;
-			transition: all 0.3s ease-in-out;
-		}
-	}
-
-	/* WordPress EXACT: Show secondary nav when mobile menu is open (mobile only) */
-	/* Using :global() to match parent component's class */
-	@media screen and (max-width: 1279px) {
-		:global(.dashboard--menu-open) .dashboard__nav-secondary {
+			left: auto;
+			bottom: auto;
+			max-height: 100vh;
+			height: auto;
 			opacity: 1;
 			visibility: visible;
+			z-index: auto;
 		}
 	}
 
