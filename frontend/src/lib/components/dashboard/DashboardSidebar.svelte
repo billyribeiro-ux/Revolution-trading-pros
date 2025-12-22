@@ -413,14 +413,19 @@
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
 		scrollbar-color: rgba(255,255,255,0.2) transparent;
-		/* Mobile: fixed positioning */
-		position: fixed;
-		bottom: var(--toggle-height);
-		left: 0;
-		top: 0;
-		opacity: 0;
-		visibility: hidden;
-		z-index: 100010;
+	}
+
+	/* Mobile: fixed positioning */
+	@media screen and (max-width: 1279px) {
+		.dashboard__nav-primary {
+			position: fixed;
+			bottom: var(--toggle-height);
+			left: 0;
+			top: 0;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 100010;
+		}
 	}
 
 	/* WordPress EXACT: Custom scrollbar for webkit browsers */
