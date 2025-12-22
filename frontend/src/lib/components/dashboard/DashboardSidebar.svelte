@@ -486,7 +486,9 @@
 		/* Collapsed state - ensure it's visible and properly positioned */
 		.dashboard__nav-primary.is-collapsed {
 			display: block;
-			position: relative;
+			position: sticky !important;
+			top: 0 !important;
+			max-height: 100vh !important;
 			opacity: 1;
 			visibility: visible;
 			flex-shrink: 0;
@@ -497,10 +499,9 @@
 			width: var(--sidebar-width);
 			box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
 			z-index: 100020;
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
+			position: sticky !important;
+			top: 0 !important;
+			max-height: 100vh !important;
 		}
 
 		/* Show profile name on hover */
