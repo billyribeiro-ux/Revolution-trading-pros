@@ -141,11 +141,7 @@
 	// Check if we're on any account page (for highlighting profile section)
 	const isAccountSection = $derived(
 		currentPath.startsWith('/dashboard/account') ||
-		currentPath.startsWith('/dashboard/orders') ||
-		currentPath.startsWith('/dashboard/subscriptions') ||
-		currentPath.startsWith('/dashboard/coupons') ||
-		currentPath.startsWith('/dashboard/addresses') ||
-		currentPath.startsWith('/dashboard/payment-methods')
+		currentPath.startsWith('/dashboard/orders')
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════

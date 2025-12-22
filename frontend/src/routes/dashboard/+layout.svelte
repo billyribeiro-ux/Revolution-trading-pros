@@ -62,16 +62,12 @@
 	// Check if we're on an account page (shows account secondary nav)
 	const isAccountSection = $derived(
 		currentPath.startsWith('/dashboard/account') ||
-		currentPath.startsWith('/dashboard/orders') ||
-		currentPath.startsWith('/dashboard/subscriptions') ||
-		currentPath.startsWith('/dashboard/coupons') ||
-		currentPath.startsWith('/dashboard/addresses') ||
-		currentPath.startsWith('/dashboard/payment-methods')
+		currentPath.startsWith('/dashboard/orders')
 	);
 
 	// Check if we're on a membership dashboard (shows membership secondary nav)
 	// Matches /dashboard/[slug] but NOT /dashboard, /dashboard/account, /dashboard/courses, etc.
-	const staticRoutes = ['account', 'orders', 'subscriptions', 'coupons', 'addresses', 'payment-methods', 'courses', 'indicators', 'ww', 'support', 'logout', 'watchlist'];
+	const staticRoutes = ['account', 'orders', 'courses', 'indicators', 'ww', 'support', 'logout', 'watchlist'];
 
 	const membershipSlug = $derived.by(() => {
 		const match = currentPath.match(/^\/dashboard\/([^/]+)/);

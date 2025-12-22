@@ -80,25 +80,25 @@
 			wooClass: 'woocommerce-MyAccount-navigation-link--orders'
 		},
 		{
-			href: '/dashboard/subscriptions',
+			href: '/dashboard/account/subscriptions',
 			label: 'My Subscriptions',
 			noIcon: true,
 			wooClass: 'woocommerce-MyAccount-navigation-link--subscriptions'
 		},
 		{
-			href: '/dashboard/coupons',
+			href: '/dashboard/account/coupons',
 			label: 'Coupons',
 			noIcon: true,
 			wooClass: 'woocommerce-MyAccount-navigation-link--wc-smart-coupons'
 		},
 		{
-			href: '/dashboard/addresses',
+			href: '/dashboard/account/edit-address',
 			label: 'Billing Address',
 			noIcon: true,
 			wooClass: 'woocommerce-MyAccount-navigation-link--edit-address'
 		},
 		{
-			href: '/dashboard/payment-methods',
+			href: '/dashboard/account/payment-methods',
 			label: 'Payment Methods',
 			noIcon: true,
 			wooClass: 'woocommerce-MyAccount-navigation-link--payment-methods'

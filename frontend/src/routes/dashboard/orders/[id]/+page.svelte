@@ -92,7 +92,7 @@
 				status: 'Pending Cancellation',
 				nextPayment: null,
 				total: 197.00,
-				viewUrl: '/dashboard/subscriptions/2176655'
+				viewUrl: '/dashboard/account/subscriptions/2176655'
 			}
 		],
 		customer: {
