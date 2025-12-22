@@ -318,6 +318,7 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		flex-shrink: 0;
+		align-self: flex-start;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
