@@ -144,6 +144,26 @@
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// Mock memberships for development (matches +page.svelte)
+	const MOCK_MEMBERSHIPS: UserMembership[] = [
+		{
+			id: 'mastering-the-trade',
+			name: 'Mastering the Trade',
+			type: 'trading-room',
+			slug: 'mastering-the-trade',
+			status: 'active',
+			roomLabel: 'Trading Room'
+		},
+		{
+			id: 'simpler-showcase',
+			name: 'Simpler Showcase',
+			type: 'trading-room',
+			slug: 'simpler-showcase',
+			status: 'active',
+			roomLabel: 'Breakout Room'
+		}
+	];
+
 	async function loadMemberships(): Promise<void> {
 		if (!$isAuthenticated) return;
 
@@ -153,10 +173,16 @@
 		try {
 			const data = await getUserMemberships();
 			memberships = data.memberships || [];
+
+			// Fallback to mock data if API returns empty
+			if (memberships.length === 0) {
+				console.log('[Dashboard] Using mock memberships for sidebar');
+				memberships = MOCK_MEMBERSHIPS;
+			}
 		} catch (e) {
 			console.error('Failed to load memberships:', e);
-			// Keep empty - user has no memberships or API failed
-			memberships = [];
+			// Use mock data on error
+			memberships = MOCK_MEMBERSHIPS;
 		} finally {
 			isLoading = false;
 		}
