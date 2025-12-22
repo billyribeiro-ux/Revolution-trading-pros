@@ -338,10 +338,16 @@
 		opacity: 1;
 		visibility: visible;
 		flex-shrink: 0;
-		position: sticky;
-		top: 0;
-		max-height: 100vh;
 		/* Sidebar sizes to content, ends where footer starts */
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__nav-secondary {
+			position: sticky !important;
+			top: 0 !important;
+			max-height: 100vh !important;
+			height: auto !important;
+		}
 	}
 
 	.dashboard__nav-secondary::-webkit-scrollbar {

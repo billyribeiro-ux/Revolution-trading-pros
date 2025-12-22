@@ -406,19 +406,20 @@
 		padding-bottom: 30px;
 		font-size: 16px;
 		background-color: var(--sidebar-bg-primary);
-		position: fixed;
-		bottom: var(--toggle-height); /* Ends where the full-width footer starts */
-		left: 0;
-		top: 0;
-		opacity: 0;
-		visibility: hidden;
 		overflow-x: hidden;
 		overflow-y: auto;
-		z-index: 100010;
 		transition: all 0.3s ease-in-out;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
 		scrollbar-color: rgba(255,255,255,0.2) transparent;
+		/* Mobile: fixed positioning */
+		position: fixed;
+		bottom: var(--toggle-height);
+		left: 0;
+		top: 0;
+		opacity: 0;
+		visibility: hidden;
+		z-index: 100010;
 	}
 
 	/* WordPress EXACT: Custom scrollbar for webkit browsers */
@@ -442,13 +443,16 @@
 	/* WordPress EXACT: Desktop state (min-width 1280px) */
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-primary {
-			display: block;
-			position: sticky;
-			top: 0;
-			bottom: auto; /* Reset mobile bottom constraint */
-			opacity: 1;
-			visibility: visible;
-			max-height: 100vh; /* Don't exceed viewport height */
+			position: sticky !important;
+			top: 0 !important;
+			bottom: auto !important;
+			left: auto !important;
+			right: auto !important;
+			opacity: 1 !important;
+			visibility: visible !important;
+			height: auto !important;
+			max-height: 100vh !important;
+			z-index: auto !important;
 			/* WordPress EXACT: Sidebar sizes to content, ends where footer starts */
 		}
 	}
