@@ -445,6 +445,7 @@
 			display: block;
 			position: sticky;
 			top: 0;
+			bottom: auto; /* Reset mobile bottom constraint */
 			opacity: 1;
 			visibility: visible;
 			max-height: 100vh; /* Don't exceed viewport height */
