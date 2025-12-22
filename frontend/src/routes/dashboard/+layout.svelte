@@ -231,7 +231,7 @@
 				class="dashboard__overlay"
 				class:is-visible={isSidebarOpen}
 				onclick={closeSidebar}
-				onkeydown={(e) => e.key === 'Enter' && closeSidebar()}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && closeSidebar()}
 				role="button"
 				tabindex={isSidebarOpen ? 0 : -1}
 				aria-label="Close navigation"
@@ -308,6 +308,7 @@
 	.dashboard {
 		display: flex;
 		flex-flow: row nowrap;
+		min-height: calc(100vh - 80px); /* Account for navbar height, stops at footer */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -320,7 +321,9 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		flex-shrink: 0;
-		align-self: stretch; /* Match height of content, not extend into footer */
+		align-self: flex-start; /* Start at top, don't stretch into footer */
+		height: 100%; /* Match parent height only */
+		max-height: 100%; /* Don't exceed parent container */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -450,9 +453,7 @@
 	}
 
 	/* WordPress EXACT: Toggle collapsed state - narrower when two-panel nav is showing */
-	.dashboard__toggle.is-collapsed {
-		/* Toggle still spans full width on mobile */
-	}
+	/* Toggle still spans full width on mobile - no additional styles needed */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   TWO-PANEL SIDEBAR (when has-secondary class is applied)

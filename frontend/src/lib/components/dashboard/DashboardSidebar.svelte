@@ -450,6 +450,8 @@
 			position: static;
 			opacity: 1;
 			visibility: visible;
+			height: 100%; /* Constrain to parent container height */
+			max-height: 100%; /* Don't exceed parent height */
 			/* WordPress EXACT: Sidebar sizes to content, ends where footer starts */
 		}
 	}
@@ -847,10 +849,7 @@
 		object-fit: cover;
 	}
 
-	/* Font Awesome icons fallback */
-	.dashboard__nav-item-icon i {
-		font-size: 16px;
-	}
+	/* Font Awesome icons fallback - removed as we're using Tabler Icons (SVG) */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   RESPONSIVE
