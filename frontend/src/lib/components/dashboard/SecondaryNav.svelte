@@ -232,7 +232,7 @@
      TEMPLATE - WordPress EXACT Structure
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<nav class="dashboard__nav-secondary" aria-label="Secondary navigation" style="position: sticky; top: 0; max-height: 100vh;">
+<nav class="dashboard__nav-secondary" aria-label="Secondary navigation">
 	<ul>
 		{#each navItems as item (item.href + item.label)}
 			<li
@@ -343,10 +343,8 @@
 
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-secondary {
-			position: sticky !important;
-			top: 0 !important;
-			max-height: 100vh !important;
-			height: auto !important;
+			position: relative;
+			height: auto;
 		}
 	}
 
