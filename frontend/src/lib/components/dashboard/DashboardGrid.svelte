@@ -63,7 +63,7 @@
 						{widget}
 						ondragstart={() => handleDragStart(widget)}
 						ondragend={handleDragEnd}
-						onlayoutchange={(e) => handleLayoutChange(widget, e.detail)}
+						onlayoutchange={(e: CustomEvent) => handleLayoutChange(widget, e.detail)}
 					/>
 				{/if}
 			{/each}
