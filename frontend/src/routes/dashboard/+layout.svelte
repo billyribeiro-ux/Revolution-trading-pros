@@ -72,6 +72,12 @@
 					</li>
 				</ul>
 
+				<!-- Premium Reports (future feature) -->
+				<p class="dashboard__nav-category">premium reports</p>
+				<ul class="dashboard__nav-list">
+					<!-- Future: Premium report items will go here -->
+				</ul>
+
 				<!-- Tools -->
 				<p class="dashboard__nav-category">tools</p>
 				<ul class="dashboard__nav-list">
