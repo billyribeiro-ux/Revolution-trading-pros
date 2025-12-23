@@ -124,14 +124,13 @@
 	.breadcrumbs {
 		background: #f8f9fa;
 		border-bottom: 1px solid #e5e7eb;
-		padding: 12px 30px;
+		padding: 12px 30px 12px 310px;
 		font-size: 13px;
 		font-family: 'Open Sans', sans-serif;
 	}
 
 	.breadcrumbs__container {
 		max-width: 1700px;
-		margin: 0 auto;
 	}
 
 	.breadcrumbs a {
@@ -222,7 +221,7 @@
 		color: hsla(0,0%,100%,0.5);
 		text-decoration: none;
 		font-size: 14px;
-		font-weight: 400;
+		font-weight: 300;
 		font-family: 'Open Sans', sans-serif;
 		transition: color 0.15s;
 	}
@@ -257,12 +256,12 @@
 	/* Category Headers */
 	.dashboard__nav-category {
 		padding: 30px 30px 10px;
-		color: hsla(0,0%,100%,0.7);
+		color: #fff;
 		text-transform: uppercase;
 		font-size: 10px;
-		font-weight: 600;
+		font-weight: 700;
 		letter-spacing: 0.5px;
-		margin: 0;
+		margin: 0 0 5px 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
