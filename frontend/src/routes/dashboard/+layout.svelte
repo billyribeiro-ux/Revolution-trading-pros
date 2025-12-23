@@ -11,7 +11,7 @@
 	// Tabler Icons - exact matches to screenshot
 	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
 	import IconPlayerPlayFilled from '@tabler/icons-svelte/icons/player-play-filled';
-	import IconAdjustments from '@tabler/icons-svelte/icons/adjustments';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
 	import IconHelpCircle from '@tabler/icons-svelte/icons/help-circle';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 
@@ -67,7 +67,7 @@
 					</li>
 					<li>
 						<a href="/dashboard/indicators">
-							<span class="dashboard__nav-icon"><IconAdjustments size={20} /></span>
+							<span class="dashboard__nav-icon"><IconChartCandle size={20} /></span>
 							<span>My Indicators</span>
 						</a>
 					</li>
@@ -223,7 +223,8 @@
 		color: hsla(0,0%,100%,0.5);
 		text-decoration: none;
 		font-size: 14px;
-		font-weight: 300;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
 		transition: color 0.15s;
 	}
 
