@@ -124,14 +124,13 @@
 	.breadcrumbs {
 		background: #f8f9fa;
 		border-bottom: 1px solid #e5e7eb;
-		padding: 12px 30px;
+		padding: 12px 30px 12px 310px;
 		font-size: 13px;
 		font-family: 'Open Sans', sans-serif;
 	}
 
 	.breadcrumbs__container {
 		max-width: 1700px;
-		margin: 0 auto;
 	}
 
 	.breadcrumbs a {
