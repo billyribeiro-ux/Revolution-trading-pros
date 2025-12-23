@@ -153,7 +153,7 @@
 			<!-- Page Header -->
 			<header class="cart-page-header">
 				<a href="/" class="back-link">
-					<IconArrowLeft size={18} />
+					<IconArrowLeft size={14} strokeWidth={2.5} />
 					<span>Continue Shopping</span>
 				</a>
 				<h1 class="page-title">CART</h1>
@@ -172,7 +172,7 @@
 							<p>Looks like you haven't added any products to your cart yet.</p>
 							<a href="/live-trading-rooms" class="btn btn-lg btn-orange">
 								Browse Trading Rooms
-								<IconArrowRight size={18} />
+								<IconArrowRight size={16} />
 							</a>
 						</div>
 					</div>
@@ -230,7 +230,7 @@
 																aria-label="Remove this item"
 																onclick={() => removeItem(item.id, item.interval)}
 															>
-																<IconX size={12} />&nbsp;Remove
+																<IconX size={13} />&nbsp;Remove
 															</button>
 														</div>
 														<div class="product-price">
@@ -281,7 +281,7 @@
 														<span class="coupon-label">Coupon: {appliedCoupon.code}</span>
 														<span class="coupon-discount">-${discountAmount.toFixed(2)}</span>
 														<button type="button" class="remove-coupon" onclick={removeCouponCode}>
-															<IconX size={12} />
+															<IconX size={14} />
 														</button>
 													</div>
 												{/if}
@@ -357,7 +357,7 @@
 
 												<!-- Security Badge -->
 												<div class="security-badge">
-													<IconShieldCheck size={20} />
+													<IconShieldCheck size={13} />
 													<span>Secure checkout guaranteed</span>
 												</div>
 											</div>
