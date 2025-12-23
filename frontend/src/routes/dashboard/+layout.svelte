@@ -268,14 +268,16 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if $isAuthenticated || $authStore.isInitializing}
-	<!-- Revolution Trading Pros NavBar always at top -->
-	<NavBar />
+	<!-- WordPress EXACT: Page wrapper ensures footer at bottom -->
+	<div class="dashboard-page">
+		<!-- Revolution Trading Pros NavBar always at top -->
+		<NavBar />
 
-	<!-- WordPress EXACT: Breadcrumb navigation between NavBar and dashboard -->
-	<Breadcrumb items={breadcrumbItems} />
+		<!-- WordPress EXACT: Breadcrumb navigation between NavBar and dashboard -->
+		<Breadcrumb items={breadcrumbItems} />
 
-	<!-- WordPress EXACT: .dashboard (root container) -->
-	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
+		<!-- WordPress EXACT: .dashboard (root container) -->
+		<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
 		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, overlay, then secondary nav -->
 		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen} class:has-secondary={secondaryNavSection !== null}>
@@ -350,11 +352,12 @@
 				{@render children()}
 			{/if}
 		</main>
-	</div>
+		</div>
 
-	<!-- WordPress EXACT: Footer is OUTSIDE dashboard, full width -->
-	<!-- Sidebar ends where footer starts -->
-	<Footer />
+		<!-- WordPress EXACT: Footer is OUTSIDE dashboard, full width -->
+		<!-- Sidebar ends where footer starts -->
+		<Footer />
+	</div>
 {:else}
 	<div class="dashboard-loading" aria-busy="true">
 		<div class="loading-spinner"></div>
@@ -367,6 +370,27 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE WRAPPER - Ensures footer at bottom
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard-page {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+		min-height: 100dvh; /* Dynamic viewport height for mobile */
+	}
+
+	/* Dashboard area grows to fill available space, pushing footer down */
+	.dashboard-page > :global(.dashboard) {
+		flex: 1 0 auto;
+	}
+
+	/* Footer stays at bottom */
+	.dashboard-page > :global(.footer) {
+		flex-shrink: 0;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   CSS CUSTOM PROPERTIES (WordPress Reference)
 	   ═══════════════════════════════════════════════════════════════════════════ */
