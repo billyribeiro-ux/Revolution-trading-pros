@@ -23,7 +23,7 @@
 	<!-- BREADCRUMB -->
 	<nav class="breadcrumbs">
 		<div class="breadcrumbs__container">
-			<span><a href="#">Home</a></span>
+			<span><a href="/">Home</a></span>
 			<span class="separator">/</span>
 			<span><strong>Member Dashboard</strong></span>
 		</div>
@@ -37,7 +37,7 @@
 			<nav class="dashboard__nav-primary">
 
 				<!-- Profile -->
-				<a href="#" class="dashboard__profile">
+				<a href="/dashboard/account" class="dashboard__profile">
 					<span class="dashboard__profile-photo"></span>
 					<span class="dashboard__profile-name">John Doe</span>
 				</a>
@@ -45,19 +45,19 @@
 				<!-- Main Links -->
 				<ul class="dashboard__nav-list">
 					<li class="is-active">
-						<a href="#">
+						<a href="/dashboard">
 							<span class="dashboard__nav-icon">🏠</span>
 							<span>Member Dashboard</span>
 						</a>
 					</li>
 					<li>
-						<a href="#">
+						<a href="/dashboard/classes">
 							<span class="dashboard__nav-icon">📹</span>
 							<span>My Classes</span>
 						</a>
 					</li>
 					<li>
-						<a href="#">
+						<a href="/dashboard/indicators">
 							<span class="dashboard__nav-icon">📊</span>
 							<span>My Indicators</span>
 						</a>
@@ -68,13 +68,13 @@
 				<p class="dashboard__nav-category">MEMBERSHIPS</p>
 				<ul class="dashboard__nav-list">
 					<li>
-						<a href="#">
+						<a href="/dashboard/mastering-the-trade">
 							<span class="dashboard__nav-icon">👥</span>
 							<span>Mastering the Trade</span>
 						</a>
 					</li>
 					<li>
-						<a href="#">
+						<a href="/dashboard/simpler-showcase">
 							<span class="dashboard__nav-icon">👥</span>
 							<span>Simpler Showcase</span>
 						</a>
@@ -85,13 +85,13 @@
 				<p class="dashboard__nav-category">TOOLS</p>
 				<ul class="dashboard__nav-list">
 					<li>
-						<a href="#">
+						<a href="/dashboard/watchlist">
 							<span class="dashboard__nav-icon">📋</span>
 							<span>Weekly Watchlist</span>
 						</a>
 					</li>
 					<li>
-						<a href="#">
+						<a href="/dashboard/support">
 							<span class="dashboard__nav-icon">🎧</span>
 							<span>Support</span>
 						</a>
@@ -102,7 +102,7 @@
 				<p class="dashboard__nav-category">ACCOUNT</p>
 				<ul class="dashboard__nav-list">
 					<li>
-						<a href="#">
+						<a href="/dashboard/account">
 							<span class="dashboard__nav-icon">⚙️</span>
 							<span>My Account</span>
 						</a>
