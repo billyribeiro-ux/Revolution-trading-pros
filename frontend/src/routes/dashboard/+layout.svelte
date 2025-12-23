@@ -22,6 +22,7 @@
 	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import SecondaryNav from '$lib/components/dashboard/SecondaryNav.svelte';
+	import Breadcrumb from '$lib/components/dashboard/Breadcrumb.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
@@ -95,6 +96,62 @@
 		if (isAccountSection) return 'account';
 		if (isMembershipSection) return 'membership';
 		return null;
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// BREADCRUMB ITEMS
+	// WordPress EXACT: Home / Member Dashboard / Page Title
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const breadcrumbItems = $derived.by(() => {
+		const items: { label: string; href?: string }[] = [
+			{ label: 'Home', href: '/' }
+		];
+
+		// Always add Member Dashboard as second item
+		if (currentPath === '/dashboard') {
+			items.push({ label: 'Member Dashboard' });
+		} else {
+			items.push({ label: 'Member Dashboard', href: '/dashboard' });
+
+			// Add page-specific breadcrumb
+			if (currentPath.startsWith('/dashboard/account')) {
+				const subPath = currentPath.replace('/dashboard/account', '').replace(/^\//, '');
+				if (subPath) {
+					items.push({ label: 'My Account', href: '/dashboard/account' });
+					// Map sub-paths to labels
+					const subPathLabels: Record<string, string> = {
+						'profile': 'Profile',
+						'orders': 'Orders',
+						'subscriptions': 'Subscriptions',
+						'payment-methods': 'Payment Methods',
+						'addresses': 'Addresses',
+						'downloads': 'Downloads'
+					};
+					items.push({ label: subPathLabels[subPath] || subPath });
+				} else {
+					items.push({ label: 'My Account' });
+				}
+			} else if (currentPath.startsWith('/dashboard/courses')) {
+				items.push({ label: 'My Classes' });
+			} else if (currentPath.startsWith('/dashboard/indicators')) {
+				items.push({ label: 'My Indicators' });
+			} else if (currentPath.startsWith('/dashboard/ww')) {
+				items.push({ label: 'Weekly Watchlist' });
+			} else if (currentPath.startsWith('/dashboard/support')) {
+				items.push({ label: 'Support' });
+			} else if (currentPath.startsWith('/dashboard/orders')) {
+				items.push({ label: 'Orders' });
+			} else if (membershipSlug && currentMembership) {
+				// Membership section breadcrumb
+				items.push({ label: currentMembership.name });
+			} else if (membershipSlug) {
+				// Fallback for membership without name
+				items.push({ label: membershipSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) });
+			}
+		}
+
+		return items;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -211,11 +268,16 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 {#if $isAuthenticated || $authStore.isInitializing}
-	<!-- Revolution Trading Pros NavBar always at top -->
-	<NavBar />
+	<!-- WordPress EXACT: Page wrapper ensures footer at bottom -->
+	<div class="dashboard-page">
+		<!-- Revolution Trading Pros NavBar always at top -->
+		<NavBar />
 
-	<!-- WordPress EXACT: .dashboard (root container) -->
-	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
+		<!-- WordPress EXACT: Breadcrumb navigation between NavBar and dashboard -->
+		<Breadcrumb items={breadcrumbItems} />
+
+		<!-- WordPress EXACT: .dashboard (root container) -->
+		<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
 
 		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, overlay, then secondary nav -->
 		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen} class:has-secondary={secondaryNavSection !== null}>
@@ -290,11 +352,12 @@
 				{@render children()}
 			{/if}
 		</main>
-	</div>
+		</div>
 
-	<!-- WordPress EXACT: Footer is OUTSIDE dashboard, full width -->
-	<!-- Sidebar ends where footer starts -->
-	<Footer />
+		<!-- WordPress EXACT: Footer is OUTSIDE dashboard, full width -->
+		<!-- Sidebar ends where footer starts -->
+		<Footer />
+	</div>
 {:else}
 	<div class="dashboard-loading" aria-busy="true">
 		<div class="loading-spinner"></div>
@@ -307,6 +370,27 @@
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE WRAPPER - Ensures footer at bottom
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard-page {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+		min-height: 100dvh; /* Dynamic viewport height for mobile */
+	}
+
+	/* Dashboard area grows to fill available space, pushing footer down */
+	.dashboard-page > :global(.dashboard) {
+		flex: 1 0 auto;
+	}
+
+	/* Footer stays at bottom */
+	.dashboard-page > :global(.footer) {
+		flex-shrink: 0;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   CSS CUSTOM PROPERTIES (WordPress Reference)
 	   ═══════════════════════════════════════════════════════════════════════════ */
@@ -331,8 +415,7 @@
 		display: flex;
 		flex-flow: row nowrap;
 		position: relative;
-		/* Remove min-height: 100vh - let content determine height */
-		/* This allows footer to be full width below the dashboard */
+		align-items: flex-start; /* CRITICAL: Prevent children from stretching vertically */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -345,7 +428,8 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		flex-shrink: 0;
-		align-self: flex-start;
+		align-self: flex-start; /* Redundant but explicit */
+		height: fit-content; /* Force sidebar to be content height only */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -355,7 +439,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-width: 0;
-		min-height: auto; /* Content determines height, stops at footer */
+		min-height: 0; /* Prevent min-height: auto from inheriting page min-heights */
 		background-color: var(--dashboard-bg);
 	}
 
