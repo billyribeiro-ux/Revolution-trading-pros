@@ -8,7 +8,12 @@
 		onlayoutchange?: (event: CustomEvent<any>) => void;
 	}
 
-	let { widget, ondragstart, ondragend, onlayoutchange }: Props = $props();
+	let { 
+		widget,
+		ondragstart,
+		ondragend,
+		onlayoutchange
+	}: Props = $props();
 
 	function handleDragStart() {
 		ondragstart?.();
