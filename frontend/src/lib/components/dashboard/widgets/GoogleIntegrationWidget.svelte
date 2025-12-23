@@ -228,7 +228,7 @@
 					role="button"
 					tabindex="0"
 					onclick={() => handleConnect(integration)}
-					onkeypress={(e) => e.key === 'Enter' && handleConnect(integration)}
+					onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleConnect(integration)}
 				>
 					<!-- Status Indicator -->
 					<div class="status-dot" class:connected={integration.connected}>
@@ -344,7 +344,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="modal-content"
-			onclick={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
 			in:scale={{ start: 0.9, duration: 300, easing: backOut }}
 		>
 			<h3>Disconnect {selectedIntegration.name}?</h3>
