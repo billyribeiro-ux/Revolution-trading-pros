@@ -22,6 +22,7 @@
 	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import SecondaryNav from '$lib/components/dashboard/SecondaryNav.svelte';
+	import Breadcrumb from '$lib/components/dashboard/Breadcrumb.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
@@ -95,6 +96,62 @@
 		if (isAccountSection) return 'account';
 		if (isMembershipSection) return 'membership';
 		return null;
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// BREADCRUMB ITEMS
+	// WordPress EXACT: Home / Member Dashboard / Page Title
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const breadcrumbItems = $derived.by(() => {
+		const items: { label: string; href?: string }[] = [
+			{ label: 'Home', href: '/' }
+		];
+
+		// Always add Member Dashboard as second item
+		if (currentPath === '/dashboard') {
+			items.push({ label: 'Member Dashboard' });
+		} else {
+			items.push({ label: 'Member Dashboard', href: '/dashboard' });
+
+			// Add page-specific breadcrumb
+			if (currentPath.startsWith('/dashboard/account')) {
+				const subPath = currentPath.replace('/dashboard/account', '').replace(/^\//, '');
+				if (subPath) {
+					items.push({ label: 'My Account', href: '/dashboard/account' });
+					// Map sub-paths to labels
+					const subPathLabels: Record<string, string> = {
+						'profile': 'Profile',
+						'orders': 'Orders',
+						'subscriptions': 'Subscriptions',
+						'payment-methods': 'Payment Methods',
+						'addresses': 'Addresses',
+						'downloads': 'Downloads'
+					};
+					items.push({ label: subPathLabels[subPath] || subPath });
+				} else {
+					items.push({ label: 'My Account' });
+				}
+			} else if (currentPath.startsWith('/dashboard/courses')) {
+				items.push({ label: 'My Classes' });
+			} else if (currentPath.startsWith('/dashboard/indicators')) {
+				items.push({ label: 'My Indicators' });
+			} else if (currentPath.startsWith('/dashboard/ww')) {
+				items.push({ label: 'Weekly Watchlist' });
+			} else if (currentPath.startsWith('/dashboard/support')) {
+				items.push({ label: 'Support' });
+			} else if (currentPath.startsWith('/dashboard/orders')) {
+				items.push({ label: 'Orders' });
+			} else if (membershipSlug && currentMembership) {
+				// Membership section breadcrumb
+				items.push({ label: currentMembership.name });
+			} else if (membershipSlug) {
+				// Fallback for membership without name
+				items.push({ label: membershipSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) });
+			}
+		}
+
+		return items;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -213,6 +270,9 @@
 {#if $isAuthenticated || $authStore.isInitializing}
 	<!-- Revolution Trading Pros NavBar always at top -->
 	<NavBar />
+
+	<!-- WordPress EXACT: Breadcrumb navigation between NavBar and dashboard -->
+	<Breadcrumb items={breadcrumbItems} />
 
 	<!-- WordPress EXACT: .dashboard (root container) -->
 	<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
