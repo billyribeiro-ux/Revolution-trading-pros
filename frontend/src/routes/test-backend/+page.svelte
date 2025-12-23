@@ -364,14 +364,14 @@
 	<div
 		class="popup-overlay"
 		onclick={closePopup}
-		onkeydown={(e) => e.key === 'Escape' && closePopup()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closePopup()}
 		role="button"
 		tabindex="0"
 	>
 		<div
 			class="popup-content"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="dialog"
 			tabindex="-1"
 		>
