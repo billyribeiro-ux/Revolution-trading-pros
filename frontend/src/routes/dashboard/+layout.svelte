@@ -59,13 +59,13 @@
 						</a>
 					</li>
 					<li>
-						<a href="/dashboard/classes">
+						<a href="#">
 							<span class="dashboard__nav-icon"><IconPlayerPlayFilled size={20} /></span>
 							<span>My Classes</span>
 						</a>
 					</li>
 					<li>
-						<a href="/dashboard/indicators">
+						<a href="#">
 							<span class="dashboard__nav-icon"><IconChartCandle size={20} /></span>
 							<span>My Indicators</span>
 						</a>
@@ -76,7 +76,7 @@
 				<p class="dashboard__nav-category">TOOLS</p>
 				<ul class="dashboard__nav-list">
 					<li>
-						<a href="/dashboard/support">
+						<a href="#">
 							<span class="dashboard__nav-icon"><IconHelpCircle size={20} /></span>
 							<span>Support</span>
 						</a>
@@ -87,7 +87,7 @@
 				<p class="dashboard__nav-category">ACCOUNT</p>
 				<ul class="dashboard__nav-list">
 					<li>
-						<a href="/dashboard/account">
+						<a href="#">
 							<span class="dashboard__nav-icon"><IconSettings size={20} /></span>
 							<span>My Account</span>
 						</a>
