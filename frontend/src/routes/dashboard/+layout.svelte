@@ -1,758 +1,287 @@
 <script lang="ts">
 	/**
-	 * Dashboard Layout - Svelte 5 / SvelteKit Implementation
-	 * ═══════════════════════════════════════════════════════════════════════════
-	 *
-	 * Exact match of WordPress Revolution Trading dashboard structure:
-	 * - .dashboard (root container)
-	 * - .dashboard__sidebar (aside - left navigation)
-	 * - .dashboard__main (main content area)
-	 * - .dashboard__header (page header with title + actions)
-	 * - .dashboard__content (content wrapper)
-	 * - .dashboard__overlay (mobile menu overlay)
-	 * - .dashboard__toggle (mobile toggle button)
-	 *
-	 * @version 4.0.0 (WordPress-exact / December 2025)
+	 * Dashboard Layout - VISUAL SHELL ONLY
+	 * No functionality, just structure matching WordPress
 	 */
-
-	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
-	import { getUserMemberships, type UserMembership } from '$lib/api/user-memberships';
-	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
-	import SecondaryNav from '$lib/components/dashboard/SecondaryNav.svelte';
-	import Breadcrumb from '$lib/components/dashboard/Breadcrumb.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// TYPES & PROPS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	interface Props {
-		children: Snippet;
-	}
-
-	let { children }: Props = $props();
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE (Svelte 5 Runes) - Start empty, load from API
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	let memberships = $state<UserMembership[]>([]);
-	let isLoading = $state(true);
-	let isSidebarOpen = $state(false);
-	let error = $state<string | null>(null);
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	const userName = $derived($user?.name || ($user?.email ? $user.email.split('@')[0] : null) || 'My Account');
-	const userEmail = $derived($user?.email || '');
-	const userAvatar = $derived($user?.avatar || '');
-	const currentPath = $derived($page.url.pathname);
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// TWO-PANEL NAVIGATION STATE
-	// Determines when to show collapsed primary + secondary nav
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Check if we're on an account page (shows account secondary nav)
-	const isAccountSection = $derived(
-		currentPath.startsWith('/dashboard/account') ||
-		currentPath.startsWith('/dashboard/orders')
-	);
-
-	// Check if we're on a membership dashboard (shows membership secondary nav)
-	// Matches /dashboard/[slug] but NOT /dashboard, /dashboard/account, /dashboard/courses, etc.
-	const staticRoutes = ['account', 'orders', 'courses', 'indicators', 'ww', 'support', 'logout', 'watchlist'];
-
-	const membershipSlug = $derived.by(() => {
-		const match = currentPath.match(/^\/dashboard\/([^/]+)/);
-		if (!match) return null;
-		const slug = match[1];
-		if (staticRoutes.includes(slug)) return null;
-		return slug;
-	});
-
-	const isMembershipSection = $derived(membershipSlug !== null);
-
-	// Get the membership name from the memberships list
-	const currentMembership = $derived(
-		membershipSlug ? memberships.find(m => m.slug === membershipSlug) : null
-	);
-	const membershipName = $derived(currentMembership?.name || '');
-
-	// Sidebar should be collapsed when in account OR membership section
-	// WordPress EXACT: Both show collapsed primary (60px) + secondary nav (220px)
-	const isSidebarCollapsed = $derived(isAccountSection || isMembershipSection);
-
-	// Determine which secondary nav section to show
-	// WordPress EXACT: Both account and membership sections show vertical secondary nav
-	const secondaryNavSection = $derived.by((): 'account' | 'membership' | null => {
-		if (isAccountSection) return 'account';
-		if (isMembershipSection) return 'membership';
-		return null;
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// BREADCRUMB ITEMS
-	// WordPress EXACT: Home / Member Dashboard / Page Title
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	const breadcrumbItems = $derived.by(() => {
-		const items: { label: string; href?: string }[] = [
-			{ label: 'Home', href: '/' }
-		];
-
-		// Always add Member Dashboard as second item
-		if (currentPath === '/dashboard') {
-			items.push({ label: 'Member Dashboard' });
-		} else {
-			items.push({ label: 'Member Dashboard', href: '/dashboard' });
-
-			// Add page-specific breadcrumb
-			if (currentPath.startsWith('/dashboard/account')) {
-				const subPath = currentPath.replace('/dashboard/account', '').replace(/^\//, '');
-				if (subPath) {
-					items.push({ label: 'My Account', href: '/dashboard/account' });
-					// Map sub-paths to labels
-					const subPathLabels: Record<string, string> = {
-						'profile': 'Profile',
-						'orders': 'Orders',
-						'subscriptions': 'Subscriptions',
-						'payment-methods': 'Payment Methods',
-						'addresses': 'Addresses',
-						'downloads': 'Downloads'
-					};
-					items.push({ label: subPathLabels[subPath] || subPath });
-				} else {
-					items.push({ label: 'My Account' });
-				}
-			} else if (currentPath.startsWith('/dashboard/courses')) {
-				items.push({ label: 'My Classes' });
-			} else if (currentPath.startsWith('/dashboard/indicators')) {
-				items.push({ label: 'My Indicators' });
-			} else if (currentPath.startsWith('/dashboard/ww')) {
-				items.push({ label: 'Weekly Watchlist' });
-			} else if (currentPath.startsWith('/dashboard/support')) {
-				items.push({ label: 'Support' });
-			} else if (currentPath.startsWith('/dashboard/orders')) {
-				items.push({ label: 'Orders' });
-			} else if (membershipSlug && currentMembership) {
-				// Membership section breadcrumb
-				items.push({ label: currentMembership.name });
-			} else if (membershipSlug) {
-				// Fallback for membership without name
-				items.push({ label: membershipSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) });
-			}
-		}
-
-		return items;
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Authentication guard and data loading
-	$effect(() => {
-		if (!browser) return;
-		if ($authStore.isInitializing) return;
-
-		if (!$isAuthenticated) {
-			const redirectUrl = encodeURIComponent($page.url.pathname + $page.url.search);
-			goto(`/login?redirect=${redirectUrl}`, { replaceState: true });
-			return;
-		}
-
-		loadMemberships();
-	});
-
-	// Close sidebar on route change
-	$effect(() => {
-		if (browser && isSidebarOpen && currentPath) {
-			closeSidebar();
-		}
-	});
-
-	// Handle body scroll lock (WordPress: html--dashboard-menu-open)
-	$effect(() => {
-		if (!browser) return;
-
-		if (isSidebarOpen) {
-			document.documentElement.classList.add('html--dashboard-menu-open');
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.documentElement.classList.remove('html--dashboard-menu-open');
-			document.body.style.overflow = '';
-		}
-
-		return () => {
-			document.documentElement.classList.remove('html--dashboard-menu-open');
-			document.body.style.overflow = '';
-		};
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Mock memberships for development (matches +page.svelte)
-	const MOCK_MEMBERSHIPS: UserMembership[] = [
-		{
-			id: 'mastering-the-trade',
-			name: 'Mastering the Trade',
-			type: 'trading-room',
-			slug: 'mastering-the-trade',
-			status: 'active',
-			roomLabel: 'Trading Room'
-		},
-		{
-			id: 'simpler-showcase',
-			name: 'Simpler Showcase',
-			type: 'trading-room',
-			slug: 'simpler-showcase',
-			status: 'active',
-			roomLabel: 'Breakout Room'
-		}
-	];
-
-	async function loadMemberships(): Promise<void> {
-		if (!$isAuthenticated) return;
-
-		isLoading = true;
-		error = null;
-
-		try {
-			const data = await getUserMemberships();
-			memberships = data.memberships || [];
-
-			// Fallback to mock data if API returns empty
-			if (memberships.length === 0) {
-				console.log('[Dashboard] Using mock memberships for sidebar');
-				memberships = MOCK_MEMBERSHIPS;
-			}
-		} catch (e) {
-			console.error('Failed to load memberships:', e);
-			// Use mock data on error
-			memberships = MOCK_MEMBERSHIPS;
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	function toggleSidebar(): void {
-		isSidebarOpen = !isSidebarOpen;
-	}
-
-	function closeSidebar(): void {
-		isSidebarOpen = false;
-	}
+	let { children }: { children: Snippet } = $props();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     HEAD
-     ═══════════════════════════════════════════════════════════════════════════ -->
-
 <svelte:head>
-	<title>{$page.data?.title || 'Dashboard'} | Revolution Trading Pros</title>
-	<meta name="robots" content="noindex, nofollow" />
+	<title>Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE - WordPress Exact Structure
-     ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE WRAPPER -->
+<div class="dashboard-page">
 
-{#if $isAuthenticated || $authStore.isInitializing}
-	<!-- WordPress EXACT: Page wrapper ensures footer at bottom -->
-	<div class="dashboard-page">
-		<!-- Revolution Trading Pros NavBar always at top -->
-		<NavBar />
+	<!-- NAVBAR -->
+	<NavBar />
 
-		<!-- WordPress EXACT: Breadcrumb navigation between NavBar and dashboard -->
-		<Breadcrumb items={breadcrumbItems} />
+	<!-- BREADCRUMB -->
+	<nav class="breadcrumbs">
+		<div class="breadcrumbs__container">
+			<span><a href="#">Home</a></span>
+			<span class="separator">/</span>
+			<span><strong>Member Dashboard</strong></span>
+		</div>
+	</nav>
 
-		<!-- WordPress EXACT: .dashboard (root container) -->
-		<div class="dashboard" class:dashboard--menu-open={isSidebarOpen}>
+	<!-- DASHBOARD -->
+	<div class="dashboard">
 
-		<!-- WordPress EXACT: .dashboard__sidebar (aside) - Contains nav, toggle, overlay, then secondary nav -->
-		<aside class="dashboard__sidebar" class:is-open={isSidebarOpen} class:has-secondary={secondaryNavSection !== null}>
-			<!-- Primary Nav (full or collapsed) - WordPress: .dashboard__nav-primary / .dashboard__nav-primary.is-collapsed -->
-			<DashboardSidebar
-				{memberships}
-				bind:isMobileOpen={isSidebarOpen}
-				onCloseMobile={closeSidebar}
-				{userName}
-				{userEmail}
-				{userAvatar}
-				isCollapsed={isSidebarCollapsed}
-			/>
+		<!-- SIDEBAR -->
+		<aside class="dashboard__sidebar">
+			<nav class="dashboard__nav-primary">
 
-			<!-- WordPress EXACT: .dashboard__toggle (comes BEFORE secondary nav) -->
-			<footer class="dashboard__toggle" class:is-collapsed={isSidebarCollapsed}>
-				<button
-					class="dashboard__toggle-button"
-					onclick={toggleSidebar}
-					data-toggle-dashboard-menu
-					aria-label={isSidebarOpen ? 'Close Dashboard Menu' : 'Open Dashboard Menu'}
-					aria-expanded={isSidebarOpen}
-				>
-					<div class="dashboard__toggle-button-icon">
-						<span></span>
-						<span></span>
-						<span></span>
-					</div>
-					<span class="framework__toggle-button-label">Dashboard Menu</span>
-				</button>
-			</footer>
+				<!-- Profile -->
+				<a href="#" class="dashboard__profile">
+					<span class="dashboard__profile-photo"></span>
+					<span class="dashboard__profile-name">John Doe</span>
+				</a>
 
-			<!-- WordPress EXACT: .dashboard__overlay (comes BEFORE secondary nav) -->
-			<div
-				class="dashboard__overlay"
-				class:is-visible={isSidebarOpen}
-				onclick={closeSidebar}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && closeSidebar()}
-				role="button"
-				tabindex={isSidebarOpen ? 0 : -1}
-				aria-label="Close navigation"
-				data-toggle-dashboard-menu
-			></div>
+				<!-- Main Links -->
+				<ul class="dashboard__nav-list">
+					<li class="is-active">
+						<a href="#">
+							<span class="dashboard__nav-icon">🏠</span>
+							<span>Member Dashboard</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">📹</span>
+							<span>My Classes</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">📊</span>
+							<span>My Indicators</span>
+						</a>
+					</li>
+				</ul>
 
-			<!-- WordPress EXACT: .dashboard__nav-secondary (LAST in sidebar, after toggle and overlay) -->
-			{#if secondaryNavSection}
-				<SecondaryNav
-					section={secondaryNavSection}
-					membershipSlug={membershipSlug || ''}
-					{membershipName}
-					{memberships}
-				/>
-			{/if}
+				<!-- Memberships -->
+				<p class="dashboard__nav-category">MEMBERSHIPS</p>
+				<ul class="dashboard__nav-list">
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">👥</span>
+							<span>Mastering the Trade</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">👥</span>
+							<span>Simpler Showcase</span>
+						</a>
+					</li>
+				</ul>
+
+				<!-- Tools -->
+				<p class="dashboard__nav-category">TOOLS</p>
+				<ul class="dashboard__nav-list">
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">📋</span>
+							<span>Weekly Watchlist</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">🎧</span>
+							<span>Support</span>
+						</a>
+					</li>
+				</ul>
+
+				<!-- Account -->
+				<p class="dashboard__nav-category">ACCOUNT</p>
+				<ul class="dashboard__nav-list">
+					<li>
+						<a href="#">
+							<span class="dashboard__nav-icon">⚙️</span>
+							<span>My Account</span>
+						</a>
+					</li>
+				</ul>
+
+			</nav>
 		</aside>
 
-		<!-- WordPress EXACT: .dashboard__main -->
-		<main class="dashboard__main" aria-label="Dashboard content">
-			{#if isLoading}
-				<div class="dashboard-loading" aria-busy="true" aria-label="Loading dashboard">
-					<div class="loading-spinner"></div>
-					<p>Loading your dashboard...</p>
-				</div>
-			{:else if error}
-				<div class="dashboard-error" role="alert">
-					<div class="error-icon">!</div>
-					<p class="error-message">{error}</p>
-					<button class="retry-btn" onclick={loadMemberships}>
-						Try Again
-					</button>
-				</div>
-			{:else}
-				{@render children()}
-			{/if}
+		<!-- MAIN CONTENT -->
+		<main class="dashboard__main">
+			{@render children()}
 		</main>
-		</div>
 
-		<!-- WordPress EXACT: Footer is OUTSIDE dashboard, full width -->
-		<!-- Sidebar ends where footer starts -->
-		<Footer />
 	</div>
-{:else}
-	<div class="dashboard-loading" aria-busy="true">
-		<div class="loading-spinner"></div>
-		<p>Redirecting to login...</p>
-	</div>
-{/if}
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - WordPress Exact CSS
-     ═══════════════════════════════════════════════════════════════════════════ -->
+	<!-- FOOTER -->
+	<Footer />
+</div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE WRAPPER - Ensures footer at bottom
+	   PAGE WRAPPER
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
 	.dashboard-page {
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-		min-height: 100dvh; /* Dynamic viewport height for mobile */
-	}
-
-	/* Dashboard area grows to fill available space, pushing footer down */
-	.dashboard-page > :global(.dashboard) {
-		flex: 1 0 auto;
-	}
-
-	/* Footer stays at bottom */
-	.dashboard-page > :global(.footer) {
-		flex-shrink: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES (WordPress Reference)
+	   BREADCRUMBS
 	   ═══════════════════════════════════════════════════════════════════════════ */
+	.breadcrumbs {
+		background: #f8f9fa;
+		border-bottom: 1px solid #e5e7eb;
+		padding: 12px 30px;
+		font-size: 13px;
+		font-family: 'Open Sans', sans-serif;
+	}
 
-	/* WordPress EXACT: CSS Custom Properties */
-	:root {
-		--dashboard-bg: #f4f4f4;
-		--dashboard-sidebar-bg: #0f2d41;
-		--dashboard-toggle-bg: #0d2532;
-		--dashboard-sidebar-width: 280px;
-		--dashboard-toggle-height: 50px;
-		--dashboard-transition: all 0.3s ease-in-out;
-		--loading-color: #0984ae;
-		--error-color: #ef4444;
+	.breadcrumbs__container {
+		max-width: 1700px;
+		margin: 0 auto;
+	}
+
+	.breadcrumbs a {
+		color: #6b7280;
+		text-decoration: none;
+	}
+
+	.breadcrumbs a:hover {
+		color: #0984ae;
+		text-decoration: underline;
+	}
+
+	.breadcrumbs .separator {
+		margin: 0 8px;
+		color: #9ca3af;
+	}
+
+	.breadcrumbs strong {
+		color: #333;
+		font-weight: 600;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD ROOT (WordPress EXACT: .dashboard)
+	   DASHBOARD CONTAINER
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
 	.dashboard {
 		display: flex;
-		flex-flow: row nowrap;
-		position: relative;
-		align-items: flex-start; /* CRITICAL: Prevent children from stretching vertically */
+		flex: 1;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD SIDEBAR (WordPress EXACT: .dashboard__sidebar)
-	   Sidebar ends where footer starts - does NOT extend into footer
+	   SIDEBAR
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
 	.dashboard__sidebar {
-		display: flex;
-		flex: 0 0 auto;
-		flex-flow: row nowrap;
-		flex-shrink: 0;
-		align-self: flex-start; /* Redundant but explicit */
-		height: fit-content; /* Force sidebar to be content height only */
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD MAIN (WordPress EXACT: .dashboard__main)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__main {
-		flex: 1 1 auto;
-		min-width: 0;
-		min-height: 0; /* Prevent min-height: auto from inheriting page min-heights */
-		background-color: var(--dashboard-bg);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD OVERLAY (WordPress EXACT: .dashboard__overlay)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__overlay {
-		background-color: rgba(0, 0, 0, 0.65);
-		bottom: 0;
-		left: 0;
-		position: fixed;
-		right: 0;
-		top: 0;
-		z-index: 100009;
-		border: none;
-		cursor: pointer;
-		opacity: 0;
-		visibility: hidden;
-		transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-	}
-
-	.dashboard__overlay.is-visible {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	.dashboard__overlay:focus {
-		outline: none;
-	}
-
-	/* WordPress EXACT: Overlay only visible on mobile */
-	@media screen and (min-width: 1280px) {
-		.dashboard__overlay {
-			display: none;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD TOGGLE FOOTER (WordPress EXACT: .dashboard__toggle)
-	   Mobile-only toggle bar at bottom - HIDDEN on desktop (1280px+)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__toggle {
-		background-color: var(--dashboard-toggle-bg);
-		height: var(--dashboard-toggle-height);
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 100011;
-	}
-
-	/* WordPress EXACT: Hide toggle on desktop - only visible on mobile */
-	@media screen and (min-width: 1280px) {
-		.dashboard__toggle {
-			display: none;
-		}
-	}
-
-	/* WordPress EXACT: .dashboard__toggle-button */
-	.dashboard__toggle-button {
-		background: none;
-		color: #fff;
-		height: var(--dashboard-toggle-height);
-		padding: 0 20px 0 60px;
-		position: relative;
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		width: 100%;
-	}
-
-	/* WordPress EXACT: .dashboard__toggle-button-icon (hamburger) */
-	.dashboard__toggle-button-icon {
-		position: absolute;
-		top: 50%;
-		left: 20px;
-		margin-top: -9px;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		width: 24px;
-		height: 18px;
-	}
-
-	.dashboard__toggle-button-icon span {
-		display: block;
-		width: 100%;
-		height: 2px;
-		background: #fff;
-		border-radius: 1px;
-		transition: var(--dashboard-transition);
-	}
-
-	/* Animate to X when open */
-	.dashboard--menu-open .dashboard__toggle-button-icon span:nth-child(1) {
-		transform: translateY(8px) rotate(45deg);
-	}
-
-	.dashboard--menu-open .dashboard__toggle-button-icon span:nth-child(2) {
-		opacity: 0;
-	}
-
-	.dashboard--menu-open .dashboard__toggle-button-icon span:nth-child(3) {
-		transform: translateY(-8px) rotate(-45deg);
-	}
-
-	/* WordPress EXACT: .framework__toggle-button-label */
-	.framework__toggle-button-label {
-		font-size: 14px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	/* WordPress EXACT: Toggle collapsed state - narrower when two-panel nav is showing */
-	/* Toggle still spans full width on mobile - no additional styles needed */
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   TWO-PANEL SIDEBAR (when has-secondary class is applied)
-	   WordPress EXACT: Primary nav collapses to 60px, secondary nav is 220px
-	   Total sidebar width: 280px (60 + 220)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__sidebar.has-secondary {
-		/* Contains collapsed primary (60px) + secondary nav (220px) = 280px total */
 		width: 280px;
+		flex-shrink: 0;
+		background: #0f2d41;
 	}
 
-	/* Mobile: Force primary nav to 60px width when has secondary panel */
-	@media screen and (max-width: 1279px) {
-		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary) {
-			width: 60px !important;
-			min-width: 60px !important;
-			max-width: 60px !important;
-		}
+	.dashboard__nav-primary {
+		padding-bottom: 30px;
 	}
 
-	@media screen and (min-width: 1280px) {
-		.dashboard__sidebar.has-secondary {
-			/* WordPress EXACT: On desktop, show both panels side by side */
-			width: auto;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			position: relative; /* Needed for absolute positioning of hover state */
-		}
-
-		/* Ensure children participate in flex layout */
-		/* CRITICAL: Must use !important to override component's scoped width */
-		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary) {
-			flex: 0 0 60px !important; /* Collapsed primary nav width */
-			width: 60px !important; /* Explicit width override */
-			min-width: 60px !important;
-			max-width: 60px !important;
-		}
-
-		/* Allow primary nav to expand on hover */
-		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-primary:hover) {
-			width: 280px !important;
-			max-width: 280px !important;
-			flex: 0 0 280px !important;
-			z-index: 100020;
-			box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
-		}
-
-		.dashboard__sidebar.has-secondary > :global(.dashboard__nav-secondary) {
-			flex: 0 0 220px; /* Secondary nav panel width */
-		}
+	/* Profile Section */
+	.dashboard__profile {
+		display: block;
+		padding: 32px 20px 28px 80px;
+		position: relative;
+		text-decoration: none;
+		transition: background 0.15s;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   LOADING STATE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard-loading {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 400px;
-		color: #666;
-		gap: 16px;
+	.dashboard__profile:hover {
+		background: rgba(255,255,255,0.05);
 	}
 
-	.loading-spinner {
-		width: 44px;
-		height: 44px;
-		border: 3px solid #e5e7eb;
-		border-top-color: var(--loading-color);
+	.dashboard__profile-photo {
+		position: absolute;
+		left: 30px;
+		top: 50%;
+		margin-top: -17px;
+		width: 34px;
+		height: 34px;
+		border: 2px solid #fff;
 		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
+		background: #1a3a4f;
 	}
 
-	@keyframes spin {
-		to { transform: rotate(360deg); }
+	.dashboard__profile-name {
+		color: #fff;
+		font-weight: 600;
+		font-size: 16px;
 	}
 
-	.dashboard-loading p {
+	/* Navigation List */
+	.dashboard__nav-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.dashboard__nav-list li a {
+		display: flex;
+		align-items: center;
+		height: 50px;
+		padding: 0 20px 0 80px;
+		position: relative;
+		color: hsla(0,0%,100%,0.5);
+		text-decoration: none;
 		font-size: 14px;
-		color: #6b7280;
+		font-weight: 300;
+		transition: color 0.15s;
+	}
+
+	.dashboard__nav-list li a:hover {
+		color: #fff;
+	}
+
+	.dashboard__nav-list li.is-active a {
+		color: #fff;
+	}
+
+	.dashboard__nav-list li.is-active a::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 5px;
+		background: #0984ae;
+	}
+
+	.dashboard__nav-icon {
+		position: absolute;
+		left: 30px;
+		font-size: 20px;
+	}
+
+	/* Category Headers */
+	.dashboard__nav-category {
+		padding: 30px 30px 10px;
+		color: hsla(0,0%,100%,0.7);
+		text-transform: uppercase;
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.5px;
 		margin: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ERROR STATE
+	   MAIN CONTENT
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard-error {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 400px;
-		gap: 16px;
-		padding: 24px;
-		text-align: center;
-	}
-
-	.error-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background: #fef2f2;
-		color: var(--error-color);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 24px;
-		font-weight: 700;
-	}
-
-	.error-message {
-		color: #374151;
-		font-size: 14px;
-		margin: 0;
-		max-width: 300px;
-	}
-
-	.retry-btn {
-		background: var(--loading-color);
-		color: white;
-		border: none;
-		padding: 10px 24px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background 0.2s ease;
-	}
-
-	.retry-btn:hover {
-		background: #076787;
-	}
-
-	.retry-btn:focus-visible {
-		outline: 2px solid var(--loading-color);
-		outline-offset: 2px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - DESKTOP (WordPress EXACT: min-width 1280px)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media screen and (min-width: 1280px) {
-		/* Hide toggle on desktop */
-		.dashboard__toggle {
-			display: none;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - MOBILE (WordPress EXACT: below 1280px)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media screen and (max-width: 1279px) {
-		.dashboard__main {
-			padding-bottom: var(--dashboard-toggle-height);
-		}
-	}
-
-	@media screen and (max-width: 480px) {
-		/* Mobile-specific adjustments if needed */
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   GLOBAL STYLES (WordPress: html--dashboard-menu-open)
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	:global(.html--dashboard-menu-open) {
-		overflow: hidden;
-	}
-
-	:global(.html--dashboard-menu-open body) {
-		overflow: hidden;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   REDUCED MOTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media (prefers-reduced-motion: reduce) {
-		.dashboard__sidebar,
-		.dashboard__main,
-		.dashboard__overlay,
-		.dashboard__toggle-button,
-		.dashboard__toggle-button-icon span,
-		.loading-spinner {
-			transition: none;
-			animation: none;
-		}
+	.dashboard__main {
+		flex: 1;
+		background: #f4f4f4;
+		min-height: 500px;
 	}
 </style>
