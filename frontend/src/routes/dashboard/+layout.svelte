@@ -26,6 +26,7 @@
 			<span><a href="#">Home</a></span>
 			<span class="separator">/</span>
 			<span><strong>Member Dashboard</strong></span>
+			<span style="color: red; margin-left: 20px; font-weight: bold;">*** NEW BUILD v2 ***</span>
 		</div>
 	</nav>
 
