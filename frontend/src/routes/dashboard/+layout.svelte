@@ -6,6 +6,14 @@
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
+	import { user } from '$lib/stores/auth';
+
+	// Tabler Icons - exact matches to screenshot
+	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
+	import IconPlayerPlayFilled from '@tabler/icons-svelte/icons/player-play-filled';
+	import IconAdjustments from '@tabler/icons-svelte/icons/adjustments';
+	import IconHelpCircle from '@tabler/icons-svelte/icons/help-circle';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
 
 	let { children }: { children: Snippet } = $props();
 </script>
@@ -39,44 +47,27 @@
 				<!-- Profile -->
 				<a href="/dashboard/account" class="dashboard__profile">
 					<span class="dashboard__profile-photo"></span>
-					<span class="dashboard__profile-name">John Doe</span>
+					<span class="dashboard__profile-name">{$user?.name || 'Member'}</span>
 				</a>
 
 				<!-- Main Links -->
 				<ul class="dashboard__nav-list">
 					<li class="is-active">
 						<a href="/dashboard">
-							<span class="dashboard__nav-icon">🏠</span>
+							<span class="dashboard__nav-icon"><IconHomeFilled size={20} /></span>
 							<span>Member Dashboard</span>
 						</a>
 					</li>
 					<li>
 						<a href="/dashboard/classes">
-							<span class="dashboard__nav-icon">📹</span>
+							<span class="dashboard__nav-icon"><IconPlayerPlayFilled size={20} /></span>
 							<span>My Classes</span>
 						</a>
 					</li>
 					<li>
 						<a href="/dashboard/indicators">
-							<span class="dashboard__nav-icon">📊</span>
+							<span class="dashboard__nav-icon"><IconAdjustments size={20} /></span>
 							<span>My Indicators</span>
-						</a>
-					</li>
-				</ul>
-
-				<!-- Memberships -->
-				<p class="dashboard__nav-category">MEMBERSHIPS</p>
-				<ul class="dashboard__nav-list">
-					<li>
-						<a href="/dashboard/mastering-the-trade">
-							<span class="dashboard__nav-icon">👥</span>
-							<span>Mastering the Trade</span>
-						</a>
-					</li>
-					<li>
-						<a href="/dashboard/simpler-showcase">
-							<span class="dashboard__nav-icon">👥</span>
-							<span>Simpler Showcase</span>
 						</a>
 					</li>
 				</ul>
@@ -85,14 +76,8 @@
 				<p class="dashboard__nav-category">TOOLS</p>
 				<ul class="dashboard__nav-list">
 					<li>
-						<a href="/dashboard/watchlist">
-							<span class="dashboard__nav-icon">📋</span>
-							<span>Weekly Watchlist</span>
-						</a>
-					</li>
-					<li>
 						<a href="/dashboard/support">
-							<span class="dashboard__nav-icon">🎧</span>
+							<span class="dashboard__nav-icon"><IconHelpCircle size={20} /></span>
 							<span>Support</span>
 						</a>
 					</li>
@@ -103,7 +88,7 @@
 				<ul class="dashboard__nav-list">
 					<li>
 						<a href="/dashboard/account">
-							<span class="dashboard__nav-icon">⚙️</span>
+							<span class="dashboard__nav-icon"><IconSettings size={20} /></span>
 							<span>My Account</span>
 						</a>
 					</li>
@@ -262,7 +247,10 @@
 	.dashboard__nav-icon {
 		position: absolute;
 		left: 30px;
-		font-size: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: inherit;
 	}
 
 	/* Category Headers */
