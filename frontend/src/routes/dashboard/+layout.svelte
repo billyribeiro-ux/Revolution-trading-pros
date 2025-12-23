@@ -331,8 +331,7 @@
 		display: flex;
 		flex-flow: row nowrap;
 		position: relative;
-		/* Remove min-height: 100vh - let content determine height */
-		/* This allows footer to be full width below the dashboard */
+		align-items: flex-start; /* CRITICAL: Prevent children from stretching vertically */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -345,7 +344,8 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		flex-shrink: 0;
-		align-self: flex-start;
+		align-self: flex-start; /* Redundant but explicit */
+		height: fit-content; /* Force sidebar to be content height only */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -355,7 +355,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-width: 0;
-		min-height: auto; /* Content determines height, stops at footer */
+		min-height: 0; /* Prevent min-height: auto from inheriting page min-heights */
 		background-color: var(--dashboard-bg);
 	}
 
