@@ -444,15 +444,14 @@
 	/* WordPress EXACT: Desktop state (min-width 1280px) */
 	@media screen and (min-width: 1280px) {
 		.dashboard__nav-primary {
-			position: sticky;
-			top: 0;
+			position: relative;
+			top: auto;
 			bottom: auto;
 			left: auto;
 			right: auto;
 			opacity: 1;
 			visibility: visible;
 			height: auto;
-			max-height: 100vh;
 			z-index: auto;
 			/* WordPress EXACT: Sidebar sizes to content, ends where footer starts */
 		}
@@ -481,9 +480,7 @@
 		/* Collapsed state - ensure it's visible and properly positioned */
 		.dashboard__nav-primary.is-collapsed {
 			display: block;
-			position: sticky !important;
-			top: 0 !important;
-			max-height: 100vh !important;
+			position: relative;
 			opacity: 1;
 			visibility: visible;
 			flex-shrink: 0;
@@ -494,9 +491,6 @@
 			width: var(--sidebar-width);
 			box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
 			z-index: 100020;
-			position: sticky !important;
-			top: 0 !important;
-			max-height: 100vh !important;
 		}
 
 		/* Show profile name on hover */

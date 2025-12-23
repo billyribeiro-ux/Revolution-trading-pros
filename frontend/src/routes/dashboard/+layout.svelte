@@ -331,7 +331,8 @@
 		display: flex;
 		flex-flow: row nowrap;
 		position: relative;
-		min-height: 100vh;
+		/* Remove min-height: 100vh - let content determine height */
+		/* This allows footer to be full width below the dashboard */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

@@ -335,15 +335,14 @@
 		scrollbar-width: thin;
 		scrollbar-color: rgba(255,255,255,0.2) transparent;
 		flex-shrink: 0;
-		/* Mobile: hidden by default, shown on menu open */
-		position: fixed;
-		left: 60px;
-		top: 0;
-		bottom: 50px;
-		z-index: 100010;
-		opacity: 0;
-		visibility: hidden;
-		transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+		/* Sidebar sizes to content, ends where footer starts */
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__nav-secondary {
+			position: relative;
+			height: auto;
+		}
 	}
 
 	.dashboard__nav-secondary::-webkit-scrollbar {
