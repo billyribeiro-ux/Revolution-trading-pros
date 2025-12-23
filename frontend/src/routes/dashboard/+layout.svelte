@@ -54,41 +54,47 @@
 				<ul class="dashboard__nav-list">
 					<li class="is-active">
 						<a href="/dashboard">
-							<span class="dashboard__nav-icon"><IconHomeFilled size={20} /></span>
+							<span class="dashboard__nav-icon"><IconHomeFilled size={24} /></span>
 							<span>Member Dashboard</span>
 						</a>
 					</li>
 					<li>
 						<a href="/dashboard/classes">
-							<span class="dashboard__nav-icon"><IconPlayerPlayFilled size={20} /></span>
-							<span>My Classes</span>
+							<span class="dashboard__nav-icon"><IconPlayerPlayFilled size={24} /></span>
+							<span class="nav-text-bold">My Classes</span>
 						</a>
 					</li>
 					<li>
 						<a href="/dashboard/indicators">
-							<span class="dashboard__nav-icon"><IconChartCandle size={20} /></span>
-							<span>My Indicators</span>
+							<span class="dashboard__nav-icon"><IconChartCandle size={24} /></span>
+							<span class="nav-text-bold">My Indicators</span>
 						</a>
 					</li>
 				</ul>
 
+				<!-- Premium Reports (future feature) -->
+				<p class="dashboard__nav-category">premium reports</p>
+				<ul class="dashboard__nav-list">
+					<!-- Future: Premium report items will go here -->
+				</ul>
+
 				<!-- Tools -->
-				<p class="dashboard__nav-category">TOOLS</p>
+				<p class="dashboard__nav-category">tools</p>
 				<ul class="dashboard__nav-list">
 					<li>
 						<a href="/dashboard/support">
-							<span class="dashboard__nav-icon"><IconHelpCircle size={20} /></span>
+							<span class="dashboard__nav-icon"><IconHelpCircle size={24} /></span>
 							<span>Support</span>
 						</a>
 					</li>
 				</ul>
 
 				<!-- Account -->
-				<p class="dashboard__nav-category">ACCOUNT</p>
+				<p class="dashboard__nav-category">account</p>
 				<ul class="dashboard__nav-list">
 					<li>
 						<a href="/dashboard/account">
-							<span class="dashboard__nav-icon"><IconSettings size={20} /></span>
+							<span class="dashboard__nav-icon"><IconSettings size={24} /></span>
 							<span>My Account</span>
 						</a>
 					</li>
@@ -180,7 +186,7 @@
 		padding: 32px 20px 28px 80px;
 		position: relative;
 		text-decoration: none;
-		transition: background 0.15s;
+		transition: background 0.15s ease-in-out;
 	}
 
 	.dashboard__profile:hover {
@@ -197,12 +203,15 @@
 		border: 2px solid #fff;
 		border-radius: 50%;
 		background: #1a3a4f;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-name {
+		display: block;
 		color: #fff;
-		font-weight: 600;
 		font-size: 16px;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	/* Navigation List */
@@ -212,10 +221,14 @@
 		padding: 0;
 	}
 
+	.dashboard__nav-list li {
+		position: relative;
+	}
+
 	.dashboard__nav-list li a {
 		display: flex;
 		align-items: center;
-		height: 50px;
+		min-height: 40px;
 		padding: 0 20px 0 80px;
 		position: relative;
 		color: hsla(0,0%,100%,0.5);
@@ -223,11 +236,17 @@
 		font-size: 14px;
 		font-weight: 300;
 		font-family: 'Open Sans', sans-serif;
-		transition: color 0.15s;
+		margin-bottom: 10px;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__nav-list li a:hover {
 		color: #fff;
+	}
+
+	.dashboard__nav-list li a:hover .dashboard__nav-icon {
+		color: #fff;
+		opacity: 1;
 	}
 
 	.dashboard__nav-list li.is-active a {
@@ -244,13 +263,30 @@
 		background: #0984ae;
 	}
 
+	/* Bold text for My Classes and My Indicators */
+	.nav-text-bold {
+		font-weight: bold;
+		color: #fff;
+	}
+
+	/* Icon Styling */
 	.dashboard__nav-icon {
 		position: absolute;
 		left: 30px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: inherit;
+		width: 32px;
+		height: 24px;
+		color: #C5CFD5;
+		opacity: 0.6;
+		line-height: 24px;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dashboard__nav-list li.is-active .dashboard__nav-icon {
+		color: #fff;
+		opacity: 1;
 	}
 
 	/* Category Headers */
@@ -262,6 +298,7 @@
 		font-weight: 700;
 		letter-spacing: 0.5px;
 		margin: 0 0 5px 0;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -271,5 +308,6 @@
 		flex: 1;
 		background: #f4f4f4;
 		min-height: 500px;
+		padding: 30px;
 	}
 </style>
