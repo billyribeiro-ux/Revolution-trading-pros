@@ -14,7 +14,7 @@
 		{
 			id: '88765154a2216f5a8806f524e7fb22a1',
 			productId: '1318641',
-			name: 'Mastering the Trade Room (1 Month Trial)',
+			name: 'Options Day Trading Room (1 Month Trial)',
 			price: 247.00,
 			image: 'https://cdn.simplertrading.com/2020/11/01132413/Store-Card-MasteringTheTrade-Room.jpg',
 			interval: 'monthly',
@@ -140,7 +140,7 @@
 					<div class="woocommerce">
 						<div class="woocommerce-notices-wrapper"></div>
 						
-						<form class="woocommerce-cart-form" action="/cart" method="post" onsubmit={(e) => e.preventDefault()}>
+						<form class="woocommerce-cart-form" action="/cart" method="post" onsubmit={(e: Event) => e.preventDefault()}>
 							<div class="woocommerce-cart-form__contents">
 								<div class="row">
 									<!-- Products Column -->
@@ -454,14 +454,14 @@
 	</div>
 
 	<!-- Back to Top -->
-	<a title="Scroll back to top" rel="nofollow" href="#" class="generate-back-to-top" style="opacity:0;visibility:hidden;">
+	<button type="button" title="Scroll back to top" class="generate-back-to-top" style="opacity:0;visibility:hidden;" onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
 		<span class="screen-reader-text">Scroll back to top</span>
 		<span class="gp-icon icon-arrow">
 			<svg viewBox="0 0 330 512" width="1em" height="1em">
 				<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
 			</svg>
 		</span>
-	</a>
+	</button>
 </div>
 
 <style>

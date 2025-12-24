@@ -512,9 +512,9 @@ function getSuperadminMockMemberships(): UserMembershipsResponse {
 		// Trading Rooms
 		{
 			id: 'mock-1',
-			name: 'Mastering the Trade',
+			name: 'Options Day Trading Room',
 			type: 'trading-room',
-			slug: 'mastering-the-trade',
+			slug: 'options-day-trading-room',
 			status: 'active',
 			membershipType: 'complimentary',
 			icon: 'chart-line',

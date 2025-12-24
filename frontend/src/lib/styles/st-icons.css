@@ -68,7 +68,8 @@
 .st-icon-day-trading::before { content: "\E91D"; font-size: 32px; line-height: 32px; }
 
 /* Revolution Trading Membership Icons */
-.st-icon-mastering-the-trade::before { content: "\E933"; font-size: 32px; line-height: 32px; }
+.st-icon-options-day-trading::before { content: "\E933"; font-size: 32px; line-height: 32px; }
+.st-icon-mastering-the-trade::before { content: "\E933"; font-size: 32px; line-height: 32px; } /* Legacy alias */
 .st-icon-revolution-showcase::before { content: "\E912"; font-size: 32px; line-height: 32px; }
 .st-icon-moxie::before { content: "\E918"; font-size: 32px; line-height: 32px; }
 .st-icon-trade-of-the-week::before { content: "\E924"; font-size: 32px; line-height: 32px; }

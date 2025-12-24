@@ -95,9 +95,9 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		memberships: [
 			{
 				id: 'mem_1',
-				slug: 'mastering-the-trade',
-				name: 'Mastering the Trade',
-				thumbnail_url: '/images/memberships/mastering-the-trade.jpg',
+				slug: 'options-day-trading-room',
+				name: 'Options Day Trading Room',
+				thumbnail_url: '/images/memberships/options-day-trading-room.jpg',
 				category: 'trading-room',
 				status: 'active',
 				expires_at: '2025-01-15T00:00:00Z',
@@ -124,7 +124,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 				title: 'Completed: Analysis of A Trade',
 				description: 'You watched 70 minutes of educational content',
 				timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-				link: '/dashboard/mastering-the-trade/learning-center/analysis-of-a-trade'
+				link: '/dashboard/options-day-trading-room/learning-center/analysis-of-a-trade'
 			},
 			{
 				id: 'act_2',
@@ -132,7 +132,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 				title: 'Trade Alert: SPY Call Options',
 				description: 'New trade alert received',
 				timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-				link: '/dashboard/mastering-the-trade/alerts'
+				link: '/dashboard/options-day-trading-room/alerts'
 			},
 			{
 				id: 'act_3',
@@ -149,7 +149,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 				description: 'This week\'s top trading opportunities',
 				thumbnail_url: '/images/featured/weekly-watchlist.jpg',
 				type: 'watchlist',
-				link: '/dashboard/mastering-the-trade/watchlist'
+				link: '/dashboard/options-day-trading-room/watchlist'
 			},
 			{
 				id: 'fc_2',
@@ -157,7 +157,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 				description: 'Learn to read options flow like a pro',
 				thumbnail_url: '/images/featured/options-flow.jpg',
 				type: 'video',
-				link: '/dashboard/mastering-the-trade/learning-center/options-flow-analysis'
+				link: '/dashboard/options-day-trading-room/learning-center/options-flow-analysis'
 			}
 		],
 		announcements: [

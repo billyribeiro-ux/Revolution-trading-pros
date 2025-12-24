@@ -60,7 +60,7 @@
 			...lesson,
 			trainer: storeData.trainers.find(t => t.id === lesson.trainerId),
 			category: storeData.categories.find(c => c.id === lesson.categoryId),
-			tradingRooms: storeData.tradingRooms.filter(r => lesson.tradingRoomIds.includes(r.id))
+			tradingRooms: storeData.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id))
 		}));
 	});
 
@@ -77,7 +77,7 @@
 			}
 
 			// Room filter
-			if (selectedRoom && !lesson.tradingRoomIds.includes(selectedRoom)) {
+			if (selectedRoom && !lesson.tradingRoomIds?.includes(selectedRoom)) {
 				return false;
 			}
 
@@ -332,7 +332,7 @@
 									<IconEdit size={16} />
 								</a>
 								<a
-									href="/dashboard/{lesson.tradingRooms?.[0]?.slug || 'mastering-the-trade'}/learning-center/{lesson.slug}"
+									href="/dashboard/{lesson.tradingRooms?.[0]?.slug || 'options-day-trading-room'}/learning-center/{lesson.slug}"
 									class="action-btn"
 									title="View"
 									target="_blank"
@@ -385,8 +385,22 @@
 
 <!-- Delete Modal -->
 {#if showDeleteModal}
-	<div class="modal-overlay" onclick={() => showDeleteModal = false}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<div 
+		class="modal-overlay" 
+		onclick={() => showDeleteModal = false}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeleteModal = false)}
+		role="button"
+		tabindex="-1"
+		aria-label="Close modal"
+	>
+		<div 
+			class="modal" 
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="0"
+		>
 			<h3>Delete Lesson?</h3>
 			<p>This action cannot be undone. The lesson will be permanently deleted.</p>
 			<div class="modal-actions">

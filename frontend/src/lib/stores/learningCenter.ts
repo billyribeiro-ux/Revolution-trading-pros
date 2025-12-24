@@ -31,14 +31,14 @@ import type {
 export const TRADING_ROOMS: TradingRoom[] = [
 	{
 		id: 'mtt',
-		slug: 'mastering-the-trade',
-		name: 'Mastering the Trade',
-		shortName: 'MTT',
+		slug: 'options-day-trading-room',
+		name: 'Options Day Trading Room',
+		shortName: 'ODTR',
 		description: 'Live trading room with professional traders sharing real-time analysis and trade ideas.',
 		type: 'trading-room',
-		icon: 'st-icon-mastering-the-trade',
+		icon: 'st-icon-options-day-trading',
 		color: '#0984ae',
-		tradingRoomUrl: '/trading-room/mastering-the-trade',
+		tradingRoomUrl: '/trading-room/options-day-trading-room',
 		hasLearningCenter: true,
 		hasArchive: true,
 		hasDiscord: true,
@@ -328,13 +328,13 @@ export const CATEGORIES: LessonCategory[] = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const LESSONS: Lesson[] = [
-	// Mastering the Trade lessons
+	// Options Day Trading Room lessons
 	{
 		id: 'mtt-1',
-		slug: 'welcome-to-mtt',
-		title: 'Welcome to Mastering the Trade',
-		description: 'Introduction to the Mastering the Trade room and what to expect.',
-		fullDescription: 'Get started with Mastering the Trade. Learn how the room operates, meet the traders, and understand the trading methodology.',
+		slug: 'welcome-to-odtr',
+		title: 'Welcome to Options Day Trading Room',
+		description: 'Introduction to the Options Day Trading Room and what to expect.',
+		fullDescription: 'Get started with Options Day Trading Room. Learn how the room operates, meet the traders, and understand the trading methodology.',
 		type: 'video',
 		videoUrl: 'https://simpler-options.s3.amazonaws.com/tutorials/Welcome-MTT.mp4',
 		posterUrl: 'https://cdn.simplertrading.com/2023/06/07133302/Allison-SmallAccountMentorship.jpg',
@@ -709,7 +709,7 @@ export const LESSONS: Lesson[] = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const MODULES: LessonModule[] = [
-	// Mastering the Trade modules
+	// Options Day Trading Room modules
 	{ id: 'mtt-mod-1', slug: 'getting-started', tradingRoomId: 'mtt', name: 'Getting Started', description: 'Start here to get oriented', sortOrder: 1 },
 	{ id: 'mtt-mod-2', slug: 'psychology-risk', tradingRoomId: 'mtt', name: 'Psychology & Risk', description: 'Master your mindset and risk management', sortOrder: 2 },
 	{ id: 'mtt-mod-3', slug: 'options-basics', tradingRoomId: 'mtt', name: 'Options Basics', description: 'Learn options fundamentals', sortOrder: 3 },
@@ -778,20 +778,20 @@ function createLearningCenterStore() {
 		getLessonsForRoom(tradingRoomId: string): Lesson[] {
 			const state = get({ subscribe });
 			return state.lessons.filter(l =>
-				l.tradingRoomIds.includes(tradingRoomId) && l.status === 'published'
-			).sort((a, b) => a.sortOrder - b.sortOrder);
+				l.tradingRoomIds?.includes(tradingRoomId) && l.status === 'published'
+			).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 		},
 
 		getModulesForRoom(tradingRoomId: string): LessonModule[] {
 			const state = get({ subscribe });
 			return state.modules.filter(m => m.tradingRoomId === tradingRoomId)
-				.sort((a, b) => a.sortOrder - b.sortOrder);
+				.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 		},
 
 		getLessonsForModule(moduleId: string): Lesson[] {
 			const state = get({ subscribe });
 			return state.lessons.filter(l => l.moduleId === moduleId && l.status === 'published')
-				.sort((a, b) => (a.moduleOrder || 0) - (b.moduleOrder || 0));
+				.sort((a, b) => (a.moduleOrder ?? 0) - (b.moduleOrder ?? 0));
 		},
 
 		getLessonBySlug(slug: string): LessonWithRelations | undefined {
@@ -817,7 +817,7 @@ function createLearningCenterStore() {
 			let filtered = state.lessons.filter(l => l.status === 'published');
 
 			if (filter.tradingRoomId) {
-				filtered = filtered.filter(l => l.tradingRoomIds.includes(filter.tradingRoomId!));
+				filtered = filtered.filter(l => l.tradingRoomIds?.includes(filter.tradingRoomId!));
 			}
 			if (filter.trainerId) {
 				filtered = filtered.filter(l => l.trainerId === filter.trainerId);
@@ -839,28 +839,24 @@ function createLearningCenterStore() {
 				filtered = filtered.filter(l =>
 					l.title.toLowerCase().includes(searchLower) ||
 					l.description.toLowerCase().includes(searchLower) ||
-					l.tags.some(t => t.toLowerCase().includes(searchLower))
+					l.tags?.some(t => t.toLowerCase().includes(searchLower))
 				);
 			}
 			if (filter.tags && filter.tags.length > 0) {
 				filtered = filtered.filter(l =>
-					filter.tags!.some(tag => l.tags.includes(tag))
+					l.tags && l.tags.some(tag => filter.tags!.includes(tag))
 				);
 			}
 
 			// Add relations
 			return filtered.map(lesson => ({
 				...lesson,
-				trainer: state.trainers.find(t => t.id === lesson.trainerId),
-				category: state.categories.find(c => c.id === lesson.categoryId),
-				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds.includes(r.id)),
-				module: state.modules.find(m => m.id === lesson.moduleId)
-			})).sort((a, b) => a.sortOrder - b.sortOrder);
+				trainer: state.trainers.find(t => t.id === lesson.trainerId) ?? null,
+				category: state.categories.find(c => c.id === lesson.categoryId) ?? null,
+				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
+				module: state.modules.find(m => m.id === lesson.moduleId) ?? null
+			})).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 		},
-
-		// ═══════════════════════════════════════════════════════════════════════
-		// ADMIN CRUD OPERATIONS
-		// ═══════════════════════════════════════════════════════════════════════
 
 		async createLesson(input: CreateLessonInput): Promise<Lesson> {
 			const state = get({ subscribe });
