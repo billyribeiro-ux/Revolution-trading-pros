@@ -535,21 +535,9 @@ function getSuperadminMockMemberships(): UserMembershipsResponse {
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
 			interval: 'monthly'
-		},
-		// Weekly Watchlist
-		{
-			id: 'mock-3',
-			name: 'Weekly Watchlist',
-			type: 'weekly-watchlist',
-			slug: 'weekly-watchlist',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'calendar',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly'
 		}
+		// NOTE: Weekly Watchlist removed from memberships - it's a Tool, not a membership
+		// It appears in the Tools section of the dashboard, not in the memberships cards
 	];
 
 	const enhanced = enhanceMemberships(mockMemberships);

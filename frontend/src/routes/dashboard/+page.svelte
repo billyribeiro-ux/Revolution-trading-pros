@@ -285,6 +285,28 @@
 			</section>
 		{/if}
 
+		<!-- TOOLS SECTION - Exact Match from Jesus -->
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Tools</h2>
+			<div class="membership-cards row">
+				<div class="col-sm-6 col-xl-4">
+					<article class="membership-card">
+						<a href="/dashboard/ww" class="membership-card__header">
+							<span class="mem_icon">
+								<span class="membership-card__icon">
+									<span class="icon icon--md st-icon-trade-of-the-week"></span>
+								</span>
+							</span>
+							<span class="mem_div">Weekly Watchlist</span>
+						</a>
+						<div class="membership-card__actions">
+							<a href="/dashboard/ww">Dashboard</a>
+						</div>
+					</article>
+				</div>
+			</div>
+		</section>
+
 		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from Jesus -->
 		<div class="dashboard__content-section u--background-color-white">
 			<section>
