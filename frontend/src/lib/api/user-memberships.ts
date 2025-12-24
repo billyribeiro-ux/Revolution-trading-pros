@@ -367,49 +367,180 @@ export async function preloadMembershipData(): Promise<void> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Get all available membership products for superadmin testing
- * Superadmin gets automatic access to ALL memberships for testing purposes
+ * ICT 11+ ENTERPRISE PATTERN: Superadmin Auto-Unlock System
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Superadmin gets automatic access to ALL available memberships for testing.
+ * This function fetches all products and transforms them into active memberships.
+ * 
+ * FALLBACK STRATEGY:
+ * 1. Try /admin/products endpoint (primary)
+ * 2. Try /products endpoint (fallback)
+ * 3. Return mock data if both fail (development safety)
+ * 
+ * @returns UserMembershipsResponse with all available memberships
  */
 async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
+	console.log('[Superadmin] 🔓 Fetching all available memberships for superadmin...');
+	
 	try {
-		// Fetch all available membership products from backend
-		const response = await fetch(`${API_BASE}/admin/products?type=membership&per_page=100`, {
+		// STRATEGY 1: Try admin endpoint first
+		let response = await fetch(`${API_BASE}/admin/products?type=membership&per_page=100`, {
 			method: 'GET',
 			headers: await getAuthHeaders(),
 			credentials: 'include'
 		});
 
+		// STRATEGY 2: Fallback to public products endpoint
 		if (!response.ok) {
-			console.error('[Superadmin] Failed to fetch products');
-			return categorizeMemberships([]);
+			console.warn('[Superadmin] Admin endpoint failed, trying public products endpoint...');
+			response = await fetch(`${API_BASE}/products?category=membership&per_page=100`, {
+				method: 'GET',
+				headers: await getAuthHeaders(),
+				credentials: 'include'
+			});
+		}
+
+		if (!response.ok) {
+			console.error('[Superadmin] ❌ Both API endpoints failed:', response.status, response.statusText);
+			// STRATEGY 3: Return mock data for development
+			return getSuperadminMockMemberships();
 		}
 
 		const data = await response.json();
-		const products = data.data || [];
+		const products = data.data || data.products || [];
+		
+		console.log(`[Superadmin] ✅ Fetched ${products.length} products from API`);
+
+		if (products.length === 0) {
+			console.warn('[Superadmin] ⚠️ No products returned from API, using mock data');
+			return getSuperadminMockMemberships();
+		}
 
 		// Transform products into active memberships for superadmin
-		const memberships: UserMembership[] = products.map((product: any) => ({
-			id: product.id,
-			name: product.name,
-			type: (product.category || 'trading-room') as MembershipType,
-			slug: product.slug,
-			status: 'active' as MembershipStatus,
-			membershipType: 'complimentary' as MembershipSubscriptionType,
-			icon: product.icon || 'chart-line',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
-			price: product.price_monthly || 0,
-			interval: 'monthly' as BillingInterval,
-			roomLabel: product.name,
-			features: product.features || []
-		}));
+		const memberships: UserMembership[] = products.map((product: any) => {
+			// Determine membership type from product category
+			let membershipType: MembershipType = 'trading-room';
+			const category = (product.category || product.type || '').toLowerCase();
+			
+			if (category.includes('course') || category.includes('class')) {
+				membershipType = 'course';
+			} else if (category.includes('indicator')) {
+				membershipType = 'indicator';
+			} else if (category.includes('alert')) {
+				membershipType = 'alert-service';
+			} else if (category.includes('watchlist') || category.includes('weekly')) {
+				membershipType = 'weekly-watchlist';
+			} else if (category.includes('report') || category.includes('premium')) {
+				membershipType = 'premium-report';
+			}
+
+			return {
+				id: String(product.id),
+				name: product.name || product.title || 'Unnamed Product',
+				type: membershipType,
+				slug: product.slug || `product-${product.id}`,
+				status: 'active' as MembershipStatus,
+				membershipType: 'complimentary' as MembershipSubscriptionType,
+				icon: product.icon || getDefaultIcon(membershipType),
+				startDate: new Date().toISOString(),
+				nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+				price: product.price_monthly || product.price || 0,
+				interval: 'monthly' as BillingInterval,
+				roomLabel: product.name || product.title,
+				features: product.features || []
+			};
+		});
+
+		console.log('[Superadmin] 📊 Membership breakdown:', {
+			total: memberships.length,
+			tradingRooms: memberships.filter(m => m.type === 'trading-room').length,
+			courses: memberships.filter(m => m.type === 'course').length,
+			indicators: memberships.filter(m => m.type === 'indicator').length,
+			weeklyWatchlist: memberships.filter(m => m.type === 'weekly-watchlist').length,
+			premiumReports: memberships.filter(m => m.type === 'premium-report').length
+		});
 
 		const enhanced = enhanceMemberships(memberships);
-		return categorizeMemberships(enhanced);
+		const categorized = categorizeMemberships(enhanced);
+		
+		console.log('[Superadmin] ✅ Successfully loaded all memberships');
+		return categorized;
 	} catch (error) {
-		console.error('[Superadmin] Error fetching memberships:', error);
-		return categorizeMemberships([]);
+		console.error('[Superadmin] ❌ Critical error fetching memberships:', error);
+		// STRATEGY 3: Return mock data on error
+		return getSuperadminMockMemberships();
 	}
+}
+
+/**
+ * ICT 11+ PATTERN: Get default icon for membership type
+ */
+function getDefaultIcon(type: MembershipType): string {
+	const iconMap: Record<MembershipType, string> = {
+		'trading-room': 'chart-line',
+		'alert-service': 'bell',
+		'course': 'book',
+		'indicator': 'chart-candle',
+		'weekly-watchlist': 'calendar',
+		'premium-report': 'file-text'
+	};
+	return iconMap[type] || 'chart-line';
+}
+
+/**
+ * ICT 11+ PATTERN: Mock memberships for development/fallback
+ * Ensures superadmin always has access even if API is down
+ */
+function getSuperadminMockMemberships(): UserMembershipsResponse {
+	console.log('[Superadmin] 🔧 Using mock membership data (API unavailable)');
+	
+	const mockMemberships: UserMembership[] = [
+		// Trading Rooms
+		{
+			id: 'mock-1',
+			name: 'Mastering the Trade',
+			type: 'trading-room',
+			slug: 'mastering-the-trade',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'chart-line',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
+		},
+		{
+			id: 'mock-2',
+			name: 'Simpler Showcase',
+			type: 'trading-room',
+			slug: 'simpler-showcase',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'trophy',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
+		},
+		// Weekly Watchlist
+		{
+			id: 'mock-3',
+			name: 'Weekly Watchlist',
+			type: 'weekly-watchlist',
+			slug: 'weekly-watchlist',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'calendar',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
+		}
+	];
+
+	const enhanced = enhanceMemberships(mockMemberships);
+	return categorizeMemberships(enhanced);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

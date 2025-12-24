@@ -23,13 +23,31 @@
 
 	// ICT 11+ Pattern: Layout guarantees auth is ready, so onMount is safe
 	onMount(async () => {
+		console.log('[Dashboard] 🚀 Initializing dashboard page...');
 		try {
+			console.log('[Dashboard] 📡 Fetching user memberships...');
 			membershipsData = await getUserMemberships();
+			
+			console.log('[Dashboard] ✅ Memberships loaded:', {
+				total: membershipsData?.memberships?.length || 0,
+				tradingRooms: membershipsData?.tradingRooms?.length || 0,
+				courses: membershipsData?.courses?.length || 0,
+				indicators: membershipsData?.indicators?.length || 0,
+				weeklyWatchlist: membershipsData?.weeklyWatchlist?.length || 0,
+				premiumReports: membershipsData?.premiumReports?.length || 0
+			});
+			
+			if (membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0) {
+				console.log('[Dashboard] 🎯 Trading Rooms:', membershipsData.tradingRooms.map(r => r.name));
+			} else {
+				console.warn('[Dashboard] ⚠️ No trading rooms found in memberships data');
+			}
 		} catch (err) {
-			console.error('Failed to load memberships:', err);
+			console.error('[Dashboard] ❌ Failed to load memberships:', err);
 			error = 'Failed to load memberships. Please try again.';
 		} finally {
 			loading = false;
+			console.log('[Dashboard] ✅ Dashboard initialization complete');
 		}
 	});
 
@@ -44,6 +62,27 @@
 
 	function closeDropdown(): void {
 		dropdownOpen = false;
+	}
+
+	/**
+	 * ICT 11+ ENTERPRISE PATTERN: Manual refresh for testing
+	 * Clears cache and refetches memberships
+	 */
+	async function handleRefreshMemberships(): Promise<void> {
+		console.log('[Dashboard] 🔄 Manual refresh triggered - clearing cache...');
+		loading = true;
+		error = null;
+		
+		try {
+			// Force cache bypass
+			membershipsData = await getUserMemberships({ skipCache: true });
+			console.log('[Dashboard] ✅ Manual refresh complete');
+		} catch (err) {
+			console.error('[Dashboard] ❌ Manual refresh failed:', err);
+			error = 'Failed to refresh memberships. Please try again.';
+		} finally {
+			loading = false;
+		}
 	}
 
 	// Generate dashboard URL from membership data

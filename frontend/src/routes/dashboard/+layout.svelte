@@ -43,8 +43,24 @@
 	// Fetch memberships when auth is ready
 	$effect(() => {
 		if (browser && !$isInitializing) {
+			console.log('[Layout] 🔄 Auth ready, fetching memberships for sidebar...');
 			getUserMemberships().then(data => {
 				membershipsData = data;
+				console.log('[Layout] ✅ Sidebar memberships loaded:', {
+					total: data?.memberships?.length || 0,
+					tradingRooms: data?.tradingRooms?.length || 0,
+					courses: data?.courses?.length || 0,
+					premiumReports: data?.premiumReports?.length || 0,
+					weeklyWatchlist: data?.weeklyWatchlist?.length || 0
+				});
+				
+				if (data?.tradingRooms && data.tradingRooms.length > 0) {
+					console.log('[Layout] 🎯 Sidebar Trading Rooms:', data.tradingRooms.map(r => r.name));
+				} else {
+					console.warn('[Layout] ⚠️ No trading rooms in sidebar data');
+				}
+			}).catch(err => {
+				console.error('[Layout] ❌ Failed to load sidebar memberships:', err);
 			});
 		}
 	});
