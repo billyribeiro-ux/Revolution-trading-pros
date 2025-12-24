@@ -79,11 +79,11 @@ const config = {
 			mode: 'auto',
 			directives: {
 				'default-src': ['self'],
-				'script-src': ['self', 'unsafe-inline', 'https://www.googletagmanager.com', 'https://www.google-analytics.com', 'https://static.cloudflareinsights.com'],
+				'script-src': ['self', 'unsafe-inline', 'https://www.googletagmanager.com', 'https://www.google-analytics.com', 'https://static.cloudflareinsights.com', 'https://apis.google.com'],
 				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
 				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
-				'connect-src': ['self', 'ws:', 'wss:', 'https:', 'https://revolution-trading-pros-api.fly.dev', 'https://revolution-trading-pros.pages.dev'],
+				'connect-src': ['self', 'ws:', 'wss:', 'https:', 'https://revolution-trading-pros-api.fly.dev', 'https://revolution-trading-pros.pages.dev', 'https://www.googleapis.com'],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']
