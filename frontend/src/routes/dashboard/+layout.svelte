@@ -73,23 +73,24 @@
 	<title>Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<!-- PAGE WRAPPER -->
-<div class="dashboard-page">
+<!-- NAVBAR - Full Navigation Menu -->
+<NavBar />
 
-	<!-- NAVBAR -->
-	<NavBar />
+<!-- BREADCRUMB -->
+<nav class="breadcrumbs">
+	<div class="breadcrumbs__container">
+		<span><a href="/">Home</a></span>
+		<span class="separator">/</span>
+		<span><strong>Member Dashboard</strong></span>
+	</div>
+</nav>
 
-	<!-- BREADCRUMB -->
-	<nav class="breadcrumbs">
-		<div class="breadcrumbs__container">
-			<span><a href="/">Home</a></span>
-			<span class="separator">/</span>
-			<span><strong>Member Dashboard</strong></span>
-		</div>
-	</nav>
-
-	<!-- DASHBOARD -->
-	<div class="dashboard">
+<!-- PAGE WRAPPER - Matches Jesus structure -->
+<div id="page" class="hfeed site grid-parent">
+	<div id="content" class="site-content">
+		
+		<!-- DASHBOARD -->
+		<div class="dashboard">
 
 		<!-- SIDEBAR -->
 		<aside class="dashboard__sidebar">
@@ -246,20 +247,28 @@
 			{/if}
 		</main>
 
-	</div>
+		</div>
+		
+	</div><!-- #content -->
+</div><!-- #page -->
 
-	<!-- FOOTER -->
-	<Footer />
-</div>
+<!-- FOOTER - Full Width Outside Dashboard -->
+<Footer />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE WRAPPER
+	   PAGE WRAPPER - Matches Jesus HTML Structure
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	.dashboard-page {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
+	#page {
+		display: block;
+	}
+
+	#content {
+		display: block;
+	}
+
+	.site-content {
+		display: block;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -439,13 +448,14 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN CONTENT
+	   MAIN CONTENT - Matches Jesus HTML
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__main {
 		flex: 1;
 		background: #f4f4f4;
-		min-height: 500px;
-		padding: 30px;
+		min-height: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

@@ -435,10 +435,12 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT
+	   DASHBOARD CONTENT - Matches Jesus HTML
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__content {
-		padding: 0 30px 30px;
+		padding: 30px;
+		background: #f4f4f4;
+		flex: 1;
 	}
 
 	.dashboard__content-section {
