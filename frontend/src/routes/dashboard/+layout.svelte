@@ -113,7 +113,9 @@
 <!-- PAGE WRAPPER - Matches Jesus structure -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
-		
+
+		<a id="top"></a>
+
 		<!-- DASHBOARD -->
 		<div class="dashboard">
 
