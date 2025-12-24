@@ -191,13 +191,11 @@
 							<h4 class="h5 article-card__title"><a href="/blog">Welcome to Revolution Trading Pros</a></h4>
 							<span class="article-card__meta"><small>Latest market insights and trading education</small></span>
 							<div class="article-card__excerpt u--hide-read-more">
-								<p>
-									<div class="woocommerce">
-										<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
-											This content is only available to members.
-										</div>
+								<div class="woocommerce">
+									<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
+										This content is only available to members.
 									</div>
-								</p>
+								</div>
 							</div>
 							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
 						</article>
@@ -213,13 +211,11 @@
 							<h4 class="h5 article-card__title"><a href="/blog">Market Analysis & Trading Strategies</a></h4>
 							<span class="article-card__meta"><small>Expert insights from our trading team</small></span>
 							<div class="article-card__excerpt u--hide-read-more">
-								<p>
-									<div class="woocommerce">
-										<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
-											This content is only available to members.
-										</div>
+								<div class="woocommerce">
+									<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
+										This content is only available to members.
 									</div>
-								</p>
+								</div>
 							</div>
 							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
 						</article>
