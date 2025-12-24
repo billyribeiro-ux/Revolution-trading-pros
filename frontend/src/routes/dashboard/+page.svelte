@@ -6,10 +6,13 @@
 	 * Fully data-driven dashboard with no hardcoded values.
 	 * All memberships, icons, and content come from the API/database.
 	 *
-	 * @version 2.0.0
+	 * Layout guarantees auth is initialized before this component mounts,
+	 * so we can safely fetch data in onMount without race conditions.
+	 *
+	 * @version 2.1.0
 	 */
+	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
-	import { isInitializing } from '$lib/stores/auth';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
@@ -17,17 +20,9 @@
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
-	let hasFetched = $state(false);
 
-	// Wait for auth initialization before fetching
-	$effect(() => {
-		if (!$isInitializing && !hasFetched) {
-			hasFetched = true;
-			fetchMemberships();
-		}
-	});
-
-	async function fetchMemberships() {
+	// ICT 11+ Pattern: Layout guarantees auth is ready, so onMount is safe
+	onMount(async () => {
 		try {
 			membershipsData = await getUserMemberships();
 		} catch (err) {
@@ -36,7 +31,7 @@
 		} finally {
 			loading = false;
 		}
-	}
+	});
 
 	function toggleDropdown() {
 		dropdownOpen = !dropdownOpen;

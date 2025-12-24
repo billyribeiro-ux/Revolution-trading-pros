@@ -1,12 +1,21 @@
 <script lang="ts">
 	/**
-	 * Dashboard Layout - VISUAL SHELL ONLY
-	 * No functionality, just structure matching WordPress
+	 * Dashboard Layout - ICT 11+ Auth-Guarded Layout
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Principal Engineer Pattern:
+	 * - Layout-level auth guard ensures auth is initialized before rendering children
+	 * - Child pages can safely assume auth token is available
+	 * - Single responsibility: auth check happens once, not in every page
+	 *
+	 * @version 2.0.0
 	 */
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
-	import { user } from '$lib/stores/auth';
+	import { user, isInitializing, isAuthenticated } from '$lib/stores/auth';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	// Tabler Icons - exact matches to screenshot
 	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
@@ -16,6 +25,16 @@
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 
 	let { children }: { children: Snippet } = $props();
+
+	// ICT 11+ Auth Guard: Redirect to login if not authenticated after init completes
+	$effect(() => {
+		if (browser && !$isInitializing && !$isAuthenticated) {
+			goto('/login?redirect=/dashboard');
+		}
+	});
+
+	// Derived: Show content only when auth is ready
+	let authReady = $derived(!$isInitializing);
 </script>
 
 <svelte:head>
@@ -105,7 +124,14 @@
 
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">
-			{@render children()}
+			{#if authReady}
+				{@render children()}
+			{:else}
+				<div class="auth-loading">
+					<div class="loading-spinner"></div>
+					<p>Loading your dashboard...</p>
+				</div>
+			{/if}
 		</main>
 
 	</div>
@@ -309,5 +335,35 @@
 		background: #f4f4f4;
 		min-height: 500px;
 		padding: 30px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   AUTH LOADING STATE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.auth-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 300px;
+		color: #666;
+	}
+
+	.auth-loading p {
+		margin-top: 16px;
+		font-size: 14px;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e7eb;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 </style>
