@@ -312,6 +312,18 @@
 		</div>
 
 	</div>
+	
+	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - Hidden on main dashboard -->
+	<aside class="dashboard__content-sidebar">
+		<section class="content-sidebar__section">
+			<h3 class="content-sidebar__heading">Quick Links</h3>
+			<ul class="content-sidebar__nav">
+				<li><a href="/dashboard">Overview</a></li>
+				<li><a href="/dashboard/classes">My Classes</a></li>
+				<li><a href="/dashboard/indicators">My Indicators</a></li>
+			</ul>
+		</section>
+	</aside>
 </div>
 
 <style>
@@ -1063,42 +1075,95 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PREMIUM REPORTS
+	   PANEL 2: SECONDARY SIDEBAR (CONTENT SIDEBAR) - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════
+	   
+	   This sidebar appears on individual membership pages but is HIDDEN on the
+	   main dashboard landing page. It provides contextual navigation for specific
+	   memberships.
+	   
+	   VISIBILITY RULES:
+	   - Main dashboard (/dashboard): HIDDEN (display: none)
+	   - Membership pages (/dashboard/[slug]): VISIBLE (desktop 1080px+)
+	   - Mobile (<1080px): Always hidden
+	   
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	.premium-reports-placeholder {
+	
+	.dashboard__content-sidebar {
+		display: none;
+		width: 260px;
+		flex: 0 0 auto;
+		margin-top: -1px;
 		background: #fff;
-		border-radius: 5px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		padding: 60px 40px;
-		text-align: center;
+		border-right: 1px solid #dbdbdb;
+		border-top: 1px solid #dbdbdb;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		line-height: 1.6;
 	}
 
-	.placeholder-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 80px;
-		height: 80px;
-		background: linear-gradient(135deg, #0984ae 0%, #076787 100%);
-		border-radius: 20px;
-		color: #fff;
-		margin-bottom: 20px;
+	@media (min-width: 1080px) {
+		.dashboard__content-sidebar {
+			display: block;
+		}
 	}
 
-	.premium-reports-placeholder h3 {
-		font-size: 20px;
+	/* Hide Panel 2 on main dashboard page - matches Simpler Trading behavior */
+	:global(body.dashboard-home) .dashboard__content-sidebar {
+		display: none !important;
+	}
+
+	.content-sidebar__section {
+		padding: 20px 30px 20px 20px;
+		border-bottom: 1px solid #dbdbdb;
+	}
+
+	.content-sidebar__heading {
+		padding: 15px 20px;
+		margin: -20px -30px 20px -20px;
+		font-size: 14px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		color: #333;
-		margin: 0 0 12px 0;
+		background: #ededed;
+		border-bottom: 1px solid #dbdbdb;
+		line-height: 1.4;
 	}
 
-	.premium-reports-placeholder p {
-		font-size: 14px;
-		color: #666;
+	.content-sidebar__nav {
+		list-style: none;
 		margin: 0;
-		max-width: 400px;
-		margin-left: auto;
-		margin-right: auto;
+		padding: 0;
+	}
+
+	.content-sidebar__nav li {
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid #dbdbdb;
+	}
+
+	.content-sidebar__nav li:first-child {
+		border-top: none;
+	}
+
+	.content-sidebar__nav a {
+		display: block;
+		padding: 15px 20px;
+		font-size: 14px;
+		font-weight: 400;
+		color: #666;
+		text-decoration: none;
+		border-radius: 5px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.content-sidebar__nav a:hover {
+		background: #f4f4f4;
+		color: #0984ae;
 	}
 </style>

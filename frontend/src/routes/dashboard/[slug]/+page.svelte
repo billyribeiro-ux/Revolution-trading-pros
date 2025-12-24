@@ -127,12 +127,15 @@
 	<title>{membership?.name || 'Membership'} | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="membership-detail">
-	<!-- Back Button -->
-	<a href="/dashboard" class="back-link">
-		<IconArrowLeft size={18} />
-		Back to Dashboard
-	</a>
+<!-- DASHBOARD CONTENT WRAPPER WITH PANEL 2 -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<div class="membership-detail">
+			<!-- Back Button -->
+			<a href="/dashboard" class="back-link">
+				<IconArrowLeft size={18} />
+				Back to Dashboard
+			</a>
 
 	{#if loading}
 		<div class="loading-state">
@@ -245,14 +248,59 @@
 			</div>
 		</div>
 	{/if}
+		</div>
+	</div>
+
+<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - Visible on membership pages -->
+<aside class="dashboard__content-sidebar">
+	<section class="content-sidebar__section">
+		<h3 class="content-sidebar__heading">Navigation</h3>
+		<ul class="content-sidebar__nav">
+			<li><a href="/dashboard/{slug}" class:active={!$page.url.pathname.includes('/alerts')}>Overview</a></li>
+			<li><a href="/dashboard/{slug}/alerts">Alerts</a></li>
+			{#if membership?.type === 'trading-room'}
+				<li><a href="/trading-room/{slug}" target="_blank">Trading Room <IconExternalLink size={14} /></a></li>
+			{/if}
+		</ul>
+	</section>
+	
+	{#if membership}
+		<section class="content-sidebar__section">
+			<h3 class="content-sidebar__heading">Quick Info</h3>
+			<div class="sidebar-info">
+				<p><strong>Status:</strong> {membership.status}</p>
+				<p><strong>Type:</strong> {membership.membershipType || 'Active'}</p>
+				{#if membership.nextBillingDate}
+					<p><strong>Next Billing:</strong> {formatDate(membership.nextBillingDate)}</p>
+				{/if}
+			</div>
+		</section>
+	{/if}
+</aside>
+
 </div>
 
 <!-- Cancel Modal -->
 {#if showCancelModal && membership}
-	<div class="modal-overlay" onclick={() => (showCancelModal = false)} role="dialog" aria-modal="true">
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="document">
+	<div 
+		class="modal-overlay" 
+		onclick={() => (showCancelModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCancelModal = false)}
+		role="button"
+		tabindex="-1"
+		aria-label="Close modal"
+	>
+		<div 
+			class="modal-content" 
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog" 
+			aria-modal="true"
+			aria-labelledby="modal-title"
+			tabindex="0"
+		>
 			<div class="modal-header">
-				<h2>Cancel Subscription</h2>
+				<h2 id="modal-title">Cancel Subscription</h2>
 				<button class="close-btn" onclick={() => (showCancelModal = false)}>
 					<IconX size={20} />
 				</button>
@@ -755,5 +803,113 @@
 			width: 100%;
 			justify-content: center;
 		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT LAYOUT - Support for Panel 2
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__content {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+	}
+
+	.dashboard__content-main {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	/* Panel 2 Sidebar Styles */
+	.dashboard__content-sidebar {
+		display: none;
+		width: 260px;
+		flex: 0 0 auto;
+		margin-top: -1px;
+		background: #fff;
+		border-right: 1px solid #dbdbdb;
+		border-top: 1px solid #dbdbdb;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		line-height: 1.6;
+	}
+
+	@media (min-width: 1080px) {
+		.dashboard__content-sidebar {
+			display: block;
+		}
+	}
+
+	.content-sidebar__section {
+		padding: 20px 30px 20px 20px;
+		border-bottom: 1px solid #dbdbdb;
+	}
+
+	.content-sidebar__heading {
+		padding: 15px 20px;
+		margin: -20px -30px 20px -20px;
+		font-size: 14px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #333;
+		background: #ededed;
+		border-bottom: 1px solid #dbdbdb;
+		line-height: 1.4;
+	}
+
+	.content-sidebar__nav {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.content-sidebar__nav li {
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid #dbdbdb;
+	}
+
+	.content-sidebar__nav li:first-child {
+		border-top: none;
+	}
+
+	.content-sidebar__nav a {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 15px 20px;
+		font-size: 14px;
+		font-weight: 400;
+		color: #666;
+		text-decoration: none;
+		border-radius: 5px;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.content-sidebar__nav a:hover {
+		background: #f4f4f4;
+		color: #0984ae;
+	}
+
+	.content-sidebar__nav a.active {
+		background: #f4f4f4;
+		font-weight: 600;
+		color: #0984ae;
+	}
+
+	.sidebar-info {
+		font-size: 13px;
+		line-height: 1.8;
+	}
+
+	.sidebar-info p {
+		margin: 0 0 8px 0;
+		color: #666;
+	}
+
+	.sidebar-info strong {
+		color: #333;
+		font-weight: 600;
 	}
 </style>
