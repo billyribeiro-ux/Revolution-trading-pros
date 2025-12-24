@@ -137,10 +137,7 @@
 	<script src="https://apis.google.com/js/api.js"></script>
 </svelte:head>
 
-<!-- DASHBOARD MAIN - WordPress Structure -->
-<main class="dashboard__main">
-	
-	<!-- DASHBOARD HEADER -->
+<!-- DASHBOARD HEADER -->
 	<header class="dashboard__header">
 		<div class="dashboard__header-left">
 			<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
@@ -181,8 +178,8 @@
 		</div>
 	</header>
 
-	<!-- DASHBOARD CONTENT - Exact WordPress Structure -->
-	<div class="dashboard__content">
+<!-- DASHBOARD CONTENT - Exact WordPress Structure -->
+<div class="dashboard__content">
 	<div class="dashboard__content-main">
 
 		<!-- VIDEO TUTORIAL SECTION -->
@@ -271,19 +268,9 @@
 			</ul>
 		</section>
 	</aside>
-	</div>
-
-</main>
+</div>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD MAIN - WordPress Structure
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.dashboard__main {
-		flex: 1;
-		min-width: 0;
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD HEADER - WordPress Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
