@@ -159,82 +159,35 @@ async fn setup_db(
     }))
 }
 
-/// Seed membership plans and assign to super admin
-/// POST /seed-memberships
-async fn seed_memberships(
+/// Run all pending migrations including membership plan seeding
+/// POST /run-migrations
+/// ICT 11+ Pattern: Migrations are defined in SQL files, not hardcoded
+async fn run_migrations(
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (axum::http::StatusCode, Json<SetupResponse>)> {
-    // Seed all 6 membership plans
-    let seed_plans = r#"
-        INSERT INTO membership_plans (name, slug, description, price, billing_cycle, is_active, metadata, features, trial_days)
-        VALUES
-            ('Day Trading Room', 'day-trading-room', 'Live day trading sessions with real-time trade alerts.', 197.00, 'monthly', true, '{"type": "trading-room", "icon": "chart-line", "room_label": "Day Trading Room"}', '["Live Day Trading Sessions", "Discord Access", "Real-Time Trade Alerts", "Daily Market Analysis"]', 7),
-            ('Swing Trading Room', 'swing-trading-room', 'Live swing trading sessions with swing trade alerts.', 147.00, 'monthly', true, '{"type": "trading-room", "icon": "trending-up", "room_label": "Swing Trading Room"}', '["Live Swing Trading Sessions", "Discord Access", "Swing Trade Alerts", "Weekly Watchlist"]', 7),
-            ('Small Account Mentorship', 'small-account-mentorship', 'Personalized mentorship for small accounts.', 97.00, 'monthly', true, '{"type": "trading-room", "icon": "wallet", "room_label": "Small Account Mentorship"}', '["Small Account Strategies", "Personalized Mentorship", "Risk Management", "Position Sizing"]', 7),
-            ('Alerts Only', 'alerts-only', 'Real-time trade alerts with entry and exit points.', 97.00, 'monthly', true, '{"type": "alert-service", "icon": "bell"}', '["Real-Time Trade Alerts", "Entry & Exit Points", "Stop Loss Levels", "Mobile Notifications"]', 0),
-            ('Explosive Swing', 'explosive-swing', 'High momentum swing trade alerts.', 147.00, 'monthly', true, '{"type": "alert-service", "icon": "rocket"}', '["Explosive Swing Trade Alerts", "High Momentum Plays", "Detailed Analysis", "Risk/Reward Ratios"]', 0),
-            ('SPX Profit Pulse', 'spx-profit-pulse', 'Premium SPX options alerts.', 197.00, 'monthly', true, '{"type": "alert-service", "icon": "activity"}', '["SPX Options Alerts", "Intraday Opportunities", "Premium Analysis", "High Win Rate Setups"]', 0)
-        ON CONFLICT (slug) DO UPDATE SET
-            name = EXCLUDED.name,
-            description = EXCLUDED.description,
-            price = EXCLUDED.price,
-            metadata = EXCLUDED.metadata,
-            features = EXCLUDED.features,
-            updated_at = NOW()
-    "#;
+    // Migration: Seed membership plans (from migrations/008_seed_membership_plans.sql)
+    // This SQL is loaded from the migration file at compile time
+    let seed_plans_sql = include_str!("../../migrations/008_seed_membership_plans.sql");
 
-    sqlx::raw_sql(seed_plans)
+    sqlx::raw_sql(seed_plans_sql)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
-            tracing::error!("Failed to seed membership plans: {}", e);
+            tracing::error!("Failed to run membership seed migration: {}", e);
             (
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to seed plans: {}", e),
+                    message: format!("Failed to run migration: {}", e),
                 }),
             )
         })?;
 
-    tracing::info!("Seeded membership plans");
-
-    // Assign all memberships to super admin
-    let assign_memberships = r#"
-        INSERT INTO user_memberships (user_id, plan_id, starts_at, expires_at, status, current_period_start, current_period_end)
-        SELECT
-            u.id,
-            p.id,
-            NOW(),
-            NOW() + INTERVAL '100 years',
-            'active',
-            NOW(),
-            NOW() + INTERVAL '100 years'
-        FROM users u
-        CROSS JOIN membership_plans p
-        WHERE u.email = 'welberribeirodrums@gmail.com'
-        ON CONFLICT DO NOTHING
-    "#;
-
-    sqlx::raw_sql(assign_memberships)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to assign memberships: {}", e);
-            (
-                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                Json(SetupResponse {
-                    success: false,
-                    message: format!("Failed to assign memberships: {}", e),
-                }),
-            )
-        })?;
-
-    tracing::info!("Assigned all memberships to super admin");
+    tracing::info!("Ran membership seed migration successfully");
 
     Ok(Json(SetupResponse {
         success: true,
-        message: "Membership plans seeded and assigned to super admin".to_string(),
+        message: "Migrations completed: membership plans seeded and assigned to super admin".to_string(),
     }))
 }
 
@@ -243,5 +196,5 @@ pub fn router() -> Router<AppState> {
         .route("/health", get(health_check))
         .route("/ready", get(ready_check))
         .route("/setup-db", post(setup_db))
-        .route("/seed-memberships", post(seed_memberships))
+        .route("/run-migrations", post(run_migrations))
 }
