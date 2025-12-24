@@ -94,9 +94,9 @@
 						</a>
 					</li>
 					<li>
-						<a href="/dashboard/classes">
+						<a href="/dashboard/courses">
 							<span class="dashboard__nav-icon"><IconPlayerPlayFilled size={24} /></span>
-							<span class="nav-text-bold">My Classes</span>
+							<span class="nav-text-bold">My Courses</span>
 						</a>
 					</li>
 					<li>
@@ -107,11 +107,11 @@
 					</li>
 				</ul>
 
-				<!-- User's Trading Rooms -->
+				<!-- DAY TRADING ROOM ONLY - Other rooms commented out until Day Trading is 100% -->
 				{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
 					<p class="dashboard__nav-category">trading rooms</p>
 					<ul class="dashboard__nav-list">
-						{#each membershipsData.tradingRooms as room (room.id)}
+						{#each membershipsData.tradingRooms.filter(r => r.slug === 'day-trading-room') as room (room.id)}
 							<li>
 								<a href="/dashboard/{room.slug}">
 									<span class="dashboard__nav-icon">
@@ -124,7 +124,20 @@
 					</ul>
 				{/if}
 
-				<!-- User's Alert Services -->
+				<!-- COMMENTED OUT: Other Trading Rooms - uncomment when Day Trading Room is 100% complete
+				{#each membershipsData.tradingRooms.filter(r => r.slug !== 'day-trading-room') as room (room.id)}
+					<li>
+						<a href="/dashboard/{room.slug}">
+							<span class="dashboard__nav-icon">
+								<DynamicIcon name={room.icon} size={24} />
+							</span>
+							<span>{room.name}</span>
+						</a>
+					</li>
+				{/each}
+				-->
+
+				<!-- COMMENTED OUT: Alert Services - uncomment when Day Trading Room is 100% complete
 				{#if membershipsData?.alertServices && membershipsData.alertServices.length > 0}
 					<p class="dashboard__nav-category">alert services</p>
 					<ul class="dashboard__nav-list">
@@ -140,6 +153,7 @@
 						{/each}
 					</ul>
 				{/if}
+				-->
 
 				<!-- Premium Reports (future feature) -->
 				<p class="dashboard__nav-category">premium reports</p>

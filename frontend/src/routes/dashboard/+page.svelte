@@ -93,7 +93,8 @@
 			<li class="rules-disclaimer">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
 		</ul>
 
-		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+		<!-- DAY TRADING ROOM ONLY - showing only day-trading-room until 100% complete -->
+		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.filter(r => r.slug === 'day-trading-room').length > 0}
 			<div class="dropdown" class:is-open={dropdownOpen}>
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -108,7 +109,7 @@
 				{#if dropdownOpen}
 					<nav class="dropdown-menu">
 						<ul>
-							{#each membershipsData.tradingRooms as room (room.id)}
+							{#each membershipsData.tradingRooms.filter(r => r.slug === 'day-trading-room') as room (room.id)}
 								<li>
 									<a href={getAccessUrl(room)} target="_blank">
 										<span class="room-icon">
@@ -135,6 +136,7 @@
 			<h2 class="section-title">Memberships</h2>
 			<div class="membership-cards row">
 
+				<!-- DAY TRADING ROOM ONLY - Other memberships commented out until Day Trading is 100% -->
 				{#if loading}
 					<div class="loading-state">Loading memberships...</div>
 				{:else if error}
@@ -142,8 +144,8 @@
 						<p>{error}</p>
 						<button class="btn btn-primary" onclick={() => location.reload()}>Retry</button>
 					</div>
-				{:else if membershipsData?.memberships && membershipsData.memberships.length > 0}
-					{#each membershipsData.memberships as membership (membership.id)}
+				{:else if membershipsData?.memberships && membershipsData.memberships.filter(m => m.slug === 'day-trading-room').length > 0}
+					{#each membershipsData.memberships.filter(m => m.slug === 'day-trading-room') as membership (membership.id)}
 						<div class="col-sm-6 col-xl-4">
 							<article class="membership-card">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
@@ -171,6 +173,27 @@
 						<a href="/pricing" class="btn btn-primary">View Plans</a>
 					</div>
 				{/if}
+
+				<!-- COMMENTED OUT: Other memberships - uncomment when Day Trading Room is 100% complete
+				{#each membershipsData.memberships.filter(m => m.slug !== 'day-trading-room') as membership (membership.id)}
+					<div class="col-sm-6 col-xl-4">
+						<article class="membership-card">
+							<a href={getDashboardUrl(membership)} class="membership-card__header">
+								<span class="mem_icon">
+									<span class="membership-card__icon">
+										<DynamicIcon name={membership.icon} size={32} />
+									</span>
+								</span>
+								<span class="mem_div">{membership.name}</span>
+							</a>
+							<div class="membership-card__actions">
+								<a href={getDashboardUrl(membership)}>Dashboard</a>
+								<a href={getAccessUrl(membership)}>{getActionLabel(membership)}</a>
+							</div>
+						</article>
+					</div>
+				{/each}
+				-->
 
 			</div>
 		</section>
