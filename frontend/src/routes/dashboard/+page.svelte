@@ -93,8 +93,7 @@
 			<li class="rules-disclaimer">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
 		</ul>
 
-		<!-- DAY TRADING ROOM ONLY - showing only day-trading-room until 100% complete -->
-		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.filter(r => r.slug === 'day-trading-room').length > 0}
+		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
 			<div class="dropdown" class:is-open={dropdownOpen}>
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -109,7 +108,7 @@
 				{#if dropdownOpen}
 					<nav class="dropdown-menu">
 						<ul>
-							{#each membershipsData.tradingRooms.filter(r => r.slug === 'day-trading-room') as room (room.id)}
+							{#each membershipsData.tradingRooms as room (room.id)}
 								<li>
 									<a href={getAccessUrl(room)} target="_blank">
 										<span class="room-icon">
@@ -131,21 +130,25 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 
-		<!-- MEMBERSHIPS SECTION -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Memberships</h2>
-			<div class="membership-cards row">
-
-				<!-- DAY TRADING ROOM ONLY - Other memberships commented out until Day Trading is 100% -->
-				{#if loading}
-					<div class="loading-state">Loading memberships...</div>
-				{:else if error}
-					<div class="error-state">
-						<p>{error}</p>
-						<button class="btn btn-primary" onclick={() => location.reload()}>Retry</button>
-					</div>
-				{:else if membershipsData?.memberships && membershipsData.memberships.filter(m => m.slug === 'day-trading-room').length > 0}
-					{#each membershipsData.memberships.filter(m => m.slug === 'day-trading-room') as membership (membership.id)}
+		<!-- MEMBERSHIPS SECTION - Only show if user has memberships -->
+		{#if loading}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="loading-state">Loading memberships...</div>
+			</section>
+		{:else if error}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="error-state">
+					<p>{error}</p>
+					<button class="btn btn-primary" onclick={() => location.reload()}>Retry</button>
+				</div>
+			</section>
+		{:else if membershipsData?.memberships && membershipsData.memberships.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="membership-cards row">
+					{#each membershipsData.memberships as membership (membership.id)}
 						<div class="col-sm-6 col-xl-4">
 							<article class="membership-card">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
@@ -167,36 +170,79 @@
 							</article>
 						</div>
 					{/each}
-				{:else}
-					<div class="no-memberships">
-						<p>You don't have any active memberships yet.</p>
-						<a href="/pricing" class="btn btn-primary">View Plans</a>
-					</div>
-				{/if}
+				</div>
+			</section>
+		{/if}
 
-				<!-- COMMENTED OUT: Other memberships - uncomment when Day Trading Room is 100% complete
-				{#each membershipsData.memberships.filter(m => m.slug !== 'day-trading-room') as membership (membership.id)}
-					<div class="col-sm-6 col-xl-4">
-						<article class="membership-card">
-							<a href={getDashboardUrl(membership)} class="membership-card__header">
-								<span class="mem_icon">
-									<span class="membership-card__icon">
-										<DynamicIcon name={membership.icon} size={32} />
-									</span>
-								</span>
-								<span class="mem_div">{membership.name}</span>
-							</a>
-							<div class="membership-card__actions">
-								<a href={getDashboardUrl(membership)}>Dashboard</a>
-								<a href={getAccessUrl(membership)}>{getActionLabel(membership)}</a>
+		<!-- LATEST UPDATES SECTION - Simpler Trading shows this when no memberships -->
+		{#if !loading && !error && (!membershipsData?.memberships || membershipsData.memberships.length === 0)}
+			<section class="dashboard__content-section">
+				<h2 class="section-title u--margin-top-20">Latest Updates</h2>
+				<div class="article-cards row flex-grid">
+					<!-- Placeholder article cards - will be replaced with actual blog/video content -->
+					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+						<article class="article-card">
+							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop');">
+								<img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop" alt="Trading Update" />
+							</figure>
+							<div class="article-card__type">
+								<span class="label label--info">Daily Video</span>
 							</div>
+							<h4 class="h5 article-card__title"><a href="/blog">Welcome to Revolution Trading Pros</a></h4>
+							<span class="article-card__meta"><small>Latest market insights and trading education</small></span>
+							<div class="article-card__excerpt u--hide-read-more">
+								<p>
+									<div class="woocommerce">
+										<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
+											This content is only available to members.
+										</div>
+									</div>
+								</p>
+							</div>
+							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
 						</article>
 					</div>
-				{/each}
-				-->
-
-			</div>
-		</section>
+					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+						<article class="article-card">
+							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop');">
+								<img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop" alt="Market Analysis" />
+							</figure>
+							<div class="article-card__type">
+								<span class="label label--info">Daily Video</span>
+							</div>
+							<h4 class="h5 article-card__title"><a href="/blog">Market Analysis & Trading Strategies</a></h4>
+							<span class="article-card__meta"><small>Expert insights from our trading team</small></span>
+							<div class="article-card__excerpt u--hide-read-more">
+								<p>
+									<div class="woocommerce">
+										<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
+											This content is only available to members.
+										</div>
+									</div>
+								</p>
+							</div>
+							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
+						</article>
+					</div>
+					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+						<article class="article-card">
+							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop');">
+								<img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop" alt="Trading Education" />
+							</figure>
+							<div class="article-card__type">
+								<span class="label label--info">Daily Video</span>
+							</div>
+							<h4 class="h5 article-card__title"><a href="/blog">Learn Advanced Trading Techniques</a></h4>
+							<span class="article-card__meta"><small>Professional trading education</small></span>
+							<div class="article-card__excerpt u--hide-read-more">
+								<p>Get access to exclusive trading education, live trading rooms, and expert analysis. Join our community of successful traders today.</p>
+							</div>
+							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
+						</article>
+					</div>
+				</div>
+			</section>
+		{/if}
 
 		<!-- PREMIUM REPORTS SECTION -->
 		<section class="dashboard__content-section">
@@ -504,20 +550,198 @@
 		color: #dc3545;
 	}
 
-	.no-memberships {
-		padding: 40px;
-		text-align: center;
+	/* Article Cards - Simpler Trading Style */
+	.article-cards {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px;
+	}
+
+	.article-cards.row {
+		margin: 0 -10px;
+	}
+
+	.flex-grid {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.flex-grid-item {
+		display: flex;
+	}
+
+	.col-xs-12 {
+		width: 100%;
+		padding: 0 10px;
+		box-sizing: border-box;
+		margin-bottom: 20px;
+	}
+
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+
+	.col-md-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+
+	.col-xl-4 {
+		flex: 0 0 33.333%;
+		max-width: 33.333%;
+	}
+
+	@media (max-width: 991px) {
+		.col-xl-4 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (max-width: 575px) {
+		.col-sm-6,
+		.col-md-6,
+		.col-xl-4 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+	}
+
+	.article-card {
 		background: #fff;
 		border-radius: 5px;
+		overflow: hidden;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.15s ease-in-out;
+		display: flex;
+		flex-direction: column;
 		width: 100%;
 	}
 
-	.no-memberships p {
-		margin: 0 0 20px 0;
-		color: #666;
+	.article-card:hover {
+		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 	}
 
+	.article-card__image {
+		position: relative;
+		width: 100%;
+		height: 200px;
+		background-size: cover;
+		background-position: center;
+		margin: 0;
+	}
+
+	.article-card__image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+	}
+
+	.article-card__type {
+		padding: 12px 20px 0;
+	}
+
+	.label {
+		display: inline-block;
+		padding: 4px 12px;
+		border-radius: 3px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.label--info {
+		background: #0984ae;
+		color: #fff;
+	}
+
+	.article-card__title {
+		padding: 12px 20px 0;
+		margin: 0;
+	}
+
+	.article-card__title a {
+		color: #333;
+		text-decoration: none;
+		font-size: 18px;
+		font-weight: 600;
+		line-height: 1.4;
+		transition: color 0.15s;
+	}
+
+	.article-card__title a:hover {
+		color: #0984ae;
+	}
+
+	.h5 {
+		font-size: 18px;
+		font-weight: 600;
+	}
+
+	.article-card__meta {
+		display: block;
+		padding: 8px 20px 0;
+		color: #999;
+		font-size: 13px;
+	}
+
+	.article-card__excerpt {
+		padding: 12px 20px;
+		color: #666;
+		font-size: 14px;
+		line-height: 1.6;
+	}
+
+	.article-card__excerpt p {
+		margin: 0;
+	}
+
+	.u--hide-read-more {
+		/* Hide read more links */
+	}
+
+	.woocommerce {
+		margin: 0;
+	}
+
+	.wc-memberships-restriction-message {
+		background: #f8f9fa;
+		border-left: 4px solid #0984ae;
+		padding: 12px 16px;
+		margin: 0;
+		color: #666;
+		font-size: 13px;
+		border-radius: 3px;
+	}
+
+	.article-card .btn {
+		margin: 0 20px 20px;
+	}
+
+	.btn-tiny {
+		padding: 8px 16px;
+		font-size: 13px;
+	}
+
+	.btn-default {
+		background: #f5f5f5;
+		color: #333;
+		border: 1px solid #ddd;
+	}
+
+	.btn-default:hover {
+		background: #e8e8e8;
+		border-color: #ccc;
+	}
+
+	.u--margin-top-20 {
+		margin-top: 20px;
+	}
+
+	.btn,
 	.btn-primary {
 		display: inline-block;
 		padding: 10px 24px;
@@ -528,7 +752,9 @@
 		border-radius: 4px;
 		font-weight: 600;
 		cursor: pointer;
-		transition: background 0.15s;
+		transition: all 0.15s;
+		font-size: 14px;
+		text-align: center;
 	}
 
 	.btn-primary:hover {
