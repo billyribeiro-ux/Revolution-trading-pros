@@ -69,6 +69,8 @@ struct MembershipPlanDbRow {
     slug: String,
     price: f64,
     billing_cycle: String,
+    metadata: Option<serde_json::Value>,
+    features: Option<serde_json::Value>,
 }
 
 /// Get user's memberships/subscriptions
@@ -78,11 +80,12 @@ async fn get_memberships(
     user: User,
 ) -> Result<Json<MembershipsResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Try to fetch subscriptions - handle case where table doesn't exist
+    // Note: Using user_memberships table (not user_subscriptions)
     let subscriptions_result: Result<Vec<UserSubscriptionDbRow>, _> = sqlx::query_as(
         r#"
         SELECT s.id, s.user_id, s.plan_id, s.starts_at, s.expires_at, s.status, s.created_at
-        FROM user_subscriptions s
-        WHERE s.user_id = $1 AND s.status IN ('active', 'trialing')
+        FROM user_memberships s
+        WHERE s.user_id = $1 AND s.status IN ('active', 'trialing', 'pending')
         ORDER BY s.created_at DESC
         "#
     )
@@ -103,7 +106,7 @@ async fn get_memberships(
     let mut memberships = Vec::new();
     for sub in subscriptions {
         let plan: Option<MembershipPlanDbRow> = sqlx::query_as(
-            "SELECT id, name, slug, price, billing_cycle FROM membership_plans WHERE id = $1"
+            "SELECT id, name, slug, price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
         )
         .bind(sub.plan_id)
         .fetch_optional(&state.db.pool)
@@ -112,20 +115,44 @@ async fn get_memberships(
 
         if let Some(plan) = plan {
             let is_trial = sub.status == "trialing";
+
+            // Extract type from metadata (default to "trading-room")
+            let membership_type = plan.metadata
+                .as_ref()
+                .and_then(|m| m.get("type"))
+                .and_then(|t| t.as_str())
+                .unwrap_or("trading-room")
+                .to_string();
+
+            // Extract icon from metadata
+            let icon = plan.metadata
+                .as_ref()
+                .and_then(|m| m.get("icon"))
+                .and_then(|i| i.as_str())
+                .map(|s| s.to_string());
+
+            // Extract features array
+            let features = plan.features
+                .as_ref()
+                .and_then(|f| f.as_array())
+                .map(|arr| arr.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect::<Vec<String>>());
+
             let membership = UserMembershipResponse {
                 id: sub.id.to_string(),
                 name: plan.name,
-                membership_type: "subscription".to_string(),
+                membership_type,
                 slug: plan.slug,
                 status: if is_trial { "active".to_string() } else { sub.status },
                 subscription_type: Some(if is_trial { "trial" } else { "active" }.to_string()),
-                icon: None,
+                icon,
                 start_date: sub.starts_at.format("%Y-%m-%d").to_string(),
                 next_billing_date: sub.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
                 expires_at: sub.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
                 price: Some(plan.price),
                 interval: Some(plan.billing_cycle),
-                features: None,
+                features,
             };
             memberships.push(membership);
         }

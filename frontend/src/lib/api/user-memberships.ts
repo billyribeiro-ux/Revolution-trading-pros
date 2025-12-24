@@ -357,41 +357,101 @@ export async function preloadMembershipData(): Promise<void> {
 
 /**
  * Mock data for development/demo purposes
+ * Revolution Trading Pros Services:
+ * - Trading Rooms: Day Trading Room, Swing Trading Room, Small Account Mentorship
+ * - Alert Services: Alerts Only, Explosive Swing, SPX Profit Pulse
  */
 function getMockMemberships(): UserMembershipsResponse {
 	const tradingRooms: UserMembership[] = [
 		{
-			id: 'mastering-the-trade',
-			name: 'Mastering the Trade',
+			id: 'day-trading-room',
+			name: 'Day Trading Room',
 			type: 'trading-room',
-			slug: 'mastering-the-trade',
+			slug: 'day-trading-room',
 			status: 'active',
 			membershipType: 'active',
 			startDate: '2024-01-15',
 			nextBillingDate: '2025-01-15',
 			price: 197,
 			interval: 'monthly',
-			roomLabel: 'Trading Room',
-			features: ['Live Trading Sessions', 'Discord Access', 'Trade Alerts']
+			roomLabel: 'Day Trading Room',
+			features: ['Live Day Trading Sessions', 'Discord Access', 'Real-Time Trade Alerts', 'Daily Market Analysis']
 		},
 		{
-			id: 'simpler-showcase',
-			name: 'Simpler Showcase',
+			id: 'swing-trading-room',
+			name: 'Swing Trading Room',
 			type: 'trading-room',
-			slug: 'simpler-showcase',
+			slug: 'swing-trading-room',
 			status: 'active',
-			membershipType: 'trial',
-			startDate: '2024-03-01',
-			nextBillingDate: '2025-03-01',
+			membershipType: 'active',
+			startDate: '2024-02-01',
+			nextBillingDate: '2025-02-01',
 			price: 147,
 			interval: 'monthly',
-			roomLabel: 'Breakout Room',
-			features: ['Weekly Analysis', 'Discord Access', 'Swing Alerts']
+			roomLabel: 'Swing Trading Room',
+			features: ['Live Swing Trading Sessions', 'Discord Access', 'Swing Trade Alerts', 'Weekly Watchlist']
+		},
+		{
+			id: 'small-account-mentorship',
+			name: 'Small Account Mentorship',
+			type: 'trading-room',
+			slug: 'small-account-mentorship',
+			status: 'active',
+			membershipType: 'active',
+			startDate: '2024-03-01',
+			nextBillingDate: '2025-03-01',
+			price: 97,
+			interval: 'monthly',
+			roomLabel: 'Small Account Mentorship',
+			features: ['Small Account Strategies', 'Personalized Mentorship', 'Risk Management', 'Position Sizing']
 		}
 	];
 
-	// Only trading rooms for demo - matches WordPress reference
-	return categorizeMemberships(tradingRooms);
+	const alertServices: UserMembership[] = [
+		{
+			id: 'alerts-only',
+			name: 'Alerts Only',
+			type: 'alert-service',
+			slug: 'alerts-only',
+			status: 'active',
+			membershipType: 'active',
+			startDate: '2024-01-15',
+			nextBillingDate: '2025-01-15',
+			price: 97,
+			interval: 'monthly',
+			features: ['Real-Time Trade Alerts', 'Entry & Exit Points', 'Stop Loss Levels', 'Mobile Notifications']
+		},
+		{
+			id: 'explosive-swing',
+			name: 'Explosive Swing',
+			type: 'alert-service',
+			slug: 'explosive-swing',
+			status: 'active',
+			membershipType: 'active',
+			startDate: '2024-02-01',
+			nextBillingDate: '2025-02-01',
+			price: 147,
+			interval: 'monthly',
+			features: ['Explosive Swing Trade Alerts', 'High Momentum Plays', 'Detailed Analysis', 'Risk/Reward Ratios']
+		},
+		{
+			id: 'spx-profit-pulse',
+			name: 'SPX Profit Pulse',
+			type: 'alert-service',
+			slug: 'spx-profit-pulse',
+			status: 'active',
+			membershipType: 'active',
+			startDate: '2024-03-01',
+			nextBillingDate: '2025-03-01',
+			price: 197,
+			interval: 'monthly',
+			features: ['SPX Options Alerts', 'Intraday Opportunities', 'Premium Analysis', 'High Win Rate Setups']
+		}
+	];
+
+	// Combine all memberships
+	const allMemberships = [...tradingRooms, ...alertServices];
+	return categorizeMemberships(allMemberships);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
