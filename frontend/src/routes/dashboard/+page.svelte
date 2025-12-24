@@ -308,37 +308,97 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER
+	   DASHBOARD HEADER - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__header {
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		max-width: 1700px;
+		padding: 20px;
 		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		padding: 30px;
 		flex-wrap: wrap;
-		gap: 20px;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	@media screen and (min-width: 820px) {
+		.dashboard__header {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 
 	.dashboard__header-left {
-		flex: 1;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
 	}
 
-	.dashboard__page-title {
-		font-size: 24px;
-		font-weight: 600;
-		color: #333;
+	@media screen and (min-width: 577px) {
+		.dashboard__header-left {
+			flex-direction: row;
+		}
+	}
+
+	h1.dashboard__page-title {
 		margin: 0;
+		color: #333;
+		font-size: 36px;
+		font-weight: 300;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.2;
 	}
 
 	.dashboard__header-right {
 		display: flex;
 		align-items: center;
-		gap: 20px;
-		flex-wrap: wrap;
+		flex-direction: column-reverse;
+		margin-top: 10px;
 	}
 
-	/* Trading Room Rules */
+	@media screen and (min-width: 577px) {
+		.dashboard__header-right {
+			flex-direction: row-reverse;
+			justify-content: flex-end;
+		}
+	}
+
+	@media screen and (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: row;
+			justify-content: flex-start;
+			margin-top: 0;
+		}
+	}
+
+	@media screen and (min-width: 577px) {
+		.dashboard__header-right > * + * {
+			margin-right: 10px;
+		}
+	}
+
+	@media screen and (min-width: 820px) {
+		.dashboard__header-right > * + * {
+			margin-left: 6px;
+			margin-right: 0;
+		}
+	}
+
+	/* Trading Room Rules - Exact Match */
 	.trading-room-rules {
 		list-style: none;
 		margin: 0;
@@ -348,7 +408,7 @@
 
 	.rules-link {
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 700 !important;
 		color: #1e73be;
 		text-decoration: none;
 	}
@@ -363,117 +423,160 @@
 		margin-top: 4px;
 	}
 
-	/* Dropdown */
+	/* Dropdown - Exact Simpler Trading Match */
 	.dropdown {
 		position: relative;
 		display: inline-block;
 	}
 
-	.btn-orange {
+	.btn-orange,
+	.btn-tradingroom {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
-		background: #f99e31;
-		border: 1px solid #f99e31;
+		gap: 6px;
+		background: #f69532;
+		border: none;
 		color: #fff;
-		padding: 8px 16px;
-		border-radius: 4px;
+		padding: 10px 20px;
+		border-radius: 5px;
 		font-size: 14px;
 		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
 		transition: all 0.15s ease-in-out;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		line-height: 1.4;
 	}
 
-	.btn-orange:hover {
-		background: #e8901d;
-		border-color: #e8901d;
+	.btn-orange:hover,
+	.btn-tradingroom:hover {
+		background: #dc7309;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 	}
 
 	.dropdown-menu {
 		position: absolute;
 		top: 100%;
 		right: 0;
-		margin-top: 4px;
+		margin-top: 5px;
 		background: #fff;
-		border: 1px solid #e5e7eb;
-		border-radius: 4px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		min-width: 220px;
+		border: none;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		min-width: 260px;
+		padding: 20px;
 		z-index: 1000;
+		font-size: 14px;
 	}
 
 	.dropdown-menu ul {
 		list-style: none;
-		margin: 0;
-		padding: 8px 0;
+		margin: -10px;
+		padding: 0;
 	}
 
-	.dropdown-menu li a {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 10px 16px;
-		color: #333;
+	.dropdown-menu ul li a {
+		display: block;
+		padding: 10px 15px;
+		color: #666;
 		text-decoration: none;
 		font-size: 14px;
-		transition: background 0.15s;
+		font-family: 'Open Sans', sans-serif;
+		border-radius: 5px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.dropdown-menu li a:hover {
-		background: #f5f5f5;
+	.dropdown-menu ul li a:hover {
+		background-color: #f4f4f4;
+		color: #0984ae;
 	}
 
 	.room-icon {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
-		background: #0984ae;
-		border-radius: 50%;
-		color: #fff;
+		width: 24px;
+		height: 24px;
+		margin-right: 6px;
+		color: #999;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dropdown-menu ul li a:hover .room-icon {
+		color: #0984ae;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT - Matches Jesus HTML
+	   DASHBOARD CONTENT - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.logged-in .dashboard__content) {
+		max-width: 1700px;
+	}
+
 	.dashboard__content {
-		padding: 30px;
-		background: #f4f4f4;
-		flex: 1;
+		display: flex;
+		flex-flow: row nowrap;
+	}
+
+	.dashboard__content-main {
+		border-right: 1px solid #dbdbdb;
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	.dashboard__content-section {
-		margin-bottom: 30px;
+		padding: 30px 20px;
+		overflow-x: auto;
+		overflow-y: hidden;
 	}
 
-	.section-title {
-		font-size: 18px;
-		font-weight: 600;
+	@media screen and (min-width: 1280px) {
+		.dashboard__content-section {
+			padding: 30px;
+		}
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__content-section {
+			padding: 40px;
+		}
+	}
+
+	.dashboard__content-section + .dashboard__content-section {
+		border-top: 1px solid #dbdbdb;
+	}
+
+	.section-title,
+	h2.section-title {
 		color: #333;
-		margin: 0 0 20px 0;
+		font-weight: 700;
+		font-size: 20px;
+		margin-bottom: 30px;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.2;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP CARDS
+	   MEMBERSHIP CARDS - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.membership-cards {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 20px;
+		margin-top: -30px;
 	}
 
 	.membership-cards.row {
-		margin: 0 -10px;
+		display: flex;
+		flex-wrap: wrap;
+		margin: -30px -15px 0;
 	}
 
 	.col-sm-6 {
 		flex: 0 0 50%;
 		max-width: 50%;
-		padding: 0 10px;
+		padding: 0 15px;
 		box-sizing: border-box;
-		margin-bottom: 20px;
+		margin-top: 30px;
 	}
 
 	.col-xl-4 {
@@ -481,7 +584,7 @@
 		max-width: 33.333%;
 	}
 
-	@media (max-width: 991px) {
+	@media (max-width: 1199px) {
 		.col-xl-4 {
 			flex: 0 0 50%;
 			max-width: 50%;
@@ -497,80 +600,96 @@
 	}
 
 	.membership-card {
+		margin-top: 30px;
 		background: #fff;
 		border-radius: 5px;
-		overflow: hidden;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.15s ease-in-out;
+		overflow: hidden;
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
 	.membership-card__header {
-		display: flex;
-		align-items: center;
+		display: block;
 		padding: 20px;
 		color: #333;
-		text-decoration: none;
-		font-size: 17px;
-		font-weight: 600;
+		font-weight: 700;
+		white-space: nowrap;
 		transition: all 0.15s ease-in-out;
+		text-decoration: none;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 17px;
+		line-height: 1.4;
 	}
 
+	.membership-card__header:visited {
+		color: #333;
+	}
+
+	.membership-card__header:focus,
 	.membership-card__header:hover {
-		color: #0e6ac4;
+		color: #0984ae;
 	}
 
-	.mem_icon {
+	.mem_icon,
+	.mem_div {
 		display: inline-block;
 		vertical-align: middle;
-		margin-right: 12px;
+	}
+
+	.mem_div {
+		white-space: normal;
+		width: calc(100% - 43px);
 	}
 
 	.membership-card__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		display: inline-block;
 		width: 50px;
 		height: 50px;
-		background-color: #0984ae;
-		border-radius: 50%;
+		margin-right: 9px;
+		line-height: 50px;
 		color: #fff;
+		text-align: center;
+		border-radius: 50%;
 		transition: all 0.15s ease-in-out;
+		background-color: #0984ae;
+		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
 	}
 
 	.membership-card__header:hover .membership-card__icon {
 		background-color: #076787;
-	}
-
-	.mem_div {
-		display: inline-block;
-		vertical-align: middle;
-		white-space: normal;
-		width: calc(100% - 62px);
+		box-shadow: 0 15px 30px rgba(9, 132, 174, 0.2);
 	}
 
 	.membership-card__actions {
 		display: flex;
+		font-size: 14px;
 		border-top: 1px solid #ededed;
+		justify-content: center;
 	}
 
 	.membership-card__actions a {
 		display: block;
-		flex: 1 1 auto;
-		padding: 12px 15px;
-		color: #1e73be;
-		font-size: 14px;
-		font-weight: 400;
+		flex: 0 0 auto;
+		flex-basis: 50%;
+		width: 50%;
+		height: 100%;
+		padding: 15px;
 		text-align: center;
 		text-decoration: none;
+		color: #666;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		font-weight: 400;
 		transition: all 0.15s ease-in-out;
 	}
 
 	.membership-card__actions a:hover {
-		background: #f5f5f5;
+		background-color: #f4f4f4;
 		color: #0984ae;
 	}
 
@@ -656,7 +775,7 @@
 		border-radius: 5px;
 		overflow: hidden;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -710,9 +829,10 @@
 		color: #333;
 		text-decoration: none;
 		font-size: 18px;
-		font-weight: 600;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: color 0.15s;
+		transition: color 0.2s;
 	}
 
 	.article-card__title a:hover {
@@ -793,9 +913,10 @@
 		text-decoration: none;
 		border: none;
 		border-radius: 4px;
-		font-weight: 600;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
-		transition: all 0.15s;
+		transition: all 0.2s ease-in-out;
 		font-size: 14px;
 		text-align: center;
 	}
@@ -829,7 +950,8 @@
 
 	.premium-reports-placeholder h3 {
 		font-size: 20px;
-		font-weight: 600;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
 		color: #333;
 		margin: 0 0 12px 0;
 	}
