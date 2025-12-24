@@ -338,6 +338,7 @@
 	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard, matches Jesus file exactly -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
+			<h4 class="content-sidebar__heading">Quick Info</h4>
 		</section>
 	</aside>
 </div>
