@@ -80,107 +80,139 @@
 			<nav class="dashboard__nav-primary">
 
 				<!-- Profile -->
-				<a href="/dashboard/account" class="dashboard__profile">
+				<a href="/dashboard/account" class="dashboard__profile-nav-item">
 					<span class="dashboard__profile-photo"></span>
 					<span class="dashboard__profile-name">{$user?.name || 'Member'}</span>
 				</a>
 
 				<!-- Main Links -->
-				<ul class="dashboard__nav-list">
-					<li class="is-active">
-						<a href="/dashboard">
-							<span class="dashboard__nav-icon"><IconHomeFilled size={24} /></span>
-							<span>My Memberships</span>
-						</a>
-					</li>
-					<li>
-						<a href="/dashboard/courses">
-							<span class="dashboard__nav-icon"><IconPlayerPlayFilled size={24} /></span>
-							<span class="nav-text-bold">My Courses</span>
-						</a>
-					</li>
-					<li>
-						<a href="/dashboard/indicators">
-							<span class="dashboard__nav-icon"><IconChartCandle size={24} /></span>
-							<span class="nav-text-bold">My Indicators</span>
-						</a>
-					</li>
-				</ul>
-
-				<!-- DAY TRADING ROOM ONLY - Other rooms commented out until Day Trading is 100% -->
-				{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
-					<p class="dashboard__nav-category">trading rooms</p>
-					<ul class="dashboard__nav-list">
-						{#each membershipsData.tradingRooms.filter(r => r.slug === 'day-trading-room') as room (room.id)}
-							<li>
-								<a href="/dashboard/{room.slug}">
-									<span class="dashboard__nav-icon">
-										<DynamicIcon name={room.icon} size={24} />
-									</span>
-									<span>{room.name}</span>
-								</a>
-							</li>
-						{/each}
+				<ul>
+					<li></li>
+					<ul class="dash_main_links">
+						<li class="is-active">
+							<a href="/dashboard">
+								<span class="dashboard__nav-item-icon"><IconHomeFilled size={24} /></span>
+								<span class="dashboard__nav-item-text">Member Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="/dashboard/courses">
+								<span class="dashboard__nav-item-icon"><IconPlayerPlayFilled size={24} /></span>
+								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
+							</a>
+						</li>
+						<li>
+							<a href="/dashboard/indicators">
+								<span class="dashboard__nav-item-icon"><IconChartCandle size={24} /></span>
+								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
+							</a>
+						</li>
 					</ul>
-				{/if}
+				</ul>
 
-				<!-- COMMENTED OUT: Other Trading Rooms - uncomment when Day Trading Room is 100% complete
-				{#each membershipsData.tradingRooms.filter(r => r.slug !== 'day-trading-room') as room (room.id)}
+				<!-- MEMBERSHIPS SECTION - Trading Rooms -->
+				<ul>
 					<li>
-						<a href="/dashboard/{room.slug}">
-							<span class="dashboard__nav-icon">
-								<DynamicIcon name={room.icon} size={24} />
-							</span>
-							<span>{room.name}</span>
-						</a>
+						<p class="dashboard__nav-category">memberships</p>
 					</li>
-				{/each}
-				-->
-
-				<!-- COMMENTED OUT: Alert Services - uncomment when Day Trading Room is 100% complete
-				{#if membershipsData?.alertServices && membershipsData.alertServices.length > 0}
-					<p class="dashboard__nav-category">alert services</p>
-					<ul class="dashboard__nav-list">
-						{#each membershipsData.alertServices as alert (alert.id)}
-							<li>
-								<a href="/dashboard/{alert.slug}/alerts">
-									<span class="dashboard__nav-icon">
-										<DynamicIcon name={alert.icon} size={24} />
-									</span>
-									<span>{alert.name}</span>
-								</a>
-							</li>
-						{/each}
+					<ul class="dash_main_links">
+						{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+							{#each membershipsData.tradingRooms as room (room.id)}
+								<li>
+									<a href="/dashboard/{room.slug}">
+										<span class="dashboard__nav-item-icon">
+											<DynamicIcon name={room.icon} size={24} />
+										</span>
+										<span class="dashboard__nav-item-text">{room.name}</span>
+									</a>
+								</li>
+							{/each}
+						{/if}
 					</ul>
-				{/if}
-				-->
-
-				<!-- Premium Reports (future feature) -->
-				<p class="dashboard__nav-category">premium reports</p>
-				<ul class="dashboard__nav-list">
-					<!-- Future: Premium report items will go here -->
 				</ul>
 
-				<!-- Tools -->
-				<p class="dashboard__nav-category">tools</p>
-				<ul class="dashboard__nav-list">
+				<!-- MASTERY SECTION - Courses -->
+				<ul>
 					<li>
-						<a href="/dashboard/support">
-							<span class="dashboard__nav-icon"><IconHelpCircle size={24} /></span>
-							<span>Support</span>
-						</a>
+						<p class="dashboard__nav-category">mastery</p>
 					</li>
+					<ul class="dash_main_links">
+						{#if membershipsData?.courses && membershipsData.courses.length > 0}
+							{#each membershipsData.courses as course (course.id)}
+								<li>
+									<a href="/dashboard/{course.slug}">
+										<span class="dashboard__nav-item-icon">
+											<DynamicIcon name={course.icon} size={24} />
+										</span>
+										<span class="dashboard__nav-item-text">{course.name}</span>
+									</a>
+								</li>
+							{/each}
+						{/if}
+					</ul>
 				</ul>
 
-				<!-- Account -->
-				<p class="dashboard__nav-category">account</p>
-				<ul class="dashboard__nav-list">
+				<!-- PREMIUM REPORTS SECTION -->
+				<ul>
 					<li>
-						<a href="/dashboard/account">
-							<span class="dashboard__nav-icon"><IconSettings size={24} /></span>
-							<span>My Account</span>
-						</a>
+						<p class="dashboard__nav-category">premium reports</p>
 					</li>
+					<ul class="dash_main_links">
+						{#if membershipsData?.premiumReports && membershipsData.premiumReports.length > 0}
+							{#each membershipsData.premiumReports as report (report.id)}
+								<li>
+									<a href="/dashboard/{report.slug}">
+										<span class="dashboard__nav-item-icon">
+											<DynamicIcon name={report.icon} size={24} />
+										</span>
+										<span class="dashboard__nav-item-text">{report.name}</span>
+									</a>
+								</li>
+							{/each}
+						{/if}
+					</ul>
+				</ul>
+
+				<!-- TOOLS SECTION -->
+				<ul>
+					<li>
+						<p class="dashboard__nav-category">tools</p>
+					</li>
+					<ul class="dash_main_links">
+						{#if membershipsData?.weeklyWatchlist && membershipsData.weeklyWatchlist.length > 0}
+							{#each membershipsData.weeklyWatchlist as report (report.id)}
+								<li>
+									<a href="/dashboard/{report.slug}">
+										<span class="dashboard__nav-item-icon">
+											<DynamicIcon name={report.icon} size={24} />
+										</span>
+										<span class="dashboard__nav-item-text">{report.name}</span>
+									</a>
+								</li>
+							{/each}
+						{/if}
+						<li>
+							<a href="/dashboard/support">
+								<span class="dashboard__nav-item-icon"><IconHelpCircle size={24} /></span>
+								<span class="dashboard__nav-item-text">Support</span>
+							</a>
+						</li>
+					</ul>
+				</ul>
+
+				<!-- ACCOUNT SECTION -->
+				<ul>
+					<li>
+						<p class="dashboard__nav-category">account</p>
+					</li>
+					<ul class="dash_main_links">
+						<li>
+							<a href="/dashboard/account">
+								<span class="dashboard__nav-item-icon"><IconSettings size={24} /></span>
+								<span class="dashboard__nav-item-text">My Account</span>
+							</a>
+						</li>
+					</ul>
 				</ul>
 
 			</nav>
@@ -271,7 +303,7 @@
 	}
 
 	/* Profile Section */
-	.dashboard__profile {
+	.dashboard__profile-nav-item {
 		display: block;
 		padding: 32px 20px 28px 80px;
 		position: relative;
@@ -279,7 +311,7 @@
 		transition: background 0.15s ease-in-out;
 	}
 
-	.dashboard__profile:hover {
+	.dashboard__profile-nav-item:hover {
 		background: rgba(255,255,255,0.05);
 	}
 
@@ -305,17 +337,17 @@
 	}
 
 	/* Navigation List */
-	.dashboard__nav-list {
+	.dash_main_links {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.dashboard__nav-list li {
+	.dash_main_links li {
 		position: relative;
 	}
 
-	.dashboard__nav-list li a {
+	.dash_main_links li a {
 		display: flex;
 		align-items: center;
 		min-height: 40px;
@@ -330,20 +362,20 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dashboard__nav-list li a:hover {
+	.dash_main_links li a:hover {
 		color: #fff;
 	}
 
-	.dashboard__nav-list li a:hover .dashboard__nav-icon {
+	.dash_main_links li a:hover .dashboard__nav-item-icon {
 		color: #fff;
 		opacity: 1;
 	}
 
-	.dashboard__nav-list li.is-active a {
+	.dash_main_links li.is-active a {
 		color: #fff;
 	}
 
-	.dashboard__nav-list li.is-active a::after {
+	.dash_main_links li.is-active a::after {
 		content: '';
 		position: absolute;
 		top: 0;
@@ -353,14 +385,8 @@
 		background: #0984ae;
 	}
 
-	/* Bold text for My Classes and My Indicators */
-	.nav-text-bold {
-		font-weight: bold;
-		color: #fff;
-	}
-
 	/* Icon Styling */
-	.dashboard__nav-icon {
+	.dashboard__nav-item-icon {
 		position: absolute;
 		left: 30px;
 		display: flex;
@@ -374,9 +400,14 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dashboard__nav-list li.is-active .dashboard__nav-icon {
+	.dash_main_links li.is-active .dashboard__nav-item-icon {
 		color: #fff;
 		opacity: 1;
+	}
+
+	/* Text Styling */
+	.dashboard__nav-item-text {
+		color: inherit;
 	}
 
 	/* Category Headers */

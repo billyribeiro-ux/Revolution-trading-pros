@@ -68,6 +68,7 @@ export interface UserMembershipsResponse {
 	courses: UserMembership[];
 	indicators: UserMembership[];
 	weeklyWatchlist: UserMembership[];
+	premiumReports: UserMembership[];
 	stats?: {
 		totalActive: number;
 		totalValue: number;
@@ -141,6 +142,7 @@ function categorizeMemberships(memberships: UserMembership[]): UserMembershipsRe
 	const courses = memberships.filter((m) => m.type === 'course');
 	const indicators = memberships.filter((m) => m.type === 'indicator');
 	const weeklyWatchlist = memberships.filter((m) => m.type === 'weekly-watchlist');
+	const premiumReports = memberships.filter((m) => m.type === 'premium-report');
 
 	const activeMembers = memberships.filter((m) => m.status === 'active' || m.status === 'expiring');
 	const expiringMembers = memberships.filter((m) => m.status === 'expiring');
@@ -153,6 +155,7 @@ function categorizeMemberships(memberships: UserMembership[]): UserMembershipsRe
 		courses,
 		indicators,
 		weeklyWatchlist,
+		premiumReports,
 		stats: {
 			totalActive: activeMembers.length,
 			totalValue,
@@ -198,7 +201,8 @@ function getAccessUrl(type: MembershipType, slug: string): string {
 		'alert-service': '/dashboard/alerts',
 		course: '/dashboard/courses',
 		indicator: '/dashboard/indicators',
-		'weekly-watchlist': '/dashboard/weekly-watchlist'
+		'weekly-watchlist': '/dashboard/weekly-watchlist',
+		'premium-report': '/dashboard/premium-reports'
 	};
 
 	return `${baseUrls[type]}/${slug}`;
