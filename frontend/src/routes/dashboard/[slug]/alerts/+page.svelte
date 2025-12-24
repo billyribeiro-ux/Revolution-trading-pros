@@ -17,80 +17,18 @@
 	import IconClock from '@tabler/icons-svelte/icons/clock';
 	import IconFilter from '@tabler/icons-svelte/icons/filter';
 	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
+	import { getTradeAlerts, type TradeAlert, type AlertType } from '$lib/api/trade-alerts';
 
 	let slug = $derived($page.params.slug);
 	let loading = $state(true);
-	let alerts = $state<Alert[]>([]);
-	let filter = $state<'all' | 'buy' | 'sell' | 'update'>('all');
-
-	interface Alert {
-		id: string;
-		type: 'buy' | 'sell' | 'update' | 'close';
-		symbol: string;
-		action: string;
-		price?: number;
-		target?: number;
-		stopLoss?: number;
-		notes?: string;
-		timestamp: string;
-	}
-
-	// Mock alerts for demo
-	const mockAlerts: Alert[] = [
-		{
-			id: '1',
-			type: 'buy',
-			symbol: 'SPY',
-			action: 'BUY CALL',
-			price: 2.45,
-			target: 3.50,
-			stopLoss: 1.80,
-			notes: 'Looking for continuation to 480 level',
-			timestamp: new Date(Date.now() - 3600000).toISOString()
-		},
-		{
-			id: '2',
-			type: 'update',
-			symbol: 'SPY',
-			action: 'UPDATE',
-			notes: 'Moving stop to breakeven, looking good',
-			timestamp: new Date(Date.now() - 7200000).toISOString()
-		},
-		{
-			id: '3',
-			type: 'sell',
-			symbol: 'AAPL',
-			action: 'BUY PUT',
-			price: 1.85,
-			target: 2.80,
-			stopLoss: 1.20,
-			notes: 'Bearish setup on breakdown of 175 support',
-			timestamp: new Date(Date.now() - 10800000).toISOString()
-		},
-		{
-			id: '4',
-			type: 'buy',
-			symbol: 'TSLA',
-			action: 'BUY CALL',
-			price: 3.20,
-			target: 5.00,
-			stopLoss: 2.40,
-			notes: 'Bullish reversal pattern forming',
-			timestamp: new Date(Date.now() - 86400000).toISOString()
-		}
-	];
-
-	onMount(async () => {
-		// Simulate loading
-		await new Promise(resolve => setTimeout(resolve, 500));
-		alerts = mockAlerts;
-		loading = false;
-	});
+	let alerts = $state<TradeAlert[]>([]);
+	let activeFilter = $state<'all' | AlertType>('all');
+	let error = $state<string | null>(null);
 
 	let filteredAlerts = $derived(
-		filter === 'all'
+		activeFilter === 'all'
 			? alerts
-			: alerts.filter(a => a.type === filter)
+			: alerts.filter((alert) => alert.type === activeFilter)
 	);
 
 	function formatTime(timestamp: string): string {
@@ -116,16 +54,35 @@
 		return `$${price.toFixed(2)}`;
 	}
 
-	function getSlugName(s: string): string {
+	function getSlugName(s: string | undefined): string {
+		if (!s) return '';
 		return s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 	}
 
-	function refresh() {
+	async function loadAlerts() {
 		loading = true;
-		setTimeout(() => {
+		error = null;
+		try {
+			const response = await getTradeAlerts(slug || '', {
+				status: 'active',
+				per_page: 50
+			});
+			alerts = response.alerts;
+		} catch (err) {
+			console.error('Failed to load alerts:', err);
+			error = 'Failed to load trade alerts. Please try again.';
+		} finally {
 			loading = false;
-		}, 500);
+		}
 	}
+
+	function refreshAlerts() {
+		loadAlerts();
+	}
+
+	onMount(() => {
+		loadAlerts();
+	});
 </script>
 
 <svelte:head>
@@ -136,7 +93,7 @@
 	<!-- Header -->
 	<header class="page-header">
 		<div class="header-left">
-			<a href="/dashboard/{slug}" class="back-link">
+			<a href="/dashboard/{slug || ''}" class="back-link">
 				<IconArrowLeft size={18} />
 				Back to {getSlugName(slug)}
 			</a>
@@ -146,7 +103,7 @@
 			</h1>
 		</div>
 		<div class="header-right">
-			<button class="btn-icon" onclick={refresh} disabled={loading}>
+			<button class="btn-icon" onclick={refreshAlerts} disabled={loading}>
 				<IconRefresh size={20} class={loading ? 'spinning' : ''} />
 			</button>
 		</div>
@@ -158,29 +115,29 @@
 			<IconFilter size={16} />
 			<button
 				class="filter-btn"
-				class:active={filter === 'all'}
-				onclick={() => filter = 'all'}
+				class:active={activeFilter === 'all'}
+				onclick={() => activeFilter = 'all'}
 			>
 				All
 			</button>
 			<button
 				class="filter-btn buy"
-				class:active={filter === 'buy'}
-				onclick={() => filter = 'buy'}
+				class:active={activeFilter === 'buy'}
+				onclick={() => activeFilter = 'buy'}
 			>
 				Buy Alerts
 			</button>
 			<button
 				class="filter-btn sell"
-				class:active={filter === 'sell'}
-				onclick={() => filter = 'sell'}
+				class:active={activeFilter === 'sell'}
+				onclick={() => activeFilter = 'sell'}
 			>
 				Sell Alerts
 			</button>
 			<button
 				class="filter-btn update"
-				class:active={filter === 'update'}
-				onclick={() => filter = 'update'}
+				class:active={activeFilter === 'update'}
+				onclick={() => activeFilter = 'update'}
 			>
 				Updates
 			</button>
@@ -194,15 +151,20 @@
 				<div class="spinner"></div>
 				<p>Loading alerts...</p>
 			</div>
+		{:else if error}
+			<div class="error-state">
+				<p>{error}</p>
+				<button class="btn-retry" onclick={refreshAlerts}>Try Again</button>
+			</div>
 		{:else if filteredAlerts.length === 0}
 			<div class="empty-state">
 				<IconBell size={48} />
 				<h3>No Alerts Found</h3>
 				<p>
-					{#if filter === 'all'}
+					{#if activeFilter === 'all'}
 						No trade alerts have been posted yet.
 					{:else}
-						No {filter} alerts found. Try changing the filter.
+						No {activeFilter} alerts found. Try changing the filter.
 					{/if}
 				</p>
 			</div>
@@ -219,34 +181,34 @@
 								{:else}
 									<IconBell size={16} />
 								{/if}
-								{alert.action}
+								{alert.type.toUpperCase()}
 							</div>
 							<div class="alert-time">
 								<IconClock size={14} />
-								{formatTime(alert.timestamp)}
+								{formatTime(alert.created_at)}
 							</div>
 						</div>
 
 						<div class="alert-symbol">{alert.symbol}</div>
 
-						{#if alert.price || alert.target || alert.stopLoss}
+						{#if alert.entry_price || alert.target_price || alert.stop_loss}
 							<div class="alert-details">
-								{#if alert.price}
+								{#if alert.entry_price}
 									<div class="detail-item">
 										<span class="label">Entry</span>
-										<span class="value">{formatPrice(alert.price)}</span>
+										<span class="value">{formatPrice(alert.entry_price)}</span>
 									</div>
 								{/if}
-								{#if alert.target}
+								{#if alert.target_price}
 									<div class="detail-item target">
 										<span class="label">Target</span>
-										<span class="value">{formatPrice(alert.target)}</span>
+										<span class="value">{formatPrice(alert.target_price)}</span>
 									</div>
 								{/if}
-								{#if alert.stopLoss}
+								{#if alert.stop_loss}
 									<div class="detail-item stop">
 										<span class="label">Stop</span>
-										<span class="value">{formatPrice(alert.stopLoss)}</span>
+										<span class="value">{formatPrice(alert.stop_loss)}</span>
 									</div>
 								{/if}
 							</div>
@@ -393,14 +355,41 @@
 
 	/* Loading & Empty */
 	.loading-state,
-	.empty-state {
+	.empty-state,
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 4rem 2rem;
+		min-height: 300px;
 		color: #64748b;
-		text-align: center;
+	}
+
+	.empty-state p,
+	.error-state p {
+		margin-top: 16px;
+		font-size: 16px;
+	}
+
+	.error-state {
+		color: #ef4444;
+	}
+
+	.btn-retry {
+		margin-top: 16px;
+		padding: 10px 20px;
+		background: #0984ae;
+		color: #fff;
+		border: none;
+		border-radius: 6px;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.15s;
+	}
+
+	.btn-retry:hover {
+		background: #076787;
 	}
 
 	.spinner {

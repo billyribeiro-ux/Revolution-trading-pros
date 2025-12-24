@@ -14,6 +14,8 @@
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
+import { isSuperadminEmail } from '$lib/config/roles';
+import { get } from 'svelte/store';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -209,8 +211,8 @@ function getAccessUrl(type: MembershipType, slug: string): string {
 /**
  * Get current user's active memberships (cached)
  *
- * ICT 11+ Pattern: Graceful degradation - always return data
- * Falls back to mock data if API fails or user not authenticated
+ * SUPERADMIN AUTO-UNLOCK: Superadmin users get automatic access to ALL memberships for testing
+ * Regular users get their actual purchased memberships from the backend
  */
 export async function getUserMemberships(options?: {
 	skipCache?: boolean;
@@ -225,6 +227,14 @@ export async function getUserMemberships(options?: {
 	if (!token) {
 		console.log('[UserMemberships] No auth token - user not authenticated');
 		return categorizeMemberships([]);
+	}
+
+	// SUPERADMIN AUTO-UNLOCK: Check if user is superadmin
+	const { user } = get(authStore);
+	if (user && isSuperadminEmail(user.email)) {
+		console.log('[UserMemberships] Superadmin detected - unlocking all memberships');
+		// Skip cache for superadmin to always get latest products
+		return await getSuperadminMemberships();
 	}
 
 	const params = new URLSearchParams();
@@ -254,7 +264,6 @@ export async function getUserMemberships(options?: {
 			{ ttl: CACHE_TTL.memberships, persist: true }
 		);
 
-		// Return actual data from API (no mock data fallback)
 		return result;
 	} catch (error) {
 		console.error('[UserMemberships] Error fetching memberships:', error);
@@ -350,112 +359,53 @@ export async function preloadMembershipData(): Promise<void> {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA (Development Only)
+// SUPERADMIN AUTO-UNLOCK
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Mock data for development/demo purposes
- * Revolution Trading Pros Services:
- * - Trading Rooms: Day Trading Room, Swing Trading Room, Small Account Mentorship
- * - Alert Services: Alerts Only, Explosive Swing, SPX Profit Pulse
+ * Get all available membership products for superadmin testing
+ * Superadmin gets automatic access to ALL memberships for testing purposes
  */
-function getMockMemberships(): UserMembershipsResponse {
-	const tradingRooms: UserMembership[] = [
-		{
-			id: 'day-trading-room',
-			name: 'Day Trading Room',
-			type: 'trading-room',
-			slug: 'day-trading-room',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'chart-line',
-			startDate: '2024-01-15',
-			nextBillingDate: '2025-01-15',
-			price: 197,
-			interval: 'monthly',
-			roomLabel: 'Day Trading Room',
-			features: ['Live Day Trading Sessions', 'Discord Access', 'Real-Time Trade Alerts', 'Daily Market Analysis']
-		},
-		{
-			id: 'swing-trading-room',
-			name: 'Swing Trading Room',
-			type: 'trading-room',
-			slug: 'swing-trading-room',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'trending-up',
-			startDate: '2024-02-01',
-			nextBillingDate: '2025-02-01',
-			price: 147,
-			interval: 'monthly',
-			roomLabel: 'Swing Trading Room',
-			features: ['Live Swing Trading Sessions', 'Discord Access', 'Swing Trade Alerts', 'Weekly Watchlist']
-		},
-		{
-			id: 'small-account-mentorship',
-			name: 'Small Account Mentorship',
-			type: 'trading-room',
-			slug: 'small-account-mentorship',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'wallet',
-			startDate: '2024-03-01',
-			nextBillingDate: '2025-03-01',
-			price: 97,
-			interval: 'monthly',
-			roomLabel: 'Small Account Mentorship',
-			features: ['Small Account Strategies', 'Personalized Mentorship', 'Risk Management', 'Position Sizing']
-		}
-	];
+async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
+	try {
+		// Fetch all available membership products from backend
+		const response = await fetch(`${API_BASE}/admin/products?type=membership&per_page=100`, {
+			method: 'GET',
+			headers: await getAuthHeaders(),
+			credentials: 'include'
+		});
 
-	const alertServices: UserMembership[] = [
-		{
-			id: 'alerts-only',
-			name: 'Alerts Only',
-			type: 'alert-service',
-			slug: 'alerts-only',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'bell',
-			startDate: '2024-01-15',
-			nextBillingDate: '2025-01-15',
-			price: 97,
-			interval: 'monthly',
-			features: ['Real-Time Trade Alerts', 'Entry & Exit Points', 'Stop Loss Levels', 'Mobile Notifications']
-		},
-		{
-			id: 'explosive-swing',
-			name: 'Explosive Swing',
-			type: 'alert-service',
-			slug: 'explosive-swing',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'rocket',
-			startDate: '2024-02-01',
-			nextBillingDate: '2025-02-01',
-			price: 147,
-			interval: 'monthly',
-			features: ['Explosive Swing Trade Alerts', 'High Momentum Plays', 'Detailed Analysis', 'Risk/Reward Ratios']
-		},
-		{
-			id: 'spx-profit-pulse',
-			name: 'SPX Profit Pulse',
-			type: 'alert-service',
-			slug: 'spx-profit-pulse',
-			status: 'active',
-			membershipType: 'active',
-			icon: 'activity',
-			startDate: '2024-03-01',
-			nextBillingDate: '2025-03-01',
-			price: 197,
-			interval: 'monthly',
-			features: ['SPX Options Alerts', 'Intraday Opportunities', 'Premium Analysis', 'High Win Rate Setups']
+		if (!response.ok) {
+			console.error('[Superadmin] Failed to fetch products');
+			return categorizeMemberships([]);
 		}
-	];
 
-	// Combine all memberships
-	const allMemberships = [...tradingRooms, ...alertServices];
-	return categorizeMemberships(allMemberships);
+		const data = await response.json();
+		const products = data.data || [];
+
+		// Transform products into active memberships for superadmin
+		const memberships: UserMembership[] = products.map((product: any) => ({
+			id: product.id,
+			name: product.name,
+			type: (product.category || 'trading-room') as MembershipType,
+			slug: product.slug,
+			status: 'active' as MembershipStatus,
+			membershipType: 'complimentary' as MembershipSubscriptionType,
+			icon: product.icon || 'chart-line',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
+			price: product.price_monthly || 0,
+			interval: 'monthly' as BillingInterval,
+			roomLabel: product.name,
+			features: product.features || []
+		}));
+
+		const enhanced = enhanceMemberships(memberships);
+		return categorizeMemberships(enhanced);
+	} catch (error) {
+		console.error('[Superadmin] Error fetching memberships:', error);
+		return categorizeMemberships([]);
+	}
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
