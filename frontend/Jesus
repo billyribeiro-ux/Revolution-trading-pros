@@ -3,13 +3,26 @@
 
 
 
+<!-- ========================================
+     DOCUMENT START
+     This is the Simpler Trading Member Dashboard page
+     A complete WordPress/Beaver Builder page with membership management
+     ======================================== -->
 <!DOCTYPE html>
 <html lang="en-US">
 
 <head>
+	<!-- ========================================
+	     HEAD SECTION START
+	     Contains meta tags, CSS, JavaScript initialization
+	     ======================================== -->
 	<meta charset="UTF-8">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 
+	<!-- ========================================
+	     TRACKING & A/B TESTING SECTION
+	     Convert Experiences for split testing
+	     ======================================== -->
 	<!-- begin Convert Experiences code-->
 	<script type="text/javascript" src="//cdn-3.convertexperiments.com/js/10006018-10006413.js"></script>
 	<!-- end Convert Experiences code -->
@@ -86,6 +99,11 @@ body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: 
 :where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
 .wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
 </style>
+<!-- ========================================
+     BEAVER BUILDER CSS FRAMEWORK
+     Grid system, rows, columns, responsive utilities
+     Full-height layouts, flexbox configurations
+     ======================================== -->
 <style id='fl-builder-layout-401190-inline-css' type='text/css'>
 /* Grid
 ------------------------------------------------------ */
@@ -1193,6 +1211,11 @@ body.fl-builder-ie-11 .fl-row.fl-row-custom-height.fl-visible-desktop-medium {
 	font-weight: bold;
 }
 
+/* ========================================
+   GLOBAL CUSTOM CSS
+   Site-wide button styles, dashboard navigation,
+   trading room rules, icon customizations
+   ======================================== */
 /* Start Global CSS */
 p:empty {
     display: none;
@@ -2522,6 +2545,10 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 		</style>
 		
+		<!-- ========================================
+		     GOOGLE TAG MANAGER DATA LAYER
+		     User tracking, membership data, page analytics
+		     ======================================== -->
 		<script type="text/javascript">
 			// Initial Data Layer Init
 			var om_load_webfont = false;
@@ -2623,12 +2650,20 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 	<!-- End Google Tag Manager - Install in Head -->
 </head>
 
+<!-- ========================================
+     BODY SECTION START
+     Main page content, navigation, dashboard
+     ======================================== -->
 <body class="page-template page-template-templates page-template-dashboard-landing page-template-templatesdashboard-landing-php page page-id-401190 page-parent logged-in wp-custom-logo wp-embed-responsive theme-generatepress fl-builder post-image-aligned-center sticky-menu-slide sticky-enabled regular-menu-logo menu-logo-enabled both-sticky-menu woocommerce-no-js fl-theme-builder-footer member-logged-in no-sidebar nav-below-header fluid-header separate-containers active-footer-widgets-4 nav-aligned-right header-aligned-center dropdown-hover full-width-content elementor-default elementor-kit-1684418 cm-manage-google-fonts" itemtype="https://schema.org/WebPage" itemscope>
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PT24H76"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
-		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
+		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<!-- ========================================
+		     SITE HEADER
+		     Simpler Trading logo and branding
+		     ======================================== -->
+		<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
 			<div class="inside-header grid-container grid-parent">
 				<div class="site-logo">
 				<a href="https://www.simplertrading.com/" title="Simpler Trading" rel="home">
@@ -2636,6 +2671,11 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 				</a>
 			</div>			</div><!-- .inside-header -->
 		</header><!-- #masthead -->
+		<!-- ========================================
+		     MAIN NAVIGATION MENU
+		     Dropdown menus for: Trading Rooms, Learning, Tools,
+		     Resources, About Us, Dashboard, Cart
+		     ======================================== -->
 				<nav id="site-navigation" class="main-navigation" itemtype="https://schema.org/SiteNavigationElement" itemscope>
 			<div class="inside-navigation grid-container grid-parent">
 				<div class="site-logo sticky-logo navigation-logo">
@@ -2726,6 +2766,10 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <li id="menu-item-1957762" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1957762"><a href="tel:5122668659"><span class="fa fa-phone fa-cust-rotate-90 blue_icon"></span> (512) 266-8659</a></li>
 <li class="menu-item menu-item-cart"><a href="https://www.simplertrading.com/cart"><span class="cart-link-icon"><span class="fa fa-shopping-cart"></span><span class="cart-items-count">1</span></span><span class="cart-link-text">View My Cart</span></a></li></ul></div>			</div><!-- .inside-navigation -->
 		</nav><!-- #site-navigation -->
+		<!-- ========================================
+		     BREADCRUMB NAVIGATION
+		     Shows: Home / Member Dashboard
+		     ======================================== -->
 		<nav id="breadcrumbs" class="breadcrumbs"><div class="container-fluid"><ul><li class="item-home"><a class="breadcrumb-link breadcrumb-home" href="https://www.simplertrading.com" title="Home">Home</a></li><li class="separator separator-home"> / </li><li class="item-current item-401190"><strong class="breadcrumb-current breadcrumb-401190"> Member Dashboard</strong></li></ul></div></nav>
 	<div id="page" class="hfeed site grid-parent">
 				<div id="content" class="site-content">
@@ -2733,7 +2777,16 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 <a id="top"></a>
 
+    <!-- ========================================
+         DASHBOARD MAIN CONTENT AREA
+         Sidebar navigation + main content panel
+         ======================================== -->
     <div class="dashboard">
+        <!-- ========================================
+             DASHBOARD SIDEBAR
+             Profile, main links, memberships by category,
+             tools, account settings
+             ======================================== -->
         <aside class="dashboard__sidebar">
             <nav class="dashboard__nav-primary  ">
   <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
@@ -2843,8 +2896,16 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
   </button>
 </footer>
 <div class="dashboard__overlay" data-toggle-dashboard-menu></div>                    </aside>
+        <!-- ========================================
+             DASHBOARD MAIN PANEL
+             Header, memberships cards, tools, content
+             ======================================== -->
         <main class="dashboard__main ">
                             
+    <!-- ========================================
+         DASHBOARD HEADER
+         Page title, trading room dropdown, rules link
+         ======================================== -->
     <header class="dashboard__header">
         <div class="dashboard__header-left">
                         <h1 class="dashboard__page-title">Member Dashboard</h1>
@@ -2874,6 +2935,11 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
             
             <div class="dashboard__content">
                 <div class="dashboard__content-main">
+                    <!-- ========================================
+                         MEMBERSHIPS SECTION
+                         Cards for active memberships with links to
+                         dashboards and trading rooms
+                         ======================================== -->
                     <!-- Dashboard Walkthrough Banner-->
     <section class="dashboard__content-section">
         <h2 class="section-title">Memberships</h2>
@@ -2922,6 +2988,10 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 
 
+<!-- ========================================
+     TOOLS SECTION
+     Weekly Watchlist and other trading tools
+     ======================================== -->
 <section class="dashboard__content-section">
     <h2 class="section-title">Tools</h2>
     <div class="membership-cards row">
@@ -2948,6 +3018,11 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 
 
+            <!-- ========================================
+                 WEEKLY WATCHLIST PREVIEW
+                 Featured content with TG Watkins
+                 Week of December 22, 2025
+                 ======================================== -->
             <div class="dashboard__content-section u--background-color-white">
             
                 <section>
@@ -3008,6 +3083,10 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     </div>
 </div>
 
+<!-- ========================================
+     FOOTER SECTION
+     Company info, links, legal disclaimers, social media
+     ======================================== -->
 <div class="site-footer">
 	<footer class="fl-builder-content fl-builder-content-36965 fl-builder-global-templates-locked" data-post-id="36965" data-type="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter"><div class="fl-row fl-row-full-width fl-row-bg-color fl-node-59adb3c86fcbf footer-section" data-node="59adb3c86fcbf">
 	<div class="fl-row-content-wrap">
@@ -3016,7 +3095,11 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <div class="fl-col-group fl-node-5b6c661a8e03f fl-col-group-equal-height fl-col-group-align-top fl-col-group-custom-width" data-node="5b6c661a8e03f">
 			<div class="fl-col fl-node-5b6c661a8e13a fl-col-small" data-node="5b6c661a8e13a">
 	<div class="fl-col-content fl-node-content">
-	<div id="footer-logo" class="fl-module fl-module-html fl-node-59adb48fc0c6a" data-node="59adb48fc0c6a">
+	<!-- ========================================
+     FOOTER COLUMN 1: LOGO & CONTACT INFO
+     Simpler Trading logo, email, address, phone
+     ======================================== -->
+<div id="footer-logo" class="fl-module fl-module-html fl-node-59adb48fc0c6a" data-node="59adb48fc0c6a">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-html">
 	<xml version="1.0" encoding="utf-8">
@@ -3140,7 +3223,11 @@ Suite 4200 #1005</span><br />
 </div>
 			<div class="fl-col fl-node-5b6c661a8e176 fl-col-small" data-node="5b6c661a8e176">
 	<div class="fl-col-content fl-node-content">
-	<div id="learn-more--footer" class="fl-module fl-module-rich-text fl-node-5b6c66514654a" data-node="5b6c66514654a">
+	<!-- ========================================
+     FOOTER COLUMN 2: LEARN MORE LINKS
+     Memberships, Daily Videos, Support, Partners
+     ======================================== -->
+<div id="learn-more--footer" class="fl-module fl-module-rich-text fl-node-5b6c66514654a" data-node="5b6c66514654a">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-rich-text">
 	<div class="footer-margins">
@@ -3158,7 +3245,11 @@ Suite 4200 #1005</span><br />
 </div>
 			<div class="fl-col fl-node-5b6c661a8e1b2 fl-col-small" data-node="5b6c661a8e1b2">
 	<div class="fl-col-content fl-node-content">
-	<div id="about--footer" class="fl-module fl-module-rich-text fl-node-5b6c693409ba7" data-node="5b6c693409ba7">
+	<!-- ========================================
+     FOOTER COLUMN 3: ABOUT LINKS
+     About Simpler, Our Traders, Store, Blog
+     ======================================== -->
+<div id="about--footer" class="fl-module fl-module-rich-text fl-node-5b6c693409ba7" data-node="5b6c693409ba7">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-rich-text">
 	<p><strong style="font-size: 17px;">ABOUT</strong></p>
@@ -3173,7 +3264,11 @@ Suite 4200 #1005</span><br />
 </div>
 			<div class="fl-col fl-node-5b6c661a8e1ec fl-col-small" data-node="5b6c661a8e1ec">
 	<div class="fl-col-content fl-node-content">
-	<div id="legal--footer" class="fl-module fl-module-rich-text fl-node-5b6c6953e8ba2" data-node="5b6c6953e8ba2">
+	<!-- ========================================
+     FOOTER COLUMN 4: LEGAL LINKS
+     Privacy Policy, Terms & Conditions, Consent
+     ======================================== -->
+<div id="legal--footer" class="fl-module fl-module-rich-text fl-node-5b6c6953e8ba2" data-node="5b6c6953e8ba2">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-rich-text">
 	<p><strong style="font-size: 17px;">LEGAL</strong></p>
@@ -3199,7 +3294,11 @@ Suite 4200 #1005</span><br />
 </div>
 			<div class="fl-col fl-node-59adb67783096 fl-col-small" data-node="59adb67783096">
 	<div class="fl-col-content fl-node-content">
-	<div class="fl-module fl-module-html fl-node-5b96b44e7af4e" data-node="5b96b44e7af4e">
+	<!-- ========================================
+     APP DOWNLOAD BUTTONS
+     Apple App Store and Google Play Store
+     ======================================== -->
+<div class="fl-module fl-module-html fl-node-5b96b44e7af4e" data-node="5b96b44e7af4e">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-html">
 	<div class="app-download-btn">
@@ -3213,6 +3312,10 @@ Suite 4200 #1005</span><br />
 </div></div>
 	</div>
 </div>
+<!-- ========================================
+     SOCIAL MEDIA ICONS
+     Facebook, Twitter, YouTube, Instagram
+     ======================================== -->
 <div class="fl-module fl-module-icon-group fl-node-5b72f8ed22a5c footer-socials" data-node="5b72f8ed22a5c">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-icon-group">
@@ -3265,6 +3368,10 @@ Suite 4200 #1005</span><br />
 			<div class="fl-col fl-node-59adb3c86fb7e" data-node="59adb3c86fb7e">
 	<div class="fl-col-content fl-node-content">
 	<div class="fl-module fl-module-rich-text fl-node-59adb3c86fc1f" data-node="59adb3c86fc1f">
+	<!-- ========================================
+	     LEGAL DISCLAIMERS & COPYRIGHT
+	     CFTC disclaimers, risk warnings, copyright notice
+	     ======================================== -->
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-rich-text">
 	<p><span style="font-weight: 400;">The information contained on this website is solely for educational purposes, and does not constitute investment advice. The risk of trading in securities markets can be substantial. You must review and agree to our Disclaimers and Terms and Conditions before using this site.</span></p>
@@ -3336,7 +3443,13 @@ EF.click({
 					}
 				})(jQuery);
 			</script>
-					<div data-elementor-type="popup" data-elementor-id="2178347" class="elementor elementor-2178347 elementor-location-popup" data-elementor-settings="{&quot;entrance_animation&quot;:&quot;slideInUp&quot;,&quot;exit_animation&quot;:&quot;slideInUp&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:1.2,&quot;sizes&quot;:[]},&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:{&quot;page_load&quot;:&quot;yes&quot;,&quot;page_load_delay&quot;:3},&quot;timing&quot;:{&quot;schedule_start_date&quot;:&quot;2025-12-08 19:00&quot;,&quot;schedule_end_date&quot;:&quot;2025-12-13 12:00&quot;,&quot;schedule&quot;:&quot;yes&quot;,&quot;schedule_timezone&quot;:&quot;site&quot;,&quot;schedule_server_datetime&quot;:&quot;2025-12-24 03:38:02&quot;}}">
+			<!-- ========================================
+		     MARKETING POPUP #1
+		     "Daytraders - Stop Getting Chopped Up"
+		     Raghee's volatility trading system replay
+		     Scheduled: December 8-13, 2025
+		     ======================================== -->
+				<div data-elementor-type="popup" data-elementor-id="2178347" class="elementor elementor-2178347 elementor-location-popup" data-elementor-settings="{&quot;entrance_animation&quot;:&quot;slideInUp&quot;,&quot;exit_animation&quot;:&quot;slideInUp&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:1.2,&quot;sizes&quot;:[]},&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:{&quot;page_load&quot;:&quot;yes&quot;,&quot;page_load_delay&quot;:3},&quot;timing&quot;:{&quot;schedule_start_date&quot;:&quot;2025-12-08 19:00&quot;,&quot;schedule_end_date&quot;:&quot;2025-12-13 12:00&quot;,&quot;schedule&quot;:&quot;yes&quot;,&quot;schedule_timezone&quot;:&quot;site&quot;,&quot;schedule_server_datetime&quot;:&quot;2025-12-24 03:38:02&quot;}}">
 					<div class="elementor-section-wrap">
 						<div class="elementor-element elementor-element-4bdd027 e-con-boxed e-con" data-id="4bdd027" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;content_width&quot;:&quot;boxed&quot;}">
 					<div class="e-con-inner">
@@ -3418,6 +3531,11 @@ EF.click({
 				</div>
 							</div>
 				</div>
+		<!-- ========================================
+		     MARKETING POPUP #2
+		     Same as Popup #1 (pre-premiere version)
+		     Scheduled: December 8, 2025
+		     ======================================== -->
 				<div data-elementor-type="popup" data-elementor-id="2178309" class="elementor elementor-2178309 elementor-location-popup" data-elementor-settings="{&quot;entrance_animation&quot;:&quot;slideInUp&quot;,&quot;exit_animation&quot;:&quot;slideInUp&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:1.2,&quot;sizes&quot;:[]},&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:{&quot;page_load&quot;:&quot;yes&quot;,&quot;page_load_delay&quot;:3},&quot;timing&quot;:{&quot;schedule_start_date&quot;:&quot;2025-12-08 00:00&quot;,&quot;schedule_end_date&quot;:&quot;2025-12-08 18:00&quot;,&quot;schedule&quot;:&quot;yes&quot;,&quot;schedule_timezone&quot;:&quot;site&quot;,&quot;schedule_server_datetime&quot;:&quot;2025-12-24 03:38:02&quot;}}">
 					<div class="elementor-section-wrap">
 						<div class="elementor-element elementor-element-4bdd027 e-con-boxed e-con" data-id="4bdd027" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;content_width&quot;:&quot;boxed&quot;}">
@@ -3500,6 +3618,12 @@ EF.click({
 				</div>
 							</div>
 				</div>
+		<!-- ========================================
+		     MARKETING POPUP #3
+		     "Become a Disciplined Trader in 30 Days"
+		     Tr3ndy Zone Challenge with John & Mel
+		     Scheduled: October 29 - November 1, 2025
+		     ======================================== -->
 				<div data-elementor-type="popup" data-elementor-id="2169399" class="elementor elementor-2169399 elementor-location-popup" data-elementor-settings="{&quot;entrance_animation&quot;:&quot;slideInUp&quot;,&quot;exit_animation&quot;:&quot;slideInUp&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:1.2,&quot;sizes&quot;:[]},&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:{&quot;page_load&quot;:&quot;yes&quot;,&quot;page_load_delay&quot;:3},&quot;timing&quot;:{&quot;schedule_start_date&quot;:&quot;2025-10-29 20:00&quot;,&quot;schedule_end_date&quot;:&quot;2025-11-01 12:00&quot;,&quot;schedule&quot;:&quot;yes&quot;,&quot;schedule_timezone&quot;:&quot;site&quot;,&quot;schedule_server_datetime&quot;:&quot;2025-12-24 03:38:02&quot;}}">
 					<div class="elementor-section-wrap">
 						<div class="elementor-element elementor-element-4bdd027 e-con-boxed e-con" data-id="4bdd027" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;content_width&quot;:&quot;boxed&quot;}">
@@ -3582,6 +3706,11 @@ EF.click({
 				</div>
 							</div>
 				</div>
+		<!-- ========================================
+		     MARKETING POPUP #4
+		     Same as Popup #3 (pre-event version)
+		     Scheduled: October 25-29, 2025
+		     ======================================== -->
 				<div data-elementor-type="popup" data-elementor-id="2167899" class="elementor elementor-2167899 elementor-location-popup" data-elementor-settings="{&quot;entrance_animation&quot;:&quot;slideInUp&quot;,&quot;exit_animation&quot;:&quot;slideInUp&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:1.2,&quot;sizes&quot;:[]},&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:{&quot;page_load&quot;:&quot;yes&quot;,&quot;page_load_delay&quot;:3},&quot;timing&quot;:{&quot;schedule_start_date&quot;:&quot;2025-10-25 12:00&quot;,&quot;schedule_end_date&quot;:&quot;2025-10-29 20:00&quot;,&quot;schedule&quot;:&quot;yes&quot;,&quot;schedule_timezone&quot;:&quot;site&quot;,&quot;schedule_server_datetime&quot;:&quot;2025-12-24 03:38:02&quot;}}">
 					<div class="elementor-section-wrap">
 						<div class="elementor-element elementor-element-4bdd027 e-con-boxed e-con" data-id="4bdd027" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;content_width&quot;:&quot;boxed&quot;}">
@@ -3675,6 +3804,11 @@ and Discover How We Win 70%+ of Our Trades - LIVE </div>		</div>
                 }
             }
         </script>
+            <!-- ========================================
+                 COOKIE CONSENT BANNER
+                 GDPR/Privacy compliance with category toggles
+                 Necessary, Analytics, Videos, Fonts, Marketing
+                 ======================================== -->
             <div id="cs_preview_popup"><div class="cs_preview_container  bars_position_bottom bar_large cs_block_content_0" style="display: none;" data-scroll="0" data-sticky="1" data-smart-sticky-desktop="1" data-smart-sticky-mobile="0"  data-smart-sticky-desktop-show="1" data-cstype="ask_before_tracking" data-rule="2172652"><div class="preview_wrap"><!--googleoff: all-->    <div class="cs_popup_overlay"></div>
     <div class="aOXmlhNWwBUAdiwNoszFBYEHSYxEArvhyESs"
          style="--cs-color-active-toggle: #0172CB40; --cs-color-active-toggle-button: #0172CB; --cs-active-toggle-background-color: #0172CB; --cs-active-toggle-text-color: #ffffff; --cs-text-underline-color: #5D5D5D80; --cs-text-color: #5D5D5D; --cs-color-underline: #005BD3; --cs_subtitles_text_color: #5D5D5D; --cs_op_subtitle_f_w: 600; --cs_tab_buttons_bg: #E7ECF1"
@@ -4069,6 +4203,11 @@ and Discover How We Win 70%+ of Our Trades - LIVE </div>		</div>
     </script>
     <noscript><img height="1" width="1" style="display: none;" src="https://www.facebook.com/tr?id=841178052635402&ev=PageView&noscript=1&eid=84117805263540219f73066-8f3e-4c7c-ab21-e54364335305&cd%5Bpage_title%5D=Member+Dashboard&cd%5Bpost_type%5D=page&cd%5Bpost_id%5D=401190&cd%5Bplugin%5D=PixelYourSite&cd%5Bevent_url%5D=www.simplertrading.com%2Fdashboard&cd%5Buser_role%5D=subscriber" alt="facebook_pixel"></noscript>
 
+<!-- ========================================
+     TUMME FINGERPRINTING SYSTEM
+     Device fingerprinting for user tracking
+     24-hour cookie expiration
+     ======================================== -->
 <script>
      async function manageTumme() {
          const cookieName = "TUMME_";
@@ -4166,6 +4305,10 @@ and Discover How We Win 70%+ of Our Trades - LIVE </div>		</div>
      } 
 
 </script>
+	<!-- ========================================
+	     WOOCOMMERCE INITIALIZATION
+	     E-commerce functionality for cart/checkout
+	     ======================================== -->
 	<script type="text/javascript">
 		(function () {
 			var c = document.body.className;
@@ -4344,6 +4487,15 @@ jQuery(function($) {
 				window.wp_rp_datalayer = {"page_type":"other"};
  });
 </script>
+<!-- ========================================
+     BEAVER BUILDER LAYOUT ENGINE
+     Massive JavaScript framework for:
+     - Background management (parallax, video)
+     - Responsive resizing
+     - Module animations
+     - Anchor link scrolling
+     - Form handling
+     ======================================== -->
 <script>var wpAjaxUrl = 'https://www.simplertrading.com/cms/wp-admin/admin-ajax.php';var flBuilderUrl = 'https://www.simplertrading.com/wp-content/plugins/bb-plugin/';var FLBuilderLayoutConfig = {
 	anchorLinkAnimations : {
 		duration 	: 1000,
@@ -5710,6 +5862,15 @@ jQuery(function($) {
 
 })(jQuery);
 
+/* ========================================
+   CUSTOM DASHBOARD JAVASCRIPT
+   Site-specific functionality:
+   - Post-login redirects
+   - Accordion expand/collapse
+   - Responsive trading room display
+   - Membership card filtering
+   - Email validation
+   ======================================== */
 /* Start Global JS */
 /// Redirect users after coming from single post 
 jQuery( window ).load(function() {
@@ -5866,5 +6027,11 @@ if (jQuery('body').hasClass('scanners-template')) {
 <input type="hidden" class="cs-blocker-script-advanced-data" value="{&quot;data_layers&quot;:[&quot;dataLayer&quot;]}"><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"485cf297e01e4936beee6df03732224c","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
+
+<!-- ========================================
+     END OF DOCUMENT
+     Simpler Trading Member Dashboard
+     WordPress + Beaver Builder + WooCommerce
+     ======================================== -->
 
 <!-- plugin=object-cache-pro client=phpredis metric#hits=16712 metric#misses=351 metric#hit-ratio=97.9 metric#bytes=3979571 metric#prefetches=688 metric#store-reads=341 metric#store-writes=78 metric#store-hits=811 metric#store-misses=297 metric#sql-queries=240 metric#ms-total=1125.22 metric#ms-cache=97.38 metric#ms-cache-median=0.21 metric#ms-cache-ratio=8.7 -->

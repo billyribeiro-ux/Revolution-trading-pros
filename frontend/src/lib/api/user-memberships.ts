@@ -37,7 +37,7 @@ const CACHE_TTL = {
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist';
+export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report';
 export type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
 export type BillingInterval = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
 export type MembershipSubscriptionType = 'trial' | 'active' | 'paused' | 'complimentary' | null;
