@@ -133,19 +133,19 @@
 					<ul class="dash_main_links">
 						<li class="is-active">
 							<a href="/dashboard">
-								<span class="dashboard__nav-item-icon"><IconHomeFilled size={24} /></span>
+								<span class="dashboard__nav-item-icon st-icon-home"></span>
 								<span class="dashboard__nav-item-text">Member Dashboard</span>
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/courses">
-								<span class="dashboard__nav-item-icon"><IconPlayerPlayFilled size={24} /></span>
+								<span class="dashboard__nav-item-icon st-icon-courses"></span>
 								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/indicators">
-								<span class="dashboard__nav-item-icon"><IconChartCandle size={24} /></span>
+								<span class="dashboard__nav-item-icon st-icon-indicators"></span>
 								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
 							</a>
 						</li>
@@ -162,9 +162,7 @@
 							{#each membershipsData.tradingRooms as room (room.id)}
 								<li>
 									<a href="/dashboard/{room.slug}">
-										<span class="dashboard__nav-item-icon">
-											<DynamicIcon name={room.icon} size={24} />
-										</span>
+										<span class="dashboard__nav-item-icon st-icon-{room.slug}"></span>
 										<span class="dashboard__nav-item-text">{room.name}</span>
 									</a>
 								</li>
@@ -183,9 +181,7 @@
 							{#each membershipsData.courses as course (course.id)}
 								<li>
 									<a href="/dashboard/{course.slug}">
-										<span class="dashboard__nav-item-icon">
-											<DynamicIcon name={course.icon} size={24} />
-										</span>
+										<span class="dashboard__nav-item-icon st-icon-{course.slug}"></span>
 										<span class="dashboard__nav-item-text">{course.name}</span>
 									</a>
 								</li>
@@ -221,21 +217,15 @@
 						<p class="dashboard__nav-category">tools</p>
 					</li>
 					<ul class="dash_main_links">
-						{#if membershipsData?.weeklyWatchlist && membershipsData.weeklyWatchlist.length > 0}
-							{#each membershipsData.weeklyWatchlist as report (report.id)}
-								<li>
-									<a href="/dashboard/{report.slug}">
-										<span class="dashboard__nav-item-icon">
-											<DynamicIcon name={report.icon} size={24} />
-										</span>
-										<span class="dashboard__nav-item-text">{report.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
 						<li>
-							<a href="/dashboard/support">
-								<span class="dashboard__nav-item-icon"><IconHelpCircle size={24} /></span>
+							<a href="/dashboard/ww">
+								<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+								<span class="dashboard__nav-item-text">Weekly Watchlist</span>
+							</a>
+						</li>
+						<li>
+							<a href="https://intercom.help/simpler-trading/en/" target="_blank">
+								<span class="dashboard__nav-item-icon st-icon-support"></span>
 								<span class="dashboard__nav-item-text">Support</span>
 							</a>
 						</li>
@@ -250,7 +240,7 @@
 					<ul class="dash_main_links">
 						<li>
 							<a href="/dashboard/account">
-								<span class="dashboard__nav-item-icon"><IconSettings size={24} /></span>
+								<span class="dashboard__nav-item-icon st-icon-settings"></span>
 								<span class="dashboard__nav-item-text">My Account</span>
 							</a>
 						</li>
@@ -271,21 +261,21 @@
 		></div>
 
 		<!-- MOBILE TOGGLE BUTTON -->
-		<div class="dashboard__toggle">
+		<footer class="dashboard__toggle">
 			<button 
 				type="button" 
 				class="dashboard__toggle-button"
 				onclick={toggleMobileMenu}
-				aria-label="Toggle Menu"
+				data-toggle-dashboard-menu
 			>
-				<span class="dashboard__toggle-button-icon">
+				<div class="dashboard__toggle-button-icon">
 					<span></span>
 					<span></span>
 					<span></span>
-				</span>
-				<span class="framework__toggle-button-label">Menu</span>
+				</div>
+				<span class="framework__toggle-button-label">Dashboard Menu</span>
 			</button>
-		</div>
+		</footer>
 
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">
