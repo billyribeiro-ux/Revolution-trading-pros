@@ -70,6 +70,17 @@
 	// Active tab
 	let activeTab = $state<'overview' | 'subscriptions' | 'orders' | 'emails' | 'notes'>('overview');
 
+	// Membership management modals
+	let showExtendModal = $state(false);
+	let showGrantModal = $state(false);
+	let selectedSubscription = $state<Subscription | null>(null);
+	let extendDays = $state(30);
+	let extending = $state(false);
+	let granting = $state(false);
+	let availablePlans = $state<Array<{ id: number; name: string; slug: string }>>([]);
+	let selectedPlanId = $state<number | null>(null);
+	let grantExpiresAt = $state('');
+
 	// Email history (mock)
 	let emailHistory = $state<Array<{
 		id: number;
@@ -302,6 +313,126 @@
 		if (score >= 60) return { label: 'Engaged', color: 'text-blue-400' };
 		if (score >= 40) return { label: 'Moderate', color: 'text-yellow-400' };
 		return { label: 'Low Engagement', color: 'text-red-400' };
+	}
+
+	// Load available membership plans for granting
+	async function loadPlans() {
+		try {
+			const response = await fetch('/api/admin/membership-plans');
+			if (response.ok) {
+				availablePlans = await response.json();
+			}
+		} catch (err) {
+			console.error('Failed to load plans:', err);
+		}
+	}
+
+	// Open extend modal
+	function openExtendModal(sub: Subscription) {
+		selectedSubscription = sub;
+		extendDays = 30;
+		showExtendModal = true;
+	}
+
+	// Open grant modal
+	async function openGrantModal() {
+		if (availablePlans.length === 0) {
+			await loadPlans();
+		}
+		selectedPlanId = null;
+		grantExpiresAt = '';
+		showGrantModal = true;
+	}
+
+	// Extend membership
+	async function handleExtend() {
+		if (!selectedSubscription) return;
+		extending = true;
+		try {
+			// Calculate new expiration date
+			const currentExpiry = selectedSubscription.next_payment
+				? new Date(selectedSubscription.next_payment)
+				: new Date();
+			currentExpiry.setDate(currentExpiry.getDate() + extendDays);
+
+			const response = await fetch(`/api/admin/user-memberships/${selectedSubscription.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					expires_at: currentExpiry.toISOString()
+				})
+			});
+
+			if (response.ok) {
+				toastStore.success(`Membership extended by ${extendDays} days`);
+				showExtendModal = false;
+				await loadMember(); // Refresh data
+			} else {
+				const data = await response.json();
+				toastStore.error(data.error || 'Failed to extend membership');
+			}
+		} catch (err) {
+			console.error('Failed to extend membership:', err);
+			toastStore.error('Failed to extend membership');
+		} finally {
+			extending = false;
+		}
+	}
+
+	// Grant new membership
+	async function handleGrant() {
+		if (!selectedPlanId) {
+			toastStore.error('Please select a plan');
+			return;
+		}
+		granting = true;
+		try {
+			const response = await fetch('/api/admin/user-memberships', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					user_id: memberId,
+					plan_id: selectedPlanId,
+					expires_at: grantExpiresAt || null,
+					status: 'active'
+				})
+			});
+
+			if (response.ok) {
+				toastStore.success('Membership granted successfully');
+				showGrantModal = false;
+				await loadMember(); // Refresh data
+			} else {
+				const data = await response.json();
+				toastStore.error(data.error || 'Failed to grant membership');
+			}
+		} catch (err) {
+			console.error('Failed to grant membership:', err);
+			toastStore.error('Failed to grant membership');
+		} finally {
+			granting = false;
+		}
+	}
+
+	// Revoke membership
+	async function handleRevoke(subId: number) {
+		if (!confirm('Are you sure you want to revoke this membership?')) return;
+		try {
+			const response = await fetch(`/api/admin/user-memberships/${subId}`, {
+				method: 'DELETE'
+			});
+
+			if (response.ok) {
+				toastStore.success('Membership revoked');
+				await loadMember(); // Refresh data
+			} else {
+				const data = await response.json();
+				toastStore.error(data.error || 'Failed to revoke membership');
+			}
+		} catch (err) {
+			console.error('Failed to revoke membership:', err);
+			toastStore.error('Failed to revoke membership');
+		}
 	}
 </script>
 
@@ -540,6 +671,10 @@
 				<div class="panel">
 					<div class="panel-header">
 						<h3>Subscription History</h3>
+						<button class="btn-primary small" onclick={openGrantModal}>
+							<IconGift size={16} />
+							Grant Membership
+						</button>
 					</div>
 					{#if !member.subscriptions || member.subscriptions.length === 0}
 						<div class="empty-state">
@@ -585,6 +720,16 @@
 											<span class="label">Total Paid</span>
 											<span class="value">{formatCurrency(sub.total_paid)}</span>
 										</div>
+									</div>
+									<div class="subscription-actions">
+										<button class="btn-secondary small" onclick={() => openExtendModal(sub)}>
+											<IconCalendar size={14} />
+											Extend
+										</button>
+										<button class="btn-danger-outline small" onclick={() => handleRevoke(sub.id)}>
+											<IconTrash size={14} />
+											Revoke
+										</button>
 									</div>
 								</div>
 							{/each}
@@ -877,6 +1022,124 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn-primary" onclick={() => (showTagModal = false)}>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Extend Membership Modal -->
+{#if showExtendModal && selectedSubscription}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={() => (showExtendModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showExtendModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+	>
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+			<div class="modal-header">
+				<h2>Extend Membership</h2>
+				<button class="close-btn" onclick={() => (showExtendModal = false)}>
+					<IconX size={20} />
+				</button>
+			</div>
+			<div class="modal-body">
+				<p class="extend-info">
+					Extending: <strong>{selectedSubscription.product || 'Membership'}</strong>
+				</p>
+				<div class="form-group">
+					<label for="extend-days">Extend by (days)</label>
+					<div class="extend-options">
+						{#each [7, 14, 30, 60, 90, 365] as days}
+							<button
+								type="button"
+								class="extend-option"
+								class:selected={extendDays === days}
+								onclick={() => (extendDays = days)}
+							>
+								{days} days
+							</button>
+						{/each}
+					</div>
+					<input
+						id="extend-days"
+						type="number"
+						bind:value={extendDays}
+						min="1"
+						max="3650"
+						class="extend-custom"
+						placeholder="Custom days..."
+					/>
+				</div>
+				<p class="extend-preview">
+					New expiration: <strong>{
+						selectedSubscription.next_payment
+							? formatDate(new Date(new Date(selectedSubscription.next_payment).getTime() + extendDays * 24 * 60 * 60 * 1000).toISOString())
+							: formatDate(new Date(Date.now() + extendDays * 24 * 60 * 60 * 1000).toISOString())
+					}</strong>
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => (showExtendModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={handleExtend} disabled={extending || extendDays < 1}>
+					<IconCalendar size={18} />
+					{extending ? 'Extending...' : `Extend by ${extendDays} Days`}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Grant Membership Modal -->
+{#if showGrantModal}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div
+		class="modal-overlay"
+		onclick={() => (showGrantModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showGrantModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+	>
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+			<div class="modal-header">
+				<h2>Grant Membership</h2>
+				<button class="close-btn" onclick={() => (showGrantModal = false)}>
+					<IconX size={20} />
+				</button>
+			</div>
+			<div class="modal-body">
+				<p class="grant-info">
+					Granting membership to: <strong>{member?.name}</strong>
+				</p>
+				<div class="form-group">
+					<label for="grant-plan">Select Plan</label>
+					<select id="grant-plan" bind:value={selectedPlanId}>
+						<option value={null}>Select a plan...</option>
+						{#each availablePlans as plan}
+							<option value={plan.id}>{plan.name}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="grant-expires">Expiration Date (optional)</label>
+					<input
+						id="grant-expires"
+						type="date"
+						bind:value={grantExpiresAt}
+						min={new Date().toISOString().split('T')[0]}
+					/>
+					<small class="form-hint">Leave empty for no expiration (lifetime)</small>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => (showGrantModal = false)}>Cancel</button>
+				<button class="btn-primary" onclick={handleGrant} disabled={granting || !selectedPlanId}>
+					<IconGift size={18} />
+					{granting ? 'Granting...' : 'Grant Membership'}
+				</button>
 			</div>
 		</div>
 	</div>
@@ -1789,5 +2052,126 @@
 		.tabs button {
 			white-space: nowrap;
 		}
+	}
+
+	/* Subscription Actions */
+	.subscription-actions {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.btn-danger-outline {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.875rem;
+		background: transparent;
+		border: 1px solid rgba(239, 68, 68, 0.4);
+		border-radius: 8px;
+		color: #f87171;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-danger-outline:hover {
+		background: rgba(239, 68, 68, 0.1);
+		border-color: rgba(239, 68, 68, 0.6);
+	}
+
+	/* Extend Modal Styles */
+	.extend-info,
+	.grant-info {
+		color: #94a3b8;
+		font-size: 0.9375rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.extend-info strong,
+	.grant-info strong {
+		color: #f1f5f9;
+	}
+
+	.extend-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.extend-option {
+		padding: 0.5rem 0.875rem;
+		background: rgba(148, 163, 184, 0.1);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 8px;
+		color: #94a3b8;
+		font-size: 0.8125rem;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.extend-option:hover {
+		background: rgba(99, 102, 241, 0.1);
+		border-color: rgba(99, 102, 241, 0.3);
+		color: #a5b4fc;
+	}
+
+	.extend-option.selected {
+		background: rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.5);
+		color: #a5b4fc;
+	}
+
+	.extend-custom {
+		width: 100%;
+		padding: 0.625rem 0.875rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 8px;
+		color: #f1f5f9;
+		font-size: 0.875rem;
+	}
+
+	.extend-preview {
+		margin-top: 1rem;
+		padding: 0.75rem 1rem;
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		border-radius: 8px;
+		color: #94a3b8;
+		font-size: 0.875rem;
+	}
+
+	.extend-preview strong {
+		color: #34d399;
+	}
+
+	/* Grant Modal Styles */
+	.form-group select {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 10px;
+		color: #f1f5f9;
+		font-size: 0.9375rem;
+		font-family: inherit;
+		cursor: pointer;
+	}
+
+	.form-group select:focus {
+		outline: none;
+		border-color: rgba(99, 102, 241, 0.5);
+	}
+
+	.form-hint {
+		display: block;
+		margin-top: 0.5rem;
+		font-size: 0.75rem;
+		color: #64748b;
 	}
 </style>

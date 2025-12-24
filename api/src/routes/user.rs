@@ -3,9 +3,9 @@
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -167,9 +167,147 @@ async fn get_profile(user: User) -> Json<crate::models::UserResponse> {
     Json(user.into())
 }
 
+/// Cancel subscription request
+#[derive(Debug, Deserialize)]
+pub struct CancelSubscriptionRequest {
+    #[serde(default)]
+    pub cancel_immediately: bool,
+    pub reason: Option<String>,
+}
+
+/// Cancel a user's subscription
+/// POST /api/user/memberships/:id/cancel
+async fn cancel_membership(
+    State(state): State<AppState>,
+    user: User,
+    Path(membership_id): Path<i64>,
+    Json(input): Json<CancelSubscriptionRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Verify user owns this membership
+    let membership: Option<UserSubscriptionDbRow> = sqlx::query_as(
+        "SELECT id, user_id, plan_id, starts_at, expires_at, status, created_at FROM user_memberships WHERE id = $1 AND user_id = $2"
+    )
+    .bind(membership_id)
+    .bind(user.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let membership = membership.ok_or_else(|| {
+        (StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"})))
+    })?;
+
+    if membership.status != "active" && membership.status != "trialing" {
+        return Err((StatusCode::BAD_REQUEST, Json(json!({
+            "error": "Cannot cancel membership",
+            "message": "This membership is not active"
+        }))));
+    }
+
+    if input.cancel_immediately {
+        // Cancel immediately
+        sqlx::query(
+            "UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW() WHERE id = $1"
+        )
+        .bind(membership_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+        Ok(Json(json!({
+            "success": true,
+            "message": "Membership cancelled immediately",
+            "status": "cancelled"
+        })))
+    } else {
+        // Cancel at period end
+        sqlx::query(
+            "UPDATE user_memberships SET cancel_at_period_end = true, updated_at = NOW() WHERE id = $1"
+        )
+        .bind(membership_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+        Ok(Json(json!({
+            "success": true,
+            "message": "Membership will be cancelled at the end of the billing period",
+            "status": "pending_cancellation",
+            "cancel_at": membership.expires_at.map(|d| d.format("%Y-%m-%d").to_string())
+        })))
+    }
+}
+
+/// Get single membership details
+/// GET /api/user/memberships/:id
+async fn get_membership_details(
+    State(state): State<AppState>,
+    user: User,
+    Path(membership_id): Path<i64>,
+) -> Result<Json<UserMembershipResponse>, (StatusCode, Json<serde_json::Value>)> {
+    let subscription: UserSubscriptionDbRow = sqlx::query_as(
+        "SELECT id, user_id, plan_id, starts_at, expires_at, status, created_at FROM user_memberships WHERE id = $1 AND user_id = $2"
+    )
+    .bind(membership_id)
+    .bind(user.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"}))))?;
+
+    let plan: MembershipPlanDbRow = sqlx::query_as(
+        "SELECT id, name, slug, price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
+    )
+    .bind(subscription.plan_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Plan not found"}))))?;
+
+    let is_trial = subscription.status == "trialing";
+
+    let membership_type = plan.metadata
+        .as_ref()
+        .and_then(|m| m.get("type"))
+        .and_then(|t| t.as_str())
+        .unwrap_or("trading-room")
+        .to_string();
+
+    let icon = plan.metadata
+        .as_ref()
+        .and_then(|m| m.get("icon"))
+        .and_then(|i| i.as_str())
+        .map(|s| s.to_string());
+
+    let features = plan.features
+        .as_ref()
+        .and_then(|f| f.as_array())
+        .map(|arr| arr.iter()
+            .filter_map(|v| v.as_str().map(|s| s.to_string()))
+            .collect::<Vec<String>>());
+
+    Ok(Json(UserMembershipResponse {
+        id: subscription.id.to_string(),
+        name: plan.name,
+        membership_type,
+        slug: plan.slug,
+        status: if is_trial { "active".to_string() } else { subscription.status },
+        subscription_type: Some(if is_trial { "trial" } else { "active" }.to_string()),
+        icon,
+        start_date: subscription.starts_at.format("%Y-%m-%d").to_string(),
+        next_billing_date: subscription.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
+        expires_at: subscription.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
+        price: Some(plan.price),
+        interval: Some(plan.billing_cycle),
+        features,
+    }))
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/memberships", get(get_memberships))
+        .route("/memberships/:id", get(get_membership_details))
+        .route("/memberships/:id/cancel", post(cancel_membership))
         .route("/profile", get(get_profile))
 }
 
