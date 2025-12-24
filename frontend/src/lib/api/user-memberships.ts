@@ -384,17 +384,17 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 	console.log('[Superadmin] 🔓 Fetching all available memberships for superadmin...');
 	
 	try {
-		// STRATEGY 1: Try admin endpoint first
-		let response = await fetch(`${API_BASE}/admin/products?type=membership&per_page=100`, {
+		// STRATEGY 1: Try membership plans endpoint (correct admin endpoint)
+		let response = await fetch(`${API_BASE}/admin/membership-plans`, {
 			method: 'GET',
 			headers: await getAuthHeaders(),
 			credentials: 'include'
 		});
 
-		// STRATEGY 2: Fallback to public products endpoint
+		// STRATEGY 2: Fallback to public products endpoint with correct parameter
 		if (!response.ok) {
-			console.warn('[Superadmin] Admin endpoint failed, trying public products endpoint...');
-			response = await fetch(`${API_BASE}/products?category=membership&per_page=100`, {
+			console.warn('[Superadmin] Admin membership-plans endpoint failed, trying public products endpoint...');
+			response = await fetch(`${API_BASE}/products?product_type=membership&per_page=100`, {
 				method: 'GET',
 				headers: await getAuthHeaders(),
 				credentials: 'include'
@@ -408,7 +408,7 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 		}
 
 		const data = await response.json();
-		const products = data.data || data.products || [];
+		const products = data.data || data || [];
 		
 		console.log(`[Superadmin] ✅ Fetched ${products.length} products from API`);
 
@@ -417,38 +417,51 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 			return getSuperadminMockMemberships();
 		}
 
-		// Transform products into active memberships for superadmin
-		const memberships: UserMembership[] = products.map((product: any) => {
-			// Determine membership type from product category
-			let membershipType: MembershipType = 'trading-room';
-			const category = (product.category || product.type || '').toLowerCase();
+		// Transform membership plans/products into active memberships for superadmin
+		const memberships: UserMembership[] = products.map((item: any) => {
+			// Handle both membership_plans and products structures
+			const name = item.name || item.title || 'Unnamed Membership';
+			const slug = item.slug || `membership-${item.id}`;
+			const price = item.price || item.price_monthly || 0;
 			
-			if (category.includes('course') || category.includes('class')) {
+			// Determine membership type from name, slug, or metadata
+			let membershipType: MembershipType = 'trading-room';
+			const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
+			
+			if (searchText.includes('course') || searchText.includes('class') || searchText.includes('mastery')) {
 				membershipType = 'course';
-			} else if (category.includes('indicator')) {
+			} else if (searchText.includes('indicator')) {
 				membershipType = 'indicator';
-			} else if (category.includes('alert')) {
+			} else if (searchText.includes('alert')) {
 				membershipType = 'alert-service';
-			} else if (category.includes('watchlist') || category.includes('weekly')) {
+			} else if (searchText.includes('watchlist') || searchText.includes('weekly')) {
 				membershipType = 'weekly-watchlist';
-			} else if (category.includes('report') || category.includes('premium')) {
+			} else if (searchText.includes('report') || searchText.includes('premium')) {
 				membershipType = 'premium-report';
+			}
+			
+			// Extract icon from metadata if available
+			let icon = getDefaultIcon(membershipType);
+			if (item.metadata && typeof item.metadata === 'object') {
+				icon = item.metadata.icon || icon;
+			} else if (item.features && typeof item.features === 'object') {
+				icon = item.features.icon || icon;
 			}
 
 			return {
-				id: String(product.id),
-				name: product.name || product.title || 'Unnamed Product',
+				id: String(item.id),
+				name,
 				type: membershipType,
-				slug: product.slug || `product-${product.id}`,
+				slug,
 				status: 'active' as MembershipStatus,
 				membershipType: 'complimentary' as MembershipSubscriptionType,
-				icon: product.icon || getDefaultIcon(membershipType),
+				icon,
 				startDate: new Date().toISOString(),
 				nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-				price: product.price_monthly || product.price || 0,
+				price,
 				interval: 'monthly' as BillingInterval,
-				roomLabel: product.name || product.title,
-				features: product.features || []
+				roomLabel: name,
+				features: Array.isArray(item.features) ? item.features : []
 			};
 		});
 
