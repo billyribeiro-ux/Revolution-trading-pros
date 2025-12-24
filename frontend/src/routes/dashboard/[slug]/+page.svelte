@@ -12,7 +12,7 @@
 	
 	let slug = $derived($page.params.slug);
 	
-	// Convert slug to display name (e.g., "options-day-trading-room" -> "Options Day Trading Room")
+	// Convert slug to display name (e.g., "day-trading-room" -> "Day Trading Room")
 	let displayName = $derived(
 		slug
 			? slug.split('-')
