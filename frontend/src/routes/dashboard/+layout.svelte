@@ -19,6 +19,7 @@
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 
 	// Tabler Icons - exact matches to screenshot
@@ -114,7 +115,7 @@
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
 
-		<a id="top"></a>
+		<a id="top" aria-label="Skip to top"></a>
 
 		<!-- DASHBOARD -->
 		<div class="dashboard">
@@ -250,6 +251,56 @@
 				</ul>
 
 			</nav>
+
+			<!-- SECONDARY NAVIGATION - Membership-specific navigation (appears on membership pages only) -->
+			{#if $page.url.pathname.includes('/dashboard/') && $page.url.pathname !== '/dashboard'}
+				<nav class="dashboard__nav-secondary">
+					<ul>
+						<li>
+							<a href="/dashboard/{$page.params.slug}">
+								<span class="dashboard__nav-item-icon st-icon-dashboard"></span>
+								<span class="dashboard__nav-item-text">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="/dashboard/{$page.params.slug}/daily-videos">
+								<span class="dashboard__nav-item-icon st-icon-daily-videos"></span>
+								<span class="dashboard__nav-item-text">Premium Daily Videos</span>
+							</a>
+						</li>
+						<li>
+							<a href="/dashboard/{$page.params.slug}/learning-center">
+								<span class="dashboard__nav-item-icon st-icon-learning-center"></span>
+								<span class="dashboard__nav-item-text">Learning Center</span>
+							</a>
+						</li>
+						<li>
+							<a href="/dashboard/{$page.params.slug}/trading-room-archive">
+								<span class="dashboard__nav-item-icon st-icon-chatroom-archive"></span>
+								<span class="dashboard__nav-item-text">Trading Room Archives</span>
+							</a>
+						</li>
+						<li class="has-submenu">
+							<button type="button" class="submenu-toggle">
+								<span class="dashboard__nav-item-icon st-icon-forum"></span>
+								<span class="dashboard__nav-item-text">Meet the Traders</span>
+							</button>
+							<ul class="dashboard__nav-submenu">
+								<li><a href="/dashboard/{$page.params.slug}/traders">All Traders</a></li>
+							</ul>
+						</li>
+						<li class="has-submenu">
+							<button type="button" class="submenu-toggle">
+								<span class="dashboard__nav-item-icon st-icon-forum"></span>
+								<span class="dashboard__nav-item-text">Trader Store</span>
+							</button>
+							<ul class="dashboard__nav-submenu">
+								<li><a href="/dashboard/{$page.params.slug}/trader-store">View Store</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+			{/if}
 		</aside>
 
 		<!-- MOBILE OVERLAY -->
@@ -603,6 +654,94 @@
 		margin: 0 0 5px 0;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SECONDARY NAVIGATION - Membership-specific navigation in LEFT sidebar
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-secondary {
+		background-color: #0a2335;
+		padding: 0;
+		margin: 0;
+	}
+
+	.dashboard__nav-secondary ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.dashboard__nav-secondary li {
+		position: relative;
+	}
+
+	.dashboard__nav-secondary a {
+		display: flex;
+		align-items: center;
+		padding: 15px 30px;
+		color: #c5cfd5;
+		text-decoration: none;
+		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
+		transition: all 0.15s ease-in-out;
+		position: relative;
+	}
+
+	.dashboard__nav-secondary a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: #fff;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-item-icon {
+		position: static;
+		margin-right: 15px;
+		width: 24px;
+		height: 24px;
+		font-size: 24px;
+		line-height: 24px;
+		color: inherit;
+		opacity: 0.7;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-item-text {
+		color: inherit;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-submenu {
+		background-color: #081a27;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		z-index: 110;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-submenu li {
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-submenu a {
+		padding: 12px 30px 12px 60px;
+		font-size: 13px;
+	}
+
+	.dashboard__nav-secondary .submenu-toggle {
+		display: flex;
+		align-items: center;
+		padding: 15px 30px;
+		color: #c5cfd5;
+		background: none;
+		border: none;
+		width: 100%;
+		text-align: left;
+		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
+		transition: all 0.15s ease-in-out;
+		cursor: pointer;
+	}
+
+	.dashboard__nav-secondary .submenu-toggle:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
