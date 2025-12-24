@@ -159,9 +159,42 @@ async fn setup_db(
     }))
 }
 
+/// Run all pending migrations including membership plan seeding
+/// POST /run-migrations
+/// ICT 11+ Pattern: Migrations are defined in SQL files, not hardcoded
+async fn run_migrations(
+    axum::extract::State(state): axum::extract::State<AppState>,
+) -> Result<Json<SetupResponse>, (axum::http::StatusCode, Json<SetupResponse>)> {
+    // Migration: Seed membership plans (from migrations/008_seed_membership_plans.sql)
+    // This SQL is loaded from the migration file at compile time
+    let seed_plans_sql = include_str!("../../migrations/008_seed_membership_plans.sql");
+
+    sqlx::raw_sql(seed_plans_sql)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!("Failed to run membership seed migration: {}", e);
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(SetupResponse {
+                    success: false,
+                    message: format!("Failed to run migration: {}", e),
+                }),
+            )
+        })?;
+
+    tracing::info!("Ran membership seed migration successfully");
+
+    Ok(Json(SetupResponse {
+        success: true,
+        message: "Migrations completed: membership plans seeded and assigned to super admin".to_string(),
+    }))
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/health", get(health_check))
         .route("/ready", get(ready_check))
         .route("/setup-db", post(setup_db))
+        .route("/run-migrations", post(run_migrations))
 }

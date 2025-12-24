@@ -7,15 +7,19 @@
 	 * - Layout-level auth guard ensures auth is initialized before rendering children
 	 * - Child pages can safely assume auth token is available
 	 * - Single responsibility: auth check happens once, not in every page
+	 * - Sidebar shows user's actual memberships (data-driven)
 	 *
-	 * @version 2.0.0
+	 * @version 2.1.0
 	 */
+	import { onMount } from 'svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	import type { Snippet } from 'svelte';
 	import { user, isInitializing, isAuthenticated } from '$lib/stores/auth';
+	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 
 	// Tabler Icons - exact matches to screenshot
 	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
@@ -26,10 +30,22 @@
 
 	let { children }: { children: Snippet } = $props();
 
+	// Memberships data for sidebar
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
+
 	// ICT 11+ Auth Guard: Redirect to login if not authenticated after init completes
 	$effect(() => {
 		if (browser && !$isInitializing && !$isAuthenticated) {
 			goto('/login?redirect=/dashboard');
+		}
+	});
+
+	// Fetch memberships when auth is ready
+	$effect(() => {
+		if (browser && !$isInitializing) {
+			getUserMemberships().then(data => {
+				membershipsData = data;
+			});
 		}
 	});
 
@@ -90,6 +106,40 @@
 						</a>
 					</li>
 				</ul>
+
+				<!-- User's Trading Rooms -->
+				{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+					<p class="dashboard__nav-category">trading rooms</p>
+					<ul class="dashboard__nav-list">
+						{#each membershipsData.tradingRooms as room (room.id)}
+							<li>
+								<a href="/dashboard/{room.slug}">
+									<span class="dashboard__nav-icon">
+										<DynamicIcon name={room.icon} size={24} />
+									</span>
+									<span>{room.name}</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+
+				<!-- User's Alert Services -->
+				{#if membershipsData?.alertServices && membershipsData.alertServices.length > 0}
+					<p class="dashboard__nav-category">alert services</p>
+					<ul class="dashboard__nav-list">
+						{#each membershipsData.alertServices as alert (alert.id)}
+							<li>
+								<a href="/dashboard/{alert.slug}/alerts">
+									<span class="dashboard__nav-icon">
+										<DynamicIcon name={alert.icon} size={24} />
+									</span>
+									<span>{alert.name}</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 
 				<!-- Premium Reports (future feature) -->
 				<p class="dashboard__nav-category">premium reports</p>
