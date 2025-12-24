@@ -90,7 +90,7 @@
 					<li class="is-active">
 						<a href="/dashboard">
 							<span class="dashboard__nav-icon"><IconHomeFilled size={24} /></span>
-							<span>Member Dashboard</span>
+							<span>My Memberships</span>
 						</a>
 					</li>
 					<li>
