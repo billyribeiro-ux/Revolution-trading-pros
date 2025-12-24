@@ -2,6 +2,7 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 1: DOCUMENT TYPE DECLARATION
      ═══════════════════════════════════════════════════════════════════════════
+     PAGE: /dashboard (Member Dashboard Landing Page)
      
      This is the Simpler Trading Member Dashboard page.
      A complete WordPress/Beaver Builder page with WooCommerce membership management.
@@ -20,6 +21,7 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     SECTION 2: HTML HEAD - METADATA & RESOURCES
 	     ═══════════════════════════════════════════════════════════════════════════
+	     PAGE: /dashboard
 	     
 	     Contains all document metadata, SEO tags, CSS stylesheets, and JavaScript.
 	     This section loads BEFORE the page is visible to users.
@@ -2706,6 +2708,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 3: HTML BODY - VISIBLE PAGE CONTENT
      ═══════════════════════════════════════════════════════════════════════════
+     PAGE: /dashboard
      
      Contains all visible page elements.
      
@@ -2727,6 +2730,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     SECTION 4: SITE HEADER
 		     ═══════════════════════════════════════════════════════════════════════════
+		     PAGE: /dashboard (appears on all pages)
 		     
 		     Element ID: masthead
 		     
@@ -2748,6 +2752,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     SECTION 5: MAIN NAVIGATION MENU
 		     ═══════════════════════════════════════════════════════════════════════════
+		     PAGE: /dashboard (appears on all pages)
 		     
 		     Menu ID: menu-header-menu-2023
 		     
@@ -2757,7 +2762,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 		     3. Tools (dropdown)
 		     4. Resources (dropdown)
 		     5. About Us (dropdown)
-		     6. Dashboard (dropdown)
+		     6. Dashboard (dropdown) - links to /dashboard/account, /dashboard/classes, etc.
 		     7. Phone Number
 		     8. Shopping Cart
 		     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -2854,6 +2859,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     SECTION 6: BREADCRUMB NAVIGATION
 		     ═══════════════════════════════════════════════════════════════════════════
+		     PAGE: /dashboard
 		     
 		     Shows current page location in site hierarchy.
 		     
@@ -2869,6 +2875,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     <!-- ═══════════════════════════════════════════════════════════════════════════
          SECTION 7: DASHBOARD MAIN CONTENT AREA
          ═══════════════════════════════════════════════════════════════════════════
+         PAGE: /dashboard
          
          Two-column layout:
          - Left: Sidebar navigation
@@ -2878,15 +2885,24 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
         <!-- ═══════════════════════════════════════════════════════════════════════════
              SECTION 7.1: DASHBOARD SIDEBAR NAVIGATION
              ═══════════════════════════════════════════════════════════════════════════
+             PAGE: /dashboard (appears on all dashboard pages)
              
              Sections (in order):
-             1. Profile (user photo & name)
-             2. Main Links (Dashboard, Classes, Indicators)
-             3. MEMBERSHIPS (trading rooms)
+             1. Profile (user photo & name) - links to /dashboard/account
+             2. Main Links:
+                - /dashboard (Member Dashboard)
+                - /dashboard/classes (My Classes)
+                - /dashboard/indicators (My Indicators)
+             3. MEMBERSHIPS (trading rooms):
+                - /dashboard/mastering-the-trade
+                - /dashboard/simpler-showcase
              4. MASTERY (courses)
              5. PREMIUM REPORTS
-             6. TOOLS (Weekly Watchlist, Support)
-             7. ACCOUNT (My Account)
+             6. TOOLS:
+                - /dashboard/ww (Weekly Watchlist)
+                - /support (Support)
+             7. ACCOUNT:
+                - /dashboard/account (My Account)
              ═══════════════════════════════════════════════════════════════════════════ -->
         <aside class="dashboard__sidebar">
             <nav class="dashboard__nav-primary  ">
@@ -3000,11 +3016,12 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
         <!-- ═══════════════════════════════════════════════════════════════════════════
              SECTION 7.2: DASHBOARD MAIN CONTENT PANEL
              ═══════════════════════════════════════════════════════════════════════════
+             PAGE: /dashboard
              
              Contains:
              - Dashboard header (title, trading room dropdown)
-             - Membership cards
-             - Tools section
+             - Membership cards (links to /dashboard/mastering-the-trade, etc.)
+             - Tools section (links to /dashboard/ww)
              - Featured content
              ═══════════════════════════════════════════════════════════════════════════ -->
         <main class="dashboard__main ">
@@ -3012,13 +3029,16 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     <!-- ═══════════════════════════════════════════════════════════════════════════
          SECTION 7.2.1: DASHBOARD HEADER
          ═══════════════════════════════════════════════════════════════════════════
+         PAGE: /dashboard
          
          Left Side:
          - Page title: "Member Dashboard"
          
          Right Side:
          - Trading Room Rules link (PDF)
-         - "Enter a Trading Room" dropdown (JWT-authenticated links)
+         - "Enter a Trading Room" dropdown with JWT-authenticated links to:
+           * /dashboard/mastering-the-trade/room
+           * /dashboard/simpler-showcase/room
          ═══════════════════════════════════════════════════════════════════════════ -->
     <header class="dashboard__header">
         <div class="dashboard__header-left">
@@ -3052,18 +3072,19 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                     <!-- ═══════════════════════════════════════════════════════════════════════════
                          SECTION 7.2.2: MEMBERSHIPS SECTION
                          ═══════════════════════════════════════════════════════════════════════════
+                         PAGE: /dashboard
                          
                          Displays user's active membership cards.
                          
                          Each card shows:
                          - Membership name
                          - Icon
-                         - Dashboard link
-                         - Trading Room link (if applicable)
+                         - Dashboard link (e.g., /dashboard/mastering-the-trade)
+                         - Trading Room link (e.g., /dashboard/mastering-the-trade/room)
                          
                          Current Memberships:
-                         1. Mastering the Trade
-                         2. Simpler Showcase
+                         1. Mastering the Trade (/dashboard/mastering-the-trade)
+                         2. Simpler Showcase (/dashboard/simpler-showcase)
                          ═══════════════════════════════════════════════════════════════════════════ -->
                     <!-- Dashboard Walkthrough Banner-->
     <section class="dashboard__content-section">
@@ -3116,11 +3137,12 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 7.2.3: TOOLS SECTION
      ═══════════════════════════════════════════════════════════════════════════
+     PAGE: /dashboard
      
      Displays trading tools the user has access to.
      
      Current Tools:
-     - Weekly Watchlist (with dashboard link)
+     - Weekly Watchlist (/dashboard/ww)
      ═══════════════════════════════════════════════════════════════════════════ -->
 <section class="dashboard__content-section">
     <h2 class="section-title">Tools</h2>
@@ -3151,6 +3173,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
             <!-- ═══════════════════════════════════════════════════════════════════════════
                  SECTION 7.2.4: WEEKLY WATCHLIST FEATURED CONTENT
                  ═══════════════════════════════════════════════════════════════════════════
+                 PAGE: /dashboard
                  
                  Featured: Weekly Watchlist with TG Watkins
                  Week of: December 22, 2025
@@ -3159,7 +3182,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                  - Title and date
                  - Description
                  - Featured image
-                 - "Watch Now" button
+                 - "Watch Now" button (links to /watchlist/12222025-tg-watkins)
                  ═══════════════════════════════════════════════════════════════════════════ -->
             <div class="dashboard__content-section u--background-color-white">
             
@@ -3224,6 +3247,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 8: SITE FOOTER
      ═══════════════════════════════════════════════════════════════════════════
+     PAGE: /dashboard (appears on all pages)
      
      Multi-column layout with:
      - Company logo & contact info
