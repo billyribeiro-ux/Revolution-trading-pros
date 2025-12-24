@@ -1,5 +1,8 @@
 //! Admin routes - Revolution Trading Pros
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
+//!
+//! Enterprise-grade admin API with role-based access control.
+//! All routes require admin or super-admin role.
 
 use axum::{
     extract::{Path, Query, State},
@@ -14,6 +17,37 @@ use crate::{
     models::User,
     AppState,
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTHORIZATION HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Check if user has admin privileges (admin or super-admin role)
+fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let role = user.role.as_deref().unwrap_or("user");
+    if role == "admin" || role == "super-admin" || role == "super_admin" {
+        Ok(())
+    } else {
+        Err((StatusCode::FORBIDDEN, Json(json!({
+            "error": "Access denied",
+            "message": "This action requires admin privileges"
+        }))))
+    }
+}
+
+/// Check if user is super-admin (highest privilege level)
+#[allow(dead_code)]
+fn require_super_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let role = user.role.as_deref().unwrap_or("user");
+    if role == "super-admin" || role == "super_admin" {
+        Ok(())
+    } else {
+        Err((StatusCode::FORBIDDEN, Json(json!({
+            "error": "Access denied",
+            "message": "This action requires super-admin privileges"
+        }))))
+    }
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // USER MANAGEMENT (Admin Staff)
@@ -618,8 +652,10 @@ pub struct UpdateMembershipRequest {
 /// List all membership plans (admin - includes inactive)
 async fn list_all_plans(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let plans: Vec<MembershipPlanRow> = sqlx::query_as(
         "SELECT * FROM membership_plans ORDER BY price ASC"
     )
@@ -633,9 +669,11 @@ async fn list_all_plans(
 /// List user memberships (admin)
 async fn list_user_memberships(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Query(query): Query<UserMembershipListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
@@ -696,9 +734,11 @@ async fn list_user_memberships(
 /// Get single user membership (admin)
 async fn get_user_membership(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<AdminUserMembershipRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let membership: AdminUserMembershipRow = sqlx::query_as(
         r#"
         SELECT
@@ -725,9 +765,11 @@ async fn get_user_membership(
 /// Grant membership to user (admin)
 async fn grant_membership(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Json(input): Json<GrantMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     // Verify user exists
     let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
         .bind(input.user_id)
@@ -782,10 +824,12 @@ async fn grant_membership(
 /// Update user membership (admin) - extend expiration, change status
 async fn update_user_membership(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     // Build UPDATE dynamically
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
@@ -848,9 +892,11 @@ async fn update_user_membership(
 /// Delete/revoke user membership (admin)
 async fn revoke_membership(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let result = sqlx::query("DELETE FROM user_memberships WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -867,9 +913,11 @@ async fn revoke_membership(
 /// Get memberships for specific user (admin)
 async fn get_user_memberships_by_user(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(user_id): Path<i64>,
 ) -> Result<Json<Vec<AdminUserMembershipRow>>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let memberships: Vec<AdminUserMembershipRow> = sqlx::query_as(
         r#"
         SELECT
