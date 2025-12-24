@@ -72,7 +72,19 @@ impl Config {
             stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_default(),
 
             cors_origins: std::env::var("CORS_ORIGINS")
-                .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev,https://revolutiontradingpros.com,https://www.revolutiontradingpros.com".to_string())
+                .unwrap_or_else(|_| {
+                    // Include localhost origins for development
+                    let origins = vec![
+                        "https://revolution-trading-pros.pages.dev",
+                        "https://revolutiontradingpros.com",
+                        "https://www.revolutiontradingpros.com",
+                        "http://localhost:5173",
+                        "http://localhost:3000",
+                        "http://127.0.0.1:5173",
+                        "http://127.0.0.1:3000",
+                    ];
+                    origins.join(",")
+                })
                 .split(',')
                 .map(|s| s.trim().to_string())
                 .collect(),

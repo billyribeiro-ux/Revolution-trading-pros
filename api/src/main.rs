@@ -141,7 +141,7 @@ async fn main() -> anyhow::Result<()> {
         // Content Security Policy
         .layer(SetResponseHeaderLayer::overriding(
             HeaderName::from_static("content-security-policy"),
-            HeaderValue::from_static("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://revolution-trading-pros-api.fly.dev wss://revolution-trading-pros-api.fly.dev"),
+            HeaderValue::from_static("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://revolution-trading-pros-api.fly.dev wss://revolution-trading-pros-api.fly.dev http://localhost:* ws://localhost:*"),
         ))
         // Strict Transport Security (HSTS) - 1 year, include subdomains
         .layer(SetResponseHeaderLayer::overriding(
