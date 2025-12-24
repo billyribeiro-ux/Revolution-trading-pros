@@ -1,0 +1,995 @@
+═══════════════════════════════════════════════════════════════════════════
+███╗   ███╗███████╗██████╗  ██████╗██╗   ██╗
+████╗ ████║██╔════╝██╔══██╗██╔════╝╚██╗ ██╔╝
+██╔████╔██║█████╗  ██████╔╝██║      ╚████╔╝ 
+██║╚██╔╝██║██╔══╝  ██╔══██╗██║       ╚██╔╝  
+██║ ╚═╝ ██║███████╗██║  ██║╚██████╗   ██║   
+╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝   ╚═╝   
+
+SIMPLER TRADING DASHBOARD - TWO-PANEL SIDEBAR SYSTEM
+COMPLETE DOCUMENTATION IN PLAIN ENGLISH
+═══════════════════════════════════════════════════════════════════════════
+
+FILE: mercy
+PURPOSE: Comprehensive documentation of the two-panel sidebar system
+AUTHOR: Apple ICT 11+ Principal Engineer
+DATE: December 24, 2025
+
+═══════════════════════════════════════════════════════════════════════════
+TABLE OF CONTENTS
+═══════════════════════════════════════════════════════════════════════════
+
+1. OVERVIEW - What is the Two-Panel System?
+2. PANEL 1 - Primary Sidebar (Blue Panel)
+3. PANEL 2 - Secondary Sidebar (Content Sidebar)
+4. THE COLLAPSE BEHAVIOR - How Panels Switch
+5. COMPLETE FLOW - Step-by-Step User Journey
+6. TECHNICAL IMPLEMENTATION - CSS & JavaScript
+7. RESPONSIVE BEHAVIOR - Mobile vs Desktop
+8. CODE EXAMPLES - HTML Structure
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 1] OVERVIEW - WHAT IS THE TWO-PANEL SYSTEM?
+═══════════════════════════════════════════════════════════════════════════
+
+The Simpler Trading dashboard uses a TWO-PANEL SIDEBAR SYSTEM where:
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                       │
+│  [PANEL 1]              [MAIN CONTENT]              [PANEL 2]       │
+│  Primary Sidebar        Dashboard Area              Content Sidebar  │
+│  (Always visible)       (Changes based on page)     (Conditional)   │
+│                                                                       │
+│  280px wide             Flexible width               260px wide      │
+│  Blue #0f2d41           White/Gray #f4f4f4          White #fff      │
+│                                                                       │
+│  Shows:                 Shows:                       Shows:          │
+│  - Profile              - Page title                 - Sub-menu      │
+│  - Main nav             - Membership cards           - Context nav   │
+│  - Categories           - Tools                      - Quick links   │
+│  - All memberships      - Content                    - Resources     │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
+
+KEY CONCEPT:
+Panel 1 (Primary) = ALWAYS VISIBLE on all dashboard pages
+Panel 2 (Secondary) = ONLY VISIBLE on individual membership pages
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 2] PANEL 1 - PRIMARY SIDEBAR (BLUE PANEL)
+═══════════════════════════════════════════════════════════════════════════
+
+LOCATION IN JESUS FILE: Line 3059
+HTML ELEMENT: <aside class="dashboard__sidebar">
+CSS CLASS: .dashboard__sidebar
+BACKGROUND COLOR: #0f2d41 (Dark blue)
+WIDTH: 280px
+POSITION: Fixed on left side of screen
+
+─────────────────────────────────────────────────────────────────────────
+WHAT IT CONTAINS:
+─────────────────────────────────────────────────────────────────────────
+
+[2.1] PROFILE SECTION (Top of sidebar)
+├─ User's profile photo (circular, 34px × 34px)
+├─ User's name (white text, 16px, weight 400)
+└─ Links to: /dashboard/account
+
+[2.2] MAIN NAVIGATION LINKS
+├─ Member Dashboard → /dashboard (home icon)
+├─ My Classes → /dashboard/classes (courses icon)
+└─ My Indicators → /dashboard/indicators (indicators icon)
+
+[2.3] MEMBERSHIPS CATEGORY
+├─ Header: "MEMBERSHIPS" (uppercase, 10px, weight 700)
+└─ Lists all trading rooms user has access to:
+    ├─ Mastering the Trade
+    ├─ Simpler Showcase
+    ├─ Options Trading
+    ├─ Day Trading
+    └─ (etc. - dynamically populated based on user's subscriptions)
+
+[2.4] MASTERY CATEGORY
+├─ Header: "MASTERY" (uppercase, 10px, weight 700)
+└─ Lists all courses user owns:
+    ├─ Options 101
+    ├─ Chart Patterns
+    ├─ Fibonacci Trading
+    └─ (etc. - dynamically populated)
+
+[2.5] PREMIUM REPORTS CATEGORY
+├─ Header: "PREMIUM REPORTS" (uppercase, 10px, weight 700)
+└─ Lists premium content:
+    └─ Weekly Watchlist
+
+[2.6] TOOLS CATEGORY
+├─ Header: "TOOLS" (uppercase, 10px, weight 700)
+└─ Links to:
+    ├─ Weekly Watchlist → /dashboard/ww
+    └─ Support → https://intercom.help/simpler-trading/en/
+
+[2.7] ACCOUNT CATEGORY
+├─ Header: "ACCOUNT" (uppercase, 10px, weight 700)
+└─ Links to:
+    └─ My Account → /dashboard/account
+
+─────────────────────────────────────────────────────────────────────────
+STYLING DETAILS - COMPLETE PIXEL-PERFECT SPECIFICATIONS:
+─────────────────────────────────────────────────────────────────────────
+
+[2.8] PANEL 1 CONTAINER:
+├─ Background color: #0f2d41 (dark blue)
+├─ Width: 280px (fixed)
+├─ Padding bottom: 30px
+├─ Font family: 'Open Sans', sans-serif
+├─ Font size: 16px (base)
+├─ Line height: 1
+├─ Min height: 100%
+├─ Display: flex
+├─ Flex: 0 0 auto
+├─ Flex flow: row nowrap
+├─ Position: static (desktop), fixed (mobile)
+├─ Overflow X: hidden
+├─ Overflow Y: auto
+├─ Transition: all 0.3s ease-in-out
+└─ Z-index: 100010 (mobile menu open)
+
+[2.9] PROFILE SECTION:
+├─ Link padding: 32px 20px 28px 80px
+├─ Height: auto
+├─ Line height: 1.4
+├─ Display: flex
+├─ Align items: center
+├─ Position: relative
+├─ Color: hsla(0, 0%, 100%, 0.5)
+├─ Transition: all 0.15s ease-in-out
+└─ Hover color: #fff
+
+PROFILE PHOTO:
+├─ Position: absolute
+├─ Top: 50%
+├─ Left: 30px
+├─ Margin top: -17px
+├─ Width: 34px
+├─ Height: 34px
+├─ Border: 2px solid #fff
+├─ Border radius: 50% (circular)
+├─ Background: no-repeat center
+├─ Background size: 32px
+├─ Transition: all 0.15s ease-in-out
+└─ Hover border color: #0984ae
+
+PROFILE NAME:
+├─ Display: block
+├─ Color: #fff
+├─ Font size: 16px
+├─ Font weight: 400
+├─ Font family: 'Open Sans', sans-serif
+└─ Line height: 1.4
+
+[2.10] NAVIGATION LINKS (MAIN & MEMBERSHIP ITEMS):
+├─ Height: 50px
+├─ Padding: 0 20px 0 80px
+├─ Display: flex
+├─ Align items: center
+├─ Position: relative
+├─ Color: hsla(0, 0%, 100%, 0.5) (50% white opacity)
+├─ Text decoration: none
+├─ Font size: 14px
+├─ Font weight: 300
+├─ Font family: 'Open Sans', sans-serif
+├─ Transition: all 0.15s ease-in-out
+├─ Hover color: #fff (100% white)
+└─ Hover text decoration: none
+
+ACTIVE STATE (is-active class):
+├─ Color: #fff
+└─ Active indicator: 5px wide bar on right edge
+
+ACTIVE INDICATOR (::after pseudo-element):
+├─ Position: absolute
+├─ Display: block
+├─ Content: "" (empty)
+├─ Top: 0
+├─ Right: 0
+├─ Bottom: 0
+├─ Width: 5px
+├─ Background: #0984ae (blue accent)
+├─ Transform: scale(1)
+├─ Transform origin: 100% 50%
+└─ Transition: all 0.15s ease-in-out
+
+[2.11] ICONS:
+├─ Position: absolute
+├─ Top: 50%
+├─ Left: 30px
+├─ Margin top: -16px
+├─ Width: 32px
+├─ Height: 32px
+├─ Font size: 32px
+├─ Line height: 32px
+├─ Display: flex
+├─ Align items: center
+├─ Justify content: center
+├─ Color: #C5CFD5
+├─ Opacity: 0.6 (60%)
+├─ Transition: all 0.15s ease-in-out
+├─ Hover color: #fff
+└─ Hover opacity: 1 (100%)
+
+[2.12] CATEGORY HEADERS:
+├─ Font weight: 700 (bold)
+├─ Padding: 30px 30px 0
+├─ Color: #fff (white)
+├─ Text transform: uppercase
+├─ Font size: 10px
+├─ Letter spacing: 0.5px
+├─ Margin: 0 0 5px 0
+├─ Font family: 'Open Sans', sans-serif
+├─ Line height: 1
+└─ No text decoration
+
+[2.13] NAVIGATION LIST SPACING:
+├─ List style: none
+├─ Margin: 0
+├─ Padding: 0
+├─ Space between sections: 20px margin-top
+└─ No bullets or list markers
+
+[2.14] TRANSITIONS & EFFECTS:
+├─ All interactive elements: 0.15s ease-in-out
+├─ Sidebar slide (mobile): 0.3s ease-in-out
+├─ Opacity changes: 0.15s ease-in-out
+├─ Color changes: 0.15s ease-in-out
+├─ Transform changes: 0.15s ease-in-out
+└─ Border color changes: 0.15s ease-in-out
+
+[2.15] SHADOWS:
+├─ No box shadows on Panel 1
+├─ No text shadows
+└─ Clean, flat design aesthetic
+
+─────────────────────────────────────────────────────────────────────────
+WHEN IS PANEL 1 VISIBLE?
+─────────────────────────────────────────────────────────────────────────
+
+ALWAYS VISIBLE on:
+✓ Main dashboard landing page (/dashboard)
+✓ Individual membership pages (/dashboard/mastering-the-trade)
+✓ Course pages (/dashboard/classes)
+✓ Account settings (/dashboard/account)
+✓ ALL dashboard pages
+
+RESPONSIVE BEHAVIOR:
+├─ Desktop (1280px+): Always visible, 280px wide
+├─ Tablet/Mobile (<1280px): Hidden by default, slides in from left when menu button clicked
+└─ Mobile menu button: Fixed at bottom of screen, 50px tall, #0d2532 background
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 3] PANEL 2 - SECONDARY SIDEBAR (CONTENT SIDEBAR)
+═══════════════════════════════════════════════════════════════════════════
+
+LOCATION IN JESUS FILE: Line 3377
+HTML ELEMENT: <aside class="dashboard__content-sidebar">
+CSS CLASS: .dashboard__content-sidebar
+BACKGROUND COLOR: #fff (White) with #ededed borders
+WIDTH: 260px
+POSITION: Inside main content area, on the RIGHT side
+
+─────────────────────────────────────────────────────────────────────────
+WHAT IT CONTAINS:
+─────────────────────────────────────────────────────────────────────────
+
+[3.1] CONTEXTUAL NAVIGATION
+├─ Sub-menu items specific to the current membership
+├─ Quick links to sections within the membership
+└─ Related resources
+
+[3.2] SECTION HEADINGS - COMPLETE SPECIFICATIONS:
+├─ Padding: 15px 20px
+├─ Margin: -20px -30px 20px -20px (negative to extend full width)
+├─ Font size: 14px
+├─ Font weight: 700 (bold)
+├─ Font family: 'Open Sans', sans-serif
+├─ Letter spacing: 0.1em (10% wider)
+├─ Text transform: uppercase
+├─ Color: #333 (dark gray)
+├─ Background: #ededed (light gray)
+├─ Border bottom: 1px solid #dbdbdb
+├─ Line height: 1.4
+└─ No text decoration
+
+[3.3] NAVIGATION ITEMS - COMPLETE SPECIFICATIONS:
+├─ Padding: 20px 30px 20px 20px
+├─ Font size: 14px
+├─ Font weight: 400 (normal)
+├─ Font family: 'Open Sans', sans-serif
+├─ Line height: 1.6
+├─ Color: #666 (medium gray)
+├─ Text decoration: none
+├─ Border top: 1px solid #dbdbdb (between sections)
+├─ Transition: all 0.15s ease-in-out
+├─ Hover color: #0984ae (blue)
+├─ Hover background: #f4f4f4 (light gray)
+└─ Active font weight: 600 (semi-bold)
+
+[3.4] PANEL 2 CONTAINER - COMPLETE SPECIFICATIONS:
+├─ Display: none (mobile), block (desktop 1080px+)
+├─ Width: 260px (fixed)
+├─ Flex: 0 0 auto
+├─ Margin top: -1px
+├─ Background: #fff (white)
+├─ Border right: 1px solid #dbdbdb
+├─ Border top: 1px solid #dbdbdb
+├─ Position: static
+├─ Font family: 'Open Sans', sans-serif
+├─ Font size: 14px (base)
+└─ Line height: 1.6
+
+[3.5] CONTENT SIDEBAR SECTIONS:
+├─ Padding: 20px 30px 20px 20px
+├─ Font size: 14px
+├─ Border between sections: 1px solid #dbdbdb
+└─ No shadows or effects
+
+[3.6] PANEL 2 LINKS:
+├─ Display: block
+├─ Padding: 15px 20px
+├─ Font size: 14px
+├─ Font weight: 400
+├─ Color: #666
+├─ Text decoration: none
+├─ Border radius: 5px
+├─ White space: nowrap
+├─ Text overflow: ellipsis
+├─ Transition: all 0.15s ease-in-out
+├─ Hover background: #f4f4f4
+├─ Hover color: #0984ae
+└─ Active background: #f4f4f4, font-weight: 600
+
+[3.7] PANEL 2 TRANSITIONS & EFFECTS:
+├─ All interactive elements: 0.15s ease-in-out
+├─ Background color changes: 0.15s ease-in-out
+├─ Color changes: 0.15s ease-in-out
+├─ No transform effects
+└─ No opacity changes
+
+[3.8] PANEL 2 SHADOWS:
+├─ No box shadows
+├─ No text shadows
+└─ Clean, minimal design
+
+─────────────────────────────────────────────────────────────────────────
+WHEN IS PANEL 2 VISIBLE?
+─────────────────────────────────────────────────────────────────────────
+
+VISIBLE on:
+✓ Individual membership pages (e.g., /dashboard/mastering-the-trade)
+✓ Course detail pages
+✓ Any page that needs contextual sub-navigation
+
+HIDDEN on:
+✗ Main dashboard landing page (/dashboard)
+  └─ CSS Rule (Line 2451): .page-id-401190 .dashboard__content-sidebar { display: none; }
+✗ Simple pages without sub-navigation
+✗ Mobile devices (< 1080px)
+
+RESPONSIVE BEHAVIOR:
+├─ Desktop (1080px+): Visible when applicable
+└─ Mobile/Tablet (<1080px): Always hidden (display: none)
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 4] THE COLLAPSE BEHAVIOR - HOW PANELS SWITCH
+═══════════════════════════════════════════════════════════════════════════
+
+IMPORTANT: The panels DO NOT "collapse" or "switch" in the traditional sense.
+Instead, they work on a VISIBILITY SYSTEM based on the page you're viewing.
+
+─────────────────────────────────────────────────────────────────────────
+[4.1] ON THE MAIN DASHBOARD PAGE (/dashboard)
+─────────────────────────────────────────────────────────────────────────
+
+LAYOUT:
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                       │
+│  [PANEL 1: PRIMARY]     [MAIN CONTENT - FULL WIDTH]                 │
+│  280px                  Remaining space                              │
+│  Blue sidebar           ├─ Dashboard header                          │
+│  Always visible         ├─ Membership cards                          │
+│                         ├─ Tools section                             │
+│                         └─ Weekly Watchlist featured                 │
+│                                                                       │
+│                         [PANEL 2: HIDDEN]                            │
+│                         CSS: display: none                           │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
+
+WHY PANEL 2 IS HIDDEN:
+The main dashboard doesn't need contextual navigation because it's showing
+an overview of ALL memberships. There's no specific membership context.
+
+CSS RULE (Line 2451-2453):
+.page-id-401190 .dashboard__content-sidebar {
+    display: none;
+}
+
+WHERE:
+├─ .page-id-401190 = WordPress page ID for main dashboard
+└─ This rule specifically hides Panel 2 on the landing page
+
+─────────────────────────────────────────────────────────────────────────
+[4.2] ON AN INDIVIDUAL MEMBERSHIP PAGE (/dashboard/mastering-the-trade)
+─────────────────────────────────────────────────────────────────────────
+
+LAYOUT:
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                       │
+│  [PANEL 1]         [MAIN CONTENT]              [PANEL 2]            │
+│  280px             Flexible width               260px               │
+│  Blue sidebar      ├─ Membership header        White sidebar        │
+│  Still visible     ├─ Content sections         ├─ Sub-menu          │
+│                    ├─ Videos/lessons           ├─ Quick links       │
+│                    └─ Resources                └─ Related items     │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
+
+WHY PANEL 2 IS VISIBLE:
+Individual membership pages need contextual navigation to help users find
+specific content within that membership (lessons, videos, resources, etc.)
+
+CSS RULE:
+No .page-id-401190 class on these pages, so the display: none rule doesn't apply.
+Panel 2 is visible by default on membership pages.
+
+─────────────────────────────────────────────────────────────────────────
+[4.3] THE "COLLAPSE" IS ACTUALLY A PAGE TRANSITION
+─────────────────────────────────────────────────────────────────────────
+
+WHAT HAPPENS WHEN USER CLICKS A MEMBERSHIP:
+
+STEP 1: User is on main dashboard (/dashboard)
+├─ Panel 1: Visible (blue sidebar)
+├─ Panel 2: Hidden (CSS display: none)
+└─ Main content: Shows all membership cards
+
+STEP 2: User clicks "Mastering the Trade" membership card
+├─ Browser navigates to: /dashboard/mastering-the-trade
+├─ New page loads
+└─ Page has different WordPress page ID (not 401190)
+
+STEP 3: New page renders with different layout
+├─ Panel 1: Still visible (blue sidebar - same as before)
+├─ Panel 2: NOW VISIBLE (no display: none rule applies)
+└─ Main content: Shows membership-specific content
+
+STEP 4: Panel 2 appears on the right side
+├─ Shows sub-navigation for "Mastering the Trade"
+├─ Lists lessons, videos, resources
+└─ Provides quick access to membership sections
+
+THIS IS NOT A COLLAPSE - IT'S A PAGE CHANGE!
+The "collapse" behavior you see is actually:
+1. Page navigation (URL changes)
+2. New HTML loads
+3. Different CSS rules apply
+4. Panel 2 becomes visible because display: none rule doesn't apply
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 5] COMPLETE FLOW - STEP-BY-STEP USER JOURNEY
+═══════════════════════════════════════════════════════════════════════════
+
+Let's walk through the COMPLETE user experience from login to viewing
+membership content, explaining exactly when each panel appears.
+
+─────────────────────────────────────────────────────────────────────────
+[5.1] USER LOGS IN
+─────────────────────────────────────────────────────────────────────────
+
+ACTION: User enters email/password and clicks "Login"
+
+WHAT HAPPENS:
+1. WordPress authenticates user
+2. Browser redirects to: /dashboard
+3. Main dashboard page loads
+
+PANELS VISIBLE:
+├─ Panel 1 (Primary): ✓ VISIBLE
+│   └─ Shows all memberships user has access to
+└─ Panel 2 (Secondary): ✗ HIDDEN
+    └─ CSS rule hides it: .page-id-401190 .dashboard__content-sidebar { display: none; }
+
+SCREEN LAYOUT:
+┌─────────────────────────────────────────────────────────────────────┐
+│ [PANEL 1 - 280px]      [MAIN CONTENT - Full Width]                  │
+│                                                                       │
+│ Profile: John Doe      MEMBER DASHBOARD                             │
+│                        ┌──────────────┐ ┌──────────────┐            │
+│ Member Dashboard       │ Mastering    │ │ Simpler      │            │
+│ My Classes             │ the Trade    │ │ Showcase     │            │
+│ My Indicators          └──────────────┘ └──────────────┘            │
+│                                                                       │
+│ MEMBERSHIPS            TOOLS                                         │
+│ • Mastering Trade      ┌──────────────┐                             │
+│ • Simpler Showcase     │ Weekly       │                             │
+│                        │ Watchlist    │                             │
+│ MASTERY                └──────────────┘                             │
+│ • Options 101                                                        │
+│                        WEEKLY WATCHLIST                              │
+│ TOOLS                  [Featured content section]                    │
+│ • Weekly Watchlist                                                   │
+│ • Support                                                            │
+│                                                                       │
+│ ACCOUNT                                                              │
+│ • My Account                                                         │
+└─────────────────────────────────────────────────────────────────────┘
+
+─────────────────────────────────────────────────────────────────────────
+[5.2] USER VIEWS MEMBERSHIP CARDS
+─────────────────────────────────────────────────────────────────────────
+
+ACTION: User sees membership cards in main content area
+
+WHAT USER SEES:
+Each membership card shows:
+├─ Membership icon (50px circle with colored background)
+├─ Membership name (e.g., "Mastering the Trade")
+└─ Two action buttons:
+    ├─ "Dashboard" → Goes to membership dashboard
+    └─ "Trading Room" → Opens live trading room (new tab)
+
+PANELS STATUS:
+├─ Panel 1: Still visible (unchanged)
+└─ Panel 2: Still hidden (unchanged)
+
+─────────────────────────────────────────────────────────────────────────
+[5.3] USER CLICKS "DASHBOARD" ON A MEMBERSHIP CARD
+─────────────────────────────────────────────────────────────────────────
+
+ACTION: User clicks "Dashboard" button on "Mastering the Trade" card
+
+WHAT HAPPENS:
+1. Browser navigates to: /dashboard/mastering-the-trade
+2. WordPress loads new page
+3. Page has different ID (not 401190)
+4. CSS display: none rule NO LONGER APPLIES
+5. Panel 2 becomes visible
+
+PANELS VISIBLE:
+├─ Panel 1 (Primary): ✓ STILL VISIBLE
+│   └─ Same content as before (all memberships listed)
+└─ Panel 2 (Secondary): ✓ NOW VISIBLE
+    └─ Shows sub-navigation for "Mastering the Trade"
+
+SCREEN LAYOUT:
+┌─────────────────────────────────────────────────────────────────────┐
+│ [PANEL 1]         [MAIN CONTENT]              [PANEL 2 - 260px]     │
+│ 280px             Flexible                    White sidebar         │
+│                                                                       │
+│ Profile: John     MASTERING THE TRADE         NAVIGATION            │
+│                                                                       │
+│ Member Dashboard  [Header with title]         • Overview            │
+│ My Classes                                     • Lessons            │
+│ My Indicators     [Content sections]           • Videos             │
+│                                                • Resources          │
+│ MEMBERSHIPS       ┌─────────────────┐         • Trading Room       │
+│ • Mastering Trade │ Latest Lesson   │         • Support            │
+│ • Simpler Show... │                 │                              │
+│                   └─────────────────┘         QUICK LINKS          │
+│ MASTERY                                                             │
+│ • Options 101     ┌─────────────────┐         • Chart Setup        │
+│                   │ Recent Video    │         • Indicators         │
+│ TOOLS             │                 │         • Strategies         │
+│ • Weekly Watch... └─────────────────┘                              │
+│ • Support                                                           │
+│                   [More content...]                                 │
+│ ACCOUNT                                                             │
+│ • My Account                                                        │
+└─────────────────────────────────────────────────────────────────────┘
+
+NOTICE THE CHANGE:
+├─ Panel 1: Unchanged (still shows all memberships)
+├─ Panel 2: NOW VISIBLE (shows membership-specific navigation)
+└─ Main content: Now shows "Mastering the Trade" specific content
+
+─────────────────────────────────────────────────────────────────────────
+[5.4] USER NAVIGATES WITHIN MEMBERSHIP USING PANEL 2
+─────────────────────────────────────────────────────────────────────────
+
+ACTION: User clicks "Lessons" in Panel 2 (secondary sidebar)
+
+WHAT HAPPENS:
+1. Browser navigates to: /dashboard/mastering-the-trade/lessons
+2. Page updates to show lessons
+3. Both panels remain visible
+
+PANELS STATUS:
+├─ Panel 1: ✓ Still visible (unchanged)
+└─ Panel 2: ✓ Still visible (may highlight "Lessons" as active)
+
+MAIN CONTENT CHANGES:
+├─ Shows list of lessons for "Mastering the Trade"
+├─ User can click individual lessons to watch
+└─ Panel 2 provides quick navigation between sections
+
+─────────────────────────────────────────────────────────────────────────
+[5.5] USER RETURNS TO MAIN DASHBOARD
+─────────────────────────────────────────────────────────────────────────
+
+ACTION: User clicks "Member Dashboard" in Panel 1 (primary sidebar)
+
+WHAT HAPPENS:
+1. Browser navigates back to: /dashboard
+2. Main dashboard page loads again
+3. Page ID is 401190 again
+4. CSS display: none rule APPLIES AGAIN
+5. Panel 2 becomes hidden
+
+PANELS VISIBLE:
+├─ Panel 1: ✓ Still visible (unchanged)
+└─ Panel 2: ✗ HIDDEN AGAIN
+    └─ CSS rule applies: .page-id-401190 .dashboard__content-sidebar { display: none; }
+
+SCREEN LAYOUT:
+Back to the original layout with only Panel 1 visible and full-width main content.
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 6] TECHNICAL IMPLEMENTATION - CSS & JAVASCRIPT
+═══════════════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────────────────
+[6.1] CSS RULES THAT CONTROL PANEL VISIBILITY
+─────────────────────────────────────────────────────────────────────────
+
+PANEL 1 (PRIMARY SIDEBAR) - ALWAYS VISIBLE:
+
+.dashboard__sidebar {
+    display: flex;
+    flex: 0 0 auto;
+    flex-flow: row nowrap;
+    width: 280px;
+    background-color: #0f2d41;
+    min-height: 100%;
+}
+
+PANEL 2 (SECONDARY SIDEBAR) - DEFAULT VISIBLE:
+
+.dashboard__content-sidebar {
+    display: none;        /* Hidden on mobile by default */
+    width: 260px;
+    flex: 0 0 auto;
+    margin-top: -1px;
+    border-right: 1px solid #dbdbdb;
+    border-top: 1px solid #dbdbdb;
+}
+
+@media (min-width: 1080px) {
+    .dashboard__content-sidebar {
+        display: block;   /* Visible on desktop */
+    }
+}
+
+PANEL 2 - HIDDEN ON MAIN DASHBOARD:
+
+.page-id-401190 .dashboard__content-sidebar {
+    display: none !important;
+}
+
+WHERE:
+├─ .page-id-401190 = WordPress adds this class to <body> on main dashboard
+├─ !important = Overrides the media query rule
+└─ Result: Panel 2 is hidden on main dashboard even on desktop
+
+─────────────────────────────────────────────────────────────────────────
+[6.2] HTML STRUCTURE
+─────────────────────────────────────────────────────────────────────────
+
+<div class="dashboard">
+    
+    <!-- PANEL 1: PRIMARY SIDEBAR (Always visible) -->
+    <aside class="dashboard__sidebar">
+        <nav class="dashboard__nav-primary">
+            <!-- Profile section -->
+            <a href="/dashboard/account" class="dashboard__profile-nav-item">
+                <span class="dashboard__profile-photo"></span>
+                <span class="dashboard__profile-name">John Doe</span>
+            </a>
+            
+            <!-- Main navigation -->
+            <ul>
+                <li><a href="/dashboard">Member Dashboard</a></li>
+                <li><a href="/dashboard/classes">My Classes</a></li>
+                <li><a href="/dashboard/indicators">My Indicators</a></li>
+            </ul>
+            
+            <!-- Memberships category -->
+            <ul>
+                <li><p class="dashboard__nav-category">MEMBERSHIPS</p></li>
+                <ul>
+                    <li><a href="/dashboard/mastering-the-trade">Mastering the Trade</a></li>
+                    <li><a href="/dashboard/simpler-showcase">Simpler Showcase</a></li>
+                </ul>
+            </ul>
+            
+            <!-- More categories... -->
+        </nav>
+    </aside>
+    
+    <!-- MAIN CONTENT AREA -->
+    <main class="dashboard__main">
+        
+        <!-- Dashboard header -->
+        <header class="dashboard__header">
+            <h1>Member Dashboard</h1>
+        </header>
+        
+        <!-- Content wrapper -->
+        <div class="dashboard__content">
+            
+            <!-- Main content column -->
+            <div class="dashboard__content-main">
+                <!-- Membership cards, content, etc. -->
+            </div>
+            
+            <!-- PANEL 2: SECONDARY SIDEBAR (Conditional) -->
+            <aside class="dashboard__content-sidebar">
+                <section class="content-sidebar__section">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="#">Overview</a></li>
+                        <li><a href="#">Lessons</a></li>
+                        <li><a href="#">Videos</a></li>
+                    </ul>
+                </section>
+            </aside>
+            
+        </div>
+    </main>
+    
+</div>
+
+─────────────────────────────────────────────────────────────────────────
+[6.3] JAVASCRIPT BEHAVIOR (Mobile Menu)
+─────────────────────────────────────────────────────────────────────────
+
+On mobile (<1280px), Panel 1 is hidden by default and slides in when user
+clicks the menu button.
+
+MOBILE MENU BUTTON (Line 3157-3166):
+
+<footer class="dashboard__toggle">
+    <button class="dashboard__toggle-button" data-toggle-dashboard-menu>
+        <div class="dashboard__toggle-button-icon">
+            <span></span>  <!-- Hamburger line 1 -->
+            <span></span>  <!-- Hamburger line 2 -->
+            <span></span>  <!-- Hamburger line 3 -->
+        </div>
+        <span class="framework__toggle-button-label">Dashboard Menu</span>
+    </button>
+</footer>
+
+OVERLAY (Line 3167):
+
+<div class="dashboard__overlay" data-toggle-dashboard-menu></div>
+
+JAVASCRIPT FUNCTIONALITY:
+1. User clicks menu button
+2. JavaScript adds class: .html--dashboard-menu-open to <html>
+3. CSS shows Panel 1 with opacity: 1, visibility: visible
+4. Overlay appears with rgba(0, 0, 0, 0.65) background
+5. User clicks overlay or menu button again to close
+6. JavaScript removes .html--dashboard-menu-open class
+7. Panel 1 slides out, overlay fades out
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 7] RESPONSIVE BEHAVIOR - MOBILE VS DESKTOP
+═══════════════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────────────────
+[7.1] DESKTOP (1280px and wider)
+─────────────────────────────────────────────────────────────────────────
+
+PANEL 1 (PRIMARY):
+├─ Always visible
+├─ Fixed position on left
+├─ 280px wide
+└─ No menu button needed
+
+PANEL 2 (SECONDARY):
+├─ Visible on membership pages (1080px+)
+├─ Hidden on main dashboard (.page-id-401190)
+├─ 260px wide
+└─ Fixed position on right side of content area
+
+LAYOUT:
+[Panel 1: 280px] [Main Content: Flexible] [Panel 2: 260px (if applicable)]
+
+─────────────────────────────────────────────────────────────────────────
+[7.2] TABLET (768px - 1279px)
+─────────────────────────────────────────────────────────────────────────
+
+PANEL 1 (PRIMARY):
+├─ Hidden by default
+├─ Slides in from left when menu button clicked
+├─ Full width overlay appears
+└─ Menu button visible at bottom (50px tall, #0d2532)
+
+PANEL 2 (SECONDARY):
+├─ Always hidden (display: none)
+└─ Not enough screen width for two sidebars
+
+LAYOUT:
+[Main Content: Full Width]
+[Menu Button: Fixed at bottom]
+
+─────────────────────────────────────────────────────────────────────────
+[7.3] MOBILE (< 768px)
+─────────────────────────────────────────────────────────────────────────
+
+PANEL 1 (PRIMARY):
+├─ Hidden by default
+├─ Slides in from left when menu button clicked
+├─ Full width overlay appears
+└─ Menu button visible at bottom
+
+PANEL 2 (SECONDARY):
+├─ Always hidden
+└─ No room for secondary navigation
+
+LAYOUT:
+[Main Content: Full Width, Single Column]
+[Menu Button: Fixed at bottom]
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 8] CODE EXAMPLES - COMPLETE HTML STRUCTURE
+═══════════════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────────────────
+[8.1] MAIN DASHBOARD PAGE (/dashboard) - PANEL 2 HIDDEN
+─────────────────────────────────────────────────────────────────────────
+
+<body class="page-id-401190">
+    <div class="dashboard">
+        
+        <!-- PANEL 1: Always visible -->
+        <aside class="dashboard__sidebar">
+            <nav class="dashboard__nav-primary">
+                <!-- All navigation content -->
+            </nav>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="dashboard__main">
+            <header class="dashboard__header">
+                <h1>Member Dashboard</h1>
+            </header>
+            
+            <div class="dashboard__content">
+                <div class="dashboard__content-main">
+                    <!-- Membership cards -->
+                    <section class="dashboard__content-section">
+                        <h2>Memberships</h2>
+                        <div class="membership-cards">
+                            <!-- Cards here -->
+                        </div>
+                    </section>
+                </div>
+                
+                <!-- PANEL 2: HIDDEN by CSS -->
+                <!-- .page-id-401190 .dashboard__content-sidebar { display: none; } -->
+                <aside class="dashboard__content-sidebar">
+                    <!-- This is in the HTML but not displayed -->
+                </aside>
+            </div>
+        </main>
+        
+    </div>
+</body>
+
+─────────────────────────────────────────────────────────────────────────
+[8.2] MEMBERSHIP PAGE (/dashboard/mastering-the-trade) - PANEL 2 VISIBLE
+─────────────────────────────────────────────────────────────────────────
+
+<body class="page-id-402345">  <!-- Different page ID, not 401190 -->
+    <div class="dashboard">
+        
+        <!-- PANEL 1: Still visible -->
+        <aside class="dashboard__sidebar">
+            <nav class="dashboard__nav-primary">
+                <!-- Same navigation content -->
+            </nav>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="dashboard__main">
+            <header class="dashboard__header">
+                <h1>Mastering the Trade</h1>
+            </header>
+            
+            <div class="dashboard__content">
+                <div class="dashboard__content-main">
+                    <!-- Membership-specific content -->
+                    <section class="dashboard__content-section">
+                        <h2>Latest Lessons</h2>
+                        <!-- Lessons here -->
+                    </section>
+                </div>
+                
+                <!-- PANEL 2: NOW VISIBLE -->
+                <!-- No .page-id-401190 class, so display: none doesn't apply -->
+                <aside class="dashboard__content-sidebar">
+                    <section class="content-sidebar__section">
+                        <h3 class="content-sidebar__heading">Navigation</h3>
+                        <ul>
+                            <li><a href="/dashboard/mastering-the-trade">Overview</a></li>
+                            <li><a href="/dashboard/mastering-the-trade/lessons">Lessons</a></li>
+                            <li><a href="/dashboard/mastering-the-trade/videos">Videos</a></li>
+                            <li><a href="/dashboard/mastering-the-trade/resources">Resources</a></li>
+                        </ul>
+                    </section>
+                </aside>
+            </div>
+        </main>
+        
+    </div>
+</body>
+
+═══════════════════════════════════════════════════════════════════════════
+[SECTION 9] SUMMARY - KEY TAKEAWAYS
+═══════════════════════════════════════════════════════════════════════════
+
+1. TWO SEPARATE PANELS:
+   ├─ Panel 1 (Primary): Blue sidebar, 280px, always visible
+   └─ Panel 2 (Secondary): White sidebar, 260px, conditional
+
+2. PANEL 1 SHOWS:
+   ├─ User profile
+   ├─ Main navigation
+   ├─ All memberships (categorized)
+   └─ Account settings
+
+3. PANEL 2 SHOWS:
+   ├─ Contextual sub-navigation
+   ├─ Membership-specific links
+   └─ Quick access to sections
+
+4. THE "COLLAPSE" IS NOT A COLLAPSE:
+   ├─ It's a page navigation
+   ├─ Different pages have different CSS rules
+   ├─ Panel 2 visibility controlled by page ID
+   └─ No JavaScript collapse animation
+
+5. VISIBILITY RULES:
+   ├─ Main dashboard (/dashboard): Panel 1 visible, Panel 2 hidden
+   ├─ Membership pages: Both panels visible (desktop only)
+   └─ Mobile: Only Panel 1 (slides in), Panel 2 always hidden
+
+6. CSS CONTROL:
+   ├─ .page-id-401190 .dashboard__content-sidebar { display: none; }
+   ├─ This rule hides Panel 2 on main dashboard
+   └─ Other pages don't have this class, so Panel 2 shows
+
+7. RESPONSIVE:
+   ├─ Desktop (1280px+): Both panels can be visible
+   ├─ Tablet (768-1279px): Only Panel 1 (via menu button)
+   └─ Mobile (<768px): Only Panel 1 (via menu button)
+
+8. USER FLOW:
+   Login → Main Dashboard (Panel 1 only)
+   → Click Membership → Membership Page (Both panels)
+   → Navigate within membership (Both panels stay)
+   → Return to dashboard (Panel 2 disappears)
+
+═══════════════════════════════════════════════════════════════════════════
+END OF DOCUMENTATION
+═══════════════════════════════════════════════════════════════════════════
+
+This file explains the complete two-panel sidebar system in plain English.
+For implementation in Revolution Trading Pros, replicate this exact behavior
+using Svelte 5 components with the same CSS classes and responsive rules.
+
+Questions? Review the Jesus file at:
+- Panel 1: Line 3059
+- Panel 2: Line 3377
+- CSS hide rule: Line 2451
+
+═══════════════════════════════════════════════════════════════════════════

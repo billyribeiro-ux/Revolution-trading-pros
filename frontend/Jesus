@@ -1,46 +1,198 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     ███████╗██╗███╗   ███╗██████╗ ██╗     ███████╗██████╗     ████████╗██████╗  █████╗ ██████╗ ██╗███╗   ██╗ ██████╗ 
+     ██╔════╝██║████╗ ████║██╔══██╗██║     ██╔════╝██╔══██╗    ╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██║████╗  ██║██╔════╝ 
+     ███████╗██║██╔████╔██║██████╔╝██║     █████╗  ██████╔╝       ██║   ██████╔╝███████║██║  ██║██║██╔██╗ ██║██║  ███╗
+     ╚════██║██║██║╚██╔╝██║██╔═══╝ ██║     ██╔══╝  ██╔══██╗       ██║   ██╔══██╗██╔══██║██║  ██║██║██║╚██╗██║██║   ██║
+     ███████║██║██║ ╚═╝ ██║██║     ███████╗███████╗██║  ██║       ██║   ██║  ██║██║  ██║██████╔╝██║██║ ╚████║╚██████╔╝
+     ╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+     
+     ═══════════════════════════════════════════════════════════════════════════
+     [SECTION 1.0] DOCUMENT TYPE & ROOT ELEMENT
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     FILE: Jesus (Simpler Trading Member Dashboard - Complete HTML Reference)
+     URL: https://www.simplertrading.com/dashboard
+     PURPOSE: Member dashboard landing page with memberships, tools, and content
+     
+     TECHNOLOGY STACK:
+     ├─ [1.0.1] WordPress CMS (Content Management System)
+     ├─ [1.0.2] Beaver Builder (Visual Page Builder)
+     ├─ [1.0.3] WooCommerce (E-commerce & Membership Management)
+     ├─ [1.0.4] Elementor (Popup Modals & Dynamic Content)
+     ├─ [1.0.5] Google Tag Manager (Analytics & Tracking)
+     └─ [1.0.6] Custom Dashboard CSS (dashboard.8f78208b.css)
+     
+     DOCUMENT STRUCTURE OVERVIEW:
+     ├─ [SECTION 1.0] Document Type & Root Element
+     ├─ [SECTION 2.0] HTML Head (Metadata, CSS, JavaScript)
+     ├─ [SECTION 3.0] Body Opening & Google Tag Manager
+     ├─ [SECTION 4.0] Skip Links (Accessibility)
+     ├─ [SECTION 5.0] Site Header & Navigation
+     ├─ [SECTION 6.0] Breadcrumb Navigation
+     ├─ [SECTION 7.0] Dashboard Container
+     │   ├─ [7.1] Sidebar Navigation
+     │   │   ├─ [7.1.1] Profile Section
+     │   │   ├─ [7.1.2] Main Navigation Links
+     │   │   ├─ [7.1.3] Memberships Category
+     │   │   ├─ [7.1.4] Mastery Category
+     │   │   ├─ [7.1.5] Premium Reports Category
+     │   │   ├─ [7.1.6] Tools Category
+     │   │   └─ [7.1.7] Account Category
+     │   └─ [7.2] Main Content Panel
+     │       ├─ [7.2.1] Dashboard Header
+     │       ├─ [7.2.2] Memberships Section
+     │       ├─ [7.2.3] Tools Section
+     │       └─ [7.2.4] Weekly Watchlist Featured
+     ├─ [SECTION 8.0] Footer
+     └─ [SECTION 9.0] Closing Scripts & Modals
+     
+     ═══════════════════════════════════════════════════════════════════════════ -->
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION 1: DOCUMENT TYPE DECLARATION
+     [SECTION 1.1] HTML5 DOCTYPE DECLARATION
      ═══════════════════════════════════════════════════════════════════════════
-     PAGE: /dashboard (Member Dashboard Landing Page)
      
-     This is the Simpler Trading Member Dashboard page.
-     A complete WordPress/Beaver Builder page with WooCommerce membership management.
+     ELEMENT: <!DOCTYPE html>
+     PURPOSE: Declares this as an HTML5 document
+     POSITION: Must be the very first line of the HTML file
+     CASE: Not case-sensitive, but uppercase is convention
+     IMPACT: Tells browser to use standards mode (not quirks mode)
      
-     Technology Stack:
-     - WordPress CMS
-     - Beaver Builder (page layout)
-     - WooCommerce (e-commerce/memberships)
-     - Elementor (popup modals)
-     - Google Tag Manager (analytics)
      ═══════════════════════════════════════════════════════════════════════════ -->
 <!DOCTYPE html>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     [SECTION 1.2] HTML ROOT ELEMENT
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     ELEMENT: <html>
+     ATTRIBUTES:
+     └─ [1.2.1] lang="en-US"
+        ├─ PURPOSE: Declares document language as US English
+        ├─ SEO: Helps search engines understand content language
+        ├─ ACCESSIBILITY: Helps screen readers pronounce content correctly
+        ├─ STANDARD: ISO 639-1 language code (en) + ISO 3166-1 country code (US)
+        └─ REQUIRED: WCAG 2.1 Level A accessibility requirement
+     
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <html lang="en-US">
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     [SECTION 2.0] HTML HEAD - METADATA & RESOURCES
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     ELEMENT: <head>
+     PURPOSE: Contains document metadata, styles, scripts, and SEO information
+     LOADING: All resources in <head> load BEFORE page becomes visible
+     PERFORMANCE: Critical for page load speed - minimize blocking resources
+     
+     SUBSECTIONS:
+     ├─ [2.1] Character Encoding & Document Profile
+     ├─ [2.2] A/B Testing & Conversion Optimization
+     ├─ [2.3] SEO & Social Media Metadata
+     ├─ [2.4] DNS Prefetch & Resource Hints
+     ├─ [2.5] CSS Stylesheets (External & Inline)
+     ├─ [2.6] JavaScript Libraries & WordPress Core
+     └─ [2.7] Plugin Scripts & Custom Code
+     
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <head>
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     SECTION 2: HTML HEAD - METADATA & RESOURCES
-	     ═══════════════════════════════════════════════════════════════════════════
-	     PAGE: /dashboard
-	     
-	     Contains all document metadata, SEO tags, CSS stylesheets, and JavaScript.
-	     This section loads BEFORE the page is visible to users.
+	     [SECTION 2.1] CHARACTER ENCODING & DOCUMENT PROFILE
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<!-- SUBSECTION 2.1: Character Encoding & Viewport -->
+	
+	<!-- [2.1.1] CHARACTER ENCODING DECLARATION
+	     ═══════════════════════════════════════════════════════════════════════════
+	     ELEMENT: <meta charset="UTF-8">
+	     ATTRIBUTES:
+	     └─ charset="UTF-8"
+	        ├─ PURPOSE: Declares character encoding for the document
+	        ├─ UTF-8: Universal character set supporting all languages
+	        ├─ POSITION: Must be within first 1024 bytes of document
+	        ├─ BROWSERS: All modern browsers default to UTF-8
+	        └─ CHARACTERS: Supports 1,112,064 possible characters
+	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<meta charset="UTF-8">
+	
+	<!-- [2.1.2] XFN PROFILE LINK
+	     ═══════════════════════════════════════════════════════════════════════════
+	     ELEMENT: <link rel="profile" href="https://gmpg.org/xfn/11">
+	     ATTRIBUTES:
+	     ├─ rel="profile"
+	     │  └─ Declares this is a metadata profile link
+	     └─ href="https://gmpg.org/xfn/11"
+	        ├─ XFN: XHTML Friends Network
+	        ├─ VERSION: 1.1
+	        ├─ PURPOSE: Enables social relationship markup in HTML
+	        ├─ USAGE: WordPress uses this for author/contributor relationships
+	        └─ HTML5: Optional (legacy from XHTML days)
+	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     SUBSECTION 2.2: A/B TESTING & CONVERSION OPTIMIZATION
+	     [SECTION 2.2] A/B TESTING & CONVERSION OPTIMIZATION
+	     ═══════════════════════════════════════════════════════════════════════════ -->
+	
+	<!-- [2.2.1] CONVERT EXPERIENCES A/B TESTING SCRIPT
 	     ═══════════════════════════════════════════════════════════════════════════
+	     TOOL: Convert Experiences (convertexperiments.com)
+	     PURPOSE: Split testing to optimize conversion rates and revenue
+	     LOADING: Synchronous (blocking) - MUST load before page renders
 	     
-	     Tool: Convert Experiences
-	     Purpose: Split testing to optimize conversion rates
-	     Must load early to prevent page flicker during tests
+	     ELEMENT: <script type="text/javascript" src="..."></script>
+	     ATTRIBUTES:
+	     ├─ type="text/javascript"
+	     │  └─ MIME type for JavaScript (optional in HTML5)
+	     └─ src="//cdn-3.convertexperiments.com/js/10006018-10006413.js"
+	        ├─ PROTOCOL: Protocol-relative URL (// = matches page protocol)
+	        ├─ CDN: cdn-3.convertexperiments.com
+	        ├─ ACCOUNT ID: 10006018
+	        ├─ PROJECT ID: 10006413
+	        └─ FILE: JavaScript bundle with A/B test configurations
+	     
+	     PERFORMANCE IMPACT:
+	     ├─ DELAY: ~50-100ms added to page load time
+	     ├─ BLOCKING: Yes - prevents page render until loaded
+	     ├─ FLICKER: Prevents by loading before DOM renders
+	     └─ CRITICAL: Required for revenue optimization tests
+	     
+	     FUNCTIONALITY:
+	     ├─ Modifies DOM elements before page becomes visible
+	     ├─ Tracks user interactions and conversions
+	     ├─ Splits traffic between test variations
+	     └─ Reports results to Convert dashboard
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- begin Convert Experiences code-->
 	<script type="text/javascript" src="//cdn-3.convertexperiments.com/js/10006018-10006413.js"></script>
 	<!-- end Convert Experiences code -->
+	
+	<!-- [2.2.2] ROBOTS META TAG - SEARCH ENGINE DIRECTIVES
+	     ═══════════════════════════════════════════════════════════════════════════
+	     ELEMENT: <meta name='robots' content='noindex, nofollow' />
+	     ATTRIBUTES:
+	     ├─ name='robots'
+	     │  └─ Targets all search engine crawlers
+	     └─ content='noindex, nofollow'
+	        ├─ [DIRECTIVE 1] noindex
+	        │  ├─ PURPOSE: Do NOT index this page in search results
+	        │  ├─ EFFECT: Page will not appear in Google/Bing search
+	        │  └─ REASON: Member dashboard is private content
+	        └─ [DIRECTIVE 2] nofollow
+	           ├─ PURPOSE: Do NOT follow links on this page
+	           ├─ EFFECT: Links don't pass PageRank/authority
+	           └─ REASON: Internal member links should not be crawled
+	     
+	     WHY THIS IS IMPORTANT:
+	     ├─ PRIVACY: Member dashboard should not be publicly searchable
+	     ├─ SECURITY: Prevents exposure of member-only content
+	     ├─ SEO: Prevents duplicate content issues
+	     └─ COMPLIANCE: Protects member data from public indexing
+	     
+	     ALTERNATIVES:
+	     ├─ robots.txt file (site-wide rules)
+	     ├─ X-Robots-Tag HTTP header (server-level)
+	     └─ WordPress settings (admin panel)
+	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<meta name='robots' content='noindex, nofollow' />
 
 	<!-- This site is optimized with the Yoast SEO Premium plugin v19.2.1 (Yoast SEO v20.12) - https://yoast.com/wordpress/plugins/seo/ -->
