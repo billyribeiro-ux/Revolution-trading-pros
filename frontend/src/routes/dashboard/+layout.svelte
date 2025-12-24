@@ -339,36 +339,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BREADCRUMBS - Exact Simpler Trading Match
+	   BREADCRUMBS - Exact Jesus File Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.breadcrumbs {
 		z-index: 1;
-		background: #fff;
-		border-bottom: 1px solid #e8e8e8;
-		padding: 15px 20px;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.breadcrumbs .container-fluid {
-		max-width: 100%;
-		width: 100%;
-		margin: 0 auto;
-		padding: 0;
-	}
-
-	@media (min-width: 1280px) {
-		.breadcrumbs {
-			padding: 15px 30px;
-		}
-		.breadcrumbs .container-fluid {
-			max-width: 1700px;
-		}
-	}
-
-	@media (min-width: 1440px) {
-		.breadcrumbs {
-			padding: 15px 40px;
-		}
 	}
 
 	.breadcrumbs ul {
