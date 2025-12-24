@@ -1,26 +1,30 @@
 <script lang="ts">
+	/**
+	 * Member Dashboard - ICT 11+ Principal Engineer Pattern
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * Fully data-driven dashboard with no hardcoded values.
+	 * All memberships, icons, and content come from the API/database.
+	 *
+	 * @version 2.0.0
+	 */
 	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
-
-	// Icons for different membership types
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
-	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
-	import IconWallet from '@tabler/icons-svelte/icons/wallet';
-	import IconBell from '@tabler/icons-svelte/icons/bell';
-	import IconRocket from '@tabler/icons-svelte/icons/rocket';
-	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	let dropdownOpen = $state(false);
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let loading = $state(true);
+	let error = $state<string | null>(null);
 
 	// Fetch memberships on mount
 	onMount(async () => {
 		try {
 			membershipsData = await getUserMemberships();
-		} catch (error) {
-			console.error('Failed to load memberships:', error);
+		} catch (err) {
+			console.error('Failed to load memberships:', err);
+			error = 'Failed to load memberships. Please try again.';
 		} finally {
 			loading = false;
 		}
@@ -34,34 +38,42 @@
 		dropdownOpen = false;
 	}
 
-	// Get icon component based on membership slug
-	function getIconForMembership(slug: string) {
-		switch (slug) {
-			case 'day-trading-room':
-				return IconChartLine;
-			case 'swing-trading-room':
-				return IconTrendingUp;
-			case 'small-account-mentorship':
-				return IconWallet;
-			case 'alerts-only':
-				return IconBell;
-			case 'explosive-swing':
-				return IconRocket;
-			case 'spx-profit-pulse':
-				return IconActivity;
+	// Generate dashboard URL from membership data
+	function getDashboardUrl(membership: UserMembership): string {
+		return membership.accessUrl || `/dashboard/${membership.slug}`;
+	}
+
+	// Generate trading room/alert service URL from membership data
+	function getAccessUrl(membership: UserMembership): string {
+		if (membership.type === 'trading-room') {
+			return `/trading-room/${membership.slug}`;
+		}
+		return `/dashboard/${membership.slug}/alerts`;
+	}
+
+	// Get action label based on membership type from data
+	function getActionLabel(membership: UserMembership): string {
+		// Use roomLabel from data if available, otherwise derive from type
+		if (membership.roomLabel) {
+			return membership.roomLabel.includes('Room') ? 'Trading Room' : membership.roomLabel;
+		}
+		switch (membership.type) {
+			case 'trading-room':
+				return 'Trading Room';
+			case 'alert-service':
+				return 'View Alerts';
+			case 'course':
+				return 'View Course';
+			case 'indicator':
+				return 'Download';
 			default:
-				return IconChartLine;
+				return 'Access';
 		}
 	}
 
-	// Get dashboard URL for a membership
-	function getDashboardUrl(membership: UserMembership): string {
-		return `/dashboard/${membership.slug}`;
-	}
-
-	// Get trading room URL for a membership
-	function getTradingRoomUrl(membership: UserMembership): string {
-		return `/trading-room/${membership.slug}`;
+	// Check if action should open in new tab based on membership type
+	function shouldOpenNewTab(membership: UserMembership): boolean {
+		return membership.type === 'trading-room';
 	}
 </script>
 
@@ -78,42 +90,36 @@
 			<li class="rules-disclaimer">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
 		</ul>
 
-		<div class="dropdown" class:is-open={dropdownOpen}>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<button
-				class="btn btn-orange btn-tradingroom"
-				onclick={(e) => { e.stopPropagation(); toggleDropdown(); }}
-			>
-				<strong>Enter a Trading Room</strong>
-				<IconChevronDown size={16} />
-			</button>
+		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+			<div class="dropdown" class:is-open={dropdownOpen}>
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<button
+					class="btn btn-orange btn-tradingroom"
+					onclick={(e) => { e.stopPropagation(); toggleDropdown(); }}
+				>
+					<strong>Enter a Trading Room</strong>
+					<IconChevronDown size={16} />
+				</button>
 
-			{#if dropdownOpen}
-				<nav class="dropdown-menu">
-					<ul>
-						{#if membershipsData?.tradingRooms}
-							{#each membershipsData.tradingRooms as room}
-								{@const Icon = getIconForMembership(room.slug)}
+				{#if dropdownOpen}
+					<nav class="dropdown-menu">
+						<ul>
+							{#each membershipsData.tradingRooms as room (room.id)}
 								<li>
-									<a href={getTradingRoomUrl(room)} target="_blank">
-										<span class="room-icon"><Icon size={20} /></span>
+									<a href={getAccessUrl(room)} target="_blank">
+										<span class="room-icon">
+											<DynamicIcon name={room.icon} size={20} />
+										</span>
 										{room.name}
 									</a>
 								</li>
 							{/each}
-						{:else}
-							<li>
-								<a href="/trading-room/day-trading" target="_blank">
-									<span class="room-icon"><IconChartLine size={20} /></span>
-									Day Trading Room
-								</a>
-							</li>
-						{/if}
-					</ul>
-				</nav>
-			{/if}
-		</div>
+						</ul>
+					</nav>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </header>
 
@@ -128,25 +134,29 @@
 
 				{#if loading}
 					<div class="loading-state">Loading memberships...</div>
+				{:else if error}
+					<div class="error-state">
+						<p>{error}</p>
+						<button class="btn btn-primary" onclick={() => location.reload()}>Retry</button>
+					</div>
 				{:else if membershipsData?.memberships && membershipsData.memberships.length > 0}
-					{#each membershipsData.memberships as membership}
-						{@const Icon = getIconForMembership(membership.slug)}
+					{#each membershipsData.memberships as membership (membership.id)}
 						<div class="col-sm-6 col-xl-4">
-							<article class="membership-card membership-card--{membership.slug}">
+							<article class="membership-card">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon">
-											<Icon size={32} />
+											<DynamicIcon name={membership.icon} size={32} />
 										</span>
 									</span>
 									<span class="mem_div">{membership.name}</span>
 								</a>
 								<div class="membership-card__actions">
 									<a href={getDashboardUrl(membership)}>Dashboard</a>
-									{#if membership.type === 'trading-room'}
-										<a href={getTradingRoomUrl(membership)} target="_blank">Trading Room</a>
+									{#if shouldOpenNewTab(membership)}
+										<a href={getAccessUrl(membership)} target="_blank">{getActionLabel(membership)}</a>
 									{:else}
-										<a href={getDashboardUrl(membership)}>View Alerts</a>
+										<a href={getAccessUrl(membership)}>{getActionLabel(membership)}</a>
 									{/if}
 								</div>
 							</article>
@@ -435,12 +445,19 @@
 		border-left: 1px solid #ededed;
 	}
 
-	/* Loading & Empty States */
-	.loading-state {
+	/* Loading, Error & Empty States */
+	.loading-state,
+	.error-state {
 		padding: 40px;
 		text-align: center;
 		color: #666;
 		font-size: 14px;
+		width: 100%;
+	}
+
+	.error-state p {
+		margin: 0 0 20px 0;
+		color: #dc3545;
 	}
 
 	.no-memberships {
@@ -463,8 +480,10 @@
 		background: #0984ae;
 		color: #fff;
 		text-decoration: none;
+		border: none;
 		border-radius: 4px;
 		font-weight: 600;
+		cursor: pointer;
 		transition: background 0.15s;
 	}
 
