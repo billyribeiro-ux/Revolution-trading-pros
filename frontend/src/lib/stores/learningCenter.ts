@@ -803,7 +803,7 @@ function createLearningCenterStore() {
 				...lesson,
 				trainer: state.trainers.find(t => t.id === lesson.trainerId),
 				category: state.categories.find(c => c.id === lesson.categoryId),
-				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds.includes(r.id)),
+				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
 				module: state.modules.find(m => m.id === lesson.moduleId)
 			};
 		},
@@ -851,10 +851,10 @@ function createLearningCenterStore() {
 			// Add relations
 			return filtered.map(lesson => ({
 				...lesson,
-				trainer: state.trainers.find(t => t.id === lesson.trainerId) ?? null,
-				category: state.categories.find(c => c.id === lesson.categoryId) ?? null,
+				trainer: state.trainers.find(t => t.id === lesson.trainerId),
+				category: state.categories.find(c => c.id === lesson.categoryId),
 				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
-				module: state.modules.find(m => m.id === lesson.moduleId) ?? null
+				module: state.modules.find(m => m.id === lesson.moduleId)
 			})).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 		},
 
