@@ -3,21 +3,110 @@
 
 
 
+<!--
+================================================================================
+SIMPLER TRADING MEMBER DASHBOARD WITH MEMBERSHIPS
+================================================================================
+This is the main member dashboard page for Simpler Trading. It displays:
+- User memberships (trading courses, tools they have access to)
+- Navigation to various dashboard sections
+- Trading room access buttons
+- Weekly watchlist content
+- User account management
+
+FILE STRUCTURE OVERVIEW:
+========================
+Lines 1-2624:     HEAD SECTION (Meta tags, SEO, CSS styles, fonts)
+Lines 2625-2729:  BODY OPENING & SITE HEADER (Logo, main navigation)
+Lines 2730-2845:  DASHBOARD SIDEBAR (User profile, navigation links)
+Lines 2846-2873:  DASHBOARD HEADER (Page title, trading room button)
+Lines 2874-2946:  MEMBERSHIPS & TOOLS SECTIONS (Membership cards)
+Lines 2947-2997:  WEEKLY WATCHLIST CONTENT (Featured content)
+Lines 2998-3010:  LOADING CONTAINER (Loading spinner)
+Lines 3011-3285:  FOOTER (Contact info, links, disclaimers)
+Lines 3286-4070:  POPUP MODALS & COOKIE CONSENT
+Lines 4070-5871:  JAVASCRIPT SCRIPTS (All functionality)
+================================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="en-US">
 
+<!--
+================================================================================
+                            HEAD SECTION START
+================================================================================
+The HEAD section contains all metadata, SEO information, and styles for the page.
+This includes:
+- Character encoding and viewport settings
+- SEO meta tags (title, description, robots)
+- Open Graph tags for Facebook/social sharing
+- Twitter Card metadata
+- Schema.org JSON-LD structured data for search engines
+- Preload hints for performance optimization
+- Google Fonts
+- CSS stylesheets (WordPress, WooCommerce, custom theme styles)
+- Inline CSS for layout and components
+================================================================================
+-->
 <head>
+	<!-- CHARACTER ENCODING: Sets the character encoding to UTF-8 for proper text display -->
 	<meta charset="UTF-8">
+	<!-- XFN PROFILE: Extensible Friend Network profile for microformats -->
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 
+	<!--
+	==========================================================================
+	A/B TESTING & CONVERSION OPTIMIZATION (Convert Experiences)
+	==========================================================================
+	This script enables A/B testing and conversion tracking. It allows testing
+	different page variations to optimize user experience and conversions.
+	==========================================================================
+	-->
 	<!-- begin Convert Experiences code-->
 	<script type="text/javascript" src="//cdn-3.convertexperiments.com/js/10006018-10006413.js"></script>
 	<!-- end Convert Experiences code -->
+
+	<!--
+	==========================================================================
+	ROBOTS META TAG (SEO)
+	==========================================================================
+	'noindex, nofollow' tells search engines:
+	- noindex: Don't show this page in search results
+	- nofollow: Don't follow links on this page
+	This is used for member-only dashboard pages that shouldn't be publicly indexed.
+	==========================================================================
+	-->
 	<meta name='robots' content='noindex, nofollow' />
 
 	<!-- This site is optimized with the Yoast SEO Premium plugin v19.2.1 (Yoast SEO v20.12) - https://yoast.com/wordpress/plugins/seo/ -->
 	<title>Welcome to Simpler Trading - the Best Trading Community for Trading Tips</title>
+	<!--
+	==========================================================================
+	SEO META DESCRIPTION
+	==========================================================================
+	The description that appears in search engine results. Should be:
+	- 150-160 characters for optimal display
+	- Compelling and include key information about the page
+	- Contains relevant keywords naturally
+	==========================================================================
+	-->
 	<meta name="description" content="With over 200 combined years of experience in trading, our team of experts will help you learn the basics of trading, as well as advanced trading strategies. Join today and take your trading to the next level." />
+	<!--
+	==========================================================================
+	OPEN GRAPH META TAGS (Facebook/Social Sharing)
+	==========================================================================
+	Open Graph protocol enables rich sharing on Facebook, LinkedIn, etc.
+	When someone shares this page on social media, these tags control:
+	- og:locale: Language/region (en_US = English, United States)
+	- og:type: Content type (article, website, product, etc.)
+	- og:title: Title displayed in the share preview
+	- og:description: Description in the share preview
+	- og:url: Canonical URL of the page
+	- og:site_name: Name of the website
+	- og:image: Image shown in the share preview
+	==========================================================================
+	-->
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="Member Dashboard" />
@@ -30,13 +119,72 @@
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:type" content="image/jpeg" />
+	<!--
+	==========================================================================
+	TWITTER CARD META TAGS
+	==========================================================================
+	Twitter Card tags control how the page appears when shared on Twitter:
+	- twitter:card: Card type (summary_large_image shows a large image preview)
+	- twitter:site: The Twitter handle of the website
+	These work together with Open Graph for complete social sharing coverage.
+	==========================================================================
+	-->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@simpleroptions" />
+
+	<!--
+	==========================================================================
+	SCHEMA.ORG JSON-LD STRUCTURED DATA (Generated by Yoast SEO)
+	==========================================================================
+	This JSON-LD (JavaScript Object Notation for Linked Data) provides
+	structured data that search engines use to understand the page content.
+
+	This block contains:
+	- @type: WebPage - Identifies this as a web page
+	- url, name, description - Basic page information
+	- breadcrumb - Navigation path (Home > Member Dashboard)
+	- WebSite - Information about the overall website
+	- Organization - Company information, logo, social media links
+
+	This helps with:
+	- Rich search results (breadcrumbs, site links)
+	- Knowledge Graph entries
+	- Better SEO understanding of content
+	==========================================================================
+	-->
 	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://my.simplertrading.com/dashboard","url":"https://my.simplertrading.com/dashboard","name":"Welcome to Simpler Trading - the Best Trading Community for Trading Tips","isPartOf":{"@id":"https://my.simplertrading.com/#website"},"datePublished":"2018-07-24T19:55:52+00:00","dateModified":"2025-06-13T14:28:34+00:00","description":"With over 200 combined years of experience in trading, our team of experts will help you learn the basics of trading, as well as advanced trading strategies. Join today and take your trading to the next level.","breadcrumb":{"@id":"https://my.simplertrading.com/dashboard#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://my.simplertrading.com/dashboard"]}]},{"@type":"BreadcrumbList","@id":"https://my.simplertrading.com/dashboard#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.simplertrading.com/"},{"@type":"ListItem","position":2,"name":"Member Dashboard"}]},{"@type":"WebSite","@id":"https://my.simplertrading.com/#website","url":"https://my.simplertrading.com/","name":"Simpler Trading","description":"Trading Made Simple","publisher":{"@id":"https://my.simplertrading.com/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://my.simplertrading.com/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"Organization","@id":"https://my.simplertrading.com/#organization","name":"Simpler Trading","url":"https://my.simplertrading.com/","logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://my.simplertrading.com/#/schema/logo/image/","url":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","contentUrl":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","width":901,"height":80,"caption":"Simpler Trading"},"image":{"@id":"https://my.simplertrading.com/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/simplerofficial/","https://twitter.com/simpleroptions","https://www.instagram.com/simplertrading/","https://www.linkedin.com/company/4418329/","https://www.youtube.com/user/SimplerOptions"]}]}</script>
 	<!-- / Yoast SEO Premium plugin. -->
 
 
+<!--
+==========================================================================
+PIXEL YOUR SITE PRO - CONVERSION TRACKING PLUGIN
+==========================================================================
+PixelYourSite helps track conversions for advertising platforms.
+It manages pixels for Facebook, Google Ads, Pinterest, etc.
+==========================================================================
+-->
 <script type='application/javascript'>console.log('PixelYourSite PRO version 9.2.2');</script>
+
+<!--
+==========================================================================
+DNS PREFETCH & PRECONNECT (Performance Optimization)
+==========================================================================
+DNS Prefetch: Tells the browser to resolve domain names before they're
+needed, reducing DNS lookup time when resources are requested later.
+
+Preconnect: Goes further by also establishing TCP connections and
+TLS handshakes early, making resource loading even faster.
+
+Domains being prefetched:
+- simplertrading.com: Main website
+- cdn.jwplayer.com: Video player CDN
+- googletagmanager.com: Google Tag Manager
+- fonts.googleapis.com: Google Fonts API
+- use.typekit.net: Adobe Typekit fonts
+- fonts.gstatic.com: Google Fonts static files
+==========================================================================
+-->
 <link rel='dns-prefetch' href='//www.simplertrading.com' />
 <link rel='dns-prefetch' href='//cdn.jwplayer.com' />
 <link rel='dns-prefetch' href='//www.googletagmanager.com' />
@@ -2623,12 +2771,48 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 	<!-- End Google Tag Manager - Install in Head -->
 </head>
 
+<!--
+================================================================================
+                              BODY SECTION START
+================================================================================
+The BODY contains all visible page content. Key classes on this element:
+- page-template-dashboard-landing: Uses the dashboard landing template
+- logged-in: User is authenticated (logged in)
+- member-logged-in: User has an active membership
+- theme-generatepress: Using GeneratePress WordPress theme
+- fl-builder: Beaver Builder page builder is active
+
+itemtype="https://schema.org/WebPage": Schema.org markup identifying this
+as a web page for search engine understanding.
+================================================================================
+-->
 <body class="page-template page-template-templates page-template-dashboard-landing page-template-templatesdashboard-landing-php page page-id-401190 page-parent logged-in wp-custom-logo wp-embed-responsive theme-generatepress fl-builder post-image-aligned-center sticky-menu-slide sticky-enabled regular-menu-logo menu-logo-enabled both-sticky-menu woocommerce-no-js fl-theme-builder-footer member-logged-in no-sidebar nav-below-header fluid-header separate-containers active-footer-widgets-4 nav-aligned-right header-aligned-center dropdown-hover full-width-content elementor-default elementor-kit-1684418 cm-manage-google-fonts" itemtype="https://schema.org/WebPage" itemscope>
+
+	<!--
+	==========================================================================
+	GOOGLE TAG MANAGER (noscript fallback)
+	==========================================================================
+	This is the noscript version of GTM for browsers with JavaScript disabled.
+	It loads via an iframe and provides basic tracking when JS is not available.
+	==========================================================================
+	-->
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PT24H76"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
-		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
+
+	<!-- ACCESSIBILITY: Skip link allows keyboard users to jump directly to main content -->
+		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>
+
+	<!--
+	==========================================================================
+	SITE HEADER SECTION
+	==========================================================================
+	The main site header containing the Simpler Trading logo.
+	Uses Schema.org WPHeader markup for SEO.
+	==========================================================================
+	-->
+		<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
 			<div class="inside-header grid-container grid-parent">
 				<div class="site-logo">
 				<a href="https://www.simplertrading.com/" title="Simpler Trading" rel="home">
@@ -2731,12 +2915,51 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 				<div id="content" class="site-content">
 			
 
+<!--
+================================================================================
+                    MAIN DASHBOARD LAYOUT CONTAINER
+================================================================================
+This is the main dashboard layout that contains:
+1. SIDEBAR (left): Navigation panel with user profile and menu items
+2. MAIN CONTENT (right): Membership cards, tools, and featured content
+
+The dashboard uses a two-column layout:
+- Sidebar is fixed/sticky on desktop, slides in on mobile
+- Main content area scrolls independently
+================================================================================
+-->
 <a id="top"></a>
 
     <div class="dashboard">
+
+        <!--
+        ======================================================================
+        DASHBOARD SIDEBAR SECTION
+        ======================================================================
+        The left sidebar contains:
+        1. User Profile: Avatar image and username (links to account settings)
+        2. Main Navigation Links:
+           - Member Dashboard (home)
+           - My Classes (user's purchased courses)
+           - My Indicators (trading indicators)
+        3. Memberships Category: Links to individual membership dashboards
+        4. Mastery Category: Advanced training programs
+        5. Premium Reports Category: Market analysis reports
+        6. Tools Category: Weekly Watchlist, Support
+        7. Account Category: My Account settings
+
+        Each navigation item has:
+        - Icon (st-icon-* classes for Simpler Trading icon font)
+        - Text label
+        - Active state (is-active class when on that page)
+        ======================================================================
+        -->
         <aside class="dashboard__sidebar">
             <nav class="dashboard__nav-primary  ">
+
+  <!-- USER PROFILE SECTION: Displays user avatar and name -->
   <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
+    <!-- Gravatar: User's profile photo loaded from Gravatar service -->
     <span class="dashboard__profile-photo" style="background-image: url(https://secure.gravatar.com/avatar/b27c0cfb1c74fb928f5e40ba6711669f?s=32&d=mm&r=g);"></span>
     <span class="dashboard__profile-name">Zack Stambowski</span>
     </span>
@@ -2842,9 +3065,43 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     <span class="framework__toggle-button-label">Dashboard Menu</span>
   </button>
 </footer>
+<!-- MOBILE MENU: Overlay that appears when mobile sidebar is open -->
 <div class="dashboard__overlay" data-toggle-dashboard-menu></div>                    </aside>
+
+        <!--
+        ======================================================================
+        DASHBOARD MAIN CONTENT AREA
+        ======================================================================
+        This is the main content area of the dashboard (right side of layout).
+        Contains:
+        1. Dashboard Header: Page title + Trading Room access button
+        2. Content Sections: Memberships, Tools, Weekly Watchlist
+        3. Content Sidebar: Additional widgets (currently empty)
+        ======================================================================
+        -->
         <main class="dashboard__main ">
-                            
+
+            <!--
+            ==================================================================
+            DASHBOARD HEADER SECTION
+            ==================================================================
+            The header bar at the top of the dashboard main content area.
+
+            Left Side (dashboard__header-left):
+            - Page title: "Member Dashboard"
+
+            Right Side (dashboard__header-right):
+            - Trading Room Rules: Link to PDF with room rules
+            - "Enter a Trading Room" button: Dropdown with JWT-authenticated
+              links to live trading rooms the user has access to
+
+            The JWT tokens in the trading room links contain:
+            - User authentication info
+            - Membership permissions
+            - Expiration timestamps
+            This provides secure single sign-on to external chat platform.
+            ==================================================================
+            -->
     <header class="dashboard__header">
         <div class="dashboard__header-left">
                         <h1 class="dashboard__page-title">Member Dashboard</h1>
@@ -2871,10 +3128,43 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                      
 
     </header>
-            
+
+            <!--
+            ==================================================================
+            DASHBOARD CONTENT WRAPPER
+            ==================================================================
+            Contains the main dashboard content and optional sidebar.
+            Uses a two-column layout:
+            - dashboard__content-main: Primary content area (left)
+            - dashboard__content-sidebar: Secondary widgets (right)
+            ==================================================================
+            -->
             <div class="dashboard__content">
                 <div class="dashboard__content-main">
                     <!-- Dashboard Walkthrough Banner-->
+
+    <!--
+    ======================================================================
+    MEMBERSHIPS SECTION
+    ======================================================================
+    Displays cards for each membership the user has access to.
+
+    Each membership card (membership-card) contains:
+    1. HEADER: Icon + membership name (clickable link to dashboard)
+    2. ACTIONS: Two buttons
+       - "Dashboard" link: Goes to membership-specific dashboard
+       - "Trading Room" link: JWT-authenticated link to live trading room
+
+    Card Types/Styles:
+    - membership-card--options: Options trading focused memberships
+    - membership-card--foundation: Foundational/beginner courses
+    - membership-card--ww: Weekly Watchlist
+
+    The cards use a responsive grid layout:
+    - col-sm-6: 2 columns on small screens (tablets)
+    - col-xl-4: 3 columns on extra-large screens (desktops)
+    ======================================================================
+    -->
     <section class="dashboard__content-section">
         <h2 class="section-title">Memberships</h2>
         <div class="membership-cards row">
@@ -2919,14 +3209,26 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
     </section>
 
+    <!--
+    ======================================================================
+    TOOLS SECTION
+    ======================================================================
+    Displays tool cards available to the user. Tools are supplementary
+    resources that may be included with memberships or available separately.
 
+    Current tools:
+    - Weekly Watchlist: Stock/options picks for the week
+    - Other tools may include scanners, indicators, etc.
 
-
+    Uses the same card layout as memberships for visual consistency.
+    ======================================================================
+    -->
 <section class="dashboard__content-section">
     <h2 class="section-title">Tools</h2>
     <div class="membership-cards row">
-        
+
                     <div class="col-sm-6 col-xl-4">
+                <!-- WEEKLY WATCHLIST CARD: Links to the watchlist dashboard -->
                 <article class="membership-card membership-card--ww">
                     <a href="https://www.simplertrading.com/dashboard/ww" class="membership-card__header">
                         <span class="mem_icon">
@@ -2945,11 +3247,31 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     </div>
         </section>
 
+    <!--
+    ======================================================================
+    WEEKLY WATCHLIST FEATURED CONTENT SECTION
+    ======================================================================
+    A prominent content section showcasing the current week's watchlist
+    video/article. This is a featured piece of free content that:
 
+    1. Highlights the value of the Weekly Watchlist tool
+    2. Provides immediate value to logged-in members
+    3. Promotes the TG Watkins video content
 
+    Layout:
+    - Two-column responsive design (text left, image right)
+    - On mobile: image appears above text
+    - On desktop: side-by-side layout
 
+    The section includes:
+    - Title with underline styling
+    - Brief description with current week's date
+    - "Watch Now" call-to-action button
+    - Thumbnail image linking to the full content
+    ======================================================================
+    -->
             <div class="dashboard__content-section u--background-color-white">
-            
+
                 <section>
             <div class="row">
                 <div class="col-sm-6 col-lg-5">
@@ -2984,13 +3306,27 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     white-space: normal;
     width: calc(100% - 43px);
 }
+<!-- INLINE STYLES: For membership card icon/text alignment -->
 </style>                </div>
 
+                <!--
+                ==============================================================
+                CONTENT SIDEBAR (Right Side)
+                ==============================================================
+                A secondary sidebar within the main content area.
+                Currently empty, but can be used for:
+                - Promotional banners
+                - Upcoming webinars/events
+                - Quick links
+                - User statistics/achievements
+                ==============================================================
+                -->
                                         <aside class="dashboard__content-sidebar">
                     <section class="content-sidebar__section">
                             </section>
             </aside>
                             </div>
+        <!-- End of dashboard__main -->
         </main>
 
         
@@ -3001,6 +3337,18 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 	</div><!-- #content -->
 </div><!-- #page -->
 
+<!--
+================================================================================
+LOADING OVERLAY CONTAINER
+================================================================================
+A global loading spinner overlay that appears during AJAX requests or page
+transitions. Hidden by default, shown via JavaScript when needed.
+
+Contains:
+- loading-icon: CSS spinner animation
+- loading-message: Optional text (e.g., "Loading...")
+================================================================================
+-->
 <div class="loading-container loading-global">
     <div class="loading">
         <span class="loading-icon"></span>
@@ -3008,6 +3356,44 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     </div>
 </div>
 
+<!--
+================================================================================
+                              FOOTER SECTION
+================================================================================
+The site footer built with Beaver Builder (FL Builder).
+Uses a global template (post ID: 36965) so changes apply site-wide.
+
+Footer Structure:
+1. COLUMN 1: Logo SVG + Contact Information
+   - Simpler Trading logo (inline SVG)
+   - Email address, physical address, phone number
+   - App store download links (iOS & Android)
+   - Social media icons (Facebook, Twitter, YouTube, Instagram)
+
+2. COLUMN 2: Learn More Links
+   - Memberships
+   - Daily Videos
+   - Support
+   - Rejoin Mailing List
+   - Partners
+
+3. COLUMN 3: About Links
+   - About Simpler
+   - Our Traders
+   - Simpler Store
+   - Blog
+
+4. COLUMN 4: Legal Links
+   - Privacy Policy
+   - Terms & Conditions
+   - My Consent Preferences
+
+5. DISCLAIMER ROW:
+   - Trading disclaimers required by CFTC
+   - Risk warnings and legal notices
+   - Copyright notice
+================================================================================
+-->
 <div class="site-footer">
 	<footer class="fl-builder-content fl-builder-content-36965 fl-builder-global-templates-locked" data-post-id="36965" data-type="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter"><div class="fl-row fl-row-full-width fl-row-bg-color fl-node-59adb3c86fcbf footer-section" data-node="59adb3c86fcbf">
 	<div class="fl-row-content-wrap">
@@ -3284,13 +3670,57 @@ Suite 4200 #1005</span><br />
 </div>
 </footer></div><!-- .site-footer -->
 
+<!--
+================================================================================
+BACK TO TOP BUTTON
+================================================================================
+A floating button that appears when user scrolls down the page.
+Clicking it smoothly scrolls back to the top of the page.
+
+Configuration:
+- data-scroll-speed="400": Animation duration in milliseconds
+- data-start-scroll="300": Shows button after scrolling 300px down
+- Initially hidden (opacity:0, visibility:hidden)
+- Made visible via JavaScript when scroll threshold is reached
+================================================================================
+-->
 <a title="Scroll back to top" rel="nofollow" href="#" class="generate-back-to-top" style="opacity:0;visibility:hidden;" data-scroll-speed="400" data-start-scroll="300">
 				<span class="screen-reader-text">Scroll back to top</span>
 				<span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
 						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
 					</svg></span>
 			</a>
+
+<!--
+================================================================================
+                           JAVASCRIPT SECTION START
+================================================================================
+This section contains all JavaScript code for the page functionality.
+Scripts are organized as follows:
+
+1. REVOLUTION SLIDER (RS_MODULES): Configuration for slider plugin
+2. EVERFLOW TRACKING (EF.click): Affiliate tracking for marketing
+3. WOOCOMMERCE: Cart and buy-now functionality
+4. ELEMENTOR POPUPS: Marketing popup modals with scheduling
+5. COOKIE CONSENT (ConsentMagic): GDPR/privacy compliance
+6. TUMME FINGERPRINTING: User identification tracking
+7. PHOTOSWIPE: Image lightbox gallery
+8. WORDPRESS/WOOCOMMERCE LIBS: Core framework scripts
+9. ELEMENTOR: Page builder frontend scripts
+10. FL BUILDER (Beaver Builder): Layout JavaScript
+11. CUSTOM DASHBOARD JS: Dashboard-specific functionality
+
+These scripts handle:
+- UI interactions (menus, accordions, toggles)
+- Tracking & analytics
+- Privacy consent management
+- E-commerce functionality
+- Form validation
+- Responsive behavior
+================================================================================
+-->
 		<script>
+			/* REVOLUTION SLIDER: Module configuration for slider functionality */
 			window.RS_MODULES = window.RS_MODULES || {};
 			window.RS_MODULES.modules = window.RS_MODULES.modules || {};
 			window.RS_MODULES.waiting = window.RS_MODULES.waiting || [];
