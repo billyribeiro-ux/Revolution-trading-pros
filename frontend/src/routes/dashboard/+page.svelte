@@ -335,15 +335,9 @@
 
 	</div>
 	
-	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - Hidden on main dashboard -->
+	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard, matches Jesus file exactly -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<h3 class="content-sidebar__heading">Quick Links</h3>
-			<ul class="content-sidebar__nav">
-				<li><a href="/dashboard">Overview</a></li>
-				<li><a href="/dashboard/classes">My Classes</a></li>
-				<li><a href="/dashboard/indicators">My Indicators</a></li>
-			</ul>
 		</section>
 	</aside>
 </div>
