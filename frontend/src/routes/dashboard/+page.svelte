@@ -351,7 +351,7 @@
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
-		max-width: 1700px;
+		max-width: 1100px;
 		padding: 20px;
 		display: flex;
 		flex-wrap: wrap;
@@ -471,7 +471,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		background: #f69532;
+		background: #F69532;
 		border: none;
 		color: #fff;
 		padding: 10px 20px;
@@ -480,15 +480,15 @@
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
-		transition: all 0.15s ease-in-out;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		line-height: 1.4;
 	}
 
 	.btn-orange:hover,
 	.btn-tradingroom:hover {
 		background: #dc7309;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 	}
 
 	.dropdown-menu {
@@ -549,7 +549,7 @@
 	   DASHBOARD CONTENT - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.logged-in .dashboard__content) {
-		max-width: 1700px;
+		max-width: 1100px;
 	}
 
 	.dashboard__content {
@@ -621,14 +621,14 @@
 		max-width: 33.333%;
 	}
 
-	@media (max-width: 1199px) {
+	@media (max-width: 992px) {
 		.col-xl-4 {
 			flex: 0 0 50%;
 			max-width: 50%;
 		}
 	}
 
-	@media (max-width: 575px) {
+	@media (max-width: 641px) {
 		.col-sm-6,
 		.col-xl-4 {
 			flex: 0 0 100%;
@@ -641,12 +641,12 @@
 		background: #fff;
 		border-radius: 5px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transform: translateY(-2px);
 	}
 
@@ -791,14 +791,14 @@
 		max-width: 33.333%;
 	}
 
-	@media (max-width: 991px) {
+	@media (max-width: 992px) {
 		.col-xl-4 {
 			flex: 0 0 50%;
 			max-width: 50%;
 		}
 	}
 
-	@media (max-width: 575px) {
+	@media (max-width: 641px) {
 		.col-sm-6,
 		.col-md-6,
 		.col-xl-4 {
@@ -819,7 +819,7 @@
 	}
 
 	.article-card:hover {
-		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 	}
 
 	.article-card__image {
@@ -1026,7 +1026,7 @@
 		padding-left: 15px;
 	}
 
-	@media (min-width: 576px) {
+	@media (min-width: 641px) {
 		.col-sm-6 {
 			flex: 0 0 50%;
 			max-width: 50%;
@@ -1059,11 +1059,13 @@
 		background: #f5f5f5;
 		color: #333;
 		border: 1px solid #ddd;
+		box-shadow: none;
 	}
 
 	.btn-default:hover {
 		background: #e8e8e8;
 		border-color: #ccc;
+		box-shadow: none;
 	}
 
 	.u--margin-top-20 {
@@ -1073,22 +1075,23 @@
 	.btn,
 	.btn-primary {
 		display: inline-block;
-		padding: 10px 24px;
-		background: #0984ae;
+		padding: 10px 20px;
+		background: #F69532;
 		color: #fff;
 		text-decoration: none;
 		border: none;
-		border-radius: 4px;
+		border-radius: 5px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
 		font-size: 14px;
 		text-align: center;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 	}
 
 	.btn-primary:hover {
-		background: #076787;
+		background: #dc7309;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
