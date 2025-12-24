@@ -637,6 +637,54 @@ export async function getOwnedProducts(): Promise<{
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// SUBSCRIPTION MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface CancelSubscriptionRequest {
+	cancel_immediately?: boolean;
+	reason?: string;
+}
+
+export interface CancelSubscriptionResponse {
+	success: boolean;
+	message: string;
+	status: string;
+	cancel_at?: string;
+}
+
+/**
+ * Cancel a subscription
+ * Members can only cancel their own subscriptions
+ */
+export async function cancelSubscription(
+	membershipId: string,
+	options?: CancelSubscriptionRequest
+): Promise<CancelSubscriptionResponse> {
+	if (!browser) {
+		throw new Error('Cannot cancel subscription on server');
+	}
+
+	const url = `${API_BASE}/user/memberships/${membershipId}/cancel`;
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: await getAuthHeaders(),
+		credentials: 'include',
+		body: JSON.stringify({
+			cancel_immediately: options?.cancel_immediately ?? false,
+			reason: options?.reason
+		})
+	});
+
+	const data = await handleResponse<CancelSubscriptionResponse>(response);
+
+	// Invalidate cache after cancellation
+	invalidateMembershipCache();
+
+	return data;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // EXPORT
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -648,5 +696,6 @@ export default {
 	preloadMembershipData,
 	checkProductOwnership,
 	checkProductVariantOwnership,
-	getOwnedProducts
+	getOwnedProducts,
+	cancelSubscription
 };

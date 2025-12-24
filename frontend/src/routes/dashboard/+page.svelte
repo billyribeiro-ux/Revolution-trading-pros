@@ -172,6 +172,24 @@
 			</div>
 		</section>
 
+		<!-- PREMIUM REPORTS SECTION -->
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Premium Reports</h2>
+			<div class="premium-reports-placeholder">
+				<div class="placeholder-icon">
+					<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+						<polyline points="14 2 14 8 20 8"></polyline>
+						<line x1="16" y1="13" x2="8" y2="13"></line>
+						<line x1="16" y1="17" x2="8" y2="17"></line>
+						<polyline points="10 9 9 9 8 9"></polyline>
+					</svg>
+				</div>
+				<h3>Premium Reports Coming Soon</h3>
+				<p>Access exclusive market analysis, trading reports, and insights from our expert team.</p>
+			</div>
+		</section>
+
 	</div>
 </div>
 
@@ -489,5 +507,44 @@
 
 	.btn-primary:hover {
 		background: #076787;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PREMIUM REPORTS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.premium-reports-placeholder {
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		padding: 60px 40px;
+		text-align: center;
+	}
+
+	.placeholder-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 80px;
+		height: 80px;
+		background: linear-gradient(135deg, #0984ae 0%, #076787 100%);
+		border-radius: 20px;
+		color: #fff;
+		margin-bottom: 20px;
+	}
+
+	.premium-reports-placeholder h3 {
+		font-size: 20px;
+		font-weight: 600;
+		color: #333;
+		margin: 0 0 12px 0;
+	}
+
+	.premium-reports-placeholder p {
+		font-size: 14px;
+		color: #666;
+		margin: 0;
+		max-width: 400px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 </style>
