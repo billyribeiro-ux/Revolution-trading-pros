@@ -20,9 +20,9 @@ import { apiCache, buildCacheKey, invalidateCache } from './cache';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
+// API routes are nested under /api in the backend
+const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+const API_BASE = browser ? (import.meta.env.VITE_API_URL || PROD_API) : '';
 
 // Cache TTLs (in milliseconds)
 const CACHE_TTL = {
