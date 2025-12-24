@@ -32,6 +32,25 @@
 
 	// Memberships data for sidebar
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
+	
+	// Mobile menu state
+	let mobileMenuOpen = $state(false);
+
+	// Toggle mobile menu
+	function toggleMobileMenu() {
+		mobileMenuOpen = !mobileMenuOpen;
+		if (browser) {
+			document.documentElement.classList.toggle('html--dashboard-menu-open', mobileMenuOpen);
+		}
+	}
+
+	// Close mobile menu
+	function closeMobileMenu() {
+		mobileMenuOpen = false;
+		if (browser) {
+			document.documentElement.classList.remove('html--dashboard-menu-open');
+		}
+	}
 
 	// ICT 11+ Auth Guard: Redirect to login if not authenticated after init completes
 	$effect(() => {
@@ -241,6 +260,33 @@
 			</nav>
 		</aside>
 
+		<!-- MOBILE OVERLAY -->
+		<div 
+			class="dashboard__overlay" 
+			onclick={closeMobileMenu}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
+			role="button"
+			tabindex="-1"
+			aria-label="Close menu"
+		></div>
+
+		<!-- MOBILE TOGGLE BUTTON -->
+		<div class="dashboard__toggle">
+			<button 
+				type="button" 
+				class="dashboard__toggle-button"
+				onclick={toggleMobileMenu}
+				aria-label="Toggle Menu"
+			>
+				<span class="dashboard__toggle-button-icon">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+				<span class="framework__toggle-button-label">Menu</span>
+			</button>
+		</div>
+
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">
 			{#if authReady}
@@ -293,25 +339,44 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BREADCRUMBS - Exact Match from Jesus File
+	   BREADCRUMBS - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.breadcrumbs {
 		z-index: 1;
+		background: #fff;
+		border-bottom: 1px solid #e8e8e8;
+		padding: 0;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.breadcrumbs .container-fluid {
-		max-width: 1700px;
+		max-width: 100%;
+		width: 100%;
 		margin: 0 auto;
-		padding: 0 20px;
+		padding: 15px 20px;
+	}
+
+	@media (min-width: 1280px) {
+		.breadcrumbs .container-fluid {
+			max-width: 1700px;
+			padding: 15px 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.breadcrumbs .container-fluid {
+			padding: 15px 40px;
+		}
 	}
 
 	.breadcrumbs ul {
 		list-style: none;
 		margin: 0;
-		padding: 12px 0;
+		padding: 0;
 		display: flex;
 		align-items: center;
-		font-size: 14px;
+		font-size: 13px;
+		line-height: 1.4;
 	}
 
 	.breadcrumbs li {
@@ -327,6 +392,7 @@
 
 	.breadcrumbs a:hover {
 		color: #0984ae;
+		text-decoration: underline;
 	}
 
 	.breadcrumbs .separator {
@@ -376,6 +442,21 @@
 			opacity: 0;
 			visibility: hidden;
 			z-index: 100010;
+			width: 280px;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__sidebar {
+			display: block;
+			bottom: auto;
+			left: auto;
+			opacity: 1;
+			overflow: visible;
+			position: static;
+			top: auto;
+			visibility: visible;
+			z-index: auto;
 		}
 	}
 
@@ -624,6 +705,141 @@
 	@media (max-width: 641px) {
 		.dashboard {
 			min-height: auto;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MOBILE TOGGLE BUTTON & OVERLAY - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__toggle {
+		background-color: #0d2532;
+		bottom: 0;
+		height: 50px;
+		left: 0;
+		line-height: 50px;
+		padding: 0;
+		position: fixed;
+		right: 0;
+		z-index: 100010;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__toggle {
+			display: none;
+		}
+	}
+
+	.dashboard__toggle-button {
+		appearance: none;
+		background: none;
+		border: none;
+		color: #fff;
+		height: 50px;
+		overflow: hidden;
+		padding: 0 20px 0 60px;
+		position: relative;
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.dashboard__toggle-button:active,
+	.dashboard__toggle-button:focus,
+	.dashboard__toggle-button:hover {
+		background: none;
+		outline: none;
+	}
+
+	.dashboard__toggle-button-icon {
+		height: 50px;
+		left: 20px;
+		position: absolute;
+		top: 50%;
+		margin-top: -7px;
+		width: 50px;
+	}
+
+	.dashboard__toggle-button-icon span {
+		background-color: #fff;
+		border-radius: 0;
+		display: block;
+		height: 2px;
+		left: 0;
+		opacity: 1;
+		position: absolute;
+		transform: rotate(0);
+		transform-origin: left center;
+		transition: all 0.15s ease-in-out;
+		width: 20px;
+	}
+
+	.dashboard__toggle-button-icon span:first-child {
+		top: 0;
+	}
+
+	.dashboard__toggle-button-icon span:nth-child(2) {
+		top: 6px;
+	}
+
+	.dashboard__toggle-button-icon span:nth-child(3) {
+		top: 12px;
+	}
+
+	:global(.html--dashboard-menu-open) .dashboard__toggle-button-icon span:first-child {
+		left: 3px;
+		top: -1px;
+		transform: rotate(45deg);
+	}
+
+	:global(.html--dashboard-menu-open) .dashboard__toggle-button-icon span:nth-child(2) {
+		opacity: 0;
+		width: 0;
+	}
+
+	:global(.html--dashboard-menu-open) .dashboard__toggle-button-icon span:nth-child(3) {
+		left: 3px;
+		top: 13px;
+		transform: rotate(-45deg);
+	}
+
+	.framework__toggle-button-label {
+		font-size: 12px;
+		position: relative;
+		text-transform: uppercase;
+		top: -2px;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.dashboard__overlay {
+		background-color: rgba(0, 0, 0, 0.65);
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		position: fixed;
+		right: 0;
+		top: 0;
+		transition: all 0.3s ease-in-out;
+		visibility: hidden;
+		z-index: 100009;
+	}
+
+	:global(.html--dashboard-menu-open) .dashboard__overlay {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	:global(.html--dashboard-menu-open) .dashboard__sidebar {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	:global(.html--dashboard-menu-open) {
+		overflow: hidden;
+	}
+
+	@media (max-width: 1279px) {
+		:global(body) {
+			padding-bottom: 50px;
 		}
 	}
 </style>

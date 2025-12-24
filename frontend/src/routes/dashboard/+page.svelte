@@ -285,23 +285,31 @@
 			</section>
 		{/if}
 
-		<!-- PREMIUM REPORTS SECTION -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Premium Reports</h2>
-			<div class="premium-reports-placeholder">
-				<div class="placeholder-icon">
-					<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-						<polyline points="14 2 14 8 20 8"></polyline>
-						<line x1="16" y1="13" x2="8" y2="13"></line>
-						<line x1="16" y1="17" x2="8" y2="17"></line>
-						<polyline points="10 9 9 9 8 9"></polyline>
-					</svg>
+		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from Jesus -->
+		<div class="dashboard__content-section u--background-color-white">
+			<section>
+				<div class="row">
+					<div class="col-sm-6 col-lg-5">
+						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+						<div class="hidden-md d-lg-none pb-2">
+							<a href="/watchlist/latest">
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+							</a>
+						</div>
+						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
+						<div class="u--hide-read-more">
+							<p>Week of December 22, 2025.</p>
+						</div>
+						<a href="/watchlist/latest" class="btn btn-tiny btn-default">Watch Now</a>
+					</div>
+					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+						<a href="/watchlist/latest">
+							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+						</a>
+					</div>
 				</div>
-				<h3>Premium Reports Coming Soon</h3>
-				<p>Access exclusive market analysis, trading reports, and insights from our expert team.</p>
-			</div>
-		</section>
+			</section>
+		</div>
 
 	</div>
 </div>
@@ -887,6 +895,135 @@
 	.btn-tiny {
 		padding: 8px 16px;
 		font-size: 13px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   WEEKLY WATCHLIST SECTION - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.section-title-alt {
+		color: #0984ae;
+		font-weight: 700;
+		font-size: 14px;
+		letter-spacing: 0.2em;
+		margin-bottom: 30px;
+		text-transform: uppercase;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.section-title-alt--underline {
+		padding-bottom: 30px;
+		position: relative;
+	}
+
+	.section-title-alt--underline::after {
+		background-color: #e8e8e8;
+		bottom: 2px;
+		content: " ";
+		display: block;
+		height: 2px;
+		position: absolute;
+		left: 0;
+		width: 50px;
+	}
+
+	.u--background-color-white {
+		background-color: #fff !important;
+	}
+
+	.u--border-radius {
+		border-radius: 8px !important;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700 !important;
+	}
+
+
+	.hidden-md {
+		display: block;
+	}
+
+	.d-lg-none {
+		display: block;
+	}
+
+	@media (min-width: 992px) {
+		.d-lg-none {
+			display: none !important;
+		}
+	}
+
+	.pb-2 {
+		padding-bottom: 0.5rem;
+	}
+
+	.hidden-xs,
+	.hidden-sm {
+		display: none;
+	}
+
+	.d-none {
+		display: none !important;
+	}
+
+	.d-lg-block {
+		display: none !important;
+	}
+
+	@media (min-width: 992px) {
+		.d-lg-block {
+			display: block !important;
+		}
+
+		.hidden-xs,
+		.hidden-sm {
+			display: block;
+		}
+	}
+
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+	}
+
+	.col-sm-6,
+	.col-lg-5,
+	.col-lg-7 {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+
+	@media (min-width: 576px) {
+		.col-sm-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-5 {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
+
+		.col-lg-7 {
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+		}
+	}
+
+	.dashboard__content-section section {
+		margin: 0;
+	}
+
+	.dashboard__content-section section img {
+		width: 100%;
+		height: auto;
+		display: block;
 	}
 
 	.btn-default {
