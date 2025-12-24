@@ -220,11 +220,11 @@ export async function getUserMemberships(options?: {
 		return categorizeMemberships([]);
 	}
 
-	// ICT 11+ Pattern: Check auth but don't throw - graceful fallback to mock data
+	// Check auth - if no token, return empty (user needs to login)
 	const token = authStore.getToken();
 	if (!token) {
-		console.log('[UserMemberships] No auth token, using mock data');
-		return getMockMemberships();
+		console.log('[UserMemberships] No auth token - user not authenticated');
+		return categorizeMemberships([]);
 	}
 
 	const params = new URLSearchParams();
@@ -254,18 +254,12 @@ export async function getUserMemberships(options?: {
 			{ ttl: CACHE_TTL.memberships, persist: true }
 		);
 
-		// If API returns empty data, use mock data instead (for demo purposes)
-		if (!result.memberships || result.memberships.length === 0) {
-			console.log('[UserMemberships] API returned empty, using mock data');
-			return getMockMemberships();
-		}
-
+		// Return actual data from API (no mock data fallback)
 		return result;
 	} catch (error) {
 		console.error('[UserMemberships] Error fetching memberships:', error);
-
-		// ICT 11+ Pattern: Graceful degradation - return mock data on any error
-		return getMockMemberships();
+		// Return empty - let UI show appropriate message
+		return categorizeMemberships([]);
 	}
 }
 
