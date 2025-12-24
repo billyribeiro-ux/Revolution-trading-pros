@@ -1,24 +1,41 @@
 
-<!-- ========================================
-     DOCUMENT START
-     This is the Simpler Trading Member Dashboard page
-     A complete WordPress/Beaver Builder page with membership management
-     ======================================== -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 1: DOCUMENT TYPE DECLARATION
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     This is the Simpler Trading Member Dashboard page.
+     A complete WordPress/Beaver Builder page with WooCommerce membership management.
+     
+     Technology Stack:
+     - WordPress CMS
+     - Beaver Builder (page layout)
+     - WooCommerce (e-commerce/memberships)
+     - Elementor (popup modals)
+     - Google Tag Manager (analytics)
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en-US">
 
 <head>
-	<!-- ========================================
-	     HEAD SECTION START
-	     Contains meta tags, CSS, JavaScript initialization
-	     ======================================== -->
+	<!-- ═══════════════════════════════════════════════════════════════════════════
+	     SECTION 2: HTML HEAD - METADATA & RESOURCES
+	     ═══════════════════════════════════════════════════════════════════════════
+	     
+	     Contains all document metadata, SEO tags, CSS stylesheets, and JavaScript.
+	     This section loads BEFORE the page is visible to users.
+	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<!-- SUBSECTION 2.1: Character Encoding & Viewport -->
 	<meta charset="UTF-8">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 
-	<!-- ========================================
-	     TRACKING & A/B TESTING SECTION
-	     Convert Experiences for split testing
-	     ======================================== -->
+	<!-- ═══════════════════════════════════════════════════════════════════════════
+	     SUBSECTION 2.2: A/B TESTING & CONVERSION OPTIMIZATION
+	     ═══════════════════════════════════════════════════════════════════════════
+	     
+	     Tool: Convert Experiences
+	     Purpose: Split testing to optimize conversion rates
+	     Must load early to prevent page flicker during tests
+	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- begin Convert Experiences code-->
 	<script type="text/javascript" src="//cdn-3.convertexperiments.com/js/10006018-10006413.js"></script>
 	<!-- end Convert Experiences code -->
@@ -95,11 +112,24 @@ body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: 
 :where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
 .wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
 </style>
-<!-- ========================================
-     BEAVER BUILDER CSS FRAMEWORK
-     Grid system, rows, columns, responsive utilities
-     Full-height layouts, flexbox configurations
-     ======================================== -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SUBSECTION 2.3: BEAVER BUILDER LAYOUT FRAMEWORK CSS
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Layout ID: 401190 (this dashboard page)
+     
+     Features:
+     - 12-column responsive grid system
+     - Flexbox-based rows and columns
+     - Full-height section support
+     - Responsive breakpoints (mobile/tablet/desktop)
+     - Background options (colors, images, videos, parallax)
+     
+     Breakpoints:
+     - Mobile: < 768px
+     - Tablet: 768px - 992px  
+     - Desktop: > 992px
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <style id='fl-builder-layout-401190-inline-css' type='text/css'>
 /* Grid
 ------------------------------------------------------ */
@@ -1207,11 +1237,24 @@ body.fl-builder-ie-11 .fl-row.fl-row-custom-height.fl-visible-desktop-medium {
 	font-weight: bold;
 }
 
-/* ========================================
-   GLOBAL CUSTOM CSS
-   Site-wide button styles, dashboard navigation,
-   trading room rules, icon customizations
-   ======================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUBSECTION 2.4: GLOBAL CUSTOM CSS
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   Site-wide custom styles and overrides.
+   
+   Contains:
+   - Custom button styles (shaped, squared, primary colors)
+   - Dashboard navigation customizations
+   - Trading room rules styling
+   - Icon customizations
+   - Utility classes
+   
+   Design System:
+   - Primary Color: #0984ae (blue)
+   - Secondary Color: #ff6900 (orange)
+   - Font: 'Open Sans', sans-serif
+   ═══════════════════════════════════════════════════════════════════════════ */
 /* Start Global CSS */
 p:empty {
     display: none;
@@ -2541,10 +2584,24 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 		</style>
 		
-		<!-- ========================================
-		     GOOGLE TAG MANAGER DATA LAYER
-		     User tracking, membership data, page analytics
-		     ======================================== -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     SUBSECTION 2.5: GOOGLE TAG MANAGER DATA LAYER
+		     ═══════════════════════════════════════════════════════════════════════════
+		     
+		     GTM Container: GTM-PT24H76
+		     
+		     Data Collected:
+		     - User ID: 94190
+		     - Page Type: "Uncategorized"
+		     - Membership Types: User's active memberships
+		     - Subscription Status: trial/active/paused/complimentary
+		     
+		     Used for:
+		     - Tracking user behavior
+		     - Firing marketing pixels
+		     - User segmentation
+		     - Conversion tracking
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<script type="text/javascript">
 			// Initial Data Layer Init
 			var om_load_webfont = false;
@@ -2646,19 +2703,40 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 	<!-- End Google Tag Manager - Install in Head -->
 </head>
 
-<!-- ========================================
-     BODY SECTION START
-     Main page content, navigation, dashboard
-     ======================================== -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 3: HTML BODY - VISIBLE PAGE CONTENT
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Contains all visible page elements.
+     
+     Structure:
+     1. Google Tag Manager (noscript)
+     2. Site Header (logo)
+     3. Main Navigation (menu)
+     4. Breadcrumbs
+     5. Dashboard Content
+     6. Footer
+     7. Popups/Modals
+     8. JavaScript
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <body class="page-template page-template-templates page-template-dashboard-landing page-template-templatesdashboard-landing-php page page-id-401190 page-parent logged-in wp-custom-logo wp-embed-responsive theme-generatepress fl-builder post-image-aligned-center sticky-menu-slide sticky-enabled regular-menu-logo menu-logo-enabled both-sticky-menu woocommerce-no-js fl-theme-builder-footer member-logged-in no-sidebar nav-below-header fluid-header separate-containers active-footer-widgets-4 nav-aligned-right header-aligned-center dropdown-hover full-width-content elementor-default elementor-kit-1684418 cm-manage-google-fonts" itemtype="https://schema.org/WebPage" itemscope>
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PT24H76"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 	<!-- End Google Tag Manager (noscript) -->
-		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<!-- ========================================
-		     SITE HEADER
-		     Simpler Trading logo and branding
-		     ======================================== -->
+		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     SECTION 4: SITE HEADER
+		     ═══════════════════════════════════════════════════════════════════════════
+		     
+		     Element ID: masthead
+		     
+		     Contains:
+		     - Simpler Trading logo (PNG, 901x80px)
+		     - Link to homepage
+		     - Retina-ready image (2x resolution)
+		     
+		     Logo CDN: cdn.simplertrading.com
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
 			<div class="inside-header grid-container grid-parent">
 				<div class="site-logo">
@@ -2667,11 +2745,22 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 				</a>
 			</div>			</div><!-- .inside-header -->
 		</header><!-- #masthead -->
-		<!-- ========================================
-		     MAIN NAVIGATION MENU
-		     Dropdown menus for: Trading Rooms, Learning, Tools,
-		     Resources, About Us, Dashboard, Cart
-		     ======================================== -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     SECTION 5: MAIN NAVIGATION MENU
+		     ═══════════════════════════════════════════════════════════════════════════
+		     
+		     Menu ID: menu-header-menu-2023
+		     
+		     Top-Level Items:
+		     1. Live Trading Rooms (dropdown)
+		     2. Learning (dropdown)
+		     3. Tools (dropdown)
+		     4. Resources (dropdown)
+		     5. About Us (dropdown)
+		     6. Dashboard (dropdown)
+		     7. Phone Number
+		     8. Shopping Cart
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 				<nav id="site-navigation" class="main-navigation" itemtype="https://schema.org/SiteNavigationElement" itemscope>
 			<div class="inside-navigation grid-container grid-parent">
 				<div class="site-logo sticky-logo navigation-logo">
@@ -2762,10 +2851,14 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <li id="menu-item-1957762" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1957762"><a href="tel:5122668659"><span class="fa fa-phone fa-cust-rotate-90 blue_icon"></span> (512) 266-8659</a></li>
 <li class="menu-item menu-item-cart"><a href="https://www.simplertrading.com/cart"><span class="cart-link-icon"><span class="fa fa-shopping-cart"></span><span class="cart-items-count">1</span></span><span class="cart-link-text">View My Cart</span></a></li></ul></div>			</div><!-- .inside-navigation -->
 		</nav><!-- #site-navigation -->
-		<!-- ========================================
-		     BREADCRUMB NAVIGATION
-		     Shows: Home / Member Dashboard
-		     ======================================== -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     SECTION 6: BREADCRUMB NAVIGATION
+		     ═══════════════════════════════════════════════════════════════════════════
+		     
+		     Shows current page location in site hierarchy.
+		     
+		     Current Path: Home / Member Dashboard
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<nav id="breadcrumbs" class="breadcrumbs"><div class="container-fluid"><ul><li class="item-home"><a class="breadcrumb-link breadcrumb-home" href="https://www.simplertrading.com" title="Home">Home</a></li><li class="separator separator-home"> / </li><li class="item-current item-401190"><strong class="breadcrumb-current breadcrumb-401190"> Member Dashboard</strong></li></ul></div></nav>
 	<div id="page" class="hfeed site grid-parent">
 				<div id="content" class="site-content">
@@ -2773,16 +2866,28 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 <a id="top"></a>
 
-    <!-- ========================================
-         DASHBOARD MAIN CONTENT AREA
-         Sidebar navigation + main content panel
-         ======================================== -->
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         SECTION 7: DASHBOARD MAIN CONTENT AREA
+         ═══════════════════════════════════════════════════════════════════════════
+         
+         Two-column layout:
+         - Left: Sidebar navigation
+         - Right: Main content panel
+         ═══════════════════════════════════════════════════════════════════════════ -->
     <div class="dashboard">
-        <!-- ========================================
-             DASHBOARD SIDEBAR
-             Profile, main links, memberships by category,
-             tools, account settings
-             ======================================== -->
+        <!-- ═══════════════════════════════════════════════════════════════════════════
+             SECTION 7.1: DASHBOARD SIDEBAR NAVIGATION
+             ═══════════════════════════════════════════════════════════════════════════
+             
+             Sections (in order):
+             1. Profile (user photo & name)
+             2. Main Links (Dashboard, Classes, Indicators)
+             3. MEMBERSHIPS (trading rooms)
+             4. MASTERY (courses)
+             5. PREMIUM REPORTS
+             6. TOOLS (Weekly Watchlist, Support)
+             7. ACCOUNT (My Account)
+             ═══════════════════════════════════════════════════════════════════════════ -->
         <aside class="dashboard__sidebar">
             <nav class="dashboard__nav-primary  ">
   <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
@@ -2892,16 +2997,29 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
   </button>
 </footer>
 <div class="dashboard__overlay" data-toggle-dashboard-menu></div>                    </aside>
-        <!-- ========================================
-             DASHBOARD MAIN PANEL
-             Header, memberships cards, tools, content
-             ======================================== -->
+        <!-- ═══════════════════════════════════════════════════════════════════════════
+             SECTION 7.2: DASHBOARD MAIN CONTENT PANEL
+             ═══════════════════════════════════════════════════════════════════════════
+             
+             Contains:
+             - Dashboard header (title, trading room dropdown)
+             - Membership cards
+             - Tools section
+             - Featured content
+             ═══════════════════════════════════════════════════════════════════════════ -->
         <main class="dashboard__main ">
                             
-    <!-- ========================================
-         DASHBOARD HEADER
-         Page title, trading room dropdown, rules link
-         ======================================== -->
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         SECTION 7.2.1: DASHBOARD HEADER
+         ═══════════════════════════════════════════════════════════════════════════
+         
+         Left Side:
+         - Page title: "Member Dashboard"
+         
+         Right Side:
+         - Trading Room Rules link (PDF)
+         - "Enter a Trading Room" dropdown (JWT-authenticated links)
+         ═══════════════════════════════════════════════════════════════════════════ -->
     <header class="dashboard__header">
         <div class="dashboard__header-left">
                         <h1 class="dashboard__page-title">Member Dashboard</h1>
@@ -2931,11 +3049,22 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
             
             <div class="dashboard__content">
                 <div class="dashboard__content-main">
-                    <!-- ========================================
-                         MEMBERSHIPS SECTION
-                         Cards for active memberships with links to
-                         dashboards and trading rooms
-                         ======================================== -->
+                    <!-- ═══════════════════════════════════════════════════════════════════════════
+                         SECTION 7.2.2: MEMBERSHIPS SECTION
+                         ═══════════════════════════════════════════════════════════════════════════
+                         
+                         Displays user's active membership cards.
+                         
+                         Each card shows:
+                         - Membership name
+                         - Icon
+                         - Dashboard link
+                         - Trading Room link (if applicable)
+                         
+                         Current Memberships:
+                         1. Mastering the Trade
+                         2. Simpler Showcase
+                         ═══════════════════════════════════════════════════════════════════════════ -->
                     <!-- Dashboard Walkthrough Banner-->
     <section class="dashboard__content-section">
         <h2 class="section-title">Memberships</h2>
@@ -2984,10 +3113,15 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 
 
-<!-- ========================================
-     TOOLS SECTION
-     Weekly Watchlist and other trading tools
-     ======================================== -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 7.2.3: TOOLS SECTION
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Displays trading tools the user has access to.
+     
+     Current Tools:
+     - Weekly Watchlist (with dashboard link)
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <section class="dashboard__content-section">
     <h2 class="section-title">Tools</h2>
     <div class="membership-cards row">
@@ -3014,11 +3148,19 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 
 
-            <!-- ========================================
-                 WEEKLY WATCHLIST PREVIEW
-                 Featured content with TG Watkins
-                 Week of December 22, 2025
-                 ======================================== -->
+            <!-- ═══════════════════════════════════════════════════════════════════════════
+                 SECTION 7.2.4: WEEKLY WATCHLIST FEATURED CONTENT
+                 ═══════════════════════════════════════════════════════════════════════════
+                 
+                 Featured: Weekly Watchlist with TG Watkins
+                 Week of: December 22, 2025
+                 
+                 Contains:
+                 - Title and date
+                 - Description
+                 - Featured image
+                 - "Watch Now" button
+                 ═══════════════════════════════════════════════════════════════════════════ -->
             <div class="dashboard__content-section u--background-color-white">
             
                 <section>
@@ -3079,10 +3221,17 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     </div>
 </div>
 
-<!-- ========================================
-     FOOTER SECTION
-     Company info, links, legal disclaimers, social media
-     ======================================== -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 8: SITE FOOTER
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Multi-column layout with:
+     - Company logo & contact info
+     - Navigation links (Learn More, About, Legal)
+     - App download buttons (iOS, Android)
+     - Social media icons
+     - Legal disclaimers & copyright
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="site-footer">
 	<footer class="fl-builder-content fl-builder-content-36965 fl-builder-global-templates-locked" data-post-id="36965" data-type="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter"><div class="fl-row fl-row-full-width fl-row-bg-color fl-node-59adb3c86fcbf footer-section" data-node="59adb3c86fcbf">
 	<div class="fl-row-content-wrap">
