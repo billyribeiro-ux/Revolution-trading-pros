@@ -1,8 +1,30 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
+
+	// Icons for different membership types
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconWallet from '@tabler/icons-svelte/icons/wallet';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconRocket from '@tabler/icons-svelte/icons/rocket';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	let dropdownOpen = $state(false);
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
+	let loading = $state(true);
+
+	// Fetch memberships on mount
+	onMount(async () => {
+		try {
+			membershipsData = await getUserMemberships();
+		} catch (error) {
+			console.error('Failed to load memberships:', error);
+		} finally {
+			loading = false;
+		}
+	});
 
 	function toggleDropdown() {
 		dropdownOpen = !dropdownOpen;
@@ -10,6 +32,36 @@
 
 	function closeDropdown() {
 		dropdownOpen = false;
+	}
+
+	// Get icon component based on membership slug
+	function getIconForMembership(slug: string) {
+		switch (slug) {
+			case 'day-trading-room':
+				return IconChartLine;
+			case 'swing-trading-room':
+				return IconTrendingUp;
+			case 'small-account-mentorship':
+				return IconWallet;
+			case 'alerts-only':
+				return IconBell;
+			case 'explosive-swing':
+				return IconRocket;
+			case 'spx-profit-pulse':
+				return IconActivity;
+			default:
+				return IconChartLine;
+		}
+	}
+
+	// Get dashboard URL for a membership
+	function getDashboardUrl(membership: UserMembership): string {
+		return `/dashboard/${membership.slug}`;
+	}
+
+	// Get trading room URL for a membership
+	function getTradingRoomUrl(membership: UserMembership): string {
+		return `/trading-room/${membership.slug}`;
 	}
 </script>
 
@@ -40,12 +92,24 @@
 			{#if dropdownOpen}
 				<nav class="dropdown-menu">
 					<ul>
-						<li>
-							<a href="/trading-room/day-trading" target="_blank">
-								<span class="room-icon"><IconChartLine size={20} /></span>
-								Day Trading Room
-							</a>
-						</li>
+						{#if membershipsData?.tradingRooms}
+							{#each membershipsData.tradingRooms as room}
+								{@const Icon = getIconForMembership(room.slug)}
+								<li>
+									<a href={getTradingRoomUrl(room)} target="_blank">
+										<span class="room-icon"><Icon size={20} /></span>
+										{room.name}
+									</a>
+								</li>
+							{/each}
+						{:else}
+							<li>
+								<a href="/trading-room/day-trading" target="_blank">
+									<span class="room-icon"><IconChartLine size={20} /></span>
+									Day Trading Room
+								</a>
+							</li>
+						{/if}
 					</ul>
 				</nav>
 			{/if}
@@ -62,23 +126,38 @@
 			<h2 class="section-title">Memberships</h2>
 			<div class="membership-cards row">
 
-				<!-- Day Trading Room Card -->
-				<div class="col-sm-6 col-xl-4">
-					<article class="membership-card membership-card--day-trading">
-						<a href="/dashboard/day-trading" class="membership-card__header">
-							<span class="mem_icon">
-								<span class="membership-card__icon">
-									<IconChartLine size={32} />
-								</span>
-							</span>
-							<span class="mem_div">Day Trading Room</span>
-						</a>
-						<div class="membership-card__actions">
-							<a href="/dashboard/day-trading">Dashboard</a>
-							<a href="/trading-room/day-trading" target="_blank">Trading Room</a>
+				{#if loading}
+					<div class="loading-state">Loading memberships...</div>
+				{:else if membershipsData?.memberships && membershipsData.memberships.length > 0}
+					{#each membershipsData.memberships as membership}
+						{@const Icon = getIconForMembership(membership.slug)}
+						<div class="col-sm-6 col-xl-4">
+							<article class="membership-card membership-card--{membership.slug}">
+								<a href={getDashboardUrl(membership)} class="membership-card__header">
+									<span class="mem_icon">
+										<span class="membership-card__icon">
+											<Icon size={32} />
+										</span>
+									</span>
+									<span class="mem_div">{membership.name}</span>
+								</a>
+								<div class="membership-card__actions">
+									<a href={getDashboardUrl(membership)}>Dashboard</a>
+									{#if membership.type === 'trading-room'}
+										<a href={getTradingRoomUrl(membership)} target="_blank">Trading Room</a>
+									{:else}
+										<a href={getDashboardUrl(membership)}>View Alerts</a>
+									{/if}
+								</div>
+							</article>
 						</div>
-					</article>
-				</div>
+					{/each}
+				{:else}
+					<div class="no-memberships">
+						<p>You don't have any active memberships yet.</p>
+						<a href="/pricing" class="btn btn-primary">View Plans</a>
+					</div>
+				{/if}
 
 			</div>
 		</section>
@@ -250,6 +329,8 @@
 		flex: 0 0 50%;
 		max-width: 50%;
 		padding: 0 10px;
+		box-sizing: border-box;
+		margin-bottom: 20px;
 	}
 
 	.col-xl-4 {
@@ -352,5 +433,42 @@
 
 	.membership-card__actions a + a {
 		border-left: 1px solid #ededed;
+	}
+
+	/* Loading & Empty States */
+	.loading-state {
+		padding: 40px;
+		text-align: center;
+		color: #666;
+		font-size: 14px;
+	}
+
+	.no-memberships {
+		padding: 40px;
+		text-align: center;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		width: 100%;
+	}
+
+	.no-memberships p {
+		margin: 0 0 20px 0;
+		color: #666;
+	}
+
+	.btn-primary {
+		display: inline-block;
+		padding: 10px 24px;
+		background: #0984ae;
+		color: #fff;
+		text-decoration: none;
+		border-radius: 4px;
+		font-weight: 600;
+		transition: background 0.15s;
+	}
+
+	.btn-primary:hover {
+		background: #076787;
 	}
 </style>
