@@ -8,8 +8,8 @@
 	 *
 	 * @version 2.0.0
 	 */
-	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
+	import { isInitializing } from '$lib/stores/auth';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
@@ -17,9 +17,17 @@
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+	let hasFetched = $state(false);
 
-	// Fetch memberships on mount
-	onMount(async () => {
+	// Wait for auth initialization before fetching
+	$effect(() => {
+		if (!$isInitializing && !hasFetched) {
+			hasFetched = true;
+			fetchMemberships();
+		}
+	});
+
+	async function fetchMemberships() {
 		try {
 			membershipsData = await getUserMemberships();
 		} catch (err) {
@@ -28,7 +36,7 @@
 		} finally {
 			loading = false;
 		}
-	});
+	}
 
 	function toggleDropdown() {
 		dropdownOpen = !dropdownOpen;
