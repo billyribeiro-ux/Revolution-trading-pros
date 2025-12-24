@@ -1118,16 +1118,8 @@
 		line-height: 1.6;
 	}
 
-	@media (min-width: 1080px) {
-		.dashboard__content-sidebar {
-			display: block;
-		}
-	}
-
-	/* Hide Panel 2 on main dashboard page - matches Simpler Trading behavior */
-	:global(body.dashboard-home) .dashboard__content-sidebar {
-		display: none !important;
-	}
+	/* Panel 2 is ALWAYS hidden on main dashboard page - matches Jesus file line 2451-2453 */
+	/* On membership pages, it will be shown via their own CSS */
 
 	.content-sidebar__section {
 		padding: 20px 30px 20px 20px;
@@ -1146,40 +1138,5 @@
 		background: #ededed;
 		border-bottom: 1px solid #dbdbdb;
 		line-height: 1.4;
-	}
-
-	.content-sidebar__nav {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.content-sidebar__nav li {
-		margin: 0;
-		padding: 0;
-		border-top: 1px solid #dbdbdb;
-	}
-
-	.content-sidebar__nav li:first-child {
-		border-top: none;
-	}
-
-	.content-sidebar__nav a {
-		display: block;
-		padding: 15px 20px;
-		font-size: 14px;
-		font-weight: 400;
-		color: #666;
-		text-decoration: none;
-		border-radius: 5px;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		transition: all 0.15s ease-in-out;
-	}
-
-	.content-sidebar__nav a:hover {
-		background: #f4f4f4;
-		color: #0984ae;
 	}
 </style>

@@ -251,31 +251,25 @@
 		</div>
 	</div>
 
-<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - Visible on membership pages -->
+<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - Visible on membership pages, matches SimplerMasteringTheTradeDashboard -->
 <aside class="dashboard__content-sidebar">
 	<section class="content-sidebar__section">
-		<h3 class="content-sidebar__heading">Navigation</h3>
-		<ul class="content-sidebar__nav">
-			<li><a href="/dashboard/{slug}" class:active={!$page.url.pathname.includes('/alerts')}>Overview</a></li>
-			<li><a href="/dashboard/{slug}/alerts">Alerts</a></li>
-			{#if membership?.type === 'trading-room'}
-				<li><a href="/trading-room/{slug}" target="_blank">Trading Room <IconExternalLink size={14} /></a></li>
-			{/if}
-		</ul>
+		<h4 class="content-sidebar__heading">Trading Room Schedule
+			<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;">Schedule is subject to change.</p>
+		</h4>
+		<div class="script-container">
+			<p style="padding: 10px; color: #666; font-size: 13px;">Trading room schedule will be displayed here.</p>
+		</div>
 	</section>
 	
-	{#if membership}
-		<section class="content-sidebar__section">
-			<h3 class="content-sidebar__heading">Quick Info</h3>
-			<div class="sidebar-info">
-				<p><strong>Status:</strong> {membership.status}</p>
-				<p><strong>Type:</strong> {membership.membershipType || 'Active'}</p>
-				{#if membership.nextBillingDate}
-					<p><strong>Next Billing:</strong> {formatDate(membership.nextBillingDate)}</p>
-				{/if}
-			</div>
-		</section>
-	{/if}
+	<section class="content-sidebar__section">
+		<h4 class="content-sidebar__heading">Quick Links</h4>
+		<ul class="link-list">
+			<li><a href="https://intercom.help/simpler-trading/en/" target="_blank">Support</a></li>
+			<li><a href="/tutorials" target="_blank">Platform Tutorials</a></li>
+			<li><a href="/blog" target="_blank">Simpler Blog</a></li>
+		</ul>
+	</section>
 </aside>
 
 </div>
@@ -858,26 +852,24 @@
 		line-height: 1.4;
 	}
 
-	.content-sidebar__nav {
+	.link-list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.content-sidebar__nav li {
+	.link-list li {
 		margin: 0;
 		padding: 0;
 		border-top: 1px solid #dbdbdb;
 	}
 
-	.content-sidebar__nav li:first-child {
+	.link-list li:first-child {
 		border-top: none;
 	}
 
-	.content-sidebar__nav a {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+	.link-list a {
+		display: block;
 		padding: 15px 20px;
 		font-size: 14px;
 		font-weight: 400;
@@ -887,29 +879,8 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.content-sidebar__nav a:hover {
-		background: #f4f4f4;
+	.link-list a:hover {
+		background-color: #f4f4f4;
 		color: #0984ae;
-	}
-
-	.content-sidebar__nav a.active {
-		background: #f4f4f4;
-		font-weight: 600;
-		color: #0984ae;
-	}
-
-	.sidebar-info {
-		font-size: 13px;
-		line-height: 1.8;
-	}
-
-	.sidebar-info p {
-		margin: 0 0 8px 0;
-		color: #666;
-	}
-
-	.sidebar-info strong {
-		color: #333;
-		font-weight: 600;
 	}
 </style>
