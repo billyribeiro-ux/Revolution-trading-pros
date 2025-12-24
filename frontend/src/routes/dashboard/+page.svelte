@@ -33,11 +33,16 @@
 		}
 	});
 
-	function toggleDropdown() {
+	/**
+	 * ICT 11+ Pattern: Pure function handlers with explicit event typing
+	 * Prevents event bubbling and maintains clean separation of concerns
+	 */
+	function handleDropdownToggle(event: MouseEvent): void {
+		event.stopPropagation();
 		dropdownOpen = !dropdownOpen;
 	}
 
-	function closeDropdown() {
+	function closeDropdown(): void {
 		dropdownOpen = false;
 	}
 
@@ -95,11 +100,12 @@
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
 			<div class="dropdown" class:is-open={dropdownOpen}>
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<button
+					type="button"
 					class="btn btn-orange btn-tradingroom"
-					onclick={(e) => { e.stopPropagation(); toggleDropdown(); }}
+					onclick={handleDropdownToggle}
+					aria-expanded={dropdownOpen}
+					aria-haspopup="true"
 				>
 					<strong>Enter a Trading Room</strong>
 					<IconChevronDown size={16} />
@@ -696,7 +702,7 @@
 	}
 
 	.u--hide-read-more {
-		/* Hide read more links */
+		display: none;
 	}
 
 	.woocommerce {
