@@ -137,8 +137,52 @@
 	<script src="https://apis.google.com/js/api.js"></script>
 </svelte:head>
 
-<!-- DASHBOARD CONTENT - Exact WordPress Structure -->
-<div class="dashboard__content">
+<!-- DASHBOARD MAIN - WordPress Structure -->
+<main class="dashboard__main">
+	
+	<!-- DASHBOARD HEADER -->
+	<header class="dashboard__header">
+		<div class="dashboard__header-left">
+			<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
+			<a href="/dashboard/day-trading-room/start-here" class="btn btn-xs btn-default">
+				New? Start Here
+			</a>
+		</div>
+		<div class="dashboard__header-right">
+			<ul class="ultradingroom">
+				<li class="litradingroom">
+					<a href="/trading-room-rules.pdf" target="_blank" class="btn btn-xs btn-link">Trading Room Rules</a>
+				</li>
+				<li class="litradingroomhind">
+					By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+				</li>
+			</ul>
+			<div class="dropdown display-inline-block">
+				<a href="#" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
+					<strong>Enter a Trading Room</strong>
+				</a>
+				<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+					<ul class="dropdown-menu__menu">
+						<li>
+							<a href="/trading-room/day-trading-room" target="_blank" rel="nofollow">
+								<span class="st-icon-mastering-the-trade icon icon--md"></span>
+								Day Trading Room
+							</a>
+						</li>
+						<li>
+							<a href="/trading-room/simpler-showcase" target="_blank" rel="nofollow">
+								<span class="st-icon-simpler-showcase icon icon--md"></span>
+								Simpler Showcase Room
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</header>
+
+	<!-- DASHBOARD CONTENT - Exact WordPress Structure -->
+	<div class="dashboard__content">
 	<div class="dashboard__content-main">
 
 		<!-- VIDEO TUTORIAL SECTION -->
@@ -227,9 +271,188 @@
 			</ul>
 		</section>
 	</aside>
-</div>
+	</div>
+
+</main>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD MAIN - WordPress Structure
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__main {
+		flex: 1;
+		min-width: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD HEADER - WordPress Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 20px 30px;
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		gap: 20px;
+	}
+
+	@media (max-width: 991px) {
+		.dashboard__header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+		flex-wrap: wrap;
+	}
+
+	.dashboard__page-title {
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.2;
+	}
+
+	.dashboard__header-right {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+
+	.ultradingroom {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		text-align: right;
+	}
+
+	.litradingroom {
+		list-style: none;
+	}
+
+	.litradingroomhind {
+		font-size: 11px;
+		color: #666;
+		list-style: none;
+	}
+
+	.display-inline-block {
+		display: inline-block;
+		position: relative;
+	}
+
+	.btn-xs {
+		padding: 6px 12px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	.btn-link {
+		background: transparent;
+		color: #0984ae;
+		border: none;
+		text-decoration: none;
+		font-weight: 700 !important;
+	}
+
+	.btn-link:hover {
+		text-decoration: underline;
+	}
+
+	.btn-orange,
+	.btn-tradingroom {
+		background: #F69532;
+		color: #fff;
+		border: none;
+		font-weight: 700;
+		padding: 8px 16px;
+		border-radius: 3px;
+		text-decoration: none;
+		display: inline-block;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+
+	.btn-orange:hover,
+	.btn-tradingroom:hover {
+		background: #dc7309;
+	}
+
+	.dropdown-toggle::after {
+		content: '';
+		display: none;
+	}
+
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 5px;
+		background: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 4px;
+		box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+		z-index: 1000;
+		min-width: 250px;
+		display: none;
+	}
+
+	.dropdown:hover .dropdown-menu {
+		display: block;
+	}
+
+	.dropdown-menu--full-width {
+		min-width: 300px;
+	}
+
+	.dropdown-menu__menu {
+		list-style: none;
+		margin: 0;
+		padding: 10px 0;
+	}
+
+	.dropdown-menu__menu li {
+		margin: 0;
+	}
+
+	.dropdown-menu__menu a {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 20px;
+		color: #333;
+		text-decoration: none;
+		transition: background 0.2s;
+	}
+
+	.dropdown-menu__menu a:hover {
+		background: #f5f5f5;
+	}
+
+	.icon {
+		display: inline-block;
+	}
+
+	.icon--md {
+		width: 20px;
+		height: 20px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT - Exact WordPress Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD CONTENT - Exact WordPress Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
