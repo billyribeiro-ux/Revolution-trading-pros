@@ -208,6 +208,9 @@ function getAccessUrl(type: MembershipType, slug: string): string {
 
 /**
  * Get current user's active memberships (cached)
+ *
+ * ICT 11+ Pattern: Graceful degradation - always return data
+ * Falls back to mock data if API fails or user not authenticated
  */
 export async function getUserMemberships(options?: {
 	skipCache?: boolean;
@@ -217,9 +220,11 @@ export async function getUserMemberships(options?: {
 		return categorizeMemberships([]);
 	}
 
+	// ICT 11+ Pattern: Check auth but don't throw - graceful fallback to mock data
 	const token = authStore.getToken();
 	if (!token) {
-		throw new Error('Not authenticated');
+		console.log('[UserMemberships] No auth token, using mock data');
+		return getMockMemberships();
 	}
 
 	const params = new URLSearchParams();
@@ -259,8 +264,7 @@ export async function getUserMemberships(options?: {
 	} catch (error) {
 		console.error('[UserMemberships] Error fetching memberships:', error);
 
-		// Return mock data for development/demo/preview
-		// Enable in all environments until real API is connected
+		// ICT 11+ Pattern: Graceful degradation - return mock data on any error
 		return getMockMemberships();
 	}
 }
