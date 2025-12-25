@@ -635,11 +635,13 @@
 		margin-top: 20px;
 	}
 
-	/* Profile Section - Exact match to Simpler Trading with absolute positioning */
+	/* Profile Section - Exact match to Simpler Trading */
 	.dashboard__profile-nav-item {
 		position: relative;
-		display: block;
-		padding: 32px 20px 28px 80px;
+		display: flex;
+		align-items: center;
+		min-height: 74px;
+		padding: 20px 20px 20px 74px;
 		text-decoration: none;
 		color: hsla(0, 0%, 100%, 0.7);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -658,8 +660,8 @@
 	.dashboard__profile-photo {
 		position: absolute;
 		top: 50%;
-		left: 30px;
-		margin-top: -17px;
+		left: 20px;
+		transform: translateY(-50%);
 		width: 34px;
 		height: 34px;
 		border: 2px solid #fff;
@@ -676,7 +678,7 @@
 		font-size: 14px;
 		font-weight: 600;
 		font-family: 'Open Sans', sans-serif;
-		line-height: 34px;
+		line-height: 1.4;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
