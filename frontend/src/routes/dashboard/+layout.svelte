@@ -25,6 +25,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
+	import { getUserAvatarUrl } from '$lib/utils/gravatar';
 
 	// Tabler Icons - Sidebar Navigation Icons
 	import IconHome from '@tabler/icons-svelte/icons/home';
@@ -103,6 +104,9 @@
 
 	// Derived: Show content only when auth is ready
 	let authReady = $derived(!$isInitializing);
+
+	// Derived: User's avatar URL (Gravatar with fallback)
+	let userAvatarUrl = $derived(getUserAvatarUrl($user, { size: 32, default: 'mp' }));
 
 	// Breadcrumb mapping for dashboard sub-pages
 	const breadcrumbTitles: Record<string, string> = {
@@ -197,11 +201,11 @@
 		<aside class="dashboard__sidebar">
 			<nav class="dashboard__nav-primary">
 
-				<!-- Profile -->
+				<!-- Profile - Avatar loads from Gravatar using user's email -->
 				<a href="/dashboard/account/" class="dashboard__profile-nav-item">
 					<span
 						class="dashboard__profile-photo"
-						style={$user?.avatar ? `background-image: url(${$user.avatar});` : ''}
+						style="background-image: url({userAvatarUrl});"
 					></span>
 					<span class="dashboard__profile-name">{$user?.name || 'Member'}</span>
 				</a>
@@ -221,7 +225,7 @@
 							<span class="dashboard__nav-item-icon">
 								<IconSchool size={24} />
 							</span>
-							<span class="dashboard__nav-item-text">My Classes</span>
+							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Classes</span>
 						</a>
 					</li>
 					<li class={$page.url.pathname.startsWith('/dashboard/indicators') ? 'is-active' : ''}>
@@ -229,7 +233,7 @@
 							<span class="dashboard__nav-item-icon">
 								<IconChartCandle size={24} />
 							</span>
-							<span class="dashboard__nav-item-text">My Indicators</span>
+							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Indicators</span>
 						</a>
 					</li>
 				</ul>
