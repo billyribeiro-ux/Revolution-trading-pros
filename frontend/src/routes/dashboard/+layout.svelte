@@ -701,9 +701,7 @@
 		height: 40px;
 	}
 
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
-		/* Tooltip styles applied below - don't use display:none */
-	}
+	/* Note: .dashboard__profile-name tooltip styles applied in combined selector below */
 
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-category {
 		display: none;
