@@ -302,7 +302,7 @@
 	</div>
 
 	<!-- Form -->
-	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+	<form onsubmit={(e: Event) => { e.preventDefault(); handleSubmit(); }}>
 		<!-- Step 1: Select Trading Rooms -->
 		{#if currentStep === 1}
 			<div class="form-step">
@@ -448,8 +448,9 @@
 
 				<!-- Content Type Selection -->
 				<div class="type-selector">
-					<label class="label">Content Type</label>
-					<div class="type-options">
+					<fieldset class="type-fieldset">
+						<legend class="label">Content Type</legend>
+						<div class="type-options">
 						{#each lessonTypes as type (type.value)}
 							{@const Icon = type.icon}
 							<button
@@ -463,7 +464,8 @@
 								<span class="type-desc">{type.description}</span>
 							</button>
 						{/each}
-					</div>
+						</div>
+					</fieldset>
 				</div>
 
 				<!-- Video URL -->
@@ -518,7 +520,7 @@
 				<!-- Preview -->
 				{#if formData.thumbnailUrl || formData.posterUrl}
 					<div class="preview-section">
-						<label>Preview</label>
+						<h3 class="preview-label">Preview</h3>
 						<div class="preview-image">
 							<img src={formData.thumbnailUrl || formData.posterUrl} alt="Preview" />
 						</div>
@@ -537,8 +539,9 @@
 
 				<!-- Access Level -->
 				<div class="form-group">
-					<label>Access Level</label>
-					<div class="radio-options">
+					<fieldset class="access-fieldset">
+						<legend class="label">Access Level</legend>
+						<div class="radio-options">
 						{#each accessLevels as level}
 							<label class="radio-option">
 								<input
@@ -553,7 +556,8 @@
 								</div>
 							</label>
 						{/each}
-					</div>
+						</div>
+					</fieldset>
 				</div>
 
 				<!-- Status -->
@@ -571,7 +575,7 @@
 
 				<!-- Tags -->
 				<div class="form-group">
-					<label>Tags</label>
+					<label for="tags">Tags</label>
 					<div class="tags-input">
 						<div class="tags-list">
 							{#each formData.tags || [] as tag}
@@ -586,6 +590,7 @@
 						<div class="tag-add">
 							<input
 								type="text"
+								id="tags"
 								bind:value={newTag}
 								placeholder="Add a tag..."
 								onkeydown={handleTagKeydown}
@@ -1130,6 +1135,31 @@
 
 	.btn-secondary:hover {
 		background: #475569;
+	}
+
+	/* Fieldset styles */
+	.type-fieldset,
+	.access-fieldset {
+		border: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.type-fieldset .label,
+	.access-fieldset .label {
+		display: block;
+		margin-bottom: 12px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: #94a3b8;
+	}
+
+	/* Preview label */
+	.preview-label {
+		margin: 0 0 12px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: #94a3b8;
 	}
 
 	/* Responsive */
