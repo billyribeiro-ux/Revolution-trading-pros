@@ -755,30 +755,34 @@
 		stroke: currentColor;
 	}
 
-	/* Text Styling */
+	/* Text Styling - Exact Match to reference */
 	.dashboard__nav-item-text {
-		color: inherit;
 		font-size: 14px;
 		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
+		color: hsla(0, 0%, 100%, 0.7);
+		line-height: 1.4;
 	}
 
 	/* Bold white text for My Classes and My Indicators */
 	.dashboard__nav-item-text--bold {
+		font-size: 14px;
 		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
 		color: #fff;
 	}
 
 	/* Category Headers - Exact Match to dashboard-globals.css reference */
 	.dashboard__nav-category {
-		color: hsla(0, 0%, 100%, 0.3);
 		font-size: 11px;
 		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		color: hsla(0, 0%, 100%, 0.3);
 		letter-spacing: 0.5px;
 		line-height: 1;
 		margin: 0;
 		padding: 20px 20px 12px;
 		text-transform: uppercase;
-		font-family: 'Open Sans', sans-serif;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
