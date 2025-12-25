@@ -9,10 +9,58 @@
 	 * Layout guarantees auth is initialized before this component mounts,
 	 * so we can safely fetch data in onMount without race conditions.
 	 *
-	 * @version 2.1.0
+	 * @version 2.2.0 - Fixed icons with Tabler SVG icons
 	 */
 	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
+
+	// Tabler Icons for membership cards - replacing broken st-icon font
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconRocket from '@tabler/icons-svelte/icons/rocket';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconTarget from '@tabler/icons-svelte/icons/target';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
+	import IconCalendarWeek from '@tabler/icons-svelte/icons/calendar-week';
+	import IconWallet from '@tabler/icons-svelte/icons/wallet';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
+
+	// Icon registry - maps membership slugs to Tabler icon components
+	type IconComponent = typeof IconChartLine;
+	const membershipIconRegistry: Record<string, IconComponent> = {
+		// Trading memberships
+		'mastering-the-trade': IconChartCandle,
+		'options-day-trading': IconChartCandle,
+		'simpler-showcase': IconStar,
+		'revolution-showcase': IconStar,
+		'trade-of-the-week': IconCalendarWeek,
+		'weekly-watchlist': IconCalendarWeek,
+		'ww': IconCalendarWeek,
+		// Trading room types
+		'explosive-swings': IconBolt,
+		'swing-trading': IconTrendingUp,
+		'small-accounts': IconWallet,
+		'day-trading': IconActivity,
+		'moxie': IconRocket,
+		// Education
+		'foundation': IconBook,
+		'courses': IconSchool,
+		// Indicators & alerts
+		'indicators': IconReportAnalytics,
+		'spx-profit-pulse': IconBell,
+		// Default fallback
+		'default': IconChartLine
+	};
+
+	// Get icon component for a membership
+	function getMembershipIcon(slug: string): IconComponent {
+		return membershipIconRegistry[slug] || membershipIconRegistry['default'];
+	}
 
 	let dropdownOpen = $state(false);
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
@@ -152,9 +200,12 @@
 					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 						<ul class="dropdown-menu__menu">
 							{#each membershipsData.tradingRooms as room (room.id)}
+								{@const RoomIcon = getMembershipIcon(room.slug)}
 								<li>
 									<a href={getAccessUrl(room)} target="_blank" rel="nofollow">
-										<span class="st-icon-{room.slug} icon icon--md"></span>
+										<span class="dropdown-icon">
+											<RoomIcon size={20} />
+										</span>
 										{room.roomLabel || room.name}
 									</a>
 								</li>
@@ -190,12 +241,13 @@
 				<h2 class="section-title">Memberships</h2>
 				<div class="membership-cards row">
 					{#each membershipsData.memberships as membership (membership.id)}
+						{@const MembershipIcon = getMembershipIcon(membership.slug)}
 						<div class="col-sm-6 col-xl-4">
 							<article class="membership-card membership-card--{membership.type === 'trading-room' ? 'options' : 'foundation'}">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon{membership.slug === 'simpler-showcase' ? ' simpler-showcase-icon' : ''}">
-											<span class="icon icon--lg st-icon-{membership.slug}"></span>
+											<MembershipIcon size={32} />
 										</span>
 									</span>
 									<span class="mem_div">{membership.name}</span>
@@ -290,7 +342,7 @@
 						<a href="/dashboard/ww/" class="membership-card__header">
 							<span class="mem_icon">
 								<span class="membership-card__icon">
-									<span class="icon icon--md st-icon-trade-of-the-week"></span>
+									<IconCalendarWeek size={24} />
 								</span>
 							</span>
 							<span class="mem_div">Weekly Watchlist</span>
@@ -562,6 +614,28 @@
 		color: #0984ae;
 	}
 
+	/* Dropdown icon styling for Tabler SVG icons */
+	.dropdown-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
+		color: #999;
+		vertical-align: middle;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dropdown-menu ul li a:hover .dropdown-icon {
+		color: #0984ae;
+	}
+
+	.dropdown-icon :global(svg) {
+		width: 20px;
+		height: 20px;
+	}
+
 	/* Icon styles - WordPress match */
 	.icon {
 		display: inline-block;
@@ -746,17 +820,24 @@
 	}
 
 	.membership-card__icon {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		width: 50px;
 		height: 50px;
 		margin-right: 9px;
-		line-height: 50px;
 		color: #fff;
-		text-align: center;
 		border-radius: 50%;
 		transition: all 0.15s ease-in-out;
 		background-color: #0984ae;
 		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
+	}
+
+	/* Tabler SVG icons inside membership card icons */
+	.membership-card__icon :global(svg) {
+		width: 28px;
+		height: 28px;
+		stroke: currentColor;
 	}
 
 	.membership-card__header:hover .membership-card__icon {
