@@ -635,15 +635,15 @@
 		margin-top: 20px;
 	}
 
-	/* Profile Section - Exact match to Simpler Trading */
+	/* Profile Section - Exact match to dashboard-globals.css reference */
 	.dashboard__profile-nav-item {
 		position: relative;
-		display: flex;
-		align-items: center;
-		min-height: 74px;
-		padding: 20px 20px 20px 74px;
+		display: block;
+		height: auto;
+		line-height: 1.4;
+		padding: 32px 20px 28px 80px;
 		text-decoration: none;
-		color: hsla(0, 0%, 100%, 0.7);
+		color: hsla(0, 0%, 100%, 0.5);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.15s ease-in-out;
 	}
@@ -662,21 +662,21 @@
 		top: 50%;
 		left: 20px;
 		transform: translateY(-50%);
-		width: 34px;
-		height: 34px;
-		border: 2px solid #fff;
+		width: 44px;
+		height: 44px;
+		border: 2px solid hsla(0, 0%, 100%, 0.2);
 		border-radius: 50%;
-		background-color: #1a3a4f;
+		background-color: #0f2d41;
 		background-size: cover;
 		background-position: center;
-		transition: all 0.15s ease-in-out;
+		transition: border-color 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-name {
 		display: block;
 		color: #fff;
-		font-size: 14px;
-		font-weight: 600;
+		font-size: 16px;
+		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
 		white-space: nowrap;
@@ -684,7 +684,7 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Navigation Links - Exact Match */
+	/* Navigation Links - Exact Match to dashboard-globals.css reference */
 	.dash_main_links {
 		list-style: none;
 		margin: 0;
@@ -698,8 +698,7 @@
 	.dash_main_links li a {
 		display: flex;
 		align-items: center;
-		height: 50px;
-		padding: 0 20px 0 60px;
+		padding: 12px 20px;
 		position: relative;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
@@ -718,16 +717,16 @@
 		bottom: 0;
 		width: 5px;
 		background: transparent;
-		transform: scale(1);
 		transition: all 0.15s ease-in-out;
-		transform-origin: 100% 50%;
 	}
 
 	.dash_main_links li a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
 	.dash_main_links li.is-active a {
+		background-color: rgba(255, 255, 255, 0.1);
 		color: #fff;
 	}
 
@@ -735,19 +734,17 @@
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - Exact Match with Tabler SVG icons */
+	/* Icon Styling - Inline with margin-right per reference */
 	.dashboard__nav-item-icon {
-		position: absolute;
-		top: 50%;
-		left: 20px;
-		transform: translateY(-50%);
-		width: 24px;
-		height: 24px;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
 		color: #0984ae;
-		transition: all 0.15s ease-in-out;
+		vertical-align: middle;
+		flex-shrink: 0;
 	}
 
 	/* Ensure SVG icons inherit color */
@@ -758,27 +755,30 @@
 		stroke: currentColor;
 	}
 
-	.dash_main_links li a:hover .dashboard__nav-item-icon,
-	.dash_main_links li.is-active .dashboard__nav-item-icon {
-		color: #0984ae;
-	}
-
 	/* Text Styling */
 	.dashboard__nav-item-text {
 		color: inherit;
+		font-size: 14px;
+		font-weight: 400;
 	}
 
-	/* Category Headers - Exact Match */
-	.dashboard__nav-category {
+	/* Bold white text for My Classes and My Indicators */
+	.dashboard__nav-item-text--bold {
 		font-weight: 700;
-		padding: 30px 30px 0;
 		color: #fff;
-		text-transform: uppercase;
-		font-size: 10px;
+	}
+
+	/* Category Headers - Exact Match to dashboard-globals.css reference */
+	.dashboard__nav-category {
+		color: hsla(0, 0%, 100%, 0.3);
+		font-size: 11px;
+		font-weight: 700;
 		letter-spacing: 0.5px;
-		margin: 0 0 5px 0;
-		font-family: 'Open Sans', sans-serif;
 		line-height: 1;
+		margin: 0;
+		padding: 20px 20px 12px;
+		text-transform: uppercase;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -818,19 +818,14 @@
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
-		position: static;
-		margin-right: 12px;
-		width: 24px;
-		height: 24px;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
 		color: #0984ae;
-		transition: all 0.15s ease-in-out;
-	}
-
-	.dashboard__nav-secondary a:hover .dashboard__nav-item-icon {
-		color: #0984ae;
+		flex-shrink: 0;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-text {
