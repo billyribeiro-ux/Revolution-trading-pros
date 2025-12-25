@@ -221,7 +221,7 @@
 							<span class="dashboard__nav-item-icon">
 								<IconSchool size={24} />
 							</span>
-							<span class="dashboard__nav-item-text">My Classes</span>
+							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Classes</span>
 						</a>
 					</li>
 					<li class={$page.url.pathname.startsWith('/dashboard/indicators') ? 'is-active' : ''}>
@@ -229,7 +229,7 @@
 							<span class="dashboard__nav-item-icon">
 								<IconChartCandle size={24} />
 							</span>
-							<span class="dashboard__nav-item-text">My Indicators</span>
+							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Indicators</span>
 						</a>
 					</li>
 				</ul>
