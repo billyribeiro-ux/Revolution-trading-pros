@@ -475,34 +475,18 @@
 				</nav>
 			{/if}
 
-			<!-- MOBILE TOGGLE BUTTON - INSIDE sidebar per WordPress structure -->
-			<footer class="dashboard__toggle">
-				<button
-					type="button"
-					class="dashboard__toggle-button"
-					onclick={toggleMobileMenu}
-					data-toggle-dashboard-menu
-				>
-					<div class="dashboard__toggle-button-icon">
-						<span></span>
-						<span></span>
-						<span></span>
-					</div>
-					<span class="framework__toggle-button-label">Dashboard Menu</span>
-				</button>
-			</footer>
-
-			<!-- MOBILE OVERLAY - INSIDE sidebar per WordPress structure -->
-			<div
-				class="dashboard__overlay"
-				onclick={closeMobileMenu}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
-				role="button"
-				tabindex="-1"
-				aria-label="Close menu"
-				data-toggle-dashboard-menu
-			></div>
 		</aside>
+
+		<!-- MOBILE OVERLAY - Must be OUTSIDE sidebar to be visible when sidebar is hidden -->
+		<div
+			class="dashboard__overlay"
+			onclick={closeMobileMenu}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
+			role="button"
+			tabindex="-1"
+			aria-label="Close menu"
+			data-toggle-dashboard-menu
+		></div>
 
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">
@@ -516,8 +500,25 @@
 			{/if}
 		</main>
 
+		<!-- MOBILE TOGGLE BUTTON - Must be OUTSIDE sidebar to be visible when sidebar is hidden -->
+		<footer class="dashboard__toggle" class:is-open={mobileMenuOpen}>
+			<button
+				type="button"
+				class="dashboard__toggle-button"
+				onclick={toggleMobileMenu}
+				data-toggle-dashboard-menu
+			>
+				<div class="dashboard__toggle-button-icon">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<span class="framework__toggle-button-label">Dashboard Menu</span>
+			</button>
+		</footer>
+
 		</div>
-		
+
 	</div><!-- #content -->
 </div><!-- #page -->
 
