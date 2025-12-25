@@ -651,40 +651,10 @@
 		height: 20px;
 	}
 
-	/* Icon styles - WordPress match */
-	.icon {
-		display: inline-block;
-		vertical-align: middle;
-	}
-
-	.icon--md {
-		width: 24px;
-		height: 24px;
-		font-size: 24px;
-		line-height: 24px;
-		margin-right: 8px;
-	}
-
-	.icon--lg {
-		width: 32px;
-		height: 32px;
-		font-size: 32px;
-		line-height: 32px;
-	}
-
 	/* Simpler Showcase icon - WordPress exact match */
 	.simpler-showcase-icon {
 		background: black !important;
 		color: orange !important;
-	}
-
-	.dropdown-menu ul li a .icon {
-		color: #999;
-		transition: all 0.15s ease-in-out;
-	}
-
-	.dropdown-menu ul li a:hover .icon {
-		color: #0984ae;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1289,19 +1259,6 @@
 		border-bottom: 1px solid #dbdbdb;
 	}
 
-	.content-sidebar__heading {
-		padding: 15px 20px;
-		margin: -20px -30px 20px -20px;
-		font-size: 14px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: #333;
-		background: #ededed;
-		border-bottom: 1px solid #dbdbdb;
-		line-height: 1.4;
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   ADDITIONAL GLOBAL STYLES FROM SIMPLER TRADING

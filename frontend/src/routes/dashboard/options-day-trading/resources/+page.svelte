@@ -28,7 +28,7 @@
 						<h3>Options Greeks Cheat Sheet</h3>
 						<p>Quick reference guide for Delta, Gamma, Theta, and Vega.</p>
 					</div>
-					<a href="#" class="resource-download">Download PDF</a>
+					<button type="button" class="resource-download" onclick={() => alert('Download functionality coming soon')}>Download PDF</button>
 				</div>
 				<div class="resource-item">
 					<div class="resource-icon">📊</div>
@@ -36,7 +36,7 @@
 						<h3>Trade Journal Template</h3>
 						<p>Track your trades and analyze your performance.</p>
 					</div>
-					<a href="#" class="resource-download">Download Excel</a>
+					<button type="button" class="resource-download" onclick={() => alert('Download functionality coming soon')}>Download Excel</button>
 				</div>
 				<div class="resource-item">
 					<div class="resource-icon">📈</div>
@@ -44,7 +44,7 @@
 						<h3>Position Sizing Calculator</h3>
 						<p>Calculate optimal position sizes based on your risk tolerance.</p>
 					</div>
-					<a href="#" class="resource-download">Download Excel</a>
+					<button type="button" class="resource-download" onclick={() => alert('Download functionality coming soon')}>Download Excel</button>
 				</div>
 				<div class="resource-item">
 					<div class="resource-icon">📋</div>
@@ -52,7 +52,7 @@
 						<h3>Pre-Market Checklist</h3>
 						<p>Daily checklist to prepare for the trading day.</p>
 					</div>
-					<a href="#" class="resource-download">Download PDF</a>
+					<button type="button" class="resource-download" onclick={() => alert('Download functionality coming soon')}>Download PDF</button>
 				</div>
 			</div>
 		</section>
@@ -146,6 +146,9 @@
 		font-weight: 600;
 		font-size: 14px;
 		transition: background 0.2s;
+		border: none;
+		cursor: pointer;
+		font-family: inherit;
 	}
 
 	.resource-download:hover {
