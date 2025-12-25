@@ -303,15 +303,15 @@
 			</div>
 		</section>
 
-		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from Jesus -->
+		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from WordPress line 3482 -->
 		<div class="dashboard__content-section u--background-color-white">
 			<section>
 				<div class="row">
 					<div class="col-sm-6 col-lg-5">
 						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 						<div class="hidden-md d-lg-none pb-2">
-							<a href="/watchlist/latest">
-								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+							<a class="" href="/watchlist/latest">
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
 							</a>
 						</div>
 						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
@@ -322,7 +322,7 @@
 					</div>
 					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 						<a href="/watchlist/latest">
-							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
 						</a>
 					</div>
 				</div>
@@ -330,11 +330,10 @@
 		</div>
 
 	</div>
-	
-	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard, matches Jesus file exactly -->
+
+	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard per WordPress line 3520 -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Quick Info</h4>
 		</section>
 	</aside>
 </div>
