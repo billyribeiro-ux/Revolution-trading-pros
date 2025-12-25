@@ -194,7 +194,7 @@
 							<article class="membership-card membership-card--{membership.type === 'trading-room' ? 'options' : 'foundation'}">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
-										<span class="membership-card__icon">
+										<span class="membership-card__icon{membership.slug === 'simpler-showcase' ? ' simpler-showcase-icon' : ''}">
 											<span class="icon icon--lg st-icon-{membership.slug}"></span>
 										</span>
 									</span>
@@ -203,7 +203,7 @@
 								<div class="membership-card__actions">
 									<a href={getDashboardUrl(membership)}>Dashboard</a>
 									{#if shouldOpenNewTab(membership)}
-										<a href={getAccessUrl(membership)} target="_blank">{getActionLabel(membership)}</a>
+										<a href={getAccessUrl(membership)} target="_blank" rel="nofollow">{getActionLabel(membership)}</a>
 									{:else}
 										<a href={getAccessUrl(membership)}>{getActionLabel(membership)}</a>
 									{/if}
@@ -281,13 +281,13 @@
 			</section>
 		{/if}
 
-		<!-- TOOLS SECTION - Exact Match from Jesus -->
+		<!-- TOOLS SECTION - Exact Match from WordPress line 3456 -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Tools</h2>
 			<div class="membership-cards row">
 				<div class="col-sm-6 col-xl-4">
-					<article class="membership-card">
-						<a href="/dashboard/ww" class="membership-card__header">
+					<article class="membership-card membership-card--ww">
+						<a href="/dashboard/ww/" class="membership-card__header">
 							<span class="mem_icon">
 								<span class="membership-card__icon">
 									<span class="icon icon--md st-icon-trade-of-the-week"></span>
@@ -296,7 +296,7 @@
 							<span class="mem_div">Weekly Watchlist</span>
 						</a>
 						<div class="membership-card__actions">
-							<a href="/dashboard/ww">Dashboard</a>
+							<a href="/dashboard/ww/">Dashboard</a>
 						</div>
 					</article>
 				</div>
