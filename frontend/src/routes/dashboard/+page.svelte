@@ -138,11 +138,15 @@
 		return membership.accessUrl || `/dashboard/${membership.slug}`;
 	}
 
-	// Generate trading room URL - always points to /dashboard/day-trading-room for trading rooms
+	/**
+	 * ICT 11+ Pattern: Data-driven URL generation
+	 * Trading rooms use roomSlug from API data, memberships use their own slug
+	 */
 	function getAccessUrl(membership: UserMembership): string {
 		if (membership.type === 'trading-room') {
-			// All trading rooms go to the main day trading room page
-			return '/dashboard/day-trading-room';
+			// Use roomSlug from API if available, otherwise use membership slug
+			const roomSlug = membership.roomSlug || membership.slug;
+			return `/dashboard/${roomSlug}`;
 		}
 		return `/dashboard/${membership.slug}/alerts`;
 	}
