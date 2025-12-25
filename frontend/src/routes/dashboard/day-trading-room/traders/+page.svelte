@@ -12,34 +12,34 @@
 	import IconBrandTwitter from '@tabler/icons-svelte/icons/brand-twitter';
 	import IconMail from '@tabler/icons-svelte/icons/mail';
 
-	// Mock trader data
+	// Mock trader data - Billy Ribeiro, Freddie Ferber, Shao Wan
 	const traders = [
 		{
 			id: 1,
-			name: 'Henry Gambell',
-			nickname: 'HG',
+			name: 'Billy Ribeiro',
+			nickname: 'Billy',
 			title: 'Lead Day Trader',
-			bio: 'With over 15 years of trading experience, HG specializes in momentum trading and technical analysis. He leads the Day Trading Room and provides daily market analysis.',
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			specialties: ['Momentum Trading', 'Technical Analysis', 'Options']
+			bio: 'Billy brings a disciplined approach to day trading with a focus on high-probability setups and risk management. His systematic methodology helps traders develop consistent profitability.',
+			image: '/images/traders/billy-ribeiro.jpg',
+			specialties: ['Day Trading', 'Risk Management', 'Technical Analysis']
 		},
 		{
 			id: 2,
-			name: 'David Shay',
-			nickname: 'DShay',
+			name: 'Freddie Ferber',
+			nickname: 'Freddie',
 			title: 'Senior Options Trader',
-			bio: 'David brings a wealth of knowledge in options strategies and risk management. His methodical approach helps traders understand complex options concepts.',
-			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-			specialties: ['Options Strategies', 'Risk Management', 'Swing Trading']
+			bio: 'Freddie specializes in options strategies and momentum trading. His expertise in reading market dynamics and identifying high-probability trades has helped countless traders succeed.',
+			image: '/images/traders/freddie-ferber.jpg',
+			specialties: ['Options Strategies', 'Momentum Trading', 'Swing Trading']
 		},
 		{
 			id: 3,
-			name: 'Sam Seiden',
-			nickname: 'SS',
-			title: 'Supply & Demand Expert',
-			bio: 'Sam is known for his expertise in supply and demand zones. He teaches traders how to identify high-probability setups using institutional trading concepts.',
-			image: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg',
-			specialties: ['Supply & Demand', 'Price Action', 'Futures Trading']
+			name: 'Shao Wan',
+			nickname: 'Shao',
+			title: 'Quantitative Trading Expert',
+			bio: 'Shao combines technical analysis with quantitative methods to identify market opportunities. His data-driven approach provides unique insights into market behavior and trading patterns.',
+			image: '/images/traders/shao-wan.jpg',
+			specialties: ['Quantitative Analysis', 'Price Action', 'Futures Trading']
 		}
 	];
 </script>
@@ -254,6 +254,8 @@
 		background: #f5f5f5;
 		color: #666;
 		border-radius: 50%;
+		border: none;
+		cursor: pointer;
 		transition: all 0.2s;
 	}
 

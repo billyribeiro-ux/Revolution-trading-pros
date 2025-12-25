@@ -4,28 +4,29 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * 100% PIXEL-PERFECT match to SimplerMyClasses reference
-	 * Card grid layout with Watch Now buttons
+	 * API integration for member vs non-member conditional rendering
 	 *
-	 * @version 2.0.0 - 100% Pixel Perfect
+	 * @version 2.1.0 - API Integration + 100% Pixel Perfect
 	 */
+	import { onMount } from 'svelte';
+	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 
-	// Sample classes data matching SimplerMyClasses reference
-	const classes = [
-		{
-			id: 1,
-			title: 'Quickstart to Precision Trading E-Learning Module',
-			date: 'February 2022',
-			trader: 'TG Watkins',
-			slug: 'quickstart-precision-trading-elearning-c'
-		},
-		{
-			id: 2,
-			title: 'Quickstart To Precision Trading',
-			date: 'April 2020',
-			trader: 'TG Watkins',
-			slug: 'quickstart-precision-trading-c'
+	// Loading and data state
+	let loading = $state(true);
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
+
+	onMount(async () => {
+		try {
+			membershipsData = await getUserMemberships();
+		} catch (err) {
+			console.error('Failed to load classes:', err);
+		} finally {
+			loading = false;
 		}
-	];
+	});
+
+	// Derived classes list from API response (courses type includes classes)
+	const classes = $derived(membershipsData?.courses || []);
 </script>
 
 <svelte:head>
@@ -38,7 +39,13 @@
 		<section class="dashboard__content-section">
 			<h2 class="section-title">My Classes</h2>
 			<div>
-				{#if classes.length > 0}
+				{#if loading}
+					<!-- Loading State -->
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<p>Loading your classes...</p>
+					</div>
+				{:else if classes.length > 0}
 					<div class="card-grid flex-grid row">
 						{#each classes as cls}
 							<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
@@ -46,10 +53,10 @@
 									<section class="card-body u--squash">
 										<h4 class="h5 card-title pb-1">
 											<a href="/classes/{cls.slug}">
-												{cls.title}
+												{cls.name}
 											</a>
 										</h4>
-										<p class="article-card__meta"><small>{cls.date} with {cls.trader}</small></p>
+										<p class="article-card__meta"><small>{cls.startDate ? new Date(cls.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Enrolled'}</small></p>
 									</section>
 									<footer class="card-footer">
 										<a class="btn btn-tiny btn-default" href="/classes/{cls.slug}">Watch Now</a>
@@ -73,6 +80,36 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   100% PIXEL-PERFECT STYLES - Matching SimplerMyClasses reference
 	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 200px;
+		gap: 16px;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e7eb;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-state p {
+		color: #666;
+		font-size: 14px;
+	}
 
 	.section-title {
 		font-size: 24px;
