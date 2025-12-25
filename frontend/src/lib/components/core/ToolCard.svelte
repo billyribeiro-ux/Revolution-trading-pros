@@ -30,8 +30,10 @@ USAGE:
 	 * ─────────────────────────────────────────────────────────────────────────────
 	 * IMPORTS
 	 * ─────────────────────────────────────────────────────────────────────────────
+	 * Import DashboardIcon for crisp SVG icons (replaces font icons)
 	 */
 	import type { ToolCardProps } from './types';
+	import DashboardIcon from './DashboardIcon.svelte';
 
 	/**
 	 * ─────────────────────────────────────────────────────────────────────────────
@@ -83,7 +85,11 @@ Matches WordPress structure from core file (lines 2929-2943):
 		<!-- Icon Container -->
 		<span class="mem_icon">
 			<span class="membership-card__icon">
-				<span class="icon icon--md {iconClass}"></span>
+				<!--
+				DashboardIcon maps tool slugs to Tabler SVG icons.
+				Falls back to font icons if no mapping exists.
+				-->
+				<DashboardIcon name={slug} size={24} />
 			</span>
 		</span>
 

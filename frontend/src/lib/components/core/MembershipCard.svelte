@@ -32,6 +32,7 @@ USAGE:
 	 * IMPORTS
 	 * ─────────────────────────────────────────────────────────────────────────────
 	 * Import types from our centralized type definitions
+	 * Import DashboardIcon for crisp SVG icons (replaces font icons)
 	 */
 	import type {
 		Membership,
@@ -43,6 +44,7 @@ USAGE:
 		getActionLabel,
 		shouldOpenNewTab
 	} from './types';
+	import DashboardIcon from './DashboardIcon.svelte';
 
 	/**
 	 * ─────────────────────────────────────────────────────────────────────────────
@@ -175,10 +177,11 @@ Structure mirrors the WordPress HTML from the core file:
 		<span class="mem_icon">
 			<span class="membership-card__icon" class:simpler-showcase-icon={isShowcase}>
 				<!--
-				Icon uses custom font icons (st-icon-*) matching WordPress
-				Falls back to a generic icon if not specified
+				DashboardIcon maps membership slugs to Tabler SVG icons.
+				Falls back to font icons if no mapping exists.
+				Size 28 matches the visual weight of the original 32px font icons.
 				-->
-				<span class="icon icon--lg st-icon-{membership.slug}"></span>
+				<DashboardIcon name={membership.slug} size={28} />
 			</span>
 		</span>
 

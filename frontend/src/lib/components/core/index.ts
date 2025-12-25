@@ -131,6 +131,22 @@ export { default as WeeklyWatchlistSection } from './WeeklyWatchlistSection.svel
  */
 export { default as ToolCard } from './ToolCard.svelte';
 
+/**
+ * DashboardIcon - SVG Icon Component with Font Fallback
+ *
+ * Features:
+ * - Maps st-icon-* classes to Tabler SVG icons
+ * - Automatic fallback to font icons if mapping doesn't exist
+ * - Tree-shakeable - only imported icons are bundled
+ * - Crisp SVG scaling at any size
+ *
+ * @example
+ * <DashboardIcon name="home" size={32} />
+ * <DashboardIcon name="mastering-the-trade" />
+ * <DashboardIcon name="st-icon-courses" />  <!-- Legacy format works too -->
+ */
+export { default as DashboardIcon } from './DashboardIcon.svelte';
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPE EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════

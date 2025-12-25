@@ -1,0 +1,282 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════════
+ * DESIGN TOKENS - Apple Principal Engineer ICT 11+ Standard
+ * ═══════════════════════════════════════════════════════════════════════════════════
+ *
+ * Single source of truth for all design values in the application.
+ * Based on the Simpler Trading reference implementation with pixel-perfect accuracy.
+ *
+ * USAGE:
+ * Import this file in app.css or use in components:
+ *   color: var(--color-primary);
+ *   font-family: var(--font-primary);
+ *
+ * ORGANIZATION:
+ * 1. Color Palette (Brand, UI, Semantic)
+ * 2. Typography (Fonts, Sizes, Weights)
+ * 3. Spacing (Padding, Margins, Gaps)
+ * 4. Borders & Shadows
+ * 5. Transitions & Animations
+ * 6. Z-Index Layers
+ * 7. Breakpoints (as reference)
+ *
+ * @version 3.0.0 - Svelte 5 / SvelteKit Dec 2025
+ * ═══════════════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   1. COLOR PALETTE
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	/* Brand Colors - Primary */
+	--color-primary: #0984ae;              /* Simpler Trading teal/blue */
+	--color-primary-hover: #076787;        /* Darker teal for hover states */
+	--color-primary-light: #3ba5ff;        /* Light blue for accents */
+
+	/* Brand Colors - Secondary (Orange) */
+	--color-secondary: #f69532;            /* Brand orange */
+	--color-secondary-hover: #dc7309;      /* Darker orange for hover */
+	--color-secondary-light: #ffb74d;      /* Light orange */
+
+	/* Brand Colors - Accent */
+	--color-accent-blue: #1e73be;          /* Link blue */
+	--color-accent-green: #28a745;         /* Success green */
+	--color-accent-red: #dc3545;           /* Error red */
+	--color-accent-yellow: #ffc107;        /* Warning yellow */
+
+	/* UI Colors - Backgrounds */
+	--color-bg-page: #efefef;              /* Page background (light gray) */
+	--color-bg-white: #ffffff;             /* Content areas */
+	--color-bg-sidebar: #0f2d41;           /* Sidebar dark navy */
+	--color-bg-sidebar-secondary: #0a2335; /* Darker sidebar sections */
+	--color-bg-hover: rgba(255, 255, 255, 0.05);  /* Hover overlay on dark bg */
+	--color-bg-hover-light: #f4f4f4;       /* Hover on light backgrounds */
+	--color-bg-active: rgba(255, 255, 255, 0.1);  /* Active state on dark bg */
+
+	/* UI Colors - Text */
+	--color-text-primary: #333333;         /* Primary text on light bg */
+	--color-text-secondary: #666666;       /* Secondary text */
+	--color-text-muted: #999999;           /* Muted/meta text */
+	--color-text-white: #ffffff;           /* Text on dark backgrounds */
+	--color-text-white-muted: hsla(0, 0%, 100%, 0.7);  /* Muted text on dark */
+	--color-text-white-faded: hsla(0, 0%, 100%, 0.5);  /* Faded text on dark */
+	--color-text-white-subtle: hsla(0, 0%, 100%, 0.3); /* Category labels */
+
+	/* UI Colors - Borders */
+	--color-border-light: #ededed;         /* Light border (cards) */
+	--color-border-medium: #dbdbdb;        /* Medium border (sections) */
+	--color-border-dark: #e5e5e5;          /* Darker border */
+
+	/* UI Colors - Icons */
+	--color-icon-default: #8796a0;         /* Default icon color */
+	--color-icon-muted: #c5cfd5;           /* Muted icons in sidebar */
+
+	/* Semantic Colors */
+	--color-success: #28a745;
+	--color-success-bg: #d4edda;
+	--color-warning: #ffc107;
+	--color-warning-bg: #fff3cd;
+	--color-error: #dc3545;
+	--color-error-bg: #f8d7da;
+	--color-info: #17a2b8;
+	--color-info-bg: #d1ecf1;
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   2. TYPOGRAPHY
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	/* Font Families */
+	--font-primary: 'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--font-heading: 'Open Sans Condensed', 'Open Sans', sans-serif;
+	--font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+	/* Font Sizes - Desktop */
+	--font-size-h1: 44px;
+	--font-size-h2: 32px;
+	--font-size-h3: 26px;
+	--font-size-h4: 22px;
+	--font-size-h5: 18px;
+	--font-size-h6: 16px;
+	--font-size-body: 14px;
+	--font-size-small: 13px;
+	--font-size-xs: 12px;
+	--font-size-xxs: 11px;
+	--font-size-category: 10px;
+
+	/* Font Weights */
+	--font-weight-light: 300;
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+	--font-weight-extrabold: 800;
+
+	/* Line Heights */
+	--line-height-tight: 1.1;
+	--line-height-snug: 1.2;
+	--line-height-normal: 1.4;
+	--line-height-relaxed: 1.6;
+	--line-height-loose: 1.8;
+
+	/* Letter Spacing */
+	--letter-spacing-tight: -0.5px;
+	--letter-spacing-normal: 0;
+	--letter-spacing-wide: 0.5px;
+	--letter-spacing-category: 0.5px;
+	--letter-spacing-button: 1.125px;
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   3. SPACING
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	/* Base spacing unit (4px grid) */
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-7: 28px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--space-12: 48px;
+	--space-16: 64px;
+
+	/* Component-specific spacing */
+	--sidebar-width: 220px;
+	--sidebar-padding-x: 20px;
+	--sidebar-padding-y: 30px;
+	--sidebar-item-height: 50px;
+
+	--header-padding-sm: 20px;
+	--header-padding-lg: 30px;
+	--header-padding-xl: 40px;
+
+	--section-padding-sm: 20px;
+	--section-padding-md: 30px;
+	--section-padding-lg: 40px;
+
+	--card-padding: 20px;
+	--card-gap: 30px;
+
+	/* Grid gutters (Bootstrap-compatible) */
+	--grid-gutter: 15px;
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   4. BORDERS & SHADOWS
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	/* Border Radius */
+	--radius-sm: 3px;
+	--radius-md: 5px;
+	--radius-lg: 8px;
+	--radius-xl: 12px;
+	--radius-full: 50%;
+	--radius-pill: 25px;
+
+	/* Border Widths */
+	--border-thin: 1px;
+	--border-medium: 2px;
+	--border-thick: 4px;
+
+	/* Shadows */
+	--shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
+	--shadow-md: 0 5px 15px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 5px 30px rgba(0, 0, 0, 0.1);
+	--shadow-xl: 0 10px 40px rgba(0, 0, 0, 0.15);
+	--shadow-button: 0 2px 5px rgba(0, 0, 0, 0.16);
+	--shadow-dropdown: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+	/* Icon shadows (colored based on icon color) */
+	--shadow-icon-primary: 0 10px 20px rgba(9, 132, 174, 0.25);
+	--shadow-icon-primary-hover: 0 15px 30px rgba(9, 132, 174, 0.2);
+	--shadow-icon-secondary: 0 10px 20px rgba(246, 149, 50, 0.25);
+	--shadow-icon-success: 0 10px 20px rgba(40, 167, 69, 0.25);
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   5. TRANSITIONS & ANIMATIONS
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	/* Durations */
+	--duration-fast: 150ms;
+	--duration-normal: 200ms;
+	--duration-slow: 300ms;
+	--duration-slower: 500ms;
+
+	/* Easing */
+	--ease-default: ease-in-out;
+	--ease-in: ease-in;
+	--ease-out: ease-out;
+	--ease-linear: linear;
+	--ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+	/* Common transitions */
+	--transition-fast: all var(--duration-fast) var(--ease-default);
+	--transition-normal: all var(--duration-normal) var(--ease-default);
+	--transition-slow: all var(--duration-slow) var(--ease-default);
+	--transition-color: color var(--duration-fast) var(--ease-default);
+	--transition-background: background-color var(--duration-fast) var(--ease-default);
+	--transition-transform: transform var(--duration-normal) var(--ease-default);
+	--transition-shadow: box-shadow var(--duration-normal) var(--ease-default);
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   6. Z-INDEX LAYERS
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	--z-base: 1;
+	--z-dropdown: 1000;
+	--z-sticky: 1020;
+	--z-fixed: 1030;
+	--z-modal-backdrop: 1040;
+	--z-modal: 1050;
+	--z-popover: 1060;
+	--z-tooltip: 1070;
+	--z-sidebar: 100010;
+	--z-overlay: 100009;
+
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   7. ICON SIZES
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	--icon-xs: 16px;
+	--icon-sm: 20px;
+	--icon-md: 24px;
+	--icon-lg: 32px;
+	--icon-xl: 40px;
+	--icon-2xl: 48px;
+
+	/* Membership card icon container */
+	--icon-container-size: 50px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE TYPOGRAPHY
+   Mobile-first font size adjustments
+   ═══════════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+	:root {
+		--font-size-h1: 30px;
+		--font-size-h2: 25px;
+		--font-size-h3: 22px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════════
+   BREAKPOINT REFERENCE (for documentation)
+   Use these values in media queries throughout the app
+   ═══════════════════════════════════════════════════════════════════════════════════
+
+   --breakpoint-xs: 0;
+   --breakpoint-sm: 576px;
+   --breakpoint-md: 768px;
+   --breakpoint-lg: 992px;
+   --breakpoint-xl: 1200px;
+   --breakpoint-xxl: 1440px;
+
+   Simpler Trading specific:
+   --breakpoint-mobile-menu: 950px;
+   --breakpoint-sidebar-visible: 1280px;
+
+   ═══════════════════════════════════════════════════════════════════════════════════ */

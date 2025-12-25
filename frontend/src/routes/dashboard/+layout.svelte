@@ -16,6 +16,8 @@
 	import Footer from '$lib/components/sections/Footer.svelte';
 	
 	// Import pixel-perfect global styles from reference file 1
+	// Design tokens provide CSS custom properties for consistent styling
+	import '$lib/styles/design-tokens.css';
 	import '$lib/styles/dashboard-globals.css';
 	import '$lib/styles/st-icons.css';
 	import type { Snippet } from 'svelte';
