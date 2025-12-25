@@ -311,6 +311,7 @@
 			role="button"
 			tabindex="-1"
 			aria-label="Close menu"
+			data-toggle-dashboard-menu
 		></div>
 
 		<!-- MOBILE TOGGLE BUTTON -->

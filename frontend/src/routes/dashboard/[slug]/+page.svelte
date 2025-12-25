@@ -52,7 +52,7 @@
 			<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 				<ul class="dropdown-menu__menu">
 					<li>
-						<a href="/trading-room/{slug}" target="_blank" rel="nofollow">
+						<a href="/dashboard/{slug}" target="_blank" rel="nofollow">
 							<span class="st-icon-{slug} icon icon--md"></span>
 							{displayName}
 						</a>

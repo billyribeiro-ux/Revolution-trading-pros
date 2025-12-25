@@ -161,13 +161,13 @@
 				<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 					<ul class="dropdown-menu__menu">
 						<li>
-							<a href="/trading-room/day-trading-room" target="_blank" rel="nofollow">
+							<a href="/dashboard/day-trading-room" target="_blank" rel="nofollow">
 								<span class="st-icon-mastering-the-trade icon icon--md"></span>
 								Day Trading Room
 							</a>
 						</li>
 						<li>
-							<a href="/trading-room/simpler-showcase" target="_blank" rel="nofollow">
+							<a href="/dashboard/simpler-showcase" target="_blank" rel="nofollow">
 								<span class="st-icon-simpler-showcase icon icon--md"></span>
 								Simpler Showcase Room
 							</a>

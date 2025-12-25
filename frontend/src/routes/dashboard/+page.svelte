@@ -93,7 +93,7 @@
 	// Generate trading room/alert service URL from membership data
 	function getAccessUrl(membership: UserMembership): string {
 		if (membership.type === 'trading-room') {
-			return `/trading-room/${membership.slug}`;
+			return `/dashboard/${membership.slug}`;
 		}
 		return `/dashboard/${membership.slug}/alerts`;
 	}
