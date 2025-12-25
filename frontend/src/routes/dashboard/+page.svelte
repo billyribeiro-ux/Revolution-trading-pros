@@ -1376,6 +1376,18 @@
 		color: orange !important;
 	}
 
+	/* EXACT INLINE STYLES FROM FILE 1 - Lines 5776-5785 */
+	:global(.mem_icon),
+	:global(.mem_div) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.mem_div) {
+		white-space: normal;
+		width: calc(100% - 43px);
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   MISSING BUTTON CLASSES - btn-xs, btn-link
 	   ═══════════════════════════════════════════════════════════════════════════ */
