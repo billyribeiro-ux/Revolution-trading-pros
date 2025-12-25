@@ -358,9 +358,9 @@ STYLES - Dropdown Component CSS
 		right: 0;
 		margin-top: 5px;
 		background: #fff;
-		border: none;
-		border-radius: 5px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		border: 1px solid #dbdbdb;
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		min-width: 260px;
 		padding: 10px;
 		z-index: 1000;

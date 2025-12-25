@@ -241,7 +241,7 @@ STYLES - Grid and State CSS
 
 	.section-title {
 		color: #333;
-		font-size: 28px;
+		font-size: 32px;
 		font-weight: 700;
 		margin: 0 0 30px;
 		font-family: 'Open Sans', sans-serif;
@@ -313,7 +313,8 @@ STYLES - Grid and State CSS
 
 	.membership-card--skeleton {
 		background: #fff;
-		border-radius: 5px;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
 	}
@@ -338,8 +339,8 @@ STYLES - Grid and State CSS
 	}
 
 	.skeleton--icon {
-		width: 50px;
-		height: 50px;
+		width: 40px;
+		height: 40px;
 		border-radius: 50%;
 		flex-shrink: 0;
 	}

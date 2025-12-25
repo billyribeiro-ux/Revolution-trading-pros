@@ -217,8 +217,8 @@ STYLES - Weekly Watchlist Section CSS
 	.section-title-alt {
 		color: #0984ae;
 		font-weight: 700;
-		font-size: 14px;
-		letter-spacing: 0.2em;
+		font-size: 11px;
+		letter-spacing: 1px;
 		margin-bottom: 30px;
 		text-transform: uppercase;
 		font-family: 'Open Sans', sans-serif;
@@ -374,14 +374,14 @@ STYLES - Weekly Watchlist Section CSS
 	}
 
 	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 13px;
+		padding: 5px 10px;
+		font-size: 11px;
 	}
 
 	.btn-default {
-		background: #f5f5f5;
+		background: #fff;
 		color: #333;
-		border: 1px solid #ddd;
+		border: 1px solid #ccc;
 		box-shadow: none;
 	}
 

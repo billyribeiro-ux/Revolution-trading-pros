@@ -506,7 +506,7 @@ These are page-specific overrides and additions.
 
 	.section-title {
 		color: #333;
-		font-size: 28px;
+		font-size: 32px;
 		font-weight: 700;
 		margin: 0 0 30px;
 		font-family: 'Open Sans', sans-serif;
@@ -604,7 +604,8 @@ These are page-specific overrides and additions.
 
 	.article-card {
 		background: #fff;
-		border-radius: 5px;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
@@ -614,7 +615,7 @@ These are page-specific overrides and additions.
 	}
 
 	.article-card:hover {
-		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	.article-card__image {
@@ -706,14 +707,14 @@ These are page-specific overrides and additions.
 	}
 
 	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 13px;
+		padding: 5px 10px;
+		font-size: 11px;
 	}
 
 	.btn-default {
-		background: #f5f5f5;
+		background: #fff;
 		color: #333;
-		border: 1px solid #ddd;
+		border: 1px solid #ccc;
 		box-shadow: none;
 	}
 

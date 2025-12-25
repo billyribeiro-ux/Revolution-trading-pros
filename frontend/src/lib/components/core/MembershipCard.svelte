@@ -179,9 +179,9 @@ Structure mirrors the WordPress HTML from the core file:
 				<!--
 				DashboardIcon maps membership slugs to Tabler SVG icons.
 				Falls back to font icons if no mapping exists.
-				Size 28 matches the visual weight of the original 32px font icons.
+				Size 24 fits inside 40px container (matching reference).
 				-->
-				<DashboardIcon name={membership.slug} size={28} />
+				<DashboardIcon name={membership.slug} size={24} />
 			</span>
 		</span>
 
@@ -241,18 +241,18 @@ Styles match the Simpler Trading design system exactly.
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card {
-		/* Card container with elevation shadow */
+		/* Card container - exact match to reference */
 		background: #fff;
-		border-radius: 5px;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
-	/* Subtle lift on hover for interactivity feedback */
+	/* Hover state - exact match to reference */
 	.membership-card:hover {
-		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
-		transform: translateY(-2px);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -263,12 +263,12 @@ Styles match the Simpler Trading design system exactly.
 		display: block;
 		padding: 20px;
 		color: #333;
-		font-weight: 700;
+		font-weight: 600;
 		white-space: nowrap;
 		transition: all 0.15s ease-in-out;
 		text-decoration: none;
 		font-family: 'Open Sans', sans-serif;
-		font-size: 17px;
+		font-size: 15px;
 		line-height: 1.4;
 	}
 
@@ -296,30 +296,28 @@ Styles match the Simpler Trading design system exactly.
 	/* Name wrapper allows text to wrap on narrow screens */
 	.mem_div {
 		white-space: normal;
-		width: calc(100% - 43px);
+		width: calc(100% - 50px);
 	}
 
 	.membership-card__icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 50px;
-		height: 50px;
-		margin-right: 9px;
-		line-height: 50px;
+		width: 40px;
+		height: 40px;
+		margin-right: 10px;
+		line-height: 40px;
 		color: #fff;
 		text-align: center;
 		border-radius: 50%;
 		transition: all 0.15s ease-in-out;
-		/* Default blue gradient background */
+		/* Default blue background - no shadow per reference */
 		background-color: #0984ae;
-		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
 	}
 
 	/* Darken icon background on hover */
 	.membership-card__header:hover .membership-card__icon {
 		background-color: #076787;
-		box-shadow: 0 15px 30px rgba(9, 132, 174, 0.2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -372,10 +370,10 @@ Styles match the Simpler Trading design system exactly.
 		flex-basis: 50%;
 		width: 50%;
 		height: 100%;
-		padding: 15px;
+		padding: 15px 10px;
 		text-align: center;
 		text-decoration: none;
-		color: #666;
+		color: #0984ae;
 		font-family: 'Open Sans', sans-serif;
 		font-size: 14px;
 		font-weight: 400;
@@ -400,24 +398,20 @@ Styles match the Simpler Trading design system exactly.
 	/* Options variant - Blue theme for trading rooms */
 	.membership-card--options .membership-card__icon {
 		background-color: #0984ae;
-		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
 	}
 
 	/* Foundation variant - Green theme for courses */
 	.membership-card--foundation .membership-card__icon {
 		background-color: #28a745;
-		box-shadow: 0 10px 20px rgba(40, 167, 69, 0.25);
 	}
 
 	/* Weekly Watchlist variant - Orange theme */
 	.membership-card--ww .membership-card__icon {
 		background-color: #f69532;
-		box-shadow: 0 10px 20px rgba(246, 149, 50, 0.25);
 	}
 
 	/* Default variant - Neutral gray */
 	.membership-card--default .membership-card__icon {
 		background-color: #6c757d;
-		box-shadow: 0 10px 20px rgba(108, 117, 125, 0.25);
 	}
 </style>

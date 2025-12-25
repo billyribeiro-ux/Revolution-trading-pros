@@ -121,15 +121,15 @@ STYLES - Tool Card CSS
 
 	.membership-card {
 		background: #fff;
-		border-radius: 5px;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
-		transform: translateY(-2px);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -140,12 +140,12 @@ STYLES - Tool Card CSS
 		display: block;
 		padding: 20px;
 		color: #333;
-		font-weight: 700;
+		font-weight: 600;
 		white-space: nowrap;
 		transition: all 0.15s ease-in-out;
 		text-decoration: none;
 		font-family: 'Open Sans', sans-serif;
-		font-size: 17px;
+		font-size: 15px;
 		line-height: 1.4;
 	}
 
@@ -171,32 +171,30 @@ STYLES - Tool Card CSS
 
 	.mem_div {
 		white-space: normal;
-		width: calc(100% - 43px);
+		width: calc(100% - 50px);
 	}
 
 	.membership-card__icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 50px;
-		height: 50px;
-		margin-right: 9px;
-		line-height: 50px;
+		width: 40px;
+		height: 40px;
+		margin-right: 10px;
+		line-height: 40px;
 		color: #fff;
 		text-align: center;
 		border-radius: 50%;
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* Weekly Watchlist Orange Theme */
+	/* Weekly Watchlist Orange Theme - no shadow per reference */
 	.membership-card--ww .membership-card__icon {
 		background-color: #f69532;
-		box-shadow: 0 10px 20px rgba(246, 149, 50, 0.25);
 	}
 
 	.membership-card--ww .membership-card__header:hover .membership-card__icon {
 		background-color: #dc7309;
-		box-shadow: 0 15px 30px rgba(246, 149, 50, 0.2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -237,10 +235,10 @@ STYLES - Tool Card CSS
 		display: block;
 		flex: 0 0 auto;
 		height: 100%;
-		padding: 15px;
+		padding: 15px 10px;
 		text-align: center;
 		text-decoration: none;
-		color: #666;
+		color: #0984ae;
 		font-family: 'Open Sans', sans-serif;
 		font-size: 14px;
 		font-weight: 400;
