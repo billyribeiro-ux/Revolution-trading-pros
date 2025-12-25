@@ -103,6 +103,58 @@
 
 	// Derived: Show content only when auth is ready
 	let authReady = $derived(!$isInitializing);
+
+	// Breadcrumb mapping for dashboard sub-pages
+	const breadcrumbTitles: Record<string, string> = {
+		'mastering-the-trade': 'Mastering the Trade',
+		'simpler-showcase': 'Simpler Showcase',
+		'da-tradingroom': 'Trading Room',
+		'ww': 'Weekly Watchlist',
+		'weekly-watchlist': 'Weekly Watchlist',
+		'courses': 'Courses',
+		'indicators': 'Indicators',
+		'alerts': 'Alerts',
+		'settings': 'Settings',
+		'account': 'Account',
+		'profile': 'Profile'
+	};
+
+	// Derived: Generate breadcrumbs from current URL path
+	let breadcrumbs = $derived.by(() => {
+		const pathname = $page.url.pathname;
+		const segments = pathname.split('/').filter(Boolean);
+
+		const crumbs: Array<{ label: string; href: string; isCurrent: boolean }> = [
+			{ label: 'Home', href: '/', isCurrent: false }
+		];
+
+		// Build path progressively
+		let currentPath = '';
+		segments.forEach((segment, index) => {
+			currentPath += `/${segment}`;
+			const isLast = index === segments.length - 1;
+
+			let label = segment;
+			if (segment === 'dashboard') {
+				label = 'Member Dashboard';
+			} else if (breadcrumbTitles[segment]) {
+				label = breadcrumbTitles[segment];
+			} else {
+				// Convert slug to title case
+				label = segment.split('-').map(word =>
+					word.charAt(0).toUpperCase() + word.slice(1)
+				).join(' ');
+			}
+
+			crumbs.push({
+				label,
+				href: currentPath,
+				isCurrent: isLast
+			});
+		});
+
+		return crumbs;
+	});
 </script>
 
 <svelte:head>
@@ -112,17 +164,22 @@
 <!-- NAVBAR - Full Navigation Menu -->
 <NavBar />
 
-<!-- BREADCRUMB NAVIGATION - Exact Match from Jesus File -->
+<!-- BREADCRUMB NAVIGATION - Dynamic based on current page -->
 <nav id="breadcrumbs" class="breadcrumbs">
 	<div class="container-fluid">
 		<ul>
-			<li class="item-home">
-				<a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a>
-			</li>
-			<li class="separator separator-home"> / </li>
-			<li class="item-current item-401190">
-				<strong class="breadcrumb-current breadcrumb-401190"> Member Dashboard</strong>
-			</li>
+			{#each breadcrumbs as crumb, index (crumb.href)}
+				{#if index > 0}
+					<li class="separator"> / </li>
+				{/if}
+				<li class="item-{crumb.label.toLowerCase().replace(/\s+/g, '-')}">
+					{#if crumb.isCurrent}
+						<strong class="breadcrumb-current"> {crumb.label}</strong>
+					{:else}
+						<a class="breadcrumb-link" href={crumb.href} title={crumb.label}>{crumb.label}</a>
+					{/if}
+				</li>
+			{/each}
 		</ul>
 	</div>
 </nav>
