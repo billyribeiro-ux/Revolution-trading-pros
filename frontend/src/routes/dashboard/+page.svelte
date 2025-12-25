@@ -133,18 +133,27 @@
 		}
 	}
 
-	// Generate dashboard URL from membership data
+	/**
+	 * ICT 11+ Pattern: Data-driven URL generation
+	 * Trading room memberships link to their room dashboard (via roomSlug)
+	 * Other memberships link to their own dashboard
+	 */
 	function getDashboardUrl(membership: UserMembership): string {
+		if (membership.type === 'trading-room') {
+			// Trading room memberships go to the room dashboard
+			const roomSlug = membership.roomSlug || membership.slug;
+			return `/dashboard/${roomSlug}`;
+		}
 		return membership.accessUrl || `/dashboard/${membership.slug}`;
 	}
 
 	/**
-	 * ICT 11+ Pattern: Data-driven URL generation
-	 * Trading rooms use roomSlug from API data, memberships use their own slug
+	 * ICT 11+ Pattern: Secondary action URL
+	 * For trading rooms: same as dashboard (room page)
+	 * For others: alerts/content page
 	 */
 	function getAccessUrl(membership: UserMembership): string {
 		if (membership.type === 'trading-room') {
-			// Use roomSlug from API if available, otherwise use membership slug
 			const roomSlug = membership.roomSlug || membership.slug;
 			return `/dashboard/${roomSlug}`;
 		}
