@@ -753,7 +753,7 @@
 	.section-title,
 	h2.section-title {
 		color: #333;
-		font-size: 28px;
+		font-size: 32px;
 		font-weight: 700;
 		margin: 0 0 30px;
 		font-family: 'Open Sans', sans-serif;
@@ -883,7 +883,7 @@
 	.membership-card__actions {
 		display: flex;
 		font-size: 14px;
-		border-top: 1px solid #ededed;
+		border-top: 1px solid #dbdbdb;
 		justify-content: center;
 	}
 
@@ -896,7 +896,7 @@
 		padding: 15px;
 		text-align: center;
 		text-decoration: none;
-		color: #666;
+		color: #0984ae;
 		font-family: 'Open Sans', sans-serif;
 		font-size: 14px;
 		font-weight: 400;
@@ -909,7 +909,7 @@
 	}
 
 	.membership-card__actions a + a {
-		border-left: 1px solid #ededed;
+		border-left: 1px solid #dbdbdb;
 	}
 
 	/* Loading, Error & Empty States */
