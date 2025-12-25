@@ -74,6 +74,9 @@ export default defineConfig({
 		minify: 'esbuild',
 		// Optimize CSS minification
 		cssMinify: 'esbuild',
+		// Disable CSS code splitting to prevent server/client stylesheet mismatch
+		// This fixes: "Server stylesheet source not found for client stylesheet" error
+		cssCodeSplit: false,
 		// Optimize chunk splitting - CRITICAL FOR PERFORMANCE
 		rollupOptions: {
 			output: {
