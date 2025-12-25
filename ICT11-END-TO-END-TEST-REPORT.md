@@ -400,6 +400,71 @@ All routes are functional, all links resolve correctly, and the system is fully 
 
 ---
 
+---
+
+## ADDENDUM: DEEP INVESTIGATION (December 25, 2025)
+
+### Additional Root Cause Found
+
+**Issue:** User reported page routing to "Options Day Trading Room"
+
+**Investigation Method:** Systematic code-level tracing of entire routing chain
+
+### Files Examined (Evidence-Based)
+
+1. **Hooks (server & client)** - No redirects found ✅
+2. **Layout sidebar** - Uses dynamic `{room.slug}` from API ✅
+3. **API endpoints** - All use `day-trading-room` slug ✅
+4. **Route files** - Correct structure, no conflicts ✅
+5. **Learning center store** - **FOUND ISSUE** ❌
+6. **Cart mock data** - **FOUND ISSUE** ❌
+
+### Root Cause Identified
+
+**The routing was CORRECT** but **display text was inconsistent**.
+
+Content in `learningCenter.ts` and `cart-wordpress/+page.svelte` still displayed "Options Day Trading Room" even though the slug was correct. This caused user confusion.
+
+### Fixes Applied
+
+**File 1:** `/lib/stores/learningCenter.ts`
+- Comment: `Options Day Trading Room lessons` → `Day Trading Room lessons`
+- Slug: `welcome-to-odtr` → `welcome-to-dtr`
+- Title: `Welcome to Options Day Trading Room` → `Welcome to Day Trading Room`
+- Description: Updated all references
+- Module comment: Updated
+
+**File 2:** `/routes/cart-wordpress/+page.svelte`
+- Product name: `Options Day Trading Room (1 Month Trial)` → `Day Trading Room (1 Month Trial)`
+
+### Verification
+
+```bash
+grep -r "Options Day Trading" frontend/src/
+# Result: 0 matches
+```
+
+### Commit History
+
+```
+22404adb - fix: Remove all 'Options Day Trading Room' text references
+a88135c7 - docs: Add comprehensive ICT 11+ end-to-end test report
+cc5238a9 - fix: Remove all references to options-day-trading-room slug
+94dfee5c - fix: Create all missing routes to eliminate 404 errors
+9d4f42d0 - fix: Resolve accessibility and CSS warnings
+```
+
+### Final Status
+
+✅ **ALL ISSUES RESOLVED**
+- Routing: Correct (`day-trading-room`)
+- Display text: Consistent (`Day Trading Room`)
+- API data: Correct
+- No 404 errors
+- No build warnings
+
+---
+
 **Signed:**  
 ICT 11+ Principal Engineer  
-December 24, 2025
+December 25, 2025
