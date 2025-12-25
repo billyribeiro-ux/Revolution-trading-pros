@@ -347,8 +347,27 @@
 		position: relative;
 	}
 
-	.btn-xs {
+	/* Base button - Bootstrap 3 standard */
+	.btn {
+		display: inline-block;
 		padding: 6px 12px;
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.42857143;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		cursor: pointer;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		text-decoration: none;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	/* btn-xs - smaller button variant */
+	.btn-xs {
+		padding: 1px 5px;
 		font-size: 12px;
 		line-height: 1.5;
 		border-radius: 3px;
@@ -366,17 +385,12 @@
 		text-decoration: underline;
 	}
 
+	/* Orange button colors - NO padding override */
 	.btn-orange,
 	.btn-tradingroom {
 		background-color: #F69532;
 		color: #fff;
-		border: 1px solid #F69532;
-		font-weight: 700;
-		padding: 8px 16px;
-		border-radius: 3px;
-		text-decoration: none;
-		display: inline-block;
-		cursor: pointer;
+		border-color: #F69532;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		transition: all 0.15s ease-in-out;
 	}
@@ -397,8 +411,9 @@
 		position: absolute;
 		top: 100%;
 		right: 0;
-		margin-top: 5px;
-		background: #fff;
+		margin: 5px 0 0;
+		padding: 10px;
+		background-color: #fff;
 		border: 1px solid #dbdbdb;
 		border-radius: 4px;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
