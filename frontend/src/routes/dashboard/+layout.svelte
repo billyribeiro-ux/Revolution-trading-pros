@@ -114,11 +114,19 @@
 
 	// Breadcrumb mapping for dashboard sub-pages
 	const breadcrumbTitles: Record<string, string> = {
-		'options-day-trading': 'Options Day Trading',
+		// Trading Rooms
 		'day-trading-room': 'Day Trading Room',
+		'swing-trading-room': 'Swing Trading Room',
+		'small-account-mentorship': 'Small Account Mentorship',
+		'options-day-trading': 'Options Day Trading',
 		'simpler-showcase': 'Simpler Showcase',
+		// Alert Services
+		'spx-profit-pulse': 'SPX Profit Pulse',
+		'explosive-swing': 'Explosive Swing',
+		// Tools
 		'ww': 'Weekly Watchlist',
 		'weekly-watchlist': 'Weekly Watchlist',
+		// Member Dashboard
 		'courses': 'Courses',
 		'classes': 'My Classes',
 		'indicators': 'My Indicators',
@@ -126,12 +134,14 @@
 		'settings': 'Settings',
 		'account': 'Account',
 		'profile': 'Profile',
+		// Sub-pages
 		'learning-center': 'Learning Center',
 		'start-here': 'Start Here',
 		'resources': 'Resources',
 		'daily-videos': 'Premium Daily Videos',
 		'trading-room-archive': 'Trading Room Archives',
-		'traders': 'Meet the Traders'
+		'traders': 'Meet the Traders',
+		'trader-store': 'Trader Store'
 	};
 
 	// Derived: Generate breadcrumbs from current URL path
@@ -172,7 +182,20 @@
 	});
 
 	// Known trading room/membership slugs that have secondary navigation
-	const membershipSlugs = ['day-trading-room', 'options-day-trading', 'simpler-showcase'];
+	// Trading Rooms: Day Trading Room, Swing Trading Room, Small Account Mentorship
+	// Alert Services: SPX Profit Pulse, Explosive Swings
+	const membershipSlugs = [
+		// Trading Rooms
+		'day-trading-room',
+		'swing-trading-room',
+		'small-account-mentorship',
+		// Alert Services
+		'spx-profit-pulse',
+		'explosive-swing',
+		// Legacy
+		'options-day-trading',
+		'simpler-showcase'
+	];
 
 	// Derived: Get current membership slug from URL path
 	let currentMembershipSlug = $derived.by(() => {
@@ -282,6 +305,23 @@
 										<DynamicIcon name={room.icon || 'chart-line'} size={24} />
 									</span>
 									<span class="dashboard__nav-item-text">{room.name}</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+
+				<!-- ALERT SERVICES SECTION -->
+				{#if membershipsData?.alertServices && membershipsData.alertServices.length > 0}
+					<p class="dashboard__nav-category">alert services</p>
+					<ul class="dash_main_links">
+						{#each membershipsData.alertServices as alert (alert.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${alert.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{alert.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={alert.icon || 'bell'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{alert.name}</span>
 								</a>
 							</li>
 						{/each}

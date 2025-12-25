@@ -508,9 +508,11 @@ function getDefaultIcon(type: MembershipType): string {
  */
 function getSuperadminMockMemberships(): UserMembershipsResponse {
 	console.log('[Superadmin] 🔧 Using mock membership data (API unavailable)');
-	
+
 	const mockMemberships: UserMembership[] = [
-		// Trading Rooms
+		// ═══════════════════════════════════════════════════════════════════════════
+		// TRADING ROOMS (3)
+		// ═══════════════════════════════════════════════════════════════════════════
 		{
 			id: 'mock-1',
 			name: 'Day Trading Room',
@@ -526,19 +528,60 @@ function getSuperadminMockMemberships(): UserMembershipsResponse {
 		},
 		{
 			id: 'mock-2',
-			name: 'Simpler Showcase',
+			name: 'Swing Trading Room',
 			type: 'trading-room',
-			slug: 'simpler-showcase',
+			slug: 'swing-trading-room',
 			status: 'active',
 			membershipType: 'complimentary',
-			icon: 'trophy',
+			icon: 'trending-up',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
+		},
+		{
+			id: 'mock-3',
+			name: 'Small Account Mentorship',
+			type: 'trading-room',
+			slug: 'small-account-mentorship',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'school',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
+		},
+		// ═══════════════════════════════════════════════════════════════════════════
+		// ALERT SERVICES (2)
+		// ═══════════════════════════════════════════════════════════════════════════
+		{
+			id: 'mock-4',
+			name: 'SPX Profit Pulse',
+			type: 'alert-service',
+			slug: 'spx-profit-pulse',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'bell',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
+		},
+		{
+			id: 'mock-5',
+			name: 'Explosive Swing',
+			type: 'alert-service',
+			slug: 'explosive-swing',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'rocket',
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
 			interval: 'monthly'
 		}
-		// NOTE: Weekly Watchlist removed from memberships - it's a Tool, not a membership
-		// It appears in the Tools section of the dashboard, not in the memberships cards
+		// NOTE: Weekly Watchlist is in the Tools section, not memberships cards
 	];
 
 	const enhanced = enhanceMemberships(mockMemberships);
