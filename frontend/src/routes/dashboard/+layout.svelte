@@ -755,10 +755,6 @@
 		display: block;
 	}
 
-	.dashboard__nav-primary > ul + ul {
-		margin-top: 20px;
-	}
-
 	/* Profile Section - Exact match to dashboard-globals.css reference */
 	.dashboard__profile-nav-item {
 		position: relative;
@@ -1010,43 +1006,6 @@
 	.dashboard__nav-secondary .nav-arrow :global(svg) {
 		width: 16px;
 		height: 16px;
-	}
-
-	.dashboard__nav-secondary .dashboard__nav-submenu {
-		background-color: #081a27;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		z-index: 110;
-	}
-
-	.dashboard__nav-secondary .dashboard__nav-submenu li {
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.dashboard__nav-secondary .dashboard__nav-submenu li a {
-		padding: 12px 30px 12px 60px;
-		font-size: 13px;
-	}
-
-	.dashboard__nav-secondary .submenu-toggle {
-		display: flex;
-		align-items: center;
-		padding: 14px 20px;
-		color: hsla(0, 0%, 100%, 0.7);
-		background: none;
-		border: none;
-		width: 100%;
-		text-align: left;
-		font-size: 14px;
-		font-family: 'Open Sans', sans-serif;
-		transition: all 0.15s ease-in-out;
-		cursor: pointer;
-	}
-
-	.dashboard__nav-secondary .submenu-toggle:hover {
-		background-color: rgba(255, 255, 255, 0.05);
-		color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

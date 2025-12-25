@@ -25,22 +25,22 @@
 				<div class="course-card">
 					<h3>Options Basics</h3>
 					<p>Learn the fundamentals of options trading, including calls, puts, and basic strategies.</p>
-					<a href="#" class="course-link">Start Course →</a>
+					<button type="button" class="course-link" onclick={() => alert('Course coming soon')}>Start Course →</button>
 				</div>
 				<div class="course-card">
 					<h3>Day Trading Strategies</h3>
 					<p>Master intraday options trading techniques for consistent profits.</p>
-					<a href="#" class="course-link">Start Course →</a>
+					<button type="button" class="course-link" onclick={() => alert('Course coming soon')}>Start Course →</button>
 				</div>
 				<div class="course-card">
 					<h3>Risk Management</h3>
 					<p>Learn how to protect your capital and manage position sizing.</p>
-					<a href="#" class="course-link">Start Course →</a>
+					<button type="button" class="course-link" onclick={() => alert('Course coming soon')}>Start Course →</button>
 				</div>
 				<div class="course-card">
 					<h3>Technical Analysis</h3>
 					<p>Chart patterns, indicators, and price action for options traders.</p>
-					<a href="#" class="course-link">Start Course →</a>
+					<button type="button" class="course-link" onclick={() => alert('Course coming soon')}>Start Course →</button>
 				</div>
 			</div>
 		</section>
@@ -119,6 +119,12 @@
 		color: #0984ae;
 		font-weight: 600;
 		text-decoration: none;
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: inherit;
 	}
 
 	.course-link:hover {
