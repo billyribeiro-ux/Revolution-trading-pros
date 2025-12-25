@@ -395,6 +395,12 @@
 		transition: all 0.15s ease-in-out;
 	}
 
+	/* EXACT from Simpler Trading style.css - btn-tradingroom override */
+	.btn.btn-xs.btn-orange.btn-tradingroom {
+		width: 280px;
+		padding: 12px 18px;
+	}
+
 	.btn-orange:hover,
 	.btn-tradingroom:hover {
 		background-color: #dc7309;

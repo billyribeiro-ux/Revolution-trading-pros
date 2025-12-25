@@ -558,36 +558,49 @@ These are page-specific overrides and additions.
 		}
 	}
 
-	@media (max-width: 992px) {
-		.col-xl-4 {
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
+	/* Trading Room Rules - Exact WordPress Match (ultradingroom)
+	   Note: In reference, JS removes .btn class. We override here instead. */
+	.ultradingroom {
+		text-align: right;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: block !important;  /* Override global display:none */
+		max-width: none;
 	}
 
-	@media (max-width: 641px) {
-		.col-sm-6,
-		.col-xl-4 {
-			flex: 0 0 100%;
-			max-width: 100%;
-		}
+	.ultradingroom .litradingroom {
+		display: block;
+		padding: 0;
+		border: none;
+		background: transparent;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   ARTICLE CARDS - Latest Updates Section
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.article-cards.row {
-		margin: 0 -10px;
+	.ultradingroom .litradingroom a {
+		font-weight: 700 !important;
+		font-size: 12px;
+		color: #0984ae;
+		text-decoration: none;
+		padding: 0;
+		background: transparent;
+		border: none;
+		box-shadow: none;
 	}
 
-	.flex-grid {
-		display: flex;
-		flex-wrap: wrap;
+	.ultradingroom .litradingroom a:hover {
+		text-decoration: underline;
+		color: #065a75;
 	}
 
-	.flex-grid-item {
-		display: flex;
+	.ultradingroom .litradingroomhind {
+		font-size: 11px;
+		color: #666;
+		display: block;
+		padding: 0;
+		border: none;
+		background: transparent;
+		box-shadow: none;
+		text-align: right;
 	}
 
 	.col-xs-12 {
@@ -634,18 +647,34 @@ These are page-specific overrides and additions.
 		opacity: 0;
 	}
 
-	.article-card__type {
-		padding: 12px 20px 0;
+	.btn-orange,
+	.btn-tradingroom {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		background: #F69532;
+		border: none;
+		color: #fff;
+		border-radius: 5px;
+		font-size: 14px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+		line-height: 1.4;
 	}
 
-	.label {
-		display: inline-block;
-		padding: 4px 12px;
-		border-radius: 3px;
-		font-size: 11px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+	/* EXACT from Simpler Trading style.css - btn-tradingroom override */
+	.btn.btn-xs.btn-orange.btn-tradingroom {
+		width: 280px;
+		padding: 12px 18px;
+	}
+
+	.btn-orange:hover,
+	.btn-tradingroom:hover {
+		background: #dc7309;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 	}
 
 	.label--info {
@@ -740,5 +769,332 @@ These are page-specific overrides and additions.
 	.content-sidebar__section {
 		padding: 20px 30px 20px 20px;
 		border-bottom: 1px solid #dbdbdb;
+	}
+
+	.content-sidebar__heading {
+		padding: 15px 20px;
+		margin: -20px -30px 20px -20px;
+		font-size: 14px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #333;
+		background: #ededed;
+		border-bottom: 1px solid #dbdbdb;
+		line-height: 1.4;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ADDITIONAL GLOBAL STYLES FROM SIMPLER TRADING
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Empty paragraph cleanup */
+	:global(p:empty) {
+		display: none;
+	}
+
+	/* Scanner image cleanup */
+	:global(.scanner-load-content img[src*="/public/images/space.gif"]) {
+		display: none;
+	}
+
+	/* Typography overrides */
+	:global(h2) {
+		font-size: 32px;
+	}
+
+	:global(h3) {
+		font-size: 26px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BUTTON SHAPE VARIANTS - Simpler Trading Brand Buttons
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Shaped Button - Pill-shaped with extra bold text */
+	:global(.shaped-btn) {
+		display: block;
+		border-radius: 25px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 18px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+	}
+
+	/* Squared Button - Subtle rounded corners */
+	:global(.squared-btn) {
+		display: block;
+		border-radius: 4px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 14px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+	}
+
+	/* Primary Button Color - Brand Orange */
+	:global(.primary-btn) {
+		background-color: #F69532;
+		color: #fff;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	:global(.primary-btn:hover) {
+		background-color: #dc7309;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD-SPECIFIC UTILITY STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Dashboard navigation submenu z-index fix */
+	:global(.dashboard__nav-secondary .dashboard__nav-submenu) {
+		z-index: 110 !important;
+	}
+
+	/* Trading room image wrapper padding reset */
+	:global(.tr_img_wrap) {
+		padding: 0 !important;
+	}
+
+	/* Weekly watchlist title padding reset */
+	:global(figure.weekly_watchlist .article-card__title) {
+		padding: 0 !important;
+	}
+
+	/* Trading room layout controls - ultradingroom visibility controlled by component styles */
+	:global(.dashboard__header) {
+		justify-content: space-between;
+	}
+
+	/* EXACT CSS FROM FILE 1 - Lines 3924-4072 */
+	:global(p:empty) {
+		display: none;
+	}
+
+	:global(.scanner-load-content img[src*="/public/images/space.gif"]) {
+		display: none;
+	}
+
+	:global(h2) {
+		font-size: 32px;
+	}
+
+	:global(h3) {
+		font-size: 26px;
+	}
+
+	/* Button Shapes - EXACT from file 1 */
+	:global(.shaped-btn) {
+		display: block;
+		border-radius: 25px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 18px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all .2s ease-in-out;
+	}
+
+	:global(.squared-btn) {
+		display: block;
+		border-radius: 4px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 14px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all .2s ease-in-out;
+	}
+
+	/* Button Colors - EXACT from file 1 */
+	:global(.primary-btn) {
+		background-color: #F69532;
+		color: #fff;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	:global(.primary-btn:hover) {
+		background-color: #dc7309;
+	}
+
+	/* Dashboard-specific styles - EXACT from file 1 */
+	:global(.dashboard__nav-secondary .dashboard__nav-submenu) {
+		z-index: 110 !important;
+	}
+
+	:global(.tr_img_wrap) {
+		padding: 0 !important;
+	}
+
+	:global(figure.weekly_watchlist .article-card__title) {
+		padding: 0 !important;
+	}
+
+	/* Mobile navigation override - EXACT from file 1 */
+	@media (max-width: 641px) {
+		:global(.main-navigation .main-nav ul li[class*="current-menu-"] > a),
+		:global(.main-navigation .main-nav ul li > a) {
+			color: #191717 !important;
+		}
+	}
+
+	/* Icon styles - EXACT from file 1 */
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	:global(.simpler-showcase-icon) {
+		background: black !important;
+		color: orange !important;
+	}
+
+	/* EXACT INLINE STYLES FROM FILE 1 - Lines 5776-5785 */
+	:global(.mem_icon),
+	:global(.mem_div) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.mem_div) {
+		white-space: normal;
+		width: calc(100% - 43px);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MISSING BUTTON CLASSES - btn-xs, btn-link
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.btn) {
+		display: inline-block;
+		padding: 6px 12px;
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.42857143;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		cursor: pointer;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	:global(.btn-xs) {
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	:global(.btn-link) {
+		color: #0984ae;
+		font-weight: 400;
+		border-radius: 0;
+		background-color: transparent;
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	:global(.btn-link:hover),
+	:global(.btn-link:focus) {
+		color: #065a75;
+		text-decoration: underline;
+		background-color: transparent;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD ICON SIZING - Missing from your dashboard
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-icon) {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
+		font-size: 24px;
+		color: #0984ae;
+		vertical-align: middle;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 26px !important;
+	}
+
+	:global(.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 20px !important;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-stacked-profits) {
+		font-size: 40px !important;
+	}
+
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	:global(.st-icon-big-market-scorecard:before) {
+		margin-left: 4px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ICON SIZE CLASSES - icon--lg, icon--md
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.icon) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.icon--lg) {
+		font-size: 32px;
+		width: 32px;
+		height: 32px;
+	}
+
+	:global(.icon--md) {
+		font-size: 24px;
+		width: 24px;
+		height: 24px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MEMBERSHIP CARD ICON STYLING
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.membership-card__icon) {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		margin-right: 10px;
+		color: #0984ae;
+	}
+
+	:global(.simpler-showcase-icon) {
+		background: black !important;
+		color: orange !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FONT WEIGHT & SIZE FIXES - Match reference exactly
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-text) {
+		font-size: 14px;
+		font-weight: 400;
+		color: #fff;
+	}
+
+	/* Bold white text for My Classes and My Indicators */
+	:global(.dashboard__nav-item-text[style*="bold"]) {
+		font-weight: 700 !important;
+		color: white !important;
 	}
 </style>
