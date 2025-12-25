@@ -13,7 +13,6 @@
 	 */
 	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
-	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	let dropdownOpen = $state(false);
@@ -132,9 +131,9 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<ul class="trading-room-rules">
-			<li><a href="/trading-room-rules.pdf" target="_blank" class="rules-link">Trading Room Rules</a></li>
-			<li class="rules-disclaimer">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
+		<ul class="ultradingroom" style="text-align: right; list-style: none;">
+			<li class="litradingroom"><a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a></li>
+			<li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
 		</ul>
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
@@ -151,15 +150,13 @@
 				</button>
 
 				{#if dropdownOpen}
-					<nav class="dropdown-menu">
-						<ul>
+					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+						<ul class="dropdown-menu__menu">
 							{#each membershipsData.tradingRooms as room (room.id)}
 								<li>
-									<a href={getAccessUrl(room)} target="_blank">
-										<span class="room-icon">
-											<DynamicIcon name={room.icon} size={20} />
-										</span>
-										{room.name}
+									<a href={getAccessUrl(room)} target="_blank" rel="nofollow">
+										<span class="st-icon-{room.slug} icon icon--md"></span>
+										{room.roomLabel || room.name}
 									</a>
 								</li>
 							{/each}
@@ -195,11 +192,11 @@
 				<div class="membership-cards row">
 					{#each membershipsData.memberships as membership (membership.id)}
 						<div class="col-sm-6 col-xl-4">
-							<article class="membership-card">
+							<article class="membership-card membership-card--{membership.type === 'trading-room' ? 'options' : 'foundation'}">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon">
-											<DynamicIcon name={membership.icon} size={32} />
+											<span class="icon icon--lg st-icon-{membership.slug}"></span>
 										</span>
 									</span>
 									<span class="mem_div">{membership.name}</span>
@@ -395,7 +392,7 @@
 		margin: 0;
 		color: #333;
 		font-size: 36px;
-		font-weight: 300;
+		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.2;
 	}
@@ -435,29 +432,46 @@
 		}
 	}
 
-	/* Trading Room Rules - Exact Match */
-	.trading-room-rules {
+	/* Trading Room Rules - Exact WordPress Match (ultradingroom) */
+	.ultradingroom {
+		text-align: right;
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		text-align: right;
 	}
 
-	.rules-link {
-		font-size: 14px;
+	.ultradingroom .litradingroom {
+		display: block;
+	}
+
+	.ultradingroom .litradingroom a {
 		font-weight: 700 !important;
+		font-size: 14px;
 		color: #1e73be;
 		text-decoration: none;
 	}
 
-	.rules-link:hover {
+	.ultradingroom .litradingroom a:hover {
 		text-decoration: underline;
 	}
 
-	.rules-disclaimer {
+	.ultradingroom .litradingroomhind {
 		font-size: 11px;
 		color: #666;
-		margin-top: 4px;
+		display: block;
+	}
+
+	.btn-xs {
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	.btn-link {
+		background: none;
+		border: none;
+		color: #1e73be;
 	}
 
 	/* Dropdown - Exact Simpler Trading Match */
@@ -530,18 +544,39 @@
 		color: #0984ae;
 	}
 
-	.room-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+	/* Icon styles - WordPress match */
+	.icon {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	.icon--md {
 		width: 24px;
 		height: 24px;
-		margin-right: 6px;
+		font-size: 24px;
+		line-height: 24px;
+		margin-right: 8px;
+	}
+
+	.icon--lg {
+		width: 32px;
+		height: 32px;
+		font-size: 32px;
+		line-height: 32px;
+	}
+
+	/* Simpler Showcase icon - WordPress exact match */
+	.simpler-showcase-icon {
+		background: black !important;
+		color: orange !important;
+	}
+
+	.dropdown-menu ul li a .icon {
 		color: #999;
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dropdown-menu ul li a:hover .room-icon {
+	.dropdown-menu ul li a:hover .icon {
 		color: #0984ae;
 	}
 

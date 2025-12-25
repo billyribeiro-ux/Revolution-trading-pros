@@ -303,21 +303,10 @@
 			{/if}
 		</aside>
 
-		<!-- MOBILE OVERLAY -->
-		<div 
-			class="dashboard__overlay" 
-			onclick={closeMobileMenu}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
-			role="button"
-			tabindex="-1"
-			aria-label="Close menu"
-			data-toggle-dashboard-menu
-		></div>
-
-		<!-- MOBILE TOGGLE BUTTON -->
+		<!-- MOBILE TOGGLE BUTTON - OUTSIDE sidebar per WordPress structure -->
 		<footer class="dashboard__toggle">
-			<button 
-				type="button" 
+			<button
+				type="button"
 				class="dashboard__toggle-button"
 				onclick={toggleMobileMenu}
 				data-toggle-dashboard-menu
@@ -330,6 +319,17 @@
 				<span class="framework__toggle-button-label">Dashboard Menu</span>
 			</button>
 		</footer>
+
+		<!-- MOBILE OVERLAY - OUTSIDE sidebar per WordPress structure -->
+		<div
+			class="dashboard__overlay"
+			onclick={closeMobileMenu}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
+			role="button"
+			tabindex="-1"
+			aria-label="Close menu"
+			data-toggle-dashboard-menu
+		></div>
 
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">
