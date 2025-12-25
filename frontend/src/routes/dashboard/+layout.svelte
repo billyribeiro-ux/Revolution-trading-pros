@@ -16,6 +16,8 @@
 	import Footer from '$lib/components/sections/Footer.svelte';
 	
 	// Import pixel-perfect global styles from reference file 1
+	// Design tokens provide CSS custom properties for consistent styling
+	import '$lib/styles/design-tokens.css';
 	import '$lib/styles/dashboard-globals.css';
 	import '$lib/styles/st-icons.css';
 	import type { Snippet } from 'svelte';
@@ -686,6 +688,7 @@
 		text-align: center;
 		height: auto;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		position: relative;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
@@ -699,7 +702,7 @@
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
-		display: none;
+		/* Tooltip styles applied below - don't use display:none */
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-category {
@@ -709,6 +712,7 @@
 	.dashboard__nav-primary.is-collapsed .dash_main_links li a {
 		padding: 14px 0;
 		justify-content: center;
+		position: relative;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dash_main_links li a::after {
@@ -727,6 +731,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text,
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		display: block !important;
 		z-index: 100;
 		position: absolute;
 		left: 100%;
@@ -737,7 +742,7 @@
 		opacity: 0;
 		visibility: hidden;
 		background: #fff;
-		color: #333;
+		color: #333 !important;
 		border-radius: 5px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		white-space: nowrap;
