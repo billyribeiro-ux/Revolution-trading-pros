@@ -43,7 +43,8 @@ p {
    CONTAINER - Line 4598
    ═══════════════════════════════════════════════════════════════════════════════ */
 .grid-container {
-  max-width: 1160px;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -781,7 +782,7 @@ figure.weekly_watchlist .article-card__title {
    CONTAINER FLUID - Bootstrap style
    ═══════════════════════════════════════════════════════════════════════════════ */
 .container-fluid {
-  max-width: 1160px;
+  max-width: 100%;
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;

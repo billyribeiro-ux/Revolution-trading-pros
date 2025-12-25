@@ -390,11 +390,11 @@
 	   CONTAINER FLUID - Bootstrap-style Container (MISSING FROM YOUR DASHBOARD)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.container-fluid) {
-		max-width: 1160px;
+		max-width: 100%;
 		padding-right: 15px;
 		padding-left: 15px;
-		margin-right: auto;
-		margin-left: auto;
+		margin-right: 0;
+		margin-left: 0;
 		width: 100%;
 	}
 
@@ -463,8 +463,8 @@
 	}
 
 	:global(.site-content) {
-		max-width: 1160px;
-		margin: 0 auto;
+		max-width: 100%;
+		margin: 0;
 		background-color: #efefef !important;
 	}
 
@@ -483,8 +483,9 @@
 		display: flex;
 		flex-flow: row nowrap;
 		flex: 1;
-		max-width: 1160px;
-		margin: 0 auto;
+		max-width: 100%;
+		margin: 0;
+		width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

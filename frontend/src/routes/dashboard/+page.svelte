@@ -355,8 +355,7 @@
 	.dashboard__header {
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
-		border-right: 1px solid #dbdbdb;
-		max-width: 1160px;
+		max-width: 100%;
 		padding: 20px;
 		display: flex;
 		flex-wrap: wrap;
@@ -575,7 +574,7 @@
 	   DASHBOARD CONTENT - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.logged-in .dashboard__content) {
-		max-width: 1160px;
+		max-width: 100%;
 	}
 
 	.dashboard__content {
