@@ -635,15 +635,15 @@
 		margin-top: 20px;
 	}
 
-	/* Profile Section - Exact Match */
+	/* Profile Section - Flexbox aligned avatar with name */
 	.dashboard__profile-nav-item {
-		display: block;
-		height: auto;
-		line-height: 1.4;
-		padding: 32px 20px 28px 80px;
-		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 20px;
 		text-decoration: none;
-		color: hsla(0, 0%, 100%, 0.5);
+		color: hsla(0, 0%, 100%, 0.7);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.15s ease-in-out;
 	}
 
@@ -656,41 +656,27 @@
 		border-color: #0984ae;
 	}
 
-	.dashboard__profile-nav-item::after {
-		position: absolute;
-		display: block;
-		content: "";
-		top: 0;
-		right: 0;
-		bottom: 0;
-		width: 5px;
-		background: transparent;
-		transform: scale(1);
-		transition: all 0.15s ease-in-out;
-		transform-origin: 100% 50%;
-	}
-
 	.dashboard__profile-photo {
-		position: absolute;
-		top: 50%;
-		left: 30px;
-		margin-top: -17px;
-		width: 34px;
-		height: 34px;
+		width: 32px;
+		height: 32px;
+		min-width: 32px;
 		border: 2px solid #fff;
 		border-radius: 50%;
-		background: #1a3a4f no-repeat center;
-		background-size: 32px;
+		background-color: #1a3a4f;
+		background-size: cover;
+		background-position: center;
 		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-name {
-		display: block;
 		color: #fff;
-		font-size: 16px;
-		font-weight: 400;
+		font-size: 14px;
+		font-weight: 600;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	/* Navigation Links - Exact Match */
