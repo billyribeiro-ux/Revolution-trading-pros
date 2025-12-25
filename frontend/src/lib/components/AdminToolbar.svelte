@@ -592,7 +592,11 @@
 				isLoading = true;
 				try {
 					await getUser();
-					console.debug('[AdminToolbar] User loaded:', $userStore?.email);
+					// Type-safe access with proper null checking
+					const user = $userStore as AdminUser | null;
+					if (user?.email) {
+						console.debug('[AdminToolbar] User loaded:', user.email);
+					}
 				} catch (error) {
 					console.error('[AdminToolbar] Failed to load user:', error);
 					errorState.hasError = true;
@@ -682,11 +686,11 @@
 					<button
 						bind:this={quickMenuTriggerRef}
 						class="quick-menu-trigger"
-						onclick={(e) => {
+						onclick={(e: MouseEvent) => {
 							e.stopPropagation();
 							toggleQuickMenu();
 						}}
-						onkeydown={(e) => handleKeyDown(e, 'quick')}
+						onkeydown={(e: KeyboardEvent) => handleKeyDown(e, 'quick')}
 						aria-expanded={showQuickMenu}
 						aria-haspopup="true"
 						aria-controls="quick-menu-dropdown"
@@ -747,11 +751,11 @@
 					<button
 						bind:this={userMenuTriggerRef}
 						class="user-menu-trigger"
-						onclick={(e) => {
+						onclick={(e: MouseEvent) => {
 							e.stopPropagation();
 							toggleUserMenu();
 						}}
-						onkeydown={(e) => handleKeyDown(e, 'user')}
+						onkeydown={(e: KeyboardEvent) => handleKeyDown(e, 'user')}
 						aria-expanded={showDropdown}
 						aria-haspopup="true"
 						aria-controls="user-menu-dropdown"

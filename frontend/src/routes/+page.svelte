@@ -24,7 +24,14 @@
 	let { data }: { data: PageData } = $props();
 
 	// Posts state - use SSR data or fetch client-side
-	let posts = $state(data.posts || []);
+	let posts = $state<any[]>([]);
+
+	// Sync posts with data.posts reactively
+	$effect(() => {
+		if (data.posts && data.posts.length > 0) {
+			posts = data.posts;
+		}
+	});
 
 	// Client-side fallback fetch if SSR returned empty
 	onMount(async () => {

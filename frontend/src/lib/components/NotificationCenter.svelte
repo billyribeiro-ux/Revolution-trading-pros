@@ -135,7 +135,7 @@
 		class="notification-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={close}
-		onkeydown={(e) => e.key === 'Enter' && close()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && close()}
 		role="button"
 		tabindex="0"
 		aria-label="Close notification center"
@@ -143,8 +143,8 @@
 		<div
 			class="notification-panel"
 			transition:fly={{ x: 320, duration: 300, easing: quintOut }}
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="presentation"
 		>
 			<!-- Header -->
