@@ -735,9 +735,561 @@ These are page-specific overrides and additions.
 		text-align: center;
 	}
 
-	.btn-tiny {
-		padding: 5px 10px;
+	.icon--md {
+		width: 24px;
+		height: 24px;
+		font-size: 24px;
+		line-height: 24px;
+		margin-right: 8px;
+	}
+
+	.icon--lg {
+		width: 32px;
+		height: 32px;
+		font-size: 32px;
+		line-height: 32px;
+	}
+
+	/* Simpler Showcase icon - WordPress exact match */
+	.simpler-showcase-icon {
+		background: black !important;
+		color: orange !important;
+	}
+
+	.dropdown-menu ul li a .icon {
+		color: #999;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dropdown-menu ul li a:hover .icon {
+		color: #0984ae;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD CONTENT - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.logged-in .dashboard__content) {
+		max-width: 100%;
+	}
+
+	.dashboard__content {
+		display: flex;
+		flex-flow: row nowrap;
+	}
+
+	.dashboard__content-main {
+		border-right: 1px solid #dbdbdb;
+		flex: 1 1 auto;
+		background-color: #efefef;
+		min-width: 0;
+	}
+
+	.dashboard__content-section {
+		padding: 30px 40px;
+		background-color: #fff;
+		margin-bottom: 20px;
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__content-section {
+			padding: 30px;
+		}
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__content-section {
+			padding: 40px;
+		}
+	}
+
+	.dashboard__content-section + .dashboard__content-section {
+		border-top: 1px solid #dbdbdb;
+	}
+
+	.section-title,
+	h2.section-title {
+		color: #333;
+		font-size: 32px;
+		font-weight: 700;
+		margin: 0 0 30px;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.2;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MEMBERSHIP CARDS - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.membership-cards {
+		margin-top: -30px;
+	}
+
+	.membership-cards.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin: -30px -15px 0;
+	}
+
+	/* Fix for proper Bootstrap-style grid negative margins */
+	.row {
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+		padding: 0 15px;
+		box-sizing: border-box;
+		margin-top: 30px;
+	}
+
+	.col-xl-4 {
+		flex: 0 0 33.333%;
+		max-width: 33.333%;
+	}
+
+	@media (max-width: 992px) {
+		.col-xl-4 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (max-width: 641px) {
+		.col-sm-6,
+		.col-xl-4 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+	}
+
+	.membership-card {
+		margin-top: 30px;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
+		overflow: hidden;
+	}
+
+	.membership-card:hover {
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transform: translateY(-2px);
+	}
+
+	.membership-card__header {
+		display: block;
+		padding: 20px;
+		color: #333;
+		font-weight: 700;
+		white-space: nowrap;
+		transition: all 0.15s ease-in-out;
+		text-decoration: none;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 17px;
+		line-height: 1.4;
+	}
+
+	.membership-card__header:visited {
+		color: #333;
+	}
+
+	.membership-card__header:focus,
+	.membership-card__header:hover {
+		color: #0984ae;
+	}
+
+	.mem_icon,
+	.mem_div {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	.mem_div {
+		white-space: normal;
+		width: calc(100% - 43px);
+	}
+
+	.membership-card__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 50px;
+		height: 50px;
+		margin-right: 9px;
+		color: #fff;
+		border-radius: 50%;
+		transition: all 0.15s ease-in-out;
+		background-color: #0984ae;
+		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
+	}
+
+	/* Tabler SVG icons inside membership card icons */
+	.membership-card__icon :global(svg) {
+		width: 28px;
+		height: 28px;
+		stroke: currentColor;
+	}
+
+	.membership-card__header:hover .membership-card__icon {
+		background-color: #076787;
+		box-shadow: 0 15px 30px rgba(9, 132, 174, 0.2);
+	}
+
+	.membership-card__actions {
+		display: flex;
+		font-size: 14px;
+		border-top: 1px solid #dbdbdb;
+		justify-content: center;
+	}
+
+	.membership-card__actions a {
+		display: block;
+		flex: 0 0 auto;
+		flex-basis: 50%;
+		width: 50%;
+		height: 100%;
+		padding: 15px;
+		text-align: center;
+		text-decoration: none;
+		color: #0984ae;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		font-weight: 400;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.membership-card__actions a:hover {
+		background-color: #f4f4f4;
+		color: #0984ae;
+	}
+
+	.membership-card__actions a + a {
+		border-left: 1px solid #dbdbdb;
+	}
+
+	/* Loading, Error & Empty States */
+	.loading-state,
+	.error-state {
+		padding: 40px;
+		text-align: center;
+		color: #666;
+		font-size: 14px;
+		width: 100%;
+	}
+
+	.error-state p {
+		margin: 0 0 20px 0;
+		color: #dc3545;
+	}
+
+	/* Article Cards - Simpler Trading Style */
+	.article-cards {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px;
+	}
+
+	.article-cards.row {
+		margin: 0 -10px;
+	}
+
+	.flex-grid {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.flex-grid-item {
+		display: flex;
+	}
+
+	.col-xs-12 {
+		width: 100%;
+		padding: 0 10px;
+		box-sizing: border-box;
+		margin-bottom: 20px;
+	}
+
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+
+	.col-md-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+
+	.col-xl-4 {
+		flex: 0 0 33.333%;
+		max-width: 33.333%;
+	}
+
+	@media (max-width: 992px) {
+		.col-xl-4 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (max-width: 641px) {
+		.col-sm-6,
+		.col-md-6,
+		.col-xl-4 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+	}
+
+	.article-card {
+		background: #fff;
+		border-radius: 5px;
+		overflow: hidden;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.article-card:hover {
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+	}
+
+	.article-card__image {
+		position: relative;
+		width: 100%;
+		height: 200px;
+		background-size: cover;
+		background-position: center;
+		margin: 0;
+	}
+
+	.article-card__image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+	}
+
+	.article-card__type {
+		padding: 12px 20px 0;
+	}
+
+	.label {
+		display: inline-block;
+		padding: 4px 12px;
+		border-radius: 3px;
 		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.label--info {
+		background: #0984ae;
+		color: #fff;
+	}
+
+	.article-card__title {
+		padding: 12px 20px 0;
+		margin: 0;
+	}
+
+	.article-card__title a {
+		color: #333;
+		text-decoration: none;
+		font-size: 18px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
+		transition: color 0.2s;
+	}
+
+	.article-card__title a:hover {
+		color: #0984ae;
+	}
+
+	.h5 {
+		font-size: 18px;
+		font-weight: 600;
+	}
+
+	.article-card__meta {
+		display: block;
+		padding: 8px 20px 0;
+		color: #999;
+		font-size: 13px;
+	}
+
+	.article-card__excerpt {
+		padding: 12px 20px;
+		color: #666;
+		font-size: 14px;
+		line-height: 1.6;
+	}
+
+	.article-card__excerpt p {
+		margin: 0;
+	}
+
+	.u--hide-read-more {
+		display: none;
+	}
+
+	.woocommerce {
+		margin: 0;
+	}
+
+	.wc-memberships-restriction-message {
+		background: #f8f9fa;
+		border-left: 4px solid #0984ae;
+		padding: 12px 16px;
+		margin: 0;
+		color: #666;
+		font-size: 13px;
+		border-radius: 3px;
+	}
+
+	.article-card .btn {
+		margin: 0 20px 20px;
+	}
+
+	.btn-tiny {
+		padding: 8px 16px;
+		font-size: 13px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   WEEKLY WATCHLIST SECTION - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.section-title-alt {
+		color: #0984ae;
+		font-weight: 700;
+		font-size: 14px;
+		letter-spacing: 0.2em;
+		margin-bottom: 30px;
+		text-transform: uppercase;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.section-title-alt--underline {
+		padding-bottom: 30px;
+		position: relative;
+	}
+
+	.section-title-alt--underline::after {
+		background-color: #e8e8e8;
+		bottom: 2px;
+		content: " ";
+		display: block;
+		height: 2px;
+		position: absolute;
+		left: 0;
+		width: 50px;
+	}
+
+	.u--background-color-white {
+		background-color: #fff !important;
+		padding: 40px;
+	}
+
+	.u--border-radius {
+		border-radius: 8px !important;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700 !important;
+	}
+
+
+	.hidden-md {
+		display: block;
+	}
+
+	.d-lg-none {
+		display: block;
+	}
+
+	@media (min-width: 992px) {
+		.d-lg-none {
+			display: none !important;
+		}
+	}
+
+	.pb-2 {
+		padding-bottom: 0.5rem;
+	}
+
+	.hidden-xs,
+	.hidden-sm {
+		display: none;
+	}
+
+	.d-none {
+		display: none !important;
+	}
+
+	.d-lg-block {
+		display: none !important;
+	}
+
+	@media (min-width: 992px) {
+		.d-lg-block {
+			display: block !important;
+		}
+
+		.hidden-xs,
+		.hidden-sm {
+			display: block;
+		}
+	}
+
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px;
+	}
+
+	.col-sm-6,
+	.col-lg-5,
+	.col-lg-7 {
+		position: relative;
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+
+	@media (min-width: 641px) {
+		.col-sm-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-5 {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
+
+		.col-lg-7 {
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+		}
+	}
+
+	.dashboard__content-section section {
+		margin: 0;
+	}
+
+	.dashboard__content-section section img {
+		width: 100%;
+		height: auto;
+		display: block;
 	}
 
 	.btn-default {
