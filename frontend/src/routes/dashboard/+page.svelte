@@ -138,15 +138,15 @@
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
 			<div class="dropdown display-inline-block" class:is-open={dropdownOpen}>
-				<a
-					href="#"
+				<button
+					type="button"
 					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
 					id="dLabel"
 					onclick={handleDropdownToggle}
 					aria-expanded={dropdownOpen}
 				>
 					<strong>Enter a Trading Room</strong>
-				</a>
+				</button>
 
 				{#if dropdownOpen}
 					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
@@ -311,7 +311,7 @@
 						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 						<div class="hidden-md d-lg-none pb-2">
 							<a class="" href="/watchlist/latest">
-								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
 							</a>
 						</div>
 						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
@@ -322,7 +322,7 @@
 					</div>
 					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 						<a href="/watchlist/latest">
-							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
 						</a>
 					</div>
 				</div>
