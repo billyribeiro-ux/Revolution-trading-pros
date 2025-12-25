@@ -8,22 +8,31 @@
 	import IconBrandTwitter from '@tabler/icons-svelte/icons/brand-twitter';
 	import IconMail from '@tabler/icons-svelte/icons/mail';
 
+	// Mock trader data - Billy Ribeiro, Freddie Ferber, Shao Wan
 	const traders = [
 		{
 			id: 1,
-			name: 'Options Expert',
-			title: 'Lead Options Trader',
-			bio: 'Specializing in options strategies with over 20 years of experience in the markets.',
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			specialties: ['Options Strategies', 'Weekly Options', 'Risk Management']
+			name: 'Billy Ribeiro',
+			title: 'Lead Day Trader',
+			bio: 'Billy brings a disciplined approach to day trading with a focus on high-probability setups and risk management. His systematic methodology helps traders develop consistent profitability.',
+			image: '/images/traders/billy-ribeiro.jpg',
+			specialties: ['Day Trading', 'Risk Management', 'Technical Analysis']
 		},
 		{
 			id: 2,
-			name: 'Senior Analyst',
-			title: 'Options Analyst',
-			bio: 'Expert in options flow analysis and unusual activity detection.',
-			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-			specialties: ['Options Flow', 'Technical Analysis', 'Volatility Trading']
+			name: 'Freddie Ferber',
+			title: 'Senior Options Trader',
+			bio: 'Freddie specializes in options strategies and momentum trading. His expertise in reading market dynamics and identifying high-probability trades has helped countless traders succeed.',
+			image: '/images/traders/freddie-ferber.jpg',
+			specialties: ['Options Strategies', 'Momentum Trading', 'Swing Trading']
+		},
+		{
+			id: 3,
+			name: 'Shao Wan',
+			title: 'Quantitative Trading Expert',
+			bio: 'Shao combines technical analysis with quantitative methods to identify market opportunities. His data-driven approach provides unique insights into market behavior and trading patterns.',
+			image: '/images/traders/shao-wan.jpg',
+			specialties: ['Quantitative Analysis', 'Price Action', 'Futures Trading']
 		}
 	];
 </script>
@@ -62,8 +71,8 @@
 					<div class="trader-actions">
 						<a href="/traders/{trader.id}" class="view-profile-btn">View Profile</a>
 						<div class="social-links">
-							<a href="#" class="social-link" aria-label="Twitter"><IconBrandTwitter size={18} /></a>
-							<a href="#" class="social-link" aria-label="Email"><IconMail size={18} /></a>
+							<button type="button" class="social-link" aria-label="Twitter"><IconBrandTwitter size={18} /></button>
+							<button type="button" class="social-link" aria-label="Email"><IconMail size={18} /></button>
 						</div>
 					</div>
 				</div>
@@ -94,7 +103,7 @@
 	.view-profile-btn { display: inline-block; padding: 10px 20px; background: #0984ae; color: #fff; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: 600; transition: background 0.2s; }
 	.view-profile-btn:hover { background: #076787; }
 	.social-links { display: flex; gap: 12px; }
-	.social-link { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #f5f5f5; color: #666; border-radius: 50%; transition: all 0.2s; }
+	.social-link { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: #f5f5f5; color: #666; border-radius: 50%; border: none; cursor: pointer; transition: all 0.2s; }
 	.social-link:hover { background: #0984ae; color: #fff; }
 	@media (max-width: 768px) { .traders { padding: 20px; } .traders-grid { grid-template-columns: 1fr; } }
 </style>

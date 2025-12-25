@@ -3,15 +3,23 @@
 	 * View Subscription - Account Section
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Subscription details view page
+	 * Subscription details view page with cancel functionality
 	 *
-	 * @version 2.0.0 - 100% Pixel Perfect
+	 * @version 2.1.0 - API Integration + 100% Pixel Perfect
 	 */
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { cancelSubscription } from '$lib/api/user-memberships';
 
 	const subscriptionId = $page.params.id;
 
-	// Sample subscription data
+	// State for cancel flow
+	let showCancelModal = $state(false);
+	let cancelReason = $state('');
+	let cancelling = $state(false);
+	let cancelError = $state('');
+
+	// Sample subscription data (will be replaced with API fetch)
 	const subscription = {
 		id: subscriptionId,
 		status: 'Active',
@@ -31,6 +39,27 @@
 			country: 'United States'
 		}
 	};
+
+	// Handle cancel subscription
+	async function handleCancelSubscription() {
+		cancelling = true;
+		cancelError = '';
+
+		try {
+			await cancelSubscription(subscriptionId, {
+				cancel_immediately: false,
+				reason: cancelReason || undefined
+			});
+
+			// Success - redirect back to subscriptions
+			showCancelModal = false;
+			goto('/dashboard/account/subscriptions?cancelled=true');
+		} catch (err) {
+			cancelError = err instanceof Error ? err.message : 'Failed to cancel subscription';
+		} finally {
+			cancelling = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -77,9 +106,36 @@
 				<h3>Subscription Actions</h3>
 				<div class="action-buttons">
 					<button class="btn btn-default">Update Payment Method</button>
-					<button class="btn btn-warning">Cancel Subscription</button>
+					<button class="btn btn-warning" onclick={() => showCancelModal = true}>Cancel Subscription</button>
 				</div>
 			</div>
+
+			<!-- Cancel Confirmation Modal -->
+			{#if showCancelModal}
+				<div class="modal-overlay" onclick={() => showCancelModal = false} role="presentation">
+					<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+						<h3 id="cancel-title">Cancel Subscription</h3>
+						<p>Are you sure you want to cancel your subscription to <strong>{subscription.product}</strong>?</p>
+						<p class="modal-note">Your subscription will remain active until the end of your current billing period.</p>
+
+						<div class="form-group">
+							<label for="cancel-reason">Reason for cancellation (optional)</label>
+							<textarea id="cancel-reason" bind:value={cancelReason} rows="3" placeholder="Please let us know why you're canceling..."></textarea>
+						</div>
+
+						{#if cancelError}
+							<div class="error-message">{cancelError}</div>
+						{/if}
+
+						<div class="modal-actions">
+							<button class="btn btn-default" onclick={() => showCancelModal = false} disabled={cancelling}>Keep Subscription</button>
+							<button class="btn btn-danger" onclick={handleCancelSubscription} disabled={cancelling}>
+								{cancelling ? 'Canceling...' : 'Confirm Cancellation'}
+							</button>
+						</div>
+					</div>
+				</div>
+			{/if}
 
 			<div class="billing-address">
 				<h3>Billing Address</h3>
@@ -221,5 +277,105 @@
 
 	.btn-warning:hover {
 		background: #ffe69c;
+	}
+
+	.btn-danger {
+		background: #dc3545;
+		color: #fff;
+		border: 1px solid #dc3545;
+	}
+
+	.btn-danger:hover {
+		background: #c82333;
+	}
+
+	.btn-danger:disabled,
+	.btn-default:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	/* Modal styles */
+	.modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+	}
+
+	.modal {
+		background: #fff;
+		border-radius: 8px;
+		padding: 30px;
+		max-width: 500px;
+		width: 90%;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	}
+
+	.modal h3 {
+		font-size: 20px;
+		font-weight: 700;
+		margin: 0 0 15px;
+		color: #333;
+	}
+
+	.modal p {
+		font-size: 14px;
+		color: #666;
+		margin: 0 0 10px;
+	}
+
+	.modal-note {
+		font-size: 13px;
+		color: #999;
+		margin-bottom: 20px !important;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	.form-group label {
+		display: block;
+		font-size: 14px;
+		font-weight: 600;
+		color: #333;
+		margin-bottom: 8px;
+	}
+
+	.form-group textarea {
+		width: 100%;
+		padding: 10px 12px;
+		font-size: 14px;
+		border: 1px solid #dbdbdb;
+		border-radius: 4px;
+		resize: vertical;
+		font-family: inherit;
+	}
+
+	.form-group textarea:focus {
+		outline: none;
+		border-color: #0984ae;
+	}
+
+	.error-message {
+		background: #f8d7da;
+		color: #721c24;
+		padding: 10px 15px;
+		border-radius: 4px;
+		font-size: 14px;
+		margin-bottom: 20px;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
 	}
 </style>

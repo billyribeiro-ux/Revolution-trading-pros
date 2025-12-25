@@ -4,13 +4,34 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * 100% PIXEL-PERFECT match to SimplerMyIndicators reference
-	 * Empty state with "See All Indicators" button
+	 * API integration for member vs non-member conditional rendering
 	 *
-	 * @version 2.0.0 - 100% Pixel Perfect
+	 * @version 2.1.0 - API Integration + 100% Pixel Perfect
 	 */
+	import { onMount } from 'svelte';
+	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 
-	// Sample indicators - empty by default matching reference
-	const indicators: { id: number; name: string; slug: string }[] = [];
+	// Loading and data state
+	let loading = $state(true);
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
+
+	// Get user's owned indicators from API
+	$effect(() => {
+		// This will re-run if membershipsData changes
+	});
+
+	onMount(async () => {
+		try {
+			membershipsData = await getUserMemberships();
+		} catch (err) {
+			console.error('Failed to load indicators:', err);
+		} finally {
+			loading = false;
+		}
+	});
+
+	// Derived indicators list from API response
+	const indicators = $derived(membershipsData?.indicators || []);
 </script>
 
 <svelte:head>
@@ -23,7 +44,13 @@
 		<section class="dashboard__content-section">
 			<h2 class="section-title">My Indicators</h2>
 			<div>
-				{#if indicators.length > 0}
+				{#if loading}
+					<!-- Loading State -->
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<p>Loading your indicators...</p>
+					</div>
+				{:else if indicators.length > 0}
 					<div class="card-grid flex-grid row">
 						{#each indicators as indicator}
 							<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
@@ -58,6 +85,36 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   100% PIXEL-PERFECT STYLES - Matching SimplerMyIndicators reference
 	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 200px;
+		gap: 16px;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e7eb;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-state p {
+		color: #666;
+		font-size: 14px;
+	}
 
 	.section-title {
 		font-size: 24px;
