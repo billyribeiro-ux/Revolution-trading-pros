@@ -1,0 +1,836 @@
+/**
+ * PIXEL-PERFECT DASHBOARD STYLES
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * Extracted EXACTLY from reference file 1 (simplertrading.com/dashboard)
+ * Line references included for verification
+ * 
+ * ICT 11+ Principal Engineer Standard - Apple Quality
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BODY & BASE STYLES - Line 4598
+   ═══════════════════════════════════════════════════════════════════════════════ */
+body {
+  background-color: #efefef;
+  color: #666666;
+}
+
+body, button, input, select, textarea {
+  font-family: "Open Sans", sans-serif;
+}
+
+a, a:visited {
+  color: #1e73be;
+}
+
+a:hover, a:focus, a:active {
+  color: #000000;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTAINER - Line 4598
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.grid-container {
+  max-width: 1160px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY - Line 4598
+   ═══════════════════════════════════════════════════════════════════════════════ */
+h1 {
+  font-family: "Open Sans Condensed", sans-serif;
+  font-weight: bold;
+  font-size: 44px;
+  line-height: 1.1em;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 26px;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 30px;
+  }
+  h2 {
+    font-size: 25px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAVIGATION - Line 4598
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.main-navigation,
+.main-navigation ul ul {
+  background-color: #0a2335;
+}
+
+.main-navigation .main-nav ul li a,
+.menu-toggle {
+  color: #ffffff;
+  font-family: "Open Sans", sans-serif;
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+.main-navigation .main-nav ul ul li a {
+  font-size: 13px;
+}
+
+.main-navigation .main-nav ul li:hover > a,
+.main-navigation .main-nav ul li:focus > a,
+.main-navigation .main-nav ul li.sfHover > a {
+  color: #0a2335;
+  background-color: #e9ebed;
+}
+
+.main-navigation .main-nav ul li[class*="current-menu-"] > a {
+  color: #ffffff;
+  background-color: rgba(48, 48, 48, 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SIDEBAR - Exact from dashboard.css
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__sidebar {
+  width: 220px;
+  background-color: #0f2d41;
+  min-height: 100%;
+}
+
+.dashboard__nav-primary {
+  width: 220px;
+  padding-bottom: 30px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.dashboard__nav-category {
+  color: hsla(0, 0%, 100%, 0.3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin: 0;
+  padding: 20px 20px 12px;
+  text-transform: uppercase;
+}
+
+.dash_main_links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dash_main_links a {
+  color: hsla(0, 0%, 100%, 0.7);
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.dash_main_links a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.dash_main_links li.is-active a {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.dashboard__nav-item-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  font-size: 24px;
+  color: #0984ae;
+  vertical-align: middle;
+}
+
+.dashboard__nav-item-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD HEADER - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__header {
+  background-color: #fff;
+  border-bottom: 1px solid #dbdbdb;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+@media screen and (min-width: 1280px) {
+  .dashboard__header {
+    padding: 30px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .dashboard__header {
+    padding: 30px 40px;
+  }
+}
+
+.dashboard__page-title {
+  margin: 0;
+  color: #333;
+  font-size: 36px;
+  font-weight: 300;
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD CONTENT - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__content {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.dashboard__content-main {
+  border-right: 1px solid #dbdbdb;
+  flex: 1 1 auto;
+  background-color: #efefef;
+  min-width: 0;
+}
+
+.dashboard__content-section {
+  padding: 30px 40px;
+  background-color: #fff;
+  margin-bottom: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.dashboard__content-section + .dashboard__content-section {
+  border-top: 1px solid #dbdbdb;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECTION TITLES - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.section-title,
+h2.section-title {
+  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 30px;
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.2;
+}
+
+.section-title-alt {
+  color: #0984ae;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0 0 15px;
+  font-family: 'Open Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-title-alt--underline {
+  padding-bottom: 30px;
+  position: relative;
+}
+
+.section-title-alt--underline::after {
+  background-color: #e8e8e8;
+  bottom: 2px;
+  content: " ";
+  display: block;
+  height: 2px;
+  position: absolute;
+  left: 0;
+  width: 50px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MEMBERSHIP CARDS - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.membership-cards {
+  margin-top: -30px;
+}
+
+.membership-cards.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -30px -15px 0;
+}
+
+.row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.col-sm-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 0 15px;
+  box-sizing: border-box;
+  margin-top: 30px;
+}
+
+.col-xl-4 {
+  flex: 0 0 33.333%;
+  max-width: 33.333%;
+}
+
+@media (max-width: 1199px) {
+  .col-xl-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 767px) {
+  .col-sm-6,
+  .col-xl-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+.membership-card {
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.membership-card:hover {
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.membership-card__header {
+  display: block;
+  padding: 20px;
+  color: #333;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.membership-card__header:hover {
+  background-color: #f4f4f4;
+}
+
+.membership-card__header:visited {
+  color: #333;
+}
+
+.membership-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  color: #0984ae;
+}
+
+.membership-card__actions {
+  display: flex;
+  border-top: 1px solid #dbdbdb;
+}
+
+.membership-card__actions a {
+  flex: 1 1 auto;
+  padding: 15px 10px;
+  color: #0984ae;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.membership-card__actions a:hover {
+  background-color: #f4f4f4;
+}
+
+.membership-card__actions a + a {
+  border-left: 1px solid #dbdbdb;
+}
+
+/* mem_icon and mem_div - Line 5776-5785 */
+.mem_icon,
+.mem_div {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.mem_div {
+  white-space: normal;
+  width: calc(100% - 43px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BUTTONS - Exact from reference (Lines 3942-3995)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-xs {
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+.btn-tiny {
+  padding: 5px 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+.btn-link {
+  color: #0984ae;
+  font-weight: 400;
+  border-radius: 0;
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.btn-link:hover,
+.btn-link:focus {
+  color: #065a75;
+  text-decoration: underline;
+  background-color: transparent;
+}
+
+.btn-orange,
+.btn-tradingroom {
+  background-color: #F69532;
+  color: #fff;
+  border-color: #F69532;
+}
+
+.btn-orange:hover,
+.btn-tradingroom:hover {
+  background-color: #dc7309;
+  border-color: #dc7309;
+  color: #fff;
+}
+
+.btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.btn-default:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+
+.shaped-btn {
+  display: block;
+  border-radius: 25px;
+  width: 100%;
+  font-weight: 800;
+  font-size: 18px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  letter-spacing: 1.125px;
+  transition: all .2s ease-in-out;
+}
+
+.squared-btn {
+  display: block;
+  border-radius: 4px;
+  width: 100%;
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  letter-spacing: 1.125px;
+  transition: all .2s ease-in-out;
+}
+
+.primary-btn {
+  background-color: #F69532;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+}
+
+.primary-btn:hover {
+  background-color: #dc7309;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DROPDOWN - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.display-inline-block {
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 200px;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+  font-size: 14px;
+}
+
+.dropdown-menu ul,
+.dropdown-menu__menu {
+  list-style: none;
+  margin: -10px;
+  padding: 0;
+}
+
+.dropdown-menu ul li a,
+.dropdown-menu__menu li a {
+  display: block;
+  padding: 10px 15px;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease-in-out;
+}
+
+.dropdown-menu ul li a:hover,
+.dropdown-menu__menu li a:hover {
+  background-color: #f4f4f4;
+  color: #0984ae;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ICON SIZES - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon--lg {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.icon--md {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.st-icon-this-week {
+  font-size: 28px;
+}
+
+.simpler-showcase-icon {
+  background: black !important;
+  color: orange !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.u--background-color-white {
+  background-color: #fff !important;
+}
+
+.u--border-radius {
+  border-radius: 8px !important;
+}
+
+.u--font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.u--hide-read-more {
+  overflow: hidden;
+}
+
+.u--margin-top-20 {
+  margin-top: 20px !important;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem !important;
+}
+
+/* Hidden classes */
+.hidden-xs,
+.hidden-sm,
+.hidden-md {
+  display: block;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.d-lg-none {
+  display: none;
+}
+
+.d-lg-block {
+  display: block;
+}
+
+@media (max-width: 991px) {
+  .hidden-md {
+    display: none !important;
+  }
+  .d-lg-none {
+    display: block;
+  }
+  .d-lg-block {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hidden-sm {
+    display: none !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .hidden-xs {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD SPECIFIC - Line 4011-4034
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__nav-secondary .dashboard__nav-submenu {
+  z-index: 110 !important;
+}
+
+.tr_img_wrap {
+  padding: 0 !important;
+}
+
+figure.weekly_watchlist .article-card__title {
+  padding: 0 !important;
+}
+
+.ultradingroom {
+  max-width: 299px;
+  display: none;
+}
+
+.litradingroomhind {
+  width: 300px;
+  float: right;
+}
+
+/* Mobile navigation override - Line 4050-4054 */
+@media (max-width: 641px) {
+  .main-navigation .main-nav ul li[class*="current-menu-"] > a,
+  .main-navigation .main-nav ul li > a {
+    color: #191717 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTENT SIDEBAR - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__content-sidebar {
+  flex: 0 0 auto;
+  width: 300px;
+  background-color: #fff;
+  border-left: 1px solid #dbdbdb;
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .dashboard__content-sidebar {
+    display: block;
+  }
+}
+
+.content-sidebar__section {
+  padding: 20px;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.content-sidebar__heading {
+  color: #333;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BREADCRUMBS - Exact from reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.breadcrumbs {
+  z-index: 1;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.breadcrumbs .container-fluid {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.breadcrumbs ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.breadcrumbs li {
+  display: inline;
+  margin: 0;
+}
+
+.breadcrumbs a {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+
+.breadcrumbs a:hover {
+  color: #0984ae;
+  text-decoration: underline;
+}
+
+.breadcrumbs .separator {
+  margin: 0 8px;
+  color: #999;
+}
+
+.breadcrumbs strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTAINER FLUID - Bootstrap style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.container-fluid {
+  max-width: 1160px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PROFILE NAV ITEM
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__profile-nav-item {
+  display: block;
+  height: auto;
+  line-height: 1.4;
+  padding: 32px 20px 28px 80px;
+  position: relative;
+  text-decoration: none;
+  color: hsla(0, 0%, 100%, 0.5);
+  transition: all 0.15s ease-in-out;
+}
+
+.dashboard__profile-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.dashboard__profile-photo {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid hsla(0, 0%, 100%, 0.2);
+  background-color: #0f2d41;
+  background-size: cover;
+  background-position: center;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+  border-color: #0984ae;
+}
+
+.dashboard__profile-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   EMPTY PARAGRAPH FIX - Line 3924
+   ═══════════════════════════════════════════════════════════════════════════════ */
+p:empty {
+  display: none;
+}
+
+.scanner-load-content img[src*="/public/images/space.gif"] {
+  display: none;
+}
