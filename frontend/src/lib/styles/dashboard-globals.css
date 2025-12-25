@@ -241,15 +241,15 @@ h3 {
 .section-title,
 h2.section-title {
   color: #333;
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0 0 30px;
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0 0 20px;
   font-family: 'Open Sans', sans-serif;
-  line-height: 1.2;
+  line-height: 1.4;
 }
 
 .section-title-alt {
-  color: #0984ae;
+  color: #F69532;
   font-size: 11px;
   font-weight: 700;
   margin: 0 0 15px;
@@ -338,12 +338,12 @@ h2.section-title {
   display: block;
   padding: 20px;
   color: #333;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
   transition: all 0.15s ease-in-out;
   text-decoration: none;
   font-family: 'Open Sans', sans-serif;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.4;
 }
 
@@ -362,7 +362,9 @@ h2.section-title {
   width: 40px;
   height: 40px;
   margin-right: 10px;
-  color: #0984ae;
+  color: #fff;
+  background-color: #0984ae;
+  border-radius: 50%;
 }
 
 .membership-card__actions {
@@ -465,15 +467,15 @@ h2.section-title {
 }
 
 .btn-default {
-  color: #333;
-  background-color: #fff;
-  border-color: #ccc;
+  color: #fff;
+  background-color: #F69532;
+  border-color: #F69532;
 }
 
 .btn-default:hover {
-  color: #333;
-  background-color: #e6e6e6;
-  border-color: #adadad;
+  color: #fff;
+  background-color: #dc7309;
+  border-color: #dc7309;
 }
 
 .shaped-btn {
