@@ -45,6 +45,10 @@
 	import IconArchive from '@tabler/icons-svelte/icons/archive';
 	import IconUsers from '@tabler/icons-svelte/icons/users';
 	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconAward from '@tabler/icons-svelte/icons/award';
+	import IconBuildingStore from '@tabler/icons-svelte/icons/building-store';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -358,36 +362,73 @@
 			{#if currentMembershipSlug}
 				<nav class="dashboard__nav-secondary">
 					<ul class="dash_main_links">
+						<!-- Dashboard with membership name -->
 						<li class={$page.url.pathname === `/dashboard/${currentMembershipSlug}` || $page.url.pathname === `/dashboard/${currentMembershipSlug}/` ? 'is-active' : ''}>
 							<a href="/dashboard/{currentMembershipSlug}">
 								<span class="dashboard__nav-item-icon">
 									<IconLayoutDashboard size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">Dashboard</span>
+								<span class="dashboard__nav-item-text">{breadcrumbTitles[currentMembershipSlug] || 'Dashboard'} Dashboard</span>
 							</a>
 						</li>
-						<li class={$page.url.pathname.includes('/start-here') ? 'is-active' : ''}>
-							<a href="/dashboard/{currentMembershipSlug}/start-here">
+						<!-- Premium Daily Videos -->
+						<li class={$page.url.pathname.includes('/daily-videos') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/daily-videos">
 								<span class="dashboard__nav-item-icon">
-									<IconStar size={24} />
+									<IconPlayerPlay size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">Start Here</span>
+								<span class="dashboard__nav-item-text">Premium Daily Videos</span>
 							</a>
 						</li>
+						<!-- Learning Center -->
 						<li class={$page.url.pathname.includes('/learning-center') ? 'is-active' : ''}>
 							<a href="/dashboard/{currentMembershipSlug}/learning-center">
 								<span class="dashboard__nav-item-icon">
-									<IconBooks size={24} />
+									<IconAward size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Learning Center</span>
 							</a>
 						</li>
-						<li class={$page.url.pathname.includes('/resources') ? 'is-active' : ''}>
-							<a href="/dashboard/{currentMembershipSlug}/resources">
+						<!-- Trading Room Archives -->
+						<li class={$page.url.pathname.includes('/trading-room-archive') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/trading-room-archive">
 								<span class="dashboard__nav-item-icon">
 									<IconArchive size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">Resources</span>
+								<span class="dashboard__nav-item-text">Trading Room Archives</span>
+							</a>
+						</li>
+						<!-- Meet the Traders (with arrow) -->
+						<li class={$page.url.pathname.includes('/traders') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/traders">
+								<span class="dashboard__nav-item-icon">
+									<IconUsers size={24} />
+								</span>
+								<span class="dashboard__nav-item-text">Meet the Traders</span>
+								<span class="nav-arrow">
+									<IconChevronRight size={16} />
+								</span>
+							</a>
+						</li>
+						<!-- Trader Store (with arrow) -->
+						<li class={$page.url.pathname.includes('/trader-store') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/trader-store">
+								<span class="dashboard__nav-item-icon">
+									<IconBuildingStore size={24} />
+								</span>
+								<span class="dashboard__nav-item-text">Trader Store</span>
+								<span class="nav-arrow">
+									<IconChevronRight size={16} />
+								</span>
+							</a>
+						</li>
+						<!-- Simpler Showcase -->
+						<li class={$page.url.pathname.includes('/simpler-showcase') ? 'is-active' : ''}>
+							<a href="/dashboard/simpler-showcase">
+								<span class="dashboard__nav-item-icon">
+									<IconTrophy size={24} />
+								</span>
+								<span class="dashboard__nav-item-text">Simpler Showcase</span>
 							</a>
 						</li>
 					</ul>
@@ -881,7 +922,7 @@
 	.dashboard__nav-secondary a {
 		display: flex;
 		align-items: center;
-		padding: 15px 30px;
+		padding: 15px 20px 15px 25px;
 		color: #c5cfd5;
 		text-decoration: none;
 		font-size: 14px;
@@ -890,9 +931,31 @@
 		position: relative;
 	}
 
+	/* Active indicator on LEFT side for secondary nav */
+	.dashboard__nav-secondary a::before {
+		position: absolute;
+		display: block;
+		content: "";
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 5px;
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+	}
+
 	.dashboard__nav-secondary a:hover {
 		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
+	}
+
+	.dashboard__nav-secondary li.is-active a {
+		background-color: rgba(255, 255, 255, 0.08);
+		color: #fff;
+	}
+
+	.dashboard__nav-secondary li.is-active a::before {
+		background-color: #0984ae;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
@@ -901,13 +964,25 @@
 		justify-content: center;
 		width: 24px;
 		height: 24px;
-		margin-right: 10px;
+		margin-right: 12px;
 		color: #0984ae;
 		flex-shrink: 0;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-text {
 		color: inherit;
+		flex: 1;
+	}
+
+	/* Arrow indicator for items with submenus */
+	.dashboard__nav-secondary .nav-arrow {
+		margin-left: auto;
+		color: hsla(0, 0%, 100%, 0.4);
+	}
+
+	.dashboard__nav-secondary .nav-arrow :global(svg) {
+		width: 16px;
+		height: 16px;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-submenu {
