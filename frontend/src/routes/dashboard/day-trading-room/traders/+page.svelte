@@ -80,12 +80,12 @@
 					<div class="trader-actions">
 						<a href="/traders/{trader.id}" class="view-profile-btn">View Profile</a>
 						<div class="social-links">
-							<a href="#" class="social-link" aria-label="Twitter">
+							<button type="button" class="social-link" aria-label="Twitter">
 								<IconBrandTwitter size={18} />
-							</a>
-							<a href="#" class="social-link" aria-label="Email">
+							</button>
+							<button type="button" class="social-link" aria-label="Email">
 								<IconMail size={18} />
-							</a>
+							</button>
 						</div>
 					</div>
 				</div>

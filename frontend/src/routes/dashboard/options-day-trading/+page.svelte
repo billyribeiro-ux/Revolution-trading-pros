@@ -110,6 +110,7 @@
 						class="dot"
 						class:active={index === currentSlide}
 						onclick={() => currentSlide = index}
+						aria-label="Go to slide {index + 1}"
 					></button>
 				{/each}
 			</div>
