@@ -199,11 +199,12 @@ h3 {
   }
 }
 
+/* FILE 1 LINE 5043-5045: h1.dashboard__page-title { font-weight: 700; } */
 .dashboard__page-title {
   margin: 0;
   color: #333;
   font-size: 36px;
-  font-weight: 300;
+  font-weight: 700;
   font-family: 'Open Sans', sans-serif;
   line-height: 1.2;
 }
@@ -238,18 +239,20 @@ h3 {
 /* ═══════════════════════════════════════════════════════════════════════════════
    SECTION TITLES - Exact from reference
    ═══════════════════════════════════════════════════════════════════════════════ */
+/* FILE 1 LINE 3931-3933: h2 { font-size: 32px; } */
 .section-title,
 h2.section-title {
   color: #333;
-  font-size: 18px;
-  font-weight: 400;
-  margin: 0 0 20px;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 30px;
   font-family: 'Open Sans', sans-serif;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
+/* section-title-alt for Weekly Watchlist - blue per wlion-dashboard */
 .section-title-alt {
-  color: #F69532;
+  color: #0984ae;
   font-size: 11px;
   font-weight: 700;
   margin: 0 0 15px;
@@ -466,16 +469,17 @@ h2.section-title {
   color: #fff;
 }
 
+/* btn-default - standard Bootstrap default button */
 .btn-default {
-  color: #fff;
-  background-color: #F69532;
-  border-color: #F69532;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
 }
 
 .btn-default:hover {
-  color: #fff;
-  background-color: #dc7309;
-  border-color: #dc7309;
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
 }
 
 .shaped-btn {
