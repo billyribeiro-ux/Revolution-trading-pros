@@ -674,16 +674,18 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   COLLAPSED STATE - When on membership sub-pages
 	   Primary nav collapses to 80px, shows only icons
+	   Pixel-perfect match to Simpler Trading reference
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed {
 		width: 80px;
-		padding: 30px 0 30px 0;
+		padding: 0 0 30px 0;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
 		padding: 20px 0;
 		text-align: center;
 		height: auto;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
@@ -692,6 +694,8 @@
 		top: auto;
 		transform: none;
 		margin: 0 auto;
+		width: 40px;
+		height: 40px;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
@@ -703,8 +707,12 @@
 	}
 
 	.dashboard__nav-primary.is-collapsed .dash_main_links li a {
-		padding: 12px 0;
+		padding: 14px 0;
 		justify-content: center;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a::after {
+		display: none;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
@@ -724,6 +732,7 @@
 
 	.dashboard__sidebar.has-secondary .dashboard__nav-primary {
 		flex: 0 0 80px;
+		border-right: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
 	.dashboard__sidebar.has-secondary .dashboard__nav-secondary {
@@ -810,7 +819,7 @@
 		position: relative;
 	}
 
-	.dash_main_links li a {
+	.dashboard__nav-primary .dash_main_links li a {
 		display: flex;
 		align-items: center;
 		padding: 12px 20px;
@@ -820,10 +829,12 @@
 		font-size: 14px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dash_main_links li a::after {
+	/* Active indicator on RIGHT side for primary nav */
+	.dashboard__nav-primary .dash_main_links li a::after {
 		position: absolute;
 		display: block;
 		content: "";
@@ -835,17 +846,17 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dash_main_links li a:hover {
+	.dashboard__nav-primary .dash_main_links li a:hover {
 		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
-	.dash_main_links li.is-active a {
+	.dashboard__nav-primary .dash_main_links li.is-active a {
 		background-color: rgba(255, 255, 255, 0.1);
 		color: #fff;
 	}
 
-	.dash_main_links li.is-active a::after {
+	.dashboard__nav-primary .dash_main_links li.is-active a::after {
 		background-color: #0984ae;
 	}
 
@@ -902,11 +913,14 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   SECONDARY NAVIGATION - Membership-specific navigation in LEFT sidebar
+	   Pixel-perfect match to Simpler Trading reference
+	   Primary nav (collapsed): #0F2D41 | Secondary nav: #143E59
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary {
-		background-color: #0a2335;
-		padding: 0;
+		background-color: #143E59;
+		padding: 20px 0 0 0;
 		margin: 0;
+		min-height: 100%;
 	}
 
 	.dashboard__nav-secondary ul {
@@ -919,20 +933,22 @@
 		position: relative;
 	}
 
-	.dashboard__nav-secondary a {
+	.dashboard__nav-secondary li a {
 		display: flex;
 		align-items: center;
-		padding: 15px 20px 15px 25px;
-		color: #c5cfd5;
+		padding: 14px 20px 14px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		font-size: 14px;
+		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
 		transition: all 0.15s ease-in-out;
 		position: relative;
 	}
 
 	/* Active indicator on LEFT side for secondary nav */
-	.dashboard__nav-secondary a::before {
+	.dashboard__nav-secondary li a::before {
 		position: absolute;
 		display: block;
 		content: "";
@@ -944,13 +960,13 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dashboard__nav-secondary a:hover {
+	.dashboard__nav-secondary li a:hover {
 		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
 	.dashboard__nav-secondary li.is-active a {
-		background-color: rgba(255, 255, 255, 0.08);
+		background-color: rgba(255, 255, 255, 0.1);
 		color: #fff;
 	}
 
@@ -964,20 +980,31 @@
 		justify-content: center;
 		width: 24px;
 		height: 24px;
-		margin-right: 12px;
+		margin-right: 10px;
 		color: #0984ae;
 		flex-shrink: 0;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-item-icon :global(svg) {
+		width: 24px;
+		height: 24px;
+		color: inherit;
+		stroke: currentColor;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-text {
 		color: inherit;
 		flex: 1;
+		font-size: 14px;
+		font-weight: 400;
 	}
 
 	/* Arrow indicator for items with submenus */
 	.dashboard__nav-secondary .nav-arrow {
 		margin-left: auto;
 		color: hsla(0, 0%, 100%, 0.4);
+		display: inline-flex;
+		align-items: center;
 	}
 
 	.dashboard__nav-secondary .nav-arrow :global(svg) {
@@ -997,7 +1024,7 @@
 		border-top: 1px solid rgba(255, 255, 255, 0.05);
 	}
 
-	.dashboard__nav-secondary .dashboard__nav-submenu a {
+	.dashboard__nav-secondary .dashboard__nav-submenu li a {
 		padding: 12px 30px 12px 60px;
 		font-size: 13px;
 	}
@@ -1005,8 +1032,8 @@
 	.dashboard__nav-secondary .submenu-toggle {
 		display: flex;
 		align-items: center;
-		padding: 15px 30px;
-		color: #c5cfd5;
+		padding: 14px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
 		background: none;
 		border: none;
 		width: 100%;
