@@ -201,15 +201,16 @@
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
 			<div class="dropdown display-inline-block" class:is-open={dropdownOpen}>
-				<button
-					type="button"
+				<a
+					href="#trading-rooms"
 					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
 					id="dLabel"
+					role="button"
 					onclick={handleDropdownToggle}
 					aria-expanded={dropdownOpen}
 				>
 					<strong>Enter a Trading Room</strong>
-				</button>
+				</a>
 
 				{#if dropdownOpen}
 					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
@@ -840,7 +841,7 @@
 
 	.membership-card__header:focus,
 	.membership-card__header:hover {
-		color: #0984ae;
+		color: #0e6ac4;
 	}
 
 	.mem_icon,
@@ -882,8 +883,8 @@
 
 	.membership-card__actions {
 		display: flex;
-		font-size: 14px;
-		border-top: 1px solid #dbdbdb;
+		font-size: 16px;
+		border-top: 1px solid #ededed;
 		justify-content: center;
 	}
 
@@ -909,7 +910,7 @@
 	}
 
 	.membership-card__actions a + a {
-		border-left: 1px solid #dbdbdb;
+		border-left: 1px solid #ededed;
 	}
 
 	/* Loading, Error & Empty States */
