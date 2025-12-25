@@ -129,8 +129,11 @@
 			<nav class="dashboard__nav-primary">
 
 				<!-- Profile -->
-				<a href="/dashboard/account" class="dashboard__profile-nav-item">
-					<span class="dashboard__profile-photo"></span>
+				<a href="/dashboard/account/" class="dashboard__profile-nav-item">
+					<span
+						class="dashboard__profile-photo"
+						style={$user?.avatar ? `background-image: url(${$user.avatar});` : ''}
+					></span>
 					<span class="dashboard__profile-name">{$user?.name || 'Member'}</span>
 				</a>
 
@@ -139,19 +142,19 @@
 					<li></li>
 					<ul class="dash_main_links">
 						<li class="is-active">
-							<a href="/dashboard">
+							<a href="/dashboard/">
 								<span class="dashboard__nav-item-icon st-icon-home"></span>
 								<span class="dashboard__nav-item-text">Member Dashboard</span>
 							</a>
 						</li>
 						<li>
-							<a href="/dashboard/courses">
+							<a href="/dashboard/classes/">
 								<span class="dashboard__nav-item-icon st-icon-courses"></span>
 								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
 							</a>
 						</li>
 						<li>
-							<a href="/dashboard/indicators">
+							<a href="/dashboard/indicators/">
 								<span class="dashboard__nav-item-icon st-icon-indicators"></span>
 								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
 							</a>
@@ -225,7 +228,7 @@
 					</li>
 					<ul class="dash_main_links">
 						<li>
-							<a href="/dashboard/ww">
+							<a href="/dashboard/ww/">
 								<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
 								<span class="dashboard__nav-item-text">Weekly Watchlist</span>
 							</a>
@@ -246,7 +249,7 @@
 					</li>
 					<ul class="dash_main_links">
 						<li>
-							<a href="/dashboard/account">
+							<a href="/dashboard/account/">
 								<span class="dashboard__nav-item-icon st-icon-settings"></span>
 								<span class="dashboard__nav-item-text">My Account</span>
 							</a>
@@ -305,35 +308,35 @@
 					</ul>
 				</nav>
 			{/if}
-		</aside>
 
-		<!-- MOBILE TOGGLE BUTTON - OUTSIDE sidebar per WordPress structure -->
-		<footer class="dashboard__toggle">
-			<button
-				type="button"
-				class="dashboard__toggle-button"
-				onclick={toggleMobileMenu}
+			<!-- MOBILE TOGGLE BUTTON - INSIDE sidebar per WordPress structure -->
+			<footer class="dashboard__toggle">
+				<button
+					type="button"
+					class="dashboard__toggle-button"
+					onclick={toggleMobileMenu}
+					data-toggle-dashboard-menu
+				>
+					<div class="dashboard__toggle-button-icon">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<span class="framework__toggle-button-label">Dashboard Menu</span>
+				</button>
+			</footer>
+
+			<!-- MOBILE OVERLAY - INSIDE sidebar per WordPress structure -->
+			<div
+				class="dashboard__overlay"
+				onclick={closeMobileMenu}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
+				role="button"
+				tabindex="-1"
+				aria-label="Close menu"
 				data-toggle-dashboard-menu
-			>
-				<div class="dashboard__toggle-button-icon">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-				<span class="framework__toggle-button-label">Dashboard Menu</span>
-			</button>
-		</footer>
-
-		<!-- MOBILE OVERLAY - OUTSIDE sidebar per WordPress structure -->
-		<div
-			class="dashboard__overlay"
-			onclick={closeMobileMenu}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
-			role="button"
-			tabindex="-1"
-			aria-label="Close menu"
-			data-toggle-dashboard-menu
-		></div>
+			></div>
+		</aside>
 
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">

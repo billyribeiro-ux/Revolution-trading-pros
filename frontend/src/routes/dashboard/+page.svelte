@@ -13,7 +13,6 @@
 	 */
 	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	let dropdownOpen = $state(false);
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
@@ -55,6 +54,7 @@
 	 * Prevents event bubbling and maintains clean separation of concerns
 	 */
 	function handleDropdownToggle(event: MouseEvent): void {
+		event.preventDefault();
 		event.stopPropagation();
 		dropdownOpen = !dropdownOpen;
 	}
@@ -138,16 +138,15 @@
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
 			<div class="dropdown display-inline-block" class:is-open={dropdownOpen}>
-				<button
-					type="button"
+				<a
+					href="#"
 					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+					id="dLabel"
 					onclick={handleDropdownToggle}
 					aria-expanded={dropdownOpen}
-					aria-haspopup="true"
 				>
 					<strong>Enter a Trading Room</strong>
-					<IconChevronDown size={16} />
-				</button>
+				</a>
 
 				{#if dropdownOpen}
 					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
@@ -204,7 +203,7 @@
 								<div class="membership-card__actions">
 									<a href={getDashboardUrl(membership)}>Dashboard</a>
 									{#if shouldOpenNewTab(membership)}
-										<a href={getAccessUrl(membership)} target="_blank">{getActionLabel(membership)}</a>
+										<a href={getAccessUrl(membership)} target="_blank" rel="nofollow">{getActionLabel(membership)}</a>
 									{:else}
 										<a href={getAccessUrl(membership)}>{getActionLabel(membership)}</a>
 									{/if}
@@ -282,13 +281,13 @@
 			</section>
 		{/if}
 
-		<!-- TOOLS SECTION - FILE 1 LINES 5724-5745 -->
+		<!-- TOOLS SECTION - Exact Match from WordPress line 3456 -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Tools</h2>
 			<div class="membership-cards row">
 				<div class="col-sm-6 col-xl-4">
 					<article class="membership-card membership-card--ww">
-						<a href="/dashboard/ww" class="membership-card__header">
+						<a href="/dashboard/ww/" class="membership-card__header">
 							<span class="mem_icon">
 								<span class="membership-card__icon">
 									<span class="icon icon--md st-icon-trade-of-the-week"></span>
@@ -297,22 +296,22 @@
 							<span class="mem_div">Weekly Watchlist</span>
 						</a>
 						<div class="membership-card__actions">
-							<a href="/dashboard/ww">Dashboard</a>
+							<a href="/dashboard/ww/">Dashboard</a>
 						</div>
 					</article>
 				</div>
 			</div>
 		</section>
 
-		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from Jesus -->
+		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from WordPress line 3482 -->
 		<div class="dashboard__content-section u--background-color-white">
 			<section>
 				<div class="row">
 					<div class="col-sm-6 col-lg-5">
 						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 						<div class="hidden-md d-lg-none pb-2">
-							<a href="/watchlist/latest">
-								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+							<a class="" href="/watchlist/latest">
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
 							</a>
 						</div>
 						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
@@ -323,7 +322,7 @@
 					</div>
 					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 						<a href="/watchlist/latest">
-							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
 						</a>
 					</div>
 				</div>
@@ -331,8 +330,8 @@
 		</div>
 
 	</div>
-	
-	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY per FILE 1 LINE 5788-5791 -->
+
+	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard per WordPress line 3520 -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
 		</section>
@@ -475,13 +474,28 @@
 	}
 
 	/* Dropdown - Exact Simpler Trading Match */
-	:global(.display-inline-block) {
-		display: inline-block;
+	.display-inline-block {
+		display: inline-block !important;
 	}
 
 	.dropdown {
 		position: relative;
 		display: inline-block;
+	}
+
+	.dropdown-toggle {
+		text-decoration: none;
+	}
+
+	.dropdown-toggle::after {
+		display: inline-block;
+		margin-left: 0.255em;
+		vertical-align: 0.255em;
+		content: "";
+		border-top: 0.3em solid;
+		border-right: 0.3em solid transparent;
+		border-bottom: 0;
+		border-left: 0.3em solid transparent;
 	}
 
 	.btn-orange,
