@@ -383,10 +383,29 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BREADCRUMBS - Exact Jesus File Match
+	   CONTAINER FLUID - Bootstrap-style Container (MISSING FROM YOUR DASHBOARD)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.container-fluid) {
+		max-width: 1160px;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto;
+		width: 100%;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BREADCRUMBS - Exact Reference File Match with Container
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.breadcrumbs {
 		z-index: 1;
+		background-color: #f5f5f5;
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.breadcrumbs .container-fluid {
+		padding-top: 10px;
+		padding-bottom: 10px;
 	}
 
 	.breadcrumbs ul {
@@ -426,12 +445,26 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE & SITE CONTENT WRAPPERS - WordPress Structure
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(#page) {
+		max-width: 100%;
+	}
+
+	:global(.site-content) {
+		max-width: 1160px;
+		margin: 0 auto;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD CONTAINER - Flexbox Layout
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard {
 		display: flex;
 		flex-flow: row nowrap;
 		flex: 1;
+		max-width: 1160px;
+		margin: 0 auto;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

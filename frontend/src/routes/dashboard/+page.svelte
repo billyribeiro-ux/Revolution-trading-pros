@@ -132,9 +132,14 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<ul class="trading-room-rules">
-			<li><a href="/trading-room-rules.pdf" target="_blank" class="rules-link">Trading Room Rules</a></li>
-			<li class="rules-disclaimer">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
+		<!-- Trading Room Rules - Two Blue Panels (one collapses on mobile) -->
+		<ul class="ultradingroom" style="text-align: right; list-style: none;">
+			<li class="litradingroom">
+				<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a>
+			</li>
+			<li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</li>
 		</ul>
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
@@ -285,7 +290,7 @@
 			</section>
 		{/if}
 
-		<!-- TOOLS SECTION - Exact Match from Jesus -->
+		<!-- TOOLS SECTION - Exact Match -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Tools</h2>
 			<div class="membership-cards row">
@@ -351,7 +356,7 @@
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
-		max-width: 1100px;
+		max-width: 1160px;
 		padding: 20px;
 		display: flex;
 		flex-wrap: wrap;
@@ -403,13 +408,14 @@
 	.dashboard__header-right {
 		display: flex;
 		align-items: center;
-		flex-direction: column-reverse;
+		flex-direction: column;
 		margin-top: 10px;
+		text-align: right;
 	}
 
 	@media screen and (min-width: 577px) {
 		.dashboard__header-right {
-			flex-direction: row-reverse;
+			flex-direction: row;
 			justify-content: flex-end;
 		}
 	}
@@ -417,7 +423,7 @@
 	@media screen and (min-width: 820px) {
 		.dashboard__header-right {
 			flex-direction: row;
-			justify-content: flex-start;
+			justify-content: flex-end;
 			margin-top: 0;
 		}
 	}
@@ -435,32 +441,52 @@
 		}
 	}
 
-	/* Trading Room Rules - Exact Match */
-	.trading-room-rules {
-		list-style: none;
+	/* Trading Room Rules - Two Blue Panels with Responsive Collapse */
+	:global(.ultradingroom) {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
 		margin: 0;
 		padding: 0;
-		text-align: right;
 	}
 
-	.rules-link {
-		font-size: 14px;
+	:global(.litradingroom) {
+		list-style: none;
+	}
+
+	:global(.litradingroom a) {
+		color: #0984ae;
 		font-weight: 700 !important;
-		color: #1e73be;
 		text-decoration: none;
+		font-size: 12px;
 	}
 
-	.rules-link:hover {
+	:global(.litradingroom a:hover) {
 		text-decoration: underline;
 	}
 
-	.rules-disclaimer {
+	/* Second panel - collapses on mobile (< 430px) */
+	:global(.litradingroomhind) {
+		width: 300px;
+		float: right;
 		font-size: 11px;
 		color: #666;
 		margin-top: 4px;
+		list-style: none;
+	}
+
+	/* Responsive collapse - hide second panel on mobile */
+	@media (max-width: 430px) {
+		:global(.litradingroomhind) {
+			display: none;
+		}
 	}
 
 	/* Dropdown - Exact Simpler Trading Match */
+	:global(.display-inline-block) {
+		display: inline-block;
+	}
+
 	.dropdown {
 		position: relative;
 		display: inline-block;
@@ -549,7 +575,7 @@
 	   DASHBOARD CONTENT - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.logged-in .dashboard__content) {
-		max-width: 1100px;
+		max-width: 1160px;
 	}
 
 	.dashboard__content {
@@ -606,6 +632,12 @@
 		display: flex;
 		flex-wrap: wrap;
 		margin: -30px -15px 0;
+	}
+
+	/* Fix for proper Bootstrap-style grid negative margins */
+	.row {
+		margin-left: -15px;
+		margin-right: -15px;
 	}
 
 	.col-sm-6 {
@@ -1142,5 +1174,240 @@
 		background: #ededed;
 		border-bottom: 1px solid #dbdbdb;
 		line-height: 1.4;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ADDITIONAL GLOBAL STYLES FROM SIMPLER TRADING
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Empty paragraph cleanup */
+	:global(p:empty) {
+		display: none;
+	}
+
+	/* Scanner image cleanup */
+	:global(.scanner-load-content img[src*="/public/images/space.gif"]) {
+		display: none;
+	}
+
+	/* Typography overrides */
+	:global(h2) {
+		font-size: 32px;
+	}
+
+	:global(h3) {
+		font-size: 26px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BUTTON SHAPE VARIANTS - Simpler Trading Brand Buttons
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Shaped Button - Pill-shaped with extra bold text */
+	:global(.shaped-btn) {
+		display: block;
+		border-radius: 25px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 18px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+	}
+
+	/* Squared Button - Subtle rounded corners */
+	:global(.squared-btn) {
+		display: block;
+		border-radius: 4px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 14px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+	}
+
+	/* Primary Button Color - Brand Orange */
+	:global(.primary-btn) {
+		background-color: #F69532;
+		color: #fff;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	:global(.primary-btn:hover) {
+		background-color: #dc7309;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD-SPECIFIC UTILITY STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Dashboard navigation submenu z-index fix */
+	:global(.dashboard__nav-secondary .dashboard__nav-submenu) {
+		z-index: 110 !important;
+	}
+
+	/* Trading room image wrapper padding reset */
+	:global(.tr_img_wrap) {
+		padding: 0 !important;
+	}
+
+	/* Weekly watchlist title padding reset */
+	:global(figure.weekly_watchlist .article-card__title) {
+		padding: 0 !important;
+	}
+
+	/* Trading room layout controls */
+	:global(.ultradingroom) {
+		max-width: 299px;
+		display: none;
+	}
+
+	:global(.dashboard__header) {
+		justify-content: space-between;
+	}
+
+	:global(.litradingroomhind) {
+		width: 300px;
+		float: right;
+	}
+
+	/* Mobile navigation color override */
+	@media (max-width: 641px) {
+		:global(.main-navigation .main-nav ul li[class*="current-menu-"] > a),
+		:global(.main-navigation .main-nav ul li > a) {
+			color: #191717 !important;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MISSING BUTTON CLASSES - btn-xs, btn-link
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.btn) {
+		display: inline-block;
+		padding: 6px 12px;
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.42857143;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		cursor: pointer;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	:global(.btn-xs) {
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	:global(.btn-link) {
+		color: #0984ae;
+		font-weight: 400;
+		border-radius: 0;
+		background-color: transparent;
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	:global(.btn-link:hover),
+	:global(.btn-link:focus) {
+		color: #065a75;
+		text-decoration: underline;
+		background-color: transparent;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD ICON SIZING - Missing from your dashboard
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-icon) {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
+		font-size: 24px;
+		color: #0984ae;
+		vertical-align: middle;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 26px !important;
+	}
+
+	:global(.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 20px !important;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-stacked-profits) {
+		font-size: 40px !important;
+	}
+
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	:global(.st-icon-big-market-scorecard:before) {
+		margin-left: 4px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ICON SIZE CLASSES - icon--lg, icon--md
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.icon) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.icon--lg) {
+		font-size: 32px;
+		width: 32px;
+		height: 32px;
+	}
+
+	:global(.icon--md) {
+		font-size: 24px;
+		width: 24px;
+		height: 24px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MEMBERSHIP CARD ICON STYLING
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.membership-card__icon) {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		margin-right: 10px;
+		color: #0984ae;
+	}
+
+	:global(.simpler-showcase-icon) {
+		background: black !important;
+		color: orange !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FONT WEIGHT & SIZE FIXES - Match reference exactly
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-text) {
+		font-size: 14px;
+		font-weight: 400;
+		color: #fff;
+	}
+
+	/* Bold white text for My Classes and My Indicators */
+	:global(.dashboard__nav-item-text[style*="bold"]) {
+		font-weight: 700 !important;
+		color: white !important;
 	}
 </style>
