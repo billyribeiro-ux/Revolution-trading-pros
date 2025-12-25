@@ -678,7 +678,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed {
 		width: 80px;
-		padding: 0 0 30px 0;
+		padding: 30px 0 30px 0;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
@@ -717,10 +717,75 @@
 
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
 		margin-right: 0;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
 	}
 
-	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text {
-		display: none;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COLLAPSED TOOLTIP - Shows label bubble on hover
+	   Pixel-perfect match to Simpler Trading reference
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		z-index: 100;
+		position: absolute;
+		left: 100%;
+		top: 50%;
+		transform: translate(-10px, -50%);
+		margin-left: 15px;
+		padding: 8px 12px;
+		opacity: 0;
+		visibility: hidden;
+		background: #fff;
+		color: #333;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		white-space: nowrap;
+		font-size: 13px;
+		font-weight: 600;
+		pointer-events: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Tooltip arrow */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text::before,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name::before {
+		content: '';
+		position: absolute;
+		left: -6px;
+		top: 50%;
+		transform: translateY(-50%);
+		border-width: 6px;
+		border-style: solid;
+		border-color: transparent #fff transparent transparent;
+	}
+
+	/* Show tooltip on hover */
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-text,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(0, -50%);
+	}
+
+	/* Background circle effect on link hover */
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: transparent;
+		transform: translate(-50%, -50%) scale(0.8);
+		transition: all 0.15s ease-in-out;
+		z-index: -1;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a:hover::before {
+		transform: translate(-50%, -50%) scale(1);
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 
 	/* Sidebar with secondary nav - flex container */
