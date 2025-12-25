@@ -3,28 +3,82 @@
 	 * Day Trading Room - Trading Room Archives
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Historical recordings of live trading room sessions
+	 * 100% PIXEL-PERFECT match to SimplerTradingRoomArchive reference
+	 * Date-grouped sessions with card-grid layout
 	 *
-	 * @version 1.0.0
+	 * @version 2.0.0 - 100% Pixel Perfect
 	 */
-	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconArchive from '@tabler/icons-svelte/icons/archive';
-	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
-	import IconClock from '@tabler/icons-svelte/icons/clock';
 
-	// Mock archive data
-	const archives = [
-		{ id: 1, date: 'December 23, 2025', duration: '3:45:20', trader: 'HG' },
-		{ id: 2, date: 'December 22, 2025', duration: '4:12:15', trader: 'Expert' },
-		{ id: 3, date: 'December 19, 2025', duration: '3:58:40', trader: 'Expert' },
-		{ id: 4, date: 'December 18, 2025', duration: '4:05:30', trader: 'HG' },
-		{ id: 5, date: 'December 17, 2025', duration: '3:52:10', trader: 'Expert' },
-		{ id: 6, date: 'December 16, 2025', duration: '4:18:25', trader: 'HG' },
-		{ id: 7, date: 'December 15, 2025', duration: '3:45:55', trader: 'Expert' },
-		{ id: 8, date: 'December 12, 2025', duration: '4:02:40', trader: 'Expert' },
-		{ id: 9, date: 'December 11, 2025', duration: '3:55:15', trader: 'HG' },
-		{ id: 10, date: 'December 10, 2025', duration: '4:10:30', trader: 'Expert' }
+	// Archive data grouped by date - matching SimplerTradingRoomArchive reference
+	const archivesByDate = [
+		{
+			date: 'December 5, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'John F. Carter', slug: '12052025' },
+				{ id: 2, title: 'Macro Moves', trader: 'Sam Shames', slug: '12052025' },
+				{ id: 3, title: 'Mastery Live Trading', trader: 'Jonathan McKeever', slug: '12052025' },
+				{ id: 4, title: 'BIAS Trading Session', trader: 'Bruce Marshall', slug: '12052025' },
+				{ id: 5, title: 'Cash In On The Close', trader: 'Allison Ostrander', slug: '12052025' }
+			]
+		},
+		{
+			date: 'December 4, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'John F. Carter', slug: '12042025' },
+				{ id: 2, title: 'Macro Moves', trader: 'Sam Shames', slug: '12042025' },
+				{ id: 3, title: 'Simpler Tech', trader: 'Lorna St. George', slug: '12042025' },
+				{ id: 4, title: 'Swing Trading Options', trader: 'Taylor Horton', slug: '12042025' },
+				{ id: 5, title: 'Cash In On The Close', trader: 'Henry Gambell', slug: '12042025' }
+			]
+		},
+		{
+			date: 'December 3, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'John F. Carter', slug: '12032025' },
+				{ id: 2, title: 'Macro Moves', trader: 'Sam Shames', slug: '12032025' },
+				{ id: 3, title: 'Moxie', trader: 'TG Watkins', slug: '12032025' },
+				{ id: 4, title: '5 Star Method for Options', trader: 'Danielle Shay', slug: '12032025' },
+				{ id: 5, title: 'Cash In On The Close', trader: 'Henry Gambell', slug: '12032025' }
+			]
+		},
+		{
+			date: 'December 2, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'Henry Gambell', slug: '12022025' },
+				{ id: 2, title: 'Futures Set Ups', trader: 'Raghee Horner', slug: '12022025' },
+				{ id: 3, title: 'Elliott Wave', trader: 'David Starr', slug: '12022025' },
+				{ id: 4, title: 'Swing Trading Options', trader: 'Taylor Horton', slug: '12022025' },
+				{ id: 5, title: 'Cash In On The Close', trader: 'Danielle Shay', slug: '12022025' }
+			]
+		},
+		{
+			date: 'December 1, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'Taylor Horton', slug: '12012025' },
+				{ id: 2, title: 'Macro Moves', trader: 'Sam Shames', slug: '12012025' },
+				{ id: 3, title: 'Day Trading Options', trader: 'Neil Yeager', slug: '12012025' },
+				{ id: 4, title: 'BIAS Trading Session', trader: 'Bruce Marshall', slug: '12012025' },
+				{ id: 5, title: 'Cash In On The Close', trader: 'Henry Gambell', slug: '12012025' }
+			]
+		},
+		{
+			date: 'November 28, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'John F. Carter', slug: '11282025' },
+				{ id: 2, title: 'Macro Moves', trader: 'Sam Shames', slug: '11282025' },
+				{ id: 3, title: 'Day Trading Options', trader: 'Jonathan McKeever', slug: '11282025' }
+			]
+		},
+		{
+			date: 'November 26, 2025',
+			sessions: [
+				{ id: 1, title: 'Nail the Open', trader: 'Taylor Horton', slug: '11262025' },
+				{ id: 2, title: 'Macro Moves', trader: 'Sam Shames', slug: '11262025' },
+				{ id: 3, title: 'Moxie', trader: 'TG Watkins', slug: '11262025' },
+				{ id: 4, title: '5 Star Method for Options', trader: 'Danielle Shay', slug: '11262025' },
+				{ id: 5, title: 'Cash In On The Close', trader: 'John F. Carter', slug: '11262025' }
+			]
+		}
 	];
 </script>
 
@@ -32,211 +86,142 @@
 	<title>Trading Room Archives - Day Trading Room | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="archives">
-	<a href="/dashboard/day-trading-room" class="back-link">
-		<IconArrowLeft size={18} />
-		Back to Day Trading Room
-	</a>
-
-	<header class="page-header">
-		<div class="header-icon">
-			<IconArchive size={32} />
-		</div>
-		<div class="header-content">
-			<h1 class="page-title">Trading Room Archives</h1>
-			<p class="page-subtitle">Watch past live trading room sessions at your convenience</p>
-		</div>
-	</header>
-
-	<div class="archives-list">
-		{#each archives as archive}
-			<article class="archive-card">
-				<div class="archive-thumbnail">
-					<div class="play-icon">
-						<IconPlayerPlay size={32} />
+<!-- 100% EXACT structure from SimplerTradingRoomArchive reference -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Day Trading Room Trading Room Archives</h2>
+			<p></p>
+			<div id="response">
+				{#each archivesByDate as dateGroup}
+					<p class="u--margin-bottom-20"><strong>{dateGroup.date}</strong></p>
+					<div class="card-grid flex-grid row training_room">
+						{#each dateGroup.sessions as session, index}
+							<article class="flex-grid-item col-xs-12 col-sm-6 col-md-4 col-xl-3 tr_archive_item u--margin-bottom-20">
+								<div class="card flex-grid-panel">
+									<section class="card-body flex-grid mod-flex-content-between flex-grid-column">
+										<div>
+											<h4 style="margin-bottom: 5px;"><strong>{session.title}</strong></h4>
+											<p class="u--margin-bottom-20 u--font-size-sm"><i>With {session.trader}</i></p>
+										</div>
+										<h4 class="h5 card-title u--margin-bottom-0">
+											<a data-index={index + 1} class="btn btn-tiny btn-default" href="/chatroom-archive/day-trading-room/{session.slug}">
+												Watch Now
+											</a>
+										</h4>
+									</section>
+								</div>
+							</article>
+						{/each}
 					</div>
-				</div>
-				<div class="archive-info">
-					<div class="archive-meta">
-						<span class="archive-date">
-							<IconCalendar size={16} />
-							{archive.date}
-						</span>
-						<span class="archive-duration">
-							<IconClock size={16} />
-							{archive.duration}
-						</span>
-					</div>
-					<h3 class="archive-title">Day Trading Room Session</h3>
-					<p class="archive-trader">with {archive.trader}</p>
-				</div>
-				<a href="/chatroom-archive/day-trading-room/{archive.id}" class="watch-btn">
-					Watch Recording
-				</a>
-			</article>
-		{/each}
+				{/each}
+			</div>
+		</section>
 	</div>
 </div>
 
 <style>
-	.archives {
-		padding: 30px;
-		max-width: 1200px;
-		margin: 0 auto;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   100% PIXEL-PERFECT STYLES - Matching SimplerTradingRoomArchive reference
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Date heading - Exact from reference line 3020 */
+	:global(.u--margin-bottom-20) {
+		margin-bottom: 20px;
 	}
 
-	.back-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: #0984ae;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 500;
-		margin-bottom: 24px;
-	}
-
-	.back-link:hover {
-		text-decoration: underline;
-	}
-
-	.page-header {
+	/* Card Grid - Exact from reference line 3021 */
+	:global(.card-grid.flex-grid.row.training_room) {
 		display: flex;
-		align-items: center;
-		gap: 20px;
-		margin-bottom: 40px;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+		margin-bottom: 10px;
 	}
 
-	.header-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 64px;
-		height: 64px;
-		background: linear-gradient(135deg, #0984ae 0%, #076787 100%);
-		border-radius: 16px;
-		color: #fff;
+	/* Archive Item - Exact from reference line 3022 */
+	:global(.tr_archive_item) {
+		padding: 0 15px;
 	}
 
-	.page-title {
-		font-size: 28px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 4px;
-		font-family: 'Open Sans', sans-serif;
+	:global(.flex-grid-item.col-xs-12) {
+		flex: 0 0 100%;
+		max-width: 100%;
 	}
 
-	.page-subtitle {
-		font-size: 14px;
-		color: #666;
-		margin: 0;
+	@media (min-width: 576px) {
+		:global(.flex-grid-item.col-sm-6) {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
 	}
 
-	.archives-list {
+	@media (min-width: 768px) {
+		:global(.flex-grid-item.col-md-4) {
+			flex: 0 0 33.333%;
+			max-width: 33.333%;
+		}
+	}
+
+	@media (min-width: 1200px) {
+		:global(.flex-grid-item.col-xl-3) {
+			flex: 0 0 25%;
+			max-width: 25%;
+		}
+	}
+
+	/* Card - Exact from reference */
+	:global(.card.flex-grid-panel) {
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
-	}
-
-	.archive-card {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		background: #fff;
+		width: 100%;
+		height: 100%;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
 		border-radius: 8px;
-		padding: 16px 20px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-		transition: all 0.2s;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
+		overflow: hidden;
 	}
 
-	.archive-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+	:global(.card.flex-grid-panel:hover) {
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
-	.archive-thumbnail {
+	/* Card Body - Exact from reference line 3001 */
+	:global(.card-body.flex-grid.mod-flex-content-between.flex-grid-column) {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 80px;
-		height: 60px;
-		background: linear-gradient(135deg, #0984ae 0%, #076787 100%);
-		border-radius: 6px;
-		flex-shrink: 0;
+		flex-direction: column;
+		justify-content: space-between;
+		flex: 1 1 auto;
+		padding: 15px;
 	}
 
-	.play-icon {
-		color: #fff;
-		opacity: 0.9;
-	}
-
-	.archive-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.archive-meta {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		margin-bottom: 8px;
-		font-size: 13px;
-		color: #666;
-	}
-
-	.archive-date,
-	.archive-duration {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-	}
-
-	.archive-title {
+	/* Session Title - Exact from reference line 3002 */
+	:global(.card-body h4) {
+		margin: 0;
 		font-size: 16px;
 		font-weight: 700;
-		color: #333;
-		margin: 0;
 		font-family: 'Open Sans', sans-serif;
-	}
-
-	.archive-trader {
-		font-size: 14px;
-		color: #0984ae;
-		margin: 4px 0 0;
-	}
-
-	.watch-btn {
-		display: inline-block;
-		padding: 10px 20px;
-		background: #f5f5f5;
 		color: #333;
-		text-decoration: none;
-		border-radius: 5px;
-		font-size: 14px;
-		font-weight: 600;
-		border: 1px solid #ddd;
-		transition: all 0.2s;
-		white-space: nowrap;
 	}
 
-	.watch-btn:hover {
-		background: #e8e8e8;
-		border-color: #ccc;
+	/* Trader Name - Exact from reference */
+	:global(.u--font-size-sm) {
+		font-size: 13px;
+		color: #666;
+		margin: 0;
 	}
 
-	@media (max-width: 768px) {
-		.archives {
-			padding: 20px;
-		}
+	/* Watch Now Button Container */
+	:global(.card-title.u--margin-bottom-0) {
+		margin-bottom: 0 !important;
+		margin-top: auto;
+	}
 
-		.archive-card {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 12px;
-		}
-
-		.watch-btn {
-			width: 100%;
-			text-align: center;
-		}
+	/* Empty paragraph hidden */
+	p:empty {
+		display: none;
 	}
 </style>
