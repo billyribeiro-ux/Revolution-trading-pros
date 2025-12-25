@@ -40,7 +40,7 @@
 								Hello <strong>{user.name}</strong> (not <strong>{user.name}</strong>? <a href="/logout">Log out</a>)
 							</p>
 							<p class="u--margin-bottom-0">
-								From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/billing-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
+								From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
 							</p>
 						</div>
 					</div>
