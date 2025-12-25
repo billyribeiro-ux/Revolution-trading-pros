@@ -10,6 +10,10 @@
 	 */
 	import { onMount } from 'svelte';
 
+	// Tabler Icons for dropdown menu
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
+
 	// Article data - matches WordPress structure
 	const articles = [
 		{
@@ -155,20 +159,24 @@
 				</li>
 			</ul>
 			<div class="dropdown display-inline-block">
-				<button type="button" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" aria-expanded="false">
 					<strong>Enter a Trading Room</strong>
 				</button>
 				<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 					<ul class="dropdown-menu__menu">
 						<li>
 							<a href="/dashboard/day-trading-room" target="_blank" rel="nofollow">
-								<span class="st-icon-mastering-the-trade icon icon--md"></span>
+								<span class="dropdown-icon dropdown-icon--day-trading">
+									<IconChartLine size={20} />
+								</span>
 								Day Trading Room
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/simpler-showcase" target="_blank" rel="nofollow">
-								<span class="st-icon-simpler-showcase icon icon--md"></span>
+								<span class="dropdown-icon dropdown-icon--showcase">
+									<IconTrophy size={20} />
+								</span>
 								Simpler Showcase Room
 							</a>
 						</li>
@@ -428,13 +436,30 @@
 		background: #f5f5f5;
 	}
 
-	.icon {
-		display: inline-block;
+	/* Dropdown Icon Styling - Pixel-perfect match */
+	.dropdown-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		flex-shrink: 0;
 	}
 
-	.icon--md {
-		width: 20px;
-		height: 20px;
+	.dropdown-icon--day-trading {
+		background-color: #0984ae;
+		color: #fff;
+	}
+
+	.dropdown-icon--showcase {
+		background-color: #000;
+		color: #F69532;
+	}
+
+	.dropdown-icon :global(svg) {
+		width: 18px;
+		height: 18px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
