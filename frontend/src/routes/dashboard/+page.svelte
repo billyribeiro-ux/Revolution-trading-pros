@@ -42,6 +42,7 @@
 		'weekly-watchlist': IconCalendarWeek,
 		'ww': IconCalendarWeek,
 		// Trading room types
+		'da-tradingroom': IconChartCandle,
 		'explosive-swings': IconBolt,
 		'swing-trading': IconTrendingUp,
 		'small-accounts': IconWallet,
@@ -137,10 +138,11 @@
 		return membership.accessUrl || `/dashboard/${membership.slug}`;
 	}
 
-	// Generate trading room/alert service URL from membership data
+	// Generate trading room URL - uses tradingRoomSlug if available, otherwise direct path
 	function getAccessUrl(membership: UserMembership): string {
 		if (membership.type === 'trading-room') {
-			return `/dashboard/${membership.slug}`;
+			// Trading rooms use their specific room URL, not the membership slug
+			return membership.tradingRoomUrl || `/dashboard/da-tradingroom`;
 		}
 		return `/dashboard/${membership.slug}/alerts`;
 	}
