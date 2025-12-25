@@ -21,7 +21,6 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
-	import '$lib/styles/dashboard.css';
 
 	// Tabler Icons - exact matches to screenshot
 	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
