@@ -17,6 +17,7 @@
 	
 	// Import pixel-perfect global styles from reference file 1
 	import '$lib/styles/dashboard-globals.css';
+	import '$lib/styles/st-icons.css';
 	import type { Snippet } from 'svelte';
 	import { user, isInitializing, isAuthenticated } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
