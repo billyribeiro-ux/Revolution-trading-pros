@@ -57,6 +57,7 @@ export interface UserMembership {
 	interval?: BillingInterval;
 	daysUntilExpiry?: number;
 	accessUrl?: string;
+	tradingRoomUrl?: string;
 	roomLabel?: string;
 	features?: string[];
 }
