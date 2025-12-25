@@ -13,7 +13,6 @@
 	 */
 	import { onMount } from 'svelte';
 	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	let dropdownOpen = $state(false);
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
@@ -55,6 +54,7 @@
 	 * Prevents event bubbling and maintains clean separation of concerns
 	 */
 	function handleDropdownToggle(event: MouseEvent): void {
+		event.preventDefault();
 		event.stopPropagation();
 		dropdownOpen = !dropdownOpen;
 	}
@@ -137,17 +137,16 @@
 		</ul>
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
-			<div class="dropdown" class:is-open={dropdownOpen}>
-				<button
-					type="button"
-					class="btn btn-orange btn-tradingroom"
+			<div class="dropdown display-inline-block" class:is-open={dropdownOpen}>
+				<a
+					href="#"
+					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+					id="dLabel"
 					onclick={handleDropdownToggle}
 					aria-expanded={dropdownOpen}
-					aria-haspopup="true"
 				>
 					<strong>Enter a Trading Room</strong>
-					<IconChevronDown size={16} />
-				</button>
+				</a>
 
 				{#if dropdownOpen}
 					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
@@ -475,9 +474,28 @@
 	}
 
 	/* Dropdown - Exact Simpler Trading Match */
+	.display-inline-block {
+		display: inline-block !important;
+	}
+
 	.dropdown {
 		position: relative;
 		display: inline-block;
+	}
+
+	.dropdown-toggle {
+		text-decoration: none;
+	}
+
+	.dropdown-toggle::after {
+		display: inline-block;
+		margin-left: 0.255em;
+		vertical-align: 0.255em;
+		content: "";
+		border-top: 0.3em solid;
+		border-right: 0.3em solid transparent;
+		border-bottom: 0;
+		border-left: 0.3em solid transparent;
 	}
 
 	.btn-orange,
