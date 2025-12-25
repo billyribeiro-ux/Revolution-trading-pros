@@ -1,174 +1,80 @@
-<!--
-═══════════════════════════════════════════════════════════════════════════════════
-MEMBER DASHBOARD PAGE - Svelte 5 / SvelteKit (Nov/Dec 2025)
-═══════════════════════════════════════════════════════════════════════════════════
-
-PURPOSE:
-This is the main Member Dashboard page that displays after user login.
-It shows the user's active memberships, trading rooms, tools, and weekly watchlist.
-All data is fetched from the API and rendered dynamically.
-
-PRINCIPAL ENGINEER ICT 11+ PATTERN:
-- Auth guard is handled by the parent +layout.svelte
-- This page can safely assume authentication is complete
-- Uses composition of reusable core components
-- Data-driven rendering - no hardcoded membership values
-
-SVELTE 5 RUNES USED:
-- $state(): Reactive state management for loading, data, and errors
-- $derived(): Computed values that auto-update
-- $effect(): Side effects for data fetching
-- $props(): Not used here (page component has no props)
-
-COMPONENT COMPOSITION:
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ DashboardHeader                                                                 │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│ MembershipCardsGrid (memberships)                                               │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│ Tools Section (ToolCards)                                                       │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│ WeeklyWatchlistSection                                                          │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│ Content Sidebar (empty on main dashboard)                                       │
-└─────────────────────────────────────────────────────────────────────────────────┘
-
-@version 3.0.0 - Svelte 5 Runes with Core Components
-@updated December 2025
-═══════════════════════════════════════════════════════════════════════════════════
--->
 <script lang="ts">
 	/**
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 * IMPORTS
-	 * ─────────────────────────────────────────────────────────────────────────────
+	 * Member Dashboard - ICT 11+ Principal Engineer Pattern
+	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Svelte 5 lifecycle import (onMount is still used for initial data fetch)
+	 * Fully data-driven dashboard with no hardcoded values.
+	 * All memberships, icons, and content come from the API/database.
+	 *
+	 * Layout guarantees auth is initialized before this component mounts,
+	 * so we can safely fetch data in onMount without race conditions.
+	 *
+	 * @version 2.2.0 - Fixed icons with Tabler SVG icons
 	 */
 	import { onMount } from 'svelte';
+	import { getUserMemberships, type UserMembership, type UserMembershipsResponse } from '$lib/api/user-memberships';
 
-	/**
-	 * API import for fetching user membership data
-	 * This function returns all memberships, trading rooms, courses, etc.
-	 */
-	import {
-		getUserMemberships,
-		type UserMembership,
-		type UserMembershipsResponse
-	} from '$lib/api/user-memberships';
+	// Tabler Icons for membership cards - replacing broken st-icon font
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
+	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+	import IconActivity from '@tabler/icons-svelte/icons/activity';
+	import IconRocket from '@tabler/icons-svelte/icons/rocket';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconTarget from '@tabler/icons-svelte/icons/target';
+	import IconBook from '@tabler/icons-svelte/icons/book';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
+	import IconCalendarWeek from '@tabler/icons-svelte/icons/calendar-week';
+	import IconWallet from '@tabler/icons-svelte/icons/wallet';
+	import IconBell from '@tabler/icons-svelte/icons/bell';
+	import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
 
-	/**
-	 * Core component imports using barrel export
-	 * This is the recommended pattern for importing multiple components
-	 */
-	import {
-		DashboardHeader,
-		MembershipCardsGrid,
-		ToolCard,
-		WeeklyWatchlistSection,
-		type Membership,
-		type TradingRoom
-	} from '$lib/components/core';
+	// Icon registry - maps membership slugs to Tabler icon components
+	type IconComponent = typeof IconChartLine;
+	const membershipIconRegistry: Record<string, IconComponent> = {
+		// Trading memberships
+		'mastering-the-trade': IconChartCandle,
+		'options-day-trading': IconChartCandle,
+		'simpler-showcase': IconStar,
+		'revolution-showcase': IconStar,
+		'trade-of-the-week': IconCalendarWeek,
+		'weekly-watchlist': IconCalendarWeek,
+		'ww': IconCalendarWeek,
+		// Trading room types
+		'day-trading-room': IconChartCandle,
+		'explosive-swings': IconBolt,
+		'swing-trading': IconTrendingUp,
+		'small-accounts': IconWallet,
+		'day-trading': IconActivity,
+		'moxie': IconRocket,
+		// Education
+		'foundation': IconBook,
+		'courses': IconSchool,
+		// Indicators & alerts
+		'indicators': IconReportAnalytics,
+		'spx-profit-pulse': IconBell,
+		// Default fallback
+		'default': IconChartLine
+	};
 
-	/**
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 * STATE - Svelte 5 $state() Rune
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 *
-	 * The $state() rune creates reactive state variables. When these values
-	 * change, Svelte automatically updates the DOM.
-	 *
-	 * IMPORTANT: $state() replaces `let variable = value` for reactive state
-	 * in Svelte 5. Variables declared with plain `let` are NOT reactive.
-	 *
-	 * @see https://svelte.dev/docs/svelte/$state
-	 */
+	// Get icon component for a membership
+	function getMembershipIcon(slug: string): IconComponent {
+		return membershipIconRegistry[slug] || membershipIconRegistry['default'];
+	}
 
-	// Loading state indicator - true while fetching data
+	let dropdownOpen = $state(false);
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let loading = $state(true);
-
-	// Error message to display if API call fails
 	let error = $state<string | null>(null);
 
-	// Main memberships data from API
-	let membershipsData = $state<UserMembershipsResponse | null>(null);
-
-	// Trading room dropdown open/close state
-	let dropdownOpen = $state(false);
-
-	/**
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 * DERIVED STATE - Svelte 5 $derived() Rune
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 *
-	 * The $derived() rune creates computed values that automatically update
-	 * when their dependencies change. This replaces the `$: derived = ...`
-	 * reactive statement syntax from Svelte 4.
-	 *
-	 * Benefits:
-	 * - Cleaner, more explicit syntax
-	 * - Better TypeScript inference
-	 * - Dependency tracking is automatic
-	 *
-	 * @see https://svelte.dev/docs/svelte/$derived
-	 */
-
-	// Extract memberships array, defaulting to empty array
-	let memberships = $derived<Membership[]>(
-		membershipsData?.memberships?.map(m => ({
-			id: m.id,
-			name: m.name,
-			slug: m.slug,
-			type: m.type as any,
-			icon: m.icon,
-			accessUrl: m.accessUrl,
-			roomLabel: m.roomLabel,
-			dashboardUrl: `/dashboard/${m.slug}`,
-			isActive: true
-		})) || []
-	);
-
-	// Extract trading rooms for the dropdown
-	let tradingRooms = $derived<TradingRoom[]>(
-		membershipsData?.tradingRooms?.map(r => ({
-			id: r.id,
-			name: r.name,
-			slug: r.slug,
-			ssoUrl: r.accessUrl || `/dashboard/${r.slug}`,
-			roomLabel: r.roomLabel || r.name,
-			icon: r.icon
-		})) || []
-	);
-
-	// Check if user has any memberships
-	let hasMemberships = $derived(memberships.length > 0);
-
-	// Check if user has trading rooms (for dropdown display)
-	let hasTradingRooms = $derived(tradingRooms.length > 0);
-
-	/**
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 * LIFECYCLE - Data Fetching
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 *
-	 * onMount runs after the component is first rendered to the DOM.
-	 * We use it here for initial data fetching.
-	 *
-	 * Note: In Svelte 5, you could also use $effect() for data fetching,
-	 * but onMount is still preferred for one-time initialization.
-	 *
-	 * PRINCIPAL ENGINEER PATTERN:
-	 * The parent +layout.svelte guarantees auth is initialized before
-	 * this component mounts, so we don't need to wait for auth here.
-	 */
+	// ICT 11+ Pattern: Layout guarantees auth is ready, so onMount is safe
 	onMount(async () => {
-		console.log('[Dashboard] 🚀 Page mounted, fetching memberships...');
-
+		console.log('[Dashboard] 🚀 Initializing dashboard page...');
 		try {
-			// Fetch user memberships from API
+			console.log('[Dashboard] 📡 Fetching user memberships...');
 			membershipsData = await getUserMemberships();
-
-			// Log successful fetch for debugging
+			
 			console.log('[Dashboard] ✅ Memberships loaded:', {
 				total: membershipsData?.memberships?.length || 0,
 				tradingRooms: membershipsData?.tradingRooms?.length || 0,
@@ -177,232 +83,264 @@ COMPONENT COMPOSITION:
 				weeklyWatchlist: membershipsData?.weeklyWatchlist?.length || 0,
 				premiumReports: membershipsData?.premiumReports?.length || 0
 			});
-
-			// Log trading rooms specifically
-			if (membershipsData?.tradingRooms?.length) {
-				console.log('[Dashboard] 🎯 Trading Rooms:',
-					membershipsData.tradingRooms.map(r => r.name)
-				);
+			
+			if (membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0) {
+				console.log('[Dashboard] 🎯 Trading Rooms:', membershipsData.tradingRooms.map(r => r.name));
+			} else {
+				console.warn('[Dashboard] ⚠️ No trading rooms found in memberships data');
 			}
-
 		} catch (err) {
-			// Handle API errors gracefully
 			console.error('[Dashboard] ❌ Failed to load memberships:', err);
 			error = 'Failed to load memberships. Please try again.';
 		} finally {
-			// Always set loading to false when done
 			loading = false;
-			console.log('[Dashboard] ✅ Initialization complete');
+			console.log('[Dashboard] ✅ Dashboard initialization complete');
 		}
 	});
 
 	/**
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 * EVENT HANDLERS
-	 * ─────────────────────────────────────────────────────────────────────────────
-	 *
-	 * Pure functions for handling user interactions.
-	 * Svelte 5 uses standard JavaScript event syntax (onclick, not on:click).
+	 * ICT 11+ Pattern: Pure function handlers with explicit event typing
+	 * Prevents event bubbling and maintains clean separation of concerns
 	 */
-
-	/**
-	 * Toggle the trading room dropdown
-	 */
-	function handleDropdownToggle(): void {
+	function handleDropdownToggle(event: MouseEvent): void {
+		event.preventDefault();
+		event.stopPropagation();
 		dropdownOpen = !dropdownOpen;
 	}
 
-	/**
-	 * Close dropdown when clicking outside
-	 * Called from window click handler
-	 */
-	function handleWindowClick(): void {
-		if (dropdownOpen) {
-			dropdownOpen = false;
-		}
+	function closeDropdown(): void {
+		dropdownOpen = false;
 	}
 
 	/**
-	 * Handle retry button click (in error state)
-	 * Clears error and reloads the page
+	 * ICT 11+ ENTERPRISE PATTERN: Manual refresh for testing
+	 * Clears cache and refetches memberships
 	 */
-	async function handleRetry(): Promise<void> {
-		console.log('[Dashboard] 🔄 Retry triggered...');
+	async function handleRefreshMemberships(): Promise<void> {
+		console.log('[Dashboard] 🔄 Manual refresh triggered - clearing cache...');
 		loading = true;
 		error = null;
-
+		
 		try {
-			// Force cache bypass on retry
+			// Force cache bypass
 			membershipsData = await getUserMemberships({ skipCache: true });
+			console.log('[Dashboard] ✅ Manual refresh complete');
 		} catch (err) {
-			console.error('[Dashboard] ❌ Retry failed:', err);
-			error = 'Failed to load memberships. Please try again.';
+			console.error('[Dashboard] ❌ Manual refresh failed:', err);
+			error = 'Failed to refresh memberships. Please try again.';
 		} finally {
 			loading = false;
 		}
 	}
 
 	/**
-	 * Handle membership card dashboard click
-	 * Logs for analytics and allows default navigation
+	 * ICT 11+ Pattern: Data-driven URL generation
+	 * Trading room memberships link to their room dashboard (via roomSlug)
+	 * Other memberships link to their own dashboard
 	 */
-	function handleDashboardClick(membership: Membership): void {
-		console.log('[Dashboard] 📊 Dashboard clicked:', membership.name);
-		// Analytics tracking could go here
+	function getDashboardUrl(membership: UserMembership): string {
+		if (membership.type === 'trading-room') {
+			// Trading room memberships go to the room dashboard
+			const roomSlug = membership.roomSlug || membership.slug;
+			return `/dashboard/${roomSlug}`;
+		}
+		return membership.accessUrl || `/dashboard/${membership.slug}`;
 	}
 
 	/**
-	 * Handle membership card access click (trading room, etc.)
-	 * Logs for analytics and allows default navigation
+	 * ICT 11+ Pattern: Secondary action URL
+	 * For trading rooms: same as dashboard (room page)
+	 * For others: alerts/content page
 	 */
-	function handleAccessClick(membership: Membership): void {
-		console.log('[Dashboard] 🚀 Access clicked:', membership.name);
-		// Analytics tracking could go here
+	function getAccessUrl(membership: UserMembership): string {
+		if (membership.type === 'trading-room') {
+			const roomSlug = membership.roomSlug || membership.slug;
+			return `/dashboard/${roomSlug}`;
+		}
+		return `/dashboard/${membership.slug}/alerts`;
+	}
+
+	// Get action label based on membership type from data
+	function getActionLabel(membership: UserMembership): string {
+		// Use roomLabel from data if available, otherwise derive from type
+		if (membership.roomLabel) {
+			return membership.roomLabel.includes('Room') ? 'Trading Room' : membership.roomLabel;
+		}
+		switch (membership.type) {
+			case 'trading-room':
+				return 'Trading Room';
+			case 'alert-service':
+				return 'View Alerts';
+			case 'course':
+				return 'View Course';
+			case 'indicator':
+				return 'Download';
+			default:
+				return 'Access';
+		}
+	}
+
+	// Check if action should open in new tab based on membership type
+	function shouldOpenNewTab(membership: UserMembership): boolean {
+		return membership.type === 'trading-room';
 	}
 </script>
 
-<!--
-═══════════════════════════════════════════════════════════════════════════════════
-TEMPLATE - Dashboard Page Structure
-═══════════════════════════════════════════════════════════════════════════════════
+<svelte:window on:click={closeDropdown} />
 
-The page follows the Simpler Trading layout:
-1. Header with title and trading room dropdown
-2. Memberships grid (if any)
-3. Latest Updates (if no memberships)
-4. Tools section
-5. Weekly Watchlist feature section
-6. Content sidebar (empty on main dashboard)
--->
+<!-- DASHBOARD HEADER -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">Member Dashboard</h1>
+	</div>
+	<div class="dashboard__header-right">
+		<ul class="ultradingroom" style="text-align: right; list-style: none;">
+			<li class="litradingroom"><a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a></li>
+			<li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li>
+		</ul>
 
-<!-- Window click handler for closing dropdown -->
-<svelte:window onclick={handleWindowClick} />
+		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+			<div class="dropdown display-inline-block" class:is-open={dropdownOpen}>
+				<button
+					type="button"
+					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+					id="dLabel"
+					onclick={handleDropdownToggle}
+					aria-expanded={dropdownOpen}
+				>
+					<strong>Enter a Trading Room</strong>
+				</button>
 
-<!--
-─────────────────────────────────────────────────────────────────────────────────
-SECTION 1: DASHBOARD HEADER
-Contains page title, Trading Room Rules link, and Enter Trading Room dropdown
-─────────────────────────────────────────────────────────────────────────────────
--->
-<DashboardHeader
-	title="Member Dashboard"
-	tradingRooms={tradingRooms}
-	showRulesLink={hasTradingRooms}
-/>
+				{#if dropdownOpen}
+					<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+						<ul class="dropdown-menu__menu">
+							{#each membershipsData.tradingRooms as room (room.id)}
+								{@const RoomIcon = getMembershipIcon(room.slug)}
+								<li>
+									<a href={getAccessUrl(room)} target="_blank" rel="nofollow">
+										<span class="dropdown-icon">
+											<RoomIcon size={20} />
+										</span>
+										{room.roomLabel || room.name}
+									</a>
+								</li>
+							{/each}
+						</ul>
+					</nav>
+				{/if}
+			</div>
+		{/if}
+	</div>
+</header>
 
-<!--
-─────────────────────────────────────────────────────────────────────────────────
-DASHBOARD CONTENT WRAPPER
-Contains main content area and optional sidebar
-─────────────────────────────────────────────────────────────────────────────────
--->
+<!-- DASHBOARD CONTENT -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 
-		<!--
-		─────────────────────────────────────────────────────────────────────────
-		SECTION 2: MEMBERSHIPS GRID
-		Shows user's active memberships as cards
-		Handles loading, error, and empty states internally
-		─────────────────────────────────────────────────────────────────────────
-		-->
-		<MembershipCardsGrid
-			{memberships}
-			isLoading={loading}
-			{error}
-			title="Memberships"
-			showActions={true}
-			onRetry={handleRetry}
-			onDashboardClick={handleDashboardClick}
-			onAccessClick={handleAccessClick}
-		/>
+		<!-- MEMBERSHIPS SECTION - Only show if user has memberships -->
+		{#if loading}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="loading-state">Loading memberships...</div>
+			</section>
+		{:else if error}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="error-state">
+					<p>{error}</p>
+					<button class="btn btn-primary" onclick={() => location.reload()}>Retry</button>
+				</div>
+			</section>
+		{:else if membershipsData?.memberships && membershipsData.memberships.length > 0}
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Memberships</h2>
+				<div class="membership-cards row">
+					{#each membershipsData.memberships as membership (membership.id)}
+						{@const MembershipIcon = getMembershipIcon(membership.slug)}
+						<div class="col-sm-6 col-xl-4">
+							<article class="membership-card membership-card--{membership.type === 'trading-room' ? 'options' : 'foundation'}">
+								<a href={getDashboardUrl(membership)} class="membership-card__header">
+									<span class="mem_icon">
+										<span class="membership-card__icon{membership.slug === 'simpler-showcase' ? ' simpler-showcase-icon' : ''}">
+											<MembershipIcon size={32} />
+										</span>
+									</span>
+									<span class="mem_div">{membership.name}</span>
+								</a>
+								<div class="membership-card__actions">
+									<a href={getDashboardUrl(membership)}>Dashboard</a>
+									{#if shouldOpenNewTab(membership)}
+										<a href={getAccessUrl(membership)} target="_blank" rel="nofollow">{getActionLabel(membership)}</a>
+									{:else}
+										<a href={getAccessUrl(membership)}>{getActionLabel(membership)}</a>
+									{/if}
+								</div>
+							</article>
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
 
-		<!--
-		─────────────────────────────────────────────────────────────────────────
-		SECTION 3: LATEST UPDATES (Conditional)
-		Only shown when user has no memberships
-		Displays placeholder content encouraging signup
-		─────────────────────────────────────────────────────────────────────────
-		-->
-		{#if !loading && !error && !hasMemberships}
+		<!-- LATEST UPDATES SECTION - Simpler Trading shows this when no memberships -->
+		{#if !loading && !error && (!membershipsData?.memberships || membershipsData.memberships.length === 0)}
 			<section class="dashboard__content-section">
 				<h2 class="section-title u--margin-top-20">Latest Updates</h2>
 				<div class="article-cards row flex-grid">
-					<!--
-					Placeholder article cards
-					In production, these would be fetched from a blog/content API
-					-->
+					<!-- Placeholder article cards - will be replaced with actual blog/video content -->
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
-							<figure
-								class="article-card__image"
-								style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop');"
-							>
-								<img
-									src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop"
-									alt="Trading Update"
-									loading="lazy"
-								/>
+							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop');">
+								<img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop" alt="Trading Update" />
 							</figure>
 							<div class="article-card__type">
 								<span class="label label--info">Daily Video</span>
 							</div>
-							<h4 class="h5 article-card__title">
-								<a href="/blog">Welcome to Revolution Trading Pros</a>
-							</h4>
-							<span class="article-card__meta">
-								<small>Latest market insights and trading education</small>
-							</span>
+							<h4 class="h5 article-card__title"><a href="/blog">Welcome to Revolution Trading Pros</a></h4>
+							<span class="article-card__meta"><small>Latest market insights and trading education</small></span>
+							<div class="article-card__excerpt u--hide-read-more">
+								<div class="woocommerce">
+									<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
+										This content is only available to members.
+									</div>
+								</div>
+							</div>
 							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
 						</article>
 					</div>
-
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
-							<figure
-								class="article-card__image"
-								style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop');"
-							>
-								<img
-									src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop"
-									alt="Market Analysis"
-									loading="lazy"
-								/>
+							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop');">
+								<img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop" alt="Market Analysis" />
 							</figure>
 							<div class="article-card__type">
 								<span class="label label--info">Daily Video</span>
 							</div>
-							<h4 class="h5 article-card__title">
-								<a href="/blog">Market Analysis & Trading Strategies</a>
-							</h4>
-							<span class="article-card__meta">
-								<small>Expert insights from our trading team</small>
-							</span>
+							<h4 class="h5 article-card__title"><a href="/blog">Market Analysis & Trading Strategies</a></h4>
+							<span class="article-card__meta"><small>Expert insights from our trading team</small></span>
+							<div class="article-card__excerpt u--hide-read-more">
+								<div class="woocommerce">
+									<div class="woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message">
+										This content is only available to members.
+									</div>
+								</div>
+							</div>
 							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
 						</article>
 					</div>
-
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
-							<figure
-								class="article-card__image"
-								style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop');"
-							>
-								<img
-									src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop"
-									alt="Trading Education"
-									loading="lazy"
-								/>
+							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop');">
+								<img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop" alt="Trading Education" />
 							</figure>
 							<div class="article-card__type">
 								<span class="label label--info">Daily Video</span>
 							</div>
-							<h4 class="h5 article-card__title">
-								<a href="/blog">Learn Advanced Trading Techniques</a>
-							</h4>
-							<span class="article-card__meta">
-								<small>Professional trading education</small>
-							</span>
+							<h4 class="h5 article-card__title"><a href="/blog">Learn Advanced Trading Techniques</a></h4>
+							<span class="article-card__meta"><small>Professional trading education</small></span>
+							<div class="article-card__excerpt u--hide-read-more">
+								<p>Get access to exclusive trading education, live trading rooms, and expert analysis. Join our community of successful traders today.</p>
+							</div>
 							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
 						</article>
 					</div>
@@ -410,151 +348,152 @@ Contains main content area and optional sidebar
 			</section>
 		{/if}
 
-		<!--
-		─────────────────────────────────────────────────────────────────────────
-		SECTION 4: TOOLS
-		Shows available tools like Weekly Watchlist, Scanner, etc.
-		─────────────────────────────────────────────────────────────────────────
-		-->
+		<!-- TOOLS SECTION - Exact Match from WordPress line 3456 -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Tools</h2>
 			<div class="membership-cards row">
 				<div class="col-sm-6 col-xl-4">
-					<ToolCard
-						name="Weekly Watchlist"
-						slug="ww"
-						icon="st-icon-trade-of-the-week"
-						href="/dashboard/ww/"
-					/>
+					<article class="membership-card membership-card--ww">
+						<a href="/dashboard/ww/" class="membership-card__header">
+							<span class="mem_icon">
+								<span class="membership-card__icon">
+									<IconCalendarWeek size={24} />
+								</span>
+							</span>
+							<span class="mem_div">Weekly Watchlist</span>
+						</a>
+						<div class="membership-card__actions">
+							<a href="/dashboard/ww/">Dashboard</a>
+						</div>
+					</article>
 				</div>
-				<!-- Additional tools can be added here -->
 			</div>
 		</section>
 
-		<!--
-		─────────────────────────────────────────────────────────────────────────
-		SECTION 5: WEEKLY WATCHLIST FEATURE
-		Featured content section with video thumbnail
-		─────────────────────────────────────────────────────────────────────────
-		-->
-		<WeeklyWatchlistSection isLoading={loading} />
+		<!-- WEEKLY WATCHLIST FEATURED SECTION - Exact Match from WordPress line 3482 -->
+		<div class="dashboard__content-section u--background-color-white">
+			<section>
+				<div class="row">
+					<div class="col-sm-6 col-lg-5">
+						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+						<div class="hidden-md d-lg-none pb-2">
+							<a class="" href="/watchlist/latest">
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+							</a>
+						</div>
+						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
+						<div class="u--hide-read-more">
+							<p>Week of December 22, 2025.</p>
+						</div>
+						<a href="/watchlist/latest" class="btn btn-tiny btn-default">Watch Now</a>
+					</div>
+					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+						<a href="/watchlist/latest">
+							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+						</a>
+					</div>
+				</div>
+			</section>
+		</div>
 
 	</div>
 
-	<!--
-	─────────────────────────────────────────────────────────────────────────────
-	PANEL 2: SECONDARY SIDEBAR (Content Sidebar)
-	Empty on main dashboard, shown on membership-specific pages
-	─────────────────────────────────────────────────────────────────────────────
-	-->
+	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard per WordPress line 3520 -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<!-- Sidebar content would go here on membership pages -->
 		</section>
 	</aside>
 </div>
 
-<!--
-═══════════════════════════════════════════════════════════════════════════════════
-STYLES - Page-specific CSS
-═══════════════════════════════════════════════════════════════════════════════════
-
-Most styling is inherited from +layout.svelte and core components.
-These are page-specific overrides and additions.
--->
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD CONTENT LAYOUT
-	   Two-column layout: main content + optional sidebar
+	   DASHBOARD HEADER - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content {
-		display: flex;
-		flex-flow: row nowrap;
-	}
-
-	.dashboard__content-main {
-		border-right: 1px solid #dbdbdb;
-		flex: 1 1 auto;
-		background-color: #efefef;
-		min-width: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   CONTENT SECTIONS
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content-section {
-		padding: 30px 40px;
+	.dashboard__header {
 		background-color: #fff;
-		margin-bottom: 20px;
-		overflow-x: auto;
-		overflow-y: hidden;
+		border-bottom: 1px solid #dbdbdb;
+		max-width: 100%;
+		padding: 20px;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	@media screen and (min-width: 820px) {
+		.dashboard__header {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
 	}
 
 	@media screen and (min-width: 1280px) {
-		.dashboard__content-section {
+		.dashboard__header {
 			padding: 30px;
 		}
 	}
 
 	@media screen and (min-width: 1440px) {
-		.dashboard__content-section {
-			padding: 40px;
+		.dashboard__header {
+			padding: 30px 40px;
 		}
 	}
 
-	.section-title {
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	@media screen and (min-width: 577px) {
+		.dashboard__header-left {
+			flex-direction: row;
+		}
+	}
+
+	h1.dashboard__page-title {
+		margin: 0;
 		color: #333;
-		font-size: 32px;
+		font-size: 36px;
 		font-weight: 700;
-		margin: 0 0 30px;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.2;
 	}
 
-	.u--margin-top-20 {
-		margin-top: 20px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   GRID LAYOUT
-	   Bootstrap-style flexbox grid
-	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	.membership-cards.row {
+	.dashboard__header-right {
 		display: flex;
-		flex-wrap: wrap;
-		margin: -30px -15px 0;
+		align-items: center;
+		flex-direction: column;
+		margin-top: 10px;
+		text-align: right;
 	}
 
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		margin-right: -15px;
-		margin-left: -15px;
-	}
-
-	.col-sm-6,
-	.col-xl-4 {
-		position: relative;
-		width: 100%;
-		padding-right: 15px;
-		padding-left: 15px;
-		margin-top: 30px;
-	}
-
-	@media (min-width: 641px) {
-		.col-sm-6 {
-			flex: 0 0 50%;
-			max-width: 50%;
+	@media screen and (min-width: 577px) {
+		.dashboard__header-right {
+			flex-direction: row;
+			justify-content: flex-end;
 		}
 	}
 
-	@media (min-width: 1200px) {
-		.col-xl-4 {
-			flex: 0 0 33.333%;
-			max-width: 33.333%;
+	@media screen and (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: row;
+			justify-content: flex-end;
+			margin-top: 0;
+		}
+	}
+
+	@media screen and (min-width: 577px) {
+		.dashboard__header-right > * + * {
+			margin-right: 10px;
+		}
+	}
+
+	@media screen and (min-width: 820px) {
+		.dashboard__header-right > * + * {
+			margin-left: 6px;
+			margin-right: 0;
 		}
 	}
 
@@ -603,48 +542,42 @@ These are page-specific overrides and additions.
 		text-align: right;
 	}
 
-	.col-xs-12 {
-		width: 100%;
-		padding: 0 10px;
-		box-sizing: border-box;
-		margin-bottom: 20px;
+	.btn-xs {
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
 	}
 
-	.col-md-6 {
-		flex: 0 0 50%;
-		max-width: 50%;
+	.btn-link {
+		background: none;
+		border: none;
+		color: #1e73be;
 	}
 
-	.article-card {
-		background: #fff;
-		border: 1px solid #dbdbdb;
-		border-radius: 8px;
-		overflow: hidden;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		transition: all 0.2s ease-in-out;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
+	/* Dropdown - Exact Simpler Trading Match */
+	.display-inline-block {
+		display: inline-block !important;
 	}
 
-	.article-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-	}
-
-	.article-card__image {
+	.dropdown {
 		position: relative;
-		width: 100%;
-		height: 200px;
-		background-size: cover;
-		background-position: center;
-		margin: 0;
+		display: inline-block;
 	}
 
-	.article-card__image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0;
+	.dropdown-toggle {
+		text-decoration: none;
+	}
+
+	.dropdown-toggle::after {
+		display: inline-block;
+		margin-left: 0.255em;
+		vertical-align: 0.255em;
+		content: "";
+		border-top: 0.3em solid;
+		border-right: 0.3em solid transparent;
+		border-bottom: 0;
+		border-left: 0.3em solid transparent;
 	}
 
 	.btn-orange,
@@ -677,62 +610,71 @@ These are page-specific overrides and additions.
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 	}
 
-	.label--info {
-		background: #0984ae;
-		color: #fff;
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 5px;
+		background: #fff;
+		border: none;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		min-width: 260px;
+		padding: 20px;
+		z-index: 1000;
+		font-size: 14px;
 	}
 
-	.article-card__title {
-		padding: 12px 20px 0;
-		margin: 0;
+	.dropdown-menu ul {
+		list-style: none;
+		margin: -10px;
+		padding: 0;
 	}
 
-	.article-card__title a {
-		color: #333;
+	.dropdown-menu ul li a {
+		display: block;
+		padding: 10px 15px;
+		color: #666;
 		text-decoration: none;
-		font-size: 18px;
-		font-weight: 700;
+		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: color 0.2s;
+		border-radius: 5px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.article-card__title a:hover {
+	.dropdown-menu ul li a:hover {
+		background-color: #f4f4f4;
 		color: #0984ae;
 	}
 
-	.h5 {
-		font-size: 18px;
-		font-weight: 600;
-	}
-
-	.article-card__meta {
-		display: block;
-		padding: 8px 20px 0;
+	/* Dropdown icon styling for Tabler SVG icons */
+	.dropdown-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
 		color: #999;
-		font-size: 13px;
+		vertical-align: middle;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.article-card .btn {
-		margin: auto 20px 20px;
+	.dropdown-menu ul li a:hover .dropdown-icon {
+		color: #0984ae;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   BUTTON STYLES
-	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dropdown-icon :global(svg) {
+		width: 20px;
+		height: 20px;
+	}
 
-	.btn {
+	/* Icon styles - WordPress match */
+	.icon {
 		display: inline-block;
-		padding: 10px 20px;
-		text-decoration: none;
-		border: none;
-		border-radius: 5px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		cursor: pointer;
-		transition: all 0.2s ease-in-out;
-		font-size: 14px;
-		text-align: center;
+		vertical-align: middle;
 	}
 
 	.icon--md {
@@ -1293,21 +1235,59 @@ These are page-specific overrides and additions.
 	}
 
 	.btn-default {
-		background: #fff;
+		background: #f5f5f5;
 		color: #333;
-		border: 1px solid #ccc;
+		border: 1px solid #ddd;
 		box-shadow: none;
 	}
 
 	.btn-default:hover {
 		background: #e8e8e8;
 		border-color: #ccc;
+		box-shadow: none;
+	}
+
+	.u--margin-top-20 {
+		margin-top: 20px;
+	}
+
+	.btn,
+	.btn-primary {
+		display: inline-block;
+		padding: 10px 20px;
+		background: #F69532;
+		color: #fff;
+		text-decoration: none;
+		border: none;
+		border-radius: 5px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 14px;
+		text-align: center;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	.btn-primary:hover {
+		background: #dc7309;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR (Hidden on main dashboard)
+	   PANEL 2: SECONDARY SIDEBAR (CONTENT SIDEBAR) - Exact Simpler Trading Match
+	   ═══════════════════════════════════════════════════════════════════════════
+	   
+	   This sidebar appears on individual membership pages but is HIDDEN on the
+	   main dashboard landing page. It provides contextual navigation for specific
+	   memberships.
+	   
+	   VISIBILITY RULES:
+	   - Main dashboard (/dashboard): HIDDEN (display: none)
+	   - Membership pages (/dashboard/[slug]): VISIBLE (desktop 1080px+)
+	   - Mobile (<1080px): Always hidden
+	   
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
+	
 	.dashboard__content-sidebar {
 		display: none;
 		width: 260px;
@@ -1316,7 +1296,13 @@ These are page-specific overrides and additions.
 		background: #fff;
 		border-right: 1px solid #dbdbdb;
 		border-top: 1px solid #dbdbdb;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		line-height: 1.6;
 	}
+
+	/* Panel 2 is ALWAYS hidden on main dashboard page - matches Jesus file line 2451-2453 */
+	/* On membership pages, it will be shown via their own CSS */
 
 	.content-sidebar__section {
 		padding: 20px 30px 20px 20px;
