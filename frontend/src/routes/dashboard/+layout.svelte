@@ -159,6 +159,9 @@
 
 		return crumbs;
 	});
+
+	// Derived: Check if we're on a membership sub-page (triggers collapsed sidebar)
+	let isOnMembershipPage = $derived(!!$page.params.slug);
 </script>
 
 <svelte:head>
@@ -198,8 +201,8 @@
 		<div class="dashboard">
 
 		<!-- SIDEBAR -->
-		<aside class="dashboard__sidebar">
-			<nav class="dashboard__nav-primary">
+		<aside class="dashboard__sidebar" class:has-secondary={isOnMembershipPage}>
+			<nav class="dashboard__nav-primary" class:is-collapsed={isOnMembershipPage}>
 
 				<!-- Profile - Avatar loads from Gravatar using user's email -->
 				<a href="/dashboard/account/" class="dashboard__profile-nav-item">
@@ -614,6 +617,67 @@
 		padding-bottom: 30px;
 		font-size: 14px;
 		line-height: 1;
+		transition: width 0.3s ease-in-out;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COLLAPSED STATE - When on membership sub-pages
+	   Primary nav collapses to 80px, shows only icons
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-primary.is-collapsed {
+		width: 80px;
+		padding: 30px 0 30px 0;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
+		padding: 20px 0;
+		text-align: center;
+		height: auto;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
+		position: relative;
+		left: auto;
+		top: auto;
+		transform: none;
+		margin: 0 auto;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		display: none;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-category {
+		display: none;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a {
+		padding: 12px 0;
+		justify-content: center;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
+		margin-right: 0;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text {
+		display: none;
+	}
+
+	/* Sidebar with secondary nav - flex container */
+	.dashboard__sidebar.has-secondary {
+		display: flex;
+		flex-flow: row nowrap;
+		width: auto;
+	}
+
+	.dashboard__sidebar.has-secondary .dashboard__nav-primary {
+		flex: 0 0 80px;
+	}
+
+	.dashboard__sidebar.has-secondary .dashboard__nav-secondary {
+		flex: 0 0 220px;
+		width: 220px;
 	}
 
 	.dashboard__nav-primary ul {
