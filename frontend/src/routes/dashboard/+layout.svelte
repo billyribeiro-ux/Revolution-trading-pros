@@ -26,12 +26,24 @@
 	import { page } from '$app/stores';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 
-	// Tabler Icons - exact matches to screenshot
-	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
-	import IconPlayerPlayFilled from '@tabler/icons-svelte/icons/player-play-filled';
+	// Tabler Icons - Sidebar Navigation Icons
+	import IconHome from '@tabler/icons-svelte/icons/home';
+	import IconBook from '@tabler/icons-svelte/icons/book';
 	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-	import IconHelpCircle from '@tabler/icons-svelte/icons/help-circle';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconCalendarWeek from '@tabler/icons-svelte/icons/calendar-week';
+	import IconHeadset from '@tabler/icons-svelte/icons/headset';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
+	import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
+	import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconBooks from '@tabler/icons-svelte/icons/books';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -138,172 +150,171 @@
 				</a>
 
 				<!-- Main Links -->
-				<ul>
-					<li></li>
-					<ul class="dash_main_links">
-						<li class="is-active">
-							<a href="/dashboard/">
-								<span class="dashboard__nav-item-icon st-icon-home"></span>
-								<span class="dashboard__nav-item-text">Member Dashboard</span>
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard/classes/">
-								<span class="dashboard__nav-item-icon st-icon-courses"></span>
-								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard/indicators/">
-								<span class="dashboard__nav-item-icon st-icon-indicators"></span>
-								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
-							</a>
-						</li>
-					</ul>
+				<ul class="dash_main_links">
+					<li class={$page.url.pathname === '/dashboard' || $page.url.pathname === '/dashboard/' ? 'is-active' : ''}>
+						<a href="/dashboard/">
+							<span class="dashboard__nav-item-icon">
+								<IconHome size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">Member Dashboard</span>
+						</a>
+					</li>
+					<li class={$page.url.pathname.startsWith('/dashboard/classes') ? 'is-active' : ''}>
+						<a href="/dashboard/classes/">
+							<span class="dashboard__nav-item-icon">
+								<IconSchool size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">My Classes</span>
+						</a>
+					</li>
+					<li class={$page.url.pathname.startsWith('/dashboard/indicators') ? 'is-active' : ''}>
+						<a href="/dashboard/indicators/">
+							<span class="dashboard__nav-item-icon">
+								<IconChartCandle size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">My Indicators</span>
+						</a>
+					</li>
 				</ul>
 
 				<!-- MEMBERSHIPS SECTION - Trading Rooms -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">memberships</p>
-					</li>
+				{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+					<p class="dashboard__nav-category">memberships</p>
 					<ul class="dash_main_links">
-						{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
-							{#each membershipsData.tradingRooms as room (room.id)}
-								<li>
-									<a href="/dashboard/{room.slug}">
-										<span class="dashboard__nav-item-icon st-icon-{room.slug}"></span>
-										<span class="dashboard__nav-item-text">{room.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
+						{#each membershipsData.tradingRooms as room (room.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${room.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{room.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={room.icon || 'chart-line'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{room.name}</span>
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</ul>
+				{/if}
 
 				<!-- MASTERY SECTION - Courses -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">mastery</p>
-					</li>
+				{#if membershipsData?.courses && membershipsData.courses.length > 0}
+					<p class="dashboard__nav-category">mastery</p>
 					<ul class="dash_main_links">
-						{#if membershipsData?.courses && membershipsData.courses.length > 0}
-							{#each membershipsData.courses as course (course.id)}
-								<li>
-									<a href="/dashboard/{course.slug}">
-										<span class="dashboard__nav-item-icon st-icon-{course.slug}"></span>
-										<span class="dashboard__nav-item-text">{course.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
+						{#each membershipsData.courses as course (course.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${course.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{course.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={course.icon || 'book'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{course.name}</span>
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</ul>
+				{/if}
 
 				<!-- PREMIUM REPORTS SECTION -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">premium reports</p>
-					</li>
+				{#if membershipsData?.premiumReports && membershipsData.premiumReports.length > 0}
+					<p class="dashboard__nav-category">premium reports</p>
 					<ul class="dash_main_links">
-						{#if membershipsData?.premiumReports && membershipsData.premiumReports.length > 0}
-							{#each membershipsData.premiumReports as report (report.id)}
-								<li>
-									<a href="/dashboard/{report.slug}">
-										<span class="dashboard__nav-item-icon">
-											<DynamicIcon name={report.icon} size={24} />
-										</span>
-										<span class="dashboard__nav-item-text">{report.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
+						{#each membershipsData.premiumReports as report (report.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${report.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{report.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={report.icon || 'report-analytics'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{report.name}</span>
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</ul>
+				{/if}
 
 				<!-- TOOLS SECTION -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">tools</p>
+				<p class="dashboard__nav-category">tools</p>
+				<ul class="dash_main_links">
+					<li class={$page.url.pathname.startsWith('/dashboard/ww') ? 'is-active' : ''}>
+						<a href="/dashboard/ww/">
+							<span class="dashboard__nav-item-icon">
+								<IconCalendarWeek size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">Weekly Watchlist</span>
+						</a>
 					</li>
-					<ul class="dash_main_links">
-						<li>
-							<a href="/dashboard/ww/">
-								<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
-								<span class="dashboard__nav-item-text">Weekly Watchlist</span>
-							</a>
-						</li>
-						<li>
-							<a href="https://intercom.help/simpler-trading/en/" target="_blank">
-								<span class="dashboard__nav-item-icon st-icon-support"></span>
-								<span class="dashboard__nav-item-text">Support</span>
-							</a>
-						</li>
-					</ul>
+					<li>
+						<a href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener noreferrer">
+							<span class="dashboard__nav-item-icon">
+								<IconHeadset size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">Support</span>
+						</a>
+					</li>
 				</ul>
 
 				<!-- ACCOUNT SECTION -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">account</p>
+				<p class="dashboard__nav-category">account</p>
+				<ul class="dash_main_links">
+					<li class={$page.url.pathname.startsWith('/dashboard/account') ? 'is-active' : ''}>
+						<a href="/dashboard/account/">
+							<span class="dashboard__nav-item-icon">
+								<IconSettings size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">My Account</span>
+						</a>
 					</li>
-					<ul class="dash_main_links">
-						<li>
-							<a href="/dashboard/account/">
-								<span class="dashboard__nav-item-icon st-icon-settings"></span>
-								<span class="dashboard__nav-item-text">My Account</span>
-							</a>
-						</li>
-					</ul>
 				</ul>
 
 			</nav>
 
 			<!-- SECONDARY NAVIGATION - Membership-specific navigation (appears on membership pages only) -->
-			{#if $page.url.pathname.includes('/dashboard/') && $page.url.pathname !== '/dashboard'}
+			{#if $page.params.slug}
 				<nav class="dashboard__nav-secondary">
-					<ul>
+					<ul class="dash_main_links">
 						<li>
 							<a href="/dashboard/{$page.params.slug}">
-								<span class="dashboard__nav-item-icon st-icon-dashboard"></span>
+								<span class="dashboard__nav-item-icon">
+									<IconLayoutDashboard size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Dashboard</span>
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/{$page.params.slug}/daily-videos">
-								<span class="dashboard__nav-item-icon st-icon-daily-videos"></span>
+								<span class="dashboard__nav-item-icon">
+									<IconVideo size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Premium Daily Videos</span>
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/{$page.params.slug}/learning-center">
-								<span class="dashboard__nav-item-icon st-icon-learning-center"></span>
+								<span class="dashboard__nav-item-icon">
+									<IconBooks size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Learning Center</span>
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/{$page.params.slug}/trading-room-archive">
-								<span class="dashboard__nav-item-icon st-icon-chatroom-archive"></span>
+								<span class="dashboard__nav-item-icon">
+									<IconArchive size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Trading Room Archives</span>
 							</a>
 						</li>
-						<li class="has-submenu">
-							<button type="button" class="submenu-toggle">
-								<span class="dashboard__nav-item-icon st-icon-forum"></span>
+						<li>
+							<a href="/dashboard/{$page.params.slug}/traders">
+								<span class="dashboard__nav-item-icon">
+									<IconUsers size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Meet the Traders</span>
-							</button>
-							<ul class="dashboard__nav-submenu">
-								<li><a href="/dashboard/{$page.params.slug}/traders">All Traders</a></li>
-							</ul>
+							</a>
 						</li>
-						<li class="has-submenu">
-							<button type="button" class="submenu-toggle">
-								<span class="dashboard__nav-item-icon st-icon-forum"></span>
+						<li>
+							<a href="/dashboard/{$page.params.slug}/trader-store">
+								<span class="dashboard__nav-item-icon">
+									<IconShoppingBag size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Trader Store</span>
-							</button>
-							<ul class="dashboard__nav-submenu">
-								<li><a href="/dashboard/{$page.params.slug}/trader-store">View Store</a></li>
-							</ul>
+							</a>
 						</li>
 					</ul>
 				</nav>
@@ -636,12 +647,12 @@
 		display: flex;
 		align-items: center;
 		height: 50px;
-		padding: 0 20px 0 80px;
+		padding: 0 20px 0 60px;
 		position: relative;
-		color: hsla(0, 0%, 100%, 0.5);
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		font-size: 14px;
-		font-weight: 300;
+		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		transition: all 0.15s ease-in-out;
 	}
@@ -672,28 +683,32 @@
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - Exact Match */
+	/* Icon Styling - Exact Match with Tabler SVG icons */
 	.dashboard__nav-item-icon {
 		position: absolute;
 		top: 50%;
-		left: 30px;
-		margin-top: -16px;
-		width: 32px;
-		height: 32px;
-		font-size: 32px;
-		line-height: 32px;
+		left: 20px;
+		transform: translateY(-50%);
+		width: 24px;
+		height: 24px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #C5CFD5;
-		opacity: 0.6;
+		color: #0984ae;
 		transition: all 0.15s ease-in-out;
+	}
+
+	/* Ensure SVG icons inherit color */
+	.dashboard__nav-item-icon :global(svg) {
+		width: 24px;
+		height: 24px;
+		color: inherit;
+		stroke: currentColor;
 	}
 
 	.dash_main_links li a:hover .dashboard__nav-item-icon,
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
-		color: #fff;
-		opacity: 1;
+		color: #0984ae;
 	}
 
 	/* Text Styling */
@@ -752,13 +767,18 @@
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
 		position: static;
-		margin-right: 15px;
+		margin-right: 12px;
 		width: 24px;
 		height: 24px;
-		font-size: 24px;
-		line-height: 24px;
-		color: inherit;
-		opacity: 0.7;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #0984ae;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dashboard__nav-secondary a:hover .dashboard__nav-item-icon {
+		color: #0984ae;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-text {
@@ -1009,95 +1029,20 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD ICON STYLING - CRITICAL MISSING STYLES
+	   GLOBAL ICON UTILITY CLASSES
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	:global(.dashboard__nav-item-icon) {
-		display: inline-block;
-		width: 24px;
-		height: 24px;
-		margin-right: 10px;
-		font-size: 24px;
-		color: #0984ae;
-		vertical-align: middle;
-	}
-
-	:global(.dashboard__nav-item-text) {
-		font-size: 14px;
-		font-weight: 400;
-		color: #fff;
-	}
-
-	:global(.dashboard__nav-category) {
-		color: hsla(0, 0%, 100%, 0.3);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.5px;
-		line-height: 1;
-		margin: 0;
-		padding: 20px 20px 12px;
-		text-transform: uppercase;
-	}
-
-	:global(.dash_main_links) {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	:global(.dash_main_links li) {
-		position: relative;
-	}
-
-	:global(.dash_main_links a) {
-		color: hsla(0, 0%, 100%, 0.7);
-		display: flex;
-		align-items: center;
-		padding: 12px 20px;
-		text-decoration: none;
-		transition: all 0.15s ease-in-out;
-	}
-
-	:global(.dash_main_links a:hover) {
-		background-color: rgba(255, 255, 255, 0.05);
-		color: #fff;
-	}
-
-	:global(.dash_main_links li.is-active a) {
-		background-color: rgba(255, 255, 255, 0.1);
-		color: #fff;
-	}
-
-	/* Icon size overrides */
-	:global(.dashboard__nav-item-icon.st-icon-training-room) {
-		font-size: 26px !important;
-	}
-
-	:global(.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room) {
-		font-size: 20px !important;
-	}
-
-	:global(.dashboard__nav-item-icon.st-icon-stacked-profits) {
-		font-size: 40px !important;
-	}
-
-	:global(.st-icon-this-week) {
-		font-size: 28px;
-	}
-
-	/* Icon classes */
 	:global(.icon) {
-		display: inline-block;
-		vertical-align: middle;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	:global(.icon--lg) {
-		font-size: 32px;
 		width: 32px;
 		height: 32px;
 	}
 
 	:global(.icon--md) {
-		font-size: 24px;
 		width: 24px;
 		height: 24px;
 	}
