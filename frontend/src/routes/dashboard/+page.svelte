@@ -137,10 +137,10 @@
 		</ul>
 
 		{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
-			<div class="dropdown" class:is-open={dropdownOpen}>
+			<div class="dropdown display-inline-block" class:is-open={dropdownOpen}>
 				<button
 					type="button"
-					class="btn btn-orange btn-tradingroom"
+					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
 					onclick={handleDropdownToggle}
 					aria-expanded={dropdownOpen}
 					aria-haspopup="true"
@@ -195,7 +195,7 @@
 							<article class="membership-card membership-card--{membership.type === 'trading-room' ? 'options' : 'foundation'}">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
-										<span class="membership-card__icon">
+										<span class="membership-card__icon{membership.slug === 'simpler-showcase' ? ' simpler-showcase-icon' : ''}">
 											<span class="icon icon--lg st-icon-{membership.slug}"></span>
 										</span>
 									</span>
