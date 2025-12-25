@@ -27,13 +27,30 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
+	import { getUserAvatarUrl } from '$lib/utils/gravatar';
 
-	// Tabler Icons - exact matches to screenshot
-	import IconHomeFilled from '@tabler/icons-svelte/icons/home-filled';
-	import IconPlayerPlayFilled from '@tabler/icons-svelte/icons/player-play-filled';
+	// Tabler Icons - Sidebar Navigation Icons
+	import IconHome from '@tabler/icons-svelte/icons/home';
+	import IconBook from '@tabler/icons-svelte/icons/book';
 	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-	import IconHelpCircle from '@tabler/icons-svelte/icons/help-circle';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconCalendarWeek from '@tabler/icons-svelte/icons/calendar-week';
+	import IconHeadset from '@tabler/icons-svelte/icons/headset';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import IconStar from '@tabler/icons-svelte/icons/star';
+	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
+	import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
+	import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
+	import IconVideo from '@tabler/icons-svelte/icons/video';
+	import IconBooks from '@tabler/icons-svelte/icons/books';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconAward from '@tabler/icons-svelte/icons/award';
+	import IconBuildingStore from '@tabler/icons-svelte/icons/building-store';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -93,6 +110,90 @@
 
 	// Derived: Show content only when auth is ready
 	let authReady = $derived(!$isInitializing);
+
+	// Derived: User's avatar URL (Gravatar with fallback)
+	let userAvatarUrl = $derived(getUserAvatarUrl($user, { size: 32, default: 'mp' }));
+
+	// Breadcrumb mapping for dashboard sub-pages
+	const breadcrumbTitles: Record<string, string> = {
+		'options-day-trading': 'Options Day Trading',
+		'day-trading-room': 'Day Trading Room',
+		'simpler-showcase': 'Simpler Showcase',
+		'ww': 'Weekly Watchlist',
+		'weekly-watchlist': 'Weekly Watchlist',
+		'courses': 'Courses',
+		'classes': 'My Classes',
+		'indicators': 'My Indicators',
+		'alerts': 'Alerts',
+		'settings': 'Settings',
+		'account': 'Account',
+		'profile': 'Profile',
+		'learning-center': 'Learning Center',
+		'start-here': 'Start Here',
+		'resources': 'Resources',
+		'daily-videos': 'Premium Daily Videos',
+		'trading-room-archive': 'Trading Room Archives',
+		'traders': 'Meet the Traders'
+	};
+
+	// Derived: Generate breadcrumbs from current URL path
+	let breadcrumbs = $derived.by(() => {
+		const pathname = $page.url.pathname;
+		const segments = pathname.split('/').filter(Boolean);
+
+		const crumbs: Array<{ label: string; href: string; isCurrent: boolean }> = [
+			{ label: 'Home', href: '/', isCurrent: false }
+		];
+
+		// Build path progressively
+		let currentPath = '';
+		segments.forEach((segment, index) => {
+			currentPath += `/${segment}`;
+			const isLast = index === segments.length - 1;
+
+			let label = segment;
+			if (segment === 'dashboard') {
+				label = 'Member Dashboard';
+			} else if (breadcrumbTitles[segment]) {
+				label = breadcrumbTitles[segment];
+			} else {
+				// Convert slug to title case
+				label = segment.split('-').map(word =>
+					word.charAt(0).toUpperCase() + word.slice(1)
+				).join(' ');
+			}
+
+			crumbs.push({
+				label,
+				href: currentPath,
+				isCurrent: isLast
+			});
+		});
+
+		return crumbs;
+	});
+
+	// Known trading room/membership slugs that have secondary navigation
+	const membershipSlugs = ['day-trading-room', 'options-day-trading', 'simpler-showcase'];
+
+	// Derived: Get current membership slug from URL path
+	let currentMembershipSlug = $derived.by(() => {
+		const pathname = $page.url.pathname;
+		// Check if we're on a dynamic [slug] route
+		if ($page.params.slug) {
+			return $page.params.slug;
+		}
+		// Check if we're on a static trading room route
+		const segments = pathname.replace('/dashboard/', '').split('/');
+		const firstSegment = segments[0];
+		if (membershipSlugs.includes(firstSegment)) {
+			return firstSegment;
+		}
+		return null;
+	});
+
+	// Derived: Check if we're on a membership sub-page (triggers collapsed sidebar)
+	let isOnMembershipPage = $derived(!!currentMembershipSlug);
 </script>
 
 <svelte:head>
@@ -102,17 +203,22 @@
 <!-- NAVBAR - Full Navigation Menu -->
 <NavBar />
 
-<!-- BREADCRUMB NAVIGATION - Exact Match from Jesus File -->
+<!-- BREADCRUMB NAVIGATION - Dynamic based on current page -->
 <nav id="breadcrumbs" class="breadcrumbs">
 	<div class="container-fluid">
 		<ul>
-			<li class="item-home">
-				<a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a>
-			</li>
-			<li class="separator separator-home"> / </li>
-			<li class="item-current item-401190">
-				<strong class="breadcrumb-current breadcrumb-401190"> Member Dashboard</strong>
-			</li>
+			{#each breadcrumbs as crumb, index (crumb.href)}
+				{#if index > 0}
+					<li class="separator"> / </li>
+				{/if}
+				<li class="item-{crumb.label.toLowerCase().replace(/\s+/g, '-')}">
+					{#if crumb.isCurrent}
+						<strong class="breadcrumb-current"> {crumb.label}</strong>
+					{:else}
+						<a class="breadcrumb-link" href={crumb.href} title={crumb.label}>{crumb.label}</a>
+					{/if}
+				</li>
+			{/each}
 		</ul>
 	</div>
 </nav>
@@ -127,185 +233,205 @@
 		<div class="dashboard">
 
 		<!-- SIDEBAR -->
-		<aside class="dashboard__sidebar">
-			<nav class="dashboard__nav-primary">
+		<aside class="dashboard__sidebar" class:has-secondary={isOnMembershipPage}>
+			<nav class="dashboard__nav-primary" class:is-collapsed={isOnMembershipPage}>
 
-				<!-- Profile -->
+				<!-- Profile - Avatar loads from Gravatar using user's email -->
 				<a href="/dashboard/account/" class="dashboard__profile-nav-item">
 					<span
 						class="dashboard__profile-photo"
-						style={$user?.avatar ? `background-image: url(${$user.avatar});` : ''}
+						style="background-image: url({userAvatarUrl});"
 					></span>
 					<span class="dashboard__profile-name">{$user?.name || 'Member'}</span>
 				</a>
 
 				<!-- Main Links -->
-				<ul>
-					<li></li>
-					<ul class="dash_main_links">
-						<li class="is-active">
-							<a href="/dashboard/">
-								<span class="dashboard__nav-item-icon st-icon-home"></span>
-								<span class="dashboard__nav-item-text">Member Dashboard</span>
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard/classes/">
-								<span class="dashboard__nav-item-icon st-icon-courses"></span>
-								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard/indicators/">
-								<span class="dashboard__nav-item-icon st-icon-indicators"></span>
-								<span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
-							</a>
-						</li>
-					</ul>
+				<ul class="dash_main_links">
+					<li class={$page.url.pathname === '/dashboard' || $page.url.pathname === '/dashboard/' ? 'is-active' : ''}>
+						<a href="/dashboard/">
+							<span class="dashboard__nav-item-icon">
+								<IconHome size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">Member Dashboard</span>
+						</a>
+					</li>
+					<li class={$page.url.pathname.startsWith('/dashboard/classes') ? 'is-active' : ''}>
+						<a href="/dashboard/classes/">
+							<span class="dashboard__nav-item-icon">
+								<IconSchool size={24} />
+							</span>
+							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Classes</span>
+						</a>
+					</li>
+					<li class={$page.url.pathname.startsWith('/dashboard/indicators') ? 'is-active' : ''}>
+						<a href="/dashboard/indicators/">
+							<span class="dashboard__nav-item-icon">
+								<IconChartCandle size={24} />
+							</span>
+							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Indicators</span>
+						</a>
+					</li>
 				</ul>
 
 				<!-- MEMBERSHIPS SECTION - Trading Rooms -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">memberships</p>
-					</li>
+				{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
+					<p class="dashboard__nav-category">memberships</p>
 					<ul class="dash_main_links">
-						{#if membershipsData?.tradingRooms && membershipsData.tradingRooms.length > 0}
-							{#each membershipsData.tradingRooms as room (room.id)}
-								<li>
-									<a href="/dashboard/{room.slug}">
-										<span class="dashboard__nav-item-icon st-icon-{room.slug}"></span>
-										<span class="dashboard__nav-item-text">{room.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
+						{#each membershipsData.tradingRooms as room (room.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${room.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{room.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={room.icon || 'chart-line'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{room.name}</span>
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</ul>
+				{/if}
 
 				<!-- MASTERY SECTION - Courses -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">mastery</p>
-					</li>
+				{#if membershipsData?.courses && membershipsData.courses.length > 0}
+					<p class="dashboard__nav-category">mastery</p>
 					<ul class="dash_main_links">
-						{#if membershipsData?.courses && membershipsData.courses.length > 0}
-							{#each membershipsData.courses as course (course.id)}
-								<li>
-									<a href="/dashboard/{course.slug}">
-										<span class="dashboard__nav-item-icon st-icon-{course.slug}"></span>
-										<span class="dashboard__nav-item-text">{course.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
+						{#each membershipsData.courses as course (course.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${course.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{course.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={course.icon || 'book'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{course.name}</span>
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</ul>
+				{/if}
 
 				<!-- PREMIUM REPORTS SECTION -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">premium reports</p>
-					</li>
+				{#if membershipsData?.premiumReports && membershipsData.premiumReports.length > 0}
+					<p class="dashboard__nav-category">premium reports</p>
 					<ul class="dash_main_links">
-						{#if membershipsData?.premiumReports && membershipsData.premiumReports.length > 0}
-							{#each membershipsData.premiumReports as report (report.id)}
-								<li>
-									<a href="/dashboard/{report.slug}">
-										<span class="dashboard__nav-item-icon">
-											<DynamicIcon name={report.icon} size={24} />
-										</span>
-										<span class="dashboard__nav-item-text">{report.name}</span>
-									</a>
-								</li>
-							{/each}
-						{/if}
+						{#each membershipsData.premiumReports as report (report.id)}
+							<li class={$page.url.pathname.startsWith(`/dashboard/${report.slug}`) ? 'is-active' : ''}>
+								<a href="/dashboard/{report.slug}">
+									<span class="dashboard__nav-item-icon">
+										<DynamicIcon name={report.icon || 'report-analytics'} size={24} />
+									</span>
+									<span class="dashboard__nav-item-text">{report.name}</span>
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</ul>
+				{/if}
 
 				<!-- TOOLS SECTION -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">tools</p>
+				<p class="dashboard__nav-category">tools</p>
+				<ul class="dash_main_links">
+					<li class={$page.url.pathname.startsWith('/dashboard/ww') ? 'is-active' : ''}>
+						<a href="/dashboard/ww/">
+							<span class="dashboard__nav-item-icon">
+								<IconCalendarWeek size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">Weekly Watchlist</span>
+						</a>
 					</li>
-					<ul class="dash_main_links">
-						<li>
-							<a href="/dashboard/ww/">
-								<span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
-								<span class="dashboard__nav-item-text">Weekly Watchlist</span>
-							</a>
-						</li>
-						<li>
-							<a href="https://intercom.help/simpler-trading/en/" target="_blank">
-								<span class="dashboard__nav-item-icon st-icon-support"></span>
-								<span class="dashboard__nav-item-text">Support</span>
-							</a>
-						</li>
-					</ul>
+					<li>
+						<a href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener noreferrer">
+							<span class="dashboard__nav-item-icon">
+								<IconHeadset size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">Support</span>
+						</a>
+					</li>
 				</ul>
 
 				<!-- ACCOUNT SECTION -->
-				<ul>
-					<li>
-						<p class="dashboard__nav-category">account</p>
+				<p class="dashboard__nav-category">account</p>
+				<ul class="dash_main_links">
+					<li class={$page.url.pathname.startsWith('/dashboard/account') ? 'is-active' : ''}>
+						<a href="/dashboard/account/">
+							<span class="dashboard__nav-item-icon">
+								<IconSettings size={24} />
+							</span>
+							<span class="dashboard__nav-item-text">My Account</span>
+						</a>
 					</li>
-					<ul class="dash_main_links">
-						<li>
-							<a href="/dashboard/account/">
-								<span class="dashboard__nav-item-icon st-icon-settings"></span>
-								<span class="dashboard__nav-item-text">My Account</span>
-							</a>
-						</li>
-					</ul>
 				</ul>
 
 			</nav>
 
 			<!-- SECONDARY NAVIGATION - Membership-specific navigation (appears on membership pages only) -->
-			{#if $page.url.pathname.includes('/dashboard/') && $page.url.pathname !== '/dashboard'}
+			{#if currentMembershipSlug}
 				<nav class="dashboard__nav-secondary">
-					<ul>
-						<li>
-							<a href="/dashboard/{$page.params.slug}">
-								<span class="dashboard__nav-item-icon st-icon-dashboard"></span>
-								<span class="dashboard__nav-item-text">Dashboard</span>
+					<ul class="dash_main_links">
+						<!-- Dashboard with membership name -->
+						<li class={$page.url.pathname === `/dashboard/${currentMembershipSlug}` || $page.url.pathname === `/dashboard/${currentMembershipSlug}/` ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}">
+								<span class="dashboard__nav-item-icon">
+									<IconLayoutDashboard size={24} />
+								</span>
+								<span class="dashboard__nav-item-text">{breadcrumbTitles[currentMembershipSlug] || 'Dashboard'} Dashboard</span>
 							</a>
 						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/daily-videos">
-								<span class="dashboard__nav-item-icon st-icon-daily-videos"></span>
+						<!-- Premium Daily Videos -->
+						<li class={$page.url.pathname.includes('/daily-videos') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/daily-videos">
+								<span class="dashboard__nav-item-icon">
+									<IconPlayerPlay size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Premium Daily Videos</span>
 							</a>
 						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/learning-center">
-								<span class="dashboard__nav-item-icon st-icon-learning-center"></span>
+						<!-- Learning Center -->
+						<li class={$page.url.pathname.includes('/learning-center') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/learning-center">
+								<span class="dashboard__nav-item-icon">
+									<IconAward size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Learning Center</span>
 							</a>
 						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/trading-room-archive">
-								<span class="dashboard__nav-item-icon st-icon-chatroom-archive"></span>
+						<!-- Trading Room Archives -->
+						<li class={$page.url.pathname.includes('/trading-room-archive') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/trading-room-archive">
+								<span class="dashboard__nav-item-icon">
+									<IconArchive size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Trading Room Archives</span>
 							</a>
 						</li>
-						<li class="has-submenu">
-							<button type="button" class="submenu-toggle">
-								<span class="dashboard__nav-item-icon st-icon-forum"></span>
+						<!-- Meet the Traders (with arrow) -->
+						<li class={$page.url.pathname.includes('/traders') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/traders">
+								<span class="dashboard__nav-item-icon">
+									<IconUsers size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Meet the Traders</span>
-							</button>
-							<ul class="dashboard__nav-submenu">
-								<li><a href="/dashboard/{$page.params.slug}/traders">All Traders</a></li>
-							</ul>
+								<span class="nav-arrow">
+									<IconChevronRight size={16} />
+								</span>
+							</a>
 						</li>
-						<li class="has-submenu">
-							<button type="button" class="submenu-toggle">
-								<span class="dashboard__nav-item-icon st-icon-forum"></span>
+						<!-- Trader Store (with arrow) -->
+						<li class={$page.url.pathname.includes('/trader-store') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/trader-store">
+								<span class="dashboard__nav-item-icon">
+									<IconBuildingStore size={24} />
+								</span>
 								<span class="dashboard__nav-item-text">Trader Store</span>
-							</button>
-							<ul class="dashboard__nav-submenu">
-								<li><a href="/dashboard/{$page.params.slug}/trader-store">View Store</a></li>
-							</ul>
+								<span class="nav-arrow">
+									<IconChevronRight size={16} />
+								</span>
+							</a>
+						</li>
+						<!-- Simpler Showcase -->
+						<li class={$page.url.pathname.includes('/simpler-showcase') ? 'is-active' : ''}>
+							<a href="/dashboard/simpler-showcase">
+								<span class="dashboard__nav-item-icon">
+									<IconTrophy size={24} />
+								</span>
+								<span class="dashboard__nav-item-text">Simpler Showcase</span>
+							</a>
 						</li>
 					</ul>
 				</nav>
@@ -544,6 +670,141 @@
 		padding-bottom: 30px;
 		font-size: 14px;
 		line-height: 1;
+		transition: width 0.3s ease-in-out;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COLLAPSED STATE - When on membership sub-pages
+	   Primary nav collapses to 80px, shows only icons
+	   Pixel-perfect match to Simpler Trading reference
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-primary.is-collapsed {
+		width: 80px;
+		padding: 30px 0 30px 0;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
+		padding: 20px 0;
+		text-align: center;
+		height: auto;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
+		position: relative;
+		left: auto;
+		top: auto;
+		transform: none;
+		margin: 0 auto;
+		width: 40px;
+		height: 40px;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		display: none;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-category {
+		display: none;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a {
+		padding: 14px 0;
+		justify-content: center;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a::after {
+		display: none;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
+		margin-right: 0;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   COLLAPSED TOOLTIP - Shows label bubble on hover
+	   Pixel-perfect match to Simpler Trading reference
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		z-index: 100;
+		position: absolute;
+		left: 100%;
+		top: 50%;
+		transform: translate(-10px, -50%);
+		margin-left: 15px;
+		padding: 8px 12px;
+		opacity: 0;
+		visibility: hidden;
+		background: #fff;
+		color: #333;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		white-space: nowrap;
+		font-size: 13px;
+		font-weight: 600;
+		pointer-events: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Tooltip arrow */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text::before,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name::before {
+		content: '';
+		position: absolute;
+		left: -6px;
+		top: 50%;
+		transform: translateY(-50%);
+		border-width: 6px;
+		border-style: solid;
+		border-color: transparent #fff transparent transparent;
+	}
+
+	/* Show tooltip on hover */
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-text,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(0, -50%);
+	}
+
+	/* Background circle effect on link hover */
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: transparent;
+		transform: translate(-50%, -50%) scale(0.8);
+		transition: all 0.15s ease-in-out;
+		z-index: -1;
+	}
+
+	.dashboard__nav-primary.is-collapsed .dash_main_links li a:hover::before {
+		transform: translate(-50%, -50%) scale(1);
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+
+	/* Sidebar with secondary nav - flex container */
+	.dashboard__sidebar.has-secondary {
+		display: flex;
+		flex-flow: row nowrap;
+		width: auto;
+	}
+
+	.dashboard__sidebar.has-secondary .dashboard__nav-primary {
+		flex: 0 0 80px;
+		border-right: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.dashboard__sidebar.has-secondary .dashboard__nav-secondary {
+		flex: 0 0 220px;
+		width: 220px;
 	}
 
 	.dashboard__nav-primary ul {
@@ -561,19 +822,16 @@
 		display: block;
 	}
 
-	.dashboard__nav-primary > ul + ul {
-		margin-top: 20px;
-	}
-
-	/* Profile Section - Exact Match */
+	/* Profile Section - Exact match to dashboard-globals.css reference */
 	.dashboard__profile-nav-item {
+		position: relative;
 		display: block;
 		height: auto;
 		line-height: 1.4;
 		padding: 32px 20px 28px 80px;
-		position: relative;
 		text-decoration: none;
 		color: hsla(0, 0%, 100%, 0.5);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.15s ease-in-out;
 	}
 
@@ -586,44 +844,34 @@
 		border-color: #0984ae;
 	}
 
-	.dashboard__profile-nav-item::after {
-		position: absolute;
-		display: block;
-		content: "";
-		top: 0;
-		right: 0;
-		bottom: 0;
-		width: 5px;
-		background: transparent;
-		transform: scale(1);
-		transition: all 0.15s ease-in-out;
-		transform-origin: 100% 50%;
-	}
-
 	.dashboard__profile-photo {
 		position: absolute;
 		top: 50%;
-		left: 30px;
-		margin-top: -17px;
-		width: 34px;
-		height: 34px;
-		border: 2px solid #fff;
+		left: 20px;
+		transform: translateY(-50%);
+		width: 44px;
+		height: 44px;
+		border: 2px solid hsla(0, 0%, 100%, 0.2);
 		border-radius: 50%;
-		background: #1a3a4f no-repeat center;
-		background-size: 32px;
-		transition: all 0.15s ease-in-out;
+		background-color: #0f2d41;
+		background-size: cover;
+		background-position: center;
+		transition: border-color 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-name {
 		display: block;
 		color: #fff;
 		font-size: 16px;
-		font-weight: 400;
+		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
-	/* Navigation Links - Exact Match */
+	/* Navigation Links - Exact Match to dashboard-globals.css reference */
 	.dash_main_links {
 		list-style: none;
 		margin: 0;
@@ -634,21 +882,22 @@
 		position: relative;
 	}
 
-	.dash_main_links li a {
+	.dashboard__nav-primary .dash_main_links li a {
 		display: flex;
 		align-items: center;
-		height: 50px;
-		padding: 0 20px 0 80px;
+		padding: 12px 20px;
 		position: relative;
-		color: hsla(0, 0%, 100%, 0.5);
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		font-size: 14px;
-		font-weight: 300;
+		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dash_main_links li a::after {
+	/* Active indicator on RIGHT side for primary nav */
+	.dashboard__nav-primary .dash_main_links li a::after {
 		position: absolute;
 		display: block;
 		content: "";
@@ -657,72 +906,84 @@
 		bottom: 0;
 		width: 5px;
 		background: transparent;
-		transform: scale(1);
 		transition: all 0.15s ease-in-out;
-		transform-origin: 100% 50%;
 	}
 
-	.dash_main_links li a:hover {
+	.dashboard__nav-primary .dash_main_links li a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
-	.dash_main_links li.is-active a {
+	.dashboard__nav-primary .dash_main_links li.is-active a {
+		background-color: rgba(255, 255, 255, 0.1);
 		color: #fff;
 	}
 
-	.dash_main_links li.is-active a::after {
+	.dashboard__nav-primary .dash_main_links li.is-active a::after {
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - Exact Match */
+	/* Icon Styling - Inline with margin-right per reference */
 	.dashboard__nav-item-icon {
-		position: absolute;
-		top: 50%;
-		left: 30px;
-		margin-top: -16px;
-		width: 32px;
-		height: 32px;
-		font-size: 32px;
-		line-height: 32px;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: #C5CFD5;
-		opacity: 0.6;
-		transition: all 0.15s ease-in-out;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
+		color: #0984ae;
+		vertical-align: middle;
+		flex-shrink: 0;
 	}
 
-	.dash_main_links li a:hover .dashboard__nav-item-icon,
-	.dash_main_links li.is-active .dashboard__nav-item-icon {
-		color: #fff;
-		opacity: 1;
-	}
-
-	/* Text Styling */
-	.dashboard__nav-item-text {
+	/* Ensure SVG icons inherit color */
+	.dashboard__nav-item-icon :global(svg) {
+		width: 24px;
+		height: 24px;
 		color: inherit;
+		stroke: currentColor;
 	}
 
-	/* Category Headers - Exact Match */
-	.dashboard__nav-category {
-		font-weight: 700;
-		padding: 30px 30px 0;
-		color: #fff;
-		text-transform: uppercase;
-		font-size: 10px;
-		letter-spacing: 0.5px;
-		margin: 0 0 5px 0;
+	/* Text Styling - Exact Match to reference */
+	.dashboard__nav-item-text {
+		font-size: 14px;
+		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
+		color: hsla(0, 0%, 100%, 0.7);
+		line-height: 1.4;
+	}
+
+	/* Bold white text for My Classes and My Indicators */
+	.dashboard__nav-item-text--bold {
+		font-size: 14px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		color: #fff;
+	}
+
+	/* Category Headers - Exact Match to dashboard-globals.css reference */
+	.dashboard__nav-category {
+		font-size: 11px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		color: hsla(0, 0%, 100%, 0.3);
+		letter-spacing: 0.5px;
 		line-height: 1;
+		margin: 0;
+		padding: 20px 20px 12px;
+		text-transform: uppercase;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   SECONDARY NAVIGATION - Membership-specific navigation in LEFT sidebar
+	   Pixel-perfect match to Simpler Trading reference
+	   Primary nav (collapsed): #0F2D41 | Secondary nav: #143E59
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary {
-		background-color: #0a2335;
-		padding: 0;
+		background-color: #143E59;
+		padding: 20px 0 0 0;
 		margin: 0;
+		min-height: 100%;
 	}
 
 	.dashboard__nav-secondary ul {
@@ -735,73 +996,83 @@
 		position: relative;
 	}
 
-	.dashboard__nav-secondary a {
+	.dashboard__nav-secondary li a {
 		display: flex;
 		align-items: center;
-		padding: 15px 30px;
-		color: #c5cfd5;
+		padding: 14px 20px 14px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		font-size: 14px;
+		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
 		transition: all 0.15s ease-in-out;
 		position: relative;
 	}
 
-	.dashboard__nav-secondary a:hover {
+	/* Active indicator on LEFT side for secondary nav */
+	.dashboard__nav-secondary li a::before {
+		position: absolute;
+		display: block;
+		content: "";
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 5px;
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dashboard__nav-secondary li a:hover {
 		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
+	.dashboard__nav-secondary li.is-active a {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #fff;
+	}
+
+	.dashboard__nav-secondary li.is-active a::before {
+		background-color: #0984ae;
+	}
+
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
-		position: static;
-		margin-right: 15px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		width: 24px;
 		height: 24px;
-		font-size: 24px;
-		line-height: 24px;
+		margin-right: 10px;
+		color: #0984ae;
+		flex-shrink: 0;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-item-icon :global(svg) {
+		width: 24px;
+		height: 24px;
 		color: inherit;
-		opacity: 0.7;
+		stroke: currentColor;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-text {
 		color: inherit;
-	}
-
-	.dashboard__nav-secondary .dashboard__nav-submenu {
-		background-color: #081a27;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		z-index: 110;
-	}
-
-	.dashboard__nav-secondary .dashboard__nav-submenu li {
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.dashboard__nav-secondary .dashboard__nav-submenu a {
-		padding: 12px 30px 12px 60px;
-		font-size: 13px;
-	}
-
-	.dashboard__nav-secondary .submenu-toggle {
-		display: flex;
-		align-items: center;
-		padding: 15px 30px;
-		color: #c5cfd5;
-		background: none;
-		border: none;
-		width: 100%;
-		text-align: left;
+		flex: 1;
 		font-size: 14px;
-		font-family: 'Open Sans', sans-serif;
-		transition: all 0.15s ease-in-out;
-		cursor: pointer;
+		font-weight: 400;
 	}
 
-	.dashboard__nav-secondary .submenu-toggle:hover {
-		background-color: rgba(255, 255, 255, 0.05);
-		color: #fff;
+	/* Arrow indicator for items with submenus */
+	.dashboard__nav-secondary .nav-arrow {
+		margin-left: auto;
+		color: hsla(0, 0%, 100%, 0.4);
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.dashboard__nav-secondary .nav-arrow :global(svg) {
+		width: 16px;
+		height: 16px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1011,95 +1282,20 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD ICON STYLING - CRITICAL MISSING STYLES
+	   GLOBAL ICON UTILITY CLASSES
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	:global(.dashboard__nav-item-icon) {
-		display: inline-block;
-		width: 24px;
-		height: 24px;
-		margin-right: 10px;
-		font-size: 24px;
-		color: #0984ae;
-		vertical-align: middle;
-	}
-
-	:global(.dashboard__nav-item-text) {
-		font-size: 14px;
-		font-weight: 400;
-		color: #fff;
-	}
-
-	:global(.dashboard__nav-category) {
-		color: hsla(0, 0%, 100%, 0.3);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.5px;
-		line-height: 1;
-		margin: 0;
-		padding: 20px 20px 12px;
-		text-transform: uppercase;
-	}
-
-	:global(.dash_main_links) {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	:global(.dash_main_links li) {
-		position: relative;
-	}
-
-	:global(.dash_main_links a) {
-		color: hsla(0, 0%, 100%, 0.7);
-		display: flex;
-		align-items: center;
-		padding: 12px 20px;
-		text-decoration: none;
-		transition: all 0.15s ease-in-out;
-	}
-
-	:global(.dash_main_links a:hover) {
-		background-color: rgba(255, 255, 255, 0.05);
-		color: #fff;
-	}
-
-	:global(.dash_main_links li.is-active a) {
-		background-color: rgba(255, 255, 255, 0.1);
-		color: #fff;
-	}
-
-	/* Icon size overrides */
-	:global(.dashboard__nav-item-icon.st-icon-training-room) {
-		font-size: 26px !important;
-	}
-
-	:global(.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room) {
-		font-size: 20px !important;
-	}
-
-	:global(.dashboard__nav-item-icon.st-icon-stacked-profits) {
-		font-size: 40px !important;
-	}
-
-	:global(.st-icon-this-week) {
-		font-size: 28px;
-	}
-
-	/* Icon classes */
 	:global(.icon) {
-		display: inline-block;
-		vertical-align: middle;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	:global(.icon--lg) {
-		font-size: 32px;
 		width: 32px;
 		height: 32px;
 	}
 
 	:global(.icon--md) {
-		font-size: 24px;
 		width: 24px;
 		height: 24px;
 	}

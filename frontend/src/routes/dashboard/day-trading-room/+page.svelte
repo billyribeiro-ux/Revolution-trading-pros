@@ -10,6 +10,10 @@
 	 */
 	import { onMount } from 'svelte';
 
+	// Tabler Icons for dropdown menu
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
+
 	// Article data - matches WordPress structure
 	const articles = [
 		{
@@ -155,20 +159,24 @@
 				</li>
 			</ul>
 			<div class="dropdown display-inline-block">
-				<button type="button" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" aria-expanded="false">
 					<strong>Enter a Trading Room</strong>
 				</button>
 				<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 					<ul class="dropdown-menu__menu">
 						<li>
 							<a href="/dashboard/day-trading-room" target="_blank" rel="nofollow">
-								<span class="st-icon-mastering-the-trade icon icon--md"></span>
+								<span class="dropdown-icon dropdown-icon--day-trading">
+									<IconChartLine size={20} />
+								</span>
 								Day Trading Room
 							</a>
 						</li>
 						<li>
 							<a href="/dashboard/simpler-showcase" target="_blank" rel="nofollow">
-								<span class="st-icon-simpler-showcase icon icon--md"></span>
+								<span class="dropdown-icon dropdown-icon--showcase">
+									<IconTrophy size={20} />
+								</span>
 								Simpler Showcase Room
 							</a>
 						</li>
@@ -360,21 +368,24 @@
 
 	.btn-orange,
 	.btn-tradingroom {
-		background: #F69532;
+		background-color: #F69532;
 		color: #fff;
-		border: none;
+		border: 1px solid #F69532;
 		font-weight: 700;
 		padding: 8px 16px;
 		border-radius: 3px;
 		text-decoration: none;
 		display: inline-block;
 		cursor: pointer;
-		transition: background 0.2s;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+		transition: all 0.15s ease-in-out;
 	}
 
 	.btn-orange:hover,
 	.btn-tradingroom:hover {
-		background: #dc7309;
+		background-color: #dc7309;
+		border-color: #dc7309;
+		color: #fff;
 	}
 
 	.dropdown-toggle::after {
@@ -390,10 +401,11 @@
 		background: #fff;
 		border: 1px solid #dbdbdb;
 		border-radius: 4px;
-		box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		z-index: 1000;
-		min-width: 250px;
+		min-width: 200px;
 		display: none;
+		font-size: 14px;
 	}
 
 	.dropdown:hover .dropdown-menu {
@@ -401,13 +413,13 @@
 	}
 
 	.dropdown-menu--full-width {
-		min-width: 300px;
+		min-width: 280px;
 	}
 
 	.dropdown-menu__menu {
 		list-style: none;
-		margin: 0;
-		padding: 10px 0;
+		margin: -10px;
+		padding: 0;
 	}
 
 	.dropdown-menu__menu li {
@@ -417,24 +429,45 @@
 	.dropdown-menu__menu a {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		padding: 10px 20px;
-		color: #333;
+		gap: 12px;
+		padding: 10px 15px;
+		color: #666;
+		font-size: 14px;
+		line-height: 1.4;
 		text-decoration: none;
-		transition: background 0.2s;
+		white-space: nowrap;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dropdown-menu__menu a:hover {
-		background: #f5f5f5;
+		background-color: #f4f4f4;
+		color: #0984ae;
 	}
 
-	.icon {
-		display: inline-block;
+	/* Dropdown Icon Styling - Pixel-perfect match */
+	.dropdown-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		flex-shrink: 0;
 	}
 
-	.icon--md {
-		width: 20px;
-		height: 20px;
+	.dropdown-icon--day-trading {
+		background-color: #0984ae;
+		color: #fff;
+	}
+
+	.dropdown-icon--showcase {
+		background-color: #000;
+		color: #F69532;
+	}
+
+	.dropdown-icon :global(svg) {
+		width: 18px;
+		height: 18px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

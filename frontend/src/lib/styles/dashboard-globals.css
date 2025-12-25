@@ -171,7 +171,50 @@ h3 {
 .dashboard__nav-item-text {
   font-size: 14px;
   font-weight: 400;
+  color: hsla(0, 0%, 100%, 0.7);
+}
+
+/* Bold white text for My Classes and My Indicators - exact match from core */
+.dashboard__nav-item-text--bold {
+  font-weight: 700;
   color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PROFILE SECTION - Avatar aligned with username
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__profile-nav-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.15s ease-in-out;
+}
+
+.dashboard__profile-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard__profile-photo {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #0984ae;
+  background-size: cover;
+  background-position: center;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.dashboard__profile-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -867,4 +910,495 @@ p:empty {
 
 .scanner-load-content img[src*="/public/images/space.gif"] {
   display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ARTICLE CARDS - Exact from core 1 reference
+   Used on main dashboard "Latest Updates" section
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.article-cards {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.article-cards.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.article-card {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.article-card:hover {
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.article-card__image {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background-size: cover;
+  background-position: center;
+  background-color: #0984ae;
+  margin: 0;
+}
+
+.article-card__type {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.article-card__type .label {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 25px;
+}
+
+.article-card__type .label--info {
+  background-color: #0984ae;
+  color: #fff;
+}
+
+.article-card__title {
+  margin: 0;
+  padding: 15px 15px 10px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.article-card__title a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+
+.article-card__title a:hover {
+  color: #0984ae;
+}
+
+.article-card__meta {
+  display: block;
+  padding: 0 15px;
+  color: #999;
+  font-size: 12px;
+}
+
+.article-card__meta small {
+  font-size: 12px;
+}
+
+.article-card__excerpt {
+  padding: 10px 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.article-card__excerpt p {
+  margin: 0;
+}
+
+.article-card .btn {
+  margin: 0 15px 15px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CARD GRID - Exact from core 2 reference
+   Used on Daily Videos page with flex-grid panels
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.card-grid {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.card-grid.flex-grid.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card-grid-spacer {
+  padding: 0 15px;
+  margin-bottom: 30px;
+  box-sizing: border-box;
+}
+
+.flex-grid-item {
+  display: flex;
+}
+
+/* Bootstrap-style columns for card-grid */
+.col-xs-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 576px) {
+  .col-sm-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 768px) {
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .col-xl-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.flex-grid-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-media {
+  position: relative;
+  margin: 0;
+}
+
+.card-media--video {
+  width: 100%;
+}
+
+.card-image {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background-size: cover;
+  background-position: center;
+  background-color: #0984ae;
+}
+
+.card-image img.default-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.card-body {
+  flex: 1 1 auto;
+  padding: 15px;
+}
+
+.card-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.card-title a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+
+.card-title a:hover {
+  color: #0984ae;
+}
+
+.card-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+  margin-top: 10px;
+}
+
+.card-description p {
+  margin: 0;
+}
+
+.card-footer {
+  padding: 15px;
+  border-top: 1px solid #dbdbdb;
+  background-color: #fafafa;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD FILTERS - Exact from core 2 reference
+   Search and count display for video/article pages
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.dashboard-filters__count {
+  font-size: 14px;
+  color: #666;
+}
+
+.dashboard-filters__search {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-filters__search input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 200px;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.dashboard-filters__search input:focus {
+  border-color: #0984ae;
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PAGINATION - Exact from core 2 reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.facetwp-pagination,
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 0;
+  margin-top: 20px;
+}
+
+.facetwp-pager,
+.pagination-list {
+  display: flex;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-item,
+.facetwp-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+}
+
+.pagination-item:hover,
+.facetwp-page:hover {
+  color: #0984ae;
+  border-color: #0984ae;
+  background-color: #f4f4f4;
+}
+
+.pagination-item.active,
+.facetwp-page.active {
+  color: #fff;
+  background-color: #0984ae;
+  border-color: #0984ae;
+}
+
+.pagination-item.disabled,
+.facetwp-page.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   WEEKLY WATCHLIST SECTION - Exact from core 1 reference
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.weekly-watchlist-section {
+  background-color: #fff;
+  padding: 30px 40px;
+}
+
+.weekly-watchlist-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+.weekly-watchlist-content .col-sm-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 0 15px;
+}
+
+.weekly-watchlist-content .col-lg-5 {
+  flex: 0 0 41.666%;
+  max-width: 41.666%;
+}
+
+.weekly-watchlist-content .col-lg-7 {
+  flex: 0 0 58.333%;
+  max-width: 58.333%;
+}
+
+@media (max-width: 991px) {
+  .weekly-watchlist-content .col-lg-5,
+  .weekly-watchlist-content .col-lg-7 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LABELS - Exact from core references
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.label {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.label--info {
+  background-color: #0984ae;
+  color: #fff;
+}
+
+.label--success {
+  background-color: #5cb85c;
+  color: #fff;
+}
+
+.label--warning {
+  background-color: #f0ad4e;
+  color: #fff;
+}
+
+.label--danger {
+  background-color: #d9534f;
+  color: #fff;
+}
+
+.label--primary {
+  background-color: #337ab7;
+  color: #fff;
+}
+
+/* Pill-style labels (rounded) */
+.label--pill {
+  border-radius: 25px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FLEX GRID UTILITIES - Exact from core references
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-grid-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   VIDEO PLAYER STYLES - For daily videos detail pages
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.video-player-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video-player-container iframe,
+.video-player-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SQUASH UTILITY - Hide "Read More" links in excerpts
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.u--squash a.read-more,
+.u--hide-read-more a.read-more {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   H5 HEADING - Used in card titles
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.h5,
+h5 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  font-family: 'Open Sans', sans-serif;
+  margin: 0 0 10px;
 }
