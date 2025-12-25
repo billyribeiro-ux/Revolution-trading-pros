@@ -454,6 +454,7 @@
 	:global(.site-content) {
 		max-width: 1160px;
 		margin: 0 auto;
+		background-color: #efefef;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -474,7 +475,7 @@
 		display: flex;
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
-		width: 280px;
+		width: 220px;
 		background-color: #0f2d41;
 		min-height: 100%;
 		bottom: 50px;
@@ -495,7 +496,7 @@
 			opacity: 0;
 			visibility: hidden;
 			z-index: 100010;
-			width: 280px;
+			width: 220px;
 		}
 	}
 
@@ -514,9 +515,9 @@
 	}
 
 	.dashboard__nav-primary {
-		width: 280px;
+		width: 220px;
 		padding-bottom: 30px;
-		font-size: 16px;
+		font-size: 14px;
 		line-height: 1;
 	}
 

@@ -586,11 +586,14 @@
 	.dashboard__content-main {
 		border-right: 1px solid #dbdbdb;
 		flex: 1 1 auto;
+		background-color: #efefef;
 		min-width: 0;
 	}
 
 	.dashboard__content-section {
-		padding: 30px 20px;
+		padding: 30px 40px;
+		background-color: #fff;
+		margin-bottom: 20px;
 		overflow-x: auto;
 		overflow-y: hidden;
 	}
@@ -614,9 +617,9 @@
 	.section-title,
 	h2.section-title {
 		color: #333;
+		font-size: 28px;
 		font-weight: 700;
-		font-size: 20px;
-		margin-bottom: 30px;
+		margin: 0 0 30px;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.2;
 	}
@@ -989,6 +992,7 @@
 
 	.u--background-color-white {
 		background-color: #fff !important;
+		padding: 40px;
 	}
 
 	.u--border-radius {
