@@ -380,9 +380,10 @@
 					{ label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true },
 					{ label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }
 				] as metric, i}
+					{@const MetricIcon = metric.icon}
 					<div class="metric-card {metric.color}" in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}>
 						<div class="metric-icon-wrap {metric.color}">
-							<svelte:component this={metric.icon} size={20} />
+							<MetricIcon size={20} />
 						</div>
 						<div class="metric-body">
 							<span class="metric-label">{metric.label}</span>
@@ -603,7 +604,7 @@
 					<h4>404 Errors</h4>
 					<div class="error-stats">
 						<div class="error-stat">
-							<span class="error-count" class:has-errors={seoMetrics.error404Count.value > 0}>{seoMetrics.error404Count.value}</span>
+							<span class="error-count" class:has-errors={(seoMetrics.error404Count.value ?? 0) > 0}>{seoMetrics.error404Count.value ?? 0}</span>
 							<span class="error-label">Logged</span>
 						</div>
 						<div class="error-stat">
@@ -652,9 +653,10 @@
 				{ href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' },
 				{ href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }
 			] as item, i}
+				{@const BusinessIcon = item.icon}
 				<a href={item.href} class="business-card {item.color}" in:scale={{ duration: 400, delay: 350 + i * 50, easing: cubicOut }}>
 					<div class="business-card-icon {item.color}">
-						<svelte:component this={item.icon} size={28} />
+						<BusinessIcon size={28} />
 					</div>
 					<div class="business-card-content">
 						<span class="business-card-value">
@@ -687,9 +689,10 @@
 				{ href: '/admin/analytics', icon: IconChartBar, label: 'Analytics', desc: 'View detailed analytics', color: 'analytics' },
 				{ href: '/admin/settings', icon: IconSettings, label: 'Settings', desc: 'System configuration', color: 'settings' }
 			] as item}
+				{@const CmsIcon = item.icon}
 				<a href={item.href} class="cms-card">
 					<div class="cms-icon {item.color}">
-						<svelte:component this={item.icon} size={24} />
+						<CmsIcon size={24} />
 					</div>
 					<div class="cms-info">
 						<span class="cms-label">{item.label}</span>

@@ -311,6 +311,7 @@
 				</thead>
 				<tbody>
 					{#each filteredCampaigns as campaign}
+						{@const CampaignStatusIcon = getStatusIcon(campaign.status)}
 						<tr>
 							<td>
 								<div class="campaign-cell">
@@ -325,7 +326,7 @@
 							</td>
 							<td>
 								<span class="status-badge {getStatusColor(campaign.status)}">
-									<svelte:component this={getStatusIcon(campaign.status)} size={12} />
+									<CampaignStatusIcon size={12} />
 									{campaign.status}
 								</span>
 							</td>

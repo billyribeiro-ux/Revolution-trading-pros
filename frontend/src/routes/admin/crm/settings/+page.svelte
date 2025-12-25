@@ -136,14 +136,15 @@
 		<!-- Tabs -->
 		<div class="settings-tabs">
 			{#each tabs as tab}
+				{@const TabIcon = tab.icon}
 				{#if tab.href}
 					<a href={tab.href} class="tab">
-						<svelte:component this={tab.icon} size={18} />
+						<TabIcon size={18} />
 						<span>{tab.name}</span>
 					</a>
 				{:else}
 					<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
-						<svelte:component this={tab.icon} size={18} />
+						<TabIcon size={18} />
 						<span>{tab.name}</span>
 					</button>
 				{/if}
@@ -265,8 +266,9 @@
 						</div>
 
 						<div class="form-group">
-							<label>Display Options</label>
-							<div class="checkbox-group">
+							<fieldset class="checkbox-fieldset">
+								<legend class="form-label">Display Options</legend>
+								<div class="checkbox-group">
 								<label class="checkbox-label">
 									<input type="checkbox" bind:checked={emailPreferences.show_lists} />
 									<span>Show Lists</span>
@@ -283,7 +285,8 @@
 									<input type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
 									<span>Show Unsubscribe All Option</span>
 								</label>
-							</div>
+								</div>
+							</fieldset>
 						</div>
 
 						<div class="form-group">

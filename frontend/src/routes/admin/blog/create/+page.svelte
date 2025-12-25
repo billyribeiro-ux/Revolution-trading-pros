@@ -383,7 +383,7 @@
 			<!-- Advanced Block Editor -->
 			<div class="form-group editor-container" class:fullscreen={isFullscreen}>
 				<div class="editor-toolbar">
-					<label>Content</label>
+					<h3 class="editor-label">Content</h3>
 					<div class="editor-actions">
 						<button
 							type="button"

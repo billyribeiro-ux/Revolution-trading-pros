@@ -236,14 +236,16 @@
 	{:else}
 		<div class="logs-list">
 			{#each filteredLogs as log}
+				{@const LevelIcon = getLevelIcon(log.level)}
+				{@const CategoryIcon = getCategoryIcon(log.category)}
 				<div class="log-entry {getLevelColor(log.level)}">
 					<div class="log-header">
 						<div class="log-level">
-							<svelte:component this={getLevelIcon(log.level)} size={16} />
+							<LevelIcon size={16} />
 							<span>{log.level}</span>
 						</div>
 						<div class="log-category">
-							<svelte:component this={getCategoryIcon(log.category)} size={14} />
+							<CategoryIcon size={14} />
 							<span>{log.category}</span>
 						</div>
 						<span class="log-time">{formatDate(log.created_at)}</span>

@@ -309,10 +309,11 @@
             </div>
             <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
                 {#each heroicons as item}
+                    {@const HeroIcon = item.icon}
                     <div class="group bg-slate-900/50 border border-white/5 rounded-xl p-3 hover:border-purple-500/30 transition-all hover:-translate-y-1">
                         <div class="flex flex-col items-center gap-2">
                             <div class="text-slate-400 group-hover:text-purple-400 transition-colors">
-                                <svelte:component this={item.icon} class="w-7 h-7" />
+                                <HeroIcon class="w-7 h-7" />
                             </div>
                             <span class="text-[9px] text-center text-slate-500 group-hover:text-slate-300 leading-tight">{item.name}</span>
                         </div>

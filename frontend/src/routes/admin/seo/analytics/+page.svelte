@@ -11,10 +11,10 @@
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	let connectionLoading = $state(true);
-	let stats: any = null;
-	let topPages: any[] = [];
-	let comparison: any = null;
-	let loading = false;
+	let stats: any = $state(null);
+	let topPages: any[] = $state([]);
+	let comparison: any = $state(null);
+	let loading = $state(false);
 
 	let dateRange = {
 		start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -139,11 +139,9 @@
 				<div class="metric-label">Total Impressions</div>
 				<div class="metric-value">{formatNumber(stats.total_impressions || 0)}</div>
 				{#if comparison?.change?.impressions}
+					{@const ImpressionsIcon = getTrendIcon(comparison.change.impressions.direction)}
 					<div class="metric-change {getTrendClass(comparison.change.impressions.direction)}">
-						<svelte:component
-							this={getTrendIcon(comparison.change.impressions.direction)}
-							size={16}
-						/>
+						<ImpressionsIcon size={16} />
 						{Math.abs(comparison.change.impressions.percentage)}%
 					</div>
 				{/if}
@@ -153,8 +151,9 @@
 				<div class="metric-label">Total Clicks</div>
 				<div class="metric-value">{formatNumber(stats.total_clicks || 0)}</div>
 				{#if comparison?.change?.clicks}
+					{@const ClicksIcon = getTrendIcon(comparison.change.clicks.direction)}
 					<div class="metric-change {getTrendClass(comparison.change.clicks.direction)}">
-						<svelte:component this={getTrendIcon(comparison.change.clicks.direction)} size={16} />
+						<ClicksIcon size={16} />
 						{Math.abs(comparison.change.clicks.percentage)}%
 					</div>
 				{/if}
@@ -164,8 +163,9 @@
 				<div class="metric-label">Average CTR</div>
 				<div class="metric-value">{(stats.avg_ctr * 100).toFixed(2)}%</div>
 				{#if comparison?.change?.ctr}
+					{@const CtrIcon = getTrendIcon(comparison.change.ctr.direction)}
 					<div class="metric-change {getTrendClass(comparison.change.ctr.direction)}">
-						<svelte:component this={getTrendIcon(comparison.change.ctr.direction)} size={16} />
+						<CtrIcon size={16} />
 						{Math.abs(comparison.change.ctr.percentage)}%
 					</div>
 				{/if}
@@ -175,8 +175,9 @@
 				<div class="metric-label">Average Position</div>
 				<div class="metric-value">{stats.avg_position ? stats.avg_position.toFixed(1) : '—'}</div>
 				{#if comparison?.change?.position}
+					{@const PositionIcon = getTrendIcon(comparison.change.position.direction)}
 					<div class="metric-change {getTrendClass(comparison.change.position.direction)}">
-						<svelte:component this={getTrendIcon(comparison.change.position.direction)} size={16} />
+						<PositionIcon size={16} />
 						{Math.abs(comparison.change.position.percentage)}%
 					</div>
 				{/if}

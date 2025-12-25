@@ -670,17 +670,19 @@
 				</div>
 				<div class="p-6 space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Board Title</label>
+						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="board-title">Board Title</label>
 						<input
 							type="text"
+							id="board-title"
 							bind:value={newBoard.title}
 							placeholder="Enter board title..."
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (optional)</label>
+						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="board-description">Description (optional)</label>
 						<textarea
+							id="board-description"
 							bind:value={newBoard.description}
 							placeholder="Enter description..."
 							rows="3"
@@ -688,8 +690,9 @@
 						></textarea>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Board Type</label>
+						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="board-type">Board Type</label>
 						<select
+							id="board-type"
 							bind:value={newBoard.type}
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
 						>
@@ -701,8 +704,9 @@
 					</div>
 					{#if folders.length > 0}
 						<div>
-							<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder (optional)</label>
+							<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="board-folder">Folder (optional)</label>
 							<select
+								id="board-folder"
 								bind:value={newBoard.folder_id}
 								class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
 							>
@@ -742,18 +746,20 @@
 				</div>
 				<div class="p-6 space-y-4">
 					<div>
-						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder Name</label>
+						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="folder-name">Folder Name</label>
 						<input
 							type="text"
+							id="folder-name"
 							bind:value={newFolder.title}
 							placeholder="Enter folder name..."
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color</label>
+						<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="folder-color">Color</label>
 						<input
 							type="color"
+							id="folder-color"
 							bind:value={newFolder.color}
 							class="w-full h-10 rounded-lg cursor-pointer"
 						/>

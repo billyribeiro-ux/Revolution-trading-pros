@@ -196,6 +196,7 @@
 						</thead>
 						<tbody>
 							{#each importJobs as job}
+								{@const StatusIcon = getStatusIcon(job.status)}
 								<tr>
 									<td>
 										<span class="type-badge">{job.type}</span>
@@ -205,7 +206,7 @@
 									</td>
 									<td>
 										<span class="status-badge {getStatusColor(job.status)}">
-											<svelte:component this={getStatusIcon(job.status)} size={14} />
+											<StatusIcon size={14} />
 											{job.status}
 										</span>
 									</td>
@@ -265,6 +266,7 @@
 						</thead>
 						<tbody>
 							{#each exportJobs as job}
+								{@const ExportStatusIcon = getStatusIcon(job.status)}
 								<tr>
 									<td>
 										<span class="type-badge">{job.type}</span>
@@ -274,7 +276,7 @@
 									</td>
 									<td>
 										<span class="status-badge {getStatusColor(job.status)}">
-											<svelte:component this={getStatusIcon(job.status)} size={14} />
+											<ExportStatusIcon size={14} />
 											{job.status}
 										</span>
 									</td>

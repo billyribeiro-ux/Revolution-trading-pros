@@ -244,12 +244,13 @@
 		</div>
 		<nav class="sidebar-nav">
 			{#each sidebarNav as item}
+				{@const Icon = item.icon}
 				<a
 					href={item.href}
 					class="nav-item"
 					class:active={item.active}
 				>
-					<svelte:component this={item.icon} size={18} />
+					<Icon size={18} />
 					<span>{item.name}</span>
 				</a>
 			{/each}
@@ -306,13 +307,14 @@
 								<h4>Quick Links</h4>
 								<div class="quick-links-grid">
 									{#each quickLinks as link}
+										{@const LinkIcon = link.icon}
 										<a
 											href={link.href}
 											class="quick-link"
 											target={link.external ? '_blank' : undefined}
 											rel={link.external ? 'noopener noreferrer' : undefined}
 										>
-											<svelte:component this={link.icon} size={16} />
+											<LinkIcon size={16} />
 											<span>{link.name}</span>
 											{#if link.external}
 												<IconExternalLink size={12} class="external-icon" />

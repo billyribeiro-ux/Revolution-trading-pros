@@ -44,7 +44,9 @@
 	import IconHelp from '@tabler/icons-svelte/icons/help';
 	import IconHome from '@tabler/icons-svelte/icons/home';
 	import IconUser from '@tabler/icons-svelte/icons/user';
-	import type { Component } from 'svelte';
+
+	// Type for Tabler icon components
+	type IconComponent = typeof IconChartLine;
 
 	interface Props {
 		name: string | null | undefined;
@@ -56,7 +58,7 @@
 
 	// Icon registry - maps icon names to components
 	// This is the single source of truth for available icons
-	const iconRegistry: Record<string, Component> = {
+	const iconRegistry: Record<string, IconComponent> = {
 		// Chart/Trading icons
 		'chart-line': IconChartLine,
 		'trending-up': IconTrendingUp,

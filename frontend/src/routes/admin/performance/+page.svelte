@@ -159,57 +159,69 @@
 			</p>
 
 			<div class="vitals-grid">
-				<div class="vital-card">
-					<div class="vital-header">
-						<span class="vital-name">LCP</span>
-						<span class="vital-label">Largest Contentful Paint</span>
+				{#if true}
+					{@const lcpRating = getVitalRating(coreWebVitals?.lcp_rating)}
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">LCP</span>
+							<span class="vital-label">Largest Contentful Paint</span>
+						</div>
+						<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
+						<div class="vital-rating {lcpRating.color}">
+							<lcpRating.icon size={16} />
+							{lcpRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 2.5s</div>
 					</div>
-					<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
-					<div class="vital-rating {getVitalRating(coreWebVitals?.lcp_rating).color}">
-						<svelte:component this={getVitalRating(coreWebVitals?.lcp_rating).icon} size={16} />
-						{getVitalRating(coreWebVitals?.lcp_rating).label}
-					</div>
-					<div class="vital-target">Target: &lt; 2.5s</div>
-				</div>
+				{/if}
 
-				<div class="vital-card">
-					<div class="vital-header">
-						<span class="vital-name">FID</span>
-						<span class="vital-label">First Input Delay</span>
+				{#if true}
+					{@const fidRating = getVitalRating(coreWebVitals?.fid_rating)}
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">FID</span>
+							<span class="vital-label">First Input Delay</span>
+						</div>
+						<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
+						<div class="vital-rating {fidRating.color}">
+							<fidRating.icon size={16} />
+							{fidRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 100ms</div>
 					</div>
-					<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
-					<div class="vital-rating {getVitalRating(coreWebVitals?.fid_rating).color}">
-						<svelte:component this={getVitalRating(coreWebVitals?.fid_rating).icon} size={16} />
-						{getVitalRating(coreWebVitals?.fid_rating).label}
-					</div>
-					<div class="vital-target">Target: &lt; 100ms</div>
-				</div>
+				{/if}
 
-				<div class="vital-card">
-					<div class="vital-header">
-						<span class="vital-name">CLS</span>
-						<span class="vital-label">Cumulative Layout Shift</span>
+				{#if true}
+					{@const clsRating = getVitalRating(coreWebVitals?.cls_rating)}
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">CLS</span>
+							<span class="vital-label">Cumulative Layout Shift</span>
+						</div>
+						<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
+						<div class="vital-rating {clsRating.color}">
+							<clsRating.icon size={16} />
+							{clsRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 0.1</div>
 					</div>
-					<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
-					<div class="vital-rating {getVitalRating(coreWebVitals?.cls_rating).color}">
-						<svelte:component this={getVitalRating(coreWebVitals?.cls_rating).icon} size={16} />
-						{getVitalRating(coreWebVitals?.cls_rating).label}
-					</div>
-					<div class="vital-target">Target: &lt; 0.1</div>
-				</div>
+				{/if}
 
-				<div class="vital-card">
-					<div class="vital-header">
-						<span class="vital-name">INP</span>
-						<span class="vital-label">Interaction to Next Paint</span>
+				{#if true}
+					{@const inpRating = getVitalRating(coreWebVitals?.inp_rating)}
+					<div class="vital-card">
+						<div class="vital-header">
+							<span class="vital-name">INP</span>
+							<span class="vital-label">Interaction to Next Paint</span>
+						</div>
+						<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
+						<div class="vital-rating {inpRating.color}">
+							<inpRating.icon size={16} />
+							{inpRating.label}
+						</div>
+						<div class="vital-target">Target: &lt; 200ms</div>
 					</div>
-					<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
-					<div class="vital-rating {getVitalRating(coreWebVitals?.inp_rating).color}">
-						<svelte:component this={getVitalRating(coreWebVitals?.inp_rating).icon} size={16} />
-						{getVitalRating(coreWebVitals?.inp_rating).label}
-					</div>
-					<div class="vital-target">Target: &lt; 200ms</div>
-				</div>
+				{/if}
 			</div>
 		</div>
 

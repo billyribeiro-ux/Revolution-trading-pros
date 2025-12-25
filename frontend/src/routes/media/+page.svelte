@@ -134,7 +134,7 @@
 						<input
 							type="text"
 							bind:value={searchQuery}
-							oninput={(e) => mediaStore.setSearchQuery(e.currentTarget.value)}
+							oninput={(e: Event) => mediaStore.setSearchQuery((e.currentTarget as HTMLInputElement).value)}
 							placeholder="Search files..."
 							class="search-input"
 						/>
@@ -143,9 +143,9 @@
 					<!-- Filter -->
 					<select
 						bind:value={selectedFileType}
-						onchange={(e) =>
+						onchange={(e: Event) =>
 							mediaStore.setFilterType(
-								e.currentTarget.value === 'all' ? null : e.currentTarget.value
+								(e.currentTarget as HTMLSelectElement).value === 'all' ? null : (e.currentTarget as HTMLSelectElement).value
 							)}
 						class="filter-select"
 					>
@@ -207,16 +207,16 @@
 								onclick={() => mediaStore.toggleFileSelection(file.id)}
 								role="button"
 								tabindex="0"
-								onkeydown={(e) => e.key === 'Enter' && mediaStore.toggleFileSelection(file.id)}
+								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && mediaStore.toggleFileSelection(file.id)}
 							>
 								{#if file.file_type === 'image'}
 									<div class="file-thumbnail">
 										<img src={file.thumbnail_url || file.url} alt={file.alt_text || file.title} />
 									</div>
 								{:else}
+									{@const FileIcon = getFileIcon(file.file_type)}
 									<div class="file-icon-wrapper">
-										<svelte:component
-											this={getFileIcon(file.file_type)}
+										<FileIcon
 											size={48}
 											class="text-gray-400"
 										/>

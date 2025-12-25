@@ -16,20 +16,16 @@ export default defineConfig({
 		},
 	},
 	plugins: [
-		tailwindcss({
-			// Exclude node_modules from Tailwind CSS processing
-			// Fixes "Invalid declaration: Snippet" error from @threlte/core
-			exclude: ['**/node_modules/**']
-		}),
+		tailwindcss(),
 		sveltekit(),
-		// Brotli compression (best compression)
+		// Brotli compression for production
 		viteCompression({
 			algorithm: 'brotliCompress',
 			ext: '.br',
-			threshold: 512, // Compress smaller files
+			threshold: 512,
 			deleteOriginFile: false
 		}),
-		// Gzip compression (fallback for older browsers)
+		// Gzip fallback
 		viteCompression({
 			algorithm: 'gzip',
 			ext: '.gz',
@@ -74,45 +70,6 @@ export default defineConfig({
 		minify: 'esbuild',
 		// Optimize CSS minification
 		cssMinify: 'esbuild',
-		// Disable CSS code splitting to prevent server/client stylesheet mismatch
-		// This fixes: "Server stylesheet source not found for client stylesheet" error
-		cssCodeSplit: false,
-		// Optimize chunk splitting - CRITICAL FOR PERFORMANCE
-		rollupOptions: {
-			output: {
-				manualChunks: (id) => {
-					// Aggressive code splitting for faster initial load
-					if (id.includes('node_modules')) {
-						// Core framework
-						if (id.includes('svelte')) return 'vendor-svelte';
-						
-						// Heavy animation libraries - lazy load
-						if (id.includes('gsap')) return 'vendor-gsap';
-						if (id.includes('lightweight-charts')) return 'vendor-charts';
-						if (id.includes('three') || id.includes('@threlte')) return 'vendor-three';
-						
-						// Icon libraries - split by usage
-						if (id.includes('@tabler/icons-svelte')) return 'vendor-icons';
-						
-						// Chart libraries
-						if (id.includes('chart.js') || id.includes('apexcharts')) return 'vendor-charts-alt';
-						
-						// Animation libraries
-						if (id.includes('lottie') || id.includes('anime')) return 'vendor-animation';
-						
-						// D3 and data viz
-						if (id.includes('d3')) return 'vendor-d3';
-						
-						// Everything else
-						return 'vendor';
-					}
-				},
-				// Optimize chunk file names
-				chunkFileNames: 'chunks/[name]-[hash].js',
-				entryFileNames: 'entries/[name]-[hash].js',
-				assetFileNames: 'assets/[name]-[hash].[ext]'
-			}
-		},
 		// Disable source maps in production
 		sourcemap: false,
 		// Target modern browsers for smaller bundle
@@ -123,6 +80,11 @@ export default defineConfig({
 		},
 		// Optimize asset inlining
 		assetsInlineLimit: 4096 // 4KB
+	},
+	// SSR configuration to handle CSS properly
+	ssr: {
+		// Ensure external packages with CSS are handled correctly
+		noExternal: ['@tailwindcss/postcss']
 	},
 	optimizeDeps: {
 		// Pre-bundle only critical dependencies

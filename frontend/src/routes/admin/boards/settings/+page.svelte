@@ -212,10 +212,11 @@
 							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">General Settings</h2>
 							<div class="space-y-6">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="default-board-type">
 										Default Board Type
 									</label>
 									<select
+										id="default-board-type"
 										bind:value={settings.default_board_type}
 										class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 									>
@@ -364,11 +365,12 @@
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="default-hourly-rate">
 										Default Hourly Rate ($)
 									</label>
 									<input
 										type="number"
+										id="default-hourly-rate"
 										bind:value={settings.default_hourly_rate}
 										min="0"
 										step="0.01"
@@ -378,11 +380,12 @@
 
 								<div class="grid grid-cols-2 gap-4">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="working-hours">
 											Working Hours/Day
 										</label>
 										<input
 											type="number"
+											id="working-hours"
 											bind:value={settings.working_hours_per_day}
 											min="1"
 											max="24"
@@ -390,11 +393,12 @@
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="working-days">
 											Working Days/Week
 										</label>
 										<input
 											type="number"
+											id="working-days"
 											bind:value={settings.working_days_per_week}
 											min="1"
 											max="7"
@@ -410,10 +414,11 @@
 
 							<div class="space-y-6">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="storage-driver">
 										Storage Driver
 									</label>
 									<select
+										id="storage-driver"
 										bind:value={storageConfig!.driver}
 										class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 									>
@@ -427,22 +432,24 @@
 
 								{#if storageConfig && storageConfig.driver !== 'local'}
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="bucket-name">
 											Bucket Name
 										</label>
 										<input
 											type="text"
+											id="bucket-name"
 											bind:value={storageConfig.bucket}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="region">
 											Region
 										</label>
 										<input
 											type="text"
+											id="region"
 											bind:value={storageConfig.region}
 											placeholder="us-east-1"
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -450,11 +457,12 @@
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="endpoint">
 											Endpoint (optional)
 										</label>
 										<input
 											type="text"
+											id="endpoint"
 											bind:value={storageConfig.endpoint}
 											placeholder="https://..."
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -462,22 +470,24 @@
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="access-key">
 											Access Key
 										</label>
 										<input
 											type="password"
+											id="access-key"
 											bind:value={storageConfig.access_key}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="secret-key">
 											Secret Key
 										</label>
 										<input
 											type="password"
+											id="secret-key"
 											bind:value={storageConfig.secret_key}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>

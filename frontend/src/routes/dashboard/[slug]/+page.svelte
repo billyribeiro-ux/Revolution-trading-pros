@@ -140,6 +140,3 @@
 	</aside>
 </div>
 
-<style>
-	/* All CSS inherited from +layout.svelte */
-</style>

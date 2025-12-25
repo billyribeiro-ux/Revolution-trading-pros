@@ -5,7 +5,7 @@
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	let connectionLoading = $state(true);
-	let settings = {
+	let settings = $state({
 		provider: 'smtp',
 		host: '',
 		port: 587,
@@ -14,12 +14,12 @@
 		encryption: 'tls',
 		from_address: '',
 		from_name: 'Revolution Trading Pros'
-	};
+	});
 
-	let loading = false;
-	let message = '';
-	let messageType: 'success' | 'error' = 'success';
-	let testing = false;
+	let loading = $state(false);
+	let message = $state('');
+	let messageType: 'success' | 'error' = $state('success');
+	let testing = $state(false);
 
 	onMount(async () => {
 		// Load connection status

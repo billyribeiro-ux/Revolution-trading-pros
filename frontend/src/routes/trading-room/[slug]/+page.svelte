@@ -33,7 +33,7 @@
 	let error = $state<string | null>(null);
 
 	// Room config - would come from API in production
-	let roomConfig = $derived(getRoomConfig(slug));
+	let roomConfig = $derived(getRoomConfig(slug || ''));
 
 	onMount(async () => {
 		await checkAccess();
@@ -43,7 +43,7 @@
 		loading = true;
 		error = null;
 		try {
-			const result = await getTradingRoomAccess(slug);
+			const result = await getTradingRoomAccess(slug || '');
 			hasAccess = result.hasAccess;
 			membership = result.membership || null;
 			discordInvite = result.discordInvite || null;
@@ -202,10 +202,10 @@
 								<span>Discord Community</span>
 							</a>
 						{:else}
-							<a href="#" class="action-btn discord">
+							<button type="button" class="action-btn discord" disabled>
 								<IconBrandDiscord size={24} />
-								<span>Discord Community</span>
-							</a>
+								<span>Discord Coming Soon</span>
+							</button>
 						{/if}
 						<a href="/dashboard/{slug}/alerts" class="action-btn alerts">
 							<IconBell size={24} />
@@ -475,11 +475,6 @@
 	.stream-status.offline {
 		background: rgba(239, 68, 68, 0.15);
 		color: #f87171;
-	}
-
-	.stream-status.live {
-		background: rgba(16, 185, 129, 0.15);
-		color: #34d399;
 	}
 
 	/* Sidebar */
