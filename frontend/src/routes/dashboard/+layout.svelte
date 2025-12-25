@@ -108,7 +108,7 @@
 	const breadcrumbTitles: Record<string, string> = {
 		'mastering-the-trade': 'Mastering the Trade',
 		'simpler-showcase': 'Simpler Showcase',
-		'da-tradingroom': 'Trading Room',
+		'day-trading-room': 'Day Trading Room',
 		'ww': 'Weekly Watchlist',
 		'weekly-watchlist': 'Weekly Watchlist',
 		'courses': 'Courses',
