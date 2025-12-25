@@ -200,7 +200,7 @@
 				<div class="membership-cards row">
 					{#each membershipsData.memberships as membership (membership.id)}
 						<div class="col-sm-6 col-xl-4">
-							<article class="membership-card">
+							<article class="membership-card membership-card--{membership.slug}">
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon">
@@ -290,12 +290,12 @@
 			</section>
 		{/if}
 
-		<!-- TOOLS SECTION - Exact Match -->
+		<!-- TOOLS SECTION - FILE 1 LINES 5724-5745 -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Tools</h2>
 			<div class="membership-cards row">
 				<div class="col-sm-6 col-xl-4">
-					<article class="membership-card">
+					<article class="membership-card membership-card--ww">
 						<a href="/dashboard/ww" class="membership-card__header">
 							<span class="mem_icon">
 								<span class="membership-card__icon">
@@ -340,10 +340,9 @@
 
 	</div>
 	
-	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY on main dashboard, matches Jesus file exactly -->
+	<!-- PANEL 2: SECONDARY SIDEBAR (Content Sidebar) - EMPTY per FILE 1 LINE 5788-5791 -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Quick Info</h4>
 		</section>
 	</aside>
 </div>
