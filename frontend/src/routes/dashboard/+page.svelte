@@ -1278,12 +1278,102 @@
 		float: right;
 	}
 
-	/* Mobile navigation color override */
+	/* EXACT CSS FROM FILE 1 - Lines 3924-4072 */
+	:global(p:empty) {
+		display: none;
+	}
+
+	:global(.scanner-load-content img[src*="/public/images/space.gif"]) {
+		display: none;
+	}
+
+	:global(h2) {
+		font-size: 32px;
+	}
+
+	:global(h3) {
+		font-size: 26px;
+	}
+
+	/* Button Shapes - EXACT from file 1 */
+	:global(.shaped-btn) {
+		display: block;
+		border-radius: 25px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 18px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all .2s ease-in-out;
+	}
+
+	:global(.squared-btn) {
+		display: block;
+		border-radius: 4px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 14px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all .2s ease-in-out;
+	}
+
+	/* Button Colors - EXACT from file 1 */
+	:global(.primary-btn) {
+		background-color: #F69532;
+		color: #fff;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	:global(.primary-btn:hover) {
+		background-color: #dc7309;
+	}
+
+	/* Dashboard-specific styles - EXACT from file 1 */
+	:global(.dashboard__nav-secondary .dashboard__nav-submenu) {
+		z-index: 110 !important;
+	}
+
+	:global(.tr_img_wrap) {
+		padding: 0 !important;
+	}
+
+	:global(figure.weekly_watchlist .article-card__title) {
+		padding: 0 !important;
+	}
+
+	:global(.ultradingroom) {
+		max-width: 299px;
+		display: none;
+	}
+
+	:global(.dashboard__header) {
+		justify-content: space-between;
+	}
+
+	:global(.litradingroomhind) {
+		width: 300px;
+		float: right;
+	}
+
+	/* Mobile navigation override - EXACT from file 1 */
 	@media (max-width: 641px) {
 		:global(.main-navigation .main-nav ul li[class*="current-menu-"] > a),
 		:global(.main-navigation .main-nav ul li > a) {
 			color: #191717 !important;
 		}
+	}
+
+	/* Icon styles - EXACT from file 1 */
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	:global(.simpler-showcase-icon) {
+		background: black !important;
+		color: orange !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
