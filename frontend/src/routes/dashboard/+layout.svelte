@@ -635,12 +635,13 @@
 		margin-top: 20px;
 	}
 
-	/* Profile Section - Flexbox aligned avatar with name */
+	/* Profile Section - Exact match to Simpler Trading */
 	.dashboard__profile-nav-item {
+		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		padding: 20px;
+		min-height: 74px;
+		padding: 20px 20px 20px 74px;
 		text-decoration: none;
 		color: hsla(0, 0%, 100%, 0.7);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -657,9 +658,12 @@
 	}
 
 	.dashboard__profile-photo {
-		width: 32px;
-		height: 32px;
-		min-width: 32px;
+		position: absolute;
+		top: 50%;
+		left: 20px;
+		transform: translateY(-50%);
+		width: 34px;
+		height: 34px;
 		border: 2px solid #fff;
 		border-radius: 50%;
 		background-color: #1a3a4f;
@@ -669,6 +673,7 @@
 	}
 
 	.dashboard__profile-name {
+		display: block;
 		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
