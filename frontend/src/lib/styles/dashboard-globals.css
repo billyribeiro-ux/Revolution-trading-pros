@@ -11,10 +11,16 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    BODY & BASE STYLES - Line 4598
+   FORCE LIGHT THEME - Override Tailwind dark defaults
    ═══════════════════════════════════════════════════════════════════════════════ */
-body {
-  background-color: #efefef;
-  color: #666666;
+html, body {
+  background-color: #efefef !important;
+  color: #666666 !important;
+}
+
+/* Remove any dark theme overrides */
+html:not(.light), body:not(.light) {
+  background-color: #efefef !important;
 }
 
 body, button, input, select, textarea {

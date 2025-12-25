@@ -449,16 +449,31 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE & SITE CONTENT WRAPPERS - WordPress Structure
+	   PAGE & SITE CONTENT WRAPPERS - FORCE LIGHT BACKGROUNDS
+	   Matches reference file 1 exactly - no dark containers
 	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(html),
+	:global(body) {
+		background-color: #efefef !important;
+	}
+
 	:global(#page) {
 		max-width: 100%;
+		background-color: #efefef !important;
 	}
 
 	:global(.site-content) {
 		max-width: 1160px;
 		margin: 0 auto;
-		background-color: #efefef;
+		background-color: #efefef !important;
+	}
+
+	#page {
+		background-color: #efefef !important;
+	}
+
+	#content {
+		background-color: #efefef !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -789,7 +804,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-width: 0;
-		background-color: #f4f4f4;
+		background-color: #fff;
 		display: flex;
 		flex-direction: column;
 	}
