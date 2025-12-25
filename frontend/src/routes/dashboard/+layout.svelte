@@ -14,6 +14,10 @@
 	import { onMount } from 'svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
+	
+	// Import pixel-perfect global styles from reference file 1
+	import '$lib/styles/dashboard-globals.css';
+	import '$lib/styles/st-icons.css';
 	import type { Snippet } from 'svelte';
 	import { user, isInitializing, isAuthenticated } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
@@ -386,10 +390,29 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BREADCRUMBS - Exact Jesus File Match
+	   CONTAINER FLUID - Bootstrap-style Container (MISSING FROM YOUR DASHBOARD)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.container-fluid) {
+		max-width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: 0;
+		margin-left: 0;
+		width: 100%;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BREADCRUMBS - Exact Reference File Match with Container
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.breadcrumbs {
 		z-index: 1;
+		background-color: #f5f5f5;
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.breadcrumbs .container-fluid {
+		padding-top: 10px;
+		padding-bottom: 10px;
 	}
 
 	.breadcrumbs ul {
@@ -429,12 +452,43 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGE & SITE CONTENT WRAPPERS - FORCE LIGHT BACKGROUNDS
+	   Matches reference file 1 exactly - no dark containers
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(html),
+	:global(body) {
+		background-color: #efefef !important;
+	}
+
+	:global(#page) {
+		max-width: 100%;
+		background-color: #efefef !important;
+	}
+
+	:global(.site-content) {
+		max-width: 100%;
+		margin: 0;
+		background-color: #efefef !important;
+	}
+
+	#page {
+		background-color: #efefef !important;
+	}
+
+	#content {
+		background-color: #efefef !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD CONTAINER - Flexbox Layout
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard {
 		display: flex;
 		flex-flow: row nowrap;
 		flex: 1;
+		max-width: 100%;
+		margin: 0;
+		width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -444,7 +498,7 @@
 		display: flex;
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
-		width: 280px;
+		width: 220px;
 		background-color: #0f2d41;
 		min-height: 100%;
 		bottom: 50px;
@@ -465,7 +519,7 @@
 			opacity: 0;
 			visibility: hidden;
 			z-index: 100010;
-			width: 280px;
+			width: 220px;
 		}
 	}
 
@@ -484,9 +538,9 @@
 	}
 
 	.dashboard__nav-primary {
-		width: 280px;
+		width: 220px;
 		padding-bottom: 30px;
-		font-size: 16px;
+		font-size: 14px;
 		line-height: 1;
 	}
 
@@ -754,7 +808,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-width: 0;
-		background-color: #f4f4f4;
+		background-color: #fff;
 		display: flex;
 		flex-direction: column;
 	}
@@ -952,5 +1006,99 @@
 		:global(body) {
 			padding-bottom: 50px;
 		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD ICON STYLING - CRITICAL MISSING STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-icon) {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
+		font-size: 24px;
+		color: #0984ae;
+		vertical-align: middle;
+	}
+
+	:global(.dashboard__nav-item-text) {
+		font-size: 14px;
+		font-weight: 400;
+		color: #fff;
+	}
+
+	:global(.dashboard__nav-category) {
+		color: hsla(0, 0%, 100%, 0.3);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.5px;
+		line-height: 1;
+		margin: 0;
+		padding: 20px 20px 12px;
+		text-transform: uppercase;
+	}
+
+	:global(.dash_main_links) {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	:global(.dash_main_links li) {
+		position: relative;
+	}
+
+	:global(.dash_main_links a) {
+		color: hsla(0, 0%, 100%, 0.7);
+		display: flex;
+		align-items: center;
+		padding: 12px 20px;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	:global(.dash_main_links a:hover) {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: #fff;
+	}
+
+	:global(.dash_main_links li.is-active a) {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #fff;
+	}
+
+	/* Icon size overrides */
+	:global(.dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 26px !important;
+	}
+
+	:global(.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 20px !important;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-stacked-profits) {
+		font-size: 40px !important;
+	}
+
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	/* Icon classes */
+	:global(.icon) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.icon--lg) {
+		font-size: 32px;
+		width: 32px;
+		height: 32px;
+	}
+
+	:global(.icon--md) {
+		font-size: 24px;
+		width: 24px;
+		height: 24px;
 	}
 </style>

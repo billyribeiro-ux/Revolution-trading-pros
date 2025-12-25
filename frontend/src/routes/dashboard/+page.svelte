@@ -345,8 +345,7 @@
 	.dashboard__header {
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
-		border-right: 1px solid #dbdbdb;
-		max-width: 1100px;
+		max-width: 100%;
 		padding: 20px;
 		display: flex;
 		flex-wrap: wrap;
@@ -398,13 +397,14 @@
 	.dashboard__header-right {
 		display: flex;
 		align-items: center;
-		flex-direction: column-reverse;
+		flex-direction: column;
 		margin-top: 10px;
+		text-align: right;
 	}
 
 	@media screen and (min-width: 577px) {
 		.dashboard__header-right {
-			flex-direction: row-reverse;
+			flex-direction: row;
 			justify-content: flex-end;
 		}
 	}
@@ -412,7 +412,7 @@
 	@media screen and (min-width: 820px) {
 		.dashboard__header-right {
 			flex-direction: row;
-			justify-content: flex-start;
+			justify-content: flex-end;
 			margin-top: 0;
 		}
 	}
@@ -447,6 +447,7 @@
 		font-size: 14px;
 		color: #1e73be;
 		text-decoration: none;
+		font-size: 12px;
 	}
 
 	.ultradingroom .litradingroom a:hover {
@@ -601,7 +602,7 @@
 	   DASHBOARD CONTENT - Exact Simpler Trading Match
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.logged-in .dashboard__content) {
-		max-width: 1100px;
+		max-width: 100%;
 	}
 
 	.dashboard__content {
@@ -612,11 +613,14 @@
 	.dashboard__content-main {
 		border-right: 1px solid #dbdbdb;
 		flex: 1 1 auto;
+		background-color: #efefef;
 		min-width: 0;
 	}
 
 	.dashboard__content-section {
-		padding: 30px 20px;
+		padding: 30px 40px;
+		background-color: #fff;
+		margin-bottom: 20px;
 		overflow-x: auto;
 		overflow-y: hidden;
 	}
@@ -640,9 +644,9 @@
 	.section-title,
 	h2.section-title {
 		color: #333;
+		font-size: 28px;
 		font-weight: 700;
-		font-size: 20px;
-		margin-bottom: 30px;
+		margin: 0 0 30px;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.2;
 	}
@@ -658,6 +662,12 @@
 		display: flex;
 		flex-wrap: wrap;
 		margin: -30px -15px 0;
+	}
+
+	/* Fix for proper Bootstrap-style grid negative margins */
+	.row {
+		margin-left: -15px;
+		margin-right: -15px;
 	}
 
 	.col-sm-6 {
@@ -1009,6 +1019,7 @@
 
 	.u--background-color-white {
 		background-color: #fff !important;
+		padding: 40px;
 	}
 
 	.u--border-radius {
@@ -1194,5 +1205,342 @@
 		background: #ededed;
 		border-bottom: 1px solid #dbdbdb;
 		line-height: 1.4;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ADDITIONAL GLOBAL STYLES FROM SIMPLER TRADING
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Empty paragraph cleanup */
+	:global(p:empty) {
+		display: none;
+	}
+
+	/* Scanner image cleanup */
+	:global(.scanner-load-content img[src*="/public/images/space.gif"]) {
+		display: none;
+	}
+
+	/* Typography overrides */
+	:global(h2) {
+		font-size: 32px;
+	}
+
+	:global(h3) {
+		font-size: 26px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   BUTTON SHAPE VARIANTS - Simpler Trading Brand Buttons
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Shaped Button - Pill-shaped with extra bold text */
+	:global(.shaped-btn) {
+		display: block;
+		border-radius: 25px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 18px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+	}
+
+	/* Squared Button - Subtle rounded corners */
+	:global(.squared-btn) {
+		display: block;
+		border-radius: 4px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 14px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+	}
+
+	/* Primary Button Color - Brand Orange */
+	:global(.primary-btn) {
+		background-color: #F69532;
+		color: #fff;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	:global(.primary-btn:hover) {
+		background-color: #dc7309;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD-SPECIFIC UTILITY STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Dashboard navigation submenu z-index fix */
+	:global(.dashboard__nav-secondary .dashboard__nav-submenu) {
+		z-index: 110 !important;
+	}
+
+	/* Trading room image wrapper padding reset */
+	:global(.tr_img_wrap) {
+		padding: 0 !important;
+	}
+
+	/* Weekly watchlist title padding reset */
+	:global(figure.weekly_watchlist .article-card__title) {
+		padding: 0 !important;
+	}
+
+	/* Trading room layout controls */
+	:global(.ultradingroom) {
+		max-width: 299px;
+		display: none;
+	}
+
+	:global(.dashboard__header) {
+		justify-content: space-between;
+	}
+
+	:global(.litradingroomhind) {
+		width: 300px;
+		float: right;
+	}
+
+	/* EXACT CSS FROM FILE 1 - Lines 3924-4072 */
+	:global(p:empty) {
+		display: none;
+	}
+
+	:global(.scanner-load-content img[src*="/public/images/space.gif"]) {
+		display: none;
+	}
+
+	:global(h2) {
+		font-size: 32px;
+	}
+
+	:global(h3) {
+		font-size: 26px;
+	}
+
+	/* Button Shapes - EXACT from file 1 */
+	:global(.shaped-btn) {
+		display: block;
+		border-radius: 25px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 18px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all .2s ease-in-out;
+	}
+
+	:global(.squared-btn) {
+		display: block;
+		border-radius: 4px;
+		width: 100%;
+		font-weight: 800;
+		font-size: 14px;
+		text-transform: uppercase;
+		padding: 10px 20px;
+		letter-spacing: 1.125px;
+		transition: all .2s ease-in-out;
+	}
+
+	/* Button Colors - EXACT from file 1 */
+	:global(.primary-btn) {
+		background-color: #F69532;
+		color: #fff;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	:global(.primary-btn:hover) {
+		background-color: #dc7309;
+	}
+
+	/* Dashboard-specific styles - EXACT from file 1 */
+	:global(.dashboard__nav-secondary .dashboard__nav-submenu) {
+		z-index: 110 !important;
+	}
+
+	:global(.tr_img_wrap) {
+		padding: 0 !important;
+	}
+
+	:global(figure.weekly_watchlist .article-card__title) {
+		padding: 0 !important;
+	}
+
+	:global(.ultradingroom) {
+		max-width: 299px;
+		display: none;
+	}
+
+	:global(.dashboard__header) {
+		justify-content: space-between;
+	}
+
+	:global(.litradingroomhind) {
+		width: 300px;
+		float: right;
+	}
+
+	/* Mobile navigation override - EXACT from file 1 */
+	@media (max-width: 641px) {
+		:global(.main-navigation .main-nav ul li[class*="current-menu-"] > a),
+		:global(.main-navigation .main-nav ul li > a) {
+			color: #191717 !important;
+		}
+	}
+
+	/* Icon styles - EXACT from file 1 */
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	:global(.simpler-showcase-icon) {
+		background: black !important;
+		color: orange !important;
+	}
+
+	/* EXACT INLINE STYLES FROM FILE 1 - Lines 5776-5785 */
+	:global(.mem_icon),
+	:global(.mem_div) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.mem_div) {
+		white-space: normal;
+		width: calc(100% - 43px);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MISSING BUTTON CLASSES - btn-xs, btn-link
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.btn) {
+		display: inline-block;
+		padding: 6px 12px;
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.42857143;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		cursor: pointer;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	:global(.btn-xs) {
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	:global(.btn-link) {
+		color: #0984ae;
+		font-weight: 400;
+		border-radius: 0;
+		background-color: transparent;
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	:global(.btn-link:hover),
+	:global(.btn-link:focus) {
+		color: #065a75;
+		text-decoration: underline;
+		background-color: transparent;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD ICON SIZING - Missing from your dashboard
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-icon) {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		margin-right: 10px;
+		font-size: 24px;
+		color: #0984ae;
+		vertical-align: middle;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 26px !important;
+	}
+
+	:global(.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room) {
+		font-size: 20px !important;
+	}
+
+	:global(.dashboard__nav-item-icon.st-icon-stacked-profits) {
+		font-size: 40px !important;
+	}
+
+	:global(.st-icon-this-week) {
+		font-size: 28px;
+	}
+
+	:global(.st-icon-big-market-scorecard:before) {
+		margin-left: 4px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ICON SIZE CLASSES - icon--lg, icon--md
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.icon) {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	:global(.icon--lg) {
+		font-size: 32px;
+		width: 32px;
+		height: 32px;
+	}
+
+	:global(.icon--md) {
+		font-size: 24px;
+		width: 24px;
+		height: 24px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   MEMBERSHIP CARD ICON STYLING
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.membership-card__icon) {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		margin-right: 10px;
+		color: #0984ae;
+	}
+
+	:global(.simpler-showcase-icon) {
+		background: black !important;
+		color: orange !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FONT WEIGHT & SIZE FIXES - Match reference exactly
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__nav-item-text) {
+		font-size: 14px;
+		font-weight: 400;
+		color: #fff;
+	}
+
+	/* Bold white text for My Classes and My Indicators */
+	:global(.dashboard__nav-item-text[style*="bold"]) {
+		font-weight: 700 !important;
+		color: white !important;
 	}
 </style>
