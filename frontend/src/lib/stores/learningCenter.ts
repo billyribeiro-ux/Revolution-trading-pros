@@ -328,13 +328,13 @@ export const CATEGORIES: LessonCategory[] = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const LESSONS: Lesson[] = [
-	// Options Day Trading Room lessons
+	// Day Trading Room lessons
 	{
 		id: 'mtt-1',
-		slug: 'welcome-to-odtr',
-		title: 'Welcome to Options Day Trading Room',
-		description: 'Introduction to the Options Day Trading Room and what to expect.',
-		fullDescription: 'Get started with Options Day Trading Room. Learn how the room operates, meet the traders, and understand the trading methodology.',
+		slug: 'welcome-to-dtr',
+		title: 'Welcome to Day Trading Room',
+		description: 'Introduction to the Day Trading Room and what to expect.',
+		fullDescription: 'Get started with Day Trading Room. Learn how the room operates, meet the traders, and understand the trading methodology.',
 		type: 'video',
 		videoUrl: 'https://simpler-options.s3.amazonaws.com/tutorials/Welcome-MTT.mp4',
 		posterUrl: 'https://cdn.simplertrading.com/2023/06/07133302/Allison-SmallAccountMentorship.jpg',
@@ -709,7 +709,7 @@ export const LESSONS: Lesson[] = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const MODULES: LessonModule[] = [
-	// Options Day Trading Room modules
+	// Day Trading Room modules
 	{ id: 'mtt-mod-1', slug: 'getting-started', tradingRoomId: 'mtt', name: 'Getting Started', description: 'Start here to get oriented', sortOrder: 1 },
 	{ id: 'mtt-mod-2', slug: 'psychology-risk', tradingRoomId: 'mtt', name: 'Psychology & Risk', description: 'Master your mindset and risk management', sortOrder: 2 },
 	{ id: 'mtt-mod-3', slug: 'options-basics', tradingRoomId: 'mtt', name: 'Options Basics', description: 'Learn options fundamentals', sortOrder: 3 },

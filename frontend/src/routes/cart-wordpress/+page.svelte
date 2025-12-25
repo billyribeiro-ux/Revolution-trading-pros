@@ -14,7 +14,7 @@
 		{
 			id: '88765154a2216f5a8806f524e7fb22a1',
 			productId: '1318641',
-			name: 'Options Day Trading Room (1 Month Trial)',
+			name: 'Day Trading Room (1 Month Trial)',
 			price: 247.00,
 			image: 'https://cdn.simplertrading.com/2020/11/01132413/Store-Card-MasteringTheTrade-Room.jpg',
 			interval: 'monthly',
