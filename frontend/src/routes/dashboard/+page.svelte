@@ -497,34 +497,49 @@
 		}
 	}
 
-	/* Trading Room Rules - Exact WordPress Match (ultradingroom) */
+	/* Trading Room Rules - Exact WordPress Match (ultradingroom)
+	   Note: In reference, JS removes .btn class. We override here instead. */
 	.ultradingroom {
 		text-align: right;
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		display: block !important;  /* Override global display:none */
+		max-width: none;
 	}
 
 	.ultradingroom .litradingroom {
 		display: block;
+		padding: 0;
+		border: none;
+		background: transparent;
 	}
 
 	.ultradingroom .litradingroom a {
 		font-weight: 700 !important;
-		font-size: 14px;
-		color: #1e73be;
-		text-decoration: none;
 		font-size: 12px;
+		color: #0984ae;
+		text-decoration: none;
+		padding: 0;
+		background: transparent;
+		border: none;
+		box-shadow: none;
 	}
 
 	.ultradingroom .litradingroom a:hover {
 		text-decoration: underline;
+		color: #065a75;
 	}
 
 	.ultradingroom .litradingroomhind {
 		font-size: 11px;
 		color: #666;
 		display: block;
+		padding: 0;
+		border: none;
+		background: transparent;
+		box-shadow: none;
+		text-align: right;
 	}
 
 	.btn-xs {
@@ -573,7 +588,6 @@
 		background: #F69532;
 		border: none;
 		color: #fff;
-		padding: 10px 20px;
 		border-radius: 5px;
 		font-size: 14px;
 		font-weight: 700;
@@ -582,6 +596,12 @@
 		transition: all 0.2s ease-in-out;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		line-height: 1.4;
+	}
+
+	/* EXACT from Simpler Trading style.css - btn-tradingroom override */
+	.btn.btn-xs.btn-orange.btn-tradingroom {
+		width: 280px;
+		padding: 12px 18px;
 	}
 
 	.btn-orange:hover,
@@ -1386,19 +1406,9 @@
 		padding: 0 !important;
 	}
 
-	/* Trading room layout controls */
-	:global(.ultradingroom) {
-		max-width: 299px;
-		display: none;
-	}
-
+	/* Trading room layout controls - ultradingroom visibility controlled by component styles */
 	:global(.dashboard__header) {
 		justify-content: space-between;
-	}
-
-	:global(.litradingroomhind) {
-		width: 300px;
-		float: right;
 	}
 
 	/* EXACT CSS FROM FILE 1 - Lines 3924-4072 */
@@ -1465,20 +1475,6 @@
 
 	:global(figure.weekly_watchlist .article-card__title) {
 		padding: 0 !important;
-	}
-
-	:global(.ultradingroom) {
-		max-width: 299px;
-		display: none;
-	}
-
-	:global(.dashboard__header) {
-		justify-content: space-between;
-	}
-
-	:global(.litradingroomhind) {
-		width: 300px;
-		float: right;
 	}
 
 	/* Mobile navigation override - EXACT from file 1 */
