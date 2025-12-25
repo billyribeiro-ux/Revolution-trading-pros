@@ -433,7 +433,8 @@ h2.section-title {
 
 .membership-card__actions {
   display: flex;
-  border-top: 1px solid #dbdbdb;
+  font-size: 16px;
+  border-top: 1px solid #ededed;
 }
 
 .membership-card__actions a {
@@ -451,7 +452,7 @@ h2.section-title {
 }
 
 .membership-card__actions a + a {
-  border-left: 1px solid #dbdbdb;
+  border-left: 1px solid #ededed;
 }
 
 /* mem_icon and mem_div - Line 5776-5785 */
