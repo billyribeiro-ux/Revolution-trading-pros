@@ -110,17 +110,24 @@
 
 	// Breadcrumb mapping for dashboard sub-pages
 	const breadcrumbTitles: Record<string, string> = {
-		'mastering-the-trade': 'Mastering the Trade',
-		'simpler-showcase': 'Simpler Showcase',
+		'options-day-trading': 'Options Day Trading',
 		'day-trading-room': 'Day Trading Room',
+		'simpler-showcase': 'Simpler Showcase',
 		'ww': 'Weekly Watchlist',
 		'weekly-watchlist': 'Weekly Watchlist',
 		'courses': 'Courses',
-		'indicators': 'Indicators',
+		'classes': 'My Classes',
+		'indicators': 'My Indicators',
 		'alerts': 'Alerts',
 		'settings': 'Settings',
 		'account': 'Account',
-		'profile': 'Profile'
+		'profile': 'Profile',
+		'learning-center': 'Learning Center',
+		'start-here': 'Start Here',
+		'resources': 'Resources',
+		'daily-videos': 'Premium Daily Videos',
+		'trading-room-archive': 'Trading Room Archives',
+		'traders': 'Meet the Traders'
 	};
 
 	// Derived: Generate breadcrumbs from current URL path
@@ -160,8 +167,27 @@
 		return crumbs;
 	});
 
+	// Known trading room/membership slugs that have secondary navigation
+	const membershipSlugs = ['day-trading-room', 'options-day-trading', 'simpler-showcase'];
+
+	// Derived: Get current membership slug from URL path
+	let currentMembershipSlug = $derived.by(() => {
+		const pathname = $page.url.pathname;
+		// Check if we're on a dynamic [slug] route
+		if ($page.params.slug) {
+			return $page.params.slug;
+		}
+		// Check if we're on a static trading room route
+		const segments = pathname.replace('/dashboard/', '').split('/');
+		const firstSegment = segments[0];
+		if (membershipSlugs.includes(firstSegment)) {
+			return firstSegment;
+		}
+		return null;
+	});
+
 	// Derived: Check if we're on a membership sub-page (triggers collapsed sidebar)
-	let isOnMembershipPage = $derived(!!$page.params.slug);
+	let isOnMembershipPage = $derived(!!currentMembershipSlug);
 </script>
 
 <svelte:head>
@@ -329,55 +355,39 @@
 			</nav>
 
 			<!-- SECONDARY NAVIGATION - Membership-specific navigation (appears on membership pages only) -->
-			{#if $page.params.slug}
+			{#if currentMembershipSlug}
 				<nav class="dashboard__nav-secondary">
 					<ul class="dash_main_links">
-						<li>
-							<a href="/dashboard/{$page.params.slug}">
+						<li class={$page.url.pathname === `/dashboard/${currentMembershipSlug}` || $page.url.pathname === `/dashboard/${currentMembershipSlug}/` ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}">
 								<span class="dashboard__nav-item-icon">
 									<IconLayoutDashboard size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Dashboard</span>
 							</a>
 						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/daily-videos">
+						<li class={$page.url.pathname.includes('/start-here') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/start-here">
 								<span class="dashboard__nav-item-icon">
-									<IconVideo size={24} />
+									<IconStar size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">Premium Daily Videos</span>
+								<span class="dashboard__nav-item-text">Start Here</span>
 							</a>
 						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/learning-center">
+						<li class={$page.url.pathname.includes('/learning-center') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/learning-center">
 								<span class="dashboard__nav-item-icon">
 									<IconBooks size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Learning Center</span>
 							</a>
 						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/trading-room-archive">
+						<li class={$page.url.pathname.includes('/resources') ? 'is-active' : ''}>
+							<a href="/dashboard/{currentMembershipSlug}/resources">
 								<span class="dashboard__nav-item-icon">
 									<IconArchive size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">Trading Room Archives</span>
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/traders">
-								<span class="dashboard__nav-item-icon">
-									<IconUsers size={24} />
-								</span>
-								<span class="dashboard__nav-item-text">Meet the Traders</span>
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard/{$page.params.slug}/trader-store">
-								<span class="dashboard__nav-item-icon">
-									<IconShoppingBag size={24} />
-								</span>
-								<span class="dashboard__nav-item-text">Trader Store</span>
+								<span class="dashboard__nav-item-text">Resources</span>
 							</a>
 						</li>
 					</ul>
