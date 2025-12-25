@@ -30,6 +30,16 @@
 			paymentMethod: null,
 			total: '$247.00',
 			interval: ''
+		},
+		{
+			id: '2170842',
+			status: 'Cancelled',
+			statusClass: 'label--error',
+			product: 'Day Trading Room Monthly',
+			nextPayment: '-',
+			paymentMethod: null,
+			total: '$297.00',
+			interval: ''
 		}
 	];
 </script>
@@ -193,6 +203,11 @@
 	}
 
 	.label--danger {
+		background-color: #f8d7da;
+		color: #721c24;
+	}
+
+	.label--error {
 		background-color: #f8d7da;
 		color: #721c24;
 	}
