@@ -742,17 +742,24 @@
 		padding-bottom: 30px;
 		font-size: 14px;
 		line-height: 1;
-		transition: width 0.3s ease-in-out;
+		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: width, padding;
+		contain: layout style;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   COLLAPSED STATE - When on membership sub-pages
 	   Primary nav collapses to 80px, shows only icons
 	   Pixel-perfect match to Simpler Trading reference
+	   Uses GPU-accelerated transitions for smooth layout shift prevention
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed {
 		width: 80px;
 		padding: 30px 0 30px 0;
+		/* Prevent layout shift with stable flex-basis */
+		flex: 0 0 80px;
+		min-width: 80px;
+		max-width: 80px;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
@@ -798,6 +805,7 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   COLLAPSED TOOLTIP - Shows label bubble on hover
 	   Pixel-perfect match to Simpler Trading reference
+	   Reference: .dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text { color: #0984ae !important }
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text,
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
@@ -812,14 +820,15 @@
 		opacity: 0;
 		visibility: hidden;
 		background: #fff;
-		color: #333 !important;
+		color: #0984ae !important; /* Reference: blue text in tooltip */
 		border-radius: 5px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		white-space: nowrap;
 		font-size: 13px;
 		font-weight: 600;
 		pointer-events: none;
-		transition: all 0.15s ease-in-out;
+		transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out, transform 0.15s ease-in-out;
+		will-change: opacity, visibility, transform;
 	}
 
 	/* Tooltip arrow */
@@ -863,21 +872,33 @@
 		background-color: rgba(0, 0, 0, 0.2);
 	}
 
-	/* Sidebar with secondary nav - flex container */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SIDEBAR WITH SECONDARY NAV - Stable flex container
+	   Prevents layout shift during navigation transitions
+	   Total width: 80px (collapsed primary) + 220px (secondary) = 300px
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__sidebar.has-secondary {
 		display: flex;
 		flex-flow: row nowrap;
-		width: auto;
+		width: 300px; /* Fixed width prevents layout shift */
+		min-width: 300px;
+		max-width: 300px;
+		contain: layout style;
 	}
 
 	.dashboard__sidebar.has-secondary .dashboard__nav-primary {
 		flex: 0 0 80px;
+		width: 80px;
+		min-width: 80px;
+		max-width: 80px;
 		border-right: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
 	.dashboard__sidebar.has-secondary .dashboard__nav-secondary {
 		flex: 0 0 220px;
 		width: 220px;
+		min-width: 220px;
+		max-width: 220px;
 	}
 
 	.dashboard__nav-primary ul {
