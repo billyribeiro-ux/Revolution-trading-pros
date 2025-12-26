@@ -19,7 +19,8 @@
 	const slug = $derived(data.slug);
 
 	// Article data - will be fetched from API later
-	const articles = [
+	// Using $derived to properly reference reactive slug value in closures
+	const articles = $derived([
 		{
 			id: 1,
 			type: 'Daily Video',
@@ -80,7 +81,7 @@
 			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			isVideo: false
 		}
-	];
+	]);
 
 	// Google Calendar integration
 	onMount(() => {
