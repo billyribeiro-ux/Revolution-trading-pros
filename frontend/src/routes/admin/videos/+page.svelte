@@ -739,9 +739,9 @@
 		role="button"
 		tabindex="0"
 		onclick={() => { showUploadModal = false; showEditModal = false; }}
-		onkeydown={(e) => e.key === 'Escape' && (showUploadModal = false, showEditModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showUploadModal = false, showEditModal = false)}
 	>
-		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div class="modal modal-large" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Video' : 'Add New Video'}</h2>
 				<button class="modal-close" onclick={() => { showUploadModal = false; showEditModal = false; }} type="button" aria-label="Close">&times;</button>
