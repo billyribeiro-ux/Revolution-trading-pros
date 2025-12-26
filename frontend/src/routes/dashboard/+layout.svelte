@@ -852,24 +852,26 @@
 		transform: translate(0, -50%);
 	}
 
-	/* Background circle effect on link hover */
-	.dashboard__nav-primary.is-collapsed .dash_main_links li a::before {
-		content: '';
+	/* Background circle effect on link hover - Pixel-perfect match to WordPress reference */
+	.dashboard__nav-primary.is-collapsed a::before {
 		position: absolute;
+		display: block;
+		content: '';
 		top: 50%;
 		left: 50%;
-		width: 48px;
-		height: 48px;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
 		border-radius: 50%;
+		transform: scale(.9);
 		background: transparent;
-		transform: translate(-50%, -50%) scale(0.8);
-		transition: all 0.15s ease-in-out;
-		z-index: -1;
+		transition: all .15s ease-in-out;
 	}
 
-	.dashboard__nav-primary.is-collapsed .dash_main_links li a:hover::before {
-		transform: translate(-50%, -50%) scale(1);
-		background-color: rgba(0, 0, 0, 0.2);
+	.dashboard__nav-primary.is-collapsed a:hover::before {
+		transform: scale(1);
+		background-color: rgba(0, 0, 0, .2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
