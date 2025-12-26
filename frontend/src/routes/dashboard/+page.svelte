@@ -831,6 +831,7 @@
 		width: calc(100% - 43px);
 	}
 
+	/* Membership Card Icon - EXACT match to dashboard-globals.css lines 404-416 */
 	.membership-card__icon {
 		display: inline-flex;
 		align-items: center;
@@ -838,10 +839,10 @@
 		width: 50px;
 		height: 50px;
 		margin-right: 9px;
-		color: #fff;
-		border-radius: 50%;
-		transition: all 0.15s ease-in-out;
+		color: #fff !important;
 		background-color: #0984ae;
+		border-radius: 50%;
+		flex-shrink: 0;
 		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
 	}
 
@@ -851,11 +852,6 @@
 		height: 24px;
 		color: #fff !important;
 		fill: currentColor;
-	}
-
-	.membership-card__header:hover .membership-card__icon {
-		background-color: #076787;
-		box-shadow: 0 15px 30px rgba(9, 132, 174, 0.2);
 	}
 
 	/* Membership Card Actions - EXACT match to globals lines 434-456 */
@@ -1563,19 +1559,7 @@
 		height: 24px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   MEMBERSHIP CARD ICON STYLING
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	:global(.membership-card__icon) {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		margin-right: 10px;
-		color: #0984ae;
-	}
-
+	/* Simpler Showcase special icon - black background with orange icon */
 	:global(.simpler-showcase-icon) {
 		background: black !important;
 		color: orange !important;
