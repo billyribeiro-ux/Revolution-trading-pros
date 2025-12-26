@@ -83,7 +83,7 @@
 		role="button"
 		tabindex="0"
 		onclick={() => fileInput.click()}
-		onkeydown={(e) => e.key === 'Enter' && fileInput.click()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && fileInput.click()}
 	>
 		<IconUpload size={48} class="upload-icon" />
 		<h3 class="upload-title">Drop files here or click to browse</h3>

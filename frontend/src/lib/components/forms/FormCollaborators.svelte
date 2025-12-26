@@ -283,7 +283,7 @@
 							</div>
 						</div>
 						<div class="collab-actions">
-							<select value={collab.role} onchange={(e) => updateRole(collab.id, (e.target as HTMLSelectElement).value)} class="role-badge">
+							<select value={collab.role} onchange={(e: Event) => updateRole(collab.id, (e.target as HTMLSelectElement).value)} class="role-badge">
 								{#each roles as role}
 									<option value={role.value}>{role.label}</option>
 								{/each}

@@ -232,7 +232,7 @@
 </script>
 
 <div class="calculated-field">
-	<label class="field-label">
+	<label class="field-label" for={field.name}>
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
@@ -243,7 +243,7 @@
 		<p class="field-help">{field.help_text}</p>
 	{/if}
 
-	<div class="calculated-display" class:has-error={!!error}>
+	<div class="calculated-display" class:has-error={!!error} id={field.name} role="status" aria-live="polite">
 		<span class="calculated-value">{displayValue}</span>
 		{#if calculatedValue !== null}
 			<span class="raw-value">({calculatedValue})</span>

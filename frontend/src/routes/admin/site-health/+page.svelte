@@ -500,13 +500,13 @@
 							{#if healthData?.performance.responseTime !== null}
 								<div class="metric">
 									<span class="metric-label">Response Time</span>
-									<span class="metric-value">{formatMs(healthData.performance.responseTime)}</span>
+									<span class="metric-value">{formatMs(healthData?.performance.responseTime ?? 0)}</span>
 								</div>
 							{/if}
 							{#if healthData?.performance.memoryUsage !== null}
 								<div class="metric">
 									<span class="metric-label">Memory Usage</span>
-									<span class="metric-value">{healthData.performance.memoryUsage}%</span>
+									<span class="metric-value">{healthData?.performance.memoryUsage ?? 0}%</span>
 								</div>
 							{/if}
 							{#if healthData?.performance.responseTime === null && healthData?.performance.memoryUsage === null}
@@ -534,8 +534,8 @@
 							{#if healthData?.security.sslValid !== null}
 								<div class="metric">
 									<span class="metric-label">SSL Certificate</span>
-									<span class="metric-value" class:good={healthData.security.sslValid} class:bad={!healthData.security.sslValid}>
-										{healthData.security.sslValid ? 'Valid' : 'Invalid'}
+									<span class="metric-value" class:good={healthData?.security.sslValid} class:bad={!healthData?.security.sslValid}>
+										{healthData?.security.sslValid ? 'Valid' : 'Invalid'}
 									</span>
 								</div>
 							{/if}
@@ -720,7 +720,7 @@
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Response Time</span>
-										<span class="metric-value large">{formatMs(healthData.performance.responseTime)}</span>
+										<span class="metric-value large">{formatMs(healthData?.performance.responseTime ?? 0)}</span>
 									</div>
 								</div>
 							{/if}
@@ -731,9 +731,9 @@
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Memory Usage</span>
-										<span class="metric-value large">{healthData.performance.memoryUsage}%</span>
+										<span class="metric-value large">{healthData?.performance.memoryUsage ?? 0}%</span>
 										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData.performance.memoryUsage}%"></div>
+											<div class="metric-progress" style="width: {healthData?.performance.memoryUsage ?? 0}%"></div>
 										</div>
 									</div>
 								</div>
@@ -745,9 +745,9 @@
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">CPU Usage</span>
-										<span class="metric-value large">{healthData.performance.cpuUsage}%</span>
+										<span class="metric-value large">{healthData?.performance.cpuUsage ?? 0}%</span>
 										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData.performance.cpuUsage}%"></div>
+											<div class="metric-progress" style="width: {healthData?.performance.cpuUsage ?? 0}%"></div>
 										</div>
 									</div>
 								</div>
@@ -759,9 +759,9 @@
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Disk Usage</span>
-										<span class="metric-value large">{healthData.performance.diskUsage}%</span>
+										<span class="metric-value large">{healthData?.performance.diskUsage ?? 0}%</span>
 										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData.performance.diskUsage}%"></div>
+											<div class="metric-progress" style="width: {healthData?.performance.diskUsage ?? 0}%"></div>
 										</div>
 									</div>
 								</div>
@@ -785,48 +785,48 @@
 					<h3>Security Status</h3>
 					{#if healthData?.security.sslValid !== null}
 						<div class="metrics-grid">
-							<div class="metric-card ssl" class:valid={healthData.security.sslValid} class:invalid={!healthData.security.sslValid}>
+							<div class="metric-card ssl" class:valid={healthData?.security.sslValid} class:invalid={!healthData?.security.sslValid}>
 								<div class="metric-icon">
 									<IconCertificate size={24} />
 								</div>
 								<div class="metric-content">
 									<span class="metric-label">SSL Certificate</span>
-									<span class="metric-value large">{healthData.security.sslValid ? 'Valid' : 'Invalid'}</span>
-									{#if healthData.security.sslExpiry}
-										<span class="metric-detail">Expires: {healthData.security.sslExpiry.toLocaleDateString()}</span>
+									<span class="metric-value large">{healthData?.security.sslValid ? 'Valid' : 'Invalid'}</span>
+									{#if healthData?.security.sslExpiry}
+										<span class="metric-detail">Expires: {healthData?.security.sslExpiry.toLocaleDateString()}</span>
 									{/if}
 								</div>
 								<div class="metric-status">
-									{#if healthData.security.sslValid}
+									{#if healthData?.security.sslValid}
 										<IconCheck size={24} />
 									{:else}
 										<IconX size={24} />
 									{/if}
 								</div>
 							</div>
-							{#if healthData.security.headersScore !== null}
+							{#if healthData?.security.headersScore !== null}
 								<div class="metric-card">
 									<div class="metric-icon">
 										<IconShieldCheck size={24} />
 									</div>
 									<div class="metric-content">
 										<span class="metric-label">Security Headers</span>
-										<span class="metric-value large">{healthData.security.headersScore}%</span>
+										<span class="metric-value large">{healthData?.security.headersScore ?? 0}%</span>
 										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData.security.headersScore}%; background: {getScoreColor(healthData.security.headersScore)}"></div>
+											<div class="metric-progress" style="width: {healthData?.security.headersScore ?? 0}%; background: {getScoreColor(healthData?.security.headersScore ?? 0)}"></div>
 										</div>
 									</div>
 								</div>
 							{/if}
-							<div class="metric-card" class:critical={healthData.security.vulnerabilities > 0}>
+							<div class="metric-card" class:critical={(healthData?.security.vulnerabilities ?? 0) > 0}>
 								<div class="metric-icon">
 									<IconBug size={24} />
 								</div>
 								<div class="metric-content">
 									<span class="metric-label">Vulnerabilities</span>
-									<span class="metric-value large" class:good={healthData.security.vulnerabilities === 0}>{healthData.security.vulnerabilities}</span>
+									<span class="metric-value large" class:good={(healthData?.security.vulnerabilities ?? 0) === 0}>{healthData?.security.vulnerabilities ?? 0}</span>
 								</div>
-								{#if healthData.security.vulnerabilities === 0}
+								{#if (healthData?.security.vulnerabilities ?? 0) === 0}
 									<div class="metric-status good">
 										<IconCheck size={24} />
 									</div>

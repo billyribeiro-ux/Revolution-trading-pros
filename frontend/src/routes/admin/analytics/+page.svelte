@@ -43,41 +43,46 @@
 	}
 
 	// Derived export data
-	let exportData = $derived(dashboardData ? [
-		{
-			metric: 'Total Users',
-			value: getKpiValue(dashboardData.kpis, 'total_users'),
-			period: selectedPeriod
-		},
-		{
-			metric: 'Total Revenue',
-			value: getKpiValue(dashboardData.kpis, 'total_revenue'),
-			period: selectedPeriod
-		},
-		{
-			metric: 'Conversion Rate',
-			value: getKpiValue(dashboardData.kpis, 'conversion_rate'),
-			period: selectedPeriod
-		},
-		{
-			metric: 'Average Order Value',
-			value: getKpiValue(dashboardData.kpis, 'avg_order_value'),
-			period: selectedPeriod
-		},
-		...(dashboardData.time_series?.revenue || []).map(item => ({
-			type: 'Revenue',
-			date: item.date,
-			value: item.value
-		})),
-		...(dashboardData.time_series?.users || []).map(item => ({
-			type: 'Users',
-			date: item.date,
-			value: item.value
-		}))
-	] : []);
+	let exportData = $derived.by(() => {
+		if (!dashboardData) return [];
+		
+		const data = dashboardData;
+		return [
+			{
+				metric: 'Total Users',
+				value: getKpiValue(data.kpis, 'total_users'),
+				period: selectedPeriod
+			},
+			{
+				metric: 'Total Revenue',
+				value: getKpiValue(data.kpis, 'total_revenue'),
+				period: selectedPeriod
+			},
+			{
+				metric: 'Conversion Rate',
+				value: getKpiValue(data.kpis, 'conversion_rate'),
+				period: selectedPeriod
+			},
+			{
+				metric: 'Average Order Value',
+				value: getKpiValue(data.kpis, 'avg_order_value'),
+				period: selectedPeriod
+			},
+			...(data.time_series?.revenue || []).map((item: { date: string; value: number }) => ({
+				type: 'Revenue',
+				date: item.date,
+				value: item.value
+			})),
+			...(data.time_series?.users || []).map((item: { date: string; value: number }) => ({
+				type: 'Users',
+				date: item.date,
+				value: item.value
+			}))
+		];
+	});
 
-	// Subscribe to connection status
-	let unsubscribe: (() => void) | null = null;
+	// Subscribe to connection status - for future store subscriptions
+	let unsubscribe = $state<(() => void) | null>(null);
 
 	// Navigation tabs
 	const tabs = [
@@ -88,14 +93,17 @@
 	];
 	let activeTab = $state('overview');
 
-	// Analytics services that can be connected
-	const analyticsServices = [
-		{ key: SERVICE_KEYS.GOOGLE_ANALYTICS, name: 'Google Analytics', icon: '📊', color: '#f97316' },
-		{ key: SERVICE_KEYS.MIXPANEL, name: 'Mixpanel', icon: '📈', color: '#8b5cf6' },
-		{ key: SERVICE_KEYS.AMPLITUDE, name: 'Amplitude', icon: '📉', color: '#3b82f6' },
-		{ key: SERVICE_KEYS.SEGMENT, name: 'Segment', icon: '🔗', color: '#10b981' },
-		{ key: SERVICE_KEYS.PLAUSIBLE, name: 'Plausible', icon: '🌿', color: '#14b8a6' }
-	];
+	// Analytics services that can be connected - dynamically generated from FEATURE_SERVICES
+	const analyticsServices = FEATURE_SERVICES.analytics.map((key) => {
+		const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
+			[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#f97316' },
+			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#8b5cf6' },
+			[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: '📉', color: '#3b82f6' },
+			[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: '🔗', color: '#10b981' },
+			[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
+		};
+		return { key, ...serviceConfig[key] };
+	});
 
 	async function loadDashboard() {
 		loading = true;
@@ -115,31 +123,45 @@
 	}
 
 	onMount(async () => {
-		// Built-in analytics - no external connection required
-		isConnected = true;
+		// Subscribe to analytics connection status
+		unsubscribe = isAnalyticsConnected.subscribe((connected) => {
+			isConnected = connected;
+		});
+
+		// Load connection status
+		connectionsLoading = true;
+		await connections.load();
 		connectionsLoading = false;
-		loadDashboard();
+
+		// Load dashboard if connected
+		if (isConnected) {
+			loadDashboard();
+		}
 	});
 
 	onDestroy(() => {
-		if (unsubscribe) unsubscribe();
+		if (unsubscribe !== null) {
+			unsubscribe();
+		}
 	});
 
 	// Format time series data
-	let revenueTimeSeries = $derived(
-		dashboardData?.time_series?.revenue?.map((item) => ({
+	let revenueTimeSeries = $derived.by(() => {
+		if (!dashboardData?.time_series?.revenue) return [];
+		return dashboardData.time_series.revenue.map((item: { date: string; value: number }) => ({
 			date: item.date,
 			value: item.value,
 			label: '$' + item.value.toLocaleString()
-		})) || []
-	);
+		}));
+	});
 
-	let usersTimeSeries = $derived(
-		dashboardData?.time_series?.users?.map((item) => ({
+	let usersTimeSeries = $derived.by(() => {
+		if (!dashboardData?.time_series?.users) return [];
+		return dashboardData.time_series.users.map((item: { date: string; value: number }) => ({
 			date: item.date,
 			value: item.value
-		})) || []
-	);
+		}));
+	});
 </script>
 
 <svelte:head>

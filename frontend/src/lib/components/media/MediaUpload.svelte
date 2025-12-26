@@ -163,7 +163,7 @@
     role="button"
     tabindex="0"
     onclick={openFilePicker}
-    onkeydown={(e) => e.key === 'Enter' && openFilePicker()}
+    onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openFilePicker()}
     ondragenter={handleDragEnter}
     ondragleave={handleDragLeave}
     ondragover={handleDragOver}

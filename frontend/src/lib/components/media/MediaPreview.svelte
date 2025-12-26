@@ -89,7 +89,7 @@
   <div class="preview-overlay" onclick={handleClose} role="dialog" aria-modal="true">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div class="preview-modal" onclick={(e) => e.stopPropagation()} role="document">
+    <div class="preview-modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="document">
       <!-- Header -->
       <div class="preview-header">
         <h2 class="preview-title">{item.filename}</h2>
@@ -183,7 +183,7 @@
                     <dd>{item.width} x {item.height}</dd>
                   {/if}
                   <dt>Uploaded</dt>
-                  <dd>{formatDate(item.uploaded_at)}</dd>
+                  <dd>{item.uploaded_at ? formatDate(item.uploaded_at) : 'Unknown'}</dd>
                   {#if item.collection}
                     <dt>Collection</dt>
                     <dd>{item.collection}</dd>
@@ -264,7 +264,7 @@
                 }}
                 role="button"
                 tabindex="0"
-                onkeydown={(e) => e.key === 'Enter' && (selectedVariant = variant)}
+                onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (selectedVariant = variant)}
               >
                 <div class="variant-preview">
                   <img src={variant.url} alt="{variant.type} variant" loading="lazy" />

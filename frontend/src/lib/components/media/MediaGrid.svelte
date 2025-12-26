@@ -138,8 +138,8 @@
         class:selected={isSelected}
         role="button"
         tabindex="0"
-        onclick={(e) => handleItemClick(item, e)}
-        onkeydown={(e) => e.key === 'Enter' && onselect?.(item)}
+        onclick={(e: MouseEvent) => handleItemClick(item, e)}
+        onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && onselect?.(item)}
       >
         <!-- Selection checkbox -->
         {#if selectable}
@@ -147,8 +147,8 @@
             <input
               type="checkbox"
               checked={isSelected}
-              onclick={(e) => { e.stopPropagation(); toggleSelection(item); }}
-              onkeydown={(e) => e.stopPropagation()}
+              onclick={(e: MouseEvent) => { e.stopPropagation(); toggleSelection(item); }}
+              onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             />
           </div>
         {/if}
@@ -185,7 +185,7 @@
 
           <!-- Optimization status badge -->
           {#if showStatus && item.file_type === 'image'}
-            <div class="status-badge" style="background: {getStatusColor(item.processing_status)}">
+            <div class="status-badge" style="background: {getStatusColor(item.processing_status || 'pending')}">
               {#if item.is_optimized}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -208,20 +208,20 @@
 
           <!-- Actions overlay -->
           <div class="item-actions">
-            <button type="button" class="action-btn" title="Preview" onclick={(e) => handlePreview(item, e)}>
+            <button type="button" class="action-btn" title="Preview" onclick={(e: MouseEvent) => handlePreview(item, e)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
             </button>
             {#if item.file_type === 'image' && !item.is_optimized}
-              <button type="button" class="action-btn optimize" title="Optimize" onclick={(e) => handleOptimize(item, e)}>
+              <button type="button" class="action-btn optimize" title="Optimize" onclick={(e: MouseEvent) => handleOptimize(item, e)}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
               </button>
             {/if}
-            <button type="button" class="action-btn delete" title="Delete" onclick={(e) => handleDelete(item, e)}>
+            <button type="button" class="action-btn delete" title="Delete" onclick={(e: MouseEvent) => handleDelete(item, e)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
               </svg>

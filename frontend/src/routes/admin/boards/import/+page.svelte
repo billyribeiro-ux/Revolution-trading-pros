@@ -277,6 +277,8 @@
 
 				<!-- Drop Zone -->
 				<div
+					role="button"
+					tabindex="0"
 					class="border-2 border-dashed rounded-xl p-8 text-center transition-colors {dragOver ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'border-gray-300 dark:border-gray-600'}"
 					ondrop={handleDrop}
 					ondragover={handleDragOver}

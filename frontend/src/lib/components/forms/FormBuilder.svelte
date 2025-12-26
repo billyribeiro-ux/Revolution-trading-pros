@@ -38,7 +38,8 @@
 					success_message: 'Thank you for your submission!',
 					submit_text: 'Submit',
 					send_email: false,
-					email_to: ''
+					email_to: '',
+					...form.settings
 				},
 				styles: {},
 				status: 'draft',
@@ -235,7 +236,7 @@
 					<input
 						id="success-message"
 						type="text"
-						bind:value={formData.settings.success_message}
+						bind:value={formData.settings!.success_message}
 						placeholder="Thank you message"
 						class="form-input"
 					/>
@@ -246,7 +247,7 @@
 					<input
 						id="submit-text"
 						type="text"
-						bind:value={formData.settings.submit_text}
+						bind:value={formData.settings!.submit_text}
 						placeholder="Submit"
 						class="form-input"
 					/>
@@ -254,18 +255,18 @@
 
 				<div class="form-group">
 					<label for="send-email" class="checkbox-label">
-						<input id="send-email" type="checkbox" bind:checked={formData.settings.send_email} />
+						<input id="send-email" type="checkbox" bind:checked={formData.settings!.send_email} />
 						<span>Send email notifications</span>
 					</label>
 				</div>
 
-				{#if formData.settings.send_email}
+				{#if formData.settings?.send_email}
 					<div class="form-group">
 						<label for="email-to">Send To Email</label>
 						<input
 							id="email-to"
 							type="email"
-							bind:value={formData.settings.email_to}
+							bind:value={formData.settings!.email_to}
 							placeholder="admin@example.com"
 							class="form-input"
 						/>

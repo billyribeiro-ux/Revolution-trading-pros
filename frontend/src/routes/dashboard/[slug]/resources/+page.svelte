@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	let { data }: { data: PageData } = $props();
-	const { room, slug } = data;
+	let { data }: { data: any } = $props();
+	const room = $derived(data.room);
+	const slug = $derived(data.slug);
 
 	const resources = [
 		{ id: 1, title: 'Trading Room Rules', description: 'Guidelines for the trading room.', type: 'PDF', downloadUrl: '/trading-room-rules.pdf' },

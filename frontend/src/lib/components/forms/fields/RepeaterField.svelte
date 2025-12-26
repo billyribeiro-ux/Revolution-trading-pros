@@ -37,20 +37,23 @@
 	const collapsible = $derived(field.attributes?.collapsible ?? true);
 	const confirmDelete = $derived(field.attributes?.confirm_delete ?? true);
 
-	// Sub-fields configuration
-	const subFields: Partial<FormField>[] = field.attributes?.sub_fields ?? [
+	// Sub-fields configuration - use $derived to maintain reactivity
+	const subFields = $derived<Partial<FormField>[]>(field.attributes?.sub_fields ?? [
 		{ name: 'title', label: 'Title', field_type: 'text', required: true },
 		{ name: 'description', label: 'Description', field_type: 'textarea' }
-	];
+	]);
 
-	// Initialize rows from value
-	let rows = $state<RepeaterRow[]>(
-		value.length > 0
-			? value
-			: minItems > 0
-				? Array.from({ length: minItems }, () => createNewRow())
-				: []
-	);
+	// Initialize rows state
+	let rows = $state<RepeaterRow[]>([]);
+
+	// Sync rows with value prop and minItems using $effect
+	$effect(() => {
+		if (value && value.length > 0) {
+			rows = value;
+		} else if (minItems > 0 && rows.length === 0) {
+			rows = Array.from({ length: minItems }, () => createNewRow());
+		}
+	});
 
 	// Drag state
 	let draggedIndex = $state<number | null>(null);
@@ -152,7 +155,7 @@
 </script>
 
 <div class="repeater-field">
-	<label class="repeater-label">
+	<label class="repeater-label" for={field.name + '_repeater'}>
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
@@ -162,6 +165,9 @@
 	{#if field.help_text}
 		<p class="repeater-help">{field.help_text}</p>
 	{/if}
+
+	<!-- Hidden input for form association -->
+	<input type="hidden" id={field.name + '_repeater'} name={field.name} value={JSON.stringify(rows)} />
 
 	<div class="repeater-rows">
 		{#each rows as row, index (row.id)}
@@ -174,6 +180,8 @@
 				ondragstart={() => handleDragStart(index)}
 				ondragover={(e: DragEvent) => handleDragOver(e, index)}
 				ondragend={handleDragEnd}
+				role="group"
+				aria-label="{itemLabel} {index + 1}"
 			>
 				<!-- Row Header -->
 				<div class="row-header">
@@ -209,7 +217,7 @@
 						{#each subFields as subField}
 							{#if subField.name}
 								<div class="sub-field" style="width: {subField.width ?? 100}%">
-									<label class="sub-field-label">
+									<label class="sub-field-label" for="{field.name}_{row.id}_{subField.name}">
 										{subField.label}
 										{#if subField.required}
 											<span class="required">*</span>
@@ -219,6 +227,7 @@
 									{#if subField.field_type === 'text'}
 										<input
 											type="text"
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											placeholder={subField.placeholder ?? ''}
@@ -226,6 +235,7 @@
 										/>
 									{:else if subField.field_type === 'textarea'}
 										<textarea
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLTextAreaElement).value)}
 											placeholder={subField.placeholder ?? ''}
@@ -235,6 +245,7 @@
 									{:else if subField.field_type === 'number'}
 										<input
 											type="number"
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
 												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).valueAsNumber)}
@@ -244,6 +255,7 @@
 									{:else if subField.field_type === 'email'}
 										<input
 											type="email"
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											placeholder={subField.placeholder ?? ''}
@@ -261,6 +273,7 @@
 										</label>
 									{:else if subField.field_type === 'select'}
 										<select
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											onchange={(e: Event) =>
 												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLSelectElement).value)}
@@ -278,6 +291,7 @@
 									{:else if subField.field_type === 'date'}
 										<input
 											type="date"
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											onchange={(e: Event) =>
 												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
@@ -286,6 +300,7 @@
 									{:else}
 										<input
 											type="text"
+											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											placeholder={subField.placeholder ?? ''}

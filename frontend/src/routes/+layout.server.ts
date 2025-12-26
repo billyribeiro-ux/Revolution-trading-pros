@@ -10,9 +10,7 @@
  * @version 1.0.0
  */
 
-import type { LayoutServerLoad } from './$types';
-
-export const load: LayoutServerLoad = async ({ locals }) => {
+export const load = async ({ locals }: { locals: any }) => {
 	// Return consent data for hydration on client
 	return {
 		// Initial consent state from cookie (read in hooks.server.ts)

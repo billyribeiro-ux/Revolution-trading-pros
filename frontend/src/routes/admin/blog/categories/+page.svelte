@@ -456,8 +456,8 @@
 								<input
 									type="checkbox"
 									checked={selectedCategories.has(category.id)}
-									onchange={(e) => {
-										if (e.currentTarget.checked) {
+									onchange={(e: Event) => {
+										if ((e.currentTarget as HTMLInputElement).checked) {
 											selectedCategories.add(category.id);
 										} else {
 											selectedCategories.delete(category.id);
@@ -559,8 +559,8 @@
 								<input
 									type="checkbox"
 									checked={selectedTags.has(tag.id)}
-									onchange={(e) => {
-										if (e.currentTarget.checked) {
+									onchange={(e: Event) => {
+										if ((e.currentTarget as HTMLInputElement).checked) {
 											selectedTags.add(tag.id);
 										} else {
 											selectedTags.delete(tag.id);
@@ -618,15 +618,15 @@
 		role="button"
 		tabindex="0"
 		onclick={() => (showCategoryModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showCategoryModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCategoryModal = false)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3>{editingCategory ? 'Edit' : 'Add'} Category</h3>
@@ -717,15 +717,15 @@
 		role="button"
 		tabindex="0"
 		onclick={() => (showTagModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showTagModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showTagModal = false)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3>{editingTag ? 'Edit' : 'Add'} Tag</h3>

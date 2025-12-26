@@ -233,7 +233,7 @@
 								type="checkbox"
 								value={optionValue}
 								checked={isChecked(optionValue)}
-								onchange={(e) => handleCheckboxChange(optionValue, e.currentTarget.checked)}
+								onchange={(e: Event) => handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
 								{...field.attributes || {}}
 							/>
 							<span>{optionLabel}</span>
@@ -371,7 +371,7 @@
 						id={`field-${field.name}`}
 						name={field.name}
 						checked={value === true || value === '1' || value === 'yes' || value === 'on'}
-						onchange={(e) => onchange?.(e.currentTarget.checked)}
+						onchange={(e: Event) => onchange?.((e.currentTarget as HTMLInputElement).checked)}
 						{...field.attributes || {}}
 					/>
 					<span class="newsletter-checkbox-text">
@@ -405,7 +405,7 @@
 								type="checkbox"
 								value={optionValue}
 								checked={isChecked(optionValue)}
-								onchange={(e) => handleCheckboxChange(optionValue, e.currentTarget.checked)}
+								onchange={(e: Event) => handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
 							/>
 							<div class="category-content">
 								{#if optionIcon}

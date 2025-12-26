@@ -880,12 +880,12 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showEmailModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showEmailModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Send Email to {member?.name}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
@@ -933,12 +933,12 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showNoteModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showNoteModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showNoteModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Add Note</h2>
 				<button class="close-btn" onclick={() => (showNoteModal = false)}>
@@ -973,12 +973,12 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showTagModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showTagModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showTagModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Manage Tags</h2>
 				<button class="close-btn" onclick={() => (showTagModal = false)}>
@@ -1012,7 +1012,7 @@
 							type="text"
 							bind:value={newTag}
 							placeholder="Enter custom tag..."
-							onkeydown={(e) => e.key === 'Enter' && addCustomTag()}
+							onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && addCustomTag()}
 						/>
 						<button class="btn-primary small" onclick={addCustomTag} disabled={!newTag.trim()}>
 							Add
@@ -1033,12 +1033,12 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showExtendModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showExtendModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showExtendModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Extend Membership</h2>
 				<button class="close-btn" onclick={() => (showExtendModal = false)}>
@@ -1098,12 +1098,12 @@
 	<div
 		class="modal-overlay"
 		onclick={() => (showGrantModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showGrantModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showGrantModal = false)}
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Grant Membership</h2>
 				<button class="close-btn" onclick={() => (showGrantModal = false)}>

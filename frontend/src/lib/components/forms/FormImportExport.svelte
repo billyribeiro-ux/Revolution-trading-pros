@@ -195,8 +195,8 @@
 			<div class="export-section">
 				<!-- Export Type -->
 				<div class="option-group">
-					<label class="option-label">What to export</label>
-					<div class="radio-group">
+					<label class="option-label" for="export-type-group">What to export</label>
+					<div class="radio-group" id="export-type-group" role="radiogroup">
 						<label class="radio-option">
 							<input type="radio" bind:group={exportType} value="form" />
 							<span class="radio-content">
@@ -223,8 +223,8 @@
 
 				<!-- Export Format -->
 				<div class="option-group">
-					<label class="option-label">Format</label>
-					<div class="format-options">
+					<label class="option-label" for="export-format-group">Format</label>
+					<div class="format-options" id="export-format-group" role="group">
 						{#each exportFormats as format}
 							<button
 								class="format-btn"
@@ -243,9 +243,9 @@
 				<!-- Date Range (for submissions) -->
 				{#if exportType === 'submissions' || exportType === 'all'}
 					<div class="option-group">
-						<label class="option-label">Date Range (optional)</label>
+						<label class="option-label" for="date-from">Date Range (optional)</label>
 						<div class="date-range">
-							<input type="date" bind:value={dateFrom} class="date-input" placeholder="From" />
+							<input type="date" id="date-from" bind:value={dateFrom} class="date-input" placeholder="From" />
 							<span class="date-separator">to</span>
 							<input type="date" bind:value={dateTo} class="date-input" placeholder="To" />
 						</div>
@@ -277,8 +277,8 @@
 			<div class="import-section">
 				<!-- Import Source -->
 				<div class="option-group">
-					<label class="option-label">Import from</label>
-					<div class="source-options">
+					<label class="option-label" for="import-source-group">Import from</label>
+					<div class="source-options" id="import-source-group" role="group">
 						{#each importSources as source}
 							<button
 								class="source-btn"
@@ -295,7 +295,7 @@
 				<!-- File Upload -->
 				{#if importSource !== 'template'}
 					<div class="option-group">
-						<label class="option-label">Select File</label>
+						<label class="option-label" for="import-file">Select File</label>
 						<div class="file-upload">
 							<input
 								type="file"

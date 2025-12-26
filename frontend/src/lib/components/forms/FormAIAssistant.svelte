@@ -207,8 +207,9 @@
 		<!-- Generate Tab -->
 		{#if activeTab === 'generate'}
 			<div class="generate-section">
-				<label class="prompt-label">Describe your form</label>
+				<label class="prompt-label" for="ai-prompt-input">Describe your form</label>
 				<textarea
+					id="ai-prompt-input"
 					bind:value={prompt}
 					placeholder="E.g., Create a customer feedback form with rating, comments, and contact info"
 					class="prompt-input"

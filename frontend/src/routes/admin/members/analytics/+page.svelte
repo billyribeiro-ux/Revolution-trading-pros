@@ -254,16 +254,16 @@
 					<div class="metric-icon purple">
 						<IconUsers size={24} />
 					</div>
-					<div class="metric-trend {metrics.memberGrowth >= 0 ? 'positive' : 'negative'}">
-						{#if metrics.memberGrowth >= 0}
-							<IconTrendingUp size={16} />
-						{:else}
-							<IconTrendingDown size={16} />
-						{/if}
-						{Math.abs(metrics.memberGrowth)}%
+					<div class="metric-trend {(metrics.memberGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
+					{#if (metrics.memberGrowth ?? 0) >= 0}
+						<IconTrendingUp size={16} />
+					{:else}
+						<IconTrendingDown size={16} />
+					{/if}
+					{Math.abs(metrics.memberGrowth ?? 0)}%
 					</div>
 				</div>
-				<div class="metric-value">{formatNumber(metrics.totalMembers)}</div>
+				<div class="metric-value">{formatNumber(metrics.totalMembers ?? 0)}</div>
 				<div class="metric-label">Total Members</div>
 			</div>
 
@@ -272,31 +272,31 @@
 					<div class="metric-icon emerald">
 						<IconCurrencyDollar size={24} />
 					</div>
-					<div class="metric-trend {metrics.mrrGrowth >= 0 ? 'positive' : 'negative'}">
-						{#if metrics.mrrGrowth >= 0}
-							<IconTrendingUp size={16} />
-						{:else}
-							<IconTrendingDown size={16} />
-						{/if}
-						{Math.abs(metrics.mrrGrowth)}%
+					<div class="metric-trend {(metrics.mrrGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
+					{#if (metrics.mrrGrowth ?? 0) >= 0}
+						<IconTrendingUp size={16} />
+					{:else}
+						<IconTrendingDown size={16} />
+					{/if}
+					{Math.abs(metrics.mrrGrowth ?? 0)}%
 					</div>
 				</div>
-				<div class="metric-value">{formatCurrency(metrics.mrr)}</div>
+				<div class="metric-value">{formatCurrency(metrics.mrr ?? 0)}</div>
 				<div class="metric-label">Monthly Recurring Revenue</div>
 			</div>
 
 			<div class="metric-card">
 				<div class="metric-header">
-					<div class="metric-icon {metrics.churnChange <= 0 ? 'emerald' : 'red'}">
+					<div class="metric-icon {(metrics.churnChange ?? 0) <= 0 ? 'emerald' : 'red'}">
 						<IconChartLine size={24} />
 					</div>
-					<div class="metric-trend {metrics.churnChange <= 0 ? 'positive' : 'negative'}">
-						{#if metrics.churnChange <= 0}
+					<div class="metric-trend {(metrics.churnChange ?? 0) <= 0 ? 'positive' : 'negative'}">
+						{#if (metrics.churnChange ?? 0) <= 0}
 							<IconTrendingDown size={16} />
 						{:else}
 							<IconTrendingUp size={16} />
 						{/if}
-						{Math.abs(metrics.churnChange)}%
+						{Math.abs(metrics.churnChange ?? 0)}%
 					</div>
 				</div>
 				<div class="metric-value">{metrics.churnRate}%</div>
@@ -308,16 +308,16 @@
 					<div class="metric-icon blue">
 						<IconChartLine size={24} />
 					</div>
-					<div class="metric-trend {metrics.ltvGrowth >= 0 ? 'positive' : 'negative'}">
-						{#if metrics.ltvGrowth >= 0}
+					<div class="metric-trend {(metrics.ltvGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
+						{#if (metrics.ltvGrowth ?? 0) >= 0}
 							<IconTrendingUp size={16} />
 						{:else}
 							<IconTrendingDown size={16} />
 						{/if}
-						{Math.abs(metrics.ltvGrowth)}%
+						{Math.abs(metrics.ltvGrowth ?? 0)}%
 					</div>
 				</div>
-				<div class="metric-value">{formatCurrency(metrics.avgLtv)}</div>
+				<div class="metric-value">{formatCurrency(metrics.avgLtv ?? 0)}</div>
 				<div class="metric-label">Average LTV</div>
 			</div>
 		</div>

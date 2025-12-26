@@ -137,7 +137,7 @@
       <button
         class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 transition-all duration-200 {selectedSize === variant.sizeName ? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800' : 'border-transparent'} {interactive ? 'cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md' : ''}"
         onclick={() => handleSelect(variant.sizeName)}
-        onmouseenter={(e) => handleMouseEnter(e, variant)}
+        onmouseenter={(e: MouseEvent) => handleMouseEnter(e, variant)}
         onmousemove={handleMouseMove}
         onmouseleave={handleMouseLeave}
         transition:scale={{ duration: 200 }}

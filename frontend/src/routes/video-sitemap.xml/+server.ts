@@ -15,8 +15,6 @@
  * @version 1.0.0 - November 2025 Google Video Standards
  */
 
-import type { RequestHandler } from './$types';
-
 // Use environment variable - configure VITE_SITE_URL for your domain
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
 
@@ -401,7 +399,7 @@ function generateVideoSitemap(): string {
 </urlset>`;
 }
 
-export const GET: RequestHandler = async () => {
+export const GET = async () => {
 	const sitemap = generateVideoSitemap();
 
 	return new Response(sitemap, {

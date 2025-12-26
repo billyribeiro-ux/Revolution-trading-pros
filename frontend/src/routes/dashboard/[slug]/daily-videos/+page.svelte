@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	let { data }: { data: PageData } = $props();
-	const { room, slug } = data;
+	let { data }: { data: any } = $props();
+	const room = $derived(data.room);
+	const slug = $derived(data.slug);
 
 	let searchQuery = $state('');
 	let currentPage = $state(1);

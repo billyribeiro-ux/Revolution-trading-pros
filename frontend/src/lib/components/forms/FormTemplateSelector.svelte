@@ -91,7 +91,7 @@
 					role="button"
 					tabindex="0"
 					onclick={() => handleSelect(template)}
-					onkeypress={(e) => e.key === 'Enter' && handleSelect(template)}
+					onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleSelect(template)}
 				>
 					<div class="template-icon">{template.icon}</div>
 					<div class="template-content">

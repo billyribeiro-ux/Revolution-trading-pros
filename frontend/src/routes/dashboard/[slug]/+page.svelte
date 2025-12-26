@@ -9,14 +9,14 @@
 	 * @version 2.0.0 - Dynamic Routes
 	 */
 	import { onMount } from 'svelte';
-	import type { PageData } from './$types';
 
 	// Tabler Icons for dropdown menu
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
 
-	let { data }: { data: PageData } = $props();
-	const { room, slug } = data;
+	let { data }: { data: any } = $props();
+	const room = $derived(data.room);
+	const slug = $derived(data.slug);
 
 	// Article data - will be fetched from API later
 	const articles = [

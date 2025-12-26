@@ -1,8 +1,9 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import IconRocket from '@tabler/icons-svelte/icons/rocket';
-	let { data }: { data: PageData } = $props();
-	const { room, slug } = data;
+	
+	let { data }: { data: any } = $props();
+	const room = $derived(data.room);
+	const slug = $derived(data.slug);
 </script>
 
 <svelte:head><title>Start Here - {room.name} | Revolution Trading Pros</title></svelte:head>

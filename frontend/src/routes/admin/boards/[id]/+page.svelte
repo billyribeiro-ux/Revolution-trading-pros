@@ -82,7 +82,7 @@
 	let timerDisplay = $state('00:00:00');
 
 	// Filtered tasks by stage
-	let tasksByStage = $derived(() => {
+	let tasksByStage = $derived.by(() => {
 		const result: Record<string, Task[]> = {};
 		stages.forEach(stage => {
 			result[stage.id] = tasks
@@ -556,16 +556,20 @@
 						<!-- Tasks -->
 						<div
 							class="flex-1 overflow-y-auto p-2 space-y-2"
-							ondragover={(e) => handleDragOver(e, stage.id, tasksByStage[stage.id]?.length || 0)}
+							ondragover={(e: DragEvent) => handleDragOver(e, stage.id, tasksByStage[stage.id]?.length || 0)}
 							ondragleave={handleDragLeave}
-							ondrop={(e) => handleDrop(e, stage.id, tasksByStage[stage.id]?.length || 0)}
+							ondrop={(e: DragEvent) => handleDrop(e, stage.id, tasksByStage[stage.id]?.length || 0)}
+							role="region"
+							aria-label="Task drop zone"
 						>
 							{#each tasksByStage[stage.id] || [] as task, index}
 								<div
 									draggable="true"
-									ondragstart={(e) => handleDragStart(e, task)}
+									ondragstart={(e: DragEvent) => handleDragStart(e, task)}
 									ondragend={handleDragEnd}
-									ondragover={(e) => handleDragOver(e, stage.id, index)}
+									ondragover={(e: DragEvent) => handleDragOver(e, stage.id, index)}
+									role="button"
+									tabindex="0"
 									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id === task.id ? 'opacity-50' : ''} {dragOverStage === stage.id && dragOverPosition === index ? 'border-t-2 border-indigo-500' : ''}"
 									onclick={() => openTaskModal(task)}
 								>
@@ -648,7 +652,7 @@
 										placeholder="Enter task title..."
 										rows="2"
 										class="w-full text-sm border-0 p-0 resize-none focus:ring-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-400"
-										onkeydown={(e) => {
+										onkeydown={(e: KeyboardEvent) => {
 											if (e.key === 'Enter' && !e.shiftKey) {
 												e.preventDefault();
 												createTask(stage.id);
@@ -704,7 +708,7 @@
 								bind:value={newStageTitle}
 								placeholder="Stage title..."
 								class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-2"
-								onkeydown={(e) => {
+								onkeydown={(e: KeyboardEvent) => {
 									if (e.key === 'Enter') createStage();
 									if (e.key === 'Escape') { showNewStageInput = false; newStageTitle = ''; }
 								}}
@@ -750,8 +754,8 @@
 							<input
 								type="text"
 								value={selectedTask.title}
-								onblur={(e) => { updateTask({ title: e.currentTarget.value }); editingTaskTitle = false; }}
-								onkeydown={(e) => { if (e.key === 'Enter') { updateTask({ title: e.currentTarget.value }); editingTaskTitle = false; } }}
+								onblur={(e: FocusEvent) => { updateTask({ title: (e.currentTarget as HTMLInputElement).value }); editingTaskTitle = false; }}
+								onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') { updateTask({ title: (e.currentTarget as HTMLInputElement).value }); editingTaskTitle = false; } }}
 								class="w-full text-xl font-semibold bg-transparent border-b border-indigo-500 focus:outline-none text-gray-900 dark:text-white"
 							/>
 						{:else}
@@ -759,15 +763,15 @@
 								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400"
 								onclick={() => editingTaskTitle = true}
 							>
-								{selectedTask.title}
+								{selectedTask?.title}
 							</h2>
 						{/if}
 						<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-							in {stages.find(s => s.id === selectedTask.stage_id)?.title || 'Unknown'}
+							in {stages.find(s => s.id === selectedTask?.stage_id)?.title || 'Unknown'}
 						</p>
 					</div>
 					<div class="flex items-center gap-2">
-						{#if selectedTask.status === 'completed'}
+						{#if selectedTask?.status === 'completed'}
 							<span class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded flex items-center gap-1">
 								<IconCheck class="w-3.5 h-3.5" />
 								Completed
@@ -799,7 +803,7 @@
 							{#if editingTaskDescription}
 								<textarea
 									value={selectedTask.description || ''}
-									onblur={(e) => { updateTask({ description: e.currentTarget.value }); editingTaskDescription = false; }}
+									onblur={(e: FocusEvent) => { updateTask({ description: (e.currentTarget as HTMLTextAreaElement).value }); editingTaskDescription = false; }}
 									rows="4"
 									class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
 									placeholder="Add a description..."
@@ -807,6 +811,8 @@
 							{:else}
 								<div
 									onclick={() => editingTaskDescription = true}
+									role="button"
+									tabindex="0"
 									class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 min-h-[60px]"
 								>
 									{selectedTask.description || 'Click to add a description...'}
@@ -847,7 +853,7 @@
 										bind:value={newSubtaskTitle}
 										placeholder="Add subtask..."
 										class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-										onkeydown={(e) => { if (e.key === 'Enter') addSubtask(); }}
+										onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') addSubtask(); }}
 									/>
 									<button
 										onclick={addSubtask}
@@ -958,7 +964,7 @@
 							<input
 								type="date"
 								value={selectedTask.due_date?.split('T')[0] || ''}
-								onchange={(e) => updateTask({ due_date: e.currentTarget.value })}
+								onchange={(e: Event) => updateTask({ due_date: (e.currentTarget as HTMLInputElement).value })}
 								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 							/>
 						</div>
@@ -968,7 +974,7 @@
 							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Priority</h4>
 							<select
 								value={selectedTask.priority}
-								onchange={(e) => updateTask({ priority: e.currentTarget.value as any })}
+								onchange={(e: Event) => updateTask({ priority: (e.currentTarget as HTMLSelectElement).value as any })}
 								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 							>
 								<option value="none">None</option>

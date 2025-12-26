@@ -17,11 +17,10 @@
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import type { PageData } from './$types';
 
 	const API_URL = 'https://revolution-trading-pros-api.fly.dev';
 
-	let { data }: { data: PageData } = $props();
+	let { data }: { data: any } = $props();
 
 	// Posts state - use SSR data or fetch client-side
 	let posts = $state<any[]>([]);

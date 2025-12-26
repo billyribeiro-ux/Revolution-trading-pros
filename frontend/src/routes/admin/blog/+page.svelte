@@ -165,7 +165,7 @@
 			const data = await adminFetch(`/api/admin/posts?${params}`);
 
 			// Enhance posts with additional data
-			posts = (data.data || []).map((post) => ({
+			posts = (data.data || []).map((post: any) => ({
 				...post,
 				seo_score: calculateSeoScore(post),
 				engagement_rate: calculateEngagementRate(post),
@@ -1170,15 +1170,15 @@
 			role="button"
 			tabindex="0"
 			onclick={() => (previewPost = null)}
-			onkeydown={(e) => e.key === 'Escape' && (previewPost = null)}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (previewPost = null)}
 		>
 			<div
 				class="modal preview-modal"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			>
 				<div class="modal-header">
 					<h2>Preview: {previewPost.title}</h2>
@@ -1200,15 +1200,15 @@
 			role="button"
 			tabindex="0"
 			onclick={() => (showExportModal = false)}
-			onkeydown={(e) => e.key === 'Escape' && (showExportModal = false)}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showExportModal = false)}
 		>
 			<div
 				class="modal"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			>
 				<div class="modal-header">
 					<h2>Export Posts</h2>
@@ -1255,15 +1255,15 @@
 			role="button"
 			tabindex="0"
 			onclick={() => (showAnalyticsModal = false)}
-			onkeydown={(e) => e.key === 'Escape' && (showAnalyticsModal = false)}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAnalyticsModal = false)}
 		>
 			<div
 				class="modal analytics-modal"
 				role="dialog"
 				aria-modal="true"
 				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			>
 				<div class="modal-header">
 					<h2>Analytics: {analyticsPost.title}</h2>

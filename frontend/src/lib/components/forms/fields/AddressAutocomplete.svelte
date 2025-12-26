@@ -53,21 +53,28 @@
 	let manualMode = $state(false);
 	let selectedIndex = $state(-1);
 
-	let address = $state<AddressComponents>(value ?? {
-			street_number: '',
-			street_name: '',
-			address_line1: '',
-			address_line2: '',
-			city: '',
-			state: '',
-			postal_code: '',
-			country: '',
-			country_code: '',
-			formatted_address: '',
-			lat: undefined,
-			lng: undefined
+	// Initialize address state with proper derived reactivity
+	let address = $state<AddressComponents>({
+		street_number: '',
+		street_name: '',
+		address_line1: '',
+		address_line2: '',
+		city: '',
+		state: '',
+		postal_code: '',
+		country: '',
+		country_code: '',
+		formatted_address: '',
+		lat: undefined,
+		lng: undefined
+	});
+
+	// Sync address with value prop changes
+	$effect(() => {
+		if (value && JSON.stringify(value) !== JSON.stringify(address)) {
+			address = value;
 		}
-	);
+	});
 
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout>;
@@ -275,7 +282,7 @@
 </script>
 
 <div class="address-field">
-	<label class="field-label">
+	<label class="field-label" for={field.name}>
 		{field.label}
 		{#if field.required}
 			<span class="required">*</span>
@@ -314,8 +321,15 @@
 							class:selected={index === selectedIndex}
 							onclick={() => selectSuggestion(suggestion)}
 							onmouseenter={() => (selectedIndex = index)}
+							onkeydown={(e: KeyboardEvent) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.preventDefault();
+									selectSuggestion(suggestion);
+								}
+							}}
 							role="option"
 							aria-selected={index === selectedIndex}
+							tabindex="0"
 						>
 							<span class="suggestion-icon">📍</span>
 							<span class="suggestion-text">{suggestion.description}</span>
@@ -337,7 +351,7 @@
 		<div class="address-fields">
 			<div class="field-row">
 				<div class="field-col full">
-					<label class="sub-label">Address Line 1</label>
+					<label class="sub-label" for={field.name + '_address_line1'}>Address Line 1</label>
 					<input
 						type="text"
 						value={address.address_line1}
@@ -351,7 +365,7 @@
 
 			<div class="field-row">
 				<div class="field-col full">
-					<label class="sub-label">Address Line 2</label>
+					<label class="sub-label" for={field.name + '_address_line2'}>Address Line 2</label>
 					<input
 						type="text"
 						value={address.address_line2}
@@ -365,7 +379,7 @@
 
 			<div class="field-row">
 				<div class="field-col half">
-					<label class="sub-label">City</label>
+					<label class="sub-label" for={field.name + '_city'}>City</label>
 					<input
 						type="text"
 						value={address.city}
@@ -376,7 +390,7 @@
 					/>
 				</div>
 				<div class="field-col quarter">
-					<label class="sub-label">State/Province</label>
+					<label class="sub-label" for={field.name + '_state'}>State/Province</label>
 					<input
 						type="text"
 						value={address.state}
@@ -387,7 +401,7 @@
 					/>
 				</div>
 				<div class="field-col quarter">
-					<label class="sub-label">ZIP/Postal Code</label>
+					<label class="sub-label" for={field.name + '_postal_code'}>ZIP/Postal Code</label>
 					<input
 						type="text"
 						value={address.postal_code}
@@ -401,7 +415,7 @@
 
 			<div class="field-row">
 				<div class="field-col full">
-					<label class="sub-label">Country</label>
+					<label class="sub-label" for={field.name + '_country'}>Country</label>
 					<input
 						type="text"
 						value={address.country}

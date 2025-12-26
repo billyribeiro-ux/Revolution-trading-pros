@@ -538,14 +538,14 @@
 		aria-modal="true"
 		tabindex="-1"
 		onclick={() => (showCreateModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showCreateModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateModal = false)}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content large"
 			role="document"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Create New Campaign</h2>
