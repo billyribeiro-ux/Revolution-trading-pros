@@ -1,5 +1,4 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
 		"moduleResolution": "bundler",
 		"module": "ESNext",
@@ -12,6 +11,22 @@
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		
+		// Path mappings for SvelteKit aliases
+		"baseUrl": ".",
+		"paths": {
+			"$lib": ["src/lib"],
+			"$lib/*": ["src/lib/*"],
+			"$app/*": ["node_modules/@sveltejs/kit/src/runtime/app/*"],
+			"$components": ["src/lib/components"],
+			"$components/*": ["src/lib/components/*"],
+			"$stores": ["src/lib/stores"],
+			"$stores/*": ["src/lib/stores/*"],
+			"$utils": ["src/lib/utils"],
+			"$utils/*": ["src/lib/utils/*"],
+			"$api": ["src/lib/api"],
+			"$api/*": ["src/lib/api/*"]
+		},
 
 		// ═══════════════════════════════════════════════════════════════════════════
 		// ENTERPRISE STRICT MODE CONFIGURATION

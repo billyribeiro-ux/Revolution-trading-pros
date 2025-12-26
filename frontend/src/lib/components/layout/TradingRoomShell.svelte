@@ -43,8 +43,17 @@
 		children
 	}: Props = $props();
 
-	let sidebarOpen = $state(showSidebar);
-	let rightPanelOpen = $state(showRightPanel);
+	let sidebarOpen = $state(false);
+	let rightPanelOpen = $state(false);
+
+	// Sync with prop changes
+	$effect(() => {
+		sidebarOpen = showSidebar;
+	});
+
+	$effect(() => {
+		rightPanelOpen = showRightPanel;
+	});
 	let isFullscreen = $state(false);
 
 	function toggleSidebar() {
@@ -271,12 +280,8 @@
 			left: 0;
 			bottom: 0;
 			z-index: 100;
-			transform: translateX(-100%);
-			transition: transform 0.2s ease;
-		}
-
-		.shell-sidebar.open {
 			transform: translateX(0);
+			transition: transform 0.2s ease;
 		}
 
 		.shell-right-panel {
@@ -285,12 +290,8 @@
 			right: 0;
 			bottom: 0;
 			z-index: 100;
-			transform: translateX(100%);
-			transition: transform 0.2s ease;
-		}
-
-		.shell-right-panel.open {
 			transform: translateX(0);
+			transition: transform 0.2s ease;
 		}
 	}
 

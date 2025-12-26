@@ -5,8 +5,13 @@ import {
 	isSuperadmin, 
 	isAdmin as checkIsAdmin, 
 	hasPermission as checkHasPermission,
+	hasAnyPermission,
+	hasAllPermissions,
 	getUserPermissions,
 	getHighestRole,
+	SUPERADMIN_EMAILS,
+	ROLES,
+	PERMISSIONS,
 	type PermissionType 
 } from '$lib/config/roles';
 
@@ -601,14 +606,11 @@ export const getSessionId = (): string | null => authStore.getSessionId();
 // Re-export role helpers for convenience
 export { 
 	isSuperadmin, 
-	isAdmin as checkIsAdmin, 
-	hasPermission, 
+	checkIsAdmin, 
+	checkHasPermission as hasPermission, 
 	hasAnyPermission, 
 	hasAllPermissions,
 	SUPERADMIN_EMAILS,
 	ROLES,
 	PERMISSIONS
-} from '$lib/config/roles';
-
-// Re-export removeToast function if needed by Toast component
-export { removeToast } from '$lib/stores/toast';
+};

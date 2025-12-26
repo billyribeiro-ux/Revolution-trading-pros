@@ -316,6 +316,7 @@
     }
 
     // Keep within bounds
+    if (!image) return;
     newArea.x = Math.max(0, Math.min(image.naturalWidth - newArea.width, newArea.x));
     newArea.y = Math.max(0, Math.min(image.naturalHeight - newArea.height, newArea.y));
 
@@ -387,12 +388,12 @@
   class="crop-modal-overlay"
   transition:fade
   onclick={() => dispatch('cancel')}
-  onkeydown={(e) => { if (e.key === 'Escape') dispatch('cancel'); if (e.key === 'Enter' || e.key === ' ') dispatch('cancel'); }}
+  onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') dispatch('cancel'); if (e.key === 'Enter' || e.key === ' ') dispatch('cancel'); }}
   role="button"
   tabindex="0"
   aria-label="Close modal"
 >
-  <div class="crop-modal {className}" transition:scale onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="crop-modal-title" tabindex="-1">
+  <div class="crop-modal {className}" transition:scale onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="crop-modal-title" tabindex="-1">
     <!-- Header -->
     <div class="modal-header">
       <h2 id="crop-modal-title" class="text-lg font-semibold text-gray-900 dark:text-white">Crop & Edit Image</h2>

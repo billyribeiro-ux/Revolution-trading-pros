@@ -11,7 +11,7 @@
  * @version 1.0.0
  */
 
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './.types';
 
 // Static data that can be generated at build time
 const tradingRoomsData = [
@@ -102,7 +102,7 @@ const tickerSymbols = [
 	{ sym: 'BTC', price: '42,100', change: '+1.2%', up: true },
 ];
 
-export const load: PageServerLoad = async ({ url, setHeaders }) => {
+export const load: PageServerLoad = async ({ url, setHeaders }: { url: URL; setHeaders: (headers: Record<string, string>) => void }) => {
 	// Set caching headers for Google December 2025 Core Web Vitals compliance
 	// Note: Content-Encoding is handled by the server/CDN at runtime, not during prerender
 	setHeaders({
