@@ -879,11 +879,6 @@
 		fill: currentColor;
 	}
 
-	.membership-card__header:hover .membership-card__icon {
-		background-color: #076787;
-		box-shadow: 0 15px 30px rgba(9, 132, 174, 0.2);
-	}
-
 	/* Membership Card Actions - EXACT match to globals lines 434-456 */
 	.membership-card__actions {
 		display: flex;
