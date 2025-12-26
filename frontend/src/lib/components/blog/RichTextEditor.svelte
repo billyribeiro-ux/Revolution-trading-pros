@@ -421,15 +421,15 @@
 		role="button"
 		tabindex="0"
 		onclick={() => (showLinkDialog = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showLinkDialog = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showLinkDialog = false)}
 	>
 		<div
 			class="dialog"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<h3>Insert Link</h3>
 			<input type="url" bind:value={linkUrl} placeholder="https://example.com" />
@@ -450,15 +450,15 @@
 		role="button"
 		tabindex="0"
 		onclick={() => (showImageDialog = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showImageDialog = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showImageDialog = false)}
 	>
 		<div
 			class="dialog"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<h3>Insert Image</h3>
 			<input type="url" bind:value={imageUrl} placeholder="https://example.com/image.jpg" />

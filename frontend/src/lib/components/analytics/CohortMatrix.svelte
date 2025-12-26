@@ -86,10 +86,10 @@
 				{#each data as row, rowIndex (row.cohort_date)}
 					<tr class="border-t border-gray-100 hover:bg-gray-50/50">
 						<td class="px-3 py-2 font-medium text-gray-900 sticky left-0 bg-white z-10">
-							{formatDate(row.cohort_date)}
+							{formatDate(row.cohort_date ?? '')}
 						</td>
 						<td class="px-3 py-2 text-center text-gray-600">
-							{row.cohort_size.toLocaleString()}
+							{(row.cohort_size ?? 0).toLocaleString()}
 						</td>
 						{#each periodNumbers as period}
 							{@const periodData = row.periods ? row.periods[period] : null}

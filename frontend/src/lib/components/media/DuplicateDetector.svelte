@@ -337,11 +337,11 @@
 
 	<!-- Merge Modal -->
 	{#if selectedGroup}
-		<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
+		<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
 			<div
 				class="modal"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="modal-title"

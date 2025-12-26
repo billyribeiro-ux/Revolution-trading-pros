@@ -153,12 +153,12 @@
 		class:warning={overallStatus() === 'warning'}
 		class:critical={overallStatus() === 'critical'}
 		class:disconnected={overallStatus() === 'none'}
-		onclick={(e) => { e.stopPropagation(); toggle(); }}
+		onclick={(e: MouseEvent) => { e.stopPropagation(); toggle(); }}
 		title="API Rate Limits"
 	>
 		{#if hasConnectedServices}
 			<IconPlugConnected size={18} />
-			<span class="limit-percentage">{lowestPercentage() !== null ? Math.round(lowestPercentage()) : '--'}%</span>
+			<span class="limit-percentage">{lowestPercentage() !== null ? Math.round(lowestPercentage() ?? 0) : '--'}%</span>
 		{:else}
 			<IconPlugConnectedX size={18} />
 			<span class="limit-percentage">--</span>
@@ -174,8 +174,8 @@
 		<div
 			class="rate-limit-dropdown"
 			transition:scale={{ duration: 200, start: 0.95 }}
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="menu"
 			tabindex="-1"
 		>

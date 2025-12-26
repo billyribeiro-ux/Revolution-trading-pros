@@ -80,7 +80,7 @@
 			<input
 				type="text"
 				bind:value={searchQuery}
-				onkeyup={(e) => e.key === 'Enter' && handleSearch()}
+				onkeyup={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
 				placeholder="Search events..."
 				class="search-input"
 			/>

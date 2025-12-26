@@ -56,7 +56,7 @@
 		class="shortcuts-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={handleBackdrop}
-		onkeydown={(e) => e.key === 'Escape' && close()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && close()}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"

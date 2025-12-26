@@ -30,12 +30,12 @@
 	let { field, value = [], error, onchange }: Props = $props();
 
 	// Get repeater configuration from field attributes
-	const minItems = field.attributes?.min_items ?? 0;
-	const maxItems = field.attributes?.max_items ?? 10;
-	const addButtonText = field.attributes?.add_button_text ?? 'Add Item';
-	const itemLabel = field.attributes?.item_label ?? 'Item';
-	const collapsible = field.attributes?.collapsible ?? true;
-	const confirmDelete = field.attributes?.confirm_delete ?? true;
+	const minItems = $derived(field.attributes?.min_items ?? 0);
+	const maxItems = $derived(field.attributes?.max_items ?? 10);
+	const addButtonText = $derived(field.attributes?.add_button_text ?? 'Add Item');
+	const itemLabel = $derived(field.attributes?.item_label ?? 'Item');
+	const collapsible = $derived(field.attributes?.collapsible ?? true);
+	const confirmDelete = $derived(field.attributes?.confirm_delete ?? true);
 
 	// Sub-fields configuration
 	const subFields: Partial<FormField>[] = field.attributes?.sub_fields ?? [
@@ -172,7 +172,7 @@
 				class:drag-over={dragOverIndex === index && draggedIndex !== index}
 				draggable="true"
 				ondragstart={() => handleDragStart(index)}
-				ondragover={(e) => handleDragOver(e, index)}
+				ondragover={(e: DragEvent) => handleDragOver(e, index)}
 				ondragend={handleDragEnd}
 			>
 				<!-- Row Header -->
@@ -220,14 +220,14 @@
 										<input
 											type="text"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e) => updateFieldValue(index, subField.name!, e.currentTarget.value)}
+											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>
 									{:else if subField.field_type === 'textarea'}
 										<textarea
 											value={row.values[subField.name] ?? ''}
-											oninput={(e) => updateFieldValue(index, subField.name!, e.currentTarget.value)}
+											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLTextAreaElement).value)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-textarea"
 											rows={3}
@@ -236,8 +236,8 @@
 										<input
 											type="number"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e) =>
-												updateFieldValue(index, subField.name!, e.currentTarget.valueAsNumber)}
+											oninput={(e: Event) =>
+												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).valueAsNumber)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>
@@ -245,15 +245,25 @@
 										<input
 											type="email"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e) => updateFieldValue(index, subField.name!, e.currentTarget.value)}
+											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>
+									{:else if subField.field_type === 'checkbox'}
+										<label class="sub-field-checkbox">
+											<input
+												type="checkbox"
+												checked={row.values[subField.name] ?? false}
+												onchange={(e: Event) =>
+													updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).checked)}
+											/>
+											<span>{subField.placeholder ?? 'Yes'}</span>
+										</label>
 									{:else if subField.field_type === 'select'}
 										<select
 											value={row.values[subField.name] ?? ''}
-											onchange={(e) =>
-												updateFieldValue(index, subField.name!, e.currentTarget.value)}
+											onchange={(e: Event) =>
+												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLSelectElement).value)}
 											class="sub-field-select"
 										>
 											<option value="">Select...</option>
@@ -265,29 +275,19 @@
 												{/each}
 											{/if}
 										</select>
-									{:else if subField.field_type === 'checkbox'}
-										<label class="sub-field-checkbox">
-											<input
-												type="checkbox"
-												checked={row.values[subField.name] ?? false}
-												onchange={(e) =>
-													updateFieldValue(index, subField.name!, e.currentTarget.checked)}
-											/>
-											<span>{subField.placeholder ?? 'Yes'}</span>
-										</label>
 									{:else if subField.field_type === 'date'}
 										<input
 											type="date"
 											value={row.values[subField.name] ?? ''}
-											onchange={(e) =>
-												updateFieldValue(index, subField.name!, e.currentTarget.value)}
+											onchange={(e: Event) =>
+												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											class="sub-field-input"
 										/>
 									{:else}
 										<input
 											type="text"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e) => updateFieldValue(index, subField.name!, e.currentTarget.value)}
+											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>

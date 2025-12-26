@@ -371,7 +371,7 @@
 		<div 
 			class="consent-modal-overlay" 
 			onclick={closePreferences}
-			onkeydown={(e) => e.key === 'Escape' && closePreferences()}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closePreferences()}
 			role="button"
 			tabindex="-1"
 			aria-label="Close preferences"
@@ -382,8 +382,8 @@
 				aria-labelledby="preferences-title"
 				aria-modal="true"
 				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			>
 				<div class="consent-modal__header">
 					<h2 id="preferences-title" class="consent-modal__title">Cookie Preferences</h2>

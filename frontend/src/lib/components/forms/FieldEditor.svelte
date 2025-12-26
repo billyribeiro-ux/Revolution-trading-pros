@@ -33,20 +33,20 @@
 	$effect(() => {
 		if (field) {
 			fieldData = {
-				field_type: 'text',
-				label: '',
-				name: '',
-				placeholder: '',
-				help_text: '',
-				default_value: '',
-				options: null,
-				validation: null,
-				conditional_logic: null,
-				attributes: null,
-				required: false,
-				order: 0,
-				width: 12,
-				...field
+				...field,
+				field_type: field.field_type ?? 'text',
+				label: field.label ?? '',
+				name: field.name ?? '',
+				placeholder: field.placeholder ?? '',
+				help_text: field.help_text ?? '',
+				default_value: field.default_value ?? '',
+				options: field.options ?? null,
+				validation: field.validation ?? null,
+				conditional_logic: field.conditional_logic ?? null,
+				attributes: field.attributes ?? null,
+				required: field.required ?? false,
+				order: field.order ?? 0,
+				width: field.width ?? 12
 			};
 			showConditionalLogic = !!field.conditional_logic;
 			optionsText = field.options ? field.options.join('\n') : '';
@@ -234,7 +234,7 @@
 							<input
 								id="min-length"
 								type="number"
-								bind:value={fieldData.validation.min_length}
+								bind:value={fieldData.validation!.min_length}
 								class="form-input"
 								min="0"
 							/>
@@ -245,7 +245,7 @@
 							<input
 								id="max-length"
 								type="number"
-								bind:value={fieldData.validation.max_length}
+								bind:value={fieldData.validation!.max_length}
 								class="form-input"
 								min="1"
 							/>
@@ -260,7 +260,7 @@
 							<input
 								id="min-value"
 								type="number"
-								bind:value={fieldData.validation.min}
+								bind:value={fieldData.validation!.min}
 								class="form-input"
 							/>
 						</div>
@@ -270,7 +270,7 @@
 							<input
 								id="max-value"
 								type="number"
-								bind:value={fieldData.validation.max}
+								bind:value={fieldData.validation!.max}
 								class="form-input"
 							/>
 						</div>
@@ -283,7 +283,7 @@
 						<input
 							id="file-accept"
 							type="text"
-							bind:value={fieldData.validation.accept}
+							bind:value={fieldData.validation!.accept}
 							placeholder=".pdf,.doc,.docx"
 							class="form-input"
 						/>
@@ -294,7 +294,7 @@
 						<input
 							id="file-size"
 							type="number"
-							bind:value={fieldData.validation.max_size}
+							bind:value={fieldData.validation!.max_size}
 							class="form-input"
 							min="1"
 							step="1"

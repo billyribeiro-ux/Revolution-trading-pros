@@ -344,7 +344,7 @@
 				ondragleave={handleDragLeave}
 				ondrop={handleDrop}
 				onclick={() => videoInput?.click()}
-				onkeydown={(e) => e.key === 'Enter' && videoInput?.click()}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && videoInput?.click()}
 			>
 				{#if videoFile}
 					<div class="file-preview">
@@ -381,7 +381,7 @@
 				type="file"
 				accept="video/mp4,video/webm,video/quicktime"
 				hidden
-				onchange={(e) => handleFileInputChange(e, 'video')}
+				onchange={(e: Event) => handleFileInputChange(e, 'video')}
 			/>
 
 			<!-- Thumbnail Upload -->
@@ -393,7 +393,7 @@
 					role="button"
 					tabindex="0"
 					onclick={() => thumbnailInput?.click()}
-					onkeydown={(e) => e.key === 'Enter' && thumbnailInput?.click()}
+					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && thumbnailInput?.click()}
 				>
 					{#if thumbnailFile}
 						<img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview" />
@@ -417,7 +417,7 @@
 					type="file"
 					accept="image/jpeg,image/png,image/webp"
 					hidden
-					onchange={(e) => handleFileInputChange(e, 'thumbnail')}
+					onchange={(e: Event) => handleFileInputChange(e, 'thumbnail')}
 				/>
 			</div>
 
@@ -495,7 +495,7 @@
 									type="checkbox"
 									value={category.id}
 									checked={selectedCategories.includes(category.id)}
-									onchange={(e) => {
+									onchange={(e: Event) => {
 										if ((e.target as HTMLInputElement).checked) {
 											selectedCategories = [...selectedCategories, category.id];
 										} else {

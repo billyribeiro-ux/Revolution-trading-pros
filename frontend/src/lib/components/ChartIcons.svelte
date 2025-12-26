@@ -59,8 +59,8 @@
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
         
         const line = d3.line<number>()
-            .x((d, i) => x(i))
-            .y(d => y(d))
+            .x((d: number, i: number) => x(i))
+            .y((d: number) => y(d))
             .curve(d3.curveMonotoneX);
         
         g.append('path')
@@ -77,9 +77,9 @@
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
         
         const area = d3.area<number>()
-            .x((d, i) => x(i))
+            .x((d: number, i: number) => x(i))
             .y0(height)
-            .y1(d => y(d))
+            .y1((d: number) => y(d))
             .curve(d3.curveMonotoneX);
         
         g.append('path')
@@ -89,8 +89,8 @@
             .attr('d', area);
         
         const line = d3.line<number>()
-            .x((d, i) => x(i))
-            .y(d => y(d))
+            .x((d: number, i: number) => x(i))
+            .y((d: number) => y(d))
             .curve(d3.curveMonotoneX);
         
         g.append('path')
@@ -157,7 +157,7 @@
         const data = [30, 20, 25, 25];
         const radius = Math.min(width, height) / 2;
         
-        const pie = d3.pie<number>().value(d => d);
+        const pie = d3.pie<number>().value((d: number) => d);
         const arc = d3.arc<any>().innerRadius(0).outerRadius(radius);
         
         const colors = d3.scaleOrdinal()
@@ -241,8 +241,8 @@
         
         // Draw data
         const radarLine = d3.lineRadial<number>()
-            .angle((d, i) => angleSlice * i)
-            .radius(d => d * radius)
+            .angle((d: number, i: number) => angleSlice * i)
+            .radius((d: number) => d * radius)
             .curve(d3.curveLinearClosed);
         
         g.append('path')

@@ -449,7 +449,7 @@
 										</div>
 
 										{#if couponFormVisible}
-											<form class="checkout_coupon woocommerce-form-coupon" onsubmit={(e) => e.preventDefault()}>
+											<form class="checkout_coupon woocommerce-form-coupon" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
 												<p>If you have a coupon code, please apply it below.</p>
 												<div class="coupon-input-row">
 													<input

@@ -252,6 +252,7 @@
 
   // Move crop area
   function moveCropArea(dx: number, dy: number) {
+    if (!image) return;
     const maxX = image.naturalWidth - cropArea.width;
     const maxY = image.naturalHeight - cropArea.height;
     cropArea.x = Math.max(0, Math.min(maxX, cropArea.x + dx));

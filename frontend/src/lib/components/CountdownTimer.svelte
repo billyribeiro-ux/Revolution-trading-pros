@@ -253,9 +253,9 @@
 	// Reactive Statements
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let currentSize = $derived(size === 'custom' && customSize ? customSize : sizeMap[size].fontSize);
-	let currentLabelSize = $derived(size === 'custom' ? '0.75rem' : sizeMap[size].labelSize);
-	let currentPadding = $derived(size === 'custom' ? padding : sizeMap[size].padding);
+	let currentSize = $derived(size === 'custom' && customSize ? customSize : (size in sizeMap ? sizeMap[size as keyof typeof sizeMap].fontSize : sizeMap.medium.fontSize));
+	let currentLabelSize = $derived(size === 'custom' ? '0.75rem' : (size in sizeMap ? sizeMap[size as keyof typeof sizeMap].labelSize : sizeMap.medium.labelSize));
+	let currentPadding = $derived(size === 'custom' ? padding : (size in sizeMap ? sizeMap[size as keyof typeof sizeMap].padding : sizeMap.medium.padding));
 
 	$effect(() => {
 		if (timeData.isWarning && !timeData.isDanger) currentColor = warningColor;

@@ -56,6 +56,22 @@
 	import { spring } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
+
+	// YouTube API type declarations
+	declare global {
+		interface Window {
+			YT?: {
+				Player: any;
+				PlayerState: {
+					PLAYING: number;
+					PAUSED: number;
+					ENDED: number;
+					BUFFERING: number;
+				};
+			};
+			onYouTubeIframeAPIReady?: () => void;
+		}
+	}
 	import {
 		IconPlayerPlay,
 		IconPlayerPause,
@@ -638,6 +654,7 @@
 	}
 
 	function createYouTubePlayer() {
+		if (!window.YT || !iframeElement) return;
 		playerAPI = new window.YT.Player(iframeElement, {
 			events: {
 				onReady: handleYouTubeReady,
@@ -648,6 +665,7 @@
 	}
 
 	async function loadVimeoAPI() {
+		if (!iframeElement) return;
 		const Player = (await import('@vimeo/player')).default;
 		playerAPI = new Player(iframeElement);
 
@@ -821,6 +839,7 @@
 	}
 
 	function handleYouTubeStateChange(event: any) {
+		if (!window.YT) return;
 		switch (event.data) {
 			case window.YT.PlayerState.PLAYING:
 				handlePlay();
@@ -1407,7 +1426,7 @@
 									max="1"
 									step="0.1"
 									value={currentVolume}
-									oninput={(e) => setVolume(parseFloat(e.currentTarget.value))}
+									oninput={(e: Event & { currentTarget: HTMLInputElement }) => setVolume(parseFloat(e.currentTarget.value))}
 									class="volume-slider"
 								/>
 							</div>

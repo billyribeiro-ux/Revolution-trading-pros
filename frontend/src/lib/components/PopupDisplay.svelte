@@ -58,7 +58,7 @@
 
 			if (popups.length > 0) {
 				// Show highest priority popup
-				currentPopup = popups.sort((a, b) => b.priority - a.priority)[0];
+				currentPopup = popups.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 				setupTriggers(currentPopup);
 			}
 		} catch (error) {
@@ -368,7 +368,7 @@
 
 {#if show && currentPopup}
 	<div
-		class="popup-overlay {getPositionClasses(currentPopup.position)}"
+		class="popup-overlay {getPositionClasses(currentPopup.position ?? 'center')}"
 		class:closing={isClosing}
 		onclick={handleOverlayClick}
 		onkeydown={handleKeydown}
@@ -386,11 +386,11 @@
 			aria-labelledby="popup-title"
 			aria-describedby="popup-content"
 			tabindex="-1"
-			class="popup-container {getSizeClass(currentPopup.size)} {getAnimationClass(
-				currentPopup.animation
-			)}"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			class="popup-container {getSizeClass(currentPopup.size ?? 'medium')} {getAnimationClass(
+			currentPopup.animation ?? 'fade'
+		)}"
+		onclick={(e: MouseEvent) => e.stopPropagation()}
+		onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			style={currentPopup.design?.backgroundColor
 				? `background-color: ${currentPopup.design.backgroundColor}`
 				: ''}

@@ -386,7 +386,7 @@
 		<div 
 			class="preview-overlay" 
 			onclick={() => showPreview = false}
-			onkeydown={(e) => { if (e.key === 'Escape') showPreview = false; }}
+			onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') showPreview = false; }}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="preview-modal-title"
@@ -457,13 +457,19 @@
 		<div
 			class="diff-overlay"
 			onclick={() => showDiffView = false}
-			onkeydown={(e) => { if (e.key === 'Escape') showDiffView = false; }}
+			onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') showDiffView = false; }}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="diff-modal-title"
 			tabindex="-1"
 		>
-			<div class="diff-modal" onclick={(e) => e.stopPropagation()} role="document">
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div 
+				class="diff-modal" 
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				role="document"
+			>
 				<div class="diff-header">
 					<h4 id="diff-modal-title">Revision Comparison</h4>
 					<div class="diff-header-meta">
@@ -592,7 +598,7 @@
 					<button class="cancel-btn" onclick={() => showDiffView = false}>
 						Close
 					</button>
-					<button class="restore-btn" onclick={() => { onRestore(compareRevisionB); showDiffView = false; }}>
+					<button class="restore-btn" onclick={() => { if (compareRevisionB) onRestore(compareRevisionB); showDiffView = false; }}>
 						Restore Newer Version
 					</button>
 				</div>
@@ -971,10 +977,6 @@
 		font-size: 0.875rem;
 		color: var(--text-secondary, #6b7280);
 		line-height: 1.5;
-	}
-
-	.preview-diff {
-		margin-bottom: 1.5rem;
 	}
 
 	.diff-summary {

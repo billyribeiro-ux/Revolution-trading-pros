@@ -56,8 +56,8 @@
 							<div
 								role="button"
 								tabindex="0"
-								onclick={(e) => { e.preventDefault(); onKpiClick?.(kpi); }}
-								onkeypress={(e) => { e.preventDefault(); onKpiClick?.(kpi); }}
+								onclick={(e: MouseEvent) => { e.preventDefault(); onKpiClick?.(kpi); }}
+								onkeypress={(e: KeyboardEvent) => { e.preventDefault(); onKpiClick?.(kpi); }}
 							>
 								<KpiCard {kpi} clickable={!!onKpiClick} />
 							</div>

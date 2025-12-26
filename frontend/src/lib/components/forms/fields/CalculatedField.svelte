@@ -24,13 +24,13 @@
 	let { field, formData, onchange }: Props = $props();
 
 	// Configuration from field attributes
-	const formula = field.attributes?.formula ?? '';
-	const format = field.attributes?.format ?? 'number';
-	const decimals = field.attributes?.decimals ?? 2;
-	const prefix = field.attributes?.prefix ?? '';
-	const suffix = field.attributes?.suffix ?? '';
-	const currency = field.attributes?.currency ?? 'USD';
-	const showFormula = field.attributes?.show_formula ?? false;
+	const formula = $derived(field.attributes?.formula ?? '');
+	const format = $derived(field.attributes?.format ?? 'number');
+	const decimals = $derived(field.attributes?.decimals ?? 2);
+	const prefix = $derived(field.attributes?.prefix ?? '');
+	const suffix = $derived(field.attributes?.suffix ?? '');
+	const currency = $derived(field.attributes?.currency ?? 'USD');
+	const showFormula = $derived(field.attributes?.show_formula ?? false);
 
 	let calculatedValue = $state<number | null>(null);
 	let displayValue = $state<string>('—');
@@ -64,7 +64,7 @@
 			let expression = formula;
 
 			// Replace field references {field_name} with actual values
-			expression = expression.replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g, (_, fieldName) => {
+			expression = expression.replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g, (_: string, fieldName: string) => {
 				const value = formData[fieldName];
 
 				if (value === undefined || value === null || value === '') {

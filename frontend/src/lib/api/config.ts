@@ -161,6 +161,16 @@ export const API_ENDPOINTS = {
 	// Search - Rust API
 	search: '/api/search',
 
+	// Time - Server time sync
+	time: {
+		now: '/api/time/now'
+	},
+
+	// Timers - Timer events tracking
+	timers: {
+		events: '/api/timers/events'
+	},
+
 	// Health
 	health: '/api/health'
 } as const;

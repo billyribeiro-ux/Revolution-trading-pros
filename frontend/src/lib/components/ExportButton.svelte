@@ -176,7 +176,7 @@
 		class="export-btn"
 		class:disabled
 		class:open={isOpen}
-		onclick={(e) => { e.stopPropagation(); toggleDropdown(); }}
+		onclick={(e: MouseEvent) => { e.stopPropagation(); toggleDropdown(); }}
 		{disabled}
 	>
 		{#if isExporting}
@@ -197,8 +197,8 @@
 			class="dropdown"
 			in:scale={{ duration: 200, start: 0.95 }}
 			out:fade={{ duration: 150 }}
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="menu"
 			tabindex="-1"
 		>

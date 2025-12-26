@@ -2,6 +2,7 @@
 
 /* Explicitly define source paths for Tailwind to scan */
 /* This prevents scanning node_modules which causes "Invalid declaration: Snippet" error from @threlte/core */
+/* @source is a Tailwind CSS v4 directive - ignore unknown at-rule warning */
 @source "../src/**/*.{html,js,ts,svelte}";
 
 /**
@@ -15,6 +16,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
  * Tailwind v4 Theme Configuration
  * This @theme block registers custom colors as utility classes
+ * @theme is a Tailwind CSS v4 directive - ignore unknown at-rule warning
  * ═══════════════════════════════════════════════════════════════════════════ */
 @theme {
 	/* Brand Colors */

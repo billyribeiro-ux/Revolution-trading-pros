@@ -31,7 +31,14 @@
 		rules: []
 	};
 
-	let logic = $state<ConditionalLogic>(value ?? { ...defaultLogic });
+	let logic = $state<ConditionalLogic>({ ...defaultLogic });
+
+	// Sync with prop changes
+	$effect(() => {
+		if (value) {
+			logic = { ...defaultLogic, ...value };
+		}
+	});
 
 	// Available operators with labels
 	const operators = [
@@ -230,7 +237,7 @@
 						<!-- Field Select -->
 						<select
 							value={rule.field}
-							onchange={(e) => updateRule(index, { field: e.currentTarget.value, value: '' })}
+							onchange={(e: Event) => updateRule(index, { field: (e.currentTarget as HTMLSelectElement).value, value: '' })}
 							class="rule-select field-select"
 						>
 							{#each getAvailableFields() as field}
@@ -241,7 +248,7 @@
 						<!-- Operator Select -->
 						<select
 							value={rule.operator}
-							onchange={(e) => updateRule(index, { operator: e.currentTarget.value as any })}
+							onchange={(e: Event) => updateRule(index, { operator: (e.currentTarget as HTMLSelectElement).value as any })}
 							class="rule-select operator-select"
 						>
 							{#each getOperatorsForField(rule.field) as op}
@@ -255,7 +262,7 @@
 							{#if fieldOptions.length > 0}
 								<select
 									value={rule.value}
-									onchange={(e) => updateRule(index, { value: e.currentTarget.value })}
+									onchange={(e: Event) => updateRule(index, { value: (e.currentTarget as HTMLSelectElement).value })}
 									class="rule-select value-select"
 								>
 									<option value="">Select value...</option>
@@ -267,7 +274,7 @@
 								<input
 									type="text"
 									value={rule.value}
-									oninput={(e) => updateRule(index, { value: e.currentTarget.value })}
+									oninput={(e: Event) => updateRule(index, { value: (e.currentTarget as HTMLInputElement).value })}
 									placeholder="Enter value..."
 									class="rule-input value-input"
 								/>

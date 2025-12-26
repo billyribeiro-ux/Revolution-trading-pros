@@ -24,7 +24,7 @@
 	// Calculate width percentages based on conversion
 	function getStepWidth(step: FunnelStep, index: number): number {
 		if (index === 0) return 100;
-		return step.overall_conversion_rate;
+		return step.overall_conversion_rate ?? 0;
 	}
 
 	// Color gradient for funnel steps
@@ -88,12 +88,12 @@
 				</div>
 
 				<!-- Drop-off Indicator -->
-				{#if showDropOff && index > 0 && step.drop_off > 0}
+				{#if showDropOff && index > 0 && (step.drop_off ?? 0) > 0}
 					<div class="absolute -top-1 right-0 transform translate-x-full ml-16">
 						<div class="flex items-center gap-1 text-xs text-red-500">
 							<span>↓</span>
-							<span>{formatNumber(step.drop_off)}</span>
-							<span class="text-gray-400">({step.drop_off_rate.toFixed(1)}%)</span>
+							<span>{formatNumber(step.drop_off ?? 0)}</span>
+							<span class="text-gray-400">({(step.drop_off_rate ?? 0).toFixed(1)}%)</span>
 						</div>
 					</div>
 				{/if}
@@ -118,11 +118,11 @@
 				<div>
 					<span class="text-gray-500">Overall Rate:</span>
 					<span
-						class="font-semibold ml-1 {lastStep.overall_conversion_rate >= 10
-							? 'text-green-600'
-							: 'text-orange-600'}"
-					>
-						{lastStep.overall_conversion_rate.toFixed(2)}%
+						class="font-semibold ml-1 {(lastStep.overall_conversion_rate ?? 0) >= 10
+						? 'text-green-600'
+						: 'text-orange-600'}"
+				>
+					{(lastStep.overall_conversion_rate ?? 0).toFixed(2)}%
 					</span>
 				</div>
 			</div>

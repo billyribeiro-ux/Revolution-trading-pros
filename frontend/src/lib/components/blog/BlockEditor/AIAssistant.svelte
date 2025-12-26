@@ -119,11 +119,11 @@
 		const baseContent = prompt.toLowerCase();
 
 		if (activeTab === 'generate') {
-			generatedContent = generateSampleContent(baseContent, tone, length);
+			generatedContent = generateSampleContent(baseContent, tone ?? 'professional', length ?? 'medium');
 		} else if (activeTab === 'improve') {
 			generatedContent = improveSampleContent(prompt);
 		} else if (activeTab === 'translate') {
-			generatedContent = translateSampleContent(prompt, targetLanguage);
+			generatedContent = translateSampleContent(prompt, targetLanguage ?? 'es');
 		} else if (activeTab === 'summarize') {
 			generatedContent = summarizeSampleContent(prompt);
 		}

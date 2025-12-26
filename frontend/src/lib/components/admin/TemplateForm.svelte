@@ -89,7 +89,7 @@
 	{#if error}
 		<p class="alert alert-error">{error}</p>
 	{/if}
-	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+	<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleSubmit(); }}>
 		<div class="grid">
 			<div class="field">
 				<label for="name">Name</label>

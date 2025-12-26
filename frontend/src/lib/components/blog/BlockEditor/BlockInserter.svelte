@@ -83,7 +83,7 @@
 	// State
 	// ==========================================================================
 
-	let localSearch = $state(searchQuery);
+	let localSearch = $derived(searchQuery);
 	let activeCategory = $state<string | null>(null);
 	let hoveredBlock = $state<BlockType | null>(null);
 
@@ -195,8 +195,8 @@
 			class:positioned={position}
 			style:left={position ? `${position.x}px` : 'auto'}
 			style:top={position ? `${position.y}px` : 'auto'}
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-label="Insert block"
@@ -231,7 +231,7 @@
 				{#if displayMode === 'search' && filteredBlocks()}
 					<!-- Search Results -->
 					<div class="search-results">
-						{#if filteredBlocks().length === 0}
+						{#if (filteredBlocks()?.length ?? 0) === 0}
 							<div class="no-results">
 								<p>No blocks found for "{localSearch}"</p>
 							</div>

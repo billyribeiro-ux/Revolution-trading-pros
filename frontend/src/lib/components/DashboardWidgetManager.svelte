@@ -134,7 +134,7 @@
 		class="widget-manager-overlay"
 		transition:fade={{ duration: 150 }}
 		onclick={close}
-		onkeydown={(e) => e.key === 'Enter' && close()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && close()}
 		role="button"
 		tabindex="0"
 		aria-label="Close widget manager"
@@ -142,8 +142,8 @@
 		<div
 			class="widget-manager"
 			transition:scale={{ duration: 300, start: 0.95, easing: quintOut }}
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			role="presentation"
 		>
 			<!-- Header -->

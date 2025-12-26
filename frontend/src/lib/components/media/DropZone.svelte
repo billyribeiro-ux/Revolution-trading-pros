@@ -178,7 +178,7 @@
   role="button"
   tabindex={disabled ? -1 : 0}
   onclick={openFileDialog}
-  onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
+  onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openFileDialog()}
   ondragenter={handleDragEnter}
   ondragleave={handleDragLeave}
   ondragover={handleDragOver}

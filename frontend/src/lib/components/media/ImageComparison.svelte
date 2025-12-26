@@ -260,7 +260,7 @@
 
     {:else}
       <!-- Toggle Mode -->
-      <div class="toggle-wrapper" onclick={() => showOriginal = !showOriginal} onkeydown={(e) => e.key === ' ' && (showOriginal = !showOriginal, e.preventDefault())} role="button" tabindex="0">
+      <div class="toggle-wrapper" onclick={() => showOriginal = !showOriginal} onkeydown={(e: KeyboardEvent) => e.key === ' ' && (showOriginal = !showOriginal, e.preventDefault())} role="button" tabindex="0">
         <div class="image-layer" class:visible={!showOriginal}>
           <img src={optimizedSrc} alt="Optimized version" draggable="false" />
           <span class="image-label">Optimized</span>

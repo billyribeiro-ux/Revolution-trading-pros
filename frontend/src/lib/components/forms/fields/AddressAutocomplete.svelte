@@ -40,10 +40,10 @@
 	let { field, value, error, onchange }: Props = $props();
 
 	// Configuration from field attributes
-	const showMap = field.attributes?.show_map ?? false;
-	const allowManual = field.attributes?.allow_manual ?? true;
-	const requiredFields = field.attributes?.required_fields ?? ['address_line1', 'city', 'country'];
-	const apiKey = field.attributes?.google_api_key ?? '';
+	const showMap = $derived(field.attributes?.show_map ?? false);
+	const allowManual = $derived(field.attributes?.allow_manual ?? true);
+	const requiredFields = $derived(field.attributes?.required_fields ?? ['address_line1', 'city', 'country']);
+	const apiKey = $derived(field.attributes?.google_api_key ?? '');
 
 	// State
 	let searchInput = $state('');
@@ -53,8 +53,7 @@
 	let manualMode = $state(false);
 	let selectedIndex = $state(-1);
 
-	let address = $state<AddressComponents>(
-		value ?? {
+	let address = $state<AddressComponents>(value ?? {
 			street_number: '',
 			street_name: '',
 			address_line1: '',
@@ -342,7 +341,7 @@
 					<input
 						type="text"
 						value={address.address_line1}
-						oninput={(e) => updateField('address_line1', e.currentTarget.value)}
+						oninput={(e: Event) => updateField('address_line1', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="Street address"
 						class="sub-input"
 						readonly={!manualMode}
@@ -356,7 +355,7 @@
 					<input
 						type="text"
 						value={address.address_line2}
-						oninput={(e) => updateField('address_line2', e.currentTarget.value)}
+						oninput={(e: Event) => updateField('address_line2', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="Apt, Suite, Unit, etc."
 						class="sub-input"
 						readonly={!manualMode}
@@ -370,7 +369,7 @@
 					<input
 						type="text"
 						value={address.city}
-						oninput={(e) => updateField('city', e.currentTarget.value)}
+						oninput={(e: Event) => updateField('city', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="City"
 						class="sub-input"
 						readonly={!manualMode}
@@ -381,7 +380,7 @@
 					<input
 						type="text"
 						value={address.state}
-						oninput={(e) => updateField('state', e.currentTarget.value)}
+						oninput={(e: Event) => updateField('state', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="State"
 						class="sub-input"
 						readonly={!manualMode}
@@ -392,7 +391,7 @@
 					<input
 						type="text"
 						value={address.postal_code}
-						oninput={(e) => updateField('postal_code', e.currentTarget.value)}
+						oninput={(e: Event) => updateField('postal_code', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="ZIP"
 						class="sub-input"
 						readonly={!manualMode}
@@ -406,7 +405,7 @@
 					<input
 						type="text"
 						value={address.country}
-						oninput={(e) => updateField('country', e.currentTarget.value)}
+						oninput={(e: Event) => updateField('country', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="Country"
 						class="sub-input"
 						readonly={!manualMode}

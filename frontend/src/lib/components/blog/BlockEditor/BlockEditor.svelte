@@ -1131,24 +1131,25 @@
 					<div class="blocks-container">
 						{#each editorState.blocks as block, index (block.id)}
 							<div
-								class="block-wrapper"
-								class:selected={block.id === editorState.selectedBlockId}
-								class:hovered={block.id === editorState.hoveredBlockId}
-								class:dragging={block.id === editorState.draggedBlockId}
-								class:drop-target={index === editorState.dropTargetIndex}
-								data-block-id={block.id}
-								draggable={!readOnly}
-								ondragstart={(e) => handleDragStart(e, block.id)}
-								ondragover={(e) => handleDragOver(e, index)}
-								ondragend={handleDragEnd}
-								ondrop={(e) => handleDrop(e, index)}
-								onclick={() => editorState.selectedBlockId = block.id}
-								onmouseenter={() => editorState.hoveredBlockId = block.id}
-								onmouseleave={() => editorState.hoveredBlockId = null}
-								tabindex="0"
-								role="button"
-								animate:flip={{ duration: 300, easing: quintOut }}
-							>
+							class="block-wrapper"
+							class:selected={block.id === editorState.selectedBlockId}
+							class:hovered={block.id === editorState.hoveredBlockId}
+							class:dragging={block.id === editorState.draggedBlockId}
+							class:drop-target={index === editorState.dropTargetIndex}
+							data-block-id={block.id}
+							draggable={!readOnly}
+							ondragstart={(e: DragEvent) => handleDragStart(e, block.id)}
+							ondragover={(e: DragEvent) => handleDragOver(e, index)}
+							ondragend={handleDragEnd}
+							ondrop={(e: DragEvent) => handleDrop(e, index)}
+							onclick={() => editorState.selectedBlockId = block.id}
+							onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); editorState.selectedBlockId = block.id; } }}
+							onmouseenter={() => editorState.hoveredBlockId = block.id}
+							onmouseleave={() => editorState.hoveredBlockId = null}
+							tabindex="0"
+							role="button"
+							animate:flip={{ duration: 300, easing: quintOut }}
+						>
 								<!-- Block Toolbar (on hover/select) -->
 								{#if (block.id === editorState.selectedBlockId || block.id === editorState.hoveredBlockId) && editorState.viewMode === 'edit'}
 									<div class="block-toolbar" transition:fade={{ duration: 150 }}>
@@ -1163,7 +1164,7 @@
 										<button
 											type="button"
 											class="block-tool"
-											onclick={(e) => { e.stopPropagation(); moveBlock(block.id, 'up'); }}
+											onclick={(e: MouseEvent) => { e.stopPropagation(); moveBlock(block.id, 'up'); }}
 											disabled={index === 0}
 											title="Move up"
 										>
@@ -1172,7 +1173,7 @@
 										<button
 											type="button"
 											class="block-tool"
-											onclick={(e) => { e.stopPropagation(); moveBlock(block.id, 'down'); }}
+											onclick={(e: MouseEvent) => { e.stopPropagation(); moveBlock(block.id, 'down'); }}
 											disabled={index === editorState.blocks.length - 1}
 											title="Move down"
 										>
@@ -1182,7 +1183,7 @@
 										<button
 											type="button"
 											class="block-tool"
-											onclick={(e) => { e.stopPropagation(); duplicateBlock(block.id); }}
+											onclick={(e: MouseEvent) => { e.stopPropagation(); duplicateBlock(block.id); }}
 											title="Duplicate"
 										>
 											<IconCopy size={16} />
@@ -1190,7 +1191,7 @@
 										<button
 											type="button"
 											class="block-tool danger"
-											onclick={(e) => { e.stopPropagation(); deleteBlock(block.id); }}
+											onclick={(e: MouseEvent) => { e.stopPropagation(); deleteBlock(block.id); }}
 											title="Delete"
 										>
 											<IconTrash size={16} />
@@ -1211,7 +1212,7 @@
 									<button
 										type="button"
 										class="add-between-btn"
-										onclick={(e) => { e.stopPropagation(); openBlockInserter(index + 1, e); }}
+										onclick={(e: MouseEvent) => { e.stopPropagation(); openBlockInserter(index + 1, e); }}
 										title="Add block"
 									>
 										<IconPlus size={16} />
@@ -1838,8 +1839,5 @@
 			transition: transform 0.3s ease;
 		}
 
-		.editor-sidebar.open {
-			transform: translateX(0);
-		}
 	}
 </style>

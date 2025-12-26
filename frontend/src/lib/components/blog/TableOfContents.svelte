@@ -93,13 +93,13 @@
 		let index = 0;
 
 		contentBlocks.forEach((block) => {
-			if (block.type === 'heading' && block.data?.level >= 2 && block.data?.level <= maxDepth) {
+			if (block.type === 'heading' && block.data && (block.data.level ?? 0) >= 2 && (block.data.level ?? 0) <= maxDepth) {
 				const text = block.data?.text || '';
 				const id = generateSlug(text, index);
 				headings.push({
 					id,
 					text: stripHtml(text),
-					level: block.data.level
+					level: block.data.level ?? 2
 				});
 				index++;
 			}

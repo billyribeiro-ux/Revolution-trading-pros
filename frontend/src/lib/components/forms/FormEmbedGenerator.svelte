@@ -151,7 +151,7 @@
 	<div class="generator-content">
 		<!-- Embed Type Selection -->
 		<div class="section">
-			<label class="section-label">Embed Type</label>
+			<h3 class="section-label">Embed Type</h3>
 			<div class="embed-types">
 				{#each embedTypes as type}
 					<button
@@ -168,23 +168,23 @@
 
 		<!-- Options -->
 		<div class="section">
-			<label class="section-label">Customization</label>
+			<h3 class="section-label">Customization</h3>
 			<div class="options-grid">
 				{#if selectedType === 'iframe'}
 					<div class="option">
-						<label>Width</label>
-						<input type="text" bind:value={options.width} placeholder="100%" />
+						<label for="embed-width">Width</label>
+						<input id="embed-width" type="text" bind:value={options.width} placeholder="100%" />
 					</div>
 					<div class="option">
-						<label>Height</label>
-						<input type="text" bind:value={options.height} placeholder="600" />
+						<label for="embed-height">Height</label>
+						<input id="embed-height" type="text" bind:value={options.height} placeholder="600" />
 					</div>
 				{/if}
 
 				{#if selectedType === 'popup'}
 					<div class="option full-width">
-						<label>Button Text</label>
-						<input type="text" bind:value={options.buttonText} placeholder="Open Form" />
+						<label for="button-text">Button Text</label>
+						<input id="button-text" type="text" bind:value={options.buttonText} placeholder="Open Form" />
 					</div>
 				{/if}
 
@@ -210,8 +210,8 @@
 				</div>
 
 				<div class="option">
-					<label>Theme</label>
-					<select bind:value={options.theme}>
+					<label for="embed-theme">Theme</label>
+					<select id="embed-theme" bind:value={options.theme}>
 						<option value="light">Light</option>
 						<option value="dark">Dark</option>
 						<option value="auto">Auto</option>
@@ -226,7 +226,7 @@
 
 		<!-- Embed Code -->
 		<div class="section">
-			<label class="section-label">Embed Code</label>
+			<h3 class="section-label">Embed Code</h3>
 			<div class="code-container">
 				<pre class="code-block">{embedCode || 'Generating...'}</pre>
 				<button
@@ -241,23 +241,23 @@
 
 		<!-- Share Link -->
 		<div class="section">
-			<label class="section-label">Direct Link</label>
+			<h3 class="section-label">Direct Link</h3>
 
 			<!-- UTM Parameters -->
 			<details class="utm-section">
 				<summary>UTM Parameters (optional)</summary>
 				<div class="utm-grid">
 					<div class="option">
-						<label>Source</label>
-						<input type="text" bind:value={utmParams.source} placeholder="e.g., newsletter" />
+						<label for="utm-source">Source</label>
+						<input id="utm-source" type="text" bind:value={utmParams.source} placeholder="e.g., newsletter" />
 					</div>
 					<div class="option">
-						<label>Medium</label>
-						<input type="text" bind:value={utmParams.medium} placeholder="e.g., email" />
+						<label for="utm-medium">Medium</label>
+						<input id="utm-medium" type="text" bind:value={utmParams.medium} placeholder="e.g., email" />
 					</div>
 					<div class="option">
-						<label>Campaign</label>
-						<input type="text" bind:value={utmParams.campaign} placeholder="e.g., spring2025" />
+						<label for="utm-campaign">Campaign</label>
+						<input id="utm-campaign" type="text" bind:value={utmParams.campaign} placeholder="e.g., spring2025" />
 					</div>
 				</div>
 				<button class="btn-regenerate small" onclick={generateShareLink}> Update Link </button>
@@ -274,7 +274,7 @@
 		<!-- QR Code -->
 		{#if qrCodeUrl}
 			<div class="section">
-				<label class="section-label">QR Code</label>
+				<h3 class="section-label">QR Code</h3>
 				<div class="qr-container">
 					<img src={qrCodeUrl} alt="QR Code for {formTitle}" class="qr-code" />
 					<a href={qrCodeUrl} download="form-qr-{formSlug}.png" class="btn-download">
@@ -286,7 +286,7 @@
 
 		<!-- Social Sharing -->
 		<div class="section">
-			<label class="section-label">Share on Social</label>
+			<h3 class="section-label">Share on Social</h3>
 			<div class="social-buttons">
 				<a
 					href="https://twitter.com/intent/tweet?url={encodeURIComponent(shareUrl)}&text={encodeURIComponent(formTitle)}"

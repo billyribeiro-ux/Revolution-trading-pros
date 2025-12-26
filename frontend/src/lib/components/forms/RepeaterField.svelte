@@ -246,10 +246,10 @@
 				draggable="true"
 				role="listitem"
 				aria-label="Item {index + 1} of {items.length}"
-				ondragstart={(e) => handleDragStart(e, index)}
-				ondragover={(e) => handleDragOver(e, index)}
+				ondragstart={(e: DragEvent) => handleDragStart(e, index)}
+				ondragover={(e: DragEvent) => handleDragOver(e, index)}
 				ondragleave={handleDragLeave}
-				ondrop={(e) => handleDrop(e, index)}
+				ondrop={(e: DragEvent) => handleDrop(e, index)}
 				ondragend={handleDragEnd}
 			>
 				<div class="repeater-item__header">
@@ -409,7 +409,7 @@
 											id="{id}-{index}-{field.name}"
 											class="repeater-item__input"
 											value={item.data[field.name]}
-											onchange={(e) => updateField(index, field.name, e.currentTarget.value)}
+											onchange={(e: Event) => updateField(index, field.name, (e.currentTarget as HTMLSelectElement).value)}
 											required={field.required}
 										>
 											<option value="">Select...</option>
@@ -424,7 +424,7 @@
 											value={item.data[field.name]}
 											placeholder={field.placeholder}
 											required={field.required}
-											oninput={(e) => updateField(index, field.name, e.currentTarget.value)}
+											oninput={(e: Event) => updateField(index, field.name, (e.currentTarget as HTMLTextAreaElement).value)}
 										></textarea>
 									{:else}
 										<input
@@ -434,7 +434,7 @@
 											value={item.data[field.name]}
 											placeholder={field.placeholder}
 											required={field.required}
-											oninput={(e) => updateField(index, field.name, e.currentTarget.value)}
+											oninput={(e: Event) => updateField(index, field.name, (e.currentTarget as HTMLInputElement).value)}
 										/>
 									{/if}
 								</div>

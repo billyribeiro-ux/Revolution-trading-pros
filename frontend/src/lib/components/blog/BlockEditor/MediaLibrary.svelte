@@ -51,7 +51,7 @@
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let selectedItems = $state<Set<string>>(new Set());
 	let searchQuery = $state('');
-	let currentFolder = $state(initialFolder);
+	let currentFolder = $derived(initialFolder);
 	let sortBy = $state<'date' | 'name' | 'size'>('date');
 	let sortOrder = $state<'asc' | 'desc'>('desc');
 	let filterType = $state<'all' | 'image' | 'video' | 'audio' | 'document'>('all');
@@ -348,8 +348,21 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
-	<div class="media-overlay" onclick={onClose}>
-		<div class="media-modal" onclick={(e) => e.stopPropagation()}>
+	<div 
+		class="media-overlay" 
+		onclick={onClose}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<div 
+			class="media-modal" 
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<!-- Header -->
 			<div class="modal-header">
 				<h2>Media Library</h2>
@@ -487,7 +500,7 @@
 												onSelect(item);
 												onClose();
 											}}
-											onkeydown={(e) => {
+											onkeydown={(e: KeyboardEvent) => {
 												if (e.key === 'Enter' || e.key === ' ') {
 													toggleSelection(item);
 												}
@@ -508,10 +521,10 @@
 												<span class="item-size">{formatFileSize(item.size)}</span>
 											</div>
 											<div class="item-actions">
-												<button onclick={(e) => { e.stopPropagation(); openEditModal(item); }} title="Edit">
+												<button onclick={(e: MouseEvent) => { e.stopPropagation(); openEditModal(item); }} title="Edit">
 													✏️
 												</button>
-												<button onclick={(e) => { e.stopPropagation(); deleteItem(item.id); }} title="Delete">
+												<button onclick={(e: MouseEvent) => { e.stopPropagation(); deleteItem(item.id); }} title="Delete">
 													🗑️
 												</button>
 											</div>
@@ -553,10 +566,10 @@
 													<td class="size-cell">{formatFileSize(item.size)}</td>
 													<td class="date-cell">{item.createdAt.toLocaleDateString()}</td>
 													<td class="actions-cell">
-														<button onclick={(e) => { e.stopPropagation(); openEditModal(item); }}>
+														<button onclick={(e: MouseEvent) => { e.stopPropagation(); openEditModal(item); }}>
 															✏️
 														</button>
-														<button onclick={(e) => { e.stopPropagation(); deleteItem(item.id); }}>
+														<button onclick={(e: MouseEvent) => { e.stopPropagation(); deleteItem(item.id); }}>
 															🗑️
 														</button>
 													</td>
@@ -578,6 +591,8 @@
 							ondragover={handleDragOver}
 							ondragleave={handleDragLeave}
 							ondrop={handleDrop}
+							role="region"
+							aria-label="File upload drop zone"
 						>
 							<span class="upload-icon">📤</span>
 							<p class="upload-title">Drag and drop files here</p>
@@ -661,8 +676,21 @@
 
 <!-- Edit Modal -->
 {#if editingItem}
-	<div class="edit-overlay" onclick={() => editingItem = null}>
-		<div class="edit-modal" onclick={(e) => e.stopPropagation()}>
+	<div 
+		class="edit-overlay" 
+		onclick={() => editingItem = null}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (editingItem = null)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<div 
+			class="edit-modal" 
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<h3>Edit Media</h3>
 			<div class="edit-preview">
 				{#if editingItem.type === 'image'}
