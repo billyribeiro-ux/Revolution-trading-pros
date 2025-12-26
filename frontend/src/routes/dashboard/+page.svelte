@@ -263,7 +263,7 @@
 								<a href={getDashboardUrl(membership)} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon{membership.slug === 'simpler-showcase' ? ' simpler-showcase-icon' : ''}">
-											<MembershipIcon size={32} />
+											<MembershipIcon size={24} />
 										</span>
 									</span>
 									<span class="mem_div">{membership.name}</span>
@@ -782,17 +782,19 @@
 		}
 	}
 
+	/* Membership Card - EXACT match to dashboard-globals.css lines 369-402 */
 	.membership-card {
 		margin-top: 30px;
-		background: #fff;
-		border-radius: 5px;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
 
@@ -800,12 +802,12 @@
 		display: block;
 		padding: 20px;
 		color: #333;
-		font-weight: 700;
+		font-weight: 600;
 		white-space: nowrap;
 		transition: all 0.15s ease-in-out;
 		text-decoration: none;
 		font-family: 'Open Sans', sans-serif;
-		font-size: 17px;
+		font-size: 15px;
 		line-height: 1.4;
 	}
 
@@ -813,9 +815,9 @@
 		color: #333;
 	}
 
-	.membership-card__header:focus,
+	/* Hover state - exact match to reference (background color change, not text color) */
 	.membership-card__header:hover {
-		color: #0e6ac4;
+		background-color: #f4f4f4;
 	}
 
 	.mem_icon,
@@ -843,11 +845,12 @@
 		box-shadow: 0 10px 20px rgba(9, 132, 174, 0.25);
 	}
 
-	/* Tabler SVG icons inside membership card icons */
+	/* Tabler SVG icons inside membership card icons - EXACT match to globals line 419-424 */
 	.membership-card__icon :global(svg) {
-		width: 28px;
-		height: 28px;
-		stroke: currentColor;
+		width: 24px;
+		height: 24px;
+		color: #fff !important;
+		fill: currentColor;
 	}
 
 	.membership-card__header:hover .membership-card__icon {
@@ -855,32 +858,26 @@
 		box-shadow: 0 15px 30px rgba(9, 132, 174, 0.2);
 	}
 
+	/* Membership Card Actions - EXACT match to globals lines 434-456 */
 	.membership-card__actions {
 		display: flex;
 		font-size: 16px;
 		border-top: 1px solid #ededed;
-		justify-content: center;
 	}
 
 	.membership-card__actions a {
-		display: block;
-		flex: 0 0 auto;
-		flex-basis: 50%;
-		width: 50%;
-		height: 100%;
-		padding: 15px;
+		flex: 1 1 auto;
+		padding: 15px 10px;
+		color: #0984ae;
+		font-size: 14px;
 		text-align: center;
 		text-decoration: none;
-		color: #0984ae;
-		font-family: 'Open Sans', sans-serif;
-		font-size: 14px;
-		font-weight: 400;
 		transition: all 0.15s ease-in-out;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.membership-card__actions a:hover {
 		background-color: #f4f4f4;
-		color: #0984ae;
 	}
 
 	.membership-card__actions a + a {
