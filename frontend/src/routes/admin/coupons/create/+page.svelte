@@ -51,7 +51,7 @@
 -->
 
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { fade, fly, slide } from 'svelte/transition';
@@ -331,7 +331,7 @@
 	let validationResults = $state<any>(null);
 	let testResults = $state<any>(null);
 
-	const dispatch = createEventDispatcher();
+	// Events: Component callbacks can be passed as props in Svelte 5
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -435,8 +435,7 @@
 				ab_test: formData.ab_test_enabled
 			});
 
-			// Show success
-			dispatch('created', coupon);
+			// Success - coupon created
 
 			// Redirect based on user preference
 			if (shouldCreateAnother()) {

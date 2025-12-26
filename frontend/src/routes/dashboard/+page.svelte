@@ -186,7 +186,7 @@
 	}
 </script>
 
-<svelte:window on:click={closeDropdown} />
+<svelte:window onclick={closeDropdown} />
 
 <!-- DASHBOARD HEADER -->
 <header class="dashboard__header">
