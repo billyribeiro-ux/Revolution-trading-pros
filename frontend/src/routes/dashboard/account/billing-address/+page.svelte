@@ -17,7 +17,7 @@
 	let address1 = $state('');
 	let address2 = $state('');
 	let city = $state('');
-	let state = $state('');
+	let billingState = $state('');
 	let postcode = $state('');
 	let phone = $state('');
 	let email = $state('');
@@ -39,7 +39,7 @@
 			<h2 class="section-title">Billing Address</h2>
 
 			<div class="content-box content-box--centered">
-				<form class="woocommerce-address-fields" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+				<form class="woocommerce-address-fields" onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleSubmit(); }}>
 					<div class="woocommerce-address-fields__field-wrapper">
 						<div class="form-row form-row-first">
 							<label for="billing_first_name">First name <span class="required">*</span></label>
@@ -82,7 +82,7 @@
 
 						<div class="form-row form-row-first address-field">
 							<label for="billing_state">State <span class="required">*</span></label>
-							<input type="text" class="input-text" name="billing_state" id="billing_state" bind:value={state} required />
+							<input type="text" class="input-text" name="billing_state" id="billing_state" bind:value={billingState} required />
 						</div>
 
 						<div class="form-row form-row-last address-field">

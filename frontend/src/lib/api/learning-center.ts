@@ -62,7 +62,7 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific lesson with navigation context
 	 */
-	async getLesson(membershipSlug: string, lessonId: string): Promise<LessonData> {
+	async getLesson(membershipSlug: string, lessonId: string): Promise<LessonWithRelations> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/lessons/${lessonId}`
 		)) as { data: LessonWithRelations };
@@ -111,7 +111,7 @@ export const learningCenterApi = {
 	/**
 	 * Mark a lesson as complete
 	 */
-	async markLessonComplete(membershipSlug: string, lessonId: string): Promise<LessonProgress> {
+	async markLessonComplete(membershipSlug: string, lessonId: string): Promise<UserLessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/complete`
 		)) as { data: UserLessonProgress };
@@ -121,7 +121,7 @@ export const learningCenterApi = {
 	/**
 	 * Mark a lesson as incomplete
 	 */
-	async markLessonIncomplete(membershipSlug: string, lessonId: string): Promise<LessonProgress> {
+	async markLessonIncomplete(membershipSlug: string, lessonId: string): Promise<UserLessonProgress> {
 		const response = (await apiClient.post(
 			`/memberships/${membershipSlug}/lessons/${lessonId}/incomplete`
 		)) as { data: UserLessonProgress };
@@ -168,7 +168,7 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific archived video
 	 */
-	async getArchivedVideo(membershipSlug: string, videoId: string): Promise<ArchivedVideo> {
+	async getArchivedVideo(membershipSlug: string, videoId: string): Promise<LessonWithRelations> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/archive/${videoId}`
 		)) as { data: LessonWithRelations };

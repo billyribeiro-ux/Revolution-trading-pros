@@ -784,7 +784,7 @@ export class EnterpriseClient {
 
 		if (contentType.includes('application/json')) {
 			const text = await response.text();
-			return text ? JSON.parse(text) : null;
+			return text ? JSON.parse(text) : ({} as T);
 		}
 
 		if (contentType.includes('text/')) {

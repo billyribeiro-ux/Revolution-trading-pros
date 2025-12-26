@@ -162,7 +162,17 @@ export const API_ENDPOINTS = {
 	search: '/api/search',
 
 	// Health
-	health: '/api/health'
+	health: '/api/health',
+
+	// Time - Server time sync
+	time: {
+		now: '/api/time'
+	},
+
+	// Timers - Analytics for countdown timers
+	timers: {
+		events: '/api/timers/events'
+	}
 } as const;
 
 /**
