@@ -716,6 +716,11 @@
 			z-index: 100010;
 			width: 220px;
 		}
+
+		/* Sidebar with secondary nav needs full width (80px + 220px = 300px) on mobile */
+		.dashboard__sidebar.has-secondary {
+			width: 300px;
+		}
 	}
 
 	@media (min-width: 1280px) {
@@ -1391,12 +1396,6 @@
 
 	:global(.html--dashboard-menu-open) {
 		overflow: hidden;
-	}
-
-	@media (max-width: 1279px) {
-		:global(body) {
-			padding-bottom: 50px;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
