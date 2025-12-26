@@ -37,7 +37,7 @@
 					<div class="content-box content-box--centered">
 						<div class="content-box__section">
 							<p>
-								Hello <strong>{user.name}</strong> (not <strong>{user.name}</strong>? <a href="/logout">Log out</a>)
+								Hello <strong>{user.name}</strong> (not <strong>{user.name}</strong>? <a href="/dashboard/account/customer-logout">Log out</a>)
 							</p>
 							<p class="u--margin-bottom-0">
 								From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.

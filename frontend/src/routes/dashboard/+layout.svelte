@@ -215,6 +215,23 @@
 
 	// Derived: Check if we're on a membership sub-page (triggers collapsed sidebar)
 	let isOnMembershipPage = $derived(!!currentMembershipSlug);
+
+	// Derived: Check if we're on an account page (triggers account secondary nav)
+	let isOnAccountPage = $derived($page.url.pathname.startsWith('/dashboard/account'));
+
+	// Derived: Check if sidebar should show secondary nav (membership OR account pages)
+	let hasSecondaryNav = $derived(isOnMembershipPage || isOnAccountPage);
+
+	// Account navigation links - WooCommerce style (exact match to reference)
+	const accountNavLinks = [
+		{ slug: 'orders', label: 'My Orders', class: 'woocommerce-MyAccount-navigation-link--orders' },
+		{ slug: 'subscriptions', label: 'My Subscriptions', class: 'woocommerce-MyAccount-navigation-link--subscriptions' },
+		{ slug: 'wc-smart-coupons', label: 'Coupons', class: 'woocommerce-MyAccount-navigation-link--wc-smart-coupons' },
+		{ slug: 'edit-address', label: 'Billing Address', class: 'woocommerce-MyAccount-navigation-link--edit-address' },
+		{ slug: 'payment-methods', label: 'Payment Methods', class: 'woocommerce-MyAccount-navigation-link--payment-methods' },
+		{ slug: 'edit-account', label: 'Account Details', class: 'woocommerce-MyAccount-navigation-link--edit-account' },
+		{ slug: 'customer-logout', label: 'Log out', class: 'woocommerce-MyAccount-navigation-link--customer-logout' }
+	];
 </script>
 
 <svelte:head>
@@ -254,8 +271,8 @@
 		<div class="dashboard">
 
 		<!-- SIDEBAR -->
-		<aside class="dashboard__sidebar" class:has-secondary={isOnMembershipPage}>
-			<nav class="dashboard__nav-primary" class:is-collapsed={isOnMembershipPage}>
+		<aside class="dashboard__sidebar" class:has-secondary={hasSecondaryNav}>
+			<nav class="dashboard__nav-primary" class:is-collapsed={hasSecondaryNav}>
 
 				<!-- Profile - Avatar loads from Gravatar using user's email -->
 				<a href="/dashboard/account/" class="dashboard__profile-nav-item">
@@ -398,6 +415,32 @@
 
 			</nav>
 
+<!-- MOBILE TOGGLE - Inside aside, after primary nav (exact match to reference) -->
+<footer class="dashboard__toggle is-collapsed" class:is-open={mobileMenuOpen}>
+	<button
+		type="button"
+		class="dashboard__toggle-button"
+		onclick={toggleMobileMenu}
+		data-toggle-dashboard-menu
+	>
+		<div class="dashboard__toggle-button-icon">
+			<span></span>
+			<span></span>
+			<span></span>
+		</div>
+		<span class="framework__toggle-button-label">Dashboard Menu</span>
+	</button>
+</footer>
+<div
+	class="dashboard__overlay"
+	onclick={closeMobileMenu}
+	onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
+	role="button"
+	tabindex="-1"
+	aria-label="Close menu"
+	data-toggle-dashboard-menu
+></div>
+
 			<!-- SECONDARY NAVIGATION - Membership-specific navigation (appears on membership pages only) -->
 			{#if currentMembershipSlug}
 				<nav class="dashboard__nav-secondary">
@@ -475,18 +518,20 @@
 				</nav>
 			{/if}
 
-		</aside>
+			<!-- ACCOUNT SECONDARY NAVIGATION - WooCommerce style (exact match to reference) -->
+			{#if isOnAccountPage}
+				<nav class="dashboard__nav-secondary">
+					<ul>
+						{#each accountNavLinks as link (link.slug)}
+							<li class="woocommerce-MyAccount-navigation-link {link.class}" class:is-active={$page.url.pathname.includes(`/account/${link.slug}`)}>
+								<a class="no-icon" href="/dashboard/account/{link.slug}">{link.label}</a>
+							</li>
+						{/each}
+					</ul>
+				</nav>
+			{/if}
 
-		<!-- MOBILE OVERLAY - Must be OUTSIDE sidebar to be visible when sidebar is hidden -->
-		<div
-			class="dashboard__overlay"
-			onclick={closeMobileMenu}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeMobileMenu()}
-			role="button"
-			tabindex="-1"
-			aria-label="Close menu"
-			data-toggle-dashboard-menu
-		></div>
+		</aside>
 
 		<!-- MAIN CONTENT -->
 		<main class="dashboard__main">
@@ -499,23 +544,6 @@
 				</div>
 			{/if}
 		</main>
-
-		<!-- MOBILE TOGGLE BUTTON - Must be OUTSIDE sidebar to be visible when sidebar is hidden -->
-		<footer class="dashboard__toggle" class:is-open={mobileMenuOpen}>
-			<button
-				type="button"
-				class="dashboard__toggle-button"
-				onclick={toggleMobileMenu}
-				data-toggle-dashboard-menu
-			>
-				<div class="dashboard__toggle-button-icon">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-				<span class="framework__toggle-button-label">Dashboard Menu</span>
-			</button>
-		</footer>
 
 		</div>
 
@@ -1113,6 +1141,56 @@
 	.dashboard__nav-secondary .nav-arrow :global(svg) {
 		width: 16px;
 		height: 16px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   WOOCOMMERCE ACCOUNT NAVIGATION - Exact match to reference
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link {
+		list-style: none;
+	}
+
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link a {
+		display: block;
+		padding: 14px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
+		transition: all 0.15s ease-in-out;
+		position: relative;
+	}
+
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link a.no-icon {
+		padding-left: 20px;
+	}
+
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link a::before {
+		position: absolute;
+		display: block;
+		content: "";
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: 5px;
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: #fff;
+	}
+
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link.is-active a {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #fff;
+	}
+
+	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link.is-active a::before {
+		background-color: #0984ae;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
