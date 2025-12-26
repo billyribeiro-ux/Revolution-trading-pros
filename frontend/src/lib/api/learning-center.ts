@@ -65,7 +65,7 @@ export const learningCenterApi = {
 	/**
 	 * Get a specific lesson with navigation context
 	 */
-	async getLesson(membershipSlug: string, lessonId: string): Promise<LessonData> {
+	async getLesson(membershipSlug: string, lessonId: string): Promise<LessonWithRelations> {
 		const response = (await apiClient.get(
 			`/memberships/${membershipSlug}/lessons/${lessonId}`
 		)) as { data: LessonWithRelations };
