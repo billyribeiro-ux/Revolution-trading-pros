@@ -94,19 +94,29 @@
 		line-height: 1.2;
 	}
 
-	/* Dashboard Content */
+	/* Dashboard Content - Exact match to reference dashboard-globals.css lines 258-280 */
 	.dashboard__content {
-		padding: 0 30px 30px;
+		display: flex;
+		flex-flow: row nowrap;
 	}
 
 	.dashboard__content-main {
-		max-width: 100%;
+		border-right: 1px solid #dbdbdb;
+		flex: 1 1 auto;
+		background-color: #efefef;
+		min-width: 0;
 	}
 
 	.dashboard__content-section {
-		background: #fff;
-		border-radius: 0;
-		padding: 0;
+		padding: 30px 40px;
+		background-color: #fff;
+		margin-bottom: 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+
+	.dashboard__content-section + .dashboard__content-section {
+		border-top: 1px solid #dbdbdb;
 	}
 
 	/* WooCommerce Content Box */
@@ -167,8 +177,9 @@
 			font-size: 30px;
 		}
 
-		.dashboard__content {
-			padding: 0 20px 20px;
+		/* Mobile: content-section padding reduced, NOT dashboard__content */
+		.dashboard__content-section {
+			padding: 20px;
 		}
 
 		.content-box__section {
