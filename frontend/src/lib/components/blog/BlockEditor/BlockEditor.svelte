@@ -902,14 +902,21 @@
 
 		<div class="header-right">
 			<div class="save-status">
-				{#if isSaving}
-					<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
-				{:else if editorState.hasUnsavedChanges}
-					<span class="unsaved">Unsaved changes</span>
-				{:else}
-					<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
-				{/if}
+			{#if saveError}
+				<span class="error">{saveError}</span>
+			{:else if isSaving}
+				<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
+			{:else if editorState.hasUnsavedChanges}
+				<span class="unsaved">Unsaved changes</span>
+			{:else}
+				<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
+			{/if}
+		</div>
+		{#if seoAnalysis}
+			<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
+				<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
 			</div>
+		{/if}
 
 			<div class="header-actions">
 				<button
