@@ -53,7 +53,6 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { spring } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 
