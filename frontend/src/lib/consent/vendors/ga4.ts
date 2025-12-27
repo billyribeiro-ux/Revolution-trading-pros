@@ -91,7 +91,7 @@ function initGtag(): void {
 
 	if (typeof window.gtag !== 'function') {
 		window.gtag = function (...args: unknown[]) {
-			window.dataLayer.push(args);
+			window.dataLayer!.push(args);
 		};
 	}
 }
@@ -110,7 +110,7 @@ export function trackPageView(url?: string): void {
 	const pageUrl = url || window.location.href;
 	const pagePath = url ? new URL(url, window.location.origin).pathname : window.location.pathname;
 
-	window.gtag('event', 'page_view', {
+	window.gtag!('event', 'page_view', {
 		page_location: pageUrl,
 		page_path: pagePath,
 		page_title: document.title,
@@ -131,7 +131,7 @@ export function trackEvent(
 ): void {
 	if (!browser || !ga4Initialized) return;
 
-	window.gtag('event', eventName, params);
+	window.gtag!('event', eventName, params);
 	console.debug('[GA4] Tracked event:', eventName, params);
 }
 
@@ -143,7 +143,7 @@ export function trackEvent(
 export function setUserProperties(properties: Record<string, unknown>): void {
 	if (!browser || !ga4Initialized || !PUBLIC_GA4_MEASUREMENT_ID) return;
 
-	window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
+	window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
 		user_properties: properties,
 	});
 
@@ -158,7 +158,7 @@ export function setUserProperties(properties: Record<string, unknown>): void {
 export function setUserId(userId: string | null): void {
 	if (!browser || !ga4Initialized || !PUBLIC_GA4_MEASUREMENT_ID) return;
 
-	window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
+	window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
 		user_id: userId,
 	});
 
@@ -230,7 +230,7 @@ export const ga4Vendor: VendorConfig = {
 			}
 
 			// Step 4: Initialize gtag with measurement ID
-			window.gtag('js', new Date());
+			window.gtag!('js', new Date());
 
 			// Step 5: Configure GA4 - SvelteKit-native approach
 			// 
@@ -239,7 +239,7 @@ export const ga4Vendor: VendorConfig = {
 			// - No history hooks - SvelteKit owns the router, we just listen
 			// - Clean separation of concerns: GA4 collects, SvelteKit navigates
 			//
-			window.gtag('config', PUBLIC_GA4_MEASUREMENT_ID, {
+			window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
 				// CRITICAL: Disable automatic page view tracking
 				// We track manually via SvelteKit's afterNavigate hook
 				send_page_view: false,
