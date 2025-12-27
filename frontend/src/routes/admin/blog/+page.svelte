@@ -32,8 +32,7 @@
 		IconCheck,
 		IconX,
 		IconMenu2,
-		IconLayoutGrid,
-		IconBolt
+		IconLayoutGrid
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════

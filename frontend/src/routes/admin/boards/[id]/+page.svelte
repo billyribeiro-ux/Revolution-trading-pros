@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
-	import type { Board, Stage, Task, Label, BoardMember, Comment, Attachment, Subtask, Checklist, CustomFieldDefinition } from '$lib/boards/types';
+	import type { Board, Stage, Task, Label, BoardMember, Comment, Attachment, Subtask, CustomFieldDefinition } from '$lib/boards/types';
 	import {
 		IconArrowLeft,
 		IconPlus,
@@ -15,16 +14,11 @@
 		IconFilter,
 		IconSearch,
 		IconCalendar,
-		IconClock,
-		IconTag,
 		IconPaperclip,
 		IconMessage,
 		IconChecklist,
-		IconGripVertical,
 		IconX,
 		IconTrash,
-		IconEdit,
-		IconCopy,
 		IconArchive,
 		IconCheck,
 		IconAlertTriangle,
