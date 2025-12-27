@@ -1,26 +1,24 @@
 <script lang="ts">
 	/**
-	 * My Account Page - 100% PIXEL-PERFECT Match
+	 * My Account Page - 100% PIXEL-PERFECT Match to WordPress Reference
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Exact replica of Simpler Trading Dashboard Account welcome page
-	 * Reference: DashboardAccount lines 2940-2967
+	 * Reference: myaccount lines 2940-2957
 	 *
-	 * @version 2.0.0 - 100% Pixel Perfect
+	 * @version 2.1.0 - 100% Pixel Perfect with correct content-box styling
 	 */
+	import { user } from '$lib/stores/auth';
 
-	// User data - would come from auth/store in production
-	const user = {
-		name: 'Zack Stambowski',
-		email: 'welberribeitodrums@gmail.com'
-	};
+	// Fallback user data if not authenticated
+	$: userName = $user?.name || 'Member';
 </script>
 
 <svelte:head>
 	<title>My Account | Revolution Trading Pros</title>
 </svelte:head>
 
-<!-- Main Content - Exact from DashboardAccount reference -->
+<!-- Main Content - Exact from myaccount reference lines 2922-2967 -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">My Account</h1>
@@ -37,10 +35,10 @@
 					<div class="content-box content-box--centered">
 						<div class="content-box__section">
 							<p>
-								Hello <strong>{user.name}</strong> (not <strong>{user.name}</strong>? <a href="/dashboard/account/customer-logout">Log out</a>)
+								Hello <strong>{userName}</strong> (not <strong>{userName}</strong>? <a href="/dashboard/account/customer-logout">Log out</a>)
 							</p>
 							<p class="u--margin-bottom-0">
-								From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
+								From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/billing-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
 							</p>
 						</div>
 					</div>
@@ -52,7 +50,7 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   100% PIXEL-PERFECT STYLES - Matching DashboardAccount reference
+	   100% PIXEL-PERFECT STYLES - Matching WordPress myaccount reference
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Dashboard Header - Exact match to reference (white background) */
@@ -94,14 +92,13 @@
 		line-height: 1.2;
 	}
 
-	/* Dashboard Content - Exact match to reference dashboard-globals.css lines 258-280 */
+	/* Dashboard Content - Exact match to reference */
 	.dashboard__content {
 		display: flex;
 		flex-flow: row nowrap;
 	}
 
 	.dashboard__content-main {
-		border-right: 1px solid #dbdbdb;
 		flex: 1 1 auto;
 		background-color: #efefef;
 		min-width: 0;
@@ -115,34 +112,33 @@
 		overflow-y: hidden;
 	}
 
-	.dashboard__content-section + .dashboard__content-section {
-		border-top: 1px solid #dbdbdb;
-	}
-
-	/* WooCommerce Content Box */
+	/* WooCommerce Content Box - PIXEL PERFECT match to screenshot
+	   Light blue/teal info box style used in WordPress WooCommerce */
 	.woocommerce-MyAccount-content {
 		padding: 0;
 	}
 
 	.content-box {
-		background: #fff;
-		border-radius: 8px;
+		background: #d9edf7;
+		border: 1px solid #bce8f1;
+		border-radius: 4px;
 		overflow: hidden;
 	}
 
 	.content-box--centered {
-		max-width: 800px;
+		max-width: 100%;
 	}
 
 	.content-box__section {
-		padding: 30px;
+		padding: 20px 25px;
+		border-left: 4px solid #31708f;
 	}
 
 	.content-box__section p {
 		font-size: 15px;
-		line-height: 1.7;
-		color: #333;
-		margin: 0 0 15px;
+		line-height: 1.6;
+		color: #31708f;
+		margin: 0 0 10px;
 		font-family: 'Open Sans', sans-serif;
 	}
 
@@ -152,19 +148,20 @@
 	}
 
 	.content-box__section a {
-		color: #0984ae;
-		text-decoration: none;
+		color: #31708f;
+		text-decoration: underline;
 		font-weight: 600;
 		transition: all 0.15s ease-in-out;
 	}
 
 	.content-box__section a:hover {
-		color: #065a75;
+		color: #245269;
 		text-decoration: underline;
 	}
 
 	.content-box__section strong {
 		font-weight: 700;
+		color: #31708f;
 	}
 
 	/* Responsive - Exact match to reference */
@@ -177,13 +174,12 @@
 			font-size: 30px;
 		}
 
-		/* Mobile: content-section padding reduced, NOT dashboard__content */
 		.dashboard__content-section {
 			padding: 20px;
 		}
 
 		.content-box__section {
-			padding: 20px;
+			padding: 15px 20px;
 		}
 
 		.content-box__section p {

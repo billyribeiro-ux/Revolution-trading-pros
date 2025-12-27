@@ -223,11 +223,12 @@
 	let hasSecondaryNav = $derived(isOnMembershipPage || isOnAccountPage);
 
 	// Account navigation links - WooCommerce style (exact match to reference)
+	// Slugs match our actual SvelteKit routes in /dashboard/account/
 	const accountNavLinks = [
 		{ slug: 'orders', label: 'My Orders', class: 'woocommerce-MyAccount-navigation-link--orders' },
 		{ slug: 'subscriptions', label: 'My Subscriptions', class: 'woocommerce-MyAccount-navigation-link--subscriptions' },
-		{ slug: 'wc-smart-coupons', label: 'Coupons', class: 'woocommerce-MyAccount-navigation-link--wc-smart-coupons' },
-		{ slug: 'edit-address', label: 'Billing Address', class: 'woocommerce-MyAccount-navigation-link--edit-address' },
+		{ slug: 'coupons', label: 'Coupons', class: 'woocommerce-MyAccount-navigation-link--wc-smart-coupons' },
+		{ slug: 'billing-address', label: 'Billing Address', class: 'woocommerce-MyAccount-navigation-link--edit-address' },
 		{ slug: 'payment-methods', label: 'Payment Methods', class: 'woocommerce-MyAccount-navigation-link--payment-methods' },
 		{ slug: 'edit-account', label: 'Account Details', class: 'woocommerce-MyAccount-navigation-link--edit-account' },
 		{ slug: 'customer-logout', label: 'Log out', class: 'woocommerce-MyAccount-navigation-link--customer-logout' }
