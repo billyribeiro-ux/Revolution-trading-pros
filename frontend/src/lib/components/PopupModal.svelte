@@ -52,8 +52,8 @@
 
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { scale, fade, fly, blur, slide, crossfade } from 'svelte/transition';
-	import { quintOut, cubicOut, backOut, elasticOut, bounceOut, expoOut } from 'svelte/easing';
+	import { scale, fade } from 'svelte/transition';
+	import { quintOut, cubicOut, backOut, elasticOut, expoOut } from 'svelte/easing';
 	import { spring, tweened } from 'svelte/motion';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups';
 	import { browser } from '$app/environment';
@@ -68,7 +68,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let isVisible = $state(false);
-	let isLoading = false;
+	let _isLoading = false;
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitError = $state('');

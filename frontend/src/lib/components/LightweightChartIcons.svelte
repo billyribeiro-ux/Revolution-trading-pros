@@ -4,7 +4,7 @@
         size?: number;
     }
     
-    let { type = 'candlestick', size = 48 }: Props = $props();
+    let { type: _type = 'candlestick', size = 48 }: Props = $props();
 </script>
 
 <svg width={size} height={size} viewBox="0 0 48 48" class="text-teal-400">

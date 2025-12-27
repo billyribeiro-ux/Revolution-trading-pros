@@ -66,13 +66,13 @@
 		for (const notif of notifs) {
 			const date = new Date(notif.timestamp);
 			if (date >= today) {
-				groups.Today.push(notif);
+				groups['Today']?.push(notif);
 			} else if (date >= yesterday) {
-				groups.Yesterday.push(notif);
+				groups['Yesterday']?.push(notif);
 			} else if (date >= weekAgo) {
-				groups['This Week'].push(notif);
+				groups['This Week']?.push(notif);
 			} else {
-				groups.Older.push(notif);
+				groups['Older']?.push(notif);
 			}
 		}
 
