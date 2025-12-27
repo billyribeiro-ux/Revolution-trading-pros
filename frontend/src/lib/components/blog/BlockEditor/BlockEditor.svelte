@@ -577,7 +577,10 @@
 				if (index !== -1) {
 					const newIndex = e.key === 'ArrowUp' ? index - 1 : index + 1;
 					if (newIndex >= 0 && newIndex < editorState.blocks.length) {
-						editorState.selectedBlockId = editorState.blocks[newIndex].id;
+						const nextBlock = editorState.blocks[newIndex];
+						if (nextBlock) {
+							editorState.selectedBlockId = nextBlock.id;
+						}
 					}
 				}
 			}
@@ -644,10 +647,6 @@
 
 	function setDevicePreview(device: 'desktop' | 'tablet' | 'mobile') {
 		editorState.devicePreview = device;
-	}
-
-	function adjustZoom(delta: number) {
-		editorState.zoom = Math.max(50, Math.min(150, editorState.zoom + delta));
 	}
 
 	// ==========================================================================
