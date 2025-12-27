@@ -172,17 +172,7 @@ export const API_ENDPOINTS = {
 	},
 
 	// Health
-	health: '/api/health',
-
-	// Time - Server time sync
-	time: {
-		now: '/api/time'
-	},
-
-	// Timers - Analytics for countdown timers
-	timers: {
-		events: '/api/timers/events'
-	}
+	health: '/api/health'
 } as const;
 
 /**

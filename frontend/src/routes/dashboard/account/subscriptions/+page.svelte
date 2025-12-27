@@ -3,106 +3,269 @@
 	 * My Subscriptions - Account Section
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * 100% PIXEL-PERFECT match to SimplerMySubscriptions reference
-	 * Subscriptions table with status labels
+	 * Apple ICT 11+ Principal Engineer Grade - December 2025
+	 * Real API integration with cancel functionality
 	 *
-	 * @version 2.0.0 - 100% Pixel Perfect
+	 * @version 3.0.0 - Production Ready
 	 */
 
-	// Sample subscriptions data matching SimplerMySubscriptions reference
-	const subscriptions = [
-		{
-			id: '2176655',
-			status: 'Active',
-			statusClass: 'label--success',
-			product: 'Mastering the Trade Room (1 Month Trial)',
-			nextPayment: 'January 3, 2026',
-			paymentMethod: 'visa card ending in 9396',
-			total: '$197.00',
-			interval: '/ month'
-		},
-		{
-			id: '2173015',
-			status: 'Pending Cancellation',
-			statusClass: 'label--info',
-			product: 'Moxie Indicator™ Mastery Monthly (Trial)',
-			nextPayment: '-',
-			paymentMethod: null,
-			total: '$247.00',
-			interval: ''
-		},
-		{
-			id: '2170842',
-			status: 'Cancelled',
-			statusClass: 'label--error',
-			product: 'Day Trading Room Monthly',
-			nextPayment: '-',
-			paymentMethod: null,
-			total: '$297.00',
-			interval: ''
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { authStore } from '$lib/stores/auth';
+
+	// API Configuration
+	const isDev = import.meta.env.DEV;
+	const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+	const API_BASE = browser
+		? isDev
+			? ''
+			: (import.meta.env.VITE_API_URL || PRODUCTION_API_URL)
+		: '';
+
+	// Types
+	interface Subscription {
+		id: number;
+		plan_id: number;
+		plan_name: string;
+		status: string;
+		starts_at: string;
+		expires_at: string | null;
+		cancelled_at: string | null;
+		cancel_at_period_end: boolean;
+		current_period_start: string | null;
+		current_period_end: string | null;
+		stripe_subscription_id: string | null;
+		billing_cycle: string;
+		price: number;
+		currency: string;
+	}
+
+	// State using Svelte 5 runes
+	let subscriptions = $state<Subscription[]>([]);
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
+	let cancellingId = $state<number | null>(null);
+
+	// Fetch subscriptions from API
+	async function fetchSubscriptions(): Promise<void> {
+		if (!browser) return;
+
+		isLoading = true;
+		error = null;
+
+		try {
+			const token = authStore.getToken();
+
+			const response = await fetch(`${API_BASE}/api/subscriptions/my`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
+					...(token ? { Authorization: `Bearer ${token}` } : {})
+				},
+				credentials: 'include'
+			});
+
+			if (!response.ok) {
+				if (response.status === 401) {
+					error = 'Please log in to view your subscriptions';
+					return;
+				}
+				throw new Error('Failed to fetch subscriptions');
+			}
+
+			const data = await response.json();
+			subscriptions = data.subscriptions || data || [];
+		} catch (e) {
+			console.error('Error fetching subscriptions:', e);
+			error = e instanceof Error ? e.message : 'Failed to load subscriptions';
+		} finally {
+			isLoading = false;
 		}
-	];
+	}
+
+	// Cancel subscription
+	async function cancelSubscription(id: number, immediately: boolean = false): Promise<void> {
+		if (!confirm(`Are you sure you want to cancel this subscription${immediately ? ' immediately' : ' at the end of the billing period'}?`)) {
+			return;
+		}
+
+		cancellingId = id;
+
+		try {
+			const token = authStore.getToken();
+
+			const response = await fetch(`${API_BASE}/api/subscriptions/${id}/cancel`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Accept: 'application/json',
+					...(token ? { Authorization: `Bearer ${token}` } : {})
+				},
+				credentials: 'include',
+				body: JSON.stringify({ immediately })
+			});
+
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.message || 'Failed to cancel subscription');
+			}
+
+			// Refresh subscriptions
+			await fetchSubscriptions();
+		} catch (e) {
+			console.error('Error cancelling subscription:', e);
+			alert(e instanceof Error ? e.message : 'Failed to cancel subscription');
+		} finally {
+			cancellingId = null;
+		}
+	}
+
+	// Format date for display
+	function formatDate(dateString: string | null): string {
+		if (!dateString) return '-';
+		const date = new Date(dateString);
+		return date.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		});
+	}
+
+	// Format currency
+	function formatCurrency(amount: number, currency: string = 'USD'): string {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: currency
+		}).format(amount);
+	}
+
+	// Get status display info
+	function getStatusInfo(sub: Subscription): { label: string; class: string } {
+		if (sub.status === 'cancelled') {
+			return { label: 'Cancelled', class: 'label--error' };
+		}
+		if (sub.cancel_at_period_end) {
+			return { label: 'Pending Cancellation', class: 'label--info' };
+		}
+		if (sub.status === 'past_due') {
+			return { label: 'Past Due', class: 'label--warning' };
+		}
+		if (sub.status === 'active') {
+			return { label: 'Active', class: 'label--success' };
+		}
+		return { label: sub.status, class: '' };
+	}
+
+	// Get billing interval display
+	function getBillingInterval(cycle: string): string {
+		switch (cycle?.toLowerCase()) {
+			case 'monthly':
+				return '/ month';
+			case 'quarterly':
+				return '/ quarter';
+			case 'yearly':
+			case 'annual':
+				return '/ year';
+			default:
+				return '';
+		}
+	}
+
+	onMount(() => {
+		fetchSubscriptions();
+	});
 </script>
 
 <svelte:head>
 	<title>My Subscriptions - Account | Revolution Trading Pros</title>
 </svelte:head>
 
-<!-- 100% EXACT structure from SimplerMySubscriptions reference -->
+<!-- Subscriptions Page - Real API Integration -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<h2 class="section-title">My Subscriptions</h2>
 
-			<div class="woocommerce_account_subscriptions">
-				<table class="table">
-					<thead>
-						<tr>
-							<th class="col-xs-3"><span class="nobr">Subscription</span></th>
-							<th class="col-xs-3"><span class="nobr">Status</span></th>
-							<th class="col-xs-2"><span class="nobr">Product</span></th>
-							<th class="col-xs-2"><span class="nobr">Next Payment</span></th>
-							<th class="col-xs-2"><span class="nobr">Total</span></th>
-							<th class="col-xs-2">&nbsp;</th>
-						</tr>
-					</thead>
-					<tbody class="u--font-size-sm">
-						{#each subscriptions as sub}
-							<tr class="order">
-								<td class="col-xs-3" data-title="ID">
-									<a href="/dashboard/account/view-subscription/{sub.id}">
-										#{sub.id}
-									</a>
-								</td>
-								<td class="col-xs-3" data-title="Status">
-									<span class="label {sub.statusClass}">
-										{sub.status}
-									</span>
-								</td>
-								<td class="col-xs-2" data-title="Product">
-									<span>{sub.product}</span>
-								</td>
-								<td class="col-xs-2" data-title="Next Payment">
-									{sub.nextPayment}
-									{#if sub.paymentMethod}
-										<br/><small>Via {sub.paymentMethod}</small>
-									{/if}
-								</td>
-								<td class="col-xs-2" data-title="Total">
-									<span class="woocommerce-Price-amount amount">{sub.total}</span>{sub.interval}
-								</td>
-								<td class="col-xs-2 text-right">
-									<a href="/dashboard/account/view-subscription/{sub.id}" class="btn btn-default btn-xs">View</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-
-			{#if subscriptions.length === 0}
+			{#if isLoading}
+				<div class="loading-state">
+					<div class="spinner"></div>
+					<p>Loading your subscriptions...</p>
+				</div>
+			{:else if error}
+				<div class="error-state">
+					<p>{error}</p>
+					<button class="btn btn-primary" onclick={() => fetchSubscriptions()}>
+						Try Again
+					</button>
+				</div>
+			{:else if subscriptions.length === 0}
 				<div class="empty-state">
-					<p>No subscriptions found.</p>
+					<div class="empty-icon">📋</div>
+					<p>No active subscriptions found.</p>
+					<a href="/pricing" class="btn btn-primary">Browse Memberships</a>
+				</div>
+			{:else}
+				<div class="woocommerce_account_subscriptions">
+					<table class="table">
+						<thead>
+							<tr>
+								<th class="col-xs-3"><span class="nobr">Subscription</span></th>
+								<th class="col-xs-3"><span class="nobr">Status</span></th>
+								<th class="col-xs-2"><span class="nobr">Plan</span></th>
+								<th class="col-xs-2"><span class="nobr">Next Payment</span></th>
+								<th class="col-xs-2"><span class="nobr">Total</span></th>
+								<th class="col-xs-2">&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody class="u--font-size-sm">
+							{#each subscriptions as sub (sub.id)}
+								{@const statusInfo = getStatusInfo(sub)}
+								<tr class="order">
+									<td class="col-xs-3" data-title="ID">
+										<a href="/dashboard/account/view-subscription/{sub.id}">
+											#{sub.id}
+										</a>
+									</td>
+									<td class="col-xs-3" data-title="Status">
+										<span class="label {statusInfo.class}">
+											{statusInfo.label}
+										</span>
+									</td>
+									<td class="col-xs-2" data-title="Plan">
+										<span>{sub.plan_name}</span>
+									</td>
+									<td class="col-xs-2" data-title="Next Payment">
+										{#if sub.status === 'active' && !sub.cancel_at_period_end}
+											{formatDate(sub.current_period_end)}
+										{:else}
+											-
+										{/if}
+									</td>
+									<td class="col-xs-2" data-title="Total">
+										<span class="woocommerce-Price-amount amount">
+											{formatCurrency(sub.price, sub.currency)}
+										</span>
+										{getBillingInterval(sub.billing_cycle)}
+									</td>
+									<td class="col-xs-2 text-right actions-cell">
+										<a href="/dashboard/account/view-subscription/{sub.id}" class="btn btn-default btn-xs">
+											View
+										</a>
+										{#if sub.status === 'active' && !sub.cancel_at_period_end}
+											<button
+												class="btn btn-danger btn-xs"
+												onclick={() => cancelSubscription(sub.id, false)}
+												disabled={cancellingId === sub.id}
+											>
+												{cancellingId === sub.id ? 'Cancelling...' : 'Cancel'}
+											</button>
+										{/if}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
 				</div>
 			{/if}
 		</section>
@@ -111,7 +274,7 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   100% PIXEL-PERFECT STYLES - Matching SimplerMySubscriptions reference
+	   Apple ICT 11+ Grade Styles - Production Ready
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.section-title {
@@ -122,7 +285,65 @@
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	/* Table - Exact from reference */
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e0e0e0;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* Error State */
+	.error-state {
+		text-align: center;
+		padding: 40px 20px;
+		color: #d32f2f;
+		background: #ffebee;
+		border-radius: 8px;
+	}
+
+	.error-state p {
+		margin-bottom: 16px;
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+		color: #666;
+		background: #f9f9f9;
+		border-radius: 8px;
+	}
+
+	.empty-icon {
+		font-size: 48px;
+		margin-bottom: 16px;
+	}
+
+	.empty-state p {
+		margin-bottom: 20px;
+		font-size: 16px;
+	}
+
+	/* Table */
 	.table {
 		width: 100%;
 		border-collapse: collapse;
@@ -176,7 +397,7 @@
 		text-decoration: underline;
 	}
 
-	/* Status Labels - Exact from reference */
+	/* Status Labels */
 	.label {
 		display: inline-block;
 		padding: 4px 10px;
@@ -202,20 +423,10 @@
 		color: #856404;
 	}
 
-	.label--danger {
-		background-color: #f8d7da;
-		color: #721c24;
-	}
-
+	.label--danger,
 	.label--error {
 		background-color: #f8d7da;
 		color: #721c24;
-	}
-
-	/* Small text */
-	small {
-		font-size: 12px;
-		color: #666;
 	}
 
 	/* Price */
@@ -223,7 +434,7 @@
 		font-weight: 600;
 	}
 
-	/* View button */
+	/* Buttons */
 	.btn {
 		display: inline-block;
 		padding: 8px 16px;
@@ -232,6 +443,17 @@
 		border-radius: 4px;
 		text-decoration: none;
 		transition: all 0.15s ease;
+		border: none;
+		cursor: pointer;
+	}
+
+	.btn-primary {
+		background: #0984ae;
+		color: #fff;
+	}
+
+	.btn-primary:hover {
+		background: #077a9e;
 	}
 
 	.btn-default {
@@ -245,6 +467,20 @@
 		border-color: #999;
 	}
 
+	.btn-danger {
+		background: #dc3545;
+		color: #fff;
+	}
+
+	.btn-danger:hover {
+		background: #c82333;
+	}
+
+	.btn-danger:disabled {
+		background: #e9a4ab;
+		cursor: not-allowed;
+	}
+
 	.btn-xs {
 		padding: 6px 12px;
 		font-size: 12px;
@@ -254,17 +490,21 @@
 		text-align: right;
 	}
 
-	/* Empty state */
-	.empty-state {
-		text-align: center;
-		padding: 40px 20px;
-		color: #666;
+	.actions-cell {
+		display: flex;
+		gap: 8px;
+		justify-content: flex-end;
 	}
 
 	@media (max-width: 992px) {
 		.table {
 			display: block;
 			overflow-x: auto;
+		}
+
+		.actions-cell {
+			flex-direction: column;
+			gap: 4px;
 		}
 	}
 </style>

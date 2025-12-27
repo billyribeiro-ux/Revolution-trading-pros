@@ -28,6 +28,7 @@ pub struct Config {
 
     // Stripe
     pub stripe_secret_key: String,
+    pub stripe_publishable_key: String,
     pub stripe_webhook_secret: String,
 
     // CORS
@@ -69,6 +70,7 @@ impl Config {
                 .unwrap_or(24),
 
             stripe_secret_key: std::env::var("STRIPE_SECRET").unwrap_or_default(),
+            stripe_publishable_key: std::env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_default(),
             stripe_webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_default(),
 
             cors_origins: std::env::var("CORS_ORIGINS")
