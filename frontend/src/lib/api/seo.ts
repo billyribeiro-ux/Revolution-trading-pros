@@ -62,16 +62,16 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
-const API_BASE = import.meta.env['VITE_API_URL'] || PROD_API;
+const _API_BASE = import.meta.env['VITE_API_URL'] || PROD_API;
 const WS_BASE = import.meta.env['VITE_WS_URL'] || PROD_WS;
 const AI_API = import.meta.env['VITE_AI_API_URL'] || PROD_AI;
 
 const CACHE_TTL = 300000; // 5 minutes
 const ANALYSIS_DEBOUNCE = 2000; // 2 seconds
-const CRAWL_BATCH_SIZE = 50;
+const _CRAWL_BATCH_SIZE = 50;
 const RANK_CHECK_INTERVAL = 3600000; // 1 hour
 const ALERT_CHECK_INTERVAL = 300000; // 5 minutes
-const MAX_RETRIES = 3;
+const _MAX_RETRIES = 3;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
@@ -695,7 +695,7 @@ class SeoManagementService {
 		}
 	}
 
-	private handleCrawlComplete(data: any): void {
+	private handleCrawlComplete(_data: any): void {
 		// Refresh technical issues
 		this.loadTechnicalIssues();
 	}
@@ -910,12 +910,12 @@ class SeoManagementService {
 			technical_score: technicalAudit ? 100 - technicalAudit.issues.length * 5 : 100,
 			content_score: basicAnalysis.seo_score,
 			user_experience_score: performanceMetrics?.pageSpeed.score || 100,
-			competitor_comparison: competitorAnalysis ?? undefined,
-			keyword_opportunities: keywordOpportunities ?? undefined,
-			content_gaps: contentGaps ?? undefined,
-			technical_issues: technicalAudit?.issues,
-			page_speed: performanceMetrics?.pageSpeed,
-			core_web_vitals: performanceMetrics?.coreWebVitals,
+			...(competitorAnalysis !== null && competitorAnalysis !== undefined && { competitor_comparison: competitorAnalysis }),
+			...(keywordOpportunities !== null && keywordOpportunities !== undefined && { keyword_opportunities: keywordOpportunities }),
+			...(contentGaps !== null && contentGaps !== undefined && { content_gaps: contentGaps }),
+			...(technicalAudit?.issues !== undefined && { technical_issues: technicalAudit.issues }),
+			...(performanceMetrics?.pageSpeed !== undefined && { page_speed: performanceMetrics.pageSpeed }),
+			...(performanceMetrics?.coreWebVitals !== undefined && { core_web_vitals: performanceMetrics.coreWebVitals }),
 			suggestions: [...basicAnalysis.suggestions, ...aiSuggestions]
 		};
 	}
@@ -1330,7 +1330,7 @@ class SeoManagementService {
 		});
 	}
 
-	private clearCache(pattern?: string): void {
+	private _clearCache(pattern?: string): void {
 		if (pattern) {
 			for (const key of this.cache.keys()) {
 				if (key.includes(pattern)) {
