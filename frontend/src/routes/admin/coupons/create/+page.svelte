@@ -54,8 +54,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { fade, fly, slide } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
+	import { fade, slide } from 'svelte/transition';
 	import {
 		couponsApi,
 		productsApi,
@@ -68,29 +67,17 @@
 		IconCheck,
 		IconX,
 		IconPlus,
-		IconMinus,
-		IconPercentage,
-		IconCurrencyDollar,
-		IconCalendar,
 		IconUsers,
-		IconShoppingCart,
 		IconTag,
-		IconDevices,
 		IconRefresh,
 		IconAlertCircle,
 		IconChartBar,
-		IconRobot,
 		IconShield,
 		IconCopy,
-		IconDownload,
-		IconUpload,
 		IconSettings,
 		IconBolt,
-		IconGift,
 		IconMail,
-		IconBrandGoogle,
 		IconBrandFacebook,
-		IconQrcode,
 		IconSparkles,
 		IconMapPin,
 		IconTestPipe
@@ -290,7 +277,6 @@
 		expires_at: '',
 		timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 		recurring: false,
-		recurrence_pattern: undefined,
 		product_restrictions: [],
 		category_restrictions: [],
 		user_segments: [],
@@ -329,7 +315,6 @@
 	let generatedCodes = $state<string[]>([]);
 	let importedCodes = $state<any[]>([]);
 	let validationResults = $state<any>(null);
-	let testResults = $state<any>(null);
 
 	// Events: Component callbacks can be passed as props in Svelte 5
 
@@ -425,7 +410,7 @@
 			const submitData = prepareSubmitData();
 
 			// Create coupon
-			const coupon = await couponsApi.create(submitData);
+			await couponsApi.create(submitData);
 
 			// Track analytics
 			trackEvent('coupon_created', {
