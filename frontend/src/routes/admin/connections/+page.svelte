@@ -11,7 +11,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { fade, fly, scale, slide } from 'svelte/transition';
-	import { quintOut, backOut, cubicOut } from 'svelte/easing';
+	import { backOut, cubicOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
@@ -64,24 +64,9 @@
 		services: Service[];
 	}
 
-	interface Summary {
-		total_available: number;
-		total_connected: number;
-		total_disconnected: number;
-		total_errors: number;
-		needs_attention: number;
-	}
-
 	// State
 	let connections = $state<Service[]>([]);
 	let categories = $state<Record<string, Category>>({});
-	let summary = $state<Summary>({
-		total_available: 0,
-		total_connected: 0,
-		total_disconnected: 0,
-		total_errors: 0,
-		needs_attention: 0
-	});
 	let isLoading = $state(true);
 	let selectedCategory = $state<string | null>(null);
 	let searchQuery = $state('');
@@ -130,7 +115,6 @@
 			const data = await adminFetch('/api/admin/connections');
 			connections = data.connections;
 			categories = data.categories;
-			summary = data.summary;
 		} catch (error) {
 			console.error('Failed to fetch connections:', error);
 		} finally {

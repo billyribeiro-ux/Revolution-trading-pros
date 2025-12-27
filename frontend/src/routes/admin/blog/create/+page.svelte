@@ -108,35 +108,20 @@
 		}
 	]);
 
-	let categories: any[] = $state([]);
-	let tags: any[] = $state([]);
-	let availableCategories: any[] = $state([]);
 	let availableTags: any[] = $state([]);
 	let saving = $state(false);
 	let saveError = $state('');
 	let saveSuccess = $state('');
-	let showFeaturedImage = $state(false);
 	let newTag = $state('');
 	let showSeoPanel = $state(false);
 	let uploadingImage = $state(false);
 	let uploadError = $state('');
 	let isFullscreen = $state(false);
-	let editorMode = $state<'visual' | 'code'>('visual');
 
 	onMount(() => {
-		loadCategories();
 		loadTags();
 		generateSlug();
 	});
-
-	async function loadCategories() {
-		try {
-			const data = await api.get('/api/admin/categories');
-			availableCategories = data.data || data || [];
-		} catch (error) {
-			console.error('Failed to load categories:', error);
-		}
-	}
 
 	async function loadTags() {
 		try {
@@ -299,8 +284,6 @@
 				if (!post.featured_image_title) {
 					post.featured_image_title = result.file.title || file.name.replace(/\.[^/.]+$/, '');
 				}
-
-				showFeaturedImage = true;
 			} catch (error: any) {
 				console.error('Failed to upload featured image:', error);
 				uploadError = error.message || 'Failed to upload image';
@@ -317,7 +300,6 @@
 		post.featured_image_caption = '';
 		post.featured_image_description = '';
 		post.featured_media_id = null;
-		showFeaturedImage = false;
 	}
 
 	$effect(() => {
@@ -1175,10 +1157,11 @@
 		background: #f8f9fa;
 	}
 
-	.editor-toolbar label {
+	.editor-label {
 		font-weight: 600;
 		color: #1a1a1a;
 		font-size: 0.95rem;
+		margin: 0;
 	}
 
 	.editor-actions {

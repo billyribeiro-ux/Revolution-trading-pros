@@ -21,7 +21,6 @@
 		IconCurrencyDollar,
 		IconCalendar,
 		IconLock,
-		IconWorld,
 		IconTarget,
 		IconTrendingUp,
 		IconCertificate,
@@ -29,22 +28,13 @@
 		IconEye,
 		IconSettings,
 		IconRefresh,
-		IconTag,
-		IconPercentage,
 		IconGift,
 		IconCopy,
 		IconAlertCircle,
 		IconRocket,
 		IconStar,
-		IconMail,
 		IconBrandGoogle,
 		IconBrandFacebook,
-		IconLink,
-		IconPlayerPlay,
-		IconQuestionMark,
-		IconPencil,
-		IconShield,
-		IconDevices,
 		IconChevronDown
 	} from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
@@ -177,12 +167,10 @@
 
 	// UI State Management
 	let activeTab = $state('basic');
-	let activeSection = $state('info');
 	let uploading = $state(false);
 	let saving = $state(false);
 	let generating = $state(false);
 	let analyzing = $state(false);
-	let previewMode = $state<'desktop' | 'tablet' | 'mobile'>('desktop');
 	let overallScore = $state(0);
 	let validationResults = $state<ValidationResult[]>([]);
 	let isDragging = $state(false);
@@ -191,8 +179,6 @@
 	let hasUnsavedChanges = $state(false);
 	let lastSaved = $state<Date | null>(null);
 	let autoSaveTimer: ReturnType<typeof setInterval>;
-	let showPricingModal = $state(false);
-	let showAIPanel = $state(false);
 	let expandedModules = $state(new Set<string>());
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -797,7 +783,6 @@
 
 	async function suggestPricing() {
 		analyzing = true;
-		showPricingModal = true;
 
 		setTimeout(() => {
 			const analysis = {
@@ -838,21 +823,9 @@
 			);
 
 			analyzing = false;
-			showPricingModal = false;
 		}, 2000);
 	}
 
-	function improveWithAI(field: string) {
-		const improvements: Record<string, string> = {
-			title: 'Try adding power words like "Master", "Professional", or "Complete"',
-			description: 'Include specific outcomes, mention the number of lessons, and add social proof',
-			pricing: 'Consider value-based pricing instead of cost-based pricing'
-		};
-
-		alert(
-			`💡 AI Suggestion: ${improvements[field] || 'Make it more specific and benefit-focused'}`
-		);
-	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete File Upload System
@@ -1294,8 +1267,12 @@
 
 				if (error.isValidationError && error.response?.errors) {
 					const firstField = Object.keys(error.response.errors)[0];
-					const firstMessage = error.response.errors[firstField]?.[0];
-					alert(firstMessage || error.message);
+					if (firstField) {
+						const firstMessage = error.response.errors[firstField]?.[0];
+						alert(firstMessage || error.message);
+					} else {
+						alert(error.message);
+					}
 				} else {
 					alert(error.message);
 				}
@@ -1324,7 +1301,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function generateId(): string {
-		return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+		return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 	}
 
 	function addBonus() {
@@ -1799,7 +1776,7 @@
 						</h2>
 
 						<div class="list-editor">
-							{#each course.outcomes as outcome, i}
+							{#each course.outcomes as _, i}
 								<div class="list-item">
 									<IconCheck size={16} />
 									<input
@@ -1833,7 +1810,7 @@
 						</h2>
 
 						<div class="list-editor">
-							{#each course.prerequisites as prereq, i}
+							{#each course.prerequisites as _, i}
 								<div class="list-item">
 									<IconAlertCircle size={16} />
 									<input
@@ -1867,7 +1844,7 @@
 						</h2>
 
 						<div class="list-editor">
-							{#each course.target_audience as audience, i}
+							{#each course.target_audience as _, i}
 								<div class="list-item">
 									<IconUsers size={16} />
 									<input
@@ -2735,7 +2712,7 @@
 						<h2>Tools & Resources Required</h2>
 
 						<div class="list-editor">
-							{#each course.tools_required as tool, i}
+							{#each course.tools_required as _, i}
 								<div class="list-item">
 									<IconSettings size={16} />
 									<input

@@ -132,11 +132,13 @@
 			]);
 
 			board = boardRes.board;
-			members = boardRes.members;
+			members = boardRes.members || [];
 			stages = stagesRes;
 			tasks = tasksRes.data;
 			labels = labelsRes;
 			customFields = fieldsRes;
+			// Suppress unused warning - customFields loaded for future use
+			void customFields;
 		} catch (error) {
 			console.error('Failed to load board:', error);
 		} finally {
@@ -562,6 +564,12 @@
 									tabindex="0"
 									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id === task.id ? 'opacity-50' : ''} {dragOverStage === stage.id && dragOverPosition === index ? 'border-t-2 border-indigo-500' : ''}"
 									onclick={() => openTaskModal(task)}
+									onkeydown={(e: KeyboardEvent) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault();
+											openTaskModal(task);
+										}
+									}}
 								>
 									<!-- Labels -->
 									{#if task.labels && task.labels.length > 0}
@@ -749,12 +757,13 @@
 								class="w-full text-xl font-semibold bg-transparent border-b border-indigo-500 focus:outline-none text-gray-900 dark:text-white"
 							/>
 						{:else}
-							<h2
-								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400"
+							<button
+								type="button"
+								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 text-left w-full bg-transparent border-0 p-0"
 								onclick={() => editingTaskTitle = true}
 							>
 								{selectedTask?.title}
-							</h2>
+							</button>
 						{/if}
 						<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
 							in {stages.find(s => s.id === selectedTask?.stage_id)?.title || 'Unknown'}
@@ -801,6 +810,12 @@
 							{:else}
 								<div
 									onclick={() => editingTaskDescription = true}
+									onkeydown={(e: KeyboardEvent) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault();
+											editingTaskDescription = true;
+										}
+									}}
 									role="button"
 									tabindex="0"
 									class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 min-h-[60px]"

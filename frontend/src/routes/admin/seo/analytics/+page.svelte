@@ -42,10 +42,9 @@
 	}
 
 	async function loadStats() {
-		const params = new URLSearchParams({
-			start_date: dateRange.start,
-			end_date: dateRange.end
-		});
+		const params = new URLSearchParams();
+		if (dateRange.start) params.append('start_date', dateRange.start);
+		if (dateRange.end) params.append('end_date', dateRange.end);
 
 		try {
 			const response = await fetch(`/api/seo/analytics/stats?${params}`);
@@ -57,12 +56,11 @@
 	}
 
 	async function loadTopPages() {
-		const params = new URLSearchParams({
-			start_date: dateRange.start,
-			end_date: dateRange.end,
-			metric: 'clicks',
-			limit: '10'
-		});
+		const params = new URLSearchParams();
+		if (dateRange.start) params.append('start_date', dateRange.start);
+		if (dateRange.end) params.append('end_date', dateRange.end);
+		params.append('metric', 'clicks');
+		params.append('limit', '10');
 
 		try {
 			const response = await fetch(`/api/seo/analytics/top-pages?${params}`);

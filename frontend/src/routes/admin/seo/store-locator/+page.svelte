@@ -15,7 +15,6 @@
 	} from '$lib/icons';
 	import {
 		locations,
-		activeLocations,
 		generateLocationSchema,
 		generateKml,
 		isLocationOpen,
@@ -148,7 +147,7 @@
 				...(formData.phone ? [{ type: 'phone' as const, value: formData.phone, isPrimary: true }] : []),
 				...(formData.email ? [{ type: 'email' as const, value: formData.email, isPrimary: true }] : [])
 			],
-			website: formData.website || undefined,
+			website: formData.website || '',
 			hours: daysOfWeek.map((day) => ({
 				dayOfWeek: day,
 				opens: '09:00',
