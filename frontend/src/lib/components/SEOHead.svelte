@@ -219,20 +219,20 @@
 		faqItems = [],
 		// GEO (Generative Engine Optimization)
 		geoOptimized = true,
-		aiCitationReady = true
+		aiCitationReady: _aiCitationReady = true
 	}: Props = $props();
 
 	// Site Configuration
-	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
-	const siteName = import.meta.env.VITE_SITE_NAME || 'Revolution Trading Pros';
+	const siteUrl = import.meta.env['VITE_SITE_URL'] || 'https://revolution-trading-pros.pages.dev';
+	const siteName = import.meta.env['VITE_SITE_NAME'] || 'Revolution Trading Pros';
 	const siteDescription =
-		import.meta.env.VITE_SITE_DESCRIPTION ||
+		import.meta.env['VITE_SITE_DESCRIPTION'] ||
 		'Master the markets with institutional-grade trading tools and education';
-	const defaultImage = import.meta.env.VITE_DEFAULT_OG_IMAGE || '/og-image-default.png';
-	const twitterHandle = import.meta.env.VITE_TWITTER_HANDLE || '@RevTradingPros';
-	const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID || '';
-	const gtmId = import.meta.env.VITE_GTM_ID || '';
-	const gtagId = import.meta.env.VITE_GTAG_ID || '';
+	const defaultImage = import.meta.env['VITE_DEFAULT_OG_IMAGE'] || '/og-image-default.png';
+	const twitterHandle = import.meta.env['VITE_TWITTER_HANDLE'] || '@RevTradingPros';
+	const facebookAppId = import.meta.env['VITE_FACEBOOK_APP_ID'] || '';
+	const _gtmId = import.meta.env['VITE_GTM_ID'] || '';
+	const _gtagId = import.meta.env['VITE_GTAG_ID'] || '';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Computed Properties
@@ -265,7 +265,7 @@
 
 	// Language & Region
 	let hreflang = $derived(`${language}-${region}`);
-	let locale = $derived(`${language}_${region.toUpperCase()}`);
+	let _locale = $derived(`${language}_${region.toUpperCase()}`);
 
 	// Schema Generation
 	let generatedSchema = $derived(autoSchema ? generateSchema() : schema);
@@ -306,7 +306,7 @@
 		return `<${tag} type="application/ld+json">${stableStringify(schema)}</${tag}>`;
 	}
 
-	function generateGtmScript(id: string): string {
+	function _generateGtmScript(id: string): string {
 		const tag = 'script';
 		return `<${tag}>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');</${tag}>`;
 	}
