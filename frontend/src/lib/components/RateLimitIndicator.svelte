@@ -10,7 +10,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { fade, scale } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
 	import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';

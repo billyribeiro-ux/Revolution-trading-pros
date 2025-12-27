@@ -231,8 +231,6 @@
 	const defaultImage = import.meta.env['VITE_DEFAULT_OG_IMAGE'] || '/og-image-default.png';
 	const twitterHandle = import.meta.env['VITE_TWITTER_HANDLE'] || '@RevTradingPros';
 	const facebookAppId = import.meta.env['VITE_FACEBOOK_APP_ID'] || '';
-	const _gtmId = import.meta.env['VITE_GTM_ID'] || '';
-	const _gtagId = import.meta.env['VITE_GTAG_ID'] || '';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Computed Properties
