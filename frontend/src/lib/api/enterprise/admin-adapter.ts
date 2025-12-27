@@ -14,7 +14,7 @@
  */
 
 import { browser } from '$app/environment';
-import { writable, get } from 'svelte/store';
+import { writable, get as _get } from 'svelte/store';
 
 // Import existing admin APIs
 import {
@@ -36,15 +36,15 @@ import {
 // Import enterprise infrastructure
 import {
 	createRequestContext,
-	getTraceHeaders,
+	getTraceHeaders as _getTraceHeaders,
 	log,
 	recordTrace,
 	getTracingMetrics,
 	getRecentTraces
 } from './tracing';
-import { getCsrfHeaders, initializeCsrf } from './csrf';
-import { isApiError, createApiError, ErrorCodes, serializeError } from './errors';
-import type { RequestContext, RequestMetrics, EnterpriseApiError } from './types';
+import { getCsrfHeaders as _getCsrfHeaders, initializeCsrf } from './csrf';
+import { isApiError as _isApiError, createApiError as _createApiError, ErrorCodes as _ErrorCodes, serializeError } from './errors';
+import type { RequestContext as _RequestContext, RequestMetrics as _RequestMetrics, EnterpriseApiError as _EnterpriseApiError } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Enterprise Enhancement Wrapper
