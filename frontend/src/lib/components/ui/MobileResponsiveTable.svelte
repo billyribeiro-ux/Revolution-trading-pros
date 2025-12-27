@@ -148,11 +148,13 @@
 	});
 
 	// Generate export columns (adapt 2-param render to 1-param format)
-	let exportColumns = $derived(columns.map((col): ExportColumn => ({
-		key: col.key,
-		label: col.label,
-		format: col.render ? (value: unknown) => col.render!(value, {}) : undefined
-	})));
+	let exportColumns = $derived(columns.map((col) => {
+		const base = { key: col.key, label: col.label };
+		if (col.render) {
+			return { ...base, format: (value: unknown) => col.render!(value, {}) } as ExportColumn;
+		}
+		return base as ExportColumn;
+	}));
 
 	let visibleColumns = $derived(isMobile ? columns.filter((c) => !c.mobileHidden) : columns);
 	let isAllSelected = $derived(data.length > 0 && selectedIds.length === data.length);

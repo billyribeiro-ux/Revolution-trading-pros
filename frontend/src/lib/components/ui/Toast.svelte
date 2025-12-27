@@ -18,7 +18,7 @@
 		IconInfoCircle,
 		IconLoader
 	} from '$lib/icons';
-	import { toasts, removeToast, type Toast, type ToastType } from '$lib/stores/toast';
+	import { toasts, removeToast, type ToastType } from '$lib/stores/toast';
 
 	const icons: Record<ToastType, typeof IconCheck> = {
 		success: IconCheck,
