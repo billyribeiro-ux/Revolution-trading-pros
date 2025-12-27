@@ -106,10 +106,10 @@ export class PopupHeatmapTracker {
 	private boundHandleTouch: (event: TouchEvent) => void;
 	private boundHandleScroll: (event: Event) => void;
 	private boundHandleMouseMove: (event: MouseEvent) => void;
-	private boundHandleFormFocus: (event: FocusEvent) => void;
-	private boundHandleFormBlur: (event: FocusEvent) => void;
-	private boundHandleFormInput: (event: Event) => void;
-	private boundHandleFormChange: (event: Event) => void;
+	private _boundHandleFormFocus: (event: FocusEvent) => void;
+	private _boundHandleFormBlur: (event: FocusEvent) => void;
+	private _boundHandleFormInput: (event: Event) => void;
+	private _boundHandleFormChange: (event: Event) => void;
 
 	constructor(popupId: string, sessionId?: string) {
 		this.popupId = popupId;
@@ -120,10 +120,10 @@ export class PopupHeatmapTracker {
 		this.boundHandleTouch = this.handleTouch.bind(this);
 		this.boundHandleScroll = this.handleScroll.bind(this);
 		this.boundHandleMouseMove = this.handleMouseMove.bind(this);
-		this.boundHandleFormFocus = this.handleFormFocus.bind(this);
-		this.boundHandleFormBlur = this.handleFormBlur.bind(this);
-		this.boundHandleFormInput = this.handleFormInput.bind(this);
-		this.boundHandleFormChange = this.handleFormChange.bind(this);
+		this._boundHandleFormFocus = this.handleFormFocus.bind(this);
+		this._boundHandleFormBlur = this.handleFormBlur.bind(this);
+		this._boundHandleFormInput = this.handleFormInput.bind(this);
+		this._boundHandleFormChange = this.handleFormChange.bind(this);
 	}
 
 	/**
@@ -383,7 +383,7 @@ export class PopupHeatmapTracker {
 			fieldType: target.type || target.tagName.toLowerCase(),
 			action: 'blur',
 			timestamp: Date.now(),
-			timeSpent,
+			...(timeSpent !== undefined && { timeSpent }),
 			hasValue: Boolean(target.value),
 		});
 	}
