@@ -145,12 +145,14 @@ class BingSeoAPI {
 			headers['Authorization'] = `Bearer ${token}`;
 		}
 
-		const response = await fetch(url.toString(), {
+		const fetchOptions: RequestInit = {
 			method,
 			headers,
-			body: data ? JSON.stringify(data) : undefined,
+			...(data && { body: JSON.stringify(data) }),
 			credentials: 'include'
-		});
+		};
+
+		const response = await fetch(url.toString(), fetchOptions);
 
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));
