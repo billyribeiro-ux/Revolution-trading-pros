@@ -30,9 +30,15 @@ High-performance trading platform built with Rust + Axum.
 │   │   └── middleware/     # Auth, rate limiting
 │   └── migrations/         # SQL migrations
 ├── frontend/               # SvelteKit 5 frontend
+│   ├── Do's/               # ⚠️ CRITICAL: Dashboard reference files
+│   │   └── README.md       # MUST READ before dashboard work
+│   ├── .ai-context.md      # AI agent context and guidelines
+│   └── ARCHITECTURE.md     # Frontend architecture guide
 ├── image-service/          # Node.js image processing microservice
 └── DEPLOYMENT_GUIDE_RUST.md
 ```
+
+**⚠️ For AI Agents:** Before working on dashboard pages, consult `frontend/Do's/` for HTML reference files and `frontend/.ai-context.md` for essential context.
 
 ## Quick Start
 

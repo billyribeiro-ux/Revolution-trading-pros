@@ -86,8 +86,21 @@ src/
 │       ├── crm/
 │       └── ...
 │
+├── Do's/                       # ⚠️ CRITICAL: Dashboard reference files
+│   ├── README.md               # MUST READ for all dashboard work
+│   ├── DashboardHome           # Dashboard home reference
+│   ├── DayTradingRoomDashboard # Trading room reference
+│   ├── LatestUpdates           # Updates page reference
+│   ├── Learning-Center         # Learning center reference
+│   ├── Platform-Tutorials      # Tutorials reference
+│   ├── Premium-Daily-Videos    # Videos listing reference
+│   ├── Premium-Daily-Videos-Clicked # Video detail reference
+│   └── wwclickememberdashboard # Member dashboard reference
+│
 └── app.css                     # Global styles and design tokens
 ```
+
+**⚠️ IMPORTANT FOR AI AGENTS:** Before working on any dashboard pages, consult the `Do's/` directory for HTML reference files that define the exact structure and functionality expected for each page.
 
 ---
 
