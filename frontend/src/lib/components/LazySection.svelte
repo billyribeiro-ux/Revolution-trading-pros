@@ -40,7 +40,6 @@
 
 	// ICT11+ PRODUCTION FIX: Always start visible for SSR/SEO
 	// Content is always rendered, only animations are deferred
-	let _isVisible = $state(true);
 	let hasAnimated = $state(false);
 	let container = $state<HTMLElement | null>(null);
 	let observer: IntersectionObserver | null = null;

@@ -110,23 +110,6 @@
     panY = 0;
   }
 
-  function _handleKeydown(event: KeyboardEvent) {
-    if (mode === 'slider') {
-      if (event.key === 'ArrowLeft') {
-        sliderPosition.set(Math.max(0, $sliderPosition - 5));
-        event.preventDefault();
-      } else if (event.key === 'ArrowRight') {
-        sliderPosition.set(Math.min(100, $sliderPosition + 5));
-        event.preventDefault();
-      }
-    } else if (mode === 'toggle') {
-      if (event.key === ' ') {
-        showOriginal = !showOriginal;
-        event.preventDefault();
-      }
-    }
-  }
-
   // ═══════════════════════════════════════════════════════════════════════════
   // Helpers
   // ═══════════════════════════════════════════════════════════════════════════

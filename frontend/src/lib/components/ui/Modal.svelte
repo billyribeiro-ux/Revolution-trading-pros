@@ -55,7 +55,6 @@
 	};
 
 	// Store the element that triggered the modal
-	let _triggerElement: HTMLElement | null = $state(null);
 	let modalElement: HTMLDivElement | null = $state(null);
 	let previouslyFocused: Element | null = $state(null);
 
