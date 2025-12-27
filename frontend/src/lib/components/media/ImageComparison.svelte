@@ -29,8 +29,8 @@
     optimizedSrc,
     originalSize = 0,
     optimizedSize = 0,
-    width = 800,
-    height = 600
+    width: _width = 800,
+    height: _height = 600
   }: Props = $props();
 
   // State - Svelte 5 runes
@@ -110,7 +110,7 @@
     panY = 0;
   }
 
-  function handleKeydown(event: KeyboardEvent) {
+  function _handleKeydown(event: KeyboardEvent) {
     if (mode === 'slider') {
       if (event.key === 'ArrowLeft') {
         sliderPosition.set(Math.max(0, $sliderPosition - 5));
