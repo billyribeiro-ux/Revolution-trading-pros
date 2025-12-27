@@ -44,7 +44,9 @@
       // Range selection
       const lastIdx = items.findIndex((i) => i.id === lastSelectedId);
       const currentIdx = items.findIndex((i) => i.id === item.id);
-      const [start, end] = [lastIdx, currentIdx].sort((a, b) => a - b);
+      const sorted = [lastIdx, currentIdx].sort((a, b) => a - b);
+      const start = sorted[0] ?? 0;
+      const end = sorted[1] ?? 0;
       const rangeIds = items.slice(start, end + 1).map((i) => i.id);
 
       if (idx === -1) {
