@@ -1,380 +1,467 @@
 <script lang="ts">
 	/**
-	 * Weekly Watchlist Archive - 100% PIXEL-PERFECT Match
+	 * Weekly Watchlist Archive - Matching Simpler Trading
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * Archive of past weekly watchlists
-	 * @version 1.0.0 - Pixel Perfect
+	 * Archive of past weekly watchlists (spreadsheet tab)
+	 * @version 2.0.0 - December 2025
 	 */
 
-	// Archive data
+	// Archive data - matches reference URL structure
 	const archives = [
-		{ id: 1, week: 'December 16-20, 2025', trader: 'TG Watkins', stockCount: 5, date: 'December 15, 2025', slug: 'dec-16-20-2025' },
-		{ id: 2, week: 'December 9-13, 2025', trader: 'TG Watkins', stockCount: 6, date: 'December 8, 2025', slug: 'dec-9-13-2025' },
-		{ id: 3, week: 'December 2-6, 2025', trader: 'TG Watkins', stockCount: 5, date: 'December 1, 2025', slug: 'dec-2-6-2025' },
-		{ id: 4, week: 'November 25-29, 2025', trader: 'TG Watkins', stockCount: 4, date: 'November 24, 2025', slug: 'nov-25-29-2025' },
-		{ id: 5, week: 'November 18-22, 2025', trader: 'TG Watkins', stockCount: 5, date: 'November 17, 2025', slug: 'nov-18-22-2025' },
-		{ id: 6, week: 'November 11-15, 2025', trader: 'TG Watkins', stockCount: 6, date: 'November 10, 2025', slug: 'nov-11-15-2025' },
-		{ id: 7, week: 'November 4-8, 2025', trader: 'TG Watkins', stockCount: 5, date: 'November 3, 2025', slug: 'nov-4-8-2025' },
-		{ id: 8, week: 'October 28 - November 1, 2025', trader: 'TG Watkins', stockCount: 5, date: 'October 27, 2025', slug: 'oct-28-nov-1-2025' }
+		{ date: 'December 22, 2025', trader: 'TG Watkins', slug: '12222025-tg-watkins' },
+		{ date: 'December 15, 2025', trader: 'Allison Ostrander', slug: '12152025-allison-ostrander' },
+		{ date: 'December 8, 2025', trader: 'Taylor Horton', slug: '12082025-taylor-horton' },
+		{ date: 'December 1, 2025', trader: 'Raghee Horner', slug: '12012025-raghee-horner' },
+		{ date: 'November 24, 2025', trader: 'David Starr', slug: '11242025-david-starr' },
+		{ date: 'November 17, 2025', trader: 'Mike Teeto', slug: '11172025-mike-teeto' },
+		{ date: 'November 10, 2025', trader: 'Taylor Horton', slug: '11102025-taylor-horton' },
+		{ date: 'November 3, 2025', trader: 'Allison Ostrander', slug: '11032025-allison-ostrander' },
+		{ date: 'October 27, 2025', trader: 'Bruce Marshall', slug: '10272025-bruce-marshall' },
+		{ date: 'October 20, 2025', trader: 'Jonathan McKeever', slug: 'tr3ndy-10202025' },
+		{ date: 'October 12, 2025', trader: 'TG Watkins', slug: '10122025-tg-watkins' },
+		{ date: 'October 6, 2025', trader: 'Henry Gambell', slug: '10062025-henry-gambell' }
 	];
 
-	// Pagination
+	// Pagination state
 	let currentPage = $state(1);
-	const itemsPerPage = 10;
+	const totalPages = 22;
 </script>
 
 <svelte:head>
-	<title>Weekly Watchlist Archive | Revolution Trading Pros</title>
-	<meta name="description" content="Archive of past weekly trading watchlists with historical stock picks and analysis." />
+	<title>Weekly Watchlist Archive - Revolution Trading Pros</title>
+	<meta name="description" content="Archive of past weekly trading watchlists" />
 </svelte:head>
 
-<!-- WordPress EXACT Structure -->
-<div class="page-template-default page logged-in woocommerce-page">
-
-	<!-- Breadcrumbs -->
-	<nav id="breadcrumbs" class="breadcrumbs">
-		<div class="container-fluid">
+<!-- Dashboard Layout -->
+<div class="dashboard">
+	<!-- Sidebar Navigation -->
+	<aside class="dashboard__sidebar">
+		<nav class="dashboard__nav-secondary">
 			<ul>
-				<li class="item-home"><a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a></li>
-				<li class="separator separator-home"> / </li>
-				<li class="item-dashboard"><a class="breadcrumb-link" href="/dashboard" title="Dashboard">Dashboard</a></li>
-				<li class="separator"> / </li>
-				<li class="item-watchlist"><a class="breadcrumb-link" href="/weeklywatchlist" title="Weekly Watchlist">Weekly Watchlist</a></li>
-				<li class="separator"> / </li>
-				<li class="item-current"><strong class="breadcrumb-current">Archive</strong></li>
+				<li>
+					<a href="/dashboard/ww/">
+						<span class="dashboard__nav-item-icon st-icon-dashboard"></span>
+						<span class="dashboard__nav-item-text">Weekly Watchlist</span>
+					</a>
+				</li>
+				<li>
+					<a href="/dashboard/ww/watchlist-rundown-archive/">
+						<span class="dashboard__nav-item-icon st-icon-chatroom-archive"></span>
+						<span class="dashboard__nav-item-text">Watchlist Rundown Archive</span>
+					</a>
+				</li>
+				<li class="is-active">
+					<a href="/dashboard/ww/weekly-watchlist-archive/">
+						<span class="dashboard__nav-item-icon st-icon-chatroom-archive"></span>
+						<span class="dashboard__nav-item-text">Weekly Watchlist Archive</span>
+					</a>
+				</li>
 			</ul>
-		</div>
-	</nav>
+		</nav>
+	</aside>
 
-	<!-- Page Content -->
-	<div id="page" class="hfeed site grid-parent">
-		<div id="content" class="site-content">
+	<!-- Main Content -->
+	<main class="dashboard__main">
+		<header class="dashboard__header">
+			<div class="dashboard__header-left">
+				<h1 class="dashboard__page-title">Weekly Watchlist Dashboard</h1>
+			</div>
+		</header>
 
-			<!-- Page Header -->
-			<header class="page-header-section">
-				<div class="container-fluid">
-					<h1 class="page-title">Weekly Watchlist Archive</h1>
-					<p class="page-subtitle">Browse past weekly watchlists and historical stock picks</p>
-				</div>
-			</header>
-
-			<!-- Main Content -->
-			<section class="wl-page-content">
-				<div class="container-fluid">
-					<!-- Back Link -->
-					<div class="back-link-wrap">
-						<a href="/weeklywatchlist" class="back-link">
-							<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-							Back to Current Watchlist
-						</a>
-					</div>
-
-					<!-- Archive Grid -->
-					<div class="archive-grid">
-						{#each archives as archive}
-							<article class="archive-card">
-								<div class="archive-card-header">
-									<span class="archive-icon">
-										<svg viewBox="0 0 24 24" width="24" height="24">
-											<path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2V7h-4v2h2z"/>
-										</svg>
-									</span>
-									<span class="archive-date">{archive.date}</span>
+		<div class="dashboard__content">
+			<div class="dashboard__content-main">
+				<section class="dashboard__content-section">
+					<div class="fl-post-grid-post">
+						{#each archives as item}
+							<div class="card fl-post-text">
+								<div class="">
+									<section class="card-body u--squash">
+										<h4 class="h5 card-title">Weekly Watchlist for {item.date}</h4>
+										<div class="excerpt"><i>With {item.trader}</i></div>
+										<div class="fl-post-more-link">
+											<a class="btn btn-tiny btn-default" href="/watchlist/{item.slug}?tab=2">Read Now</a>
+										</div>
+									</section>
 								</div>
-								<div class="archive-card-body">
-									<h3 class="archive-title">Week of {archive.week}</h3>
-									<div class="archive-meta">
-										<span class="meta-item">
-											<svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-											{archive.trader}
-										</span>
-										<span class="meta-item">
-											<svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-											{archive.stockCount} Stocks
-										</span>
-									</div>
-								</div>
-								<div class="archive-card-footer">
-									<a href="/weeklywatchlist/archive/{archive.slug}" class="view-btn">View Watchlist</a>
-								</div>
-							</article>
+							</div>
 						{/each}
 					</div>
 
 					<!-- Pagination -->
-					<div class="pagination">
-						<span class="page-info">Showing 1-8 of 52 watchlists</span>
-						<div class="page-controls">
-							<button class="page-btn" disabled>Previous</button>
-							<button class="page-btn page-btn-active">1</button>
-							<button class="page-btn">2</button>
-							<button class="page-btn">3</button>
-							<span class="page-dots">...</span>
-							<button class="page-btn">7</button>
-							<button class="page-btn">Next</button>
+					<div class="text-center pagination-container">
+						<div id="loopage_pg" class="pagination-wrap">
+							{#if currentPage > 1}
+								<a class="page-numbers" href="?pg={currentPage - 1}">&laquo;</a>
+							{/if}
+
+							<span aria-current="page" class="page-numbers current">{currentPage}</span>
+
+							{#if currentPage < totalPages}
+								<a class="page-numbers" href="?pg={currentPage + 1}">{currentPage + 1}</a>
+							{/if}
+
+							{#if currentPage + 1 < totalPages}
+								<a class="page-numbers" href="?pg={currentPage + 2}">{currentPage + 2}</a>
+							{/if}
+
+							{#if currentPage + 2 < totalPages}
+								<span class="page-numbers dots">&hellip;</span>
+								<a class="page-numbers" href="?pg={totalPages}">{totalPages}</a>
+							{/if}
+
+							{#if currentPage < totalPages}
+								<a class="next page-numbers" href="?pg={currentPage + 1}">&raquo;</a>
+							{/if}
 						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+
+		<!-- Current Watchlist Section -->
+		<div class="dashboard__content-section u--background-color-white">
+			<section>
+				<div class="row">
+					<div class="col-sm-6 col-lg-5">
+						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+						<div class="hidden-md d-lg-none pb-2">
+							<a href="/watchlist/12222025-tg-watkins">
+								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+							</a>
+						</div>
+						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
+						<div class="u--hide-read-more">
+							<p>Week of December 22, 2025.</p>
+						</div>
+						<a href="/watchlist/12222025-tg-watkins" class="btn btn-tiny btn-default">Watch Now</a>
+					</div>
+					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+						<a href="/watchlist/12222025-tg-watkins">
+							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
+						</a>
 					</div>
 				</div>
 			</section>
-
 		</div>
-	</div>
+	</main>
 </div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   100% PIXEL-PERFECT STYLES - Matching Simpler Trading
+	   Weekly Watchlist Archive - Matching Simpler Trading Exactly
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	:global(body) {
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-		margin: 0;
-		padding: 0;
+	/* Dashboard Layout */
+	.dashboard {
+		display: flex;
+		min-height: 100vh;
 		background: #f4f4f4;
 	}
 
-	/* Breadcrumbs */
-	.breadcrumbs {
-		background: #f4f4f4;
-		padding: 12px 0;
+	/* Sidebar */
+	.dashboard__sidebar {
+		width: 280px;
+		background: #1a1a1a;
+		flex-shrink: 0;
+	}
+
+	.dashboard__nav-secondary ul {
+		list-style: none;
+		margin: 0;
+		padding: 20px 0;
+	}
+
+	.dashboard__nav-secondary li {
+		margin: 0;
+	}
+
+	.dashboard__nav-secondary a {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 24px;
+		color: #999;
+		text-decoration: none;
+		font-size: 14px;
+		transition: all 0.2s;
+	}
+
+	.dashboard__nav-secondary a:hover {
+		color: #fff;
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.dashboard__nav-secondary li.is-active a {
+		color: #fff;
+		background: rgba(9, 132, 174, 0.2);
+		border-left: 3px solid #0984ae;
+	}
+
+	.dashboard__nav-item-icon {
+		font-size: 18px;
+	}
+
+	/* Main Content */
+	.dashboard__main {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.dashboard__header {
+		padding: 20px 30px;
+		background: #fff;
 		border-bottom: 1px solid #dbdbdb;
 	}
 
-	.breadcrumbs ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-
-	.breadcrumbs li {
-		font-size: 14px;
-		color: #666;
-	}
-
-	.breadcrumbs a {
-		color: #0984ae;
-		text-decoration: none;
-	}
-
-	.breadcrumbs a:hover {
-		text-decoration: underline;
-	}
-
-	.separator {
-		margin: 0 8px;
-	}
-
-	/* Container */
-	.container-fluid {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 20px;
-	}
-
-	/* Page Header */
-	.page-header-section {
-		padding: 40px 0 30px;
-	}
-
-	.page-title {
-		font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
-		font-size: 36px;
+	.dashboard__page-title {
+		font-size: 24px;
 		font-weight: 700;
-		color: #1a1a1a;
-		margin: 0 0 8px;
-		text-transform: uppercase;
-	}
-
-	.page-subtitle {
-		color: #666;
-		font-size: 16px;
-		font-weight: 500;
+		color: #333;
 		margin: 0;
+		font-family: 'Open Sans', sans-serif;
 	}
 
-	/* Back Link */
-	.back-link-wrap {
-		margin-bottom: 24px;
+	.dashboard__content {
+		padding: 30px;
 	}
 
-	.back-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: #0984ae;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 600;
-	}
-
-	.back-link:hover {
-		color: #076787;
-		text-decoration: underline;
-	}
-
-	/* Archive Grid */
-	.archive-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 20px;
-		margin-bottom: 40px;
-	}
-
-	.archive-card {
+	.dashboard__content-section {
 		background: #fff;
-		border-radius: 8px;
-		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		border-radius: 4px;
+		padding: 20px;
+		margin-bottom: 20px;
 	}
 
-	.archive-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-	}
-
-	.archive-card-header {
+	/* Archive Grid - Matching Reference */
+	.fl-post-grid-post {
+		font-size: 19px;
+		background: transparent !important;
+		border: 0;
 		display: flex;
-		align-items: center;
+		flex-wrap: wrap;
 		justify-content: space-between;
-		padding: 16px 20px;
-		background: #f9f9f9;
-		border-bottom: 1px solid #ededed;
+		gap: 1%;
 	}
 
-	.archive-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		background: #0984ae;
-		border-radius: 8px;
-		color: #fff;
+	.card {
+		max-width: 32%;
+		margin: 0.5%;
+		background: #fff;
+		border-radius: 4px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		flex: 1 1 calc(33.333% - 1%);
+		min-width: 280px;
 	}
 
-	.archive-date {
-		font-size: 13px;
-		color: #666;
-		font-weight: 500;
-	}
-
-	.archive-card-body {
+	.card-body.u--squash {
 		padding: 20px;
 	}
 
-	.archive-title {
+	.card-title {
+		font-size: 24px;
+		line-height: 1.3;
+		margin: 0 0 10px;
+		color: #333;
+		font-weight: 600;
+	}
+
+	.excerpt {
+		margin: 20px 0;
 		font-size: 16px;
-		font-weight: 700;
-		color: #1a1a1a;
-		margin: 0 0 12px;
-	}
-
-	.archive-meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 16px;
-	}
-
-	.meta-item {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 13px;
 		color: #666;
 	}
 
-	.archive-card-footer {
-		padding: 16px 20px;
-		border-top: 1px solid #ededed;
+	.fl-post-more-link {
+		margin-top: 15px;
 	}
 
-	.view-btn {
+	/* Buttons */
+	.btn {
 		display: inline-block;
 		padding: 10px 20px;
-		background: #0984ae;
-		color: #fff;
 		text-decoration: none;
-		border-radius: 5px;
-		font-size: 14px;
+		border-radius: 3px;
 		font-weight: 600;
-		transition: background 0.15s ease;
+		transition: all 0.2s;
 	}
 
-	.view-btn:hover {
-		background: #076787;
+	.btn-tiny {
+		padding: 8px 16px;
+		font-size: 13px;
 	}
 
-	/* Pagination */
-	.pagination {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		flex-wrap: wrap;
-		gap: 16px;
-		padding: 20px 0 40px;
-	}
-
-	.page-info {
-		font-size: 14px;
-		color: #666;
-	}
-
-	.page-controls {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.page-btn {
-		padding: 8px 14px;
-		background: #fff;
+	.btn-default {
+		background: #f5f5f5;
 		color: #333;
 		border: 1px solid #dbdbdb;
-		border-radius: 5px;
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.15s ease;
 	}
 
-	.page-btn:hover:not(:disabled) {
-		background: #f4f4f4;
+	.btn-default:hover {
+		background: #e8e8e8;
 		border-color: #999;
 	}
 
-	.page-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
+	/* Pagination - Matching Reference */
+	.pagination-container {
+		margin-top: 20px;
+		text-align: center;
 	}
 
-	.page-btn-active {
-		background: #0984ae;
-		color: #fff;
+	.pagination-wrap {
+		display: inline-flex;
+		gap: 0;
+	}
+
+	.page-numbers {
+		display: inline-block;
+		padding: 8px 14px;
+		font-size: 17px;
+		font-weight: 600;
+		color: #666;
+		background: #fff !important;
+		text-decoration: none;
+		border: 1px solid #e6e6e6;
+		margin-left: -1px;
+	}
+
+	.page-numbers:first-child {
+		border-radius: 5px 0 0 5px;
+		margin-left: 0;
+	}
+
+	.page-numbers:last-child {
+		border-radius: 0 5px 5px 0;
+	}
+
+	.page-numbers:hover {
+		background: #f5f5f5 !important;
+	}
+
+	.page-numbers.current {
+		color: #f4f4f4;
+		background: #0984ae !important;
 		border-color: #0984ae;
 	}
 
-	.page-dots {
-		padding: 0 8px;
-		color: #666;
+	.page-numbers.dots {
+		border: none;
+		background: transparent !important;
+	}
+
+	/* Current Watchlist Section */
+	.u--background-color-white {
+		background: #fff;
+		margin: 0 30px 30px;
+		padding: 30px;
+		border-radius: 4px;
+	}
+
+	.section-title-alt {
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 20px;
+	}
+
+	.section-title-alt--underline {
+		padding-bottom: 15px;
+		border-bottom: 2px solid #0984ae;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700;
+	}
+
+	.u--border-radius {
+		border-radius: 4px;
+		width: 100%;
+	}
+
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0 -15px;
+	}
+
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+		padding: 0 15px;
+	}
+
+	.col-lg-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+
+	.col-lg-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+
+	.pb-2 {
+		padding-bottom: 10px;
 	}
 
 	/* Responsive */
+	@media (max-width: 992px) {
+		.dashboard__sidebar {
+			display: none;
+		}
+
+		.col-lg-5,
+		.col-lg-7 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+
+		.d-lg-block {
+			display: none !important;
+		}
+
+		.d-lg-none {
+			display: block !important;
+		}
+	}
+
 	@media (max-width: 768px) {
-		.page-title {
-			font-size: 28px;
+		.card {
+			flex: 1 1 100%;
+			max-width: 100%;
 		}
 
-		.archive-grid {
-			grid-template-columns: 1fr;
+		.col-sm-6 {
+			flex: 0 0 100%;
+			max-width: 100%;
 		}
 
-		.pagination {
-			flex-direction: column;
-			align-items: flex-start;
+		.dashboard__content {
+			padding: 15px;
+		}
+
+		.u--background-color-white {
+			margin: 0 15px 15px;
+			padding: 20px;
+		}
+	}
+
+	/* Hide classes */
+	.hidden-xs,
+	.hidden-sm {
+		display: block;
+	}
+
+	.hidden-md {
+		display: none;
+	}
+
+	@media (max-width: 992px) {
+		.hidden-md {
+			display: block;
+		}
+
+		.d-none {
+			display: none !important;
 		}
 	}
 </style>
