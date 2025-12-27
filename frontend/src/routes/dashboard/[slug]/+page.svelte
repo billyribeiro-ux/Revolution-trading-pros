@@ -9,12 +9,50 @@
 	 * @version 2.0.0 - Dynamic Routes
 	 */
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	// Tabler Icons for dropdown menu
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
 
 	let { data }: { data: any } = $props();
+
+	// Trading Room dropdown toggle state - WordPress style click-based toggle
+	let dropdownOpen = $state(false);
+	let dropdownRef = $state<HTMLElement | null>(null);
+
+	// Toggle dropdown on button click
+	function toggleDropdown(e: Event) {
+		e.preventDefault();
+		e.stopPropagation();
+		dropdownOpen = !dropdownOpen;
+	}
+
+	// Close dropdown when clicking outside
+	function handleClickOutside(e: MouseEvent) {
+		if (dropdownRef && !dropdownRef.contains(e.target as Node)) {
+			dropdownOpen = false;
+		}
+	}
+
+	// Close dropdown on Escape key
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape' && dropdownOpen) {
+			dropdownOpen = false;
+		}
+	}
+
+	// Setup click-outside listener
+	$effect(() => {
+		if (browser && dropdownOpen) {
+			document.addEventListener('click', handleClickOutside);
+			document.addEventListener('keydown', handleKeydown);
+			return () => {
+				document.removeEventListener('click', handleClickOutside);
+				document.removeEventListener('keydown', handleKeydown);
+			};
+		}
+	});
 	const room = $derived(data.room);
 	const slug = $derived(data.slug);
 
@@ -163,17 +201,24 @@
 		{#if room.type === 'trading-room'}
 			<ul class="ultradingroom">
 				<li class="litradingroom">
-					<a href="/trading-room-rules.pdf" target="_blank" class="btn btn-xs btn-link">Trading Room Rules</a>
+					<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link">Trading Room Rules</a>
 				</li>
 				<li class="litradingroomhind">
 					By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
 				</li>
 			</ul>
-			<div class="dropdown display-inline-block">
-				<button type="button" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" aria-expanded="false">
+			<div class="dropdown display-inline-block" class:show={dropdownOpen} bind:this={dropdownRef}>
+				<button
+					type="button"
+					class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+					id="dLabel"
+					data-bs-toggle="dropdown"
+					aria-expanded={dropdownOpen}
+					onclick={toggleDropdown}
+				>
 					<strong>Enter a Trading Room</strong>
 				</button>
-				<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+				<nav class="dropdown-menu dropdown-menu--full-width" class:show={dropdownOpen} aria-labelledby="dLabel">
 					<ul class="dropdown-menu__menu">
 						<li>
 							<a href="/dashboard/{slug}" target="_blank" rel="nofollow">
@@ -323,8 +368,9 @@
 		flex-wrap: wrap;
 	}
 
+	/* WordPress reference: font-size: 36px (core 1:3087) */
 	.dashboard__page-title {
-		font-size: 24px;
+		font-size: 36px;
 		font-weight: 700;
 		color: #333;
 		margin: 0;
@@ -440,10 +486,17 @@
 		min-width: 200px;
 		display: none;
 		font-size: 14px;
+		/* Animation for smooth open/close */
+		opacity: 0;
+		transform: translateY(-5px);
+		transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 	}
 
-	.dropdown:hover .dropdown-menu {
+	/* Click-based toggle (WordPress style with data-bs-toggle) */
+	.dropdown-menu.show {
 		display: block;
+		opacity: 1;
+		transform: translateY(0);
 	}
 
 	.dropdown-menu--full-width {
