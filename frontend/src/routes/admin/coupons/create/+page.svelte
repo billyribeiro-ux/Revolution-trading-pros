@@ -912,11 +912,11 @@
 		if (Array.isArray(data['user_segments']) && data['user_segments'].length === 0) delete data['user_segments'];
 
 		// Convert dates to ISO format
-		if (data.starts_at) {
-			data.starts_at = new Date(data.starts_at).toISOString();
+		if (data['starts_at']) {
+			data['starts_at'] = new Date(data['starts_at'] as string).toISOString();
 		}
-		if (data.expires_at) {
-			data.expires_at = new Date(data.expires_at).toISOString();
+		if (data['expires_at']) {
+			data['expires_at'] = new Date(data['expires_at'] as string).toISOString();
 		}
 
 		return data;
