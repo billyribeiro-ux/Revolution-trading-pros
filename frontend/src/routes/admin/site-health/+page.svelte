@@ -109,7 +109,6 @@
 	let isLoading = $state(true);
 	let isRefreshing = $state(false);
 	let isRunningTests = $state(false);
-	let showContent = $state(false);
 	let healthData = $state<SiteHealthData | null>(null);
 	let lastUpdated = $state<Date | null>(null);
 	let activeTab = $state<'overview' | 'performance' | 'security' | 'database' | 'server'>('overview');
@@ -127,9 +126,6 @@
 		await loadHealthData();
 
 		isLoading = false;
-		setTimeout(() => {
-			showContent = true;
-		}, 100);
 	});
 
 	onDestroy(() => {
@@ -291,30 +287,9 @@
 		}
 	}
 
-	function formatBytes(bytes: number): string {
-		if (bytes === 0) return '0 B';
-		const k = 1024;
-		const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-	}
-
 	function formatMs(ms: number): string {
 		if (ms < 1000) return `${Math.round(ms)}ms`;
 		return `${(ms / 1000).toFixed(2)}s`;
-	}
-
-	function getCategoryChecks(category: string): HealthCheck[] {
-		return healthData?.checks.filter((c) => c.category === category) ?? [];
-	}
-
-	function getCategoryStats(category: string): { good: number; warning: number; critical: number } {
-		const checks = getCategoryChecks(category);
-		return {
-			good: checks.filter((c) => c.status === 'good').length,
-			warning: checks.filter((c) => c.status === 'warning').length,
-			critical: checks.filter((c) => c.status === 'critical').length
-		};
 	}
 
 	const tabs = [
