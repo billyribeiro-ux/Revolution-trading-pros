@@ -482,29 +482,45 @@
 								<span class="dashboard__nav-item-text">Trading Room Archives</span>
 							</a>
 						</li>
-						<!-- Meet the Traders (with arrow) -->
-						<li class={$page.url.pathname.includes('/traders') ? 'is-active' : ''}>
-							<a href="/dashboard/{currentMembershipSlug}/traders">
+						<!-- Meet the Traders (with submenu) - Exact WordPress match -->
+						<li class="has-submenu" class:is-active={$page.url.pathname.includes('/traders')}>
+							<a href="#" style="cursor: default;" onclick="return false;">
 								<span class="dashboard__nav-item-icon">
 									<IconUsers size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Meet the Traders</span>
-								<span class="nav-arrow">
-									<IconChevronRight size={16} />
-								</span>
 							</a>
+							<ul class="dashboard__nav-submenu">
+								<li><a href="/dashboard/{currentMembershipSlug}/john-carter">John Carter</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/henry-gambell">Henry Gambell</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/taylor-horton">Taylor Horton</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/bruce-marshall">Bruce Marshall</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/danielle-shay">Danielle Shay</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/allison-ostrander">Allison Ostrander</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/sam-shames">Sam Shames</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/kody-ashmore">Kody Ashmore</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/raghee-horner">Raghee Horner</a></li>
+							</ul>
 						</li>
-						<!-- Trader Store (with arrow) -->
-						<li class={$page.url.pathname.includes('/trader-store') ? 'is-active' : ''}>
-							<a href="/dashboard/{currentMembershipSlug}/trader-store">
+						<!-- Trader Store (with submenu) - Exact WordPress match -->
+						<li class="has-submenu" class:is-active={$page.url.pathname.includes('/trader-store')}>
+							<a href="#" style="cursor: default;" onclick="return false;">
 								<span class="dashboard__nav-item-icon">
 									<IconBuildingStore size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Trader Store</span>
-								<span class="nav-arrow">
-									<IconChevronRight size={16} />
-								</span>
 							</a>
+							<ul class="dashboard__nav-submenu">
+								<li><a href="/dashboard/{currentMembershipSlug}/john-carter/john-carter-trader-store">John Carter</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/henry-gambell/trader-store">Henry Gambell</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/taylor-horton/taylor-horton-trader-store">Taylor Horton</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/bruce-marshall/bruce-marshall-trader-store">Bruce Marshall</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/danielle-shay/danielle-shay-trader-store">Danielle Shay</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/allison-ostrander/allison-ostrander-trader-store">Allison Ostrander</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/sam-shames/sam-shames-trader-store">Sam Shames</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/kody-ashmore/kody-ashmore-trader-store">Kody Ashmore</a></li>
+								<li><a href="/dashboard/{currentMembershipSlug}/raghee-horner/raghee-horner-trader-store">Raghee Horner</a></li>
+							</ul>
 						</li>
 						<!-- Simpler Showcase -->
 						<li class={$page.url.pathname.includes('/simpler-showcase') ? 'is-active' : ''}>
@@ -1170,6 +1186,78 @@
 	.dashboard__nav-secondary .nav-arrow :global(svg) {
 		width: 16px;
 		height: 16px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SUBMENU - Hover-based dropdown for Traders and Trader Store
+	   Pixel-perfect match to WordPress reference (core 1:2980-3068)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__nav-secondary li.has-submenu {
+		position: relative;
+	}
+
+	/* Parent link styling - non-navigating */
+	.dashboard__nav-secondary li.has-submenu > a {
+		cursor: default;
+	}
+
+	/* Submenu container - hidden by default, appears on hover */
+	.dashboard__nav-secondary .dashboard__nav-submenu {
+		position: absolute;
+		left: 100%;
+		top: 0;
+		min-width: 180px;
+		background-color: #143E59;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateX(-10px);
+		transition: all 0.2s ease-in-out;
+		z-index: 110;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+		border-radius: 0 4px 4px 0;
+	}
+
+	/* Show submenu on hover */
+	.dashboard__nav-secondary li.has-submenu:hover > .dashboard__nav-submenu {
+		opacity: 1;
+		visibility: visible;
+		transform: translateX(0);
+	}
+
+	/* Submenu items */
+	.dashboard__nav-secondary .dashboard__nav-submenu li {
+		margin: 0;
+		padding: 0;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-submenu li a {
+		display: block;
+		padding: 12px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
+		text-decoration: none;
+		font-size: 13px;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
+		transition: all 0.15s ease-in-out;
+		white-space: nowrap;
+		border-left: 3px solid transparent;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-submenu li a:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #fff;
+		border-left-color: #0984ae;
+	}
+
+	/* Active state for submenu items */
+	.dashboard__nav-secondary .dashboard__nav-submenu li.is-active a {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #fff;
+		border-left-color: #0984ae;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
