@@ -56,70 +56,92 @@
 	const room = $derived(data.room);
 	const slug = $derived(data.slug);
 
+	// Fallback placeholder for video cards (WordPress reference)
+	const FALLBACK_PLACEHOLDER = 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
+
 	// Article data - will be fetched from API later
 	// Using $derived to properly reference reactive slug value in closures
 	const articles = $derived([
 		{
 			id: 1,
-			type: 'Daily Video',
-			title: 'Market Analysis & Trading Strategies',
+			type: 'daily-video',
+			label: 'Daily Video',
+			title: "Santa's On His Way",
 			date: 'December 23, 2025 with HG',
 			excerpt: 'Things can always change, but given how the market closed on Tuesday, it looks like Santa\'s on his way. Let\'s look at the facts, then also some preferences and opinions as we get into the end of 2025.',
-			href: `/daily/${slug}/market-analysis`,
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			isVideo: true
+			href: `/daily/${slug}/santas-on-his-way`,
+			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg'
 		},
 		{
 			id: 2,
-			type: 'Chatroom Archive',
+			type: 'chatroom-archive',
 			title: 'December 23, 2025',
 			date: 'December 23, 2025',
-			excerpt: 'With Expert Trader',
+			traderName: 'Danielle Shay',
 			href: `/chatroom-archive/${slug}/12232025`,
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false
+			image: FALLBACK_PLACEHOLDER
 		},
 		{
 			id: 3,
-			type: 'Daily Video',
-			title: 'Setting Up for Success',
-			date: 'December 22, 2025 with Expert',
+			type: 'daily-video',
+			label: 'Daily Video',
+			title: 'Setting Up for the Santa Rally',
+			date: 'December 22, 2025 with Danielle Shay',
 			excerpt: 'Everything looks good for a potential rally, as the indexes are consolidating and breaking higher, along with a lot of key stocks. Let\'s take a look at TSLA, GOOGL, AMZN, AVGO, MSFT, and more.',
-			href: `/daily/${slug}/setting-up-success`,
-			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-			isVideo: true
+			href: `/daily/${slug}/setting-up-santa-rally`,
+			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg'
 		},
 		{
 			id: 4,
-			type: 'Chatroom Archive',
+			type: 'chatroom-archive',
 			title: 'December 22, 2025',
 			date: 'December 22, 2025',
-			excerpt: 'With Expert Trader',
+			traderName: 'Henry Gambell',
 			href: `/chatroom-archive/${slug}/12222025`,
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false
+			image: FALLBACK_PLACEHOLDER
 		},
 		{
 			id: 5,
-			type: 'Daily Video',
+			type: 'daily-video',
+			label: 'Daily Video',
 			title: 'Holiday Weekend Market Review',
-			date: 'December 19, 2025 with Expert',
+			date: 'December 19, 2025 with Sam',
 			excerpt: 'Indexes continue to churn sideways as we approach next week\'s holiday trade. Bulls usually take over in low volume. Can they do it again?',
-			href: `/daily/${slug}/holiday-weekend-review`,
-			image: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg',
-			isVideo: true
+			href: `/daily/${slug}/holiday-weekend-market-review`,
+			image: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg'
 		},
 		{
 			id: 6,
-			type: 'Chatroom Archive',
+			type: 'chatroom-archive',
 			title: 'December 19, 2025',
 			date: 'December 19, 2025',
-			excerpt: 'With Expert Trader',
+			traderName: 'Bruce Marshall',
 			href: `/chatroom-archive/${slug}/12192025`,
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false
+			image: FALLBACK_PLACEHOLDER
 		}
 	]);
+
+	// Weekly Watchlist - Dynamic date calculation
+	const weeklyWatchlistDate = $derived(() => {
+		const now = new Date();
+		// Get the Monday of the current week
+		const day = now.getDay();
+		const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+		const monday = new Date(now.setDate(diff));
+		return monday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+	});
+
+	// Weekly Watchlist - Dynamic URL based on date
+	const weeklyWatchlistUrl = $derived(() => {
+		const now = new Date();
+		const day = now.getDay();
+		const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+		const monday = new Date(now.setDate(diff));
+		const month = String(monday.getMonth() + 1).padStart(2, '0');
+		const dayNum = String(monday.getDate()).padStart(2, '0');
+		const year = monday.getFullYear();
+		return `/watchlist/${month}${dayNum}${year}-tg-watkins`;
+	});
 
 	// Google Calendar integration
 	onMount(() => {
@@ -257,34 +279,48 @@
 			</section>
 		{/if}
 
-		<!-- LATEST UPDATES SECTION -->
+		<!-- LATEST UPDATES SECTION - WordPress reference core 1:3143-3300 -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Latest Updates</h2>
 			<div class="article-cards row flex-grid">
 				{#each articles as article (article.id)}
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
-							<figure class="article-card__image" style="background-image: url({article.image});">
-								<img src={article.image} alt={article.title} />
-							</figure>
-							{#if article.isVideo}
+							{#if article.type === 'daily-video'}
+								<!-- DAILY VIDEO CARD - WordPress core 1:3148-3167 -->
+								<figure class="article-card__image" style="background-image: url({article.image});">
+									<img src={FALLBACK_PLACEHOLDER} alt={article.title} />
+								</figure>
 								<div class="article-card__type">
-									<span class="label label--info">{article.type}</span>
+									<span class="label label--info">{article.label}</span>
 								</div>
+								<h4 class="h5 article-card__title"><a href={article.href}>{article.title}</a></h4>
+								<span class="article-card__meta"><small>{article.date}</small></span>
+								<div class="article-card__excerpt u--hide-read-more">
+									<p>{article.excerpt}</p>
+								</div>
+								<a href={article.href} class="btn btn-tiny btn-default">Watch Now</a>
+							{:else}
+								<!-- CHATROOM ARCHIVE CARD - WordPress core 1:3169-3189 -->
+								<figure class="card-media article-card__image card-media--video" style="background-image: url({article.image});">
+									<a href={article.href}>
+										<img src={article.image} alt={article.title} />
+									</a>
+								</figure>
+								<h4 class="h5 article-card__title"><a href={article.href}>{article.title}</a></h4>
+								<div class="article-card__excerpt u--hide-read-more">
+									<p class="u--margin-bottom-0 u--font-size-sm"><i>With {article.traderName}</i></p>
+								</div>
+								<span class="article-card__meta"><small>{article.date}</small></span>
+								<a href={article.href} class="btn btn-tiny btn-default">Watch Now</a>
 							{/if}
-							<h4 class="h5 article-card__title"><a href={article.href}>{article.title}</a></h4>
-							<span class="article-card__meta"><small>{article.date}</small></span>
-							<div class="article-card__excerpt u--hide-read-more">
-								<p>{article.excerpt}</p>
-							</div>
-							<a href={article.href} class="btn btn-tiny btn-default">Watch Now</a>
 						</article>
 					</div>
 				{/each}
 			</div>
 		</section>
 
-		<!-- WEEKLY WATCHLIST SECTION -->
+		<!-- WEEKLY WATCHLIST SECTION - WordPress reference core:2952-2976 -->
 		{#if room.watchlistImage}
 			<div class="dashboard__content-section u--background-color-white">
 				<section>
@@ -292,18 +328,18 @@
 						<div class="col-sm-6 col-lg-5">
 							<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 							<div class="hidden-md d-lg-none pb-2">
-								<a href="/watchlist/latest">
+								<a href={weeklyWatchlistUrl()}>
 									<img src={room.watchlistImage} alt="Weekly Watchlist" class="u--border-radius">
 								</a>
 							</div>
 							<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
 							<div class="u--hide-read-more">
-								<p>Week of December 22, 2025.</p>
+								<p>Week of {weeklyWatchlistDate()}.</p>
 							</div>
-							<a href="/watchlist/latest" class="btn btn-tiny btn-default">Watch Now</a>
+							<a href={weeklyWatchlistUrl()} class="btn btn-tiny btn-default">Watch Now</a>
 						</div>
 						<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
-							<a href="/watchlist/latest">
+							<a href={weeklyWatchlistUrl()}>
 								<img src={room.watchlistImage} alt="Weekly Watchlist" class="u--border-radius">
 							</a>
 						</div>
@@ -703,6 +739,47 @@
 		opacity: 0;
 	}
 
+	/* Chatroom Archive: Show image in figure with link - WordPress core 1:3174-3178 */
+	.article-card__image.card-media--video img {
+		opacity: 1;
+	}
+
+	.article-card__image.card-media--video a {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Video Play Icon Overlay - WordPress reference core 1:3174 card-media--video */
+	.card-media--video {
+		position: relative;
+		cursor: pointer;
+	}
+
+	.card-media--video::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 60px;
+		height: 60px;
+		background-color: rgba(0, 0, 0, 0.6);
+		border-radius: 50%;
+		/* Play triangle using CSS */
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 28px 28px;
+		transition: all 0.2s ease-in-out;
+		pointer-events: none;
+	}
+
+	.card-media--video:hover::after {
+		background-color: rgba(9, 132, 174, 0.8);
+		transform: translate(-50%, -50%) scale(1.1);
+	}
+
 	.article-card__type {
 		padding: 12px 20px 0;
 	}
@@ -798,6 +875,15 @@
 
 	.u--background-color-white {
 		background-color: #fff !important;
+	}
+
+	/* Utility classes for chatroom archive cards - WordPress reference */
+	.u--margin-bottom-0 {
+		margin-bottom: 0 !important;
+	}
+
+	.u--font-size-sm {
+		font-size: 13px !important;
 	}
 
 	.section-title-alt {
