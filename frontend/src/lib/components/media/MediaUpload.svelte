@@ -102,8 +102,8 @@
     for (const file of files) {
       try {
         const options: UploadOptions = {
-          collection,
-          preset,
+          ...(collection && { collection }),
+          ...(preset && { preset }),
           process_immediately: processImmediately,
         };
 

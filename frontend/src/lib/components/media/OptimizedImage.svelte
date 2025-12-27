@@ -107,7 +107,7 @@
   }
 
   // Handle image error
-  function handleError(e: Event) {
+  function handleError(_e: Event) {
     hasError = true;
     onErrorCallback?.(new Error('Image failed to load'));
   }
@@ -177,23 +177,23 @@
   {#if isInView || priority}
     <picture>
       <!-- AVIF source (best compression) -->
-      {#if srcset?.avif}
+      {#if srcset?.['avif']}
         <source
-          srcset={srcset.avif}
+          srcset={srcset['avif']}
           type="image/avif"
         />
       {/if}
 
       <!-- WebP source (good compression, wide support) -->
-      {#if srcset?.webp}
+      {#if srcset?.['webp']}
         <source
-          srcset={srcset.webp}
+          srcset={srcset['webp']}
           type="image/webp"
         />
       {/if}
 
       <!-- Responsive srcset -->
-      {#if srcset && !srcset.avif && !srcset.webp}
+      {#if srcset && !srcset['avif'] && !srcset['webp']}
         <source
           srcset={buildSrcset()}
           {sizes}
