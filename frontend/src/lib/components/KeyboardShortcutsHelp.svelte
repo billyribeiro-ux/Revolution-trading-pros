@@ -27,7 +27,7 @@
 			if (!acc[shortcut.category]) {
 				acc[shortcut.category] = [];
 			}
-			acc[shortcut.category].push(shortcut);
+			acc[shortcut.category]?.push(shortcut);
 			return acc;
 		}, {} as Record<string, typeof $keyboard.shortcuts>));
 
@@ -78,7 +78,7 @@
 
 			<!-- Content -->
 			<div class="modal-content">
-				{#each Object.entries(groupedShortcuts) as [category, shortcuts], index}
+				{#each Object.entries(groupedShortcuts) as [category, shortcuts]}
 					<div class="shortcut-group">
 						<h3 class="group-title">{category}</h3>
 						<div class="shortcuts-list">

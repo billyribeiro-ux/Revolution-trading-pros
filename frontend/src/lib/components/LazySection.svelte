@@ -13,7 +13,7 @@
 	 * - PRODUCTION FIX: Always render content on SSR for SEO, lazy load animations only
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -34,13 +34,13 @@
 		rootMargin = '200px',
 		threshold = 0,
 		fallbackTimeout = 2000,
-		placeholderHeight = '400px',
+		placeholderHeight: _placeholderHeight = '400px',
 		children
 	}: Props = $props();
 
 	// ICT11+ PRODUCTION FIX: Always start visible for SSR/SEO
 	// Content is always rendered, only animations are deferred
-	let isVisible = $state(true);
+	let _isVisible = $state(true);
 	let hasAnimated = $state(false);
 	let container = $state<HTMLElement | null>(null);
 	let observer: IntersectionObserver | null = null;
