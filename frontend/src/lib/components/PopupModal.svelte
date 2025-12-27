@@ -76,8 +76,8 @@
 	let modalElement = $state<HTMLDivElement>();
 	let previousFocus: HTMLElement | null = null;
 	let scrollPosition = 0;
-	let _mousePosition = { x: 0, y: 0 };
-	let _viewportSize = { width: 0, height: 0 };
+	let mousePosition = { x: 0, y: 0 };
+	let viewportSize = { width: 0, height: 0 };
 	let deviceType = $state<'mobile' | 'tablet' | 'desktop'>('desktop');
 	let userInteracted = false;
 	let impressionTime = 0;
