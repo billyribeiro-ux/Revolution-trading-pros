@@ -52,14 +52,17 @@
 
 	async function loadActivePopups() {
 		try {
-			const device = getDeviceType();
 			const response = await popupsApi.getActive(pageUrl || window.location.href);
 			popups = response || [];
 
 			if (popups.length > 0) {
 				// Show highest priority popup
-				currentPopup = popups.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
-				setupTriggers(currentPopup);
+				const sorted = popups.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+				const topPopup = sorted[0];
+				if (topPopup) {
+					currentPopup = topPopup;
+					setupTriggers(topPopup);
+				}
 			}
 		} catch (error) {
 			console.error('Failed to load popups:', error);
@@ -261,10 +264,10 @@
 			const lastElement = focusableElements[focusableElements.length - 1];
 
 			if (event.shiftKey && document.activeElement === firstElement) {
-				lastElement.focus();
+				lastElement?.focus();
 				event.preventDefault();
 			} else if (!event.shiftKey && document.activeElement === lastElement) {
-				firstElement.focus();
+				firstElement?.focus();
 				event.preventDefault();
 			}
 		}
