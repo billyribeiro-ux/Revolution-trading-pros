@@ -147,8 +147,8 @@
 		showImportModal = true;
 	}
 
-	function confirmImport() {
-		if (importTemplateConfig(importJson)) {
+	async function confirmImport() {
+		if (await importTemplateConfig(importJson)) {
 			showNotification('Configuration imported successfully');
 			showImportModal = false;
 			importJson = '';

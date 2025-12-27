@@ -10,8 +10,23 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
+interface MockCategory {
+	id: number;
+	name: string;
+	slug: string;
+	description: string;
+	color: string;
+	icon: string;
+	post_count: number;
+	is_featured: boolean;
+	sort_order: number;
+	parent_id: number | null;
+	created_at: string;
+	updated_at: string;
+}
+
 // Mock categories matching the predefined list in the blog admin
-const mockCategories = [
+const mockCategories: MockCategory[] = [
 	{
 		id: 1,
 		name: 'Market Analysis',
