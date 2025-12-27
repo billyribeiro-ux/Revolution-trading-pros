@@ -68,7 +68,7 @@ function processEventQueue(): void {
 
 	while (eventQueue.length > 0) {
 		const { event, data } = eventQueue.shift()!;
-		window.twq('event', event, data || {});
+		window.twq!('event', event, data || {});
 	}
 }
 

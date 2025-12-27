@@ -133,7 +133,7 @@ export function trackPixelEvent(
 		return;
 	}
 
-	window.fbq('track', eventName, params);
+	window.fbq!('track', eventName, params);
 	console.debug('[MetaPixel] Tracked event:', eventName, params);
 }
 
@@ -152,7 +152,7 @@ export function trackCustomPixelEvent(
 		return;
 	}
 
-	window.fbq('trackCustom', eventName, params);
+	window.fbq!('trackCustom', eventName, params);
 	console.debug('[MetaPixel] Tracked custom event:', eventName, params);
 }
 
@@ -176,11 +176,11 @@ export function setLimitedDataUse(enabled: boolean, state: number = 0): void {
 
 	if (enabled) {
 		// Enable LDU - limits data processing to anonymized data
-		window.fbq('dataProcessingOptions', ['LDU'], 1, state);
+		window.fbq!('dataProcessingOptions', ['LDU'], 1, state);
 		console.debug('[MetaPixel] Limited Data Use enabled');
 	} else {
 		// Disable LDU - full data processing
-		window.fbq('dataProcessingOptions', []);
+		window.fbq!('dataProcessingOptions', []);
 		console.debug('[MetaPixel] Limited Data Use disabled');
 	}
 }
@@ -229,11 +229,11 @@ export const metaPixelVendor: VendorConfig = {
 
 			// Step 2: Grant consent before initializing
 			// This tells Meta we have consent to track
-			window.fbq('consent', 'grant');
+			window.fbq!('consent', 'grant');
 			pixelConsentGranted = true;
 
 			// Step 3: Initialize the pixel with the ID
-			window.fbq('init', PUBLIC_META_PIXEL_ID);
+			window.fbq!('init', PUBLIC_META_PIXEL_ID);
 
 			// Step 4: Load the fbevents.js script
 			await injectPixelScript();
@@ -260,7 +260,7 @@ export const metaPixelVendor: VendorConfig = {
 		if (browser && window.fbq) {
 			try {
 				// Revoke consent - tells Meta to stop collecting data
-				window.fbq('consent', 'revoke');
+				window.fbq!('consent', 'revoke');
 				console.debug('[MetaPixel] Consent revoked - stopped event tracking');
 			} catch (error) {
 				console.debug('[MetaPixel] Error revoking consent:', error);

@@ -136,7 +136,7 @@ function initializeGtagFunction(): void {
 
 	if (typeof window.gtag !== 'function') {
 		window.gtag = function gtag(...args: unknown[]) {
-			window.dataLayer.push(args);
+			window.dataLayer!.push(args);
 		};
 	}
 }
@@ -280,10 +280,10 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 					]);
 
 					// Step 4: Initialize gtag with timestamp
-					window.gtag('js', new Date());
+					window.gtag!('js', new Date());
 
 					// Step 5: Configure GA4 with privacy-preserving defaults
-					window.gtag('config', this._measurementId, {
+					window.gtag!('config', this._measurementId, {
 						send_page_view: gaConfig.sendPageView ?? false,
 						anonymize_ip: gaConfig.anonymizeIp ?? true,
 						allow_google_signals: this._consent.marketing && (gaConfig.allowGoogleSignals ?? false),
@@ -325,7 +325,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		if (!browser || typeof window.gtag !== 'function') return;
 
 		// Set default consent state before any tracking
-		window.gtag('consent', 'default', {
+		window.gtag!('consent', 'default', {
 			analytics_storage: this._consent.analytics ? 'granted' : 'denied',
 			ad_storage: this._consent.marketing ? 'granted' : 'denied',
 			ad_user_data: this._consent.marketing ? 'granted' : 'denied',
@@ -346,7 +346,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		if (!browser || typeof window.gtag !== 'function') return;
 
 		// Update consent in GA4
-		window.gtag('consent', 'update', {
+		window.gtag!('consent', 'update', {
 			analytics_storage: consent.analytics ? 'granted' : 'denied',
 			ad_storage: consent.marketing ? 'granted' : 'denied',
 			ad_user_data: consent.marketing ? 'granted' : 'denied',
@@ -442,7 +442,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 
 		// Set user ID in GA4
 		if (this.isReady) {
-			window.gtag('config', this._measurementId, {
+			window.gtag!('config', this._measurementId, {
 				user_id: payload.user_id,
 			});
 		}
@@ -471,7 +471,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		if (!browser || !this._measurementId) return;
 
 		if (this.isReady) {
-			window.gtag('set', 'user_properties', properties);
+			window.gtag!('set', 'user_properties', properties);
 		}
 
 		if (this._config?.debug) {
@@ -486,7 +486,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		this._userId = null;
 
 		if (browser && this.isReady) {
-			window.gtag('config', this._measurementId, {
+			window.gtag!('config', this._measurementId, {
 				user_id: null,
 			});
 		}
@@ -567,7 +567,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		startTime: number
 	): void {
 		try {
-			window.gtag('event', eventName, payload);
+			window.gtag!('event', eventName, payload);
 
 			// Update metrics
 			this._metrics.eventsTracked++;
