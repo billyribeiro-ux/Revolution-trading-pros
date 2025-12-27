@@ -318,9 +318,7 @@
 	let isPlaying: boolean = $state(false);
 	let isPaused: boolean = $state(false);
 	let isEnded: boolean = $state(false);
-	let isBuffering: boolean = $state(false);
 	let isFullscreen: boolean = $state(false);
-	let isPictureInPicture: boolean = $state(false);
 	let isMuted: boolean = $state(false);
 	let hasError: boolean = $state(false);
 
@@ -346,15 +344,9 @@
 	// UI state
 	let showControls: boolean = $state(true);
 	let showSettings: boolean = $state(false);
-	let _showQualityMenu: boolean = $state(false);
-	let _showSpeedMenu: boolean = $state(false);
-	let _showChapters: boolean = $state(false);
-	let _showPlaylistMenu: boolean = $state(false);
 	let controlsTimer: number | null = $state(null);
-	let isHovering: boolean = $state(false);
 	let thumbnailLoaded: boolean = $state(false);
 	let hasInteracted: boolean = $state(false);
-	let showCallToAction: boolean = $state(false);
 
 	// Quality options
 	let availableQualities: string[] = $state([]);
@@ -395,7 +387,6 @@
 	let progressMilestones: Set<number> = $state(new Set());
 
 	// Animations
-	const _playerScale = spring(1, { stiffness: 0.2, damping: 0.5 });
 
 	// Event handler references for cleanup (prevents memory leaks)
 	let handleEnterPiP: (() => void) | null = null;
