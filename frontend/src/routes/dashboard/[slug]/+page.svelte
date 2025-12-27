@@ -516,8 +516,9 @@
 		padding: 10px;
 		background-color: #fff;
 		border: 1px solid #dbdbdb;
-		border-radius: 4px;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+		border-radius: 5px;
+		/* Phase 5: WordPress reference box-shadow: 0 10px 30px rgba(0,0,0,0.15) */
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		z-index: 1000;
 		min-width: 200px;
 		display: none;
@@ -721,6 +722,12 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+	}
+
+	/* Phase 5: Card hover effects - WordPress pattern */
+	.article-card:hover {
+		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
 	.article-card__image {
