@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconEye, IconArrowLeft } from '$lib/icons';
 	import { createPopup } from '$lib/api/popups';
 	import {
 		defaultPopupConfig,
-		type Popup,
-		type PopupButton,
-		type PopupContent
+		type Popup
 	} from '$lib/stores/popups';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
