@@ -479,16 +479,20 @@
 				break;
 			case 'Enter':
 			case ' ':
-				if (focusedDropdownIndex >= 0 && submenu?.[focusedDropdownIndex]) {
-					event.preventDefault();
-					handleNavClick(submenu[focusedDropdownIndex].href, submenu[focusedDropdownIndex].label);
+				if (focusedDropdownIndex >= 0) {
+					const item = submenu[focusedDropdownIndex];
+					if (item) {
+						event.preventDefault();
+						handleNavClick(item.href, item.label);
+					}
 				}
 				break;
+			}
 		}
-	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NAVIGATION HANDLERS
+		// ═══════════════════════════════════════════════════════════════════════════
+		// NAVIGATION HANDLERS
+		// ═══════════════════════════════════════════════════════════════════════════
 	// ═══════════════════════════════════════════════════════════════════════════
 	
 	function handleNavClick(href: string, label: string): void {
