@@ -484,12 +484,12 @@
 						</li>
 						<!-- Meet the Traders (with submenu) - Exact WordPress match -->
 						<li class="has-submenu" class:is-active={$page.url.pathname.includes('/traders')}>
-							<a href="#" style="cursor: default;" onclick="return false;">
+							<span class="submenu-trigger" role="button" tabindex="0">
 								<span class="dashboard__nav-item-icon">
 									<IconUsers size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Meet the Traders</span>
-							</a>
+							</span>
 							<ul class="dashboard__nav-submenu">
 								<li><a href="/dashboard/{currentMembershipSlug}/john-carter">John Carter</a></li>
 								<li><a href="/dashboard/{currentMembershipSlug}/henry-gambell">Henry Gambell</a></li>
@@ -504,12 +504,12 @@
 						</li>
 						<!-- Trader Store (with submenu) - Exact WordPress match -->
 						<li class="has-submenu" class:is-active={$page.url.pathname.includes('/trader-store')}>
-							<a href="#" style="cursor: default;" onclick="return false;">
+							<span class="submenu-trigger" role="button" tabindex="0">
 								<span class="dashboard__nav-item-icon">
 									<IconBuildingStore size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">Trader Store</span>
-							</a>
+							</span>
 							<ul class="dashboard__nav-submenu">
 								<li><a href="/dashboard/{currentMembershipSlug}/john-carter/john-carter-trader-store">John Carter</a></li>
 								<li><a href="/dashboard/{currentMembershipSlug}/henry-gambell/trader-store">Henry Gambell</a></li>
@@ -1196,9 +1196,30 @@
 		position: relative;
 	}
 
-	/* Parent link styling - non-navigating */
-	.dashboard__nav-secondary li.has-submenu > a {
+	/* Submenu trigger - styled like nav links but non-navigating (Svelte 5 a11y compliant) */
+	.dashboard__nav-secondary .submenu-trigger {
+		display: flex;
+		align-items: center;
+		padding: 14px 20px 14px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
+		transition: all 0.15s ease-in-out;
 		cursor: default;
+		position: relative;
+	}
+
+	.dashboard__nav-secondary .submenu-trigger:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: #fff;
+	}
+
+	.dashboard__nav-secondary li.has-submenu.is-active .submenu-trigger {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #fff;
 	}
 
 	/* Submenu container - hidden by default, appears on hover */
