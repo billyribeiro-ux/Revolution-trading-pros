@@ -19,8 +19,9 @@
   import { cubicOut, backOut as _backOut } from 'svelte/easing';
   import DropZone from '$lib/components/media/DropZone.svelte';
   import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
-  import UploadProgress from '$lib/components/media/UploadProgress.svelte'; // eslint-disable-line @typescript-eslint/no-unused-vars
-  import OptimizationStats from '$lib/components/media/OptimizationStats.svelte'; // eslint-disable-line @typescript-eslint/no-unused-vars
+  // Reserved for future use:
+  // import UploadProgress from '$lib/components/media/UploadProgress.svelte';
+  // import OptimizationStats from '$lib/components/media/OptimizationStats.svelte';
   import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
   import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
   import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
@@ -262,7 +263,8 @@
       const [from, to] = start < end ? [start, end] : [end, start];
 
       for (let i = from; i <= to; i++) {
-        selectedIds.add(items[i].id);
+        const item = items[i];
+        if (item) selectedIds.add(item.id);
       }
       selectedIds = selectedIds;
     } else if (event.metaKey || event.ctrlKey) {
@@ -1212,7 +1214,7 @@
             class="alt-input"
             placeholder="Enter alt text for accessibility..."
             value={detailItem.alt_text || ''}
-            onblur={async (e) => {
+            onblur={async (e: FocusEvent) => {
               const target = e.target as HTMLTextAreaElement;
               if (target.value !== detailItem?.alt_text) {
                 await mediaApi.update(detailItem!.id, { alt_text: target.value });
