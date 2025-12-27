@@ -1193,7 +1193,7 @@
             {#if aiEnabled}
               <button
                 class="btn-text btn-sm"
-                onclick={() => handleGenerateAltText(detailItem)}
+                onclick={() => detailItem && handleGenerateAltText(detailItem)}
                 disabled={isAnalyzing}
               >
                 {#if isAnalyzing}
@@ -1230,7 +1230,7 @@
               <h3>AI Analysis</h3>
               <button
                 class="btn-text btn-sm"
-                onclick={() => handleAIAnalyze(detailItem)}
+                onclick={() => detailItem && handleAIAnalyze(detailItem)}
                 disabled={isAnalyzing}
               >
                 {#if isAnalyzing}
@@ -1241,9 +1241,9 @@
               </button>
             </div>
 
-            {#if detailItem.custom_properties?.ai_tags && Array.isArray(detailItem.custom_properties.ai_tags)}
+            {#if detailItem.custom_properties?.['ai_tags'] && Array.isArray(detailItem.custom_properties['ai_tags'])}
               <div class="ai-tags">
-                {#each detailItem.custom_properties.ai_tags as tag}
+                {#each detailItem.custom_properties['ai_tags'] as tag}
                   <span class="tag">{String(tag)}</span>
                 {/each}
               </div>
@@ -1256,7 +1256,7 @@
         <!-- Actions -->
         <div class="details-actions">
           {#if detailItem.file_type === 'image'}
-            <button class="btn-secondary" onclick={() => handleCrop(detailItem)}>
+            <button class="btn-secondary" onclick={() => detailItem && handleCrop(detailItem)}>
               <svg viewBox="0 0 20 20" fill="currentColor">
                 <path d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"/>
               </svg>
