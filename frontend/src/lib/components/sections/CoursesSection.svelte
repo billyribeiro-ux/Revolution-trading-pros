@@ -3,10 +3,9 @@
      * CoursesSection - Apple/Netflix Cinematic Design
      * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
      */
-    import { onMount, onDestroy, tick } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import { browser } from '$app/environment';
-    import { cubicOut, backOut } from 'svelte/easing';
-    import { spring } from 'svelte/motion';
+    import { cubicOut } from 'svelte/easing';
     
     // Tabler Icons (Preserving sub-path imports for tree-shaking)
     import IconSchool from '@tabler/icons-svelte/icons/school';
@@ -16,7 +15,6 @@
     import IconShield from '@tabler/icons-svelte/icons/shield';
     import IconClock from '@tabler/icons-svelte/icons/clock';
     import IconUsers from '@tabler/icons-svelte/icons/users';
-    import IconStar from '@tabler/icons-svelte/icons/star-filled';
     import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
     import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play-filled';
     import IconCertificate from '@tabler/icons-svelte/icons/certificate';
@@ -143,7 +141,7 @@
             if (sectionRef) {
                 const visibilityObserver = new IntersectionObserver(
                     (entries) => {
-                        if (entries[0].isIntersecting) {
+                        if (entries[0]?.isIntersecting) {
                             isVisible = true;
                             visibilityObserver.disconnect();
                         }
@@ -217,7 +215,7 @@
     // ============================================================================
     // TRANSITIONS
     // ============================================================================
-    function slideUp(node: Element, { delay = 0, duration = 800 }) {
+    function slideUp(_node: Element, { delay = 0, duration = 800 }) {
         return {
             delay,
             duration,
@@ -301,7 +299,7 @@
                 style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
             ></div>
 
-            {#each courses as course, i}
+            {#each courses as course}
                 <a
                     href={course.href}
                     class="course-card group relative rounded-[2rem] overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
