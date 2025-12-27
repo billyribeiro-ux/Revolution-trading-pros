@@ -14,8 +14,6 @@
 		IconTrash,
 		IconInbox,
 		IconDownload,
-		IconTag,
-		IconMail,
 		IconX,
 		IconCheck,
 		IconLoader
