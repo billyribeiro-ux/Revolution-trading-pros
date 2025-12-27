@@ -952,7 +952,7 @@
 						class="mobile-nav-item"
 						class:active={currentPath === item.href}
 						aria-current={currentPath === item.href ? 'page' : undefined}
-						onclick={() => handleNavClick(item.href, item.label)}
+						onclick={() => handleNavClick(item.href ?? '', item.label)}
 					>
 						{item.label}
 					</a>
