@@ -145,7 +145,7 @@ class ApiCache {
 			data,
 			timestamp: Date.now(),
 			ttl,
-			etag
+			etag: etag ?? undefined
 		};
 
 		this.cache.set(key, entry as CacheEntry<unknown>);

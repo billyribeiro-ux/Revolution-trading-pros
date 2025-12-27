@@ -83,8 +83,6 @@ const CACHE_TTL = 300000; // 5 minutes
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000;
 const PAYMENT_TIMEOUT = 30000;
-const _WEBHOOK_TIMEOUT = 10000;
-const _BATCH_SIZE = 100;
 const METRICS_INTERVAL = 60000; // 1 minute
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -388,7 +386,6 @@ class SubscriptionService {
 	private static instance: SubscriptionService;
 	private cache = new Map<string, { data: any; expiry: number }>();
 	private wsConnection?: WebSocket;
-	private _metricsInterval?: number;
 	private pendingRequests = new Map<string, Promise<any>>();
 	private retryQueue: RetryItem[] = [];
 
@@ -733,7 +730,7 @@ class SubscriptionService {
 		this.loadMetrics();
 
 		// Periodic updates
-		this._metricsInterval = window.setInterval(() => {
+		window.setInterval(() => {
 			this.loadMetrics();
 		}, METRICS_INTERVAL);
 	}
@@ -825,17 +822,6 @@ class SubscriptionService {
 	/**
 	 * Utilities
 	 */
-	private _generateRequestId(): string {
-		return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-	}
-
-	private _generateIdempotencyKey(url: string, options: RequestInit): string {
-		const data = `${url}${JSON.stringify(options.body || {})}`;
-		return btoa(data)
-			.replace(/[^a-zA-Z0-9]/g, '')
-			.substring(0, 32);
-	}
-
 	private shouldRetry(error: any): boolean {
 		// Don't retry client errors (4xx)
 		if (error.status >= 400 && error.status < 500) return false;

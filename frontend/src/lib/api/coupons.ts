@@ -69,9 +69,6 @@ const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 const CACHE_TTL = 300000; // 5 minutes
 const VALIDATION_CACHE_TTL = 60000; // 1 minute
 const FRAUD_CHECK_TIMEOUT = 3000; // 3 seconds
-const _MAX_RETRIES = 3;
-const _RETRY_DELAY = 1000;
-const _BATCH_SIZE = 100;
 const ANALYTICS_INTERVAL = 60000; // 1 minute
 
 // ═══════════════════════════════════════════════════════════════════════════

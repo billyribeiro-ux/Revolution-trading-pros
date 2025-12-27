@@ -49,7 +49,6 @@ import { browser } from '$app/environment';
 const isDev = import.meta.env.DEV;
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev/api';
 const API_BASE_URL = isDev ? '' : (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
-const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000; // 1 second
@@ -227,7 +226,6 @@ class AuthenticationService {
 	private requestQueue: Map<string, Promise<any>> = new Map();
 	private sessionFingerprint?: string;
 	private abortController?: AbortController;
-	private securityObserver?: MutationObserver;
 
 	// Event listener references for proper cleanup (memory leak prevention)
 	private visibilityChangeHandler?: () => void;
@@ -520,26 +518,6 @@ class AuthenticationService {
 	private isTokenExpiringSoon(expiry?: number): boolean {
 		if (!expiry) return false;
 		return Date.now() > expiry - TOKEN_REFRESH_THRESHOLD;
-	}
-
-	/**
-	 * Get CSRF token
-	 */
-	private getCSRFToken(): string | null {
-		if (!browser) return null;
-
-		// Try to get from cookie
-		const cookies = document.cookie.split(';');
-		for (const cookie of cookies) {
-			const [name, value] = cookie.trim().split('=');
-			if (name === 'XSRF-TOKEN' && value) {
-				return decodeURIComponent(value);
-			}
-		}
-
-		// Try to get from meta tag
-		const metaTag = document.querySelector('meta[name="csrf-token"]');
-		return metaTag?.getAttribute('content') || null;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1175,9 +1153,6 @@ class AuthenticationService {
 				}
 			}
 		});
-
-		// Store observer for cleanup
-		this.securityObserver = observer;
 
 		// Only observe document.head for script injection (more targeted)
 		observer.observe(document.head, {

@@ -70,7 +70,6 @@ const SYNC_INTERVAL = 60000; // 1 minute
 const PATTERN_CHECK_BATCH = 100;
 const RISK_SCORE_THRESHOLD = 0.7;
 const SIMILAR_EMAIL_THRESHOLD = 0.85;
-const _AUTO_BAN_THRESHOLD = 5; // violations
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
