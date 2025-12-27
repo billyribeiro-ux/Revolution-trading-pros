@@ -573,6 +573,7 @@
 
 		for (let i = 0; i < sortedTiers.length; i++) {
 			const tier = sortedTiers[i];
+			if (!tier) continue;
 
 			if (tier.min_amount >= tier.max_amount) {
 				errors.push({
@@ -584,7 +585,7 @@
 
 			if (i > 0) {
 				const prevTier = sortedTiers[i - 1];
-				if (tier.min_amount < prevTier.max_amount) {
+				if (prevTier && tier.min_amount < prevTier.max_amount) {
 					errors.push({
 						field: `tier_${i}`,
 						message: `Tier ${i + 1} overlaps with previous tier`,
