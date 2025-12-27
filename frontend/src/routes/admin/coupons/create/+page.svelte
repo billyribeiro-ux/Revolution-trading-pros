@@ -680,7 +680,7 @@
 				length: 8,
 				count: 1
 			});
-			formData.code = response.data.codes[0];
+			formData.code = response.data.codes[0] ?? '';
 			addNotification('success', 'Code generated successfully');
 		} catch (error) {
 			console.error('Failed to generate code:', error);
@@ -897,7 +897,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function prepareSubmitData() {
-		const data = { ...formData };
+		const data = { ...formData } as Record<string, unknown>;
 
 		// Clean up null/undefined values
 		Object.keys(data).forEach((key) => {
@@ -907,9 +907,9 @@
 		});
 
 		// Remove empty arrays
-		if (data.product_restrictions?.length === 0) delete data.product_restrictions;
-		if (data.category_restrictions?.length === 0) delete data.category_restrictions;
-		if (data.user_segments?.length === 0) delete data.user_segments;
+		if (Array.isArray(data['product_restrictions']) && data['product_restrictions'].length === 0) delete data['product_restrictions'];
+		if (Array.isArray(data['category_restrictions']) && data['category_restrictions'].length === 0) delete data['category_restrictions'];
+		if (Array.isArray(data['user_segments']) && data['user_segments'].length === 0) delete data['user_segments'];
 
 		// Convert dates to ISO format
 		if (data.starts_at) {
@@ -1186,7 +1186,7 @@
 								<input
 									id="bogo-buy-quantity"
 									type="number"
-									bind:value={formData.bogo_config.buy_quantity}
+									bind:value={formData.bogo_config!.buy_quantity}
 									min="1"
 									class="input"
 								/>
@@ -1196,7 +1196,7 @@
 								<input
 									id="bogo-get-quantity"
 									type="number"
-									bind:value={formData.bogo_config.get_quantity}
+									bind:value={formData.bogo_config!.get_quantity}
 									min="1"
 									class="input"
 								/>
@@ -1206,7 +1206,7 @@
 								<input
 									id="bogo-discount"
 									type="number"
-									bind:value={formData.bogo_config.get_discount}
+									bind:value={formData.bogo_config!.get_discount}
 									min="0"
 									max="100"
 									class="input"
