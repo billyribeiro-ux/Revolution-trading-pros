@@ -48,7 +48,13 @@ interface ClarityConfig {
 }
 
 interface ClarityWindow extends Window {
-	clarity?: (command: string, ...args: unknown[]) => void;
+	clarity?: ClarityFunction;
+	[key: string]: unknown;
+}
+
+interface ClarityFunction {
+	(command: string, ...args: unknown[]): void;
+	q?: unknown[][];
 }
 
 declare const window: ClarityWindow;
