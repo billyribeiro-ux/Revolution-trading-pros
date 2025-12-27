@@ -1599,7 +1599,7 @@ export default {
 
 // Organization APIs - These proxy to backend endpoints
 // Note: /api/admin/organization/teams and /api/admin/organization/departments
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = import.meta.env['VITE_API_URL'] || '/api';
 
 function getAuthHeaders(): HeadersInit {
 	const token = typeof localStorage !== 'undefined' ? localStorage.getItem('access_token') : '';

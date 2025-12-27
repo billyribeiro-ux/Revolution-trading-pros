@@ -66,8 +66,8 @@ const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
 const API_BASE = '';
-const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
-const ML_API = browser ? import.meta.env.VITE_ML_API || PROD_ML : '';
+const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const IMPRESSION_DEBOUNCE = 1000; // 1 second
 const CONVERSION_TIMEOUT = 30000; // 30 seconds

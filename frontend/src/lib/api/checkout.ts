@@ -13,7 +13,7 @@ import { authStore } from '$lib/stores/auth';
 const isDev = import.meta.env.DEV;
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
 const API_BASE = browser 
-	? (isDev ? '' : (import.meta.env.VITE_API_URL || PRODUCTION_API_URL))
+	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL))
 	: '';
 
 export interface StripeConfig {
