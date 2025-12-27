@@ -19,19 +19,15 @@
 		IconChecklist,
 		IconX,
 		IconTrash,
-		IconArchive,
 		IconCheck,
-		IconAlertTriangle,
 		IconUser,
-		IconChevronDown,
-		IconChevronRight,
 		IconPlayerPlay,
 		IconPlayerStop,
 		IconSubtask
 	} from '$lib/icons';
 
 	// Get board ID from URL
-	const boardId = $derived($page.params.id!);
+	const boardId = $derived($page.params['id'] ?? '');
 
 	// State
 	let board = $state<Board | null>(null);
@@ -39,7 +35,6 @@
 	let tasks = $state<Task[]>([]);
 	let labels = $state<Label[]>([]);
 	let members = $state<BoardMember[]>([]);
-	let customFields = $state<CustomFieldDefinition[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
 	let filterAssignee = $state<string | null>(null);
