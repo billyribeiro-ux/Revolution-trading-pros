@@ -490,29 +490,29 @@
 
 		for (const pattern of patterns) {
 			const match = url.match(pattern);
-			if (match) return match[1];
+			if (match?.[1]) return match[1];
 		}
 		return '';
 	}
 
 	function extractVimeoId(url: string): string {
 		const match = url.match(/vimeo\.com\/(\d+)/);
-		return match ? match[1] : '';
+		return match?.[1] ?? '';
 	}
 
 	function extractWistiaId(url: string): string {
 		const match = url.match(/(?:wistia\.com|wi\.st)\/medias?\/([a-zA-Z0-9]+)/);
-		return match ? match[1] : '';
+		return match?.[1] ?? '';
 	}
 
 	function extractDailymotionId(url: string): string {
 		const match = url.match(/(?:dailymotion\.com\/video|dai\.ly)\/([a-zA-Z0-9]+)/);
-		return match ? match[1] : '';
+		return match?.[1] ?? '';
 	}
 
 	function extractTwitchId(url: string): string {
 		const match = url.match(/twitch\.tv\/videos\/(\d+)/);
-		return match ? match[1] : '';
+		return match?.[1] ?? '';
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -638,7 +638,11 @@
 		const tag = document.createElement('script');
 		tag.src = 'https://www.youtube.com/iframe_api';
 		const firstScriptTag = document.getElementsByTagName('script')[0];
-		firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+		if (firstScriptTag?.parentNode) {
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		} else {
+			document.head.appendChild(tag);
+		}
 
 		window.onYouTubeIframeAPIReady = () => {
 			createYouTubePlayer();
