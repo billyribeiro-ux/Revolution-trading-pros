@@ -2,23 +2,52 @@
 	/**
 	 * Footer Component - Revolution Trading Pros
 	 * Matches brand design with logo, links, contact info, and legal text
+	 * Phase 4: Footer & Global Elements - WordPress reference core:3024-3290
 	 */
+	import { browser } from '$app/environment';
 	import {
 		IconBrandFacebook,
 		IconBrandInstagram,
 		IconBrandTwitter,
 		IconBrandYoutube,
 		IconPhone,
-		IconMail
+		IconMail,
+		IconChevronUp
 	} from '$lib/icons';
 
 	const currentYear = new Date().getFullYear();
 
+	// Scroll to top visibility - WordPress reference core:3287-3292
+	let showScrollTop = $state(false);
+
+	$effect(() => {
+		if (browser) {
+			const handleScroll = () => {
+				showScrollTop = window.scrollY > 300;
+			};
+			window.addEventListener('scroll', handleScroll);
+			return () => window.removeEventListener('scroll', handleScroll);
+		}
+	});
+
+	function scrollToTop() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
 	const learnMoreLinks = [
 		{ href: '/courses', label: 'Courses' },
-		{ href: '/alerts', label: 'Our Atlases' },
+		{ href: '/alerts', label: 'Our Alerts' },
 		{ href: '/mentorship', label: 'Mentorship' },
-		{ href: '/indicators', label: 'Indicators' }
+		{ href: '/indicators', label: 'Indicators' },
+		{ href: '/support', label: 'Support' }
+	];
+
+	// WordPress reference core:3164-3168
+	const aboutLinks = [
+		{ href: '/our-mission', label: 'About Us' },
+		{ href: '/our-traders', label: 'Our Traders' },
+		{ href: '/blog', label: 'Blog' },
+		{ href: '/resources', label: 'Resources' }
 	];
 
 	const legalLinks = [
@@ -64,9 +93,21 @@
 				</ul>
 			</div>
 
+			<!-- About Column - WordPress reference core:3164-3168 -->
+			<div class="footer__column">
+				<h3 class="footer__heading">ABOUT</h3>
+				<ul class="footer__links">
+					{#each aboutLinks as link (link.href)}
+						<li>
+							<a href={link.href} class="footer__link">{link.label}</a>
+						</li>
+					{/each}
+				</ul>
+			</div>
+
 			<!-- Legal Pages Column -->
 			<div class="footer__column">
-				<h3 class="footer__heading">LEGAL PAGES</h3>
+				<h3 class="footer__heading">LEGAL</h3>
 				<ul class="footer__links">
 					{#each legalLinks as link (link.href)}
 						<li>
@@ -156,6 +197,18 @@
 	</div>
 </footer>
 
+<!-- Scroll to Top Button - WordPress reference core:3287-3292 -->
+{#if showScrollTop}
+	<button
+		class="scroll-to-top"
+		onclick={scrollToTop}
+		aria-label="Scroll back to top"
+		type="button"
+	>
+		<IconChevronUp size={24} />
+	</button>
+{/if}
+
 <style>
 	.footer {
 		background: #1e293b;
@@ -170,26 +223,33 @@
 		padding: 0 24px;
 	}
 
-	/* Top Section */
+	/* Top Section - Updated for 5 columns with ABOUT */
 	.footer__top {
 		display: grid;
-		grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
-		gap: 48px;
+		grid-template-columns: 1.5fr 1fr 1fr 1fr 1.5fr;
+		gap: 32px;
 		padding-bottom: 48px;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: 1200px) {
 		.footer__top {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 1fr 1fr 1fr;
 			gap: 32px;
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 768px) {
+		.footer__top {
+			grid-template-columns: 1fr 1fr;
+			gap: 24px;
+		}
+	}
+
+	@media (max-width: 480px) {
 		.footer__top {
 			grid-template-columns: 1fr;
-			gap: 32px;
+			gap: 24px;
 		}
 	}
 
@@ -355,6 +415,46 @@
 
 		.footer__bottom p {
 			font-size: 0.75rem;
+		}
+	}
+
+	/* Scroll to Top Button - WordPress reference core:3287-3292 */
+	.scroll-to-top {
+		position: fixed;
+		bottom: 24px;
+		right: 24px;
+		width: 48px;
+		height: 48px;
+		background: #0984ae;
+		color: #fff;
+		border: none;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		transition: all 0.2s ease-in-out;
+		z-index: 999;
+	}
+
+	.scroll-to-top:hover {
+		background: #067a9c;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+	}
+
+	.scroll-to-top:focus-visible {
+		outline: 2px solid #facc15;
+		outline-offset: 2px;
+	}
+
+	@media (max-width: 640px) {
+		.scroll-to-top {
+			bottom: 16px;
+			right: 16px;
+			width: 44px;
+			height: 44px;
 		}
 	}
 </style>
