@@ -138,8 +138,8 @@
 
 <!-- Email Modal -->
 {#if showEmailModal}
-	<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+	<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
+		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation">
 			<button type="button" class="modal-close" onclick={closeModal} aria-label="Close">
 				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<line x1="18" y1="6" x2="6" y2="18"></line>
@@ -159,7 +159,7 @@
 				Enter your email to receive a link to resume your form later.
 			</p>
 
-			<form onsubmit={(e) => { e.preventDefault(); handleEmailSubmit(); }}>
+			<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleEmailSubmit(); }}>
 				<label for="save-email-input" class="visually-hidden">Email address</label>
 				<input
 					id="save-email-input"
@@ -183,8 +183,8 @@
 
 <!-- Success Modal -->
 {#if savedHash}
-	<div class="modal-overlay" onclick={closeModal} onkeydown={(e) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
-		<div class="modal-content success" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+	<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
+		<div class="modal-content success" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation">
 			<div class="success-icon">
 				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>

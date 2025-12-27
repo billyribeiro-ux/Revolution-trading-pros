@@ -49,7 +49,7 @@
 	let error = $state('');
 
 	// Derived values from page store
-	let slug = $derived($page.params.slug);
+	let slug = $derived($page.params.slug!);
 
 	// Load post when slug changes
 	$effect(() => {

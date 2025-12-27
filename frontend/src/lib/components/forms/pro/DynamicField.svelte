@@ -213,7 +213,7 @@
 					class="search-input"
 					placeholder="Search options..."
 					value={searchQuery}
-					oninput={(e) => (searchQuery = (e.target as HTMLInputElement).value)}
+					oninput={(e: Event) => (searchQuery = (e.target as HTMLInputElement).value)}
 					onfocus={() => (showDropdown = true)}
 				/>
 			{/if}
@@ -261,7 +261,7 @@
 						value={option.value}
 						checked={selectedValues.includes(option.value)}
 						{disabled}
-						onchange={(e) =>
+						onchange={(e: Event) =>
 							handleCheckboxChange(option.value, (e.target as HTMLInputElement).checked)}
 					/>
 					<span class="checkbox-label">{option.label}</span>

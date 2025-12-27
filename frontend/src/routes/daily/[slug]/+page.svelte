@@ -5,7 +5,7 @@
 	 */
 	import { page } from '$app/stores';
 	
-	const slug = $derived($page.params.slug);
+	const slug = $derived($page.params.slug!);
 </script>
 
 <svelte:head>

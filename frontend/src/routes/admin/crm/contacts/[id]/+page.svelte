@@ -778,8 +778,8 @@
 <!-- Add Tag Modal -->
 {#if showAddTagModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => showAddTagModal = false} onkeydown={(e) => e.key === 'Escape' && (showAddTagModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-tag-title" tabindex="-1">
-		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" onclick={() => showAddTagModal = false} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddTagModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-tag-title" tabindex="-1">
+		<div class="modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h3 id="add-tag-title">Add Tag</h3>
 				<button class="modal-close" onclick={() => showAddTagModal = false}>
@@ -807,8 +807,8 @@
 <!-- Add List Modal -->
 {#if showAddListModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={() => showAddListModal = false} onkeydown={(e) => e.key === 'Escape' && (showAddListModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-list-title" tabindex="-1">
-		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" onclick={() => showAddListModal = false} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddListModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-list-title" tabindex="-1">
+		<div class="modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h3 id="add-list-title">Add to List</h3>
 				<button class="modal-close" onclick={() => showAddListModal = false}>
@@ -836,8 +836,8 @@
 <!-- Add Note Modal -->
 {#if showAddNoteModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => showAddNoteModal = false} onkeydown={(e) => e.key === 'Escape' && (showAddNoteModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-note-title" tabindex="-1">
-		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" onclick={() => showAddNoteModal = false} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddNoteModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-note-title" tabindex="-1">
+		<div class="modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h3 id="add-note-title">Add Note</h3>
 				<button class="modal-close" onclick={() => showAddNoteModal = false}>

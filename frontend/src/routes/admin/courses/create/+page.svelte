@@ -1934,9 +1934,9 @@
 								animate:flip={{ duration: 300 }}
 								draggable="true"
 								role="listitem"
-								ondragstart={(e) => handleDragStart(e, module, 'module')}
+								ondragstart={(e: DragEvent) => handleDragStart(e, module, 'module')}
 								ondragover={handleDragOver}
-								ondrop={(e) => handleModuleDrop(e, moduleIndex)}
+								ondrop={(e: DragEvent) => handleModuleDrop(e, moduleIndex)}
 								ondragend={handleDragEnd}
 								class:dragging={isDragging && draggedModule?.id === module.id}
 							>
@@ -1986,9 +1986,9 @@
 													animate:flip={{ duration: 200 }}
 													draggable="true"
 													role="listitem"
-													ondragstart={(e) => handleDragStart(e, lesson, 'lesson')}
+													ondragstart={(e: DragEvent) => handleDragStart(e, lesson, 'lesson')}
 													ondragover={handleDragOver}
-													ondrop={(e) => handleLessonDrop(e, module.id, lessonIndex)}
+													ondrop={(e: DragEvent) => handleLessonDrop(e, module.id, lessonIndex)}
 													ondragend={handleDragEnd}
 												>
 													<IconGripVertical size={16} class="lesson-drag" />
@@ -2360,7 +2360,7 @@
 								<input
 									type="file"
 									accept="image/*"
-									onchange={(e) => handleImageUpload(e, 'thumbnail')}
+									onchange={(e: Event) => handleImageUpload(e, 'thumbnail')}
 									disabled={uploading}
 								/>
 							</label>
@@ -2412,8 +2412,8 @@
 										<input
 											type="url"
 											placeholder="Paste YouTube, Vimeo, or Wistia URL..."
-											onchange={(e) => {
-												course.promo_video = e.target.value;
+											onchange={(e: Event) => {
+												course.promo_video = (e.target as HTMLInputElement).value;
 												hasUnsavedChanges = true;
 											}}
 										/>
@@ -2443,7 +2443,7 @@
 								<input
 									type="file"
 									accept="image/*"
-									onchange={(e) => handleImageUpload(e, 'gallery')}
+									onchange={(e: Event) => handleImageUpload(e, 'gallery')}
 									disabled={uploading || course.gallery.length >= 10}
 								/>
 							</label>
@@ -2534,7 +2534,7 @@
 								<input
 									type="file"
 									accept="image/*"
-									onchange={(e) => handleImageUpload(e, 'og')}
+									onchange={(e: Event) => handleImageUpload(e, 'og')}
 									disabled={uploading}
 								/>
 							</label>

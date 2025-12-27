@@ -73,7 +73,7 @@
 			<div
 				class="node-template"
 				draggable="true"
-				ondragstart={(e) => handleDragStart(e, template.type)}
+				ondragstart={(e: DragEvent) => handleDragStart(e, template.type)}
 				role="button"
 				tabindex="0"
 				style="border-left-color: {template.color};"

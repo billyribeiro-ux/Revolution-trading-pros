@@ -90,7 +90,7 @@
 									type="color"
 									id="primary-color"
 									value={customTheme.colors.primary}
-									oninput={(e) => handleColorChange('primary', e.currentTarget.value)}
+									oninput={(e: Event) => handleColorChange('primary', (e.currentTarget as HTMLInputElement).value)}
 								/>
 								<span class="color-value">{customTheme.colors.primary}</span>
 							</div>
@@ -103,7 +103,7 @@
 									type="color"
 									id="secondary-color"
 									value={customTheme.colors.secondary}
-									oninput={(e) => handleColorChange('secondary', e.currentTarget.value)}
+									oninput={(e: Event) => handleColorChange('secondary', (e.currentTarget as HTMLInputElement).value)}
 								/>
 								<span class="color-value">{customTheme.colors.secondary}</span>
 							</div>
@@ -116,7 +116,7 @@
 									type="color"
 									id="background-color"
 									value={customTheme.colors.background}
-									oninput={(e) => handleColorChange('background', e.currentTarget.value)}
+									oninput={(e: Event) => handleColorChange('background', (e.currentTarget as HTMLInputElement).value)}
 								/>
 								<span class="color-value">{customTheme.colors.background}</span>
 							</div>
@@ -129,7 +129,7 @@
 									type="color"
 									id="text-color"
 									value={customTheme.colors.text}
-									oninput={(e) => handleColorChange('text', e.currentTarget.value)}
+									oninput={(e: Event) => handleColorChange('text', (e.currentTarget as HTMLInputElement).value)}
 								/>
 								<span class="color-value">{customTheme.colors.text}</span>
 							</div>
@@ -142,7 +142,7 @@
 									type="color"
 									id="border-color"
 									value={customTheme.colors.border}
-									oninput={(e) => handleColorChange('border', e.currentTarget.value)}
+									oninput={(e: Event) => handleColorChange('border', (e.currentTarget as HTMLInputElement).value)}
 								/>
 								<span class="color-value">{customTheme.colors.border}</span>
 							</div>

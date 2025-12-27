@@ -108,7 +108,7 @@
 					id="{name}_{level.name}"
 					name="{name}[{level.name}]"
 					value={selections[level.name] || ''}
-					onchange={(e) => handleChange(level.name, (e.target as HTMLSelectElement).value, index)}
+					onchange={(e: Event) => handleChange(level.name, (e.target as HTMLSelectElement).value, index)}
 					disabled={isDisabled}
 					class="select-input"
 					class:placeholder={!selections[level.name]}

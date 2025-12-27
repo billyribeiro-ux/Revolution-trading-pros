@@ -228,7 +228,7 @@
 								Font Family
 								<select
 									value={block.settings.fontFamily || 'inherit'}
-									onchange={(e) => updateSetting('fontFamily', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('fontFamily', (e.currentTarget as HTMLInputElement).value)}
 								>
 									{#each fontFamilies as font}
 										<option value={font.value}>{font.label}</option>
@@ -247,7 +247,7 @@
 											min="8"
 											max="200"
 											value={parseInt(block.settings.fontSize || '16')}
-											onchange={(e) => updateSetting('fontSize', `${e.currentTarget.value}px`)}
+											onchange={(e: Event) => updateSetting('fontSize', `${(e.currentTarget as HTMLInputElement).value}px`)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -258,7 +258,7 @@
 									Weight
 									<select
 										value={block.settings.fontWeight || '400'}
-										onchange={(e) => updateSetting('fontWeight', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('fontWeight', (e.currentTarget as HTMLInputElement).value)}
 									>
 										{#each fontWeights as weight}
 											<option value={weight.value}>{weight.label}</option>
@@ -278,7 +278,7 @@
 										max="3"
 										step="0.1"
 										value={parseFloat(block.settings.lineHeight || '1.6')}
-										onchange={(e) => updateSetting('lineHeight', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('lineHeight', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</label>
 							</div>
@@ -292,7 +292,7 @@
 											max="20"
 											step="0.5"
 											value={parseFloat(block.settings.letterSpacing || '0')}
-											onchange={(e) => updateSetting('letterSpacing', `${e.currentTarget.value}px`)}
+											onchange={(e: Event) => updateSetting('letterSpacing', `${(e.currentTarget as HTMLInputElement).value}px`)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -378,7 +378,7 @@
 									<input
 										type="text"
 										value={block.settings.textColor || '#000000'}
-										onchange={(e) => updateSetting('textColor', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('textColor', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</div>
 							</label>
@@ -414,7 +414,7 @@
 									<input
 										type="text"
 										value={block.settings.backgroundColor || 'transparent'}
-										onchange={(e) => updateSetting('backgroundColor', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('backgroundColor', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</div>
 							</label>
@@ -443,7 +443,7 @@
 									type="text"
 									placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
 									value={block.settings.backgroundGradient || ''}
-									onchange={(e) => updateSetting('backgroundGradient', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('backgroundGradient', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
@@ -471,8 +471,8 @@
 										min="0"
 										aria-label="Padding top"
 										value={parseInt(paddingValues.top) || 0}
-										onchange={(e) => {
-											const newValues = { ...paddingValues, top: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...paddingValues, top: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -483,8 +483,8 @@
 										min="0"
 										aria-label="Padding left"
 										value={parseInt(paddingValues.left) || 0}
-										onchange={(e) => {
-											const newValues = { ...paddingValues, left: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...paddingValues, left: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -498,8 +498,8 @@
 										min="0"
 										aria-label="Padding right"
 										value={parseInt(paddingValues.right) || 0}
-										onchange={(e) => {
-											const newValues = { ...paddingValues, right: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...paddingValues, right: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -510,8 +510,8 @@
 										min="0"
 										aria-label="Padding bottom"
 										value={parseInt(paddingValues.bottom) || 0}
-										onchange={(e) => {
-											const newValues = { ...paddingValues, bottom: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...paddingValues, bottom: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -527,8 +527,8 @@
 										type="number"
 										aria-label="Margin top"
 										value={parseInt(marginValues.top) || 0}
-										onchange={(e) => {
-											const newValues = { ...marginValues, top: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...marginValues, top: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -538,8 +538,8 @@
 										type="number"
 										aria-label="Margin left"
 										value={parseInt(marginValues.left) || 0}
-										onchange={(e) => {
-											const newValues = { ...marginValues, left: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...marginValues, left: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -552,8 +552,8 @@
 										type="number"
 										aria-label="Margin right"
 										value={parseInt(marginValues.right) || 0}
-										onchange={(e) => {
-											const newValues = { ...marginValues, right: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...marginValues, right: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -563,8 +563,8 @@
 										type="number"
 										aria-label="Margin bottom"
 										value={parseInt(marginValues.bottom) || 0}
-										onchange={(e) => {
-											const newValues = { ...marginValues, bottom: `${e.currentTarget.value}px` };
+										onchange={(e: Event) => {
+											const newValues = { ...marginValues, bottom: `${(e.currentTarget as HTMLInputElement).value}px` };
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -592,7 +592,7 @@
 									Style
 									<select
 										value={block.settings.borderStyle || 'none'}
-										onchange={(e) => updateSetting('borderStyle', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('borderStyle', (e.currentTarget as HTMLInputElement).value)}
 									>
 										{#each borderStyles as style}
 											<option value={style.value}>{style.label}</option>
@@ -609,7 +609,7 @@
 											min="0"
 											max="20"
 											value={parseInt(block.settings.borderWidth || '0')}
-											onchange={(e) => updateSetting('borderWidth', `${e.currentTarget.value}px`)}
+											onchange={(e: Event) => updateSetting('borderWidth', `${(e.currentTarget as HTMLInputElement).value}px`)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -631,7 +631,7 @@
 									<input
 										type="text"
 										value={block.settings.borderColor || '#CCCCCC'}
-										onchange={(e) => updateSetting('borderColor', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('borderColor', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</div>
 							</label>
@@ -662,7 +662,7 @@
 										min="0"
 										max="100"
 										value={parseInt(block.settings.borderRadius || '0')}
-										onchange={(e) => updateSetting('borderRadius', `${e.currentTarget.value}px`)}
+										onchange={(e: Event) => updateSetting('borderRadius', `${(e.currentTarget as HTMLInputElement).value}px`)}
 									/>
 									<span class="unit">px</span>
 								</div>
@@ -676,7 +676,7 @@
 									type="text"
 									placeholder="0 4px 6px rgba(0, 0, 0, 0.1)"
 									value={block.settings.boxShadow || ''}
-									onchange={(e) => updateSetting('boxShadow', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('boxShadow', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
@@ -701,7 +701,7 @@
 								Entrance Animation
 								<select
 									value={block.settings.animation || 'none'}
-									onchange={(e) => updateSetting('animation', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('animation', (e.currentTarget as HTMLInputElement).value)}
 								>
 									{#each animations as anim}
 										<option value={anim.value}>{anim.label}</option>
@@ -721,7 +721,7 @@
 											max="5"
 											step="0.1"
 											value={parseFloat(block.settings.animationDuration || '0.5')}
-											onchange={(e) => updateSetting('animationDuration', `${e.currentTarget.value}s`)}
+											onchange={(e: Event) => updateSetting('animationDuration', `${(e.currentTarget as HTMLInputElement).value}s`)}
 										/>
 										<span class="unit">s</span>
 									</div>
@@ -737,7 +737,7 @@
 											max="5"
 											step="0.1"
 											value={parseFloat(block.settings.animationDelay || '0')}
-											onchange={(e) => updateSetting('animationDelay', `${e.currentTarget.value}s`)}
+											onchange={(e: Event) => updateSetting('animationDelay', `${(e.currentTarget as HTMLInputElement).value}s`)}
 										/>
 										<span class="unit">s</span>
 									</div>
@@ -769,7 +769,7 @@
 											min="-360"
 											max="360"
 											value={parseInt(block.settings.rotate || '0')}
-											onchange={(e) => updateSetting('rotate', `${e.currentTarget.value}deg`)}
+											onchange={(e: Event) => updateSetting('rotate', `${(e.currentTarget as HTMLInputElement).value}deg`)}
 										/>
 										<span class="unit">°</span>
 									</div>
@@ -784,7 +784,7 @@
 										max="3"
 										step="0.1"
 										value={parseFloat(block.settings.scale || '1')}
-										onchange={(e) => updateSetting('scale', e.currentTarget.value)}
+										onchange={(e: Event) => updateSetting('scale', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</label>
 							</div>
@@ -798,7 +798,7 @@
 										<input
 											type="number"
 											value={parseInt(block.settings.translateX || '0')}
-											onchange={(e) => updateSetting('translateX', `${e.currentTarget.value}px`)}
+											onchange={(e: Event) => updateSetting('translateX', `${(e.currentTarget as HTMLInputElement).value}px`)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -811,7 +811,7 @@
 										<input
 											type="number"
 											value={parseInt(block.settings.translateY || '0')}
-											onchange={(e) => updateSetting('translateY', `${e.currentTarget.value}px`)}
+											onchange={(e: Event) => updateSetting('translateY', `${(e.currentTarget as HTMLInputElement).value}px`)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -829,7 +829,7 @@
 											min="-45"
 											max="45"
 											value={parseInt(block.settings.skewX || '0')}
-											onchange={(e) => updateSetting('skewX', `${e.currentTarget.value}deg`)}
+											onchange={(e: Event) => updateSetting('skewX', `${(e.currentTarget as HTMLInputElement).value}deg`)}
 										/>
 										<span class="unit">°</span>
 									</div>
@@ -844,7 +844,7 @@
 											min="-45"
 											max="45"
 											value={parseInt(block.settings.skewY || '0')}
-											onchange={(e) => updateSetting('skewY', `${e.currentTarget.value}deg`)}
+											onchange={(e: Event) => updateSetting('skewY', `${(e.currentTarget as HTMLInputElement).value}deg`)}
 										/>
 										<span class="unit">°</span>
 									</div>
@@ -876,7 +876,7 @@
 										max="1"
 										step="0.01"
 										value={block.settings.opacity || 1}
-										oninput={(e) => updateSetting('opacity', parseFloat(e.currentTarget.value))}
+										oninput={(e: Event) => updateSetting('opacity', parseFloat((e.currentTarget as HTMLInputElement).value))}
 									/>
 									<span class="value">{Math.round((block.settings.opacity || 1) * 100)}%</span>
 								</div>
@@ -888,7 +888,7 @@
 								Blend Mode
 								<select
 									value={block.settings.blendMode || 'normal'}
-									onchange={(e) => updateSetting('blendMode', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('blendMode', (e.currentTarget as HTMLInputElement).value)}
 								>
 									{#each blendModes as mode}
 										<option value={mode}>{mode}</option>
@@ -907,7 +907,7 @@
 										min="0"
 										max="20"
 										value={parseInt(String(block.settings.filterBlur || '0'))}
-										oninput={(e) => updateSetting('filterBlur', `${e.currentTarget.value}px`)}
+										oninput={(e: Event) => updateSetting('filterBlur', `${(e.currentTarget as HTMLInputElement).value}px`)}
 									/>
 									<span class="value">{block.settings.filterBlur || '0px'}</span>
 								</div>
@@ -918,7 +918,7 @@
 										min="0"
 										max="200"
 										value={parseInt(String(block.settings.filterBrightness || '100'))}
-										oninput={(e) => updateSetting('filterBrightness', `${e.currentTarget.value}%`)}
+										oninput={(e: Event) => updateSetting('filterBrightness', `${(e.currentTarget as HTMLInputElement).value}%`)}
 									/>
 									<span class="value">{block.settings.filterBrightness || '100%'}</span>
 								</div>
@@ -929,7 +929,7 @@
 										min="0"
 										max="200"
 										value={parseInt(String(block.settings.filterContrast || '100'))}
-										oninput={(e) => updateSetting('filterContrast', `${e.currentTarget.value}%`)}
+										oninput={(e: Event) => updateSetting('filterContrast', `${(e.currentTarget as HTMLInputElement).value}%`)}
 									/>
 									<span class="value">{block.settings.filterContrast || '100%'}</span>
 								</div>
@@ -940,7 +940,7 @@
 										min="0"
 										max="100"
 										value={parseInt(String(block.settings.filterGrayscale || '0'))}
-										oninput={(e) => updateSetting('filterGrayscale', `${e.currentTarget.value}%`)}
+										oninput={(e: Event) => updateSetting('filterGrayscale', `${(e.currentTarget as HTMLInputElement).value}%`)}
 									/>
 									<span class="value">{block.settings.filterGrayscale || '0%'}</span>
 								</div>
@@ -951,7 +951,7 @@
 										min="0"
 										max="200"
 										value={parseInt(String(block.settings.filterSaturate || '100'))}
-										oninput={(e) => updateSetting('filterSaturate', `${e.currentTarget.value}%`)}
+										oninput={(e: Event) => updateSetting('filterSaturate', `${(e.currentTarget as HTMLInputElement).value}%`)}
 									/>
 									<span class="value">{block.settings.filterSaturate || '100%'}</span>
 								</div>
@@ -979,7 +979,7 @@
 									type="text"
 									placeholder="my-custom-class another-class"
 									value={block.settings.customClass || ''}
-									onchange={(e) => updateSetting('customClass', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('customClass', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
@@ -991,7 +991,7 @@
 									type="text"
 									placeholder="my-element-id"
 									value={block.settings.customId || ''}
-									onchange={(e) => updateSetting('customId', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('customId', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
@@ -1005,7 +1005,7 @@
   property: value;
 &#125;"
 								value={block.settings.customCSS || ''}
-								onchange={(e) => updateSetting('customCSS', e.currentTarget.value)}
+								onchange={(e: Event) => updateSetting('customCSS', (e.currentTarget as HTMLInputElement).value)}
 							></textarea>
 							</label>
 						</div>
@@ -1030,7 +1030,7 @@
 								<input
 									type="checkbox"
 									checked={block.settings.hideOnDesktop !== true}
-									onchange={(e) => updateSetting('hideOnDesktop', !e.currentTarget.checked)}
+									onchange={(e: Event) => updateSetting('hideOnDesktop', !(e.currentTarget as HTMLInputElement).checked)}
 								/>
 								<span class="device-icon">🖥️</span>
 								<span>Show on Desktop</span>
@@ -1039,7 +1039,7 @@
 								<input
 									type="checkbox"
 									checked={block.settings.hideOnTablet !== true}
-									onchange={(e) => updateSetting('hideOnTablet', !e.currentTarget.checked)}
+									onchange={(e: Event) => updateSetting('hideOnTablet', !(e.currentTarget as HTMLInputElement).checked)}
 								/>
 								<span class="device-icon">📱</span>
 								<span>Show on Tablet</span>
@@ -1048,7 +1048,7 @@
 								<input
 									type="checkbox"
 									checked={block.settings.hideOnMobile !== true}
-									onchange={(e) => updateSetting('hideOnMobile', !e.currentTarget.checked)}
+									onchange={(e: Event) => updateSetting('hideOnMobile', !(e.currentTarget as HTMLInputElement).checked)}
 								/>
 								<span class="device-icon">📲</span>
 								<span>Show on Mobile</span>
@@ -1083,7 +1083,7 @@
 											type="text"
 											placeholder="e.g., 14px"
 											value={block.settings.tabletFontSize || ''}
-											onchange={(e) => updateSetting('tabletFontSize', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('tabletFontSize', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1094,7 +1094,7 @@
 											type="text"
 											placeholder="e.g., 10px 15px"
 											value={block.settings.tabletPadding || ''}
-											onchange={(e) => updateSetting('tabletPadding', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('tabletPadding', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1111,7 +1111,7 @@
 											type="text"
 											placeholder="e.g., 12px"
 											value={block.settings.mobileFontSize || ''}
-											onchange={(e) => updateSetting('mobileFontSize', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('mobileFontSize', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1122,7 +1122,7 @@
 											type="text"
 											placeholder="e.g., 8px 10px"
 											value={block.settings.mobilePadding || ''}
-											onchange={(e) => updateSetting('mobilePadding', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('mobilePadding', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1151,7 +1151,7 @@
 									min="-999"
 									max="9999"
 									value={block.settings.zIndex || 0}
-									onchange={(e) => updateSetting('zIndex', parseInt(e.currentTarget.value))}
+									onchange={(e: Event) => updateSetting('zIndex', parseInt((e.currentTarget as HTMLInputElement).value))}
 								/>
 							</label>
 						</div>
@@ -1161,7 +1161,7 @@
 								Position
 								<select
 									value={block.settings.position || 'static'}
-									onchange={(e) => updateSetting('position', e.currentTarget.value)}
+									onchange={(e: Event) => updateSetting('position', (e.currentTarget as HTMLInputElement).value)}
 								>
 									<option value="static">Static</option>
 									<option value="relative">Relative</option>
@@ -1181,7 +1181,7 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionTop || ''}
-											onchange={(e) => updateSetting('positionTop', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('positionTop', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1192,7 +1192,7 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionRight || ''}
-											onchange={(e) => updateSetting('positionRight', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('positionRight', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1205,7 +1205,7 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionBottom || ''}
-											onchange={(e) => updateSetting('positionBottom', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('positionBottom', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1216,7 +1216,7 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionLeft || ''}
-											onchange={(e) => updateSetting('positionLeft', e.currentTarget.value)}
+											onchange={(e: Event) => updateSetting('positionLeft', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>

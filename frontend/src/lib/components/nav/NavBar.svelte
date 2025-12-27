@@ -691,7 +691,7 @@
 							class:active={isSubmenuActive(item.submenu)}
 							class:open={activeDropdown === item.id}
 							onclick={() => toggleDropdown(item.id)}
-							onkeydown={(e) => activeDropdown === item.id && handleDropdownKeydown(e, item.submenu!)}
+							onkeydown={(e: KeyboardEvent) => activeDropdown === item.id && handleDropdownKeydown(e, item.submenu!)}
 							aria-expanded={activeDropdown === item.id}
 							aria-haspopup="menu"
 							aria-controls="dropdown-{item.id}"
@@ -754,7 +754,7 @@
 						class:active={currentPath.startsWith('/dashboard')}
 						class:open={activeDropdown === 'dashboard'}
 						onclick={() => toggleDropdown('dashboard')}
-						onkeydown={(e) => activeDropdown === 'dashboard' && handleDropdownKeydown(e, dashboardItems)}
+						onkeydown={(e: KeyboardEvent) => activeDropdown === 'dashboard' && handleDropdownKeydown(e, dashboardItems)}
 						aria-expanded={activeDropdown === 'dashboard'}
 						aria-haspopup="menu"
 						aria-controls="dropdown-dashboard"
@@ -864,7 +864,7 @@
 		class:closing={mobileMenuState === 'closing'}
 		class:reduced-motion={prefersReducedMotion || disableTransitions}
 		onclick={closeMobileMenu}
-		onkeydown={(e) => e.key === 'Enter' && closeMobileMenu()}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && closeMobileMenu()}
 		role="button"
 		tabindex="-1"
 		aria-label="Close menu"

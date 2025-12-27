@@ -5,7 +5,7 @@
 	 * Individual Premium Daily Video Page
 	 * Reference: frontend/Do's/Premium-Daily-Videos-Clicked
 	 */
-	const videoId = $derived($page.params.id);
+	const videoId = $derived($page.params.id!);
 
 	// Mock video data - in real app this would come from API
 	const video = $derived({

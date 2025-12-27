@@ -90,14 +90,14 @@
 	role="button"
 	tabindex="0"
 	onclick={cancel}
-	onkeydown={(e) => e.key === 'Escape' && cancel()}
+	onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && cancel()}
 >
 	<div
 		class="modal"
 		role="dialog"
 		tabindex="-1"
-		onclick={(e) => e.stopPropagation()}
-		onkeypress={(e) => e.stopPropagation()}
+		onclick={(e: MouseEvent) => e.stopPropagation()}
+		onkeypress={(e: KeyboardEvent) => e.stopPropagation()}
 	>
 		<div class="modal-header">
 			<h2>{redirect ? 'Edit Redirect' : 'Create Redirect'}</h2>
@@ -106,7 +106,7 @@
 			</button>
 		</div>
 
-		<form onsubmit={(e) => { e.preventDefault(); save(); }}>
+		<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); save(); }}>
 			<div class="modal-body">
 				{#if error}
 					<div class="error-message">{error}</div>

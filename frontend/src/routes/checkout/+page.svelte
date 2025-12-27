@@ -285,7 +285,7 @@
 		<div class="checkout-content">
 			<!-- Main Form Area -->
 			<div class="checkout-form-section">
-				<form class="checkout woocommerce-checkout" onsubmit={(e) => e.preventDefault()}>
+				<form class="checkout woocommerce-checkout" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
 					<!-- Step 1: Billing -->
 					<div id="checkout-billing" class="checkout-step" class:active={currentStep === 'billing'}>
 						<div class="card">
@@ -451,7 +451,7 @@
 										class="payment-method"
 										class:selected={paymentMethod === 'stripe'}
 										onclick={() => paymentMethod = 'stripe'}
-										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'stripe'; } }}
+										onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'stripe'; } }}
 										role="button"
 										tabindex="0"
 									>
@@ -480,7 +480,7 @@
 										class="payment-method"
 										class:selected={paymentMethod === 'paypal'}
 										onclick={() => paymentMethod = 'paypal'}
-										onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'paypal'; } }}
+										onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'paypal'; } }}
 										role="button"
 										tabindex="0"
 									>
@@ -642,7 +642,7 @@
 											type="text"
 											placeholder="Coupon code"
 											bind:value={couponCode}
-											onkeypress={(e) => e.key === 'Enter' && applyCouponCode()}
+											onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && applyCouponCode()}
 											disabled={applyingCoupon}
 										/>
 										<button

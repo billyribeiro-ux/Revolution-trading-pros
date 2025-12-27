@@ -37,7 +37,7 @@
 	} from '$lib/icons';
 
 	// Get board ID from URL
-	const boardId = $derived($page.params.id);
+	const boardId = $derived($page.params.id!);
 
 	// State
 	let board = $state<Board | null>(null);

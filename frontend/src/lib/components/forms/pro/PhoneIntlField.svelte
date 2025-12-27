@@ -182,7 +182,7 @@
 							placeholder="Search country..."
 							bind:value={searchQuery}
 							class="country-search"
-							onclick={(e) => e.stopPropagation()}
+							onclick={(e: MouseEvent) => e.stopPropagation()}
 						/>
 					</div>
 					<div class="country-list">
@@ -191,7 +191,7 @@
 								type="button"
 								class="country-option"
 								class:selected={selectedCountry.code === country.code}
-								onclick={(e) => {
+								onclick={(e: MouseEvent) => {
 									e.stopPropagation();
 									selectCountry(country);
 								}}

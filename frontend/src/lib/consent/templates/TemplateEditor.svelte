@@ -844,7 +844,7 @@
 							Base on existing template
 							<select
 								class="form-select"
-								onchange={(e) => copyFromTemplate(e.currentTarget.value)}
+								onchange={(e: Event) => copyFromTemplate((e.currentTarget as HTMLInputElement).value)}
 							>
 								<option value="">Select a template...</option>
 								{#each BANNER_TEMPLATES as t}

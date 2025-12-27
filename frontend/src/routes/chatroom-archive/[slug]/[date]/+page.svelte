@@ -5,7 +5,7 @@
 	 */
 	import { page } from '$app/stores';
 	
-	const slug = $derived($page.params.slug);
+	const slug = $derived($page.params.slug!);
 	// @ts-ignore - date param exists in route
 	const date = $derived($page.params.date);
 </script>

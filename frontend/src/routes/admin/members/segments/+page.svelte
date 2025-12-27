@@ -558,14 +558,14 @@
 		aria-modal="true"
 		tabindex="-1"
 		onclick={() => (showCreateSegmentModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showCreateSegmentModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateSegmentModal = false)}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content large"
 			role="document"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Create Smart Segment</h2>
@@ -655,14 +655,14 @@
 		aria-modal="true"
 		tabindex="-1"
 		onclick={() => (showCreateTagModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showCreateTagModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateTagModal = false)}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content"
 			role="document"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Create New Tag</h2>

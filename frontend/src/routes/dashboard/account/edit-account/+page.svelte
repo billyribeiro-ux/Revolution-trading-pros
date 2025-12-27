@@ -42,7 +42,7 @@
 				<div class="content-box__section">
 					<legend>Personal Details</legend>
 
-					<form class="woocommerce-EditAccountForm edit-account" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+					<form class="woocommerce-EditAccountForm edit-account" onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleSubmit(); }}>
 						<p class="woocommerce-form-row woocommerce-form-row--first form-row form-row-first">
 							<label for="account_first_name">First name <span class="required">*</span></label>
 							<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_first_name" id="account_first_name" autocomplete="given-name" bind:value={firstName} required />

@@ -104,7 +104,7 @@
 	<div class="node-actions">
 		<button
 			class="action-btn"
-			onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
+			onclick={(e: MouseEvent) => { e.stopPropagation(); ondelete?.(); }}
 			title="Delete node"
 		>
 			<svg

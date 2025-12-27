@@ -171,14 +171,14 @@
 		role="button"
 		tabindex="0"
 		onclick={() => (showSitemapXml = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showSitemapXml = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSitemapXml = false)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			tabindex="0"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showSitemapXml = false)}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSitemapXml = false)}
 		>
 			<div class="modal-header">
 				<h3>Generated Sitemap</h3>

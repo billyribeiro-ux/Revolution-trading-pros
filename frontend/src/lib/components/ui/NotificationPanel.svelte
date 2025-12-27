@@ -209,7 +209,7 @@
 								hover:bg-slate-800/50 transition-colors cursor-pointer
 								{notification.read ? 'opacity-70' : ''}"
 							onclick={() => handleNotificationClick(notification)}
-							onkeypress={(e) => e.key === 'Enter' && handleNotificationClick(notification)}
+							onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleNotificationClick(notification)}
 							role="button"
 							tabindex="0"
 						>
@@ -240,7 +240,7 @@
 
 									{#if notification.action}
 										<button
-											onclick={(e) => { e.stopPropagation(); handleNotificationClick(notification); }}
+											onclick={(e: MouseEvent) => { e.stopPropagation(); handleNotificationClick(notification); }}
 											class="mt-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium"
 										>
 											{notification.action.label}
@@ -250,7 +250,7 @@
 
 								<!-- Dismiss button -->
 								<button
-									onclick={(e) => { e.stopPropagation(); notificationStore.dismiss(notification.id); }}
+									onclick={(e: MouseEvent) => { e.stopPropagation(); notificationStore.dismiss(notification.id); }}
 									class="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100
 										hover:bg-slate-700/50 transition-all"
 									aria-label="Dismiss"

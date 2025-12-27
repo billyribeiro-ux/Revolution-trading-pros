@@ -8,7 +8,7 @@
 	let loading = true;
 	let error = '';
 	let preview = null;
-	const id = $page.params.id;
+	const id = $page.params.id!;
 
 	onMount(async () => {
 		try {

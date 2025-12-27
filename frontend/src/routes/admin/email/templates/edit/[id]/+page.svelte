@@ -9,7 +9,7 @@
 	let error = '';
 	let template = null;
 
-	const id = $page.params.id;
+	const id = $page.params.id!;
 
 	onMount(async () => {
 		try {

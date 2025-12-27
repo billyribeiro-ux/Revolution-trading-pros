@@ -322,7 +322,7 @@
 				type="text"
 				placeholder="Search by email or name..."
 				bind:value={searchQuery}
-				onkeydown={(e) => e.key === 'Enter' && handleSearch()}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
 			/>
 		</div>
 
@@ -503,15 +503,15 @@
 		tabindex="0"
 		aria-label="Close modal"
 		onclick={() => (showAddModal = false)}
-		onkeydown={(e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showAddModal = false; }}
+		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showAddModal = false; }}
 	>
 		<div
 			class="modal-content"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Add Subscriber</h2>

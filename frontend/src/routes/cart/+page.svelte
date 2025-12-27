@@ -179,7 +179,7 @@
 				</div>
 			{:else}
 				<!-- Cart Form - Simpler Trading Structure -->
-				<form class="woocommerce-cart-form" onsubmit={(e) => e.preventDefault()}>
+				<form class="woocommerce-cart-form" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
 					<div class="woocommerce-cart-form__contents">
 						<div class="row">
 							<!-- Products Column -->

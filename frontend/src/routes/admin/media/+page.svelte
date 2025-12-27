@@ -641,7 +641,7 @@
           type="text"
           placeholder="Search media..."
           bind:value={searchQuery}
-          onkeydown={(e) => e.key === 'Enter' && loadMedia()}
+          onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && loadMedia()}
         />
         {#if searchQuery}
           <button class="search-clear" onclick={() => { searchQuery = ''; loadMedia(); }} aria-label="Clear search">
@@ -919,10 +919,10 @@
               class="media-item"
               class:selected={selectedIds.has(item.id)}
               class:focused={focusedId === item.id}
-              onclick={(e) => handleItemClick(item, e)}
+              onclick={(e: MouseEvent) => handleItemClick(item, e)}
               ondblclick={() => handleItemDoubleClick(item)}
               oncontextmenu={(e) => handleContextMenu(e, item)}
-              onkeydown={(e) => e.key === 'Enter' && handleItemDoubleClick(item)}
+              onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleItemDoubleClick(item)}
               role="button"
               tabindex="0"
               aria-label={item.filename}
@@ -962,7 +962,7 @@
                     <input
                       type="checkbox"
                       checked={selectedIds.has(item.id)}
-                      onclick={(e) => {
+                      onclick={(e: MouseEvent) => {
                         e.stopPropagation();
                         if (selectedIds.has(item.id)) {
                           selectedIds.delete(item.id);
@@ -985,7 +985,7 @@
                   <input
                     type="checkbox"
                     checked={selectedIds.has(item.id)}
-                    onclick={(e) => {
+                    onclick={(e: MouseEvent) => {
                       e.stopPropagation();
                       if (selectedIds.has(item.id)) {
                         selectedIds.delete(item.id);
@@ -1029,12 +1029,12 @@
                 <div class="item-date">{formatDate(item.created_at)}</div>
 
                 <div class="item-actions">
-                  <button class="btn-icon-sm" onclick={(e) => { e.stopPropagation(); handleOptimize(item); }} title="Optimize">
+                  <button class="btn-icon-sm" onclick={(e: MouseEvent) => { e.stopPropagation(); handleOptimize(item); }} title="Optimize">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
                     </svg>
                   </button>
-                  <button class="btn-icon-sm" onclick={(e) => { e.stopPropagation(); handleDelete(item); }} title="Delete">
+                  <button class="btn-icon-sm" onclick={(e: MouseEvent) => { e.stopPropagation(); handleDelete(item); }} title="Delete">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
@@ -1368,14 +1368,14 @@
   <div 
     class="modal-overlay" 
     onclick={() => (showPreviewModal = false)} 
-    onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)}
+    onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showPreviewModal = false)}
     role="dialog"
     aria-modal="true"
     aria-labelledby="preview-modal-title"
     tabindex="-1"
     transition:fade={{ duration: 200 }}
   >
-    <div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation" transition:scale={{ duration: 300, start: 0.95 }}>
+    <div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation" transition:scale={{ duration: 300, start: 0.95 }}>
       <div class="modal-header">
         <h2 id="preview-modal-title">Responsive Preview</h2>
         <button class="btn-icon" onclick={() => (showPreviewModal = false)} aria-label="Close preview">

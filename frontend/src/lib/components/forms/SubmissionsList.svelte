@@ -288,7 +288,7 @@
 									<select
 										class="status-select"
 										value={submission.status}
-										onchange={(e) => handleStatusChange(submission, e.currentTarget.value as any)}
+										onchange={(e: Event) => handleStatusChange(submission, (e.currentTarget as HTMLInputElement).value as any)}
 									>
 										<option value="unread">Unread</option>
 										<option value="read">Read</option>

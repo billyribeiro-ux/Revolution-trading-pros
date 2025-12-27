@@ -241,7 +241,7 @@
 								value={quantity}
 								min="0"
 								max={maxQty}
-								oninput={(e) => handleQuantityChange(product, parseInt((e.target as HTMLInputElement).value) || 0)}
+								oninput={(e: Event) => handleQuantityChange(product, parseInt((e.target as HTMLInputElement).value) || 0)}
 								{disabled}
 							/>
 							<button
@@ -267,7 +267,7 @@
 								name="{name}_selection"
 								value={product.id}
 								checked={isSelected}
-								onchange={(e) => handleCheckboxChange(product, (e.target as HTMLInputElement).checked)}
+								onchange={(e: Event) => handleCheckboxChange(product, (e.target as HTMLInputElement).checked)}
 								disabled={disabled}
 							/>
 							<span class="radio-custom"></span>

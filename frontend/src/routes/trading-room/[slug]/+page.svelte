@@ -25,7 +25,7 @@
 	import IconExternalLink from '@tabler/icons-svelte/icons/external-link';
 	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
 
-	let slug = $derived($page.params.slug);
+	let slug = $derived($page.params.slug!);
 	let hasAccess = $state(false);
 	let membership = $state<UserMembership | null>(null);
 	let discordInvite = $state<string | null>(null);
