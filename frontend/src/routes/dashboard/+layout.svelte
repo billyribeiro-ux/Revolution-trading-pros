@@ -685,10 +685,14 @@
 
 	#page {
 		background-color: #efefef !important;
+		margin-bottom: 0 !important;
+		padding-bottom: 0 !important;
 	}
 
 	#content {
 		background-color: #efefef !important;
+		margin-bottom: 0 !important;
+		padding-bottom: 0 !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -700,6 +704,7 @@
 		flex: 1;
 		max-width: 100%;
 		margin: 0;
+		margin-bottom: 0 !important;
 		width: 100%;
 	}
 
