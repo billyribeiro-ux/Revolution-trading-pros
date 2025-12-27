@@ -53,7 +53,7 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
-	import { quintOut, cubicOut, backOut, elasticOut } from 'svelte/easing';
+	import { quintOut, cubicOut, elasticOut } from 'svelte/easing';
 	import { spring, tweened } from 'svelte/motion';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups';
 	import { browser } from '$app/environment';
@@ -76,8 +76,8 @@
 	let modalElement = $state<HTMLDivElement>();
 	let previousFocus: HTMLElement | null = null;
 	let scrollPosition = 0;
-	let mousePosition = { x: 0, y: 0 };
-	let viewportSize = { width: 0, height: 0 };
+	let _mousePosition = { x: 0, y: 0 };
+	let _viewportSize = { width: 0, height: 0 };
 	let deviceType = $state<'mobile' | 'tablet' | 'desktop'>('desktop');
 	let userInteracted = false;
 	let impressionTime = 0;
@@ -761,7 +761,7 @@
 		return 'immediate';
 	}
 
-	function extractVideoId(url: string): string | null {
+	function extractVideoId(url: string): string | null | undefined {
 		const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
 		const match = url.match(regex);
 		return match ? match[1] : null;
