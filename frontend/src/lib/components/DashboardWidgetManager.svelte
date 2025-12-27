@@ -124,7 +124,8 @@
 		const sizes: WidgetSize[] = ['small', 'medium', 'large', 'full'];
 		const currentIndex = sizes.indexOf(widget.size);
 		const nextIndex = (currentIndex + 1) % sizes.length;
-		widgetStore.setWidgetSize(widget.id, sizes[nextIndex]);
+		const nextSize = sizes[nextIndex];
+		if (nextSize) widgetStore.setWidgetSize(widget.id, nextSize);
 	}
 </script>
 
