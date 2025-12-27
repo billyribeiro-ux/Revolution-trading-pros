@@ -150,11 +150,11 @@ export function createApiError(
 	error.status = options.status;
 	error.category = options.category ?? categorizeError(options.status, options.code);
 	error.severity = options.severity ?? determineSeverity(options.status, options.category);
-	error.validationErrors = options.validationErrors;
-	error.context = options.context;
-	error.retryAfter = options.retryAfter;
+	if (options.validationErrors !== undefined) error.validationErrors = options.validationErrors;
+	if (options.context !== undefined) error.context = options.context;
+	if (options.retryAfter !== undefined) error.retryAfter = options.retryAfter;
 	error.isRetryable = isRetryable(options.status, options.code);
-	error.cause = options.cause;
+	if (options.cause !== undefined) error.cause = options.cause;
 	error.timestamp = new Date().toISOString();
 
 	return error;
@@ -186,13 +186,14 @@ export async function createErrorFromResponse(
 	const { code, status } = mapHttpStatusToError(response.status);
 	const message = body.message || body.error || getDefaultMessage(response.status);
 
+	const retryAfter = parseRetryAfter(response.headers.get('Retry-After'));
 	return createApiError({
 		message,
 		code,
 		status,
-		validationErrors: body.errors,
-		context,
-		retryAfter: parseRetryAfter(response.headers.get('Retry-After'))
+		...(body.errors !== undefined && { validationErrors: body.errors }),
+		...(context !== undefined && { context }),
+		...(retryAfter !== undefined && { retryAfter })
 	});
 }
 
@@ -226,7 +227,7 @@ export function createNetworkError(
 		status: 0,
 		category: 'network',
 		cause,
-		context
+		...(context !== undefined && { context })
 	});
 }
 
