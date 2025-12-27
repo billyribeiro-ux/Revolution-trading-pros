@@ -7,12 +7,10 @@
 -->
 
 <script lang="ts">
-	import { tick } from 'svelte';
 	import {
 		IconPhoto,
 		IconVideo,
 		IconCheck,
-		IconQuote,
 		IconChartCandle,
 		IconAlertTriangle,
 		IconPlus,
@@ -20,7 +18,7 @@
 		IconGripVertical
 	} from '$lib/icons';
 
-	import type { Block, BlockContent, BlockSettings } from './types';
+	import type { Block, BlockContent } from './types';
 
 	// ==========================================================================
 	// Props
@@ -44,8 +42,6 @@
 	// State
 	// ==========================================================================
 
-	let editableRef = $state<HTMLElement | undefined>(undefined);
-	let isTyping = $state(false);
 
 	// ==========================================================================
 	// Content Update
@@ -60,11 +56,6 @@
 	function handleTextInput(e: Event) {
 		const target = e.target as HTMLElement;
 		updateContent({ text: target.textContent || '' });
-	}
-
-	function handleHTMLInput(e: Event) {
-		const target = e.target as HTMLElement;
-		updateContent({ html: target.innerHTML });
 	}
 
 	function handlePaste(e: ClipboardEvent) {
@@ -305,13 +296,12 @@
 						{/if}
 					</span>
 					<span
-						contenteditable={isEditing}
 						class="check-text editable-content"
 						oninput={(e: Event) => {
 							const items = block.content.items?.map(i =>
-								i.id === item.id ? { ...i, content: (e.target as HTMLElement).textContent || '' } : i
-							);
-							updateContent({ items });
+							i.id === item.id ? { ...i, content: (e.target as HTMLElement).textContent || '' } : i
+						);
+						if (items) updateContent({ items });
 						}}
 						onpaste={handlePaste}
 					>
