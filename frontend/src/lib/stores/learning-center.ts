@@ -152,7 +152,7 @@ function createLearningCenterStore() {
 
 				update((state) => ({
 					...state,
-					currentCourse: course,
+					currentCourse: course as unknown as Course,
 					isLoading: false
 				}));
 			} catch (error: any) {
