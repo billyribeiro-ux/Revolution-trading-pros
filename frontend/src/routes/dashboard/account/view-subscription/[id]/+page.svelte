@@ -113,7 +113,7 @@
 			<!-- Cancel Confirmation Modal -->
 			{#if showCancelModal}
 				<div class="modal-overlay" onclick={() => showCancelModal = false} role="presentation">
-					<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+					<div class="modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="cancel-title" tabindex="-1">
 						<h3 id="cancel-title">Cancel Subscription</h3>
 						<p>Are you sure you want to cancel your subscription to <strong>{subscription.product}</strong>?</p>
 						<p class="modal-note">Your subscription will remain active until the end of your current billing period.</p>
