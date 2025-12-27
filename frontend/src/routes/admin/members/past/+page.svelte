@@ -618,7 +618,7 @@
 									<span class="spending">{formatCurrency(member.total_spent || 0)}</span>
 								</td>
 								<td>
-									<span class="date">{formatDate(member.last_membership?.expired_at)}</span>
+									<span class="date">{formatDate(member.last_membership?.expired_at ?? null)}</span>
 								</td>
 								<td>
 									<span class="days-badge">

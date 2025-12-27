@@ -135,6 +135,13 @@ declare global {
 			consent: ConsentState;
 			/** Whether the user has interacted with the consent banner */
 			hasConsentInteraction: boolean;
+			/** Current authenticated user (if any) */
+			user?: {
+				id: string;
+				email: string;
+				name?: string;
+				role?: string;
+			} | null;
 		}
 		// interface PageData {}
 		// interface PageState {}
