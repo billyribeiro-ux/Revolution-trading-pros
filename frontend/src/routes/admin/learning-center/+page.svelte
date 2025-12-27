@@ -10,11 +10,10 @@
 	 */
 
 	import { learningCenterStore } from '$lib/stores/learningCenter';
-	import type { LessonWithRelations, TradingRoom, Trainer, LessonCategory } from '$lib/types/learning-center';
+	import type { LessonWithRelations } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconFilter from '@tabler/icons-svelte/icons/filter';
 	import IconEdit from '@tabler/icons-svelte/icons/edit';
 	import IconTrash from '@tabler/icons-svelte/icons/trash';
 	import IconEye from '@tabler/icons-svelte/icons/eye';
@@ -22,7 +21,6 @@
 	import IconDots from '@tabler/icons-svelte/icons/dots';
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconFileText from '@tabler/icons-svelte/icons/file-text';
-	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -56,12 +54,16 @@
 		const lessons = storeData.lessons;
 
 		// Enrich with relations
-		return lessons.map(lesson => ({
-			...lesson,
-			trainer: storeData.trainers.find(t => t.id === lesson.trainerId),
-			category: storeData.categories.find(c => c.id === lesson.categoryId),
-			tradingRooms: storeData.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id))
-		}));
+		return lessons.map(lesson => {
+			const trainer = storeData.trainers.find(t => t.id === lesson.trainerId);
+			const category = storeData.categories.find(c => c.id === lesson.categoryId);
+			return {
+				...lesson,
+				...(trainer && { trainer }),
+				...(category && { category }),
+				tradingRooms: storeData.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id))
+			} as LessonWithRelations;
+		});
 	});
 
 	// Filter lessons
