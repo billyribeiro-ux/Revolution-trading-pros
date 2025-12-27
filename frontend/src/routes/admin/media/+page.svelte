@@ -1001,7 +1001,7 @@
 
                 <div class="item-info">
                   <span class="item-name" title={item.filename}>{item.filename}</span>
-                  <span class="item-meta">{formatBytes(item.size)}</span>
+                  <span class="item-meta">{formatBytes(item.size ?? 0)}</span>
                 </div>
               {:else}
                 <!-- List view -->
@@ -1038,7 +1038,7 @@
                   <span class="item-path">{item.collection || 'default'}</span>
                 </div>
 
-                <div class="item-size">{formatBytes(item.size)}</div>
+                <div class="item-size">{formatBytes(item.size ?? 0)}</div>
 
                 <div class="item-status">
                   {#if item.is_optimized}
@@ -1142,7 +1142,7 @@
             <OptimizedImage
               src={detailItem.url}
               alt={detailItem.alt_text || detailItem.filename}
-              blurhash={String(detailItem.custom_properties?.blurhash || '')}
+              blurhash={String(detailItem.custom_properties?.['blurhash'] || '')}
             />
           {:else}
             <div class="file-preview-icon">{getFileIcon(detailItem.file_type)}</div>
@@ -1156,7 +1156,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Size</span>
-            <span class="detail-value">{formatBytes(detailItem.size)}</span>
+            <span class="detail-value">{formatBytes(detailItem.size ?? 0)}</span>
           </div>
           {#if detailItem.dimensions}
             <div class="detail-row">
