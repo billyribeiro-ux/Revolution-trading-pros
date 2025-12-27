@@ -106,10 +106,6 @@ export class PopupHeatmapTracker {
 	private boundHandleTouch: (event: TouchEvent) => void;
 	private boundHandleScroll: (event: Event) => void;
 	private boundHandleMouseMove: (event: MouseEvent) => void;
-	private _boundHandleFormFocus: (event: FocusEvent) => void;
-	private _boundHandleFormBlur: (event: FocusEvent) => void;
-	private _boundHandleFormInput: (event: Event) => void;
-	private _boundHandleFormChange: (event: Event) => void;
 
 	constructor(popupId: string, sessionId?: string) {
 		this.popupId = popupId;
@@ -120,10 +116,6 @@ export class PopupHeatmapTracker {
 		this.boundHandleTouch = this.handleTouch.bind(this);
 		this.boundHandleScroll = this.handleScroll.bind(this);
 		this.boundHandleMouseMove = this.handleMouseMove.bind(this);
-		this._boundHandleFormFocus = this.handleFormFocus.bind(this);
-		this._boundHandleFormBlur = this.handleFormBlur.bind(this);
-		this._boundHandleFormInput = this.handleFormInput.bind(this);
-		this._boundHandleFormChange = this.handleFormChange.bind(this);
 	}
 
 	/**
