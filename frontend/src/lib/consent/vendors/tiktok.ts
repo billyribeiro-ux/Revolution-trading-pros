@@ -44,35 +44,48 @@ function initializeTikTok(pixelId: string): void {
 	if (!window.ttq) {
 		window.TiktokAnalyticsObject = 'ttq';
 
-		const ttq: NonNullable<typeof window.ttq> = (window.ttq = {} as NonNullable<typeof window.ttq>);
-		ttq._i = ttq._i || {};
+		const _i: Record<string, TikTokPixelInstance | unknown[]> = {};
 
-		ttq.load = function (t: string) {
-			const e = 'https://analytics.tiktok.com/i18n/pixel/events.js';
-			const instance: TikTokPixelInstance = { _u: e };
-			ttq._i![t] = instance;
+		window.ttq = {
+			_i,
+			load(t: string) {
+				const e = 'https://analytics.tiktok.com/i18n/pixel/events.js';
+				const instance: TikTokPixelInstance = { _u: e };
+				_i[t] = instance;
 
-			const o = document.createElement('script');
-			o.type = 'text/javascript';
-			o.async = true;
-			o.src = e + '?sdkid=' + t + '&lib=' + 'ttq';
+				const o = document.createElement('script');
+				o.type = 'text/javascript';
+				o.async = true;
+				o.src = e + '?sdkid=' + t + '&lib=' + 'ttq';
 
-			const a = document.getElementsByTagName('script')[0];
-			a.parentNode?.insertBefore(o, a);
-		};
-
-		// Add stub methods
-		const methods = ['page', 'track', 'identify', 'instances', 'debug', 'on', 'off', 'once', 'ready', 'alias', 'group', 'enableCookie', 'disableCookie'];
-		methods.forEach((method) => {
-			(ttq as unknown as Record<string, unknown>)[method] = function (...args: unknown[]) {
-				const pixelArgs = [method, ...args];
-				Object.values(ttq._i || {}).forEach((instance: unknown) => {
+				const a = document.getElementsByTagName('script')[0];
+				a.parentNode?.insertBefore(o, a);
+			},
+			page() {
+				Object.values(_i).forEach((instance: unknown) => {
 					if (Array.isArray(instance)) {
-						instance.push(pixelArgs);
+						instance.push(['page']);
 					}
 				});
-			};
-		});
+			},
+			track(event: string, data?: Record<string, unknown>) {
+				Object.values(_i).forEach((instance: unknown) => {
+					if (Array.isArray(instance)) {
+						instance.push(['track', event, data]);
+					}
+				});
+			},
+			identify(data: Record<string, unknown>) {
+				Object.values(_i).forEach((instance: unknown) => {
+					if (Array.isArray(instance)) {
+						instance.push(['identify', data]);
+					}
+				});
+			},
+			instances() {
+				return Object.keys(_i);
+			}
+		};
 	}
 
 	// Load the pixel

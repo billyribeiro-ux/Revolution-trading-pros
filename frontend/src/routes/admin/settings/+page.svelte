@@ -410,7 +410,7 @@
 
 			if (data.success) {
 				// Update local state
-				const idx = allServices.findIndex(s => s.key === selectedService.key);
+				const idx = allServices.findIndex(s => s.key === selectedService!.key);
 				if (idx !== -1) {
 					allServices[idx] = {
 						...allServices[idx],
@@ -483,7 +483,7 @@
 
 			if (data.success) {
 				// Update local state
-				const idx = allServices.findIndex(s => s.key === disconnectingService.key);
+				const idx = allServices.findIndex(s => s.key === disconnectingService!.key);
 				if (idx !== -1) {
 					allServices[idx] = {
 						...allServices[idx],

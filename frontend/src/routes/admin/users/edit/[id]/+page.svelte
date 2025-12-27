@@ -19,7 +19,7 @@
 		roles: [] as string[]
 	};
 
-	let userId = $derived(parseInt($page.params.id));
+	let userId = $derived(parseInt($page.params.id!));
 
 	onMount(async () => {
 		await loadUser();

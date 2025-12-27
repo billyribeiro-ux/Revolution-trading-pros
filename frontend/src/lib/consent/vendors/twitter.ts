@@ -34,16 +34,18 @@ function initializeTwitter(pixelId: string): void {
 
 	// Create twq stub if not present
 	if (!window.twq) {
-		const twq = (window.twq = function (...args: unknown[]) {
-			if (twq.exe) {
-				twq.exe.apply(twq, args);
+		const twqFunc = function (...args: unknown[]) {
+			const t = window.twq!;
+			if (t.exe) {
+				t.exe.apply(t, args);
 			} else {
-				twq.queue.push(args);
+				t.queue.push(args);
 			}
-		} as typeof window.twq);
+		} as NonNullable<typeof window.twq>;
 
-		twq!.version = '1.1';
-		twq!.queue = [];
+		twqFunc.version = '1.1';
+		twqFunc.queue = [];
+		window.twq = twqFunc;
 	}
 
 	// Load Twitter script
