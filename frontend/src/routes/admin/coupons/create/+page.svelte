@@ -403,7 +403,7 @@
 			const submitData = prepareSubmitData();
 
 			// Create coupon
-			await couponsApi.create(submitData);
+			await couponsApi.create(submitData as Parameters<typeof couponsApi.create>[0]);
 
 			// Track analytics
 			trackEvent('coupon_created', {
