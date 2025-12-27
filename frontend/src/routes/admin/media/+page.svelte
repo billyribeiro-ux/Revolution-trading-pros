@@ -15,12 +15,12 @@
    */
   import { onMount, onDestroy } from 'svelte';
   import { fly, fade, scale, slide } from 'svelte/transition';
-  import { spring, tweened } from 'svelte/motion';
-  import { cubicOut, backOut } from 'svelte/easing';
+  import { spring as _spring, tweened } from 'svelte/motion';
+  import { cubicOut, backOut as _backOut } from 'svelte/easing';
   import DropZone from '$lib/components/media/DropZone.svelte';
   import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
-  import UploadProgress from '$lib/components/media/UploadProgress.svelte';
-  import OptimizationStats from '$lib/components/media/OptimizationStats.svelte';
+  import UploadProgress from '$lib/components/media/UploadProgress.svelte'; // eslint-disable-line @typescript-eslint/no-unused-vars
+  import OptimizationStats from '$lib/components/media/OptimizationStats.svelte'; // eslint-disable-line @typescript-eslint/no-unused-vars
   import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
   import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
   import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
@@ -569,7 +569,7 @@
     }
   }
 
-  function handleClickOutside(event: MouseEvent) {
+  function handleClickOutside(_event: MouseEvent) {
     if (contextMenu) {
       contextMenu = null;
     }
