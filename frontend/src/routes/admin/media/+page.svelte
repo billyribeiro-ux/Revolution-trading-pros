@@ -174,7 +174,9 @@
     const idx = uploadQueue.findIndex((u) => u.id === id);
     if (idx === -1) return;
 
-    uploadQueue[idx].status = 'uploading';
+    const uploadItem = uploadQueue[idx];
+    if (!uploadItem) return;
+    uploadItem.status = 'uploading';
     uploadQueue = uploadQueue;
 
     try {
@@ -186,8 +188,11 @@
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
           const progress = Math.round((e.loaded / e.total) * 100);
-          uploadQueue[idx].progress = progress;
-          uploadQueue = uploadQueue;
+          const item = uploadQueue[idx];
+          if (item) {
+            item.progress = progress;
+            uploadQueue = uploadQueue;
+          }
         }
       };
 
@@ -204,8 +209,11 @@
         xhr.send(formData);
       });
 
-      uploadQueue[idx].status = 'complete';
-      uploadQueue[idx].result = result;
+      const completedItem = uploadQueue[idx];
+      if (completedItem) {
+        completedItem.status = 'complete';
+        completedItem.result = result;
+      }
       uploadQueue = uploadQueue;
 
       // Add to items list
@@ -214,8 +222,11 @@
       loadStatistics();
 
     } catch (e: any) {
-      uploadQueue[idx].status = 'error';
-      uploadQueue[idx].error = e.message || 'Upload failed';
+      const errorItem = uploadQueue[idx];
+      if (errorItem) {
+        errorItem.status = 'error';
+        errorItem.error = e.message || 'Upload failed';
+      }
       uploadQueue = uploadQueue;
     }
 
@@ -491,16 +502,22 @@
     switch (event.key) {
       case 'ArrowRight':
         if (currentIndex < items.length - 1) {
-          focusedId = items[currentIndex + 1].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const nextItem = items[currentIndex + 1];
+          if (nextItem) {
+            focusedId = nextItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
 
       case 'ArrowLeft':
         if (currentIndex > 0) {
-          focusedId = items[currentIndex - 1].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const prevItem = items[currentIndex - 1];
+          if (prevItem) {
+            focusedId = prevItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
@@ -508,8 +525,11 @@
       case 'ArrowDown':
         const cols = viewMode === 'grid' ? 6 : 1;
         if (currentIndex + cols < items.length) {
-          focusedId = items[currentIndex + cols].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const downItem = items[currentIndex + cols];
+          if (downItem) {
+            focusedId = downItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
@@ -517,8 +537,11 @@
       case 'ArrowUp':
         const colsUp = viewMode === 'grid' ? 6 : 1;
         if (currentIndex - colsUp >= 0) {
-          focusedId = items[currentIndex - colsUp].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const upItem = items[currentIndex - colsUp];
+          if (upItem) {
+            focusedId = upItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
@@ -922,7 +945,7 @@
               class:focused={focusedId === item.id}
               onclick={(e: MouseEvent) => handleItemClick(item, e)}
               ondblclick={() => handleItemDoubleClick(item)}
-              oncontextmenu={(e) => handleContextMenu(e, item)}
+              oncontextmenu={(e: MouseEvent) => handleContextMenu(e, item)}
               onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleItemDoubleClick(item)}
               role="button"
               tabindex="0"
@@ -935,7 +958,7 @@
                     <OptimizedImage
                       src={item.thumbnail_url || item.url}
                       alt={item.alt_text || item.filename}
-                      blurhash={String(item.custom_properties?.blurhash || '')}
+                      blurhash={String(item.custom_properties?.['blurhash'] || '')}
                       aspectRatio="1"
                     />
                   {:else}
