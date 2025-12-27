@@ -15,7 +15,7 @@
   import { onMount } from 'svelte';
   import { tweened } from 'svelte/motion';
   import { cubicOut } from 'svelte/easing';
-  import { fade, fly, scale } from 'svelte/transition';
+  import { fly, scale } from 'svelte/transition';
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Types
@@ -58,7 +58,6 @@
   let formatStats = $state<FormatStats[]>([]);
   let isLoading = $state(true);
   let timeRange = $state<'7d' | '30d' | '90d' | '1y'>('30d');
-  let activeTab: 'overview' | 'bandwidth' | 'formats' | 'performance' = 'overview';
 
   // Connection status - NO MOCK DATA
   let isConnected = $state(false);
@@ -473,9 +472,9 @@
         <!-- X-axis labels -->
         <div class="x-axis">
           {#if bandwidthData.length > 0}
-            <span>{bandwidthData[0].date}</span>
-            <span>{bandwidthData[Math.floor(bandwidthData.length / 2)]?.date}</span>
-            <span>{bandwidthData[bandwidthData.length - 1].date}</span>
+            <span>{bandwidthData[0]?.date ?? ''}</span>
+            <span>{bandwidthData[Math.floor(bandwidthData.length / 2)]?.date ?? ''}</span>
+            <span>{bandwidthData[bandwidthData.length - 1]?.date ?? ''}</span>
           {/if}
         </div>
       </div>
