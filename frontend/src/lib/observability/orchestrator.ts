@@ -174,23 +174,32 @@ class AnalyticsOrchestrator {
 		if (!browser) return;
 
 		// Merge custom config with defaults
+		const defaults = getDefaultConfig();
+		const ga = defaults.googleAnalytics!;
+		const be = defaults.backend!;
 		this._config = {
-			...getDefaultConfig(),
+			...defaults,
 			...customConfig,
 			googleAnalytics: {
-				...getDefaultConfig().googleAnalytics,
-				...customConfig?.googleAnalytics,
+				measurementId: customConfig?.googleAnalytics?.measurementId ?? ga.measurementId,
+				debug: customConfig?.googleAnalytics?.debug ?? ga.debug,
+				sendPageView: customConfig?.googleAnalytics?.sendPageView ?? ga.sendPageView,
+				anonymizeIp: customConfig?.googleAnalytics?.anonymizeIp ?? ga.anonymizeIp,
+				allowGoogleSignals: customConfig?.googleAnalytics?.allowGoogleSignals ?? ga.allowGoogleSignals,
+				allowAdPersonalization: customConfig?.googleAnalytics?.allowAdPersonalization ?? ga.allowAdPersonalization,
 			},
 			backend: {
-				...getDefaultConfig().backend,
-				...customConfig?.backend,
+				endpoint: customConfig?.backend?.endpoint ?? be.endpoint,
+				flushIntervalMs: customConfig?.backend?.flushIntervalMs ?? be.flushIntervalMs,
+				maxBatchSize: customConfig?.backend?.maxBatchSize ?? be.maxBatchSize,
+				useSendBeacon: customConfig?.backend?.useSendBeacon ?? be.useSendBeacon,
 			},
 			console: {
-				...getDefaultConfig().console,
+				...defaults.console,
 				...customConfig?.console,
 			},
 			consent: {
-				...getDefaultConfig().consent,
+				...defaults.consent,
 				...customConfig?.consent,
 			},
 		};

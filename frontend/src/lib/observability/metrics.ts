@@ -74,25 +74,20 @@ export interface UserProperties {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const Events = {
-	// Page Events
-	PAGE_VIEW: 'page_view',
-	PAGE_LEAVE: 'page_leave',
-
-	// User Events
+	// User Events (custom)
 	USER_SIGNED_UP: 'user_signed_up',
 	USER_LOGGED_IN: 'user_logged_in',
 	USER_LOGGED_OUT: 'user_logged_out',
 	USER_PROFILE_UPDATED: 'user_profile_updated',
 
-	// Navigation Events
+	// Navigation Events (custom)
 	BUTTON_CLICKED: 'button_clicked',
 	LINK_CLICKED: 'link_clicked',
 	NAV_ITEM_CLICKED: 'nav_item_clicked',
 
-	// Form Events
+	// Form Events (custom - avoid duplicates with AnalyticsEvents)
 	FORM_STARTED: 'form_started',
 	FORM_SUBMITTED: 'form_submitted',
-	FORM_ERROR: 'form_error',
 	FORM_ABANDONED: 'form_abandoned',
 
 	// E-commerce Events
