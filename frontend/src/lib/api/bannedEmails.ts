@@ -61,9 +61,9 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
 
-const API_BASE = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
-const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
-const ML_API = browser ? import.meta.env.VITE_ML_API || PROD_ML : '';
+const API_BASE = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const SYNC_INTERVAL = 60000; // 1 minute

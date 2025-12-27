@@ -62,9 +62,9 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
-const API_BASE = import.meta.env.VITE_API_URL || PROD_API;
-const WS_BASE = import.meta.env.VITE_WS_URL || PROD_WS;
-const AI_API = import.meta.env.VITE_AI_API_URL || PROD_AI;
+const API_BASE = import.meta.env['VITE_API_URL'] || PROD_API;
+const WS_BASE = import.meta.env['VITE_WS_URL'] || PROD_WS;
+const AI_API = import.meta.env['VITE_AI_API_URL'] || PROD_AI;
 
 const CACHE_TTL = 300000; // 5 minutes
 const ANALYSIS_DEBOUNCE = 2000; // 2 seconds

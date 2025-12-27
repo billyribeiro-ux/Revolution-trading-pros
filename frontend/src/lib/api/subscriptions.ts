@@ -71,12 +71,12 @@ const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 
 const isDev = import.meta.env.DEV;
 const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env.VITE_API_URL || PROD_API)) 
+	? (isDev ? '/api' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
 	: '';
-const WS_BASE = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
+const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 // Analytics API - only enable if explicitly configured (microservice is optional)
-const ANALYTICS_API = browser && import.meta.env.VITE_ANALYTICS_API
-	? import.meta.env.VITE_ANALYTICS_API
+const ANALYTICS_API = browser && import.meta.env['VITE_ANALYTICS_API']
+	? import.meta.env['VITE_ANALYTICS_API']
 	: null; // Disabled by default - microservice not required
 
 const CACHE_TTL = 300000; // 5 minutes
