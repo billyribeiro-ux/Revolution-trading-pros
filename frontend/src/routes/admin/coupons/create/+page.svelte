@@ -1706,7 +1706,7 @@
 									</button>
 								</div>
 
-								{#each formData.ab_variants as variant, index}
+								{#each formData.ab_variants as variant}
 									<div class="variant-row">
 										<input
 											type="text"
