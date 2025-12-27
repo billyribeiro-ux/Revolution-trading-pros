@@ -66,10 +66,10 @@ const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
 const isDev = import.meta.env.DEV;
 const API_BASE = browser 
-	? (isDev ? '' : (import.meta.env.VITE_API_URL || PROD_API)) 
+	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
 	: '';
-const WS_BASE = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
-const AI_API = browser ? import.meta.env.VITE_AI_API_URL || PROD_AI : '';
+const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+const AI_API = browser ? import.meta.env['VITE_AI_API_URL'] || PROD_AI : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const DEBOUNCE_DELAY = 500;
@@ -630,7 +630,7 @@ class FormsService {
 		if (!browser || !this.getAuthToken()) return;
 
 		// ICT11+ Pattern: Skip WebSocket in dev if not configured
-		if (isDev && !import.meta.env.VITE_WS_URL) {
+		if (isDev && !import.meta.env['VITE_WS_URL']) {
 			console.debug('[FormsService] WebSocket skipped in dev (no VITE_WS_URL configured)');
 			return;
 		}
