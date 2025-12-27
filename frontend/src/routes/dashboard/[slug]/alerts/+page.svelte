@@ -19,7 +19,7 @@
 	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
 	import { getTradeAlerts, type TradeAlert, type AlertType } from '$lib/api/trade-alerts';
 
-	let slug = $derived($page.params.slug);
+	let slug = $derived($page.params.slug!);
 	let loading = $state(true);
 	let alerts = $state<TradeAlert[]>([]);
 	let activeFilter = $state<'all' | AlertType>('all');

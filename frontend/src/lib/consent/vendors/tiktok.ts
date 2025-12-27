@@ -44,7 +44,7 @@ function initializeTikTok(pixelId: string): void {
 	if (!window.ttq) {
 		window.TiktokAnalyticsObject = 'ttq';
 
-		const ttq = (window.ttq = window.ttq || {} as typeof window.ttq);
+		const ttq: NonNullable<typeof window.ttq> = (window.ttq = {} as NonNullable<typeof window.ttq>);
 		ttq._i = ttq._i || {};
 
 		ttq.load = function (t: string) {
@@ -64,7 +64,7 @@ function initializeTikTok(pixelId: string): void {
 		// Add stub methods
 		const methods = ['page', 'track', 'identify', 'instances', 'debug', 'on', 'off', 'once', 'ready', 'alias', 'group', 'enableCookie', 'disableCookie'];
 		methods.forEach((method) => {
-			(ttq as Record<string, unknown>)[method] = function (...args: unknown[]) {
+			(ttq as unknown as Record<string, unknown>)[method] = function (...args: unknown[]) {
 				const pixelArgs = [method, ...args];
 				Object.values(ttq._i || {}).forEach((instance: unknown) => {
 					if (Array.isArray(instance)) {

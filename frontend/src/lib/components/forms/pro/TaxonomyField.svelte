@@ -288,7 +288,7 @@
 			id={name}
 			{name}
 			{disabled}
-			onchange={(e) => toggleTerm((e.target as HTMLSelectElement).value)}
+			onchange={(e: Event) => toggleTerm((e.target as HTMLSelectElement).value)}
 			class="select-input"
 		>
 			<option value="">{placeholder}</option>

@@ -105,7 +105,7 @@
 			class:invalid={validationResult && !validationResult.valid}
 			disabled={isValidating || validationResult?.valid}
 			oninput={handleInput}
-			onkeydown={(e) => {
+			onkeydown={(e: KeyboardEvent) => {
 				if (e.key === 'Enter') {
 					e.preventDefault();
 					validateCoupon();

@@ -239,7 +239,7 @@
 				id="{name}_line1"
 				name="{name}[address_line_1]"
 				value={addressValue.address_line_1}
-				oninput={(e) => handleInputChange('address_line_1', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) => handleInputChange('address_line_1', (e.target as HTMLInputElement).value)}
 				placeholder="123 Main Street"
 				{disabled}
 				{required}
@@ -253,7 +253,7 @@
 				id="{name}_line2"
 				name="{name}[address_line_2]"
 				value={addressValue.address_line_2}
-				oninput={(e) => handleInputChange('address_line_2', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) => handleInputChange('address_line_2', (e.target as HTMLInputElement).value)}
 				placeholder="Apt, Suite, Unit, etc."
 				{disabled}
 			/>
@@ -266,7 +266,7 @@
 				id="{name}_city"
 				name="{name}[city]"
 				value={addressValue.city}
-				oninput={(e) => handleInputChange('city', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) => handleInputChange('city', (e.target as HTMLInputElement).value)}
 				placeholder="City"
 				{disabled}
 				{required}
@@ -280,7 +280,7 @@
 				id="{name}_state"
 				name="{name}[state]"
 				value={addressValue.state}
-				oninput={(e) => handleInputChange('state', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) => handleInputChange('state', (e.target as HTMLInputElement).value)}
 				placeholder="State"
 				{disabled}
 				{required}
@@ -294,7 +294,7 @@
 				id="{name}_zip"
 				name="{name}[zip]"
 				value={addressValue.zip}
-				oninput={(e) => handleInputChange('zip', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) => handleInputChange('zip', (e.target as HTMLInputElement).value)}
 				placeholder="12345"
 				{disabled}
 				{required}
@@ -308,7 +308,7 @@
 				id="{name}_country"
 				name="{name}[country]"
 				value={addressValue.country}
-				oninput={(e) => handleInputChange('country', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) => handleInputChange('country', (e.target as HTMLInputElement).value)}
 				placeholder="United States"
 				{disabled}
 				{required}

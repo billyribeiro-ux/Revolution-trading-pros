@@ -119,7 +119,7 @@
 					value={option.value}
 					checked={selectedValues.includes(option.value)}
 					disabled={disabled || (isAtMaxLimit() && !selectedValues.includes(option.value))}
-					onchange={(e) => handleCheckboxChange(option.value, (e.target as HTMLInputElement).checked)}
+					onchange={(e: Event) => handleCheckboxChange(option.value, (e.target as HTMLInputElement).checked)}
 				/>
 				<span class="checkbox-custom">
 					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -137,7 +137,7 @@
 					name="{name}_other"
 					checked={otherChecked}
 					disabled={disabled || (isAtMaxLimit() && !otherChecked)}
-					onchange={(e) => handleOtherChange((e.target as HTMLInputElement).checked)}
+					onchange={(e: Event) => handleOtherChange((e.target as HTMLInputElement).checked)}
 				/>
 				<span class="checkbox-custom">
 					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">

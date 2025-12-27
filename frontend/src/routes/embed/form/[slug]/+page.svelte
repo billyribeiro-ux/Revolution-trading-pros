@@ -10,7 +10,7 @@
 	let error = $state('');
 	let submitted = $state(false);
 
-	let formSlug = $derived($page.params.slug);
+	let formSlug = $derived($page.params.slug!);
 
 	onMount(async () => {
 		try {

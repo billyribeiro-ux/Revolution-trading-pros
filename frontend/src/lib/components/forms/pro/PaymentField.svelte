@@ -96,7 +96,7 @@
 						handleSingleSelect(item);
 					}
 				}}
-				onkeydown={(e) => {
+				onkeydown={(e: KeyboardEvent) => {
 					if (e.key === 'Enter' || e.key === ' ') {
 						if (paymentType === 'single') handleSingleSelect(item);
 					}
@@ -107,7 +107,7 @@
 						id="payment-item-{item.id}"
 						type="checkbox"
 						checked={isSelected(item.id)}
-						onchange={(e) => handleMultiSelect(item, e.currentTarget.checked)}
+						onchange={(e: Event) => handleMultiSelect(item, (e.currentTarget as HTMLInputElement).checked)}
 					/>
 				{:else}
 					<input
@@ -134,7 +134,7 @@
 							type="button"
 							class="qty-btn"
 							aria-label="Decrease quantity"
-							onclick={(e) => {
+							onclick={(e: MouseEvent) => {
 								e.stopPropagation();
 								const qty = getQuantity(item.id);
 								if (qty > 1) handleQuantityChange(item.id, qty - 1);
@@ -149,14 +149,14 @@
 							value={getQuantity(item.id)}
 							class="qty-input"
 							aria-label="Quantity"
-							onclick={(e) => e.stopPropagation()}
-							onchange={(e) => handleQuantityChange(item.id, parseInt(e.currentTarget.value) || 1)}
+							onclick={(e: MouseEvent) => e.stopPropagation()}
+							onchange={(e: Event) => handleQuantityChange(item.id, parseInt((e.currentTarget as HTMLInputElement).value) || 1)}
 						/>
 						<button
 							type="button"
 							class="qty-btn"
 							aria-label="Increase quantity"
-							onclick={(e) => {
+							onclick={(e: MouseEvent) => {
 								e.stopPropagation();
 								handleQuantityChange(item.id, getQuantity(item.id) + 1);
 							}}

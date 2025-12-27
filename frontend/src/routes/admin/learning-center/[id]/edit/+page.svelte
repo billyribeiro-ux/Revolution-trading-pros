@@ -24,7 +24,7 @@
 	// PROPS & STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const lessonId = $derived($page.params.id);
+	const lessonId = $derived($page.params.id!);
 
 	// Store data
 	let storeData = $derived(get(learningCenterStore));

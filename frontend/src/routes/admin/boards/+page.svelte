@@ -466,7 +466,7 @@
 									<div class="flex items-start justify-between mb-3">
 										<h4 class="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{board.title}</h4>
 										<button
-											onclick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(board); }}
+											onclick={(e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(board); }}
 											class="text-yellow-500 hover:text-yellow-600"
 										>
 											<IconStarFilled class="w-5 h-5" />
@@ -524,7 +524,7 @@
 												{/if}
 											</h4>
 											<button
-												onclick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(board); }}
+												onclick={(e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(board); }}
 												class="{board.is_favorite ? 'text-yellow-500' : 'text-gray-400 opacity-0 group-hover:opacity-100'} hover:text-yellow-500 transition-all"
 											>
 												{#if board.is_favorite}

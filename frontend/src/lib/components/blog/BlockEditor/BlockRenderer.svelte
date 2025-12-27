@@ -221,7 +221,7 @@
 			<div class="code-header">
 				<select
 					value={block.content.language || 'javascript'}
-					onchange={(e) => updateContent({ language: (e.target as HTMLSelectElement).value })}
+					onchange={(e: Event) => updateContent({ language: (e.target as HTMLSelectElement).value })}
 					disabled={!isEditing}
 				>
 					<option value="javascript">JavaScript</option>
@@ -240,7 +240,7 @@
 			<pre class="code-content"><code
 				contenteditable={isEditing}
 				class="language-{block.content.language || 'javascript'}"
-				oninput={(e) => updateContent({ code: (e.target as HTMLElement).textContent || '' })}
+				oninput={(e: Event) => updateContent({ code: (e.target as HTMLElement).textContent || '' })}
 				onpaste={handlePaste}
 			>{block.content.code || ''}</code></pre>
 		</div>
@@ -254,8 +254,8 @@
 					<span
 						contenteditable={isEditing}
 						class="list-text editable-content"
-						oninput={(e) => updateListItem(index, (e.target as HTMLElement).textContent || '')}
-						onkeydown={(e) => {
+						oninput={(e: Event) => updateListItem(index, (e.target as HTMLElement).textContent || '')}
+						onkeydown={(e: KeyboardEvent) => {
 							if (e.key === 'Enter') {
 								e.preventDefault();
 								addListItem(index);
@@ -307,7 +307,7 @@
 					<span
 						contenteditable={isEditing}
 						class="check-text editable-content"
-						oninput={(e) => {
+						oninput={(e: Event) => {
 							const items = block.content.items?.map(i =>
 								i.id === item.id ? { ...i, content: (e.target as HTMLElement).textContent || '' } : i
 							);
@@ -352,7 +352,7 @@
 						contenteditable={isEditing}
 						class="image-caption editable-content"
 						class:placeholder={!block.content.mediaCaption}
-						oninput={(e) => updateContent({ mediaCaption: (e.target as HTMLElement).textContent || '' })}
+						oninput={(e: Event) => updateContent({ mediaCaption: (e.target as HTMLElement).textContent || '' })}
 						data-placeholder="Add a caption..."
 					>
 						{block.content.mediaCaption || ''}
@@ -365,7 +365,7 @@
 					<input
 						type="file"
 						accept="image/*"
-						onchange={(e) => {
+						onchange={(e: Event) => {
 							const file = (e.target as HTMLInputElement).files?.[0];
 							if (file) {
 								const url = URL.createObjectURL(file);
@@ -418,7 +418,7 @@
 					<input
 						type="url"
 						placeholder="https://youtube.com/watch?v=..."
-						onchange={(e) => updateContent({ embedUrl: (e.target as HTMLInputElement).value })}
+						onchange={(e: Event) => updateContent({ embedUrl: (e.target as HTMLInputElement).value })}
 					/>
 				</div>
 			{/if}
@@ -449,7 +449,7 @@
 				href={block.settings.linkUrl || '#'}
 				class="button-block button-{block.settings.buttonStyle || 'primary'} button-size-{block.settings.buttonSize || 'medium'}"
 				target={block.settings.linkTarget || '_self'}
-				onclick={(e) => isEditing && e.preventDefault()}
+				onclick={(e: MouseEvent) => isEditing && e.preventDefault()}
 			>
 				<span
 					contenteditable={isEditing}
@@ -489,7 +489,7 @@
 					type="text"
 					value={block.content.ticker || 'SPY'}
 					placeholder="Ticker symbol"
-					onchange={(e) => updateContent({ ticker: (e.target as HTMLInputElement).value })}
+					onchange={(e: Event) => updateContent({ ticker: (e.target as HTMLInputElement).value })}
 					disabled={!isEditing}
 					class="ticker-input"
 				/>
@@ -516,7 +516,7 @@
 				<div class="html-header">Custom HTML</div>
 				<textarea
 					value={block.content.html || ''}
-					oninput={(e) => updateContent({ html: (e.target as HTMLTextAreaElement).value })}
+					oninput={(e: Event) => updateContent({ html: (e.target as HTMLTextAreaElement).value })}
 					placeholder="<div>Your HTML here...</div>"
 					rows="8"
 				></textarea>

@@ -206,7 +206,7 @@
 									name="{name}[{index}][{field.name}]"
 									value={row.values[field.name]}
 									{disabled}
-									onchange={(e) => updateField(row.id, field.name, (e.target as HTMLSelectElement).value)}
+									onchange={(e: Event) => updateField(row.id, field.name, (e.target as HTMLSelectElement).value)}
 								>
 									<option value="">{field.placeholder || 'Select...'}</option>
 									{#each field.options || [] as option}
@@ -221,7 +221,7 @@
 									placeholder={field.placeholder}
 									{disabled}
 									rows="3"
-									oninput={(e) => updateField(row.id, field.name, (e.target as HTMLTextAreaElement).value)}
+									oninput={(e: Event) => updateField(row.id, field.name, (e.target as HTMLTextAreaElement).value)}
 								></textarea>
 							{:else}
 								<input
@@ -231,7 +231,7 @@
 									value={row.values[field.name]}
 									placeholder={field.placeholder}
 									{disabled}
-									oninput={(e) => updateField(row.id, field.name, (e.target as HTMLInputElement).value)}
+									oninput={(e: Event) => updateField(row.id, field.name, (e.target as HTMLInputElement).value)}
 								/>
 							{/if}
 						</div>

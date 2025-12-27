@@ -771,6 +771,11 @@ export async function getOwnedProducts(): Promise<{
 export interface CancelSubscriptionRequest {
 	cancel_immediately?: boolean;
 	reason?: string;
+	survey?: {
+		cancel_reason?: string;
+		rejoin_likelihood?: number;
+		additional_feedback?: string;
+	};
 }
 
 export interface CancelSubscriptionResponse {

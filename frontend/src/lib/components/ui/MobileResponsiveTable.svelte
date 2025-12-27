@@ -198,8 +198,8 @@
 						transition-all duration-150 hover:bg-slate-800/70 cursor-pointer
 						active:scale-[0.98] active:bg-slate-800/80"
 					onclick={() => handleRowClick(row)}
-					onkeypress={(e) => e.key === 'Enter' && handleRowClick(row)}
-					onkeydown={(e) => e.key === ' ' && (e.preventDefault(), handleRowClick(row))}
+					onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleRowClick(row)}
+					onkeydown={(e: KeyboardEvent) => e.key === ' ' && (e.preventDefault(), handleRowClick(row))}
 					role="button"
 					tabindex="0"
 					aria-label={`Row ${index + 1}`}
@@ -209,7 +209,7 @@
 							<input
 								type="checkbox"
 								checked={isRowSelected(row)}
-								onclick={(e) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
+								onclick={(e: MouseEvent) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
 								class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 							/>
 							<span class="text-xs text-slate-500">#{index + 1}</span>
@@ -292,7 +292,7 @@
 									<input
 										type="checkbox"
 										checked={isRowSelected(row)}
-										onclick={(e) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
+										onclick={(e: MouseEvent) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
 										class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 									/>
 								</td>

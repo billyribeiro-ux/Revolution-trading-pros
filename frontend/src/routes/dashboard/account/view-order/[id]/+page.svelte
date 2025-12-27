@@ -9,7 +9,7 @@
 	 */
 	import { page } from '$app/stores';
 
-	const orderId = $page.params.id;
+	const orderId = $page.params.id!;
 
 	// Sample order data
 	const order = {

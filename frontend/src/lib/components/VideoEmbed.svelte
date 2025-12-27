@@ -1426,7 +1426,7 @@
 									max="1"
 									step="0.1"
 									value={currentVolume}
-									oninput={(e: Event & { currentTarget: HTMLInputElement }) => setVolume(parseFloat(e.currentTarget.value))}
+									oninput={(e: Event & { currentTarget: HTMLInputElement }) => setVolume(parseFloat((e.currentTarget as HTMLInputElement).value))}
 									class="volume-slider"
 								/>
 							</div>

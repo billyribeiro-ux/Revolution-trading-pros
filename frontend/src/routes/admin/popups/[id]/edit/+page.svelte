@@ -6,7 +6,7 @@
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
-	const popupId = parseInt($page.params.id);
+	const popupId = parseInt($page.params.id!);
 
 	// Form state
 	let formData: Partial<Popup> = {
@@ -24,9 +24,9 @@
 		animation: 'zoom',
 		show_close_button: true,
 		close_on_overlay_click: true,
-		auto_close_after: null,
+		auto_close_after: undefined,
 		has_form: false,
-		form_id: null,
+		form_id: undefined,
 		trigger_rules: {},
 		frequency_rules: { frequency: 'once_per_session' },
 		display_rules: { devices: ['desktop', 'tablet', 'mobile'] },

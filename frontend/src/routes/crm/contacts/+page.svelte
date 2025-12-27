@@ -120,7 +120,7 @@
 					class="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
 					placeholder="Search by name, email, title"
 					bind:value={localSearch}
-					onkeydown={(e) => e.key === 'Enter' && loadContacts()}
+					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && loadContacts()}
 				/>
 			</div>
 

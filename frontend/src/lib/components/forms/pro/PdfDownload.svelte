@@ -298,8 +298,8 @@
 {/if}
 
 {#if previewUrl}
-	<div class="preview-overlay" onclick={closePreview} onkeydown={(e) => { if (e.key === 'Escape') closePreview(); if (e.key === 'Enter' || e.key === ' ') closePreview(); }} role="button" tabindex="0" aria-label="Close preview">
-		<div class="preview-modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+	<div class="preview-overlay" onclick={closePreview} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closePreview(); if (e.key === 'Enter' || e.key === ' ') closePreview(); }} role="button" tabindex="0" aria-label="Close preview">
+		<div class="preview-modal" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation">
 			<div class="preview-header">
 				<h3>PDF Preview</h3>
 				<button type="button" class="close-btn" onclick={closePreview} aria-label="Close preview">

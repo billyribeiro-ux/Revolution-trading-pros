@@ -11,7 +11,7 @@
 	import { goto } from '$app/navigation';
 	import { cancelSubscription } from '$lib/api/user-memberships';
 
-	const subscriptionId = $page.params.id;
+	const subscriptionId = $page.params.id!;
 
 	// State for cancel survey flow
 	let showCancelModal = $state(false);

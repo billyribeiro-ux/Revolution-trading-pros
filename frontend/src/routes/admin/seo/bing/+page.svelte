@@ -269,7 +269,7 @@
 						id="url-to-submit"
 						bind:value={urlToSubmit}
 						placeholder="https://yourdomain.com/new-page"
-						onkeydown={(e) => e.key === 'Enter' && handleSubmitUrl()}
+						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSubmitUrl()}
 					/>
 					<button class="btn-primary bing" onclick={handleSubmitUrl} disabled={submitting}>
 						{#if submitting}
@@ -413,15 +413,15 @@
 		tabindex="0"
 		aria-label="Close modal"
 		onclick={() => (showBatchModal = false)}
-		onkeydown={(e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showBatchModal = false; }}
+		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showBatchModal = false; }}
 	>
 		<div
 			class="modal-content"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h2>Batch URL Submission</h2>

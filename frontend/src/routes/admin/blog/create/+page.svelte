@@ -591,7 +591,7 @@
 						type="text"
 						bind:value={newTag}
 						placeholder="Add new tag..."
-						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), createTag())}
+						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (e.preventDefault(), createTag())}
 					/>
 					<button type="button" class="btn-add-tag" onclick={createTag}>
 						<IconPlus size={16} />
@@ -605,8 +605,8 @@
 								<input
 									type="checkbox"
 									value={tag.id}
-									onchange={(e) => {
-										if (e.currentTarget.checked) {
+									onchange={(e: Event) => {
+										if ((e.currentTarget as HTMLInputElement).checked) {
 											post.tags = [...post.tags, tag.id];
 										}
 									}}

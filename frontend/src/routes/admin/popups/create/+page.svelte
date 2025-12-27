@@ -15,8 +15,8 @@
 	let showPreview = false;
 	let saving = false;
 
-	// Initialize with default config
-	let popup: Partial<Popup> = {
+	// Initialize with default config - use Required for properties we know are defined
+	let popup = {
 		...JSON.parse(JSON.stringify(defaultPopupConfig)),
 		name: '',
 		title: '',
@@ -26,7 +26,7 @@
 		},
 		buttons: [],
 		formFields: []
-	};
+	} as Partial<Popup> & { displayRules: NonNullable<Popup['displayRules']> };
 
 	async function handleSave() {
 		if (!popup.name) {

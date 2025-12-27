@@ -157,7 +157,7 @@
 			<button
 				class="toolbar-btn transform-btn"
 				title="Transform block"
-				onclick={(e) => {
+				onclick={(e: MouseEvent) => {
 					e.stopPropagation();
 					showTransformMenu = !showTransformMenu;
 					showMoreMenu = false;
@@ -272,7 +272,7 @@
 				<button
 					class="toolbar-btn"
 					title="Text alignment"
-					onclick={(e) => {
+					onclick={(e: MouseEvent) => {
 						e.stopPropagation();
 						showAlignMenu = !showAlignMenu;
 						showTransformMenu = false;
@@ -339,7 +339,7 @@
 			<button
 				class="toolbar-btn"
 				title="More options"
-				onclick={(e) => {
+				onclick={(e: MouseEvent) => {
 					e.stopPropagation();
 					showMoreMenu = !showMoreMenu;
 					showTransformMenu = false;
@@ -394,7 +394,7 @@
 	<div 
 		class="modal-overlay" 
 		onclick={() => showLinkModal = false}
-		onkeydown={(e) => { if (e.key === 'Escape') showLinkModal = false; }}
+		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') showLinkModal = false; }}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="link-modal-title"

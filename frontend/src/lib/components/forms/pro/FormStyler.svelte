@@ -234,7 +234,7 @@
 						id="container-bg"
 						type="color"
 						value={currentSettings.containerBg || '#ffffff'}
-						oninput={(e) => updateSetting('containerBg', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('containerBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -243,7 +243,7 @@
 						id="container-padding"
 						type="text"
 						value={currentSettings.containerPadding || '1.5rem'}
-						oninput={(e) => updateSetting('containerPadding', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('containerPadding', (e.target as HTMLInputElement).value)}
 						placeholder="1.5rem"
 					/>
 				</div>
@@ -253,7 +253,7 @@
 						id="container-border-radius"
 						type="text"
 						value={currentSettings.containerBorderRadius || '0.5rem'}
-						oninput={(e) => updateSetting('containerBorderRadius', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('containerBorderRadius', (e.target as HTMLInputElement).value)}
 						placeholder="0.5rem"
 					/>
 				</div>
@@ -263,7 +263,7 @@
 						id="container-border-color"
 						type="color"
 						value={currentSettings.containerBorderColor || '#e5e7eb'}
-						oninput={(e) => updateSetting('containerBorderColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('containerBorderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -272,7 +272,7 @@
 						id="container-border-width"
 						type="text"
 						value={currentSettings.containerBorderWidth || '1px'}
-						oninput={(e) => updateSetting('containerBorderWidth', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('containerBorderWidth', (e.target as HTMLInputElement).value)}
 						placeholder="1px"
 					/>
 				</div>
@@ -281,7 +281,7 @@
 					<select
 						id="container-shadow"
 						value={currentSettings.containerShadow || 'none'}
-						onchange={(e) => updateSetting('containerShadow', (e.target as HTMLSelectElement).value as StyleSettings['containerShadow'])}
+						onchange={(e: Event) => updateSetting('containerShadow', (e.target as HTMLSelectElement).value as StyleSettings['containerShadow'])}
 					>
 						<option value="none">None</option>
 						<option value="sm">Small</option>
@@ -299,7 +299,7 @@
 						id="input-bg"
 						type="color"
 						value={currentSettings.inputBg || '#ffffff'}
-						oninput={(e) => updateSetting('inputBg', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -308,7 +308,7 @@
 						id="input-text-color"
 						type="color"
 						value={currentSettings.inputTextColor || '#374151'}
-						oninput={(e) => updateSetting('inputTextColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputTextColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -317,7 +317,7 @@
 						id="input-border-color"
 						type="color"
 						value={currentSettings.inputBorderColor || '#d1d5db'}
-						oninput={(e) => updateSetting('inputBorderColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputBorderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -326,7 +326,7 @@
 						id="input-focus-border-color"
 						type="color"
 						value={currentSettings.inputFocusBorderColor || '#3b82f6'}
-						oninput={(e) => updateSetting('inputFocusBorderColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputFocusBorderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -335,7 +335,7 @@
 						id="input-placeholder-color"
 						type="color"
 						value={currentSettings.inputPlaceholderColor || '#9ca3af'}
-						oninput={(e) => updateSetting('inputPlaceholderColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputPlaceholderColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -344,7 +344,7 @@
 						id="input-border-radius"
 						type="text"
 						value={currentSettings.inputBorderRadius || '0.375rem'}
-						oninput={(e) => updateSetting('inputBorderRadius', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputBorderRadius', (e.target as HTMLInputElement).value)}
 						placeholder="0.375rem"
 					/>
 				</div>
@@ -354,7 +354,7 @@
 						id="input-padding"
 						type="text"
 						value={currentSettings.inputPadding || '0.625rem 0.75rem'}
-						oninput={(e) => updateSetting('inputPadding', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputPadding', (e.target as HTMLInputElement).value)}
 						placeholder="0.625rem 0.75rem"
 					/>
 				</div>
@@ -364,7 +364,7 @@
 						id="input-font-size"
 						type="text"
 						value={currentSettings.inputFontSize || '0.9375rem'}
-						oninput={(e) => updateSetting('inputFontSize', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('inputFontSize', (e.target as HTMLInputElement).value)}
 						placeholder="0.9375rem"
 					/>
 				</div>
@@ -374,7 +374,7 @@
 						id="label-color"
 						type="color"
 						value={currentSettings.labelColor || '#374151'}
-						oninput={(e) => updateSetting('labelColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('labelColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -383,7 +383,7 @@
 						id="label-font-size"
 						type="text"
 						value={currentSettings.labelFontSize || '0.875rem'}
-						oninput={(e) => updateSetting('labelFontSize', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('labelFontSize', (e.target as HTMLInputElement).value)}
 						placeholder="0.875rem"
 					/>
 				</div>
@@ -396,7 +396,7 @@
 						id="button-bg"
 						type="color"
 						value={currentSettings.buttonBg || '#3b82f6'}
-						oninput={(e) => updateSetting('buttonBg', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('buttonBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -405,7 +405,7 @@
 						id="button-text-color"
 						type="color"
 						value={currentSettings.buttonTextColor || '#ffffff'}
-						oninput={(e) => updateSetting('buttonTextColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('buttonTextColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -414,7 +414,7 @@
 						id="button-hover-bg"
 						type="color"
 						value={currentSettings.buttonHoverBg || '#2563eb'}
-						oninput={(e) => updateSetting('buttonHoverBg', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('buttonHoverBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -423,7 +423,7 @@
 						id="button-border-radius"
 						type="text"
 						value={currentSettings.buttonBorderRadius || '0.5rem'}
-						oninput={(e) => updateSetting('buttonBorderRadius', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('buttonBorderRadius', (e.target as HTMLInputElement).value)}
 						placeholder="0.5rem"
 					/>
 				</div>
@@ -433,7 +433,7 @@
 						id="button-padding"
 						type="text"
 						value={currentSettings.buttonPadding || '0.75rem 1.5rem'}
-						oninput={(e) => updateSetting('buttonPadding', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('buttonPadding', (e.target as HTMLInputElement).value)}
 						placeholder="0.75rem 1.5rem"
 					/>
 				</div>
@@ -443,7 +443,7 @@
 						id="button-font-size"
 						type="text"
 						value={currentSettings.buttonFontSize || '1rem'}
-						oninput={(e) => updateSetting('buttonFontSize', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('buttonFontSize', (e.target as HTMLInputElement).value)}
 						placeholder="1rem"
 					/>
 				</div>
@@ -452,7 +452,7 @@
 					<select
 						id="button-font-weight"
 						value={currentSettings.buttonFontWeight || '600'}
-						onchange={(e) => updateSetting('buttonFontWeight', (e.target as HTMLSelectElement).value)}
+						onchange={(e: Event) => updateSetting('buttonFontWeight', (e.target as HTMLSelectElement).value)}
 					>
 						<option value="400">Normal</option>
 						<option value="500">Medium</option>
@@ -465,7 +465,7 @@
 					<select
 						id="button-width"
 						value={currentSettings.buttonWidth || 'auto'}
-						onchange={(e) => updateSetting('buttonWidth', (e.target as HTMLSelectElement).value as StyleSettings['buttonWidth'])}
+						onchange={(e: Event) => updateSetting('buttonWidth', (e.target as HTMLSelectElement).value as StyleSettings['buttonWidth'])}
 					>
 						<option value="auto">Auto</option>
 						<option value="full">Full Width</option>
@@ -479,7 +479,7 @@
 					<select
 						id="font-family"
 						value={currentSettings.fontFamily || 'inherit'}
-						onchange={(e) => updateSetting('fontFamily', (e.target as HTMLSelectElement).value)}
+						onchange={(e: Event) => updateSetting('fontFamily', (e.target as HTMLSelectElement).value)}
 					>
 						{#each fontFamilies as font}
 							<option value={font.value}>{font.label}</option>
@@ -492,7 +492,7 @@
 						id="error-color"
 						type="color"
 						value={currentSettings.errorColor || '#dc2626'}
-						oninput={(e) => updateSetting('errorColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('errorColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -501,7 +501,7 @@
 						id="error-bg-color"
 						type="color"
 						value={currentSettings.errorBgColor || '#fef2f2'}
-						oninput={(e) => updateSetting('errorBgColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('errorBgColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -510,7 +510,7 @@
 						id="success-color"
 						type="color"
 						value={currentSettings.successColor || '#166534'}
-						oninput={(e) => updateSetting('successColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('successColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -519,7 +519,7 @@
 						id="success-bg-color"
 						type="color"
 						value={currentSettings.successBgColor || '#dcfce7'}
-						oninput={(e) => updateSetting('successBgColor', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('successBgColor', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<div class="setting-row">
@@ -528,7 +528,7 @@
 						id="field-gap"
 						type="text"
 						value={currentSettings.fieldGap || '1rem'}
-						oninput={(e) => updateSetting('fieldGap', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('fieldGap', (e.target as HTMLInputElement).value)}
 						placeholder="1rem"
 					/>
 				</div>
@@ -538,7 +538,7 @@
 						id="section-gap"
 						type="text"
 						value={currentSettings.sectionGap || '2rem'}
-						oninput={(e) => updateSetting('sectionGap', (e.target as HTMLInputElement).value)}
+						oninput={(e: Event) => updateSetting('sectionGap', (e.target as HTMLInputElement).value)}
 						placeholder="2rem"
 					/>
 				</div>

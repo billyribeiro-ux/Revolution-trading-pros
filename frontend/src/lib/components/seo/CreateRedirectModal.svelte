@@ -70,8 +70,8 @@
 <div class="modal-overlay" onclick={cancel} onkeydown={handleKeydown} role="presentation">
 	<div
 		class="modal"
-		onclick={(e) => e.stopPropagation()}
-		onkeydown={(e) => e.stopPropagation()}
+		onclick={(e: MouseEvent) => e.stopPropagation()}
+		onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -83,7 +83,7 @@
 			</button>
 		</div>
 
-		<form onsubmit={(e) => { e.preventDefault(); save(); }}>
+		<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); save(); }}>
 			<div class="modal-body">
 				{#if error}
 					<div class="error-message">{error}</div>

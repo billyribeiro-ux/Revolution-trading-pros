@@ -226,7 +226,7 @@
 		{
 			id: 'small-popup',
 			name: 'Small Notification',
-			title: null,
+			title: undefined,
 			isActive: true,
 			content: {
 				type: 'html',

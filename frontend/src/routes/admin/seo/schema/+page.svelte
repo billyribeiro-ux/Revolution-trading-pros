@@ -170,15 +170,15 @@
 		role="button"
 		tabindex="0"
 		onclick={() => (showPreview = null)}
-		onkeydown={(e) => e.key === 'Escape' && (showPreview = null)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showPreview = null)}
 	>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 		>
 			<div class="modal-header">
 				<h3><IconCode size={20} /> JSON-LD Preview</h3>
