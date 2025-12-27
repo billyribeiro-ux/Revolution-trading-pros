@@ -285,6 +285,57 @@ impl EmailService {
         self.send(to, subject, &html, Some(&text)).await
     }
 
+    /// Send order confirmation email
+    pub async fn send_order_confirmation(&self, to: &str, order_number: &str) -> Result<()> {
+        let subject = format!("Order Confirmed - #{}", order_number);
+        let orders_url = format!("{}/dashboard/account/orders", self.app_url);
+
+        let html = Self::email_template(
+            "Order Confirmed!",
+            &format!(
+                r#"
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="font-size: 64px;">✅</div>
+                </div>
+                <p style="font-size: 16px; color: #374151; margin-bottom: 20px; text-align: center;">
+                    Thank you for your purchase! Your order <strong>#{}</strong> has been confirmed.
+                </p>
+                <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px;
+                            padding: 20px; margin: 24px 0; text-align: center;">
+                    <p style="color: #166534; margin: 0; font-size: 14px;">
+                        Your order is now being processed. You will receive access to your purchases shortly.
+                    </p>
+                </div>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="{}"
+                       style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669);
+                              color: white; text-decoration: none; padding: 16px 32px;
+                              border-radius: 12px; font-weight: 700; font-size: 16px;
+                              box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                        View Your Orders
+                    </a>
+                </div>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 24px; text-align: center;">
+                    If you have any questions about your order, please contact our support team.
+                </p>
+                "#,
+                order_number,
+                orders_url
+            ),
+        );
+
+        let text = format!(
+            "Order Confirmed!\n\n\
+            Thank you for your purchase! Your order #{} has been confirmed.\n\n\
+            Your order is now being processed. You will receive access to your purchases shortly.\n\n\
+            View your orders: {}\n\n\
+            - The Revolution Trading Pros Team",
+            order_number, orders_url
+        );
+
+        self.send(to, &subject, &html, Some(&text)).await
+    }
+
     /// Generate a beautiful HTML email template wrapper
     fn email_template(title: &str, content: &str) -> String {
         format!(
