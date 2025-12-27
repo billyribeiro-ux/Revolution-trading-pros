@@ -117,24 +117,30 @@ function normalQuantile(p: number): number {
 
 	if (p < pLow) {
 		q = Math.sqrt(-2 * Math.log(p));
-		return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-			((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+		const c0 = c[0] ?? 0, c1 = c[1] ?? 0, c2 = c[2] ?? 0, c3 = c[3] ?? 0, c4 = c[4] ?? 0, c5 = c[5] ?? 0;
+	const d0 = d[0] ?? 0, d1 = d[1] ?? 0, d2 = d[2] ?? 0, d3 = d[3] ?? 0;
+	return (((((c0 * q + c1) * q + c2) * q + c3) * q + c4) * q + c5) /
+			((((d0 * q + d1) * q + d2) * q + d3) * q + 1);
 	} else if (p <= pHigh) {
 		q = p - 0.5;
 		r = q * q;
-		return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
-			(((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+		const a0 = a[0] ?? 0, a1 = a[1] ?? 0, a2 = a[2] ?? 0, a3 = a[3] ?? 0, a4 = a[4] ?? 0, a5 = a[5] ?? 0;
+	const b0 = b[0] ?? 0, b1 = b[1] ?? 0, b2 = b[2] ?? 0, b3 = b[3] ?? 0, b4 = b[4] ?? 0;
+	return (((((a0 * r + a1) * r + a2) * r + a3) * r + a4) * r + a5) * q /
+			(((((b0 * r + b1) * r + b2) * r + b3) * r + b4) * r + 1);
 	} else {
 		q = Math.sqrt(-2 * Math.log(1 - p));
-		return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-			((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+		const c0 = c[0] ?? 0, c1 = c[1] ?? 0, c2 = c[2] ?? 0, c3 = c[3] ?? 0, c4 = c[4] ?? 0, c5 = c[5] ?? 0;
+		const d0 = d[0] ?? 0, d1 = d[1] ?? 0, d2 = d[2] ?? 0, d3 = d[3] ?? 0;
+		return -(((((c0 * q + c1) * q + c2) * q + c3) * q + c4) * q + c5) /
+			((((d0 * q + d1) * q + d2) * q + d3) * q + 1);
 	}
 }
 
 /**
  * Beta function for Bayesian calculations.
  */
-function beta(a: number, b: number): number {
+function _beta(a: number, b: number): number {
 	return (gamma(a) * gamma(b)) / gamma(a + b);
 }
 
@@ -153,9 +159,12 @@ function gamma(n: number): number {
 		771.32342877765313, -176.61502916214059, 12.507343278686905,
 		-0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7,
 	];
-	let x = c[0];
+	let x = c[0] ?? 0;
 	for (let i = 1; i < g + 2; i++) {
-		x += c[i] / (n + i);
+		const ci = c[i];
+		if (ci !== undefined) {
+			x += ci / (n + i);
+		}
 	}
 	const t = n + g + 0.5;
 	return Math.sqrt(2 * Math.PI) * Math.pow(t, n + 0.5) * Math.exp(-t) * x;
