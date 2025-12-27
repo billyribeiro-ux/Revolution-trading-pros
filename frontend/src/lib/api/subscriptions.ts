@@ -83,8 +83,8 @@ const CACHE_TTL = 300000; // 5 minutes
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000;
 const PAYMENT_TIMEOUT = 30000;
-const WEBHOOK_TIMEOUT = 10000;
-const BATCH_SIZE = 100;
+const _WEBHOOK_TIMEOUT = 10000;
+const _BATCH_SIZE = 100;
 const METRICS_INTERVAL = 60000; // 1 minute
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -388,7 +388,7 @@ class SubscriptionService {
 	private static instance: SubscriptionService;
 	private cache = new Map<string, { data: any; expiry: number }>();
 	private wsConnection?: WebSocket;
-	private metricsInterval?: number;
+	private _metricsInterval?: number;
 	private pendingRequests = new Map<string, Promise<any>>();
 	private retryQueue: RetryItem[] = [];
 
@@ -675,9 +675,10 @@ class SubscriptionService {
 	private handlePaymentUpdate(payment: PaymentHistory): void {
 		// Update relevant subscription
 		this.subscriptions.update((subs) => {
-			const sub = subs.find((s) => s.id === payment.metadata?.subscriptionId);
+			const sub = subs.find((s) => s.id === payment.metadata?.['subscriptionId']);
 			if (sub) {
 				// Convert PaymentHistory to SubscriptionPayment format
+				const failureReason = payment.attempts.find((a) => a.error)?.error;
 				const subscriptionPayment: SubscriptionPayment = {
 					id: payment.id,
 					amount: payment.amount,
@@ -690,7 +691,7 @@ class SubscriptionService {
 					paymentDate: payment.createdAt,
 					dueDate: payment.createdAt,
 					paymentMethod: typeof payment.method === 'string' ? payment.method : payment.method.type,
-					failureReason: payment.attempts.find((a) => a.error)?.error,
+					...(failureReason !== undefined && { failureReason }),
 					retryCount: payment.attempts.length - 1
 				};
 				sub.paymentHistory = [...(sub.paymentHistory || []), subscriptionPayment];
@@ -701,7 +702,7 @@ class SubscriptionService {
 		// Show notification for failures
 		if (payment.status === 'failed') {
 			this.showNotification(
-				`Payment failed for subscription ${payment.metadata?.subscriptionId}`,
+				`Payment failed for subscription ${payment.metadata?.['subscriptionId']}`,
 				'error'
 			);
 		}
@@ -732,7 +733,7 @@ class SubscriptionService {
 		this.loadMetrics();
 
 		// Periodic updates
-		this.metricsInterval = window.setInterval(() => {
+		this._metricsInterval = window.setInterval(() => {
 			this.loadMetrics();
 		}, METRICS_INTERVAL);
 	}
@@ -824,11 +825,11 @@ class SubscriptionService {
 	/**
 	 * Utilities
 	 */
-	private generateRequestId(): string {
+	private _generateRequestId(): string {
 		return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 	}
 
-	private generateIdempotencyKey(url: string, options: RequestInit): string {
+	private _generateIdempotencyKey(url: string, options: RequestInit): string {
 		const data = `${url}${JSON.stringify(options.body || {})}`;
 		return btoa(data)
 			.replace(/[^a-zA-Z0-9]/g, '')
@@ -1072,7 +1073,7 @@ class SubscriptionService {
 		}
 	}
 
-	async retryPayment(subscriptionId: string, paymentId: string): Promise<PaymentHistory> {
+	async retryPayment(subscriptionId: string, _paymentId: string): Promise<PaymentHistory> {
 		return this.authFetch<PaymentHistory>(
 			`${API_BASE}/subscriptions/${subscriptionId}/retry-payment`,
 			{
