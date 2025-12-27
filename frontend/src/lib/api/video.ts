@@ -224,7 +224,6 @@ export class VideoTracker {
 	private sessionId: string;
 	private watchStartTime: number = 0;
 	private totalWatchTime: number = 0;
-	private lastEventTime: number = 0;
 	private eventQueue: any[] = [];
 	private flushInterval: number | null = null;
 

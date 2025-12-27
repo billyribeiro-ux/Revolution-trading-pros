@@ -8,8 +8,6 @@ import type {
 	Deal,
 	Pipeline,
 	Stage,
-	Activity,
-	Note,
 	ContactSegment,
 	TimelineEvent,
 	DealForecast,

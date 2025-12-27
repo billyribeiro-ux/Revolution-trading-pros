@@ -58,20 +58,16 @@ import { api, type ApiResponse } from './client';
 
 // Production fallbacks - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
-const _API_BASE = import.meta.env['VITE_API_URL'] || PROD_API;
 const WS_BASE = import.meta.env['VITE_WS_URL'] || PROD_WS;
 const AI_API = import.meta.env['VITE_AI_API_URL'] || PROD_AI;
 
 const CACHE_TTL = 300000; // 5 minutes
 const ANALYSIS_DEBOUNCE = 2000; // 2 seconds
-const _CRAWL_BATCH_SIZE = 50;
 const RANK_CHECK_INTERVAL = 3600000; // 1 hour
 const ALERT_CHECK_INTERVAL = 300000; // 5 minutes
-const _MAX_RETRIES = 3;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
@@ -1330,17 +1326,6 @@ class SeoManagementService {
 		});
 	}
 
-	private _clearCache(pattern?: string): void {
-		if (pattern) {
-			for (const key of this.cache.keys()) {
-				if (key.includes(pattern)) {
-					this.cache.delete(key);
-				}
-			}
-		} else {
-			this.cache.clear();
-		}
-	}
 
 	private async loadTechnicalIssues(): Promise<void> {
 		try {

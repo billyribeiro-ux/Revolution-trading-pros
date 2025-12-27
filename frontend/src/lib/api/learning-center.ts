@@ -17,10 +17,7 @@ import type {
 	LearningCenterData,
 	UserRoomProgress,
 	UserLessonProgress,
-	PaginatedLessons,
-	LessonData,
-	LessonProgress,
-	ArchivedVideo
+	PaginatedLessons
 } from '$lib/types/learning-center';
 
 // ═══════════════════════════════════════════════════════════════════════════
