@@ -381,8 +381,7 @@ class RequestManager {
 	private cache = new Map<string, { data: any; expiry: number }>();
 	private pendingRequests = new Map<string, Promise<any>>();
 	// Reserved for request queuing - will be used for batch operations
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	private requestQueue: Array<() => Promise<any>> = [];
+	private _requestQueue: Array<() => Promise<any>> = [];
 	private activeRequests = 0;
 	private circuitBreaker = {
 		failures: 0,
@@ -665,7 +664,7 @@ async function executeRequestWithRetry<T>(
 /**
  * Generate unique request ID for tracking
  */
-function generateRequestId(): string {
+function _generateRequestId(): string {
 	return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
