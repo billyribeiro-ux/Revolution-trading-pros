@@ -12,7 +12,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
 		connections,
