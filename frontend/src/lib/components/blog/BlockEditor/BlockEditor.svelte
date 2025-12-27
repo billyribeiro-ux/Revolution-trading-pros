@@ -67,7 +67,6 @@
 	// Import sub-components (we'll create these)
 	import BlockInserter from './BlockInserter.svelte';
 	import BlockRenderer from './BlockRenderer.svelte';
-	import BlockToolbar from './BlockToolbar.svelte';
 	import BlockSettingsPanel from './BlockSettingsPanel.svelte';
 	import AIAssistant from './AIAssistant.svelte';
 	import SEOAnalyzer from './SEOAnalyzer.svelte';
@@ -399,14 +398,16 @@
 		const previous = editorState.history.past[editorState.history.past.length - 1];
 		const newPast = editorState.history.past.slice(0, -1);
 
-		editorState.history = {
-			...editorState.history,
-			past: newPast,
-			present: previous,
-			future: [editorState.history.present, ...editorState.history.future]
-		};
+		if (previous) {
+			editorState.history = {
+				...editorState.history,
+				past: newPast,
+				present: previous,
+				future: [editorState.history.present, ...editorState.history.future]
+			};
 
-		editorState.blocks = [...previous];
+			editorState.blocks = [...previous];
+		}
 	}
 
 	function redo() {
@@ -415,14 +416,16 @@
 		const next = editorState.history.future[0];
 		const newFuture = editorState.history.future.slice(1);
 
-		editorState.history = {
-			...editorState.history,
-			past: [...editorState.history.past, editorState.history.present],
-			present: next,
-			future: newFuture
-		};
+		if (next) {
+			editorState.history = {
+				...editorState.history,
+				past: [...editorState.history.past, editorState.history.present],
+				present: next,
+				future: newFuture
+			};
 
-		editorState.blocks = [...next];
+			editorState.blocks = [...next];
+		}
 	}
 
 	// ==========================================================================
