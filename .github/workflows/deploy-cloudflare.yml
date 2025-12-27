@@ -18,12 +18,14 @@ on:
     branches:
       - main
       - develop
+      - 'claude/**'
     paths:
       - 'frontend/**'
       - '.github/workflows/deploy-cloudflare.yml'
   pull_request:
     branches:
       - main
+      - develop
     paths:
       - 'frontend/**'
   workflow_dispatch:
@@ -106,7 +108,7 @@ jobs:
 
     # Set environment based on branch/trigger
     environment:
-      name: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+      name: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'production' || (github.ref == 'refs/heads/develop' && 'staging' || 'preview')) }}
       url: ${{ steps.deploy.outputs.deployment-url }}
 
     outputs:
@@ -130,7 +132,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: frontend
-          command: pages deploy .svelte-kit/cloudflare --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }} ${{ github.event_name == 'pull_request' && format('--branch=pr-{0}', github.event.pull_request.number) || (github.ref == 'refs/heads/develop' && '--branch=staging' || '') }}
+          command: pages deploy .svelte-kit/cloudflare --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }} ${{ github.event_name == 'pull_request' && format('--branch=pr-{0}', github.event.pull_request.number) || (github.ref == 'refs/heads/main' && '' || (github.ref == 'refs/heads/develop' && '--branch=staging' || format('--branch={0}', github.ref_name))) }}
 
       - name: Output deployment URL
         run: |
