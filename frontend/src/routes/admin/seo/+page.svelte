@@ -13,7 +13,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
 	import {
@@ -34,15 +34,11 @@
 		IconMapPin,
 		IconMail,
 		IconPlugConnected,
-		IconPlugConnectedX,
-		IconArrowRight,
 		IconRefresh,
-		IconChartLine,
 		IconTrendingUp,
 		IconTrendingDown,
 		IconWorld,
 		IconLink,
-		IconAlertCircle,
 		IconCheck,
 		IconClock,
 		IconTarget
@@ -50,10 +46,8 @@
 	import {
 		connections,
 		isSeoConnected,
-		FEATURE_SERVICES,
 		SERVICE_KEYS
 	} from '$lib/stores/connections';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
