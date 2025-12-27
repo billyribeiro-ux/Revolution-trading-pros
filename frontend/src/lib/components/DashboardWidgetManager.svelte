@@ -12,14 +12,13 @@
 	 * @version 1.0.0
 	 */
 
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import {
 		widgetStore,
 		visibleWidgets,
 		hiddenWidgets,
-		widgetsByCategory,
 		widgetLayout,
 		autoRefreshEnabled,
 		type DashboardWidget,
