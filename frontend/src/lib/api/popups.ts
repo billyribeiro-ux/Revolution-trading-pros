@@ -69,11 +69,8 @@ const API_BASE = '';
 const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
-const _IMPRESSION_DEBOUNCE = 1000; // 1 second
 const CONVERSION_TIMEOUT = 30000; // 30 seconds
 const CACHE_TTL = 300000; // 5 minutes
-const _ANALYTICS_BATCH_SIZE = 10;
-const _SMART_TIMING_DELAY = 3000; // 3 seconds
 const EXIT_INTENT_SENSITIVITY = 150; // pixels from top
 const INACTIVITY_THRESHOLD = 15000; // 15 seconds
 
