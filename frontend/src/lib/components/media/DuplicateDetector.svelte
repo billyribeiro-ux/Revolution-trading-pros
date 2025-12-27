@@ -159,7 +159,7 @@
 		// Default to keeping the one with highest usage
 		const maxUsage = Math.max(...group.files.map((f) => f.usage_count));
 		const fileWithMaxUsage = group.files.find((f) => f.usage_count === maxUsage);
-		selectedKeepId = fileWithMaxUsage?.id || group.files[0].id;
+		selectedKeepId = fileWithMaxUsage?.id || group.files[0]?.id || null;
 	}
 
 	function closeModal() {

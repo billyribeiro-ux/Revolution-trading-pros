@@ -56,8 +56,6 @@
   // State - Svelte 5 $state() pattern
   let loaded = $state(false);
   let hasError = $state(false);
-  let canvas = $state<HTMLCanvasElement | null>(null);
-  let imgElement = $state<HTMLImageElement | null>(null);
   let containerRef = $state<HTMLDivElement | null>(null);
   let isInView = $state(false);
   let observer: IntersectionObserver | null = null;
@@ -152,7 +150,6 @@
   <!-- BlurHash placeholder canvas -->
   {#if blurhash && !loaded}
     <canvas
-      bind:this={canvas}
       use:renderBlurhash
       width="32"
       height="32"
@@ -202,7 +199,6 @@
 
       <!-- Fallback image -->
       <img
-        bind:this={imgElement}
         {src}
         {alt}
         {width}
