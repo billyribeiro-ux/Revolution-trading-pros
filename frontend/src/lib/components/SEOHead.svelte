@@ -263,7 +263,6 @@
 
 	// Language & Region
 	let hreflang = $derived(`${language}-${region}`);
-	let _locale = $derived(`${language}_${region.toUpperCase()}`);
 
 	// Schema Generation
 	let generatedSchema = $derived(autoSchema ? generateSchema() : schema);
@@ -302,11 +301,6 @@
 		// Use concatenation to avoid Svelte parsing the script tag
 		const tag = 'script';
 		return `<${tag} type="application/ld+json">${stableStringify(schema)}</${tag}>`;
-	}
-
-	function _generateGtmScript(id: string): string {
-		const tag = 'script';
-		return `<${tag}>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');</${tag}>`;
 	}
 
 	function constructTitle(baseTitle: string, site: string): string {
