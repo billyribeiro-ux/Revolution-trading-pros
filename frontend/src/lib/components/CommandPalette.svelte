@@ -21,11 +21,8 @@
 	import {
 		IconSearch,
 		IconCode,
-		IconArrowRight,
 		IconArrowUp,
 		IconArrowDown,
-		IconX,
-		IconClock,
 		IconHome,
 		IconChartBar,
 		IconUsers,
@@ -37,7 +34,6 @@
 		IconPlugConnected,
 		IconActivity,
 		IconBrandGoogle,
-		IconTrendingUp,
 		IconForms,
 		IconVideo,
 		IconCreditCard,
@@ -125,7 +121,7 @@
 		if (!acc[item.category]) {
 			acc[item.category] = [];
 		}
-		acc[item.category].push(item);
+		acc[item.category]?.push(item);
 		return acc;
 	}, {} as Record<string, typeof filteredResults>));
 
@@ -146,7 +142,8 @@
 				break;
 			case 'Enter':
 				e.preventDefault();
-				selectItem(flatResults[selectedIndex]);
+				const selected = flatResults[selectedIndex];
+				if (selected) selectItem(selected);
 				break;
 			case 'Escape':
 				e.preventDefault();
@@ -267,7 +264,7 @@
 					{#each Object.entries(groupedResults) as [category, items], categoryIndex}
 						<div class="results-group" in:fly={{ y: 10, duration: 200, delay: categoryIndex * 50 }}>
 							<div class="group-label">{category}</div>
-							{#each items as item, itemIndex}
+							{#each items as item}
 								{@const globalIndex = flatResults.indexOf(item)}
 								{@const Icon = item.icon}
 								<button
