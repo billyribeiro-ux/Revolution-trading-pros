@@ -118,8 +118,6 @@
     let cardsRef = $state<HTMLElement | null>(null);
     // ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
     let isVisible = $state(false);
-    let hoveredCard = $state<string | null>(null);
-    let gsapInstance: any = null;
     let scrollTriggerInstance: any = null;
     let prefersReducedMotion = $state(false);
 
@@ -179,7 +177,6 @@
             const gsap = gsapModule.gsap || gsapModule.default;
             const ScrollTrigger = scrollTriggerModule.ScrollTrigger || scrollTriggerModule.default;
             gsap.registerPlugin(ScrollTrigger);
-            gsapInstance = gsap;
             scrollTriggerInstance = ScrollTrigger;
 
             // Wait for cards to render
@@ -303,9 +300,6 @@
                 <a
                     href={course.href}
                     class="course-card group relative rounded-[2rem] overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
-                    onmouseenter={() => (hoveredCard = course.id)}
-                    onmouseleave={() => (hoveredCard = null)}
-                    ontouchstart={() => (hoveredCard = course.id)}
                 >
                     <div 
                         class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"
