@@ -347,10 +347,10 @@
 
 		if (event.shiftKey && document.activeElement === first) {
 			event.preventDefault();
-			last.focus();
+			last?.focus();
 		} else if (!event.shiftKey && document.activeElement === last) {
 			event.preventDefault();
-			first.focus();
+			first?.focus();
 		}
 	}
 
@@ -479,7 +479,7 @@
 				break;
 			case 'Enter':
 			case ' ':
-				if (focusedDropdownIndex >= 0) {
+				if (focusedDropdownIndex >= 0 && submenu?.[focusedDropdownIndex]) {
 					event.preventDefault();
 					handleNavClick(submenu[focusedDropdownIndex].href, submenu[focusedDropdownIndex].label);
 				}
@@ -552,7 +552,7 @@
 		scrollObserver = new IntersectionObserver(
 			(entries) => {
 				// When sentinel is NOT visible, navbar should be scrolled
-				isScrolled = !entries[0].isIntersecting;
+				isScrolled = !entries[0]?.isIntersecting;
 			},
 			{
 				threshold: 0,
