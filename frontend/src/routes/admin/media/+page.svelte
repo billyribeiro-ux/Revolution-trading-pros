@@ -1408,7 +1408,6 @@
         </button>
       </div>
       <ResponsivePreview
-        originalUrl={detailItem.url}
         variants={detailItem.variants as any || []}
       />
     </div>
