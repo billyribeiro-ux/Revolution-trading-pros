@@ -16,8 +16,10 @@ import type {
 	Lesson,
 	LessonWithRelations,
 	LearningCenterData,
-	LessonCategory,
-	PaginatedLessons
+	LearningCategory,
+	PaginatedLessons,
+	Course,
+	CourseModule
 } from '$lib/types/learning-center';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -25,10 +27,10 @@ import type {
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface LearningCenterState {
-	// Course data (now TradingRoom)
-	courses: TradingRoom[];
-	currentCourse: TradingRoom | null;
-	categories: LessonCategory[];
+	// Course data
+	courses: Course[];
+	currentCourse: Course | null;
+	categories: LearningCategory[];
 
 	// Lesson data
 	currentLesson: LessonWithRelations | null;
@@ -108,7 +110,7 @@ function createLearningCenterStore() {
 
 				update((state) => ({
 					...state,
-					courses: data.tradingRoom ? [data.tradingRoom] : [],
+					courses: data.courses || [],
 					categories: data.categories,
 					overallProgress: data.userProgress?.progressPercent || 0,
 					recentlyWatched: [], // TODO: Add recently watched logic if needed
@@ -187,11 +189,11 @@ function createLearningCenterStore() {
 
 				update((state) => ({
 					...state,
-					currentLesson: data.lesson,
-					currentCourse: data.course,
-					currentModule: data.module as CourseModule | null,
-					previousLesson: data.previousLesson,
-					nextLesson: data.nextLesson,
+					currentLesson: (data.lesson as LessonWithRelations) ?? null,
+					currentCourse: (data.course as Course) ?? null,
+					currentModule: (data.module as LessonModule) ?? null,
+					previousLesson: (data.previousLesson as LessonWithRelations) ?? null,
+					nextLesson: (data.nextLesson as LessonWithRelations) ?? null,
 					isLoading: false
 				}));
 			} catch (error: any) {
@@ -428,7 +430,7 @@ function createLearningCenterStore() {
 				update((state) => ({
 					...state,
 					archivedVideos: state.archivedVideos.map((v) =>
-						v.id === videoId ? { ...v, views: v.views + 1 } : v
+						v.id === videoId ? { ...v, views: ((v as unknown as { views?: number }).views ?? 0) + 1 } : v
 					)
 				}));
 			} catch (error) {
@@ -506,12 +508,13 @@ export const learningCenterStore = createLearningCenterStore();
 export const coursesByCategory = derived(learningCenterStore, ($store) => {
 	const grouped: Record<string, Course[]> = {};
 	$store.courses.forEach((course) => {
-		course.modules.forEach((module) => {
-			if (!grouped[module.category]) {
-				grouped[module.category] = [];
+		course.modules.forEach((module: CourseModule) => {
+			const category = module.category ?? 'uncategorized';
+			if (!grouped[category]) {
+				grouped[category] = [];
 			}
-			if (!grouped[module.category].some((c) => c.id === course.id)) {
-				grouped[module.category].push(course);
+			if (!grouped[category].some((c) => c.id === course.id)) {
+				grouped[category].push(course);
 			}
 		});
 	});
