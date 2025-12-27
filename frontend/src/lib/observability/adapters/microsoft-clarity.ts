@@ -115,9 +115,11 @@ function injectClarityScript(projectId: string): Promise<void> {
 
 		// Initialize clarity function before script loads
 		(function(c: ClarityWindow, l: Document, a: string, r: string, i: string, t?: HTMLScriptElement, y?: Element) {
-			c[a] = c[a] || function(...args: unknown[]) {
-				(c[a].q = c[a].q || []).push(args);
+			const existingFn = c[a] as ClarityFunction | undefined;
+			const fn: ClarityFunction = existingFn || function(...args: unknown[]) {
+				(fn.q = fn.q || []).push(args);
 			};
+			c[a] = fn;
 			t = l.createElement(r) as HTMLScriptElement;
 			t.async = true;
 			t.src = CLARITY_SCRIPT_URL + i;

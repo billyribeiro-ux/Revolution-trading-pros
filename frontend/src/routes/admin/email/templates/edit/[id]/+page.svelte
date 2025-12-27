@@ -7,7 +7,7 @@
 
 	let loading = true;
 	let error = '';
-	let template = null;
+	let template: Record<string, unknown> | null = null;
 
 	const id = $page.params.id!;
 
