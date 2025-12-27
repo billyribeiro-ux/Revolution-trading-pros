@@ -60,12 +60,10 @@ import { getAuthToken } from '$lib/stores/auth';
 // NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_CDN = 'https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev';
 
 const isDev = import.meta.env.DEV;
 const API_BASE_URL = isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API);
 const WS_URL = import.meta.env['VITE_WS_URL'] || PROD_WS;
-const _CDN_URL = import.meta.env['VITE_CDN_URL'] || PROD_CDN;
 
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;
@@ -377,7 +375,6 @@ class EnterpriseApiClient {
 
 	// Batch processing
 	private batchQueue: Map<string, any[]> = new Map();
-	private _batchTimer?: number;
 
 	// Performance tracking
 	private metrics: PerformanceMetrics = {
