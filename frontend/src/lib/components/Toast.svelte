@@ -10,7 +10,7 @@
 	 * - Apple-inspired glass morphism design
 	 */
 
-	import { fly, fade, scale } from 'svelte/transition';
+	import { fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import { toasts, toastStore } from '$lib/stores/toast';

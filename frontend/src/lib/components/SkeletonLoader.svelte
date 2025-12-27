@@ -29,7 +29,7 @@
 	}: Props = $props();
 </script>
 
-{#each Array(count) as _, i}
+{#each Array(count) as _}
 	{#if variant === 'metric'}
 		<div class="skeleton skeleton-metric" style:height style:width>
 			<div class="skeleton-icon"></div>
@@ -84,7 +84,7 @@
 				<div class="skeleton-line medium"></div>
 			</div>
 			<div class="skeleton-chart-bars">
-				{#each Array(7) as _, j}
+				{#each Array(7) as _}
 					<div class="skeleton-bar" style:height="{30 + Math.random() * 60}%"></div>
 				{/each}
 			</div>
@@ -108,7 +108,7 @@
 						<div class="skeleton-line medium"></div>
 					</div>
 					<div class="skeleton-chart-bars">
-						{#each Array(10) as _, j}
+						{#each Array(10) as _}
 							<div class="skeleton-bar" style:height="{30 + Math.random() * 60}%"></div>
 						{/each}
 					</div>

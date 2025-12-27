@@ -82,9 +82,7 @@
 		IconMaximize,
 		IconMinimize,
 		IconTextCaption,
-		IconPictureInPictureOn,
-		IconShare,
-		IconBookmark
+		IconPictureInPictureOn
 	} from '$lib/icons';
 	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
 
@@ -162,7 +160,7 @@
 		url,
 		poster = null,
 		title = 'Video player',
-		description = null,
+		description: _description = null,
 		autoplay = false,
 		muted = false,
 		loop = false,
@@ -194,15 +192,15 @@
 		showFullscreen = true,
 		showPictureInPicture = true,
 		showSubtitles = true,
-		showShare = false,
-		showDownload = false,
+		showShare: _showShare = false,
+		showDownload: _showDownload = false,
 		controlsTimeout = 3000,
 		trackAnalytics = true,
 		analyticsId = null,
 		trackingEvents = ['play', 'pause', 'complete', 'progress'],
 		chapters = [],
 		overlays = [],
-		annotations = [],
+		annotations: _annotations = [],
 		callToAction = null,
 		subtitles = [],
 		playlist = [],
@@ -348,10 +346,10 @@
 	// UI state
 	let showControls: boolean = $state(true);
 	let showSettings: boolean = $state(false);
-	let showQualityMenu: boolean = $state(false);
-	let showSpeedMenu: boolean = $state(false);
-	let showChapters: boolean = $state(false);
-	let showPlaylistMenu: boolean = $state(false);
+	let _showQualityMenu: boolean = $state(false);
+	let _showSpeedMenu: boolean = $state(false);
+	let _showChapters: boolean = $state(false);
+	let _showPlaylistMenu: boolean = $state(false);
 	let controlsTimer: number | null = $state(null);
 	let isHovering: boolean = $state(false);
 	let thumbnailLoaded: boolean = $state(false);
@@ -397,7 +395,7 @@
 	let progressMilestones: Set<number> = $state(new Set());
 
 	// Animations
-	const playerScale = spring(1, { stiffness: 0.2, damping: 0.5 });
+	const _playerScale = spring(1, { stiffness: 0.2, damping: 0.5 });
 
 	// Event handler references for cleanup (prevents memory leaks)
 	let handleEnterPiP: (() => void) | null = null;
