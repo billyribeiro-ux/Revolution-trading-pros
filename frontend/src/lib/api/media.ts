@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { get } from 'svelte/store';
+import { get as _get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -759,12 +759,12 @@ class MediaApiClient {
 		sort_dir?: 'asc' | 'desc';
 	} = {}): Promise<{ data: MediaFile[]; meta: { current_page: number; last_page: number; total: number } }> {
 		const result = await this.getFiles({
-			page: params.page,
-			per_page: params.per_page,
-			search: params.search,
-			file_type: params.type,
-			sort: params.sort_by,
-			order: params.sort_dir
+			...(params.page !== undefined && { page: params.page }),
+			...(params.per_page !== undefined && { per_page: params.per_page }),
+			...(params.search !== undefined && { search: params.search }),
+			...(params.type !== undefined && { file_type: params.type }),
+			...(params.sort_by !== undefined && { sort: params.sort_by }),
+			...(params.sort_dir !== undefined && { order: params.sort_dir })
 		});
 		return {
 			data: result.files,
