@@ -55,7 +55,7 @@
 		<section id="ww-title" class="cpost-section cpost-title-section">
 			<div class="section-inner">
 				<!-- Previous Button -->
-				<div id="ww-previous" class="cpost-previous">
+				<div id="w-previous" class="cpost-previous">
 					{#if watchlistData.previous}
 						<a href="/watchlist/{watchlistData.previous.slug}" title={watchlistData.previous.title}>
 							<i class="fa fa-chevron-circle-left"></i>
