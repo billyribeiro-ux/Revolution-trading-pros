@@ -73,7 +73,6 @@
 		IconAlertCircle,
 		IconChartBar,
 		IconShield,
-		IconCopy,
 		IconSettings,
 		IconBolt,
 		IconMail,
@@ -241,14 +240,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let saving = $state(false);
-	let validating = $state(false);
 	let generating = $state(false);
 	let testing = $state(false);
 	let errors = $state<ValidationError[]>([]);
 	let activeTab = $state<'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing'>('basic');
-	let showPreview = $state(false);
-	let showBulkGenerator = $state(false);
-	let showImport = $state(false);
 	let duplicateFrom: string | null = $page.url.searchParams.get('duplicate');
 
 	// Form Data
@@ -312,8 +307,6 @@
 	let couponPreview = $state<CouponPreview | null>(null);
 
 	// Advanced Features
-	let generatedCodes = $state<string[]>([]);
-	let importedCodes = $state<any[]>([]);
 	let validationResults = $state<any>(null);
 
 	// Events: Component callbacks can be passed as props in Svelte 5
@@ -690,55 +683,6 @@
 		}
 	}
 
-	async function generateBulkCodes() {
-		showBulkGenerator = true;
-	}
-
-	async function handleBulkGeneration(event: CustomEvent) {
-		const { prefix, count, pattern } = event.detail;
-
-		generating = true;
-		try {
-			const response = await couponsApi.generateCode({
-				prefix,
-				count,
-				pattern,
-				unique: true
-			});
-			generatedCodes = response.data.codes;
-			addNotification('success', `Generated ${count} unique codes`);
-		} catch (error) {
-			console.error('Failed to generate codes:', error);
-			addNotification('error', 'Failed to generate codes');
-		} finally {
-			generating = false;
-			showBulkGenerator = false;
-		}
-	}
-
-	async function importCoupons() {
-		showImport = true;
-	}
-
-	async function handleImport(event: CustomEvent) {
-		const { file, mapping } = event.detail;
-
-		try {
-			const formData = new FormData();
-			formData.append('file', file);
-			formData.append('mapping', JSON.stringify(mapping));
-
-			const response = await couponsApi.import(formData);
-			importedCodes = response.data.coupons;
-			addNotification('success', `Imported ${response.data.count} coupons`);
-
-			showImport = false;
-		} catch (error) {
-			console.error('Failed to import coupons:', error);
-			addNotification('error', 'Failed to import coupons');
-		}
-	}
-
 	async function testCoupon() {
 		testing = true;
 		validationResults = null;
@@ -753,7 +697,6 @@
 				]
 			});
 			validationResults = results.data;
-			showPreview = true;
 		} catch (error) {
 			console.error('Failed to test coupon:', error);
 			addNotification('error', 'Failed to test coupon');
@@ -1127,10 +1070,6 @@
 							>
 								<IconSparkles size={16} />
 								Generate
-							</button>
-							<button type="button" class="btn-small" onclick={generateBulkCodes}>
-								<IconCopy size={16} />
-								Bulk Generate
 							</button>
 						</div>
 					</div>
