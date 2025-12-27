@@ -101,7 +101,8 @@
 		IconShoppingCart,
 		IconMenu2,
 		IconX,
-		IconChevronDown
+		IconChevronDown,
+		IconPhone
 	} from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
@@ -152,10 +153,11 @@
 	];
 
 	const DEFAULT_DASHBOARD_ITEMS: readonly NavSubMenuItem[] = [
-		{ href: '/dashboard', label: 'Dashboard Home' },
-		{ href: '/dashboard/courses', label: 'My Courses' },
+		{ href: '/dashboard', label: 'My Memberships' },
+		{ href: '/dashboard/classes', label: 'My Classes' },
 		{ href: '/dashboard/indicators', label: 'My Indicators' },
-		{ href: '/dashboard/account', label: 'My Account' }
+		{ href: '/dashboard/account', label: 'My Account' },
+		{ href: '/support', label: 'Support' }
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -763,10 +765,10 @@
 					</button>
 
 					{#if activeDropdown === 'dashboard'}
-						<ul 
+						<ul
 							id="dropdown-dashboard"
-							class="dropdown-menu" 
-							role="menu" 
+							class="dropdown-menu"
+							role="menu"
 							aria-label="Dashboard submenu"
 						>
 							{#each dashboardItems as sub, idx (sub.href)}
@@ -784,6 +786,18 @@
 									</a>
 								</li>
 							{/each}
+							<!-- Logout - WordPress reference core:2829 -->
+							<li role="none">
+								<button
+									class="dropdown-item dropdown-item--logout"
+									role="menuitem"
+									tabindex={focusedDropdownIndex === dashboardItems.length ? 0 : -1}
+									onclick={handleLogout}
+									type="button"
+								>
+									Logout
+								</button>
+							</li>
 						</ul>
 					{/if}
 				</div>
@@ -797,15 +811,19 @@
 			{#if actions}
 				{@render actions()}
 			{:else}
-				<!-- Cart -->
-				{#if $hasCartItems}
-					<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
-						<IconShoppingCart size={22} aria-hidden="true" />
-						{#if $cartItemCount > 0}
-							<span class="cart-badge" aria-hidden="true">{$cartItemCount}</span>
-						{/if}
-					</a>
-				{/if}
+				<!-- Phone Number - WordPress reference core:2832 -->
+				<a href="tel:5122668659" class="phone-link" aria-label="Call (512) 266-8659">
+					<IconPhone size={16} class="phone-icon" aria-hidden="true" />
+					<span class="phone-text">(512) 266-8659</span>
+				</a>
+
+				<!-- Cart - Always visible per WordPress reference -->
+				<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
+					<IconShoppingCart size={22} aria-hidden="true" />
+					{#if $cartItemCount > 0}
+						<span class="cart-badge" aria-hidden="true">{$cartItemCount}</span>
+					{/if}
+				</a>
 
 				<!-- Auth Buttons -->
 				{#if !$isAuthenticated}
@@ -1432,6 +1450,29 @@
 		outline-offset: -2px;
 	}
 
+	/* Logout button in dropdown - styled as button, not link */
+	.dropdown-item--logout {
+		width: 100%;
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		text-align: start;
+		border-block-start: 1px solid rgba(255, 255, 255, 0.1);
+		margin-block-start: 0.25rem;
+		padding-block-start: 0.875rem;
+		color: #f87171;
+	}
+
+	.dropdown-item--logout:hover,
+	.dropdown-item--logout:focus-visible {
+		background: rgba(248, 113, 113, 0.1);
+		color: #f87171;
+	}
+
+	.dropdown-item--logout::before {
+		background: linear-gradient(to bottom, #f87171, #dc2626);
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   ACTIONS
 	   ═══════════════════════════════════════════════════════════════════════════ */
@@ -1492,6 +1533,52 @@
 		text-align: center;
 		border-radius: 10px;
 		pointer-events: none;
+	}
+
+	/* Phone Link - WordPress reference core:2832 */
+	.phone-link {
+		display: none;
+		align-items: center;
+		gap: 0.375rem;
+		color: var(--nav-text);
+		font-size: 0.75rem;
+		font-weight: 600;
+		font-family: var(--nav-font);
+		text-decoration: none;
+		transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	@media (min-width: 1024px) {
+		.phone-link {
+			display: flex;
+		}
+	}
+
+	.phone-link:hover,
+	.phone-link:focus-visible {
+		color: var(--nav-primary);
+	}
+
+	.phone-link:focus-visible {
+		outline: 2px solid var(--nav-primary);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
+	/* Rotate phone icon 90 degrees like WordPress fa-cust-rotate-90 */
+	.phone-link :global(.phone-icon) {
+		transform: rotate(90deg);
+		color: #0984ae;
+	}
+
+	.phone-text {
+		color: inherit;
+	}
+
+	@media (max-width: 1279px) {
+		.phone-text {
+			display: none;
+		}
 	}
 
 	.login-btn {
