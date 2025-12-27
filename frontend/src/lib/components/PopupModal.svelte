@@ -316,19 +316,19 @@
 		return targeting === deviceType;
 	}
 
-	function isTimeTargeted(popup: Popup): boolean {
+	function isTimeTargeted(_popup: Popup): boolean {
 		// Add time-based targeting logic here
 		// e.g., business hours, specific days, etc.
 		return true;
 	}
 
-	function isUserSegmentTargeted(popup: Popup): boolean {
+	function isUserSegmentTargeted(_popup: Popup): boolean {
 		// Add user segment logic here
 		// e.g., new vs returning, logged in vs guest, etc.
 		return true;
 	}
 
-	function isGeoTargeted(popup: Popup): boolean {
+	function isGeoTargeted(_popup: Popup): boolean {
 		// Add geo-targeting logic here
 		// Would require IP-based location or browser geolocation API
 		return true;
@@ -1086,8 +1086,8 @@
 						showHours={currentPopup.countdownTimer.showHours}
 						showMinutes={currentPopup.countdownTimer.showMinutes}
 						showSeconds={currentPopup.countdownTimer.showSeconds}
-						timerColor={currentPopup.countdownTimer.timerColor}
-						onExpire={(action) => {
+						timerColor={currentPopup.countdownTimer.timerColor ?? '#ffffff'}
+						onExpire={(_action) => {
 							if (currentPopup.countdownTimer?.onExpire === 'hide') {
 								closePopup();
 							} else if (
@@ -1108,7 +1108,7 @@
 						muted={currentPopup.videoEmbed.muted}
 						controls={currentPopup.videoEmbed.controls}
 						aspectRatio={currentPopup.videoEmbed.aspectRatio}
-						customAspectRatio={currentPopup.videoEmbed.customAspectRatio}
+						customAspectRatio={currentPopup.videoEmbed.customAspectRatio ?? '16:9'}
 					/>
 				{/if}
 
