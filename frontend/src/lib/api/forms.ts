@@ -72,7 +72,6 @@ const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const AI_API = browser ? import.meta.env['VITE_AI_API_URL'] || PROD_AI : '';
 
 const CACHE_TTL = 300000; // 5 minutes
-const _DEBOUNCE_DELAY = 500;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const OFFLINE_QUEUE_KEY = 'forms_offline_queue';
