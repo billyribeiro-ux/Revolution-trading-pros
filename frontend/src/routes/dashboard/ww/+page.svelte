@@ -1,13 +1,14 @@
 <script lang="ts">
 	/**
-	 * Watchlist Rundown Archive - Matching Simpler Trading
+	 * Weekly Watchlist Dashboard - Main Page
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * Archive of weekly watchlist video rundowns (video tab)
-	 * @version 2.0.0 - December 2025
+	 * Main dashboard for Weekly Watchlist with featured cards and recent rundowns
+	 * Matches Simpler Trading's exact layout
+	 * @version 1.0.0 - December 2025
 	 */
 
-	// Archive data - matches reference structure with trader images
-	const archives = [
+	// Recent rundown archives (first 3)
+	const recentRundowns = [
 		{
 			date: 'December 22, 2025',
 			trader: 'TG Watkins',
@@ -28,55 +29,13 @@
 			slug: '12082025-taylor-horton',
 			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
 			description: 'Week of December 8, 2025.'
-		},
-		{
-			date: 'December 01, 2025',
-			trader: 'Raghee Horner',
-			slug: '12012025-raghee-horner',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Raghee-Watchlist-Rundown.jpg',
-			description: 'Week of December 1, 2025.'
-		},
-		{
-			date: 'November 24, 2025',
-			trader: 'David Starr',
-			slug: '11242025-david-starr',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
-			description: 'Week of November 24, 2025.'
-		},
-		{
-			date: 'November 17, 2025',
-			trader: 'Mike Teeto',
-			slug: '11172025-mike-teeto',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/WeeklyWatchlist_MT.jpg',
-			description: 'Week of November 17, 2025.'
-		},
-		{
-			date: 'November 10, 2025',
-			trader: 'Taylor Horton',
-			slug: '11102025-taylor-horton',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
-			description: 'Week of November 10, 2025.'
-		},
-		{
-			date: 'November 03, 2025',
-			trader: 'Allison Ostrander',
-			slug: '11032025-allison-ostrander',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
-			description: 'Week of November 3, 2025.'
-		},
-		{
-			date: 'October 27, 2025',
-			trader: 'Bruce Marshall',
-			slug: '10272025-bruce-marshall',
-			image: 'https://cdn.simplertrading.com/2021/09/20120627/Bruce-Watchlist-Rundown.jpg',
-			description: 'Week of October 27, 2025.'
 		}
 	];
 </script>
 
 <svelte:head>
-	<title>Watchlist Rundown Archive - Revolution Trading Pros</title>
-	<meta name="description" content="Archive of weekly watchlist video rundowns" />
+	<title>Weekly Watchlist Dashboard - Revolution Trading Pros</title>
+	<meta name="description" content="Get Started with Weekly Watchlist. Video rundowns and downloadable watchlists each week." />
 </svelte:head>
 
 <!-- Dashboard Layout -->
@@ -85,13 +44,13 @@
 	<aside class="dashboard__sidebar">
 		<nav class="dashboard__nav-secondary">
 			<ul>
-				<li>
+				<li class="is-active">
 					<a href="/dashboard/ww/">
 						<span class="dashboard__nav-item-icon st-icon-dashboard"></span>
 						<span class="dashboard__nav-item-text">Weekly Watchlist</span>
 					</a>
 				</li>
-				<li class="is-active">
+				<li>
 					<a href="/dashboard/ww/watchlist-rundown-archive/">
 						<span class="dashboard__nav-item-icon st-icon-chatroom-archive"></span>
 						<span class="dashboard__nav-item-text">Watchlist Rundown Archive</span>
@@ -117,11 +76,41 @@
 
 		<div class="dashboard__content">
 			<div class="dashboard__content-main">
+				<!-- Featured Cards Section -->
+				<section class="dashboard__content-section-member">
+					<div class="row featured_cards">
+						<div class="col-md-6 col-lg-4 text-center">
+							<div class="featured-card img_1">
+								<h2 class="card_title">Get Started</h2>
+								<p>Learn how to best use the Weekly Watchlist and get the most out of it.</p>
+								<a href="/dashboard/ww/getting-started/">Check It Out</a>
+							</div>
+						</div>
+						<div class="col-md-6 col-lg-4 text-center">
+							<div class="featured-card img_2">
+								<h2 class="card_title_2">Watchlist Rundown</h2>
+								<p>Video reviewing the Watchlist of the Week by the Trader who created it.</p>
+								<div class="buttons">
+									<a href="/dashboard/ww/watchlist-rundown-archive/">Check It Out</a>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 col-lg-4 text-center">
+							<div class="featured-card img_3">
+								<h2 class="card_title_3">Weekly Watchlist</h2>
+								<p>Get the complete Watchlist of the Week in a downloadable format.</p>
+								<a href="/dashboard/ww/weekly-watchlist-archive/">Check It Out</a>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Watchlist Rundown Archive Section -->
 				<div class="dashboard__content-section">
 					<section>
 						<h2 class="section-title">Watchlist Rundown Archive</h2>
 						<div class="article-cards row flex-grid">
-							{#each archives as item}
+							{#each recentRundowns as item}
 								<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 									<article class="article-card">
 										<figure class="weekly_watchlist">
@@ -146,6 +135,9 @@
 									</article>
 								</div>
 							{/each}
+						</div>
+						<div class="view-all-link">
+							<a href="/dashboard/ww/watchlist-rundown-archive/">View All Rundowns &rarr;</a>
 						</div>
 					</section>
 				</div>
@@ -182,7 +174,7 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   Watchlist Rundown Archive - Matching Simpler Trading Exactly
+	   Weekly Watchlist Dashboard - Matching Simpler Trading Exactly
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Dashboard Layout */
@@ -259,6 +251,91 @@
 		padding: 30px;
 	}
 
+	/* Featured Cards Section */
+	.dashboard__content-section-member {
+		margin-bottom: 30px;
+	}
+
+	.featured_cards {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0 -15px;
+	}
+
+	.featured_cards .col-md-6,
+	.featured_cards .col-lg-4 {
+		padding: 0 15px;
+		margin-bottom: 30px;
+	}
+
+	@media (min-width: 768px) {
+		.col-md-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-4 {
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
+
+	.featured-card {
+		background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+		border-radius: 8px;
+		padding: 40px 30px;
+		min-height: 280px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		color: #fff;
+	}
+
+	.featured-card.img_1 {
+		background: linear-gradient(135deg, #0984ae 0%, #076787 100%);
+	}
+
+	.featured-card.img_2 {
+		background: linear-gradient(135deg, #f7941d 0%, #d47a0d 100%);
+	}
+
+	.featured-card.img_3 {
+		background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+	}
+
+	.featured-card h2 {
+		font-size: 24px;
+		font-weight: 700;
+		margin: 0 0 15px;
+		text-transform: uppercase;
+	}
+
+	.featured-card p {
+		font-size: 15px;
+		line-height: 1.6;
+		margin: 0 0 20px;
+		opacity: 0.9;
+	}
+
+	.featured-card a {
+		display: inline-block;
+		padding: 10px 24px;
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
+		text-decoration: none;
+		border-radius: 4px;
+		font-weight: 600;
+		font-size: 14px;
+		transition: all 0.2s;
+	}
+
+	.featured-card a:hover {
+		background: rgba(255, 255, 255, 0.3);
+	}
+
+	/* Dashboard Content Section */
 	.dashboard__content-section {
 		background: #fff;
 		border-radius: 4px;
@@ -276,7 +353,7 @@
 		border-bottom: 2px solid #0984ae;
 	}
 
-	/* Article Cards Grid - Matching Reference */
+	/* Article Cards Grid */
 	.article-cards {
 		display: flex;
 		flex-wrap: wrap;
@@ -300,7 +377,7 @@
 	}
 
 	@media (min-width: 768px) {
-		.col-md-6 {
+		.article-cards .col-md-6 {
 			flex: 0 0 50%;
 			max-width: 50%;
 		}
@@ -410,6 +487,22 @@
 		text-decoration: underline;
 	}
 
+	.view-all-link {
+		margin-top: 20px;
+		text-align: center;
+	}
+
+	.view-all-link a {
+		color: #0984ae;
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 14px;
+	}
+
+	.view-all-link a:hover {
+		text-decoration: underline;
+	}
+
 	/* Buttons */
 	.btn {
 		display: inline-block;
@@ -487,6 +580,10 @@
 		padding-bottom: 10px;
 	}
 
+	.text-center {
+		text-align: center;
+	}
+
 	/* Responsive */
 	@media (max-width: 992px) {
 		.dashboard__sidebar {
@@ -516,6 +613,11 @@
 		.u--background-color-white {
 			margin: 0 15px 15px;
 			padding: 20px;
+		}
+
+		.featured-card {
+			min-height: 220px;
+			padding: 30px 20px;
 		}
 	}
 
