@@ -23,8 +23,8 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import { fade, fly, slide, scale } from 'svelte/transition';
-	import { quintOut, cubicOut } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import {
 		IconPlus,
 		IconGripVertical,
@@ -42,41 +42,25 @@
 		IconEdit,
 		IconMaximize,
 		IconMinimize,
-		IconLayoutGrid,
 		IconDeviceFloppy,
 		IconCloudUpload,
 		IconSearch,
 		IconRobot,
 		IconSeo,
 		IconStack2,
-		IconBrandOpenai,
-		IconWand,
-		IconSparkles,
-		IconZoomIn,
-		IconZoomOut,
 		IconKeyboard,
-		IconDots,
-		IconDotsVertical,
-		IconLock,
-		IconLockOpen,
-		IconMessage,
-		IconHistory,
-		IconDownload,
-		IconUpload
+		IconHistory
 	} from '$lib/icons';
 
 	import type {
 		Block,
 		BlockType,
 		EditorState,
-		BlockCategory,
-		BlockDefinition,
 		SEOAnalysis,
 		Revision
 	} from './types';
 
 	import {
-		BLOCK_CATEGORIES,
 		BLOCK_DEFINITIONS
 	} from './types';
 
@@ -113,8 +97,6 @@
 		blocks = $bindable([]),
 		postTitle = '',
 		postSlug = '',
-		postExcerpt = '',
-		metaTitle = '',
 		metaDescription = '',
 		focusKeyword = '',
 		onchange,
@@ -167,9 +149,6 @@
 
 	// SEO State
 	let seoAnalysis = $state<SEOAnalysis | null>(null);
-
-	// AI State
-	let aiPanelOpen = $state(false);
 
 	// Revisions State
 	let revisions = $state<Revision[]>([]);
@@ -340,8 +319,12 @@
 		pushToHistory();
 
 		const newBlocks = [...editorState.blocks];
-		[newBlocks[index], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[index]];
-		editorState.blocks = newBlocks;
+		const blockA = newBlocks[index];
+		const blockB = newBlocks[newIndex];
+		if (blockA && blockB) {
+			[newBlocks[index], newBlocks[newIndex]] = [blockB, blockA];
+			editorState.blocks = newBlocks;
+		}
 	}
 
 	// ==========================================================================
@@ -377,8 +360,10 @@
 
 				const newBlocks = [...editorState.blocks];
 				const [removed] = newBlocks.splice(fromIndex, 1);
-				newBlocks.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, removed);
-				editorState.blocks = newBlocks;
+				if (removed) {
+					newBlocks.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, removed);
+					editorState.blocks = newBlocks;
+				}
 			}
 		}
 
