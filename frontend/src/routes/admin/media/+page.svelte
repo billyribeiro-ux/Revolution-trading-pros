@@ -104,9 +104,10 @@
       const response = await mediaApi.list({
         page: currentPage,
         per_page: perPage,
-        search: searchQuery || undefined,
-        type: filterType !== 'all' ? filterType : undefined,
-        optimized: filterStatus === 'optimized' ? true : filterStatus === 'pending' ? false : undefined,
+        ...(searchQuery && { search: searchQuery }),
+        ...(filterType !== 'all' && { type: filterType }),
+        ...(filterStatus === 'optimized' && { optimized: true }),
+        ...(filterStatus === 'pending' && { optimized: false }),
         sort_by: sortBy,
         sort_dir: sortDir,
       });
