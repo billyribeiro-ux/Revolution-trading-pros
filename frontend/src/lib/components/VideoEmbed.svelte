@@ -318,7 +318,9 @@
 	let isPlaying: boolean = $state(false);
 	let isPaused: boolean = $state(false);
 	let isEnded: boolean = $state(false);
+	let isBuffering: boolean = $state(false);
 	let isFullscreen: boolean = $state(false);
+	let isPictureInPicture: boolean = $state(false);
 	let isMuted: boolean = $state(false);
 	let hasError: boolean = $state(false);
 
@@ -345,8 +347,10 @@
 	let showControls: boolean = $state(true);
 	let showSettings: boolean = $state(false);
 	let controlsTimer: number | null = $state(null);
+	let isHovering: boolean = $state(false);
 	let thumbnailLoaded: boolean = $state(false);
 	let hasInteracted: boolean = $state(false);
+	let showCallToAction: boolean = $state(false);
 
 	// Quality options
 	let availableQualities: string[] = $state([]);
