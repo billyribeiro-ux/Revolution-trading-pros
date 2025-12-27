@@ -65,14 +65,14 @@ const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
 const API_URL = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
-const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+const _WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const CART_SYNC_INTERVAL = 30000; // 30 seconds
 const CART_PERSISTENCE_KEY = 'rtp_cart';
 const SESSION_STORAGE_KEY = 'rtp_checkout_session';
 const ABANDONMENT_THRESHOLD = 600000; // 10 minutes
-const MAX_RETRY_ATTEMPTS = 3;
+const _MAX_RETRY_ATTEMPTS = 3;
 const PRICE_UPDATE_INTERVAL = 300000; // 5 minutes
 const INVENTORY_CHECK_INTERVAL = 60000; // 1 minute
 
@@ -530,8 +530,11 @@ class CheckoutCartService {
 			if (token) {
 				try {
 					// Decode JWT to get user ID (basic decode, not verification)
-					const payload = JSON.parse(atob(token.split('.')[1]));
-					userId = payload.sub || payload.user_id || null;
+					const tokenParts = token.split('.');
+					if (tokenParts[1]) {
+						const payload = JSON.parse(atob(tokenParts[1]));
+						userId = payload.sub || payload.user_id || null;
+					}
 				} catch {
 					// Token parsing failed, continue without user ID
 				}
@@ -580,7 +583,7 @@ class CheckoutCartService {
 		}
 	}
 
-	private authenticateWebSocket(): void {
+	private _authenticateWebSocket(): void {
 		const token = this.getAuthToken();
 		if (token && this.wsConnection) {
 			this.wsConnection.send(
@@ -593,7 +596,7 @@ class CheckoutCartService {
 		}
 	}
 
-	private handleWebSocketMessage(event: MessageEvent): void {
+	private _handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
 
@@ -1618,8 +1621,8 @@ export const syncCart = (items: CartItem[]) => {
 		name: item.name,
 		price: item.price,
 		quantity: item.quantity,
-		description: item.description,
-		image: item.image
+		...(item.description !== undefined && { description: item.description }),
+		...(item.image !== undefined && { image: item.image })
 	}));
 
 	checkoutService.cart.update((cart) => {
