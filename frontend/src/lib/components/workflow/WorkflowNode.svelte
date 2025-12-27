@@ -131,7 +131,7 @@
 	></div>
 	<div
 		class="connection-point output"
-		onmousedown={(e) => { e.stopPropagation(); onstartConnection?.(); }}
+		onmousedown={(e: MouseEvent) => { e.stopPropagation(); onstartConnection?.(); }}
 		role="button"
 		tabindex="0"
 	></div>

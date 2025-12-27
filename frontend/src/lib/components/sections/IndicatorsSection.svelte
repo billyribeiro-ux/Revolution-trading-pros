@@ -215,7 +215,6 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-	let observer: IntersectionObserver | null = null;
 	let rotationInterval: ReturnType<typeof setInterval> | null = null;
 	let resizeObserver: ResizeObserver | null = null;
 
@@ -280,7 +279,6 @@
 
 		return () => {
 			if (rotationInterval) clearInterval(rotationInterval);
-			observer?.disconnect();
 			resizeObserver?.disconnect();
 		};
 	});

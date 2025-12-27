@@ -163,20 +163,20 @@
 								stroke="currentColor"
 								stroke-width="8"
 								fill="none"
-								class={getScoreColor(analysis.seo_score)}
-								stroke-dasharray={`${(analysis.seo_score / 100) * 351.86} 351.86`}
+								class={getScoreColor(analysis.seo_score ?? 0)}
+								stroke-dasharray={`${((analysis.seo_score ?? 0) / 100) * 351.86} 351.86`}
 								stroke-linecap="round"
 							/>
 						</svg>
 						<div class="absolute">
-							<p class="text-3xl font-bold {getScoreColor(analysis.seo_score)}">
-								{analysis.seo_score}
+							<p class="text-3xl font-bold {getScoreColor(analysis.seo_score ?? 0)}">
+								{analysis.seo_score ?? 0}
 							</p>
 							<p class="text-xs text-gray-600">/ 100</p>
 						</div>
 					</div>
-					<p class="mt-4 text-lg font-semibold {getScoreColor(analysis.seo_score)}">
-						{getScoreLabel(analysis.seo_score)}
+					<p class="mt-4 text-lg font-semibold {getScoreColor(analysis.seo_score ?? 0)}">
+						{getScoreLabel(analysis.seo_score ?? 0)}
 					</p>
 				</div>
 			</Card>
@@ -185,7 +185,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<Card>
 					<p class="text-sm text-gray-600">Keyword Density</p>
-					<p class="text-2xl font-bold mt-1">{analysis.keyword_density.toFixed(2)}%</p>
+					<p class="text-2xl font-bold mt-1">{(analysis.keyword_density ?? 0).toFixed(2)}%</p>
 					<p class="text-xs text-gray-500 mt-1">Optimal: 0.5-2.5%</p>
 				</Card>
 
@@ -209,7 +209,7 @@
 			</div>
 
 			<!-- Suggestions -->
-			{#if analysis.suggestions.length > 0}
+			{#if analysis.suggestions && analysis.suggestions.length > 0}
 				<Card>
 					<h3 class="text-lg font-bold text-gray-900 mb-4">Improvement Suggestions</h3>
 					<ul class="space-y-3">
@@ -224,7 +224,7 @@
 			{/if}
 
 			<!-- Analysis Results -->
-			{#if analysis.analysis_results.length > 0}
+			{#if analysis.analysis_results && analysis.analysis_results.length > 0}
 				<Card>
 					<h3 class="text-lg font-bold text-gray-900 mb-4">Analysis Details</h3>
 					<ul class="space-y-2">

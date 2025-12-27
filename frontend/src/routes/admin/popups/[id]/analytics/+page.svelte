@@ -14,7 +14,7 @@
 		IconCalendar
 	} from '$lib/icons';
 
-	const popupId = parseInt($page.params.id);
+	const popupId = parseInt($page.params.id!);
 
 	let popup: Popup | null = null;
 	let analytics: any = null;
@@ -70,7 +70,7 @@
 
 			// Load popup details
 			const popupResponse = await popupsApi.get(popupId);
-			popup = popupResponse.popup;
+			popup = popupResponse.popup ?? null;
 
 			// Load analytics data - getAnalytics returns PopupAnalytics directly
 			analytics = await popupsApi.getAnalytics(popupId);
@@ -139,11 +139,11 @@
 				<div>
 					<h1 class="text-3xl font-bold text-gray-900">{popup.name}</h1>
 					<div class="flex items-center gap-3 mt-2">
-						<Badge variant={getStatusColor(popup.status)}>
+						<Badge variant={getStatusColor(popup.status ?? 'draft')}>
 							{popup.status}
 						</Badge>
 						<span class="text-sm text-gray-600">
-							{popup.type.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+							{(popup.type ?? 'popup').replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
 						</span>
 					</div>
 				</div>

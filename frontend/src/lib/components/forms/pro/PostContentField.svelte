@@ -82,7 +82,7 @@
 	}
 
 	function toggleHtmlView() {
-		if (showHtml) {
+		if (showHtml && editorRef) {
 			// Switching back to visual mode
 			editorRef.innerHTML = content;
 		}

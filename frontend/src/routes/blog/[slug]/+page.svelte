@@ -170,8 +170,8 @@
 
 {#if post}
 	<SEOHead
-		title={seoTitle}
-		description={seoDescription}
+		title={seoTitle ?? post.title}
+		description={seoDescription ?? ''}
 		canonical={`/blog/${post.slug}`}
 		ogType="article"
 		ogImage={post.featured_image}
@@ -253,7 +253,7 @@
 				<div class="post-meta">
 					<div class="author-info">
 						{#if post.author_image}
-							<img src={post.author_image} alt={post.author.name} class="author-avatar" />
+							<img src={post.author_image} alt={post.author?.name ?? 'Author'} class="author-avatar" />
 						{:else if post.author}
 							<div class="author-avatar-placeholder">
 								{post.author.name.charAt(0).toUpperCase()}

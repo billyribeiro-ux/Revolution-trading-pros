@@ -41,7 +41,7 @@
 			]);
 
 			submissions = submissionsData.submissions;
-			totalPages = Math.ceil(submissionsData.total / submissionsData.perPage);
+			totalPages = Math.ceil((submissionsData.total ?? 0) / (submissionsData.perPage ?? 10));
 			stats = statsData;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load submissions';
