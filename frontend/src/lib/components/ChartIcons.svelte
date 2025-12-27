@@ -161,7 +161,7 @@
         const arc = d3.arc<any>().innerRadius(0).outerRadius(radius);
         
         const colors = d3.scaleOrdinal()
-            .domain(data.map((d, i) => i.toString()))
+            .domain(data.map((_d, i) => i.toString()))
             .range([color, d3.rgb(color).brighter(0.5).toString(), d3.rgb(color).brighter(1).toString(), d3.rgb(color).darker(0.5).toString()]);
         
         g.attr('transform', `translate(${width/2}, ${height/2})`);
@@ -171,7 +171,7 @@
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', (d: any, i: number) => colors(i.toString()) as string)
+            .attr('fill', (_d: any, i: number) => colors(i.toString()) as string)
             .attr('stroke', 'rgba(0,0,0,0.2)')
             .attr('stroke-width', 1);
     }
@@ -196,7 +196,7 @@
             .attr('opacity', 0.7);
     }
     
-    function drawHeatmap(g: any, width: number, height: number, color: string) {
+    function drawHeatmap(g: any, width: number, height: number, _color: string) {
         const data = Array.from({length: 5}, (_, i) => 
             Array.from({length: 5}, (_, j) => ({
                 row: i,
@@ -228,7 +228,7 @@
         g.attr('transform', `translate(${width/2}, ${height/2})`);
         
         // Draw axes
-        data.forEach((d, i) => {
+        data.forEach((_d, i) => {
             const angle = angleSlice * i - Math.PI / 2;
             g.append('line')
                 .attr('x1', 0)
@@ -241,7 +241,7 @@
         
         // Draw data
         const radarLine = d3.lineRadial<number>()
-            .angle((d: number, i: number) => angleSlice * i)
+            .angle((_d: number, i: number) => angleSlice * i)
             .radius((d: number) => d * radius)
             .curve(d3.curveLinearClosed);
         
