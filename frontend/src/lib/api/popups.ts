@@ -69,11 +69,11 @@ const API_BASE = '';
 const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
-const IMPRESSION_DEBOUNCE = 1000; // 1 second
+const _IMPRESSION_DEBOUNCE = 1000; // 1 second
 const CONVERSION_TIMEOUT = 30000; // 30 seconds
 const CACHE_TTL = 300000; // 5 minutes
-const ANALYTICS_BATCH_SIZE = 10;
-const SMART_TIMING_DELAY = 3000; // 3 seconds
+const _ANALYTICS_BATCH_SIZE = 10;
+const _SMART_TIMING_DELAY = 3000; // 3 seconds
 const EXIT_INTENT_SENSITIVITY = 150; // pixels from top
 const INACTIVITY_THRESHOLD = 15000; // 15 seconds
 
@@ -1616,7 +1616,7 @@ export const error = popupService.error;
 
 // Export methods
 export const getAllPopups = () => popupService.getAllPopups();
-export const getActivePopups = (page: string) => popupService.loadActivePopups();
+export const getActivePopups = (_page: string) => popupService.loadActivePopups();
 export const createPopup = (popup: Partial<EnhancedPopup>) => popupService.createPopup(popup);
 export const updatePopup = (id: string, updates: Partial<EnhancedPopup>) =>
 	popupService.updatePopup(id, updates);
@@ -1707,7 +1707,8 @@ export const createABTest = (basePopupId: string, variants: Partial<ABTestVarian
 export const duplicatePopup = async (id: string) => {
 	const popup = get(popups).find((p) => p.id === id);
 	if (!popup) throw new Error('Popup not found');
-	const duplicate = { ...popup, id: undefined, name: `${popup.name} (Copy)` };
+	const { id: _id, ...popupWithoutId } = popup;
+	const duplicate = { ...popupWithoutId, name: `${popup.name} (Copy)` };
 	return createPopup(duplicate);
 };
 export const togglePopupStatus = async (id: string, isActive: boolean) => {
