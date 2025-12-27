@@ -8,7 +8,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import {
 		IconPlus,
 		IconEdit,
@@ -21,7 +21,6 @@
 		IconX,
 		IconAlertCircle,
 		IconChartBar,
-		IconEye,
 		IconEyeOff,
 		IconCopy
 	} from '$lib/icons';
