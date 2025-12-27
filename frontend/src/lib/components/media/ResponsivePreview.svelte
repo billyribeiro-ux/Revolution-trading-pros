@@ -23,7 +23,6 @@
 
   interface Props {
     variants?: Variant[];
-    originalUrl?: string;
     originalSize?: number;
     selectedSize?: string | null;
     showSizes?: boolean;
@@ -34,7 +33,6 @@
 
   let {
     variants = [],
-    originalUrl = '',
     originalSize = 0,
     selectedSize = $bindable(null),
     showSizes = true,
@@ -174,7 +172,7 @@
         <div class="h-1 bg-gray-200 dark:bg-gray-700">
           <div
             class="h-full bg-blue-500"
-            style="width: {(breakpointWidths[variant.sizeName] / 1920) * 100}%"
+            style="width: {((breakpointWidths[variant.sizeName] ?? 0) / 1920) * 100}%"
           ></div>
         </div>
       </button>
