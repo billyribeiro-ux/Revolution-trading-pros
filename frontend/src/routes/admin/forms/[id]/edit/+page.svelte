@@ -17,7 +17,7 @@
 	let showThemeCustomizer = $state(false);
 	let selectedTheme = $state<FormTheme | null>(null);
 
-	let formId = $derived(parseInt($page.params.id));
+	let formId = $derived(parseInt($page.params.id!));
 
 	onMount(async () => {
 		try {
