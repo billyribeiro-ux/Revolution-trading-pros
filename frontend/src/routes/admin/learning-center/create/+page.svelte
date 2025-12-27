@@ -17,7 +17,6 @@
 	import { get } from 'svelte/store';
 	import { RoomSelector } from '$lib/components/learning-center';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconFileText from '@tabler/icons-svelte/icons/file-text';
 	import IconFile from '@tabler/icons-svelte/icons/file';
@@ -157,31 +156,31 @@
 
 		if (step === 1) {
 			// Step 1: Trading Rooms selection
-			if (formData.tradingRoomIds.length === 0) {
-				newErrors.tradingRoomIds = 'Please select at least one trading room';
+			if (formData['tradingRoomIds'].length === 0) {
+				newErrors['tradingRoomIds'] = 'Please select at least one trading room';
 			}
 		}
 
 		if (step === 2) {
 			// Step 2: Basic info
-			if (!formData.title.trim()) {
-				newErrors.title = 'Title is required';
+			if (!formData['title'].trim()) {
+				newErrors['title'] = 'Title is required';
 			}
-			if (!formData.description.trim()) {
-				newErrors.description = 'Description is required';
+			if (!formData['description'].trim()) {
+				newErrors['description'] = 'Description is required';
 			}
-			if (!formData.trainerId) {
-				newErrors.trainerId = 'Please select a trainer';
+			if (!formData['trainerId']) {
+				newErrors['trainerId'] = 'Please select a trainer';
 			}
-			if (!formData.categoryId) {
-				newErrors.categoryId = 'Please select a category';
+			if (!formData['categoryId']) {
+				newErrors['categoryId'] = 'Please select a category';
 			}
 		}
 
 		if (step === 3) {
 			// Step 3: Content
-			if (formData.type === 'video' && !formData.videoUrl) {
-				newErrors.videoUrl = 'Video URL is required';
+			if (formData.type === 'video' && !formData['videoUrl']) {
+				newErrors['videoUrl'] = 'Video URL is required';
 			}
 		}
 
@@ -194,8 +193,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleRoomSelect(roomIds: string[]) {
-		formData.tradingRoomIds = roomIds;
-		if (errors.tradingRoomIds) {
+		formData['tradingRoomIds'] = roomIds;
+		if (errors['tradingRoomIds']) {
 			errors = { ...errors, tradingRoomIds: '' };
 		}
 	}
@@ -245,14 +244,6 @@
 		} finally {
 			isSubmitting = false;
 		}
-	}
-
-	// Generate slug from title
-	function generateSlug(title: string): string {
-		return title
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-|-$/g, '');
 	}
 
 	// Steps config
