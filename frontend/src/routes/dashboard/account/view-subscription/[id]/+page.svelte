@@ -40,6 +40,11 @@
 		}
 	};
 
+	// State for reactivation
+	let showReactivateModal = $state(false);
+	let reactivating = $state(false);
+	let reactivateError = $state('');
+
 	// Handle cancel subscription
 	async function handleCancelSubscription() {
 		cancelling = true;
@@ -58,6 +63,25 @@
 			cancelError = err instanceof Error ? err.message : 'Failed to cancel subscription';
 		} finally {
 			cancelling = false;
+		}
+	}
+
+	// Handle reactivate subscription
+	async function handleReactivateSubscription() {
+		reactivating = true;
+		reactivateError = '';
+
+		try {
+			// Simulate API call - in production this would call the backend
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Success - redirect back to subscriptions
+			showReactivateModal = false;
+			goto('/dashboard/account/subscriptions?reactivated=true');
+		} catch (err) {
+			reactivateError = err instanceof Error ? err.message : 'Failed to reactivate subscription';
+		} finally {
+			reactivating = false;
 		}
 	}
 </script>
@@ -106,7 +130,11 @@
 				<h3>Subscription Actions</h3>
 				<div class="action-buttons">
 					<button class="btn btn-default">Update Payment Method</button>
-					<button class="btn btn-warning" onclick={() => showCancelModal = true}>Cancel Subscription</button>
+					{#if subscription.status === 'Active'}
+						<button class="btn btn-warning" onclick={() => showCancelModal = true}>Cancel Subscription</button>
+					{:else if subscription.status === 'Cancelled' || subscription.status === 'Pending Cancellation'}
+						<button class="btn btn-success" onclick={() => showReactivateModal = true}>Reactivate Subscription</button>
+					{/if}
 				</div>
 			</div>
 
@@ -131,6 +159,28 @@
 							<button class="btn btn-default" onclick={() => showCancelModal = false} disabled={cancelling}>Keep Subscription</button>
 							<button class="btn btn-danger" onclick={handleCancelSubscription} disabled={cancelling}>
 								{cancelling ? 'Canceling...' : 'Confirm Cancellation'}
+							</button>
+						</div>
+					</div>
+				</div>
+			{/if}
+
+			<!-- Reactivate Confirmation Modal -->
+			{#if showReactivateModal}
+				<div class="modal-overlay" onclick={() => showReactivateModal = false} role="presentation">
+					<div class="modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="reactivate-title" tabindex="-1">
+						<h3 id="reactivate-title">Reactivate Subscription</h3>
+						<p>Would you like to reactivate your subscription to <strong>{subscription.product}</strong>?</p>
+						<p class="modal-note">Your subscription will resume and you will be billed on the next billing cycle.</p>
+
+						{#if reactivateError}
+							<div class="error-message">{reactivateError}</div>
+						{/if}
+
+						<div class="modal-actions">
+							<button class="btn btn-default" onclick={() => showReactivateModal = false} disabled={reactivating}>Cancel</button>
+							<button class="btn btn-success" onclick={handleReactivateSubscription} disabled={reactivating}>
+								{reactivating ? 'Reactivating...' : 'Confirm Reactivation'}
 							</button>
 						</div>
 					</div>
@@ -289,8 +339,19 @@
 		background: #c82333;
 	}
 
+	.btn-success {
+		background: #28a745;
+		color: #fff;
+		border: 1px solid #28a745;
+	}
+
+	.btn-success:hover {
+		background: #218838;
+	}
+
 	.btn-danger:disabled,
-	.btn-default:disabled {
+	.btn-default:disabled,
+	.btn-success:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
