@@ -273,15 +273,6 @@
 		}
 	}
 
-	function getDeviceType(): string {
-		if (!browser) return 'desktop';
-
-		const width = window.innerWidth;
-		if (width < 768) return 'mobile';
-		if (width < 1024) return 'tablet';
-		return 'desktop';
-	}
-
 	function getPositionClasses(position: string): string {
 		switch (position) {
 			case 'top':
