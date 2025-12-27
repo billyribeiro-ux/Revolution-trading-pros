@@ -48,7 +48,7 @@
  * @license MIT
  */
 
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -63,9 +63,9 @@ const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_CDN = 'https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev';
 
 const isDev = import.meta.env.DEV;
-const API_BASE_URL = isDev ? '' : (import.meta.env.VITE_API_URL || PROD_API);
-const WS_URL = import.meta.env.VITE_WS_URL || PROD_WS;
-const CDN_URL = import.meta.env.VITE_CDN_URL || PROD_CDN;
+const API_BASE_URL = isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API);
+const WS_URL = import.meta.env['VITE_WS_URL'] || PROD_WS;
+const _CDN_URL = import.meta.env['VITE_CDN_URL'] || PROD_CDN;
 
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;
@@ -123,7 +123,7 @@ export interface RequestConfig {
 	method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 	headers?: HeadersInit;
 	body?: any;
-	params?: Record<string, any>;
+	params?: Record<string, any> | undefined;
 	timeout?: number;
 	retry?: RetryConfig;
 	cache?: CacheConfig;
@@ -377,7 +377,7 @@ class EnterpriseApiClient {
 
 	// Batch processing
 	private batchQueue: Map<string, any[]> = new Map();
-	private batchTimer?: number;
+	private _batchTimer?: number;
 
 	// Performance tracking
 	private metrics: PerformanceMetrics = {
@@ -996,7 +996,7 @@ class EnterpriseApiClient {
 
 		// ICT11+ Pattern: Skip WebSocket in dev if not configured
 		// WebSocket requires a separate server that may not be running in dev
-		if (isDev && !import.meta.env.VITE_WS_URL) {
+		if (isDev && !import.meta.env['VITE_WS_URL']) {
 			console.debug('[ApiClient] WebSocket skipped in dev (no VITE_WS_URL configured)');
 			return;
 		}
@@ -1024,7 +1024,7 @@ class EnterpriseApiClient {
 				if (!isDev) {
 					console.debug('[ApiClient] WebSocket disconnected');
 				}
-				this.wsConnection = undefined;
+				(this.wsConnection as WebSocket | undefined) = undefined;
 
 				// Reconnect after delay if authenticated (skip in dev)
 				if (this.token && !isDev) {
@@ -1135,7 +1135,7 @@ class EnterpriseApiClient {
 				console.error('[ApiClient] SSE error:', error);
 				// Attempt reconnection with exponential backoff
 				this.sseConnection?.close();
-				this.sseConnection = undefined;
+				(this.sseConnection as EventSource | undefined) = undefined;
 				this.scheduleSSEReconnect();
 			};
 
@@ -1362,7 +1362,7 @@ class EnterpriseApiClient {
 		}
 	}
 
-	private async getOfflineData(endpoint: string): Promise<any> {
+	private async getOfflineData(_endpoint: string): Promise<any> {
 		// Try to get from IndexedDB
 		if (typeof window !== 'undefined' && 'indexedDB' in window) {
 			// Implementation for offline data retrieval
@@ -1412,7 +1412,7 @@ class EnterpriseApiClient {
 		const batches = Array.from(this.batchQueue.entries());
 		this.batchQueue.clear();
 
-		for (const [endpoint, items] of batches) {
+		for (const [_endpoint, items] of batches) {
 			if (items.length >= BATCH_SIZE) {
 				await this.batch(items);
 			}
@@ -1543,7 +1543,7 @@ class CircuitBreaker {
 
 	private reset(): void {
 		this.failures = 0;
-		this.lastFailureTime = undefined;
+		(this.lastFailureTime as number | undefined) = undefined;
 		this.state = 'closed';
 	}
 }
