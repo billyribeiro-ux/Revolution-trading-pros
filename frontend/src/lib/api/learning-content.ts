@@ -12,7 +12,7 @@ import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth';
 
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
-const API_BASE = browser ? (import.meta.env.VITE_API_URL || PROD_API) : '';
+const API_BASE = browser ? (import.meta.env['VITE_API_URL'] || PROD_API) : '';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

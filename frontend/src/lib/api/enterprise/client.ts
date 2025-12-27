@@ -87,7 +87,7 @@ export interface EnterpriseClientConfig {
 }
 
 const defaultConfig: EnterpriseClientConfig = {
-	baseUrl: import.meta.env.VITE_API_URL || '',
+	baseUrl: import.meta.env['VITE_API_URL'] || '',
 	timeout: 30000,
 	retry: {
 		maxAttempts: 3,
