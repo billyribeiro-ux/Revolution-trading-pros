@@ -160,10 +160,10 @@
     } else {
       // Fixed aspect ratio
       const imgRatio = imgW / imgH;
-      if (imgRatio > ratio) {
+      if (ratio !== null && ratio !== undefined && imgRatio > ratio) {
         // Image is wider - fit height
         const h = imgH * 0.8;
-        const w = h * ratio;
+        const w = (ratio !== null && ratio !== undefined) ? h * ratio : h;
         cropArea = {
           x: (imgW - w) / 2,
           y: imgH * 0.1,
@@ -173,7 +173,7 @@
       } else {
         // Image is taller - fit width
         const w = imgW * 0.8;
-        const h = w / ratio;
+        const h = (ratio !== null && ratio !== undefined) ? w / ratio : w;
         cropArea = {
           x: imgW * 0.1,
           y: (imgH - h) / 2,
@@ -215,13 +215,14 @@
   function handleMouseDown(e: MouseEvent | TouchEvent) {
     e.preventDefault();
     const point = 'touches' in e ? e.touches[0] : e;
+    if (!point) return;
     startX = point.clientX;
     startY = point.clientY;
 
     const target = e.target as HTMLElement;
     if (target.classList.contains('resize-handle')) {
       isResizing = true;
-      resizeHandle = target.dataset.handle || '';
+      resizeHandle = target.dataset['handle'] || '';
     } else if (target.classList.contains('crop-overlay')) {
       isDragging = true;
     }
@@ -231,6 +232,7 @@
     if (!isDragging && !isResizing) return;
 
     const point = 'touches' in e ? e.touches[0] : e;
+    if (!point) return;
     const deltaX = (point.clientX - startX) / imageScale;
     const deltaY = (point.clientY - startY) / imageScale;
 
@@ -307,7 +309,7 @@
     newArea.height = Math.max(minHeight, newArea.height);
 
     // Enforce aspect ratio if set
-    if (ratio !== null) {
+    if (ratio !== null && ratio !== undefined) {
       if (resizeHandle.includes('w') || resizeHandle.includes('e')) {
         newArea.height = newArea.width / ratio;
       } else {
