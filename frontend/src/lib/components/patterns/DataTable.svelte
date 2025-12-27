@@ -128,15 +128,15 @@
 			</thead>
 			<tbody>
 				{#if loading}
-					{#each Array(pageSize) as _, i}
-						<tr>
-							{#each columns as column}
-								<td>
-									<SkeletonLoader variant="text" width="80%" />
-								</td>
-							{/each}
-						</tr>
-					{/each}
+				{#each Array(pageSize) as _}
+					<tr>
+						{#each columns as _}
+							<td>
+								<SkeletonLoader variant="text" width="80%" />
+							</td>
+						{/each}
+					</tr>
+				{/each}
 				{:else if data.length === 0}
 					<tr>
 						<td colspan={columns.length} class="empty-cell">
