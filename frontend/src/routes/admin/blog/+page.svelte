@@ -18,7 +18,6 @@
 		IconDownload,
 		IconUpload,
 		IconList,
-		IconBolt,
 		IconTrendingUp,
 		IconExternalLink,
 		IconPlayerPlay,
@@ -80,8 +79,8 @@
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let categoryFilter = $state('all');
-	let categories = $state<any[]>([]);
-	let tags = $state<any[]>([]);
+	let _categories = $state<any[]>([]);
+	let _tags = $state<any[]>([]);
 
 	// New state for improvements
 	let selectedPosts = $state(new Set<number>());
@@ -95,8 +94,8 @@
 	let ws = $state<WebSocket | null>(null);
 	let showExportModal = $state(false);
 	let exportFormat = $state<'csv' | 'json' | 'wordpress'>('csv');
-	let showScheduleModal = $state(false);
-	let schedulePost = $state<any>(null);
+	let _showScheduleModal = $state(false);
+	let _schedulePost = $state<any>(null);
 	let showAnalyticsModal = $state(false);
 	let analyticsPost = $state<any>(null);
 	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
