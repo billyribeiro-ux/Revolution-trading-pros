@@ -1118,14 +1118,14 @@
 						</div>
 					</div>
 
-					{#if formData.type === 'bogo'}
+					{#if formData.type === 'bogo' && formData.bogo_config}
 						<div class="form-row" transition:slide>
 							<div class="form-group">
 								<label for="bogo-buy-quantity">Buy Quantity</label>
 								<input
 									id="bogo-buy-quantity"
 									type="number"
-									bind:value={formData.bogo_config!.buy_quantity}
+									bind:value={formData.bogo_config.buy_quantity}
 									min="1"
 									class="input"
 								/>
@@ -1135,7 +1135,7 @@
 								<input
 									id="bogo-get-quantity"
 									type="number"
-									bind:value={formData.bogo_config!.get_quantity}
+									bind:value={formData.bogo_config.get_quantity}
 									min="1"
 									class="input"
 								/>
@@ -1145,7 +1145,7 @@
 								<input
 									id="bogo-discount"
 									type="number"
-									bind:value={formData.bogo_config!.get_discount}
+									bind:value={formData.bogo_config.get_discount}
 									min="0"
 									max="100"
 									class="input"
