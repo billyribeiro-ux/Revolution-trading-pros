@@ -35,6 +35,7 @@
 	let tasks = $state<Task[]>([]);
 	let labels = $state<Label[]>([]);
 	let members = $state<BoardMember[]>([]);
+	let customFields = $state<CustomFieldDefinition[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
 	let filterAssignee = $state<string | null>(null);
