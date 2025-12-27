@@ -33,7 +33,7 @@
 
 		saving = true;
 		try {
-			const created = await createPopup(popup as any);
+			await createPopup(popup as any);
 			alert('Popup created successfully!');
 			goto('/admin/popups');
 		} catch (error) {

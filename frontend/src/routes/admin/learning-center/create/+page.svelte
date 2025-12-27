@@ -466,15 +466,15 @@
 						<input
 							type="url"
 							id="videoUrl"
-							bind:value={formData.videoUrl}
+							bind:value={formData['videoUrl']}
 							placeholder="https://..."
-							class:error={errors.videoUrl}
+							class:error={errors['videoUrl']}
 						/>
 						<span class="helper-text">
 							Supports YouTube, Vimeo, Wistia, or direct video URLs (S3, etc.)
 						</span>
-						{#if errors.videoUrl}
-							<span class="error-text">{errors.videoUrl}</span>
+						{#if errors['videoUrl']}
+							<span class="error-text">{errors['videoUrl']}</span>
 						{/if}
 					</div>
 				{/if}
@@ -618,8 +618,8 @@
 					</div>
 				</div>
 
-				{#if errors.submit}
-					<p class="error-message">{errors.submit}</p>
+				{#if errors['submit']}
+					<p class="error-message">{errors['submit']}</p>
 				{/if}
 			</div>
 		{/if}
