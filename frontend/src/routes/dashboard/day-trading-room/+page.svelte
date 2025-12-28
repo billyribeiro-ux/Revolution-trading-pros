@@ -207,12 +207,12 @@
 						<article class="article-card">
 							<figure class="article-card__image" style="background-image: url({article.image});">
 								<img src={article.image} alt={article.title} />
+								{#if article.isVideo}
+									<div class="article-card__type">
+										<span class="label label--info">{article.type}</span>
+									</div>
+								{/if}
 							</figure>
-							{#if article.isVideo}
-								<div class="article-card__type">
-									<span class="label label--info">{article.type}</span>
-								</div>
-							{/if}
 							<h4 class="h5 article-card__title"><a href={article.href}>{article.title}</a></h4>
 							<span class="article-card__meta"><small>{article.date}</small></span>
 							<div class="article-card__excerpt u--hide-read-more">
@@ -620,69 +620,89 @@
 		}
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ARTICLE CARD - ICT11+ PIXEL-PERFECT MATCH to dashboard-globals.css
+	   Reference lines 931-1021
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-card {
-		background: #fff;
-		border-radius: 5px;
-		overflow: hidden;
+		position: relative;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
+		overflow: hidden;
+		margin-bottom: 30px;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 	}
 
 	.article-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
+	/* Image with 16:9 aspect ratio using padding-top trick */
 	.article-card__image {
 		position: relative;
 		width: 100%;
-		height: 200px;
+		padding-top: 56.25%;
 		background-size: cover;
 		background-position: center;
+		background-color: #0984ae;
 		margin: 0;
 	}
 
 	.article-card__image img {
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		opacity: 0;
 	}
 
+	/* Type label positioned OVER the image */
 	.article-card__type {
-		padding: 12px 20px 0;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		z-index: 2;
+		margin: 0;
 	}
 
+	/* Label badge - PILL SHAPE 25px radius */
 	.label {
 		display: inline-block;
-		padding: 4px 12px;
-		border-radius: 3px;
-		font-size: 11px;
-		font-weight: 600;
+		padding: 4px 10px;
+		font-size: 10px;
+		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
+		border-radius: 25px;
 	}
 
 	.label--info {
-		background: #0984ae;
+		background-color: #0984ae;
 		color: #fff;
 	}
 
+	/* Title */
 	.article-card__title {
-		padding: 12px 20px 0;
 		margin: 0;
+		padding: 15px 15px 10px;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.3;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.article-card__title a {
 		color: #333;
 		text-decoration: none;
-		font-size: 18px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: color 0.2s;
+		transition: color 0.15s ease-in-out;
 	}
 
 	.article-card__title a:hover {
@@ -690,22 +710,28 @@
 	}
 
 	.h5 {
-		font-size: 18px;
-		font-weight: 600;
+		font-size: 16px;
+		font-weight: 700;
 	}
 
+	/* Meta */
 	.article-card__meta {
 		display: block;
-		padding: 8px 20px 0;
+		padding: 0 15px;
 		color: #999;
-		font-size: 13px;
+		font-size: 12px;
 	}
 
+	.article-card__meta small {
+		font-size: 12px;
+	}
+
+	/* Excerpt */
 	.article-card__excerpt {
-		padding: 12px 20px;
-		color: #666;
+		padding: 10px 15px;
 		font-size: 14px;
-		line-height: 1.6;
+		line-height: 1.5;
+		color: #666;
 	}
 
 	.article-card__excerpt p {
@@ -716,13 +742,32 @@
 		display: block;
 	}
 
+	/* Button in article card */
 	.article-card .btn {
-		margin: 0 20px 20px;
+		margin: 0 15px 15px;
 	}
 
+	/* btn-tiny */
 	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 13px;
+		padding: 5px 10px;
+		font-size: 11px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	/* btn-tiny.btn-default - Watch Now button ORANGE */
+	.article-card .btn.btn-tiny.btn-default {
+		background: transparent;
+		color: #F3911B;
+		padding-left: 0;
+		font-size: 17px;
+		border: none;
+	}
+
+	.article-card .btn.btn-tiny.btn-default:hover {
+		color: #F3911B;
+		background: #e7e7e7;
+		padding-left: 8px;
 	}
 
 	.btn-default {
