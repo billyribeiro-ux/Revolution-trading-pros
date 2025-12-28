@@ -132,8 +132,8 @@ export function trackConsentInteraction(
 	const event: ConsentInteractionEvent = {
 		type,
 		timestamp: now,
-		categories,
-		timeToDecision,
+		...(categories && { categories }),
+		...(timeToDecision !== undefined && { timeToDecision }),
 		pageUrl: window.location.href,
 	};
 

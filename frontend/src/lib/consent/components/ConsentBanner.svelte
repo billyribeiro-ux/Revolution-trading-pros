@@ -16,7 +16,7 @@
 	 * @component
 	 */
 
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
@@ -24,7 +24,7 @@
 		showConsentBanner,
 		openPreferencesModal,
 	} from '../store';
-	import { activeTemplate, isPreviewMode } from '../templates/store';
+	// Template store imported by BannerRenderer
 	import BannerRenderer from '../templates/BannerRenderer.svelte';
 
 	// Svelte 5 props interface
@@ -36,11 +36,9 @@
 
 	let { position = 'bottom', useTemplates = true, class: className = '' }: Props = $props();
 
-	// ICT9+ Hydration-Safe: Only render after mount
-	let mounted = $state(false);
-	
+	// ICT9+ Hydration-Safe: Initialize after mount
 	onMount(() => {
-		mounted = true;
+		// Component mounted and ready
 	});
 
 	// Handle accept all

@@ -143,6 +143,7 @@ function applyCustomization(
 ): BannerTemplate {
 	if (!customization) return template;
 
+	const customCSS = customization.customCSS || template.customCSS;
 	return {
 		...template,
 		name: customization.name || template.name,
@@ -151,7 +152,7 @@ function applyCustomization(
 		typography: { ...template.typography, ...customization.typography },
 		spacing: { ...template.spacing, ...customization.spacing },
 		copy: { ...template.copy, ...customization.copy },
-		customCSS: customization.customCSS || template.customCSS,
+		...(customCSS && { customCSS }),
 	};
 }
 
@@ -538,12 +539,12 @@ export async function setActiveTemplate(templateId: string): Promise<void> {
 	}
 
 	// Update local state immediately
-	activeTemplateConfig.update((config) => ({
-		...config,
+	const { customization: _removed, ...rest } = get(activeTemplateConfig);
+	activeTemplateConfig.set({
+		...rest,
 		templateId,
-		customization: undefined,
 		updatedAt: new Date().toISOString(),
-	}));
+	});
 
 	// Sync to backend if it's a backend template
 	const backendTemplate = get(backendTemplates).find((t) => t.id === templateId);
@@ -581,11 +582,11 @@ export function updateCustomization(customization: Partial<TemplateCustomization
  * Clear customizations
  */
 export function clearCustomization(): void {
-	activeTemplateConfig.update((config) => ({
-		...config,
-		customization: undefined,
+	const { customization: _removed, ...rest } = get(activeTemplateConfig);
+	activeTemplateConfig.set({
+		...rest,
 		updatedAt: new Date().toISOString(),
-	}));
+	});
 }
 
 /**

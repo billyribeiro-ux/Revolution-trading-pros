@@ -17,7 +17,7 @@
 
 	import { fade, scale } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import type { ConsentCategory } from '../types';
 	import {
 		consentStore,

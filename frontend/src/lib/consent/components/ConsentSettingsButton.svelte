@@ -39,6 +39,7 @@
 			}, showDelay);
 			return () => clearTimeout(timeout);
 		}
+		return undefined;
 	});
 
 	// Svelte 5: Side effect for modal visibility

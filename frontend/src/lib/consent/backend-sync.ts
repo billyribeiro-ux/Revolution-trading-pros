@@ -125,7 +125,7 @@ export function buildSyncPayload(
 ): ConsentSyncPayload {
 	const payload: ConsentSyncPayload = {
 		consentId: consent.consentId || 'unknown',
-		userId,
+		...(userId && { userId }),
 		sessionId: generateSessionId(),
 		consent: {
 			necessary: consent.necessary,
@@ -135,20 +135,20 @@ export function buildSyncPayload(
 		},
 		metadata: {
 			updatedAt: consent.updatedAt,
-			expiresAt: consent.expiresAt,
-			consentMethod: consent.consentMethod,
-			countryCode: consent.countryCode,
-			policyVersion: consent.policyVersion,
-			privacySignals: consent.privacySignals
-				? {
-						gpc: consent.privacySignals.gpc,
-						dnt: consent.privacySignals.dnt,
-						region: consent.privacySignals.region,
-					}
-				: undefined,
+			...(consent.expiresAt && { expiresAt: consent.expiresAt }),
+			...(consent.consentMethod && { consentMethod: consent.consentMethod }),
+			...(consent.countryCode && { countryCode: consent.countryCode }),
+			...(consent.policyVersion && { policyVersion: consent.policyVersion }),
+			...(consent.privacySignals && {
+				privacySignals: {
+					gpc: consent.privacySignals.gpc,
+					dnt: consent.privacySignals.dnt,
+					...(consent.privacySignals.region && { region: consent.privacySignals.region }),
+				},
+			}),
 		},
-		userAgent: browser ? navigator.userAgent : undefined,
-		url: browser ? window.location.href : undefined,
+		...(browser && { userAgent: navigator.userAgent }),
+		...(browser && { url: window.location.href }),
 	};
 
 	if (config.syncAuditLog) {

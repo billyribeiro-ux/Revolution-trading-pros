@@ -158,7 +158,9 @@ function selectVariant(variants: BannerVariant[]): BannerVariant {
 		}
 	}
 
-	return variants[0];
+	const firstVariant = variants[0];
+	if (!firstVariant) throw new Error('No variants provided');
+	return firstVariant;
 }
 
 /**
@@ -169,7 +171,9 @@ export function initializeABTest(
 	forceVariant?: string
 ): BannerVariant {
 	if (!browser) {
-		return variants[0];
+		const firstVariant = variants[0];
+	if (!firstVariant) throw new Error('No variants provided');
+	return firstVariant;
 	}
 
 	// Check for forced variant (for testing)
