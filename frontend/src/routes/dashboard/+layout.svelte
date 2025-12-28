@@ -578,12 +578,25 @@
 		max-width: none;
 	}
 
+	/* ICT11+ Fix: Reference line 1793 - EXACT font styles from Simpler Trading */
 	:global(.h1, h1) {
-		font-size: 36px;
+		font-family: "Open Sans Condensed", sans-serif;
+		font-weight: bold;
+		font-size: 44px;
+		line-height: 1.1em;
 	}
 
 	:global(.h2, h2) {
-		font-size: 30px;
+		font-size: 32px;
+	}
+
+	@media (max-width: 768px) {
+		:global(.h1, h1) {
+			font-size: 30px;
+		}
+		:global(.h2, h2) {
+			font-size: 25px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
