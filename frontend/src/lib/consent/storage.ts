@@ -53,11 +53,11 @@ function getCookie(name: string): string | null {
 	const cookies = document.cookie.split(';');
 	for (const cookie of cookies) {
 		const [key, value] = cookie.trim().split('=');
-		if (key === name) {
+		if (key === name && value !== undefined) {
 			try {
 				return decodeURIComponent(value);
 			} catch {
-				return value;
+				return value ?? null;
 			}
 		}
 	}
