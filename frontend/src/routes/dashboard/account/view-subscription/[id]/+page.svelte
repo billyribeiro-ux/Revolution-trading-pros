@@ -472,7 +472,7 @@
 	.content-box {
 		background: #fff;
 		border-radius: 4px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 	}
 
 	.content-box__section {
@@ -708,7 +708,7 @@
 		padding: 30px;
 		max-width: 500px;
 		width: 90%;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	.modal h3 {
@@ -779,7 +779,7 @@
 		padding: 40px;
 		max-width: 480px;
 		width: 90%;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		position: relative;
 		text-align: center;
 	}

@@ -311,7 +311,7 @@
 
 	.card {
 		background: #fff;
-		border-radius: 5px;
+		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		display: flex;

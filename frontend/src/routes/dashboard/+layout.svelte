@@ -856,7 +856,7 @@
 		visibility: hidden;
 		background: #fff;
 		color: #0984ae !important; /* Reference: blue text in tooltip */
-		border-radius: 5px;
+		border-radius: 4px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		white-space: nowrap;
 		font-size: 13px;

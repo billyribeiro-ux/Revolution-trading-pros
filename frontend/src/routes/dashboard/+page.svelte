@@ -592,7 +592,7 @@
 		background: #F69532;
 		border: none;
 		color: #fff;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-size: 14px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
@@ -621,7 +621,7 @@
 		margin-top: 5px;
 		background: #fff;
 		border: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		min-width: 260px;
 		padding: 20px;
@@ -642,7 +642,6 @@
 		text-decoration: none;
 		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
-		border-radius: 5px;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		transition: all 0.15s ease-in-out;
@@ -1276,7 +1275,7 @@
 		color: #fff;
 		text-decoration: none;
 		border: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
@@ -1556,15 +1555,16 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD ICON SIZING - Missing from your dashboard
+	   DASHBOARD ICON SIZING - ICT 11 CANONICAL VALUES from dashboard-globals.css
+	   28px icons, WHITE color - NOT 24px blue!
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.dashboard__nav-item-icon) {
 		display: inline-block;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		margin-right: 10px;
-		font-size: 24px;
-		color: #0984ae;
+		font-size: 28px;
+		color: #fff;
 		vertical-align: middle;
 	}
 
@@ -1615,17 +1615,17 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   FONT WEIGHT & SIZE FIXES - Match reference exactly
+	   FONT WEIGHT & SIZE FIXES - ICT 11 CANONICAL VALUES: 17px NOT 14px
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	:global(.dashboard__nav-item-text) {
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
-		color: #fff;
+		color: hsla(0, 0%, 100%, 0.7);
 	}
 
 	/* Bold white text for My Classes and My Indicators */
-	:global(.dashboard__nav-item-text[style*="bold"]) {
+	:global(.dashboard__nav-item-text--bold) {
 		font-weight: 700 !important;
-		color: white !important;
+		color: #fff !important;
 	}
 </style>
