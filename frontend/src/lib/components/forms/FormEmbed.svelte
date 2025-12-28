@@ -74,7 +74,7 @@
 		onError,
 		redirectUrl,
 		showSkeleton = true,
-		permissionMessage = 'You do not have permission to view this form.'
+		permissionMessage: _permissionMessage = 'You do not have permission to view this form.'
 	}: Props = $props();
 
 	// Combine cssClasses and deprecated class prop
@@ -299,7 +299,7 @@
 							<FormFieldRenderer
 								{field}
 								value={formData[field.name]}
-								error={errors[field.name]}
+								error={errors[field.name] ?? []}
 								onchange={(val) => handleFieldChange(field.name, val)}
 							/>
 						</div>
