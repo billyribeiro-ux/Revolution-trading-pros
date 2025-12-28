@@ -158,10 +158,10 @@
 		background: #f4f4f4;
 	}
 
-	/* Sidebar */
+	/* Sidebar - ICT 11 canonical: 220px width, #0e2433 background */
 	.dashboard__sidebar {
-		width: 280px;
-		background: #1a1a1a;
+		width: 220px;
+		background: #0e2433;
 		flex-shrink: 0;
 	}
 
