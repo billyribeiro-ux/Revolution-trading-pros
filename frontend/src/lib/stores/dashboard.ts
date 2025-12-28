@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import type { Dashboard, DashboardWidget, DashboardData } from '$lib/types/dashboard';
+import type { Dashboard, DashboardWidget } from '$lib/types/dashboard';
 import { dashboardApi } from '$lib/api/dashboard';
 
 interface DashboardState {
@@ -67,7 +67,7 @@ function createDashboardStore() {
 			update((state) => ({ ...state, isLoading: true }));
 
 			try {
-				const currentDashboard = await new Promise<Dashboard>((resolve, reject) => {
+				const currentDashboard = await new Promise<Dashboard>((resolve, _reject) => {
 					const unsubscribe = subscribe((state) => {
 						if (state.currentDashboard) {
 							unsubscribe();
@@ -168,7 +168,7 @@ export const widgetsByType = derived(dashboardStore, ($dashboard) => {
 		if (!grouped[widget.widget_type]) {
 			grouped[widget.widget_type] = [];
 		}
-		grouped[widget.widget_type].push(widget);
+		grouped[widget.widget_type]!.push(widget);
 	});
 	return grouped;
 });
