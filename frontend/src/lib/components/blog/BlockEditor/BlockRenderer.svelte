@@ -43,7 +43,7 @@
 	// ==========================================================================
 
 	// Used in bind:this directives for paragraph and heading blocks
-	// @ts-expect-error - Variable is used in bind:this directives but TypeScript doesn't recognize it
+	// @ts-ignore - Variable is used in bind:this directives
 	let editableRef = $state<HTMLElement | undefined>(undefined);
 
 	// ==========================================================================
