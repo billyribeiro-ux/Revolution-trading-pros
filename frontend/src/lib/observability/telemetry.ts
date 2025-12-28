@@ -68,7 +68,7 @@ class TelemetryService {
 	private currentTraceId: string | null = null;
 	private flushInterval: number | null = null;
 	private config = {
-		endpoint: import.meta.env.VITE_TELEMETRY_ENDPOINT || 'http://localhost:4318',
+		endpoint: import.meta.env['VITE_TELEMETRY_ENDPOINT'] || 'http://localhost:4318',
 		serviceName: 'revolution-trading-frontend',
 		serviceVersion: '2.0.0',
 		environment: import.meta.env.MODE || 'development',
@@ -244,14 +244,14 @@ class TelemetryService {
 			level,
 			message,
 			timestamp: Date.now(),
+			...(this.currentTraceId && { traceId: this.currentTraceId }),
 			attributes: {
 				...attributes,
 				service: this.config.serviceName,
 				environment: this.config.environment,
 				userAgent: navigator.userAgent,
 				url: window.location.href
-			},
-			traceId: this.currentTraceId || undefined
+			}
 		};
 
 		this.logs.push(entry);

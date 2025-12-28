@@ -123,8 +123,12 @@ export const defaultImageSeoSettings: ImageSeoSettings = {
  */
 export function extractFilename(src: string): { filename: string; extension: string } {
 	const url = src.split('?')[0]; // Remove query params
+	if (!url) return { filename: '', extension: '' };
+	
 	const parts = url.split('/');
 	const fullFilename = parts[parts.length - 1];
+	if (!fullFilename) return { filename: '', extension: '' };
+	
 	const lastDot = fullFilename.lastIndexOf('.');
 
 	if (lastDot === -1) {
@@ -244,11 +248,11 @@ export function processTemplate(
 	let result = template;
 
 	// Replace standard placeholders
-	result = result.replace(/%filename%/gi, variables.filename || '');
-	result = result.replace(/%title%/gi, variables.title || '');
+	result = result.replace(/%filename%/gi, variables['filename'] || '');
+	result = result.replace(/%title%/gi, variables['title'] || '');
 	result = result.replace(/%site%/gi, settings.siteName);
 	result = result.replace(/%sep%/gi, settings.separator);
-	result = result.replace(/%name%/gi, variables.name || '');
+	result = result.replace(/%name%/gi, variables['name'] || '');
 
 	// Clean up extra spaces and separators
 	result = result.replace(/\s+/g, ' ').trim();

@@ -24,11 +24,10 @@
 
 import { browser } from '$app/environment';
 import { getOrchestrator } from './orchestrator';
-import type {
+import {
 	PageViewPayload,
 	CustomEventPayload,
 	PurchasePayload,
-	IdentifyPayload,
 	EcommerceItem,
 	AnalyticsConfig,
 } from './adapters/types';
@@ -273,10 +272,10 @@ class MetricsService {
 			transaction_id: payload.transactionId,
 			value: payload.value,
 			currency: payload.currency,
-			tax: payload.tax,
-			shipping: payload.shipping,
-			coupon: payload.coupon,
-			items: payload.items,
+			...(payload.tax !== undefined && { tax: payload.tax }),
+			...(payload.shipping !== undefined && { shipping: payload.shipping }),
+			...(payload.coupon && { coupon: payload.coupon }),
+			...(payload.items && { items: payload.items }),
 		};
 
 		getOrchestrator().trackPurchase(purchasePayload);
