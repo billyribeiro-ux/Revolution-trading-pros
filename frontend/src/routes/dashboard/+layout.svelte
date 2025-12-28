@@ -627,17 +627,25 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   BREADCRUMBS - Exact Reference File Match with Container
+	   BREADCRUMBS - Exact WordPress Specification
+	   Width: 100% | Height: ~39px | Padding: 10px 15px
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.breadcrumbs {
+		width: 100%;
 		z-index: 1;
 		background-color: #f5f5f5;
 		border-bottom: 1px solid #e5e5e5;
 	}
 
 	.breadcrumbs .container-fluid {
+		max-width: 100%;
+		width: 100%;
 		padding-top: 10px;
 		padding-bottom: 10px;
+		padding-left: 15px;
+		padding-right: 15px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.breadcrumbs ul {
@@ -648,6 +656,7 @@
 		align-items: center;
 		font-size: 13px;
 		line-height: 1.4;
+		font-family: "Open Sans", sans-serif;
 	}
 
 	.breadcrumbs li {
@@ -658,7 +667,7 @@
 	.breadcrumbs a {
 		color: #666;
 		text-decoration: none;
-		transition: color 0.2s ease-in-out;
+		transition: color 0.15s ease-in-out;
 	}
 
 	.breadcrumbs a:hover {
