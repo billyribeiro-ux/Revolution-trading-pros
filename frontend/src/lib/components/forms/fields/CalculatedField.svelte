@@ -163,8 +163,8 @@
 		for (const op of operators) {
 			if (condition.includes(op)) {
 				const [left, right] = condition.split(op).map((s) => s.trim());
-				const leftVal = parseFloat(left) || 0;
-				const rightVal = parseFloat(right) || 0;
+				const leftVal = parseFloat(left ?? '') || 0;
+				const rightVal = parseFloat(right ?? '') || 0;
 
 				switch (op) {
 					case '>=':

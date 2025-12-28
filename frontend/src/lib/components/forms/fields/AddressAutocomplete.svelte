@@ -40,10 +40,7 @@
 	let { field, value, error, onchange }: Props = $props();
 
 	// Configuration from field attributes
-	const showMap = $derived(field.attributes?.['show_map'] ?? false);
 	const allowManual = $derived(field.attributes?.['allow_manual'] ?? true);
-	const requiredFields = $derived(field.attributes?.['required_fields'] ?? ['address_line1', 'city', 'country']);
-	const apiKey = $derived(field.attributes?.['google_api_key'] ?? '');
 
 	// State
 	let searchInput = $state('');
