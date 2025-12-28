@@ -2,19 +2,14 @@
 	import { onMount } from 'svelte';
 	import {
 		IconEye,
-		IconClick,
 		IconCursor,
 		IconPointer,
-		IconDevices,
-		IconWorld,
 		IconClock,
-		IconTrendingUp,
 		IconChartBar,
 		IconRefresh,
-		IconCalendar,
 		IconArrowUpRight,
 		IconPlay,
-		IconFilter
+		IconClick
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, isBehaviorConnected } from '$lib/stores/connections';

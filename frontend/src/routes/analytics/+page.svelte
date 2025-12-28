@@ -11,7 +11,6 @@
 	import {
 		analyticsStore,
 		dashboard,
-		realtime,
 		isLoading,
 		selectedPeriod
 	} from '$lib/stores/analytics';
@@ -22,8 +21,7 @@
 		TimeSeriesChart,
 		FunnelChart,
 		CohortMatrix,
-		AttributionChart,
-		SegmentList
+		AttributionChart
 	} from '$lib/components/analytics';
 	import {
 		IconTrendingUp,

@@ -10,7 +10,6 @@
 	import { onMount } from 'svelte';
 	import {
 		mediaStore,
-		uploadStore,
 		currentFiles,
 		selectedCount,
 		viewMode,
@@ -23,13 +22,9 @@
 		IconVideo,
 		IconFileText,
 		IconSearch,
-		IconFilter,
 		IconTable,
 		IconList,
 		IconTrash,
-		IconFolder,
-		IconDownload,
-		IconTag,
 		IconSparkles
 	} from '$lib/icons';
 
