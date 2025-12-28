@@ -15,7 +15,6 @@
 
 	// For content selector
 	let forms: Form[] = $state([]);
-	let _selectedContent: Record<string, unknown> | null = $state(null);
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },
