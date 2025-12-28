@@ -1142,14 +1142,14 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECONDARY NAVIGATION - Exact match to WordPress dashboard.8f78208b.css
-	   Primary nav (collapsed): #0f2d41 | Secondary nav: #153e59
+	   SECONDARY NAVIGATION - User Specification
+	   Primary nav: #0f2d41 | Secondary nav: #0f2d41 | Submenu: #0a2335
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary {
 		width: 280px;
 		font-size: 14px;
 		font-weight: 600;
-		background-color: #153e59;
+		background-color: #0f2d41;
 		min-height: 100%;
 	}
 
@@ -1170,9 +1170,10 @@
 	.dashboard__nav-secondary li > a,
 	.dashboard__nav-secondary li > span {
 		cursor: pointer;
-		display: block;
-		padding: 18px 20px 18px 55px;
-		color: hsla(0, 0%, 100%, 0.75);
+		display: flex;
+		align-items: center;
+		padding: 12px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		border-radius: 5px;
 		background-color: transparent;
@@ -1183,7 +1184,7 @@
 	.dashboard__nav-secondary li > a:hover,
 	.dashboard__nav-secondary li > span:hover {
 		color: #fff;
-		background-color: rgba(0, 0, 0, 0.15);
+		background-color: rgba(255, 255, 255, 0.05);
 	}
 
 	.dashboard__nav-secondary li > a.no-icon,
@@ -1194,24 +1195,23 @@
 	.dashboard__nav-secondary li.is-active > a,
 	.dashboard__nav-secondary li.is-active > span {
 		color: #fff;
-		background-color: #0984ae;
+		background-color: rgba(255, 255, 255, 0.1);
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
-		position: absolute;
-		top: 50%;
-		left: 20px;
-		margin-top: -12px;
+		display: inline-block;
 		width: 24px;
 		height: 24px;
+		margin-right: 10px;
 		font-size: 24px;
-		line-height: 24px;
+		color: #0984ae;
+		vertical-align: middle;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon :global(svg) {
 		width: 24px;
 		height: 24px;
-		color: inherit;
+		color: #0984ae;
 		stroke: currentColor;
 	}
 
@@ -1277,22 +1277,23 @@
 		background-color: #0984ae;
 	}
 
-	/* Submenu container - WordPress exact styles */
+	/* Submenu container - User specification: #0a2335 background */
 	.dashboard__nav-secondary .dashboard__nav-submenu {
-		z-index: 10;
+		z-index: 110;
 		position: absolute;
 		top: 0;
 		left: 100%;
-		padding: 15px;
-		background: #fff;
-		border-radius: 5px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		padding: 10px 0;
+		background-color: #0a2335;
+		border-radius: 0;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 		opacity: 0;
 		visibility: hidden;
-		transform: translate(5px);
+		transform: translateX(-10px);
 		transition: all 0.15s ease-in-out;
 		list-style: none;
 		margin: 0;
+		min-width: 180px;
 	}
 
 	/* Show submenu on hover */
@@ -1301,7 +1302,7 @@
 	.dashboard__nav-secondary li:hover > span::after {
 		opacity: 1;
 		visibility: visible;
-		transform: translate(0);
+		transform: translateX(0);
 	}
 
 	/* Submenu items */
@@ -1311,11 +1312,11 @@
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-submenu a {
-		padding: 15px 20px;
-		color: #666;
+		padding: 8px 20px 8px 40px;
+		font-size: 13px;
+		color: hsla(0, 0%, 100%, 0.7);
 		font-weight: 400;
 		background-color: transparent;
-		border-radius: 5px;
 		white-space: nowrap;
 		display: block;
 		text-decoration: none;
@@ -1323,16 +1324,86 @@
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-submenu a:hover {
-		color: #0984ae;
+		color: #fff;
+		background-color: rgba(255, 255, 255, 0.05);
 	}
 
 	/* Active state for submenu items */
 	.dashboard__nav-secondary .dashboard__nav-submenu li.is-active a {
-		color: #666;
-		font-weight: 600;
-		background-color: #f4f4f4;
 		color: #fff;
-		border-left-color: #0984ae;
+		font-weight: 600;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TOGGLE BUTTON - Collapse/Expand Primary Sidebar
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__toggle {
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.dashboard__toggle-button {
+		display: flex;
+		align-items: center;
+		padding: 15px 20px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		width: 100%;
+		color: #fff;
+		transition: all 0.3s ease-in-out;
+	}
+
+	.dashboard__toggle-button:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	.dashboard__toggle-button-icon {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 20px;
+		height: 14px;
+	}
+
+	.dashboard__toggle-button-icon span {
+		display: block;
+		width: 100%;
+		height: 2px;
+		background-color: #fff;
+		transition: all 0.3s ease-in-out;
+	}
+
+	.framework__toggle-button-label {
+		margin-left: 10px;
+		color: #fff;
+		font-size: 14px;
+	}
+
+	/* Toggle hidden in collapsed state */
+	.dashboard__toggle.is-collapsed .framework__toggle-button-label {
+		display: none;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   OVERLAY - Mobile/Transition Background
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		opacity: 0;
+		visibility: hidden;
+		transition: all 0.3s ease-in-out;
+		z-index: 100;
+	}
+
+	.dashboard__overlay.is-active {
+		opacity: 1;
+		visibility: visible;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
