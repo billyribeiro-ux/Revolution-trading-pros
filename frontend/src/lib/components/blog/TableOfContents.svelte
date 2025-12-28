@@ -121,7 +121,7 @@
 
 			// Update counters
 			if (counters[level - 1] !== undefined) {
-				counters[level - 1]++;
+				counters[level - 1]!++;
 			}
 			for (let i = level; i < counters.length; i++) {
 				counters[i] = 0;
@@ -152,7 +152,7 @@
 			flatItems.push(item);
 
 			// Find parent
-			while (stack.length > 0 && stack[stack.length - 1]?.level >= level) {
+			while (stack.length > 0 && (stack[stack.length - 1]?.level ?? 0) >= level) {
 				stack.pop();
 			}
 
