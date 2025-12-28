@@ -119,7 +119,11 @@
 		viewport?: string;
 		preconnect?: string[];
 		dnsPrefetch?: string[];
-		preload?: Array<{ href: string; as: string; type?: string }>;
+		preload?: Array<{ 
+			href: string; 
+			as: 'audio' | 'document' | 'embed' | 'fetch' | 'font' | 'image' | 'object' | 'script' | 'style' | 'track' | 'video' | 'worker'; 
+			type?: string 
+		}>;
 		prefetch?: string[];
 		modulePreload?: string[];
 		// November 2025 - Enhanced Schema Support

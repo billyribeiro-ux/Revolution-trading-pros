@@ -7,7 +7,6 @@
 		IconSearch,
 		IconRefresh,
 		IconDownload,
-		IconUpload,
 		IconTrash,
 		IconMail,
 		IconCheck,
@@ -29,7 +28,6 @@
 
 	// Modal states
 	let showAddModal = $state(false);
-	let showImportModal = $state(false);
 
 	// New subscriber form
 	let newSubscriber = $state({
@@ -252,10 +250,6 @@
 				<button class="btn-secondary" onclick={handleExport}>
 					<IconDownload size={18} />
 					Export
-				</button>
-				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
-					<IconUpload size={18} />
-					Import
 				</button>
 				<button class="btn-primary" onclick={() => (showAddModal = true)}>
 					<IconUserPlus size={18} />
