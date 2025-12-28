@@ -614,19 +614,38 @@
 	// Derived state for bulk actions visibility
 	const showBulkActions = $derived(selectedPosts.size > 0);
 
-	// Effect to reload posts when filters change
+	// ICT11+ Fix: Debounced effect to reload posts when filters change
+	// Previous implementation caused infinite loop by always evaluating to true
+	let filterDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+	let isInitialMount = true;
+
 	$effect(() => {
-		if (
-			searchQuery !== undefined ||
-			statusFilter !== undefined ||
-			categoryFilter !== undefined ||
-			sortBy !== undefined ||
-			sortOrder !== undefined ||
-			dateRange.start !== undefined ||
-			dateRange.end !== undefined
-		) {
-			loadPosts();
+		// Track filter values to detect changes (this creates proper dependencies)
+		const currentFilters = {
+			search: searchQuery,
+			status: statusFilter,
+			category: categoryFilter,
+			sort: sortBy,
+			order: sortOrder,
+			dateStart: dateRange.start,
+			dateEnd: dateRange.end
+		};
+
+		// Skip initial mount (onMount already calls loadPosts)
+		if (isInitialMount) {
+			isInitialMount = false;
+			return;
 		}
+
+		// Debounce filter changes to prevent rapid API calls
+		clearTimeout(filterDebounceTimer);
+		filterDebounceTimer = setTimeout(() => {
+			loadPosts();
+		}, 300);
+
+		return () => {
+			clearTimeout(filterDebounceTimer);
+		};
 	});
 </script>
 
