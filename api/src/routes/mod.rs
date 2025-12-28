@@ -19,6 +19,7 @@ pub mod videos;
 pub mod analytics;
 pub mod contacts;
 pub mod coupons;
+pub mod security;
 
 use axum::Router;
 use crate::AppState;
@@ -43,4 +44,5 @@ pub fn api_router() -> Router<AppState> {
         .nest("/analytics", analytics::router())
         .nest("/contacts", contacts::router())
         .nest("/coupons", coupons::router())
+        .nest("/security", security::router())
 }

@@ -942,6 +942,99 @@ async fn get_user_memberships_by_user(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CAMPAIGNS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+pub struct CampaignRow {
+    pub id: i64,
+    pub name: String,
+    pub description: Option<String>,
+    pub campaign_type: String,
+    pub status: String,
+    pub start_date: Option<chrono::NaiveDateTime>,
+    pub end_date: Option<chrono::NaiveDateTime>,
+    pub target_audience: Option<serde_json::Value>,
+    pub metrics: Option<serde_json::Value>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateCampaignRequest {
+    pub name: String,
+    pub description: Option<String>,
+    pub campaign_type: String,
+    pub status: Option<String>,
+    pub start_date: Option<chrono::NaiveDateTime>,
+    pub end_date: Option<chrono::NaiveDateTime>,
+    pub target_audience: Option<serde_json::Value>,
+}
+
+/// List campaigns (admin)
+async fn list_campaigns(
+    State(state): State<AppState>,
+    user: User,
+) -> Result<Json<Vec<CampaignRow>>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    let campaigns: Vec<CampaignRow> = sqlx::query_as(
+        "SELECT * FROM campaigns ORDER BY created_at DESC"
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(Json(campaigns))
+}
+
+/// Create campaign (admin)
+async fn create_campaign(
+    State(state): State<AppState>,
+    user: User,
+    Json(input): Json<CreateCampaignRequest>,
+) -> Result<Json<CampaignRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    let campaign: CampaignRow = sqlx::query_as(
+        r#"
+        INSERT INTO campaigns (name, description, campaign_type, status, start_date, end_date, target_audience, metrics, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, '{}'::jsonb, NOW(), NOW())
+        RETURNING *
+        "#
+    )
+    .bind(&input.name)
+    .bind(&input.description)
+    .bind(&input.campaign_type)
+    .bind(input.status.unwrap_or_else(|| "draft".to_string()))
+    .bind(input.start_date)
+    .bind(input.end_date)
+    .bind(&input.target_audience)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(campaign))
+}
+
+/// Delete campaign (admin)
+async fn delete_campaign(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    sqlx::query("DELETE FROM campaigns WHERE id = $1")
+        .bind(id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    Ok(Json(json!({"message": "Campaign deleted successfully"})))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // DASHBOARD STATS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -999,6 +1092,9 @@ pub fn router() -> Router<AppState> {
         .route("/membership-plans", get(list_all_plans))
         .route("/user-memberships", get(list_user_memberships).post(grant_membership))
         .route("/user-memberships/:id", get(get_user_membership).put(update_user_membership).delete(revoke_membership))
+        // Campaigns
+        .route("/campaigns", get(list_campaigns).post(create_campaign))
+        .route("/campaigns/:id", delete(delete_campaign))
         // Coupons
         .route("/coupons", get(list_coupons).post(create_coupon))
         .route("/coupons/:id", delete(delete_coupon))

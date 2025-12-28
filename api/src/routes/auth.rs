@@ -367,29 +367,35 @@ async fn login(
     );
 
     // ICT L11+ Security: Check rate limit BEFORE any processing
-    let rate_limit = state.services.redis
+    // Gracefully degrade if Redis is unavailable
+    let rate_limit_result = state.services.redis
         .check_login_rate_limit(&input.email)
-        .await
-        .map_err(|e| {
-            tracing::error!("Rate limit check error: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Service unavailable"})))
-        })?;
-
-    if !rate_limit.allowed {
-        let error_msg = if rate_limit.locked {
-            "Account temporarily locked due to too many failed attempts"
-        } else {
-            "Too many login attempts. Please wait before trying again"
-        };
-        
-        return Err((
-            StatusCode::TOO_MANY_REQUESTS,
-            Json(json!({
-                "error": error_msg,
-                "retry_after": rate_limit.retry_after,
-                "locked": rate_limit.locked
-            })),
-        ));
+        .await;
+    
+    match rate_limit_result {
+        Ok(rate_limit) => {
+            if !rate_limit.allowed {
+                let error_msg = if rate_limit.locked {
+                    "Account temporarily locked due to too many failed attempts"
+                } else {
+                    "Too many login attempts. Please wait before trying again"
+                };
+                
+                return Err((
+                    StatusCode::TOO_MANY_REQUESTS,
+                    Json(json!({
+                        "error": error_msg,
+                        "retry_after": rate_limit.retry_after,
+                        "locked": rate_limit.locked
+                    })),
+                ));
+            }
+        }
+        Err(e) => {
+            // Redis unavailable - log warning but continue with login
+            // This ensures the system remains operational even if Redis is down
+            tracing::warn!("Rate limit check failed (Redis unavailable): {} - continuing without rate limiting", e);
+        }
     }
 
     // Find user
