@@ -15,12 +15,12 @@
 
 	// API Configuration
 	const isDev = import.meta.env.DEV;
-	const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+	const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev/api';
 	const API_BASE = browser
 		? isDev
-			? ''
-			: (import.meta.env.VITE_API_URL || PRODUCTION_API_URL)
-		: '';
+			? '/api'
+			: (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL)
+		: '/api';
 
 	// State
 	let isLoading = $state(true);
@@ -38,7 +38,7 @@
 		try {
 			const token = authStore.getToken();
 
-			const response = await fetch(`${API_BASE}/api/subscriptions/my/active`, {
+			const response = await fetch(`${API_BASE}/subscriptions/my/active`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
