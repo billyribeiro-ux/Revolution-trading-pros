@@ -91,7 +91,6 @@ import IconChartPie from '@tabler/icons-svelte/icons/chart-pie';
 // Check/Status Icons
 import IconCheck from '@tabler/icons-svelte/icons/check';
 import IconChecklist from '@tabler/icons-svelte/icons/checklist';
-import IconChecks from '@tabler/icons-svelte/icons/checks';
 import IconCheckupList from '@tabler/icons-svelte/icons/checkup-list';
 
 // Chevron Icons

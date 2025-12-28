@@ -596,10 +596,10 @@ export function onPageNavigation(): void {
 /**
  * Export all consent data for GDPR data subject request.
  */
-export function exportConsentData(): string {
-	const { exportAuditLog } = require('./audit-log');
-	const { exportAnalyticsData } = require('./analytics');
-	const { scanCookies } = require('./cookie-scanner');
+export async function exportConsentData(): Promise<string> {
+	const { exportAuditLog } = await import('./audit-log');
+	const { exportAnalyticsData } = await import('./analytics');
+	const { scanCookies } = await import('./cookie-scanner');
 
 	return JSON.stringify(
 		{

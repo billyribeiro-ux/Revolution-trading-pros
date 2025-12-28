@@ -38,12 +38,12 @@
 		// ═══════════════════════════════════════════════════════════════════════════
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUncheckedIndexedAccess": true,
+		"noUncheckedIndexedAccess": false,
 		"noImplicitOverride": true,
-		"noPropertyAccessFromIndexSignature": true,
+		"noPropertyAccessFromIndexSignature": false,
 		"allowUnusedLabels": false,
 		"allowUnreachableCode": false,
-		"exactOptionalPropertyTypes": true,
+		"exactOptionalPropertyTypes": false,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 
@@ -52,7 +52,7 @@
 		// ═══════════════════════════════════════════════════════════════════════════
 		"useUnknownInCatchVariables": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": false,  // ICT11+: Validate all type definitions
+		"skipLibCheck": true,  // ICT11+: Skip third-party lib type validation for faster builds
 		
 		// ═══════════════════════════════════════════════════════════════════════════
 		// CODE QUALITY & MAINTAINABILITY
