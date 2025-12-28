@@ -183,12 +183,12 @@
 		background: #fff;
 		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s;
 	}
 
 	.product-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
 
@@ -301,7 +301,7 @@
 		background: #F69532;
 		color: #fff;
 		border: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-size: 14px;
 		font-weight: 700;
 		cursor: pointer;

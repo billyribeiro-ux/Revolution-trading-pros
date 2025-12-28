@@ -40,12 +40,12 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 8px; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-	.resource-card { display: flex; gap: 20px; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+	.resource-card { display: flex; gap: 20px; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); }
 	.resource-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: #f0f7fa; border-radius: 12px; color: #0984ae; }
 	.resource-content { flex: 1; }
 	.resource-title { font-size: 16px; font-weight: 700; color: #333; margin: 0 0 8px; }
 	.resource-description { font-size: 14px; color: #666; margin: 0 0 16px; }
 	.resource-meta { display: flex; align-items: center; justify-content: space-between; }
 	.resource-type { padding: 4px 10px; background: #f0f0f0; color: #666; border-radius: 4px; font-size: 12px; font-weight: 600; }
-	.download-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #0984ae; color: #fff; text-decoration: none; border-radius: 5px; font-size: 13px; font-weight: 600; }
+	.download-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #0984ae; color: #fff; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: 600; }
 </style>

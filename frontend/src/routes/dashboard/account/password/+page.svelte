@@ -197,7 +197,7 @@
 	.content-box {
 		background: #fff;
 		border-radius: 8px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		max-width: 500px;
 	}
 

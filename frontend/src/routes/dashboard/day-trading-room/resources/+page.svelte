@@ -173,12 +173,12 @@
 		padding: 20px;
 		background: #fff;
 		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.15s;
 	}
 
 	.resource-item:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	.resource-icon {

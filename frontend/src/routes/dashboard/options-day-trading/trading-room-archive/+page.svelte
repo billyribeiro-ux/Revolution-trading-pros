@@ -67,8 +67,8 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 4px; font-family: 'Open Sans', sans-serif; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.archives-list { display: flex; flex-direction: column; gap: 16px; }
-	.archive-card { display: flex; align-items: center; gap: 20px; background: #fff; border-radius: 8px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.2s; }
-	.archive-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); }
+	.archive-card { display: flex; align-items: center; gap: 20px; background: #fff; border-radius: 8px; padding: 16px 20px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); transition: all 0.2s; }
+	.archive-card:hover { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15); }
 	.archive-thumbnail { display: flex; align-items: center; justify-content: center; width: 80px; height: 60px; background: linear-gradient(135deg, #0984ae 0%, #076787 100%); border-radius: 6px; flex-shrink: 0; }
 	.play-icon { color: #fff; opacity: 0.9; }
 	.archive-info { flex: 1; min-width: 0; }
@@ -76,7 +76,7 @@
 	.archive-date, .archive-duration { display: flex; align-items: center; gap: 6px; }
 	.archive-title { font-size: 16px; font-weight: 700; color: #333; margin: 0; font-family: 'Open Sans', sans-serif; }
 	.archive-trader { font-size: 14px; color: #0984ae; margin: 4px 0 0; }
-	.watch-btn { display: inline-block; padding: 10px 20px; background: #f5f5f5; color: #333; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: 600; border: 1px solid #ddd; transition: all 0.2s; white-space: nowrap; }
+	.watch-btn { display: inline-block; padding: 10px 20px; background: #f5f5f5; color: #333; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 600; border: 1px solid #ddd; transition: all 0.2s; white-space: nowrap; }
 	.watch-btn:hover { background: #e8e8e8; border-color: #ccc; }
 	@media (max-width: 768px) { .archives { padding: 20px; } .archive-card { flex-direction: column; align-items: flex-start; gap: 12px; } .watch-btn { width: 100%; text-align: center; } }
 </style>

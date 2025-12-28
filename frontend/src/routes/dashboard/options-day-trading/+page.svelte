@@ -162,7 +162,7 @@
 		position: relative;
 		background: #fff;
 		border-radius: 4px;
-		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
 		margin-bottom: 30px;
 	}
@@ -314,13 +314,13 @@
 		background: #fff;
 		padding: 30px;
 		border-radius: 4px;
-		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		text-decoration: none;
 		transition: box-shadow 0.2s, transform 0.2s;
 	}
 
 	.quick-link-card:hover {
-		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
 

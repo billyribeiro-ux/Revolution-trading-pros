@@ -516,7 +516,7 @@
 		padding: 10px;
 		background-color: #fff;
 		border: 1px solid #dbdbdb;
-		border-radius: 5px;
+		border-radius: 4px;
 		/* Phase 5: WordPress reference box-shadow: 0 10px 30px rgba(0,0,0,0.15) */
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		z-index: 1000;
@@ -622,7 +622,7 @@
 
 	.dashboard__content-section-member video {
 		width: 100%;
-		border-radius: 5px;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 	}
 
@@ -905,7 +905,7 @@
 		box-shadow: none;
 		display: inline-block;
 		text-decoration: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		transition: all 0.2s ease-in-out;

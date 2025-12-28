@@ -208,7 +208,7 @@
 	.quick-link-card:hover {
 		background: #e9ecef;
 		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 	}
 
 	.quick-link-icon {
@@ -238,7 +238,7 @@
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 		transform: translateY(-3px);
 	}
 

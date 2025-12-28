@@ -797,12 +797,14 @@
 		max-width: 80px;
 	}
 
+	/* Collapsed profile - centered photo, 40px, tooltip for name */
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
 		padding: 20px 0;
 		text-align: center;
 		height: auto;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		position: relative;
+		display: block;
 	}
 
 	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
@@ -813,6 +815,7 @@
 		margin: 0 auto;
 		width: 40px;
 		height: 40px;
+		border: 2px solid hsla(0, 0%, 100%, 0.2);
 	}
 
 	/* Note: .dashboard__profile-name tooltip styles applied in combined selector below */
@@ -856,7 +859,7 @@
 		visibility: hidden;
 		background: #fff;
 		color: #0984ae !important; /* Reference: blue text in tooltip */
-		border-radius: 5px;
+		border-radius: 4px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		white-space: nowrap;
 		font-size: 13px;
@@ -953,44 +956,52 @@
 		display: block;
 	}
 
-	/* Profile Section - EXACT match to dashboard-globals.css reference
-	   ICT11+ Fix: Corrected all discrepancies:
-	   - Profile photo: 32px (was 44px)
-	   - Profile name: 14px/600 (was 16px/700)
-	   - Layout: flexbox (was absolute positioning)
-	   - Border: removed (was 2px solid) */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PROFILE SECTION - ICT 11 CANONICAL from dashboard-globals.css:883-923
+	   Photo: 44px absolute positioned left, Name: 16px/700
+	   Padding: 32px top, 20px right, 28px bottom, 80px left (for photo space)
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__profile-nav-item {
-		display: flex;
-		align-items: center;
-		padding: 20px;
+		display: block;
+		height: auto;
+		line-height: 1.4;
+		padding: 32px 20px 28px 80px;
+		position: relative;
 		text-decoration: none;
+		color: hsla(0, 0%, 100%, 0.5);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		transition: all 0.2s ease-in-out;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-nav-item:hover {
-		background-color: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.05);
+		color: #fff;
 	}
 
 	.dashboard__profile-photo {
-		display: inline-block;
-		width: 32px;
-		height: 32px;
+		position: absolute;
+		left: 20px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 44px;
+		height: 44px;
 		border-radius: 50%;
-		background-color: #0984ae;
+		border: 2px solid hsla(0, 0%, 100%, 0.2);
+		background-color: #0f2d41;
 		background-size: cover;
 		background-position: center;
-		margin-right: 10px;
-		flex-shrink: 0;
+		transition: border-color 0.15s ease-in-out;
+	}
+
+	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+		border-color: #0984ae;
 	}
 
 	.dashboard__profile-name {
-		font-size: 14px;
-		font-weight: 600;
+		display: block;
+		font-size: 16px;
+		font-weight: 700;
 		color: #fff;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 
 	/* Navigation Links - Exact Match to dashboard-globals.css reference */

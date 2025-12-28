@@ -194,43 +194,6 @@ h3 {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   PROFILE SECTION - Avatar aligned with username
-   ═══════════════════════════════════════════════════════════════════════════════ */
-.dashboard__profile-nav-item {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.2s ease-in-out;
-}
-
-.dashboard__profile-nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.dashboard__profile-photo {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #0984ae;
-  background-size: cover;
-  background-position: center;
-  margin-right: 10px;
-  flex-shrink: 0;
-}
-
-.dashboard__profile-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
    DASHBOARD HEADER - Exact from reference
    ═══════════════════════════════════════════════════════════════════════════════ */
 .dashboard__header {

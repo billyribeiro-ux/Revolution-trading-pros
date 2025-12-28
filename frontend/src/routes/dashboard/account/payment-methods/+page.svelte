@@ -286,7 +286,7 @@
 		background: #fff;
 		border-radius: 8px;
 		padding: 40px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		text-align: center;
 	}
 

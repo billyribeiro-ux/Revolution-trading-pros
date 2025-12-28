@@ -38,7 +38,7 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 4px; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.traders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; }
-	.trader-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+	.trader-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); }
 	.trader-image { width: 100%; height: 200px; background-size: cover; background-position: center top; background-color: #0984ae; }
 	.trader-info { padding: 24px; }
 	.trader-name { font-size: 22px; font-weight: 700; color: #333; margin: 0 0 4px; }
@@ -46,5 +46,5 @@
 	.trader-bio { font-size: 14px; color: #666; line-height: 1.6; margin: 0 0 16px; }
 	.trader-specialties { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 	.specialty-tag { padding: 4px 12px; background: #f0f7fa; color: #0984ae; border-radius: 20px; font-size: 12px; font-weight: 600; }
-	.view-profile-btn { display: inline-block; padding: 10px 20px; background: #0984ae; color: #fff; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: 600; }
+	.view-profile-btn { display: inline-block; padding: 10px 20px; background: #0984ae; color: #fff; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 600; }
 </style>

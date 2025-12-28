@@ -90,8 +90,8 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 4px; font-family: 'Open Sans', sans-serif; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-	.product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.2s; }
-	.product-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); transform: translateY(-2px); }
+	.product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); transition: all 0.2s; }
+	.product-card:hover { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15); transform: translateY(-2px); }
 	.product-image { position: relative; width: 100%; height: 180px; background-size: cover; background-position: center; background-color: #0984ae; }
 	.product-category { position: absolute; top: 12px; left: 12px; padding: 4px 10px; background: rgba(0, 0, 0, 0.7); color: #fff; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
 	.product-sale { position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: #F69532; color: #fff; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
@@ -105,7 +105,7 @@
 	.product-pricing { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 	.current-price { font-size: 24px; font-weight: 700; color: #333; }
 	.original-price { font-size: 16px; color: #999; text-decoration: line-through; }
-	.add-to-cart-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 20px; background: #F69532; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+	.add-to-cart-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 20px; background: #F69532; color: #fff; border: none; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
 	.add-to-cart-btn:hover { background: #dc7309; }
 	@media (max-width: 768px) { .trader-store { padding: 20px; } .products-grid { grid-template-columns: 1fr; } }
 </style>

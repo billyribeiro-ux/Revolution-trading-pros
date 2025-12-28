@@ -158,12 +158,12 @@
 		background: #fff;
 		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s;
 	}
 
 	.trader-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
 
@@ -230,7 +230,7 @@
 		background: #0984ae;
 		color: #fff;
 		text-decoration: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-size: 14px;
 		font-weight: 600;
 		transition: background 0.2s;

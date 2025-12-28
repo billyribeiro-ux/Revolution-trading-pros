@@ -165,7 +165,7 @@
 		background: #f5f5f5;
 		color: #333;
 		text-decoration: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-size: 14px;
 		font-weight: 600;
 		border: 1px solid #ddd;
@@ -201,7 +201,7 @@
 		background: #fff;
 		padding: 24px;
 		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		text-align: center;
 	}
 
@@ -249,12 +249,12 @@
 		background: #fff;
 		border-radius: 8px;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s;
 	}
 
 	.featured-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
 
@@ -321,7 +321,7 @@
 		background: #F69532;
 		color: #fff;
 		text-decoration: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		font-size: 14px;
 		font-weight: 600;
 		transition: background 0.2s;
@@ -336,7 +336,7 @@
 		background: #fff;
 		border-radius: 8px;
 		padding: 40px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 	}
 
 	.about-title {

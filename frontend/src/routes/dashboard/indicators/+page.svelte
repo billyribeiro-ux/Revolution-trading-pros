@@ -142,7 +142,7 @@
 		background: #f99e31;
 		color: #fff;
 		border: none;
-		border-radius: 5px;
+		border-radius: 4px;
 		text-decoration: none;
 		transition: all 0.15s ease;
 	}
