@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
@@ -28,7 +27,7 @@
 		config?: Record<string, unknown>;
 	}
 
-	let { data, config = {} }: Props = $props();
+	let { data, config: _config = {} }: Props = $props();
 
 	const animatedScore = tweened(0, { duration: 1500, easing: cubicOut });
 

@@ -19,7 +19,7 @@
 		config?: Record<string, unknown>;
 	}
 
-	let { data, config = {} }: Props = $props();
+	let { data, config: _config = {} }: Props = $props();
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

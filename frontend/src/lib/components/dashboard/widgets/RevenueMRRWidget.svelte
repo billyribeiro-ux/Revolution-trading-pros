@@ -42,7 +42,7 @@
 
 	{#if showChart && data?.chart_data}
 		<div class="mini-chart">
-			{#each data.chart_data as point, i}
+			{#each data.chart_data as point}
 				<div class="chart-bar" style="height: {(point.revenue / currentMRR) * 100}%"></div>
 			{/each}
 		</div>
