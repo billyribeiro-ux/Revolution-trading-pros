@@ -722,14 +722,14 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - Exact Simpler Trading Styling
+	   SIDEBAR - Exact Simpler Trading Styling (dashboard.8f78208b.css)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__sidebar {
 		display: flex;
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		width: 280px;
-		background-color: #0e2433;
+		background-color: #0f2d41;
 		min-height: 100%;
 		bottom: 50px;
 		left: 0;
@@ -775,98 +775,115 @@
 	.dashboard__nav-primary {
 		width: 280px;
 		padding-bottom: 30px;
-		font-size: 14px;
+		font-size: 16px;
 		line-height: 1;
-		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		will-change: width, padding;
-		contain: layout style;
+		background-color: #0f2d41;
+		transition: all 0.3s ease-in-out;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   COLLAPSED STATE - When on membership sub-pages
-	   Primary nav collapses to 80px, shows only icons
-	   Pixel-perfect match to Simpler Trading reference (dashboard.8f78208b.css)
-	   Uses GPU-accelerated transitions for smooth layout shift prevention
+	   COLLAPSED STATE - Exact match to WordPress dashboard.8f78208b.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed {
 		width: 80px;
-		padding: 30px 0 30px 0;
-		/* Prevent layout shift with stable flex-basis */
+		padding-top: 30px;
 		flex: 0 0 80px;
 		min-width: 80px;
 		max-width: 80px;
 	}
 
-	/* Collapsed profile - centered photo, 40px, tooltip for name */
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item {
-		padding: 20px 0;
-		text-align: center;
-		height: auto;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		position: relative;
-		display: block;
-	}
-
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
-		position: relative;
-		left: auto;
-		top: auto;
-		transform: none;
-		margin: 0 auto;
-		width: 40px;
-		height: 40px;
-		border: 2px solid hsla(0, 0%, 100%, 0.2);
-	}
-
-	/* Note: .dashboard__profile-name tooltip styles applied in combined selector below */
-
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-category {
 		display: none;
 	}
 
-	.dashboard__nav-primary.is-collapsed .dash_main_links li a {
-		padding: 14px 0;
-		justify-content: center;
-		position: relative;
+	.dashboard__nav-primary.is-collapsed li {
+		margin-top: 20px;
 	}
 
-	.dashboard__nav-primary.is-collapsed .dash_main_links li a::after {
+	.dashboard__nav-primary.is-collapsed a {
+		padding: 0;
+	}
+
+	/* Circle background effect on hover */
+	.dashboard__nav-primary.is-collapsed a::before {
+		position: absolute;
+		display: block;
+		content: "";
+		top: 50%;
+		left: 50%;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
+		border-radius: 50%;
+		transform: scale(0.9);
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dashboard__nav-primary.is-collapsed a.dashboard__profile-nav-item {
+		height: 50px;
+		line-height: 50px;
+	}
+
+	/* Center icons and profile photo in collapsed state */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
+		left: 50%;
+		margin-left: -16px;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Tooltip - hidden by default */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text,
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
+		z-index: 100;
+		position: absolute;
+		top: 50%;
+		left: 100%;
+		margin-top: -15px;
+		margin-left: -10px;
+		height: 30px;
+		line-height: 30px;
+		padding: 0 12px;
+		font-size: 14px;
+		font-weight: 600;
+		opacity: 0;
+		visibility: hidden;
+		color: #0984ae;
+		background: #fff;
+		border-radius: 5px;
+		transform: translate(5px);
+		transition: all 0.15s ease-in-out;
+		white-space: nowrap;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	}
+
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-location {
 		display: none;
 	}
 
-	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
-		margin-right: 0;
+	/* Hover effects */
+	.dashboard__nav-primary.is-collapsed a:hover::before {
 		transform: scale(1);
-		transition: all 0.2s ease-in-out;
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   COLLAPSED TOOLTIP - Shows label bubble on hover
-	   Pixel-perfect match to Simpler Trading reference
-	   Reference: .dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text { color: #0984ae !important }
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text,
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-name {
-		display: block !important;
-		z-index: 100;
-		position: absolute;
-		left: 100%;
-		top: 50%;
-		transform: translate(-10px, -50%);
-		margin-left: 15px;
-		padding: 8px 12px;
-		opacity: 0;
-		visibility: hidden;
-		background: #fff;
-		color: #0984ae !important; /* Reference: blue text in tooltip */
-		border-radius: 4px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-		white-space: nowrap;
-		font-size: 13px;
-		font-weight: 600;
-		pointer-events: none;
-		transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, transform 0.2s ease-in-out;
-		will-change: opacity, visibility, transform;
+	.dashboard__nav-primary.is-collapsed a:hover::after {
+		transform: scaleX(0);
+	}
+
+	.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-icon,
+	.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-photo {
+		transform: scale(0.9);
+	}
+
+	.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-text,
+	.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-name {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(0);
 	}
 
 	/* Tooltip arrow */
@@ -958,38 +975,40 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PROFILE SECTION - ICT 11 CANONICAL from dashboard-globals.css:883-923
-	   Photo: 44px absolute positioned left, Name: 16px/700
-	   Padding: 32px top, 20px right, 28px bottom, 80px left (for photo space)
+	   PROFILE SECTION - Exact match to WordPress dashboard.8f78208b.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__profile-nav-item {
-		display: block;
+		color: hsla(0, 0%, 100%, 0.5);
 		height: auto;
 		line-height: 1.4;
 		padding: 32px 20px 28px 80px;
+		display: flex;
+		align-items: center;
 		position: relative;
 		text-decoration: none;
-		color: hsla(0, 0%, 100%, 0.5);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		transition: all 0.15s ease-in-out;
+		font-weight: 300;
 	}
 
 	.dashboard__profile-nav-item:hover {
-		background: rgba(255, 255, 255, 0.05);
 		color: #fff;
+	}
+
+	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+		border-color: #0984ae;
 	}
 
 	.dashboard__profile-photo {
 		position: absolute;
-		left: 20px;
 		top: 50%;
-		transform: translateY(-50%);
-		width: 44px;
-		height: 44px;
+		left: 30px;
+		margin-top: -17px;
+		width: 34px;
+		height: 34px;
+		border: 2px solid #fff;
 		border-radius: 50%;
-		border: 2px solid hsla(0, 0%, 100%, 0.2);
-		background-color: #0f2d41;
-		background-size: cover;
+		background: no-repeat 50%;
+		background-size: 32px;
+		transition: all 0.15s ease-in-out;
 		background-position: center;
 		transition: border-color 0.15s ease-in-out;
 	}
@@ -1019,15 +1038,13 @@
 	.dashboard__nav-primary .dash_main_links li a {
 		display: flex;
 		align-items: center;
-		padding: 12px 20px;
+		height: 50px;
+		padding: 0 20px 0 80px;
 		position: relative;
-		color: hsla(0, 0%, 100%, 0.7);
+		color: hsla(0, 0%, 100%, 0.5);
 		text-decoration: none;
-		font-size: 17px;
-		font-weight: 400;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: all 0.2s ease-in-out;
+		font-weight: 300;
+		transition: all 0.15s ease-in-out;
 	}
 
 	/* Active indicator on RIGHT side for primary nav */
@@ -1040,16 +1057,16 @@
 		bottom: 0;
 		width: 5px;
 		background: transparent;
-		transition: all 0.2s ease-in-out;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+		transform-origin: 100% 50%;
 	}
 
 	.dashboard__nav-primary .dash_main_links li a:hover {
-		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
 	.dashboard__nav-primary .dash_main_links li.is-active a {
-		background-color: rgba(255, 255, 255, 0.1);
 		color: #fff;
 	}
 
@@ -1057,23 +1074,23 @@
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - WHITE icons per core reference (not blue) */
+	/* Icon Styling - WordPress: position absolute, left: 30px, 32x32 */
 	.dashboard__nav-item-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		margin-right: 10px;
-		color: #fff;
-		vertical-align: middle;
-		flex-shrink: 0;
+		position: absolute;
+		top: 50%;
+		left: 30px;
+		margin-top: -16px;
+		width: 32px;
+		height: 32px;
+		font-size: 32px;
+		line-height: 32px;
+		color: inherit;
 	}
 
 	/* Ensure SVG icons inherit color */
 	.dashboard__nav-item-icon :global(svg) {
-		width: 28px;
-		height: 28px;
+		width: 32px;
+		height: 32px;
 		color: inherit;
 		stroke: currentColor;
 	}
@@ -1116,91 +1133,81 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECONDARY NAVIGATION - Membership-specific navigation in LEFT sidebar
-	   Pixel-perfect match to Simpler Trading reference
-	   Primary nav (collapsed): #0F2D41 | Secondary nav: #143E59
+	   SECONDARY NAVIGATION - Exact match to WordPress dashboard.8f78208b.css
+	   Primary nav (collapsed): #0f2d41 | Secondary nav: #153e59
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary {
-		background-color: #143E59;
-		padding: 20px 0 0 0;
-		margin: 0;
+		width: 280px;
+		font-size: 14px;
+		font-weight: 600;
+		background-color: #153e59;
 		min-height: 100%;
 	}
 
-	.dashboard__nav-secondary ul {
+	.dashboard__nav-secondary > ul {
 		list-style: none;
 		margin: 0;
-		padding: 0;
+		padding: 20px;
+	}
+
+	.dashboard__nav-secondary > ul > li + li {
+		margin-top: 10px;
 	}
 
 	.dashboard__nav-secondary li {
 		position: relative;
 	}
 
-	.dashboard__nav-secondary li a {
-		display: flex;
-		align-items: center;
-		padding: 14px 20px 14px 20px;
-		color: hsla(0, 0%, 100%, 0.7);
+	.dashboard__nav-secondary li > a,
+	.dashboard__nav-secondary li > span {
+		cursor: pointer;
+		display: block;
+		padding: 18px 20px 18px 55px;
+		color: hsla(0, 0%, 100%, 0.75);
 		text-decoration: none;
-		font-size: 17px;
-		font-weight: 400;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: all 0.2s ease-in-out;
+		border-radius: 5px;
+		background-color: transparent;
+		transition: all 0.15s ease-in-out;
 		position: relative;
 	}
 
-	/* Active indicator on LEFT side for secondary nav */
-	.dashboard__nav-secondary li a::before {
-		position: absolute;
-		display: block;
-		content: "";
-		top: 0;
-		left: 0;
-		bottom: 0;
-		width: 5px;
-		background: transparent;
-		transition: all 0.2s ease-in-out;
-	}
-
-	.dashboard__nav-secondary li a:hover {
-		background-color: rgba(255, 255, 255, 0.05);
+	.dashboard__nav-secondary li > a:hover,
+	.dashboard__nav-secondary li > span:hover {
 		color: #fff;
+		background-color: rgba(0, 0, 0, 0.15);
 	}
 
-	.dashboard__nav-secondary li.is-active a {
-		background-color: rgba(255, 255, 255, 0.1);
+	.dashboard__nav-secondary li > a.no-icon,
+	.dashboard__nav-secondary li > span.no-icon {
+		padding-left: 20px;
+	}
+
+	.dashboard__nav-secondary li.is-active > a,
+	.dashboard__nav-secondary li.is-active > span {
 		color: #fff;
-	}
-
-	.dashboard__nav-secondary li.is-active a::before {
 		background-color: #0984ae;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		margin-right: 10px;
-		color: #fff;
-		flex-shrink: 0;
+		position: absolute;
+		top: 50%;
+		left: 20px;
+		margin-top: -12px;
+		width: 24px;
+		height: 24px;
+		font-size: 24px;
+		line-height: 24px;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon :global(svg) {
-		width: 28px;
-		height: 28px;
+		width: 24px;
+		height: 24px;
 		color: inherit;
 		stroke: currentColor;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-text {
 		color: inherit;
-		flex: 1;
-		font-size: 17px;
-		font-weight: 400;
 	}
 
 	/* Arrow indicator for items with submenus */
@@ -1217,63 +1224,75 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SUBMENU - Hover-based dropdown for Traders and Trader Store
-	   Pixel-perfect match to WordPress reference (core 1:2980-3068)
+	   SUBMENU - Exact match to WordPress dashboard.8f78208b.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary li.has-submenu {
 		position: relative;
 	}
 
-	/* Submenu trigger - styled like nav links but non-navigating (Svelte 5 a11y compliant) */
-	.dashboard__nav-secondary .submenu-trigger {
-		display: flex;
-		align-items: center;
-		padding: 14px 20px 14px 20px;
-		color: hsla(0, 0%, 100%, 0.7);
-		text-decoration: none;
-		font-size: 17px;
+	/* has-submenu arrow indicator */
+	.dashboard__nav-secondary li.has-submenu > a::after,
+	.dashboard__nav-secondary li.has-submenu > span::after {
+		position: absolute;
+		display: block;
+		top: 50%;
+		right: 12px;
+		margin-top: -13px;
+		font-family: FontAwesome, sans-serif;
+		content: "\f105";
+		font-size: 24px;
 		font-weight: 400;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: all 0.2s ease-in-out;
-		cursor: default;
+		transform: translate(-5px);
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Submenu trigger - styled like nav links */
+	.dashboard__nav-secondary .submenu-trigger {
+		cursor: pointer;
+		display: block;
+		padding: 18px 20px 18px 55px;
+		color: hsla(0, 0%, 100%, 0.75);
+		border-radius: 5px;
+		background-color: transparent;
+		transition: all 0.15s ease-in-out;
 		position: relative;
 	}
 
 	.dashboard__nav-secondary .submenu-trigger:hover {
-		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
+		background-color: rgba(0, 0, 0, 0.15);
 	}
 
 	.dashboard__nav-secondary li.has-submenu.is-active .submenu-trigger {
-		background-color: rgba(255, 255, 255, 0.1);
 		color: #fff;
+		background-color: #0984ae;
 	}
 
-	/* Submenu container - hidden by default, appears on hover */
+	/* Submenu container - WordPress exact styles */
 	.dashboard__nav-secondary .dashboard__nav-submenu {
+		z-index: 10;
 		position: absolute;
-		left: 100%;
 		top: 0;
-		min-width: 220px;
-		background-color: #143E59;
-		list-style: none;
-		margin: 0;
-		padding: 0;
+		left: 100%;
+		padding: 15px;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		opacity: 0;
 		visibility: hidden;
-		transform: translateX(-10px);
-		transition: all 0.2s ease-in-out;
-		z-index: 110;
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-		border-radius: 0 4px 4px 0;
+		transform: translate(5px);
+		transition: all 0.15s ease-in-out;
+		list-style: none;
+		margin: 0;
 	}
 
 	/* Show submenu on hover */
-	.dashboard__nav-secondary li.has-submenu:hover > .dashboard__nav-submenu {
+	.dashboard__nav-secondary li.has-submenu:hover > .dashboard__nav-submenu,
+	.dashboard__nav-secondary li:hover > a::after,
+	.dashboard__nav-secondary li:hover > span::after {
 		opacity: 1;
 		visibility: visible;
-		transform: translateX(0);
+		transform: translate(0);
 	}
 
 	/* Submenu items */
@@ -1282,29 +1301,27 @@
 		padding: 0;
 	}
 
-	.dashboard__nav-secondary .dashboard__nav-submenu li a {
-		display: block;
-		padding: 12px 20px;
-		color: hsla(0, 0%, 100%, 0.7);
-		text-decoration: none;
-		font-size: 13px;
+	.dashboard__nav-secondary .dashboard__nav-submenu a {
+		padding: 15px 20px;
+		color: #666;
 		font-weight: 400;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: all 0.2s ease-in-out;
+		background-color: transparent;
+		border-radius: 5px;
 		white-space: nowrap;
-		border-left: 3px solid transparent;
+		display: block;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.dashboard__nav-secondary .dashboard__nav-submenu li a:hover {
-		background-color: rgba(255, 255, 255, 0.1);
-		color: #fff;
-		border-left-color: #0984ae;
+	.dashboard__nav-secondary .dashboard__nav-submenu a:hover {
+		color: #0984ae;
 	}
 
 	/* Active state for submenu items */
 	.dashboard__nav-secondary .dashboard__nav-submenu li.is-active a {
-		background-color: rgba(255, 255, 255, 0.1);
+		color: #666;
+		font-weight: 600;
+		background-color: #f4f4f4;
 		color: #fff;
 		border-left-color: #0984ae;
 	}
