@@ -1170,6 +1170,22 @@ p:empty {
   background-color: #fafafa;
 }
 
+/* Watch Now button in card-footer - Orange style from reference */
+.card-footer .btn.btn-tiny.btn-default {
+  background: transparent;
+  color: #F3911B;
+  padding-left: 0;
+  font-size: 17px;
+  border: none;
+  font-weight: 700;
+}
+
+.card-footer .btn.btn-tiny.btn-default:hover {
+  color: #F3911B;
+  background: #e7e7e7;
+  padding-left: 8px;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    DASHBOARD FILTERS - Exact from core 2 reference
    Search and count display for video/article pages
