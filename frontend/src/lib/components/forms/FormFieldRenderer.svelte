@@ -171,10 +171,10 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				rows={typeof field.attributes?.rows === 'number'
-					? field.attributes.rows
-					: typeof field.attributes?.rows === 'string'
-						? parseInt(field.attributes.rows, 10)
+				rows={typeof field.attributes?.['rows'] === 'number'
+					? field.attributes['rows']
+					: typeof field.attributes?.['rows'] === 'string'
+						? parseInt(field.attributes['rows'], 10)
 						: 5}
 				minlength={field.validation?.min_length}
 				maxlength={field.validation?.max_length}
@@ -421,14 +421,14 @@
 						</label>
 					{/each}
 				{/if}
-				{#if field.attributes?.min_selections || field.attributes?.max_selections}
+				{#if field.attributes?.['min_selections'] || field.attributes?.['max_selections']}
 					<small class="category-hint">
-						{#if field.attributes.min_selections && field.attributes.max_selections}
-							Select between {field.attributes.min_selections} and {field.attributes.max_selections} topics
-						{:else if field.attributes.min_selections}
-							Select at least {field.attributes.min_selections} topic(s)
-						{:else if field.attributes.max_selections}
-							Select up to {field.attributes.max_selections} topics
+						{#if field.attributes['min_selections'] && field.attributes['max_selections']}
+							Select between {field.attributes['min_selections']} and {field.attributes['max_selections']} topics
+						{:else if field.attributes['min_selections']}
+							Select at least {field.attributes['min_selections']} topic(s)
+						{:else if field.attributes['max_selections']}
+							Select up to {field.attributes['max_selections']} topics
 						{/if}
 					</small>
 				{/if}
