@@ -21,13 +21,13 @@
 	let showScrollTop = $state(false);
 
 	$effect(() => {
-		if (browser) {
-			const handleScroll = () => {
-				showScrollTop = window.scrollY > 300;
-			};
-			window.addEventListener('scroll', handleScroll);
-			return () => window.removeEventListener('scroll', handleScroll);
-		}
+		if (!browser) return;
+		
+		const handleScroll = () => {
+			showScrollTop = window.scrollY > 300;
+		};
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
 	});
 
 	function scrollToTop() {
