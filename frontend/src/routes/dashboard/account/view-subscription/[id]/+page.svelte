@@ -101,9 +101,13 @@
 		status: 'Active',
 		statusClass: 'label--success',
 		startDate: 'December 3, 2025',
-		nextPayment: 'January 3, 2026',
+		lastOrderDate: 'December 3, 2025',
+		nextPayment: 'In 7 days',
+		trialEndDate: 'In 7 days',
 		product: 'Mastering the Trade Room (1 Month Trial)',
-		total: '$197.00',
+		total: '$247.00',
+		discount: '$50.00',
+		subtotal: '$197.00',
 		interval: '/ month',
 		paymentMethod: 'Visa card ending in 9396',
 		billingAddress: {
@@ -177,48 +181,91 @@
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Subscription #{subscriptionId}</h2>
 
-			<div class="subscription-header">
-				<span class="label {subscription.statusClass}">{subscription.status}</span>
-			</div>
-
-			<div class="subscription-details">
-				<table class="table">
-					<tbody>
-						<tr>
-							<th>Product</th>
-							<td>{subscription.product}</td>
-						</tr>
-						<tr>
-							<th>Amount</th>
-							<td>{subscription.total} {subscription.interval}</td>
-						</tr>
-						<tr>
-							<th>Start Date</th>
-							<td>{subscription.startDate}</td>
-						</tr>
-						<tr>
-							<th>Next Payment</th>
-							<td>{subscription.nextPayment}</td>
-						</tr>
-						<tr>
-							<th>Payment Method</th>
-							<td>{subscription.paymentMethod}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-
-			<div class="subscription-actions">
-				<h3>Subscription Actions</h3>
-				<div class="action-buttons">
-					<button class="btn btn-default">Update Payment Method</button>
-					{#if subscription.status === 'Active'}
-						<button class="btn btn-warning" onclick={openCancelModal}>Cancel Subscription</button>
-					{:else if subscription.status === 'Cancelled' || subscription.status === 'Pending Cancellation'}
-						<button class="btn btn-success" onclick={() => showReactivateModal = true}>Reactivate Subscription</button>
-					{/if}
+			<!-- Subscription Details Table -->
+			<div class="content-box">
+				<div class="content-box__section">
+					<table class="shop_table subscription_details">
+						<tbody>
+							<tr>
+								<td>Status</td>
+								<td><span class="label {subscription.statusClass}">{subscription.status}</span></td>
+							</tr>
+							<tr>
+								<td>Start Date</td>
+								<td>{subscription.startDate}</td>
+							</tr>
+							<tr>
+								<td>Last Order Date</td>
+								<td>{subscription.lastOrderDate}</td>
+							</tr>
+							<tr>
+								<td>Next Payment Date</td>
+								<td>{subscription.nextPayment}</td>
+							</tr>
+							<tr>
+								<td>Trial End Date</td>
+								<td>{subscription.trialEndDate}</td>
+							</tr>
+							<tr>
+								<td>Actions</td>
+								<td class="action-cell">
+									{#if subscription.status === 'Active'}
+										<button class="btn btn-xs btn-default" onclick={() => goto('/dashboard/account/payment-methods')}>Change payment</button>
+										<button class="btn btn-xs btn-default suspend" onclick={() => showPauseModal = true}>Suspend</button>
+										<button class="btn btn-xs btn-default st_custom_cancel" onclick={openCancelModal}>Cancel Subscription</button>
+									{:else if subscription.status === 'Cancelled' || subscription.status === 'Pending Cancellation'}
+										<button class="btn btn-xs btn-success" onclick={() => showReactivateModal = true}>Reactivate</button>
+									{/if}
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
+
+			<!-- Subscription Totals Table -->
+			<div class="content-box">
+				<div class="content-box__section">
+					<h2 class="section-title-alt">Subscription Totals</h2>
+					<table class="shop_table order_details">
+						<thead>
+							<tr>
+								<th class="product-name">Product</th>
+								<th class="product-total">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="order_item">
+								<td class="product-name">
+									{subscription.product} <strong class="product-quantity">&times; 1</strong>
+								</td>
+								<td class="product-total">
+									<span class="amount">{subscription.total}</span> {subscription.interval}
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>Subtotal:</th>
+								<td><span class="amount">{subscription.total}</span></td>
+							</tr>
+							<tr>
+								<th>Discount:</th>
+								<td>-<span class="amount">{subscription.discount}</span></td>
+							</tr>
+							<tr>
+								<th>Payment method:</th>
+								<td>{subscription.paymentMethod}</td>
+							</tr>
+							<tr class="total-row">
+								<th>Total:</th>
+								<td><span class="amount total">{subscription.subtotal}</span> {subscription.interval}</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+
 
 			<!-- Cancel Survey Modal -->
 			{#if showCancelModal}
@@ -408,17 +455,130 @@
 		margin: 0 0 20px;
 	}
 
-	.subscription-header {
-		margin-bottom: 30px;
+	/* Content Box - Matching Simpler Trading */
+	.content-box {
+		background: #fff;
+		border-radius: 4px;
+		margin-bottom: 20px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 	}
 
+	.content-box__section {
+		padding: 20px;
+	}
+
+	/* Shop Table - Subscription Details */
+	.shop_table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-bottom: 0;
+	}
+
+	.shop_table.subscription_details td {
+		padding: 12px 0;
+		border-bottom: 1px solid #ededed;
+		font-size: 14px;
+	}
+
+	.shop_table.subscription_details td:first-child {
+		color: #666;
+		font-weight: 400;
+		width: 40%;
+	}
+
+	.shop_table.subscription_details td:last-child {
+		color: #333;
+		font-weight: 600;
+	}
+
+	.shop_table.subscription_details tr:last-child td {
+		border-bottom: none;
+	}
+
+	/* Action Cell */
+	.action-cell {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	/* Order Details Table */
+	.shop_table.order_details {
+		width: 100%;
+	}
+
+	.shop_table.order_details th,
+	.shop_table.order_details td {
+		padding: 12px 0;
+		border-bottom: 1px solid #ededed;
+		font-size: 14px;
+		text-align: left;
+	}
+
+	.shop_table.order_details thead th {
+		font-weight: 600;
+		color: #333;
+	}
+
+	.shop_table.order_details .product-name {
+		width: 70%;
+	}
+
+	.shop_table.order_details .product-total {
+		width: 30%;
+		text-align: right;
+	}
+
+	.shop_table.order_details tbody td {
+		color: #666;
+	}
+
+	.shop_table.order_details .product-quantity {
+		color: #333;
+	}
+
+	.shop_table.order_details tfoot th {
+		font-weight: 400;
+		color: #666;
+	}
+
+	.shop_table.order_details tfoot td {
+		text-align: right;
+		color: #333;
+	}
+
+	.shop_table.order_details .total-row th,
+	.shop_table.order_details .total-row td {
+		font-weight: 700;
+		border-bottom: none;
+	}
+
+	.amount {
+		color: #333;
+	}
+
+	.amount.total {
+		font-size: 18px;
+		color: #0984ae;
+	}
+
+	.section-title-alt {
+		font-size: 18px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 15px;
+		padding-bottom: 10px;
+		border-bottom: 2px solid #0984ae;
+	}
+
+	/* Status Label */
 	.label {
 		display: inline-block;
-		padding: 6px 14px;
-		font-size: 12px;
-		font-weight: 700;
+		padding: 4px 10px;
+		font-size: 11px;
+		font-weight: 600;
 		text-transform: uppercase;
-		border-radius: 25px;
+		border-radius: 3px;
 	}
 
 	.label--success {
@@ -426,60 +586,10 @@
 		color: #155724;
 	}
 
-	.subscription-details {
-		margin-bottom: 30px;
-	}
-
-	.table {
-		width: 100%;
-		max-width: 500px;
-		border-collapse: collapse;
-		background: #fff;
-		border-radius: 8px;
-		overflow: hidden;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	}
-
-	.table th,
-	.table td {
-		padding: 15px 20px;
-		text-align: left;
-		border-bottom: 1px solid #ededed;
-	}
-
-	.table th {
-		font-size: 14px;
-		font-weight: 600;
-		color: #666;
-		width: 40%;
-	}
-
-	.table td {
-		font-size: 14px;
-		color: #333;
-		font-weight: 600;
-	}
-
-	.table tbody tr:last-child th,
-	.table tbody tr:last-child td {
-		border-bottom: none;
-	}
-
-	.subscription-actions {
-		margin-bottom: 30px;
-	}
-
-	.subscription-actions h3,
 	.billing-address h3 {
 		font-size: 16px;
 		font-weight: 700;
 		margin-bottom: 15px;
-	}
-
-	.action-buttons {
-		display: flex;
-		gap: 12px;
-		flex-wrap: wrap;
 	}
 
 	.billing-address {
@@ -493,6 +603,7 @@
 		font-style: normal;
 	}
 
+	/* Buttons */
 	.btn {
 		display: inline-block;
 		padding: 10px 20px;
@@ -505,6 +616,11 @@
 		transition: all 0.15s ease;
 	}
 
+	.btn-xs {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+
 	.btn-default {
 		background: #f4f4f4;
 		color: #333;
@@ -515,24 +631,24 @@
 		background: #e9e9e9;
 	}
 
-	.btn-warning {
+	.btn-default.suspend {
 		background: #fff3cd;
 		color: #856404;
-		border: 1px solid #ffc107;
+		border-color: #ffc107;
 	}
 
-	.btn-warning:hover {
+	.btn-default.suspend:hover {
 		background: #ffe69c;
 	}
 
-	.btn-danger {
-		background: #dc3545;
-		color: #fff;
-		border: 1px solid #dc3545;
+	.btn-default.st_custom_cancel {
+		background: #f8d7da;
+		color: #721c24;
+		border-color: #f5c6cb;
 	}
 
-	.btn-danger:hover {
-		background: #c82333;
+	.btn-default.st_custom_cancel:hover {
+		background: #f1b0b7;
 	}
 
 	.btn-success {
@@ -545,9 +661,7 @@
 		background: #218838;
 	}
 
-	.btn-danger:disabled,
-	.btn-default:disabled,
-	.btn-success:disabled {
+	.btn:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
