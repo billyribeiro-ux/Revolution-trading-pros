@@ -912,7 +912,7 @@
 				<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
 			{/if}
 		</div>
-		{#if seoAnalysis}
+		{#if seoAnalysis && seoAnalysis.grade}
 			<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
 				<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
 			</div>

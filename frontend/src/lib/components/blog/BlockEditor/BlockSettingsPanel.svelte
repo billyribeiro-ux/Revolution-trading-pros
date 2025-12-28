@@ -122,27 +122,16 @@
 		updateSettings({ [key]: value });
 	}
 
-	// Update nested setting
-	function updateNestedSetting(parent: string, key: string, value: unknown): void {
-		const current = (block.settings as Record<string, unknown>)[parent] || {};
-		updateSettings({
-			[parent]: {
-				...(typeof current === 'object' ? current : {}),
-				[key]: value
-			}
-		} as Partial<BlockSettings>);
-	}
-
 	// Parse spacing value
 	function parseSpacing(value: string | undefined): { top: string; right: string; bottom: string; left: string } {
 		if (!value) return { top: '0', right: '0', bottom: '0', left: '0' };
 		const parts = value.split(' ');
 		if (parts.length === 1) {
-			return { top: parts[0], right: parts[0], bottom: parts[0], left: parts[0] };
+			return { top: parts[0] ?? '0', right: parts[0] ?? '0', bottom: parts[0] ?? '0', left: parts[0] ?? '0' };
 		} else if (parts.length === 2) {
-			return { top: parts[0], right: parts[1], bottom: parts[0], left: parts[1] };
+			return { top: parts[0] ?? '0', right: parts[1] ?? '0', bottom: parts[0] ?? '0', left: parts[1] ?? '0' };
 		} else if (parts.length === 4) {
-			return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[3] };
+			return { top: parts[0] ?? '0', right: parts[1] ?? '0', bottom: parts[2] ?? '0', left: parts[3] ?? '0' };
 		}
 		return { top: '0', right: '0', bottom: '0', left: '0' };
 	}

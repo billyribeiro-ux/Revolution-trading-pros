@@ -56,7 +56,7 @@
 	import IconX from '@tabler/icons-svelte/icons/x';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
 
-	import type { BlockType, BlockCategory, BlockDefinition } from './types';
+	import type { BlockType } from './types';
 	import { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';
 
 	// ==========================================================================
@@ -149,7 +149,7 @@
 		if (!query) return null;
 
 		return Object.entries(BLOCK_DEFINITIONS)
-			.filter(([type, def]) => {
+			.filter(([, def]) => {
 				return (
 					def.name.toLowerCase().includes(query) ||
 					def.description.toLowerCase().includes(query) ||
