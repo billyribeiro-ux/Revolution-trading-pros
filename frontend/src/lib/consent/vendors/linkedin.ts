@@ -9,7 +9,6 @@
  */
 
 import { browser, dev } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -22,6 +21,7 @@ declare global {
 	}
 }
 
+const PUBLIC_LINKEDIN_PARTNER_ID = import.meta.env['PUBLIC_LINKEDIN_PARTNER_ID'] || '';
 let linkedinReady = false;
 const eventQueue: Array<{ conversionId: string; data?: Record<string, unknown> }> = [];
 
@@ -79,7 +79,7 @@ export function trackLinkedInConversion(
 	if (!browser) return;
 
 	if (!linkedinReady) {
-		eventQueue.push({ conversionId, data });
+		eventQueue.push({ conversionId, ...(data && { data }) });
 		return;
 	}
 
@@ -148,7 +148,7 @@ export const linkedinVendor: VendorConfig = {
 	supportsRevocation: true,
 
 	load: () => {
-		const partnerId = env.PUBLIC_LINKEDIN_PARTNER_ID;
+		const partnerId = PUBLIC_LINKEDIN_PARTNER_ID;
 		if (!partnerId) {
 			if (!dev) console.warn('[LinkedIn] Missing PUBLIC_LINKEDIN_PARTNER_ID environment variable');
 			return;

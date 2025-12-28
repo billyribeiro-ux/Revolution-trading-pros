@@ -9,7 +9,6 @@
  */
 
 import { browser, dev } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
 interface TikTokPixelInstance {
@@ -30,6 +29,8 @@ declare global {
 		TiktokAnalyticsObject?: string;
 	}
 }
+
+const PUBLIC_TIKTOK_PIXEL_ID = import.meta.env['PUBLIC_TIKTOK_PIXEL_ID'] || '';
 
 let tiktokReady = false;
 const eventQueue: Array<{ event: string; data?: Record<string, unknown> }> = [];
@@ -59,7 +60,9 @@ function initializeTikTok(pixelId: string): void {
 				o.src = e + '?sdkid=' + t + '&lib=' + 'ttq';
 
 				const a = document.getElementsByTagName('script')[0];
-				a.parentNode?.insertBefore(o, a);
+				if (a?.parentNode) {
+					a.parentNode.insertBefore(o, a);
+				}
 			},
 			page() {
 				Object.values(_i).forEach((instance: unknown) => {
@@ -122,7 +125,7 @@ export function trackTikTokEvent(
 	if (!browser) return;
 
 	if (!tiktokReady) {
-		eventQueue.push({ event, data });
+		eventQueue.push({ event, ...(data && { data }) });
 		return;
 	}
 
@@ -211,7 +214,7 @@ export const tiktokVendor: VendorConfig = {
 	supportsRevocation: true,
 
 	load: () => {
-		const pixelId = env.PUBLIC_TIKTOK_PIXEL_ID;
+		const pixelId = PUBLIC_TIKTOK_PIXEL_ID;
 		if (!pixelId) {
 			if (!dev) console.warn('[TikTok] Missing PUBLIC_TIKTOK_PIXEL_ID environment variable');
 			return;

@@ -74,8 +74,8 @@ export function getVendorInfo(): Array<{
 		name: v.name,
 		description: v.description,
 		requiredCategories: [...v.requiredCategories],
-		privacyPolicyUrl: v.privacyPolicyUrl,
-		dataLocations: v.dataLocations ? [...v.dataLocations] : undefined,
+		...(v.privacyPolicyUrl && { privacyPolicyUrl: v.privacyPolicyUrl }),
+		...(v.dataLocations && { dataLocations: [...v.dataLocations] }),
 	}));
 }
 

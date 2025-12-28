@@ -21,16 +21,15 @@
  */
 
 import { browser } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
-// Use dynamic environment variable (optional at build time)
-const PUBLIC_META_PIXEL_ID = env.PUBLIC_META_PIXEL_ID || '';
+// Use environment variable (optional at build time)
+const PUBLIC_META_PIXEL_ID = import.meta.env['PUBLIC_META_PIXEL_ID'] || '';
 
 /**
  * Type definitions for Meta Pixel (fbq).
  */
-type FbqMethod = 'init' | 'track' | 'trackCustom' | 'consent' | 'dataProcessingOptions';
+type _FbqMethod = 'init' | 'track' | 'trackCustom' | 'consent' | 'dataProcessingOptions';
 
 interface Fbq {
 	(method: 'init', pixelId: string): void;

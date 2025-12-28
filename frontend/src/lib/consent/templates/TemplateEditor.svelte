@@ -7,7 +7,6 @@
 	 *
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 */
-	import { onMount } from 'svelte';
 	import type { BannerTemplate, TemplatePosition, ButtonVariant, AnimationType } from './types';
 	import { BANNER_TEMPLATES, getTemplate } from './registry';
 

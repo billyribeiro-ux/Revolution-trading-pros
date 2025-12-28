@@ -9,20 +9,20 @@
  */
 
 import { browser, dev } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
 declare global {
 	interface Window {
 		twq?: {
 			(...args: unknown[]): void;
-			exe?: (...args: unknown[]) => void;
+			exe?: ((...args: unknown[]) => void) | undefined;
 			version: string;
 			queue: unknown[][];
 		};
 	}
 }
 
+const PUBLIC_TWITTER_PIXEL_ID = import.meta.env['PUBLIC_TWITTER_PIXEL_ID'] || '';
 let twitterReady = false;
 const eventQueue: Array<{ event: string; data?: Record<string, unknown> }> = [];
 
@@ -45,11 +45,10 @@ function initializeTwitter(pixelId: string): void {
 				}
 			},
 			{
-				exe: undefined as ((...args: unknown[]) => void) | undefined,
 				version: '1.1',
 				queue
 			}
-		);
+		) as typeof window.twq;
 
 		window.twq = twqFunc;
 	}
@@ -90,7 +89,7 @@ export function trackTwitterEvent(
 	if (!browser) return;
 
 	if (!twitterReady) {
-		eventQueue.push({ event, data });
+		eventQueue.push({ event, ...(data && { data }) });
 		return;
 	}
 
@@ -171,7 +170,7 @@ export const twitterVendor: VendorConfig = {
 	supportsRevocation: true,
 
 	load: () => {
-		const pixelId = env.PUBLIC_TWITTER_PIXEL_ID;
+		const pixelId = PUBLIC_TWITTER_PIXEL_ID;
 		if (!pixelId) {
 			if (!dev) console.warn('[Twitter] Missing PUBLIC_TWITTER_PIXEL_ID environment variable');
 			return;
