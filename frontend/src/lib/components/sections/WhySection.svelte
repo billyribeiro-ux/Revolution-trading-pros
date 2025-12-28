@@ -6,7 +6,6 @@
     import IconShield from '@tabler/icons-svelte/icons/shield';
     import IconCpu from '@tabler/icons-svelte/icons/cpu';
     import IconCheck from '@tabler/icons-svelte/icons/check';
-    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
     import IconBuilding from '@tabler/icons-svelte/icons/building';
 
     const features = [

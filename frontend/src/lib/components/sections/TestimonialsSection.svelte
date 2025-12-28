@@ -125,8 +125,6 @@
             
             visibilityObserver.observe(containerRef);
         });
-        
-        return () => observer?.disconnect();
     });
 
     // Ticker Tape Data
