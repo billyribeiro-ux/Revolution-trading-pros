@@ -49,16 +49,16 @@
                 return;
             }
             
-            const observer = new IntersectionObserver(
+            const visibilityObserver = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting) {
+                    if (entries[0]?.isIntersecting) {
                         isVisible = true;
-                        observer.disconnect();
+                        visibilityObserver.disconnect();
                     }
                 },
                 { threshold: 0.1 }
             );
-            observer.observe(containerRef);
+            visibilityObserver.observe(containerRef);
         });
     });
 

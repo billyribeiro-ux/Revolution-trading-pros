@@ -91,7 +91,6 @@
 	let chartProgress = $state(0);
 	const candleData = generateCandleData(60);
 	const rsiData = generateRSIData(candleData);
-	const macdData = generateMACDData(candleData);
 
 	// ============================================================================
 	// DATA GENERATORS
@@ -230,7 +229,7 @@
 			if (sectionRef) {
 				const visibilityObserver = new IntersectionObserver(
 					(entries) => {
-						if (entries[0].isIntersecting) {
+						if (entries[0]?.isIntersecting) {
 							isVisible = true;
 							visibilityObserver.disconnect();
 						}
@@ -370,7 +369,7 @@
 	// ============================================================================
 	// TRANSITIONS
 	// ============================================================================
-	function slideUp(node: Element, { delay = 0, duration = 800 }) {
+	function slideUp(_node: Element, { delay = 0, duration = 800 }) {
 		return {
 			delay,
 			duration,
@@ -381,7 +380,7 @@
 		};
 	}
 
-	function scaleIn(node: Element, { delay = 0, duration = 600 }) {
+	function scaleIn(_node: Element, { delay = 0, duration = 600 }) {
 		return {
 			delay,
 			duration,
@@ -476,7 +475,7 @@
 								class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50"
 							>
 								<span class="text-[10px] sm:text-xs font-mono text-zinc-300">
-									{indicators[activeIndicator].name} Active
+									{indicators[activeIndicator]!.name} Active
 								</span>
 							</div>
 						</div>
