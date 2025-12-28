@@ -940,50 +940,41 @@
 		display: block;
 	}
 
-	/* Profile Section - Exact match to dashboard-globals.css reference */
+	/* Profile Section - EXACT match to dashboard-globals.css reference
+	   ICT11+ Fix: Corrected all discrepancies:
+	   - Profile photo: 32px (was 44px)
+	   - Profile name: 14px/600 (was 16px/700)
+	   - Layout: flexbox (was absolute positioning)
+	   - Border: removed (was 2px solid) */
 	.dashboard__profile-nav-item {
-		position: relative;
-		display: block;
-		height: auto;
-		line-height: 1.4;
-		padding: 32px 20px 28px 80px;
+		display: flex;
+		align-items: center;
+		padding: 20px;
 		text-decoration: none;
-		color: hsla(0, 0%, 100%, 0.5);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-nav-item:hover {
-		background: rgba(255, 255, 255, 0.05);
-		color: #fff;
-	}
-
-	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: #0984ae;
+		background-color: rgba(255, 255, 255, 0.05);
 	}
 
 	.dashboard__profile-photo {
-		position: absolute;
-		top: 50%;
-		left: 20px;
-		transform: translateY(-50%);
-		width: 44px;
-		height: 44px;
-		border: 2px solid hsla(0, 0%, 100%, 0.2);
+		display: inline-block;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
-		background-color: #0f2d41;
+		background-color: #0984ae;
 		background-size: cover;
 		background-position: center;
-		transition: border-color 0.15s ease-in-out;
+		margin-right: 10px;
+		flex-shrink: 0;
 	}
 
 	.dashboard__profile-name {
-		display: block;
+		font-size: 14px;
+		font-weight: 600;
 		color: #fff;
-		font-size: 16px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1077,6 +1068,13 @@
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		color: #fff;
+	}
+
+	/* ICT11+ Fix: Reference lines 2744, 2750 - Bold white text in collapsed tooltip
+	   Override the blue #0984ae color for My Classes and My Indicators items */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-text--bold {
+		color: #fff !important;
+		font-weight: 700 !important;
 	}
 
 	/* Category Headers - Exact Match to dashboard-globals.css reference */
