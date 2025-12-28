@@ -124,7 +124,9 @@
 
 <style>
 	.marketing-footer {
-		background: linear-gradient(180deg, var(--color-rtp-surface, #1e293b) 0%, var(--color-rtp-bg, #0f172a) 100%);
+		/* ICT11+ Fix: Footer MUST use hardcoded dark colors - NEVER theme variables */
+		/* Theme variables get overridden in light mode which would make footer white */
+		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		padding: 4rem 0 2rem;
 	}
@@ -174,7 +176,7 @@
 	}
 
 	.footer-tagline {
-		color: var(--color-rtp-muted, #64748b);
+		color: #64748b; /* Hardcoded - footer is always dark */
 		font-size: 0.9375rem;
 		line-height: 1.6;
 		margin-bottom: 1.5rem;
@@ -193,19 +195,19 @@
 		justify-content: center;
 		background: rgba(99, 102, 241, 0.1);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: var(--radius-md, 0.5rem);
-		color: var(--color-rtp-muted, #94a3b8);
+		border-radius: 0.5rem;
+		color: #94a3b8; /* Hardcoded - footer is always dark */
 		transition: all 0.2s;
 	}
 
 	.social-link:hover {
 		background: rgba(99, 102, 241, 0.2);
-		color: var(--color-rtp-primary, #818cf8);
+		color: #818cf8; /* Hardcoded - footer is always dark */
 		transform: translateY(-2px);
 	}
 
 	.footer-heading {
-		color: var(--color-rtp-text, #f1f5f9);
+		color: #f1f5f9; /* Hardcoded - footer is always dark */
 		font-size: 0.875rem;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -224,26 +226,26 @@
 	}
 
 	.footer-list a {
-		color: var(--color-rtp-muted, #94a3b8);
+		color: #94a3b8; /* Hardcoded - footer is always dark */
 		text-decoration: none;
 		font-size: 0.9375rem;
 		transition: color 0.2s;
 	}
 
 	.footer-list a:hover {
-		color: var(--color-rtp-text, #f1f5f9);
+		color: #f1f5f9; /* Hardcoded - footer is always dark */
 	}
 
 	.risk-disclaimer {
 		padding: 1.5rem;
 		background: rgba(245, 158, 11, 0.05);
 		border: 1px solid rgba(245, 158, 11, 0.2);
-		border-radius: var(--radius-lg, 0.75rem);
+		border-radius: 0.75rem;
 		margin-bottom: 2rem;
 	}
 
 	.risk-disclaimer p {
-		color: var(--color-rtp-muted, #94a3b8);
+		color: #94a3b8; /* Hardcoded - footer is always dark */
 		font-size: 0.8125rem;
 		line-height: 1.6;
 		margin: 0;
@@ -260,7 +262,7 @@
 	}
 
 	.footer-bottom p {
-		color: var(--color-rtp-muted, #64748b);
+		color: #64748b; /* Hardcoded - footer is always dark */
 		font-size: 0.875rem;
 		margin: 0;
 	}
