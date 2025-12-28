@@ -120,19 +120,20 @@ h3 {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SIDEBAR - Exact from dashboard.css
+   SIDEBAR - Exact match to WordPress dashboard.8f78208b.css
    ═══════════════════════════════════════════════════════════════════════════════ */
 .dashboard__sidebar {
   width: 280px;
-  background-color: #0e2433;
+  background-color: #0f2d41;
   min-height: 100%;
 }
 
 .dashboard__nav-primary {
   width: 280px;
   padding-bottom: 30px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1;
+  background-color: #0f2d41;
 }
 
 .dashboard__nav-category {
