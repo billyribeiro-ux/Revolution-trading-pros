@@ -103,10 +103,10 @@
 		background: #f4f4f4;
 	}
 
-	/* Sidebar - ICT 11 canonical: 280px width, #0e2433 background */
+	/* Sidebar - WordPress dashboard.8f78208b.css: 280px width, #0f2d41 background */
 	.dashboard__sidebar {
 		width: 280px;
-		background: #0e2433;
+		background: #0f2d41;
 		flex-shrink: 0;
 	}
 
