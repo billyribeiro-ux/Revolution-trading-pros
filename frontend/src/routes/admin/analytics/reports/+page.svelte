@@ -379,7 +379,7 @@
 
 				<!-- Metrics -->
 				<div>
-					<span class="block text-sm font-medium text-gray-700 mb-2" for="report-metrics"
+					<span class="block text-sm font-medium text-gray-700 mb-2"
 						>Metrics</span
 					>
 					<div class="flex flex-wrap gap-2">
@@ -399,7 +399,7 @@
 
 				<!-- Dimensions -->
 				<div>
-					<span class="block text-sm font-medium text-gray-700 mb-2" for="report-dimensions"
+					<span class="block text-sm font-medium text-gray-700 mb-2"
 						>Dimensions</span
 					>
 					<div class="flex flex-wrap gap-2">

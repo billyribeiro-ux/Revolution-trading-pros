@@ -39,19 +39,6 @@ import type {
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Note: Window.dataLayer and Window.gtag are declared in src/app.d.ts
-// Only add requestIdleCallback polyfill types if needed
-interface _IdleRequestCallback {
-	(deadline: IdleDeadline): void;
-}
-
-interface _IdleRequestOptions {
-	timeout?: number;
-}
-
-interface IdleDeadline {
-	readonly didTimeout: boolean;
-	timeRemaining(): number;
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Constants
@@ -59,7 +46,6 @@ interface IdleDeadline {
 
 const GTAG_SCRIPT_URL = 'https://www.googletagmanager.com/gtag/js';
 const MAX_QUEUE_SIZE = 500;
-const _QUEUE_FLUSH_DELAY = 100;
 const INIT_TIMEOUT_MS = 10000;
 const SCRIPT_ID = 'gtag-js-script';
 

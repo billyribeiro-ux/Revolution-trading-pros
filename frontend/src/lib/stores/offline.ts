@@ -68,7 +68,7 @@ function createOfflineStore() {
 		syncInProgress: false
 	};
 
-	const { subscribe, set, update } = writable<OfflineState>(initialState);
+	const { subscribe, update } = writable<OfflineState>(initialState);
 
 	// Setup network listeners
 	if (browser) {
@@ -141,7 +141,7 @@ function createOfflineStore() {
 		savePendingActions(failedActions);
 	}
 
-	async function performSync(action: PendingAction): Promise<void> {
+	async function performSync(_action: PendingAction): Promise<void> {
 		// Simulate API call - in real implementation, this would call the actual API
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {

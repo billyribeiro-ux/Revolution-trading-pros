@@ -610,7 +610,7 @@ function createLocationsStore() {
 		}
 	}
 
-	const { subscribe, set, update } = writable<Location[]>(initial);
+	const { subscribe, update } = writable<Location[]>(initial);
 
 	const save = (locations: Location[]) => {
 		if (browser) {

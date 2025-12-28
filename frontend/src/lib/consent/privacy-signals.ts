@@ -25,16 +25,6 @@ const EU_COUNTRIES = new Set([
 	'CH', // Switzerland (similar requirements)
 ]);
 
-/**
- * US states with strict privacy laws (CCPA, etc.).
- */
-const _STRICT_US_STATES = new Set([
-	'CA', // California (CCPA/CPRA)
-	'VA', // Virginia (VCDPA)
-	'CO', // Colorado (CPA)
-	'CT', // Connecticut (CTDPA)
-	'UT', // Utah (UCPA)
-]);
 
 /**
  * Check if Do Not Track is enabled.

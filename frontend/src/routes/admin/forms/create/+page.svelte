@@ -8,7 +8,7 @@
 
 	let showTemplateSelector = true;
 	let selectedTemplate: FormTemplate | null = null;
-	let formData: Partial<Form> | undefined = undefined;
+	let formData: Partial<Form> | null = null;
 	let selectedTheme: FormTheme | null = null;
 	let showThemeCustomizer = false;
 
@@ -41,7 +41,7 @@
 	function handleStartFromScratch() {
 		selectedTemplate = null;
 		showTemplateSelector = false;
-		formData = undefined;
+		formData = null;
 	}
 
 	function handleThemeChange(theme: FormTheme) {
@@ -66,7 +66,7 @@
 			// Go back to template selector
 			showTemplateSelector = true;
 			selectedTemplate = null;
-			formData = undefined;
+			formData = null;
 		} else {
 			// Go back to forms list
 			goto('/admin/forms');

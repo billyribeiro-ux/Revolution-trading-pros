@@ -134,7 +134,6 @@ export type EventName = (typeof Events)[keyof typeof Events];
 class MetricsService {
 	private static instance: MetricsService;
 	private _initialized = false;
-	private _config: Partial<AnalyticsConfig> = {};
 
 	private constructor() {
 		// Private constructor for singleton
@@ -152,8 +151,6 @@ class MetricsService {
 	 */
 	async initialize(config?: Partial<AnalyticsConfig>): Promise<void> {
 		if (!browser || this._initialized) return;
-
-		this._config = config || {};
 
 		try {
 			const orchestrator = getOrchestrator();

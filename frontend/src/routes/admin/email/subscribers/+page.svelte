@@ -4,21 +4,15 @@
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
 		IconUsers,
-		IconPlus,
 		IconSearch,
-		IconFilter,
 		IconRefresh,
 		IconDownload,
 		IconUpload,
 		IconTrash,
-		IconEdit,
-		IconTag,
 		IconMail,
 		IconCheck,
 		IconX,
-		IconDotsVertical,
-		IconUserPlus,
-		IconChartBar
+		IconUserPlus
 	} from '$lib/icons';
 	import { emailApi, type EmailSubscriber } from '$lib/api/email';
 
@@ -36,7 +30,6 @@
 	// Modal states
 	let showAddModal = $state(false);
 	let showImportModal = $state(false);
-	let showTagModal = $state(false);
 
 	// New subscriber form
 	let newSubscriber = $state({
@@ -54,8 +47,6 @@
 		bounced: 0
 	});
 
-	// Available tags (will be fetched from API)
-	let availableTags = $state(['vip', 'newsletter', 'trial', 'customer', 'lead', 'inactive']);
 
 	onMount(async () => {
 		await loadSubscribers();
@@ -103,8 +94,8 @@
 				.filter(Boolean);
 			await emailApi.createSubscriber({
 				email: newSubscriber.email,
-				first_name: newSubscriber.first_name || undefined,
-				last_name: newSubscriber.last_name || undefined,
+				...(newSubscriber.first_name && { first_name: newSubscriber.first_name }),
+				...(newSubscriber.last_name && { last_name: newSubscriber.last_name }),
 				tags
 			});
 

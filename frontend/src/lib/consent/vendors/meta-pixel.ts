@@ -29,8 +29,6 @@ const PUBLIC_META_PIXEL_ID = import.meta.env['PUBLIC_META_PIXEL_ID'] || '';
 /**
  * Type definitions for Meta Pixel (fbq).
  */
-type _FbqMethod = 'init' | 'track' | 'trackCustom' | 'consent' | 'dataProcessingOptions';
-
 interface Fbq {
 	(method: 'init', pixelId: string): void;
 	(method: 'track', eventName: string, params?: Record<string, unknown>): void;

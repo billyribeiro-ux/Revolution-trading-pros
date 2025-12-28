@@ -2,14 +2,13 @@
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import TemplateForm from '$lib/components/admin/TemplateForm.svelte';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
 	let loading = true;
 	let error = '';
 	let template: Record<string, unknown> | null = null;
 
-	const id = $page.params.id!;
+	const id = $page.params['id']!;
 
 	onMount(async () => {
 		try {

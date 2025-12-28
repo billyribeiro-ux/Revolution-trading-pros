@@ -1,15 +1,14 @@
 import { writable, derived } from 'svelte/store';
-import type { Workflow, WorkflowNode, WorkflowEdge, WorkflowCanvas } from '$lib/types/workflow';
+import type { WorkflowNode, WorkflowEdge, WorkflowCanvas } from '$lib/types/workflow';
 
 function createWorkflowStore() {
-	const { subscribe, set, update } = writable<WorkflowCanvas>({
+	const initialState: WorkflowCanvas = {
 		nodes: [],
 		edges: [],
-		selectedNode: undefined,
-		selectedEdge: undefined,
 		zoom: 1,
 		pan: { x: 0, y: 0 }
-	});
+	};
+	const { subscribe, set, update } = writable<WorkflowCanvas>(initialState);
 
 	return {
 		subscribe,
@@ -30,14 +29,19 @@ function createWorkflowStore() {
 		},
 
 		deleteNode: (nodeId: number) => {
-			update((state) => ({
-				...state,
-				nodes: state.nodes.filter((node) => node.id !== nodeId),
-				edges: state.edges.filter(
-					(edge) => edge.from_node_id !== nodeId && edge.to_node_id !== nodeId
-				),
-				selectedNode: state.selectedNode?.id === nodeId ? undefined : state.selectedNode
-			}));
+			update((state) => {
+				const newState: WorkflowCanvas = {
+					...state,
+					nodes: state.nodes.filter((node) => node.id !== nodeId),
+					edges: state.edges.filter(
+						(edge) => edge.from_node_id !== nodeId && edge.to_node_id !== nodeId
+					)
+				};
+				if (state.selectedNode?.id !== nodeId && state.selectedNode) {
+					newState.selectedNode = state.selectedNode;
+				}
+				return newState;
+			});
 		},
 
 		moveNode: (nodeId: number, position: { x: number; y: number }) => {
@@ -65,36 +69,52 @@ function createWorkflowStore() {
 		},
 
 		deleteEdge: (edgeId: number) => {
-			update((state) => ({
-				...state,
-				edges: state.edges.filter((edge) => edge.id !== edgeId),
-				selectedEdge: state.selectedEdge?.id === edgeId ? undefined : state.selectedEdge
-			}));
+			update((state) => {
+				const newState: WorkflowCanvas = {
+					...state,
+					edges: state.edges.filter((edge) => edge.id !== edgeId)
+				};
+				if (state.selectedEdge?.id !== edgeId && state.selectedEdge) {
+					newState.selectedEdge = state.selectedEdge;
+				}
+				return newState;
+			});
 		},
 
 		// Selection
 		selectNode: (node?: WorkflowNode) => {
-			update((state) => ({
-				...state,
-				selectedNode: node,
-				selectedEdge: undefined
-			}));
+			update((state) => {
+				const newState: WorkflowCanvas = { ...state };
+				if (node) {
+					newState.selectedNode = node;
+				} else {
+					delete newState.selectedNode;
+				}
+				delete newState.selectedEdge;
+				return newState;
+			});
 		},
 
 		selectEdge: (edge?: WorkflowEdge) => {
-			update((state) => ({
-				...state,
-				selectedEdge: edge,
-				selectedNode: undefined
-			}));
+			update((state) => {
+				const newState: WorkflowCanvas = { ...state };
+				if (edge) {
+					newState.selectedEdge = edge;
+				} else {
+					delete newState.selectedEdge;
+				}
+				delete newState.selectedNode;
+				return newState;
+			});
 		},
 
 		clearSelection: () => {
-			update((state) => ({
-				...state,
-				selectedNode: undefined,
-				selectedEdge: undefined
-			}));
+			update((state) => {
+				const newState: WorkflowCanvas = { ...state };
+				delete newState.selectedNode;
+				delete newState.selectedEdge;
+				return newState;
+			});
 		},
 
 		// Canvas operations
@@ -117,8 +137,6 @@ function createWorkflowStore() {
 			set({
 				nodes,
 				edges,
-				selectedNode: undefined,
-				selectedEdge: undefined,
 				zoom: 1,
 				pan: { x: 0, y: 0 }
 			});
@@ -129,8 +147,6 @@ function createWorkflowStore() {
 			set({
 				nodes: [],
 				edges: [],
-				selectedNode: undefined,
-				selectedEdge: undefined,
 				zoom: 1,
 				pan: { x: 0, y: 0 }
 			});

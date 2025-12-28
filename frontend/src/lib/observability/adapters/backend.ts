@@ -37,7 +37,6 @@ const DEFAULT_FLUSH_INTERVAL = 5000; // 5 seconds
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const MAX_QUEUE_SIZE = 1000;
 const MAX_RETRIES = 3;
-const RETRY_DELAYS = [1000, 2000, 4000]; // Exponential backoff
 const STORAGE_KEY = 'rtp_analytics_offline_queue';
 
 // ═══════════════════════════════════════════════════════════════════════════

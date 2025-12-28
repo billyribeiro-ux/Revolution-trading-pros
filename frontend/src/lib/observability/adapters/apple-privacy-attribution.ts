@@ -170,10 +170,6 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 	private _sessionId: string = '';
 	private _conversionMap: ConversionValueMap = DEFAULT_CONVERSION_MAP;
 	private _currentConversionValue: number = 0;
-	private _consent: { analytics: boolean; marketing: boolean } = {
-		analytics: false,
-		marketing: false,
-	};
 
 	// Metrics tracking
 	private _metrics: AdapterMetrics = {
@@ -229,7 +225,6 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		}
 
 		this._config = config;
-		this._consent = config.consent;
 		this._appleConfig = config.appleAttribution || {};
 
 		// Merge custom conversion mapping
@@ -264,8 +259,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 	 * Update consent state.
 	 */
 	onConsentChange(consent: { analytics: boolean; marketing: boolean }): void {
-		this._consent = consent;
-
+		// Consent state is tracked by the orchestrator
 		if (this._config?.debug) {
 			console.debug('[AppleAttribution] Consent updated:', consent);
 		}
@@ -371,9 +365,6 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		// PCM conversions are triggered via image pixel or fetch
 		// The browser handles the actual attribution reporting
 		try {
-			// This would be an actual pixel/endpoint in production
-			const _conversionEndpoint = '/.well-known/private-click-measurement/trigger-attribution';
-
 			// Store locally for reference
 			storeAttributionData({
 				pcmConversionTriggered: true,

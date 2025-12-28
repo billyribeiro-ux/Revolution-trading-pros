@@ -24,9 +24,10 @@
 		try {
 			const response = await getForms();
 			forms = response.forms || [];
-			if (forms.length > 0 && forms[0].id) {
-				selectedFormId = forms[0].id;
-				await loadEntries(forms[0].id);
+			const firstForm = forms[0];
+			if (forms.length > 0 && firstForm?.id) {
+				selectedFormId = firstForm.id;
+				await loadEntries(firstForm.id);
 			}
 		} catch (error) {
 			addToast({ type: 'error', message: 'Failed to load forms' });

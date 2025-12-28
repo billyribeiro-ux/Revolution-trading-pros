@@ -48,7 +48,7 @@ function createThemeStore() {
 		body.classList.add(effectiveTheme);
 
 		// Set data attribute for CSS selectors
-		root.dataset.theme = effectiveTheme;
+		root.dataset['theme'] = effectiveTheme;
 
 		// Update meta theme-color for mobile browsers
 		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
@@ -107,11 +107,11 @@ function createThemeStore() {
 				const order: Theme[] = ['dark', 'light', 'auto'];
 				const currentIndex = order.indexOf(current);
 				const next = order[(currentIndex + 1) % order.length];
-				if (browser) {
+				if (browser && next) {
 					localStorage.setItem('theme', next);
 					applyTheme(next);
 				}
-				return next;
+				return next ?? 'dark';
 			});
 		},
 
