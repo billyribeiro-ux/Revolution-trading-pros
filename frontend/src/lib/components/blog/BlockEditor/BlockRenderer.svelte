@@ -245,6 +245,7 @@
 				<li class="list-item">
 					<span
 						role="textbox"
+						tabindex="0"
 						contenteditable={isEditing}
 						class="list-text editable-content"
 						oninput={(e: Event) => updateListItem(index, (e.target as HTMLElement).textContent || '')}

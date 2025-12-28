@@ -56,8 +56,7 @@
 		// Extract plain text from content
 		const plainText = stripHtml(content);
 		const wordCount = countWords(plainText);
-		const sentences = countSentences(plainText);
-		const paragraphs = countParagraphs(content);
+	const sentences = countSentences(plainText);
 
 		// ===================
 		// Title Analysis
@@ -137,11 +136,6 @@
 	// Count sentences
 	function countSentences(text: string): number {
 		return (text.match(/[.!?]+/g) || []).length || 1;
-	}
-
-	// Count paragraphs
-	function countParagraphs(html: string): number {
-		return (html.match(/<p[^>]*>/gi) || []).length || 1;
 	}
 
 	// Calculate keyword density
@@ -359,8 +353,8 @@
 	// Analyze keywords
 	function analyzeKeywords(
 		text: string,
-		title: string,
-		meta: string,
+		_title: string,
+		_meta: string,
 		keyword: string,
 		issues: SEOAnalysis['issues'],
 		suggestions: string[]
@@ -446,9 +440,7 @@
 		suggestions: string[]
 	): void {
 		// Headings hierarchy
-		const h1Count = (html.match(/<h1[^>]*>/gi) || []).length;
 		const h2Count = (html.match(/<h2[^>]*>/gi) || []).length;
-		const h3Count = (html.match(/<h3[^>]*>/gi) || []).length;
 
 		if (h2Count === 0) {
 			issues.push({ type: 'warning', message: 'No H2 subheadings found', category: 'structure' });
