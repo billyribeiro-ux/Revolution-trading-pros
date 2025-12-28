@@ -114,10 +114,6 @@
 		return candles.map((_, i) => 30 + Math.sin(i * 0.15) * 25 + Math.random() * 15);
 	}
 
-	function generateMACDData(candles: any[]) {
-		return candles.map((_, i) => Math.sin(i * 0.1) * 2 + (Math.random() - 0.5));
-	}
-
 	// ============================================================================
 	// CHART RENDERING
 	// ============================================================================

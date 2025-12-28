@@ -7,7 +7,6 @@
     import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
     import IconDatabase from '@tabler/icons-svelte/icons/database';
     import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
-    import IconCheck from '@tabler/icons-svelte/icons/check';
 
     const features = [
         {
