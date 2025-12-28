@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { IconPlayerPlay, IconRefresh, IconFilter, IconTrash } from '$lib/icons';
+	import { IconPlayerPlay, IconRefresh } from '$lib/icons';
 
-	let recordings: any[] = [];
 	let isLoading = false;
 </script>
 

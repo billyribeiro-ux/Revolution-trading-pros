@@ -644,7 +644,7 @@
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
 		<div class="ambient-grid"></div>
-		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide]?.accentColor}"></div>
+		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide]!.accentColor}"></div>
 	</div>
 
 	<!-- Chart Background -->

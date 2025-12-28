@@ -92,12 +92,12 @@
 					metrics: newReport.metrics,
 					dimensions: newReport.dimensions
 				},
-				schedule: newReport.schedule
-					? {
-							frequency: newReport.frequency,
-							recipients: newReport.recipients.split(',').map((e) => e.trim())
-						}
-					: undefined
+				...(newReport.schedule && {
+					schedule: {
+						frequency: newReport.frequency,
+						recipients: newReport.recipients.split(',').map((e) => e.trim())
+					}
+				})
 			});
 			showCreateModal = false;
 			newReport = {

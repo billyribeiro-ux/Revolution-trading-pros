@@ -8,7 +8,6 @@
 	import { onMount } from 'svelte';
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
-	import TimeSeriesChart from '$lib/components/analytics/TimeSeriesChart.svelte';
 
 	let events: AnalyticsEvent[] = [];
 	let eventTypes: { name: string; count: number }[] = [];
@@ -39,8 +38,8 @@
 		try {
 			const response = await analyticsApi.getEvents({
 				period: selectedPeriod,
-				event_type: selectedEventType || undefined,
-				search: searchQuery || undefined,
+				...(selectedEventType && { event_type: selectedEventType }),
+				...(searchQuery && { search: searchQuery }),
 				page
 			});
 			events = response.events;
