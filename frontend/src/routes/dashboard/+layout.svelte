@@ -289,7 +289,7 @@
 					<li class={$page.url.pathname === '/dashboard' || $page.url.pathname === '/dashboard/' ? 'is-active' : ''}>
 						<a href="/dashboard/">
 							<span class="dashboard__nav-item-icon">
-								<IconHome size={24} />
+								<IconHome size={28} />
 							</span>
 							<span class="dashboard__nav-item-text">Member Dashboard</span>
 						</a>
@@ -297,7 +297,7 @@
 					<li class={$page.url.pathname.startsWith('/dashboard/classes') ? 'is-active' : ''}>
 						<a href="/dashboard/classes/">
 							<span class="dashboard__nav-item-icon">
-								<IconSchool size={24} />
+								<IconSchool size={28} />
 							</span>
 							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Classes</span>
 						</a>
@@ -305,7 +305,7 @@
 					<li class={$page.url.pathname.startsWith('/dashboard/indicators') ? 'is-active' : ''}>
 						<a href="/dashboard/indicators/">
 							<span class="dashboard__nav-item-icon">
-								<IconChartCandle size={24} />
+								<IconChartCandle size={28} />
 							</span>
 							<span class="dashboard__nav-item-text dashboard__nav-item-text--bold">My Indicators</span>
 						</a>
@@ -320,7 +320,7 @@
 							<li class={$page.url.pathname.startsWith(`/dashboard/${room.slug}`) ? 'is-active' : ''}>
 								<a href="/dashboard/{room.slug}">
 									<span class="dashboard__nav-item-icon">
-										<DynamicIcon name={room.icon || 'chart-line'} size={24} />
+										<DynamicIcon name={room.icon || 'chart-line'} size={28} />
 									</span>
 									<span class="dashboard__nav-item-text">{room.name}</span>
 								</a>
@@ -337,7 +337,7 @@
 							<li class={$page.url.pathname.startsWith(`/dashboard/${alert.slug}`) ? 'is-active' : ''}>
 								<a href="/dashboard/{alert.slug}">
 									<span class="dashboard__nav-item-icon">
-										<DynamicIcon name={alert.icon || 'bell'} size={24} />
+										<DynamicIcon name={alert.icon || 'bell'} size={28} />
 									</span>
 									<span class="dashboard__nav-item-text">{alert.name}</span>
 								</a>
@@ -354,7 +354,7 @@
 							<li class={$page.url.pathname.startsWith(`/dashboard/${course.slug}`) ? 'is-active' : ''}>
 								<a href="/dashboard/{course.slug}">
 									<span class="dashboard__nav-item-icon">
-										<DynamicIcon name={course.icon || 'book'} size={24} />
+										<DynamicIcon name={course.icon || 'book'} size={28} />
 									</span>
 									<span class="dashboard__nav-item-text">{course.name}</span>
 								</a>
@@ -371,7 +371,7 @@
 							<li class={$page.url.pathname.startsWith(`/dashboard/${report.slug}`) ? 'is-active' : ''}>
 								<a href="/dashboard/{report.slug}">
 									<span class="dashboard__nav-item-icon">
-										<DynamicIcon name={report.icon || 'report-analytics'} size={24} />
+										<DynamicIcon name={report.icon || 'report-analytics'} size={28} />
 									</span>
 									<span class="dashboard__nav-item-text">{report.name}</span>
 								</a>
@@ -386,7 +386,7 @@
 					<li class={$page.url.pathname.startsWith('/dashboard/ww') ? 'is-active' : ''}>
 						<a href="/dashboard/ww/">
 							<span class="dashboard__nav-item-icon">
-								<IconCalendarWeek size={24} />
+								<IconCalendarWeek size={28} />
 							</span>
 							<span class="dashboard__nav-item-text">Weekly Watchlist</span>
 						</a>
@@ -394,7 +394,7 @@
 					<li>
 						<a href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener noreferrer">
 							<span class="dashboard__nav-item-icon">
-								<IconHeadset size={24} />
+								<IconHeadset size={28} />
 							</span>
 							<span class="dashboard__nav-item-text">Support</span>
 						</a>
@@ -407,7 +407,7 @@
 					<li class={$page.url.pathname.startsWith('/dashboard/account') ? 'is-active' : ''}>
 						<a href="/dashboard/account/">
 							<span class="dashboard__nav-item-icon">
-								<IconSettings size={24} />
+								<IconSettings size={28} />
 							</span>
 							<span class="dashboard__nav-item-text">My Account</span>
 						</a>
@@ -450,7 +450,7 @@
 						<li class={$page.url.pathname === `/dashboard/${currentMembershipSlug}` || $page.url.pathname === `/dashboard/${currentMembershipSlug}/` ? 'is-active' : ''}>
 							<a href="/dashboard/{currentMembershipSlug}">
 								<span class="dashboard__nav-item-icon">
-									<IconLayoutDashboard size={24} />
+									<IconLayoutDashboard size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">{breadcrumbTitles[currentMembershipSlug] || 'Dashboard'} Dashboard</span>
 							</a>
@@ -459,7 +459,7 @@
 						<li class={$page.url.pathname.includes('/daily-videos') ? 'is-active' : ''}>
 							<a href="/dashboard/{currentMembershipSlug}/daily-videos">
 								<span class="dashboard__nav-item-icon">
-									<IconPlayerPlay size={24} />
+									<IconPlayerPlay size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">Premium Daily Videos</span>
 							</a>
@@ -468,7 +468,7 @@
 						<li class={$page.url.pathname.includes('/learning-center') ? 'is-active' : ''}>
 							<a href="/dashboard/{currentMembershipSlug}/learning-center">
 								<span class="dashboard__nav-item-icon">
-									<IconAward size={24} />
+									<IconAward size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">Learning Center</span>
 							</a>
@@ -477,7 +477,7 @@
 						<li class={$page.url.pathname.includes('/trading-room-archive') ? 'is-active' : ''}>
 							<a href="/dashboard/{currentMembershipSlug}/trading-room-archive">
 								<span class="dashboard__nav-item-icon">
-									<IconArchive size={24} />
+									<IconArchive size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">Trading Room Archives</span>
 							</a>
@@ -486,7 +486,7 @@
 						<li class="has-submenu" class:is-active={$page.url.pathname.includes('/traders')}>
 							<span class="submenu-trigger" role="button" tabindex="0">
 								<span class="dashboard__nav-item-icon">
-									<IconUsers size={24} />
+									<IconUsers size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">Meet the Traders</span>
 							</span>
@@ -506,7 +506,7 @@
 						<li class="has-submenu" class:is-active={$page.url.pathname.includes('/trader-store')}>
 							<span class="submenu-trigger" role="button" tabindex="0">
 								<span class="dashboard__nav-item-icon">
-									<IconBuildingStore size={24} />
+									<IconBuildingStore size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">Trader Store</span>
 							</span>
@@ -526,7 +526,7 @@
 						<li class={$page.url.pathname.includes('/simpler-showcase') ? 'is-active' : ''}>
 							<a href="/dashboard/simpler-showcase">
 								<span class="dashboard__nav-item-icon">
-									<IconTrophy size={24} />
+									<IconTrophy size={28} />
 								</span>
 								<span class="dashboard__nav-item-text">Simpler Showcase</span>
 							</a>
@@ -658,7 +658,7 @@
 	.breadcrumbs a {
 		color: #666;
 		text-decoration: none;
-		transition: color 0.15s ease-in-out;
+		transition: color 0.2s ease-in-out;
 	}
 
 	.breadcrumbs a:hover {
@@ -729,7 +729,7 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		width: 220px;
-		background-color: #0f2d41;
+		background-color: #0e2433;
 		min-height: 100%;
 		bottom: 50px;
 		left: 0;
@@ -834,7 +834,7 @@
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
 		margin-right: 0;
 		transform: scale(1);
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -862,7 +862,7 @@
 		font-size: 13px;
 		font-weight: 600;
 		pointer-events: none;
-		transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out, transform 0.15s ease-in-out;
+		transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, transform 0.2s ease-in-out;
 		will-change: opacity, visibility, transform;
 	}
 
@@ -965,7 +965,7 @@
 		padding: 20px;
 		text-decoration: none;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 
 	.dashboard__profile-nav-item:hover {
@@ -1011,11 +1011,11 @@
 		position: relative;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 
 	/* Active indicator on RIGHT side for primary nav */
@@ -1028,7 +1028,7 @@
 		bottom: 0;
 		width: 5px;
 		background: transparent;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 
 	.dashboard__nav-primary .dash_main_links li a:hover {
@@ -1045,30 +1045,30 @@
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - Inline with margin-right per reference */
+	/* Icon Styling - WHITE icons per core reference (not blue) */
 	.dashboard__nav-item-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		margin-right: 10px;
-		color: #0984ae;
+		color: #fff;
 		vertical-align: middle;
 		flex-shrink: 0;
 	}
 
 	/* Ensure SVG icons inherit color */
 	.dashboard__nav-item-icon :global(svg) {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		color: inherit;
 		stroke: currentColor;
 	}
 
-	/* Text Styling - Exact Match to reference */
+	/* Text Styling - Exact Match to core reference (17px not 14px) */
 	.dashboard__nav-item-text {
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		color: hsla(0, 0%, 100%, 0.7);
@@ -1077,7 +1077,7 @@
 
 	/* Bold white text for My Classes and My Indicators */
 	.dashboard__nav-item-text--bold {
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		color: #fff;
@@ -1131,11 +1131,11 @@
 		padding: 14px 20px 14px 20px;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		position: relative;
 	}
 
@@ -1149,7 +1149,7 @@
 		bottom: 0;
 		width: 5px;
 		background: transparent;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 
 	.dashboard__nav-secondary li a:hover {
@@ -1170,16 +1170,16 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		margin-right: 10px;
-		color: #0984ae;
+		color: #fff;
 		flex-shrink: 0;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon :global(svg) {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		color: inherit;
 		stroke: currentColor;
 	}
@@ -1187,7 +1187,7 @@
 	.dashboard__nav-secondary .dashboard__nav-item-text {
 		color: inherit;
 		flex: 1;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 	}
 
@@ -1219,11 +1219,11 @@
 		padding: 14px 20px 14px 20px;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		cursor: default;
 		position: relative;
 	}
@@ -1243,7 +1243,7 @@
 		position: absolute;
 		left: 100%;
 		top: 0;
-		min-width: 180px;
+		min-width: 220px;
 		background-color: #143E59;
 		list-style: none;
 		margin: 0;
@@ -1279,7 +1279,7 @@
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		white-space: nowrap;
 		border-left: 3px solid transparent;
 	}
@@ -1309,11 +1309,11 @@
 		padding: 14px 20px;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		position: relative;
 	}
 
@@ -1330,7 +1330,7 @@
 		bottom: 0;
 		width: 5px;
 		background: transparent;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 
 	.dashboard__nav-secondary .woocommerce-MyAccount-navigation-link a:hover {
@@ -1479,7 +1479,7 @@
 		position: absolute;
 		transform: rotate(0);
 		transform-origin: left center;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		width: 20px;
 	}
 
