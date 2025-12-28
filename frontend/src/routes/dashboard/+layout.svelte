@@ -1011,7 +1011,7 @@
 		position: relative;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
@@ -1045,30 +1045,30 @@
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - Inline with margin-right per reference */
+	/* Icon Styling - WHITE icons per core reference (not blue) */
 	.dashboard__nav-item-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		margin-right: 10px;
-		color: #0984ae;
+		color: #fff;
 		vertical-align: middle;
 		flex-shrink: 0;
 	}
 
 	/* Ensure SVG icons inherit color */
 	.dashboard__nav-item-icon :global(svg) {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		color: inherit;
 		stroke: currentColor;
 	}
 
-	/* Text Styling - Exact Match to reference */
+	/* Text Styling - Exact Match to core reference (17px not 14px) */
 	.dashboard__nav-item-text {
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		color: hsla(0, 0%, 100%, 0.7);
@@ -1077,7 +1077,7 @@
 
 	/* Bold white text for My Classes and My Indicators */
 	.dashboard__nav-item-text--bold {
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		color: #fff;
@@ -1131,7 +1131,7 @@
 		padding: 14px 20px 14px 20px;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
@@ -1170,16 +1170,16 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		margin-right: 10px;
-		color: #0984ae;
+		color: #fff;
 		flex-shrink: 0;
 	}
 
 	.dashboard__nav-secondary .dashboard__nav-item-icon :global(svg) {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		color: inherit;
 		stroke: currentColor;
 	}
@@ -1187,7 +1187,7 @@
 	.dashboard__nav-secondary .dashboard__nav-item-text {
 		color: inherit;
 		flex: 1;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 	}
 
@@ -1219,7 +1219,7 @@
 		padding: 14px 20px 14px 20px;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
@@ -1309,7 +1309,7 @@
 		padding: 14px 20px;
 		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 17px;
 		font-weight: 400;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
