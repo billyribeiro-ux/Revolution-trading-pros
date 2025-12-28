@@ -289,14 +289,15 @@
 				<h2 class="section-title u--margin-top-20">Latest Updates</h2>
 				<div class="article-cards row flex-grid">
 					<!-- Placeholder article cards - will be replaced with actual blog/video content -->
+					<!-- Article Card 1 - Label INSIDE figure for overlay positioning -->
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
 							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop');">
 								<img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop" alt="Trading Update" />
+								<div class="article-card__type">
+									<span class="label label--info">Daily Video</span>
+								</div>
 							</figure>
-							<div class="article-card__type">
-								<span class="label label--info">Daily Video</span>
-							</div>
 							<h4 class="h5 article-card__title"><a href="/blog">Welcome to Revolution Trading Pros</a></h4>
 							<span class="article-card__meta"><small>Latest market insights and trading education</small></span>
 							<div class="article-card__excerpt u--hide-read-more">
@@ -306,17 +307,18 @@
 									</div>
 								</div>
 							</div>
-							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
+							<a href="/pricing" class="btn btn-tiny btn-default">Watch Now</a>
 						</article>
 					</div>
+					<!-- Article Card 2 -->
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
 							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop');">
 								<img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&h=600&fit=crop" alt="Market Analysis" />
+								<div class="article-card__type">
+									<span class="label label--info">Daily Video</span>
+								</div>
 							</figure>
-							<div class="article-card__type">
-								<span class="label label--info">Daily Video</span>
-							</div>
 							<h4 class="h5 article-card__title"><a href="/blog">Market Analysis & Trading Strategies</a></h4>
 							<span class="article-card__meta"><small>Expert insights from our trading team</small></span>
 							<div class="article-card__excerpt u--hide-read-more">
@@ -326,23 +328,24 @@
 									</div>
 								</div>
 							</div>
-							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
+							<a href="/pricing" class="btn btn-tiny btn-default">Watch Now</a>
 						</article>
 					</div>
+					<!-- Article Card 3 -->
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
 							<figure class="article-card__image" style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop');">
 								<img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=600&fit=crop" alt="Trading Education" />
+								<div class="article-card__type">
+									<span class="label label--info">Daily Video</span>
+								</div>
 							</figure>
-							<div class="article-card__type">
-								<span class="label label--info">Daily Video</span>
-							</div>
 							<h4 class="h5 article-card__title"><a href="/blog">Learn Advanced Trading Techniques</a></h4>
 							<span class="article-card__meta"><small>Professional trading education</small></span>
 							<div class="article-card__excerpt u--hide-read-more">
 								<p>Get access to exclusive trading education, live trading rooms, and expert analysis. Join our community of successful traders today.</p>
 							</div>
-							<a href="/pricing" class="btn btn-tiny btn-default">View Plans</a>
+							<a href="/pricing" class="btn btn-tiny btn-default">Watch Now</a>
 						</article>
 					</div>
 				</div>
@@ -953,69 +956,89 @@
 		}
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ARTICLE CARD - ICT11+ PIXEL-PERFECT MATCH to dashboard-globals.css
+	   Reference lines 931-1021
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-card {
-		background: #fff;
-		border-radius: 5px;
-		overflow: hidden;
+		position: relative;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
+		overflow: hidden;
+		margin-bottom: 30px;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 	}
 
 	.article-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
+	/* Image with 16:9 aspect ratio using padding-top trick - Reference line 947 */
 	.article-card__image {
 		position: relative;
 		width: 100%;
-		height: 200px;
+		padding-top: 56.25%;
 		background-size: cover;
 		background-position: center;
+		background-color: #0984ae;
 		margin: 0;
 	}
 
 	.article-card__image img {
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		opacity: 0;
 	}
 
+	/* Type label positioned OVER the image - Reference line 957-961 */
 	.article-card__type {
-		padding: 12px 20px 0;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		z-index: 2;
+		margin: 0;
 	}
 
+	/* Label badge - PILL SHAPE 25px radius - Reference line 963-971 */
 	.label {
 		display: inline-block;
-		padding: 4px 12px;
-		border-radius: 3px;
-		font-size: 11px;
-		font-weight: 600;
+		padding: 4px 10px;
+		font-size: 10px;
+		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
+		border-radius: 25px;
 	}
 
 	.label--info {
-		background: #0984ae;
+		background-color: #0984ae;
 		color: #fff;
 	}
 
+	/* Title - Reference line 978-995 */
 	.article-card__title {
-		padding: 12px 20px 0;
 		margin: 0;
+		padding: 15px 15px 10px;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.3;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.article-card__title a {
 		color: #333;
 		text-decoration: none;
-		font-size: 18px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.4;
-		transition: color 0.2s;
+		transition: color 0.15s ease-in-out;
 	}
 
 	.article-card__title a:hover {
@@ -1023,22 +1046,28 @@
 	}
 
 	.h5 {
-		font-size: 18px;
-		font-weight: 600;
+		font-size: 16px;
+		font-weight: 700;
 	}
 
+	/* Meta - Reference line 997-1006 */
 	.article-card__meta {
 		display: block;
-		padding: 8px 20px 0;
+		padding: 0 15px;
 		color: #999;
-		font-size: 13px;
+		font-size: 12px;
 	}
 
+	.article-card__meta small {
+		font-size: 12px;
+	}
+
+	/* Excerpt - Reference line 1008-1017 */
 	.article-card__excerpt {
-		padding: 12px 20px;
-		color: #666;
+		padding: 10px 15px;
 		font-size: 14px;
-		line-height: 1.6;
+		line-height: 1.5;
+		color: #666;
 	}
 
 	.article-card__excerpt p {
@@ -1063,13 +1092,33 @@
 		border-radius: 3px;
 	}
 
+	/* Button in article card - Reference line 1019-1021 */
 	.article-card .btn {
-		margin: 0 20px 20px;
+		margin: 0 15px 15px;
 	}
 
+	/* btn-tiny - Reference line 497-502 */
 	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 13px;
+		padding: 5px 10px;
+		font-size: 11px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	/* btn-tiny.btn-default SPECIAL - From Learning-Center reference line 1343-1354
+	   Watch Now button is ORANGE with transparent background */
+	.article-card .btn.btn-tiny.btn-default {
+		background: transparent;
+		color: #F3911B;
+		padding-left: 0;
+		font-size: 17px;
+		border: none;
+	}
+
+	.article-card .btn.btn-tiny.btn-default:hover {
+		color: #F3911B;
+		background: #e7e7e7;
+		padding-left: 8px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

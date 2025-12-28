@@ -190,12 +190,12 @@
 								<!-- DAILY VIDEOS -->
 								<figure class="article-card__image" style="background-image: url({video.thumbnail});">
 									<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt="" />
+									<div class="article-card__type">
+										{#each video.categoryLabels as label, i (i)}
+											<span id={video.categories[i]} class="label label--info">{label}</span>
+										{/each}
+									</div>
 								</figure>
-								<div class="article-card__type">
-									{#each video.categoryLabels as label, i (i)}
-										<span id={video.categories[i]} class="label label--info">{label}</span>
-									{/each}
-								</div>
 								<h4 class="h5 article-card__title">
 									<a href="/learning-center/{video.videoSlug}">{video.title}</a>
 								</h4>
@@ -354,24 +354,35 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ARTICLE CARD - Exact match to Simpler Trading reference
+	   ARTICLE CARD - Pixel-perfect match to Simpler Trading reference
+	   Reference: dashboard-globals.css lines 931-1021
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-card {
-		background: #fff;
-		border-radius: 4px;
+		position: relative;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		margin-bottom: 30px;
 		height: 100%;
 		display: flex;
 		flex-direction: column;
 	}
 
+	.article-card:hover {
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
+	}
+
 	.article-card__image {
 		position: relative;
+		width: 100%;
 		padding-top: 56.25%; /* 16:9 aspect ratio */
 		background-size: cover;
 		background-position: center;
-		background-repeat: no-repeat;
+		background-color: #0984ae; /* Fallback color */
 		margin: 0;
 	}
 
@@ -385,8 +396,13 @@
 		opacity: 0;
 	}
 
+	/* Type label - Absolute positioned overlay on image */
 	.article-card__type {
-		padding: 15px 15px 0;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		z-index: 2;
+		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 5px;
@@ -394,18 +410,19 @@
 
 	.label {
 		display: inline-block;
-		padding: 4px 8px;
+		padding: 4px 10px;
 		font-size: 10px;
-		font-weight: 600;
+		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		text-transform: uppercase;
-		border-radius: 3px;
+		letter-spacing: 0.5px;
+		border-radius: 25px; /* Pill shape */
 		line-height: 1.2;
 	}
 
 	.label--info {
-		background: #d1ecf1;
-		color: #0c5460;
+		background: #0984ae;
+		color: #fff;
 	}
 
 	.h5.article-card__title {
@@ -413,8 +430,9 @@
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		color: #333;
-		margin: 10px 15px 0;
-		line-height: 1.4;
+		margin: 0;
+		padding: 15px 15px 10px;
+		line-height: 1.3;
 	}
 
 	.article-card__title a {
@@ -429,12 +447,12 @@
 
 	.u--margin-top-0 {
 		margin-top: 0 !important;
-		padding: 5px 15px 0;
+		padding: 0 15px;
 	}
 
 	.trader_name {
-		font-size: 13px;
-		color: #666;
+		font-size: 12px;
+		color: #999;
 		font-family: 'Open Sans', sans-serif;
 	}
 
@@ -459,11 +477,11 @@
 		display: none;
 	}
 
-	/* Watch Now Button - Exact match */
+	/* Watch Now Button - Orange style from reference */
 	.btn {
 		display: inline-block;
 		font-family: 'Open Sans', sans-serif;
-		font-weight: 600;
+		font-weight: 700;
 		text-decoration: none;
 		border-radius: 4px;
 		cursor: pointer;
@@ -472,9 +490,26 @@
 	}
 
 	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 12px;
+		padding: 5px 10px;
+		font-size: 11px;
+		line-height: 1.5;
+		border-radius: 3px;
 		margin: 0 15px 15px;
+	}
+
+	/* Watch Now button - Orange style from Learning-Center reference */
+	.article-card .btn.btn-tiny.btn-default {
+		background: transparent;
+		color: #F3911B;
+		padding-left: 0;
+		font-size: 17px;
+		border: none;
+	}
+
+	.article-card .btn.btn-tiny.btn-default:hover {
+		color: #F3911B;
+		background: #e7e7e7;
+		padding-left: 8px;
 	}
 
 	.btn-default {

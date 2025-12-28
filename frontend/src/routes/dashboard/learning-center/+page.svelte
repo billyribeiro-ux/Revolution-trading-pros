@@ -149,10 +149,10 @@
 								style="background-image: url({video.thumbnail});"
 							>
 								<img src={video.thumbnail} alt={video.title} />
+								<div class="article-card__type">
+									<span class="label label--info">{video.categoryName}</span>
+								</div>
 							</figure>
-							<div class="article-card__type">
-								<span class="label label--info">{video.categoryName}</span>
-							</div>
 							<h4 class="h5 article-card__title">
 								<a href="/learning-center/{video.slug}">{video.title}</a>
 							</h4>
@@ -337,16 +337,22 @@
 		}
 	}
 
-	/* Article Card */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ARTICLE CARD - Pixel-perfect match to Simpler Trading reference
+	   Reference: dashboard-globals.css lines 931-1021
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-card {
-		background: #fff;
-		border-radius: 5px;
-		overflow: hidden;
+		position: relative;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
+		overflow: hidden;
+		margin-bottom: 30px;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		transition: all 0.2s;
 	}
 
 	.article-card:hover {
@@ -355,27 +361,42 @@
 	}
 
 	.article-card__image {
-		height: 180px;
+		position: relative;
+		width: 100%;
+		padding-top: 56.25%; /* 16:9 aspect ratio */
 		background-size: cover;
 		background-position: center;
+		background-color: #0984ae; /* Fallback color */
 		margin: 0;
 	}
 
 	.article-card__image img {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 		opacity: 0;
 	}
 
+	/* Type label - Absolute positioned overlay on image */
 	.article-card__type {
-		padding: 15px 20px 0;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		z-index: 2;
+		margin: 0;
 	}
 
 	.label {
 		display: inline-block;
 		padding: 4px 10px;
-		border-radius: 3px;
-		font-size: 11px;
-		font-weight: 600;
+		font-size: 10px;
+		font-weight: 700;
 		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		border-radius: 25px; /* Pill shape */
 	}
 
 	.label--info {
@@ -384,10 +405,11 @@
 	}
 
 	.article-card__title {
-		padding: 10px 20px 0;
 		margin: 0;
-		font-size: 18px;
+		padding: 15px 15px 10px;
+		font-size: 16px;
 		font-weight: 700;
+		line-height: 1.3;
 	}
 
 	.article-card__title a {
@@ -401,12 +423,12 @@
 	}
 
 	.u--margin-top-0 {
-		padding: 5px 20px;
+		padding: 0 15px;
 	}
 
 	.trader_name {
-		color: #666;
-		font-size: 14px;
+		color: #999;
+		font-size: 12px;
 	}
 
 	.trader_name i {
@@ -418,20 +440,36 @@
 	}
 
 	.article-card .btn {
-		margin: auto 20px 20px;
+		margin: auto 15px 15px;
 	}
 
 	.btn {
 		display: inline-block;
-		padding: 8px 16px;
+		padding: 5px 10px;
 		background: #f5f5f5;
 		color: #333;
 		border: 1px solid #ddd;
-		border-radius: 4px;
+		border-radius: 3px;
 		text-decoration: none;
-		font-size: 13px;
-		font-weight: 600;
+		font-size: 11px;
+		font-weight: 700;
+		line-height: 1.5;
 		transition: all 0.2s;
+	}
+
+	/* Watch Now button - Orange style from reference */
+	.article-card .btn.btn-tiny.btn-default {
+		background: transparent;
+		color: #F3911B;
+		padding-left: 0;
+		font-size: 17px;
+		border: none;
+	}
+
+	.article-card .btn.btn-tiny.btn-default:hover {
+		color: #F3911B;
+		background: #e7e7e7;
+		padding-left: 8px;
 	}
 
 	.btn:hover {

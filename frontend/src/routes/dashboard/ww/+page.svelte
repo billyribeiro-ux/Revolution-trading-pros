@@ -390,13 +390,25 @@
 		}
 	}
 
-	/* Article Card */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ARTICLE CARD - Pixel-perfect match to Simpler Trading reference
+	   Reference: dashboard-globals.css lines 931-1021
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-card {
-		background: #fff;
-		border-radius: 4px;
+		position: relative;
+		background-color: #fff;
+		border: 1px solid #dbdbdb;
+		border-radius: 8px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s ease-in-out;
 		overflow: hidden;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		margin-bottom: 30px;
 		height: 100%;
+	}
+
+	.article-card:hover {
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
 	.weekly_watchlist {
@@ -408,10 +420,11 @@
 
 	.article-card__image {
 		position: relative;
-		padding-bottom: 56.25%;
+		width: 100%;
+		padding-bottom: 56.25%; /* 16:9 aspect ratio */
 		background-size: cover;
 		background-position: center;
-		background-color: #1a1a1a;
+		background-color: #0984ae; /* Fallback color */
 	}
 
 	.article-card__image a {
@@ -431,7 +444,7 @@
 	}
 
 	.card_content {
-		padding: 20px;
+		padding: 15px;
 		display: flex;
 		flex-direction: column;
 		flex: 1;
@@ -442,15 +455,16 @@
 	}
 
 	.article-card__title {
-		font-size: 18px;
-		font-weight: 600;
+		font-size: 16px;
+		font-weight: 700;
 		margin: 0 0 10px;
-		line-height: 1.4;
+		line-height: 1.3;
 	}
 
 	.article-card__title a {
 		color: #333;
 		text-decoration: none;
+		transition: color 0.2s;
 	}
 
 	.article-card__title a:hover {
@@ -462,29 +476,37 @@
 	}
 
 	.u--margin-bottom-20 {
-		margin-bottom: 20px;
+		margin-bottom: 15px;
 	}
 
 	.card_content span i {
-		color: #666;
+		color: #999;
 		font-style: italic;
+		font-size: 12px;
 	}
 
 	.card_content p {
 		color: #666;
 		font-size: 14px;
+		line-height: 1.5;
 		margin: 0;
 	}
 
+	/* Watch Now button - Orange style from reference */
 	.watch-now-link {
-		color: #f7941d;
+		background: transparent;
+		color: #F3911B;
 		text-decoration: none;
-		font-weight: 600;
-		font-size: 14px;
+		font-weight: 700;
+		font-size: 17px;
+		padding-left: 0;
+		transition: all 0.2s ease-in-out;
 	}
 
 	.watch-now-link:hover {
-		text-decoration: underline;
+		color: #F3911B;
+		background: #e7e7e7;
+		padding-left: 8px;
 	}
 
 	.view-all-link {
