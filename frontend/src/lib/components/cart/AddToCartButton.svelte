@@ -12,7 +12,7 @@
 	 * @version 1.0.0 (Svelte 5 / December 2025)
 	 */
 
-	import { cartStore, getIntervalDisplayName } from '$lib/stores/cart';
+	import { cartStore, type CartItem } from '$lib/stores/cart';
 	import { isAuthenticated } from '$lib/stores/auth';
 	import {
 		checkProductOwnership,
@@ -177,19 +177,19 @@
 						: 'alert-service';
 
 		// Filter out 'lifetime' interval as cart store only supports monthly/quarterly/yearly
-		const cartInterval = interval === 'lifetime' ? undefined : interval;
-
-		const added = cartStore.addItem({
+		const cartItem: Omit<typeof cartStore extends { addItem: (item: infer T) => any } ? T : never, never> = {
 			id: productId,
 			name: productName,
-			description,
 			price,
 			type: cartType,
-			thumbnail,
-			image,
-			interval: cartInterval,
-			productSlug
-		});
+			...(description && { description }),
+			...(thumbnail && { thumbnail }),
+			...(image && { image }),
+			...(interval && interval !== 'lifetime' && { interval }),
+			...(productSlug && { productSlug })
+		};
+		
+		const added = cartStore.addItem(cartItem as Omit<CartItem, 'quantity'>);
 
 		if (added) {
 			addedToCart = true;
