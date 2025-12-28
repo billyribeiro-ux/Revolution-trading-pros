@@ -92,9 +92,9 @@ function createMediaStore() {
 			try {
 				const currentState = get({ subscribe });
 				const response = await mediaApi.getFiles({
-					folder_id: currentState.currentFolder || undefined,
-					file_type: currentState.filterType || undefined,
-					search: currentState.searchQuery || undefined,
+					...(currentState.currentFolder && { folder_id: currentState.currentFolder }),
+					...(currentState.filterType && { file_type: currentState.filterType }),
+					...(currentState.searchQuery && { search: currentState.searchQuery }),
 					sort: currentState.sortBy,
 					order: currentState.sortOrder,
 					page,

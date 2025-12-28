@@ -201,7 +201,9 @@ export function findVideosInContent(content: string): DetectedVideo[] {
 	const iframePattern = /<iframe[^>]+src=["']([^"']+)["'][^>]*>/gi;
 	let iframeMatch: RegExpExecArray | null;
 	while ((iframeMatch = iframePattern.exec(content)) !== null) {
-		matches.push(iframeMatch[1]);
+		if (iframeMatch[1]) {
+			matches.push(iframeMatch[1]);
+		}
 	}
 
 	for (const url of matches) {
