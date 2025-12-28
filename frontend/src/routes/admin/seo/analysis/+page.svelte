@@ -4,7 +4,7 @@
 	import { addToast } from '$lib/utils/toast';
 	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
 	import { getForms, type Form } from '$lib/api/forms';
-	import { IconSearch, IconRefresh, IconChartBar } from '$lib/icons';
+	import { IconSearch, IconChartBar } from '$lib/icons';
 
 	let contentType = $state('posts');
 	let contentId = $state('');
@@ -15,7 +15,7 @@
 
 	// For content selector
 	let forms: Form[] = $state([]);
-	let selectedContent: Record<string, unknown> | null = $state(null);
+	let _selectedContent: Record<string, unknown> | null = $state(null);
 
 	const contentTypes = [
 		{ value: 'posts', label: 'Blog Posts' },
