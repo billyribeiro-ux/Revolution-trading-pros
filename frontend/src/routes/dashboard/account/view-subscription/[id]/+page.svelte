@@ -182,9 +182,9 @@
 			<h2 class="section-title">Subscription #{subscriptionId}</h2>
 
 			<!-- Subscription Details Table -->
-			<div class="content-box">
+			<div class="content-box u--margin-bottom-20">
 				<div class="content-box__section">
-					<table class="shop_table subscription_details">
+					<table class="shop_table subscription_details u--margin-bottom-0">
 						<tbody>
 							<tr>
 								<td>Status</td>
@@ -224,10 +224,10 @@
 			</div>
 
 			<!-- Subscription Totals Table -->
-			<div class="content-box">
+			<div class="content-box u--margin-bottom-20">
 				<div class="content-box__section">
 					<h2 class="section-title-alt">Subscription Totals</h2>
-					<table class="shop_table order_details">
+					<table class="shop_table order_details u--margin-bottom-0">
 						<thead>
 							<tr>
 								<th class="product-name">Product</th>
@@ -246,20 +246,24 @@
 						</tbody>
 						<tfoot>
 							<tr>
-								<th>Subtotal:</th>
-								<td><span class="amount">{subscription.total}</span></td>
+								<th scope="row">Subtotal:</th>
+								<td><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">$</span>{subscription.total.replace('$', '')}</span></td>
 							</tr>
 							<tr>
-								<th>Discount:</th>
-								<td>-<span class="amount">{subscription.discount}</span></td>
+								<th scope="row">Discount:</th>
+								<td>-<span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">$</span>{subscription.discount.replace('$', '')}</span></td>
 							</tr>
 							<tr>
-								<th>Payment method:</th>
+								<th scope="row">Tax:</th>
+								<td><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">$</span>0.00</span></td>
+							</tr>
+							<tr>
+								<th scope="row">Payment method:</th>
 								<td>{subscription.paymentMethod}</td>
 							</tr>
 							<tr class="total-row">
-								<th>Total:</th>
-								<td><span class="amount total">{subscription.subtotal}</span> {subscription.interval}</td>
+								<th scope="row">Total:</th>
+								<td><span class="woocommerce-Price-amount amount total"><span class="woocommerce-Price-currencySymbol">$</span>{subscription.subtotal.replace('$', '')}</span> {subscription.interval}</td>
 							</tr>
 						</tfoot>
 					</table>
@@ -448,6 +452,15 @@
 </div>
 
 <style>
+	/* Utility Classes - Exact match to Simpler Trading */
+	.u--margin-bottom-20 {
+		margin-bottom: 20px !important;
+	}
+
+	.u--margin-bottom-0 {
+		margin-bottom: 0 !important;
+	}
+
 	.section-title {
 		font-size: 24px;
 		font-weight: 700;
@@ -459,7 +472,6 @@
 	.content-box {
 		background: #fff;
 		border-radius: 4px;
-		margin-bottom: 20px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 	}
 
@@ -553,11 +565,21 @@
 		border-bottom: none;
 	}
 
+	/* WooCommerce Price Styling - Exact match to reference */
+	.woocommerce-Price-amount {
+		color: #333;
+	}
+
+	.woocommerce-Price-currencySymbol {
+		/* Currency symbol inherits color */
+	}
+
 	.amount {
 		color: #333;
 	}
 
-	.amount.total {
+	.amount.total,
+	.woocommerce-Price-amount.total {
 		font-size: 18px;
 		color: #0984ae;
 	}
