@@ -183,6 +183,6 @@ async fn get_security_stats(
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/events", get(get_security_events))
+        .route("/events", get(get_security_events).post(get_security_events))
         .route("/stats", get(get_security_stats))
 }
