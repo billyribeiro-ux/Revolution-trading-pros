@@ -78,9 +78,7 @@
 	let chartRef = $state<HTMLElement | null>(null);
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
-	let isMounted = $state(false);
 	let activeIndicator = $state(0);
-	let gsapInstance: any = null;
 	let scrollTriggerInstance: any = null;
 	let animationFrame: number;
 	let chartCtx: CanvasRenderingContext2D | null = null;
@@ -218,7 +216,6 @@
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		isMounted = true;
 		
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
@@ -321,7 +318,6 @@
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
-			gsapInstance = gsap;
 			scrollTriggerInstance = ScrollTrigger;
 
 			// Animate indicator cards on scroll

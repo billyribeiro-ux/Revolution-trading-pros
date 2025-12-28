@@ -99,8 +99,6 @@
     }
 
     // Trigger entrance animations when section scrolls into viewport
-    let observer: IntersectionObserver | null = null;
-    
     onMount(() => {
         if (!browser) {
             isVisible = true;
