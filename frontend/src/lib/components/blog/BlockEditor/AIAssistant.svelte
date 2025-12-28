@@ -38,7 +38,7 @@
 		onapply: (content: string) => void;
 	}
 
-	let { editorState, onapply }: Props = $props();
+	let { onapply }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -119,7 +119,7 @@
 		const baseContent = prompt.toLowerCase();
 
 		if (activeTab === 'generate') {
-			generatedContent = generateSampleContent(baseContent, tone ?? 'professional', length ?? 'medium');
+			generatedContent = generateSampleContent(baseContent, tone ?? 'professional');
 		} else if (activeTab === 'improve') {
 			generatedContent = improveSampleContent(prompt);
 		} else if (activeTab === 'translate') {
@@ -129,9 +129,7 @@
 		}
 	}
 
-	function generateSampleContent(topic: string, tone: string, length: string): string {
-		const lengthMap = { short: 100, medium: 200, long: 400 };
-		const targetWords = lengthMap[length as keyof typeof lengthMap] || 200;
+	function generateSampleContent(topic: string, tone: string): string {
 
 		// Sample generated content based on tone
 		const intros: Record<string, string> = {
@@ -142,7 +140,7 @@
 			persuasive: `What if I told you that ${topic} could transform the way you think about everything?`
 		};
 
-		const intro = intros[tone] || intros.professional;
+		const intro = intros[tone] || intros['professional'];
 
 		return `${intro}
 

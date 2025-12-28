@@ -1,16 +1,14 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { cubicOut, quintOut, elasticOut } from 'svelte/easing'; // Added elasticOut
-    import { fade, fly, draw, slide } from 'svelte/transition'; // Added slide
+    import { cubicOut } from 'svelte/easing';
+    import { fade, draw } from 'svelte/transition';
     import { browser } from '$app/environment';
     // GSAP imported dynamically in onMount to avoid SSR issues
 
     // Icons
     import IconBuildingBank from '@tabler/icons-svelte/icons/building-bank';
-    import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
     import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
     import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
-    import IconChartDots from '@tabler/icons-svelte/icons/chart-dots';
     import IconScale from '@tabler/icons-svelte/icons/scale';
     import IconId from '@tabler/icons-svelte/icons/id';
     import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
@@ -27,7 +25,6 @@
     let containerRef: HTMLElement | undefined = $state();
     let isVisible = $state(false);
     let mouse = $state({ x: 0, y: 0 });
-    let scrollY = $state(0); // Track scroll for parallax
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!containerRef) return;
@@ -74,7 +71,7 @@
 
         const observer = new IntersectionObserver(
             (entries) => {
-                if (entries[0].isIntersecting) {
+                if (entries[0]?.isIntersecting) {
                     isVisible = true;
                     observer.disconnect();
                 }
@@ -84,7 +81,7 @@
         if (containerRef) observer.observe(containerRef);
         
         // Window scroll listener for Svelte-based parallax values
-        const handleScroll = () => { scrollY = window.scrollY; };
+        const handleScroll = () => {};
         window.addEventListener('scroll', handleScroll);
 
         return () => {
@@ -94,7 +91,7 @@
     });
 
     // Kept original function exactly as requested
-    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+    function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
         return {
             delay,
             duration,
@@ -346,7 +343,7 @@
                     </div>
 
                     <div class="lg:w-1/3 grid grid-cols-2 gap-px bg-white/10 border border-white/10 backdrop-blur-md shadow-2xl rounded-sm overflow-hidden">
-                        {#each stats as stat, i}
+                        {#each stats as stat}
                             {@const Icon = stat.icon}
                             <div class="bg-[#050505]/90 p-6 group hover:bg-[#0A0A0A] transition-colors relative overflow-hidden interactive-card">
                                 <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
