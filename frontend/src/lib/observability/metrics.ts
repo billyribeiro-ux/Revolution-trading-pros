@@ -222,7 +222,7 @@ class MetricsService {
 			page_path: properties?.path || window.location.pathname,
 			page_title: properties?.title || document.title,
 			page_referrer: properties?.referrer || document.referrer,
-			page_type: properties?.page_type,
+			...(properties?.page_type && { page_type: properties.page_type }),
 		};
 
 		getOrchestrator().trackPageView(payload);

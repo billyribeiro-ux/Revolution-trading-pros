@@ -141,7 +141,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 
 		this._eventCount++;
 
-		const icon = EVENT_ICONS.page_view || '📄';
+		const icon = EVENT_ICONS['page_view'] || '📄';
 		const title = `${icon} PAGE VIEW`;
 
 		if (this._groupLogs) {
@@ -216,7 +216,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 
 		this._eventCount++;
 
-		const icon = EVENT_ICONS.purchase || '💰';
+		const icon = EVENT_ICONS['purchase'] || '💰';
 		const title = `${icon} PURCHASE`;
 
 		if (this._groupLogs) {

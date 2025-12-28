@@ -162,7 +162,7 @@ function assignVariant(experiment: Experiment, userId: string): string {
 	// Assign based on hash
 	const hash = hashString(`${experiment.id}:${userId}`);
 	const variantIndex = hash % experiment.variants.length;
-	const variant = experiment.variants[variantIndex];
+	const variant = experiment.variants[variantIndex] || experiment.variants[0] || 'control';
 
 	// Store assignment
 	storeAssignment({

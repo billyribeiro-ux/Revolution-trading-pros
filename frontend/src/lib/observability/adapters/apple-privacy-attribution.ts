@@ -102,8 +102,8 @@ function isPCMSupported(): boolean {
 	const safariMatch = ua.match(/Version\/(\d+)\.(\d+)/);
 
 	if (safariMatch) {
-		const majorVersion = parseInt(safariMatch[1], 10);
-		const minorVersion = parseInt(safariMatch[2], 10);
+		const majorVersion = parseInt(safariMatch[1] || '0', 10);
+		const minorVersion = parseInt(safariMatch[2] || '0', 10);
 		return majorVersion > 14 || (majorVersion === 14 && minorVersion >= 5);
 	}
 
@@ -245,8 +245,8 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 
 		// Restore any existing conversion value from session
 		const storedData = getAttributionData();
-		if (storedData.conversionValue !== undefined) {
-			this._currentConversionValue = storedData.conversionValue as number;
+		if (storedData['conversionValue'] !== undefined) {
+			this._currentConversionValue = storedData['conversionValue'] as number;
 		}
 
 		this._state = 'ready';
@@ -372,7 +372,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		// The browser handles the actual attribution reporting
 		try {
 			// This would be an actual pixel/endpoint in production
-			const conversionEndpoint = '/.well-known/private-click-measurement/trigger-attribution';
+			const _conversionEndpoint = '/.well-known/private-click-measurement/trigger-attribution';
 
 			// Store locally for reference
 			storeAttributionData({
@@ -410,7 +410,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 	/**
 	 * Identify a user (privacy-preserving - no PII stored).
 	 */
-	identify(payload: IdentifyPayload): void {
+	identify(_payload: IdentifyPayload): void {
 		// Apple privacy rules: We don't store user IDs
 		// Instead, we use hashed session-based attribution
 
