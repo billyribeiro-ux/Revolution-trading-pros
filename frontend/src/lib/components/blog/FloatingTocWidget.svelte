@@ -46,15 +46,15 @@
 
 	// Svelte 5: Side effect with cleanup using $effect() rune
 	$effect(() => {
-		if (browser) {
-			window.addEventListener('scroll', handleScroll, { passive: true });
-			handleScroll(); // Check initial position
+		if (!browser) return;
+		
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		handleScroll(); // Check initial position
 
-			// Cleanup function (returned from $effect)
-			return () => {
-				window.removeEventListener('scroll', handleScroll);
-			};
-		}
+		// Cleanup function (returned from $effect)
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
 	});
 </script>
 

@@ -49,7 +49,7 @@
 	let error = $state('');
 
 	// Derived values from page store
-	let slug = $derived($page.params.slug!);
+	let slug = $derived($page.params['slug']!);
 
 	// Load post when slug changes
 	$effect(() => {
@@ -115,7 +115,8 @@
 
 	// Initialize reading analytics when post loads
 	$effect(() => {
-		if (browser && post) {
+		if (!browser || !post) return;
+		{
 			const cleanup = initReadingAnalytics({
 				postId: post.id,
 				slug: post.slug,
@@ -175,7 +176,7 @@
 		canonical={`/blog/${post.slug}`}
 		ogType="article"
 		ogImage={post.featured_image}
-		author={post.author?.name}
+		author={post.author?.name ?? null}
 		publishedTime={post.published_at}
 		schema={articleSchema}
 	/>
@@ -282,7 +283,7 @@
 					<BlurHashImage
 					src={post.featured_image}
 					alt={post.title}
-					blurhash={post.featured_image_blurhash || post.blurhash}
+					blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
 					width="100%"
 					height="100%"
 					loading="eager"
