@@ -16,7 +16,6 @@ import type {
 	Lesson,
 	LessonModule,
 	LessonWithRelations,
-	LearningCenterData,
 	LessonFilter,
 	UserLessonProgress,
 	UserRoomProgress,
@@ -799,12 +798,15 @@ function createLearningCenterStore() {
 			const lesson = state.lessons.find(l => l.slug === slug);
 			if (!lesson) return undefined;
 
+			const trainer = state.trainers.find(t => t.id === lesson.trainerId);
+			const category = state.categories.find(c => c.id === lesson.categoryId);
+			const module = state.modules.find(m => m.id === lesson.moduleId);
 			return {
 				...lesson,
-				trainer: state.trainers.find(t => t.id === lesson.trainerId),
-				category: state.categories.find(c => c.id === lesson.categoryId),
+				...(trainer && { trainer }),
+				...(category && { category }),
 				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
-				module: state.modules.find(m => m.id === lesson.moduleId)
+				...(module && { module })
 			};
 		},
 
@@ -849,13 +851,18 @@ function createLearningCenterStore() {
 			}
 
 			// Add relations
-			return filtered.map(lesson => ({
-				...lesson,
-				trainer: state.trainers.find(t => t.id === lesson.trainerId),
-				category: state.categories.find(c => c.id === lesson.categoryId),
-				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
-				module: state.modules.find(m => m.id === lesson.moduleId)
-			})).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+			return filtered.map(lesson => {
+				const trainer = state.trainers.find(t => t.id === lesson.trainerId);
+				const category = state.categories.find(c => c.id === lesson.categoryId);
+				const module = state.modules.find(m => m.id === lesson.moduleId);
+				return {
+					...lesson,
+					...(trainer && { trainer }),
+					...(category && { category }),
+					tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
+					...(module && { module })
+				};
+			}).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 		},
 
 		async createLesson(input: CreateLessonInput): Promise<Lesson> {
@@ -948,7 +955,7 @@ function createLearningCenterStore() {
 					lessonId,
 					tradingRoomId: existing?.tradingRoomId || '',
 					isCompleted: progressPercent >= 95,
-					completedAt: progressPercent >= 95 ? new Date().toISOString() : undefined,
+					...(progressPercent >= 95 && { completedAt: new Date().toISOString() }),
 					progressPercent,
 					lastPosition,
 					isBookmarked: existing?.isBookmarked || false,
