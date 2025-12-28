@@ -12,7 +12,6 @@
 	 * @version 2.0.0
 	 */
 
-	import { onMount } from 'svelte';
 	import type { FormField } from '$lib/api/forms';
 
 	interface Props {
@@ -24,13 +23,13 @@
 	let { field, formData, onchange }: Props = $props();
 
 	// Configuration from field attributes
-	const formula = $derived(field.attributes?.formula ?? '');
-	const format = $derived(field.attributes?.format ?? 'number');
-	const decimals = $derived(field.attributes?.decimals ?? 2);
-	const prefix = $derived(field.attributes?.prefix ?? '');
-	const suffix = $derived(field.attributes?.suffix ?? '');
-	const currency = $derived(field.attributes?.currency ?? 'USD');
-	const showFormula = $derived(field.attributes?.show_formula ?? false);
+	const formula = $derived(field.attributes?.['formula'] ?? '');
+	const format = $derived(field.attributes?.['format'] ?? 'number');
+	const decimals = $derived(field.attributes?.['decimals'] ?? 2);
+	const prefix = $derived(field.attributes?.['prefix'] ?? '');
+	const suffix = $derived(field.attributes?.['suffix'] ?? '');
+	const currency = $derived(field.attributes?.['currency'] ?? 'USD');
+	const showFormula = $derived(field.attributes?.['show_formula'] ?? false);
 
 	let calculatedValue = $state<number | null>(null);
 	let displayValue = $state<string>('—');

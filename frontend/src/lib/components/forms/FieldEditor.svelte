@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FormField, ConditionalLogic, ConditionalRule } from '$lib/api/forms';
+	import type { FormField } from '$lib/api/forms';
 
 	interface Props {
 		field?: FormField | null;
@@ -65,7 +65,7 @@
 				.split('\n')
 				.map((s) => s.trim())
 				.filter(Boolean)
-				.map((label, index) => ({ label, value: label.toLowerCase().replace(/\s+/g, '_') }));
+				.map((label) => ({ label, value: label.toLowerCase().replace(/\s+/g, '_') }));
 		} else {
 			fieldData.options = null;
 		}
