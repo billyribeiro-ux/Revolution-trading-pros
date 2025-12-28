@@ -752,9 +752,9 @@
 			width: 280px;
 		}
 
-		/* Sidebar with secondary nav needs full width (20px + 280px = 300px) on mobile */
+		/* Sidebar with secondary nav needs full width (80px + 280px = 360px) on mobile */
 		.dashboard__sidebar.has-secondary {
-			width: 300px;
+			width: 360px;
 		}
 	}
 
@@ -784,17 +784,17 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   COLLAPSED STATE - When on membership sub-pages
-	   Primary nav collapses to 20px, shows only icons
-	   Pixel-perfect match to Simpler Trading reference
+	   Primary nav collapses to 80px, shows only icons
+	   Pixel-perfect match to Simpler Trading reference (dashboard.8f78208b.css)
 	   Uses GPU-accelerated transitions for smooth layout shift prevention
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-primary.is-collapsed {
-		width: 20px;
+		width: 80px;
 		padding: 30px 0 30px 0;
 		/* Prevent layout shift with stable flex-basis */
-		flex: 0 0 20px;
-		min-width: 20px;
-		max-width: 20px;
+		flex: 0 0 80px;
+		min-width: 80px;
+		max-width: 80px;
 	}
 
 	/* Collapsed profile - centered photo, 40px, tooltip for name */
@@ -915,22 +915,23 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   SIDEBAR WITH SECONDARY NAV - Stable flex container
 	   Prevents layout shift during navigation transitions
-	   Total width: 20px (collapsed primary) + 280px (secondary) = 300px
+	   Total width: 80px (collapsed primary) + 280px (secondary) = 360px
+	   Matches WordPress dashboard.8f78208b.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__sidebar.has-secondary {
 		display: flex;
 		flex-flow: row nowrap;
-		width: 300px; /* Fixed width prevents layout shift */
-		min-width: 300px;
-		max-width: 300px;
+		width: 360px; /* Fixed width prevents layout shift */
+		min-width: 360px;
+		max-width: 360px;
 		contain: layout style;
 	}
 
 	.dashboard__sidebar.has-secondary .dashboard__nav-primary {
-		flex: 0 0 20px;
-		width: 20px;
-		min-width: 20px;
-		max-width: 20px;
+		flex: 0 0 80px;
+		width: 80px;
+		min-width: 80px;
+		max-width: 80px;
 		border-right: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
