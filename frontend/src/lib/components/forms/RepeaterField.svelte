@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 
 	/**
 	 * RepeaterField - Dynamic Repeating Field Groups
@@ -120,9 +120,11 @@
 	function duplicateItem(index: number): void {
 		if (items.length >= maxItems) return;
 
+		const sourceItem = items[index];
+		if (!sourceItem) return;
 		const newItem = {
 			id: generateId(),
-			data: { ...items[index].data },
+			data: { ...sourceItem.data },
 			collapsed: false
 		};
 
@@ -132,13 +134,17 @@
 
 	// Toggle collapse
 	function toggleCollapse(index: number): void {
-		items[index].collapsed = !items[index].collapsed;
+		const item = items[index];
+		if (!item) return;
+		item.collapsed = !item.collapsed;
 		items = [...items];
 	}
 
 	// Update field value
 	function updateField(index: number, fieldName: string, fieldValue: any): void {
-		items[index].data[fieldName] = fieldValue;
+		const item = items[index];
+		if (!item) return;
+		item.data[fieldName] = fieldValue;
 		items = [...items];
 		updateValue();
 	}
@@ -181,6 +187,7 @@
 
 		const newItems = [...items];
 		const [draggedItem] = newItems.splice(draggedIndex, 1);
+		if (!draggedItem) return;
 		newItems.splice(dropIndex, 0, draggedItem);
 
 		items = newItems;
@@ -200,7 +207,10 @@
 		if (newIndex < 0 || newIndex >= items.length) return;
 
 		const newItems = [...items];
-		[newItems[index], newItems[newIndex]] = [newItems[newIndex], newItems[index]];
+		const curr = newItems[index];
+		const target = newItems[newIndex];
+		if (!curr || !target) return;
+		[newItems[index], newItems[newIndex]] = [target, curr];
 		items = newItems;
 		updateValue();
 	}
@@ -208,8 +218,8 @@
 	// Get item preview text
 	function getItemPreview(item: Record<string, any>): string {
 		const firstField = fields[0];
-		if (firstField && item.data[firstField.name]) {
-			return String(item.data[firstField.name]).substring(0, 50);
+		if (firstField && item['data']?.[firstField.name]) {
+			return String(item['data'][firstField.name]).substring(0, 50);
 		}
 		return '';
 	}

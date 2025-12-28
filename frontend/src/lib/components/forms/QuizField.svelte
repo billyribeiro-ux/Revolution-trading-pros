@@ -143,10 +143,10 @@
 		}
 
 		// Update value
-		const newValue =
+		const newValue: string | string[] =
 			questionType === 'multiple'
 				? Array.from(selectedOptions)
-				: Array.from(selectedOptions)[0];
+				: (Array.from(selectedOptions)[0] ?? '');
 
 		value = newValue;
 		answered = true;

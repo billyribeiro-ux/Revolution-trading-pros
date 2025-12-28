@@ -169,11 +169,6 @@
 		return new Date(dateString).toLocaleString();
 	}
 
-	function getFieldValue(submission: FormSubmission, fieldName: string): string {
-		const data = submission.data?.find((d) => d.field_name === fieldName);
-		return data?.value || 'N/A';
-	}
-
 	let hasSelections = $derived(selectedSubmissions.size > 0);
 	let allSelected = $derived(submissions.length > 0 && selectedSubmissions.size === submissions.length);
 </script>

@@ -558,7 +558,7 @@
 									<FormFieldRenderer
 										{field}
 										value={formData[field.name]}
-										error={errors[field.name]}
+										error={errors[field.name] ?? []}
 										onchange={(val) => handleFieldChange(field.name, val)}
 									/>
 								</div>
