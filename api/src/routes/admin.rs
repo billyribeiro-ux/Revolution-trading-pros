@@ -408,8 +408,10 @@ pub struct CreateCouponRequest {
 /// List coupons (admin)
 async fn list_coupons(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
 ) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let coupons: Vec<CouponRow> = sqlx::query_as(
         "SELECT * FROM coupons ORDER BY created_at DESC"
     )
@@ -423,9 +425,11 @@ async fn list_coupons(
 /// Create coupon (admin)
 async fn create_coupon(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     let coupon: CouponRow = sqlx::query_as(
         r#"
         INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount, usage_limit, usage_count, is_active, starts_at, expires_at, applicable_products, applicable_plans, created_at, updated_at)
@@ -461,9 +465,11 @@ async fn create_coupon(
 /// Delete coupon (admin)
 async fn delete_coupon(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
     sqlx::query("DELETE FROM coupons WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -1041,8 +1047,9 @@ async fn delete_campaign(
 /// Dashboard overview (admin)
 async fn dashboard_overview(
     State(state): State<AppState>,
-    _user: User,
+    user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
     let total_users: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
