@@ -1,0 +1,393 @@
+/**
+ * DASHBOARD GLOBAL STYLES
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * Only truly global styles that apply across the dashboard layout.
+ * Component-specific styles are now scoped within Svelte 5 components.
+ *
+ * Svelte 5 Best Practice: Keep global styles minimal - only for:
+ * - Base resets and typography
+ * - Layout structure (sidebar, main)
+ * - Navigation patterns
+ * - Utility classes
+ *
+ * @version 2.0.0 - Cleaned for Svelte 5 component architecture
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+html, body {
+  background-color: #efefef;
+  color: #666666;
+}
+
+body, button, input, select, textarea {
+  font-family: "Open Sans", sans-serif;
+}
+
+a, a:visited {
+  color: #1e73be;
+}
+
+a:hover, a:focus, a:active {
+  color: #000000;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+/* Typography */
+h1 {
+  font-family: "Open Sans Condensed", sans-serif;
+  font-weight: bold;
+  font-size: 42px;
+  line-height: 1.1em;
+}
+
+h2 { font-size: 32px; }
+h3 { font-size: 26px; }
+
+@media (max-width: 768px) {
+  h1 { font-size: 30px; }
+  h2 { font-size: 25px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD SIDEBAR - Primary Navigation
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dashboard__sidebar {
+  width: 280px;
+  flex: 0 0 auto;
+  background-color: #0e2433;
+  transition: width 0.2s ease-in-out;
+  z-index: 100;
+}
+
+.dashboard__sidebar.has-secondary {
+  width: 80px;
+}
+
+@media (max-width: 1279px) {
+  .dashboard__sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 9999;
+  }
+
+  .html--dashboard-menu-open .dashboard__sidebar {
+    transform: translateX(0);
+  }
+}
+
+/* Primary Nav */
+.dashboard__nav-primary {
+  padding: 20px 0;
+}
+
+.dashboard__nav-primary.is-collapsed {
+  padding: 20px 0;
+}
+
+/* Nav Category Labels */
+.dashboard__nav-category {
+  padding: 20px 30px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.is-collapsed .dashboard__nav-category {
+  display: none;
+}
+
+/* Nav Links */
+.dash_main_links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dash_main_links li {
+  margin: 0;
+}
+
+.dash_main_links a {
+  display: flex;
+  align-items: center;
+  padding: 12px 30px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.15s ease-in-out;
+}
+
+.dash_main_links a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.dash_main_links li.is-active a {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Nav Item Icon */
+.dashboard__nav-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 15px;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.is-collapsed .dashboard__nav-item-icon {
+  margin-right: 0;
+}
+
+/* Nav Item Text */
+.dashboard__nav-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.is-collapsed .dashboard__nav-item-text {
+  display: none;
+}
+
+.dashboard__nav-item-text--bold {
+  font-weight: 700;
+}
+
+/* Profile Nav Item */
+.dashboard__profile-nav-item {
+  display: flex;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.dashboard__profile-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard__profile-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #1a3a4f;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.dashboard__profile-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.is-collapsed .dashboard__profile-photo {
+  margin-right: 0;
+}
+
+.is-collapsed .dashboard__profile-name {
+  display: none;
+}
+
+/* Secondary Nav (for membership pages) */
+.dashboard__nav-secondary {
+  position: fixed;
+  left: 80px;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background-color: #fff;
+  border-right: 1px solid #dbdbdb;
+  overflow-y: auto;
+  z-index: 99;
+}
+
+@media (max-width: 1279px) {
+  .dashboard__nav-secondary {
+    position: static;
+    left: auto;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #dbdbdb;
+  }
+}
+
+.dashboard__nav-secondary ul {
+  list-style: none;
+  margin: 0;
+  padding: 20px 0;
+}
+
+.dashboard__nav-secondary li {
+  margin: 0;
+}
+
+.dashboard__nav-secondary a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.15s ease-in-out;
+}
+
+.dashboard__nav-secondary a:hover {
+  background-color: #f4f4f4;
+  color: #0984ae;
+}
+
+.dashboard__nav-secondary li.is-active a {
+  background-color: #f4f4f4;
+  color: #0984ae;
+  font-weight: 600;
+}
+
+/* Submenu in Secondary Nav */
+.dashboard__nav-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 40px;
+  display: none;
+}
+
+.has-submenu:hover .dashboard__nav-submenu,
+.has-submenu.is-active .dashboard__nav-submenu {
+  display: block;
+}
+
+.dashboard__nav-submenu a {
+  padding: 8px 20px;
+  font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MOBILE MENU OVERLAY
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.html--dashboard-menu-open {
+  overflow: hidden;
+}
+
+.html--dashboard-menu-open::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.u--margin-top-0 { margin-top: 0 !important; }
+.u--margin-bottom-0 { margin-bottom: 0 !important; }
+.u--margin-bottom-20 { margin-bottom: 20px !important; }
+.u--padding-bottom-0 { padding-bottom: 0 !important; }
+.u--font-size-sm { font-size: 14px !important; }
+.u--font-weight-bold { font-weight: 700 !important; }
+.u--border-radius { border-radius: 8px !important; }
+.u--background-color-white { background-color: #fff !important; }
+.u--hide-read-more .read-more { display: none; }
+
+/* Visibility utilities */
+.hidden-xs, .hidden-sm, .hidden-md { display: none; }
+.d-none { display: none !important; }
+.d-lg-none { display: block; }
+.d-lg-block { display: none !important; }
+
+@media (min-width: 576px) {
+  .hidden-xs { display: block; }
+}
+
+@media (min-width: 768px) {
+  .hidden-sm { display: block; }
+}
+
+@media (min-width: 992px) {
+  .hidden-md { display: block; }
+  .d-lg-none { display: none !important; }
+  .d-lg-block { display: block !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GRID UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-xs-12, .col-sm-6, .col-md-6, .col-lg-4, .col-lg-5, .col-lg-7, .col-xl-4 {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+@media (min-width: 576px) {
+  .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+}
+
+@media (min-width: 768px) {
+  .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 { flex: 0 0 33.333%; max-width: 33.333%; }
+  .col-lg-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-lg-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+}
+
+@media (min-width: 1200px) {
+  .col-xl-4 { flex: 0 0 33.333%; max-width: 33.333%; }
+}
+
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-grid-item {
+  display: flex;
+}
+
+.text-center { text-align: center; }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTAINER
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.grid-container {
+  max-width: 100%;
+  width: 100%;
+}
