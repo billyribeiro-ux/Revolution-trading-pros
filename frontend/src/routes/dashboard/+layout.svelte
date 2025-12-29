@@ -1043,6 +1043,7 @@
 	}
 
 	.dashboard__nav-primary .dash_main_links li a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
