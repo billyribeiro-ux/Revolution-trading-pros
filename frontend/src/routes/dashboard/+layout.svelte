@@ -6,8 +6,9 @@
 	 * Auth-guarded layout with dynamic sidebar navigation.
 	 * CSS relies on dashboard-globals.css for styling.
 	 *
-	 * @version 3.0.0 - Svelte 5 with component-based architecture
+	 * @version 3.1.0 - Svelte 5 with proper runes patterns (Dec 2025)
 	 */
+	import { onMount, untrack } from 'svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 
@@ -42,36 +43,64 @@
 	import IconAward from '@tabler/icons-svelte/icons/award';
 	import IconBuildingStore from '@tabler/icons-svelte/icons/building-store';
 
+	// Props - Svelte 5 $props() pattern
 	let { children }: { children: Snippet } = $props();
 
-	// State
+	// State - Svelte 5 $state() pattern
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let mobileMenuOpen = $state(false);
+	let hasFetchedMemberships = $state(false);
 
-	// Mobile menu handler
-	function toggleMobileMenu() {
+	// Mobile menu handler - callback prop pattern for child components
+	function toggleMobileMenu(): void {
 		mobileMenuOpen = !mobileMenuOpen;
 		if (browser) {
 			document.documentElement.classList.toggle('html--dashboard-menu-open', mobileMenuOpen);
 		}
 	}
 
-	// Auth guard
+	// Auth guard - $effect for reactive side effects that should re-run on auth changes
 	$effect(() => {
-		if (browser && !$isInitializing && !$isAuthenticated) {
+		// Read reactive values synchronously (these will be tracked)
+		const initializing = $isInitializing;
+		const authenticated = $isAuthenticated;
+
+		if (browser && !initializing && !authenticated) {
 			goto('/login?redirect=/dashboard');
 		}
 	});
 
-	// Fetch memberships
+	// Fetch memberships - runs once when auth is ready
+	// Using $effect with a fetch guard to prevent multiple API calls
 	$effect(() => {
-		if (browser && !$isInitializing) {
-			getUserMemberships().then(data => {
-				membershipsData = data;
-			}).catch(err => {
-				console.error('[Layout] Failed to load sidebar memberships:', err);
-			});
+		// Read reactive values synchronously for tracking
+		const initializing = $isInitializing;
+		const authenticated = $isAuthenticated;
+		const alreadyFetched = untrack(() => hasFetchedMemberships);
+
+		if (browser && !initializing && authenticated && !alreadyFetched) {
+			// Mark as fetched immediately to prevent duplicate calls
+			hasFetchedMemberships = true;
+
+			getUserMemberships()
+				.then((data) => {
+					membershipsData = data;
+				})
+				.catch((err) => {
+					console.error('[Layout] Failed to load sidebar memberships:', err);
+					// Reset flag on error so user can retry
+					hasFetchedMemberships = false;
+				});
 		}
+	});
+
+	// Cleanup mobile menu state on unmount
+	$effect(() => {
+		return () => {
+			if (browser) {
+				document.documentElement.classList.remove('html--dashboard-menu-open');
+			}
+		};
 	});
 
 	// Derived states
