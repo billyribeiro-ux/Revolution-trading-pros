@@ -825,7 +825,7 @@
 		line-height: 50px;
 	}
 
-	/* Center icons in collapsed state - 32px icons centered in 80px width */
+	/* Center icons in collapsed state - 28px icons centered in 80px width */
 	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
 		position: absolute;
 		left: 50%;
@@ -1002,16 +1002,19 @@
 		position: relative;
 	}
 
-	.dashboard__nav-primary .dash_main_links li a {
+	.dash_main_links a {
 		display: flex;
 		align-items: center;
+		padding: 12px 20px;
+		position: relative;
+		color: hsla(0, 0%, 100%, 0.7);
+		text-decoration: none;
+		transition: all 0.2s ease-in-out;
+	}
+
+	.dashboard__nav-primary .dash_main_links li a {
 		height: 50px;
 		padding: 0 20px 0 80px;
-		position: relative;
-		color: hsla(0, 0%, 100%, 0.5);
-		text-decoration: none;
-		font-weight: 300;
-		transition: all 0.15s ease-in-out;
 	}
 
 	/* Active indicator on RIGHT side for primary nav */
@@ -1029,7 +1032,7 @@
 		transform-origin: 100% 50%;
 	}
 
-	.dashboard__nav-primary .dash_main_links li a:hover {
+	.dash_main_links a:hover {
 		background-color: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
@@ -1042,23 +1045,23 @@
 		background-color: #0984ae;
 	}
 
-	/* Icon Styling - WordPress: position absolute, left: 30px, 32x32 */
+	/* Icon Styling - WordPress: position absolute, left: 30px, 28x28 */
 	.dashboard__nav-item-icon {
 		position: absolute;
 		top: 50%;
 		left: 30px;
-		margin-top: -16px;
-		width: 32px;
-		height: 32px;
-		font-size: 32px;
-		line-height: 32px;
+		margin-top: -14px;
+		width: 28px;
+		height: 28px;
+		font-size: 28px;
+		line-height: 28px;
 		color: inherit;
 	}
 
 	/* Ensure SVG icons inherit color */
 	.dashboard__nav-item-icon :global(svg) {
-		width: 32px;
-		height: 32px;
+		width: 28px;
+		height: 28px;
 		color: inherit;
 		stroke: currentColor;
 	}
@@ -1615,8 +1618,8 @@
 	}
 
 	:global(.icon--lg) {
-		width: 32px;
-		height: 32px;
+		width: 28px;
+		height: 28px;
 	}
 
 	:global(.icon--md) {
