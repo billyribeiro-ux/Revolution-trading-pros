@@ -201,8 +201,7 @@
 			const message = await register({ name, email, password, password_confirmation });
 
 			// Success confetti! (dynamic import)
-			const confettiModule = await import('canvas-confetti') as any;
-			const confetti = confettiModule.default;
+			const confetti = (await import('canvas-confetti')).default;
 			confetti({
 				particleCount: 150,
 				spread: 100,

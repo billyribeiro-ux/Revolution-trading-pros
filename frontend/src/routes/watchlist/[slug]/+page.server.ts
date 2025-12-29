@@ -5,7 +5,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import type { PageServerLoad } from '@sveltejs/kit';
+import type { ServerLoad } from '@sveltejs/kit';
 
 interface WatchlistItem {
 	slug: string;
@@ -102,7 +102,7 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 	}
 };
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: ServerLoad = async ({ params }) => {
 	const { slug } = params;
 
 	// Try to find the watchlist item
@@ -113,7 +113,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		// Parse the slug to extract date and trader name
 		const parts = slug.split('-');
 		const dateStr = parts[0] || '';
-		const traderName = parts.slice(1).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+		const traderName = parts.slice(1).map((p: string) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
 
 		watchlistItem = {
 			slug,

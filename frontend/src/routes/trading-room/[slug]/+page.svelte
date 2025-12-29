@@ -13,7 +13,6 @@
 	 */
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { getTradingRoomAccess, type UserMembership } from '$lib/api/user-memberships';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';

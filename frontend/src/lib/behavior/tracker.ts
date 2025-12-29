@@ -14,7 +14,6 @@ export class BehaviorTracker {
 	private eventBuffer: BehaviorEvent[] = [];
 	private bufferTimer?: number;
 	private sessionStartTime: number;
-	private lastEventTime: number;
 	private sequenceNumber: number = 0;
 
 	// Tracking state
@@ -54,7 +53,6 @@ export class BehaviorTracker {
 		this.sessionId = generateSessionId();
 		this.visitorId = generateVisitorId();
 		this.sessionStartTime = Date.now();
-		this.lastEventTime = Date.now();
 
 		this.init();
 	}
@@ -458,7 +456,6 @@ export class BehaviorTracker {
 
 		this.eventBuffer.push(event);
 		this.sequenceNumber++;
-		this.lastEventTime = Date.now();
 
 		if (immediate || this.eventBuffer.length >= this.config.bufferSize) {
 			this.flush();

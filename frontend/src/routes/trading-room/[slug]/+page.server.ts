@@ -8,9 +8,9 @@
  * @version 1.0.0
  */
 
-import type { PageServerLoad } from '@sveltejs/kit';
+import type { ServerLoad } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: ServerLoad = async ({ params }) => {
 	// Return the slug to ensure the page is properly rendered server-side
 	return {
 		slug: params.slug
