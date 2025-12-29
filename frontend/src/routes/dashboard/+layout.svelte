@@ -959,19 +959,20 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   PROFILE SECTION - Exact match to WordPress dashboard.8f78208b.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	/* Profile nav item - WordPress reference: padding to accommodate 44px photo at left: 20px */
+	/* Profile nav item - WordPress reference: dashboard-globals.css lines 856-865 */
 	.dashboard__profile-nav-item {
-		color: hsla(0, 0%, 100%, 0.5);
+		display: block;
 		height: auto;
 		line-height: 1.4;
-		padding: 32px 20px 28px 76px; /* 20px left + 44px photo + 12px gap = 76px */
-		display: block;
+		padding: 32px 20px 28px 80px;
 		position: relative;
 		text-decoration: none;
-		font-weight: 300;
+		color: hsla(0, 0%, 100%, 0.5);
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-nav-item:hover {
+		background: rgba(255, 255, 255, 0.05);
 		color: #fff;
 	}
 
@@ -979,26 +980,23 @@
 		border-color: #0984ae;
 	}
 
-	/* Profile photo - WordPress reference: left: 20px, 44x44, border: hsla(0,0%,100%,0.2) */
+	/* Profile photo - WordPress reference: dashboard-globals.css lines 872-885 */
 	.dashboard__profile-photo {
 		position: absolute;
-		top: 50%;
 		left: 20px;
+		top: 50%;
 		transform: translateY(-50%);
 		width: 44px;
 		height: 44px;
-		border: 2px solid hsla(0, 0%, 100%, 0.2);
 		border-radius: 50%;
+		border: 2px solid hsla(0, 0%, 100%, 0.2);
 		background-color: #0f2d41;
 		background-size: cover;
 		background-position: center;
 		transition: border-color 0.15s ease-in-out;
 	}
 
-	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: #0984ae;
-	}
-
+	/* Profile name - WordPress reference: dashboard-globals.css lines 891-896 */
 	.dashboard__profile-name {
 		display: block;
 		font-size: 16px;
