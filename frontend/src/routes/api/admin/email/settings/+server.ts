@@ -21,7 +21,7 @@ let emailSettings = {
 	from_name: env.SMTP_FROM_NAME || 'Revolution Trading Pros'
 };
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async () => {
 	try {
 		// Return settings (with password masked for security)
 		return json({
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
 

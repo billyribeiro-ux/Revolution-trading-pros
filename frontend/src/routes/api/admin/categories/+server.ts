@@ -201,7 +201,6 @@ const mockCategories: MockCategory[] = [
 export const GET: RequestHandler = async ({ url }) => {
 	const featured = url.searchParams.get('featured');
 	const parent_id = url.searchParams.get('parent_id');
-	const with_counts = url.searchParams.get('with_counts');
 
 	let filteredCategories = [...mockCategories];
 

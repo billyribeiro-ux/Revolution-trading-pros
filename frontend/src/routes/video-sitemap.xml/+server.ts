@@ -44,45 +44,6 @@ interface VideoEntry {
 }
 
 /**
- * Extract video platform and ID from URL
- */
-function detectVideoPlatform(
-	url: string
-): { platform: VideoEntry['platform']; videoId: string } | null {
-	// YouTube patterns
-	const youtubePatterns = [
-		/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-		/youtube\.com\/v\/([a-zA-Z0-9_-]{11})/
-	];
-	for (const pattern of youtubePatterns) {
-		const match = url.match(pattern);
-		if (match) return { platform: 'youtube', videoId: match[1] };
-	}
-
-	// Vimeo patterns
-	const vimeoPattern = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/;
-	const vimeoMatch = url.match(vimeoPattern);
-	if (vimeoMatch) return { platform: 'vimeo', videoId: vimeoMatch[1] };
-
-	// Dailymotion patterns
-	const dailymotionPattern = /dailymotion\.com\/(?:video|embed\/video)\/([a-zA-Z0-9]+)/;
-	const dailymotionMatch = url.match(dailymotionPattern);
-	if (dailymotionMatch) return { platform: 'dailymotion', videoId: dailymotionMatch[1] };
-
-	// TED patterns
-	const tedPattern = /ted\.com\/talks\/([a-zA-Z0-9_]+)/;
-	const tedMatch = url.match(tedPattern);
-	if (tedMatch) return { platform: 'ted', videoId: tedMatch[1] };
-
-	// Wistia patterns
-	const wistiaPattern = /(?:wistia\.com\/medias\/|wistia\.net\/embed\/iframe\/)([a-zA-Z0-9]+)/;
-	const wistiaMatch = url.match(wistiaPattern);
-	if (wistiaMatch) return { platform: 'wistia', videoId: wistiaMatch[1] };
-
-	return null;
-}
-
-/**
  * Get thumbnail URL based on platform
  */
 function getPlatformThumbnail(platform: VideoEntry['platform'], videoId: string): string {
@@ -230,21 +191,6 @@ function escapeXml(str: string): string {
 		.replace(/'/g, '&apos;');
 }
 
-/**
- * Format duration in ISO 8601 format (PT#H#M#S)
- */
-function formatDuration(seconds: number): string {
-	const hours = Math.floor(seconds / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
-	const secs = seconds % 60;
-
-	let duration = 'PT';
-	if (hours > 0) duration += `${hours}H`;
-	if (minutes > 0) duration += `${minutes}M`;
-	if (secs > 0 || duration === 'PT') duration += `${secs}S`;
-
-	return duration;
-}
 
 /**
  * Generate video sitemap URL entry

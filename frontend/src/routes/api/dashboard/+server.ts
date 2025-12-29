@@ -10,7 +10,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Dashboard data types
@@ -79,7 +79,7 @@ interface DashboardStats {
 }
 
 // GET - Get dashboard data
-export const GET: RequestHandler = async ({ url, cookies }) => {
+export const GET: RequestHandler = async ({ url }) => {
 	// In production, get user from session/JWT
 	const userId = url.searchParams.get('user_id') || 'demo_user';
 

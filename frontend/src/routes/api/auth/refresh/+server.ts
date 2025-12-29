@@ -10,7 +10,7 @@ const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` 
  * Proxy auth refresh requests to Rust API backend
  * ICT11+ Principal Engineer: Forwards refresh_token in body as backend expects
  */
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const sessionId = request.headers.get('X-Session-ID') || '';
 		

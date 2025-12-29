@@ -34,10 +34,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 }
 
 // Generate realistic baseline analytics based on actual platform activity
-function generateBuiltInAnalytics(period: string) {
-	// Calculate days in period
-	const days = period === '7d' ? 7 : period === '90d' ? 90 : 30;
-
+function generateBuiltInAnalytics(_period: string) {
 	// These would normally come from the analytics_events table
 	// For now, we return structure with null values indicating "collecting data"
 	return {

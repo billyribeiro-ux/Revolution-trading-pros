@@ -6,7 +6,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
@@ -160,7 +160,6 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 export const GET: RequestHandler = async ({ url, request }) => {
 	const type = url.searchParams.get('type');
 	const activeOnly = url.searchParams.get('active_only') === 'true';
-	const withCounts = url.searchParams.get('with_counts') === 'true';
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/trading-rooms?${url.searchParams.toString()}`, {

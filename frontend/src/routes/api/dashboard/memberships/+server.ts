@@ -34,7 +34,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	try {
 		// Check for admin endpoint or user endpoint
 		const isAdmin = url.searchParams.get('admin') === 'true';
-		const userId = url.searchParams.get('user_id');
 
 		// Forward query params to backend
 		const queryParams = new URLSearchParams();

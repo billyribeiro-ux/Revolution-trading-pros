@@ -21,7 +21,7 @@ const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` 
  * @version 1.0.0
  * @author Revolution Trading Pros
  */
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		// Extract auth headers from client request
 		const authHeader = request.headers.get('Authorization') || '';
