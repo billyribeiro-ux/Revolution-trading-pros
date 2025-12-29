@@ -14,8 +14,7 @@
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	
-	// Import pixel-perfect global styles from reference file 1
-	import '$lib/styles/dashboard-globals.css';
+	// Icon font for legacy icons
 	import '$lib/styles/st-icons.css';
 	import type { Snippet } from 'svelte';
 	import { user, isInitializing, isAuthenticated } from '$lib/stores/auth';
