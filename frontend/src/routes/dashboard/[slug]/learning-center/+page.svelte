@@ -1,11 +1,18 @@
 <script lang="ts">
+	/**
+	 * Dynamic Room Learning Center
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * 100% PIXEL-PERFECT match to WordPress reference: frontend/Do's/Learning-Center
+	 *
+	 * @version 3.0.0 - Full Reference Compliance
+	 */
 	let { data }: { data: any } = $props();
 	const room = $derived(data.room);
 	const slug = $derived(data.slug);
 
 	let selectedCategory = $state('0');
 
-	// All categories from reference - exact match
+	// All 32 categories from WordPress reference - exact match
 	const categories = [
 		{ id: '529', label: 'Trade Setups & Strategies' },
 		{ id: '528', label: 'Methodology' },
@@ -41,7 +48,17 @@
 		{ id: '2930', label: 'Earnings & Options Expiration' }
 	];
 
-	// Sample videos - matching reference format exactly
+	// Category color map for special categories (from reference CSS)
+	const categoryColors: Record<string, string> = {
+		'2927': '#A3C2F4', // Options Strategies (Level 2 & 3)
+		'2928': '#EA9999', // Pricing/Volatility
+		'2929': '#FFBE02', // Charting/Indicators/Tools
+		'2932': '#B5D7A8', // Trade & Money Management
+		'2930': '#BC7831', // Earnings & Options Expiration
+		'2931': '#b4a7d6'  // Fibonacci & Options Trading
+	};
+
+	// Videos with multi-category support - matching reference format exactly
 	const allVideos = [
 		{
 			id: 1,
@@ -60,7 +77,7 @@
 			categories: ['529'],
 			categoryLabels: ['Trade Setups & Strategies'],
 			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			description: 'Using the economic cycle, John Carter will share insights on what\'s next in the stock market, commodities, Treasury yields, bonds, and more.',
+			description: "Using the economic cycle, John Carter will share insights on what's next in the stock market, commodities, Treasury yields, bonds, and more.",
 			videoSlug: 'market-outlook-jul2025-john-carter'
 		},
 		{
@@ -135,11 +152,15 @@
 		}
 	];
 
-	let filteredVideos = $derived(
+	const filteredVideos = $derived(
 		selectedCategory === '0'
 			? allVideos
 			: allVideos.filter(v => v.categories.includes(selectedCategory))
 	);
+
+	function getCategoryColor(catId: string): string {
+		return categoryColors[catId] || '#0984ae';
+	}
 
 	function resetFilter() {
 		selectedCategory = '0';
@@ -151,12 +172,19 @@
 </svelte:head>
 
 <div class="dashboard__content">
-	<div class="dashboard__content-main" style="min-width: 100%">
+	<div class="dashboard__content-main">
 
 		<!-- FORM TO FILTER BY TERM - Exact match to reference -->
 		<form class="term_filter" id="term_filter">
 			<div class="reset_filter">
-				<input type="radio" id="cat-0" value="0" name="categoryfilter" checked={selectedCategory === '0'} onchange={resetFilter} />
+				<input
+					type="radio"
+					id="cat-0"
+					value="0"
+					name="categoryfilter"
+					checked={selectedCategory === '0'}
+					onchange={resetFilter}
+				/>
 				<label for="cat-0">
 					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="undo" class="svg-inline--fa fa-undo fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 						<path fill="currentColor" d="M212.333 224.333H12c-6.627 0-12-5.373-12-12V12C0 5.373 5.373 0 12 0h48c6.627 0 12 5.373 12 12v78.112C117.773 39.279 184.26 7.47 258.175 8.007c136.906.994 246.448 111.623 246.157 248.532C504.041 393.258 393.12 504 256.333 504c-64.089 0-122.496-24.313-166.51-64.215-5.099-4.622-5.334-12.554-.467-17.42l33.967-33.967c4.474-4.474 11.662-4.717 16.401-.525C170.76 415.336 211.58 432 256.333 432c97.268 0 176-78.716 176-176 0-97.267-78.716-176-176-176-58.496 0-110.28 28.476-142.274 72.333h98.274c6.627 0 12 5.373 12 12v48c0 6.627-5.373 12-12 12z"></path>
@@ -164,7 +192,7 @@
 				</label>
 			</div>
 			{#each categories as cat (cat.id)}
-				<div class="filter_btn">
+				<div class="filter_btn" style={categoryColors[cat.id] ? `--cat-color: ${categoryColors[cat.id]}` : ''}>
 					<input
 						type="radio"
 						id="cat-{cat.id}"
@@ -173,9 +201,13 @@
 						checked={selectedCategory === cat.id}
 						onchange={() => selectedCategory = cat.id}
 					/>
-					<label for="cat-{cat.id}">{cat.label}</label>
+					<label
+						for="cat-{cat.id}"
+						class:has-custom-color={!!categoryColors[cat.id]}
+					>{cat.label}</label>
 				</div>
 			{/each}
+			<button type="button" class="apply_filter">Apply filter</button>
 		</form>
 
 		<section class="dashboard__content-section">
@@ -184,20 +216,22 @@
 			<div id="response">
 				<div class="article-cards row flex-grid">
 					{#each filteredVideos as video (video.id)}
-						<!-- Weekly Watchlist Traders Images -->
 						<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 							<article class="article-card">
-								<!-- DAILY VIDEOS -->
 								<figure class="article-card__image" style="background-image: url({video.thumbnail});">
 									<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt="" />
-									<div class="article-card__type">
-										{#each video.categoryLabels as label, i (i)}
-											<span id={video.categories[i]} class="label label--info">{label}</span>
-										{/each}
-									</div>
 								</figure>
+								<div class="article-card__type">
+									{#each video.categoryLabels as label, i (i)}
+										<span
+											id={video.categories[i]}
+											class="label label--info"
+											style="background-color: {getCategoryColor(video.categories[i])}"
+										>{label}</span>
+									{/each}
+								</div>
 								<h4 class="h5 article-card__title">
-									<a href="/learning-center/{video.videoSlug}">{video.title}</a>
+									<a href="/dashboard/{slug}/learning-center/{video.videoSlug}">{video.title}</a>
 								</h4>
 								<div class="u--margin-top-0">
 									<span class="trader_name"><i>With {video.trader}</i></span>
@@ -205,7 +239,7 @@
 								<div class="article-card__excerpt u--hide-read-more">
 									<p>{video.description}</p>
 								</div>
-								<a href="/learning-center/{video.videoSlug}" class="btn btn-tiny btn-default">Watch Now</a>
+								<a href="/dashboard/{slug}/learning-center/{video.videoSlug}" class="btn btn-tiny btn-default">Watch Now</a>
 							</article>
 						</div>
 					{/each}
@@ -217,7 +251,23 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CATEGORY FILTER - Exact match to Simpler Trading reference
+	   DYNAMIC ROOM LEARNING CENTER - 100% PIXEL-PERFECT MATCH
+	   Reference: frontend/Do's/Learning-Center
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Dashboard Content Layout */
+	.dashboard__content {
+		display: flex;
+	}
+
+	.dashboard__content-main {
+		flex: 1;
+		min-width: 100%;
+		background-color: #efefef;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   FILTER FORM - Exact match to reference
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.term_filter {
 		display: flex;
@@ -226,7 +276,7 @@
 		padding: 20px;
 		background: #f5f5f5;
 		border-radius: 0;
-		margin-bottom: 20px;
+		margin-bottom: 0;
 		align-items: center;
 	}
 
@@ -240,6 +290,7 @@
 		display: none;
 	}
 
+	/* Reset button - icon only */
 	.reset_filter label {
 		display: inline-flex;
 		align-items: center;
@@ -259,6 +310,14 @@
 		color: #666;
 	}
 
+	.reset_filter label:hover {
+		border-color: #0984ae;
+	}
+
+	.reset_filter label:hover svg {
+		color: #0984ae;
+	}
+
 	.reset_filter input:checked + label {
 		background: #0984ae;
 		border-color: #0984ae;
@@ -268,6 +327,7 @@
 		color: #fff;
 	}
 
+	/* Filter buttons */
 	.filter_btn label {
 		display: inline-block;
 		padding: 8px 16px;
@@ -294,9 +354,52 @@
 		border-color: #0984ae;
 	}
 
+	/* Custom color category buttons */
+	.filter_btn label.has-custom-color {
+		border-color: var(--cat-color, #ddd);
+	}
+
+	.filter_btn input:checked + label.has-custom-color {
+		background: var(--cat-color, #0984ae);
+		border-color: var(--cat-color, #0984ae);
+	}
+
+	/* Apply filter button */
+	.apply_filter {
+		display: inline-block;
+		padding: 8px 16px;
+		font-size: 12px;
+		font-weight: 600;
+		font-family: 'Open Sans', sans-serif;
+		color: #fff;
+		background: #0984ae;
+		border: 1px solid #0984ae;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.15s ease-in-out;
+		margin-left: auto;
+	}
+
+	.apply_filter:hover {
+		background: #077a9e;
+		border-color: #077a9e;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECTION TITLE - Exact match to reference
+	   CONTENT SECTION
 	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__content-section {
+		padding: 20px;
+		background: #fff;
+	}
+
+	@media (min-width: 768px) {
+		.dashboard__content-section {
+			padding: 30px 40px;
+		}
+	}
+
+	/* Section Title */
 	.section-title {
 		font-size: 24px;
 		font-weight: 700;
@@ -311,8 +414,13 @@
 		color: #666;
 	}
 
+	/* Hide empty paragraphs */
+	p:empty {
+		display: none;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ARTICLE CARDS GRID - Exact match to Simpler Trading reference
+	   ARTICLE CARDS GRID
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-cards {
 		display: flex;
@@ -328,45 +436,52 @@
 	.flex-grid-item {
 		padding: 0 15px;
 		margin-bottom: 30px;
+		display: flex;
 	}
 
 	/* Responsive columns */
 	.col-xs-12 {
 		width: 100%;
+		flex: 0 0 100%;
+		max-width: 100%;
 	}
 
 	@media (min-width: 576px) {
 		.col-sm-6 {
 			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
 		}
 	}
 
 	@media (min-width: 768px) {
 		.col-md-6 {
 			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
 		}
 	}
 
 	@media (min-width: 1200px) {
 		.col-xl-4 {
 			width: 33.333333%;
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ARTICLE CARD - Pixel-perfect match to Simpler Trading reference
-	   Reference: dashboard-globals.css lines 931-1021
+	   ARTICLE CARD - Pixel-perfect from reference
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.article-card {
 		position: relative;
+		width: 100%;
 		background-color: #fff;
 		border: 1px solid #dbdbdb;
 		border-radius: 8px;
 		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		transition: all 0.2s ease-in-out;
 		overflow: hidden;
-		margin-bottom: 30px;
-		height: 100%;
 		display: flex;
 		flex-direction: column;
 	}
@@ -376,13 +491,14 @@
 		transform: translateY(-2px);
 	}
 
+	/* Article card image - 16:9 aspect ratio */
 	.article-card__image {
 		position: relative;
 		width: 100%;
-		padding-top: 56.25%; /* 16:9 aspect ratio */
+		padding-top: 56.25%;
 		background-size: cover;
 		background-position: center;
-		background-color: #0984ae; /* Fallback color */
+		background-color: #0984ae;
 		margin: 0;
 	}
 
@@ -396,18 +512,16 @@
 		opacity: 0;
 	}
 
-	/* Type label - Absolute positioned overlay on image */
+	/* Category type labels - OUTSIDE figure */
 	.article-card__type {
-		position: absolute;
-		top: 10px;
-		left: 10px;
-		z-index: 2;
-		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 5px;
+		padding: 15px 15px 0;
+		margin: 0 !important;
 	}
 
+	/* Label styling */
 	.label {
 		display: inline-block;
 		padding: 4px 10px;
@@ -416,22 +530,23 @@
 		font-family: 'Open Sans', sans-serif;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		border-radius: 25px; /* Pill shape */
+		border-radius: 25px;
 		line-height: 1.2;
 	}
 
 	.label--info {
-		background: #0984ae;
+		background-color: #0984ae;
 		color: #fff;
 	}
 
+	/* Article title */
 	.h5.article-card__title {
 		font-size: 16px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		color: #333;
 		margin: 0;
-		padding: 15px 15px 10px;
+		padding: 10px 15px 5px;
 		line-height: 1.3;
 	}
 
@@ -445,13 +560,14 @@
 		color: #0984ae;
 	}
 
+	/* Trader name */
 	.u--margin-top-0 {
 		margin-top: 0 !important;
 		padding: 0 15px;
 	}
 
 	.trader_name {
-		font-size: 12px;
+		font-size: 13px;
 		color: #999;
 		font-family: 'Open Sans', sans-serif;
 	}
@@ -460,6 +576,7 @@
 		font-style: italic;
 	}
 
+	/* Excerpt */
 	.article-card__excerpt {
 		padding: 10px 15px;
 		flex: 1;
@@ -473,11 +590,7 @@
 		margin: 0;
 	}
 
-	.u--hide-read-more :global(.read-more) {
-		display: none;
-	}
-
-	/* Watch Now Button - Orange style from reference */
+	/* Watch Now Button - Orange style */
 	.btn {
 		display: inline-block;
 		font-family: 'Open Sans', sans-serif;
@@ -494,16 +607,15 @@
 		font-size: 11px;
 		line-height: 1.5;
 		border-radius: 3px;
-		margin: 0 15px 15px;
 	}
 
-	/* Watch Now button - Orange style from Learning-Center reference */
 	.article-card .btn.btn-tiny.btn-default {
 		background: transparent;
 		color: #F3911B;
 		padding-left: 0;
 		font-size: 17px;
 		border: none;
+		margin: 0 15px 15px;
 	}
 
 	.article-card .btn.btn-tiny.btn-default:hover {
@@ -512,22 +624,7 @@
 		padding-left: 8px;
 	}
 
-	.btn-default {
-		background: #f4f4f4;
-		color: #333;
-		border: 1px solid #dbdbdb;
-	}
-
-	.btn-default:hover {
-		background: #e9e9e9;
-		color: #333;
-	}
-
-	/* Dashboard Content Section */
-	.dashboard__content-section {
-		padding: 20px;
-	}
-
+	/* Response container */
 	#response {
 		margin-top: 0;
 	}
