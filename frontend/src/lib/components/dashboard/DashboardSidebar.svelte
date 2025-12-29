@@ -42,8 +42,6 @@
 		hasSecondaryNav?: boolean;
 		/** Secondary nav content */
 		secondaryNav?: Snippet;
-		/** Current membership slug (for secondary nav) */
-		currentMembershipSlug?: string | null;
 	}
 
 	let {
@@ -52,8 +50,7 @@
 		categories = [],
 		isCollapsed = false,
 		hasSecondaryNav = false,
-		secondaryNav,
-		currentMembershipSlug = null
+		secondaryNav
 	}: Props = $props();
 
 	// Check if a link is active
