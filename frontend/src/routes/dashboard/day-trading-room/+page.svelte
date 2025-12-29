@@ -6,7 +6,82 @@
 	 * Rebuilt to match Frontend/2 (Mastering the Trade) exactly
 	 * Renamed: "Mastering the Trade" → "Day Trading Room"
 	 *
-	 * @version 2.0.0
+	 * @version 2.1.0 - Added WordPress-identical structure with JWT SSO documentation
+	 *
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * API KEYS & CUSTOM LINKS CONFIGURATION GUIDE
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 *
+	 * 1. GOOGLE CALENDAR API (Trading Room Schedule)
+	 *    ─────────────────────────────────────────────────────────────────────────
+	 *    Current Keys (from WordPress - may need rotation):
+	 *    - CLIENT_ID: 656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com
+	 *    - API_KEY: AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw
+	 *    - CALENDAR_ID: simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com
+	 *
+	 *    SETUP REQUIREMENTS:
+	 *    a) Go to Google Cloud Console (console.cloud.google.com)
+	 *    b) Create/select project → Enable Google Calendar API
+	 *    c) Create OAuth 2.0 credentials → Add authorized domains
+	 *    d) Create API Key → Restrict to Calendar API & your domain
+	 *    e) Replace keys below with your credentials
+	 *
+	 *    SECURITY NOTE: These keys should be environment variables in production
+	 *    - VITE_GOOGLE_CLIENT_ID
+	 *    - VITE_GOOGLE_API_KEY
+	 *    - VITE_GOOGLE_CALENDAR_ID
+	 *
+	 * 2. JWT SSO TRADING ROOM AUTHENTICATION
+	 *    ─────────────────────────────────────────────────────────────────────────
+	 *    WordPress uses ProTradingRoom.com for live chat rooms with JWT SSO:
+	 *
+	 *    Original WordPress URLs:
+	 *    - Day Trading Room: https://chat.protradingroom.com/rooms/mastering-the-trade?jwt={TOKEN}
+	 *    - Showcase Room: https://chat.protradingroom.com/rooms/simpler-showcase?jwt={TOKEN}
+	 *
+	 *    BACKEND IMPLEMENTATION REQUIRED:
+	 *    a) Create endpoint: GET /api/trading-room/sso?room={room-slug}
+	 *    b) Validate user authentication & room access permissions
+	 *    c) Generate JWT with payload: { user_id, email, name, room_access, exp }
+	 *    d) Sign JWT with shared secret (coordinate with ProTradingRoom)
+	 *    e) Return: { url: "https://chat.protradingroom.com/rooms/{room}?jwt={token}" }
+	 *
+	 *    FRONTEND IMPLEMENTATION:
+	 *    - Update dropdown links to call SSO endpoint before redirect
+	 *    - Handle loading states and error cases
+	 *    - Consider redirect middleware for seamless UX
+	 *
+	 * 3. CUSTOM LINKS THAT NEED CONFIGURATION
+	 *    ─────────────────────────────────────────────────────────────────────────
+	 *    - /trading-room-rules.pdf        → Host PDF on your CDN or S3
+	 *    - /dashboard/day-trading-room/start-here → Create this route
+	 *    - /watchlist/latest              → Create watchlist route
+	 *    - /tutorials                     → Create tutorials page
+	 *    - /blog                          → Create blog route
+	 *    - /chatroom-archive/*            → Create archive routes
+	 *    - /daily/*                       → Create daily video routes
+	 *
+	 * 4. CDN/ASSET URLS
+	 *    ─────────────────────────────────────────────────────────────────────────
+	 *    Currently using Simpler Trading CDN:
+	 *    - cdn.simplertrading.com (images)
+	 *    - simpler-cdn.s3.amazonaws.com (watchlist images)
+	 *    - simpler-options.s3.amazonaws.com (tutorial videos)
+	 *
+	 *    FOR PRODUCTION: Migrate assets to your own CDN and update URLs
+	 *
+	 * 5. CUSTOM ICON FONT (OPTIONAL)
+	 *    ─────────────────────────────────────────────────────────────────────────
+	 *    WordPress uses custom icon font classes:
+	 *    - st-icon-mastering-the-trade
+	 *    - st-icon-simpler-showcase
+	 *
+	 *    Currently using Tabler Icons as alternative. If exact match needed:
+	 *    a) Extract icon font from WordPress theme
+	 *    b) Convert to modern icon format (SVG sprite or icon components)
+	 *    c) Replace Tabler icon imports with custom icons
+	 *
+	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
 	import { onMount } from 'svelte';
 
@@ -159,22 +234,56 @@
 				</li>
 			</ul>
 			<div class="dropdown display-inline-block">
-				<button type="button" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" aria-expanded="false">
+				<!-- WordPress uses <a> tag instead of <button> for dropdown toggle -->
+				<a href="#" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" aria-expanded="false">
 					<strong>Enter a Trading Room</strong>
-				</button>
+				</a>
 				<nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
 					<ul class="dropdown-menu__menu">
 						<li>
-							<a href="/dashboard/day-trading-room" target="_blank" rel="nofollow">
+							<!--
+								═══════════════════════════════════════════════════════════════════════
+								JWT SSO AUTHENTICATION REQUIRED
+								═══════════════════════════════════════════════════════════════════════
+								WordPress URL: https://chat.protradingroom.com/rooms/mastering-the-trade?jwt={DYNAMIC_JWT_TOKEN}
+
+								BACKEND REQUIREMENTS:
+								1. JWT token must be generated server-side for authenticated user
+								2. Token payload should include: user_id, email, name, room_access
+								3. Token must be signed with shared secret between your backend and ProTradingRoom
+								4. Implement endpoint: GET /api/trading-room/sso?room=day-trading-room
+								   Returns: { url: "https://chat.protradingroom.com/rooms/mastering-the-trade?jwt=..." }
+
+								IMPLEMENTATION:
+								- Replace href with dynamic URL from SSO endpoint
+								- Add on:click handler to fetch JWT URL before navigation
+								- Consider adding loading state while JWT is being fetched
+								═══════════════════════════════════════════════════════════════════════
+							-->
+							<a href="/api/trading-room/sso?room=day-trading-room" target="_blank" rel="nofollow">
 								<span class="dropdown-icon dropdown-icon--day-trading">
+									<!-- WordPress uses: <span class="st-icon-mastering-the-trade icon icon--md"></span>
+									     Custom icon font required. Using Tabler as alternative. -->
 									<IconChartLine size={20} />
 								</span>
 								Day Trading Room
 							</a>
 						</li>
 						<li>
-							<a href="/dashboard/simpler-showcase" target="_blank" rel="nofollow">
+							<!--
+								═══════════════════════════════════════════════════════════════════════
+								JWT SSO AUTHENTICATION REQUIRED
+								═══════════════════════════════════════════════════════════════════════
+								WordPress URL: https://chat.protradingroom.com/rooms/simpler-showcase?jwt={DYNAMIC_JWT_TOKEN}
+
+								Same backend requirements as Day Trading Room above.
+								Endpoint: GET /api/trading-room/sso?room=simpler-showcase
+								═══════════════════════════════════════════════════════════════════════
+							-->
+							<a href="/api/trading-room/sso?room=simpler-showcase" target="_blank" rel="nofollow">
 								<span class="dropdown-icon dropdown-icon--showcase">
+									<!-- WordPress uses: <span class="st-icon-simpler-showcase icon icon--md"></span>
+									     Custom icon font required. Using Tabler as alternative. -->
 									<IconTrophy size={20} />
 								</span>
 								Simpler Showcase Room
@@ -205,8 +314,9 @@
 				{#each articles as article (article.id)}
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
-							<figure class="article-card__image" style="background-image: url({article.image});">
-								<img src={article.image} alt={article.title} />
+							<!-- WordPress: card-media base class + card-media--video for video content -->
+							<figure class="card-media article-card__image{article.isVideo || article.type === 'Chatroom Archive' ? ' card-media--video' : ''}" style="background-image: url({article.image});">
+								<a href={article.href}><img src={article.image} alt={article.title} /></a>
 								{#if article.isVideo}
 									<div class="article-card__type">
 										<span class="label label--info">{article.type}</span>
@@ -214,10 +324,11 @@
 								{/if}
 							</figure>
 							<h4 class="h5 article-card__title"><a href={article.href}>{article.title}</a></h4>
-							<span class="article-card__meta"><small>{article.date}</small></span>
+							<!-- WordPress Order: excerpt BEFORE meta -->
 							<div class="article-card__excerpt u--hide-read-more">
-								<p>{article.excerpt}</p>
+								<p class="u--margin-bottom-0 u--font-size-sm">{#if !article.isVideo}<i>{article.excerpt}</i>{:else}{article.excerpt}{/if}</p>
 							</div>
+							<span class="article-card__meta"><small>{article.date}</small></span>
 							<a href={article.href} class="btn btn-tiny btn-default">Watch Now</a>
 						</article>
 					</div>
@@ -643,6 +754,57 @@
 		transform: translateY(-2px);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CARD MEDIA - WordPress Match (card-media base class)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.card-media {
+		position: relative;
+		width: 100%;
+		padding-top: 56.25%; /* 16:9 aspect ratio */
+		background-size: cover;
+		background-position: center;
+		background-color: #0984ae;
+		margin: 0;
+		overflow: hidden;
+	}
+
+	/* card-media--video: Adds play button overlay indicator for video content */
+	.card-media--video::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 60px;
+		height: 60px;
+		background: rgba(0, 0, 0, 0.6);
+		border-radius: 50%;
+		z-index: 3;
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	.card-media--video::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) translateX(3px);
+		width: 0;
+		height: 0;
+		border-left: 18px solid #fff;
+		border-top: 12px solid transparent;
+		border-bottom: 12px solid transparent;
+		z-index: 4;
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	.article-card:hover .card-media--video::before,
+	.article-card:hover .card-media--video::after {
+		opacity: 1;
+	}
+
 	/* Image with 16:9 aspect ratio using padding-top trick */
 	.article-card__image {
 		position: relative;
@@ -662,6 +824,16 @@
 		height: 100%;
 		object-fit: cover;
 		opacity: 0;
+	}
+
+	.article-card__image a {
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 2;
 	}
 
 	/* Type label positioned OVER the image */
@@ -740,6 +912,15 @@
 
 	.u--hide-read-more {
 		display: block;
+	}
+
+	/* WordPress utility classes */
+	.u--margin-bottom-0 {
+		margin-bottom: 0 !important;
+	}
+
+	.u--font-size-sm {
+		font-size: 14px !important;
 	}
 
 	/* Button in article card */
