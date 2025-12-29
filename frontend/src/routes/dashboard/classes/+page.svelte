@@ -235,8 +235,9 @@
 	}
 
 	.btn-default:hover {
-		background: #e9e9e9;
-		border-color: #999;
+		color: #333;
+		background-color: #e6e6e6;
+		border-color: #adadad;
 	}
 
 	/* Empty State */
@@ -262,6 +263,8 @@
 	}
 
 	.btn-orange:hover {
-		background: #f88b09;
+		background-color: #dc7309;
+		border-color: #dc7309;
+		color: #fff;
 	}
 </style>

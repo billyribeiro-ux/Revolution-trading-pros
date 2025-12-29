@@ -1258,9 +1258,9 @@
 	}
 
 	.btn-default:hover {
-		background: #e8e8e8;
-		border-color: #ccc;
-		box-shadow: none;
+		color: #333;
+		background-color: #e6e6e6;
+		border-color: #adadad;
 	}
 
 	.u--margin-top-20 {

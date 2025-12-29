@@ -653,8 +653,9 @@
 		padding-left: 8px;
 	}
 
-	/* Response container */
-	#response {
-		margin-top: 0;
+	.btn:hover {
+		color: #333;
+		background-color: #e6e6e6;
+		border-color: #adadad;
 	}
 </style>
