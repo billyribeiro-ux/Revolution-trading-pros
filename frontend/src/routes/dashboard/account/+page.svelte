@@ -6,12 +6,12 @@
 	 * Exact replica of Simpler Trading Dashboard Account welcome page
 	 * Reference: myaccount lines 2940-2957
 	 *
-	 * @version 2.1.0 - 100% Pixel Perfect with correct content-box styling
+	 * @version 2.2.0 - Svelte 5 runes pattern (Dec 2025)
 	 */
 	import { user } from '$lib/stores/auth';
 
-	// Fallback user data if not authenticated
-	$: userName = $user?.name || 'Member';
+	// Svelte 5 $derived - reactive computed value
+	let userName = $derived($user?.name || 'Member');
 </script>
 
 <svelte:head>
