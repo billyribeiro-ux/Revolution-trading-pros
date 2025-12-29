@@ -411,11 +411,44 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD PAGE - Page-specific styles only
-	   Header and title use global styles from dashboard-globals.css
+	   DASHBOARD PAGE - 100% WordPress Reference Match
+	   Source: frontend/Do's/DashboardHome lines 2848-2993, core 1 lines 1266, 2244
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Header layout extensions for this page */
+	/* Dashboard Header - EXACT WordPress Match */
+	.dashboard__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px;
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		flex-wrap: wrap;
+	}
+
+	@media screen and (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+	}
+
+	/* Page Title - EXACT WordPress Match (core 1 line 2244) */
+	h1.dashboard__page-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 36px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Header Left - WordPress Match */
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
@@ -428,6 +461,7 @@
 		}
 	}
 
+	/* Header Right - WordPress Match */
 	.dashboard__header-right {
 		display: flex;
 		align-items: center;
@@ -1374,9 +1408,7 @@
 	}
 
 	/* Trading room layout controls - ultradingroom visibility controlled by component styles */
-	:global(.dashboard__header) {
-		justify-content: space-between;
-	}
+	/* NOTE: .dashboard__header now defined as local style at top of file */
 
 	/* EXACT CSS FROM FILE 1 - Lines 3924-4072 */
 	:global(p:empty) {
