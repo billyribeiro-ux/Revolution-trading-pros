@@ -49,8 +49,8 @@
 	let computedDashboardUrl = $derived(dashboardUrl || `/dashboard/${slug}/`);
 	let computedActionUrl = $derived(actionUrl || `/dashboard/${slug}/`);
 
-	// Computed action label based on type
-	let computedActionLabel = $derived(() => {
+	// Computed action label based on type - Svelte 5 $derived.by() for complex logic
+	let computedActionLabel = $derived.by(() => {
 		if (actionLabel) return actionLabel;
 		switch (type) {
 			case 'trading-room': return 'Trading Room';
@@ -82,9 +82,9 @@
 	<div class="membership-card__actions">
 		<a href={computedDashboardUrl}>Dashboard</a>
 		{#if actionNewTab}
-			<a href={computedActionUrl} target="_blank" rel="noopener noreferrer">{computedActionLabel()}</a>
+			<a href={computedActionUrl} target="_blank" rel="noopener noreferrer">{computedActionLabel}</a>
 		{:else}
-			<a href={computedActionUrl}>{computedActionLabel()}</a>
+			<a href={computedActionUrl}>{computedActionLabel}</a>
 		{/if}
 	</div>
 </article>
