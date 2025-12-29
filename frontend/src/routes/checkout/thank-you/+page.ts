@@ -7,7 +7,7 @@
  *
  * @version 1.0.0 - L8 Principal Engineer
  */
-import type { PageLoad } from '@sveltejs/kit';
+import type { Load } from '@sveltejs/kit';
 
 // Disable prerendering - this page requires dynamic URL parameters
 export const prerender = false;
@@ -15,7 +15,7 @@ export const prerender = false;
 // Enable client-side rendering for maximum flexibility
 export const ssr = true;
 
-export const load: PageLoad = async ({ url }) => {
+export const load: Load = async ({ url }) => {
 	// Extract order details from URL parameters
 	const orderNumber = url.searchParams.get('order');
 	const productName = url.searchParams.get('product');

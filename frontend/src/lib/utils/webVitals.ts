@@ -140,14 +140,12 @@ function observeLCP(options: WebVitalsOptions): void {
 	if (!('PerformanceObserver' in window)) return;
 
 	let lcpValue = 0;
-	let lcpEntry: PerformanceEntry | null = null;
 
 	const observer = new PerformanceObserver((list) => {
 		const entries = list.getEntries();
 		const lastEntry = entries[entries.length - 1];
 		if (lastEntry) {
 			lcpValue = (lastEntry as any).startTime;
-			lcpEntry = lastEntry;
 		}
 	});
 

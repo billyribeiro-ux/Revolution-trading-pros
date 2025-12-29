@@ -20,7 +20,7 @@ import pastMembersApi, {
 	type CampaignHistory,
 	preloadDashboardData
 } from '$lib/api/past-members-dashboard';
-import type { PageLoad } from '@sveltejs/kit';
+import type { Load } from '@sveltejs/kit';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -49,7 +49,7 @@ export interface PastMembersPageData {
  * 2. Stream in dashboard data when available
  * 3. Cache results for instant navigation
  */
-export const load: PageLoad = async ({ url }) => {
+export const load: Load = async ({ url }) => {
 	// Base page data
 	const pageData: PastMembersPageData = {
 		title: 'Past Members Dashboard',

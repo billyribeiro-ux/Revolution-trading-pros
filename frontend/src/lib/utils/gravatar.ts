@@ -9,16 +9,6 @@
  */
 
 /**
- * Generate MD5 hash (browser-compatible)
- * Uses SubtleCrypto when available, falls back to simple hash
- */
-async function md5(message: string): Promise<string> {
-	// Use a simple synchronous MD5 implementation for Gravatar
-	// (Gravatar doesn't require cryptographic security)
-	return md5Sync(message);
-}
-
-/**
  * Synchronous MD5 implementation for Gravatar
  * Based on RFC 1321
  */

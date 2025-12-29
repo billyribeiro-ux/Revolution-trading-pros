@@ -5,9 +5,9 @@
  * @version 7.0.0 (WordPress IDENTICAL / December 2025)
  */
 
-import type { PageServerLoad } from '@sveltejs/kit';
+import type { ServerLoad } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals, cookies }) => {
+export const load: ServerLoad = async ({ locals }) => {
 	return {
 		user: locals.user || null,
 		cartNonce: '31d89a8fba',

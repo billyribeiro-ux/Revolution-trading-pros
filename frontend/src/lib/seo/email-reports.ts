@@ -591,7 +591,7 @@ function createReportStore() {
 		}
 	}
 
-	const { subscribe, set, update } = writable<ReportTemplate[]>(initial);
+	const { subscribe, set: _set, update } = writable<ReportTemplate[]>(initial);
 
 	const save = (templates: ReportTemplate[]) => {
 		if (browser) {

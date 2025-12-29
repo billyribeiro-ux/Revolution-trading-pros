@@ -1,11 +1,11 @@
-import type { PageLoad } from '@sveltejs/kit';
+import type { Load } from '@sveltejs/kit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { PaginatedPosts } from '$lib/types/post';
 
 export const prerender = false; // Disable prerendering for this page
 export const ssr = false; // Client-side rendering only
 
-export const load: PageLoad = async ({ fetch: svelteKitFetch }) => {
+export const load: Load = async ({ fetch: svelteKitFetch }) => {
 	try {
 		// Pass SvelteKit's fetch to apiFetch for proper SSR support
 		const posts = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list, {

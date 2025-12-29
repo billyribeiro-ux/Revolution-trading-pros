@@ -167,6 +167,7 @@ export function measureINP(): (() => void) | undefined {
 
 	} catch (error) {
 		console.error('INP measurement failed:', error);
+		return undefined;
 	}
 }
 
@@ -269,6 +270,7 @@ export function measureCLS(): (() => void) | undefined {
 		};
 	} catch (error) {
 		console.error('CLS measurement failed:', error);
+		return undefined;
 	}
 }
 

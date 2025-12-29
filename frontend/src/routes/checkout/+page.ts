@@ -2,13 +2,13 @@ import { browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { authStore } from '$lib/stores/auth';
 import { getUser } from '$lib/api/auth';
-import type { PageLoad } from '@sveltejs/kit';
+import type { Load } from '@sveltejs/kit';
 
 /**
  * Protected checkout route loader - Google Enterprise Pattern
  * Uses SvelteKit's redirect() for proper history management
  */
-export const load: PageLoad = async ({ url }) => {
+export const load: Load = async ({ url }) => {
 	// Server-side: Skip auth check, let client handle it
 	if (!browser) {
 		return { requiresAuth: true };
