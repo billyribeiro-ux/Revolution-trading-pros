@@ -835,13 +835,24 @@
 		line-height: 50px;
 	}
 
-	/* Center icons and profile photo in collapsed state */
-	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon,
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
+	/* Center icons in collapsed state - 32px icons centered in 80px width */
+	.dashboard__nav-primary.is-collapsed .dashboard__nav-item-icon {
+		position: absolute;
 		left: 50%;
-		margin-left: -16px;
-		transform: scale(1);
-		transition: all 0.15s ease-in-out;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		margin: 0;
+	}
+
+	/* Center profile photo in collapsed state - 32px photo centered in 80px width */
+	.dashboard__nav-primary.is-collapsed .dashboard__profile-photo {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		margin: 0;
+		width: 32px;
+		height: 32px;
 	}
 
 	/* Tooltip - hidden by default */
@@ -873,21 +884,13 @@
 		display: none;
 	}
 
-	/* Hover effects */
+	/* Hover effects - ONLY circle hover + name bubble */
 	.dashboard__nav-primary.is-collapsed a:hover::before {
 		transform: scale(1);
 		background-color: rgba(0, 0, 0, 0.2);
 	}
 
-	.dashboard__nav-primary.is-collapsed a:hover::after {
-		transform: scaleX(0);
-	}
-
-	.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-icon,
-	.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-photo {
-		transform: scale(0.9);
-	}
-
+	/* Show tooltip on hover */
 	.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-text,
 	.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-name {
 		opacity: 1;
@@ -906,36 +909,6 @@
 		border-width: 6px;
 		border-style: solid;
 		border-color: transparent #fff transparent transparent;
-	}
-
-	/* Show tooltip on hover */
-	.dashboard__nav-primary.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-text,
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
-		opacity: 1;
-		visibility: visible;
-		transform: translate(0, -50%);
-	}
-
-	/* Background circle effect on link hover - Pixel-perfect match to WordPress reference */
-	.dashboard__nav-primary.is-collapsed a::before {
-		position: absolute;
-		display: block;
-		content: '';
-		top: 50%;
-		left: 50%;
-		width: 50px;
-		height: 50px;
-		margin-top: -25px;
-		margin-left: -25px;
-		border-radius: 50%;
-		transform: scale(.9);
-		background: transparent;
-		transition: all .15s ease-in-out;
-	}
-
-	.dashboard__nav-primary.is-collapsed a:hover::before {
-		transform: scale(1);
-		background-color: rgba(0, 0, 0, .2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -986,13 +959,13 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   PROFILE SECTION - Exact match to WordPress dashboard.8f78208b.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
+	/* Profile nav item - WordPress reference: padding to accommodate 44px photo at left: 20px */
 	.dashboard__profile-nav-item {
 		color: hsla(0, 0%, 100%, 0.5);
 		height: auto;
 		line-height: 1.4;
-		padding: 32px 20px 28px 80px;
-		display: flex;
-		align-items: center;
+		padding: 32px 20px 28px 76px; /* 20px left + 44px photo + 12px gap = 76px */
+		display: block;
 		position: relative;
 		text-decoration: none;
 		font-weight: 300;
@@ -1006,18 +979,18 @@
 		border-color: #0984ae;
 	}
 
+	/* Profile photo - WordPress reference: left: 20px, 44x44, border: hsla(0,0%,100%,0.2) */
 	.dashboard__profile-photo {
 		position: absolute;
 		top: 50%;
-		left: 30px;
-		margin-top: -17px;
-		width: 34px;
-		height: 34px;
-		border: 2px solid #fff;
+		left: 20px;
+		transform: translateY(-50%);
+		width: 44px;
+		height: 44px;
+		border: 2px solid hsla(0, 0%, 100%, 0.2);
 		border-radius: 50%;
-		background: no-repeat 50%;
-		background-size: 32px;
-		transition: all 0.15s ease-in-out;
+		background-color: #0f2d41;
+		background-size: cover;
 		background-position: center;
 		transition: border-color 0.15s ease-in-out;
 	}

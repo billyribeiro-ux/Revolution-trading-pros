@@ -201,15 +201,16 @@
 		margin: 0;
 	}
 
+	/* Secondary nav links - WordPress reference: padding 12px 20px, color hsla(0,0%,100%,0.7) */
 	.dashboard__nav-secondary a {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		padding: 14px 24px;
-		color: #999;
+		gap: 10px;
+		padding: 12px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		font-size: 14px;
-		transition: all 0.2s;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__nav-secondary a:hover {
@@ -217,14 +218,16 @@
 		background: rgba(255, 255, 255, 0.05);
 	}
 
+	/* Active state - WordPress reference: rgba(255,255,255,0.1), no border */
 	.dashboard__nav-secondary li.is-active a {
 		color: #fff;
-		background: rgba(9, 132, 174, 0.2);
-		border-left: 3px solid #0984ae;
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	.dashboard__nav-item-icon {
-		font-size: 18px;
+		font-size: 24px;
+		width: 24px;
+		height: 24px;
 	}
 
 	/* Main Content */
@@ -239,8 +242,9 @@
 		border-bottom: 1px solid #dbdbdb;
 	}
 
+	/* Page title - WordPress reference: font-size 36px */
 	.dashboard__page-title {
-		font-size: 24px;
+		font-size: 36px;
 		font-weight: 700;
 		color: #333;
 		margin: 0;
@@ -343,14 +347,12 @@
 		margin-bottom: 20px;
 	}
 
-	/* Section Title */
+	/* Section Title - WordPress reference: font-size 32px, margin 0 0 30px, no border */
 	.section-title {
-		font-size: 24px;
+		font-size: 32px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 20px;
-		padding-bottom: 15px;
-		border-bottom: 2px solid #0984ae;
+		margin: 0 0 30px;
 	}
 
 	/* Article Cards Grid */
@@ -559,16 +561,19 @@
 		border-radius: 4px;
 	}
 
+	/* Section title alt - WordPress reference: 11px blue uppercase, letter-spacing 1px */
 	.section-title-alt {
-		font-size: 24px;
+		font-size: 11px;
 		font-weight: 700;
-		color: #333;
+		color: #0984ae;
 		margin: 0 0 20px;
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 
 	.section-title-alt--underline {
 		padding-bottom: 15px;
-		border-bottom: 2px solid #0984ae;
+		border-bottom: 1px solid #dbdbdb;
 	}
 
 	.u--font-weight-bold {

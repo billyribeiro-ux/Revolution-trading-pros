@@ -120,20 +120,27 @@
 		margin: 0;
 	}
 
+	/* Secondary nav links - WordPress reference: padding 12px 20px, color hsla(0,0%,100%,0.7) */
 	.dashboard__nav-secondary a {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		padding: 14px 24px;
-		color: #999;
+		gap: 10px;
+		padding: 12px 20px;
+		color: hsla(0, 0%, 100%, 0.7);
 		text-decoration: none;
 		font-size: 14px;
-		transition: all 0.2s;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__nav-secondary a:hover {
 		color: #fff;
 		background: rgba(255, 255, 255, 0.05);
+	}
+
+	/* Active state - WordPress reference */
+	.dashboard__nav-secondary li.is-active a {
+		color: #fff;
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	.dashboard__main {
@@ -147,11 +154,13 @@
 		border-bottom: 1px solid #dbdbdb;
 	}
 
+	/* Page title - WordPress reference: font-size 36px */
 	.dashboard__page-title {
-		font-size: 24px;
+		font-size: 36px;
 		font-weight: 700;
 		color: #333;
 		margin: 0;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.dashboard__content {
@@ -164,13 +173,12 @@
 		padding: 30px;
 	}
 
+	/* Section title - WordPress reference: font-size 32px, no border */
 	.section-title {
-		font-size: 24px;
+		font-size: 32px;
 		font-weight: 700;
 		color: #333;
 		margin: 0 0 30px;
-		padding-bottom: 15px;
-		border-bottom: 2px solid #0984ae;
 	}
 
 	.getting-started-content {
