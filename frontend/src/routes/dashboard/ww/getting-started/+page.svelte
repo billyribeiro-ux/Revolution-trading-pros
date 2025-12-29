@@ -249,7 +249,9 @@
 	}
 
 	.btn-default:hover {
-		background: #e8e8e8;
+		color: #333;
+		background-color: #e6e6e6;
+		border-color: #adadad;
 	}
 
 	@media (max-width: 992px) {
