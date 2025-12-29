@@ -11,9 +11,8 @@
 	 *
 	 * @version 1.0.0
 	 */
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { getTradingRoomAccess, type UserMembership } from '$lib/api/user-memberships';
+	import { getTradingRoomAccess } from '$lib/api/user-memberships';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconBrandDiscord from '@tabler/icons-svelte/icons/brand-discord';
@@ -26,29 +25,25 @@
 
 	let slug = $derived($page.params.slug!);
 	let hasAccess = $state(false);
-	let membership = $state<UserMembership | null>(null);
 	let discordInvite = $state<string | null>(null);
 	let loading = $state(true);
-	let error = $state<string | null>(null);
 
 	// Room config - would come from API in production
 	let roomConfig = $derived(getRoomConfig(slug || ''));
 
-	onMount(async () => {
-		await checkAccess();
+	$effect(() => {
+		checkAccess();
 	});
 
 	async function checkAccess() {
 		loading = true;
-		error = null;
 		try {
 			const result = await getTradingRoomAccess(slug || '');
 			hasAccess = result.hasAccess;
-			membership = result.membership || null;
 			discordInvite = result.discordInvite || null;
 
 			if (!hasAccess) {
-				error = 'You do not have access to this trading room.';
+				// Access denied - will be handled by template
 			}
 		} catch (err) {
 			console.error('Failed to check access:', err);
@@ -57,6 +52,25 @@
 		} finally {
 			loading = false;
 		}
+	}
+
+	function handleDashboardClick(event: MouseEvent) {
+		event.preventDefault();
+		window.location.href = '/dashboard';
+	}
+
+	function handlePricingClick(event: MouseEvent) {
+		event.preventDefault();
+		window.location.href = '/pricing';
+	}
+
+	function handleBackClick(event: MouseEvent) {
+		event.preventDefault();
+		window.location.href = '/dashboard';
+	}
+
+	function handleDiscordClick() {
+		// Allow Discord link to open in new tab normally
 	}
 
 	function getRoomConfig(roomSlug: string) {
@@ -138,20 +152,20 @@
 			<h1>Access Required</h1>
 			<p>You don't have access to the {roomConfig.name}.</p>
 			<div class="access-denied-actions">
-				<a href="/dashboard" class="btn btn-secondary">
-					<IconArrowLeft size={18} />
-					Back to Dashboard
-				</a>
-				<a href="/pricing" class="btn btn-primary">
-					View Pricing
-				</a>
+					<a href="/dashboard" class="btn btn-secondary" onclick={handleDashboardClick}>
+						<IconArrowLeft size={18} />
+						Back to Dashboard
+					</a>
+					<a href="/pricing" class="btn btn-primary" onclick={handlePricingClick}>
+						View Pricing
+					</a>
 			</div>
 		</div>
 	{:else}
 		<!-- Room Header -->
 		<header class="room-header" style="--room-color: {roomConfig.color}">
 			<div class="room-header-left">
-				<a href="/dashboard" class="back-link">
+				<a href="/dashboard" class="back-link" onclick={handleBackClick}>
 					<IconArrowLeft size={18} />
 					Dashboard
 				</a>
@@ -166,12 +180,12 @@
 				</div>
 			</div>
 			<div class="room-header-right">
-				{#if discordInvite}
-					<a href={discordInvite} target="_blank" class="btn btn-discord">
-						<IconBrandDiscord size={20} />
-						Join Discord
-					</a>
-				{/if}
+					{#if discordInvite}
+						<a href={discordInvite} target="_blank" class="btn btn-discord" onclick={handleDiscordClick}>
+							<IconBrandDiscord size={20} />
+							Join Discord
+						</a>
+					{/if}
 			</div>
 		</header>
 
