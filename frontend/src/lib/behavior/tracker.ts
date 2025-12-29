@@ -4,7 +4,7 @@
  */
 
 import type { BehaviorEvent, BehaviorEventBatch, BehaviorTrackerConfig } from './types';
-import { generateSessionId, generateVisitorId, getDeviceType, getBrowser } from './utils.js';
+import { generateSessionId, generateVisitorId } from './utils.js';
 
 export class BehaviorTracker {
 	private config: BehaviorTrackerConfig;
@@ -14,7 +14,6 @@ export class BehaviorTracker {
 	private eventBuffer: BehaviorEvent[] = [];
 	private bufferTimer?: number;
 	private sessionStartTime: number;
-	private lastEventTime: number;
 	private sequenceNumber: number = 0;
 
 	// Tracking state

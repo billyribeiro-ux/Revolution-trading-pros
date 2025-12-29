@@ -231,7 +231,7 @@ class WebSocketService {
 	 * Handle incoming message
 	 */
 	private handleMessage(message: WebSocketMessage): void {
-		const { event, widget_id, dashboard_id, user_id, cart_id, notification, data, changes } = message;
+		const { event, widget_id, dashboard_id, user_id, notification, data, changes } = message;
 
 		if (event === 'widget:update' && widget_id) {
 			const channel = `widget:${widget_id}`;

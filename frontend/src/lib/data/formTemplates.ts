@@ -1,4 +1,4 @@
-import type { Form, FormField, FieldValidation, FormSettings } from '$lib/api/forms';
+import type { FieldValidation, FormSettings } from '$lib/api/forms';
 
 export interface TemplateField {
 	field_type: string;
