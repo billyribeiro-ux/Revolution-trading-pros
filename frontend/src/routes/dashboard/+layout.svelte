@@ -11,7 +11,6 @@
 	 *
 	 * @version 2.1.0
 	 */
-	import { onMount } from 'svelte';
 	import { NavBar } from '$lib/components/nav';
 	import Footer from '$lib/components/sections/Footer.svelte';
 	
@@ -29,23 +28,15 @@
 
 	// Tabler Icons - Sidebar Navigation Icons
 	import IconHome from '@tabler/icons-svelte/icons/home';
-	import IconBook from '@tabler/icons-svelte/icons/book';
 	import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
-	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 	import IconCalendarWeek from '@tabler/icons-svelte/icons/calendar-week';
 	import IconHeadset from '@tabler/icons-svelte/icons/headset';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconStar from '@tabler/icons-svelte/icons/star';
 	import IconTrophy from '@tabler/icons-svelte/icons/trophy';
 	import IconSchool from '@tabler/icons-svelte/icons/school';
-	import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
 	import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
-	import IconVideo from '@tabler/icons-svelte/icons/video';
-	import IconBooks from '@tabler/icons-svelte/icons/books';
 	import IconArchive from '@tabler/icons-svelte/icons/archive';
 	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconShoppingBag from '@tabler/icons-svelte/icons/shopping-bag';
-	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 	import IconAward from '@tabler/icons-svelte/icons/award';
 	import IconBuildingStore from '@tabler/icons-svelte/icons/building-store';
@@ -880,9 +871,6 @@
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 	}
 
-	.dashboard__nav-primary.is-collapsed .dashboard__profile-location {
-		display: none;
-	}
 
 	/* Hover effects - ONLY circle hover + name bubble */
 	.dashboard__nav-primary.is-collapsed a:hover::before {
@@ -1158,10 +1146,6 @@
 		background-color: rgba(255, 255, 255, 0.05);
 	}
 
-	.dashboard__nav-secondary li > a.no-icon,
-	.dashboard__nav-secondary li > span.no-icon {
-		padding-left: 20px;
-	}
 
 	.dashboard__nav-secondary li.is-active > a,
 	.dashboard__nav-secondary li.is-active > span {
@@ -1299,12 +1283,6 @@
 		background-color: rgba(255, 255, 255, 0.05);
 	}
 
-	/* Active state for submenu items */
-	.dashboard__nav-secondary .dashboard__nav-submenu li.is-active a {
-		color: #fff;
-		font-weight: 600;
-		background-color: rgba(255, 255, 255, 0.1);
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   TOGGLE BUTTON - Collapse/Expand Primary Sidebar
