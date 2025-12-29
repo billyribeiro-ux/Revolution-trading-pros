@@ -729,7 +729,7 @@
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		width: 280px;
-		background-color: #0f2d41;
+		background-color: #0e2433;
 		min-height: 100%;
 		bottom: 50px;
 		left: 0;
@@ -777,7 +777,7 @@
 		padding-bottom: 30px;
 		font-size: 16px;
 		line-height: 1;
-		background-color: #0f2d41;
+		background-color: #0e2433;
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -978,7 +978,7 @@
 		height: 44px;
 		border-radius: 50%;
 		border: 2px solid hsla(0, 0%, 100%, 0.2);
-		background-color: #0f2d41;
+		background-color: #0e2433;
 		background-size: cover;
 		background-position: center;
 		transition: border-color 0.15s ease-in-out;
@@ -1103,13 +1103,13 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   SECONDARY NAVIGATION - User Specification
-	   Primary nav: #0f2d41 | Secondary nav: #0f2d41 | Submenu: #0a2335
+	   Primary nav: #0e2433 | Secondary nav: #0e2433 | Submenu: #0a2335
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary {
 		width: 280px;
 		font-size: 14px;
 		font-weight: 600;
-		background-color: #0f2d41;
+		background-color: #0e2433;
 		min-height: 100%;
 	}
 

@@ -103,10 +103,10 @@
 		background: #f4f4f4;
 	}
 
-	/* Sidebar - WordPress dashboard.8f78208b.css: 280px width, #0f2d41 background */
+	/* Sidebar - WordPress MemberDasgboardMyAccount reference: 280px width, #0e2433 background */
 	.dashboard__sidebar {
 		width: 280px;
-		background: #0f2d41;
+		background: #0e2433;
 		flex-shrink: 0;
 	}
 

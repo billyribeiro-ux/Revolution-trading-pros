@@ -120,11 +120,11 @@ h3 {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SIDEBAR - Exact match to WordPress dashboard.8f78208b.css
+   SIDEBAR - Exact match to WordPress MemberDasgboardMyAccount reference
    ═══════════════════════════════════════════════════════════════════════════════ */
 .dashboard__sidebar {
   width: 280px;
-  background-color: #0f2d41;
+  background-color: #0e2433;
   min-height: 100%;
 }
 
@@ -133,7 +133,7 @@ h3 {
   padding-bottom: 30px;
   font-size: 16px;
   line-height: 1;
-  background-color: #0f2d41;
+  background-color: #0e2433;
 }
 
 .dashboard__nav-category {
