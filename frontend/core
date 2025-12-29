@@ -1,23 +1,56 @@
+<!-- 
+===============================================================================
+FRONTEND CORE FILE - SIMPLER TRADING MEMBER DASHBOARD
+===============================================================================
 
+FILE OVERVIEW:
+This is the main frontend core file for the Simpler Trading member dashboard. It serves as a 
+comprehensive HTML document that includes all necessary meta tags, stylesheets, scripts, and 
+the complete dashboard layout structure.
 
+PURPOSE:
+- Primary entry point for the member dashboard interface
+- Integrates multiple WordPress plugins and third-party services
+- Provides responsive design and interactive functionality
+- Handles user authentication and membership management
 
+TECHNOLOGIES USED:
+- HTML5 semantic markup
+- WordPress CMS with multiple plugins
+- WooCommerce for e-commerce functionality
+- Elementor for page building
+- Bootstrap for responsive design
+- jQuery for DOM manipulation
+- Various third-party tracking and analytics services
 
+AUTHOR: Simpler Trading Development Team
+LAST MODIFIED: December 29, 2025
+VERSION: 1.0
+===============================================================================
+-->
 
 <!DOCTYPE html>
 <html lang="en-US">
 
 <head>
+	<!-- CHARACTER ENCODING AND BASIC META INFORMATION -->
 	<meta charset="UTF-8">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 
+	<!-- CONVERT EXPERIENCES TRACKING SCRIPT - A/B TESTING AND CONVERSION OPTIMIZATION -->
 	<!-- begin Convert Experiences code-->
 	<script type="text/javascript" src="//cdn-3.convertexperiments.com/js/10006018-10006413.js"></script>
 	<!-- end Convert Experiences code -->
+	
+	<!-- SEARCH ENGINE OPTIMIZATION - PREVENT INDEXING OF MEMBER DASHBOARD -->
 	<meta name='robots' content='noindex, nofollow' />
 
+	<!-- YOAST SEO PREMIUM PLUGIN CONFIGURATION - SEARCH ENGINE OPTIMIZATION -->
 	<!-- This site is optimized with the Yoast SEO Premium plugin v19.2.1 (Yoast SEO v20.12) - https://yoast.com/wordpress/plugins/seo/ -->
 	<title>Welcome to Simpler Trading - the Best Trading Community for Trading Tips</title>
 	<meta name="description" content="With over 200 combined years of experience in trading, our team of experts will help you learn the basics of trading, as well as advanced trading strategies. Join today and take your trading to the next level." />
+	
+	<!-- OPEN GRAPH META TAGS - SOCIAL MEDIA SHARING OPTIMIZATION -->
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="Member Dashboard" />
@@ -30,33 +63,51 @@
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:type" content="image/jpeg" />
+	
+	<!-- TWITTER CARD META TAGS - TWITTER SHARING OPTIMIZATION -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@simpleroptions" />
+	
+	<!-- STRUCTURED DATA - SCHEMA.ORG MARKUP FOR SEARCH ENGINES -->
 	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://my.simplertrading.com/dashboard","url":"https://my.simplertrading.com/dashboard","name":"Welcome to Simpler Trading - the Best Trading Community for Trading Tips","isPartOf":{"@id":"https://my.simplertrading.com/#website"},"datePublished":"2018-07-24T19:55:52+00:00","dateModified":"2025-06-13T14:28:34+00:00","description":"With over 200 combined years of experience in trading, our team of experts will help you learn the basics of trading, as well as advanced trading strategies. Join today and take your trading to the next level.","breadcrumb":{"@id":"https://my.simplertrading.com/dashboard#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://my.simplertrading.com/dashboard"]}]},{"@type":"BreadcrumbList","@id":"https://my.simplertrading.com/dashboard#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.simplertrading.com/"},{"@type":"ListItem","position":2,"name":"Member Dashboard"}]},{"@type":"WebSite","@id":"https://my.simplertrading.com/#website","url":"https://my.simplertrading.com/","name":"Simpler Trading","description":"Trading Made Simple","publisher":{"@id":"https://my.simplertrading.com/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://my.simplertrading.com/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"Organization","@id":"https://my.simplertrading.com/#organization","name":"Simpler Trading","url":"https://my.simplertrading.com/","logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://my.simplertrading.com/#/schema/logo/image/","url":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","contentUrl":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","width":901,"height":80,"caption":"Simpler Trading"},"image":{"@id":"https://my.simplertrading.com/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/simplerofficial/","https://twitter.com/simpleroptions","https://www.instagram.com/simplertrading/","https://www.linkedin.com/company/4418329/","https://www.youtube.com/user/SimplerOptions"]}]}</script>
 	<!-- / Yoast SEO Premium plugin. -->
 
 
+<!-- PIXEL YOUR SITE PRO - FACEBOOK PIXEL TRACKING INITIALIZATION -->
 <script type='application/javascript'>console.log('PixelYourSite PRO version 9.2.2');</script>
+
+<!-- DNS PREFETCHING - PERFORMANCE OPTIMIZATION FOR EXTERNAL RESOURCES -->
 <link rel='dns-prefetch' href='//www.simplertrading.com' />
 <link rel='dns-prefetch' href='//cdn.jwplayer.com' />
 <link rel='dns-prefetch' href='//www.googletagmanager.com' />
 <link rel='dns-prefetch' href='//fonts.googleapis.com' />
 <link rel='dns-prefetch' href='//use.typekit.net' />
 <link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+
+<!-- RSS FEEDS - CONTENT SYNDICATION -->
 <link rel="alternate" type="application/rss+xml" title="Simpler Trading &raquo; Feed" href="https://www.simplertrading.com/feed" />
 <link rel="alternate" type="application/rss+xml" title="Simpler Trading &raquo; Comments Feed" href="https://www.simplertrading.com/comments/feed" />
+
+<!-- PIXEL YOUR SITE BING - BING ADS TRACKING -->
 <script type='text/javascript'>console.log('PixelYourSite Bing version 3.0.0');</script>
+
+<!-- FONT PRELOADING - PERFORMANCE OPTIMIZATION FOR FONTAWESOME ICONS -->
 <link rel="preload" href="https://www.simplertrading.com/wp-content/plugins/bb-plugin/fonts/fontawesome/5.15.3/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://www.simplertrading.com/wp-content/plugins/bb-plugin/fonts/fontawesome/5.15.3/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://www.simplertrading.com/wp-content/plugins/bb-plugin/fonts/fontawesome/5.15.3/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<!-- WORDPRESS EMOJI SUPPORT SCRIPT - AUTO-GENERATED BY WORDPRESS -->
+<!-- Handles emoji rendering across different browsers and devices -->
 <script type="text/javascript">
 /* <![CDATA[ */
 window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.simplertrading.com\/cms\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.5.5"}};
 /*! This file is auto-generated */
-!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+JSON.stringify(n)+')',r);var a=new Worker(e,{name:"wpTestEmojiSupports"});a.onmessage=function(e){c(n=e.data),t.terminate()},t.postMessage(n)}catch(e){}else n=f(o,s)}return n})}((window,document),window._wpemojiSettings);
 /* ]]> */
 </script>
+<!-- GENERATEPRESS THEME FONT LOADING - GOOGLE FONTS -->
 <link rel='stylesheet' id='generate-fonts-css' href='//fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700|Open+Sans+Condensed:300,300italic,700' type='text/css' media='all' />
+
+<!-- WORDPRESS EMOJI STYLES - INLINE CSS FOR EMOJI DISPLAY -->
 <style id='wp-emoji-styles-inline-css' type='text/css'>
 
 	img.wp-smiley, img.emoji {
@@ -71,14 +122,25 @@ window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15
 		padding: 0 !important;
 	}
 </style>
+
+<!-- WORDPRESS CORE BLOCK LIBRARY STYLES - GUTENBERG BLOCK SUPPORT -->
 <link rel='stylesheet' id='wp-block-library-css' href='https://www.simplertrading.com/cms/wp-includes/css/dist/block-library/style.min.css?ver=6.5.5' type='text/css' media='all' />
+
+<!-- WOOCOMMERCE BLOCKS VENDOR STYLES - E-COMMERCE BLOCK COMPONENTS -->
 <link rel='stylesheet' id='wc-blocks-vendors-style-css' href='https://www.simplertrading.com/wp-content/plugins/woocommerce/packages/woocommerce-blocks/build/wc-blocks-vendors-style.css?ver=10.4.6' type='text/css' media='all' />
+
+<!-- WOOCOMMERCE BLOCKS CORE STYLES - E-COMMERCE FUNCTIONALITY -->
 <link rel='stylesheet' id='wc-blocks-style-css' href='https://www.simplertrading.com/wp-content/plugins/woocommerce/packages/woocommerce-blocks/build/wc-blocks-style.css?ver=10.4.6' type='text/css' media='all' />
+
+<!-- WOOCOMMERCE MEMBERSHIPS BLOCKS - MEMBERSHIP RESTRICTION STYLES -->
 <link rel='stylesheet' id='wc-memberships-blocks-css' href='https://www.simplertrading.com/wp-content/plugins/woocommerce-memberships/assets/css/blocks/wc-memberships-blocks.min.css?ver=1.25.0' type='text/css' media='all' />
+<!-- WORDPRESS CLASSIC THEME STYLES - LEGACY BLOCK COMPATIBILITY -->
 <style id='classic-theme-styles-inline-css' type='text/css'>
 /*! This file is auto-generated */
 .wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
 </style>
+
+<!-- WORDPRESS GLOBAL THEME STYLES - THEME CUSTOMIZATION AND COLOR PALETTES -->
 <style id='global-styles-inline-css' type='text/css'>
 body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
 .wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
@@ -86,6 +148,8 @@ body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: 
 :where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
 .wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
 </style>
+<!-- BEAVER BUILDER LAYOUT STYLES - PAGE BUILDER FRAMEWORK STYLING -->
+<!-- Custom layout styles for the member dashboard page (ID: 401190) -->
 <style id='fl-builder-layout-401190-inline-css' type='text/css'>
 /* Grid
 ------------------------------------------------------ */
@@ -2733,9 +2797,34 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 <a id="top"></a>
 
+    <!-- ================================================================================
+DASHBOARD MAIN CONTAINER - MEMBER DASHBOARD INTERFACE
+===============================================================================
+
+This section contains the complete member dashboard structure including:
+- Sidebar navigation with user profile and menu items
+- Main content area with membership cards and tools
+- Trading room access and weekly watchlist sections
+
+The dashboard dynamically populates based on user's active memberships and permissions.
+=============================================================================== -->
+
     <div class="dashboard">
+        
+<!-- DASHBOARD SIDEBAR - PRIMARY NAVIGATION AND USER PROFILE -->
+<!-- Contains user profile information, main navigation menu, and quick access links -->
         <aside class="dashboard__sidebar">
+            
+<!-- PRIMARY NAVIGATION MENU - DASHBOARD NAVIGATION STRUCTURE -->
+<!-- Dynamically generates navigation items based on user permissions and memberships -->
             <nav class="dashboard__nav-primary  ">
+                
+<!-- USER PROFILE SECTION - PERSONALIZED USER INFORMATION -->
+<!-- CALLED ON: Every dashboard page load 
+   POPULATED WITH: User data from WordPress user_meta table and Gravatar API
+   DATA SOURCE: WordPress user session (user_id: 94190) + Gravatar email hash
+   TRIGGER: User authentication via WordPress login system
+   REFRESHES: On user profile update or Gravatar change -->
   <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
     <span class="dashboard__profile-photo" style="background-image: url(https://secure.gravatar.com/avatar/b27c0cfb1c74fb928f5e40ba6711669f?s=32&d=mm&r=g);"></span>
     <span class="dashboard__profile-name">Zack Stambowski</span>
@@ -2744,19 +2833,45 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
       <ul>
       <li>
               </li>
+      <!-- MAIN DASHBOARD NAVIGATION LINKS - CORE DASHBOARD SECTIONS -->
+<!-- These links provide access to primary dashboard areas with visual icons -->
       <ul class="dash_main_links">
+                                          
+<!-- MEMBER DASHBOARD - HOME/LANDING PAGE -->
+<!-- CALLED ON: Initial dashboard load at /dashboard/ URL
+   POPULATED WITH: Active memberships, weekly watchlist, featured content
+   DATA SOURCE: WooCommerce Memberships API + WordPress custom post types
+   TRIGGER: User authentication and dashboard page request
+   REFRESHES: Real-time on membership changes, weekly content updates
+   CURRENT STATE: Active (is-active class) - shows this is current page -->
                                           <li class=" is-active">
                 <a href="/dashboard/" target="">
                   <span class="dashboard__nav-item-icon st-icon-home"></span>
                   <span class="dashboard__nav-item-text" style=" ">Member Dashboard</span>
                 </a>
               </li>
+                                                    
+<!-- MY CLASSES - EDUCATIONAL CONTENT ACCESS -->
+<!-- CALLED ON: Navigation to /dashboard/classes/ URL
+   POPULATED WITH: Purchased courses from WooCommerce + custom course data
+   DATA SOURCE: WooCommerce order history + LearnDash/Custom LMS integration
+   TRIGGER: Click on "My Classes" link or direct URL access
+   REFRESHES: On new course purchase or course content updates
+   DISPLAYS: Course thumbnails, progress indicators, completion status -->
                                                     <li class=" ">
                 <a href="/dashboard/classes/" target="">
                   <span class="dashboard__nav-item-icon st-icon-courses"></span>
                   <span class="dashboard__nav-item-text" style="font-weight:bold;color: white; ">My Classes</span>
                 </a>
               </li>
+                                                    
+<!-- MY INDICATORS - TRADING TOOLS AND INDICATORS -->
+<!-- CALLED ON: Navigation to /dashboard/indicators/ URL
+   POPULATED WITH: Downloaded indicators, purchased trading tools
+   DATA SOURCE: WooCommerce product downloads + custom indicator registry
+   TRIGGER: Click on "My Indicators" link or direct URL access
+   REFRESHES: On new indicator purchase or download availability
+   DISPLAYS: Download links, installation guides, version information -->
                                                     <li class=" ">
                 <a href="/dashboard/indicators/" target="">
                   <span class="dashboard__nav-item-icon st-icon-indicators"></span>
@@ -2765,17 +2880,40 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
               </li>
                         </ul>
     </ul>
+      <!-- MEMBERSHIPS SECTION - ACTIVE TRADING MEMBERSHIPS -->
+<!-- CALLED ON: Every dashboard page load after user authentication
+   POPULATED WITH: Active membership subscriptions from WooCommerce Memberships
+   DATA SOURCE: WooCommerce Memberships API (user_id: 94190)
+   TRIGGER: WordPress 'wp_loaded' action + membership status check
+   REFRESHES: Real-time on membership purchase, cancellation, or expiration
+   DISPLAY LOGIC: Shows only active memberships with current access rights -->
       <ul>
       <li>
                   <p class="dashboard__nav-category">memberships</p>
               </li>
       <ul class="dash_main_links">
+                                                                      
+<!-- MASTERING THE TRADE MEMBERSHIP - PREMIUM TRADING ROOM -->
+<!-- CALLED ON: Navigation to /dashboard/mastering-the-trade URL
+   POPULATED WITH: Premium membership content, live trading room access, advanced education
+   DATA SOURCE: WooCommerce Membership ID: 'mastering_the_trade' + custom post content
+   TRIGGER: Click on navigation link or direct URL access
+   REFRESHES: Real-time trading room status, new content uploads, membership validity
+   DISPLAYS: Live trading room links, premium video content, advanced strategies -->
                                                                       <li class=" ">
                 <a href="/dashboard/mastering-the-trade" target="">
                   <span class="dashboard__nav-item-icon st-icon-mastering-the-trade"></span>
                   <span class="dashboard__nav-item-text" style=" ">Mastering the Trade</span>
                 </a>
               </li>
+                                                    
+<!-- SIMPLER SHOWCASE MEMBERSHIP - FOUNDATIONAL TRADING ROOM -->
+<!-- CALLED ON: Navigation to /dashboard/simpler-showcase/ URL
+   POPULATED WITH: Basic membership content, showcase trading room, foundational education
+   DATA SOURCE: WooCommerce Membership ID: 'simpler_showcase' + custom post content
+   TRIGGER: Click on navigation link or direct URL access
+   REFRESHES: New showcase content, trading room schedule updates, membership status
+   DISPLAYS: Breakout room access, beginner-friendly content, basic trading concepts -->
                                                     <li class=" ">
                 <a href="/dashboard/simpler-showcase/" target="">
                   <span class="dashboard__nav-item-icon st-icon-simpler-showcase"></span>
@@ -2798,17 +2936,25 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
       <ul class="dash_main_links">
                                                                       </ul>
     </ul>
+      <!-- TOOLS SECTION - TRADING TOOLS AND SUPPORT -->
+<!-- Provides access to trading tools, watchlists, and customer support resources -->
       <ul>
       <li>
                   <p class="dashboard__nav-category">tools</p>
               </li>
       <ul class="dash_main_links">
+                                                                      
+<!-- WEEKLY WATCHLIST - MARKET ANALYSIS TOOL -->
+<!-- Access to weekly market analysis and trade recommendations from expert traders -->
                                                                       <li class=" ">
                 <a href="/dashboard/ww/" target="">
                   <span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
                   <span class="dashboard__nav-item-text" style=" ">Weekly Watchlist</span>
                 </a>
               </li>
+                                                                                
+<!-- CUSTOMER SUPPORT - HELP DESK ACCESS -->
+<!-- External link to customer support portal and help documentation -->
                                                                                 <li class=" ">
                 <a href="https://intercom.help/simpler-trading/en/" target="_blank">
                   <span class="dashboard__nav-item-icon st-icon-support"></span>
@@ -2843,16 +2989,42 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
   </button>
 </footer>
 <div class="dashboard__overlay" data-toggle-dashboard-menu></div>                    </aside>
+        <!-- ================================================================================
+DASHBOARD MAIN CONTENT AREA - PRIMARY DASHBOARD INTERFACE
+===============================================================================
+
+This section contains the main dashboard content including:
+- Header with page title and trading room access
+- Membership cards displaying active subscriptions
+- Tools section with weekly watchlist
+- Dynamic content based on user permissions
+
+The content dynamically populates based on user's active memberships and access levels.
+=============================================================================== -->
+
         <main class="dashboard__main ">
                             
+<!-- DASHBOARD HEADER - PAGE TITLE AND TRADING ROOM ACCESS -->
+<!-- Contains page title, trading room rules, and quick access to live trading rooms -->
     <header class="dashboard__header">
         <div class="dashboard__header-left">
                         <h1 class="dashboard__page-title">Member Dashboard</h1>
                     </div>
                                             <div class="dashboard__header-right">
+                                        
+<!-- TRADING ROOM RULES AND DISCLAIMER -->
+<!-- Legal disclaimer and rules for accessing live trading rooms -->
                                         <ul class="ultradingroom" style="text-align: right;list-style: none;"><li class="litradingroom"><a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a></li><li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">By logging into  any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li></ul>                    
                      
-                                                    <div class="dropdown display-inline-block">
+                                                    <!-- TRADING ROOM ACCESS DROPDOWN - LIVE TRADING ROOM ENTRY POINTS -->
+<!-- CALLED ON: Click on "Enter a Trading Room" button
+   POPULATED WITH: Available trading rooms based on user's active memberships
+   DATA SOURCE: WooCommerce Memberships API + JWT token generation
+   TRIGGER: Bootstrap dropdown toggle event + membership validation
+   REFRESHES: Real-time JWT token regeneration (expires 24 hours)
+   SECURITY: HMAC SHA256 signed tokens with user_id, membership, and expiration -->
+
+                    <div class="dropdown display-inline-block">
                         <a href="#" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
                             <strong>Enter a Trading Room</strong>
                             
@@ -2860,8 +3032,24 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                         
                         <nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
                             <ul class="dropdown-menu__menu">
+                                                                    
+<!-- MASTERING THE TRADE ROOM - PREMIUM LIVE TRADING ROOM -->
+<!-- CALLED ON: Dropdown population for premium members only
+   POPULATED WITH: Live trading room link with embedded JWT authentication
+   DATA SOURCE: JWT Token (exp: 1767651540) + ProTradingRoom API endpoint
+   TRIGGER: Membership validation for 'mastering_the_trade' + token generation
+   REFRESHES: JWT regenerated on each dropdown open (24-hour validity)
+   ROOM ACCESS: Real-time trading with expert traders, live market analysis -->
                                                                     <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652754202ad80b3e7c5131e2?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcwNDY3NDAsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2NzY1MTU0MCwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIl0sImlwIjpudWxsLCJiYWRnZXMiOltdLCJtZW1iZXJfc3RhcnRfZGF0ZSI6IjAzLTEyLTIwMjUifQ.AM435-RoLrFrKefxxnxRh-k7tp37GU6Nc7pMPPPwG5Q" target="_blank" rel="nofollow"><span class="st-icon-mastering-the-trade icon icon--md"></span>Mastering The Trade Room</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652368e62ad80b3e7c513033?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcwNDY3NDAsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2NzY1MTU0MCwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIl0sImlwIjpudWxsLCJiYWRnZXMiOltdfQ.YdOQgNpZZmtiL0_IvuBz90UGd1jFQ6IOu4KmtDomz4A" target="_blank" rel="nofollow"><span class="st-icon-simpler-showcase icon icon--md"></span> Simpler Showcase Room</a></li>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+<!-- SIMPLER SHOWCASE ROOM - FOUNDATIONAL LIVE TRADING ROOM -->
+<!-- CALLED ON: Dropdown population for showcase members only
+   POPULATED WITH: Breakout room link with embedded JWT authentication
+   DATA SOURCE: JWT Token (exp: 1767651540) + ProTradingRoom API endpoint
+   TRIGGER: Membership validation for 'simpler_showcase' + token generation
+   REFRESHES: JWT regenerated on each dropdown open (24-hour validity)
+   ROOM ACCESS: Educational trading sessions, beginner-friendly analysis -->
+                                                                    <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652368e62ad80b3e7c513033?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcwNDY3NDAsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2NzY1MTU0MCwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIl0sImlwIjpudWxsLCJiYWRnZXMiOltdfQ.YdOQgNpZZmtiL0_IvuBz90UGd1jFQ6IOu4KmtDomz4A" target="_blank" rel="nofollow"><span class="st-icon-simpler-showcase icon icon--md"></span> Simpler Showcase Room</a></li>
                                                                                                                                                                                            </ul>
                         </nav>
                     </div>
@@ -2872,15 +3060,40 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
     </header>
             
+            <!-- ================================================================================
+DASHBOARD CONTENT MAIN AREA - MEMBERSHIP CARDS AND TOOLS
+===============================================================================
+
+This section displays the user's active memberships and available tools:
+- Membership cards with access to dedicated dashboards and trading rooms
+- Tools section with weekly watchlist and market analysis
+- Dynamic content based on user's active subscriptions
+
+Each membership card provides quick access to the membership dashboard and live trading room.
+=============================================================================== -->
+
             <div class="dashboard__content">
                 <div class="dashboard__content-main">
-                    <!-- Dashboard Walkthrough Banner-->
+                    
+<!-- MEMBERSHIPS SECTION - ACTIVE SUBSCRIPTION DISPLAY -->
+<!-- CALLED ON: Main dashboard page load (/dashboard/ URL)
+   POPULATED WITH: Active membership cards from WooCommerce Memberships
+   DATA SOURCE: WooCommerce Memberships API query for user_id: 94190
+   TRIGGER: WordPress 'template_redirect' action + membership status check
+   REFRESHES: Real-time on membership purchase, cancellation, or status change
+   DISPLAY LOGIC: Only shows memberships with 'active' status and current access -->
+
     <section class="dashboard__content-section">
         <h2 class="section-title">Memberships</h2>
         <div class="membership-cards row">
 
-            
-            
+<!-- MASTERING THE TRADE MEMBERSHIP CARD - PREMIUM SUBSCRIPTION -->
+<!-- CALLED ON: Dashboard load if user has active 'mastering_the_trade' membership
+   POPULATED WITH: Premium membership details, access links, and current status
+   DATA SOURCE: WooCommerce Membership post + custom membership metadata
+   TRIGGER: Membership status check for 'mastering_the_trade' (ID: active)
+   REFRESHES: Real-time membership validity, content updates, room access
+   CARD DISPLAYS: Membership icon, title, dashboard link, live trading room JWT link -->
                                         <div class="col-sm-6 col-xl-4">
                     <article class="membership-card membership-card--options">
                         <a href="https://www.simplertrading.com/dashboard/mastering-the-trade" class="membership-card__header">
@@ -2897,6 +3110,13 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                     </article>
                 </div>
                         
+                        <!-- SIMPLER SHOWCASE MEMBERSHIP CARD - FOUNDATIONAL SUBSCRIPTION -->
+<!-- CALLED ON: Dashboard load if user has active 'simpler_showcase' membership
+   POPULATED WITH: Entry-level membership details, access links, and current status
+   DATA SOURCE: WooCommerce Membership post + custom membership metadata
+   TRIGGER: Membership status check for 'simpler_showcase' (ID: active)
+   REFRESHES: Real-time membership validity, showcase content updates, room access
+   CARD DISPLAYS: Custom showcase icon, title, dashboard link, breakout room JWT link -->
                         <div class="col-sm-6 col-xl-4">
                 <article class="membership-card membership-card--foundation">
                     <a href="https://www.simplertrading.com/dashboard/simpler-showcase" class="membership-card__header">
@@ -2922,10 +3142,15 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 
 
+<!-- TOOLS SECTION - TRADING TOOLS AND RESOURCES -->
+<!-- Displays available trading tools and market analysis resources -->
 <section class="dashboard__content-section">
     <h2 class="section-title">Tools</h2>
     <div class="membership-cards row">
         
+<!-- WEEKLY WATCHLIST TOOL - MARKET ANALYSIS RESOURCE -->
+<!-- Provides access to weekly market analysis and trade recommendations -->
+<!-- Card includes tool icon, title, and direct access to watchlist dashboard -->
                     <div class="col-sm-6 col-xl-4">
                 <article class="membership-card membership-card--ww">
                     <a href="https://www.simplertrading.com/dashboard/ww" class="membership-card__header">
@@ -2948,23 +3173,78 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 
 
 
+            <!-- ================================================================================
+FEATURED WEEKLY WATCHLIST SECTION - HIGHLIGHTED CONTENT
+===============================================================================
+
+This section showcases the current week's featured watchlist content:
+- Displays the latest weekly watchlist video with expert analysis
+- Responsive layout with different image sizes for mobile and desktop
+- Includes host information, date, and direct access to watch the content
+
+The content updates weekly with new market analysis and trade recommendations.
+=============================================================================== -->
+
             <div class="dashboard__content-section u--background-color-white">
             
+<!-- FEATURED WEEKLY WATCHLIST CONTENT - CURRENT WEEK'S ANALYSIS -->
+<!-- CALLED ON: Main dashboard page load (/dashboard/ URL)
+   POPULATED WITH: Latest weekly watchlist video from custom post type
+   DATA SOURCE: WordPress 'weekly_watchlist' CPT + Azure CDN for images
+   TRIGGER: WordPress 'template_redirect' + current week content query
+   REFRESHES: Weekly on Sunday night with new market analysis
+   DISPLAY LOGIC: Shows current week's content with expert host information -->
+
                 <section>
             <div class="row">
+                
+<!-- CONTENT COLUMN - TITLE AND DESCRIPTION -->
+<!-- CALLED ON: Dashboard load for left column layout
+   POPULATED WITH: Watchlist title, host info, date, and action button
+   DATA SOURCE: Weekly watchlist post meta fields (host, date, description)
+   TRIGGER: Current week content query + responsive layout detection
+   REFRESHES: Weekly with new content and host assignments -->
                 <div class="col-sm-6 col-lg-5">
                     <h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+                    
+<!-- MOBILE IMAGE - HIDDEN ON DESKTOP -->
+<!-- CALLED ON: Mobile device detection (hidden-md d-lg-none classes)
+   POPULATED WITH: Responsive thumbnail image from Azure CDN
+   DATA SOURCE: Azure blob storage (simpler-cdn.amazonaws.com)
+   TRIGGER: Bootstrap responsive breakpoints (max-width: 991px)
+   REFRESHES: Weekly with new thumbnail images -->
                     <div class="hidden-md d-lg-none pb-2">
                         <a class="" href="https://www.simplertrading.com/watchlist/12292025-david-starr">
                             <img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius">
                         </a>
                     </div>
+                    
+<!-- HOST INFORMATION AND DETAILS -->
+<!-- CALLED ON: Dashboard load for current week's host display
+   POPULATED WITH: Expert trader name and current week's date
+   DATA SOURCE: Weekly watchlist post meta (host: David Starr, date: 2025-12-29)
+   TRIGGER: Current week content retrieval + host assignment logic
+   REFRESHES: Weekly with rotating expert hosts and updated dates -->
                     <h4 class="h5 u--font-weight-bold">Weekly Watchlist with David Starr</h4>
                     <div class="u--hide-read-more">
                         <p>Week of December 29, 2025.</p>
                     </div>
+                    
+<!-- CALL TO ACTION - WATCH NOW BUTTON -->
+<!-- CALLED ON: Dashboard load for video access button
+   POPULATED WITH: Direct link to current week's watchlist video
+   DATA SOURCE: Weekly watchlist post permalink (slug: 12292025-david-starr)
+   TRIGGER: Video content availability + user access permissions
+   REFRESHES: Weekly with new video URLs and content -->
                     <a href="https://www.simplertrading.com/watchlist/12292025-david-starr" class="btn btn-tiny btn-default">Watch Now</a>
                 </div>
+                
+<!-- IMAGE COLUMN - DESKTOP ONLY -->
+<!-- CALLED ON: Desktop device detection (hidden-xs hidden-sm d-none d-lg-block)
+   POPULATED WITH: Large promotional image from Azure CDN
+   DATA SOURCE: Azure blob storage (simpler-cdn.amazonaws.com)
+   TRIGGER: Bootstrap responsive breakpoints (min-width: 992px)
+   REFRESHES: Weekly with new promotional imagery and content -->
                 <div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
                     <a href="https://www.simplertrading.com/watchlist/12292025-david-starr">
                         <img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius">
@@ -2986,21 +3266,97 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 }
 </style>                </div>
 
+<!-- ================================================================================
+DASHBOARD CONTENT SIDEBAR - SECONDARY CONTENT AREA
+===============================================================================
+
+This section contains optional sidebar content for the dashboard:
+- Currently empty but structured for future content widgets
+- Designed for additional dashboard components or promotional content
+- Responsive layout that adapts to main content area
+
+The sidebar populates based on page-specific content requirements.
+=============================================================================== -->
+
                                         <aside class="dashboard__content-sidebar">
+<!-- CALLED ON: Dashboard page load when sidebar content is available
+   POPULATED WITH: Optional content widgets, promotional materials, or additional navigation
+   DATA SOURCE: WordPress widget areas + custom sidebar content
+   TRIGGER: WordPress 'get_sidebar' action + content availability check
+   REFRESHES: On widget updates or content changes
+   DISPLAY LOGIC: Currently empty, structured for future expansion -->
+                    
                     <section class="content-sidebar__section">
+<!-- CALLED ON: Sidebar content initialization
+   POPULATED WITH: Section-specific widgets or content blocks
+   DATA SOURCE: WordPress widget system + custom content blocks
+   TRIGGER: Widget area registration + content assignment
+   REFRESHES: On widget updates or content modifications -->
                             </section>
             </aside>
+                            
+<!-- ================================================================================
+DASHBOARD MAIN CONTENT CLOSING STRUCTURE
+===============================================================================
+
+This section closes the main dashboard layout structure:
+- Ends the dashboard content main area
+- Closes the dashboard main container
+- Maintains proper HTML structure hierarchy
+
+The structure ensures proper responsive behavior and layout integrity.
+=============================================================================== -->
                             </div>
         </main>
 
+<!-- ================================================================================
+DASHBOARD CONTAINER CLOSING - MAIN LAYOUT WRAPPER
+===============================================================================
+
+This section closes the primary dashboard container:
+- Ends the main dashboard div wrapper
+- Maintains proper document structure
+- Prepares for footer and global content loading
+
+The container closure ensures all dashboard content is properly contained.
+=============================================================================== -->
         
     </div>
 
+<!-- ================================================================================
+WORDPRESS CONTENT AND PAGE CLOSING STRUCTURE
+===============================================================================
 
+This section closes the WordPress theme structure:
+- Closes #content div (main content area)
+- Closes #page div (overall page container)
+- Maintains WordPress template hierarchy
+
+These closures are essential for proper WordPress theme functionality.
+=============================================================================== -->
 
 	</div><!-- #content -->
 </div><!-- #page -->
 
+<!-- ================================================================================
+GLOBAL LOADING CONTAINER - AJAX/PAGE TRANSITION LOADING SYSTEM
+===============================================================================
+
+This section provides global loading functionality for the entire site:
+- Displays loading animations during AJAX requests and page transitions
+- Provides visual feedback for user actions and content loading
+- Maintains consistent loading experience across all dashboard sections
+
+The loading container dynamically shows/hides based on application state.
+=============================================================================== -->
+
+<!-- GLOBAL LOADING CONTAINER - SITE-WIDE LOADING INDICATOR -->
+<!-- CALLED ON: Any AJAX request, page transition, or async content loading
+   POPULATED WITH: Loading animation and contextual loading messages
+   DATA SOURCE: JavaScript loading events + CSS animations
+   TRIGGER: AJAX start/stop events, page navigation, content updates
+   REFRESHES: Real-time during loading operations
+   DISPLAY LOGIC: Shows during loading, hides when complete -->
 <div class="loading-container loading-global">
     <div class="loading">
         <span class="loading-icon"></span>
@@ -3008,17 +3364,82 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
     </div>
 </div>
 
+<!-- ================================================================================
+SITE FOOTER - BEAVER BUILDER GLOBAL FOOTER TEMPLATE
+===============================================================================
+
+This section contains the site-wide footer built with Beaver Builder:
+- Global footer template (ID: 36965) with locked content
+- Company branding, navigation links, and legal information
+- Responsive layout with multiple column sections
+- Schema.org structured data for SEO optimization
+
+The footer content is managed through Beaver Builder interface.
+=============================================================================== -->
+
 <div class="site-footer">
-	<footer class="fl-builder-content fl-builder-content-36965 fl-builder-global-templates-locked" data-post-id="36965" data-type="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter"><div class="fl-row fl-row-full-width fl-row-bg-color fl-node-59adb3c86fcbf footer-section" data-node="59adb3c86fcbf">
+<!-- CALLED ON: Every page load after main content
+   POPULATED WITH: Global footer content from Beaver Builder template
+   DATA SOURCE: Beaver Builder template (post_id: 36965) + global template system
+   TRIGGER: WordPress 'get_footer' action + template loading
+   REFRESHES: On footer template updates in Beaver Builder
+   DISPLAY LOGIC: Locked global template with consistent site-wide content -->
+    
+	<footer class="fl-builder-content fl-builder-content-36965 fl-builder-global-templates-locked" data-post-id="36965" data-type="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter">
+        
+<!-- BEAVER BUILDER FOOTER ROW - FULL-WIDTH BACKGROUND SECTION -->
+<!-- CALLED ON: Footer template rendering
+   POPULATED WITH: Footer row layout with background color styling
+   DATA SOURCE: Beaver Builder row configuration (node: 59adb3c86fcbf)
+   TRIGGER: Beaver Builder row rendering + styling application
+   REFRESHES: On footer template updates in Beaver Builder editor
+   DISPLAY FEATURES: Full-width layout, custom background color, responsive grid -->
+        
+        <div class="fl-row fl-row-full-width fl-row-bg-color fl-node-59adb3c86fcbf footer-section" data-node="59adb3c86fcbf">
 	<div class="fl-row-content-wrap">
 						<div class="fl-row-content fl-row-fixed-width fl-node-content">
 		
+<!-- BEAVER BUILDER FOOTER COLUMN GROUP - RESPONSIVE LAYOUT STRUCTURE -->
+<!-- CALLED ON: Footer template rendering for column layout
+   POPULATED WITH: Multi-column footer layout with equal height alignment
+   DATA SOURCE: Beaver Builder column group configuration (node: 5b6c661a8e03f)
+   TRIGGER: Beaver Builder column group rendering + responsive layout application
+   REFRESHES: On footer template updates in Beaver Builder editor
+   DISPLAY FEATURES: Equal height columns, top alignment, custom width distribution -->
+
 <div class="fl-col-group fl-node-5b6c661a8e03f fl-col-group-equal-height fl-col-group-align-top fl-col-group-custom-width" data-node="5b6c661a8e03f">
+			
+<!-- FOOTER LOGO COLUMN - COMPANY BRANDING SECTION -->
+<!-- CALLED ON: Footer template rendering for logo display
+   POPULATED WITH: Company logo and branding elements
+   DATA SOURCE: Beaver Builder column configuration (node: 5b6c661a8e13a)
+   TRIGGER: Column rendering + logo module loading
+   REFRESHES: On logo updates or footer template changes
+   DISPLAY FEATURES: Small column width, responsive behavior -->
+
 			<div class="fl-col fl-node-5b6c661a8e13a fl-col-small" data-node="5b6c661a8e13a">
 	<div class="fl-col-content fl-node-content">
+		
+<!-- FOOTER LOGO MODULE - HTML MODULE WITH SVG LOGO -->
+<!-- CALLED ON: Footer template rendering for logo display
+   POPULATED WITH: Company SVG logo with responsive scaling
+   DATA SOURCE: Beaver Builder HTML module (node: 59adb48fc0c6a) + inline SVG content
+   TRIGGER: HTML module rendering + SVG content processing
+   REFRESHES: On logo updates in Beaver Builder HTML module
+   DISPLAY FEATURES: Scalable vector logo, white color scheme, responsive sizing -->
+
 	<div id="footer-logo" class="fl-module fl-module-html fl-node-59adb48fc0c6a" data-node="59adb48fc0c6a">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-html">
+			
+<!-- SIMPLER TRADING SVG LOGO - VECTOR COMPANY LOGO -->
+<!-- CALLED ON: Logo module rendering for company branding
+   POPULATED WITH: Scalable vector graphics logo with company name
+   DATA SOURCE: Adobe Illustrator exported SVG (216x20 viewBox)
+   TRIGGER: HTML content rendering + SVG processing
+   REFRESHES: On logo file updates or color scheme changes
+   DISPLAY FEATURES: White fill color, responsive scaling, text-based logo design -->
+            
 	<xml version="1.0" encoding="utf-8">
 <!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -4376,6 +4797,23 @@ jQuery(function($) {
 	}
 
 	/**
+	 /**
+	 * ================================================================================
+	 * BEAVER BUILDER LAYOUT JAVASCRIPT - PAGE BUILDER LAYOUT MANAGEMENT
+	 * ================================================================================
+	 * 
+	 * This JavaScript class provides core functionality for Beaver Builder layouts:
+	 * - Initializes page builder layout components and interactions
+	 * - Manages responsive behavior and animations
+	 * - Handles gallery refreshes and grid layouts
+	 * - Provides public methods for dynamic content updates
+	 * 
+	 * The layout system automatically initializes on page load and provides
+	 * methods for refreshing content after AJAX updates or dynamic changes.
+	 * ================================================================================
+	 */
+
+	/**
 	 * Helper class with generic logic for a builder layout.
 	 *
 	 * @class FLBuilderLayout
@@ -4384,6 +4822,19 @@ jQuery(function($) {
 	FLBuilderLayout = {
 
 		/**
+		 * ================================================================================
+		 * LAYOUT INITIALIZATION METHOD - CORE BUILDER SETUP
+		 * ================================================================================
+		 * 
+		 * This method initializes the complete Beaver Builder layout system:
+		 * - Destroys existing layout events to prevent conflicts
+		 * - Initializes CSS classes for responsive behavior
+		 * - Sets up background images and parallax effects
+		 * - Conditionally initializes interactive features when builder is not active
+		 * 
+		 * Called automatically on page load and after AJAX content updates.
+		 * ================================================================================
+		 *
 		 * Initializes a builder layout.
 		 *
 		 * @since 1.0
@@ -4418,6 +4869,19 @@ jQuery(function($) {
 		},
 
 		/**
+		 * ================================================================================
+		 * GALLERY REFRESH METHOD - DYNAMIC GALLERY UPDATES
+		 * ================================================================================
+		 * 
+		 * This method provides dynamic gallery refresh functionality:
+		 * - Refreshes MosaicFlow galleries with new content layouts
+		 * - Triggers Wookmark gallery refreshes for masonry layouts
+		 * - Handles AJAX-loaded content and dynamic gallery updates
+		 * - Maintains proper column heights and spacing after content changes
+		 * 
+		 * Called after AJAX content updates or dynamic gallery modifications.
+		 * ================================================================================
+		 *
 		 * Public method for refreshing Wookmark or MosaicFlow galleries
 		 * within an element.
 		 *
@@ -4448,6 +4912,19 @@ jQuery(function($) {
 		},
 
 		/**
+		 * ================================================================================
+		 * GRID LAYOUT REFRESH METHOD - MASONRY GRID UPDATES
+		 * ================================================================================
+		 * 
+		 * This method provides dynamic grid layout refresh functionality:
+		 * - Refreshes Masonry grid layouts after content changes
+		 * - Recalculates item positions and spacing
+		 * - Handles AJAX-loaded content in grid layouts
+		 * - Maintains proper grid alignment and responsive behavior
+		 * 
+		 * Called after AJAX content updates or dynamic grid modifications.
+		 * ================================================================================
+		 *
 		 * Public method for refreshing Masonry within an element
 		 *
 		 * @since 1.8.1
@@ -4464,6 +4941,19 @@ jQuery(function($) {
 		},
 
 		/**
+		 * ================================================================================
+		 * SLIDER RELOAD METHOD - DYNAMIC SLIDER UPDATES
+		 * ================================================================================
+		 * 
+		 * This method provides dynamic slider reload functionality:
+		 * - Reloads BxSlider instances after content changes
+		 * - Handles AJAX-loaded content in slider elements
+		 * - Maintains slider navigation and animation settings
+		 * - Preserves slider state and current position during reloads
+		 * 
+		 * Called after AJAX content updates or dynamic slider modifications.
+		 * ================================================================================
+		 *
 		 * Public method for reloading BxSlider within an element
 		 *
 		 * @since 1.8.1
@@ -5541,6 +6031,19 @@ jQuery(function($) {
 		},
 
 		/**
+		 * ================================================================================
+		 * ACCORDION SCROLL METHOD - DYNAMIC ACCORDION NAVIGATION
+		 * ================================================================================
+		 * 
+		 * This method handles accordion navigation and scrolling:
+		 * - Scrolls to accordion items when hash links are clicked
+		 * - Automatically opens accordion panels after scrolling
+		 * - Handles responsive accordion behavior
+		 * - Maintains smooth scroll animations with accordion interactions
+		 * 
+		 * Called when users click anchor links pointing to accordion items.
+		 * ================================================================================
+		 *
 		 * Scrolls to an accordion item when a link is clicked.
 		 *
 		 * @since 1.5.9
@@ -5566,6 +6069,19 @@ jQuery(function($) {
 		},
 
 		/**
+		 * ================================================================================
+		 * TAB SCROLL METHOD - DYNAMIC TAB NAVIGATION
+		 * ================================================================================
+		 * 
+		 * This method handles tab navigation and scrolling:
+		 * - Scrolls to tab panels when hash links are clicked
+		 * - Automatically activates appropriate tab based on scroll position
+		 * - Handles responsive tab behavior (mobile vs desktop)
+		 * - Maintains proper tab state and smooth scroll animations
+		 * 
+		 * Called when users click anchor links pointing to tab panels.
+		 * ================================================================================
+		 *
 		 * Scrolls to a tab panel when a link is clicked.
 		 *
 		 * @since 1.5.9
@@ -5696,6 +6212,19 @@ jQuery(function($) {
 		},
 
 		/**
+		 * ================================================================================
+		 * FORM FIELD ERROR CLEAR METHOD - FORM VALIDATION CLEANUP
+		 * ================================================================================
+		 * 
+		 * This method handles form field error state management:
+		 * - Removes error styling from form fields
+		 * - Hides error message elements
+		 * - Cleans up form validation states after user corrections
+		 * - Maintains proper form field appearance during validation cycles
+		 * 
+		 * Called when users correct form field errors or on form reset.
+		 * ================================================================================
+		 *
 		 * Clears a form field error message.
 		 *
 		 * @since 1.5.4
@@ -5711,6 +6240,19 @@ jQuery(function($) {
 		}
 	};
 
+	/* ================================================================================
+	BEAVER BUILDER LAYOUT INITIALIZATION - AUTOMATIC STARTUP
+	===============================================================================
+
+	This section initializes the Beaver Builder layout system:
+	- Automatically calls FLBuilderLayout.init() on document ready
+	- Ensures all layout components are properly initialized
+	- Sets up responsive behavior and interactive features
+	- Triggers layout processing for all Beaver Builder elements
+
+	The initialization runs automatically when the DOM is fully loaded.
+	=============================================================================== */
+
 	/* Initializes the builder layout. */
 	$(function(){
 		FLBuilderLayout.init();
@@ -5718,8 +6260,35 @@ jQuery(function($) {
 
 })(jQuery);
 
+/* ================================================================================
+GLOBAL JAVASCRIPT - CUSTOM SITE FUNCTIONALITY
+===============================================================================
+
+This section contains custom JavaScript for Simpler Trading site:
+- User redirect functionality for post-to-dashboard navigation
+- Dashboard submenu behavior and external link handling
+- Weekly watchlist card styling fixes
+- Accordion expand/collapse functionality
+- Responsive trading room sizing
+
+These scripts enhance user experience and handle specific site interactions.
+=============================================================================== */
+
 /* Start Global JS */
-/// Redirect users after coming from single post 
+
+/// ================================================================================
+/// USER REDIRECT FUNCTIONALITY - POST-TO-DASHBOARD NAVIGATION
+/// ================================================================================
+/// 
+/// This function handles user redirection after viewing single posts:
+/// - Checks localStorage for redirect URL from single post views
+/// - Redirects logged-in users back to dashboard after reading posts
+/// - Cleans up localStorage after successful redirect
+/// - Ensures seamless navigation between content and dashboard
+/// 
+/// Called on window load to handle post-viewing session redirects.
+/// ================================================================================
+
 jQuery( window ).load(function() {
     let redirect = localStorage.getItem('coming_from_url');
     if(jQuery('body').hasClass('logged-in') && redirect){
@@ -5729,7 +6298,19 @@ jQuery( window ).load(function() {
     resizeroomhind();
 });
 
-/// Open Joe course in new window from dashboard subnav
+/// ================================================================================
+/// DASHBOARD SUBMENU FUNCTIONALITY - EXTERNAL LINK HANDLING
+/// ================================================================================
+/// 
+/// This function handles dashboard submenu navigation behavior:
+/// - Detects "Continued Education" link clicks in dashboard navigation
+/// - Opens external course links in new browser windows
+/// - Prevents default navigation behavior for external content
+/// - Maintains dashboard context while accessing external resources
+/// 
+/// Called when users click submenu items in dashboard navigation.
+/// ================================================================================
+
 let subMenuBtn = jQuery('.dashboard__nav-submenu li a');
 
 if(subMenuBtn) {
@@ -5743,11 +6324,37 @@ if(subMenuBtn) {
 })
 }
 
+/// ================================================================================
+/// WEEKLY WATCHLIST CARD STYLING FIX - LAYOUT CORRECTION
+/// ================================================================================
+/// 
+/// This function fixes weekly watchlist card display issues:
+/// - Removes unwanted padding from weekly watchlist card containers
+/// - Ensures proper card alignment and spacing on dashboard
+/// - Addresses layout inconsistencies in responsive design
+/// - Maintains visual consistency across dashboard elements
+/// 
+/// Called on page load to fix initial layout issues.
+/// ================================================================================
+
 // fix issue for article-cards on dashboard
 var ww_card = jQuery('figure.weekly_watchlist');
 if(ww_card) {
     ww_card.parent().css('padding-bottom', 0);
 }
+
+/// ================================================================================
+/// ACCORDION EXPAND/COLLAPSE FUNCTIONALITY - BEAVER BUILDER
+/// ================================================================================
+/// 
+/// This function handles accordion expand/collapse behavior:
+/// - Toggles all accordion items with single button click
+/// - Switches button text between "Expand All +" and "Collapse All -"
+/// - Manages accordion item active states and content visibility
+/// - Provides bulk accordion control for better user experience
+/// 
+/// Called when users click expand/collapse all buttons.
+/// ================================================================================
 
 // expand all accordions beaver builder
 var expndAll = jQuery('.expnd');
@@ -5766,6 +6373,19 @@ if(expndAll) {
     }
 });
 }
+
+/// ================================================================================
+/// TRADERS ACCORDION EXPAND ALL FUNCTIONALITY - ENHANCED VERSION
+/// ================================================================================
+/// 
+/// This function provides enhanced accordion expand/collapse for traders:
+/// - Handles multiple expand all buttons with proper event binding
+/// - Manages accordion icon states (plus/minus indicators)
+/// - Provides smooth expand/collapse animations
+/// - Ensures proper accordion state management across the site
+/// 
+/// Called when users interact with trader-specific accordion controls.
+/// ================================================================================
 
 /* This work for all traders expand all button code starting here */
 $ = jQuery;
