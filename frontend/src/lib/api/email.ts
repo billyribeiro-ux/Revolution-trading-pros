@@ -8,13 +8,13 @@
  * @version 1.0.0
  */
 
-import { get } from 'svelte/store';
+import { get as _get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth';
 
 // Production fallback - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = import.meta.env.VITE_API_BASE_URL || PROD_API;
+const API_BASE = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions
@@ -270,12 +270,14 @@ class EmailAPI {
 			headers['Authorization'] = `Bearer ${token}`;
 		}
 
-		const response = await fetch(url.toString(), {
+		const fetchOptions: RequestInit = {
 			method,
 			headers,
-			body: data ? JSON.stringify(data) : undefined,
+			...(data && { body: JSON.stringify(data) }),
 			credentials: 'include'
-		});
+		};
+
+		const response = await fetch(url.toString(), fetchOptions);
 
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));

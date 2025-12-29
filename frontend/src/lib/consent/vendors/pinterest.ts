@@ -9,7 +9,6 @@
  */
 
 import { browser, dev } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -22,6 +21,7 @@ declare global {
 	}
 }
 
+const PUBLIC_PINTEREST_TAG_ID = import.meta.env['PUBLIC_PINTEREST_TAG_ID'] || '';
 let pinterestReady = false;
 const eventQueue: Array<{ event: string; data?: Record<string, unknown> }> = [];
 
@@ -77,7 +77,7 @@ export function trackPinterestEvent(
 	if (!browser) return;
 
 	if (!pinterestReady) {
-		eventQueue.push({ event, data });
+		eventQueue.push({ event, ...(data && { data }) });
 		return;
 	}
 
@@ -150,7 +150,7 @@ export const pinterestVendor: VendorConfig = {
 	supportsRevocation: true,
 
 	load: () => {
-		const tagId = env.PUBLIC_PINTEREST_TAG_ID;
+		const tagId = PUBLIC_PINTEREST_TAG_ID;
 		if (!tagId) {
 			if (!dev) console.warn('[Pinterest] Missing PUBLIC_PINTEREST_TAG_ID environment variable');
 			return;

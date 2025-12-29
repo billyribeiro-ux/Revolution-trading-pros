@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { subscriptionStore } from '$lib/stores/subscriptions';
 	import {
 		getSubscriptions,
 		getSubscriptionStats,
@@ -43,9 +42,9 @@
 	let pauseReason = $state('');
 	let cancelImmediate = $state(false);
 
-	// Pagination
-	let currentPage = $state(1);
-	let perPage = $state(20);
+	// Pagination (reserved for future implementation)
+	// let currentPage = $state(1);
+	// let perPage = $state(20);
 
 	// Debounce timer for search
 	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -87,9 +86,9 @@
 			// Use Promise.allSettled for robust error handling - prevents freezing if one API fails
 			const results = await Promise.allSettled([
 				getSubscriptions({
-					status: statusFilter === 'all' ? undefined : [statusFilter],
-					interval: intervalFilter === 'all' ? undefined : [intervalFilter],
-					searchQuery: searchQuery || undefined
+					...(statusFilter !== 'all' && { status: [statusFilter] }),
+					...(intervalFilter !== 'all' && { interval: [intervalFilter] }),
+					...(searchQuery && { searchQuery })
 				}, true), // isAdmin = true for admin page
 				getSubscriptionStats(),
 				getUpcomingRenewals(),

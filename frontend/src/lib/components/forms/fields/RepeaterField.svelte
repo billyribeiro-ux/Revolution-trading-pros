@@ -30,15 +30,15 @@
 	let { field, value = [], error, onchange }: Props = $props();
 
 	// Get repeater configuration from field attributes
-	const minItems = $derived(field.attributes?.min_items ?? 0);
-	const maxItems = $derived(field.attributes?.max_items ?? 10);
-	const addButtonText = $derived(field.attributes?.add_button_text ?? 'Add Item');
-	const itemLabel = $derived(field.attributes?.item_label ?? 'Item');
-	const collapsible = $derived(field.attributes?.collapsible ?? true);
-	const confirmDelete = $derived(field.attributes?.confirm_delete ?? true);
+	const minItems = $derived(field.attributes?.['min_items'] ?? 0);
+	const maxItems = $derived(field.attributes?.['max_items'] ?? 10);
+	const addButtonText = $derived(field.attributes?.['add_button_text'] ?? 'Add Item');
+	const itemLabel = $derived(field.attributes?.['item_label'] ?? 'Item');
+	const collapsible = $derived(field.attributes?.['collapsible'] ?? true);
+	const confirmDelete = $derived(field.attributes?.['confirm_delete'] ?? true);
 
 	// Sub-fields configuration - use $derived to maintain reactivity
-	const subFields = $derived<Partial<FormField>[]>(field.attributes?.sub_fields ?? [
+	const subFields = $derived<Partial<FormField>[]>(field.attributes?.['sub_fields'] ?? [
 		{ name: 'title', label: 'Title', field_type: 'text', required: true },
 		{ name: 'description', label: 'Description', field_type: 'textarea' }
 	]);
@@ -129,7 +129,9 @@
 		if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
 			const newRows = [...rows];
 			const [draggedRow] = newRows.splice(draggedIndex, 1);
-			newRows.splice(dragOverIndex, 0, draggedRow);
+			if (draggedRow) {
+				newRows.splice(dragOverIndex, 0, draggedRow);
+			}
 			rows = newRows;
 			emitChange();
 		}

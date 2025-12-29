@@ -11,7 +11,7 @@
  */
 
 import { browser } from '$app/environment';
-import { writable, get } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { ConsentState } from './types';
 
 /**

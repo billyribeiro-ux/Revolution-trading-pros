@@ -16,7 +16,6 @@ import type {
 	Stage,
 	Task,
 	TaskFilters,
-	TaskPriority,
 	Subtask,
 	Checklist,
 	ChecklistItem,
@@ -33,7 +32,6 @@ import type {
 	ActivityFilters,
 	ImportJob,
 	ImportMapping,
-	ImportSource,
 	ReportPeriod,
 	StorageConfig,
 	WebhookEvent

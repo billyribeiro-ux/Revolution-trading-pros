@@ -111,11 +111,13 @@ function createNotificationStore() {
 				timestamp: new Date(notification.timestamp),
 				read: notification.read,
 				dismissed: notification.dismissed,
-				action: notification.action ? {
-					label: notification.action.label,
-					href: notification.action.href
-				} : undefined,
-				metadata: notification.metadata as Record<string, unknown>
+				...(notification.action && {
+					action: {
+						label: notification.action.label,
+						...(notification.action.href && { href: notification.action.href })
+					}
+				}),
+				...(notification.metadata && { metadata: notification.metadata as Record<string, unknown> })
 			});
 		});
 	}
@@ -137,8 +139,8 @@ function createNotificationStore() {
 			timestamp: notification.timestamp || new Date(),
 			read: notification.read ?? false,
 			dismissed: notification.dismissed ?? false,
-			action: notification.action,
-			metadata: notification.metadata
+			...(notification.action && { action: notification.action }),
+			...(notification.metadata && { metadata: notification.metadata })
 		};
 
 		update((state) => {

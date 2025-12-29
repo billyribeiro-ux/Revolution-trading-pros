@@ -4,8 +4,6 @@
 		IconVideo,
 		IconRefresh,
 		IconExternalLink,
-		IconBrandYoutube,
-		IconPlayerPlay,
 		IconPlus,
 		IconTrash,
 		IconEdit
@@ -112,10 +110,6 @@
 		return `${hours}h ${minutes}m`;
 	}
 
-	function getPlatformIcon(platform: string) {
-		// Return appropriate icon based on platform
-		return IconBrandYoutube;
-	}
 
 	function getPlatformColor(platform: string): string {
 		const colors: Record<string, string> = {

@@ -13,7 +13,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
 	import {
@@ -34,15 +34,11 @@
 		IconMapPin,
 		IconMail,
 		IconPlugConnected,
-		IconPlugConnectedX,
-		IconArrowRight,
 		IconRefresh,
-		IconChartLine,
 		IconTrendingUp,
 		IconTrendingDown,
 		IconWorld,
 		IconLink,
-		IconAlertCircle,
 		IconCheck,
 		IconClock,
 		IconTarget
@@ -50,17 +46,14 @@
 	import {
 		connections,
 		isSeoConnected,
-		FEATURE_SERVICES,
 		SERVICE_KEYS
 	} from '$lib/stores/connections';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	let isLoading = $state(true);
-	let showContent = $state(false);
 	let seoData = $state<SeoMetrics | null>(null);
 	let lastUpdated = $state<Date | null>(null);
 
@@ -274,7 +267,6 @@
 		await loadSeoData();
 
 		setTimeout(() => {
-			showContent = true;
 			metricsSpring.set(1);
 		}, 100);
 	});
@@ -737,97 +729,6 @@
 	   Not Connected Section
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	.not-connected-section {
-		position: relative;
-		z-index: 10;
-		margin-bottom: 3rem;
-	}
-
-	.services-section {
-		margin-top: 3rem;
-	}
-
-	.services-section h2 {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin: 0 0 0.5rem 0;
-	}
-
-	.services-subtitle {
-		color: #94a3b8;
-		margin: 0 0 1.5rem 0;
-	}
-
-	.services-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-		gap: 1rem;
-	}
-
-	.service-card {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1.25rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 16px;
-		cursor: pointer;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		text-align: left;
-		color: inherit;
-	}
-
-	.service-card:hover {
-		transform: translateY(-4px);
-		border-color: var(--service-color);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--service-color);
-	}
-
-	.service-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 48px;
-		height: 48px;
-		background: linear-gradient(
-			135deg,
-			color-mix(in srgb, var(--service-color) 20%, transparent),
-			color-mix(in srgb, var(--service-color) 10%, transparent)
-		);
-		border-radius: 12px;
-		font-size: 1.5rem;
-	}
-
-	.service-info {
-		flex: 1;
-	}
-
-	.service-info h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		color: #f1f5f9;
-		margin: 0 0 0.25rem 0;
-	}
-
-	.service-info p {
-		font-size: 0.8125rem;
-		color: #94a3b8;
-		margin: 0;
-		line-height: 1.4;
-	}
-
-	.service-action {
-		color: #64748b;
-		transition: all 0.2s ease;
-	}
-
-	.service-card:hover .service-action {
-		color: var(--service-color);
-		transform: translateX(4px);
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Connected Content
 	   ═══════════════════════════════════════════════════════════════════════════════ */
@@ -1084,18 +985,6 @@
 		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(var(--card-color), 0.2);
 	}
 
-	.section-card.requires-connection {
-		opacity: 0.7;
-	}
-
-	.section-card.requires-connection::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: rgba(15, 23, 42, 0.5);
-		pointer-events: none;
-	}
-
 	.card-icon {
 		display: flex;
 		align-items: center;
@@ -1150,23 +1039,6 @@
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		animation: pulse-badge 2s ease-in-out infinite;
-		z-index: 2;
-	}
-
-	.connection-required-badge {
-		position: absolute;
-		top: 1rem;
-		left: 1rem;
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		background: rgba(239, 68, 68, 0.2);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #fca5a5;
-		font-size: 0.625rem;
-		font-weight: 600;
-		padding: 0.25rem 0.5rem;
-		border-radius: 6px;
 		z-index: 2;
 	}
 
@@ -1230,14 +1102,6 @@
 		}
 
 		.sections-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.services-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.stats-grid {
 			grid-template-columns: 1fr;
 		}
 

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { ImportJob, ImportSource } from '$lib/boards/types';
 	import {

@@ -220,7 +220,7 @@
 		);
 
 		// Handle analytics consent
-		if (consents.analytics) {
+		if (consents['analytics']) {
 			// Enable Google Analytics, etc.
 			enableAnalytics();
 		} else {
@@ -228,7 +228,7 @@
 		}
 
 		// Handle marketing consent
-		if (consents.marketing) {
+		if (consents['marketing']) {
 			enableMarketing();
 		} else {
 			disableMarketing();

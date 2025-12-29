@@ -4,7 +4,7 @@
 	import { addToast } from '$lib/utils/toast';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, ContactStatus } from '$lib/crm/types';
-	import { IconPlus, IconSearch, IconMail, IconPhone } from '$lib/icons';
+	import { IconPlus, IconMail, IconPhone } from '$lib/icons';
 
 	let contacts = $state<Contact[]>([]);
 	let loading = $state(true);
@@ -33,8 +33,8 @@
 		try {
 			loading = true;
 			const response = await crmAPI.getContacts({
-				search: searchQuery || undefined,
-				status: statusFilter || undefined,
+				...(searchQuery && { search: searchQuery }),
+				...(statusFilter && { status: statusFilter }),
 				per_page: 25
 			});
 			contacts = response.data || [];

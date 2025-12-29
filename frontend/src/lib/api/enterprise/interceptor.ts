@@ -154,7 +154,7 @@ import { createApiError, ErrorCodes } from './errors';
 /**
  * Authentication interceptor - adds auth token to requests
  */
-export const authInterceptor: RequestInterceptor = (config, context) => {
+export const authInterceptor: RequestInterceptor = (config, _context) => {
 	const token = getAuthToken();
 
 	if (token) {
@@ -188,7 +188,7 @@ export const tracingInterceptor: RequestInterceptor = (config, context) => {
 /**
  * CSRF interceptor - adds CSRF token to mutating requests
  */
-export const csrfInterceptor: RequestInterceptor = (config, context) => {
+export const csrfInterceptor: RequestInterceptor = (config, _context) => {
 	if (!config.csrf?.enabled) {
 		const csrfHeaders = getCsrfHeaders(config.method || 'GET');
 		return {
@@ -304,7 +304,7 @@ export function createTokenRefreshInterceptor(
 		}
 
 		// Check if this is already a retry
-		if (context.isRetry && context.metadata?.tokenRefreshed) {
+		if (context.isRetry && context.metadata?.['tokenRefreshed']) {
 			// Token was already refreshed but still got 401
 			options.onRefreshFailed?.();
 			return error;

@@ -11,13 +11,10 @@
 import { writable, derived } from 'svelte/store';
 import { learningCenterApi } from '$lib/api/learning-center';
 import type {
-	TradingRoom,
+	TradingRoom as _TradingRoom,
 	LessonModule,
-	Lesson,
 	LessonWithRelations,
-	LearningCenterData,
 	LearningCategory,
-	PaginatedLessons,
 	Course,
 	CourseModule
 } from '$lib/types/learning-center';
@@ -214,9 +211,9 @@ function createLearningCenterStore() {
 				if (!lesson) return state;
 
 				const currentIndex = state.allLessons.findIndex((l) => l.id === lessonId);
-				const previousLesson = currentIndex > 0 ? state.allLessons[currentIndex - 1] : null;
+				const previousLesson = currentIndex > 0 ? (state.allLessons[currentIndex - 1] ?? null) : null;
 				const nextLesson =
-					currentIndex < state.allLessons.length - 1 ? state.allLessons[currentIndex + 1] : null;
+					currentIndex < state.allLessons.length - 1 ? (state.allLessons[currentIndex + 1] ?? null) : null;
 
 				// Module is already included in LessonWithRelations
 				const currentModule = lesson.module || null;
@@ -341,9 +338,13 @@ function createLearningCenterStore() {
 				await learningCenterApi.markLessonIncomplete(membershipSlug, lessonId);
 
 				update((state) => {
-					const updatedLessons = state.allLessons.map((l) =>
-						l.id === lessonId ? { ...l, completed: false, completedAt: undefined } : l
-					);
+					const updatedLessons = state.allLessons.map((l) => {
+						if (l.id === lessonId) {
+							const { completedAt: _, ...rest } = l;
+							return { ...rest, completed: false };
+						}
+						return l;
+					});
 
 					const completedCount = updatedLessons.filter((l) => l.completed).length;
 					const overallProgress = Math.round((completedCount / updatedLessons.length) * 100);
@@ -535,7 +536,7 @@ export const nextLessonToContinue = derived(learningCenterStore, ($store) => {
 	// First check recently watched
 	if ($store.recentlyWatched.length > 0) {
 		const recent = $store.recentlyWatched[0];
-		if (!recent.userProgress?.isCompleted) return recent;
+		if (recent && !recent.userProgress?.isCompleted) return recent;
 	}
 
 	// Otherwise find first incomplete lesson

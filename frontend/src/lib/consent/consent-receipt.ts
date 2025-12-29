@@ -94,7 +94,7 @@ export function generateConsentReceipt(
 		consentId: consent.consentId || 'N/A',
 		consentDate: consent.updatedAt,
 		consentMethod: consent.consentMethod || 'unknown',
-		expiresAt: consent.expiresAt,
+		...(consent.expiresAt && { expiresAt: consent.expiresAt }),
 
 		categories: {
 			necessary: consent.necessary,
@@ -103,13 +103,13 @@ export function generateConsentReceipt(
 			preferences: consent.preferences,
 		},
 
-		privacySignals: consent.privacySignals
-			? {
-					gpc: consent.privacySignals.gpc,
-					dnt: consent.privacySignals.dnt,
-					region: consent.privacySignals.region,
-				}
-			: undefined,
+		...(consent.privacySignals && {
+			privacySignals: {
+				gpc: consent.privacySignals.gpc,
+				dnt: consent.privacySignals.dnt,
+				...(consent.privacySignals.region && { region: consent.privacySignals.region }),
+			},
+		}),
 
 		auditTrail: getAuditLog().slice(-10), // Last 10 entries
 

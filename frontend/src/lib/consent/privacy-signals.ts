@@ -25,16 +25,6 @@ const EU_COUNTRIES = new Set([
 	'CH', // Switzerland (similar requirements)
 ]);
 
-/**
- * US states with strict privacy laws (CCPA, etc.).
- */
-const STRICT_US_STATES = new Set([
-	'CA', // California (CCPA/CPRA)
-	'VA', // Virginia (VCDPA)
-	'CO', // Colorado (CPA)
-	'CT', // Connecticut (CTDPA)
-	'UT', // Utah (UCPA)
-]);
 
 /**
  * Check if Do Not Track is enabled.
@@ -98,8 +88,9 @@ export function detectRegion(): string | undefined {
 			// Extract country code from locale (e.g., 'en-US' -> 'US')
 			const parts = locale.split('-');
 			if (parts.length >= 2) {
-				const country = parts[parts.length - 1].toUpperCase();
-				if (country.length === 2) {
+				const lastPart = parts[parts.length - 1];
+			const country = lastPart?.toUpperCase();
+				if (country && country.length === 2) {
 					return country;
 				}
 			}
@@ -242,7 +233,7 @@ export function detectPrivacySignals(): PrivacySignals {
 	const signals: PrivacySignals = {
 		dnt,
 		gpc,
-		region,
+		...(region && { region }),
 		requiresStrictConsent: requiresStrict,
 	};
 
@@ -303,7 +294,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
  * Check if we should show a consent banner.
  * In some cases (GPC enabled + non-EU), we might auto-apply restrictive defaults.
  */
-export function shouldShowBanner(signals: PrivacySignals, hasInteracted: boolean): boolean {
+export function shouldShowBanner(_signals: PrivacySignals, hasInteracted: boolean): boolean {
 	// Always show if user hasn't interacted
 	if (!hasInteracted) {
 		return true;

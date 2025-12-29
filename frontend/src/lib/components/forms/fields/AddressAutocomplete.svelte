@@ -40,10 +40,7 @@
 	let { field, value, error, onchange }: Props = $props();
 
 	// Configuration from field attributes
-	const showMap = $derived(field.attributes?.show_map ?? false);
-	const allowManual = $derived(field.attributes?.allow_manual ?? true);
-	const requiredFields = $derived(field.attributes?.required_fields ?? ['address_line1', 'city', 'country']);
-	const apiKey = $derived(field.attributes?.google_api_key ?? '');
+	const allowManual = $derived(field.attributes?.['allow_manual'] ?? true);
 
 	// State
 	let searchInput = $state('');
@@ -64,9 +61,7 @@
 		postal_code: '',
 		country: '',
 		country_code: '',
-		formatted_address: '',
-		lat: undefined,
-		lng: undefined
+		formatted_address: ''
 	});
 
 	// Sync address with value prop changes
@@ -214,9 +209,7 @@
 			postal_code: '',
 			country: parts[parts.length - 1] || '',
 			country_code: '',
-			formatted_address: description,
-			lat: undefined,
-			lng: undefined
+			formatted_address: description
 		};
 	}
 
@@ -235,8 +228,9 @@
 				break;
 			case 'Enter':
 				e.preventDefault();
-				if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-					selectSuggestion(suggestions[selectedIndex]);
+				const selected = suggestions[selectedIndex];
+				if (selectedIndex >= 0 && selected) {
+					selectSuggestion(selected);
 				}
 				break;
 			case 'Escape':

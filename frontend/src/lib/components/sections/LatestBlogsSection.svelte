@@ -49,20 +49,20 @@
                 return;
             }
             
-            const observer = new IntersectionObserver(
+            const visibilityObserver = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting) {
+                    if (entries[0]?.isIntersecting) {
                         isVisible = true;
-                        observer.disconnect();
+                        visibilityObserver.disconnect();
                     }
                 },
                 { threshold: 0.1 }
             );
-            observer.observe(containerRef);
+            visibilityObserver.observe(containerRef);
         });
     });
 
-    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+    function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
         return {
             delay,
             duration,
@@ -177,7 +177,7 @@
                         </div>
                         
                         <div class="space-y-8">
-                            {#each wirePosts as post, i}
+                            {#each wirePosts as post}
                                 <a href="/blog/{post.slug}" class="group block border-b border-white/5 pb-8 last:border-0 hover:pl-4 transition-all duration-300">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest">

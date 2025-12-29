@@ -13,8 +13,7 @@ import { browser } from '$app/environment';
 import {
 	analyticsApi,
 	type DashboardData,
-	type RealTimeMetrics,
-	type KpiValue
+	type RealTimeMetrics
 } from '$lib/api/analytics';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -198,8 +197,8 @@ function createEventTracker() {
 
 		const eventData = {
 			event_name: eventName,
-			event_category: properties?.category || 'user_interaction',
-			event_type: properties?.type || 'custom',
+			event_category: properties?.['category'] || 'user_interaction',
+			event_type: properties?.['type'] || 'custom',
 			properties: {
 				...properties,
 				session_id: get(sessionId),
@@ -231,7 +230,7 @@ function createEventTracker() {
 			await analyticsApi.trackPageView({
 				page_url: window.location.href,
 				page_title: document.title,
-				page_type: data?.page_type,
+				...(data?.page_type && { page_type: data.page_type }),
 				referrer: data?.referrer || document.referrer
 			});
 		} catch (error) {

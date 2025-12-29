@@ -51,10 +51,16 @@ const api = {
 		}
 		return apiFetch<T>(url, { method: 'GET' });
 	},
-	post: <T>(endpoint: string, data?: any): Promise<T> =>
-		apiFetch<T>(endpoint, { method: 'POST', body: data ? JSON.stringify(data) : undefined }),
-	put: <T>(endpoint: string, data?: any): Promise<T> =>
-		apiFetch<T>(endpoint, { method: 'PUT', body: data ? JSON.stringify(data) : undefined }),
+	post: <T>(endpoint: string, data?: any): Promise<T> => {
+		const options: RequestInit = { method: 'POST' };
+		if (data) options.body = JSON.stringify(data);
+		return apiFetch<T>(endpoint, options);
+	},
+	put: <T>(endpoint: string, data?: any): Promise<T> => {
+		const options: RequestInit = { method: 'PUT' };
+		if (data) options.body = JSON.stringify(data);
+		return apiFetch<T>(endpoint, options);
+	},
 	delete: <T>(endpoint: string): Promise<T> =>
 		apiFetch<T>(endpoint, { method: 'DELETE' })
 };

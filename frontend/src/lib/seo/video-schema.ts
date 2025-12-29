@@ -117,12 +117,13 @@ export function detectVideoPlatform(url: string): DetectedVideo | null {
 	for (const pattern of youtubePatterns) {
 		const match = url.match(pattern);
 		if (match) {
+			const videoId = match[1] || '';
 			return {
 				platform: 'youtube',
-				videoId: match[1],
-				embedUrl: `https://www.youtube.com/embed/${match[1]}`,
-				thumbnailUrl: `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`,
-				oEmbedUrl: `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${match[1]}&format=json`
+				videoId,
+				embedUrl: `https://www.youtube.com/embed/${videoId}`,
+				thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+				oEmbedUrl: `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
 			};
 		}
 	}
@@ -131,12 +132,13 @@ export function detectVideoPlatform(url: string): DetectedVideo | null {
 	const vimeoPattern = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/;
 	const vimeoMatch = url.match(vimeoPattern);
 	if (vimeoMatch) {
+		const videoId = vimeoMatch[1] || '';
 		return {
 			platform: 'vimeo',
-			videoId: vimeoMatch[1],
-			embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
-			thumbnailUrl: `https://vumbnail.com/${vimeoMatch[1]}.jpg`,
-			oEmbedUrl: `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${vimeoMatch[1]}`
+			videoId,
+			embedUrl: `https://player.vimeo.com/video/${videoId}`,
+			thumbnailUrl: `https://vumbnail.com/${videoId}.jpg`,
+			oEmbedUrl: `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}`
 		};
 	}
 
@@ -144,12 +146,13 @@ export function detectVideoPlatform(url: string): DetectedVideo | null {
 	const dailymotionPattern = /dailymotion\.com\/(?:video|embed\/video)\/([a-zA-Z0-9]+)/;
 	const dailymotionMatch = url.match(dailymotionPattern);
 	if (dailymotionMatch) {
+		const videoId = dailymotionMatch[1] || '';
 		return {
 			platform: 'dailymotion',
-			videoId: dailymotionMatch[1],
-			embedUrl: `https://www.dailymotion.com/embed/video/${dailymotionMatch[1]}`,
-			thumbnailUrl: `https://www.dailymotion.com/thumbnail/video/${dailymotionMatch[1]}`,
-			oEmbedUrl: `https://www.dailymotion.com/services/oembed?url=https://www.dailymotion.com/video/${dailymotionMatch[1]}`
+			videoId,
+			embedUrl: `https://www.dailymotion.com/embed/video/${videoId}`,
+			thumbnailUrl: `https://www.dailymotion.com/thumbnail/video/${videoId}`,
+			oEmbedUrl: `https://www.dailymotion.com/services/oembed?url=https://www.dailymotion.com/video/${videoId}`
 		};
 	}
 
@@ -157,11 +160,12 @@ export function detectVideoPlatform(url: string): DetectedVideo | null {
 	const tedPattern = /ted\.com\/talks\/([a-zA-Z0-9_]+)/;
 	const tedMatch = url.match(tedPattern);
 	if (tedMatch) {
+		const videoId = tedMatch[1] || '';
 		return {
 			platform: 'ted',
-			videoId: tedMatch[1],
-			embedUrl: `https://embed.ted.com/talks/${tedMatch[1]}`,
-			thumbnailUrl: `https://pi.tedcdn.com/r/talkstar-assets.s3.amazonaws.com/production/playlists/${tedMatch[1]}.jpg`
+			videoId,
+			embedUrl: `https://embed.ted.com/talks/${videoId}`,
+			thumbnailUrl: `https://pi.tedcdn.com/r/talkstar-assets.s3.amazonaws.com/production/playlists/${videoId}.jpg`
 		};
 	}
 
@@ -169,12 +173,13 @@ export function detectVideoPlatform(url: string): DetectedVideo | null {
 	const wistiaPattern = /(?:wistia\.com\/medias\/|wistia\.net\/embed\/iframe\/)([a-zA-Z0-9]+)/;
 	const wistiaMatch = url.match(wistiaPattern);
 	if (wistiaMatch) {
+		const videoId = wistiaMatch[1] || '';
 		return {
 			platform: 'wistia',
-			videoId: wistiaMatch[1],
-			embedUrl: `https://fast.wistia.net/embed/iframe/${wistiaMatch[1]}`,
-			thumbnailUrl: `https://embed-ssl.wistia.com/deliveries/${wistiaMatch[1]}.jpg`,
-			oEmbedUrl: `https://fast.wistia.com/oembed?url=https://home.wistia.com/medias/${wistiaMatch[1]}`
+			videoId,
+			embedUrl: `https://fast.wistia.net/embed/iframe/${videoId}`,
+			thumbnailUrl: `https://embed-ssl.wistia.com/deliveries/${videoId}.jpg`,
+			oEmbedUrl: `https://fast.wistia.com/oembed?url=https://home.wistia.com/medias/${videoId}`
 		};
 	}
 
@@ -196,7 +201,9 @@ export function findVideosInContent(content: string): DetectedVideo[] {
 	const iframePattern = /<iframe[^>]+src=["']([^"']+)["'][^>]*>/gi;
 	let iframeMatch: RegExpExecArray | null;
 	while ((iframeMatch = iframePattern.exec(content)) !== null) {
-		matches.push(iframeMatch[1]);
+		if (iframeMatch[1]) {
+			matches.push(iframeMatch[1]);
+		}
 	}
 
 	for (const url of matches) {
@@ -289,26 +296,26 @@ export function generateVideoSchema(
 
 	// Add URLs
 	if (video.contentUrl) {
-		schema.contentUrl = video.contentUrl;
+		schema['contentUrl'] = video.contentUrl;
 	}
 
 	if (video.embedUrl) {
-		schema.embedUrl = video.embedUrl;
+		schema['embedUrl'] = video.embedUrl;
 	}
 
 	// Add duration
 	if (duration) {
-		schema.duration = duration;
+		schema['duration'] = duration;
 	}
 
 	// Add expiration
 	if (video.expires) {
-		schema.expires = video.expires;
+		schema['expires'] = video.expires;
 	}
 
 	// Add interaction statistics
 	if (video.interactionStatistic && video.interactionStatistic.length > 0) {
-		schema.interactionStatistic = video.interactionStatistic.map((stat) => ({
+		schema['interactionStatistic'] = video.interactionStatistic.map((stat) => ({
 			'@type': 'InteractionCounter',
 			interactionType: { '@type': stat.type },
 			userInteractionCount: stat.count
@@ -317,22 +324,22 @@ export function generateVideoSchema(
 
 	// Add regions allowed
 	if (video.regionsAllowed && video.regionsAllowed.length > 0) {
-		schema.regionsAllowed = video.regionsAllowed.join(' ');
+		schema['regionsAllowed'] = video.regionsAllowed.join(' ');
 	}
 
 	// Add transcript
 	if (video.transcript) {
-		schema.transcript = video.transcript;
+		schema['transcript'] = video.transcript;
 	}
 
 	// Add author
 	if (video.author) {
-		schema.author = {
+		schema['author'] = {
 			'@type': 'Person',
 			name: video.author.name
 		};
 		if (video.author.url) {
-			schema.author.url = video.author.url;
+			schema['author']['url'] = video.author.url;
 		}
 	}
 
@@ -340,7 +347,7 @@ export function generateVideoSchema(
 	if (opts.includePublisher) {
 		const pub = video.publisher || opts.defaultPublisher;
 		if (pub) {
-			schema.publisher = {
+			schema['publisher'] = {
 				'@type': 'Organization',
 				name: pub.name,
 				logo: {
@@ -354,21 +361,21 @@ export function generateVideoSchema(
 
 	// Add live broadcast event
 	if (video.publication?.isLiveBroadcast) {
-		schema.publication = {
+		schema['publication'] = {
 			'@type': 'BroadcastEvent',
 			isLiveBroadcast: true
 		};
 		if (video.publication.startDate) {
-			schema.publication.startDate = video.publication.startDate;
+			schema['publication']['startDate'] = video.publication.startDate;
 		}
 		if (video.publication.endDate) {
-			schema.publication.endDate = video.publication.endDate;
+			schema['publication']['endDate'] = video.publication.endDate;
 		}
 	}
 
 	// Add clips (key moments)
 	if (video.hasPart && video.hasPart.length > 0) {
-		schema.hasPart = video.hasPart.map((clip) => ({
+		schema['hasPart'] = video.hasPart.map((clip) => ({
 			'@type': 'Clip',
 			name: clip.name,
 			startOffset: clip.startOffset,
@@ -379,7 +386,7 @@ export function generateVideoSchema(
 
 	// Add SeekToAction for video scrubbing
 	if (opts.includeSeekToAction && video.embedUrl) {
-		schema.potentialAction = {
+		schema['potentialAction'] = {
 			'@type': 'SeekToAction',
 			target: `${video.embedUrl}?t={seek_to_second_number}`,
 			'startOffset-input': 'required name=seek_to_second_number'
@@ -410,7 +417,7 @@ export function generateSchemaFromDetected(
 			description: metadata.description,
 			thumbnailUrl: detected.thumbnailUrl,
 			uploadDate: metadata.uploadDate,
-			durationSeconds: metadata.durationSeconds
+			...(metadata.durationSeconds !== undefined && { durationSeconds: metadata.durationSeconds })
 		},
 		options
 	);
@@ -539,30 +546,30 @@ export function validateVideoSchema(schema: Record<string, any>): ValidationResu
 	const warnings: string[] = [];
 
 	// Required fields
-	if (!schema.name) errors.push('Missing required field: name');
-	if (!schema.description) errors.push('Missing required field: description');
-	if (!schema.thumbnailUrl) errors.push('Missing required field: thumbnailUrl');
-	if (!schema.uploadDate) errors.push('Missing required field: uploadDate');
-	if (!schema.contentUrl && !schema.embedUrl) {
+	if (!schema['name']) errors.push('Missing required field: name');
+	if (!schema['description']) errors.push('Missing required field: description');
+	if (!schema['thumbnailUrl']) errors.push('Missing required field: thumbnailUrl');
+	if (!schema['uploadDate']) errors.push('Missing required field: uploadDate');
+	if (!schema['contentUrl'] && !schema['embedUrl']) {
 		errors.push('Missing required field: contentUrl or embedUrl');
 	}
 
 	// Recommended fields
-	if (!schema.duration) warnings.push('Missing recommended field: duration');
-	if (!schema.interactionStatistic) {
+	if (!schema['duration']) warnings.push('Missing recommended field: duration');
+	if (!schema['interactionStatistic']) {
 		warnings.push('Consider adding interactionStatistic for better visibility');
 	}
 
 	// Description length
-	if (schema.description && schema.description.length < 50) {
+	if (schema['description'] && schema['description'].length < 50) {
 		warnings.push('Description is short. Consider adding more detail (50+ characters recommended)');
 	}
 
 	// Thumbnail validation
-	if (schema.thumbnailUrl) {
-		const thumbnails = Array.isArray(schema.thumbnailUrl)
-			? schema.thumbnailUrl
-			: [schema.thumbnailUrl];
+	if (schema['thumbnailUrl']) {
+		const thumbnails = Array.isArray(schema['thumbnailUrl'])
+			? schema['thumbnailUrl']
+			: [schema['thumbnailUrl']];
 
 		if (thumbnails.length < 3) {
 			warnings.push('Consider providing multiple thumbnail sizes for better display');

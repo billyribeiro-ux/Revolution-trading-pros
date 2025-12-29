@@ -94,7 +94,7 @@
 	let activeTab = $state('overview');
 
 	// Analytics services that can be connected - dynamically generated from FEATURE_SERVICES
-	const analyticsServices = FEATURE_SERVICES.analytics.map((key) => {
+	const analyticsServices = FEATURE_SERVICES['analytics']?.map((key) => {
 		const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
 			[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#f97316' },
 			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#8b5cf6' },
@@ -103,7 +103,7 @@
 			[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
 		};
 		return { key, ...serviceConfig[key] };
-	});
+	}) || [];
 
 	async function loadDashboard() {
 		loading = true;

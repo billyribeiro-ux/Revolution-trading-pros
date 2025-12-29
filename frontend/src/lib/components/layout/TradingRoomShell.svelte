@@ -9,16 +9,12 @@
 	 * @author Revolution Trading Pros
 	 */
 
-	import { page } from '$app/stores';
-	import { user, isAuthenticated } from '$lib/stores/auth';
-	import IconMenu from '@tabler/icons-svelte/icons/menu';
-	import IconX from '@tabler/icons-svelte/icons/x';
+	import { user } from '$lib/stores/auth';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import IconMaximize from '@tabler/icons-svelte/icons/maximize';
 	import IconMinimize from '@tabler/icons-svelte/icons/minimize';
 	import IconLayoutSidebar from '@tabler/icons-svelte/icons/layout-sidebar';
 	import IconLayoutSidebarRight from '@tabler/icons-svelte/icons/layout-sidebar-right';
-	import IconLogout from '@tabler/icons-svelte/icons/logout';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

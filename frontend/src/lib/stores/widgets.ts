@@ -253,6 +253,7 @@ function createWidgetStore() {
 			update(config => {
 				const widgets = [...config.widgets];
 				const [removed] = widgets.splice(fromIndex, 1);
+				if (!removed) return config;
 				widgets.splice(toIndex, 0, removed);
 
 				// Update order values
@@ -278,6 +279,7 @@ function createWidgetStore() {
 				if (currentIndex === targetIndex) return config;
 
 				const [removed] = widgets.splice(currentIndex, 1);
+				if (!removed) return config;
 				widgets.splice(targetIndex, 0, removed);
 
 				return {
@@ -347,7 +349,10 @@ export const widgetsByCategory = derived(widgetStore, $config => {
 	};
 
 	for (const widget of $config.widgets) {
-		categories[widget.category].push(widget);
+		const categoryArray = categories[widget.category];
+		if (categoryArray) {
+			categoryArray.push(widget);
+		}
 	}
 
 	return categories;

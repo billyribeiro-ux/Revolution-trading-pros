@@ -6,7 +6,6 @@
     import IconShield from '@tabler/icons-svelte/icons/shield';
     import IconCpu from '@tabler/icons-svelte/icons/cpu';
     import IconCheck from '@tabler/icons-svelte/icons/check';
-    import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
     import IconBuilding from '@tabler/icons-svelte/icons/building';
 
     const features = [
@@ -49,7 +48,7 @@
         mouse.y = e.clientY - rect.top;
     };
 
-    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+    function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
         return {
             delay,
             duration,
@@ -77,7 +76,7 @@
             
             observer = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting) {
+                    if (entries[0]?.isIntersecting) {
                         isVisible = true;
                         observer?.disconnect();
                     }

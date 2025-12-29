@@ -55,7 +55,7 @@
     let isVisible = $state(false);
     let containerRef = $state<HTMLElement | null>(null);
 
-    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+    function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
         return {
             delay,
             duration,
@@ -84,7 +84,7 @@
             
             observer = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting) {
+                    if (entries[0]?.isIntersecting) {
                         isVisible = true;
                         observer?.disconnect();
                     }

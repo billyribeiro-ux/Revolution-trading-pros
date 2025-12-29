@@ -31,7 +31,7 @@ const mockSetTimeout = vi.fn((cb: () => void, ms?: number) => {
 	}
 	return id;
 });
-const mockSetInterval = vi.fn((cb: () => void, _ms?: number) => {
+const mockSetInterval = vi.fn((_cb: () => void, _ms?: number) => {
 	return ++timerId;
 });
 const mockClearTimeout = vi.fn();

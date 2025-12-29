@@ -48,7 +48,7 @@
 			<input
 				id="node-title"
 				type="text"
-				bind:value={config.title}
+				bind:value={config['title']}
 				onblur={handleUpdate}
 				placeholder="Enter node title"
 			/>
@@ -58,7 +58,7 @@
 			<label for="node-description">Description</label>
 			<textarea
 				id="node-description"
-				bind:value={config.description}
+				bind:value={config['description']}
 				onblur={handleUpdate}
 				placeholder="Enter description"
 				rows="3"
@@ -68,7 +68,7 @@
 		{#if node.node_type === 'action'}
 			<div class="form-group">
 				<label for="action-type">Action Type</label>
-				<select id="action-type" bind:value={config.action_type} onchange={handleUpdate}>
+				<select id="action-type" bind:value={config['action_type']} onchange={handleUpdate}>
 					<option value="">Select action...</option>
 					<option value="add_tag">Add Tag</option>
 					<option value="remove_tag">Remove Tag</option>
@@ -87,7 +87,7 @@
 				<input
 					id="delay-seconds"
 					type="number"
-					bind:value={config.delay_seconds}
+					bind:value={config['delay_seconds']}
 					onblur={handleUpdate}
 					min="0"
 				/>
@@ -97,7 +97,7 @@
 		{#if node.node_type === 'condition'}
 			<div class="form-group">
 				<label for="condition-logic">Condition Logic</label>
-				<select id="condition-logic" bind:value={config.logic} onchange={handleUpdate}>
+				<select id="condition-logic" bind:value={config['logic']} onchange={handleUpdate}>
 					<option value="AND">AND (All must be true)</option>
 					<option value="OR">OR (Any must be true)</option>
 				</select>

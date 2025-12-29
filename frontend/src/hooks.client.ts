@@ -146,7 +146,7 @@ async function reportError(
 		}
 
 		// Send to custom error tracking endpoint (if configured)
-		const errorEndpoint = import.meta.env.VITE_ERROR_TRACKING_URL;
+		const errorEndpoint = import.meta.env['VITE_ERROR_TRACKING_URL'];
 		if (errorEndpoint) {
 			await fetch(errorEndpoint, {
 				method: 'POST',
@@ -219,7 +219,7 @@ function forceReloadForFreshChunks(): void {
  * - Navigation
  * - Client-side component lifecycle
  */
-export const handleError: HandleClientError = async ({ error, event, status, message }) => {
+export const handleError: HandleClientError = async ({ error, event, status: _status, message }) => {
 	const errorId = generateErrorId();
 
 	// ICT11+ Pattern: Handle stale chunk errors from Cloudflare Pages cache
@@ -234,14 +234,16 @@ export const handleError: HandleClientError = async ({ error, event, status, mes
 	}
 
 	// Build error metadata
+	const sessionId = getSessionId();
+	const userId = getUserId();
 	const metadata: ErrorMetadata = {
 		severity: getErrorSeverity(error),
 		category: categorizeError(error),
 		userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
 		url: event.url.href,
 		timestamp: new Date().toISOString(),
-		sessionId: getSessionId(),
-		userId: getUserId()
+		...(sessionId && { sessionId }),
+		...(userId && { userId })
 	};
 
 	// Report error asynchronously
@@ -279,14 +281,16 @@ if (typeof window !== 'undefined') {
 			return;
 		}
 
+		const sessionId = getSessionId();
+		const userId = getUserId();
 		const metadata: ErrorMetadata = {
 			severity: getErrorSeverity(error),
 			category: 'unhandled_promise',
 			userAgent: navigator.userAgent,
 			url: window.location.href,
 			timestamp: new Date().toISOString(),
-			sessionId: getSessionId(),
-			userId: getUserId()
+			...(sessionId && { sessionId }),
+			...(userId && { userId })
 		};
 
 		reportError(error, metadata, errorId);
@@ -308,14 +312,16 @@ if (typeof window !== 'undefined') {
 		const errorId = generateErrorId();
 		const error = event.error || new Error(event.message);
 
+		const sessionId = getSessionId();
+		const userId = getUserId();
 		const metadata: ErrorMetadata = {
 			severity: getErrorSeverity(error),
 			category: categorizeError(error),
 			userAgent: navigator.userAgent,
 			url: window.location.href,
 			timestamp: new Date().toISOString(),
-			sessionId: getSessionId(),
-			userId: getUserId()
+			...(sessionId && { sessionId }),
+			...(userId && { userId })
 		};
 
 		reportError(error, metadata, errorId);

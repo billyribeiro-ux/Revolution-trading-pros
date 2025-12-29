@@ -58,7 +58,7 @@
 
 		if (validFiles.length > 0) {
 			uploadStore.uploadFiles(validFiles, {
-				folder_id: folderId || undefined,
+				...(folderId && { folder_id: folderId }),
 				optimize: true,
 				generate_webp: true
 			});

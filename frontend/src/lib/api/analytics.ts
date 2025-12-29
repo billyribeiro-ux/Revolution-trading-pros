@@ -367,7 +367,7 @@ class AnalyticsApiClient {
 		const response = await fetch(url, {
 			method,
 			headers: this.getAuthHeaders(),
-			body: body ? JSON.stringify(body) : undefined
+			body: body ? JSON.stringify(body) : null
 		});
 
 		if (!response.ok) {

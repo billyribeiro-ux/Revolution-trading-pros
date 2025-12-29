@@ -87,7 +87,7 @@
         mouse.y = e.clientY - rect.top;
     };
 
-    function heavySlide(node: Element, { delay = 0, duration = 1000 }) {
+    function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
         return {
             delay,
             duration,
@@ -99,8 +99,6 @@
     }
 
     // Trigger entrance animations when section scrolls into viewport
-    let observer: IntersectionObserver | null = null;
-    
     onMount(() => {
         if (!browser) {
             isVisible = true;
@@ -113,20 +111,18 @@
                 return;
             }
             
-            observer = new IntersectionObserver(
+            const visibilityObserver = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting) {
+                    if (entries[0]?.isIntersecting) {
                         isVisible = true;
-                        observer?.disconnect();
+                        visibilityObserver.disconnect();
                     }
                 },
                 { threshold: 0.1, rootMargin: '50px' }
             );
             
-            observer.observe(containerRef);
+            visibilityObserver.observe(containerRef);
         });
-        
-        return () => observer?.disconnect();
     });
 
     // Ticker Tape Data

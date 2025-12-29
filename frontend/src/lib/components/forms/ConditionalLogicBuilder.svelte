@@ -115,7 +115,7 @@
 		logic.rules = [
 			...logic.rules,
 			{
-				field: availableFields[0].name,
+				field: availableFields[0]?.name ?? '',
 				operator: 'equals',
 				value: ''
 			}
@@ -136,7 +136,10 @@
 	function moveRuleUp(index: number) {
 		if (index === 0) return;
 		const newRules = [...logic.rules];
-		[newRules[index - 1], newRules[index]] = [newRules[index], newRules[index - 1]];
+		const prev = newRules[index - 1];
+		const curr = newRules[index];
+		if (!prev || !curr) return;
+		[newRules[index - 1], newRules[index]] = [curr, prev];
 		logic.rules = newRules;
 	}
 
@@ -144,7 +147,10 @@
 	function moveRuleDown(index: number) {
 		if (index === logic.rules.length - 1) return;
 		const newRules = [...logic.rules];
-		[newRules[index], newRules[index + 1]] = [newRules[index + 1], newRules[index]];
+		const curr = newRules[index];
+		const next = newRules[index + 1];
+		if (!curr || !next) return;
+		[newRules[index], newRules[index + 1]] = [next, curr];
 		logic.rules = newRules;
 	}
 

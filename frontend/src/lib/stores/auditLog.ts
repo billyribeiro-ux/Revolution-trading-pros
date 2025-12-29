@@ -153,8 +153,8 @@ export const auditLog = {
 			userId: user?.id || 'unknown',
 			userName: user?.name || 'Unknown User',
 			userEmail: user?.email || 'unknown@example.com',
-			ipAddress: browser ? '127.0.0.1' : undefined, // In production, get from request
-			userAgent: browser ? navigator.userAgent : undefined
+			...(browser && { ipAddress: '127.0.0.1' }), // In production, get from request
+			...(browser && { userAgent: navigator.userAgent })
 		};
 
 		auditLogStore.update(state => {
@@ -173,15 +173,15 @@ export const auditLog = {
 	 * Convenience methods for common actions
 	 */
 	logCreate(resource: string, resourceId: string, description: string, category: AuditCategory = 'content', metadata?: Record<string, unknown>) {
-		return this.log({ action: 'create', resource, resourceId, description, category, metadata, success: true });
+		return this.log({ action: 'create', resource, resourceId, description, category, ...(metadata && { metadata }), success: true });
 	},
 
 	logUpdate(resource: string, resourceId: string, description: string, category: AuditCategory = 'content', metadata?: Record<string, unknown>) {
-		return this.log({ action: 'update', resource, resourceId, description, category, metadata, success: true });
+		return this.log({ action: 'update', resource, resourceId, description, category, ...(metadata && { metadata }), success: true });
 	},
 
 	logDelete(resource: string, resourceId: string, description: string, category: AuditCategory = 'content', metadata?: Record<string, unknown>) {
-		return this.log({ action: 'delete', resource, resourceId, description, category, metadata, success: true });
+		return this.log({ action: 'delete', resource, resourceId, description, category, ...(metadata && { metadata }), success: true });
 	},
 
 	logView(resource: string, resourceId: string, description: string, category: AuditCategory = 'content') {
@@ -189,7 +189,7 @@ export const auditLog = {
 	},
 
 	logExport(resource: string, description: string, metadata?: Record<string, unknown>) {
-		return this.log({ action: 'export', resource, description, category: 'content', metadata, success: true });
+		return this.log({ action: 'export', resource, description, category: 'content', ...(metadata && { metadata }), success: true });
 	},
 
 	logLogin(success: boolean, errorMessage?: string) {
@@ -199,7 +199,7 @@ export const auditLog = {
 			description: success ? 'User logged in' : 'Login attempt failed',
 			category: 'security',
 			success,
-			errorMessage
+			...(errorMessage && { errorMessage })
 		});
 	},
 
@@ -231,7 +231,7 @@ export const auditLog = {
 			description: success ? `Connected to ${service}` : `Failed to connect to ${service}`,
 			category: 'integrations',
 			success,
-			errorMessage
+			...(errorMessage && { errorMessage })
 		});
 	},
 

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly, scale, fade } from 'svelte/transition';
-	import { cubicOut, backOut, elasticOut } from 'svelte/easing';
-	import { spring, tweened } from 'svelte/motion';
+	import { cubicOut, backOut } from 'svelte/easing';
 
 	// Config available for widget customization
 	export const config: Record<string, unknown> = {};
@@ -62,8 +61,6 @@
 		}
 	]);
 
-	const progressValue = tweened(0, { duration: 2000, easing: cubicOut });
-
 	onMount(async () => {
 		mounted = true;
 		// Fetch actual integration status from API
@@ -104,7 +101,7 @@
 
 				if (data.auth_url) {
 					// Open OAuth popup
-					const popup = window.open(
+					window.open(
 						data.auth_url,
 						'google-auth',
 						'width=600,height=700,scrollbars=yes'
@@ -140,7 +137,7 @@
 			await fetch(`/api/integrations/${selectedIntegration.id}/disconnect`, { method: 'POST' });
 			selectedIntegration.connected = false;
 			selectedIntegration.status = 'disconnected';
-			selectedIntegration.lastSync = undefined;
+			delete selectedIntegration.lastSync;
 			integrations = [...integrations];
 		} catch (error) {
 			console.error('Failed to disconnect:', error);

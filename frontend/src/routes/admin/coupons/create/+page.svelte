@@ -54,8 +54,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { fade, fly, slide } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
+	import { fade, slide } from 'svelte/transition';
 	import {
 		couponsApi,
 		productsApi,
@@ -68,29 +67,16 @@
 		IconCheck,
 		IconX,
 		IconPlus,
-		IconMinus,
-		IconPercentage,
-		IconCurrencyDollar,
-		IconCalendar,
 		IconUsers,
-		IconShoppingCart,
 		IconTag,
-		IconDevices,
 		IconRefresh,
 		IconAlertCircle,
 		IconChartBar,
-		IconRobot,
 		IconShield,
-		IconCopy,
-		IconDownload,
-		IconUpload,
 		IconSettings,
 		IconBolt,
-		IconGift,
 		IconMail,
-		IconBrandGoogle,
 		IconBrandFacebook,
-		IconQrcode,
 		IconSparkles,
 		IconMapPin,
 		IconTestPipe
@@ -254,14 +240,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let saving = $state(false);
-	let validating = $state(false);
 	let generating = $state(false);
 	let testing = $state(false);
 	let errors = $state<ValidationError[]>([]);
 	let activeTab = $state<'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing'>('basic');
-	let showPreview = $state(false);
-	let showBulkGenerator = $state(false);
-	let showImport = $state(false);
 	let duplicateFrom: string | null = $page.url.searchParams.get('duplicate');
 
 	// Form Data
@@ -290,7 +272,6 @@
 		expires_at: '',
 		timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 		recurring: false,
-		recurrence_pattern: undefined,
 		product_restrictions: [],
 		category_restrictions: [],
 		user_segments: [],
@@ -326,10 +307,7 @@
 	let couponPreview = $state<CouponPreview | null>(null);
 
 	// Advanced Features
-	let generatedCodes = $state<string[]>([]);
-	let importedCodes = $state<any[]>([]);
 	let validationResults = $state<any>(null);
-	let testResults = $state<any>(null);
 
 	// Events: Component callbacks can be passed as props in Svelte 5
 
@@ -425,7 +403,7 @@
 			const submitData = prepareSubmitData();
 
 			// Create coupon
-			const coupon = await couponsApi.create(submitData);
+			await couponsApi.create(submitData as unknown as Parameters<typeof couponsApi.create>[0]);
 
 			// Track analytics
 			trackEvent('coupon_created', {
@@ -588,6 +566,7 @@
 
 		for (let i = 0; i < sortedTiers.length; i++) {
 			const tier = sortedTiers[i];
+			if (!tier) continue;
 
 			if (tier.min_amount >= tier.max_amount) {
 				errors.push({
@@ -599,7 +578,7 @@
 
 			if (i > 0) {
 				const prevTier = sortedTiers[i - 1];
-				if (tier.min_amount < prevTier.max_amount) {
+				if (prevTier && tier.min_amount < prevTier.max_amount) {
 					errors.push({
 						field: `tier_${i}`,
 						message: `Tier ${i + 1} overlaps with previous tier`,
@@ -694,62 +673,13 @@
 				length: 8,
 				count: 1
 			});
-			formData.code = response.data.codes[0];
+			formData.code = response.data.codes[0] ?? '';
 			addNotification('success', 'Code generated successfully');
 		} catch (error) {
 			console.error('Failed to generate code:', error);
 			addNotification('error', 'Failed to generate code');
 		} finally {
 			generating = false;
-		}
-	}
-
-	async function generateBulkCodes() {
-		showBulkGenerator = true;
-	}
-
-	async function handleBulkGeneration(event: CustomEvent) {
-		const { prefix, count, pattern } = event.detail;
-
-		generating = true;
-		try {
-			const response = await couponsApi.generateCode({
-				prefix,
-				count,
-				pattern,
-				unique: true
-			});
-			generatedCodes = response.data.codes;
-			addNotification('success', `Generated ${count} unique codes`);
-		} catch (error) {
-			console.error('Failed to generate codes:', error);
-			addNotification('error', 'Failed to generate codes');
-		} finally {
-			generating = false;
-			showBulkGenerator = false;
-		}
-	}
-
-	async function importCoupons() {
-		showImport = true;
-	}
-
-	async function handleImport(event: CustomEvent) {
-		const { file, mapping } = event.detail;
-
-		try {
-			const formData = new FormData();
-			formData.append('file', file);
-			formData.append('mapping', JSON.stringify(mapping));
-
-			const response = await couponsApi.import(formData);
-			importedCodes = response.data.coupons;
-			addNotification('success', `Imported ${response.data.count} coupons`);
-
-			showImport = false;
-		} catch (error) {
-			console.error('Failed to import coupons:', error);
-			addNotification('error', 'Failed to import coupons');
 		}
 	}
 
@@ -767,7 +697,6 @@
 				]
 			});
 			validationResults = results.data;
-			showPreview = true;
 		} catch (error) {
 			console.error('Failed to test coupon:', error);
 			addNotification('error', 'Failed to test coupon');
@@ -911,7 +840,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function prepareSubmitData() {
-		const data = { ...formData };
+		const data = { ...formData } as Record<string, unknown>;
 
 		// Clean up null/undefined values
 		Object.keys(data).forEach((key) => {
@@ -921,16 +850,16 @@
 		});
 
 		// Remove empty arrays
-		if (data.product_restrictions?.length === 0) delete data.product_restrictions;
-		if (data.category_restrictions?.length === 0) delete data.category_restrictions;
-		if (data.user_segments?.length === 0) delete data.user_segments;
+		if (Array.isArray(data['product_restrictions']) && data['product_restrictions'].length === 0) delete data['product_restrictions'];
+		if (Array.isArray(data['category_restrictions']) && data['category_restrictions'].length === 0) delete data['category_restrictions'];
+		if (Array.isArray(data['user_segments']) && data['user_segments'].length === 0) delete data['user_segments'];
 
 		// Convert dates to ISO format
-		if (data.starts_at) {
-			data.starts_at = new Date(data.starts_at).toISOString();
+		if (data['starts_at']) {
+			data['starts_at'] = new Date(data['starts_at'] as string).toISOString();
 		}
-		if (data.expires_at) {
-			data.expires_at = new Date(data.expires_at).toISOString();
+		if (data['expires_at']) {
+			data['expires_at'] = new Date(data['expires_at'] as string).toISOString();
 		}
 
 		return data;
@@ -1142,10 +1071,6 @@
 								<IconSparkles size={16} />
 								Generate
 							</button>
-							<button type="button" class="btn-small" onclick={generateBulkCodes}>
-								<IconCopy size={16} />
-								Bulk Generate
-							</button>
 						</div>
 					</div>
 
@@ -1193,7 +1118,7 @@
 						</div>
 					</div>
 
-					{#if formData.type === 'bogo'}
+					{#if formData.type === 'bogo' && formData.bogo_config}
 						<div class="form-row" transition:slide>
 							<div class="form-group">
 								<label for="bogo-buy-quantity">Buy Quantity</label>
@@ -1781,7 +1706,7 @@
 									</button>
 								</div>
 
-								{#each formData.ab_variants as variant, index}
+								{#each formData.ab_variants as variant}
 									<div class="variant-row">
 										<input
 											type="text"

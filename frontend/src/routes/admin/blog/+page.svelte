@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { fade, fly, slide, scale } from 'svelte/transition';
+	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import {
 		IconPlus,
@@ -18,7 +18,6 @@
 		IconDownload,
 		IconUpload,
 		IconList,
-		IconBolt,
 		IconTrendingUp,
 		IconExternalLink,
 		IconPlayerPlay,
@@ -32,9 +31,7 @@
 		IconCheck,
 		IconX,
 		IconMenu2,
-		IconLayoutGrid,
-		IconSquareRounded,
-		IconSquareRoundedCheckFilled
+		IconLayoutGrid
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -82,8 +79,6 @@
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
 	let categoryFilter = $state('all');
-	let categories = $state<any[]>([]);
-	let tags = $state<any[]>([]);
 
 	// New state for improvements
 	let selectedPosts = $state(new Set<number>());
@@ -128,8 +123,6 @@
 	onMount(() => {
 		loadPosts();
 		loadStats();
-		loadCategories();
-		loadTags();
 		setupWebSocket();
 		setupKeyboardShortcuts();
 
@@ -187,24 +180,7 @@
 		}
 	}
 
-	async function loadCategories() {
-		try {
-			const data = await adminFetch('/api/admin/categories');
-			categories = data.data || [];
-		} catch (error) {
-			console.error('Failed to load categories:', error);
-		}
-	}
-
-	async function loadTags() {
-		try {
-			const data = await adminFetch('/api/admin/tags');
-			tags = data.data || [];
-		} catch (error) {
-			console.error('Failed to load tags:', error);
-		}
-	}
-
+	
 	// ═══════════════════════════════════════════════════════════════════════════
 	// WebSocket & Real-time Updates
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1267,6 +1243,56 @@
 		</div>
 	{/if}
 
+	<!-- Schedule Modal -->
+	{#if showScheduleModal && schedulePost}
+		<div
+			class="modal-overlay"
+			role="button"
+			tabindex="0"
+			onclick={() => (showScheduleModal = false)}
+			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showScheduleModal = false)}
+		>
+			<div
+				class="modal"
+				role="dialog"
+				aria-modal="true"
+				tabindex="-1"
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			>
+				<div class="modal-header">
+					<h2>Schedule Post</h2>
+					<button class="btn-icon" onclick={() => (showScheduleModal = false)}>
+						<IconX size={20} />
+					</button>
+				</div>
+				<div class="modal-content">
+					<p class="schedule-info">Schedule "{schedulePost.title}" for publication</p>
+					<div class="schedule-form">
+						<label>
+							<span>Publish Date & Time</span>
+							<input 
+								type="datetime-local" 
+								class="schedule-input"
+								min={new Date().toISOString().slice(0, 16)}
+							/>
+						</label>
+					</div>
+				</div>
+				<div class="modal-actions">
+					<button class="btn-secondary" onclick={() => (showScheduleModal = false)}>Cancel</button>
+					<button class="btn-primary" onclick={() => {
+						showNotification('info', 'Scheduling feature coming soon');
+						showScheduleModal = false;
+					}}>
+						<IconCalendar size={18} />
+						Schedule
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Analytics Modal -->
 	{#if showAnalyticsModal && analyticsPost}
 		<div
@@ -2305,6 +2331,38 @@
 		padding: 1rem;
 		background: rgba(59, 130, 246, 0.1);
 		border-radius: 8px;
+	}
+
+	/* Schedule Modal */
+	.schedule-info {
+		color: #f1f5f9;
+		font-size: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.schedule-form label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.schedule-form label span {
+		color: #94a3b8;
+		font-size: 0.9rem;
+	}
+
+	.schedule-input {
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.3);
+		border-radius: 8px;
+		color: #f1f5f9;
+		font-size: 1rem;
+	}
+
+	.schedule-input:focus {
+		outline: none;
+		border-color: #3b82f6;
 	}
 
 	/* Analytics Modal */

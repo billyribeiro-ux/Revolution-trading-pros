@@ -112,12 +112,10 @@
 	// DOM refs
 	let heroSection = $state<HTMLElement | null>(null);
 	let chartContainer = $state<HTMLElement | null>(null);
-	let slidesContainer = $state<HTMLElement | null>(null);
 	let resizeObserver: ResizeObserver | null = null;
 	let visibilityObserver: IntersectionObserver | null = null;
 	let isVisible = $state(true);
 	let chartReady = $state(false);
-	let mounted = $state(false);
 	let isAnimating = $state(false);
 
 	// Progress for slide indicator
@@ -584,7 +582,6 @@
 	onMount(async () => {
 		if (!browser) return;
 
-		mounted = true;
 		currentSlide = 0;
 		previousSlide = -1;
 
@@ -634,7 +631,6 @@
 		chart = null;
 		series = null;
 		timeline = null;
-		mounted = false;
 	});
 </script>
 
@@ -648,7 +644,7 @@
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
 		<div class="ambient-grid"></div>
-		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide].accentColor}"></div>
+		<div class="ambient-glow" style="--accent-color: {SLIDES[currentSlide]!.accentColor}"></div>
 	</div>
 
 	<!-- Chart Background -->
@@ -664,7 +660,7 @@
 
 	<!-- Content Overlay -->
 	<div class="hero-content">
-		<div class="hero-slides" bind:this={slidesContainer}>
+		<div class="hero-slides">
 			{#each SLIDES as slide, i (i)}
 				<article
 					data-slide={i}

@@ -16,14 +16,11 @@
 		IconUsers,
 		IconUserPlus,
 		IconMail,
-		IconPhone,
 		IconBuilding,
-		IconCalendar,
 		IconSearch,
 		IconFilter,
 		IconDotsVertical,
 		IconEdit,
-		IconTrash,
 		IconEye,
 		IconTag,
 		IconChartBar,
@@ -37,8 +34,7 @@
 		IconPlayerPlay,
 		IconExternalLink,
 		IconLink,
-		IconRobot,
-		IconClick
+		IconRobot
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, isCrmConnected } from '$lib/stores/connections';
@@ -55,7 +51,6 @@
 	let connectionLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
-	let activeTab = $state<'contacts' | 'deals' | 'pipeline'>('contacts');
 	let selectedStatus = $state('all');
 	let showSearchDropdown = $state(false);
 	let searchInputFocused = $state(false);

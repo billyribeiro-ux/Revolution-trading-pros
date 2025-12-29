@@ -65,7 +65,7 @@ export class RetryPolicy {
 				503, // Service Unavailable
 				504 // Gateway Timeout
 			],
-			onRetry: config.onRetry
+			...(config.onRetry && { onRetry: config.onRetry })
 		};
 	}
 

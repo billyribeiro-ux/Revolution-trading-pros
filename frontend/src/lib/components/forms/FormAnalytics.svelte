@@ -53,7 +53,9 @@
 			const date = new Date(last30Days);
 			date.setDate(date.getDate() + i);
 			const dateKey = date.toISOString().split('T')[0];
-			dailyCounts[dateKey] = 0;
+			if (dateKey) {
+				dailyCounts[dateKey] = 0;
+			}
 		}
 
 		// Count submissions per day
@@ -61,7 +63,9 @@
 			const date = new Date(submission.created_at);
 			if (date >= last30Days) {
 				const dateKey = date.toISOString().split('T')[0];
-				dailyCounts[dateKey] = (dailyCounts[dateKey] || 0) + 1;
+				if (dateKey) {
+					dailyCounts[dateKey] = (dailyCounts[dateKey] || 0) + 1;
+				}
 			}
 		});
 
@@ -89,8 +93,9 @@
 		submissions.forEach((submission) => {
 			submission.data?.forEach((data: any) => {
 				if (data.value && data.value.trim() !== '') {
-					if (fieldStats[data.field_name]) {
-						fieldStats[data.field_name].filled++;
+					const stat = fieldStats[data.field_name];
+					if (stat) {
+						stat.filled++;
 					}
 				}
 			});
@@ -105,17 +110,11 @@
 		}));
 	}
 
-	function getConversionRate(): number {
-		// This would require view tracking, for now return a placeholder
-		return stats ? (stats.total_submissions / Math.max(stats.total_submissions * 2, 1)) * 100 : 0;
-	}
-
 	function getAverageCompletionTime(): string {
 		// Placeholder - would need to track time on form
 		return '2m 34s';
 	}
 
-	let conversionRate = $derived(getConversionRate());
 	let readRate = $derived(
 		stats && stats.total_submissions > 0 ? (stats.read_count / stats.total_submissions) * 100 : 0);
 </script>

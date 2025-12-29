@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly, scale } from 'svelte/transition';
-	import { cubicOut, backOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import { spring } from 'svelte/motion';
 	import { tilt3d } from '$lib/animations/appleAnimations';
 

@@ -14,9 +14,7 @@
 	} from '$lib/icons';
 	import {
 		reportTemplates,
-		generatedReports,
 		formatSchedule,
-		calculateNextRun,
 		defaultBranding,
 		defaultSections,
 		type ReportTemplate,
@@ -26,7 +24,6 @@
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);
 	let reports = $state<any[]>([]);
-	let loading = $state(false);
 	let showAddModal = $state(false);
 	let editingTemplate = $state<ReportTemplate | null>(null);
 
@@ -132,7 +129,7 @@
 		const emails = formData.recipients.split(',').map((e) => e.trim()).filter(Boolean);
 		const recipients = emails.map((email, i) => ({
 			id: String(i + 1),
-			name: email.split('@')[0],
+			name: email.split('@')[0] || '',
 			email
 		}));
 

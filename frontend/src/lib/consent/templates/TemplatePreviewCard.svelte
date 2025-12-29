@@ -95,7 +95,7 @@
 	<div class="card-info">
 		<div class="card-header">
 			<h3 class="card-title">{template.name}</h3>
-			<span class="category-badge {categoryColors[template.category] || categoryColors.custom}">
+			<span class="category-badge {categoryColors[template.category] || categoryColors['custom']}">
 				{template.category}
 			</span>
 		</div>

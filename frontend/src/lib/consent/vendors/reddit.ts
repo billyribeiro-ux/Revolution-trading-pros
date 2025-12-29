@@ -10,7 +10,6 @@
  */
 
 import { browser, dev } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -23,6 +22,7 @@ declare global {
 	}
 }
 
+const PUBLIC_REDDIT_PIXEL_ID = import.meta.env['PUBLIC_REDDIT_PIXEL_ID'] || '';
 let redditReady = false;
 let limitedDataUseEnabled = false;
 const eventQueue: Array<{ event: string; data?: Record<string, unknown> }> = [];
@@ -49,7 +49,7 @@ function initializeReddit(pixelId: string): void {
 		window.rdt?.('init', pixelId, {
 			optOut: false,
 			useDecimalCurrencyValues: true,
-			aaid: env.PUBLIC_REDDIT_AAID || '',
+			aaid: import.meta.env['PUBLIC_REDDIT_AAID'] || '',
 		});
 		window.rdt?.('track', 'PageVisit');
 		redditReady = true;
@@ -82,7 +82,7 @@ export function trackRedditEvent(
 	if (!browser) return;
 
 	if (!redditReady) {
-		eventQueue.push({ event, data });
+		eventQueue.push({ event, ...(data && { data }) });
 		return;
 	}
 
@@ -177,7 +177,7 @@ export const redditVendor: VendorConfig = {
 	supportsRevocation: true,
 
 	load: () => {
-		const pixelId = env.PUBLIC_REDDIT_PIXEL_ID;
+		const pixelId = PUBLIC_REDDIT_PIXEL_ID;
 		if (!pixelId) {
 			if (!dev) console.warn('[Reddit] Missing PUBLIC_REDDIT_PIXEL_ID environment variable');
 			return;

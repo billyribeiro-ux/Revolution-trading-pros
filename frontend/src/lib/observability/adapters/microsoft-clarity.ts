@@ -158,7 +158,6 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 	private _config: AnalyticsConfig | null = null;
 	private _projectId: string = '';
 	private _initPromise: Promise<void> | null = null;
-	private _userId: string | null = null;
 	private _consent: { analytics: boolean; marketing: boolean } = {
 		analytics: false,
 		marketing: false,
@@ -425,8 +424,6 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 	identify(payload: IdentifyPayload): void {
 		if (!browser) return;
 
-		this._userId = payload.user_id;
-
 		if (this.isReady && window.clarity) {
 			// Set user ID for session association
 			window.clarity!('identify', payload.user_id);
@@ -484,7 +481,6 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 	 * Reset user identity (on logout).
 	 */
 	reset(): void {
-		this._userId = null;
 		// Clarity doesn't have a reset function, new session starts on page reload
 	}
 

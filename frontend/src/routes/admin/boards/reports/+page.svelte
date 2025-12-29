@@ -11,7 +11,6 @@
 		IconTrendingDown,
 		IconChecks,
 		IconClock,
-		IconUsers,
 		IconCalendar
 	} from '$lib/icons';
 
@@ -31,7 +30,7 @@
 			const res = await boardsAPI.getBoards();
 			boards = res.data;
 			if (boards.length > 0 && !selectedBoardId) {
-				selectedBoardId = boards[0].id;
+				selectedBoardId = boards[0]?.id ?? null;
 				await loadReport();
 			}
 		} catch (error) {

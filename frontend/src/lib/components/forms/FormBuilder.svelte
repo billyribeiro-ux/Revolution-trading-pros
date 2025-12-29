@@ -108,9 +108,12 @@
 	}
 
 	function handleEditField(index: number) {
-		editingField = { ...fields[index] };
-		editingFieldIndex = index;
-		showFieldEditor = true;
+		const field = fields[index];
+		if (field) {
+			editingField = { ...field };
+			editingFieldIndex = index;
+			showFieldEditor = true;
+		}
 	}
 
 	function handleDeleteField(index: number) {
@@ -125,7 +128,9 @@
 		if (newIndex < 0 || newIndex >= fields.length) return;
 
 		const temp = fields[index];
-		fields[index] = fields[newIndex];
+		const newField = fields[newIndex];
+		if (!temp || !newField) return;
+		fields[index] = newField;
 		fields[newIndex] = temp;
 
 		updateFieldOrders();

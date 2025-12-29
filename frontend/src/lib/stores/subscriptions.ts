@@ -336,7 +336,7 @@ function createSubscriptionStore() {
 		},
 
 		// Record payment failure - handled by API webhook
-		recordPaymentFailure: async (subscriptionId: string, _reason: string) => {
+		recordPaymentFailure: async (_subscriptionId: string, _reason: string) => {
 			// Payment failures are tracked automatically by the enterprise API service via webhooks
 			// This method is here for backwards compatibility but now just reloads data
 			update((state) => ({ ...state, loading: true }));
@@ -374,25 +374,6 @@ function createSubscriptionStore() {
 			set(initialState);
 		}
 	};
-}
-
-// Helper function to calculate next payment date
-function calculateNextPaymentDate(interval: SubscriptionInterval): string {
-	const now = new Date();
-
-	switch (interval) {
-		case 'monthly':
-			now.setMonth(now.getMonth() + 1);
-			break;
-		case 'quarterly':
-			now.setMonth(now.getMonth() + 3);
-			break;
-		case 'yearly':
-			now.setFullYear(now.getFullYear() + 1);
-			break;
-	}
-
-	return now.toISOString();
 }
 
 // Create the store instance

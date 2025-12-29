@@ -36,7 +36,7 @@
   let {
     uploads = [],
     showStats = true,
-    autoHideDelay = 5000,
+    autoHideDelay: _autoHideDelay = 5000,
     className = '',
     onCancel,
     onRetry,
@@ -45,7 +45,7 @@
   }: {
     uploads?: UploadItem[];
     showStats?: boolean;
-    autoHideDelay?: number;
+    autoHideDelay?: number; // Prefixed as _autoHideDelay for future use
     className?: string;
     onCancel?: (id: string) => void;
     onRetry?: (id: string) => void;

@@ -259,11 +259,11 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 
 	// Description
 	if (location.description) {
-		schema.description = location.description;
+		schema['description'] = location.description;
 	}
 
 	// Address
-	schema.address = {
+	schema['address'] = {
 		'@type': 'PostalAddress',
 		streetAddress: location.address.streetAddress,
 		addressLocality: location.address.addressLocality,
@@ -274,7 +274,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 
 	// Geo coordinates
 	if (location.address.coordinates) {
-		schema.geo = {
+		schema['geo'] = {
 			'@type': 'GeoCoordinates',
 			latitude: location.address.coordinates.latitude,
 			longitude: location.address.coordinates.longitude
@@ -286,24 +286,24 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 		(c) => c.type === 'phone' && c.isPrimary
 	);
 	if (primaryPhone) {
-		schema.telephone = primaryPhone.value;
+		schema['telephone'] = primaryPhone.value;
 	}
 
 	const primaryEmail = location.contacts.find(
 		(c) => c.type === 'email' && c.isPrimary
 	);
 	if (primaryEmail?.value) {
-		schema.email = primaryEmail.value;
+		schema['email'] = primaryEmail.value;
 	}
 
 	// Website
 	if (location.website) {
-		schema.url = location.website;
+		schema['url'] = location.website;
 	}
 
 	// Opening hours
 	if (location.hours && location.hours.length > 0) {
-		schema.openingHoursSpecification = location.hours
+		schema['openingHoursSpecification'] = location.hours
 			.filter((h) => !h.isClosed)
 			.map((h) => ({
 				'@type': 'OpeningHoursSpecification',
@@ -315,7 +315,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 
 	// Special hours
 	if (location.specialHours && location.specialHours.length > 0) {
-		schema.specialOpeningHoursSpecification = location.specialHours.map((sh) => {
+		schema['specialOpeningHoursSpecification'] = location.specialHours.map((sh) => {
 			const spec: Record<string, any> = {
 				'@type': 'OpeningHoursSpecification',
 				validFrom: sh.date,
@@ -323,11 +323,11 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 			};
 
 			if (sh.isClosed) {
-				spec.opens = '00:00';
-				spec.closes = '00:00';
+				spec['opens'] = '00:00';
+				spec['closes'] = '00:00';
 			} else {
-				if (sh.opens) spec.opens = sh.opens;
-				if (sh.closes) spec.closes = sh.closes;
+				if (sh.opens) spec['opens'] = sh.opens;
+				if (sh.closes) spec['closes'] = sh.closes;
 			}
 
 			return spec;
@@ -336,35 +336,35 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 
 	// Price range
 	if (location.priceRange) {
-		schema.priceRange = location.priceRange;
+		schema['priceRange'] = location.priceRange;
 	}
 
 	// Payment accepted
 	if (location.paymentAccepted && location.paymentAccepted.length > 0) {
-		schema.paymentAccepted = location.paymentAccepted.join(', ');
+		schema['paymentAccepted'] = location.paymentAccepted.join(', ');
 	}
 
 	// Images
 	if (location.images && location.images.length > 0) {
 		const logo = location.images.find((img) => img.type === 'logo');
 		if (logo) {
-			schema.logo = logo.url;
+			schema['logo'] = logo.url;
 		}
 
 		const photos = location.images.filter((img) => img.type !== 'logo');
 		if (photos.length > 0) {
-			schema.image = photos.map((p) => p.url);
+			schema['image'] = photos.map((p) => p.url);
 		}
 	}
 
 	// Social profiles
 	if (location.socialProfiles && location.socialProfiles.length > 0) {
-		schema.sameAs = location.socialProfiles.map((p) => p.url);
+		schema['sameAs'] = location.socialProfiles.map((p) => p.url);
 	}
 
 	// Aggregate rating
 	if (location.aggregateRating) {
-		schema.aggregateRating = {
+		schema['aggregateRating'] = {
 			'@type': 'AggregateRating',
 			ratingValue: location.aggregateRating.ratingValue,
 			reviewCount: location.aggregateRating.reviewCount,
@@ -376,7 +376,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 	// Service area
 	if (location.serviceArea) {
 		if (location.serviceArea.type === 'radius' && location.serviceArea.center) {
-			schema.areaServed = {
+			schema['areaServed'] = {
 				'@type': 'GeoCircle',
 				geoMidpoint: {
 					'@type': 'GeoCoordinates',
@@ -386,7 +386,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 				geoRadius: `${location.serviceArea.radius} ${location.serviceArea.radiusUnit}`
 			};
 		} else if (location.serviceArea.areas && location.serviceArea.areas.length > 0) {
-			schema.areaServed = location.serviceArea.areas.map((area) => ({
+			schema['areaServed'] = location.serviceArea.areas.map((area) => ({
 				'@type': 'AdministrativeArea',
 				name: area
 			}));
@@ -395,7 +395,7 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 
 	// Google Place ID
 	if (location.googlePlaceId) {
-		schema.hasMap = `https://www.google.com/maps/place/?q=place_id:${location.googlePlaceId}`;
+		schema['hasMap'] = `https://www.google.com/maps/place/?q=place_id:${location.googlePlaceId}`;
 	}
 
 	return schema;
@@ -509,7 +509,9 @@ export function formatHours(hours: BusinessHours): string {
  * Format time from HH:MM to readable format
  */
 export function formatTime(time: string): string {
-	const [hours, minutes] = time.split(':').map(Number);
+	const parts = time.split(':').map(Number);
+	const hours = parts[0] || 0;
+	const minutes = parts[1] || 0;
 	const period = hours >= 12 ? 'PM' : 'AM';
 	const displayHours = hours % 12 || 12;
 	return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
@@ -608,7 +610,7 @@ function createLocationsStore() {
 		}
 	}
 
-	const { subscribe, set, update } = writable<Location[]>(initial);
+	const { subscribe, update } = writable<Location[]>(initial);
 
 	const save = (locations: Location[]) => {
 		if (browser) {

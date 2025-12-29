@@ -50,7 +50,7 @@ export function isUpgrade(
 	currentInterval: 'monthly' | 'quarterly' | 'yearly',
 	newInterval: 'monthly' | 'quarterly' | 'yearly'
 ): boolean {
-	return INTERVAL_PRIORITY[newInterval] > INTERVAL_PRIORITY[currentInterval];
+	return (INTERVAL_PRIORITY[newInterval] ?? 0) > (INTERVAL_PRIORITY[currentInterval] ?? 0);
 }
 
 /**

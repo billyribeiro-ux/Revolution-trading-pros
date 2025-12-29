@@ -12,8 +12,6 @@
 		IconCalendar,
 		IconUsers,
 		IconChartBar,
-		IconSearch,
-		IconFilter,
 		IconRefresh,
 		IconSend,
 		IconClock,
@@ -96,8 +94,10 @@
 		error = '';
 		try {
 			const statusFilter = activeTab === 'all' ? undefined : 
-				activeTab === 'drafts' ? 'draft' : activeTab;
-			const response = await getCampaigns({ status: statusFilter });
+			activeTab === 'drafts' ? 'draft' : activeTab;
+		const response = await getCampaigns(
+			statusFilter ? { status: statusFilter } : {}
+		);
 			campaigns = response.data;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';

@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { IconTarget, IconPlus, IconEdit, IconTrash, IconTrendingUp, IconCheck } from '$lib/icons';
-
-	let goals: any[] = [];
+	import { IconTarget, IconPlus } from '$lib/icons';
 </script>
 
 <svelte:head>

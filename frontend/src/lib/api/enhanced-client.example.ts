@@ -4,7 +4,6 @@
  */
 
 import { apiClient } from './enhanced-client';
-import type { RequestConfig } from './enhanced-client';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Example 1: Simple GET Request with Caching
@@ -317,7 +316,7 @@ export async function completeCheckout(checkoutData: {
 }) {
 	try {
 		// Step 1: Validate cart
-		const cart = await apiClient.get(`/cart/${checkoutData.cartId}`, {
+		await apiClient.get(`/cart/${checkoutData.cartId}`, {
 			useCache: false,
 			useCircuitBreaker: true
 		});

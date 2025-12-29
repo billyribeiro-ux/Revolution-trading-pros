@@ -322,7 +322,7 @@ function savePopupState(state: PopupState) {
 
 // Create the popup store
 function createPopupStore() {
-	const { subscribe, set, update } = writable<PopupState>(loadPopupState());
+	const { subscribe, update } = writable<PopupState>(loadPopupState());
 
 	return {
 		subscribe,
@@ -346,7 +346,7 @@ function createPopupStore() {
 		},
 
 		// Record that a popup was shown
-		recordImpression: (popupId: string, meta?: Record<string, any>) => {
+		recordImpression: (popupId: string, _meta?: Record<string, any>) => {
 			update((state) => {
 				const now = Date.now();
 				const history = [...state.popupHistory];

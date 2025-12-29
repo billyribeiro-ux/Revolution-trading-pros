@@ -11,7 +11,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { learningCenterStore } from '$lib/stores/learningCenter';
-	import type { LessonWithRelations, TradingRoom, Trainer, LessonCategory, LessonModule } from '$lib/types/learning-center';
+	import type { LessonWithRelations } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconDeviceFloppy from '@tabler/icons-svelte/icons/device-floppy';
@@ -24,7 +24,7 @@
 	// PROPS & STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const lessonId = $derived($page.params.id!);
+	const lessonId = $derived($page.params['id'] ?? '');
 
 	// Store data
 	let storeData = $derived(get(learningCenterStore));
@@ -33,13 +33,16 @@
 	let lesson = $derived.by((): LessonWithRelations | undefined => {
 		const found = storeData.lessons.find(l => l.id === lessonId);
 		if (!found) return undefined;
+		const trainer = storeData.trainers.find(t => t.id === found.trainerId);
+		const category = storeData.categories.find(c => c.id === found.categoryId);
+		const module = storeData.modules.find(m => m.id === found.moduleId);
 		return {
 			...found,
-			trainer: storeData.trainers.find(t => t.id === found.trainerId),
-			category: storeData.categories.find(c => c.id === found.categoryId),
+			...(trainer && { trainer }),
+			...(category && { category }),
 			tradingRooms: storeData.tradingRooms.filter(r => found.tradingRoomIds?.includes(r.id)),
-			module: storeData.modules.find(m => m.id === found.moduleId)
-		};
+			...(module && { module })
+		} as LessonWithRelations;
 	});
 
 	// Form state
@@ -60,7 +63,6 @@
 	let formIsPinned = $state(false);
 	let formTags = $state('');
 
-	let isLoading = $state(false);
 	let isSaving = $state(false);
 	let showDeleteModal = $state(false);
 

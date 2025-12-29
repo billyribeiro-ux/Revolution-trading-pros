@@ -10,7 +10,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentState, ConsentCategory, ConsentAuditEntry, ConsentStorageOptions } from './types';
-import { DEFAULT_STORAGE_OPTIONS, generateConsentId } from './types';
+import { DEFAULT_STORAGE_OPTIONS } from './types';
 
 /**
  * Generate a unique audit entry ID.
@@ -77,10 +77,10 @@ export function addAuditEntry(
 		timestamp: new Date().toISOString(),
 		action,
 		categories,
-		previousState,
+		...(previousState && { previousState }),
 		method,
-		userAgent: browser ? navigator.userAgent : undefined,
-		pageUrl: browser ? window.location.href : undefined,
+		...(browser && { userAgent: navigator.userAgent }),
+		...(browser && { pageUrl: window.location.href }),
 	};
 
 	if (browser) {
@@ -232,10 +232,12 @@ export function getAuditStats(
 } {
 	const log = getAuditLog(options);
 
+	const firstEntry = log[0]?.timestamp;
+	const lastEntry = log[log.length - 1]?.timestamp;
 	return {
 		totalEntries: log.length,
-		firstEntry: log[0]?.timestamp,
-		lastEntry: log[log.length - 1]?.timestamp,
+		...(firstEntry && { firstEntry }),
+		...(lastEntry && { lastEntry }),
 		consentGivenCount: log.filter((e) => e.action === 'consent_given').length,
 		consentUpdatedCount: log.filter((e) => e.action === 'consent_updated').length,
 		consentRevokedCount: log.filter((e) => e.action === 'consent_revoked').length,
@@ -253,8 +255,11 @@ export function verifyAuditLogIntegrity(
 
 	// Check chronological order
 	for (let i = 1; i < log.length; i++) {
-		const prev = new Date(log[i - 1].timestamp).getTime();
-		const curr = new Date(log[i].timestamp).getTime();
+		const prevEntry = log[i - 1];
+		const currEntry = log[i];
+		if (!prevEntry || !currEntry) continue;
+		const prev = new Date(prevEntry.timestamp).getTime();
+		const curr = new Date(currEntry.timestamp).getTime();
 		if (curr < prev) {
 			issues.push(`Entry ${i} timestamp is before entry ${i - 1}`);
 		}

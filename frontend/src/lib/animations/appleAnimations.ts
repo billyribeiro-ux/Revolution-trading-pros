@@ -183,7 +183,6 @@ export function parallax(
 	const { speed = 0.3, direction = 'up', scale = false } = params;
 
 	let ticking = false;
-	let lastScrollY = 0;
 
 	function updatePosition() {
 		const rect = node.getBoundingClientRect();
@@ -223,7 +222,6 @@ export function parallax(
 	}
 
 	function onScroll() {
-		lastScrollY = window.scrollY;
 		if (!ticking) {
 			requestAnimationFrame(updatePosition);
 			ticking = true;

@@ -16,10 +16,8 @@ import type {
 	Lesson,
 	LessonModule,
 	LessonWithRelations,
-	LearningCenterData,
 	LessonFilter,
 	UserLessonProgress,
-	UserRoomProgress,
 	CreateLessonInput,
 	UpdateLessonInput
 } from '$lib/types/learning-center';
@@ -799,12 +797,15 @@ function createLearningCenterStore() {
 			const lesson = state.lessons.find(l => l.slug === slug);
 			if (!lesson) return undefined;
 
+			const trainer = state.trainers.find(t => t.id === lesson.trainerId);
+			const category = state.categories.find(c => c.id === lesson.categoryId);
+			const module = state.modules.find(m => m.id === lesson.moduleId);
 			return {
 				...lesson,
-				trainer: state.trainers.find(t => t.id === lesson.trainerId),
-				category: state.categories.find(c => c.id === lesson.categoryId),
+				...(trainer && { trainer }),
+				...(category && { category }),
 				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
-				module: state.modules.find(m => m.id === lesson.moduleId)
+				...(module && { module })
 			};
 		},
 
@@ -849,13 +850,18 @@ function createLearningCenterStore() {
 			}
 
 			// Add relations
-			return filtered.map(lesson => ({
-				...lesson,
-				trainer: state.trainers.find(t => t.id === lesson.trainerId),
-				category: state.categories.find(c => c.id === lesson.categoryId),
-				tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
-				module: state.modules.find(m => m.id === lesson.moduleId)
-			})).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+			return filtered.map(lesson => {
+				const trainer = state.trainers.find(t => t.id === lesson.trainerId);
+				const category = state.categories.find(c => c.id === lesson.categoryId);
+				const module = state.modules.find(m => m.id === lesson.moduleId);
+				return {
+					...lesson,
+					...(trainer && { trainer }),
+					...(category && { category }),
+					tradingRooms: state.tradingRooms.filter(r => lesson.tradingRoomIds?.includes(r.id)),
+					...(module && { module })
+				};
+			}).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 		},
 
 		async createLesson(input: CreateLessonInput): Promise<Lesson> {
@@ -941,20 +947,23 @@ function createLearningCenterStore() {
 			update(s => {
 				const progress = new Map(s.userProgress);
 				const existing = progress.get(lessonId);
-				progress.set(lessonId, {
-					...existing,
+				const newProgress: UserLessonProgress = {
 					id: existing?.id || `progress-${Date.now()}`,
 					userId: 'current-user',
 					lessonId,
 					tradingRoomId: existing?.tradingRoomId || '',
 					isCompleted: progressPercent >= 95,
-					completedAt: progressPercent >= 95 ? new Date().toISOString() : undefined,
 					progressPercent,
-					lastPosition,
 					isBookmarked: existing?.isBookmarked || false,
 					firstViewedAt: existing?.firstViewedAt || new Date().toISOString(),
-					lastViewedAt: new Date().toISOString()
-				});
+					lastViewedAt: new Date().toISOString(),
+					...(lastPosition !== undefined && { lastPosition }),
+					...(lastPosition === undefined && existing?.lastPosition !== undefined && { lastPosition: existing.lastPosition })
+				};
+				if (progressPercent >= 95) {
+					newProgress.completedAt = new Date().toISOString();
+				}
+				progress.set(lessonId, newProgress);
 				return { ...s, userProgress: progress };
 			});
 		},

@@ -42,7 +42,7 @@
 				{formatNumber(journeyData[0]?.users || 0)} users started
 			</span>
 			<span class="stat-item">
-				{((journeyData[journeyData.length - 1]?.users / journeyData[0]?.users) * 100).toFixed(1)}%
+				{((journeyData[journeyData.length - 1]?.users ?? 0) / (journeyData[0]?.users ?? 1) * 100).toFixed(1)}%
 				completed
 			</span>
 		</div>
@@ -95,7 +95,7 @@
 						<div class="connector-stats">
 							<IconArrowRight size={20} class="text-gray-400" />
 							<span class="conversion-rate">
-								{journeyData[index + 1].conversion_rate.toFixed(1)}%
+								{journeyData[index + 1]?.conversion_rate?.toFixed(1) ?? '0.0'}%
 							</span>
 						</div>
 						{#if step.drop_off > 0}

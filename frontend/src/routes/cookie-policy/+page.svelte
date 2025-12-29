@@ -9,11 +9,8 @@
 	import { browser } from '$app/environment';
 	import {
 		scanCookies,
-		getCookieSummary,
 		openPreferencesModal,
 		consentStore,
-		getAuditStats,
-		vendors,
 		getVendorInfo,
 	} from '$lib/consent';
 	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '$lib/consent/i18n';
@@ -27,7 +24,6 @@
 	import type { SupportedLanguage } from '$lib/consent/i18n';
 
 	let cookieScan: CookieScanResult | null = null;
-	let auditStats: ReturnType<typeof getAuditStats> | null = null;
 	let vendorList: ReturnType<typeof getVendorInfo> = [];
 	let versionInfo = getVersionInfo();
 
@@ -64,9 +60,6 @@
 		if (browser) {
 			// Scan current cookies
 			cookieScan = scanCookies();
-
-			// Get audit stats
-			auditStats = getAuditStats();
 
 			// Get vendor info
 			vendorList = getVendorInfo();
@@ -262,7 +255,7 @@
 					{#if cookies.length > 0}
 						<div class="cookie-category-section">
 							<h3 class="category-title">
-								<span class="category-badge {categoryColors[category] || categoryColors.unknown}">
+								<span class="category-badge {categoryColors[category] || categoryColors['unknown']}">
 									{category}
 								</span>
 								({cookies.length} cookies)

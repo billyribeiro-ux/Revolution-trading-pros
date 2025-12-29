@@ -16,13 +16,12 @@
 
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
-	import { spring, tweened } from 'svelte/motion';
+	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
 	import IconShieldCheck from '@tabler/icons-svelte/icons/shield-check';
-	import IconShieldX from '@tabler/icons-svelte/icons/shield-x';
 	import IconDatabase from '@tabler/icons-svelte/icons/database';
 	import IconServer from '@tabler/icons-svelte/icons/server';
 	import IconClock from '@tabler/icons-svelte/icons/clock';
@@ -33,11 +32,8 @@
 	import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
 	import IconCircleX from '@tabler/icons-svelte/icons/circle-x';
 	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
-	import IconLock from '@tabler/icons-svelte/icons/lock';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import IconApiApp from '@tabler/icons-svelte/icons/api-app';
-	import IconBrandPhp from '@tabler/icons-svelte/icons/brand-php';
-	import IconWorld from '@tabler/icons-svelte/icons/world';
 	import IconCertificate from '@tabler/icons-svelte/icons/certificate';
 	import IconFolder from '@tabler/icons-svelte/icons/folder';
 	import IconCloud from '@tabler/icons-svelte/icons/cloud';
@@ -50,7 +46,6 @@
 	import IconCheck from '@tabler/icons-svelte/icons/check';
 	import IconX from '@tabler/icons-svelte/icons/x';
 	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
-	import IconDownload from '@tabler/icons-svelte/icons/download';
 	import {
 		connections,
 		connectedCount,
@@ -114,7 +109,6 @@
 	let isLoading = $state(true);
 	let isRefreshing = $state(false);
 	let isRunningTests = $state(false);
-	let showContent = $state(false);
 	let healthData = $state<SiteHealthData | null>(null);
 	let lastUpdated = $state<Date | null>(null);
 	let activeTab = $state<'overview' | 'performance' | 'security' | 'database' | 'server'>('overview');
@@ -132,9 +126,6 @@
 		await loadHealthData();
 
 		isLoading = false;
-		setTimeout(() => {
-			showContent = true;
-		}, 100);
 	});
 
 	onDestroy(() => {
@@ -161,34 +152,34 @@
 	function transformHealthData(apiData: Record<string, unknown>): SiteHealthData {
 		// Transform API response to our format
 		return {
-			overallScore: (apiData.overall_score as number) ?? 0,
-			checks: ((apiData.checks as HealthCheck[]) ?? []).map((check) => ({
+			overallScore: (apiData['overall_score'] as number) ?? 0,
+			checks: ((apiData['checks'] as HealthCheck[]) ?? []).map((check) => ({
 				...check,
 				lastChecked: check.lastChecked ? new Date(check.lastChecked) : null
 			})),
 			performance: {
-				responseTime: (apiData.performance as Record<string, unknown>)?.response_time as number | null ?? null,
-				memoryUsage: (apiData.performance as Record<string, unknown>)?.memory_usage as number | null ?? null,
-				cpuUsage: (apiData.performance as Record<string, unknown>)?.cpu_usage as number | null ?? null,
-				diskUsage: (apiData.performance as Record<string, unknown>)?.disk_usage as number | null ?? null
+				responseTime: (apiData['performance'] as Record<string, unknown>)?.['response_time'] as number | null ?? null,
+				memoryUsage: (apiData['performance'] as Record<string, unknown>)?.['memory_usage'] as number | null ?? null,
+				cpuUsage: (apiData['performance'] as Record<string, unknown>)?.['cpu_usage'] as number | null ?? null,
+				diskUsage: (apiData['performance'] as Record<string, unknown>)?.['disk_usage'] as number | null ?? null
 			},
 			security: {
-				sslValid: (apiData.security as Record<string, unknown>)?.ssl_valid as boolean | null ?? null,
-				sslExpiry: (apiData.security as Record<string, unknown>)?.ssl_expiry ? new Date((apiData.security as Record<string, unknown>).ssl_expiry as string) : null,
-				headersScore: (apiData.security as Record<string, unknown>)?.headers_score as number | null ?? null,
-				vulnerabilities: (apiData.security as Record<string, unknown>)?.vulnerabilities as number ?? 0
+				sslValid: (apiData['security'] as Record<string, unknown>)?.['ssl_valid'] as boolean | null ?? null,
+				sslExpiry: (apiData['security'] as Record<string, unknown>)?.['ssl_expiry'] ? new Date((apiData['security'] as Record<string, unknown>)['ssl_expiry'] as string) : null,
+				headersScore: (apiData['security'] as Record<string, unknown>)?.['headers_score'] as number | null ?? null,
+				vulnerabilities: (apiData['security'] as Record<string, unknown>)?.['vulnerabilities'] as number ?? 0
 			},
 			database: {
-				connected: (apiData.database as Record<string, unknown>)?.connected as boolean ?? false,
-				responseTime: (apiData.database as Record<string, unknown>)?.response_time as number | null ?? null,
-				size: (apiData.database as Record<string, unknown>)?.size as string | null ?? null,
-				tables: (apiData.database as Record<string, unknown>)?.tables as number | null ?? null
+				connected: (apiData['database'] as Record<string, unknown>)?.['connected'] as boolean ?? false,
+				responseTime: (apiData['database'] as Record<string, unknown>)?.['response_time'] as number | null ?? null,
+				size: (apiData['database'] as Record<string, unknown>)?.['size'] as string | null ?? null,
+				tables: (apiData['database'] as Record<string, unknown>)?.['tables'] as number | null ?? null
 			},
 			server: {
-				phpVersion: (apiData.server as Record<string, unknown>)?.php_version as string | null ?? null,
-				webServer: (apiData.server as Record<string, unknown>)?.web_server as string | null ?? null,
-				os: (apiData.server as Record<string, unknown>)?.os as string | null ?? null,
-				uptime: (apiData.server as Record<string, unknown>)?.uptime as string | null ?? null
+				phpVersion: (apiData['server'] as Record<string, unknown>)?.['php_version'] as string | null ?? null,
+				webServer: (apiData['server'] as Record<string, unknown>)?.['web_server'] as string | null ?? null,
+				os: (apiData['server'] as Record<string, unknown>)?.['os'] as string | null ?? null,
+				uptime: (apiData['server'] as Record<string, unknown>)?.['uptime'] as string | null ?? null
 			}
 		};
 	}
@@ -296,30 +287,9 @@
 		}
 	}
 
-	function formatBytes(bytes: number): string {
-		if (bytes === 0) return '0 B';
-		const k = 1024;
-		const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-	}
-
 	function formatMs(ms: number): string {
 		if (ms < 1000) return `${Math.round(ms)}ms`;
 		return `${(ms / 1000).toFixed(2)}s`;
-	}
-
-	function getCategoryChecks(category: string): HealthCheck[] {
-		return healthData?.checks.filter((c) => c.category === category) ?? [];
-	}
-
-	function getCategoryStats(category: string): { good: number; warning: number; critical: number } {
-		const checks = getCategoryChecks(category);
-		return {
-			good: checks.filter((c) => c.status === 'good').length,
-			warning: checks.filter((c) => c.status === 'warning').length,
-			critical: checks.filter((c) => c.status === 'critical').length
-		};
 	}
 
 	const tabs = [

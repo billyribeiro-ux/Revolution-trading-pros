@@ -76,8 +76,8 @@
       type,
       count: data.count,
       size: data.size,
-      color: colors[type] || colors.other,
-    }));
+      color: colors[type] || colors['other'],
+    })) as { type: string; count: number; size: number; color: string; }[];
   }
 </script>
 

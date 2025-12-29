@@ -192,10 +192,11 @@ export function scanCookies(): CookieScanResult {
 	// Group by vendor
 	const byVendor: Record<string, ScannedCookie[]> = {};
 	scannedCookies.forEach((cookie) => {
-		if (!byVendor[cookie.vendor]) {
-			byVendor[cookie.vendor] = [];
+		const vendor = cookie.vendor;
+		if (!byVendor[vendor]) {
+			byVendor[vendor] = [];
 		}
-		byVendor[cookie.vendor].push(cookie);
+		byVendor[vendor]!.push(cookie);
 	});
 
 	return {

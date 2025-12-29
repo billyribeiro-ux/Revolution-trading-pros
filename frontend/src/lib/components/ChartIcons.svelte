@@ -59,7 +59,7 @@
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
         
         const line = d3.line<number>()
-            .x((d: number, i: number) => x(i))
+            .x((_d: number, i: number) => x(i))
             .y((d: number) => y(d))
             .curve(d3.curveMonotoneX);
         
@@ -77,7 +77,7 @@
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
         
         const area = d3.area<number>()
-            .x((d: number, i: number) => x(i))
+            .x((_d: number, i: number) => x(i))
             .y0(height)
             .y1((d: number) => y(d))
             .curve(d3.curveMonotoneX);
@@ -89,7 +89,7 @@
             .attr('d', area);
         
         const line = d3.line<number>()
-            .x((d: number, i: number) => x(i))
+            .x((_d: number, i: number) => x(i))
             .y((d: number) => y(d))
             .curve(d3.curveMonotoneX);
         
@@ -101,7 +101,7 @@
             .attr('d', line);
     }
     
-    function drawCandlestickChart(g: any, width: number, height: number, color: string) {
+    function drawCandlestickChart(g: any, width: number, height: number, _color: string) {
         const candles = [
             {open: 0.4, close: 0.6, high: 0.7, low: 0.3},
             {open: 0.6, close: 0.5, high: 0.65, low: 0.45},
@@ -109,7 +109,7 @@
             {open: 0.7, close: 0.8, high: 0.85, low: 0.65}
         ];
         
-        const x = d3.scaleBand().domain(candles.map((d, i) => i.toString())).range([0, width]).padding(0.3);
+        const x = d3.scaleBand().domain(candles.map((_d, i) => i.toString())).range([0, width]).padding(0.3);
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
         
         candles.forEach((d, i) => {
@@ -138,14 +138,14 @@
     
     function drawBarChart(g: any, width: number, height: number, color: string) {
         const data = [0.4, 0.6, 0.5, 0.8, 0.7, 0.9];
-        const x = d3.scaleBand().domain(data.map((d, i) => i.toString())).range([0, width]).padding(0.2);
+        const x = d3.scaleBand().domain(data.map((_d, i) => i.toString())).range([0, width]).padding(0.2);
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
         
         g.selectAll('rect')
             .data(data)
             .enter()
             .append('rect')
-            .attr('x', (d: number, i: number) => x(i.toString())!)
+            .attr('x', (_d: number, i: number) => x(i.toString())!)
             .attr('y', (d: number) => y(d))
             .attr('width', x.bandwidth())
             .attr('height', (d: number) => height - y(d))
@@ -161,7 +161,7 @@
         const arc = d3.arc<any>().innerRadius(0).outerRadius(radius);
         
         const colors = d3.scaleOrdinal()
-            .domain(data.map((d, i) => i.toString()))
+            .domain(data.map((_d, i) => i.toString()))
             .range([color, d3.rgb(color).brighter(0.5).toString(), d3.rgb(color).brighter(1).toString(), d3.rgb(color).darker(0.5).toString()]);
         
         g.attr('transform', `translate(${width/2}, ${height/2})`);
@@ -171,7 +171,7 @@
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', (d: any, i: number) => colors(i.toString()) as string)
+            .attr('fill', (_d: any, i: number) => colors(i.toString()) as string)
             .attr('stroke', 'rgba(0,0,0,0.2)')
             .attr('stroke-width', 1);
     }
@@ -196,7 +196,7 @@
             .attr('opacity', 0.7);
     }
     
-    function drawHeatmap(g: any, width: number, height: number, color: string) {
+    function drawHeatmap(g: any, width: number, height: number, _color: string) {
         const data = Array.from({length: 5}, (_, i) => 
             Array.from({length: 5}, (_, j) => ({
                 row: i,
@@ -228,7 +228,7 @@
         g.attr('transform', `translate(${width/2}, ${height/2})`);
         
         // Draw axes
-        data.forEach((d, i) => {
+        data.forEach((_d, i) => {
             const angle = angleSlice * i - Math.PI / 2;
             g.append('line')
                 .attr('x1', 0)
@@ -241,7 +241,7 @@
         
         // Draw data
         const radarLine = d3.lineRadial<number>()
-            .angle((d: number, i: number) => angleSlice * i)
+            .angle((_d: number, i: number) => angleSlice * i)
             .radius((d: number) => d * radius)
             .curve(d3.curveLinearClosed);
         

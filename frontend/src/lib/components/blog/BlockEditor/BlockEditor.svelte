@@ -23,8 +23,8 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import { fade, fly, slide, scale } from 'svelte/transition';
-	import { quintOut, cubicOut } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import {
 		IconPlus,
 		IconGripVertical,
@@ -42,48 +42,31 @@
 		IconEdit,
 		IconMaximize,
 		IconMinimize,
-		IconLayoutGrid,
 		IconDeviceFloppy,
 		IconCloudUpload,
 		IconSearch,
 		IconRobot,
 		IconSeo,
 		IconStack2,
-		IconBrandOpenai,
-		IconWand,
-		IconSparkles,
-		IconZoomIn,
-		IconZoomOut,
 		IconKeyboard,
-		IconDots,
-		IconDotsVertical,
-		IconLock,
-		IconLockOpen,
-		IconMessage,
-		IconHistory,
-		IconDownload,
-		IconUpload
+		IconHistory
 	} from '$lib/icons';
 
 	import type {
 		Block,
 		BlockType,
 		EditorState,
-		BlockCategory,
-		BlockDefinition,
 		SEOAnalysis,
 		Revision
 	} from './types';
 
 	import {
-		BLOCK_CATEGORIES,
 		BLOCK_DEFINITIONS
 	} from './types';
 
 	// Import sub-components (we'll create these)
 	import BlockInserter from './BlockInserter.svelte';
 	import BlockRenderer from './BlockRenderer.svelte';
-	import BlockToolbar from './BlockToolbar.svelte';
 	import BlockSettingsPanel from './BlockSettingsPanel.svelte';
 	import AIAssistant from './AIAssistant.svelte';
 	import SEOAnalyzer from './SEOAnalyzer.svelte';
@@ -113,8 +96,6 @@
 		blocks = $bindable([]),
 		postTitle = '',
 		postSlug = '',
-		postExcerpt = '',
-		metaTitle = '',
 		metaDescription = '',
 		focusKeyword = '',
 		onchange,
@@ -167,9 +148,6 @@
 
 	// SEO State
 	let seoAnalysis = $state<SEOAnalysis | null>(null);
-
-	// AI State
-	let aiPanelOpen = $state(false);
 
 	// Revisions State
 	let revisions = $state<Revision[]>([]);
@@ -340,8 +318,12 @@
 		pushToHistory();
 
 		const newBlocks = [...editorState.blocks];
-		[newBlocks[index], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[index]];
-		editorState.blocks = newBlocks;
+		const blockA = newBlocks[index];
+		const blockB = newBlocks[newIndex];
+		if (blockA && blockB) {
+			[newBlocks[index], newBlocks[newIndex]] = [blockB, blockA];
+			editorState.blocks = newBlocks;
+		}
 	}
 
 	// ==========================================================================
@@ -377,8 +359,10 @@
 
 				const newBlocks = [...editorState.blocks];
 				const [removed] = newBlocks.splice(fromIndex, 1);
-				newBlocks.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, removed);
-				editorState.blocks = newBlocks;
+				if (removed) {
+					newBlocks.splice(toIndex > fromIndex ? toIndex - 1 : toIndex, 0, removed);
+					editorState.blocks = newBlocks;
+				}
 			}
 		}
 
@@ -414,14 +398,16 @@
 		const previous = editorState.history.past[editorState.history.past.length - 1];
 		const newPast = editorState.history.past.slice(0, -1);
 
-		editorState.history = {
-			...editorState.history,
-			past: newPast,
-			present: previous,
-			future: [editorState.history.present, ...editorState.history.future]
-		};
+		if (previous) {
+			editorState.history = {
+				...editorState.history,
+				past: newPast,
+				present: previous,
+				future: [editorState.history.present, ...editorState.history.future]
+			};
 
-		editorState.blocks = [...previous];
+			editorState.blocks = [...previous];
+		}
 	}
 
 	function redo() {
@@ -430,14 +416,16 @@
 		const next = editorState.history.future[0];
 		const newFuture = editorState.history.future.slice(1);
 
-		editorState.history = {
-			...editorState.history,
-			past: [...editorState.history.past, editorState.history.present],
-			present: next,
-			future: newFuture
-		};
+		if (next) {
+			editorState.history = {
+				...editorState.history,
+				past: [...editorState.history.past, editorState.history.present],
+				present: next,
+				future: newFuture
+			};
 
-		editorState.blocks = [...next];
+			editorState.blocks = [...next];
+		}
 	}
 
 	// ==========================================================================
@@ -589,7 +577,10 @@
 				if (index !== -1) {
 					const newIndex = e.key === 'ArrowUp' ? index - 1 : index + 1;
 					if (newIndex >= 0 && newIndex < editorState.blocks.length) {
-						editorState.selectedBlockId = editorState.blocks[newIndex].id;
+						const nextBlock = editorState.blocks[newIndex];
+						if (nextBlock) {
+							editorState.selectedBlockId = nextBlock.id;
+						}
 					}
 				}
 			}
@@ -656,10 +647,6 @@
 
 	function setDevicePreview(device: 'desktop' | 'tablet' | 'mobile') {
 		editorState.devicePreview = device;
-	}
-
-	function adjustZoom(delta: number) {
-		editorState.zoom = Math.max(50, Math.min(150, editorState.zoom + delta));
 	}
 
 	// ==========================================================================
@@ -915,14 +902,21 @@
 
 		<div class="header-right">
 			<div class="save-status">
-				{#if isSaving}
-					<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
-				{:else if editorState.hasUnsavedChanges}
-					<span class="unsaved">Unsaved changes</span>
-				{:else}
-					<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
-				{/if}
+			{#if saveError}
+				<span class="error">{saveError}</span>
+			{:else if isSaving}
+				<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
+			{:else if editorState.hasUnsavedChanges}
+				<span class="unsaved">Unsaved changes</span>
+			{:else}
+				<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
+			{/if}
+		</div>
+		{#if seoAnalysis && seoAnalysis.grade}
+			<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
+				<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
 			</div>
+		{/if}
 
 			<div class="header-actions">
 				<button

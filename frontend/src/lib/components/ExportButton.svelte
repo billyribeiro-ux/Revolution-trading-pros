@@ -104,7 +104,9 @@
 		if (!data || data.length === 0) return;
 
 		// Get headers from first object
-		const headers = Object.keys(data[0]);
+		const firstRow = data[0];
+		if (!firstRow) return;
+		const headers = Object.keys(firstRow);
 
 		// Build CSV content
 		const csvContent = [

@@ -117,7 +117,7 @@ function getLuminance(hex: string): number {
 		return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 	});
 
-	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0);
 }
 
 /**
@@ -125,7 +125,7 @@ function getLuminance(hex: string): number {
  */
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result
+	return result && result[1] && result[2] && result[3]
 		? {
 				r: parseInt(result[1], 16),
 				g: parseInt(result[2], 16),
@@ -288,7 +288,7 @@ export class PopupA11yManager {
 	 */
 	focusFirst(): void {
 		if (this.focusableElements.length > 0) {
-			this.focusableElements[0].focus();
+			this.focusableElements[0]?.focus();
 		}
 	}
 
@@ -297,7 +297,7 @@ export class PopupA11yManager {
 	 */
 	focusLast(): void {
 		if (this.focusableElements.length > 0) {
-			this.focusableElements[this.focusableElements.length - 1].focus();
+			this.focusableElements[this.focusableElements.length - 1]?.focus();
 		}
 	}
 
@@ -510,10 +510,10 @@ export class PopupA11yManager {
 
 						if (e.shiftKey && document.activeElement === firstElement) {
 							e.preventDefault();
-							lastElement.focus();
+							lastElement?.focus();
 						} else if (!e.shiftKey && document.activeElement === lastElement) {
 							e.preventDefault();
-							firstElement.focus();
+							firstElement?.focus();
 						}
 					}
 					break;

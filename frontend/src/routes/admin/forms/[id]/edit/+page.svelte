@@ -17,7 +17,7 @@
 	let showThemeCustomizer = $state(false);
 	let selectedTheme = $state<FormTheme | null>(null);
 
-	let formId = $derived(parseInt($page.params.id!));
+	let formId = $derived(parseInt($page.params['id']!));
 
 	onMount(async () => {
 		try {
@@ -26,7 +26,7 @@
 			if (form?.settings?.theme) {
 				selectedTheme = form.settings.theme;
 			} else {
-				selectedTheme = themes[0]; // Default theme
+				selectedTheme = themes[0] ?? null; // Default theme
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load form';

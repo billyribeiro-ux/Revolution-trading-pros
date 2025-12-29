@@ -49,9 +49,9 @@
  */
 
 import { browser } from '$app/environment';
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived as _derived, get } from 'svelte/store';
 import type { FormTheme } from '$lib/data/formTemplates';
-import { getAuthToken, getSessionId as getAuthSessionId } from '$lib/stores/auth';
+import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -66,13 +66,12 @@ const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
 const isDev = import.meta.env.DEV;
 const API_BASE = browser 
-	? (isDev ? '' : (import.meta.env.VITE_API_URL || PROD_API)) 
+	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
 	: '';
-const WS_BASE = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
-const AI_API = browser ? import.meta.env.VITE_AI_API_URL || PROD_AI : '';
+const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+const AI_API = browser ? import.meta.env['VITE_AI_API_URL'] || PROD_AI : '';
 
 const CACHE_TTL = 300000; // 5 minutes
-const DEBOUNCE_DELAY = 500;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const OFFLINE_QUEUE_KEY = 'forms_offline_queue';
@@ -630,7 +629,7 @@ class FormsService {
 		if (!browser || !this.getAuthToken()) return;
 
 		// ICT11+ Pattern: Skip WebSocket in dev if not configured
-		if (isDev && !import.meta.env.VITE_WS_URL) {
+		if (isDev && !import.meta.env['VITE_WS_URL']) {
 			console.debug('[FormsService] WebSocket skipped in dev (no VITE_WS_URL configured)');
 			return;
 		}
@@ -992,7 +991,9 @@ class FormsService {
 			this.forms.update((forms) => {
 				const index = forms.findIndex((f) => f.id === id);
 				if (index >= 0) {
-					forms[index] = { ...forms[index], ...formData };
+					// Merge with existing form, ensuring all required properties are present
+					const existingForm = forms[index];
+					forms[index] = { ...existingForm, ...formData } as Form;
 				}
 				return forms;
 			});
@@ -1614,10 +1615,10 @@ export const getFieldTypes = () => [
 // Export formsApi for compatibility
 export const formsApi = {
 	list: () => formsService.getForms(),
-	get: (id: number) => Promise.resolve({} as Form),
-	create: (data: Partial<Form>) => Promise.resolve({} as Form),
-	update: (id: number, data: Partial<Form>) => Promise.resolve({} as Form),
-	delete: (id: number) => Promise.resolve(),
+	get: (_id: number) => Promise.resolve({} as Form),
+	create: (_data: Partial<Form>) => Promise.resolve({} as Form),
+	update: (_id: number, _data: Partial<Form>) => Promise.resolve({} as Form),
+	delete: (_id: number) => Promise.resolve(),
 	getEntries: (formId: number, page?: number) => formsService.getSubmissions(formId, page),
 	exportEntries: (formId: number, format: string = 'csv') =>
 		fetch(`/api/forms/${formId}/export?format=${format}`).then((r) => r.blob())

@@ -106,10 +106,6 @@ export class PopupHeatmapTracker {
 	private boundHandleTouch: (event: TouchEvent) => void;
 	private boundHandleScroll: (event: Event) => void;
 	private boundHandleMouseMove: (event: MouseEvent) => void;
-	private boundHandleFormFocus: (event: FocusEvent) => void;
-	private boundHandleFormBlur: (event: FocusEvent) => void;
-	private boundHandleFormInput: (event: Event) => void;
-	private boundHandleFormChange: (event: Event) => void;
 
 	constructor(popupId: string, sessionId?: string) {
 		this.popupId = popupId;
@@ -120,10 +116,6 @@ export class PopupHeatmapTracker {
 		this.boundHandleTouch = this.handleTouch.bind(this);
 		this.boundHandleScroll = this.handleScroll.bind(this);
 		this.boundHandleMouseMove = this.handleMouseMove.bind(this);
-		this.boundHandleFormFocus = this.handleFormFocus.bind(this);
-		this.boundHandleFormBlur = this.handleFormBlur.bind(this);
-		this.boundHandleFormInput = this.handleFormInput.bind(this);
-		this.boundHandleFormChange = this.handleFormChange.bind(this);
 	}
 
 	/**
@@ -273,6 +265,10 @@ export class PopupHeatmapTracker {
 		const rect = this.popupElement.getBoundingClientRect();
 		const target = event.target as HTMLElement;
 
+		const elementId = target.id || undefined;
+		const elementClass = target.className || undefined;
+		const elementText = target.textContent?.substring(0, 50) || undefined;
+
 		const clickData: ClickData = {
 			x: event.clientX - rect.left,
 			y: event.clientY - rect.top,
@@ -280,9 +276,9 @@ export class PopupHeatmapTracker {
 			relativeY: ((event.clientY - rect.top) / rect.height) * 100,
 			timestamp: Date.now(),
 			elementTag: target.tagName.toLowerCase(),
-			elementId: target.id || undefined,
-			elementClass: target.className || undefined,
-			elementText: target.textContent?.substring(0, 50) || undefined,
+			...(elementId && { elementId }),
+			...(elementClass && { elementClass }),
+			...(elementText && { elementText }),
 			isButton: target.tagName === 'BUTTON' || target.getAttribute('role') === 'button',
 			isLink: target.tagName === 'A',
 			isFormElement: ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName),
@@ -298,6 +294,10 @@ export class PopupHeatmapTracker {
 		const rect = this.popupElement.getBoundingClientRect();
 		const target = event.target as HTMLElement;
 
+		const elementId = target.id || undefined;
+		const elementClass = target.className || undefined;
+		const elementText = target.textContent?.substring(0, 50) || undefined;
+
 		const clickData: ClickData = {
 			x: touch.clientX - rect.left,
 			y: touch.clientY - rect.top,
@@ -305,9 +305,9 @@ export class PopupHeatmapTracker {
 			relativeY: ((touch.clientY - rect.top) / rect.height) * 100,
 			timestamp: Date.now(),
 			elementTag: target.tagName.toLowerCase(),
-			elementId: target.id || undefined,
-			elementClass: target.className || undefined,
-			elementText: target.textContent?.substring(0, 50) || undefined,
+			...(elementId && { elementId }),
+			...(elementClass && { elementClass }),
+			...(elementText && { elementText }),
 			isButton: target.tagName === 'BUTTON' || target.getAttribute('role') === 'button',
 			isLink: target.tagName === 'A',
 			isFormElement: ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName),
@@ -375,7 +375,7 @@ export class PopupHeatmapTracker {
 			fieldType: target.type || target.tagName.toLowerCase(),
 			action: 'blur',
 			timestamp: Date.now(),
-			timeSpent,
+			...(timeSpent !== undefined && { timeSpent }),
 			hasValue: Boolean(target.value),
 		});
 	}

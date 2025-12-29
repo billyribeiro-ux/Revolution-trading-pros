@@ -41,9 +41,9 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { authStore, user as userStore, isSuperAdmin, isAdminUser } from '$lib/stores/auth';
+	import { authStore, user as userStore } from '$lib/stores/auth';
 	import type { User } from '$lib/stores/auth';
-	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission, PERMISSIONS } from '$lib/config/roles';
+	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
 	// Individual Tabler icon imports (Svelte 5 compatible)
 	import IconDashboard from '@tabler/icons-svelte/icons/dashboard';
@@ -57,7 +57,6 @@
 	import IconEye from '@tabler/icons-svelte/icons/eye';
 	import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
 	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconCrown from '@tabler/icons-svelte/icons/crown';
 
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Type Definitions (Enterprise Grade)
@@ -81,12 +80,6 @@
 		disabled?: boolean;
 	}
 
-	interface DropdownState {
-		isOpen: boolean;
-		lastToggled: number;
-		focusIndex: number;
-		items: MenuItem[];
-	}
 
 	interface ErrorState {
 		hasError: boolean;
@@ -141,9 +134,6 @@
 	let userMenuTriggerRef = $state<HTMLButtonElement>();
 	let quickMenuTriggerRef = $state<HTMLButtonElement>();
 
-	// Performance tracking
-	let lastInteractionTime = 0;
-	let interactionCount = 0;
 
 	// Session management
 	let sessionCheckInterval: number | null = null;
@@ -237,7 +227,6 @@
 		})()
 	);
 
-	const roleLabel = $derived(isSuperadminUser ? 'Super Admin' : 'Admin');
 
 	const filteredQuickMenuItems = $derived(
 		quickMenuItems.filter((item) => {
@@ -404,8 +393,9 @@
 			case KEYBOARD_KEYS.ENTER:
 			case KEYBOARD_KEYS.SPACE:
 				event.preventDefault();
-				if (items[currentFocusIndex]) {
-					navigateTo(items[currentFocusIndex].path);
+				const item = items[currentFocusIndex];
+				if (item) {
+					navigateTo(item.path);
 				}
 				break;
 

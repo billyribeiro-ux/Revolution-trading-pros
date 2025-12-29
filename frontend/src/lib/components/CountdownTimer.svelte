@@ -704,18 +704,6 @@
 	// Format Renderers
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function renderDefault() {
-		return true; // Use default template
-	}
-
-	function renderDigital() {
-		return true; // Use digital template
-	}
-
-	function renderCircular() {
-		return true; // Use circular template
-	}
-
 	function getCircleProps(value: number, max: number) {
 		const radius = 45;
 		const circumference = 2 * Math.PI * radius;
@@ -769,7 +757,7 @@
 		{#if format === 'default'}
 			<div class="time-units">
 				{#if showDays && (timeData.days > 0 || !compactMode)}
-					<div class="time-unit" class:flip={digitFlips.days}>
+					<div class="time-unit" class:flip={digitFlips['days']}>
 						<div class="time-value">
 							{leadingZeros ? timeData.days.toString().padStart(2, '0') : timeData.days}
 						</div>
@@ -781,7 +769,7 @@
 
 				{#if showHours && (timeData.hours > 0 || !compactMode)}
 					{#if showSeparators && showDays}<span class="separator">:</span>{/if}
-					<div class="time-unit" class:flip={digitFlips.hours}>
+					<div class="time-unit" class:flip={digitFlips['hours']}>
 						<div class="time-value">
 							{leadingZeros ? timeData.hours.toString().padStart(2, '0') : timeData.hours}
 						</div>
@@ -793,7 +781,7 @@
 
 				{#if showMinutes && (timeData.minutes > 0 || !compactMode)}
 					{#if showSeparators && (showDays || showHours)}<span class="separator">:</span>{/if}
-					<div class="time-unit" class:flip={digitFlips.minutes}>
+					<div class="time-unit" class:flip={digitFlips['minutes']}>
 						<div class="time-value">
 							{leadingZeros ? timeData.minutes.toString().padStart(2, '0') : timeData.minutes}
 						</div>
@@ -807,7 +795,7 @@
 					{#if showSeparators && (showDays || showHours || showMinutes)}<span class="separator"
 							>:</span
 						>{/if}
-					<div class="time-unit" class:flip={digitFlips.seconds}>
+					<div class="time-unit" class:flip={digitFlips['seconds']}>
 						<div class="time-value">
 							{leadingZeros ? timeData.seconds.toString().padStart(2, '0') : timeData.seconds}
 						</div>

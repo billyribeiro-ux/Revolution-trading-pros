@@ -8,7 +8,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { fade, fly, slide } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
 		offlineStore,

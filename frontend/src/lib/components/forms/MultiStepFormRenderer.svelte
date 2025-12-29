@@ -68,7 +68,7 @@
 				{
 					id: 0,
 					title: form.title || 'Form',
-					description: form.description,
+					description: form.description ?? '',
 					fields: sortedFields
 				}
 			];
@@ -88,7 +88,7 @@
 					parsedSteps.push({
 						id: stepIndex,
 						title: stepTitle,
-						description: stepDescription,
+						description: stepDescription ?? '',
 						fields: currentStepFields
 					});
 					stepIndex++;
@@ -108,7 +108,7 @@
 			parsedSteps.push({
 				id: stepIndex,
 				title: stepTitle,
-				description: stepDescription,
+				description: stepDescription ?? '',
 				fields: currentStepFields
 			});
 		}
@@ -558,7 +558,7 @@
 									<FormFieldRenderer
 										{field}
 										value={formData[field.name]}
-										error={errors[field.name]}
+										error={errors[field.name] ?? []}
 										onchange={(val) => handleFieldChange(field.name, val)}
 									/>
 								</div>

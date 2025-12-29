@@ -14,10 +14,6 @@
 import { browser } from '$app/environment';
 import type { ConsentState, GoogleConsentParams } from './types';
 
-/**
- * Type definition for gtag command queue.
- */
-type GtagCommand = ['consent' | 'config' | 'js' | 'event' | 'set', ...unknown[]];
 
 declare global {
 	interface Window {

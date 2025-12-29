@@ -225,7 +225,7 @@ export function handleCsrfTokenFromResponse(headers: Headers | Record<string, st
 	if (headers instanceof Headers) {
 		newToken = headers.get(CSRF_HEADER_NAME) || headers.get(CSRF_HEADER_NAME.toLowerCase());
 	} else {
-		newToken = headers[CSRF_HEADER_NAME] || headers[CSRF_HEADER_NAME.toLowerCase()];
+		newToken = headers[CSRF_HEADER_NAME] || headers[CSRF_HEADER_NAME.toLowerCase()] || null;
 	}
 
 	if (newToken && newToken !== memoryToken) {

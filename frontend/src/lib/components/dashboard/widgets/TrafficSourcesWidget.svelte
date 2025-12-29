@@ -18,7 +18,7 @@
 		config?: Record<string, unknown>;
 	}
 
-	let { data, config = {} }: Props = $props();
+	let { data, config: _config = {} }: Props = $props();
 
 	const totalVisitors = tweened(0, { duration: 1500, easing: cubicOut });
 

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { IconClick, IconEye, IconRefresh } from '$lib/icons';
+	import { IconClick, IconRefresh } from '$lib/icons';
 
-	let pages: any[] = [];
 	let isLoading = false;
 </script>
 

@@ -29,8 +29,8 @@
     optimizedSrc,
     originalSize = 0,
     optimizedSize = 0,
-    width = 800,
-    height = 600
+    width: _width = 800,
+    height: _height = 600
   }: Props = $props();
 
   // State - Svelte 5 runes
@@ -108,23 +108,6 @@
     zoomLevel = 1;
     panX = 0;
     panY = 0;
-  }
-
-  function handleKeydown(event: KeyboardEvent) {
-    if (mode === 'slider') {
-      if (event.key === 'ArrowLeft') {
-        sliderPosition.set(Math.max(0, $sliderPosition - 5));
-        event.preventDefault();
-      } else if (event.key === 'ArrowRight') {
-        sliderPosition.set(Math.min(100, $sliderPosition + 5));
-        event.preventDefault();
-      }
-    } else if (mode === 'toggle') {
-      if (event.key === ' ') {
-        showOriginal = !showOriginal;
-        event.preventDefault();
-      }
-    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -6,7 +6,7 @@
 	 * with detailed drop-off analysis.
 	 */
 	import { onMount } from 'svelte';
-	import { analyticsApi, type FunnelAnalysis } from '$lib/api/analytics';
+	import { analyticsApi } from '$lib/api/analytics';
 	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 
@@ -199,9 +199,10 @@
 							</thead>
 							<tbody class="divide-y divide-gray-100">
 								{#each selectedFunnel.steps as step, i}
+									{@const firstStep = selectedFunnel.steps[0]}
 									{@const fromStart =
-										selectedFunnel.steps[0].count > 0
-											? (step.count / selectedFunnel.steps[0].count) * 100
+										firstStep && firstStep.count > 0
+											? (step.count / firstStep.count) * 100
 											: 0}
 									<tr class="hover:bg-gray-50">
 										<td class="py-3 px-4">

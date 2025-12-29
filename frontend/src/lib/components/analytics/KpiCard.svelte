@@ -12,7 +12,6 @@
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import type { KpiValue } from '$lib/api/analytics';
-	import AnimatedNumber from '$lib/components/ui/AnimatedNumber.svelte';
 
 	interface Props {
 		kpi: KpiValue;

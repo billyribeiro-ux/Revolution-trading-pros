@@ -39,19 +39,6 @@ import type {
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Note: Window.dataLayer and Window.gtag are declared in src/app.d.ts
-// Only add requestIdleCallback polyfill types if needed
-interface IdleRequestCallback {
-	(deadline: IdleDeadline): void;
-}
-
-interface IdleRequestOptions {
-	timeout?: number;
-}
-
-interface IdleDeadline {
-	readonly didTimeout: boolean;
-	timeRemaining(): number;
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Constants
@@ -59,7 +46,6 @@ interface IdleDeadline {
 
 const GTAG_SCRIPT_URL = 'https://www.googletagmanager.com/gtag/js';
 const MAX_QUEUE_SIZE = 500;
-const QUEUE_FLUSH_DELAY = 100;
 const INIT_TIMEOUT_MS = 10000;
 const SCRIPT_ID = 'gtag-js-script';
 
@@ -378,10 +364,10 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		};
 
 		if (payload.page_type) {
-			eventData.page_type = payload.page_type;
+			eventData['page_type'] = payload.page_type;
 		}
 		if (payload.content_group) {
-			eventData.content_group = payload.content_group;
+			eventData['content_group'] = payload.content_group;
 		}
 
 		this._track('page_view', eventData, startTime);
@@ -397,9 +383,9 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 
 		if (payload) {
 			// Map standard fields
-			if (payload.event_category) eventData.event_category = payload.event_category;
-			if (payload.event_label) eventData.event_label = payload.event_label;
-			if (payload.value !== undefined) eventData.value = payload.value;
+			if (payload.event_category) eventData['event_category'] = payload.event_category;
+			if (payload.event_label) eventData['event_label'] = payload.event_label;
+			if (payload.value !== undefined) eventData['value'] = payload.value;
 
 			// Copy remaining custom properties
 			for (const [key, value] of Object.entries(payload)) {
@@ -424,10 +410,10 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 			currency: payload.currency,
 		};
 
-		if (payload.tax !== undefined) eventData.tax = payload.tax;
-		if (payload.shipping !== undefined) eventData.shipping = payload.shipping;
-		if (payload.coupon) eventData.coupon = payload.coupon;
-		if (payload.items) eventData.items = payload.items;
+		if (payload.tax !== undefined) eventData['tax'] = payload.tax;
+		if (payload.shipping !== undefined) eventData['shipping'] = payload.shipping;
+		if (payload.coupon) eventData['coupon'] = payload.coupon;
+		if (payload.items) eventData['items'] = payload.items;
 
 		this._track('purchase', eventData, startTime);
 	}
@@ -546,7 +532,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 
 		// Add user ID if available
 		if (this._userId) {
-			payload.user_id = this._userId;
+			payload['user_id'] = this._userId;
 		}
 
 		// If ready, send immediately

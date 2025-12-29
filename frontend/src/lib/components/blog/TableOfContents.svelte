@@ -120,7 +120,9 @@
 			const level = heading.level;
 
 			// Update counters
-			counters[level - 1]++;
+			if (counters[level - 1] !== undefined) {
+				counters[level - 1]!++;
+			}
 			for (let i = level; i < counters.length; i++) {
 				counters[i] = 0;
 			}
@@ -128,11 +130,15 @@
 			// Generate number string
 			const numberParts: number[] = [];
 			for (let i = 1; i < level; i++) {
-				if (counters[i] > 0) {
-					numberParts.push(counters[i]);
+				const counter = counters[i];
+				if (counter !== undefined && counter > 0) {
+					numberParts.push(counter);
 				}
 			}
-			numberParts.push(counters[level - 1]);
+			const lastCounter = counters[level - 1];
+			if (lastCounter !== undefined) {
+				numberParts.push(lastCounter);
+			}
 
 			const item: TocItem = {
 				id: heading.id,
@@ -146,14 +152,17 @@
 			flatItems.push(item);
 
 			// Find parent
-			while (stack.length > 0 && stack[stack.length - 1].level >= level) {
+			while (stack.length > 0 && (stack[stack.length - 1]?.level ?? 0) >= level) {
 				stack.pop();
 			}
 
 			if (stack.length === 0) {
 				result.push(item);
 			} else {
-				stack[stack.length - 1].item.children.push(item);
+				const parent = stack[stack.length - 1];
+				if (parent) {
+					parent.item.children.push(item);
+				}
 			}
 
 			stack.push({ item, level });
@@ -239,10 +248,15 @@
 		let itemIndex = 0;
 
 		headings.forEach((heading) => {
-			const level = parseInt(heading.tagName[1]);
+			const tagChar = heading.tagName[1];
+			if (!tagChar) return;
+			const level = parseInt(tagChar);
 			if (level >= 2 && level <= maxDepth && itemIndex < flatItems.length) {
-				heading.id = flatItems[itemIndex].id;
-				itemIndex++;
+				const item = flatItems[itemIndex];
+				if (item) {
+					heading.id = item.id;
+					itemIndex++;
+				}
 			}
 		});
 	}

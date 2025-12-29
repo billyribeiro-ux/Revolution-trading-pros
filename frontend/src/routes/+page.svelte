@@ -47,7 +47,7 @@
 		}
 	});
 
-	const siteUrl = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+	const siteUrl = import.meta.env['VITE_SITE_URL'] || 'https://revolution-trading-pros.pages.dev';
 
 	const homepageSchema = [
 		{

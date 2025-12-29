@@ -49,11 +49,11 @@
 	};
 
 	// Svelte 5: Derived state
-	let config = $derived(typeConfigs[type] || typeConfigs.custom);
-	let effectiveCategory = $derived(requiredCategory || config.category);
+	let config = $derived(typeConfigs[type] || typeConfigs['custom']!);
+	let effectiveCategory = $derived(requiredCategory || config?.category || 'marketing');
 	let hasConsent = $derived($consentStore[effectiveCategory]);
-	let displayIcon = $derived(customIcon || config.icon);
-	let displayTitle = $derived(title || config.name);
+	let displayIcon = $derived(customIcon || config?.icon || '🔒');
+	let displayTitle = $derived(title || config?.name || 'Content');
 
 	function handleEnableCookies() {
 		openPreferencesModal();

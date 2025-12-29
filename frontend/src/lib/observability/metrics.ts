@@ -24,11 +24,10 @@
 
 import { browser } from '$app/environment';
 import { getOrchestrator } from './orchestrator';
-import type {
+import {
 	PageViewPayload,
 	CustomEventPayload,
 	PurchasePayload,
-	IdentifyPayload,
 	EcommerceItem,
 	AnalyticsConfig,
 } from './adapters/types';
@@ -135,7 +134,6 @@ export type EventName = (typeof Events)[keyof typeof Events];
 class MetricsService {
 	private static instance: MetricsService;
 	private _initialized = false;
-	private _config: Partial<AnalyticsConfig> = {};
 
 	private constructor() {
 		// Private constructor for singleton
@@ -153,8 +151,6 @@ class MetricsService {
 	 */
 	async initialize(config?: Partial<AnalyticsConfig>): Promise<void> {
 		if (!browser || this._initialized) return;
-
-		this._config = config || {};
 
 		try {
 			const orchestrator = getOrchestrator();
@@ -222,7 +218,7 @@ class MetricsService {
 			page_path: properties?.path || window.location.pathname,
 			page_title: properties?.title || document.title,
 			page_referrer: properties?.referrer || document.referrer,
-			page_type: properties?.page_type,
+			...(properties?.page_type && { page_type: properties.page_type }),
 		};
 
 		getOrchestrator().trackPageView(payload);
@@ -273,10 +269,10 @@ class MetricsService {
 			transaction_id: payload.transactionId,
 			value: payload.value,
 			currency: payload.currency,
-			tax: payload.tax,
-			shipping: payload.shipping,
-			coupon: payload.coupon,
-			items: payload.items,
+			...(payload.tax !== undefined && { tax: payload.tax }),
+			...(payload.shipping !== undefined && { shipping: payload.shipping }),
+			...(payload.coupon && { coupon: payload.coupon }),
+			...(payload.items && { items: payload.items }),
 		};
 
 		getOrchestrator().trackPurchase(purchasePayload);

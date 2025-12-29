@@ -56,8 +56,6 @@
   // State - Svelte 5 $state() pattern
   let loaded = $state(false);
   let hasError = $state(false);
-  let canvas = $state<HTMLCanvasElement | null>(null);
-  let imgElement = $state<HTMLImageElement | null>(null);
   let containerRef = $state<HTMLDivElement | null>(null);
   let isInView = $state(false);
   let observer: IntersectionObserver | null = null;
@@ -107,7 +105,7 @@
   }
 
   // Handle image error
-  function handleError(e: Event) {
+  function handleError(_e: Event) {
     hasError = true;
     onErrorCallback?.(new Error('Image failed to load'));
   }
@@ -152,7 +150,6 @@
   <!-- BlurHash placeholder canvas -->
   {#if blurhash && !loaded}
     <canvas
-      bind:this={canvas}
       use:renderBlurhash
       width="32"
       height="32"
@@ -177,23 +174,23 @@
   {#if isInView || priority}
     <picture>
       <!-- AVIF source (best compression) -->
-      {#if srcset?.avif}
+      {#if srcset?.['avif']}
         <source
-          srcset={srcset.avif}
+          srcset={srcset['avif']}
           type="image/avif"
         />
       {/if}
 
       <!-- WebP source (good compression, wide support) -->
-      {#if srcset?.webp}
+      {#if srcset?.['webp']}
         <source
-          srcset={srcset.webp}
+          srcset={srcset['webp']}
           type="image/webp"
         />
       {/if}
 
       <!-- Responsive srcset -->
-      {#if srcset && !srcset.avif && !srcset.webp}
+      {#if srcset && !srcset['avif'] && !srcset['webp']}
         <source
           srcset={buildSrcset()}
           {sizes}
@@ -202,7 +199,6 @@
 
       <!-- Fallback image -->
       <img
-        bind:this={imgElement}
         {src}
         {alt}
         {width}

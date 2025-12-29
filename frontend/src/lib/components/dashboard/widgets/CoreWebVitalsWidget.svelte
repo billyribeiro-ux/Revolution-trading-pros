@@ -21,7 +21,7 @@
 		config?: Record<string, unknown>;
 	}
 
-	let { data, config = {} }: Props = $props();
+	let { data, config: _config = {} }: Props = $props();
 
 	const overallScore = tweened(0, { duration: 1500, easing: cubicOut });
 

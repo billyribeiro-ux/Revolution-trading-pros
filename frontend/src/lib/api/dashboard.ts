@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Dashboard, DashboardData, DashboardWidget, WidgetLayout } from '$lib/types/dashboard';
+import type { DashboardData, DashboardWidget, WidgetLayout } from '$lib/types/dashboard';
 
 export const dashboardApi = {
 	async getDashboards(type: 'admin' | 'user' = 'user'): Promise<DashboardData> {

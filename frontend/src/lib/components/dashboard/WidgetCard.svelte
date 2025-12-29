@@ -12,7 +12,7 @@
 		widget,
 		ondragstart,
 		ondragend,
-		onlayoutchange
+		onlayoutchange: _onlayoutchange
 	}: Props = $props();
 
 	function handleDragStart() {
@@ -21,10 +21,6 @@
 
 	function handleDragEnd() {
 		ondragend?.();
-	}
-
-	function handleLayoutChange(detail: any) {
-		onlayoutchange?.(new CustomEvent('layoutchange', { detail }));
 	}
 </script>
 

@@ -32,14 +32,13 @@
  */
 
 import { browser } from '$app/environment';
-import { env } from '$env/dynamic/public';
 import type { VendorConfig } from '../types';
 import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
 import { consentStore } from '../store';
 
-// Use dynamic environment variable (optional at build time)
-const PUBLIC_GA4_MEASUREMENT_ID = env.PUBLIC_GA4_MEASUREMENT_ID || '';
+// Use environment variable (optional at build time)
+const PUBLIC_GA4_MEASUREMENT_ID = import.meta.env['PUBLIC_GA4_MEASUREMENT_ID'] || '';
 
 /**
  * ICT11+ Pattern: Prevent GA4 from triggering SvelteKit router warnings

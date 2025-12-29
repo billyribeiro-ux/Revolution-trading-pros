@@ -263,8 +263,8 @@
 
 		if (emailError || passwordError) {
 			errors = {};
-			if (emailError) errors.email = [emailError];
-			if (passwordError) errors.password = [passwordError];
+			if (emailError) errors['email'] = [emailError];
+			if (passwordError) errors['password'] = [passwordError];
 
 			// Shake animation
 			if (gsap && cardRef) {
@@ -411,7 +411,7 @@
 				<!-- Email Field -->
 				<div class="form-field">
 					<label for="email" class="field-label">Email Address</label>
-					<div class="input-wrapper" class:error={errors.email}>
+					<div class="input-wrapper" class:error={errors['email']}>
 						<div class="input-icon">
 							<IconMail size={20} />
 						</div>
@@ -428,13 +428,13 @@
 							placeholder="trader@example.com"
 							autocomplete="email"
 							disabled={isLoading || isSuccess}
-							aria-invalid={!!errors.email}
-							aria-describedby={errors.email ? 'email-error' : undefined}
+							aria-invalid={!!errors['email']}
+							aria-describedby={errors['email'] ? 'email-error' : undefined}
 						/>
 					</div>
-					{#if errors.email}
+					{#if errors['email']}
 						<p id="email-error" class="field-error" transition:slide={{ duration: 150 }}>
-							{errors.email[0]}
+							{errors['email'][0]}
 						</p>
 					{/if}
 				</div>
@@ -442,7 +442,7 @@
 				<!-- Password Field -->
 				<div class="form-field">
 					<label for="password" class="field-label">Password</label>
-					<div class="input-wrapper" class:error={errors.password}>
+					<div class="input-wrapper" class:error={errors['password']}>
 						<div class="input-icon">
 							<IconLock size={20} />
 						</div>
@@ -458,8 +458,8 @@
 							placeholder="Enter your password"
 							autocomplete="current-password"
 							disabled={isLoading || isSuccess}
-							aria-invalid={!!errors.password}
-							aria-describedby={errors.password ? 'password-error' : undefined}
+							aria-invalid={!!errors['password']}
+							aria-describedby={errors['password'] ? 'password-error' : undefined}
 						/>
 						<button
 							type="button"
@@ -476,9 +476,9 @@
 							{/if}
 						</button>
 					</div>
-					{#if errors.password}
+					{#if errors['password']}
 						<p id="password-error" class="field-error" transition:slide={{ duration: 150 }}>
-							{errors.password[0]}
+							{errors['password'][0]}
 						</p>
 					{/if}
 				</div>

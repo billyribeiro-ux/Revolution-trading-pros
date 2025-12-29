@@ -20,7 +20,7 @@
 		onImportComplete?: (result: any) => void;
 	}
 
-	let { formId, formTitle, onImportComplete }: Props = $props();
+	let { formId, formTitle: _formTitle, onImportComplete }: Props = $props();
 
 	// State
 	let activeTab = $state<'export' | 'import'>('export');
@@ -54,7 +54,7 @@
 	function handleFileSelect(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (input.files?.length) {
-			importFile = input.files[0];
+			importFile = input.files[0] ?? null;
 		}
 	}
 

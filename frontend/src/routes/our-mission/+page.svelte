@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { fade, slide, fly, scale } from 'svelte/transition';
-	import { cubicOut, elasticOut } from 'svelte/easing';
+	import { slide } from 'svelte/transition';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- ICONS (Inline SVG for Zero-Dependency & Performance) ---
@@ -27,7 +25,7 @@
 	};
 
 	// --- Apple ICT9+ Scroll Animations ---
-	function reveal(node: HTMLElement, { delay = 0, duration = 800, y = 30 } = {}) {
+	function reveal(node: HTMLElement, { delay = 0, y = 30 } = {}) {
 		// Check for reduced motion preference
 		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 			return;
@@ -156,8 +154,6 @@
 			}
 		]
 	};
-	const jsonLdString = JSON.stringify(jsonLd);
-	const jsonLdScript = `<script type="application/ld+json">${jsonLdString}<\/script>`;
 
 	// --- CONTENT DATA ---
 	const pillars = [

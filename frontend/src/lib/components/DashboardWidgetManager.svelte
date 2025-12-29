@@ -12,14 +12,13 @@
 	 * @version 1.0.0
 	 */
 
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import {
 		widgetStore,
 		visibleWidgets,
 		hiddenWidgets,
-		widgetsByCategory,
 		widgetLayout,
 		autoRefreshEnabled,
 		type DashboardWidget,
@@ -125,7 +124,8 @@
 		const sizes: WidgetSize[] = ['small', 'medium', 'large', 'full'];
 		const currentIndex = sizes.indexOf(widget.size);
 		const nextIndex = (currentIndex + 1) % sizes.length;
-		widgetStore.setWidgetSize(widget.id, sizes[nextIndex]);
+		const nextSize = sizes[nextIndex];
+		if (nextSize) widgetStore.setWidgetSize(widget.id, nextSize);
 	}
 </script>
 

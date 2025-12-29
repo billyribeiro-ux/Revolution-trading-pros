@@ -98,16 +98,20 @@ export function createRequestContext(
 ): RequestContext {
 	const parentContext = options.parentContext ?? activeContext;
 
+	const parentSpanId = parentContext?.spanId;
+	const userId = options.userId ?? parentContext?.userId;
+	const sessionId = options.sessionId ?? parentContext?.sessionId;
+
 	return {
 		traceId: parentContext?.traceId ?? generateTraceId(),
 		spanId: generateSpanId(),
-		parentSpanId: parentContext?.spanId,
+		...(parentSpanId !== undefined && { parentSpanId }),
 		startTime: performance.now(),
 		priority: options.priority ?? 'normal',
 		isRetry: false,
 		retryAttempt: 0,
-		userId: options.userId ?? parentContext?.userId,
-		sessionId: options.sessionId ?? parentContext?.sessionId,
+		...(userId !== undefined && { userId }),
+		...(sessionId !== undefined && { sessionId }),
 		metadata: {
 			...parentContext?.metadata,
 			...options.metadata
@@ -218,17 +222,21 @@ export function parseTraceHeaders(headers: Record<string, string>): Partial<Requ
 	const traceparent = headers['traceparent'];
 	if (traceparent) {
 		const parts = traceparent.split('-');
-		if (parts.length >= 3) {
+		if (parts.length >= 3 && parts[1] && parts[2]) {
 			return {
 				traceId: parts[1],
 				spanId: parts[2],
-				parentSpanId
+				...(parentSpanId !== undefined && { parentSpanId })
 			};
 		}
 	}
 
 	if (traceId) {
-		return { traceId, spanId, parentSpanId };
+		return {
+			traceId,
+			...(spanId !== undefined && { spanId }),
+			...(parentSpanId !== undefined && { parentSpanId })
+		};
 	}
 
 	return null;
@@ -269,7 +277,7 @@ function calculatePercentile(percentile: number): number {
 
 	const sorted = [...responseTimeSamples].sort((a, b) => a - b);
 	const index = Math.ceil((percentile / 100) * sorted.length) - 1;
-	return sorted[Math.max(0, index)];
+	return sorted[Math.max(0, index)] ?? 0;
 }
 
 /**
@@ -320,14 +328,14 @@ export function createLogEntry(
 	return {
 		level,
 		message,
-		context: context
-			? {
-					...context,
-					// Sanitize metadata to prevent sensitive data leakage
-					metadata: sanitizeLogData(context.metadata)
-				}
-			: undefined,
-		data: data ? sanitizeLogData(data) : undefined,
+		...(context && {
+			context: {
+				...context,
+				// Sanitize metadata to prevent sensitive data leakage
+				metadata: sanitizeLogData(context.metadata)
+			}
+		}),
+		...(data && { data: sanitizeLogData(data) }),
 		timestamp: new Date().toISOString()
 	};
 }
@@ -432,9 +440,9 @@ export function recordTrace(
 		context,
 		endpoint,
 		method,
-		status,
+		...(status !== undefined && { status }),
 		duration: getRequestDuration(context),
-		error,
+		...(error !== undefined && { error }),
 		timestamp: new Date().toISOString()
 	};
 

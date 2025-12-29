@@ -8,8 +8,6 @@ import type {
 	Deal,
 	Pipeline,
 	Stage,
-	Activity,
-	Note,
 	ContactSegment,
 	TimelineEvent,
 	DealForecast,
@@ -80,7 +78,7 @@ import { apiClient } from './client';
 export class CrmAPI {
 	// Contacts
 	async getContacts(filters?: ContactFilters): Promise<{ data: Contact[]; meta: any }> {
-		return apiClient.get('/admin/crm/contacts', { params: filters });
+		return apiClient.get('/admin/crm/contacts', { params: filters ?? undefined });
 	}
 
 	async getContact(id: string): Promise<Contact> {
@@ -109,7 +107,7 @@ export class CrmAPI {
 
 	// Deals
 	async getDeals(filters?: DealFilters): Promise<{ data: Deal[]; meta: any }> {
-		return apiClient.get('/admin/crm/deals', { params: filters });
+		return apiClient.get('/admin/crm/deals', { params: filters ?? undefined });
 	}
 
 	async getDeal(id: string): Promise<Deal> {
@@ -173,7 +171,7 @@ export class CrmAPI {
 	// =====================================================
 
 	async getSequences(filters?: SequenceFilters): Promise<{ data: EmailSequence[]; meta: any }> {
-		return apiClient.get('/admin/crm/sequences', { params: filters });
+		return apiClient.get('/admin/crm/sequences', { params: filters ?? undefined });
 	}
 
 	async getSequence(id: string): Promise<{ sequence: EmailSequence; stats: SequenceStats }> {
@@ -217,7 +215,7 @@ export class CrmAPI {
 	}
 
 	async getSequenceSubscribers(id: string, filters?: { status?: string; per_page?: number }): Promise<{ data: SequenceTracker[]; meta: any }> {
-		return apiClient.get(`/admin/crm/sequences/${id}/subscribers`, { params: filters });
+		return apiClient.get(`/admin/crm/sequences/${id}/subscribers`, { params: filters ?? undefined });
 	}
 
 	async subscribeToSequence(id: string, contactIds: string[], startPosition?: number): Promise<{ subscribed_count: number }> {

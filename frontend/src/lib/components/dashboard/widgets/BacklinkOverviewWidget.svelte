@@ -26,7 +26,7 @@
 		config?: Record<string, unknown>;
 	}
 
-	let { data, config = {} }: Props = $props();
+	let { data, config: _config = {} }: Props = $props();
 
 	const totalBacklinks = tweened(0, { duration: 1500, easing: cubicOut });
 	const referringDomains = tweened(0, { duration: 1500, easing: cubicOut });
@@ -48,19 +48,6 @@
 		if (dr >= 70) return '#22c55e';
 		if (dr >= 40) return '#f59e0b';
 		return '#ef4444';
-	}
-
-	function getQualityColor(quality: string): string {
-		switch (quality) {
-			case 'high':
-				return '#22c55e';
-			case 'medium':
-				return '#f59e0b';
-			case 'low':
-				return '#ef4444';
-			default:
-				return '#9ca3af';
-		}
 	}
 </script>
 

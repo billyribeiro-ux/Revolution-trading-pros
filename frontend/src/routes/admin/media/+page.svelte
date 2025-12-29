@@ -15,12 +15,10 @@
    */
   import { onMount, onDestroy } from 'svelte';
   import { fly, fade, scale, slide } from 'svelte/transition';
-  import { spring, tweened } from 'svelte/motion';
-  import { cubicOut, backOut } from 'svelte/easing';
+  import { tweened } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
   import DropZone from '$lib/components/media/DropZone.svelte';
   import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
-  import UploadProgress from '$lib/components/media/UploadProgress.svelte';
-  import OptimizationStats from '$lib/components/media/OptimizationStats.svelte';
   import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
   import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
   import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
@@ -104,9 +102,10 @@
       const response = await mediaApi.list({
         page: currentPage,
         per_page: perPage,
-        search: searchQuery || undefined,
-        type: filterType !== 'all' ? filterType : undefined,
-        optimized: filterStatus === 'optimized' ? true : filterStatus === 'pending' ? false : undefined,
+        ...(searchQuery && { search: searchQuery }),
+        ...(filterType !== 'all' && { type: filterType }),
+        ...(filterStatus === 'optimized' && { optimized: true }),
+        ...(filterStatus === 'pending' && { optimized: false }),
         sort_by: sortBy,
         sort_dir: sortDir,
       });
@@ -173,7 +172,9 @@
     const idx = uploadQueue.findIndex((u) => u.id === id);
     if (idx === -1) return;
 
-    uploadQueue[idx].status = 'uploading';
+    const uploadItem = uploadQueue[idx];
+    if (!uploadItem) return;
+    uploadItem.status = 'uploading';
     uploadQueue = uploadQueue;
 
     try {
@@ -185,8 +186,11 @@
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
           const progress = Math.round((e.loaded / e.total) * 100);
-          uploadQueue[idx].progress = progress;
-          uploadQueue = uploadQueue;
+          const item = uploadQueue[idx];
+          if (item) {
+            item.progress = progress;
+            uploadQueue = uploadQueue;
+          }
         }
       };
 
@@ -203,8 +207,11 @@
         xhr.send(formData);
       });
 
-      uploadQueue[idx].status = 'complete';
-      uploadQueue[idx].result = result;
+      const completedItem = uploadQueue[idx];
+      if (completedItem) {
+        completedItem.status = 'complete';
+        completedItem.result = result;
+      }
       uploadQueue = uploadQueue;
 
       // Add to items list
@@ -213,8 +220,11 @@
       loadStatistics();
 
     } catch (e: any) {
-      uploadQueue[idx].status = 'error';
-      uploadQueue[idx].error = e.message || 'Upload failed';
+      const errorItem = uploadQueue[idx];
+      if (errorItem) {
+        errorItem.status = 'error';
+        errorItem.error = e.message || 'Upload failed';
+      }
       uploadQueue = uploadQueue;
     }
 
@@ -250,7 +260,8 @@
       const [from, to] = start < end ? [start, end] : [end, start];
 
       for (let i = from; i <= to; i++) {
-        selectedIds.add(items[i].id);
+        const item = items[i];
+        if (item) selectedIds.add(item.id);
       }
       selectedIds = selectedIds;
     } else if (event.metaKey || event.ctrlKey) {
@@ -490,16 +501,22 @@
     switch (event.key) {
       case 'ArrowRight':
         if (currentIndex < items.length - 1) {
-          focusedId = items[currentIndex + 1].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const nextItem = items[currentIndex + 1];
+          if (nextItem) {
+            focusedId = nextItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
 
       case 'ArrowLeft':
         if (currentIndex > 0) {
-          focusedId = items[currentIndex - 1].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const prevItem = items[currentIndex - 1];
+          if (prevItem) {
+            focusedId = prevItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
@@ -507,8 +524,11 @@
       case 'ArrowDown':
         const cols = viewMode === 'grid' ? 6 : 1;
         if (currentIndex + cols < items.length) {
-          focusedId = items[currentIndex + cols].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const downItem = items[currentIndex + cols];
+          if (downItem) {
+            focusedId = downItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
@@ -516,8 +536,11 @@
       case 'ArrowUp':
         const colsUp = viewMode === 'grid' ? 6 : 1;
         if (currentIndex - colsUp >= 0) {
-          focusedId = items[currentIndex - colsUp].id;
-          if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          const upItem = items[currentIndex - colsUp];
+          if (upItem) {
+            focusedId = upItem.id;
+            if (!event.shiftKey) selectedIds = new Set([focusedId]);
+          }
         }
         event.preventDefault();
         break;
@@ -568,7 +591,7 @@
     }
   }
 
-  function handleClickOutside(event: MouseEvent) {
+  function handleClickOutside(_event: MouseEvent) {
     if (contextMenu) {
       contextMenu = null;
     }
@@ -921,7 +944,7 @@
               class:focused={focusedId === item.id}
               onclick={(e: MouseEvent) => handleItemClick(item, e)}
               ondblclick={() => handleItemDoubleClick(item)}
-              oncontextmenu={(e) => handleContextMenu(e, item)}
+              oncontextmenu={(e: MouseEvent) => handleContextMenu(e, item)}
               onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleItemDoubleClick(item)}
               role="button"
               tabindex="0"
@@ -934,7 +957,7 @@
                     <OptimizedImage
                       src={item.thumbnail_url || item.url}
                       alt={item.alt_text || item.filename}
-                      blurhash={String(item.custom_properties?.blurhash || '')}
+                      blurhash={String(item.custom_properties?.['blurhash'] || '')}
                       aspectRatio="1"
                     />
                   {:else}
@@ -977,7 +1000,7 @@
 
                 <div class="item-info">
                   <span class="item-name" title={item.filename}>{item.filename}</span>
-                  <span class="item-meta">{formatBytes(item.size)}</span>
+                  <span class="item-meta">{formatBytes(item.size ?? 0)}</span>
                 </div>
               {:else}
                 <!-- List view -->
@@ -1014,7 +1037,7 @@
                   <span class="item-path">{item.collection || 'default'}</span>
                 </div>
 
-                <div class="item-size">{formatBytes(item.size)}</div>
+                <div class="item-size">{formatBytes(item.size ?? 0)}</div>
 
                 <div class="item-status">
                   {#if item.is_optimized}
@@ -1118,7 +1141,7 @@
             <OptimizedImage
               src={detailItem.url}
               alt={detailItem.alt_text || detailItem.filename}
-              blurhash={String(detailItem.custom_properties?.blurhash || '')}
+              blurhash={String(detailItem.custom_properties?.['blurhash'] || '')}
             />
           {:else}
             <div class="file-preview-icon">{getFileIcon(detailItem.file_type)}</div>
@@ -1132,7 +1155,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Size</span>
-            <span class="detail-value">{formatBytes(detailItem.size)}</span>
+            <span class="detail-value">{formatBytes(detailItem.size ?? 0)}</span>
           </div>
           {#if detailItem.dimensions}
             <div class="detail-row">
@@ -1169,7 +1192,7 @@
             {#if aiEnabled}
               <button
                 class="btn-text btn-sm"
-                onclick={() => handleGenerateAltText(detailItem)}
+                onclick={() => detailItem && handleGenerateAltText(detailItem)}
                 disabled={isAnalyzing}
               >
                 {#if isAnalyzing}
@@ -1188,7 +1211,7 @@
             class="alt-input"
             placeholder="Enter alt text for accessibility..."
             value={detailItem.alt_text || ''}
-            onblur={async (e) => {
+            onblur={async (e: FocusEvent) => {
               const target = e.target as HTMLTextAreaElement;
               if (target.value !== detailItem?.alt_text) {
                 await mediaApi.update(detailItem!.id, { alt_text: target.value });
@@ -1206,7 +1229,7 @@
               <h3>AI Analysis</h3>
               <button
                 class="btn-text btn-sm"
-                onclick={() => handleAIAnalyze(detailItem)}
+                onclick={() => detailItem && handleAIAnalyze(detailItem)}
                 disabled={isAnalyzing}
               >
                 {#if isAnalyzing}
@@ -1217,9 +1240,9 @@
               </button>
             </div>
 
-            {#if detailItem.custom_properties?.ai_tags && Array.isArray(detailItem.custom_properties.ai_tags)}
+            {#if detailItem.custom_properties?.['ai_tags'] && Array.isArray(detailItem.custom_properties['ai_tags'])}
               <div class="ai-tags">
-                {#each detailItem.custom_properties.ai_tags as tag}
+                {#each detailItem.custom_properties['ai_tags'] as tag}
                   <span class="tag">{String(tag)}</span>
                 {/each}
               </div>
@@ -1232,7 +1255,7 @@
         <!-- Actions -->
         <div class="details-actions">
           {#if detailItem.file_type === 'image'}
-            <button class="btn-secondary" onclick={() => handleCrop(detailItem)}>
+            <button class="btn-secondary" onclick={() => detailItem && handleCrop(detailItem)}>
               <svg viewBox="0 0 20 20" fill="currentColor">
                 <path d="M4 3a1 1 0 011 1v2h2a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 011-1zm12 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2V4a1 1 0 011-1zM3 12a1 1 0 011-1h3a1 1 0 110 2H5v2a1 1 0 11-2 0v-3zm14 0a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h2v-2a1 1 0 011-1z"/>
               </svg>
@@ -1245,13 +1268,13 @@
               Responsive Preview
             </button>
           {/if}
-          <button class="btn-primary" onclick={() => handleOptimize(detailItem)}>
+          <button class="btn-primary" onclick={() => detailItem && handleOptimize(detailItem)}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
             </svg>
             Optimize
           </button>
-          <button class="btn-danger" onclick={() => handleDelete(detailItem)}>
+          <button class="btn-danger" onclick={() => detailItem && handleDelete(detailItem)}>
             <svg viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
             </svg>
@@ -1385,7 +1408,6 @@
         </button>
       </div>
       <ResponsivePreview
-        originalUrl={detailItem.url}
         variants={detailItem.variants as any || []}
       />
     </div>

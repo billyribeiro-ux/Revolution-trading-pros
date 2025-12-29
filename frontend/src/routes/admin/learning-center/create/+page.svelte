@@ -17,7 +17,6 @@
 	import { get } from 'svelte/store';
 	import { RoomSelector } from '$lib/components/learning-center';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
-	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconFileText from '@tabler/icons-svelte/icons/file-text';
 	import IconFile from '@tabler/icons-svelte/icons/file';
@@ -157,31 +156,31 @@
 
 		if (step === 1) {
 			// Step 1: Trading Rooms selection
-			if (formData.tradingRoomIds.length === 0) {
-				newErrors.tradingRoomIds = 'Please select at least one trading room';
+			if (formData['tradingRoomIds'].length === 0) {
+				newErrors['tradingRoomIds'] = 'Please select at least one trading room';
 			}
 		}
 
 		if (step === 2) {
 			// Step 2: Basic info
-			if (!formData.title.trim()) {
-				newErrors.title = 'Title is required';
+			if (!formData['title'].trim()) {
+				newErrors['title'] = 'Title is required';
 			}
-			if (!formData.description.trim()) {
-				newErrors.description = 'Description is required';
+			if (!formData['description'].trim()) {
+				newErrors['description'] = 'Description is required';
 			}
-			if (!formData.trainerId) {
-				newErrors.trainerId = 'Please select a trainer';
+			if (!formData['trainerId']) {
+				newErrors['trainerId'] = 'Please select a trainer';
 			}
-			if (!formData.categoryId) {
-				newErrors.categoryId = 'Please select a category';
+			if (!formData['categoryId']) {
+				newErrors['categoryId'] = 'Please select a category';
 			}
 		}
 
 		if (step === 3) {
 			// Step 3: Content
-			if (formData.type === 'video' && !formData.videoUrl) {
-				newErrors.videoUrl = 'Video URL is required';
+			if (formData.type === 'video' && !formData['videoUrl']) {
+				newErrors['videoUrl'] = 'Video URL is required';
 			}
 		}
 
@@ -194,8 +193,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function handleRoomSelect(roomIds: string[]) {
-		formData.tradingRoomIds = roomIds;
-		if (errors.tradingRoomIds) {
+		formData['tradingRoomIds'] = roomIds;
+		if (errors['tradingRoomIds']) {
 			errors = { ...errors, tradingRoomIds: '' };
 		}
 	}
@@ -245,14 +244,6 @@
 		} finally {
 			isSubmitting = false;
 		}
-	}
-
-	// Generate slug from title
-	function generateSlug(title: string): string {
-		return title
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-|-$/g, '');
 	}
 
 	// Steps config
@@ -313,14 +304,14 @@
 
 				<RoomSelector
 					rooms={tradingRooms}
-					selectedRoomIds={formData.tradingRoomIds}
+					selectedRoomIds={formData['tradingRoomIds']}
 					onSelect={handleRoomSelect}
 					multiple={true}
 					showDescription={true}
 				/>
 
-				{#if errors.tradingRoomIds}
-					<p class="error-message">{errors.tradingRoomIds}</p>
+				{#if errors['tradingRoomIds']}
+					<p class="error-message">{errors['tradingRoomIds']}</p>
 				{/if}
 			</div>
 		{/if}
@@ -340,12 +331,12 @@
 						<input
 							type="text"
 							id="title"
-							bind:value={formData.title}
+							bind:value={formData['title']}
 							placeholder="Enter lesson title"
-							class:error={errors.title}
+							class:error={errors['title']}
 						/>
-						{#if errors.title}
-							<span class="error-text">{errors.title}</span>
+						{#if errors['title']}
+							<span class="error-text">{errors['title']}</span>
 						{/if}
 					</div>
 
@@ -354,13 +345,13 @@
 						<label for="description">Short Description <span class="required">*</span></label>
 						<textarea
 							id="description"
-							bind:value={formData.description}
+							bind:value={formData['description']}
 							placeholder="Brief description (shown in listings)"
 							rows="2"
-							class:error={errors.description}
+							class:error={errors['description']}
 						></textarea>
-						{#if errors.description}
-							<span class="error-text">{errors.description}</span>
+						{#if errors['description']}
+							<span class="error-text">{errors['description']}</span>
 						{/if}
 					</div>
 
@@ -380,16 +371,16 @@
 						<label for="trainer">Trainer <span class="required">*</span></label>
 						<select
 							id="trainer"
-							bind:value={formData.trainerId}
-							class:error={errors.trainerId}
+							bind:value={formData['trainerId']}
+							class:error={errors['trainerId']}
 						>
 							<option value="">Select trainer...</option>
 							{#each trainers as trainer}
 								<option value={trainer.id}>{trainer.name}</option>
 							{/each}
 						</select>
-						{#if errors.trainerId}
-							<span class="error-text">{errors.trainerId}</span>
+						{#if errors['trainerId']}
+							<span class="error-text">{errors['trainerId']}</span>
 						{/if}
 					</div>
 
@@ -398,16 +389,16 @@
 						<label for="category">Category <span class="required">*</span></label>
 						<select
 							id="category"
-							bind:value={formData.categoryId}
-							class:error={errors.categoryId}
+							bind:value={formData['categoryId']}
+							class:error={errors['categoryId']}
 						>
 							<option value="">Select category...</option>
 							{#each categories as category}
 								<option value={category.id}>{category.name}</option>
 							{/each}
 						</select>
-						{#if errors.categoryId}
-							<span class="error-text">{errors.categoryId}</span>
+						{#if errors['categoryId']}
+							<span class="error-text">{errors['categoryId']}</span>
 						{/if}
 					</div>
 
@@ -475,15 +466,15 @@
 						<input
 							type="url"
 							id="videoUrl"
-							bind:value={formData.videoUrl}
+							bind:value={formData['videoUrl']}
 							placeholder="https://..."
-							class:error={errors.videoUrl}
+							class:error={errors['videoUrl']}
 						/>
 						<span class="helper-text">
 							Supports YouTube, Vimeo, Wistia, or direct video URLs (S3, etc.)
 						</span>
-						{#if errors.videoUrl}
-							<span class="error-text">{errors.videoUrl}</span>
+						{#if errors['videoUrl']}
+							<span class="error-text">{errors['videoUrl']}</span>
 						{/if}
 					</div>
 				{/if}
@@ -627,8 +618,8 @@
 					</div>
 				</div>
 
-				{#if errors.submit}
-					<p class="error-message">{errors.submit}</p>
+				{#if errors['submit']}
+					<p class="error-message">{errors['submit']}</p>
 				{/if}
 			</div>
 		{/if}

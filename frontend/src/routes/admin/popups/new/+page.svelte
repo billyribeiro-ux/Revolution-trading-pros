@@ -20,9 +20,7 @@
 		animation: 'zoom',
 		show_close_button: true,
 		close_on_overlay_click: true,
-		auto_close_after: undefined,
 		has_form: false,
-		form_id: undefined,
 		trigger_rules: {},
 		frequency_rules: { frequency: 'once_per_session' },
 		display_rules: { devices: ['desktop', 'tablet', 'mobile'] },
@@ -98,16 +96,16 @@
 	function validateForm(): boolean {
 		errors = {};
 
-		if (!formData.name?.trim()) {
-			errors.name = 'Name is required';
+		if (!formData['name']?.trim()) {
+			errors['name'] = 'Name is required';
 		}
 
-		if (!formData.title?.trim()) {
-			errors.title = 'Title is required';
+		if (!formData['title']?.trim()) {
+			errors['title'] = 'Title is required';
 		}
 
-		if (!formData.content?.trim()) {
-			errors.content = 'Content is required';
+		if (!formData['content']?.trim()) {
+			errors['content'] = 'Content is required';
 		}
 
 		return Object.keys(errors).length === 0;
@@ -124,13 +122,13 @@
 
 		switch (formData.type) {
 			case 'timed':
-				triggerRules.delay = timedDelay;
+				triggerRules['delay'] = timedDelay;
 				break;
 			case 'scroll':
-				triggerRules.scroll_depth = scrollDepth;
+				triggerRules['scroll_depth'] = scrollDepth;
 				break;
 			case 'click_trigger':
-				triggerRules.selector = clickSelector;
+				triggerRules['selector'] = clickSelector;
 				break;
 		}
 
@@ -179,9 +177,9 @@
 						<Input
 							id="popup-name"
 							label="Internal Name *"
-							bind:value={formData.name}
+							bind:value={formData['name']}
 							placeholder="e.g., Exit Intent - Newsletter"
-							error={errors.name}
+							{...(errors['name'] && { error: errors['name'] })}
 						/>
 						<p class="text-xs text-gray-500 mt-1">For your reference only, not shown to users</p>
 					</div>
@@ -229,9 +227,9 @@
 						<Input
 							id="popup-title"
 							label="Title *"
-							bind:value={formData.title}
+							bind:value={formData['title']}
 							placeholder="e.g., Wait! Don't Leave Yet"
-							error={errors.title}
+							{...(errors['title'] && { error: errors['title'] })}
 						/>
 					</div>
 
@@ -241,15 +239,15 @@
 						</label>
 						<textarea
 							id="popup-content"
-							bind:value={formData.content}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 {errors.content
+							bind:value={formData['content']}
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 {errors['content']
 								? ' border-red-500'
 								: ''}"
 							rows="4"
 							placeholder="Enter your message (HTML allowed)"
 						></textarea>
-						{#if errors.content}
-							<p class="text-xs text-red-600 mt-1">{errors.content}</p>
+						{#if errors['content']}
+							<p class="text-xs text-red-600 mt-1">{errors['content']}</p>
 						{/if}
 						<p class="text-xs text-gray-500 mt-1">HTML is supported for formatting</p>
 					</div>

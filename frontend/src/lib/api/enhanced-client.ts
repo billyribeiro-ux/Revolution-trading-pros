@@ -15,7 +15,7 @@
 
 import { browser } from '$app/environment';
 import { getAuthToken } from '$lib/stores/auth';
-import { getCircuitBreaker, type CircuitBreaker } from '../resilience/circuit-breaker';
+import { getCircuitBreaker, type CircuitBreaker as _CircuitBreaker } from '../resilience/circuit-breaker';
 import { retryNetworkRequest, withIdempotency, generateIdempotencyKey } from '../resilience/retry';
 import {
 	startSpan,
@@ -134,7 +134,7 @@ export class EnhancedApiClient {
 		return this.request<T>(url, {
 			...config,
 			method: 'POST',
-			body: data ? JSON.stringify(data) : undefined,
+			...(data && { body: JSON.stringify(data) }),
 			idempotent: config.idempotent !== undefined ? config.idempotent : true
 		});
 	}
@@ -143,7 +143,7 @@ export class EnhancedApiClient {
 		return this.request<T>(url, {
 			...config,
 			method: 'PUT',
-			body: data ? JSON.stringify(data) : undefined,
+			...(data && { body: JSON.stringify(data) }),
 			idempotent: config.idempotent !== undefined ? config.idempotent : true
 		});
 	}
@@ -156,7 +156,7 @@ export class EnhancedApiClient {
 		return this.request<T>(url, {
 			...config,
 			method: 'PATCH',
-			body: data ? JSON.stringify(data) : undefined
+			...(data && { body: JSON.stringify(data) })
 		});
 	}
 
@@ -383,7 +383,7 @@ export class EnhancedApiClient {
 			const breaker = getCircuitBreaker(circuitName, {
 				name: circuitName,
 				failureThreshold: 5,
-				timeout: config.timeout,
+				...(config.timeout !== undefined && { timeout: config.timeout }),
 				resetTimeout: 60000
 			});
 
@@ -474,6 +474,9 @@ export class EnhancedApiClient {
 		// Check if limit exceeded
 		if (state.requests.length >= state.maxRequests) {
 			const oldestRequest = state.requests[0];
+			if (oldestRequest === undefined) {
+				throw new RateLimitError('Rate limit exceeded', 429, Date.now() + state.windowMs);
+			}
 			const resetTime = oldestRequest + state.windowMs;
 			const waitTime = resetTime - now;
 
@@ -567,7 +570,7 @@ export class RateLimitError extends Error {
 // Production fallback - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE_URL = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
+const API_BASE_URL = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
 
 export const apiClient = new EnhancedApiClient(API_BASE_URL);
 

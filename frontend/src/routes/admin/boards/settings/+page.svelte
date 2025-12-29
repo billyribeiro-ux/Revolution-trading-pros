@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { boardsAPI } from '$lib/api/boards';
-	import type { BoardsSettings, StorageConfig, DefaultStage, DefaultLabel } from '$lib/boards/types';
+	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
 	import {
 		IconLayoutKanban,
 		IconArrowLeft,

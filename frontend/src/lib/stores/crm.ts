@@ -36,7 +36,7 @@ export const contactsByStatus = derived(contacts, ($contacts) => {
 	return $contacts.reduce(
 		(acc, contact) => {
 			if (!acc[contact.status]) acc[contact.status] = [];
-			acc[contact.status].push(contact);
+			acc[contact.status]!.push(contact);
 			return acc;
 		},
 		{} as Record<string, Contact[]>

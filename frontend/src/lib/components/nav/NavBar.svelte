@@ -347,10 +347,10 @@
 
 		if (event.shiftKey && document.activeElement === first) {
 			event.preventDefault();
-			last.focus();
+			last?.focus();
 		} else if (!event.shiftKey && document.activeElement === last) {
 			event.preventDefault();
-			first.focus();
+			first?.focus();
 		}
 	}
 
@@ -480,15 +480,19 @@
 			case 'Enter':
 			case ' ':
 				if (focusedDropdownIndex >= 0) {
-					event.preventDefault();
-					handleNavClick(submenu[focusedDropdownIndex].href, submenu[focusedDropdownIndex].label);
+					const item = submenu[focusedDropdownIndex];
+					if (item) {
+						event.preventDefault();
+						handleNavClick(item.href, item.label);
+					}
 				}
 				break;
+			}
 		}
-	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NAVIGATION HANDLERS
+		// ═══════════════════════════════════════════════════════════════════════════
+		// NAVIGATION HANDLERS
+		// ═══════════════════════════════════════════════════════════════════════════
 	// ═══════════════════════════════════════════════════════════════════════════
 	
 	function handleNavClick(href: string, label: string): void {
@@ -552,7 +556,7 @@
 		scrollObserver = new IntersectionObserver(
 			(entries) => {
 				// When sentinel is NOT visible, navbar should be scrolled
-				isScrolled = !entries[0].isIntersecting;
+				isScrolled = !entries[0]?.isIntersecting;
 			},
 			{
 				threshold: 0,

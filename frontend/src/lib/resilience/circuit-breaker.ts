@@ -270,7 +270,7 @@ export class CircuitBreaker<T = any> {
 			case 'CLOSED':
 				warn(`Circuit breaker ${this.config.name} closed, normal operation resumed`);
 				this.consecutiveFailures = 0;
-				this.nextAttemptTime = undefined;
+				delete this.nextAttemptTime;
 				break;
 		}
 
@@ -339,9 +339,9 @@ export class CircuitBreaker<T = any> {
 			consecutiveFailures: this.consecutiveFailures,
 			consecutiveSuccesses: this.consecutiveSuccesses,
 			totalRequests: this.totalRequests,
-			lastFailureTime: this.lastFailureTime,
-			lastSuccessTime: this.lastSuccessTime,
-			nextAttemptTime: this.nextAttemptTime
+			...(this.lastFailureTime !== undefined && { lastFailureTime: this.lastFailureTime }),
+			...(this.lastSuccessTime !== undefined && { lastSuccessTime: this.lastSuccessTime }),
+			...(this.nextAttemptTime !== undefined && { nextAttemptTime: this.nextAttemptTime })
 		};
 	}
 
@@ -391,9 +391,9 @@ export class CircuitBreaker<T = any> {
 		this.consecutiveFailures = 0;
 		this.consecutiveSuccesses = 0;
 		this.totalRequests = 0;
-		this.lastFailureTime = undefined;
-		this.lastSuccessTime = undefined;
-		this.nextAttemptTime = undefined;
+		delete this.lastFailureTime;
+		delete this.lastSuccessTime;
+		delete this.nextAttemptTime;
 		this.requestHistory = [];
 		this.transitionTo('CLOSED');
 	}

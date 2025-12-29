@@ -12,7 +12,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { cartStore, cartTotal, cartItemCount } from '$lib/stores/cart';
+	import { cartStore, cartTotal } from '$lib/stores/cart';
 	import { login, register } from '$lib/api/auth';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconTicket from '@tabler/icons-svelte/icons/ticket';
@@ -51,13 +51,6 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	function formatPrice(price: number): string {
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: 'USD'
-		}).format(price);
-	}
 
 	function getIntervalLabel(interval?: string): string {
 		switch (interval) {

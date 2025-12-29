@@ -23,8 +23,8 @@
 				first_name: formData.first_name,
 				last_name: formData.last_name,
 				email: formData.email,
-				phone: formData.phone || undefined,
-				job_title: formData.job_title || undefined
+				...(formData.phone && { phone: formData.phone }),
+				...(formData.job_title && { job_title: formData.job_title })
 			});
 			goto('/admin/contacts');
 		} catch (error) {

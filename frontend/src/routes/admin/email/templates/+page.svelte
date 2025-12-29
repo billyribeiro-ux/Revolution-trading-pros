@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
 	import { goto } from '$app/navigation';
-	import { IconEdit, IconTrash, IconEye, IconPlus } from '$lib/icons';
+	import { IconEdit, IconTrash, IconEye } from '$lib/icons';
 
 	let templates: EmailTemplate[] = [];
 	let loading = true;

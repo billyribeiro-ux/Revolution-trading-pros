@@ -61,16 +61,15 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
 
-const API_BASE = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
-const WS_URL = browser ? import.meta.env.VITE_WS_URL || PROD_WS : '';
-const ML_API = browser ? import.meta.env.VITE_ML_API || PROD_ML : '';
+const API_BASE = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const SYNC_INTERVAL = 60000; // 1 minute
 const PATTERN_CHECK_BATCH = 100;
 const RISK_SCORE_THRESHOLD = 0.7;
 const SIMILAR_EMAIL_THRESHOLD = 0.85;
-const AUTO_BAN_THRESHOLD = 5; // violations
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
@@ -623,7 +622,7 @@ class BannedEmailManagementService {
 					await this.bulkBanEmails({
 						emails: similar,
 						reason: `Similar to banned email: ${request.email || 'unknown'}`,
-						cascade: request.cascade
+						...(request.cascade !== undefined && { cascade: request.cascade })
 					});
 				}
 			}
@@ -864,7 +863,7 @@ class BannedEmailManagementService {
 
 		// Return default info
 		return {
-			domain,
+			domain: domain || '',
 			is_disposable: false,
 			is_free_provider: false,
 			is_corporate: false,
@@ -1279,13 +1278,15 @@ class PatternDetectionEngine {
 
 	findSimilar(email: string): string[] {
 		// Simple similarity check - would be more sophisticated in production
-		const base = email.split('@')[0].replace(/[0-9]/g, '');
-		const domain = email.split('@')[1];
+		const parts = email.split('@');
+		if (parts.length < 2 || !parts[0] || !parts[1]) return [];
+		const base = parts[0].replace(/[0-9]/g, '');
+		const domain = parts[1];
 
 		return [`${base}1@${domain}`, `${base}2@${domain}`, `${base}.test@${domain}`];
 	}
 
-	analyzePatterns(emails: string[]): any[] {
+	analyzePatterns(_emails: string[]): any[] {
 		// Analyze patterns across multiple emails
 		return [];
 	}

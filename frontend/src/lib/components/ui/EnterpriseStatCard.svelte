@@ -8,7 +8,6 @@
 	 * @level L8 Principal Engineer
 	 */
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
@@ -159,55 +158,6 @@
 					if (entry.isIntersecting && !hasAnimated) {
 						isVisible = true;
 						hasAnimated = true;
-
-						// Entrance animation
-						gsap.fromTo(
-							cardRef,
-							{
-								opacity: 0,
-								y: 30,
-								scale: 0.95
-							},
-							{
-								opacity: 1,
-								y: 0,
-								scale: 1,
-								duration: 0.8,
-								delay: delay,
-								ease: 'power3.out'
-							}
-						);
-
-						// Icon bounce animation
-						const iconEl = cardRef.querySelector('.stat-icon');
-						if (iconEl) {
-							gsap.fromTo(
-								iconEl,
-								{ scale: 0, rotation: -180 },
-								{
-									scale: 1,
-									rotation: 0,
-									duration: 0.6,
-									delay: delay + 0.3,
-									ease: 'back.out(1.7)'
-								}
-							);
-						}
-
-						// Progress bar animation
-						const progressBar = cardRef.querySelector('.progress-fill');
-						if (progressBar) {
-							gsap.fromTo(
-								progressBar,
-								{ width: 0 },
-								{
-									width: `${progressPercent}%`,
-									duration: 1,
-									delay: delay + 0.5,
-									ease: 'power2.out'
-								}
-							);
-						}
 					}
 				});
 			},
@@ -224,9 +174,11 @@
 <div
 	bind:this={cardRef}
 	class="enterprise-stat-card relative p-6 rounded-2xl border bg-gradient-to-br {colors.bg} {colors.border}
-		backdrop-blur-xl transition-all duration-300 opacity-0
+		backdrop-blur-xl transition-all duration-500
+		{!hasAnimated ? 'esc-enter' : ''} {hasAnimated ? 'esc-enter-active' : ''}
 		{clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-xl' : ''}
 		hover:{colors.glow}"
+	style={`transition-delay: ${delay}s`}
 	role={clickable ? 'button' : undefined}
 	tabindex={clickable ? 0 : undefined}
 	onclick={clickable ? handleClick : undefined}
@@ -292,7 +244,7 @@
 				<div class="h-2 bg-slate-700/50 rounded-full overflow-hidden">
 					<div
 						class="progress-fill h-full rounded-full bg-gradient-to-r {colors.gradient}"
-						style="width: 0%;"
+						style={`width: ${hasAnimated ? progressPercent : 0}%; transition: width 900ms ease; transition-delay: ${delay + 0.5}s;`}
 					></div>
 				</div>
 			</div>
@@ -324,5 +276,35 @@
 
 	.enterprise-stat-card:hover {
 		transform: translateY(-2px);
+	}
+
+	.esc-enter {
+		opacity: 0;
+		transform: translateY(30px) scale(0.95);
+	}
+
+	.esc-enter-active {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+
+	.stat-icon {
+		transform-origin: center;
+	}
+
+	/* Lightweight icon “pop” without GSAP */
+	.esc-enter-active .stat-icon {
+		animation: esc-icon-pop 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		animation-delay: 0.3s;
+		animation-fill-mode: both;
+	}
+
+	@keyframes esc-icon-pop {
+		0% {
+			transform: scale(0) rotate(-180deg);
+		}
+		100% {
+			transform: scale(1) rotate(0);
+		}
 	}
 </style>

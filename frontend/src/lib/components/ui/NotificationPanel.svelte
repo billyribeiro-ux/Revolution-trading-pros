@@ -12,7 +12,6 @@
 	import { gsap } from 'gsap';
 	import {
 		IconBell,
-		IconCheck,
 		IconX,
 		IconAlertCircle,
 		IconInfoCircle,

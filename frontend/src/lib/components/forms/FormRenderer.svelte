@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Form, FormField, ConditionalLogic } from '$lib/api/forms';
+	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
 
@@ -161,7 +161,7 @@
 	// Get CSS classes for the form
 	function getFormClasses(): string {
 		const baseClasses = 'revolution-form';
-		const customClasses = form.styles?.form_class || '';
+		const customClasses = form.styles?.['form_class'] || '';
 		return `${baseClasses} ${customClasses}`.trim();
 	}
 
@@ -213,7 +213,7 @@
 							<FormFieldRenderer
 								{field}
 								value={formData[field.name]}
-								error={errors[field.name]}
+								error={errors[field.name] ?? []}
 								onchange={(val) => handleFieldChange(field.name, val)}
 							/>
 						</div>

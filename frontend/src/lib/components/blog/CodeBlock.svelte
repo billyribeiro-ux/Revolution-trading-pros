@@ -41,8 +41,10 @@
 		for (const part of parts) {
 			if (part.includes('-')) {
 				const [start, end] = part.split('-').map(Number);
-				for (let i = start; i <= end; i++) {
-					lines.add(i);
+				if (start !== undefined && end !== undefined && !isNaN(start) && !isNaN(end)) {
+					for (let i = start; i <= end; i++) {
+						lines.add(i);
+					}
 				}
 			} else {
 				lines.add(Number(part));

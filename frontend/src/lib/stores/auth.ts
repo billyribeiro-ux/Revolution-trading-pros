@@ -224,18 +224,18 @@ function createAuthStore() {
 				name: user?.name ?? '',
 				email: user?.email ?? '',
 				email_verified_at: user?.email_verified_at ?? null,
-				email_verified: user?.email_verified,
+				...(user?.email_verified !== undefined && { email_verified: user.email_verified }),
 				created_at: user?.created_at ?? '',
-				updated_at: user?.updated_at,
-				first_name: user?.first_name,
-				last_name: user?.last_name,
+				...(user?.updated_at !== undefined && { updated_at: user.updated_at }),
+				...(user?.first_name !== undefined && { first_name: user.first_name }),
+				...(user?.last_name !== undefined && { last_name: user.last_name }),
 				roles: user?.roles ?? (user?.role ? [user.role] : []),
-				role: user?.role,
+				...(user?.role !== undefined && { role: user.role }),
 				permissions: user?.permissions ?? [],
 				is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
-				avatar: user?.avatar ?? user?.avatar_url,
-				avatar_url: user?.avatar_url,
-				mfa_enabled: user?.mfa_enabled
+				...(user?.avatar ?? user?.avatar_url ? { avatar: user?.avatar ?? user?.avatar_url } : {}),
+				...(user?.avatar_url !== undefined && { avatar_url: user.avatar_url }),
+				...(user?.mfa_enabled !== undefined && { mfa_enabled: user.mfa_enabled })
 			};
 
 			// SECURITY: Store tokens in memory only (XSS-resistant)
@@ -298,18 +298,18 @@ function createAuthStore() {
 				name: user?.name ?? '',
 				email: user?.email ?? '',
 				email_verified_at: user?.email_verified_at ?? null,
-				email_verified: user?.email_verified,
+				...(user?.email_verified !== undefined && { email_verified: user.email_verified }),
 				created_at: user?.created_at ?? '',
-				updated_at: user?.updated_at,
-				first_name: user?.first_name,
-				last_name: user?.last_name,
+				...(user?.updated_at !== undefined && { updated_at: user.updated_at }),
+				...(user?.first_name !== undefined && { first_name: user.first_name }),
+				...(user?.last_name !== undefined && { last_name: user.last_name }),
 				roles: user?.roles ?? (user?.role ? [user.role] : []),
-				role: user?.role,
+				...(user?.role !== undefined && { role: user.role }),
 				permissions: user?.permissions ?? [],
 				is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
-				avatar: user?.avatar ?? user?.avatar_url,
-				avatar_url: user?.avatar_url,
-				mfa_enabled: user?.mfa_enabled
+				...(user?.avatar ?? user?.avatar_url ? { avatar: user?.avatar ?? user?.avatar_url } : {}),
+				...(user?.avatar_url !== undefined && { avatar_url: user.avatar_url }),
+				...(user?.mfa_enabled !== undefined && { mfa_enabled: user.mfa_enabled })
 			};
 
 			update((state) => ({

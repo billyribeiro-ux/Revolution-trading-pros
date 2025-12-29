@@ -18,10 +18,10 @@
  */
 
 import { browser } from '$app/environment';
-import { writable, derived, type Readable } from 'svelte/store';
+import { writable, derived as _derived, type Readable } from 'svelte/store';
 
 import type {
-	HttpMethod,
+	HttpMethod as _HttpMethod,
 	EnterpriseRequestConfig,
 	EnterpriseResponse,
 	EnterpriseApiError,
@@ -31,12 +31,12 @@ import type {
 	CacheEntry,
 	CircuitBreakerConfig,
 	CircuitBreakerState,
-	CircuitState,
+	CircuitState as _CircuitState,
 	RequestMetrics,
 	ApiEvent,
 	ApiEventHandler,
 	ApiEventType,
-	BackoffStrategy
+	BackoffStrategy as _BackoffStrategy
 } from './types';
 
 import {
@@ -87,7 +87,7 @@ export interface EnterpriseClientConfig {
 }
 
 const defaultConfig: EnterpriseClientConfig = {
-	baseUrl: import.meta.env.VITE_API_URL || '',
+	baseUrl: import.meta.env['VITE_API_URL'] || '',
 	timeout: 30000,
 	retry: {
 		maxAttempts: 3,
@@ -211,8 +211,8 @@ export class EnterpriseClient {
 
 	async request<T>(endpoint: string, config: Partial<EnterpriseRequestConfig> = {}): Promise<T> {
 		const context = createRequestContext({
-			priority: config.priority,
-			metadata: config.metadata
+			...(config.priority !== undefined && { priority: config.priority }),
+			...(config.metadata !== undefined && { metadata: config.metadata })
 		});
 
 		const fullConfig: EnterpriseRequestConfig = {
@@ -303,9 +303,9 @@ export class EnterpriseClient {
 
 			// Build request options
 			const requestInit: RequestInit = {
-				method: processedConfig.method,
-				headers: processedConfig.headers,
-				credentials: processedConfig.credentials,
+				...(processedConfig.method !== undefined && { method: processedConfig.method }),
+				...(processedConfig.headers !== undefined && { headers: processedConfig.headers }),
+				...(processedConfig.credentials !== undefined && { credentials: processedConfig.credentials }),
 				signal: this.createAbortSignal(processedConfig.timeout, processedConfig.signal)
 			};
 
@@ -389,9 +389,9 @@ export class EnterpriseClient {
 			const processedError = await executeErrorInterceptors(this.interceptors, apiError, context);
 
 			// Check if we should retry (token refreshed)
-			if (processedError.context?.metadata?.shouldRetry && !context.metadata?.retriedAfterRefresh) {
+			if (processedError.context?.metadata?.['shouldRetry'] && !context.metadata?.['retriedAfterRefresh']) {
 				const retryContext = createRetryContext(context, 0);
-				retryContext.metadata.retriedAfterRefresh = true;
+				retryContext.metadata['retriedAfterRefresh'] = true;
 				return this.executeRequest<T>(endpoint, config, retryContext);
 			}
 
@@ -483,7 +483,7 @@ export class EnterpriseClient {
 	private shouldRetryResponse(
 		response: Response,
 		retry?: RetryConfig,
-		attempt?: number
+		_attempt?: number
 	): boolean {
 		const retryableStatuses = retry?.retryableStatuses ?? this.config.retry.retryableStatuses ?? [];
 		return retryableStatuses.includes(response.status);
@@ -672,7 +672,7 @@ export class EnterpriseClient {
 		return `${config.method || 'GET'}:${endpoint}:${params}`;
 	}
 
-	private getFromCache<T>(key: string, config?: CacheConfig): T | null {
+	private getFromCache<T>(key: string, _config?: CacheConfig): T | null {
 		const entry = this.cache.get(key);
 
 		if (!entry) {

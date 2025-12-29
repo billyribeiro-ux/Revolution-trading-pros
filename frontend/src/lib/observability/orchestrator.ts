@@ -25,7 +25,7 @@
  */
 
 import { browser } from '$app/environment';
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import type {
 	AnalyticsAdapter,
 	AnalyticsConfig,
@@ -71,7 +71,7 @@ const getDefaultConfig = (): AnalyticsConfig => ({
 	enabled: true,
 	environment: (import.meta.env.MODE as 'development' | 'staging' | 'production') || 'development',
 	googleAnalytics: {
-		measurementId: import.meta.env.PUBLIC_GA4_MEASUREMENT_ID || '',
+		measurementId: import.meta.env['PUBLIC_GA4_MEASUREMENT_ID'] || '',
 		debug: import.meta.env.DEV,
 		sendPageView: false,
 		anonymizeIp: true,
@@ -79,7 +79,7 @@ const getDefaultConfig = (): AnalyticsConfig => ({
 		allowAdPersonalization: false,
 	},
 	backend: {
-		endpoint: import.meta.env.VITE_ANALYTICS_ENDPOINT || '/api/analytics/batch',
+		endpoint: import.meta.env['VITE_ANALYTICS_ENDPOINT'] || '/api/analytics/batch',
 		flushIntervalMs: 5000,
 		maxBatchSize: 50,
 		useSendBeacon: true,
@@ -182,17 +182,17 @@ class AnalyticsOrchestrator {
 			...customConfig,
 			googleAnalytics: {
 				measurementId: customConfig?.googleAnalytics?.measurementId ?? ga.measurementId,
-				debug: customConfig?.googleAnalytics?.debug ?? ga.debug,
-				sendPageView: customConfig?.googleAnalytics?.sendPageView ?? ga.sendPageView,
-				anonymizeIp: customConfig?.googleAnalytics?.anonymizeIp ?? ga.anonymizeIp,
-				allowGoogleSignals: customConfig?.googleAnalytics?.allowGoogleSignals ?? ga.allowGoogleSignals,
-				allowAdPersonalization: customConfig?.googleAnalytics?.allowAdPersonalization ?? ga.allowAdPersonalization,
+				...(customConfig?.googleAnalytics?.debug !== undefined ? { debug: customConfig.googleAnalytics.debug } : ga.debug !== undefined ? { debug: ga.debug } : {}),
+				...(customConfig?.googleAnalytics?.sendPageView !== undefined ? { sendPageView: customConfig.googleAnalytics.sendPageView } : ga.sendPageView !== undefined ? { sendPageView: ga.sendPageView } : {}),
+				...(customConfig?.googleAnalytics?.anonymizeIp !== undefined ? { anonymizeIp: customConfig.googleAnalytics.anonymizeIp } : ga.anonymizeIp !== undefined ? { anonymizeIp: ga.anonymizeIp } : {}),
+				...(customConfig?.googleAnalytics?.allowGoogleSignals !== undefined ? { allowGoogleSignals: customConfig.googleAnalytics.allowGoogleSignals } : ga.allowGoogleSignals !== undefined ? { allowGoogleSignals: ga.allowGoogleSignals } : {}),
+				...(customConfig?.googleAnalytics?.allowAdPersonalization !== undefined ? { allowAdPersonalization: customConfig.googleAnalytics.allowAdPersonalization } : ga.allowAdPersonalization !== undefined ? { allowAdPersonalization: ga.allowAdPersonalization } : {}),
 			},
 			backend: {
 				endpoint: customConfig?.backend?.endpoint ?? be.endpoint,
-				flushIntervalMs: customConfig?.backend?.flushIntervalMs ?? be.flushIntervalMs,
-				maxBatchSize: customConfig?.backend?.maxBatchSize ?? be.maxBatchSize,
-				useSendBeacon: customConfig?.backend?.useSendBeacon ?? be.useSendBeacon,
+				...(customConfig?.backend?.flushIntervalMs !== undefined ? { flushIntervalMs: customConfig.backend.flushIntervalMs } : be.flushIntervalMs !== undefined ? { flushIntervalMs: be.flushIntervalMs } : {}),
+				...(customConfig?.backend?.maxBatchSize !== undefined ? { maxBatchSize: customConfig.backend.maxBatchSize } : be.maxBatchSize !== undefined ? { maxBatchSize: be.maxBatchSize } : {}),
+				...(customConfig?.backend?.useSendBeacon !== undefined ? { useSendBeacon: customConfig.backend.useSendBeacon } : be.useSendBeacon !== undefined ? { useSendBeacon: be.useSendBeacon } : {}),
 			},
 			console: {
 				...defaults.console,

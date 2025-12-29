@@ -379,64 +379,64 @@ export const connections = {
  * Check if analytics is connected
  */
 export const isAnalyticsConnected = derived(connectionsStore, ($state) => {
-	const analyticsServices = FEATURE_SERVICES.analytics;
-	return analyticsServices.some((key) => $state.connections[key]?.isConnected);
+	const analyticsServices = FEATURE_SERVICES['analytics'];
+	return analyticsServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if SEO tools are connected
  */
 export const isSeoConnected = derived(connectionsStore, ($state) => {
-	const seoServices = FEATURE_SERVICES.seo;
-	return seoServices.some((key) => $state.connections[key]?.isConnected);
+	const seoServices = FEATURE_SERVICES['seo'];
+	return seoServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if email is connected
  */
 export const isEmailConnected = derived(connectionsStore, ($state) => {
-	const emailServices = FEATURE_SERVICES.email;
-	return emailServices.some((key) => $state.connections[key]?.isConnected);
+	const emailServices = FEATURE_SERVICES['email'];
+	return emailServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if payment is connected
  */
 export const isPaymentConnected = derived(connectionsStore, ($state) => {
-	const paymentServices = FEATURE_SERVICES.payment;
-	return paymentServices.some((key) => $state.connections[key]?.isConnected);
+	const paymentServices = FEATURE_SERVICES['payment'];
+	return paymentServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if CRM is connected
  */
 export const isCrmConnected = derived(connectionsStore, ($state) => {
-	const crmServices = FEATURE_SERVICES.crm;
-	return crmServices.some((key) => $state.connections[key]?.isConnected);
+	const crmServices = FEATURE_SERVICES['crm'];
+	return crmServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if Fluent ecosystem is connected (any Fluent product)
  */
 export const isFluentConnected = derived(connectionsStore, ($state) => {
-	const fluentServices = FEATURE_SERVICES.fluent;
-	return fluentServices.some((key) => $state.connections[key]?.isConnected);
+	const fluentServices = FEATURE_SERVICES['fluent'];
+	return fluentServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if Forms is connected (FluentForms Pro)
  */
 export const isFormsConnected = derived(connectionsStore, ($state) => {
-	const formsServices = FEATURE_SERVICES.forms;
-	return formsServices.some((key) => $state.connections[key]?.isConnected);
+	const formsServices = FEATURE_SERVICES['forms'];
+	return formsServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**
  * Check if behavior tracking is connected
  */
 export const isBehaviorConnected = derived(connectionsStore, ($state) => {
-	const behaviorServices = FEATURE_SERVICES.behavior;
-	return behaviorServices.some((key) => $state.connections[key]?.isConnected);
+	const behaviorServices = FEATURE_SERVICES['behavior'];
+	return behaviorServices?.some((key) => $state.connections[key]?.isConnected) ?? false;
 });
 
 /**

@@ -13,7 +13,7 @@
  */
 
 import { browser } from '$app/environment';
-import { get } from 'svelte/store';
+import { get as _get } from 'svelte/store';
 import { authStore } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -23,7 +23,7 @@ import { authStore } from '$lib/stores/auth';
 // Production fallback - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = browser ? import.meta.env.VITE_API_URL || PROD_API : '';
+const API_BASE = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -188,11 +188,13 @@ class CampaignsApiClient {
 			}
 		}
 
-		const response = await fetch(url, {
+		const fetchOptions: RequestInit = {
 			method,
 			headers: this.getAuthHeaders(),
-			body: body ? JSON.stringify(body) : undefined
-		});
+			...(body && { body: JSON.stringify(body) })
+		};
+
+		const response = await fetch(url, fetchOptions);
 
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));

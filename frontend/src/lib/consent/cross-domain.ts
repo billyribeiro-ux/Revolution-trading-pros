@@ -14,7 +14,7 @@
 import { browser } from '$app/environment';
 import type { ConsentState } from './types';
 import { consentStore } from './store';
-import { saveConsent, loadConsent } from './storage';
+import { loadConsent } from './storage';
 
 /**
  * Cross-domain configuration
@@ -39,7 +39,6 @@ const DEFAULT_CONFIG: CrossDomainConfig = {
 	allowedOrigins: [],
 	useUrlParams: false,
 	useDomainCookie: true,
-	cookieDomain: undefined,
 };
 
 let config: CrossDomainConfig = { ...DEFAULT_CONFIG };
@@ -168,7 +167,7 @@ function getDomainCookie(): Partial<ConsentState> | null {
 	const cookies = document.cookie.split(';');
 	for (const cookie of cookies) {
 		const [name, value] = cookie.trim().split('=');
-		if (name === 'rtp_consent_shared') {
+		if (name === 'rtp_consent_shared' && value) {
 			try {
 				return JSON.parse(decodeURIComponent(value));
 			} catch (e) {
@@ -226,7 +225,7 @@ function handleConsentRequest(source: Window, origin: string): void {
 		version: '1.0.0',
 		payload: {
 			consent: {
-				consentId: consent.consentId,
+				...(consent.consentId && { consentId: consent.consentId }),
 				analytics: consent.analytics,
 				marketing: consent.marketing,
 				preferences: consent.preferences,
@@ -282,7 +281,7 @@ function broadcastConsentUpdate(consent: ConsentState): void {
 		version: '1.0.0',
 		payload: {
 			consent: {
-				consentId: consent.consentId,
+				...(consent.consentId && { consentId: consent.consentId }),
 				analytics: consent.analytics,
 				marketing: consent.marketing,
 				preferences: consent.preferences,

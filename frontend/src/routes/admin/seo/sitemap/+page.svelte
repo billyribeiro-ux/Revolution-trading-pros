@@ -4,9 +4,7 @@
 		IconRefresh,
 		IconDownload,
 		IconUpload,
-		IconFileText,
-		IconCheck,
-		IconX
+		IconFileText
 	} from '$lib/icons';
 
 	let stats: any = null;

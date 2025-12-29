@@ -290,7 +290,7 @@
 	// Handle insert
 	function handleInsert(): void {
 		const selected = mediaItems.filter(item => selectedItems.has(item.id));
-		if (selected.length > 0) {
+		if (selected.length > 0 && selected[0]) {
 			onSelect(selected[0]); // For single select
 			onClose();
 		}
@@ -310,9 +310,9 @@
 	function saveEdit(): void {
 		if (editingItem) {
 			const index = mediaItems.findIndex(i => i.id === editingItem!.id);
-			if (index !== -1) {
+			if (index !== -1 && mediaItems[index]) {
 				mediaItems[index] = {
-					...mediaItems[index],
+					...mediaItems[index]!,
 					alt: editForm.alt,
 					caption: editForm.caption,
 					tags: editForm.tags.split(',').map(t => t.trim()).filter(Boolean),
@@ -618,7 +618,7 @@
 								<ul>
 									{#each uploadQueue as file, i}
 										<li>
-											<span class="file-icon">{getTypeIcon(file.type.split('/')[0])}</span>
+											<span class="file-icon">{getTypeIcon(file.type.split('/')[0] ?? 'other')}</span>
 											<div class="file-info">
 												<span class="file-name">{file.name}</span>
 												<span class="file-size">{formatFileSize(file.size)}</span>

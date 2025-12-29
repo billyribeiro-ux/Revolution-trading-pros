@@ -141,8 +141,8 @@ function createConsentStore() {
 					consentId: generateConsentId(),
 					consentMethod: method,
 					strictMode: privacySignals?.requiresStrictConsent || false,
-					countryCode: privacySignals?.region,
-					privacySignals: privacySignals || undefined,
+					...(privacySignals?.region && { countryCode: privacySignals.region }),
+					...(privacySignals && { privacySignals }),
 				};
 
 				// Add expiry
@@ -189,8 +189,8 @@ function createConsentStore() {
 					consentId: generateConsentId(),
 					consentMethod: method,
 					strictMode: privacySignals?.requiresStrictConsent || false,
-					countryCode: privacySignals?.region,
-					privacySignals: privacySignals || undefined,
+					...(privacySignals?.region && { countryCode: privacySignals.region }),
+					...(privacySignals && { privacySignals }),
 				};
 
 				// Add expiry
@@ -238,8 +238,8 @@ function createConsentStore() {
 					consentId: state.consentId || generateConsentId(),
 					consentMethod: method,
 					strictMode: privacySignals?.requiresStrictConsent || false,
-					countryCode: privacySignals?.region,
-					privacySignals: privacySignals || undefined,
+					...(privacySignals?.region && { countryCode: privacySignals.region }),
+					...(privacySignals && { privacySignals }),
 				};
 
 				// Add expiry
@@ -272,7 +272,7 @@ function createConsentStore() {
 			const resetState: ConsentState = {
 				...DEFAULT_CONSENT_STATE,
 				updatedAt: new Date().toISOString(),
-				privacySignals: privacySignals || undefined,
+				...(privacySignals && { privacySignals }),
 			};
 
 			set(resetState);

@@ -62,13 +62,11 @@
 	let sourceBreakdown = $state<Record<string, number>>({});
 
 	let isLoading = $state(true);
-	let error = $state<string | null>(null);
 	let dateRange = $state<'7d' | '30d' | '90d' | '365d'>('30d');
 
 	// Fetch analytics data
 	async function fetchAnalytics() {
 		isLoading = true;
-		error = null;
 
 		try {
 			const response = await fetch(`/api/forms/${formId}/analytics?range=${dateRange}`, {
@@ -87,8 +85,7 @@
 			deviceBreakdown = data.devices || {};
 			browserBreakdown = data.browsers || {};
 			sourceBreakdown = data.sources || {};
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'An error occurred';
+		} catch (_err) {
 			// Use mock data for demo
 			generateMockData();
 		} finally {
@@ -115,7 +112,7 @@
 			const date = new Date();
 			date.setDate(date.getDate() - (days - 1 - i));
 			return {
-				date: date.toISOString().split('T')[0],
+				date: date.toISOString().split('T')[0] ?? '',
 				count: Math.floor(Math.random() * 50) + 10
 			};
 		});
@@ -162,13 +159,6 @@
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
 		return `${mins}m ${secs}s`;
-	}
-
-	// Get trend direction icon
-	function getTrendIcon(current: number, previous: number): string {
-		if (current > previous) return '↑';
-		if (current < previous) return '↓';
-		return '→';
 	}
 
 	// Get max value for chart scaling

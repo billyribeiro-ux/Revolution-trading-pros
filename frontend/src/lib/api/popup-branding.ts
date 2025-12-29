@@ -284,7 +284,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
 export const DEFAULT_BRANDING: BrandingConfig = {
 	fonts: DEFAULT_FONTS,
 	typography: DEFAULT_TYPOGRAPHY,
-	colors: THEME_PRESETS.dark.colors,
+	colors: THEME_PRESETS['dark']?.colors ?? THEME_PRESETS['dark']!.colors,
 	theme: 'dark',
 	borderRadius: {
 		sm: '4px',
@@ -559,7 +559,7 @@ export class PopupBrandingService {
 
 			const weights = fonts.weights.join(';');
 			const familiesParam = families
-				.map((f) => f.split(',')[0].trim())
+				.map((f) => f.split(',')[0]?.trim() ?? '')
 				.filter((f) => !f.startsWith('-apple'))
 				.map((f) => `family=${encodeURIComponent(f)}:wght@${weights}`)
 				.join('&');

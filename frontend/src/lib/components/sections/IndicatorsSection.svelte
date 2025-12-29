@@ -78,9 +78,7 @@
 	let chartRef = $state<HTMLElement | null>(null);
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
-	let isMounted = $state(false);
 	let activeIndicator = $state(0);
-	let gsapInstance: any = null;
 	let scrollTriggerInstance: any = null;
 	let animationFrame: number;
 	let chartCtx: CanvasRenderingContext2D | null = null;
@@ -91,7 +89,6 @@
 	let chartProgress = $state(0);
 	const candleData = generateCandleData(60);
 	const rsiData = generateRSIData(candleData);
-	const macdData = generateMACDData(candleData);
 
 	// ============================================================================
 	// DATA GENERATORS
@@ -113,10 +110,6 @@
 
 	function generateRSIData(candles: any[]) {
 		return candles.map((_, i) => 30 + Math.sin(i * 0.15) * 25 + Math.random() * 15);
-	}
-
-	function generateMACDData(candles: any[]) {
-		return candles.map((_, i) => Math.sin(i * 0.1) * 2 + (Math.random() - 0.5));
 	}
 
 	// ============================================================================
@@ -223,14 +216,13 @@
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		isMounted = true;
 		
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
 			if (sectionRef) {
 				const visibilityObserver = new IntersectionObserver(
 					(entries) => {
-						if (entries[0].isIntersecting) {
+						if (entries[0]?.isIntersecting) {
 							isVisible = true;
 							visibilityObserver.disconnect();
 						}
@@ -326,7 +318,6 @@
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
-			gsapInstance = gsap;
 			scrollTriggerInstance = ScrollTrigger;
 
 			// Animate indicator cards on scroll
@@ -370,7 +361,7 @@
 	// ============================================================================
 	// TRANSITIONS
 	// ============================================================================
-	function slideUp(node: Element, { delay = 0, duration = 800 }) {
+	function slideUp(_node: Element, { delay = 0, duration = 800 }) {
 		return {
 			delay,
 			duration,
@@ -381,7 +372,7 @@
 		};
 	}
 
-	function scaleIn(node: Element, { delay = 0, duration = 600 }) {
+	function scaleIn(_node: Element, { delay = 0, duration = 600 }) {
 		return {
 			delay,
 			duration,
@@ -476,7 +467,7 @@
 								class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50"
 							>
 								<span class="text-[10px] sm:text-xs font-mono text-zinc-300">
-									{indicators[activeIndicator].name} Active
+									{indicators[activeIndicator]!.name} Active
 								</span>
 							</div>
 						</div>

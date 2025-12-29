@@ -14,7 +14,7 @@ import { getAuthToken } from '$lib/stores/auth';
 // Production fallback - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = import.meta.env.VITE_API_BASE_URL || PROD_API;
+const API_BASE = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
 
 // ===============================================================================
 // Type Definitions
@@ -145,12 +145,14 @@ class BingSeoAPI {
 			headers['Authorization'] = `Bearer ${token}`;
 		}
 
-		const response = await fetch(url.toString(), {
+		const fetchOptions: RequestInit = {
 			method,
 			headers,
-			body: data ? JSON.stringify(data) : undefined,
+			...(data && { body: JSON.stringify(data) }),
 			credentials: 'include'
-		});
+		};
+
+		const response = await fetch(url.toString(), fetchOptions);
 
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));
