@@ -4,7 +4,7 @@
         size?: number;
     }
     
-    let { type = 'line', size = 48 }: Props = $props();
+    let { size = 48 }: Props = $props();
 </script>
 
 <svg width={size} height={size} viewBox="0 0 48 48" class="text-pink-400">

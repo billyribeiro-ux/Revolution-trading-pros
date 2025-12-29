@@ -14,6 +14,7 @@ export class BehaviorTracker {
 	private eventBuffer: BehaviorEvent[] = [];
 	private bufferTimer?: number;
 	private sessionStartTime: number;
+	private lastEventTime: number;
 	private sequenceNumber: number = 0;
 
 	// Tracking state
