@@ -1412,3 +1412,79 @@ h5 {
   font-family: 'Open Sans', sans-serif;
   margin: 0 0 10px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTENT BOX - WooCommerce Info Box Style (Blue Panel)
+   Used on account pages for informational messages
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.content-box {
+  background: #d9edf7;
+  border: 1px solid #bce8f1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.content-box--centered {
+  max-width: 100%;
+}
+
+.content-box__section {
+  padding: 20px 25px;
+  border-left: 4px solid #31708f;
+}
+
+.content-box__section p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #31708f;
+  margin: 0 0 10px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.content-box__section p:last-child,
+.content-box__section .u--margin-bottom-0 {
+  margin-bottom: 0;
+}
+
+.content-box__section a {
+  color: #31708f;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+}
+
+.content-box__section a:hover {
+  color: #245269;
+  text-decoration: underline;
+}
+
+.content-box__section strong {
+  font-weight: 700;
+  color: #31708f;
+}
+
+/* Content Box - White variant for forms */
+.content-box--white {
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+}
+
+.content-box--white .content-box__section {
+  border-left: none;
+  padding: 30px;
+}
+
+.content-box--white .content-box__section p {
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .content-box__section {
+    padding: 15px 20px;
+  }
+
+  .content-box__section p {
+    font-size: 14px;
+  }
+}

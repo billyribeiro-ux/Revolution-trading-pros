@@ -411,39 +411,11 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD HEADER - Exact Simpler Trading Match
+	   DASHBOARD PAGE - Page-specific styles only
+	   Header and title use global styles from dashboard-globals.css
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	.dashboard__header {
-		background-color: #fff;
-		border-bottom: 1px solid #dbdbdb;
-		max-width: 100%;
-		padding: 20px;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		align-items: center;
-	}
 
-	@media screen and (min-width: 820px) {
-		.dashboard__header {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
-		}
-	}
-
-	@media screen and (min-width: 1280px) {
-		.dashboard__header {
-			padding: 30px;
-		}
-	}
-
-	@media screen and (min-width: 1440px) {
-		.dashboard__header {
-			padding: 30px 40px;
-		}
-	}
-
+	/* Header layout extensions for this page */
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
@@ -454,15 +426,6 @@
 		.dashboard__header-left {
 			flex-direction: row;
 		}
-	}
-
-	h1.dashboard__page-title {
-		margin: 0;
-		color: #333;
-		font-size: 36px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
 	}
 
 	.dashboard__header-right {

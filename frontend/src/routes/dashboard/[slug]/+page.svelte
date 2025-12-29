@@ -380,23 +380,12 @@
 </div>
 
 <style>
-	.dashboard__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 20px 30px;
-		background: #fff;
-		border-bottom: 1px solid #dbdbdb;
-		gap: 20px;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DYNAMIC TRADING ROOM PAGE - Page-specific styles only
+	   Header and title use global styles from dashboard-globals.css
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 991px) {
-		.dashboard__header {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-	}
-
+	/* Header layout extensions for this page */
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
@@ -404,21 +393,18 @@
 		flex-wrap: wrap;
 	}
 
-	/* WordPress reference: font-size: 36px (core 1:3087) */
-	.dashboard__page-title {
-		font-size: 36px;
-		font-weight: 700;
-		color: #333;
-		margin: 0;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
-	}
-
 	.dashboard__header-right {
 		display: flex;
 		align-items: center;
 		gap: 20px;
 		flex-wrap: wrap;
+	}
+
+	@media (max-width: 991px) {
+		.dashboard__header-left,
+		.dashboard__header-right {
+			width: 100%;
+		}
 	}
 
 	.ultradingroom {
