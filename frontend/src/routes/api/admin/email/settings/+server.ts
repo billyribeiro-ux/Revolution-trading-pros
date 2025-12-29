@@ -6,7 +6,7 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 // Default SMTP settings (in production, these would come from database/env)

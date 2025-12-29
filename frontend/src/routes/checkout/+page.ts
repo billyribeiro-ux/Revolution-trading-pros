@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { authStore } from '$lib/stores/auth';
 import { getUser } from '$lib/api/auth';
-import type { PageLoad } from './$types';
+import type { PageLoad } from '@sveltejs/kit';
 
 /**
  * Protected checkout route loader - Google Enterprise Pattern

@@ -8,7 +8,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';

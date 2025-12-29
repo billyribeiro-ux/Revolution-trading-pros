@@ -1,4 +1,4 @@
-import type { PageLoad } from './$types';
+import type { PageLoad } from '@sveltejs/kit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { PaginatedPosts } from '$lib/types/post';
 

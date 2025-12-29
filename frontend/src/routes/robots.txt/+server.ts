@@ -11,7 +11,7 @@
  * @version 2.0.0 - November 2025 SEO Standards
  */
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // Use environment variable - configure VITE_SITE_URL for your domain
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';

@@ -5,7 +5,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from '@sveltejs/kit';
 
 interface WatchlistItem {
 	slug: string;

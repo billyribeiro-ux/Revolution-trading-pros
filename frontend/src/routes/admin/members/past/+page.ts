@@ -20,7 +20,7 @@ import pastMembersApi, {
 	type CampaignHistory,
 	preloadDashboardData
 } from '$lib/api/past-members-dashboard';
-import type { PageLoad } from './$types';
+import type { PageLoad } from '@sveltejs/kit';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

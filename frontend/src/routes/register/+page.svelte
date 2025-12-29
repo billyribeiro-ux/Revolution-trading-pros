@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { register } from '$lib/api/auth';
 	import {
 		IconUser,
@@ -202,7 +201,7 @@
 			const message = await register({ name, email, password, password_confirmation });
 
 			// Success confetti! (dynamic import)
-			const confettiModule = await import('canvas-confetti');
+			const confettiModule = await import('canvas-confetti') as any;
 			const confetti = confettiModule.default;
 			confetti({
 				particleCount: 150,

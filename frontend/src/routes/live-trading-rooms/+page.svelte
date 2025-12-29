@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { spring } from 'svelte/motion';
     import { browser } from '$app/environment';
-    import type { PageData } from './$types';
+    import type { PageData } from '@sveltejs/kit';
     
     // GSAP types for TypeScript (actual imports are dynamic for SSR safety)
     type GSAPInstance = typeof import('gsap').gsap;

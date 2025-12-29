@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageData } from '@sveltejs/kit';
 	let { data }: { data: PageData } = $props();
 	const { room, slug } = data;
 

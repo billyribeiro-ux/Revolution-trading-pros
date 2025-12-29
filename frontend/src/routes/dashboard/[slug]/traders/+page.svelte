@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageData } from '@sveltejs/kit';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconUsers from '@tabler/icons-svelte/icons/users';
 	let { data }: { data: PageData } = $props();

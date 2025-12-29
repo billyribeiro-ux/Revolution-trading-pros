@@ -14,7 +14,7 @@
  * @version 2.0.0 - November 2025 Google SEO Updates
  */
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // Site configuration
 // Use environment variable - configure VITE_SITE_URL for your domain

@@ -6,7 +6,7 @@
  * In production, this would forward to an analytics service or database.
  */
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {

@@ -7,7 +7,7 @@
  *
  * @version 1.0.0 - L8 Principal Engineer
  */
-import type { PageLoad } from './$types';
+import type { PageLoad } from '@sveltejs/kit';
 
 // Disable prerendering - this page requires dynamic URL parameters
 export const prerender = false;

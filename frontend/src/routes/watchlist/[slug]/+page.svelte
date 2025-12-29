@@ -7,7 +7,35 @@
 	 * @version 1.0.0 - December 2025
 	 */
 
-	import type { PageData } from './$types';
+	// Define the WatchlistItem interface to match server data
+	interface WatchlistItem {
+		slug: string;
+		title: string;
+		subtitle: string;
+		trader: string;
+		datePosted: string;
+		video: {
+			src: string;
+			poster: string;
+			title: string;
+		};
+		spreadsheet: {
+			src: string;
+		};
+		description: string;
+		previous: {
+			slug: string;
+			title: string;
+		} | null;
+		next: {
+			slug: string;
+			title: string;
+		} | null;
+	}
+
+	interface PageData {
+		watchlist: WatchlistItem;
+	}
 
 	// Props from server load
 	let { data }: { data: PageData } = $props();

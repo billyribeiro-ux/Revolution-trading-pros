@@ -7,7 +7,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // In-memory storage (shared)
 const connections: Map<string, any> = new Map();

@@ -8,9 +8,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import {
 		IconChartLine,
-		IconTrendingUp,
 		IconCoin,
-		IconWorld,
 		IconBuildingBank,
 		IconHeartbeat,
 		IconBolt,
@@ -21,7 +19,6 @@
 		IconLeaf,
 		IconArrowRight,
 		IconCheck,
-		IconX,
 		IconExternalLink
 	} from '$lib/icons';
 
@@ -157,8 +154,6 @@
 		{ feature: 'Flexibility', etf: 'Intraday trading, short selling, limit orders', mutualFund: 'End of day trading only', etfBetter: true },
 		{ feature: 'Best For', etf: 'Cost-conscious, active traders', mutualFund: 'Hands-off investors, professional management', etfBetter: null }
 	];
-
-	let activeSection = 'overview';
 </script>
 
 <SEOHead

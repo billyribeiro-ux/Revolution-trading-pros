@@ -4,16 +4,11 @@
 	 * Comprehensive stock index education and reference resource
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { onMount } from 'svelte';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import {
 		IconChartLine,
-		IconTrendingUp,
-		IconTrendingDown,
 		IconWorld,
-		IconRefresh,
-		IconClock,
 		IconArrowRight,
 		IconQuestionMark,
 		IconExternalLink,

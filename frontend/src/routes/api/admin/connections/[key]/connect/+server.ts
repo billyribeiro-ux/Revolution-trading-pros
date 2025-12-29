@@ -7,7 +7,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // In-memory storage (shared with main connections endpoint)
 // In production, this would be a database

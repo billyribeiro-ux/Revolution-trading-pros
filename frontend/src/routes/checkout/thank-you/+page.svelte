@@ -9,7 +9,7 @@
 	 * @version 2.0.0 - Svelte 5 Migration
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import type { PageProps } from './$types';
+	import type { PageProps } from '@sveltejs/kit';
 
 	// Receive data from load function using Svelte 5 $props()
 	let { data }: PageProps = $props();

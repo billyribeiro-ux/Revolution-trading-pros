@@ -1,4 +1,4 @@
-import type { PageLoad } from './$types';
+import type { PageLoad } from '@sveltejs/kit';
 
 // Critical: Render this page as static HTML at build time.
 export const prerender = true;

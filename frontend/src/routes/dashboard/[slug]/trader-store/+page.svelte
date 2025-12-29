@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageData } from '@sveltejs/kit';
 	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';
 	let { data }: { data: PageData } = $props();
 	const { room, slug } = data;

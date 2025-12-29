@@ -8,7 +8,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 // Service definitions with all required fields
 interface ServiceField {

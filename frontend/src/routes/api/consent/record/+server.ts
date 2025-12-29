@@ -7,7 +7,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '@sveltejs/kit';
 
 interface ConsentRecord {
 	id: string;

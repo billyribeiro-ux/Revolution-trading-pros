@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getTradingRoom, isValidSlug } from '$lib/config/trading-rooms';
-import type { PageLoad } from './$types';
+import type { PageLoad } from '@sveltejs/kit';
 
 export const load: PageLoad = ({ params }) => {
 	const { slug } = params;

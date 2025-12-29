@@ -5,7 +5,7 @@
  * @version 7.0.0 (WordPress IDENTICAL / December 2025)
  */
 
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
 	return {
