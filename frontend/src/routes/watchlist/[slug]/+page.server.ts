@@ -1,8 +1,8 @@
 /**
  * Weekly Watchlist Single Item - Server Load
  * ═══════════════════════════════════════════════════════════════════════════
- * Handles data loading for individual watchlist items
- * @version 1.0.0 - December 2025
+ * Fetches watchlist data from API with mock fallback
+ * @version 2.0.0 - December 2025 - Connected to API
  */
 
 import type { ServerLoad } from '@sveltejs/kit';
@@ -12,6 +12,7 @@ interface WatchlistItem {
 	title: string;
 	subtitle: string;
 	trader: string;
+	traderImage?: string;
 	datePosted: string;
 	video: {
 		src: string;
@@ -32,7 +33,7 @@ interface WatchlistItem {
 	} | null;
 }
 
-// Mock data - replace with actual API call in production
+// Fallback mock data - used when API is unavailable
 const mockWatchlistItems: Record<string, WatchlistItem> = {
 	'12222025-tg-watkins': {
 		slug: '12222025-tg-watkins',
@@ -102,15 +103,58 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 	}
 };
 
-export const load: ServerLoad = async ({ params }) => {
+/**
+ * Fetch watchlist item from internal API
+ */
+async function fetchFromAPI(slug: string, origin: string): Promise<WatchlistItem | null> {
+	try {
+		const response = await fetch(`${origin}/api/watchlist/${slug}`, {
+			headers: {
+				'Accept': 'application/json'
+			}
+		});
+
+		if (!response.ok) return null;
+
+		const data = await response.json();
+		if (!data.success) return null;
+
+		// Map API response to expected format
+		const item = data.data;
+		return {
+			slug: item.slug,
+			title: item.title,
+			subtitle: item.subtitle,
+			trader: item.trader,
+			traderImage: item.traderImage,
+			datePosted: item.datePosted,
+			video: item.video,
+			spreadsheet: item.spreadsheet,
+			description: item.description,
+			previous: item.previous || null,
+			next: item.next || null
+		};
+	} catch {
+		return null;
+	}
+}
+
+export const load: ServerLoad = async ({ params, url }) => {
 	const { slug } = params;
 
-	// Try to find the watchlist item
+	// Try to fetch from API first
+	const origin = url.origin;
+	const apiData = await fetchFromAPI(slug, origin);
+
+	if (apiData) {
+		return { watchlist: apiData };
+	}
+
+	// Fallback to mock data
 	let watchlistItem = mockWatchlistItems[slug];
 
-	// If not found, return a default/fallback
+	// If not found, create a fallback from slug
 	if (!watchlistItem) {
-		// Parse the slug to extract date and trader name
 		const parts = slug.split('-');
 		const dateStr = parts[0] || '';
 		const traderName = parts.slice(1).map((p: string) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');

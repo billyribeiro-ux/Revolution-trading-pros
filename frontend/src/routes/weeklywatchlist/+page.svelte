@@ -1,13 +1,22 @@
 <script lang="ts">
 	/**
-	 * Weekly Watchlist Page - 100% PIXEL-PERFECT Match
+	 * Weekly Watchlist Page - Connected to API
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * Exact replica of Simpler Trading Weekly Watchlist page
-	 * @version 1.0.0 - Pixel Perfect
+	 * Displays the latest weekly watchlist with video and stocks
+	 * @version 2.0.0 - December 2025 - Connected to API
 	 */
 
-	// Current week's watchlist data
-	const currentWatchlist = {
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+
+	// State for watchlist data
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
+	let currentWatchlist = $state<WatchlistItem | null>(null);
+
+	// Fallback data
+	const fallbackWatchlist = {
 		week: 'December 23-27, 2025',
 		trader: 'TG Watkins',
 		video: '/videos/weekly-watchlist-12-23-2025.mp4',
@@ -20,6 +29,34 @@
 			{ symbol: 'QQQ', name: 'Nasdaq 100 ETF', direction: 'Bullish', entry: '$410.00', target: '$430.00', stop: '$395.00' }
 		]
 	};
+
+	// Computed display data from API or fallback
+	const displayData = $derived.by(() => {
+		if (currentWatchlist) {
+			return {
+				week: currentWatchlist.subtitle.replace('Week of ', ''),
+				trader: currentWatchlist.trader,
+				video: currentWatchlist.video.src,
+				poster: currentWatchlist.video.poster,
+				stocks: fallbackWatchlist.stocks // Stocks still from fallback until we add stocks to API
+			};
+		}
+		return fallbackWatchlist;
+	});
+
+	onMount(async () => {
+		try {
+			const response = await watchlistApi.getLatest();
+			if (response.success && response.data) {
+				currentWatchlist = response.data;
+			}
+		} catch (err) {
+			console.warn('Failed to fetch watchlist, using fallback:', err);
+			error = null; // Don't show error, just use fallback
+		} finally {
+			isLoading = false;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -51,107 +88,127 @@
 			<header class="page-header-section">
 				<div class="container-fluid">
 					<h1 class="page-title">Weekly Watchlist</h1>
-					<p class="page-subtitle">Week of {currentWatchlist.week} with {currentWatchlist.trader}</p>
+					<p class="page-subtitle">Week of {displayData.week} with {displayData.trader}</p>
 				</div>
 			</header>
 
 			<!-- Main Content -->
 			<section class="wl-page-content">
 				<div class="container-fluid">
-					<div class="row">
-						<!-- Video Section -->
-						<div class="col-xs-12 col-lg-8">
-							<div class="video-section">
-								<div class="video-card">
-									<div class="video-wrapper">
-										<div class="video-placeholder">
-											<img src={currentWatchlist.poster} alt="Weekly Watchlist Video" />
-											<button class="play-button" aria-label="Play video">
-												<svg viewBox="0 0 24 24" width="48" height="48">
-													<path fill="currentColor" d="M8 5v14l11-7z"/>
-												</svg>
-											</button>
+					{#if isLoading}
+						<div class="loading-state">
+							<div class="loading-spinner"></div>
+							<p>Loading watchlist...</p>
+						</div>
+					{:else}
+						<div class="row">
+							<!-- Video Section -->
+							<div class="col-xs-12 col-lg-8">
+								<div class="video-section">
+									<div class="video-card">
+										<div class="video-wrapper">
+											{#if displayData.video}
+												<video
+													controls
+													width="100%"
+													poster={displayData.poster}
+													style="aspect-ratio: 16/9;"
+													title="Weekly Watchlist Rundown"
+												>
+													<source src={displayData.video} type="video/mp4">
+													Your browser does not support the video tag.
+												</video>
+											{:else}
+												<div class="video-placeholder">
+													<img src={displayData.poster} alt="Weekly Watchlist Video" />
+													<button class="play-button" aria-label="Play video">
+														<svg viewBox="0 0 24 24" width="48" height="48">
+															<path fill="currentColor" d="M8 5v14l11-7z"/>
+														</svg>
+													</button>
+												</div>
+											{/if}
+										</div>
+										<div class="video-info">
+											<h2>Weekly Watchlist Rundown</h2>
+											<p class="video-meta">Posted: {currentWatchlist?.datePosted || 'December 22, 2025'} | Duration: 15:42</p>
 										</div>
 									</div>
-									<div class="video-info">
-										<h2>Weekly Watchlist Rundown</h2>
-										<p class="video-meta">Posted: December 22, 2025 | Duration: 15:42</p>
-									</div>
 								</div>
-							</div>
 
-							<!-- Watchlist Table -->
-							<div class="watchlist-section">
-								<h3 class="section-title">This Week's Watchlist</h3>
-								<div class="watchlist-table-wrapper">
-									<table class="watchlist-table">
-										<thead>
-											<tr>
-												<th>Symbol</th>
-												<th>Name</th>
-												<th>Direction</th>
-												<th>Entry</th>
-												<th>Target</th>
-												<th>Stop</th>
-											</tr>
-										</thead>
-										<tbody>
-											{#each currentWatchlist.stocks as stock}
+								<!-- Watchlist Table -->
+								<div class="watchlist-section">
+									<h3 class="section-title">This Week's Watchlist</h3>
+									<div class="watchlist-table-wrapper">
+										<table class="watchlist-table">
+											<thead>
 												<tr>
-													<td class="symbol-cell">
-														<span class="stock-symbol">{stock.symbol}</span>
-													</td>
-													<td class="name-cell">{stock.name}</td>
-													<td class="direction-cell">
-														<span class="direction-badge direction-{stock.direction.toLowerCase()}">{stock.direction}</span>
-													</td>
-													<td class="price-cell">{stock.entry}</td>
-													<td class="price-cell target">{stock.target}</td>
-													<td class="price-cell stop">{stock.stop}</td>
+													<th>Symbol</th>
+													<th>Name</th>
+													<th>Direction</th>
+													<th>Entry</th>
+													<th>Target</th>
+													<th>Stop</th>
 												</tr>
-											{/each}
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-
-						<!-- Sidebar -->
-						<div class="col-xs-12 col-lg-4">
-							<div class="sidebar">
-								<!-- Quick Links Card -->
-								<div class="sidebar-card">
-									<h4 class="card-title">Quick Links</h4>
-									<ul class="quick-links">
-										<li><a href="/weeklywatchlist/archive">View Watchlist Archive</a></li>
-										<li><a href="/weeklywatchlist/rundown-archive">View Rundown Archive</a></li>
-										<li><a href="/dashboard/day-trading-room">Back to Trading Room</a></li>
-									</ul>
-								</div>
-
-								<!-- Trader Info Card -->
-								<div class="sidebar-card trader-card">
-									<h4 class="card-title">Your Analyst</h4>
-									<div class="trader-info">
-										<div class="trader-avatar">
-											<img src="https://cdn.simplertrading.com/traders/tg-watkins.jpg" alt={currentWatchlist.trader} />
-										</div>
-										<div class="trader-details">
-											<h5 class="trader-name">{currentWatchlist.trader}</h5>
-											<p class="trader-role">Lead Market Analyst</p>
-										</div>
+											</thead>
+											<tbody>
+												{#each displayData.stocks as stock}
+													<tr>
+														<td class="symbol-cell">
+															<span class="stock-symbol">{stock.symbol}</span>
+														</td>
+														<td class="name-cell">{stock.name}</td>
+														<td class="direction-cell">
+															<span class="direction-badge direction-{stock.direction.toLowerCase()}">{stock.direction}</span>
+														</td>
+														<td class="price-cell">{stock.entry}</td>
+														<td class="price-cell target">{stock.target}</td>
+														<td class="price-cell stop">{stock.stop}</td>
+													</tr>
+												{/each}
+											</tbody>
+										</table>
 									</div>
-									<p class="trader-bio">TG Watkins brings over 20 years of trading experience, specializing in technical analysis and swing trading strategies.</p>
 								</div>
+							</div>
 
-								<!-- Disclaimer Card -->
-								<div class="sidebar-card disclaimer-card">
-									<h4 class="card-title">Disclaimer</h4>
-									<p class="disclaimer-text">The information provided is for educational purposes only and should not be construed as investment advice. Past performance is not indicative of future results.</p>
+							<!-- Sidebar -->
+							<div class="col-xs-12 col-lg-4">
+								<div class="sidebar">
+									<!-- Quick Links Card -->
+									<div class="sidebar-card">
+										<h4 class="card-title">Quick Links</h4>
+										<ul class="quick-links">
+											<li><a href="/weeklywatchlist/archive">View Watchlist Archive</a></li>
+											<li><a href="/weeklywatchlist/rundown-archive">View Rundown Archive</a></li>
+											<li><a href="/dashboard/day-trading-room">Back to Trading Room</a></li>
+										</ul>
+									</div>
+
+									<!-- Trader Info Card -->
+									<div class="sidebar-card trader-card">
+										<h4 class="card-title">Your Analyst</h4>
+										<div class="trader-info">
+											<div class="trader-avatar">
+												<img src={currentWatchlist?.traderImage || 'https://cdn.simplertrading.com/traders/tg-watkins.jpg'} alt={displayData.trader} />
+											</div>
+											<div class="trader-details">
+												<h5 class="trader-name">{displayData.trader}</h5>
+												<p class="trader-role">Lead Market Analyst</p>
+											</div>
+										</div>
+										<p class="trader-bio">{displayData.trader} brings over 20 years of trading experience, specializing in technical analysis and swing trading strategies.</p>
+									</div>
+
+									<!-- Disclaimer Card -->
+									<div class="sidebar-card disclaimer-card">
+										<h4 class="card-title">Disclaimer</h4>
+										<p class="disclaimer-text">The information provided is for educational purposes only and should not be construed as investment advice. Past performance is not indicative of future results.</p>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					{/if}
 				</div>
 			</section>
 
@@ -164,11 +221,34 @@
 	   100% PIXEL-PERFECT STYLES - Matching Simpler Trading
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	:global(body) {
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-		margin: 0;
-		padding: 0;
-		background: #f4f4f4;
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		text-align: center;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #f3f3f3;
+		border-top: 3px solid #0984ae;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+
+	.loading-state p {
+		color: #666;
+		font-size: 16px;
 	}
 
 	/* Breadcrumbs */
@@ -272,19 +352,25 @@
 	.video-wrapper {
 		position: relative;
 		width: 100%;
-		padding-bottom: 56.25%;
 		background: #1a1a1a;
 	}
 
-	.video-placeholder {
-		position: absolute;
-		top: 0;
-		left: 0;
+	.video-wrapper video {
+		display: block;
 		width: 100%;
-		height: 100%;
+		height: auto;
+	}
+
+	.video-placeholder {
+		position: relative;
+		width: 100%;
+		padding-bottom: 56.25%;
 	}
 
 	.video-placeholder img {
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
