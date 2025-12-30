@@ -12,7 +12,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { authStore } from '$lib/stores/auth';
-	import { LoadingState } from '$lib/components/dashboard';
+	import { LoadingState, StatusBadge } from '$lib/components/dashboard';
 
 	// API Configuration
 	const isDev = import.meta.env.DEV;
@@ -141,21 +141,13 @@
 		}).format(amount);
 	}
 
-	// Get status display info
-	function getStatusInfo(sub: Subscription): { label: string; class: string } {
-		if (sub.status === 'cancelled') {
-			return { label: 'Cancelled', class: 'label--error' };
-		}
-		if (sub.cancel_at_period_end) {
-			return { label: 'Pending Cancellation', class: 'label--info' };
-		}
-		if (sub.status === 'past_due') {
-			return { label: 'Past Due', class: 'label--warning' };
-		}
-		if (sub.status === 'active') {
-			return { label: 'Active', class: 'label--success' };
-		}
-		return { label: sub.status, class: '' };
+	// Get display status for StatusBadge
+	function getDisplayStatus(sub: Subscription): string {
+		if (sub.status === 'cancelled') return 'cancelled';
+		if (sub.cancel_at_period_end) return 'on-hold';
+		if (sub.status === 'past_due') return 'warning';
+		if (sub.status === 'active') return 'active';
+		return sub.status;
 	}
 
 	// Get billing interval display
@@ -218,7 +210,6 @@
 						</thead>
 						<tbody class="u--font-size-sm">
 							{#each subscriptions as sub (sub.id)}
-								{@const statusInfo = getStatusInfo(sub)}
 								<tr class="order">
 									<td class="col-xs-3" data-title="ID">
 										<a href="/dashboard/account/view-subscription/{sub.id}">
@@ -226,9 +217,7 @@
 										</a>
 									</td>
 									<td class="col-xs-3" data-title="Status">
-										<span class="label {statusInfo.class}">
-											{statusInfo.label}
-										</span>
+										<StatusBadge status={getDisplayStatus(sub)} size="sm" />
 									</td>
 									<td class="col-xs-2" data-title="Plan">
 										<span>{sub.plan_name}</span>
@@ -367,38 +356,6 @@
 	.table td a:not(.btn):hover {
 		color: #0e6ac4;
 		text-decoration: underline;
-	}
-
-	/* Status Labels */
-	.label {
-		display: inline-block;
-		padding: 4px 10px;
-		font-size: 11px;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		border-radius: 25px;
-	}
-
-	.label--success {
-		background-color: #d4edda;
-		color: #155724;
-	}
-
-	.label--info {
-		background-color: #d1ecf1;
-		color: #0c5460;
-	}
-
-	.label--warning {
-		background-color: #fff3cd;
-		color: #856404;
-	}
-
-	.label--danger,
-	.label--error {
-		background-color: #f8d7da;
-		color: #721c24;
 	}
 
 	/* Price */
