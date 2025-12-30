@@ -19,7 +19,6 @@
 		IconChevronRight,
 		IconStar
 	} from '$lib/icons';
-	import '$lib/styles/st-icons.css';
 
 	// Course data
 	const course = {
