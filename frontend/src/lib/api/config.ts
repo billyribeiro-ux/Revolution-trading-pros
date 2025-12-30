@@ -125,6 +125,15 @@ export const API_ENDPOINTS = {
 		track: (id: number) => `/api/videos/${id}/track`
 	},
 
+	// Articles - Dashboard content (daily videos, chatroom archives)
+	articles: {
+		list: '/api/dashboard/articles',
+		byRoom: (slug: string) => `/api/dashboard/articles/${slug}`,
+		single: (id: number) => `/api/dashboard/articles/item/${id}`,
+		dailyVideos: (slug: string) => `/api/dashboard/articles/${slug}/daily-videos`,
+		chatroomArchives: (slug: string) => `/api/dashboard/articles/${slug}/chatroom-archives`
+	},
+
 	// Analytics - Rust API
 	analytics: {
 		track: '/api/analytics/track',
