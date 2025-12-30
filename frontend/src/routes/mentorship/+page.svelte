@@ -22,6 +22,7 @@
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
 	// --- DOM REFS FOR GSAP ---
+	// @ts-expect-error - Used in bind:this directive
 	let heroContainer: HTMLElement | undefined;
 	let heroBadge: HTMLElement | undefined;
 	let heroTitle: HTMLElement | undefined;
