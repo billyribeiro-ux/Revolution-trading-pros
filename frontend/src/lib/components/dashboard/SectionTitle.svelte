@@ -48,7 +48,7 @@
 	   SECTION TITLE - Default Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.section-title {
-		color: #333;
+		color: #333 !important;
 		font-size: 32px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
