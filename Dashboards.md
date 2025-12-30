@@ -150,8 +150,85 @@
 #                 <?php endforeach; ?>
 #             </div>
 #         </section>
-#         
-#         <!-- Weekly Watchlist Section -->
+#
+# DETAILED MEMBERSHIP CARD IMPLEMENTATION (SOURCE: frontend/core):
+# ================================================================================
+#
+# HTML STRUCTURE:
+# <div class="membership-cards row">
+#     <div class="col-sm-6 col-xl-4">
+#         <article class="membership-card membership-card--options">
+#             <a href="/dashboard/mastering-the-trade" class="membership-card__header">
+#                 <span class="mem_icon">
+#                     <span class="membership-card__icon">
+#                         <span class="icon icon--lg st-icon-mastering-the-trade"></span>
+#                     </span>
+#                 </span>
+#                 <span class="mem_div">Mastering the Trade</span>
+#             </a>
+#             <div class="membership-card__actions">
+#                 <a href="/dashboard/mastering-the-trade">Dashboard</a>
+#                 <a href="TRADING_ROOM_URL" target="_blank">Trading Room</a>
+#             </div>
+#         </article>
+#     </div>
+# </div>
+#
+# CSS CLASSES AND STRUCTURE:
+# - .membership-cards: Container for all cards (Bootstrap row)
+# - .col-sm-6 col-xl-4: Responsive grid (2 cards on tablet, 3 on desktop)
+# - .membership-card: Main card container
+# - .membership-card--options: Modifier for options trading membership
+# - .membership-card--foundation: Modifier for showcase membership
+# - .membership-card--ww: Modifier for weekly watchlist tool
+# - .membership-card__header: Clickable header area with icon and title
+# - .membership-card__icon: Icon container with st-icon classes
+# - .mem_icon: Icon wrapper span
+# - .mem_div: Title text wrapper
+# - .membership-card__actions: Button container at bottom
+#
+# ICON SYSTEM:
+# - Uses st-icon-* classes from custom icon font
+# - .icon--lg for large icons (membership cards)
+# - .icon--md for medium icons (tools)
+# - Icons: st-icon-mastering-the-trade, st-icon-simpler-showcase, st-icon-trade-of-the-week
+#
+# RESPONSIVE BEHAVIOR:
+# - Mobile: 1 column (Bootstrap default)
+# - Tablet (sm): 2 columns (col-sm-6)
+# - Desktop (xl): 3 columns (col-xl-4)
+# - Cards stack vertically on smaller screens
+#
+# INTERACTIVE ELEMENTS:
+# - Entire header is clickable (membership dashboard)
+# - Action buttons for dashboard and trading room access
+# - Trading room links open in new tab with JWT authentication
+#
+# MEMBERSHIP TYPES DOCUMENTED:
+# 1. Mastering the Trade (membership-card--options)
+#    - Premium subscription with live trading room
+#    - JWT-based authentication for room access
+#    - Full dashboard access
+#
+# 2. Simpler Showcase (membership-card--foundation)
+#    - Foundational membership
+#    - Breakout room access (different from main trading room)
+#    - Basic dashboard features
+#
+# 3. Weekly Watchlist (membership-card--ww)
+#    - Tool card, not membership
+#    - Single dashboard link
+#    - Market analysis resource
+#
+# JAVASCRIPT ENHANCEMENTS:
+# $('.membership-card__actions a').each(function(index) {
+#     if($(this).text() == 'Trader Call Room') 
+#         $(this).hide();
+# });
+#
+# This hides "Trader Call Room" buttons dynamically based on text content.
+#
+# <!-- Weekly Watchlist Section -->
 #         <?php if (!empty($weekly_watchlist)): ?>
 #             <section class="weekly-watchlist-section">
 #                 <h2><?php _e('Weekly Watchlist', 'simpler-trading'); ?></h2>
