@@ -97,7 +97,7 @@ h3 { font-size: 26px; }
 /* Nav Category Labels */
 .dashboard__nav-category {
   padding: 20px 30px 10px;
-  font-size: 10px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
