@@ -12,7 +12,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { authStore } from '$lib/stores/auth';
-	import { LoadingState } from '$lib/components/dashboard';
+	import { LoadingState, StatusBadge } from '$lib/components/dashboard';
 
 	// API Configuration
 	const isDev = import.meta.env.DEV;
@@ -107,31 +107,6 @@
 		}).format(amount);
 	}
 
-	// Get status badge class
-	function getStatusClass(status: string): string {
-		switch (status.toLowerCase()) {
-			case 'completed':
-				return 'status--completed';
-			case 'pending':
-				return 'status--pending';
-			case 'processing':
-				return 'status--processing';
-			case 'failed':
-				return 'status--failed';
-			case 'refunded':
-				return 'status--refunded';
-			case 'cancelled':
-				return 'status--cancelled';
-			default:
-				return '';
-		}
-	}
-
-	// Capitalize first letter
-	function capitalize(str: string): string {
-		return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-	}
-
 	onMount(() => {
 		fetchOrders();
 	});
@@ -185,9 +160,7 @@
 									<time datetime={order.created_at}>{formatDate(order.created_at)}</time>
 								</td>
 								<td class="col-status">
-									<span class="status-badge {getStatusClass(order.status)}">
-										{capitalize(order.status)}
-									</span>
+									<StatusBadge status={order.status} />
 								</td>
 								<td class="col-total">
 									{formatCurrency(order.total, order.currency)}
@@ -321,46 +294,6 @@
 
 	.text-right {
 		text-align: right;
-	}
-
-	/* Status Badges */
-	.status-badge {
-		display: inline-block;
-		padding: 4px 10px;
-		font-size: 12px;
-		font-weight: 600;
-		border-radius: 4px;
-		text-transform: capitalize;
-	}
-
-	.status--completed {
-		background: #e8f5e9;
-		color: #2e7d32;
-	}
-
-	.status--pending {
-		background: #fff3e0;
-		color: #ef6c00;
-	}
-
-	.status--processing {
-		background: #e3f2fd;
-		color: #1565c0;
-	}
-
-	.status--failed {
-		background: #ffebee;
-		color: #c62828;
-	}
-
-	.status--refunded {
-		background: #f3e5f5;
-		color: #7b1fa2;
-	}
-
-	.status--cancelled {
-		background: #fafafa;
-		color: #616161;
 	}
 
 	/* Links */

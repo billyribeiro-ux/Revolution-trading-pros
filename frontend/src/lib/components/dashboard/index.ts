@@ -32,3 +32,8 @@ export { default as ErrorState } from './ErrorState.svelte';
 export { default as DashboardGrid } from './DashboardGrid.svelte';
 export { default as CardGrid } from './CardGrid.svelte';
 export { default as WidgetCard } from './WidgetCard.svelte';
+
+// UI Components
+export { default as StatusBadge } from './StatusBadge.svelte';
+export { default as FilterButton } from './FilterButton.svelte';
+export { default as Pagination } from './Pagination.svelte';
