@@ -148,10 +148,10 @@
 	.header__title {
 		margin: 0;
 		color: #333;
-		font-size: 36px;
+		font-size: 42px;
 		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
+		font-family: 'Open Sans Condensed', sans-serif;
+		line-height: 1.1em;
 	}
 
 	/* Right Side */
@@ -312,9 +312,15 @@
 		}
 	}
 
+	@media (max-width: 768px) {
+		.header__title {
+			font-size: 30px;
+		}
+	}
+
 	@media (max-width: 576px) {
 		.header__title {
-			font-size: 28px;
+			font-size: 26px;
 		}
 	}
 </style>
