@@ -1,7 +1,34 @@
 <script lang="ts">
 	/**
-	 * Weekly Watchlist - Latest
+	 * Weekly Watchlist - Latest Redirect
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Redirects to the most recent watchlist item
+	 * @version 2.0.0 - December 2025 - Connected to API
 	 */
+
+	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { watchlistApi } from '$lib/api/watchlist';
+
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
+
+	onMount(async () => {
+		try {
+			const response = await watchlistApi.getLatest();
+			if (response.success && response.data) {
+				await goto(`/watchlist/${response.data.slug}`, { replaceState: true });
+				return;
+			}
+			// Fallback to default slug
+			await goto('/watchlist/12222025-tg-watkins', { replaceState: true });
+		} catch (err) {
+			console.warn('Failed to fetch latest watchlist:', err);
+			// Fallback to default slug
+			await goto('/watchlist/12222025-tg-watkins', { replaceState: true });
+		}
+	});
 </script>
 
 <svelte:head>
@@ -20,14 +47,17 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			<h2>Weekly Watchlist with TG Watkins</h2>
-			<p>This week's top trading opportunities and market analysis.</p>
-			
-			<div class="video-placeholder">
-				<p>📹 Weekly Watchlist video will be embedded here</p>
-			</div>
-			
-			<a href="/dashboard/day-trading-room" class="btn btn-default">Return to Dashboard</a>
+			{#if isLoading}
+				<div class="loading-state">
+					<div class="loading-spinner"></div>
+					<p>Loading latest watchlist...</p>
+				</div>
+			{:else if error}
+				<div class="error-state">
+					<p>{error}</p>
+					<a href="/dashboard/day-trading-room" class="btn btn-default">Return to Dashboard</a>
+				</div>
+			{/if}
 		</section>
 	</div>
 </div>
@@ -92,23 +122,39 @@
 		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 	}
 
-	h2 {
-		font-size: 24px;
-		margin-bottom: 20px;
-		color: #333;
-	}
-
-	.video-placeholder {
-		background: #f5f5f5;
-		border: 2px dashed #dbdbdb;
-		padding: 60px;
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
 		text-align: center;
-		margin: 30px 0;
-		border-radius: 4px;
 	}
 
-	.video-placeholder p {
-		font-size: 18px;
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #f3f3f3;
+		border-top: 3px solid #0984ae;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+
+	.loading-state p,
+	.error-state p {
+		font-size: 16px;
 		color: #666;
+		margin-bottom: 20px;
+	}
+
+	.error-state {
+		text-align: center;
+		padding: 40px 20px;
 	}
 </style>
