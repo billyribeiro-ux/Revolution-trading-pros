@@ -31,7 +31,6 @@ export {
 	RateLimitIndicator,
 	ConnectionHealthPanel,
 	OfflineIndicator,
-	DashboardWidgetManager,
 	BatchOperations,
 } from './ui';
 

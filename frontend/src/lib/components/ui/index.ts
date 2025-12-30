@@ -21,7 +21,6 @@ export { default as KeyboardShortcutsHelp } from '../KeyboardShortcutsHelp.svelt
 export { default as RateLimitIndicator } from '../RateLimitIndicator.svelte';
 export { default as ConnectionHealthPanel } from '../ConnectionHealthPanel.svelte';
 export { default as OfflineIndicator } from '../OfflineIndicator.svelte';
-export { default as DashboardWidgetManager } from '../DashboardWidgetManager.svelte';
 export { default as BatchOperations } from '../BatchOperations.svelte';
 
 export { addToast, removeToast, toasts } from '$lib/utils/toast';
