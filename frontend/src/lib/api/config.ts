@@ -125,13 +125,13 @@ export const API_ENDPOINTS = {
 		track: (id: number) => `/api/videos/${id}/track`
 	},
 
-	// Articles - Dashboard content (daily videos, chatroom archives)
+	// Articles - Content endpoints (to be implemented)
 	articles: {
-		list: '/api/dashboard/articles',
-		byRoom: (slug: string) => `/api/dashboard/articles/${slug}`,
-		single: (id: number) => `/api/dashboard/articles/item/${id}`,
-		dailyVideos: (slug: string) => `/api/dashboard/articles/${slug}/daily-videos`,
-		chatroomArchives: (slug: string) => `/api/dashboard/articles/${slug}/chatroom-archives`
+		list: '/api/articles',
+		byRoom: (slug: string) => `/api/articles/${slug}`,
+		single: (id: number) => `/api/articles/item/${id}`,
+		dailyVideos: (slug: string) => `/api/articles/${slug}/daily-videos`,
+		chatroomArchives: (slug: string) => `/api/articles/${slug}/chatroom-archives`
 	},
 
 	// Analytics - Rust API

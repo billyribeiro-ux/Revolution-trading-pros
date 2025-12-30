@@ -239,7 +239,7 @@ function getMockIndicators(): UserIndicatorsResponse {
 			lastUpdated: 'Dec 1, 2025',
 			purchasedAt: 'Jan 15, 2025',
 			downloadCount: 3,
-			documentationUrl: '/dashboard/indicators/revolution-pro-scanner/docs',
+			documentationUrl: '/indicators/revolution-pro-scanner/docs',
 			features: ['Real-time scanning', 'Momentum alerts', 'Custom filters']
 		},
 		{
@@ -257,7 +257,7 @@ function getMockIndicators(): UserIndicatorsResponse {
 			lastUpdated: 'Nov 15, 2025',
 			purchasedAt: 'Mar 1, 2025',
 			downloadCount: 5,
-			documentationUrl: '/dashboard/indicators/momentum-tracker-elite/docs',
+			documentationUrl: '/indicators/momentum-tracker-elite/docs',
 			features: ['Momentum detection', 'Multi-timeframe', 'Audio alerts']
 		},
 		{
@@ -275,7 +275,7 @@ function getMockIndicators(): UserIndicatorsResponse {
 			lastUpdated: 'Oct 20, 2025',
 			purchasedAt: 'Dec 15, 2024',
 			downloadCount: 2,
-			documentationUrl: '/dashboard/indicators/support-resistance-zones/docs',
+			documentationUrl: '/indicators/support-resistance-zones/docs',
 			features: ['Auto S/R detection', 'Confluence zones', 'Volume confirmation']
 		}
 	];

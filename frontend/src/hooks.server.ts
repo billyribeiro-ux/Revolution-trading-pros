@@ -92,7 +92,6 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Prevent indexing for private areas
 		else if (
 			pathname.startsWith('/admin') ||
-			pathname.startsWith('/dashboard') ||
 			pathname.startsWith('/account') ||
 			pathname.startsWith('/cart') ||
 			pathname.startsWith('/checkout') ||

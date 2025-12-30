@@ -209,7 +209,7 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		description: 'Real-time SPX trading alerts with precise entry and exit signals.',
 		quickLinks: [
 			{ label: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
-			{ label: 'Alert Settings', href: '/dashboard/spx-profit-pulse/settings', external: false }
+			{ label: 'Alert Settings', href: '/account', external: false }
 		],
 		traders: [
 			{
@@ -240,7 +240,7 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		description: 'High-probability swing trade alerts for explosive moves in stocks and options.',
 		quickLinks: [
 			{ label: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
-			{ label: 'Alert Settings', href: '/dashboard/explosive-swing/settings', external: false }
+			{ label: 'Alert Settings', href: '/account', external: false }
 		],
 		traders: [
 			{

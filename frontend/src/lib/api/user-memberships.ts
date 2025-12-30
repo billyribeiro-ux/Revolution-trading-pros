@@ -198,12 +198,12 @@ function enhanceMemberships(memberships: UserMembership[]): UserMembership[] {
  */
 function getAccessUrl(type: MembershipType, slug: string): string {
 	const baseUrls: Record<MembershipType, string> = {
-		'trading-room': '/dashboard/trading-rooms',
-		'alert-service': '/dashboard/alerts',
-		course: '/dashboard/courses',
-		indicator: '/dashboard/indicators',
-		'weekly-watchlist': '/dashboard/weekly-watchlist',
-		'premium-report': '/dashboard/premium-reports'
+		'trading-room': '/live-trading-rooms',
+		'alert-service': '/alerts',
+		course: '/courses',
+		indicator: '/indicators',
+		'weekly-watchlist': '/weekly-watchlist',
+		'premium-report': '/premium-reports'
 	};
 
 	return `${baseUrls[type]}/${slug}`;

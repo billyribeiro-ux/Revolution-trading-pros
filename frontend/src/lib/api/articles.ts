@@ -92,7 +92,7 @@ export const articlesApi = {
 	 * Get articles for a specific trading room/membership
 	 */
 	getByRoom: async (slug: string, params?: ArticleParams): Promise<ArticlesResponse> => {
-		let url = `/api/dashboard/articles/${slug}`;
+		let url = `/api/articles/${slug}`;
 
 		if (params) {
 			const queryParams = new URLSearchParams();
@@ -127,7 +127,7 @@ export const articlesApi = {
 	 * Get a single article by ID
 	 */
 	getById: async (id: number): Promise<{ success: boolean; data: Article }> => {
-		return apiFetch(`/api/dashboard/articles/item/${id}`);
+		return apiFetch(`/api/articles/item/${id}`);
 	}
 };
 

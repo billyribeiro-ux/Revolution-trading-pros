@@ -42,7 +42,6 @@ Allow: /our-mission
 
 # Private/Admin areas - disallowed
 Disallow: /admin/
-Disallow: /dashboard/
 Disallow: /account/
 Disallow: /checkout/
 Disallow: /cart/
