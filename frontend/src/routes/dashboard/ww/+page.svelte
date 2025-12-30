@@ -14,7 +14,9 @@
 		DashboardHeader,
 		ArticleCard,
 		WeeklyWatchlistSection,
-		SectionTitle
+		SectionTitle,
+		LoadingState,
+		EmptyState
 	} from '$lib/components/dashboard';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 
@@ -89,10 +91,7 @@
 		<section class="dashboard__content-section">
 			<SectionTitle title="Watchlist Rundown Archive" />
 			{#if isLoading}
-				<div class="loading-state">
-					<div class="loading-spinner"></div>
-					<p>Loading watchlist items...</p>
-				</div>
+				<LoadingState message="Loading watchlist items..." />
 			{:else if watchlistItems.length > 0}
 				<div class="article-cards">
 					{#each watchlistItems.slice(0, 3) as item (item.id)}
@@ -109,9 +108,7 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="empty-state">
-					<p>No watchlist items available.</p>
-				</div>
+				<EmptyState title="No watchlist items available." />
 			{/if}
 			<div class="view-all-link">
 				<a href="/dashboard/ww/watchlist-rundown-archive/">View All Rundowns &rarr;</a>
@@ -283,34 +280,4 @@
 		text-decoration: underline;
 	}
 
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		color: #666;
-	}
-
-	.loading-spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #e0e0e0;
-		border-top-color: #0984ae;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin-bottom: 16px;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
-
-	/* Empty State */
-	.empty-state {
-		text-align: center;
-		padding: 40px 20px;
-		color: #666;
-	}
 </style>
