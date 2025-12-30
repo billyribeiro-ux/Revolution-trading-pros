@@ -57,12 +57,15 @@ h3 { font-size: 26px; }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DASHBOARD SIDEBAR - Primary Navigation
+   Exact Simpler Trading CSS Values
    ═══════════════════════════════════════════════════════════════════════════════ */
 .dashboard__sidebar {
-  width: 280px;
+  display: flex;
   flex: 0 0 auto;
-  background-color: #0e2433;
-  transition: width 0.2s ease-in-out;
+  flex-flow: row nowrap;
+  width: 280px;
+  background-color: #0f2d41;
+  transition: all 0.3s ease-in-out;
   z-index: 100;
 }
 
@@ -75,41 +78,57 @@ h3 { font-size: 26px; }
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    bottom: 50px;
+    opacity: 0;
+    visibility: hidden;
     transform: translateX(-100%);
-    z-index: 9999;
+    z-index: 100010;
+    transition: all 0.3s ease-in-out;
   }
 
   .html--dashboard-menu-open .dashboard__sidebar {
+    opacity: 1;
+    visibility: visible;
     transform: translateX(0);
   }
 }
 
 /* Primary Nav */
 .dashboard__nav-primary {
-  padding: 20px 0;
+  width: 280px;
+  padding-bottom: 30px;
+  font-size: 16px;
+  line-height: 1;
+  background-color: #0f2d41;
+  transition: all 0.3s ease-in-out;
 }
 
 .dashboard__nav-primary.is-collapsed {
-  padding: 20px 0;
+  width: 80px;
+  padding-top: 30px;
+  flex: 0 0 80px;
+  min-width: 80px;
+  max-width: 80px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Nav Category Labels */
+/* Nav Category Labels - Exact Simpler Trading: 24px bold white */
 .dashboard__nav-category {
-  padding: 20px 30px 10px;
+  padding: 30px 30px 0;
   font-size: 24px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  font-family: 'Open Sans', sans-serif;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
+  color: #fff;
   margin: 0;
+  line-height: 1;
 }
 
 .is-collapsed .dashboard__nav-category {
   display: none;
 }
 
-/* Nav Links */
+/* Nav Links - Simpler Trading style */
 .dash_main_links {
   list-style: none;
   margin: 0;
@@ -118,17 +137,33 @@ h3 { font-size: 26px; }
 
 .dash_main_links li {
   margin: 0;
+  position: relative;
 }
 
 .dash_main_links a {
   display: flex;
   align-items: center;
-  padding: 12px 30px;
-  color: rgba(255, 255, 255, 0.8);
+  height: 50px;
+  padding: 0 20px 0 80px;
+  position: relative;
+  color: hsla(0, 0%, 100%, 0.5);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 17px;
+  font-weight: 300;
+  font-family: 'Open Sans', sans-serif;
   transition: all 0.15s ease-in-out;
+}
+
+/* Active indicator bar on right side */
+.dash_main_links a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 5px;
+  background: transparent;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .dash_main_links a:hover {
@@ -137,82 +172,226 @@ h3 { font-size: 26px; }
 }
 
 .dash_main_links li.is-active a {
-  background-color: rgba(255, 255, 255, 0.1);
   color: #fff;
-  font-weight: 600;
 }
 
-/* Nav Item Icon */
+.dash_main_links li.is-active a::after {
+  background-color: #0984ae;
+}
+
+/* Nav Item Icon - Simpler Trading positioning */
 .dashboard__nav-item-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  margin-right: 15px;
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  margin-top: -16px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  line-height: 32px;
   color: inherit;
-  flex-shrink: 0;
 }
 
 .is-collapsed .dashboard__nav-item-icon {
-  margin-right: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
 }
 
 /* Nav Item Text */
 .dashboard__nav-item-text {
+  font-size: 17px;
+  font-weight: 400;
+  font-family: 'Open Sans', sans-serif;
+  color: hsla(0, 0%, 100%, 0.7);
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* Collapsed state tooltip */
 .is-collapsed .dashboard__nav-item-text {
-  display: none;
+  z-index: 100;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -15px;
+  margin-left: -10px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  color: #0984ae;
+  background: #fff;
+  border-radius: 5px;
+  transform: translate(5px);
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Show tooltip on hover in collapsed state */
+.is-collapsed .dash_main_links a:hover .dashboard__nav-item-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0);
+}
+
+/* Tooltip arrow */
+.is-collapsed .dashboard__nav-item-text::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #fff transparent transparent;
 }
 
 .dashboard__nav-item-text--bold {
   font-weight: 700;
+  color: #fff;
 }
 
-/* Profile Nav Item */
+/* Profile Nav Item - Simpler Trading exact values */
 .dashboard__profile-nav-item {
-  display: flex;
-  align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+  height: auto;
+  line-height: 1.4;
+  padding: 32px 20px 28px 80px;
+  position: relative;
   text-decoration: none;
-  transition: background-color 0.15s ease-in-out;
+  color: hsla(0, 0%, 100%, 0.5);
+  transition: all 0.15s ease-in-out;
 }
 
 .dashboard__profile-nav-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+  border-color: #0984ae;
 }
 
 .dashboard__profile-photo {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 44px;
   height: 44px;
   border-radius: 50%;
+  border: 2px solid hsla(0, 0%, 100%, 0.2);
+  background-color: #0f2d41;
   background-size: cover;
   background-position: center;
-  background-color: #1a3a4f;
-  margin-right: 15px;
-  flex-shrink: 0;
+  transition: border-color 0.15s ease-in-out;
 }
 
 .dashboard__profile-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Open Sans', sans-serif;
   color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+/* Collapsed state profile */
+.is-collapsed .dashboard__profile-nav-item {
+  height: 50px;
+  line-height: 50px;
+  padding: 0;
 }
 
 .is-collapsed .dashboard__profile-photo {
-  margin-right: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: 32px;
+  height: 32px;
 }
 
 .is-collapsed .dashboard__profile-name {
-  display: none;
+  z-index: 100;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -15px;
+  margin-left: -10px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  color: #0984ae;
+  background: #fff;
+  border-radius: 5px;
+  transform: translate(5px);
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Show profile name tooltip on hover */
+.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0);
+}
+
+/* Profile name tooltip arrow */
+.is-collapsed .dashboard__profile-name::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #fff transparent transparent;
+}
+
+/* Collapsed state nav links */
+.is-collapsed .dash_main_links li {
+  margin-top: 20px;
+}
+
+.is-collapsed .dash_main_links a {
+  padding: 0;
+}
+
+/* Circle hover effect in collapsed state */
+.is-collapsed .dash_main_links a::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  margin-top: -25px;
+  margin-left: -25px;
+  border-radius: 50%;
+  transform: scale(0.9);
+  background: transparent;
+  transition: all 0.15s ease-in-out;
+}
+
+.is-collapsed .dash_main_links a:hover::before {
+  transform: scale(1);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Secondary Nav (for membership pages) */

@@ -110,15 +110,17 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - Exact Simpler Trading #0e2433
+	   SIDEBAR - Exact Simpler Trading #0f2d41
+	   All values match original simplertrading.com dashboard CSS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.sidebar {
 		display: flex;
 		flex: 0 0 auto;
 		flex-flow: row nowrap;
 		width: 280px;
-		background-color: #0e2433;
+		background-color: #0f2d41;
 		min-height: 100%;
+		transition: all 0.3s ease-in-out;
 	}
 
 	.sidebar.has-secondary {
@@ -135,8 +137,8 @@
 		padding-bottom: 30px;
 		font-size: 16px;
 		line-height: 1;
-		background-color: #0e2433;
-		transition: width 0.3s ease-in-out;
+		background-color: #0f2d41;
+		transition: all 0.3s ease-in-out;
 	}
 
 	.nav-primary.is-collapsed {
@@ -149,7 +151,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PROFILE SECTION
+	   PROFILE SECTION - Exact Simpler Trading values
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.profile-item {
 		display: block;
@@ -180,7 +182,7 @@
 		height: 44px;
 		border-radius: 50%;
 		border: 2px solid hsla(0, 0%, 100%, 0.2);
-		background-color: #0e2433;
+		background-color: #0f2d41;
 		background-size: cover;
 		background-position: center;
 		transition: border-color 0.15s ease-in-out;
@@ -195,18 +197,17 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CATEGORY HEADERS
+	   CATEGORY HEADERS - 24px BOLD WHITE (exact Simpler Trading)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.nav-category {
-		color: hsla(0, 0%, 100%, 0.3);
-		font-size: 11px;
+		padding: 30px 30px 0;
+		font-size: 24px;
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
-		letter-spacing: 0.5px;
-		line-height: 1;
-		margin: 0;
-		padding: 20px 20px 12px;
 		text-transform: uppercase;
+		color: #fff;
+		margin: 0;
+		line-height: 1;
 	}
 
 	.nav-primary.is-collapsed .nav-category {
@@ -214,7 +215,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   NAVIGATION LINKS
+	   NAVIGATION LINKS - Simpler Trading exact styles
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.nav-links {
 		list-style: none;
@@ -224,6 +225,7 @@
 
 	.nav-links li {
 		position: relative;
+		margin: 0;
 	}
 
 	.nav-links a {
@@ -234,7 +236,9 @@
 		position: relative;
 		color: hsla(0, 0%, 100%, 0.5);
 		text-decoration: none;
+		font-size: 17px;
 		font-weight: 300;
+		font-family: 'Open Sans', sans-serif;
 		transition: all 0.15s ease-in-out;
 	}
 
@@ -264,29 +268,29 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   NAV ICONS
+	   NAV ICONS - 32px (Simpler Trading exact)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.nav-icon {
 		position: absolute;
 		top: 50%;
 		left: 30px;
-		margin-top: -14px;
-		width: 28px;
-		height: 28px;
-		font-size: 28px;
-		line-height: 28px;
+		margin-top: -16px;
+		width: 32px;
+		height: 32px;
+		font-size: 32px;
+		line-height: 32px;
 		color: inherit;
 	}
 
 	.nav-icon :global(svg) {
-		width: 28px;
-		height: 28px;
+		width: 32px;
+		height: 32px;
 		color: inherit;
 		stroke: currentColor;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   NAV TEXT
+	   NAV TEXT - 17px (Simpler Trading exact)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.nav-text {
 		font-size: 17px;
@@ -302,7 +306,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   COLLAPSED STATE
+	   COLLAPSED STATE - with hover effects and animations
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.nav-primary.is-collapsed .nav-links li {
 		margin-top: 20px;
@@ -312,7 +316,7 @@
 		padding: 0;
 	}
 
-	/* Circle hover effect */
+	/* Circle hover effect - animated scale */
 	.nav-primary.is-collapsed .nav-links a::before {
 		content: "";
 		position: absolute;
@@ -343,7 +347,7 @@
 		margin: 0;
 	}
 
-	/* Tooltip - hidden by default */
+	/* Tooltip - hidden by default with slide animation */
 	.nav-primary.is-collapsed .nav-text,
 	.nav-primary.is-collapsed .profile-name {
 		z-index: 100;
@@ -368,7 +372,7 @@
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 	}
 
-	/* Show tooltip on hover */
+	/* Show tooltip on hover - animated slide in */
 	.nav-primary.is-collapsed .nav-links a:hover .nav-text,
 	.nav-primary.is-collapsed .profile-item:hover .profile-name {
 		opacity: 1;
@@ -407,7 +411,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SECONDARY NAVIGATION
+	   SECONDARY NAVIGATION - Simpler Trading exact
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.nav-secondary {
 		width: 280px;
@@ -416,7 +420,7 @@
 		max-width: 280px;
 		font-size: 14px;
 		font-weight: 600;
-		background-color: #0e2433;
+		background-color: #0f2d41;
 		min-height: 100%;
 		padding: 20px;
 	}
@@ -467,7 +471,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - Mobile
+	   RESPONSIVE - Mobile with animations
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1279px) {
 		.sidebar {
