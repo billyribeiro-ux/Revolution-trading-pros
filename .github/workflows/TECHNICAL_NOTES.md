@@ -4,7 +4,9 @@
 
 **Status:** ✅ Production-Ready with Expected IDE Warnings
 
-The IDE warnings for "Context access might be invalid" are **architectural limitations of GitHub Actions** and do not indicate actual problems. All workflows have enterprise-grade runtime validation.
+**Total Warnings:** 10 (8 in deploy-cloudflare.yml + 2 in deploy-fly.yml)
+
+The IDE warnings for "Context access might be invalid" are **architectural limitations of GitHub Actions** and do not indicate actual problems. All workflows have enterprise-grade runtime validation with defense-in-depth patterns.
 
 ---
 
@@ -45,24 +47,29 @@ Our workflows use **defense-in-depth** validation:
 
 ## Current Warnings Breakdown
 
-### deploy-cloudflare.yml (7 warnings)
+### deploy-cloudflare.yml (8 warnings - EXPECTED & SAFE)
 
-| Line | Secret/Variable | Usage | Safe? |
-|------|----------------|-------|-------|
-| 85 | `SITE_URL` | Build env with fallback | ✅ Yes - has default |
-| 248 | `LHCI_GITHUB_APP_TOKEN` | Job-level env | ✅ Yes - validated before use |
-| 261 | `LHCI_GITHUB_APP_TOKEN` | Step validation | ✅ Yes - in env block |
-| 274 | `LHCI_GITHUB_APP_TOKEN` | Lighthouse CI | ✅ Yes - conditional execution |
-| 299 | `CLOUDFLARE_ZONE_ID` | Cache purge validation | ✅ Yes - in env block |
-| 300 | `CLOUDFLARE_API_TOKEN` | Cache purge validation | ✅ Yes - in env block |
-| 310-311 | Both cache secrets | Cache purge execution | ✅ Yes - in env block |
+| Line | Secret/Variable | Usage | Safe? | Reason |
+|------|----------------|-------|-------|--------|
+| 91 | `vars.SITE_URL` | Build env with fallback | ✅ Yes | Has default, validated in shell before use |
+| 267 | `secrets.LHCI_GITHUB_APP_TOKEN` | Step validation env | ✅ Yes | In env block, shell validates before use |
+| 280 | `secrets.LHCI_GITHUB_APP_TOKEN` | Lighthouse CI env | ✅ Yes | Conditional execution, continue-on-error |
+| 305 | `secrets.CLOUDFLARE_ZONE_ID` | Cache validation env | ✅ Yes | In env block, shell validates before use |
+| 306 | `secrets.CLOUDFLARE_API_TOKEN` | Cache validation env | ✅ Yes | In env block, shell validates before use |
+| 316 | `secrets.CLOUDFLARE_ZONE_ID` | Cache execution env | ✅ Yes | Conditional execution, continue-on-error |
+| 317 | `secrets.CLOUDFLARE_API_TOKEN` | Cache execution env | ✅ Yes | Conditional execution, continue-on-error |
+| 341 | `secrets.SLACK_WEBHOOK_URL` | Notification env | ✅ Yes | In env block, code is commented out |
 
-### deploy-fly.yml (1 warning)
+**Note:** These warnings are **architectural limitations** of GitHub Actions IDE tooling. The IDE cannot verify secrets/vars at parse-time because they're encrypted and dynamic. All accesses use proper runtime validation patterns.
 
-| Line | Secret | Usage | Safe? |
-|------|--------|-------|-------|
-| 45 | `FLY_API_TOKEN` | Token validation | ✅ Yes - in env block |
-| 56 | `FLY_API_TOKEN` | Deployment | ✅ Yes - conditional execution |
+### deploy-fly.yml (2 warnings - EXPECTED & SAFE)
+
+| Line | Secret | Usage | Safe? | Reason |
+|------|--------|-------|-------|--------|
+| 46 | `secrets.FLY_API_TOKEN` | Token validation env | ✅ Yes | In env block, shell validates before use |
+| 58 | `secrets.FLY_API_TOKEN` | Deployment env | ✅ Yes | Conditional execution, fails fast if missing |
+
+**Note:** Unlike Cloudflare deployment, Fly.io deployment **requires** the token and will fail fast with clear error if missing. This is intentional for production API deployments.
 
 ---
 
@@ -167,14 +174,22 @@ For each secret/variable access, we ensure:
 
 ## Testing Matrix
 
+### Cloudflare Deployment (Graceful Degradation)
+
 | Scenario | Expected Behavior | Actual Behavior |
 |----------|-------------------|-----------------|
 | All secrets configured | ✅ Full deployment | ✅ Works |
 | Missing CLOUDFLARE_API_TOKEN | ⚠️ Deployment skipped | ✅ Works |
 | Missing LHCI_GITHUB_APP_TOKEN | ⚠️ Lighthouse skipped | ✅ Works |
 | Missing CLOUDFLARE_ZONE_ID | ⚠️ Cache purge skipped | ✅ Works |
-| Missing FLY_API_TOKEN | ❌ Build fails with error | ✅ Works |
 | Missing SITE_URL | ✅ Uses default value | ✅ Works |
+
+### Fly.io Deployment (Fail-Fast)
+
+| Scenario | Expected Behavior | Actual Behavior |
+|----------|-------------------|-----------------|
+| FLY_API_TOKEN configured | ✅ Full deployment | ✅ Works |
+| Missing FLY_API_TOKEN | ❌ Fails with clear error | ✅ Works |
 
 ---
 

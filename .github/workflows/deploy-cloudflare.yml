@@ -82,7 +82,14 @@ jobs:
       - name: Set build environment
         id: build-env
         run: |
-          echo "site_url=${{ vars.SITE_URL || 'https://revolution-trading-pros.pages.dev' }}" >> $GITHUB_OUTPUT
+          if [ -n "$SITE_URL" ]; then
+            echo "site_url=$SITE_URL" >> $GITHUB_OUTPUT
+          else
+            echo "site_url=https://revolution-trading-pros.pages.dev" >> $GITHUB_OUTPUT
+          fi
+        env:
+          # IDE Warning Expected: vars.SITE_URL may not exist (safe - has default)
+          SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Build for Cloudflare
         working-directory: frontend
@@ -243,9 +250,6 @@ jobs:
     needs: deploy
     if: github.ref == 'refs/heads/main'
     timeout-minutes: 10
-    
-    env:
-      LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -261,6 +265,7 @@ jobs:
             echo "::notice::Lighthouse CI skipped - LHCI_GITHUB_APP_TOKEN not configured"
           fi
         env:
+          # IDE Warning Expected: secret may not exist (safe - validated before use)
           LHCI_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
       - name: Run Lighthouse CI
@@ -274,6 +279,7 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
         env:
+          # IDE Warning Expected: secret may not exist (safe - conditional execution)
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         continue-on-error: true
 
@@ -299,6 +305,7 @@ jobs:
             echo "::notice::Skipping cache purge - CLOUDFLARE_ZONE_ID or CLOUDFLARE_API_TOKEN not configured"
           fi
         env:
+          # IDE Warning Expected: secrets may not exist (safe - validated before use)
           CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
@@ -310,6 +317,7 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
         env:
+          # IDE Warning Expected: secrets may not exist (safe - conditional execution)
           CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         continue-on-error: true
@@ -329,6 +337,11 @@ jobs:
         run: |
           echo "Deployment failed! Check GitHub Actions for details."
           # Add Slack/Discord webhook here if needed
-          # curl -X POST -H 'Content-type: application/json' \
-          #   --data '{"text":"Frontend deployment failed!"}' \
-          #   ${{ secrets.SLACK_WEBHOOK_URL }}
+          # if [ -n "$SLACK_WEBHOOK" ]; then
+          #   curl -X POST -H 'Content-type: application/json' \
+          #     --data '{"text":"Frontend deployment failed!"}' \
+          #     "$SLACK_WEBHOOK"
+          # fi
+        env:
+          # IDE Warning Expected: secret may not exist (safe - code is commented out)
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
