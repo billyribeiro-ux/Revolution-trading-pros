@@ -147,7 +147,7 @@
 		<!-- Support Link -->
 		<p class="error-support">
 			Need help?
-			<a href="/dashboard/support">Contact Support</a>
+			<a href="/support">Contact Support</a>
 		</p>
 	</div>
 </main>

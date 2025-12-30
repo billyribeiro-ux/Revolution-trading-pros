@@ -334,7 +334,7 @@
 									<IconEdit size={16} />
 								</a>
 								<a
-									href="/dashboard/{lesson.tradingRooms?.[0]?.slug || 'day-trading-room'}/learning-center/{lesson.slug}"
+									href="/learning-center/{lesson.slug}"
 									class="action-btn"
 									title="View"
 									target="_blank"

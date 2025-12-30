@@ -165,10 +165,10 @@
 				</div>
 			</div>
 			<div class="typ-next-steps__actions">
-				<a href="/dashboard" class="btn btn-orange btn-lg">
-					Go to My Dashboard
+				<a href="/account" class="btn btn-orange btn-lg">
+					Go to My Account
 				</a>
-				<a href="/dashboard/courses" class="btn btn-outline-light btn-lg">
+				<a href="/courses" class="btn btn-outline-light btn-lg">
 					Browse Courses
 				</a>
 			</div>
@@ -214,7 +214,7 @@
 				<h3 class="typ-support__title">Need Help Getting Started?</h3>
 				<p class="typ-support__text">Our support team is here to help you every step of the way.</p>
 				<div class="typ-support__actions">
-					<a href="/dashboard/support" class="btn btn-outline-orange">Contact Support</a>
+					<a href="/support" class="btn btn-outline-orange">Contact Support</a>
 					<a href="/resources/faq" class="btn btn-link">View FAQ</a>
 				</div>
 			</div>
