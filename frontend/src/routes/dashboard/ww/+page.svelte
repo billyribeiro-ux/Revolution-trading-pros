@@ -4,46 +4,45 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Main dashboard for Weekly Watchlist with featured cards and recent rundowns.
-	 * Refactored to use modular Svelte 5 components.
+	 * Now fetches watchlist items from API.
 	 *
-	 * @version 2.0.0 - Svelte 5 with component-based architecture
+	 * @version 2.1.0 - Svelte 5 with watchlist API integration
 	 */
+	import { untrack } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		DashboardHeader,
 		ArticleCard,
 		WeeklyWatchlistSection,
 		SectionTitle
 	} from '$lib/components/dashboard';
+	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 
-	// Recent rundown archives
-	const recentRundowns = [
-		{
-			id: 1,
-			date: 'December 22, 2025',
-			trader: 'TG Watkins',
-			slug: '12222025-tg-watkins',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
-			description: 'Week of December 22, 2025.'
-		},
-		{
-			id: 2,
-			date: 'December 15, 2025',
-			trader: 'Allison Ostrander',
-			slug: '12152025-allison-ostrander',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
-			description: 'Week of December 15, 2025.'
-		},
-		{
-			id: 3,
-			date: 'December 08, 2025',
-			trader: 'Taylor Horton',
-			slug: '12082025-taylor-horton',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
-			description: 'Week of December 8, 2025.'
-		}
-	];
+	// Watchlist data from API
+	let watchlistItems = $state<WatchlistItem[]>([]);
+	let isLoading = $state(true);
+	let latestWatchlist = $derived(watchlistItems[0] || null);
 
-	// Weekly Watchlist - Dynamic date calculation (Svelte 5 $derived.by pattern)
+	// Fetch watchlist items on mount
+	$effect(() => {
+		if (!browser) return;
+
+		untrack(() => {
+			isLoading = true;
+		});
+
+		watchlistApi.getPublished({ per_page: 5 })
+			.then((response) => {
+				watchlistItems = response.data || [];
+				isLoading = false;
+			})
+			.catch((err) => {
+				console.error('Failed to fetch watchlist:', err);
+				isLoading = false;
+			});
+	});
+
+	// Weekly Watchlist - Dynamic date calculation (fallback)
 	const weeklyWatchlistDate = $derived.by(() => {
 		const now = new Date();
 		const day = now.getDay();
@@ -89,33 +88,54 @@
 		<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
 		<section class="dashboard__content-section">
 			<SectionTitle title="Watchlist Rundown Archive" />
-			<div class="article-cards">
-				{#each recentRundowns as item (item.id)}
-					<div class="article-cards__item">
-						<ArticleCard
-							title="Weekly Watchlist with {item.trader}"
-							href="/watchlist/{item.slug}"
-							image={item.image}
-							meta={item.date}
-							excerpt={item.description}
-							buttonText="Watch Now"
-						/>
-					</div>
-				{/each}
-			</div>
+			{#if isLoading}
+				<div class="loading-state">
+					<div class="loading-spinner"></div>
+					<p>Loading watchlist items...</p>
+				</div>
+			{:else if watchlistItems.length > 0}
+				<div class="article-cards">
+					{#each watchlistItems.slice(0, 3) as item (item.id)}
+						<div class="article-cards__item">
+							<ArticleCard
+								title={item.title}
+								href="/watchlist/{item.slug}"
+								image={item.video.poster}
+								meta={item.datePosted}
+								excerpt={item.subtitle}
+								buttonText="Watch Now"
+							/>
+						</div>
+					{/each}
+				</div>
+			{:else}
+				<div class="empty-state">
+					<p>No watchlist items available.</p>
+				</div>
+			{/if}
 			<div class="view-all-link">
 				<a href="/dashboard/ww/watchlist-rundown-archive/">View All Rundowns &rarr;</a>
 			</div>
 		</section>
 
 		<!-- WEEKLY WATCHLIST FEATURED SECTION -->
-		<WeeklyWatchlistSection
-			title="Weekly Watchlist"
-			featuredTitle="Weekly Watchlist with TG Watkins"
-			description="Week of {weeklyWatchlistDate}."
-			image="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg"
-			href="/watchlist/12222025-tg-watkins"
-		/>
+		{#if latestWatchlist}
+			<WeeklyWatchlistSection
+				title="Weekly Watchlist"
+				featuredTitle={latestWatchlist.title}
+				description={latestWatchlist.subtitle}
+				image={latestWatchlist.video.poster}
+				href="/watchlist/{latestWatchlist.slug}"
+			/>
+		{:else if !isLoading}
+			<WeeklyWatchlistSection
+				title="Weekly Watchlist"
+				featuredTitle="Weekly Watchlist"
+				description="Week of {weeklyWatchlistDate}."
+				image="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg"
+				href="/watchlist/latest"
+			/>
+		{/if}
 
 	</div>
 </div>
@@ -262,5 +282,36 @@
 	.view-all-link a:hover {
 		color: #065a75;
 		text-decoration: underline;
+	}
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e0e0e0;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 40px 20px;
+		color: #666;
 	}
 </style>

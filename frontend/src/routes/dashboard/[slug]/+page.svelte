@@ -5,9 +5,9 @@
 	 *
 	 * Renders trading room dashboard based on configuration.
 	 * Refactored to use modular Svelte 5 components with scoped CSS.
-	 * Now fetches articles from the Articles API.
+	 * Now fetches articles and watchlist from APIs with room filtering.
 	 *
-	 * @version 3.1.0 - Svelte 5 with API integration
+	 * @version 3.2.0 - Svelte 5 with room-filtered watchlist API
 	 */
 	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
@@ -20,8 +20,9 @@
 		SectionTitle
 	} from '$lib/components/dashboard';
 
-	// Import Articles API
+	// Import APIs
 	import { articlesApi, type Article } from '$lib/api/articles';
+	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 
 	// Tabler Icons for dropdown menu
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
@@ -46,6 +47,10 @@
 	let articlesLoading = $state(true);
 	let articlesError = $state<string | null>(null);
 
+	// Watchlist data - fetched from API with room filtering
+	let latestWatchlist = $state<WatchlistItem | null>(null);
+	let watchlistLoading = $state(true);
+
 	// Fetch articles when slug changes
 	$effect(() => {
 		const currentSlug = slug;
@@ -68,7 +73,28 @@
 			});
 	});
 
-	// Weekly Watchlist - Dynamic date calculation
+	// Fetch watchlist for current room
+	$effect(() => {
+		const currentSlug = slug;
+		if (!browser || !currentSlug) return;
+
+		untrack(() => {
+			watchlistLoading = true;
+		});
+
+		watchlistApi.getLatest(currentSlug)
+			.then((response) => {
+				latestWatchlist = response.data || null;
+				watchlistLoading = false;
+			})
+			.catch((err) => {
+				console.error('Failed to fetch watchlist:', err);
+				latestWatchlist = null;
+				watchlistLoading = false;
+			});
+	});
+
+	// Weekly Watchlist - Dynamic date calculation (fallback when API fails)
 	const weeklyWatchlistDate = $derived.by(() => {
 		const now = new Date();
 		const day = now.getDay();
@@ -223,13 +249,32 @@
 
 		<!-- WEEKLY WATCHLIST SECTION -->
 		{#if room.watchlistImage}
-			<WeeklyWatchlistSection
-				title="Weekly Watchlist"
-				featuredTitle="Weekly Watchlist with TG Watkins"
-				description="Week of {weeklyWatchlistDate}."
-				image={room.watchlistImage}
-				href={weeklyWatchlistUrl}
-			/>
+			{#if watchlistLoading}
+				<section class="dashboard__content-section">
+					<div class="watchlist-loading">
+						<div class="loading-spinner"></div>
+						<p>Loading watchlist...</p>
+					</div>
+				</section>
+			{:else if latestWatchlist}
+				<!-- Use API data when available -->
+				<WeeklyWatchlistSection
+					title="Weekly Watchlist"
+					featuredTitle={latestWatchlist.title}
+					description={latestWatchlist.subtitle}
+					image={latestWatchlist.video.poster || room.watchlistImage}
+					href="/watchlist/{latestWatchlist.slug}"
+				/>
+			{:else}
+				<!-- Fallback to calculated date if no watchlist for this room -->
+				<WeeklyWatchlistSection
+					title="Weekly Watchlist"
+					featuredTitle="Weekly Watchlist with TG Watkins"
+					description="Week of {weeklyWatchlistDate}."
+					image={room.watchlistImage}
+					href={weeklyWatchlistUrl}
+				/>
+			{/if}
 		{/if}
 
 	</div>
@@ -432,7 +477,8 @@
 	}
 
 	/* Loading State */
-	.articles-loading {
+	.articles-loading,
+	.watchlist-loading {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
