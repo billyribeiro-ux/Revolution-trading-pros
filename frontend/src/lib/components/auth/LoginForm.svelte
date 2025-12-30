@@ -247,7 +247,7 @@
 	// --- Lottie Complete Handler ---
 	function handleLottieComplete() {
 		const urlParams = new URLSearchParams(window.location.search);
-		const redirect = urlParams.get('redirect') || '/dashboard';
+		const redirect = urlParams.get('redirect') || '/';
 		goto(validateRedirectUrl(redirect), { replaceState: true });
 	}
 
@@ -304,9 +304,9 @@
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
-			// Redirect to dashboard
+			// Redirect after login
 			const urlParams = new URLSearchParams(window.location.search);
-			const redirect = urlParams.get('redirect') || '/dashboard';
+			const redirect = urlParams.get('redirect') || '/';
 			goto(validateRedirectUrl(redirect), { replaceState: true });
 		} catch (error: unknown) {
 			// Error handling
