@@ -181,7 +181,7 @@
 		padding: 32px 24px;
 		background: #fff;
 		border-radius: 12px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		text-decoration: none;
 		color: inherit;
 		cursor: pointer;
@@ -190,8 +190,7 @@
 	}
 
 	.contact-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		border-color: #0984ae;
 	}
 
@@ -252,13 +251,13 @@
 		gap: 20px;
 		padding: 24px;
 		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		transition: all 0.15s;
 	}
 
 	.resource-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	.resource-icon {
@@ -323,7 +322,7 @@
 		padding: 16px 20px;
 		background: #fff;
 		border: 1px solid #e5e7eb;
-		border-radius: 8px;
+		border-radius: 4px;
 		cursor: pointer;
 		transition: all 0.15s;
 		text-align: left;

@@ -320,7 +320,7 @@
 		padding: 0.5rem 1rem;
 		background: transparent;
 		border: none;
-		border-radius: 8px;
+		border-radius: 4px;
 		color: #94a3b8;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -522,7 +522,7 @@
 	.alert-notes {
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border-radius: 8px;
+		border-radius: 4px;
 		color: #cbd5e1;
 		font-size: 0.875rem;
 		line-height: 1.5;

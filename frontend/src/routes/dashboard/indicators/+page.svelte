@@ -200,15 +200,14 @@
 		height: 100%;
 		background-color: #fff;
 		border: 1px solid #dbdbdb;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		transition: all 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
 	:global(.card.flex-grid-panel:hover) {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	:global(.card-body.u--squash) {

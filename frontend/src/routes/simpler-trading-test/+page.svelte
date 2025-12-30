@@ -844,13 +844,13 @@
 		background-color: #fff;
 		border: 1px solid #dbdbdb;
 		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		transition: all 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
 	.st-membership-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		transform: translateY(-2px);
 	}
 

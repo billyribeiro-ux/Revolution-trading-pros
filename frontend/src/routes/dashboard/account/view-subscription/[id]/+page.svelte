@@ -472,7 +472,7 @@
 	.content-box {
 		background: #fff;
 		border-radius: 4px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 	}
 
 	.content-box__section {
@@ -704,7 +704,7 @@
 
 	.modal {
 		background: #fff;
-		border-radius: 8px;
+		border-radius: 4px;
 		padding: 30px;
 		max-width: 500px;
 		width: 90%;

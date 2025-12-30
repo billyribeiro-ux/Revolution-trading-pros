@@ -51,7 +51,7 @@
 	@media (min-width: 576px) { .col-sm-6 { flex: 0 0 50%; max-width: 50%; } }
 	@media (min-width: 768px) { .col-md-4 { flex: 0 0 33.333%; max-width: 33.333%; } }
 	@media (min-width: 1200px) { .col-xl-3 { flex: 0 0 25%; max-width: 25%; } }
-	.card { background: #fff; border: 1px solid #dbdbdb; border-radius: 8px; box-shadow: 0 5px 30px rgba(0,0,0,0.1); height: 100%; }
+	.card { background: #fff; border: 1px solid #dbdbdb; border-radius: 4px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16); height: 100%; }
 	.card-body { padding: 15px; display: flex; flex-direction: column; gap: 8px; }
 	.card-body h4 { margin: 0; font-size: 16px; }
 	.trader-name { font-size: 13px; color: #666; margin: 0; }

@@ -38,7 +38,7 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 4px; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.traders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; }
-	.trader-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); }
+	.trader-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16); }
 	.trader-image { width: 100%; height: 200px; background-size: cover; background-position: center top; background-color: #0984ae; }
 	.trader-info { padding: 24px; }
 	.trader-name { font-size: 22px; font-weight: 700; color: #333; margin: 0 0 4px; }

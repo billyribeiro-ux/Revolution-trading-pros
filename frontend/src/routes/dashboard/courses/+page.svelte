@@ -156,15 +156,14 @@
 
 	.course-card {
 		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		overflow: hidden;
 		transition: all 0.15s;
 	}
 
 	.course-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	.course-link {

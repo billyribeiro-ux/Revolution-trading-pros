@@ -39,7 +39,7 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 8px; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-	.product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); }
+	.product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16); }
 	.product-image { width: 100%; height: 180px; background: #0984ae; }
 	.product-content { padding: 20px; }
 	.product-name { font-size: 18px; font-weight: 700; color: #333; margin: 0 0 8px; }

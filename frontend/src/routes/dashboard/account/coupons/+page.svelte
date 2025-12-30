@@ -81,14 +81,13 @@
 		padding: 20px;
 		background: #fff;
 		border: 2px dashed #0984ae;
-		border-radius: 8px;
+		border-radius: 4px;
 		transition: all 0.15s ease;
 	}
 
 	.sc-coupon:hover {
 		border-style: solid;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	.coupon-code {
@@ -115,7 +114,7 @@
 	.woocommerce-Message {
 		padding: 20px 25px;
 		margin: 0;
-		border-radius: 8px;
+		border-radius: 4px;
 		font-size: 14px;
 		line-height: 1.5;
 	}
