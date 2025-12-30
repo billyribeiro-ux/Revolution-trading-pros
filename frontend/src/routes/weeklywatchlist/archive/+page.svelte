@@ -3,28 +3,54 @@
 	 * Weekly Watchlist Archive - Matching Simpler Trading
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Archive of past weekly watchlists (spreadsheet tab)
-	 * @version 2.0.0 - December 2025
+	 * Now fetches from API with room filtering support.
+	 * @version 3.0.0 - December 2025 - API integration with room filter
 	 */
 
-	// Archive data - matches reference URL structure
-	const archives = [
-		{ date: 'December 22, 2025', trader: 'TG Watkins', slug: '12222025-tg-watkins' },
-		{ date: 'December 15, 2025', trader: 'Allison Ostrander', slug: '12152025-allison-ostrander' },
-		{ date: 'December 8, 2025', trader: 'Taylor Horton', slug: '12082025-taylor-horton' },
-		{ date: 'December 1, 2025', trader: 'Raghee Horner', slug: '12012025-raghee-horner' },
-		{ date: 'November 24, 2025', trader: 'David Starr', slug: '11242025-david-starr' },
-		{ date: 'November 17, 2025', trader: 'Mike Teeto', slug: '11172025-mike-teeto' },
-		{ date: 'November 10, 2025', trader: 'Taylor Horton', slug: '11102025-taylor-horton' },
-		{ date: 'November 3, 2025', trader: 'Allison Ostrander', slug: '11032025-allison-ostrander' },
-		{ date: 'October 27, 2025', trader: 'Bruce Marshall', slug: '10272025-bruce-marshall' },
-		{ date: 'October 20, 2025', trader: 'Jonathan McKeever', slug: 'tr3ndy-10202025' },
-		{ date: 'October 12, 2025', trader: 'TG Watkins', slug: '10122025-tg-watkins' },
-		{ date: 'October 6, 2025', trader: 'Henry Gambell', slug: '10062025-henry-gambell' }
-	];
+	import { untrack } from 'svelte';
+	import { browser } from '$app/environment';
+	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+	import { ROOMS, getRoomById } from '$lib/config/rooms';
 
-	// Pagination state
+	// State
+	let items = $state<WatchlistItem[]>([]);
+	let isLoading = $state(true);
+	let selectedRoom = $state('');
 	let currentPage = $state(1);
-	const totalPages = 22;
+	let totalPages = $state(1);
+	const perPage = 12;
+
+	// Fetch watchlist items
+	$effect(() => {
+		const room = selectedRoom;
+		const page = currentPage;
+		if (!browser) return;
+
+		untrack(() => {
+			isLoading = true;
+		});
+
+		const params: any = { per_page: perPage, page, status: 'published' };
+		if (room) params.room = room;
+
+		watchlistApi.getAll(params)
+			.then((response) => {
+				items = response.data || [];
+				totalPages = response.pagination?.last_page || 1;
+				isLoading = false;
+			})
+			.catch((err) => {
+				console.error('Failed to fetch watchlist:', err);
+				isLoading = false;
+			});
+	});
+
+	// Handle room filter change
+	function handleRoomChange(event: Event) {
+		const target = event.target as HTMLSelectElement;
+		selectedRoom = target.value;
+		currentPage = 1;
+	}
 </script>
 
 <svelte:head>
@@ -66,83 +92,107 @@
 			<div class="dashboard__header-left">
 				<h1 class="dashboard__page-title">Weekly Watchlist Dashboard</h1>
 			</div>
+			<div class="dashboard__header-right">
+				<select class="room-filter" onchange={handleRoomChange} value={selectedRoom}>
+					<option value="">All Rooms</option>
+					{#each ROOMS as room}
+						<option value={room.id}>{room.name}</option>
+					{/each}
+				</select>
+			</div>
 		</header>
 
 		<div class="dashboard__content">
 			<div class="dashboard__content-main">
 				<section class="dashboard__content-section">
-					<div class="fl-post-grid-post">
-						{#each archives as item}
-							<div class="card fl-post-text">
-								<div class="">
-									<section class="card-body u--squash">
-										<h4 class="h5 card-title">Weekly Watchlist for {item.date}</h4>
-										<div class="excerpt"><i>With {item.trader}</i></div>
-										<div class="fl-post-more-link">
-											<a class="btn btn-tiny btn-default" href="/watchlist/{item.slug}?tab=2">Read Now</a>
-										</div>
-									</section>
+					{#if isLoading}
+						<div class="loading-state">
+							<div class="loading-spinner"></div>
+							<p>Loading watchlist items...</p>
+						</div>
+					{:else if items.length === 0}
+						<div class="empty-state">
+							<p>No watchlist items found{selectedRoom ? ` for ${getRoomById(selectedRoom)?.name || 'this room'}` : ''}.</p>
+						</div>
+					{:else}
+						<div class="fl-post-grid-post">
+							{#each items as item (item.id)}
+								<div class="card fl-post-text">
+									<div class="">
+										<section class="card-body u--squash">
+											<h4 class="h5 card-title">Weekly Watchlist for {item.datePosted}</h4>
+											<div class="excerpt"><i>With {item.trader}</i></div>
+											<div class="fl-post-more-link">
+												<a class="btn btn-tiny btn-default" href="/watchlist/{item.slug}?tab=2">Read Now</a>
+											</div>
+										</section>
+									</div>
+								</div>
+							{/each}
+						</div>
+
+						<!-- Pagination -->
+						{#if totalPages > 1}
+							<div class="text-center pagination-container">
+								<div id="loopage_pg" class="pagination-wrap">
+									{#if currentPage > 1}
+										<button class="page-numbers" onclick={() => currentPage--}>&laquo;</button>
+									{/if}
+
+									<span aria-current="page" class="page-numbers current">{currentPage}</span>
+
+									{#if currentPage < totalPages}
+										<button class="page-numbers" onclick={() => currentPage++}>{currentPage + 1}</button>
+									{/if}
+
+									{#if currentPage + 1 < totalPages}
+										<button class="page-numbers" onclick={() => currentPage += 2}>{currentPage + 2}</button>
+									{/if}
+
+									{#if currentPage + 2 < totalPages}
+										<span class="page-numbers dots">&hellip;</span>
+										<button class="page-numbers" onclick={() => currentPage = totalPages}>{totalPages}</button>
+									{/if}
+
+									{#if currentPage < totalPages}
+										<button class="next page-numbers" onclick={() => currentPage++}>&raquo;</button>
+									{/if}
 								</div>
 							</div>
-						{/each}
-					</div>
-
-					<!-- Pagination -->
-					<div class="text-center pagination-container">
-						<div id="loopage_pg" class="pagination-wrap">
-							{#if currentPage > 1}
-								<a class="page-numbers" href="?pg={currentPage - 1}">&laquo;</a>
-							{/if}
-
-							<span aria-current="page" class="page-numbers current">{currentPage}</span>
-
-							{#if currentPage < totalPages}
-								<a class="page-numbers" href="?pg={currentPage + 1}">{currentPage + 1}</a>
-							{/if}
-
-							{#if currentPage + 1 < totalPages}
-								<a class="page-numbers" href="?pg={currentPage + 2}">{currentPage + 2}</a>
-							{/if}
-
-							{#if currentPage + 2 < totalPages}
-								<span class="page-numbers dots">&hellip;</span>
-								<a class="page-numbers" href="?pg={totalPages}">{totalPages}</a>
-							{/if}
-
-							{#if currentPage < totalPages}
-								<a class="next page-numbers" href="?pg={currentPage + 1}">&raquo;</a>
-							{/if}
-						</div>
-					</div>
+						{/if}
+					{/if}
 				</section>
 			</div>
 		</div>
 
 		<!-- Current Watchlist Section -->
-		<div class="dashboard__content-section u--background-color-white">
-			<section>
-				<div class="row">
-					<div class="col-sm-6 col-lg-5">
-						<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-						<div class="hidden-md d-lg-none pb-2">
-							<a href="/watchlist/12222025-tg-watkins">
-								<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+		{#if items.length > 0}
+			{@const latest = items[0]}
+			<div class="dashboard__content-section u--background-color-white">
+				<section>
+					<div class="row">
+						<div class="col-sm-6 col-lg-5">
+							<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+							<div class="hidden-md d-lg-none pb-2">
+								<a href="/watchlist/{latest.slug}">
+									<img src={latest.video.poster} alt="Weekly Watchlist" class="u--border-radius" />
+								</a>
+							</div>
+							<h4 class="h5 u--font-weight-bold">{latest.title}</h4>
+							<div class="u--hide-read-more">
+								<p>{latest.subtitle}</p>
+							</div>
+							<a href="/watchlist/{latest.slug}" class="btn btn-tiny btn-default">Watch Now</a>
+						</div>
+						<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+							<a href="/watchlist/{latest.slug}">
+								<img src={latest.video.poster} alt="Weekly Watchlist" class="u--border-radius" />
 							</a>
 						</div>
-						<h4 class="h5 u--font-weight-bold">Weekly Watchlist with TG Watkins</h4>
-						<div class="u--hide-read-more">
-							<p>Week of December 22, 2025.</p>
-						</div>
-						<a href="/watchlist/12222025-tg-watkins" class="btn btn-tiny btn-default">Watch Now</a>
 					</div>
-					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
-						<a href="/watchlist/12222025-tg-watkins">
-							<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
-						</a>
-					</div>
-				</div>
-			</section>
-		</div>
+				</section>
+			</div>
+		{/if}
 	</main>
 </div>
 
@@ -208,9 +258,21 @@
 	}
 
 	.dashboard__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		padding: 20px 30px;
 		background: #fff;
 		border-bottom: 1px solid #dbdbdb;
+		gap: 20px;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__header-right {
+		flex-shrink: 0;
 	}
 
 	.dashboard__page-title {
@@ -230,6 +292,64 @@
 		border-radius: 4px;
 		padding: 20px;
 		margin-bottom: 20px;
+	}
+
+	/* Room Filter Dropdown */
+	.room-filter {
+		padding: 8px 12px;
+		font-size: 14px;
+		border: 1px solid #dbdbdb;
+		border-radius: 4px;
+		background: #fff;
+		color: #333;
+		cursor: pointer;
+		min-width: 160px;
+	}
+
+	.room-filter:hover {
+		border-color: #999;
+	}
+
+	.room-filter:focus {
+		outline: none;
+		border-color: #0984ae;
+		box-shadow: 0 0 0 2px rgba(9, 132, 174, 0.1);
+	}
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e0e0e0;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.empty-state p {
+		font-size: 16px;
+		margin: 0;
 	}
 
 	/* Archive Grid - Matching Reference */
