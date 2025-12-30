@@ -97,15 +97,14 @@
 	.membership-card {
 		background-color: #fff;
 		border: 1px solid #dbdbdb;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+		transition: box-shadow 0.2s ease-in-out;
 		overflow: hidden;
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	/* Header Link */
@@ -175,25 +174,39 @@
 	/* Action Links */
 	.membership-card__actions {
 		display: flex;
-		border-top: 1px solid #ededed;
+		border-top: none;
 	}
 
 	.membership-card__actions a {
 		flex: 1 1 auto;
-		padding: 15px 10px;
-		color: #0984ae;
+		padding: 12px 10px;
 		font-size: 14px;
+		font-weight: 800;
 		font-family: 'Open Sans', sans-serif;
 		text-align: center;
 		text-decoration: none;
-		transition: background-color 0.15s ease-in-out;
+		text-transform: uppercase;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
 	}
 
-	.membership-card__actions a:hover {
-		background-color: #f4f4f4;
+	/* Dashboard Button - Dark */
+	.membership-card__actions a:first-child {
+		background-color: #1f2937;
+		color: #fff;
 	}
 
-	.membership-card__actions a + a {
-		border-left: 1px solid #ededed;
+	.membership-card__actions a:first-child:hover {
+		background-color: #111827;
+	}
+
+	/* Trading Room Button - Red */
+	.membership-card__actions a:last-child {
+		background-color: #dc2626;
+		color: #fff;
+	}
+
+	.membership-card__actions a:last-child:hover {
+		background-color: #b91c1c;
 	}
 </style>
