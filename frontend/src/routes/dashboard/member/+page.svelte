@@ -2,7 +2,15 @@
 	/**
 	 * Member Dashboard Page
 	 * Reference: frontend/Do's/wwclickememberdashboard
+	 * Updated: Svelte 5 runes + GSAP 3.14+ (Dec 2025)
 	 */
+	import { browser } from '$app/environment';
+
+	// Svelte 5 reactive state
+	let sectionsContainer = $state<HTMLElement | null>(null);
+	let gsapContext = $state<any>(null);
+	let isAnimated = $state(false);
+
 	const membershipRooms = [
 		{
 			id: 'mastering-the-trade',
@@ -40,10 +48,92 @@
 		{ type: 'video', title: 'A Strong End Of Year', trader: 'TG', date: 'December 24, 2025' },
 		{ type: 'course', title: 'Options Fundamentals', trader: 'John Carter', date: 'December 23, 2025' }
 	];
+
+	// GSAP ScrollTrigger animations - Svelte 5 $effect with GSAP 3.14+ syntax
+	$effect(() => {
+		if (!browser || !sectionsContainer || isAnimated) return;
+
+		// Dynamic import for SSR safety (GSAP 3.14+ best practice)
+		const initAnimations = async () => {
+			const gsapModule = await import('gsap');
+			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+
+			const gsap = gsapModule.gsap || gsapModule.default;
+			gsap.registerPlugin(ScrollTrigger);
+
+			// GSAP 3.14+ context for automatic cleanup
+			gsapContext = gsap.context(() => {
+				// Animate sections on scroll
+				const sections = sectionsContainer?.querySelectorAll('.dashboard__content-section');
+
+				sections?.forEach((section, index) => {
+					gsap.fromTo(
+						section,
+						{
+							opacity: 0,
+							y: 30
+						},
+						{
+							opacity: 1,
+							y: 0,
+							duration: 0.6,
+							ease: 'power2.out',
+							scrollTrigger: {
+								trigger: section,
+								start: 'top 85%',
+								toggleActions: 'play none none none'
+							},
+							delay: index * 0.1
+						}
+					);
+
+					// Stagger children elements within each section
+					const cards = section.querySelectorAll('.membership-card, .quick-link-card, .activity-item');
+					if (cards.length) {
+						gsap.fromTo(
+							cards,
+							{
+								opacity: 0,
+								y: 20,
+								scale: 0.98
+							},
+							{
+								opacity: 1,
+								y: 0,
+								scale: 1,
+								duration: 0.5,
+								ease: 'power2.out',
+								stagger: 0.08,
+								scrollTrigger: {
+									trigger: section,
+									start: 'top 80%',
+									toggleActions: 'play none none none'
+								}
+							}
+						);
+					}
+				});
+			}, sectionsContainer);
+
+			isAnimated = true;
+		};
+
+		initAnimations();
+
+		// Cleanup function (Svelte 5 $effect cleanup pattern)
+		return () => {
+			if (gsapContext) {
+				gsapContext.revert();
+			}
+		};
+	});
 </script>
 
 <svelte:head>
 	<title>Member Dashboard | Revolution Trading Pros</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
 </svelte:head>
 
 <header class="dashboard__header">
@@ -51,10 +141,13 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 		<p class="dashboard__subtitle">Welcome back! Here's your trading overview.</p>
 	</div>
+	<div class="dashboard__header-right">
+		<a href="/dashboard" class="btn btn-primary">Enter a Trading Room</a>
+	</div>
 </header>
 
 <div class="dashboard__content">
-	<div class="dashboard__content-main">
+	<div class="dashboard__content-main" bind:this={sectionsContainer}>
 		<!-- Quick Links Section -->
 		<section class="dashboard__content-section quick-links-section">
 			<h2 class="section-title">Quick Links</h2>
@@ -103,7 +196,10 @@
 									<span class="feature-tag">{feature}</span>
 								{/each}
 							</div>
-							<a href="/dashboard/{room.id}" class="btn btn-primary">Enter Room</a>
+							<div class="membership-actions">
+								<a href="/dashboard/{room.id}" class="btn btn-primary">Dashboard</a>
+								<a href="/dashboard/{room.id}/trading-room" class="btn btn-secondary" target="_blank">Trading Room</a>
+							</div>
 						</div>
 					</article>
 				{/each}
@@ -143,26 +239,46 @@
 </div>
 
 <style>
+	/* ==========================================================================
+	   HEADER - Reference: justify-content: space-between
+	   ========================================================================== */
 	.dashboard__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
 		padding: 30px 40px;
 	}
 
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__header-right {
+		flex-shrink: 0;
+	}
+
+	/* H1 - Reference: Open Sans Condensed, 42px, bold */
 	h1.dashboard__page-title {
 		margin: 0;
 		color: #333;
-		font-size: 36px;
+		font-size: 42px;
 		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
+		font-family: 'Open Sans Condensed', sans-serif;
+		line-height: 1.1em;
 	}
 
 	.dashboard__subtitle {
 		margin: 10px 0 0;
 		color: #666;
 		font-size: 16px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
+	/* ==========================================================================
+	   CONTENT LAYOUT
+	   ========================================================================== */
 	.dashboard__content {
 		display: flex;
 	}
@@ -176,17 +292,60 @@
 		padding: 30px 40px;
 		background-color: #fff;
 		margin-bottom: 20px;
+		/* Initial state for GSAP animation */
+		opacity: 0;
 	}
 
+	/* Section Title - Reference: 32px */
 	.section-title {
 		color: #333;
-		font-size: 24px;
+		font-size: 32px;
 		font-weight: 700;
 		margin: 0 0 25px;
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	/* Quick Links */
+	/* ==========================================================================
+	   BUTTONS - Reference: #F69532, uppercase, 800 weight, letter-spacing
+	   ========================================================================== */
+	.btn {
+		display: inline-block;
+		padding: 10px 20px;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 1.125px;
+		transition: all 0.2s ease-in-out;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+	}
+
+	.btn-primary {
+		background-color: #F69532;
+		color: #fff;
+		border: none;
+	}
+
+	.btn-primary:hover {
+		background-color: #dc7309;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.btn-secondary {
+		background-color: #dc2626;
+		color: #fff;
+		border: none;
+	}
+
+	.btn-secondary:hover {
+		background-color: #b91c1c;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	/* ==========================================================================
+	   QUICK LINKS
+	   ========================================================================== */
 	.quick-links-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -199,16 +358,16 @@
 		align-items: center;
 		padding: 25px 20px;
 		background: #f8f9fa;
-		border-radius: 8px;
+		border-radius: 4px;
 		text-decoration: none;
-		transition: all 0.2s;
+		transition: all 0.2s ease-in-out;
 		border: 1px solid #e9ecef;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 	}
 
 	.quick-link-card:hover {
 		background: #e9ecef;
-		transform: translateY(-2px);
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 	}
 
 	.quick-link-icon {
@@ -220,9 +379,12 @@
 		color: #333;
 		font-size: 14px;
 		font-weight: 600;
+		font-family: 'Open Sans', sans-serif;
 	}
 
-	/* Memberships Grid */
+	/* ==========================================================================
+	   MEMBERSHIP CARDS - Reference: subtle shadow, proper transitions
+	   ========================================================================== */
 	.memberships-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -231,15 +393,14 @@
 
 	.membership-card {
 		background: #fff;
-		border-radius: 8px;
+		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		transition: all 0.2s;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+		transition: all 0.2s ease-in-out;
 	}
 
 	.membership-card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-3px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	.membership-thumbnail {
@@ -264,6 +425,7 @@
 		font-size: 20px;
 		font-weight: 700;
 		color: #333;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.membership-description {
@@ -271,6 +433,7 @@
 		font-size: 14px;
 		margin: 0 0 15px;
 		line-height: 1.5;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.membership-features {
@@ -287,29 +450,24 @@
 		border-radius: 20px;
 		font-size: 12px;
 		font-weight: 500;
+		font-family: 'Open Sans', sans-serif;
 	}
 
-	.btn {
-		display: inline-block;
-		padding: 10px 20px;
-		border-radius: 4px;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 600;
-		transition: all 0.2s;
+	/* Membership Actions - Two buttons like reference */
+	.membership-actions {
+		display: flex;
+		gap: 10px;
 	}
 
-	.btn-primary {
-		background: #0984ae;
-		color: #fff;
-		border: none;
+	.membership-actions .btn {
+		flex: 1;
+		text-align: center;
+		padding: 12px 16px;
 	}
 
-	.btn-primary:hover {
-		background: #077494;
-	}
-
-	/* Activity List */
+	/* ==========================================================================
+	   ACTIVITY LIST
+	   ========================================================================== */
 	.activity-list {
 		display: flex;
 		flex-direction: column;
@@ -321,8 +479,14 @@
 		align-items: center;
 		padding: 15px;
 		background: #f8f9fa;
-		border-radius: 8px;
+		border-radius: 4px;
 		border: 1px solid #e9ecef;
+		transition: all 0.2s ease-in-out;
+	}
+
+	.activity-item:hover {
+		background: #f0f0f0;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 	}
 
 	.activity-icon {
@@ -335,6 +499,7 @@
 		justify-content: center;
 		color: #0984ae;
 		margin-right: 15px;
+		flex-shrink: 0;
 	}
 
 	.activity-info {
@@ -346,11 +511,70 @@
 		font-weight: 600;
 		color: #333;
 		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.activity-meta {
 		color: #999;
 		font-size: 12px;
 		margin-top: 3px;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	/* ==========================================================================
+	   RESPONSIVE - Reference breakpoints
+	   ========================================================================== */
+	@media (max-width: 768px) {
+		.dashboard__header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+			padding: 20px;
+		}
+
+		.dashboard__header-right {
+			width: 100%;
+		}
+
+		.dashboard__header-right .btn {
+			width: 100%;
+			text-align: center;
+		}
+
+		h1.dashboard__page-title {
+			font-size: 30px;
+		}
+
+		.section-title {
+			font-size: 25px;
+		}
+
+		.dashboard__content-section {
+			padding: 20px;
+		}
+
+		.memberships-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.membership-actions {
+			flex-direction: column;
+		}
+	}
+
+	/* ==========================================================================
+	   REDUCED MOTION - Accessibility
+	   ========================================================================== */
+	@media (prefers-reduced-motion: reduce) {
+		.dashboard__content-section {
+			opacity: 1;
+		}
+
+		.btn,
+		.quick-link-card,
+		.membership-card,
+		.activity-item {
+			transition: none;
+		}
 	}
 </style>
