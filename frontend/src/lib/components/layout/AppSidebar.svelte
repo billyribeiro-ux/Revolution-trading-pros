@@ -8,7 +8,6 @@
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/auth';
 	import {
-		IconDashboard,
 		IconSchool,
 		IconChartLine,
 		IconBell,
@@ -25,7 +24,6 @@
 	let { isOpen = false, onclose }: Props = $props();
 
 	const menuItems = [
-		{ icon: IconDashboard, label: 'Dashboard', href: '/dashboard' },
 		{ icon: IconSchool, label: 'My Courses', href: '/my-courses' },
 		{ icon: IconChartLine, label: 'Trading Rooms', href: '/live-trading-rooms' },
 		{ icon: IconBell, label: 'Alerts', href: '/my-alerts' },

@@ -240,9 +240,9 @@
 <div class="abandoned-cart-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" onclick={() => goto('/admin/dashboard')}>
+		<button class="back-btn" onclick={() => goto('/admin')}>
 			<IconArrowLeft size={20} />
-			Back to Dashboard
+			Back to Admin
 		</button>
 
 		<div class="header-content">
