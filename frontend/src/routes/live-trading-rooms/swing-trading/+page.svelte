@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { fade, slide, fly } from 'svelte/transition';
+    import { slide } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
@@ -59,10 +59,6 @@
             }
         };
     }
-    
-    onMount(() => {
-        mounted = true;
-    });
 
     // --- DATA SOURCE: FAQs (Single Source of Truth) ---
     const faqList = [
