@@ -10,6 +10,7 @@
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import { learningCenterApi, type RoomContent } from '$lib/api/learning-center';
+	import { LoadingState, EmptyState, ErrorState } from '$lib/components/dashboard';
 
 	let { data }: { data: any } = $props();
 	const room = $derived(data.room);
@@ -174,19 +175,11 @@
 			<p></p>
 			<div id="response">
 				{#if isLoading}
-					<div class="loading-state">
-						<div class="loading-spinner"></div>
-						<p>Loading learning content...</p>
-					</div>
+					<LoadingState message="Loading learning content..." />
 				{:else if error}
-					<div class="error-state">
-						<p>Failed to load content: {error}</p>
-						<button type="button" onclick={() => location.reload()}>Try Again</button>
-					</div>
+					<ErrorState message="Failed to load content: {error}" onRetry={() => location.reload()} />
 				{:else if filteredVideos.length === 0}
-					<div class="empty-state">
-						<p>No learning content available for this room yet.</p>
-					</div>
+					<EmptyState title="No learning content available for this room yet." />
 				{:else}
 					<div class="article-cards row flex-grid">
 						{#each filteredVideos as video (video.id)}
@@ -601,61 +594,5 @@
 	/* Response container */
 	#response {
 		margin-top: 0;
-	}
-
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		color: #666;
-	}
-
-	.loading-spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #e0e0e0;
-		border-top-color: #0984ae;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin-bottom: 16px;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
-
-	/* Error State */
-	.error-state {
-		text-align: center;
-		padding: 40px 20px;
-		color: #666;
-	}
-
-	.error-state button {
-		margin-top: 16px;
-		padding: 8px 20px;
-		background: #0984ae;
-		color: #fff;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 14px;
-		font-weight: 600;
-		transition: background-color 0.2s;
-	}
-
-	.error-state button:hover {
-		background: #076787;
-	}
-
-	/* Empty State */
-	.empty-state {
-		text-align: center;
-		padding: 60px 20px;
-		color: #666;
-		font-size: 16px;
 	}
 </style>

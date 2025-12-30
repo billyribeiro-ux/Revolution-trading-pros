@@ -17,7 +17,10 @@
 		DashboardHeader,
 		ArticleCard,
 		WeeklyWatchlistSection,
-		SectionTitle
+		SectionTitle,
+		LoadingState,
+		EmptyState,
+		ErrorState
 	} from '$lib/components/dashboard';
 
 	// Import APIs
@@ -214,19 +217,11 @@
 			<SectionTitle title="Latest Updates" />
 
 			{#if articlesLoading}
-				<div class="articles-loading">
-					<div class="loading-spinner"></div>
-					<p>Loading articles...</p>
-				</div>
+				<LoadingState message="Loading articles..." />
 			{:else if articlesError}
-				<div class="articles-error">
-					<p>Failed to load articles: {articlesError}</p>
-					<button type="button" onclick={() => location.reload()}>Try Again</button>
-				</div>
+				<ErrorState message="Failed to load articles: {articlesError}" onRetry={() => location.reload()} />
 			{:else if articles.length === 0}
-				<div class="articles-empty">
-					<p>No articles available at this time.</p>
-				</div>
+				<EmptyState title="No articles available at this time." />
 			{:else}
 				<div class="article-cards">
 					{#each articles as article (article.id)}
@@ -251,10 +246,7 @@
 		{#if room.watchlistImage}
 			{#if watchlistLoading}
 				<section class="dashboard__content-section">
-					<div class="watchlist-loading">
-						<div class="loading-spinner"></div>
-						<p>Loading watchlist...</p>
-					</div>
+					<LoadingState message="Loading watchlist..." />
 				</section>
 			{:else if latestWatchlist}
 				<!-- Use API data when available -->
@@ -474,62 +466,6 @@
 	.link-list a:hover {
 		color: #076787;
 		text-decoration: underline;
-	}
-
-	/* Loading State */
-	.articles-loading,
-	.watchlist-loading {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		color: #666;
-	}
-
-	.loading-spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #e0e0e0;
-		border-top-color: #0984ae;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin-bottom: 16px;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
-
-	/* Error State */
-	.articles-error {
-		text-align: center;
-		padding: 40px 20px;
-		color: #666;
-	}
-
-	.articles-error button {
-		margin-top: 16px;
-		padding: 8px 20px;
-		background: #0984ae;
-		color: #fff;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 14px;
-		font-weight: 600;
-		transition: background-color 0.2s;
-	}
-
-	.articles-error button:hover {
-		background: #076787;
-	}
-
-	/* Empty State */
-	.articles-empty {
-		text-align: center;
-		padding: 40px 20px;
-		color: #666;
 	}
 
 	/* Responsive */

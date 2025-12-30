@@ -12,6 +12,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { authStore } from '$lib/stores/auth';
+	import { LoadingState } from '$lib/components/dashboard';
 
 	// API Configuration
 	const isDev = import.meta.env.DEV;
@@ -188,10 +189,7 @@
 			<h2 class="section-title">My Subscriptions</h2>
 
 			{#if isLoading}
-				<div class="loading-state">
-					<div class="spinner"></div>
-					<p>Loading your subscriptions...</p>
-				</div>
+				<LoadingState message="Loading your subscriptions..." />
 			{:else if error}
 				<div class="error-state">
 					<p>{error}</p>
@@ -283,32 +281,6 @@
 		color: #333;
 		margin: 0 0 20px;
 		font-family: 'Open Sans', sans-serif;
-	}
-
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		color: #666;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #e0e0e0;
-		border-top-color: #0984ae;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin-bottom: 16px;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	/* Error State */
