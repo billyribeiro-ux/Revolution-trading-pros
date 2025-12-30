@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { slide, fade } from 'svelte/transition';
+    import { slide } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
@@ -36,18 +35,15 @@
     };
 
     // ICT9+ Svelte 5: Use $derived instead of $:
-    let activePlan = $derived(pricing[selectedPlan]);
 
     // --- FAQ State ---
     let openFaq: number | null = $state(null);
     const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
     // --- Icon SVG ---
-    const IconCheckSvg = `<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>`;
 
     // --- Apple ICT9+ Scroll Animations ---
     // Smooth, performant reveal animations using IntersectionObserver
-    let mounted = $state(false);
     
     function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
         const delay = params.delay ?? 0;
@@ -93,10 +89,6 @@
             }
         };
     }
-    
-    onMount(() => {
-        mounted = true;
-    });
 
     // --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---
     const faqData = [

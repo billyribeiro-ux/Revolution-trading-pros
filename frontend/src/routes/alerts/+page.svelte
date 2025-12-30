@@ -9,7 +9,6 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
-	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// Alert Services Data
@@ -53,7 +52,6 @@
 	];
 
 	// --- Apple ICT9+ Scroll Animations ---
-	let mounted = $state(false);
 	
 	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
 		const delay = params.delay ?? 0;
@@ -91,10 +89,6 @@
 			}
 		};
 	}
-	
-	onMount(() => {
-		mounted = true;
-	});
 </script>
 
 <SEOHead
