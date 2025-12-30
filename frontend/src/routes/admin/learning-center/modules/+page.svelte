@@ -5,13 +5,16 @@
 	 *
 	 * Admin interface for managing learning center modules.
 	 * Allows creating, editing, and organizing lesson modules by trading room.
+	 * Now supports multi-room targeting like Weekly Watchlist.
 	 *
-	 * @version 1.0.0 (December 2025)
+	 * @version 2.0.0 (December 2025) - Added multi-room targeting
 	 */
 
 	import { learningCenterStore, MODULES, TRADING_ROOMS } from '$lib/stores/learningCenter';
 	import type { LessonModule, TradingRoom } from '$lib/types/learning-center';
 	import { get } from 'svelte/store';
+	import { ROOMS, ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
+	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconEdit from '@tabler/icons-svelte/icons/edit';
 	import IconTrash from '@tabler/icons-svelte/icons/trash';
@@ -34,7 +37,7 @@
 	let formName = $state('');
 	let formSlug = $state('');
 	let formDescription = $state('');
-	let formRoomId = $state('');
+	let formRoomIds = $state<string[]>([...ALL_ROOM_IDS]);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STORE DATA
@@ -61,10 +64,9 @@
 		return storeData.lessons.filter(l => l.moduleId === moduleId).length;
 	}
 
-	// Get room name
-	function getRoomName(roomId: string): string {
-		const room = storeData.tradingRooms.find(r => r.id === roomId);
-		return room?.shortName || room?.name || 'Unknown';
+	// Get room IDs for a module (supports both legacy single room and new multi-room)
+	function getModuleRoomIds(module: LessonModule): string[] {
+		return module.tradingRoomIds || (module.tradingRoomId ? [module.tradingRoomId] : []);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -75,7 +77,7 @@
 		formName = '';
 		formSlug = '';
 		formDescription = '';
-		formRoomId = selectedRoom || '';
+		formRoomIds = selectedRoom ? [selectedRoom] : [...ALL_ROOM_IDS];
 		showCreateModal = true;
 	}
 
@@ -84,7 +86,8 @@
 		formName = module.name;
 		formSlug = module.slug || '';
 		formDescription = module.description || '';
-		formRoomId = module.tradingRoomId || '';
+		// Support both legacy single room and new multi-room format
+		formRoomIds = module.tradingRoomIds || (module.tradingRoomId ? [module.tradingRoomId] : [...ALL_ROOM_IDS]);
 		showEditModal = true;
 	}
 
@@ -94,11 +97,19 @@
 	}
 
 	async function handleCreateModule() {
-		if (!formName || !formRoomId) return;
+		if (!formName || formRoomIds.length === 0) {
+			alert('Please enter a name and select at least one room');
+			return;
+		}
 
 		try {
 			// TODO: Implement create via API
-			console.log('Create module:', { name: formName, slug: formSlug, description: formDescription, tradingRoomId: formRoomId });
+			console.log('Create module:', {
+				name: formName,
+				slug: formSlug,
+				description: formDescription,
+				tradingRoomIds: formRoomIds
+			});
 		} catch (err) {
 			console.error('Failed to create module:', err);
 		}
@@ -109,9 +120,20 @@
 	async function handleUpdateModule() {
 		if (!moduleToEdit || !formName) return;
 
+		if (formRoomIds.length === 0) {
+			alert('Please select at least one room');
+			return;
+		}
+
 		try {
 			// TODO: Implement update via API
-			console.log('Update module:', { id: moduleToEdit.id, name: formName, slug: formSlug, description: formDescription });
+			console.log('Update module:', {
+				id: moduleToEdit.id,
+				name: formName,
+				slug: formSlug,
+				description: formDescription,
+				tradingRoomIds: formRoomIds
+			});
 		} catch (err) {
 			console.error('Failed to update module:', err);
 		}
@@ -189,7 +211,22 @@
 					</div>
 					<div class="module-info">
 						<h3>{module.name}</h3>
-						<span class="room-badge">{getRoomName(module.tradingRoomId || '')}</span>
+						<div class="rooms-display">
+							{#if getModuleRoomIds(module).length === 0}
+								<span class="rooms-badge rooms-none">No rooms</span>
+							{:else if isAllRooms(getModuleRoomIds(module))}
+								<span class="rooms-badge rooms-all">All Rooms</span>
+							{:else}
+								<div class="rooms-tags">
+									{#each getRoomsByIds(getModuleRoomIds(module)).slice(0, 2) as room}
+										<span class="room-tag" style="background-color: {room.color}20; color: {room.color}">{room.shortName}</span>
+									{/each}
+									{#if getModuleRoomIds(module).length > 2}
+										<span class="rooms-more">+{getModuleRoomIds(module).length - 2}</span>
+									{/if}
+								</div>
+							{/if}
+						</div>
 					</div>
 					<div class="module-actions">
 						<button type="button" class="action-btn" title="Edit" onclick={() => openEditModal(module)}>
@@ -224,15 +261,6 @@
 			<h3>Create Module</h3>
 			<form onsubmit={(e: Event) => { e.preventDefault(); handleCreateModule(); }}>
 				<div class="form-group">
-					<label for="room">Trading Room</label>
-					<select id="room" bind:value={formRoomId} required>
-						<option value="">Select a room</option>
-						{#each tradingRooms as room}
-							<option value={room.id}>{room.shortName || room.name}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="form-group">
 					<label for="name">Module Name</label>
 					<input type="text" id="name" bind:value={formName} placeholder="e.g., Getting Started" required />
 				</div>
@@ -243,6 +271,9 @@
 				<div class="form-group">
 					<label for="description">Description</label>
 					<textarea id="description" bind:value={formDescription} placeholder="Brief description of this module..." rows="3"></textarea>
+				</div>
+				<div class="form-group">
+					<RoomSelector bind:selectedRooms={formRoomIds} label="Target Rooms" />
 				</div>
 				<div class="modal-actions">
 					<button type="button" class="btn-cancel" onclick={() => showCreateModal = false}>Cancel</button>
@@ -270,6 +301,9 @@
 				<div class="form-group">
 					<label for="edit-description">Description</label>
 					<textarea id="edit-description" bind:value={formDescription} rows="3"></textarea>
+				</div>
+				<div class="form-group">
+					<RoomSelector bind:selectedRooms={formRoomIds} label="Target Rooms" />
 				</div>
 				<div class="modal-actions">
 					<button type="button" class="btn-cancel" onclick={() => showEditModal = false}>Cancel</button>
@@ -416,13 +450,48 @@
 		color: white;
 	}
 
-	.room-badge {
+	/* Room Display */
+	.rooms-display {
+		margin-top: 4px;
+	}
+
+	.rooms-badge {
+		display: inline-block;
+		padding: 3px 10px;
+		border-radius: 9999px;
+		font-size: 0.7rem;
+		font-weight: 600;
+	}
+
+	.rooms-all {
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(9, 132, 174, 0.15));
+		color: #10b981;
+	}
+
+	.rooms-none {
+		background: rgba(100, 116, 139, 0.1);
+		color: #64748b;
+	}
+
+	.rooms-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		align-items: center;
+	}
+
+	.room-tag {
 		display: inline-block;
 		padding: 2px 8px;
-		background: rgba(249, 115, 22, 0.1);
 		border-radius: 4px;
+		font-size: 0.65rem;
+		font-weight: 700;
+	}
+
+	.rooms-more {
 		font-size: 0.7rem;
-		color: #f97316;
+		color: #64748b;
+		margin-left: 4px;
 	}
 
 	.module-actions {
