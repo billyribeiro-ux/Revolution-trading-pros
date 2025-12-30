@@ -3,14 +3,16 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * CRUD operations for weekly watchlist items.
+ * Supports room-specific targeting for all 6 services.
  * Falls back to mock data when backend is unavailable.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025 - Added room targeting
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { ALL_ROOM_IDS } from '$lib/config/rooms';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -35,12 +37,13 @@ export interface WatchlistItem {
 	};
 	description: string;
 	status: 'published' | 'draft' | 'archived';
+	rooms: string[]; // Room targeting
 	createdAt: string;
 	updatedAt: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA
+// MOCK DATA - All rooms by default
 // ═══════════════════════════════════════════════════════════════════════════
 
 const mockWatchlistItems: WatchlistItem[] = [
@@ -63,6 +66,7 @@ const mockWatchlistItems: WatchlistItem[] = [
 		},
 		description: 'Week of December 22, 2025.',
 		status: 'published',
+		rooms: ALL_ROOM_IDS, // Available to all rooms
 		createdAt: '2025-12-22T09:00:00Z',
 		updatedAt: '2025-12-22T09:00:00Z'
 	},
@@ -85,6 +89,7 @@ const mockWatchlistItems: WatchlistItem[] = [
 		},
 		description: 'Week of December 15, 2025.',
 		status: 'published',
+		rooms: ['day-trading-room', 'swing-trading-room', 'small-account-mentorship'], // Only live trading rooms
 		createdAt: '2025-12-15T09:00:00Z',
 		updatedAt: '2025-12-15T09:00:00Z'
 	},
@@ -107,6 +112,7 @@ const mockWatchlistItems: WatchlistItem[] = [
 		},
 		description: 'Week of December 8, 2025.',
 		status: 'published',
+		rooms: ['small-account-mentorship', 'explosive-swings'], // Specific rooms only
 		createdAt: '2025-12-08T09:00:00Z',
 		updatedAt: '2025-12-08T09:00:00Z'
 	}
@@ -146,6 +152,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
 	const status = url.searchParams.get('status');
 	const search = url.searchParams.get('search');
+	const room = url.searchParams.get('room'); // Room filter
 
 	// Try backend first
 	const authHeader = request.headers.get('Authorization');
@@ -164,6 +171,11 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	// Filter by status
 	if (status) {
 		items = items.filter(item => item.status === status);
+	}
+
+	// Filter by room - only return items that include this room
+	if (room) {
+		items = items.filter(item => item.rooms.includes(room));
 	}
 
 	// Search filter
@@ -230,11 +242,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		throw error(400, 'Title, trader, and weekOf are required');
 	}
 
+	// Default to all rooms if not specified
+	const rooms = body.rooms || ALL_ROOM_IDS;
+
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/watchlist', {
 		method: 'POST',
 		headers: { 'Authorization': authHeader },
-		body: JSON.stringify(body)
+		body: JSON.stringify({ ...body, rooms })
 	});
 
 	if (backendData?.success) {
@@ -267,6 +282,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		},
 		description: body.description || `Week of ${dateStr}.`,
 		status: body.status || 'draft',
+		rooms: rooms,
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString()
 	};

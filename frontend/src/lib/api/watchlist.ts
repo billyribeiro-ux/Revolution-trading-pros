@@ -3,11 +3,13 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * Client for CRUD operations on weekly watchlist items.
+ * Supports room-specific targeting for all 6 services.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025 - Added room targeting
  */
 
 import { getAuthToken } from '$lib/stores/auth';
+import { ALL_ROOM_IDS } from '$lib/config/rooms';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -32,6 +34,8 @@ export interface WatchlistItem {
 	};
 	description: string;
 	status: 'published' | 'draft' | 'archived';
+	// Room targeting - which rooms/services can see this watchlist
+	rooms: string[];
 	previous?: { slug: string; title: string } | null;
 	next?: { slug: string; title: string } | null;
 	createdAt: string;
@@ -61,6 +65,7 @@ export interface WatchlistParams {
 	per_page?: number;
 	status?: 'published' | 'draft' | 'archived';
 	search?: string;
+	room?: string; // Filter by specific room
 }
 
 export interface CreateWatchlistData {
@@ -74,6 +79,7 @@ export interface CreateWatchlistData {
 	videoPoster?: string;
 	spreadsheetSrc?: string;
 	status?: 'published' | 'draft' | 'archived';
+	rooms?: string[]; // Target rooms (defaults to all)
 }
 
 export interface UpdateWatchlistData {
@@ -85,6 +91,7 @@ export interface UpdateWatchlistData {
 	videoPoster?: string;
 	spreadsheetSrc?: string;
 	status?: 'published' | 'draft' | 'archived';
+	rooms?: string[];
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -133,6 +140,7 @@ export const watchlistApi = {
 			if (params.per_page) queryParams.set('per_page', params.per_page.toString());
 			if (params.status) queryParams.set('status', params.status);
 			if (params.search) queryParams.set('search', params.search);
+			if (params.room) queryParams.set('room', params.room);
 		}
 
 		const qs = queryParams.toString();
@@ -149,6 +157,13 @@ export const watchlistApi = {
 	},
 
 	/**
+	 * Get watchlist items for a specific room
+	 */
+	getByRoom: async (roomId: string, params?: Omit<WatchlistParams, 'room'>): Promise<WatchlistResponse> => {
+		return watchlistApi.getAll({ ...params, room: roomId, status: 'published' });
+	},
+
+	/**
 	 * Get a single watchlist item by slug
 	 */
 	getBySlug: async (slug: string): Promise<SingleWatchlistResponse> => {
@@ -156,10 +171,13 @@ export const watchlistApi = {
 	},
 
 	/**
-	 * Get the latest/current watchlist item
+	 * Get the latest/current watchlist item (global or for a specific room)
 	 */
-	getLatest: async (): Promise<SingleWatchlistResponse> => {
-		const response = await watchlistApi.getPublished({ per_page: 1 });
+	getLatest: async (roomId?: string): Promise<SingleWatchlistResponse> => {
+		const params: WatchlistParams = { per_page: 1, status: 'published' };
+		if (roomId) params.room = roomId;
+
+		const response = await watchlistApi.getAll(params);
 		if (response.data.length === 0) {
 			throw new Error('No watchlist items found');
 		}
@@ -174,9 +192,15 @@ export const watchlistApi = {
 	 * Create a new watchlist item (admin only)
 	 */
 	create: async (data: CreateWatchlistData): Promise<SingleWatchlistResponse> => {
+		// Default to all rooms if not specified
+		const payload = {
+			...data,
+			rooms: data.rooms || ALL_ROOM_IDS
+		};
+
 		return apiFetch<SingleWatchlistResponse>('/api/watchlist', {
 			method: 'POST',
-			body: JSON.stringify(data)
+			body: JSON.stringify(payload)
 		});
 	},
 
