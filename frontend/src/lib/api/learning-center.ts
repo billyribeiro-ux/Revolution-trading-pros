@@ -9,6 +9,7 @@
  */
 
 import { apiClient } from './client';
+import { getAuthToken } from '$lib/stores/auth';
 import type {
 	TradingRoom,
 	LessonModule,
@@ -19,6 +20,74 @@ import type {
 	UserLessonProgress,
 	PaginatedLessons
 } from '$lib/types/learning-center';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TYPES FOR ROOM CONTENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface RoomContent {
+	id: number;
+	title: string;
+	slug: string;
+	type: string;
+	description: string;
+	excerpt: string;
+	thumbnail_url: string;
+	content_url?: string;
+	duration?: number;
+	category_id?: string;
+	categories: string[];
+	tags: string[];
+	instructor: { id: string; name: string; image?: string };
+	membership_ids: number[];
+	is_premium: boolean;
+	is_published: boolean;
+	is_featured: boolean;
+	sort_order: number;
+	view_count: number;
+	like_count: number;
+	created_at?: string;
+	updated_at?: string;
+	published_at?: string;
+}
+
+export interface RoomContentResponse {
+	success: boolean;
+	data: {
+		content: RoomContent[];
+		categories: Array<{ id: string; label: string; color?: string }>;
+		instructors: Array<{ id: string; name: string; image?: string }>;
+		pagination: {
+			page: number;
+			limit: number;
+			total: number;
+			total_pages: number;
+		};
+	};
+	error?: string;
+}
+
+export interface RoomContentParams {
+	page?: number;
+	limit?: number;
+	category_id?: string;
+	type?: string;
+	search?: string;
+	instructor_id?: string;
+	featured?: boolean;
+	published?: boolean;
+}
+
+// Room slug to membership ID mapping
+const roomSlugToMembershipId: Record<string, number> = {
+	'day-trading-room': 1,
+	'swing-trading-room': 2,
+	'small-account-mentorship': 3,
+	'options-day-trading': 4,
+	'simpler-showcase': 5,
+	'spx-profit-pulse': 6,
+	'explosive-swing': 7
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // COURSES
@@ -233,5 +302,69 @@ export const learningCenterApi = {
 			`/memberships/${membershipSlug}/bookmarks`
 		)) as { data: Lesson[] };
 		return response.data;
+	},
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// ROOM CONTENT (via proxy endpoint)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Get learning content for a specific room via the proxy endpoint
+	 */
+	async getRoomContent(roomSlug: string, params?: RoomContentParams): Promise<RoomContentResponse> {
+		const token = typeof window !== 'undefined' ? getAuthToken() : null;
+		const queryParams = new URLSearchParams();
+
+		// Map room slug to membership ID
+		const membershipId = roomSlugToMembershipId[roomSlug];
+		if (membershipId) {
+			queryParams.set('membership_id', membershipId.toString());
+		}
+
+		if (params) {
+			if (params.page) queryParams.set('page', params.page.toString());
+			if (params.limit) queryParams.set('limit', params.limit.toString());
+			if (params.category_id) queryParams.set('category_id', params.category_id);
+			if (params.type) queryParams.set('type', params.type);
+			if (params.search) queryParams.set('search', params.search);
+			if (params.instructor_id) queryParams.set('instructor_id', params.instructor_id);
+			if (params.featured !== undefined) queryParams.set('featured', params.featured.toString());
+			if (params.published !== undefined) queryParams.set('published', params.published.toString());
+		}
+
+		const qs = queryParams.toString();
+		const url = `/api/learning-center${qs ? `?${qs}` : ''}`;
+
+		const headers: Record<string, string> = {
+			'Content-Type': 'application/json',
+			Accept: 'application/json'
+		};
+
+		if (token) {
+			headers['Authorization'] = `Bearer ${token}`;
+		}
+
+		const response = await fetch(url, { headers });
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+			throw new Error(errorData.message || `API Error: ${response.status}`);
+		}
+
+		return response.json();
+	},
+
+	/**
+	 * Get learning content filtered by category for a room
+	 */
+	async getRoomContentByCategory(roomSlug: string, categoryId: string, params?: Omit<RoomContentParams, 'category_id'>): Promise<RoomContentResponse> {
+		return this.getRoomContent(roomSlug, { ...params, category_id: categoryId });
+	},
+
+	/**
+	 * Search learning content within a room
+	 */
+	async searchRoomContent(roomSlug: string, query: string, params?: Omit<RoomContentParams, 'search'>): Promise<RoomContentResponse> {
+		return this.getRoomContent(roomSlug, { ...params, search: query });
 	}
 };
