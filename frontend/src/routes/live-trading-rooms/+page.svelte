@@ -2,24 +2,20 @@
     import { onMount } from 'svelte';
     import { spring } from 'svelte/motion';
     import { browser } from '$app/environment';
-    import type { PageData } from '@sveltejs/kit';
     
     // GSAP types for TypeScript (actual imports are dynamic for SSR safety)
     type GSAPInstance = typeof import('gsap').gsap;
-    type ScrollTriggerInstance = typeof import('gsap/ScrollTrigger').ScrollTrigger;
 
     /**
      * Svelte 5 Runes & SSR/SSG Pattern
      */
-    let { data }: { data: PageData } = $props();
-    let mounted = $state(false);
+    let { data } = $props<{ data: any }>();
     
     // Use server-loaded data for SSR/SSG
     let rooms = $derived(data.rooms);
     let benefits = $derived(data.benefits);
     let symbols = $derived(data.symbols);
     let seo = $derived(data.seo);
-    let structuredData = $derived(data.structuredData);
     let tickerItems = $derived([...symbols, ...symbols, ...symbols, ...symbols]);
 
     /**
@@ -62,17 +58,16 @@
     /**
      * Animation Controller
      */
-    let heroContainer: HTMLElement;
-    let gridRef: HTMLElement;
-    let benefitsRef: HTMLElement;
-    let ctaRef: HTMLElement;
+    let heroContainer: HTMLElement | undefined;
+    let gridRef: HTMLElement | undefined;
+    let benefitsRef: HTMLElement | undefined;
+    let ctaRef: HTMLElement | undefined;
 
     /**
      * GSAP Animation Controller - Svelte 5 / Dec 2025 Pattern
      * Uses dynamic imports for SSR safety and proper cleanup
      */
     onMount(() => {
-        mounted = true;
         
         // SSR-safe guard - only run animations in browser
         if (!browser) return;
@@ -197,11 +192,12 @@
                     
                     // ===== CTA SECTION SCROLL ANIMATION =====
                     if (ctaRef) {
+                        const ctaElement = ctaRef;
                         ScrollTrigger.create({
-                            trigger: ctaRef,
+                            trigger: ctaElement,
                             start: 'top 85%',
                             onEnter: () => {
-                                gsap.fromTo(ctaRef,
+                                gsap.fromTo(ctaElement,
                                     { scale: 0.95, opacity: 0, y: 30 },
                                     { 
                                         scale: 1, 
@@ -308,11 +304,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     
     <!-- Performance & Security - Google December 2025 Requirements -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <!-- Note: Security headers should be set via server config, not meta tags -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()" />
     
     <!-- Google December 2025 E-E-A-T Signals -->
     <meta name="author" content={seo.author} />
@@ -339,11 +332,11 @@
     
     <!-- Preconnect for Performance - Google December 2025 Core Web Vitals -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     <link rel="dns-prefetch" href="//www.google-analytics.com" />
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     
     <!-- Critical Resource Preloading for LCP < 2.0s -->
     <link rel="preload" href="/images/live-trading-rooms-hero.webp" as="image" type="image/webp" />
@@ -358,10 +351,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     
-    <!-- JSON-LD Structured Data - Using server-loaded data -->
-    <script type="application/ld+json">
-        {@html JSON.stringify(structuredData)}
-    </script>
+    <!-- JSON-LD Structured Data would go here if needed -->
 </svelte:head>
 
 <div class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans relative">

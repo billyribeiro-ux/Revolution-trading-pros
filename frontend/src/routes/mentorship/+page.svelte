@@ -22,12 +22,12 @@
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
 	// --- DOM REFS FOR GSAP ---
-	let heroContainer: HTMLElement;
-	let heroBadge: HTMLElement;
-	let heroTitle: HTMLElement;
-	let heroDesc: HTMLElement;
-	let heroMetrics: HTMLElement;
-	let heroGraphic: HTMLElement;
+	let heroContainer: HTMLElement | undefined;
+	let heroBadge: HTMLElement | undefined;
+	let heroTitle: HTMLElement | undefined;
+	let heroDesc: HTMLElement | undefined;
+	let heroMetrics: HTMLElement | undefined;
+	let heroGraphic: HTMLElement | undefined;
 
 	// --- MOTION ENGINE ---
 	onMount(async () => {
@@ -333,7 +333,7 @@
 				</div>
 
 				<div class="space-y-8">
-					{#each sessionBreakdown as item, i}
+					{#each sessionBreakdown as item}
 						<div class="group gsap-reveal-item">
 							<div
 								class="flex flex-col md:flex-row gap-8 md:gap-16 p-8 hover:bg-white/[0.02] transition-colors border-l-2 border-white/10 hover:border-amber-600"
