@@ -21,9 +21,6 @@ on:
       - '.github/workflows/deploy-fly.yml'
   workflow_dispatch:
 
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
 jobs:
   deploy:
     name: Deploy to Fly.io
@@ -34,12 +31,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check Fly.io token
+        id: check-fly-token
+        run: |
+          if [ -n "$FLY_TOKEN" ]; then
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "::error::FLY_API_TOKEN secret is not configured"
+            exit 1
+          fi
+        env:
+          FLY_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Setup Fly.io CLI
+        if: steps.check-fly-token.outputs.has_token == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
+        if: steps.check-fly-token.outputs.has_token == 'true'
         working-directory: api
         run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Health check
         run: |

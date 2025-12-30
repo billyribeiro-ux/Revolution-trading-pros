@@ -79,14 +79,18 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
+      - name: Set build environment
+        id: build-env
+        run: |
+          echo "site_url=${{ vars.SITE_URL || 'https://revolution-trading-pros.pages.dev' }}" >> $GITHUB_OUTPUT
+
       - name: Build for Cloudflare
         working-directory: frontend
         run: npm run build
         env:
           DEPLOY_TARGET: cloudflare
           VITE_SITE_NAME: "Revolution Trading Pros"
-          # VITE_SITE_URL will use Cloudflare Pages URL - configure custom domain in Cloudflare Dashboard when ready
-          VITE_SITE_URL: ${{ vars.SITE_URL != '' && vars.SITE_URL || 'https://revolution-trading-pros.pages.dev' }}
+          VITE_SITE_URL: ${{ steps.build-env.outputs.site_url }}
           # Production secrets are injected at runtime via Cloudflare Dashboard
 
       - name: Upload build artifacts
@@ -239,12 +243,28 @@ jobs:
     needs: deploy
     if: github.ref == 'refs/heads/main'
     timeout-minutes: 10
+    
+    env:
+      LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check Lighthouse token
+        id: check-lighthouse
+        run: |
+          if [ -n "$LHCI_TOKEN" ]; then
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "::notice::Lighthouse CI skipped - LHCI_GITHUB_APP_TOKEN not configured"
+          fi
+        env:
+          LHCI_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
       - name: Run Lighthouse CI
+        if: steps.check-lighthouse.outputs.has_token == 'true'
         uses: treosh/lighthouse-ci-action@v11
         with:
           urls: |
@@ -254,7 +274,7 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN || '' }}
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -272,20 +292,26 @@ jobs:
       - name: Check cache purge secrets
         id: check-cache-secrets
         run: |
-          if [ -n "${{ secrets.CLOUDFLARE_ZONE_ID }}" ] && [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+          if [ -n "$CF_ZONE_ID" ] && [ -n "$CF_API_TOKEN" ]; then
             echo "has_secrets=true" >> $GITHUB_OUTPUT
           else
             echo "has_secrets=false" >> $GITHUB_OUTPUT
             echo "::notice::Skipping cache purge - CLOUDFLARE_ZONE_ID or CLOUDFLARE_API_TOKEN not configured"
           fi
+        env:
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Purge Cloudflare cache
         if: steps.check-cache-secrets.outputs.has_secrets == 'true'
         run: |
-          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
+        env:
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
