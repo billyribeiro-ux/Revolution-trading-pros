@@ -42,6 +42,15 @@
 			description: 'Week of December 8, 2025.'
 		}
 	];
+
+	// Weekly Watchlist - Dynamic date calculation (Svelte 5 $derived.by pattern)
+	const weeklyWatchlistDate = $derived.by(() => {
+		const now = new Date();
+		const day = now.getDay();
+		const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+		const monday = new Date(now.setDate(diff));
+		return monday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+	});
 </script>
 
 <svelte:head>
@@ -103,7 +112,7 @@
 		<WeeklyWatchlistSection
 			title="Weekly Watchlist"
 			featuredTitle="Weekly Watchlist with TG Watkins"
-			description="Week of December 22, 2025."
+			description="Week of {weeklyWatchlistDate}."
 			image="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg"
 			href="/watchlist/12222025-tg-watkins"
 		/>
