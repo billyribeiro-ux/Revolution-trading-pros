@@ -86,7 +86,7 @@ jobs:
           DEPLOY_TARGET: cloudflare
           VITE_SITE_NAME: "Revolution Trading Pros"
           # VITE_SITE_URL will use Cloudflare Pages URL - configure custom domain in Cloudflare Dashboard when ready
-          VITE_SITE_URL: ${{ vars.SITE_URL || 'https://revolution-trading-pros.pages.dev' }}
+          VITE_SITE_URL: ${{ vars.SITE_URL != '' && vars.SITE_URL || 'https://revolution-trading-pros.pages.dev' }}
           # Production secrets are injected at runtime via Cloudflare Dashboard
 
       - name: Upload build artifacts
@@ -254,7 +254,8 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN || '' }}
+        continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
   # PURGE CLOUDFLARE CACHE (Production Only)
@@ -268,7 +269,18 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: Check cache purge secrets
+        id: check-cache-secrets
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_ZONE_ID }}" ] && [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+            echo "::notice::Skipping cache purge - CLOUDFLARE_ZONE_ID or CLOUDFLARE_API_TOKEN not configured"
+          fi
+
       - name: Purge Cloudflare cache
+        if: steps.check-cache-secrets.outputs.has_secrets == 'true'
         run: |
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
