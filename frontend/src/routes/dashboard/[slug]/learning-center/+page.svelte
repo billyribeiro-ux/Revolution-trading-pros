@@ -3,17 +3,28 @@
 	 * Dynamic Room Learning Center
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * 100% PIXEL-PERFECT match to WordPress reference: frontend/Do's/Learning-Center
+	 * Now fetches content from the Learning Center API.
 	 *
-	 * @version 3.0.0 - Full Reference Compliance
+	 * @version 3.1.0 - API Integration
 	 */
+	import { untrack } from 'svelte';
+	import { browser } from '$app/environment';
+	import { learningCenterApi, type RoomContent } from '$lib/api/learning-center';
+
 	let { data }: { data: any } = $props();
 	const room = $derived(data.room);
 	const slug = $derived(data.slug);
 
 	let selectedCategory = $state('0');
 
-	// All 32 categories from WordPress reference - exact match
-	const categories = [
+	// API state
+	let videos = $state<RoomContent[]>([]);
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
+	let apiCategories = $state<Array<{ id: string; label: string; color?: string }>>([]);
+
+	// Fallback categories from WordPress reference (used if API doesn't return categories)
+	const defaultCategories = [
 		{ id: '529', label: 'Trade Setups & Strategies' },
 		{ id: '528', label: 'Methodology' },
 		{ id: '329', label: 'Member Webinar' },
@@ -48,6 +59,9 @@
 		{ id: '2930', label: 'Earnings & Options Expiration' }
 	];
 
+	// Use API categories if available, otherwise use defaults
+	const categories = $derived(apiCategories.length > 0 ? apiCategories : defaultCategories);
+
 	// Category color map for special categories (from reference CSS)
 	const categoryColors: Record<string, string> = {
 		'2927': '#A3C2F4', // Options Strategies (Level 2 & 3)
@@ -58,108 +72,53 @@
 		'2931': '#b4a7d6'  // Fibonacci & Options Trading
 	};
 
-	// Videos with multi-category support - matching reference format exactly
-	const allVideos = [
-		{
-			id: 1,
-			title: 'Q3 Market Cycles Update with John Carter',
-			trader: 'John Carter',
-			categories: ['529'],
-			categoryLabels: ['Trade Setups & Strategies'],
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			description: 'In this session, John walked through key cycle dates and what they mean for your trading plan.',
-			videoSlug: 'q3-market-cycles-update-john-carter-08282025'
-		},
-		{
-			id: 2,
-			title: 'Q3 Market Outlook July 2025',
-			trader: 'John Carter',
-			categories: ['529'],
-			categoryLabels: ['Trade Setups & Strategies'],
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			description: "Using the economic cycle, John Carter will share insights on what's next in the stock market, commodities, Treasury yields, bonds, and more.",
-			videoSlug: 'market-outlook-jul2025-john-carter'
-		},
-		{
-			id: 3,
-			title: "Intro to Kody Ashmore's Daily Sessions (and My Results!)",
-			trader: 'Kody Ashmore',
-			categories: ['528'],
-			categoryLabels: ['Methodology'],
-			thumbnail: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			description: "Intro to Kody Ashmore's Daily Sessions (and My Results!)",
-			videoSlug: 'kody-ashmore-daily-sessions-results'
-		},
-		{
-			id: 4,
-			title: 'The 15:50 Trade (How Buybacks Matter the Last 10 Minutes Every Day)',
-			trader: 'Chris Brecher',
-			categories: ['329', '2932'],
-			categoryLabels: ['Member Webinar', 'Trade & Money Management/Trading Plan'],
-			thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			description: 'The 15:50 Trade (How Buybacks Matter the Last 10 Minutes Every Day)',
-			videoSlug: '15-50-trade'
-		},
-		{
-			id: 5,
-			title: 'How Mike Teeto Builds His Watchlist',
-			trader: 'Mike Teeto',
-			categories: ['329'],
-			categoryLabels: ['Member Webinar'],
-			thumbnail: 'https://cdn.simplertrading.com/2024/10/18134533/LearningCenter_MT.jpg',
-			description: 'How Mike Teeto Builds His Watchlist',
-			videoSlug: 'mike-teeto-watchlist'
-		},
-		{
-			id: 6,
-			title: 'Mastering the Trade Room FAQs',
-			trader: 'Simpler Trading Team',
-			categories: ['329'],
-			categoryLabels: ['Member Webinar'],
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27120614/MemberWebinar-Generic1.jpg',
-			description: 'Mastering the Trade Room FAQs',
-			videoSlug: 'mastering-the-trade-room-faqs'
-		},
-		{
-			id: 7,
-			title: 'How to Find 3 Reasons to do a Trade',
-			trader: 'Chris Brecher',
-			categories: ['329', '2932'],
-			categoryLabels: ['Member Webinar', 'Trade & Money Management/Trading Plan'],
-			thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			description: 'How to Find 3 Reasons to do a Trade',
-			videoSlug: '3-reasons-to-do-a-trade'
-		},
-		{
-			id: 8,
-			title: 'Understanding Market Indicators',
-			trader: 'Henry Gambell',
-			categories: ['531'],
-			categoryLabels: ['Indicators'],
-			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			description: 'Deep dive into market indicators and how to use them effectively.',
-			videoSlug: 'market-indicators'
-		},
-		{
-			id: 9,
-			title: 'Options Trading Fundamentals',
-			trader: 'Danielle Shay',
-			categories: ['3260'],
-			categoryLabels: ['Options'],
-			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-			description: 'Learn options trading fundamentals from the ground up.',
-			videoSlug: 'options-fundamentals'
-		}
-	];
+	// Fetch content from API when slug changes
+	$effect(() => {
+		const currentSlug = slug;
+		if (!browser || !currentSlug) return;
 
+		untrack(() => {
+			isLoading = true;
+			error = null;
+		});
+
+		learningCenterApi.getRoomContent(currentSlug, { limit: 50 })
+			.then((response) => {
+				if (response.success && response.data.content.length > 0) {
+					videos = response.data.content;
+					if (response.data.categories.length > 0) {
+						apiCategories = response.data.categories;
+					}
+				} else {
+					// Keep empty - will show "no content" message
+					videos = [];
+				}
+				isLoading = false;
+			})
+			.catch((err) => {
+				console.error('Failed to fetch learning center content:', err);
+				error = err.message || 'Failed to load content';
+				isLoading = false;
+			});
+	});
+
+	// Filter videos by selected category
 	const filteredVideos = $derived(
 		selectedCategory === '0'
-			? allVideos
-			: allVideos.filter(v => v.categories.includes(selectedCategory))
+			? videos
+			: videos.filter(v => v.categories.includes(selectedCategory) || v.category_id === selectedCategory)
 	);
 
 	function getCategoryColor(catId: string): string {
+		// Check API categories first for custom color
+		const apiCat = apiCategories.find(c => c.id === catId);
+		if (apiCat?.color) return apiCat.color;
 		return categoryColors[catId] || '#0984ae';
+	}
+
+	function getCategoryLabel(catId: string): string {
+		const cat = categories.find(c => c.id === catId);
+		return cat?.label || catId;
 	}
 
 	function resetFilter() {
@@ -214,36 +173,52 @@
 			<h2 class="section-title">{room.name} Learning Center<span> | </span><span>Overview</span></h2>
 			<p></p>
 			<div id="response">
-				<div class="article-cards row flex-grid">
-					{#each filteredVideos as video (video.id)}
-						<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
-							<article class="article-card">
-								<figure class="article-card__image" style="background-image: url({video.thumbnail});">
-									<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt="" />
-								</figure>
-								<div class="article-card__type">
-									{#each video.categoryLabels as label, i (i)}
-										<span
-											id={video.categories[i]}
-											class="label label--info"
-											style="background-color: {getCategoryColor(video.categories[i])}"
-										>{label}</span>
-									{/each}
-								</div>
-								<h4 class="h5 article-card__title">
-									<a href="/dashboard/{slug}/learning-center/{video.videoSlug}">{video.title}</a>
-								</h4>
-								<div class="u--margin-top-0">
-									<span class="trader_name"><i>With {video.trader}</i></span>
-								</div>
-								<div class="article-card__excerpt u--hide-read-more">
-									<p>{video.description}</p>
-								</div>
-								<a href="/dashboard/{slug}/learning-center/{video.videoSlug}" class="btn btn-tiny btn-default">Watch Now</a>
-							</article>
-						</div>
-					{/each}
-				</div>
+				{#if isLoading}
+					<div class="loading-state">
+						<div class="loading-spinner"></div>
+						<p>Loading learning content...</p>
+					</div>
+				{:else if error}
+					<div class="error-state">
+						<p>Failed to load content: {error}</p>
+						<button type="button" onclick={() => location.reload()}>Try Again</button>
+					</div>
+				{:else if filteredVideos.length === 0}
+					<div class="empty-state">
+						<p>No learning content available for this room yet.</p>
+					</div>
+				{:else}
+					<div class="article-cards row flex-grid">
+						{#each filteredVideos as video (video.id)}
+							<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+								<article class="article-card">
+									<figure class="article-card__image" style="background-image: url({video.thumbnail_url || ''});">
+										<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt="" />
+									</figure>
+									<div class="article-card__type">
+										{#each video.categories as catId (catId)}
+											<span
+												id={catId}
+												class="label label--info"
+												style="background-color: {getCategoryColor(catId)}"
+											>{getCategoryLabel(catId)}</span>
+										{/each}
+									</div>
+									<h4 class="h5 article-card__title">
+										<a href="/dashboard/{slug}/learning-center/{video.slug}">{video.title}</a>
+									</h4>
+									<div class="u--margin-top-0">
+										<span class="trader_name"><i>With {video.instructor?.name || 'Expert Trader'}</i></span>
+									</div>
+									<div class="article-card__excerpt u--hide-read-more">
+										<p>{video.excerpt || video.description}</p>
+									</div>
+									<a href="/dashboard/{slug}/learning-center/{video.slug}" class="btn btn-tiny btn-default">Watch Now</a>
+								</article>
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		</section>
 	</div>
@@ -627,5 +602,61 @@
 	/* Response container */
 	#response {
 		margin-top: 0;
+	}
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e0e0e0;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* Error State */
+	.error-state {
+		text-align: center;
+		padding: 40px 20px;
+		color: #666;
+	}
+
+	.error-state button {
+		margin-top: 16px;
+		padding: 8px 20px;
+		background: #0984ae;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: 600;
+		transition: background-color 0.2s;
+	}
+
+	.error-state button:hover {
+		background: #076787;
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+		color: #666;
+		font-size: 16px;
 	}
 </style>
