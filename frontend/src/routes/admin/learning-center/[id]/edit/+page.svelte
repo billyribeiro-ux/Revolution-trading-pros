@@ -195,7 +195,7 @@
 			</div>
 			<div class="header-actions">
 				<a
-					href="/dashboard/{lesson.tradingRooms?.[0]?.slug || 'day-trading-room'}/learning-center/{lesson.slug}"
+					href="/learning-center/{lesson.slug}"
 					class="btn-secondary"
 					target="_blank"
 				>
