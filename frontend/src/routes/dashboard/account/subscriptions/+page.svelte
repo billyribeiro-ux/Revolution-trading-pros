@@ -317,7 +317,7 @@
 		padding: 40px 20px;
 		color: #d32f2f;
 		background: #ffebee;
-		border-radius: 8px;
+		border-radius: 4px;
 	}
 
 	.error-state p {
@@ -330,7 +330,7 @@
 		padding: 60px 20px;
 		color: #666;
 		background: #f9f9f9;
-		border-radius: 8px;
+		border-radius: 4px;
 	}
 
 	.empty-icon {
@@ -348,9 +348,9 @@
 		width: 100%;
 		border-collapse: collapse;
 		background: #fff;
-		border-radius: 8px;
+		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 	}
 
 	.table thead {

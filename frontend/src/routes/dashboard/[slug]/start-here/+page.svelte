@@ -29,7 +29,7 @@
 	.page-title { font-size: 32px; font-weight: 700; color: #333; margin: 0 0 12px; }
 	.page-subtitle { font-size: 16px; color: #666; max-width: 600px; margin: 0 auto; }
 	.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-	.step-card { background: #fff; border-radius: 12px; padding: 30px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); position: relative; }
+	.step-card { background: #fff; border-radius: 12px; padding: 30px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16); position: relative; }
 	.step-number { position: absolute; top: -10px; left: -10px; width: 32px; height: 32px; background: #0984ae; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
 	.step-card h3 { font-size: 18px; font-weight: 700; color: #333; margin: 0 0 12px; }
 	.step-card p { font-size: 14px; color: #666; margin: 0 0 16px; }

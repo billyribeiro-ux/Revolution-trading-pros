@@ -283,9 +283,9 @@
 
 	.card {
 		background: #fff;
-		border-radius: 8px;
+		border-radius: 4px;
 		overflow: hidden;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		display: flex;
 		flex-direction: column;
 		height: 100%;
@@ -293,8 +293,7 @@
 	}
 
 	.card:hover {
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
 	.card-media {

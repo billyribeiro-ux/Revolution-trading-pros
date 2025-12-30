@@ -193,7 +193,7 @@
 
 	.featured-card {
 		background: linear-gradient(135deg, #0984ae 0%, #065a75 100%);
-		border-radius: 8px;
+		border-radius: 4px;
 		padding: 30px;
 		color: #fff;
 		text-align: center;
@@ -201,12 +201,11 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
-		transition: transform 0.2s ease-in-out;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		transition: box-shadow 0.2s ease-in-out;
 	}
 
 	.featured-card:hover {
-		transform: translateY(-2px);
 	}
 
 	.featured-card--get-started {

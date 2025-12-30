@@ -40,7 +40,7 @@
 	.page-title { font-size: 28px; font-weight: 700; color: #333; margin: 0 0 8px; }
 	.page-subtitle { font-size: 14px; color: #666; margin: 0; }
 	.resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-	.resource-card { display: flex; gap: 20px; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1); }
+	.resource-card { display: flex; gap: 20px; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16); }
 	.resource-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: #f0f7fa; border-radius: 12px; color: #0984ae; }
 	.resource-content { flex: 1; }
 	.resource-title { font-size: 16px; font-weight: 700; color: #333; margin: 0 0 8px; }

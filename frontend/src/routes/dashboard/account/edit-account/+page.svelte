@@ -108,8 +108,8 @@
 
 	.content-box {
 		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
 		max-width: 600px;
 	}
 
