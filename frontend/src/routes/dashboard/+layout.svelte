@@ -50,6 +50,12 @@
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let mobileMenuOpen = $state(false);
 	let hasFetchedMemberships = $state(false);
+	let openSubmenu = $state<string | null>(null);
+
+	// Submenu toggle handler - for mobile click support
+	function toggleSubmenu(menuId: string): void {
+		openSubmenu = openSubmenu === menuId ? null : menuId;
+	}
 
 	// Mobile menu handler - callback prop pattern for child components
 	function toggleMobileMenu(): void {
@@ -345,8 +351,14 @@
 									<span class="dashboard__nav-item-text">Trading Room Archives</span>
 								</a>
 							</li>
-							<li class="has-submenu" class:is-active={$page.url.pathname.includes('/traders')}>
-								<span class="submenu-trigger" role="button" tabindex="0">
+							<li class="has-submenu" class:is-active={$page.url.pathname.includes('/traders')} class:is-open={openSubmenu === 'traders'}>
+								<span
+									class="submenu-trigger"
+									role="button"
+									tabindex="0"
+									onclick={() => toggleSubmenu('traders')}
+									onkeydown={(e) => e.key === 'Enter' && toggleSubmenu('traders')}
+								>
 									<span class="dashboard__nav-item-icon"><IconUsers size={28} /></span>
 									<span class="dashboard__nav-item-text">Meet the Traders</span>
 								</span>
@@ -362,8 +374,14 @@
 									<li><a href="/dashboard/{currentMembershipSlug}/raghee-horner">Raghee Horner</a></li>
 								</ul>
 							</li>
-							<li class="has-submenu" class:is-active={$page.url.pathname.includes('/trader-store')}>
-								<span class="submenu-trigger" role="button" tabindex="0">
+							<li class="has-submenu" class:is-active={$page.url.pathname.includes('/trader-store')} class:is-open={openSubmenu === 'trader-store'}>
+								<span
+									class="submenu-trigger"
+									role="button"
+									tabindex="0"
+									onclick={() => toggleSubmenu('trader-store')}
+									onkeydown={(e) => e.key === 'Enter' && toggleSubmenu('trader-store')}
+								>
 									<span class="dashboard__nav-item-icon"><IconBuildingStore size={28} /></span>
 									<span class="dashboard__nav-item-text">Trader Store</span>
 								</span>
