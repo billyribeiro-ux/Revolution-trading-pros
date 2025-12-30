@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { membersStore, churnedStore, emailStore } from '$lib/stores/members';
+	import { membersStore, emailStore } from '$lib/stores/members';
 	import type { Member, MemberFilters } from '$lib/api/members';
 	import {
 		IconUsers,
-		IconUserPlus,
 		IconTrendingUp,
 		IconTrendingDown,
 		IconCurrencyDollar,
@@ -46,7 +45,6 @@
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');
-	let selectedTemplate = $state<string | number>('');
 	let showImportModal = $state(false);
 	let importFile = $state<File | null>(null);
 	let importing = $state(false);
@@ -301,7 +299,7 @@
 					</div>
 				</div>
 				<div class="stat-sparkline">
-					{#each stats.growth_trend.slice(-6) as point, i}
+					{#each stats.growth_trend.slice(-6) as point}
 						<div
 							class="sparkline-bar"
 							style="height: {(point.new / Math.max(...stats.growth_trend.map((p) => p.new))) * 100}%"
