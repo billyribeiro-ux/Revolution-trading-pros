@@ -787,11 +787,11 @@
                 >
                     <h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
                     <div class="flex items-baseline gap-1 mb-6">
-                        <span class="text-4xl font-bold text-white">$97</span>
-                        <span class="text-slate-500">/mo</span>
+                        <span class="text-4xl font-bold text-white">${pricing.monthly.price}</span>
+                        <span class="text-slate-500">{pricing.monthly.period}</span>
                     </div>
                     <div class="text-xs font-mono text-slate-500 bg-slate-950 p-2 rounded mb-6 text-center">
-                        Flexibility to cancel anytime
+                        {pricing.monthly.tagline}
                     </div>
                     <ul class="space-y-4 mb-8 text-sm text-slate-400">
                         <li class="flex gap-3"><span class="text-emerald-500">✓</span> 2-4 Premium Swings / Week</li>
@@ -800,9 +800,9 @@
                         <li class="flex gap-3"><span class="text-emerald-500">✓</span> Entry & Exit Zones</li>
                     </ul>
                     <a
-                        href="/checkout/monthly-swings"
+                        href={pricing.monthly.link}
                         class="block w-full py-3 bg-slate-950 border border-slate-800 text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
-                        >Select Monthly</a
+                        >{pricing.monthly.btnText}</a
                     >
                 </div>
 
@@ -816,13 +816,13 @@
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-4">Quarterly</h3>
                     <div class="flex items-baseline gap-1 mb-6">
-                        <span class="text-5xl font-extrabold text-white">$247</span>
-                        <span class="text-slate-500">/qtr</span>
+                        <span class="text-5xl font-extrabold text-white">${pricing.quarterly.price}</span>
+                        <span class="text-slate-500">{pricing.quarterly.period}</span>
                     </div>
                     <div
                         class="text-xs font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded mb-6 text-center border border-emerald-500/30"
                     >
-                        Save 15% ($2.75 / day)
+                        {pricing.quarterly.tagline}
                     </div>
                     <ul class="space-y-4 mb-8 text-sm text-white">
                         <li class="flex gap-3">
@@ -843,9 +843,9 @@
                         </li>
                     </ul>
                     <a
-                        href="/checkout/quarterly-swings"
+                        href={pricing.quarterly.link}
                         class="block w-full py-4 bg-emerald-500 text-slate-900 font-bold rounded-xl text-center hover:bg-emerald-400 transition-colors shadow-lg"
-                        >Join Quarterly</a
+                        >{pricing.quarterly.btnText}</a
                     >
                 </div>
 
@@ -854,11 +854,11 @@
                 >
                     <h3 class="text-xl font-bold text-white mb-4">Annual</h3>
                     <div class="flex items-baseline gap-1 mb-6">
-                        <span class="text-4xl font-bold text-white">$927</span>
-                        <span class="text-slate-500">/yr</span>
+                        <span class="text-4xl font-bold text-white">${pricing.annual.price}</span>
+                        <span class="text-slate-500">{pricing.annual.period}</span>
                     </div>
                     <div class="text-xs font-mono text-emerald-400 bg-slate-950 p-2 rounded mb-6 text-center">
-                        Save 20% ($2.54 / day)
+                        {pricing.annual.tagline}
                     </div>
                     <ul class="space-y-4 mb-8 text-sm text-slate-400">
                         <li class="flex gap-3">
@@ -870,9 +870,9 @@
                         <li class="flex gap-3"><span class="text-emerald-500">✓</span> Private Discord Community</li>
                     </ul>
                     <a
-                        href="/checkout/annual-swings"
+                        href={pricing.annual.link}
                         class="block w-full py-3 bg-slate-950 border border-emerald-500 text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-slate-900 transition-colors"
-                        >Select Annual</a
+                        >{pricing.annual.btnText}</a
                     >
                 </div>
             </div>
