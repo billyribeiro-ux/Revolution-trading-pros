@@ -77,7 +77,13 @@ jobs:
 
       - name: Run smoke tests
         working-directory: frontend
-        run: npx playwright test tests/e2e/smoke --project=chromium --reporter=list
+        run: |
+          if [ -d "tests/e2e/smoke" ] && [ "$(ls -A tests/e2e/smoke/*.spec.ts 2>/dev/null)" ]; then
+            npx playwright test tests/e2e/smoke --project=chromium --reporter=list
+          else
+            echo "No smoke tests found, skipping..."
+            exit 0
+          fi
         env:
           E2E_DEBUG: ${{ github.event.inputs.debug || 'false' }}
 

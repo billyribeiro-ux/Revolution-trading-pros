@@ -125,8 +125,22 @@ jobs:
           name: cloudflare-build
           path: frontend/.svelte-kit/cloudflare
 
+      - name: Check Cloudflare secrets
+        id: check-secrets
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN is not set"
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+          elif [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "::warning::CLOUDFLARE_ACCOUNT_ID is not set"
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Cloudflare Pages
         id: deploy
+        if: steps.check-secrets.outputs.has_secrets == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -134,7 +148,20 @@ jobs:
           workingDirectory: frontend
           command: pages deploy .svelte-kit/cloudflare --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }} ${{ github.event_name == 'pull_request' && format('--branch=pr-{0}', github.event.pull_request.number) || (github.ref == 'refs/heads/main' && '' || (github.ref == 'refs/heads/develop' && '--branch=staging' || format('--branch={0}', github.ref_name))) }}
 
+      - name: Skip deployment notice
+        if: steps.check-secrets.outputs.has_secrets == 'false'
+        run: |
+          echo "::notice::Cloudflare deployment skipped - secrets not configured"
+          echo "## Deployment Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ Cloudflare secrets are not configured in repository settings" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Required secrets:" >> $GITHUB_STEP_SUMMARY
+          echo "- CLOUDFLARE_API_TOKEN" >> $GITHUB_STEP_SUMMARY
+          echo "- CLOUDFLARE_ACCOUNT_ID" >> $GITHUB_STEP_SUMMARY
+
       - name: Output deployment URL
+        if: steps.check-secrets.outputs.has_secrets == 'true' && steps.deploy.outcome == 'success'
         run: |
           echo "## Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
