@@ -12,6 +12,8 @@
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+	import { ROOMS, ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
+	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
 	import IconEdit from '@tabler/icons-svelte/icons/edit';
@@ -50,7 +52,8 @@
 		videoSrc: '',
 		videoPoster: '',
 		spreadsheetSrc: '',
-		status: 'draft' as 'published' | 'draft' | 'archived'
+		status: 'draft' as 'published' | 'draft' | 'archived',
+		rooms: [...ALL_ROOM_IDS] as string[]
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -175,12 +178,18 @@
 			videoSrc: '',
 			videoPoster: '',
 			spreadsheetSrc: '',
-			status: 'draft'
+			status: 'draft',
+			rooms: [...ALL_ROOM_IDS]
 		};
 	}
 
 	async function handleCreate() {
 		if (!newItem.title || !newItem.trader || !newItem.weekOf) {
+			return;
+		}
+
+		if (newItem.rooms.length === 0) {
+			alert('Please select at least one room');
 			return;
 		}
 
@@ -195,7 +204,8 @@
 				videoSrc: newItem.videoSrc || undefined,
 				videoPoster: newItem.videoPoster || undefined,
 				spreadsheetSrc: newItem.spreadsheetSrc || undefined,
-				status: newItem.status
+				status: newItem.status,
+				rooms: newItem.rooms
 			});
 			items = [response.data, ...items];
 			showCreateModal = false;
@@ -302,8 +312,8 @@
 						<th class="col-title">Watchlist</th>
 						<th class="col-trader">Trader</th>
 						<th class="col-week">Week Of</th>
+						<th class="col-rooms">Rooms</th>
 						<th class="col-status">Status</th>
-						<th class="col-date">Created</th>
 						<th class="col-actions">Actions</th>
 					</tr>
 				</thead>
@@ -341,13 +351,28 @@
 									{formatDate(item.weekOf)}
 								</div>
 							</td>
+							<td class="col-rooms">
+								<div class="rooms-cell">
+									{#if !item.rooms || item.rooms.length === 0}
+										<span class="rooms-badge rooms-none">None</span>
+									{:else if isAllRooms(item.rooms)}
+										<span class="rooms-badge rooms-all">All Rooms</span>
+									{:else}
+										<div class="rooms-tags">
+											{#each getRoomsByIds(item.rooms).slice(0, 2) as room}
+												<span class="room-tag" style="background-color: {room.color}20; color: {room.color}">{room.shortName}</span>
+											{/each}
+											{#if item.rooms.length > 2}
+												<span class="rooms-more">+{item.rooms.length - 2}</span>
+											{/if}
+										</div>
+									{/if}
+								</div>
+							</td>
 							<td class="col-status">
 								<span class="status-badge status-{item.status}">
 									{item.status}
 								</span>
-							</td>
-							<td class="col-date">
-								{formatDate(item.createdAt)}
 							</td>
 							<td class="col-actions">
 								<div class="actions-cell">
@@ -403,7 +428,7 @@
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="6" class="empty-state">
+							<td colspan="7" class="empty-state">
 								<p>No watchlist items found</p>
 								{#if searchQuery || selectedStatus}
 									<button type="button" onclick={clearFilters}>Clear filters</button>
@@ -518,6 +543,10 @@
 							bind:value={newItem.spreadsheetSrc}
 							placeholder="https://docs.google.com/..."
 						/>
+					</div>
+
+					<div class="form-group full-width">
+						<RoomSelector bind:selectedRooms={newItem.rooms} />
 					</div>
 				</div>
 
@@ -790,11 +819,11 @@
 	}
 
 	/* Column widths */
-	.col-title { width: 35%; }
-	.col-trader { width: 15%; }
-	.col-week { width: 15%; }
+	.col-title { width: 30%; }
+	.col-trader { width: 12%; }
+	.col-week { width: 12%; }
+	.col-rooms { width: 18%; }
 	.col-status { width: 10%; }
-	.col-date { width: 15%; }
 	.col-actions { width: 10%; }
 
 	/* Item cell */
@@ -867,6 +896,51 @@
 		align-items: center;
 		gap: 6px;
 		color: #94a3b8;
+	}
+
+	/* Rooms cell */
+	.rooms-cell {
+		display: flex;
+		align-items: center;
+	}
+
+	.rooms-badge {
+		display: inline-block;
+		padding: 4px 10px;
+		border-radius: 9999px;
+		font-size: 0.7rem;
+		font-weight: 600;
+	}
+
+	.rooms-all {
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(9, 132, 174, 0.15));
+		color: #10b981;
+	}
+
+	.rooms-none {
+		background: rgba(100, 116, 139, 0.1);
+		color: #64748b;
+	}
+
+	.rooms-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		align-items: center;
+	}
+
+	.room-tag {
+		display: inline-block;
+		padding: 3px 8px;
+		border-radius: 4px;
+		font-size: 0.65rem;
+		font-weight: 700;
+	}
+
+	.rooms-more {
+		font-size: 0.7rem;
+		color: #64748b;
+		margin-left: 4px;
 	}
 
 	/* Status badge */
@@ -1097,7 +1171,7 @@
 		}
 
 		.col-week,
-		.col-date {
+		.col-rooms {
 			display: none;
 		}
 	}

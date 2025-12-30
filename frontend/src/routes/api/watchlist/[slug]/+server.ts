@@ -3,13 +3,15 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * GET, PUT, DELETE operations for individual watchlist items.
+ * Supports room-specific targeting.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - December 2025 - Added room targeting
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { ALL_ROOM_IDS } from '$lib/config/rooms';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -34,6 +36,7 @@ interface WatchlistItem {
 	};
 	description: string;
 	status: 'published' | 'draft' | 'archived';
+	rooms: string[];
 	previous: { slug: string; title: string } | null;
 	next: { slug: string; title: string } | null;
 	createdAt: string;
@@ -64,6 +67,7 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 		},
 		description: 'Week of December 22, 2025.',
 		status: 'published',
+		rooms: ALL_ROOM_IDS,
 		previous: {
 			slug: '12152025-allison-ostrander',
 			title: 'Weekly Watchlist with Allison Ostrander'
@@ -91,6 +95,7 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 		},
 		description: 'Week of December 15, 2025.',
 		status: 'published',
+		rooms: ['day-trading-room', 'swing-trading-room', 'small-account-mentorship'],
 		previous: {
 			slug: '12082025-taylor-horton',
 			title: 'Weekly Watchlist with Taylor Horton'
@@ -121,6 +126,7 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 		},
 		description: 'Week of December 8, 2025.',
 		status: 'published',
+		rooms: ['small-account-mentorship', 'explosive-swings'],
 		previous: null,
 		next: {
 			slug: '12152025-allison-ostrander',
@@ -234,6 +240,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		traderImage: body.traderImage ?? existingItem.traderImage,
 		description: body.description ?? existingItem.description,
 		status: body.status ?? existingItem.status,
+		rooms: body.rooms ?? existingItem.rooms,
 		video: {
 			src: body.videoSrc ?? existingItem.video.src,
 			poster: body.videoPoster ?? existingItem.video.poster,
