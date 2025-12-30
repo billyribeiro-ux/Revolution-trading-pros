@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { slide } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
     import SEOHead from '$lib/components/SEOHead.svelte';
@@ -13,7 +12,6 @@
 
     // --- Apple ICT9+ Scroll Animations ---
     // Smooth, performant reveal animations using IntersectionObserver
-    let mounted = $state(false);
     
     function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
         const delay = params.delay ?? 0;
