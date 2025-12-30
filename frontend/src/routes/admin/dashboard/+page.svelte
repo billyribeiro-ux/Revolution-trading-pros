@@ -14,6 +14,7 @@
 	import { quintOut, backOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { ROOMS, type Room } from '$lib/config/rooms';
 
 	// Types
 	interface ConnectionStatus {
@@ -39,6 +40,13 @@
 		keywords_ranking?: number;
 	}
 
+	interface RoomStats {
+		room_id: string;
+		watchlist_count: number;
+		modules_count: number;
+		articles_count: number;
+	}
+
 	// State
 	let isLoading = $state(true);
 	let connections = $state<ConnectionStatus>({
@@ -50,6 +58,7 @@
 		sendgrid: false
 	});
 	let metrics = $state<DashboardMetrics>({});
+	let roomStats = $state<RoomStats[]>([]);
 	let lastUpdated = $state<Date | null>(null);
 	let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -96,11 +105,44 @@
 		lastUpdated = new Date();
 	}
 
+	// Fetch room content stats
+	async function fetchRoomStats() {
+		try {
+			const data = await adminFetch('/api/admin/rooms/stats');
+			if (data && Array.isArray(data)) {
+				roomStats = data;
+			}
+		} catch (e) {
+			// Room stats API may not exist yet - use empty defaults
+			console.warn('Failed to fetch room stats:', e);
+			// Initialize with zeros for each room
+			roomStats = ROOMS.map(room => ({
+				room_id: room.id,
+				watchlist_count: 0,
+				modules_count: 0,
+				articles_count: 0
+			}));
+		}
+	}
+
+	// Get stats for a specific room
+	function getStatsForRoom(roomId: string): RoomStats {
+		return roomStats.find(s => s.room_id === roomId) || {
+			room_id: roomId,
+			watchlist_count: 0,
+			modules_count: 0,
+			articles_count: 0
+		};
+	}
+
 	// Load dashboard data
 	async function loadDashboard() {
 		isLoading = true;
-		await fetchConnectionStatus();
-		await fetchMetrics();
+		await Promise.all([
+			fetchConnectionStatus(),
+			fetchMetrics(),
+			fetchRoomStats()
+		]);
 		isLoading = false;
 	}
 
@@ -520,6 +562,50 @@
 						<span class="status-text-online">Running</span>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- Room Content Stats Section -->
+		<div
+			class="section-card mb-8"
+			in:fly={{ y: 30, duration: 400, delay: 350, easing: quintOut }}
+		>
+			<div class="section-header">
+				<h2 class="section-title">
+					<span class="section-icon">📊</span> Room Content Stats
+				</h2>
+				<a href="/admin/watchlist" class="section-link">
+					Manage Content →
+				</a>
+			</div>
+
+			<div class="room-stats-grid">
+				{#each ROOMS as room (room.id)}
+					{@const stats = getStatsForRoom(room.id)}
+					<div class="room-stats-card" style="--room-color: {room.color}">
+						<div class="room-stats-header">
+							<span class="room-stats-icon">{room.icon}</span>
+							<div class="room-stats-info">
+								<div class="room-stats-name">{room.shortName}</div>
+								<div class="room-stats-fullname">{room.name}</div>
+							</div>
+						</div>
+						<div class="room-stats-metrics">
+							<div class="room-stat">
+								<span class="room-stat-value">{stats.watchlist_count}</span>
+								<span class="room-stat-label">Watchlists</span>
+							</div>
+							<div class="room-stat">
+								<span class="room-stat-value">{stats.modules_count}</span>
+								<span class="room-stat-label">Modules</span>
+							</div>
+							<div class="room-stat">
+								<span class="room-stat-value">{stats.articles_count}</span>
+								<span class="room-stat-label">Articles</span>
+							</div>
+						</div>
+					</div>
+				{/each}
 			</div>
 		</div>
 
@@ -1082,5 +1168,97 @@
 		50% {
 			opacity: 0.5;
 		}
+	}
+
+	/* Room Stats Grid */
+	.room-stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 1rem;
+	}
+
+	@media (min-width: 1024px) {
+		.room-stats-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.room-stats-grid {
+			grid-template-columns: repeat(6, 1fr);
+		}
+	}
+
+	.room-stats-card {
+		background: var(--admin-surface-sunken);
+		border-radius: 0.75rem;
+		padding: 1rem;
+		border-left: 3px solid var(--room-color, var(--admin-accent-primary));
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.room-stats-card:hover {
+		background: var(--admin-card-bg);
+		box-shadow: var(--admin-card-shadow);
+	}
+
+	.room-stats-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.room-stats-icon {
+		font-size: 1.5rem;
+	}
+
+	.room-stats-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.room-stats-name {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--admin-text-primary);
+	}
+
+	.room-stats-fullname {
+		font-size: 0.625rem;
+		color: var(--admin-text-muted);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.room-stats-metrics {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+
+	.room-stat {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
+	.room-stat-value {
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: var(--admin-text-primary);
+	}
+
+	.room-stat-label {
+		font-size: 0.625rem;
+		color: var(--admin-text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+	}
+
+	.mb-8 {
+		margin-bottom: 2rem;
 	}
 </style>
