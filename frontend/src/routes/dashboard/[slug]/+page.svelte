@@ -5,10 +5,11 @@
 	 *
 	 * Renders trading room dashboard based on configuration.
 	 * Refactored to use modular Svelte 5 components with scoped CSS.
+	 * Now fetches articles from the Articles API.
 	 *
-	 * @version 3.0.0 - Svelte 5 with component-based architecture
+	 * @version 3.1.0 - Svelte 5 with API integration
 	 */
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// Import Svelte 5 Dashboard Components
@@ -18,6 +19,9 @@
 		WeeklyWatchlistSection,
 		SectionTitle
 	} from '$lib/components/dashboard';
+
+	// Import Articles API
+	import { articlesApi, type Article } from '$lib/api/articles';
 
 	// Tabler Icons for dropdown menu
 	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
@@ -37,66 +41,32 @@
 		{ id: 2, name: 'Simpler Showcase', slug: 'simpler-showcase', roomLabel: 'Simpler Showcase Room' }
 	]);
 
-	// Article data - will be fetched from API later
-	const articles = $derived([
-		{
-			id: 1,
-			type: 'daily-video',
-			label: 'Daily Video',
-			title: "Santa's On His Way",
-			date: 'December 23, 2025 with HG',
-			excerpt: 'Things can always change, but given how the market closed on Tuesday, it looks like Santa\'s on his way. Let\'s look at the facts, then also some preferences and opinions as we get into the end of 2025.',
-			href: `/daily/${slug}/santas-on-his-way`,
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg'
-		},
-		{
-			id: 2,
-			type: 'chatroom-archive',
-			title: 'December 23, 2025',
-			date: 'December 23, 2025',
-			traderName: 'Danielle Shay',
-			href: `/chatroom-archive/${slug}/12232025`,
-			image: FALLBACK_PLACEHOLDER
-		},
-		{
-			id: 3,
-			type: 'daily-video',
-			label: 'Daily Video',
-			title: 'Setting Up for the Santa Rally',
-			date: 'December 22, 2025 with Danielle Shay',
-			excerpt: 'Everything looks good for a potential rally, as the indexes are consolidating and breaking higher, along with a lot of key stocks. Let\'s take a look at TSLA, GOOGL, AMZN, AVGO, MSFT, and more.',
-			href: `/daily/${slug}/setting-up-santa-rally`,
-			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg'
-		},
-		{
-			id: 4,
-			type: 'chatroom-archive',
-			title: 'December 22, 2025',
-			date: 'December 22, 2025',
-			traderName: 'Henry Gambell',
-			href: `/chatroom-archive/${slug}/12222025`,
-			image: FALLBACK_PLACEHOLDER
-		},
-		{
-			id: 5,
-			type: 'daily-video',
-			label: 'Daily Video',
-			title: 'Holiday Weekend Market Review',
-			date: 'December 19, 2025 with Sam',
-			excerpt: 'Indexes continue to churn sideways as we approach next week\'s holiday trade. Bulls usually take over in low volume. Can they do it again?',
-			href: `/daily/${slug}/holiday-weekend-market-review`,
-			image: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg'
-		},
-		{
-			id: 6,
-			type: 'chatroom-archive',
-			title: 'December 19, 2025',
-			date: 'December 19, 2025',
-			traderName: 'Bruce Marshall',
-			href: `/chatroom-archive/${slug}/12192025`,
-			image: FALLBACK_PLACEHOLDER
-		}
-	]);
+	// Article data - fetched from API
+	let articles = $state<Article[]>([]);
+	let articlesLoading = $state(true);
+	let articlesError = $state<string | null>(null);
+
+	// Fetch articles when slug changes
+	$effect(() => {
+		const currentSlug = slug;
+		if (!browser || !currentSlug) return;
+
+		untrack(() => {
+			articlesLoading = true;
+			articlesError = null;
+		});
+
+		articlesApi.getByRoom(currentSlug, { per_page: 10 })
+			.then((response) => {
+				articles = response.data || [];
+				articlesLoading = false;
+			})
+			.catch((err) => {
+				console.error('Failed to fetch articles:', err);
+				articlesError = err.message || 'Failed to load articles';
+				articlesLoading = false;
+			});
+	});
 
 	// Weekly Watchlist - Dynamic date calculation
 	const weeklyWatchlistDate = $derived.by(() => {
@@ -216,21 +186,39 @@
 		<!-- LATEST UPDATES SECTION -->
 		<section class="dashboard__content-section">
 			<SectionTitle title="Latest Updates" />
-			<div class="article-cards">
-				{#each articles as article (article.id)}
-					<div class="article-cards__item">
-						<ArticleCard
-							title={article.title}
-							href={article.href}
-							image={article.image}
-							label={article.type === 'daily-video' ? article.label : undefined}
-							meta={article.date}
-							excerpt={article.type === 'daily-video' ? article.excerpt : (article.traderName ? `With ${article.traderName}` : undefined)}
-							buttonText="Watch Now"
-						/>
-					</div>
-				{/each}
-			</div>
+
+			{#if articlesLoading}
+				<div class="articles-loading">
+					<div class="loading-spinner"></div>
+					<p>Loading articles...</p>
+				</div>
+			{:else if articlesError}
+				<div class="articles-error">
+					<p>Failed to load articles: {articlesError}</p>
+					<button type="button" onclick={() => location.reload()}>Try Again</button>
+				</div>
+			{:else if articles.length === 0}
+				<div class="articles-empty">
+					<p>No articles available at this time.</p>
+				</div>
+			{:else}
+				<div class="article-cards">
+					{#each articles as article (article.id)}
+						<div class="article-cards__item">
+							<ArticleCard
+								title={article.title}
+								href={article.href}
+								image={article.image}
+								label={article.type === 'daily-video' ? article.label : undefined}
+								meta={article.date}
+								excerpt={article.type === 'daily-video' ? article.excerpt : (article.traderName ? `With ${article.traderName}` : undefined)}
+								buttonText="Watch Now"
+								isVideo={article.isVideo}
+							/>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</section>
 
 		<!-- WEEKLY WATCHLIST SECTION -->
@@ -441,6 +429,61 @@
 	.link-list a:hover {
 		color: #076787;
 		text-decoration: underline;
+	}
+
+	/* Loading State */
+	.articles-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e0e0e0;
+		border-top-color: #0984ae;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		margin-bottom: 16px;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* Error State */
+	.articles-error {
+		text-align: center;
+		padding: 40px 20px;
+		color: #666;
+	}
+
+	.articles-error button {
+		margin-top: 16px;
+		padding: 8px 20px;
+		background: #0984ae;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: 600;
+		transition: background-color 0.2s;
+	}
+
+	.articles-error button:hover {
+		background: #076787;
+	}
+
+	/* Empty State */
+	.articles-empty {
+		text-align: center;
+		padding: 40px 20px;
+		color: #666;
 	}
 
 	/* Responsive */

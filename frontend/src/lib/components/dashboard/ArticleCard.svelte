@@ -31,6 +31,8 @@
 		buttonText?: string;
 		/** Whether content is restricted */
 		restricted?: boolean;
+		/** Whether to show video play icon overlay */
+		isVideo?: boolean;
 	}
 
 	let {
@@ -42,17 +44,26 @@
 		meta,
 		excerpt,
 		buttonText = 'Watch Now',
-		restricted = false
+		restricted = false,
+		isVideo = false
 	}: Props = $props();
 </script>
 
 <article class="article-card">
 	<figure
 		class="article-card__image"
+		class:article-card__image--video={isVideo}
 		style="background-image: url({image || ''});"
 	>
 		{#if image}
 			<img src={image} alt={title} loading="lazy" />
+		{/if}
+		{#if isVideo}
+			<div class="article-card__play-icon">
+				<svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+					<path d="M8 5v14l11-7z"/>
+				</svg>
+			</div>
 		{/if}
 		{#if label}
 			<div class="article-card__type">
@@ -127,6 +138,37 @@
 		height: 100%;
 		object-fit: cover;
 		opacity: 0;
+	}
+
+	/* Video Play Icon Overlay */
+	.article-card__image--video::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.3);
+		transition: background 0.2s ease-in-out;
+	}
+
+	.article-card:hover .article-card__image--video::after {
+		background: rgba(0, 0, 0, 0.4);
+	}
+
+	.article-card__play-icon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 3;
+		color: rgba(255, 255, 255, 0.9);
+		transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+	}
+
+	.article-card:hover .article-card__play-icon {
+		transform: translate(-50%, -50%) scale(1.1);
+		color: #fff;
 	}
 
 	/* Label Badge */
