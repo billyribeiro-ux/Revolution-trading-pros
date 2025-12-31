@@ -198,14 +198,14 @@
 	 * Simpler Trading Member Dashboard Sidebar Styles
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Sidebar Container */
+	/* Sidebar Container - WordPress exact: #0e2433 */
 	.dashboard__sidebar {
 		position: fixed;
 		top: 0;
 		left: 0;
 		bottom: 0;
 		width: 260px;
-		background-color: #0a2436;
+		background-color: #0e2433;
 		z-index: 100;
 		display: flex;
 		flex-direction: column;
@@ -333,22 +333,20 @@
 		color: #ffffff;
 	}
 
-	/* Active State */
+	/* Active State - WordPress: #0984ae accent */
 	.dash_main_links li.is-active a {
-		background-color: rgba(9, 132, 174, 0.2);
-		color: #ffffff;
+		background-color: rgba(9, 132, 174, 0.15);
+		color: #0984ae;
 		border-left: 3px solid #0984ae;
 		padding-left: 17px;
 	}
 
-	.dash_main_links li.is-active a::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 3px;
-		background-color: #0984ae;
+	.dash_main_links li.is-active .dashboard__nav-item-text {
+		color: #0984ae;
+	}
+
+	.dash_main_links li.is-active .dashboard__nav-item-icon {
+		opacity: 1;
 	}
 
 	/* Navigation Icons */
