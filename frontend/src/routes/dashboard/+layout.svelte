@@ -2,8 +2,15 @@
 	Dashboard Layout - Member Dashboard with Sidebar
 	SSR-compatible layout with authentication guard
 
-	@version 1.0.0
+	Phase Two: Collapsible sidebar with main content adjustment
+
+	@version 2.0.0
 	@author Revolution Trading Pros
+
+	Svelte 5 Features:
+	- $bindable() for two-way binding with sidebar collapsed state
+	- $state() for reactive collapsed tracking
+	- Snippet for children rendering
 -->
 <script lang="ts">
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
@@ -24,19 +31,23 @@
 	}
 
 	let { data, children }: Props = $props();
+
+	// Bindable collapsed state - syncs with sidebar
+	let sidebarCollapsed = $state(false);
 </script>
 
 <svelte:head>
 	<meta name="robots" content="noindex, nofollow" />
 	<title>Member Dashboard | Revolution Trading Pros</title>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700" rel="stylesheet" />
 </svelte:head>
 
 <div class="dashboard">
-	<!-- Sidebar Navigation -->
-	<DashboardSidebar user={data.user} />
+	<!-- Sidebar Navigation with bindable collapsed state -->
+	<DashboardSidebar user={data.user} bind:collapsed={sidebarCollapsed} />
 
-	<!-- Main Content Area -->
-	<main class="dashboard__main">
+	<!-- Main Content Area - margin adjusts based on sidebar state -->
+	<main class="dashboard__main" class:is-collapsed={sidebarCollapsed}>
 		{@render children()}
 	</main>
 </div>
@@ -44,42 +55,61 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Layout Container
+	 * Matches WordPress Simpler Trading reference
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard {
 		display: flex;
 		min-height: 100vh;
-		background-color: #0f172a;
-		color: #ffffff;
+		position: relative;
 	}
 
-	/* Main Content Area */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Main Content Area
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__main {
 		flex: 1;
-		margin-left: 260px;
+		margin-left: 280px;
 		min-height: 100vh;
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		background-color: #efefef;
 		transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	/* When sidebar is collapsed */
-	:global(.dashboard__sidebar.is-collapsed) ~ .dashboard__main {
+	/* Collapsed sidebar state - main content shifts */
+	.dashboard__main.is-collapsed {
 		margin-left: 80px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Styles
+	 * Responsive - Mobile (≤768px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1024px) {
+	@media (max-width: 768px) {
 		.dashboard__main {
 			margin-left: 0;
+			padding-top: 64px; /* Space for mobile toggle button */
+		}
+
+		.dashboard__main.is-collapsed {
+			margin-left: 0;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Responsive - Tablet (769-1024px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (min-width: 769px) and (max-width: 1024px) {
+		.dashboard__main:not(.is-collapsed) {
+			margin-left: 240px;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Reduced Motion
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (prefers-reduced-motion: reduce) {
 		.dashboard__main {
 			transition: none;
