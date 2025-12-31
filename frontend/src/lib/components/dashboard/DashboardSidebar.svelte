@@ -278,6 +278,12 @@
 		background-position: center;
 		margin-right: 12px;
 		flex-shrink: 0;
+		border: 2px solid rgba(255, 255, 255, 0.15);
+		transition: border-color 0.2s ease;
+	}
+
+	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+		border-color: rgba(255, 255, 255, 0.3);
 	}
 
 	.dashboard__profile-name {
