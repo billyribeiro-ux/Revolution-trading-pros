@@ -313,14 +313,13 @@
 			// Show Lottie animation before redirect
 			showLottie = true;
 			
-			// ICT11+ SURGICAL FIX: Add immediate fallback in case Lottie fails to load
-			// This ensures redirect happens even if animation component has issues
+			// ICT11+ PERMANENT FIX: Unconditional fallback redirect
+			// Even if Lottie component fails to mount or call onComplete, redirect happens
+			// Reduced to 1 second for faster UX
 			setTimeout(() => {
-				if (showLottie) {
-					console.log('[LoginForm] Fallback timeout - forcing redirect');
-					handleLottieComplete();
-				}
-			}, 2000);
+				console.log('[LoginForm] Fallback timeout - executing redirect');
+				handleLottieComplete();
+			}, 1000);
 			
 			// Lottie animation will call handleLottieComplete() which does the redirect
 		} catch (error: unknown) {
