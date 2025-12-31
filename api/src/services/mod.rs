@@ -21,7 +21,7 @@ pub struct Services {
 
 impl Services {
     pub async fn new(config: &Config) -> Result<Self> {
-        let search = search::SearchService::new(&config.meilisearch_host, &config.meilisearch_api_key);
+        let search = search::SearchService::new(&config.meilisearch_host, &config.meilisearch_api_key)?;
 
         // Initialize search indexes (non-blocking, runs in background)
         let search_clone = search.clone();
