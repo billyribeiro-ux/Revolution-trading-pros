@@ -566,35 +566,9 @@ class CouponManagementService {
 	private setupWebSocket(): void {
 		if (!browser) return;
 		
-		// Skip WebSocket in development if not configured
-		if (!WS_URL || import.meta.env.DEV) {
-			console.debug('[CouponService] WebSocket not configured, using polling fallback');
-			return;
-		}
-
-		try {
-			this.wsConnection = new WebSocket(`${WS_URL}/coupons`);
-
-			this.wsConnection.onopen = () => {
-				console.debug('[CouponService] WebSocket connected');
-				this.subscribeToUpdates();
-			};
-
-			this.wsConnection.onmessage = (event) => {
-				this.handleWebSocketMessage(event);
-			};
-
-			this.wsConnection.onerror = () => {
-				console.debug('[CouponService] WebSocket not available, using polling');
-			};
-
-			this.wsConnection.onclose = () => {
-				console.debug('[CouponService] WebSocket disconnected');
-				// Don't auto-reconnect if WebSocket isn't properly configured
-			};
-		} catch (error) {
-			console.debug('[CouponService] WebSocket not available');
-		}
+		// WebSocket not implemented on backend yet - skip for now
+		console.debug('[CouponService] WebSocket not available, using REST API only');
+		return;
 	}
 
 	private subscribeToUpdates(): void {
