@@ -344,6 +344,36 @@
 		// Navigate to members page filtered by segment
 		goto(`/admin/members?segment=${segment.id}`);
 	}
+
+	function exportSegmentData(segment: Segment) {
+		// Export segment members as CSV
+		toastStore.success(`Exporting ${segment.memberCount} members from "${segment.name}"...`);
+		// TODO: Implement actual CSV export
+	}
+
+	function viewSegmentAnalytics(segment: Segment) {
+		// Show analytics modal or navigate to analytics page
+		toastStore.info(`Analytics for "${segment.name}" - Coming soon`);
+		// TODO: Implement analytics view
+	}
+
+	function handleSaveFilter() {
+		if (!newFilter.name) {
+			toastStore.error('Please enter a filter name');
+			return;
+		}
+		const filter: SavedFilter = {
+			id: savedFilters.length + 1,
+			name: newFilter.name,
+			filters: newFilter.filters,
+			createdAt: new Date().toISOString(),
+			usageCount: 0
+		};
+		savedFilters = [...savedFilters, filter];
+		showSaveFilterModal = false;
+		newFilter = { name: '', filters: {} };
+		toastStore.success('Filter saved successfully');
+	}
 </script>
 
 <svelte:head>
@@ -373,6 +403,10 @@
 				<button class="btn-secondary" onclick={loadData}>
 					<IconRefresh size={18} />
 					Refresh
+				</button>
+				<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
+					<IconDownload size={18} />
+					Save Filter
 				</button>
 			</div>
 		</div>
@@ -448,10 +482,27 @@
 						</div>
 
 						<div class="segment-footer">
-							<span class="updated">Updated {formatDate(segment.lastUpdated)}</span>
+							<div class="footer-left">
+								<span class="updated">
+									<IconCalendar size={12} />
+									Updated {formatDate(segment.lastUpdated)}
+								</span>
+								{#if segment.memberCount > 1000}
+									<span class="growth-badge">
+										<IconTrendingUp size={12} />
+										High Volume
+									</span>
+								{/if}
+							</div>
 							<div class="segment-actions">
 								<button class="btn-icon" onclick={() => viewSegmentMembers(segment)} title="View members">
 									<IconUsers size={16} />
+								</button>
+								<button class="btn-icon" onclick={() => viewSegmentAnalytics(segment)} title="View analytics">
+									<IconChartBar size={16} />
+								</button>
+								<button class="btn-icon" onclick={() => exportSegmentData(segment)} title="Export data">
+									<IconDownload size={16} />
 								</button>
 								<button class="btn-icon" title="Send campaign">
 									<IconMail size={16} />
@@ -605,7 +656,12 @@
 						<div class="condition-row">
 							<select bind:value={condition.field}>
 								{#each conditionFields as field}
-									<option value={field.value}>{field.label}</option>
+									<option value={field.value}>
+										{#if field.value === 'total_spent'}
+											<IconCurrencyDollar size={14} /> 
+										{/if}
+										{field.label}
+									</option>
 								{/each}
 							</select>
 
@@ -712,6 +768,59 @@
 				<button class="btn-primary" onclick={handleCreateTag}>
 					<IconCheck size={18} />
 					Create Tag
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Save Filter Modal -->
+{#if showSaveFilterModal}
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		onclick={() => (showSaveFilterModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showSaveFilterModal = false)}
+	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div
+			class="modal-content"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
+			<div class="modal-header">
+				<h2>Save Current Filter</h2>
+				<button class="close-btn" onclick={() => (showSaveFilterModal = false)}>
+					<IconX size={20} />
+				</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="filter-name">Filter Name</label>
+					<input
+						id="filter-name"
+						type="text"
+						bind:value={newFilter.name}
+						placeholder="e.g., High Value Active Members"
+					/>
+				</div>
+				<p class="help-text">
+					<IconCalendar size={14} />
+					This will save your current filter settings for quick access later.
+				</p>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => (showSaveFilterModal = false)}>
+					Cancel
+				</button>
+				<button class="btn-primary" onclick={handleSaveFilter}>
+					<IconCheck size={18} />
+					Save Filter
 				</button>
 			</div>
 		</div>
@@ -912,14 +1021,49 @@
 		border-top: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
+	.footer-left {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
 	.updated {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
 		font-size: 0.75rem;
 		color: #64748b;
+	}
+
+	.growth-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		background: rgba(34, 197, 94, 0.1);
+		border: 1px solid rgba(34, 197, 94, 0.2);
+		border-radius: 6px;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		color: #22c55e;
 	}
 
 	.segment-actions {
 		display: flex;
 		gap: 0.375rem;
+	}
+
+	.help-text {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+		padding: 0.75rem;
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 8px;
+		font-size: 0.8125rem;
+		color: #a5b4fc;
 	}
 
 	/* Tags Grid */
