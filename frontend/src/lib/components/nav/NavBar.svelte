@@ -153,8 +153,11 @@
 	];
 
 	const DEFAULT_DASHBOARD_ITEMS: readonly NavSubMenuItem[] = [
-		{ href: '/account', label: 'My Account' },
-		{ href: '/support', label: 'Support' }
+		{ href: '/dashboard/', label: 'My Memberships' },
+		{ href: '/dashboard/classes/', label: 'My Classes' },
+		{ href: '/dashboard/indicators/', label: 'My Indicators' },
+		{ href: '/dashboard/account/', label: 'My Account' },
+		{ href: 'https://intercom.help/simpler-trading/en/', label: 'Support' }
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -752,7 +755,7 @@
 				<div class="dropdown" data-dropdown="dashboard">
 					<button
 						class="dropdown-trigger"
-						class:active={currentPath.startsWith('/account')}
+						class:active={currentPath.startsWith('/dashboard') || currentPath.startsWith('/account')}
 						class:open={activeDropdown === 'dashboard'}
 						onclick={() => toggleDropdown('dashboard')}
 						onkeydown={(e: KeyboardEvent) => activeDropdown === 'dashboard' && handleDropdownKeydown(e, dashboardItems)}
