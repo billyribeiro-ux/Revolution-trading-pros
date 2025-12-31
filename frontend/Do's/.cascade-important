@@ -1,7 +1,0 @@
-# CRITICAL: Dashboard Reference Files
-
-This directory contains HTML reference files that are the SOURCE OF TRUTH for dashboard page implementation.
-
-AI agents MUST read these files before working on any dashboard-related code.
-
-See README.md in this directory for complete documentation.
