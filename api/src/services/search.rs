@@ -40,9 +40,9 @@ pub struct SearchResult<T> {
 }
 
 impl SearchService {
-    pub fn new(host: &str, api_key: &str) -> Self {
-        let client = Client::new(host, Some(api_key));
-        Self { client }
+    pub fn new(host: &str, api_key: &str) -> Result<Self> {
+        let client = Client::new(host, Some(api_key))?;
+        Ok(Self { client })
     }
 
     /// Initialize indexes with settings
