@@ -27,12 +27,14 @@ COPY migrations ./migrations
 # Build the actual application
 RUN touch src/main.rs && cargo build --release
 
-# Runtime stage - Use same base as builder for glibc/OpenSSL compatibility
-FROM rust:latest AS runtime
+# Runtime stage - ICT 11+ Optimization: Minimal Debian Slim image (~100MB vs 1.5GB)
+FROM debian:bookworm-slim AS runtime
 
-# Install runtime dependencies
+# Install runtime dependencies (OpenSSL, CA certs, curl for health checks)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl \
+    ca-certificates \
+    curl \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user

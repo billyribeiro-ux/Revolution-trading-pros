@@ -1,10 +1,11 @@
-# Fly.io configuration for Revolution Trading Pros API
-# Rust + Axum backend
+# Fly.io v2 Configuration - Revolution Trading Pros API
+# ICT 11+ Production Grade - Rust + Axum backend
+# Updated: December 2025
 
 app = "revolution-trading-pros-api"
 primary_region = "iad"
 kill_signal = "SIGINT"
-kill_timeout = "5s"
+kill_timeout = "10s"
 
 [build]
   dockerfile = "Dockerfile"
@@ -13,32 +14,39 @@ kill_timeout = "5s"
   PORT = "8080"
   RUST_LOG = "info"
   ENVIRONMENT = "production"
+  # Skip migrations on startup - run manually via /setup-db endpoint
+  SKIP_MIGRATIONS = "true"
 
+# Fly.io v2 HTTP Service Configuration
 [http_service]
   internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
-  processes = ["app"]
 
+  # Connection limits for 1GB machine
   [http_service.concurrency]
     type = "connections"
     hard_limit = 1000
     soft_limit = 800
 
-[[http_service.checks]]
-  grace_period = "10s"
+# Health checks - ICT 11+ Pattern: Longer grace period for Rust cold starts
+[[services.http_checks]]
   interval = "30s"
+  timeout = "10s"
+  grace_period = "30s"  # Rust needs time to start
   method = "GET"
-  timeout = "5s"
   path = "/health"
+  protocol = "http"
 
-[[vm]]
-  memory = "512mb"
+# Fly.io v2 VM Configuration
+[vm]
+  memory = "1gb"  # Increased from 512mb for Rust runtime
   cpu_kind = "shared"
   cpus = 1
 
+# Metrics endpoint
 [metrics]
   port = 9091
   path = "/metrics"
