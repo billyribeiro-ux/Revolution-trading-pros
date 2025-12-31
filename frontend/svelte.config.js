@@ -66,6 +66,10 @@ const config = {
 				if (status === 404) {
 					return;
 				}
+				// Ignore 500 errors for authenticated routes during prerendering
+				if (status === 500 && path.startsWith('/dashboard')) {
+					return;
+				}
 				throw new Error(`${status} ${path}`);
 			},
 			handleMissingId: 'ignore',
