@@ -66,6 +66,7 @@ tower_governor = "0.4"
 # OpenAPI Documentation
 utoipa = { version = "4", features = ["axum_extras", "uuid", "chrono"] }
 utoipa-swagger-ui = { version = "7", features = ["axum"] }
+validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
