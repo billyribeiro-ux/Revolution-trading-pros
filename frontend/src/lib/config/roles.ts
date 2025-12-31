@@ -28,12 +28,23 @@ export const SUPERADMIN_EMAILS: readonly string[] = Object.freeze([
 	'welberribeirodrums@gmail.com'
 ]);
 
+/**
+ * Developer emails - these users bypass email verification and get all memberships unlocked.
+ * They experience the platform as a regular member (not admin) with full access for testing.
+ * 
+ * @security This list should be kept minimal and secure
+ */
+export const DEVELOPER_EMAILS: readonly string[] = Object.freeze([
+	'welberribeirodrums@gmail.com'
+]);
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Role Definitions
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const ROLES = Object.freeze({
 	SUPERADMIN: 'super-admin',
+	DEVELOPER: 'developer',
 	ADMIN: 'admin',
 	MEMBER: 'member',
 	USER: 'user'
@@ -142,6 +153,13 @@ export type PermissionType = typeof PERMISSIONS[keyof typeof PERMISSIONS];
 export const ROLE_PERMISSIONS: Record<RoleType, readonly PermissionType[]> = Object.freeze({
 	[ROLES.SUPERADMIN]: Object.values(PERMISSIONS), // All permissions
 	
+	[ROLES.DEVELOPER]: [
+		PERMISSIONS.DASHBOARD_VIEW,
+		PERMISSIONS.TRADING_ROOMS_ACCESS,
+		PERMISSIONS.MEMBERSHIPS_VIEW,
+		PERMISSIONS.MEDIA_VIEW
+	],
+	
 	[ROLES.ADMIN]: [
 		PERMISSIONS.DASHBOARD_VIEW,
 		PERMISSIONS.DASHBOARD_ANALYTICS,
@@ -201,6 +219,14 @@ export function isSuperadminEmail(email: string | null | undefined): boolean {
 }
 
 /**
+ * Check if an email is a developer
+ */
+export function isDeveloperEmail(email: string | null | undefined): boolean {
+	if (!email) return false;
+	return DEVELOPER_EMAILS.includes(email.toLowerCase());
+}
+
+/**
  * Check if a user has superadmin access
  */
 export function isSuperadmin(user: { email?: string; roles?: string[] } | null | undefined): boolean {
@@ -217,6 +243,24 @@ export function isSuperadmin(user: { email?: string; roles?: string[] } | null |
 	)) {
 		return true;
 	}
+	
+	return false;
+}
+
+/**
+ * Check if a user has developer access
+ */
+export function isDeveloper(user: { email?: string; role?: string; roles?: string[] } | null | undefined): boolean {
+	if (!user) return false;
+	
+	// Check email first (highest priority)
+	if (user.email && isDeveloperEmail(user.email)) return true;
+	
+	// Check role field
+	if (user.role?.toLowerCase() === ROLES.DEVELOPER) return true;
+	
+	// Check roles array
+	if (user.roles?.some(role => role.toLowerCase() === ROLES.DEVELOPER)) return true;
 	
 	return false;
 }
