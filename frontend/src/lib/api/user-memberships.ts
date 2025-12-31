@@ -234,12 +234,18 @@ export async function getUserMemberships(options?: {
 		return categorizeMemberships([]);
 	}
 
-	// SUPERADMIN AUTO-UNLOCK: Check if user is superadmin
+	// ENTERPRISE DEVELOPER ACCESS: Check if user is developer or superadmin
+	// Developers get all memberships to test the complete member experience
 	const { user } = get(authStore);
-	if (user && isSuperadminEmail(user.email)) {
-		console.log('[UserMemberships] Superadmin detected - unlocking all memberships');
-		// Skip cache for superadmin to always get latest products
-		return await getSuperadminMemberships();
+	const isDeveloper = user && (
+		user.email === 'welberribeirodrums@gmail.com' || 
+		isSuperadminEmail(user.email)
+	);
+	
+	if (isDeveloper) {
+		console.log('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
+		// Skip cache to always get latest products
+		return await getDeveloperMemberships();
 	}
 
 	const params = new URLSearchParams();
@@ -368,11 +374,11 @@ export async function preloadMembershipData(): Promise<void> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * ICT 11+ ENTERPRISE PATTERN: Superadmin Auto-Unlock System
+ * ICT 11+ ENTERPRISE PATTERN: Developer/Superadmin Auto-Unlock System
  * ═══════════════════════════════════════════════════════════════════════════
  * 
- * Superadmin gets automatic access to ALL available memberships for testing.
- * This function fetches all products and transforms them into active memberships.
+ * Developers get automatic access to ALL available memberships to test the complete
+ * member experience. They appear as regular members with full access to all services.
  * 
  * FALLBACK STRATEGY:
  * 1. Try /admin/products endpoint (primary)
@@ -381,8 +387,8 @@ export async function preloadMembershipData(): Promise<void> {
  * 
  * @returns UserMembershipsResponse with all available memberships
  */
-async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
-	console.log('[Superadmin] 🔓 Fetching all available memberships for superadmin...');
+async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
+	console.log('[Developer] 🔓 Fetching all available memberships for developer access...');
 	
 	try {
 		// STRATEGY 1: Try membership plans endpoint (correct admin endpoint)
@@ -394,7 +400,7 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 
 		// STRATEGY 2: Fallback to public products endpoint with correct parameter
 		if (!response.ok) {
-			console.warn('[Superadmin] Admin membership-plans endpoint failed, trying public products endpoint...');
+			console.warn('[Developer] Admin membership-plans endpoint failed, trying public products endpoint...');
 			response = await fetch(`${API_BASE}/products?product_type=membership&per_page=100`, {
 				method: 'GET',
 				headers: await getAuthHeaders(),
@@ -403,22 +409,22 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 		}
 
 		if (!response.ok) {
-			console.error('[Superadmin] ❌ Both API endpoints failed:', response.status, response.statusText);
+			console.error('[Developer] ❌ Both API endpoints failed:', response.status, response.statusText);
 			// STRATEGY 3: Return mock data for development
-			return getSuperadminMockMemberships();
+			return getDeveloperMockMemberships();
 		}
 
 		const data = await response.json();
 		const products = data.data || data || [];
 		
-		console.log(`[Superadmin] ✅ Fetched ${products.length} products from API`);
+		console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
 
 		if (products.length === 0) {
-			console.warn('[Superadmin] ⚠️ No products returned from API, using mock data');
-			return getSuperadminMockMemberships();
+			console.warn('[Developer] ⚠️ No products returned from API, using mock data');
+			return getDeveloperMockMemberships();
 		}
 
-		// Transform membership plans/products into active memberships for superadmin
+		// Transform membership plans/products into active memberships for developer
 		const memberships: UserMembership[] = products.map((item: any) => {
 			// Handle both membership_plans and products structures
 			const name = item.name || item.title || 'Unnamed Membership';
@@ -466,7 +472,7 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 			};
 		});
 
-		console.log('[Superadmin] 📊 Membership breakdown:', {
+		console.log('[Developer] 📊 Membership breakdown:', {
 			total: memberships.length,
 			tradingRooms: memberships.filter(m => m.type === 'trading-room').length,
 			courses: memberships.filter(m => m.type === 'course').length,
@@ -478,12 +484,12 @@ async function getSuperadminMemberships(): Promise<UserMembershipsResponse> {
 		const enhanced = enhanceMemberships(memberships);
 		const categorized = categorizeMemberships(enhanced);
 		
-		console.log('[Superadmin] ✅ Successfully loaded all memberships');
+		console.log('[Developer] ✅ Successfully loaded all memberships');
 		return categorized;
 	} catch (error) {
-		console.error('[Superadmin] ❌ Critical error fetching memberships:', error);
+		console.error('[Developer] ❌ Critical error fetching memberships:', error);
 		// STRATEGY 3: Return mock data on error
-		return getSuperadminMockMemberships();
+		return getDeveloperMockMemberships();
 	}
 }
 
@@ -504,10 +510,10 @@ function getDefaultIcon(type: MembershipType): string {
 
 /**
  * ICT 11+ PATTERN: Mock memberships for development/fallback
- * Ensures superadmin always has access even if API is down
+ * Ensures developers always have access even if API is down
  */
-function getSuperadminMockMemberships(): UserMembershipsResponse {
-	console.log('[Superadmin] 🔧 Using mock membership data (API unavailable)');
+function getDeveloperMockMemberships(): UserMembershipsResponse {
+	console.log('[Developer] 🔧 Using mock membership data (API unavailable)');
 
 	const mockMemberships: UserMembership[] = [
 		// ═══════════════════════════════════════════════════════════════════════════

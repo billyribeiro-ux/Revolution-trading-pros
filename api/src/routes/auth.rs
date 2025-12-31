@@ -463,13 +463,18 @@ async fn login(
     // Clear failed login attempts on successful authentication
     let _ = state.services.redis.clear_login_attempts(&input.email).await;
 
-    // ICT 11+ SUPERADMIN BYPASS: Check if email is verified (skip for superadmin)
-    // Superadmin emails are configured via SUPERADMIN_EMAILS environment variable
+    // ICT 11+ ENTERPRISE DEVELOPER ACCESS: Check if email is verified
+    // Developers and Superadmins bypass email verification
+    let is_developer = state.config.is_developer_email(&user.email)
+        || user.role.as_deref() == Some("developer");
+    
     let is_superadmin = state.config.is_superadmin_email(&user.email)
         || user.role.as_deref() == Some("super_admin")
         || user.role.as_deref() == Some("super-admin");
     
-    if user.email_verified_at.is_none() && !is_superadmin {
+    let bypass_verification = is_developer || is_superadmin;
+    
+    if user.email_verified_at.is_none() && !bypass_verification {
         tracing::info!(
             target: "security",
             event = "login_failed",
@@ -488,13 +493,15 @@ async fn login(
         ));
     }
     
-    if is_superadmin && user.email_verified_at.is_none() {
+    if bypass_verification && user.email_verified_at.is_none() {
+        let role_type = if is_developer { "developer" } else { "superadmin" };
         tracing::info!(
             target: "security",
-            event = "superadmin_verification_bypass",
+            event = "privileged_verification_bypass",
+            role = role_type,
             user_id = %user.id,
             email = %user.email,
-            "Superadmin bypassing email verification requirement"
+            "Privileged user bypassing email verification requirement"
         );
     }
 

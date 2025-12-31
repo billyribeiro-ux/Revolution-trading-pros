@@ -45,6 +45,10 @@ pub struct Config {
 
     // Superadmin Configuration
     pub superadmin_emails: Vec<String>,
+    
+    // Developer Configuration (Enterprise Pattern)
+    pub developer_emails: Vec<String>,
+    pub developer_mode: bool,
 }
 
 impl Config {
@@ -108,6 +112,17 @@ impl Config {
                 .split(',')
                 .map(|s| s.trim().to_lowercase())
                 .collect(),
+
+            developer_emails: std::env::var("DEVELOPER_EMAILS")
+                .unwrap_or_else(|_| "welberribeirodrums@gmail.com".to_string())
+                .split(',')
+                .map(|s| s.trim().to_lowercase())
+                .collect(),
+
+            developer_mode: std::env::var("DEVELOPER_MODE")
+                .unwrap_or_else(|_| "false".to_string())
+                .parse()
+                .unwrap_or(false),
         })
     }
 
@@ -118,5 +133,16 @@ impl Config {
     /// Check if an email is a superadmin
     pub fn is_superadmin_email(&self, email: &str) -> bool {
         self.superadmin_emails.contains(&email.to_lowercase())
+    }
+
+    /// Check if an email is a developer (Enterprise Pattern)
+    /// Developers have complete access to all features, memberships, and development tools
+    pub fn is_developer_email(&self, email: &str) -> bool {
+        self.developer_emails.contains(&email.to_lowercase())
+    }
+
+    /// Check if developer mode is enabled
+    pub fn is_developer_mode(&self) -> bool {
+        self.developer_mode || !self.is_production()
     }
 }
