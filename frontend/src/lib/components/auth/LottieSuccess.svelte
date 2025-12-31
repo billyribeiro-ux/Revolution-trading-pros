@@ -238,11 +238,17 @@
 
 		// ICT11+ Pattern: Always set a fallback timeout to ensure redirect happens
 		// Animation is 60 frames @ 60fps = 1000ms, add 500ms buffer
+		console.log('[LottieSuccess] Component mounted, setting fallback timeout');
 		fallbackTimeout = setTimeout(() => {
 			if (!hasCompleted) {
-				console.log('[LottieSuccess] Fallback timeout triggered');
+				console.log('[LottieSuccess] Fallback timeout triggered - calling onComplete');
 				hasCompleted = true;
-				onComplete?.();
+				if (onComplete) {
+					console.log('[LottieSuccess] Executing onComplete callback');
+					onComplete();
+				} else {
+					console.error('[LottieSuccess] onComplete callback is undefined!');
+				}
 			}
 		}, 1500);
 
@@ -268,10 +274,16 @@
 				});
 
 				animationInstance.addEventListener('complete', () => {
+					console.log('[LottieSuccess] Animation completed');
 					if (!hasCompleted) {
 						hasCompleted = true;
 						clearTimeout(fallbackTimeout);
-						onComplete?.();
+						console.log('[LottieSuccess] Calling onComplete from animation complete');
+						if (onComplete) {
+							onComplete();
+						} else {
+							console.error('[LottieSuccess] onComplete is undefined in animation complete handler');
+						}
 					}
 				});
 			} catch (err) {
