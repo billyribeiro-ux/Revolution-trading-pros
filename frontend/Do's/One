@@ -1,0 +1,684 @@
+<!-- 
+═══════════════════════════════════════════════════════════════════════════════
+BLUE DASHBOARD SIDEBAR (PANEL 1) - COMPLETE EXTRACTION
+═══════════════════════════════════════════════════════════════════════════════
+Extracted from: MemberDashboard (Jesus File)
+Source CSS: dashboard.8f78208b.css
+Date: December 31, 2025
+
+This file contains the COMPLETE blue sidebar navigation including:
+- HTML Structure
+- All CSS Styles
+- Hover Animations
+- Font Sizes & Weights
+- Colors & Backgrounds
+- Transitions & Effects
+- Icon Styles
+- Profile Section
+- Navigation Categories
+- Toggle Button
+- Overlay
+═══════════════════════════════════════════════════════════════════════════════
+-->
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HTML STRUCTURE - BLUE SIDEBAR (PANEL 1)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<aside class="dashboard__sidebar">
+    <!-- PRIMARY NAVIGATION -->
+    <nav class="dashboard__nav-primary">
+        
+        <!-- PROFILE SECTION -->
+        <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
+            <span class="dashboard__profile-photo" style="background-image: url(https://secure.gravatar.com/avatar/b27c0cfb1c74fb928f5e40ba6711669f?s=32&d=mm&r=g);"></span>
+            <span class="dashboard__profile-name">Zack Stambowski</span>
+        </a>
+        
+        <!-- MAIN NAVIGATION LINKS -->
+        <ul>
+            <li></li>
+            <ul class="dash_main_links">
+                <li class="is-active">
+                    <a href="/dashboard/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-home"></span>
+                        <span class="dashboard__nav-item-text">Member Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/dashboard/classes/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-courses"></span>
+                        <span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Classes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/dashboard/indicators/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-indicators"></span>
+                        <span class="dashboard__nav-item-text" style="font-weight:bold;color: white;">My Indicators</span>
+                    </a>
+                </li>
+            </ul>
+        </ul>
+        
+        <!-- MEMBERSHIPS CATEGORY -->
+        <ul>
+            <li>
+                <p class="dashboard__nav-category">memberships</p>
+            </li>
+            <ul class="dash_main_links">
+                <li>
+                    <a href="/dashboard/mastering-the-trade" target="">
+                        <span class="dashboard__nav-item-icon st-icon-mastering-the-trade"></span>
+                        <span class="dashboard__nav-item-text">Mastering the Trade</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/dashboard/simpler-showcase/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-simpler-showcase"></span>
+                        <span class="dashboard__nav-item-text">Simpler Showcase</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/dashboard/tr3ndy-spx-alerts/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-tr3ndy-spx-alerts-circle"></span>
+                        <span class="dashboard__nav-item-text">Tr3ndy SPX Alerts Service</span>
+                    </a>
+                </li>
+            </ul>
+        </ul>
+        
+        <!-- MASTERY CATEGORY -->
+        <ul>
+            <li>
+                <p class="dashboard__nav-category">mastery</p>
+            </li>
+            <ul class="dash_main_links">
+                <li>
+                    <a href="/dashboard/cgm/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-consistent-growth"></span>
+                        <span class="dashboard__nav-item-text">Compounding Growth Mastery</span>
+                    </a>
+                </li>
+            </ul>
+        </ul>
+        
+        <!-- PREMIUM REPORTS CATEGORY -->
+        <ul>
+            <li>
+                <p class="dashboard__nav-category">premium reports</p>
+            </li>
+            <ul class="dash_main_links">
+                <!-- Empty - no items -->
+            </ul>
+        </ul>
+        
+        <!-- TOOLS CATEGORY -->
+        <ul>
+            <li>
+                <p class="dashboard__nav-category">tools</p>
+            </li>
+            <ul class="dash_main_links">
+                <li>
+                    <a href="/dashboard/ww/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+                        <span class="dashboard__nav-item-text">Weekly Watchlist</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://intercom.help/simpler-trading/en/" target="_blank">
+                        <span class="dashboard__nav-item-icon st-icon-support"></span>
+                        <span class="dashboard__nav-item-text">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </ul>
+        
+        <!-- ACCOUNT CATEGORY -->
+        <ul>
+            <li>
+                <p class="dashboard__nav-category">account</p>
+            </li>
+            <ul class="dash_main_links">
+                <li>
+                    <a href="/dashboard/account/" target="">
+                        <span class="dashboard__nav-item-icon st-icon-settings"></span>
+                        <span class="dashboard__nav-item-text">My Account</span>
+                    </a>
+                </li>
+            </ul>
+        </ul>
+    </nav>
+    
+    <!-- TOGGLE BUTTON (MOBILE) -->
+    <footer class="dashboard__toggle">
+        <button class="dashboard__toggle-button" data-toggle-dashboard-menu>
+            <div class="dashboard__toggle-button-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="framework__toggle-button-label">Dashboard Menu</span>
+        </button>
+    </footer>
+    
+    <!-- OVERLAY (MOBILE) -->
+    <div class="dashboard__overlay" data-toggle-dashboard-menu></div>
+</aside>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CSS STYLES - BLUE SIDEBAR (PANEL 1)
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     Source: dashboard.8f78208b.css
+     All measurements, colors, fonts, animations extracted from Jesus file
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR CONTAINER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__sidebar {
+    background-color: #0a2335;
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFILE SECTION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__profile-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 20px 30px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.dashboard__profile-nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard__profile-photo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.dashboard__profile-name {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION PRIMARY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__nav-primary {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.dashboard__nav-primary > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard__nav-primary > ul > li {
+    list-style: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATEGORY HEADERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__nav-category {
+    padding: 20px 30px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION LINKS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dash_main_links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dash_main_links li {
+    list-style: none;
+    margin: 0;
+}
+
+.dash_main_links a {
+    display: flex;
+    align-items: center;
+    padding: 12px 30px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.dash_main_links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.dash_main_links li.is-active a {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.dash_main_links li.is-active a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #0984ae;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION ICONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__nav-item-icon {
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s ease;
+}
+
+.dash_main_links a:hover .dashboard__nav-item-icon {
+    color: #ffffff;
+}
+
+.dash_main_links li.is-active .dashboard__nav-item-icon {
+    color: #ffffff;
+}
+
+/* Specific Icon Size Overrides */
+.dashboard__nav-item-icon.st-icon-training-room {
+    font-size: 26px !important;
+}
+
+.dashboard__nav-item-icon.st-icon-stacked-profits {
+    font-size: 40px !important;
+}
+
+.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room {
+    font-size: 20px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION TEXT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__nav-item-text {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+/* Collapsed State */
+.dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text {
+    color: #0984ae !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOGGLE BUTTON (MOBILE)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__toggle {
+    padding: 20px 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #0a2335;
+}
+
+.dashboard__toggle-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 0;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.dashboard__toggle-button:hover {
+    color: #ffffff;
+}
+
+.dashboard__toggle-button-icon {
+    width: 24px;
+    height: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-right: 12px;
+}
+
+.dashboard__toggle-button-icon span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    transition: all 0.3s ease;
+}
+
+.framework__toggle-button-label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OVERLAY (MOBILE)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dashboard__overlay.is-active {
+    display: block;
+    opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUBMENU STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__nav-secondary .dashboard__nav-submenu {
+    z-index: 110 !important;
+}
+
+/* Hide specific menu items */
+.dashboard__nav-primary .dash_main_links a[href*="/dashboard/add-a-membership"] {
+    display: none;
+}
+
+.dashboard .dashboard__sidebar .dashboard__nav-secondary a[href*="/dashboard/cgm/beta-score-sheet"] {
+    display: none;
+}
+
+.dashboard .dashboard__sidebar .dashboard__nav-secondary a[href*="/dashboard/simpler-showcase/meet-traders/mary-ellen-mcgonagle/trader-store"] {
+    display: none;
+}
+
+.dashboard .dashboard__sidebar .dashboard__nav-secondary a[href*="/dashboard/simpler-showcase/meet-traders/mary-ellen-mcgonagle"] {
+    display: none;
+}
+
+.has-submenu .dashboard__nav-submenu a[href*="simpler_essentials/learning-center/introduction-to-trading"],
+.has-submenu .dashboard__nav-submenu a[href*="simpler_essentials/learning-center/introduction-to-stocks"],
+.has-submenu .dashboard__nav-submenu a[href*="simpler_essentials/learning-center/trading-psychology"] {
+    display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR STYLING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard__sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard__sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard__sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.dashboard__sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE - MOBILE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .dashboard__sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .dashboard__sidebar.is-active {
+        transform: translateX(0);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE - TABLET
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .dashboard__sidebar {
+        width: 240px;
+    }
+    
+    .dashboard__nav-item-text {
+        font-size: 13px;
+    }
+    
+    .dashboard__nav-category {
+        font-size: 9px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FONT IMPORTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700|Open+Sans+Condensed:300,300italic,700');
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADDITIONAL UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: #efefef;
+}
+
+.dashboard__main {
+    flex: 1;
+    margin-left: 280px;
+    min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+    .dashboard__main {
+        margin-left: 0;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOVER ANIMATIONS & TRANSITIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Smooth hover effect on links */
+.dash_main_links a {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Icon color transition */
+.dashboard__nav-item-icon {
+    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Text color transition */
+.dashboard__nav-item-text {
+    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Background hover effect */
+.dash_main_links a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0);
+    transition: background-color 0.2s ease;
+    pointer-events: none;
+}
+
+.dash_main_links a:hover::after {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Active state border animation */
+.dash_main_links li.is-active a::before {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+    to {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   END OF BLUE SIDEBAR STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT FOR TOGGLE FUNCTIONALITY
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<script>
+// Toggle sidebar on mobile
+document.querySelectorAll('[data-toggle-dashboard-menu]').forEach(function(element) {
+    element.addEventListener('click', function() {
+        const sidebar = document.querySelector('.dashboard__sidebar');
+        const overlay = document.querySelector('.dashboard__overlay');
+        
+        sidebar.classList.toggle('is-active');
+        overlay.classList.toggle('is-active');
+    });
+});
+
+// Close sidebar when clicking overlay
+document.querySelector('.dashboard__overlay')?.addEventListener('click', function() {
+    const sidebar = document.querySelector('.dashboard__sidebar');
+    const overlay = document.querySelector('.dashboard__overlay');
+    
+    sidebar.classList.remove('is-active');
+    overlay.classList.remove('is-active');
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     NOTES & SPECIFICATIONS
+     ═══════════════════════════════════════════════════════════════════════════
+     
+     COLORS:
+     - Background: #0a2335 (Dark Blue)
+     - Text Primary: #ffffff (White)
+     - Text Secondary: rgba(255, 255, 255, 0.7) (70% White)
+     - Text Muted: rgba(255, 255, 255, 0.5) (50% White)
+     - Hover Background: rgba(255, 255, 255, 0.1) (10% White)
+     - Active Background: rgba(255, 255, 255, 0.15) (15% White)
+     - Active Border: #0984ae (Cyan Blue)
+     - Border: rgba(255, 255, 255, 0.1) (10% White)
+     
+     FONTS:
+     - Family: 'Open Sans', sans-serif
+     - Profile Name: 14px, 600 weight
+     - Nav Links: 14px, 400 weight
+     - Nav Category: 10px, 700 weight, 0.2em letter-spacing, uppercase
+     - Active Links: 14px, 600 weight
+     
+     SPACING:
+     - Sidebar Width: 280px
+     - Profile Padding: 20px 30px
+     - Link Padding: 12px 30px
+     - Category Padding: 20px 30px 10px
+     - Icon Margin: 12px right
+     - Profile Photo: 32px × 32px
+     
+     ICONS:
+     - Default Size: 20px
+     - Training Room: 26px
+     - Stacked Profits: 40px
+     - Icon Container: 24px × 24px
+     
+     TRANSITIONS:
+     - All: 0.2s ease
+     - Sidebar Transform: 0.3s ease-in-out
+     - Overlay Opacity: 0.3s ease
+     
+     RESPONSIVE:
+     - Mobile (≤768px): Sidebar slides in from left
+     - Tablet (769-1024px): Sidebar width 240px
+     - Desktop (>1024px): Sidebar width 280px
+     
+     ═══════════════════════════════════════════════════════════════════════════ -->
