@@ -73,3 +73,10 @@ export {
 	getApexChartsTheme,
 	getChartJsTheme,
 } from './charts';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Dashboard Components
+// ═══════════════════════════════════════════════════════════════════════════
+export {
+	DashboardSidebar,
+} from './dashboard';
