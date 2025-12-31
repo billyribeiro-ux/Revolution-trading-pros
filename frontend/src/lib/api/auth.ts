@@ -1251,18 +1251,11 @@ class AuthenticationService {
 
 	/**
 	 * Track security event
+	 * NOTE: Disabled - /api/security/events endpoint not implemented on backend
 	 */
 	private trackSecurityEvent(type: string, data?: Record<string, any>): void {
-		this.apiRequest('/security/events', {
-			method: 'POST',
-			body: JSON.stringify({
-				type,
-				data,
-				timestamp: new Date().toISOString()
-			})
-		}).catch((error) => {
-			console.error('[AuthService] Failed to track security event:', error);
-		});
+		// Log locally instead of making API call
+		console.debug('[AuthService] Security event:', type, data);
 	}
 }
 
