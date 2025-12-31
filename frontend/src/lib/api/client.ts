@@ -988,6 +988,11 @@ class EnterpriseApiClient {
 	// Real-time features
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// ICT 11+ Performance: WebSocket reconnection state
+	private wsReconnectAttempts = 0;
+	private readonly MAX_WS_RECONNECT_ATTEMPTS = 10;
+	private wsReconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	private setupWebSocket(): void {
 		if (!this.token || this.wsConnection) return;
 
@@ -1003,6 +1008,7 @@ class EnterpriseApiClient {
 
 			this.wsConnection.onopen = () => {
 				console.debug('[ApiClient] WebSocket connected');
+				this.wsReconnectAttempts = 0; // Reset on successful connection
 				this.authenticateWebSocket();
 			};
 
@@ -1023,9 +1029,9 @@ class EnterpriseApiClient {
 				}
 				(this.wsConnection as WebSocket | undefined) = undefined;
 
-				// Reconnect after delay if authenticated (skip in dev)
+				// ICT 11+ Performance: Reconnect with exponential backoff
 				if (this.token && !isDev) {
-					setTimeout(() => this.setupWebSocket(), 5000);
+					this.scheduleWSReconnect();
 				}
 			};
 		} catch (error) {
@@ -1033,6 +1039,37 @@ class EnterpriseApiClient {
 				console.error('[ApiClient] Failed to setup WebSocket:', error);
 			}
 		}
+	}
+
+	/**
+	 * ICT 11+ Performance: WebSocket reconnection with exponential backoff
+	 * Prevents thundering herd and reduces server load during outages
+	 */
+	private scheduleWSReconnect(): void {
+		if (this.wsReconnectAttempts >= this.MAX_WS_RECONNECT_ATTEMPTS) {
+			console.warn('[ApiClient] Max WebSocket reconnect attempts reached');
+			return;
+		}
+
+		// Clear any existing reconnect timeout
+		if (this.wsReconnectTimeout) {
+			clearTimeout(this.wsReconnectTimeout);
+		}
+
+		// Exponential backoff: 1s, 2s, 4s, 8s, 16s, 32s, 64s (capped at 64s)
+		const baseDelay = 1000;
+		const maxDelay = 64000;
+		const jitter = Math.random() * 1000; // Add jitter to prevent thundering herd
+		const delay = Math.min(baseDelay * Math.pow(2, this.wsReconnectAttempts), maxDelay) + jitter;
+		
+		this.wsReconnectAttempts++;
+		console.debug(`[ApiClient] WebSocket reconnecting in ${Math.round(delay)}ms (attempt ${this.wsReconnectAttempts}/${this.MAX_WS_RECONNECT_ATTEMPTS})`);
+
+		this.wsReconnectTimeout = setTimeout(() => {
+			if (this.token) {
+				this.setupWebSocket();
+			}
+		}, delay);
 	}
 
 	private authenticateWebSocket(): void {

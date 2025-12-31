@@ -9,10 +9,36 @@
  * - Text reveal animations
  * - 3D perspective transforms
  * - Fluid motion with custom easing
+ * - GPU-accelerated transforms (ICT 11+ Performance)
  *
- * @version 1.0.0
- * @level Senior Apple Engineer
+ * @version 2.0.0 - ICT 11+ GPU Optimized
+ * @level Principal Apple Engineer
  */
+
+// ICT 11+ Performance: GPU acceleration CSS properties
+const GPU_ACCELERATED_PROPS = {
+	transform: 'translate3d(0, 0, 0)',
+	backfaceVisibility: 'hidden',
+	perspective: '1000px',
+	willChange: 'transform, opacity'
+} as const;
+
+/**
+ * Apply GPU acceleration to an element
+ * ICT 11+ Performance: Forces compositor layer for smooth 60fps animations
+ */
+export function enableGPUAcceleration(element: HTMLElement): void {
+	Object.assign(element.style, GPU_ACCELERATED_PROPS);
+}
+
+/**
+ * Remove GPU acceleration (cleanup to free memory)
+ * ICT 11+ Performance: Clean up after animations complete
+ */
+export function disableGPUAcceleration(element: HTMLElement): void {
+	element.style.willChange = 'auto';
+	element.style.transform = '';
+}
 
 // Custom Apple-style easing functions
 export const appleEasing = {
@@ -131,11 +157,14 @@ export function scrollReveal(
 		flip: 'perspective(1000px) rotateX(10deg)'
 	};
 
+	// ICT 11+ Performance: GPU-accelerated initial styles
 	const initialStyles = {
 		opacity: '0',
-		transform: transforms[type] || '',
+		transform: transforms[type] ? `translate3d(0,0,0) ${transforms[type]}` : 'translate3d(0,0,0)',
 		filter: type === 'blur' ? 'blur(10px)' : '',
-		transition: `opacity ${duration}ms ${easing} ${delay}ms, transform ${duration}ms ${easing} ${delay}ms, filter ${duration}ms ${easing} ${delay}ms`
+		transition: `opacity ${duration}ms ${easing} ${delay}ms, transform ${duration}ms ${easing} ${delay}ms, filter ${duration}ms ${easing} ${delay}ms`,
+		willChange: 'transform, opacity, filter',
+		backfaceVisibility: 'hidden'
 	};
 
 	Object.assign(node.style, initialStyles);
@@ -145,11 +174,15 @@ export function scrollReveal(
 			entries.forEach((entry) => {
 				if (entry.isIntersecting) {
 					node.style.opacity = '1';
-					node.style.transform = 'translateY(0) translateX(0) scale(1) rotateX(0)';
+					node.style.transform = 'translate3d(0,0,0) translateY(0) translateX(0) scale(1) rotateX(0)';
 					node.style.filter = 'blur(0)';
 
 					if (once) {
 						localObserver.unobserve(node);
+						// ICT 11+ Performance: Clean up willChange after animation completes
+						setTimeout(() => {
+							node.style.willChange = 'auto';
+						}, duration + delay + 100);
 					}
 				} else if (!once) {
 					Object.assign(node.style, initialStyles);

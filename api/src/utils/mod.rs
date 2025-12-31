@@ -1,6 +1,9 @@
 //! Utility functions - December 2025 ICT11+ Principal Engineer Grade
 //! SECURITY HARDENED - Authentication Hardening Audit
 //!
+//! Modules:
+//! - errors: Standardized error response utilities
+//!
 //! Authentication utilities:
 //! - Password hashing with Argon2id (OWASP recommended parameters)
 //! - Password verification supporting both bcrypt (Laravel) and Argon2
@@ -8,6 +11,9 @@
 //! - Refresh token generation
 //! - Session ID generation
 //! - Constant-time comparison utilities
+
+pub mod errors;
+pub use errors::*;
 
 use anyhow::Result;
 use argon2::{
