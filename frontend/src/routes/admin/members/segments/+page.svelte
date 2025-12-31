@@ -14,13 +14,8 @@
 		IconCheck,
 		IconSearch,
 		IconRefresh,
-		IconDownload,
 		IconArrowLeft,
-		IconChartBar,
-		IconMail,
-		IconCurrencyDollar,
-		IconCalendar,
-		IconTrendingUp
+		IconMail
 	} from '$lib/icons';
 
 	// State
@@ -35,7 +30,6 @@
 	// Create modal
 	let showCreateSegmentModal = false;
 	let showCreateTagModal = false;
-	let showSaveFilterModal = false;
 
 	// Form state
 	let newSegment = {
@@ -44,7 +38,6 @@
 		conditions: [] as Condition[]
 	};
 	let newTag = { name: '', color: '#6366f1' };
-	let newFilter = { name: '', filters: {} };
 
 	interface Segment {
 		id: number;
