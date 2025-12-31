@@ -195,23 +195,41 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Sidebar - Pixel Perfect WordPress Match
-	 * Simpler Trading Member Dashboard Sidebar Styles
+	 * Source: dashboard.8f78208b.css from Simpler Trading
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Sidebar Container - WordPress exact: #0e2433 */
+	/* Sidebar Container - WordPress exact: #0a2335 */
 	.dashboard__sidebar {
+		background-color: #0a2335;
+		width: 280px;
+		height: 100vh;
 		position: fixed;
 		top: 0;
 		left: 0;
-		bottom: 0;
-		width: 260px;
-		background-color: #0e2433;
+		overflow-y: auto;
+		overflow-x: hidden;
 		z-index: 100;
 		display: flex;
 		flex-direction: column;
-		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-					width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		overflow: hidden;
+		transition: transform 0.3s ease-in-out;
+	}
+
+	/* Scrollbar Styling - on sidebar container per WordPress */
+	.dashboard__sidebar::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.dashboard__sidebar::-webkit-scrollbar-track {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.dashboard__sidebar::-webkit-scrollbar-thumb {
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 3px;
+	}
+
+	.dashboard__sidebar::-webkit-scrollbar-thumb:hover {
+		background: rgba(255, 255, 255, 0.3);
 	}
 
 	.dashboard__sidebar.is-collapsed {
@@ -223,77 +241,8 @@
 		flex: 1;
 		overflow-y: auto;
 		overflow-x: hidden;
-		padding: 0;
-		scrollbar-width: thin;
-		scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 	}
 
-	.dashboard__nav-primary::-webkit-scrollbar {
-		width: 6px;
-	}
-
-	.dashboard__nav-primary::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	.dashboard__nav-primary::-webkit-scrollbar-thumb {
-		background: rgba(255, 255, 255, 0.2);
-		border-radius: 3px;
-	}
-
-	.dashboard__nav-primary::-webkit-scrollbar-thumb:hover {
-		background: rgba(255, 255, 255, 0.3);
-	}
-
-	/* Profile Section */
-	.dashboard__profile-nav-item {
-		display: flex;
-		align-items: center;
-		padding: 20px 20px 15px;
-		text-decoration: none;
-		color: #ffffff;
-		transition: background-color 0.2s ease;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-	}
-
-	.dashboard__profile-nav-item:hover {
-		background-color: rgba(255, 255, 255, 0.05);
-	}
-
-	.dashboard__profile-photo {
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		background-size: cover;
-		background-position: center;
-		background-color: rgba(255, 255, 255, 0.1);
-		flex-shrink: 0;
-		margin-right: 12px;
-		border: 2px solid rgba(255, 255, 255, 0.15);
-		transition: border-color 0.2s ease;
-	}
-
-	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: rgba(255, 255, 255, 0.3);
-	}
-
-	.dashboard__profile-name {
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-		font-size: 14px;
-		font-weight: 600;
-		color: #ffffff;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		transition: opacity 0.2s ease;
-	}
-
-	.is-collapsed .dashboard__profile-name {
-		opacity: 0;
-		width: 0;
-	}
-
-	/* Navigation Lists */
 	.dashboard__nav-primary > ul {
 		list-style: none;
 		margin: 0;
@@ -304,7 +253,69 @@
 		list-style: none;
 	}
 
-	/* Main Links Container */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Profile Section - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__profile-nav-item {
+		display: flex;
+		align-items: center;
+		padding: 20px 30px;
+		text-decoration: none;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		transition: background-color 0.2s ease;
+	}
+
+	.dashboard__profile-nav-item:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	.dashboard__profile-photo {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-size: cover;
+		background-position: center;
+		margin-right: 12px;
+		flex-shrink: 0;
+	}
+
+	.dashboard__profile-name {
+		color: #ffffff;
+		font-size: 14px;
+		font-weight: 600;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.4;
+	}
+
+	.is-collapsed .dashboard__profile-name {
+		opacity: 0;
+		width: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Category Headers - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__nav-category {
+		padding: 20px 30px 10px;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.5);
+		margin: 0;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.is-collapsed .dashboard__nav-category {
+		opacity: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Navigation Links - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dash_main_links {
 		list-style: none;
 		margin: 0;
@@ -316,56 +327,93 @@
 		margin: 0;
 	}
 
-	.dash_main_links li a {
+	.dash_main_links a {
 		display: flex;
 		align-items: center;
-		padding: 12px 20px;
-		color: rgba(255, 255, 255, 0.75);
+		padding: 12px 30px;
 		text-decoration: none;
-		transition: background-color 0.2s ease,
-					color 0.2s ease,
-					padding-left 0.2s ease;
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 14px;
+		font-weight: 400;
+		font-family: 'Open Sans', sans-serif;
+		transition: all 0.2s ease;
 		position: relative;
 	}
 
-	.dash_main_links li a:hover {
-		background-color: rgba(255, 255, 255, 0.08);
+	/* Hover background effect layer */
+	.dash_main_links a::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(255, 255, 255, 0);
+		transition: background-color 0.2s ease;
+		pointer-events: none;
+	}
+
+	.dash_main_links a:hover::after {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.dash_main_links a:hover {
+		background-color: rgba(255, 255, 255, 0.1);
 		color: #ffffff;
 	}
 
-	/* Active State - WordPress: #0984ae accent */
+	/* Active State - WordPress: white text with cyan border */
 	.dash_main_links li.is-active a {
-		background-color: rgba(9, 132, 174, 0.15);
-		color: #0984ae;
-		border-left: 3px solid #0984ae;
-		padding-left: 17px;
+		background-color: rgba(255, 255, 255, 0.15);
+		color: #ffffff;
+		font-weight: 600;
 	}
 
-	.dash_main_links li.is-active .dashboard__nav-item-text {
-		color: #0984ae;
+	.dash_main_links li.is-active a::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 4px;
+		background-color: #0984ae;
+		animation: slideIn 0.3s ease-out;
+	}
+
+	@keyframes slideIn {
+		from {
+			transform: scaleY(0);
+			opacity: 0;
+		}
+		to {
+			transform: scaleY(1);
+			opacity: 1;
+		}
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
-		opacity: 1;
+		color: #ffffff;
 	}
 
-	/* Navigation Icons */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Navigation Icons - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__nav-item-icon {
+		font-size: 20px;
 		width: 24px;
 		height: 24px;
-		display: flex;
+		margin-right: 12px;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		margin-right: 12px;
-		font-size: 18px;
-		opacity: 0.8;
-		transition: opacity 0.2s ease, transform 0.2s ease;
+		color: rgba(255, 255, 255, 0.7);
+		transition: color 0.2s ease;
 	}
 
-	.dash_main_links li a:hover .dashboard__nav-item-icon {
-		opacity: 1;
-		transform: translateX(2px);
+	.dash_main_links a:hover .dashboard__nav-item-icon {
+		color: #ffffff;
 	}
 
 	/* Icon Classes - Using CSS for icons (can be replaced with actual icon font) */
@@ -378,20 +426,21 @@
 	.st-icon-support::before { content: '💬'; }
 	.st-icon-settings::before { content: '⚙️'; }
 
-	/* Navigation Text */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Navigation Text - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__nav-item-text {
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 		font-size: 14px;
 		font-weight: 400;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		transition: opacity 0.2s ease;
+		line-height: 1.4;
+		color: inherit;
+		transition: color 0.2s ease;
 	}
 
 	.dashboard__nav-item-text.font-bold {
-		font-weight: 700;
-		color: #ffffff;
+		font-weight: bold;
+		color: white;
 	}
 
 	.is-collapsed .dashboard__nav-item-text {
@@ -399,46 +448,38 @@
 		width: 0;
 	}
 
-	/* Category Labels */
-	.dashboard__nav-category {
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-		font-size: 11px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: rgba(255, 255, 255, 0.45);
-		padding: 20px 20px 8px;
-		margin: 0;
-		transition: opacity 0.2s ease;
+	/* Collapsed State Text Color */
+	.dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text {
+		color: #0984ae !important;
 	}
 
-	.is-collapsed .dashboard__nav-category {
-		opacity: 0;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Toggle Button (Mobile) - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Toggle Footer */
 	.dashboard__toggle {
-		padding: 15px;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
-		background-color: rgba(0, 0, 0, 0.1);
+		padding: 20px 30px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		background-color: #0a2335;
 	}
 
 	.dashboard__toggle-button {
 		display: flex;
 		align-items: center;
 		width: 100%;
-		padding: 10px;
-		background: transparent;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 6px;
+		padding: 12px 0;
+		background: none;
+		border: none;
 		color: rgba(255, 255, 255, 0.7);
+		font-size: 14px;
+		font-weight: 600;
+		font-family: 'Open Sans', sans-serif;
 		cursor: pointer;
-		transition: background-color 0.2s ease, border-color 0.2s ease;
+		transition: color 0.2s ease;
 	}
 
 	.dashboard__toggle-button:hover {
-		background-color: rgba(255, 255, 255, 0.05);
-		border-color: rgba(255, 255, 255, 0.2);
+		color: #ffffff;
 	}
 
 	.dashboard__toggle-button:focus-visible {
@@ -446,15 +487,14 @@
 		outline-offset: 2px;
 	}
 
-	/* Hamburger Icon */
+	/* Hamburger Icon - WordPress exact specs */
 	.dashboard__toggle-button-icon {
-		width: 20px;
-		height: 14px;
+		width: 24px;
+		height: 18px;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		margin-right: 10px;
-		flex-shrink: 0;
+		margin-right: 12px;
 	}
 
 	.dashboard__toggle-button-icon span {
@@ -462,17 +502,13 @@
 		width: 100%;
 		height: 2px;
 		background-color: currentColor;
-		border-radius: 1px;
-		transition: transform 0.2s ease, opacity 0.2s ease;
+		transition: all 0.3s ease;
 	}
 
 	/* Toggle Button Label */
 	.dashboard__toggle-button-label {
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-		font-size: 13px;
-		font-weight: 500;
-		white-space: nowrap;
-		transition: opacity 0.2s ease;
+		font-size: 14px;
+		font-weight: 600;
 	}
 
 	.is-collapsed .dashboard__toggle-button-label {
@@ -480,9 +516,11 @@
 		width: 0;
 	}
 
-	/* Mobile Overlay */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Mobile Overlay - WordPress exact specs
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__overlay {
-		display: none;
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -490,27 +528,26 @@
 		bottom: 0;
 		background-color: rgba(0, 0, 0, 0.5);
 		z-index: 99;
-		backdrop-filter: blur(2px);
-		-webkit-backdrop-filter: blur(2px);
-		animation: fadeIn 0.2s ease;
+		display: none;
+		opacity: 0;
+		transition: opacity 0.3s ease;
 	}
 
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+	.dashboard__overlay.is-active {
+		display: block;
+		opacity: 1;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Styles
+	 * Responsive - Mobile (≤768px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Tablet and below */
-	@media (max-width: 1024px) {
+	@media (max-width: 768px) {
 		.dashboard__sidebar {
 			transform: translateX(-100%);
 		}
 
-		.dashboard__sidebar:has(.dashboard__overlay) {
+		.dashboard__sidebar.is-active {
 			transform: translateX(0);
 		}
 
@@ -519,48 +556,41 @@
 		}
 	}
 
-	/* Mobile */
-	@media (max-width: 768px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Responsive - Tablet (769-1024px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (min-width: 769px) and (max-width: 1024px) {
 		.dashboard__sidebar {
-			width: 280px;
+			width: 240px;
 		}
 
-		.dashboard__profile-nav-item {
-			padding: 15px;
-		}
-
-		.dash_main_links li a {
-			padding: 14px 15px;
+		.dashboard__nav-item-text {
+			font-size: 13px;
 		}
 
 		.dashboard__nav-category {
-			padding: 15px 15px 8px;
-		}
-	}
-
-	/* Small Mobile */
-	@media (max-width: 480px) {
-		.dashboard__sidebar {
-			width: 100%;
-			max-width: 300px;
+			font-size: 9px;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Reduced Motion
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (prefers-reduced-motion: reduce) {
 		.dashboard__sidebar,
 		.dashboard__profile-nav-item,
 		.dashboard__profile-photo,
-		.dash_main_links li a,
+		.dash_main_links a,
 		.dashboard__nav-item-icon,
 		.dashboard__toggle-button,
-		.dashboard__toggle-button-icon span {
+		.dashboard__toggle-button-icon span,
+		.dashboard__overlay {
 			transition: none;
 		}
 
-		.dashboard__overlay {
+		.dash_main_links li.is-active a::before {
 			animation: none;
 		}
 	}
