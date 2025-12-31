@@ -1,4 +1,5 @@
 //! User routes
+//! ICT 11+ Fix: Changed Path parameter from Uuid to i64 to match database schema
 
 use axum::{
     extract::{Path, State},
@@ -7,14 +8,14 @@ use axum::{
     Json, Router,
 };
 use serde_json::json;
-use uuid::Uuid;
 
 use crate::{models::UserResponse, AppState};
 
 /// Get user by ID
+/// ICT 11+ Fix: User ID is i64 (BIGINT) in database, not UUID
 async fn get_user(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<i64>,
 ) -> Result<Json<UserResponse>, (StatusCode, Json<serde_json::Value>)> {
     let user: crate::models::User = sqlx::query_as("SELECT * FROM users WHERE id = $1")
         .bind(id)

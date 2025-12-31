@@ -11,6 +11,7 @@ use uuid::Uuid;
 
 use crate::{
     models::{Course, CreateCourse, Lesson, User},
+    middleware::admin::AdminUser,
     AppState,
 };
 
@@ -74,19 +75,24 @@ async fn get_lessons(
     Ok(Json(lessons))
 }
 
-/// Create a new course (instructor/admin only - requires authentication)
+/// Create a new course (admin only)
+/// ICT 11+ Security: Admin authorization enforced via AdminUser extractor
 async fn create_course(
     State(state): State<AppState>,
-    user: User, // Extracted by auth middleware - requires valid JWT
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateCourse>,
 ) -> Result<Json<Course>, (StatusCode, Json<serde_json::Value>)> {
-    // For now, allow any authenticated user to create courses
-    // TODO: Add role-based access control when role column is added to users table
-    let _ = &user; // Use the user variable to avoid unused warning
+    tracing::info!(
+        target: "security",
+        event = "course_create",
+        user_id = %user.id,
+        email = %user.email,
+        "Admin creating course"
+    );
 
     let slug = slug::slugify(&input.title);
     let id = Uuid::new_v4();
-    let instructor_id = user.id; // Use authenticated user's ID
+    let instructor_id = user.id;
 
     let course: Course = sqlx::query_as(
         r#"

@@ -12,6 +12,7 @@ use serde_json::json;
 
 use crate::{
     models::{CreateProduct, UpdateProduct, User},
+    middleware::admin::AdminUser,
     AppState,
 };
 
@@ -48,6 +49,7 @@ pub struct ProductRow {
 }
 
 /// List all products (public)
+/// ICT 11+ Security: Fixed SQL injection vulnerability - using parameterized queries
 async fn list_products(
     State(state): State<AppState>,
     Query(query): Query<ProductListQuery>,
@@ -56,36 +58,106 @@ async fn list_products(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from("SELECT * FROM products WHERE 1=1");
-    let mut count_sql = String::from("SELECT COUNT(*) FROM products WHERE 1=1");
+    // Build query with parameterized conditions to prevent SQL injection
+    let is_active = query.is_active.unwrap_or(true);
+    
+    let (products, total) = if let Some(ref product_type) = query.product_type {
+        if let Some(ref search) = query.search {
+            // Both type and search filters
+            let search_pattern = format!("%{}%", search);
+            let products: Vec<ProductRow> = sqlx::query_as(
+                "SELECT * FROM products WHERE is_active = $1 AND type = $2 AND (name ILIKE $3 OR description ILIKE $3) ORDER BY created_at DESC LIMIT $4 OFFSET $5"
+            )
+            .bind(is_active)
+            .bind(product_type)
+            .bind(&search_pattern)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    if query.is_active.unwrap_or(true) {
-        sql.push_str(" AND is_active = true");
-        count_sql.push_str(" AND is_active = true");
-    }
+            let total: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM products WHERE is_active = $1 AND type = $2 AND (name ILIKE $3 OR description ILIKE $3)"
+            )
+            .bind(is_active)
+            .bind(product_type)
+            .bind(&search_pattern)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    if let Some(ref product_type) = query.product_type {
-        sql.push_str(&format!(" AND type = '{}'", product_type));
-        count_sql.push_str(&format!(" AND type = '{}'", product_type));
-    }
+            (products, total)
+        } else {
+            // Only type filter
+            let products: Vec<ProductRow> = sqlx::query_as(
+                "SELECT * FROM products WHERE is_active = $1 AND type = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4"
+            )
+            .bind(is_active)
+            .bind(product_type)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    if let Some(ref search) = query.search {
+            let total: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM products WHERE is_active = $1 AND type = $2"
+            )
+            .bind(is_active)
+            .bind(product_type)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+            (products, total)
+        }
+    } else if let Some(ref search) = query.search {
+        // Only search filter
         let search_pattern = format!("%{}%", search);
-        sql.push_str(&format!(" AND (name ILIKE '{}' OR description ILIKE '{}')", search_pattern, search_pattern));
-        count_sql.push_str(&format!(" AND (name ILIKE '{}' OR description ILIKE '{}')", search_pattern, search_pattern));
-    }
-
-    sql.push_str(&format!(" ORDER BY created_at DESC LIMIT {} OFFSET {}", per_page, offset));
-
-    let products: Vec<ProductRow> = sqlx::query_as(&sql)
+        let products: Vec<ProductRow> = sqlx::query_as(
+            "SELECT * FROM products WHERE is_active = $1 AND (name ILIKE $2 OR description ILIKE $2) ORDER BY created_at DESC LIMIT $3 OFFSET $4"
+        )
+        .bind(is_active)
+        .bind(&search_pattern)
+        .bind(per_page)
+        .bind(offset)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    let total: (i64,) = sqlx::query_as(&count_sql)
+        let total: (i64,) = sqlx::query_as(
+            "SELECT COUNT(*) FROM products WHERE is_active = $1 AND (name ILIKE $2 OR description ILIKE $2)"
+        )
+        .bind(is_active)
+        .bind(&search_pattern)
         .fetch_one(&state.db.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+        (products, total)
+    } else {
+        // No filters except is_active
+        let products: Vec<ProductRow> = sqlx::query_as(
+            "SELECT * FROM products WHERE is_active = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3"
+        )
+        .bind(is_active)
+        .bind(per_page)
+        .bind(offset)
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+        let total: (i64,) = sqlx::query_as(
+            "SELECT COUNT(*) FROM products WHERE is_active = $1"
+        )
+        .bind(is_active)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+        (products, total)
+    };
 
     Ok(Json(json!({
         "data": products,
@@ -114,13 +186,19 @@ async fn get_product(
 }
 
 /// Create product (admin only)
+/// ICT 11+ Security: Admin authorization enforced via AdminUser extractor
 async fn create_product(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreateProduct>,
 ) -> Result<Json<ProductRow>, (StatusCode, Json<serde_json::Value>)> {
-    // TODO: Add role check for admin
-    let _ = &user;
+    tracing::info!(
+        target: "security",
+        event = "product_create",
+        user_id = %user.id,
+        email = %user.email,
+        "Admin creating product"
+    );
 
     let slug = slug::slugify(&input.name);
 
@@ -152,13 +230,20 @@ async fn create_product(
 }
 
 /// Update product (admin only)
+/// ICT 11+ Security: Admin authorization enforced via AdminUser extractor
 async fn update_product(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateProduct>,
 ) -> Result<Json<ProductRow>, (StatusCode, Json<serde_json::Value>)> {
-    let _ = &user;
+    tracing::info!(
+        target: "security",
+        event = "product_update",
+        user_id = %user.id,
+        product_id = %id,
+        "Admin updating product"
+    );
 
     // Build dynamic update query
     let mut updates = Vec::new();
@@ -191,12 +276,19 @@ async fn update_product(
 }
 
 /// Delete product (admin only)
+/// ICT 11+ Security: Admin authorization enforced via AdminUser extractor
 async fn delete_product(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let _ = &user;
+    tracing::info!(
+        target: "security",
+        event = "product_delete",
+        user_id = %user.id,
+        product_id = %id,
+        "Admin deleting product"
+    );
 
     sqlx::query("DELETE FROM products WHERE id = $1")
         .bind(id)
