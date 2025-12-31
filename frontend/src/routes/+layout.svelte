@@ -20,7 +20,7 @@
 	import { page } from '$app/state';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
-	import { isAdminUser } from '$lib/stores/auth';
+	import { isAdminUser, authStore } from '$lib/stores/auth';
 	import { initializeAuth } from '$lib/api/auth';
 	import type { Snippet } from 'svelte';
 
@@ -62,11 +62,13 @@
 		
 		if (browser) {
 			// ICT11+ Pattern: Non-blocking auth initialization
-			// Auth restoration runs in background - UI renders immediately
-			// Protected routes handle auth checks independently
-			initializeAuth().catch((err) => {
-				console.debug('[Layout] Auth init failed (non-critical):', err);
-			});
+			// Only restore session if not already authenticated
+			const currentAuth = $isAdminUser || authStore.getToken();
+			if (!currentAuth) {
+				initializeAuth().catch((err) => {
+					console.debug('[Layout] Auth init failed (non-critical):', err);
+				});
+			}
 			
 			registerServiceWorker();
 			initPerformanceMonitoring();
