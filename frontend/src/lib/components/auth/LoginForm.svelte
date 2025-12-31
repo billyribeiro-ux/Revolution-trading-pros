@@ -501,6 +501,8 @@
 				<div class="form-row">
 					<label class="checkbox-wrapper">
 						<input
+							id="remember"
+							name="remember"
 							type="checkbox"
 							bind:checked={rememberMe}
 							disabled={isLoading || isSuccess}
