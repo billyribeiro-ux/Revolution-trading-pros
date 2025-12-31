@@ -42,7 +42,6 @@
 
 	// Import new components
 	import TypedHeadline from './TypedHeadline.svelte';
-	import LottieSuccess from './LottieSuccess.svelte';
 	import SocialLoginButtons from './SocialLoginButtons.svelte';
 
 	// --- Constants ---
@@ -58,7 +57,6 @@
 	let emailNotVerified = $state(false);  // ICT 11+: Track email verification error
 	let isLoading = $state(false);
 	let isSuccess = $state(false);
-	let showLottie = $state(false);
 	let touched = $state<Record<string, boolean>>({ email: false, password: false });
 
 	// --- Refs ---
@@ -244,9 +242,8 @@
 		};
 	});
 
-	// --- Lottie Complete Handler ---
-	function handleLottieComplete() {
-		console.log('[LoginForm] handleLottieComplete called');
+	// --- Redirect Handler ---
+	function performRedirect() {
 		const urlParams = new URLSearchParams(window.location.search);
 		const redirect = urlParams.get('redirect') || '/dashboard';
 		const validatedRedirect = validateRedirectUrl(redirect);
@@ -303,25 +300,16 @@
 			// Save/clear remembered email
 			saveRememberedEmail();
 
-			// Success - show Lottie animation
+			// ICT 11+ Pattern: Success state with immediate redirect
+			// No animation dependencies - clean, deterministic flow
 			isSuccess = true;
 			if (gsap && submitBtn) {
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
-			console.log('[LoginForm] Setting showLottie to true');
-			// Show Lottie animation before redirect
-			showLottie = true;
-			
-			// ICT11+ PERMANENT FIX: Unconditional fallback redirect
-			// Even if Lottie component fails to mount or call onComplete, redirect happens
-			// Reduced to 1 second for faster UX
-			setTimeout(() => {
-				console.log('[LoginForm] Fallback timeout - executing redirect');
-				handleLottieComplete();
-			}, 1000);
-			
-			// Lottie animation will call handleLottieComplete() which does the redirect
+			// Brief success state display, then redirect
+			// 400ms is enough for visual feedback without feeling slow
+			setTimeout(performRedirect, 400)
 		} catch (error: unknown) {
 			// Error handling
 			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
@@ -373,12 +361,14 @@
 	<div class="card-glow" aria-hidden="true"></div>
 
 	<div class="card-content">
-		<!-- Success Overlay with Lottie -->
-		{#if showLottie}
+		<!-- Success State -->
+		{#if isSuccess}
 			<div class="success-overlay" in:fade={{ duration: 300 }}>
-				<LottieSuccess size={140} onComplete={handleLottieComplete} />
+				<div class="success-icon">
+					<IconCheck size={64} stroke={2.5} />
+				</div>
 				<p class="success-message">Welcome back!</p>
-				<p class="success-submessage">Redirecting to your dashboard...</p>
+				<p class="success-submessage">Redirecting...</p>
 			</div>
 		{:else}
 			<!-- Header -->
@@ -628,6 +618,34 @@
 		justify-content: center;
 		gap: 1rem;
 		z-index: 10;
+		background: var(--auth-card-bg);
+	}
+
+	.success-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #22c55e, #16a34a);
+		color: white;
+		box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
+		animation: successPulse 0.6s ease-out;
+	}
+
+	@keyframes successPulse {
+		0% {
+			transform: scale(0);
+			opacity: 0;
+		}
+		50% {
+			transform: scale(1.1);
+		}
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
 	}
 
 	.success-message {
