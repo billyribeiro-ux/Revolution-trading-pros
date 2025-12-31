@@ -246,9 +246,12 @@
 
 	// --- Lottie Complete Handler ---
 	function handleLottieComplete() {
+		console.log('[LoginForm] handleLottieComplete called');
 		const urlParams = new URLSearchParams(window.location.search);
-		const redirect = urlParams.get('redirect') || '/';
-		goto(validateRedirectUrl(redirect), { replaceState: true });
+		const redirect = urlParams.get('redirect') || '/dashboard';
+		const validatedRedirect = validateRedirectUrl(redirect);
+		console.log('[LoginForm] Redirecting to:', validatedRedirect);
+		goto(validatedRedirect, { replaceState: true });
 	}
 
 	// --- Form Submit ---
@@ -293,7 +296,9 @@
 		if (gsap && submitBtn) gsap.to(submitBtn, { scale: 0.97, duration: 0.1 });
 
 		try {
+			console.log('[LoginForm] Starting login...');
 			await login({ email, password, remember: rememberMe });
+			console.log('[LoginForm] Login successful');
 
 			// Save/clear remembered email
 			saveRememberedEmail();
@@ -304,8 +309,18 @@
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
+			console.log('[LoginForm] Setting showLottie to true');
 			// Show Lottie animation before redirect
 			showLottie = true;
+			
+			// ICT11+ SURGICAL FIX: Add immediate fallback in case Lottie fails to load
+			// This ensures redirect happens even if animation component has issues
+			setTimeout(() => {
+				if (showLottie) {
+					console.log('[LoginForm] Fallback timeout - forcing redirect');
+					handleLottieComplete();
+				}
+			}, 2000);
 			
 			// Lottie animation will call handleLottieComplete() which does the redirect
 		} catch (error: unknown) {
