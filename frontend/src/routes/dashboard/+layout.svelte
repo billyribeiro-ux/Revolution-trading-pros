@@ -94,6 +94,11 @@
 		.dashboard__main.is-collapsed {
 			margin-left: 0;
 		}
+
+		/* Remove extra padding when content has its own header */
+		.dashboard__main:has(.dashboard__header) {
+			padding-top: 64px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
