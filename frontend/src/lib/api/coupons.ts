@@ -490,16 +490,13 @@ class CouponManagementService {
 		// Setup WebSocket for real-time updates
 		this.setupWebSocket();
 
-		// Start analytics collection
-		this.startAnalyticsCollection();
-
-		// Load initial data
-		this.loadInitialData();
-
 		// Setup fraud detection
 		this.setupFraudDetection();
 
 		console.debug('[CouponService] Initialized');
+		
+		// Note: Analytics and initial data loading disabled to prevent reactive loops
+		// Call loadInitialData() and startAnalyticsCollection() manually if needed
 	}
 
 	/**
