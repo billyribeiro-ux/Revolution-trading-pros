@@ -463,8 +463,13 @@ async fn login(
     // Clear failed login attempts on successful authentication
     let _ = state.services.redis.clear_login_attempts(&input.email).await;
 
-    // Check if email is verified (after password check for security)
-    if user.email_verified_at.is_none() {
+    // ICT 11+ SUPERADMIN BYPASS: Check if email is verified (skip for superadmin)
+    // Superadmin emails are configured via SUPERADMIN_EMAILS environment variable
+    let is_superadmin = state.config.is_superadmin_email(&user.email)
+        || user.role.as_deref() == Some("super_admin")
+        || user.role.as_deref() == Some("super-admin");
+    
+    if user.email_verified_at.is_none() && !is_superadmin {
         tracing::info!(
             target: "security",
             event = "login_failed",
@@ -481,6 +486,16 @@ async fn login(
                 "email": user.email
             })),
         ));
+    }
+    
+    if is_superadmin && user.email_verified_at.is_none() {
+        tracing::info!(
+            target: "security",
+            event = "superadmin_verification_bypass",
+            user_id = %user.id,
+            email = %user.email,
+            "Superadmin bypassing email verification requirement"
+        );
     }
 
     // Create access token

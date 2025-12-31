@@ -42,6 +42,9 @@ pub struct Config {
     // Meilisearch
     pub meilisearch_host: String,
     pub meilisearch_api_key: String,
+
+    // Superadmin Configuration
+    pub superadmin_emails: Vec<String>,
 }
 
 impl Config {
@@ -99,10 +102,21 @@ impl Config {
             meilisearch_host: std::env::var("MEILISEARCH_HOST")
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),
             meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY").unwrap_or_default(),
+
+            superadmin_emails: std::env::var("SUPERADMIN_EMAILS")
+                .unwrap_or_else(|_| "welberribeirodrums@gmail.com".to_string())
+                .split(',')
+                .map(|s| s.trim().to_lowercase())
+                .collect(),
         })
     }
 
     pub fn is_production(&self) -> bool {
         self.environment == "production"
+    }
+
+    /// Check if an email is a superadmin
+    pub fn is_superadmin_email(&self, email: &str) -> bool {
+        self.superadmin_emails.contains(&email.to_lowercase())
     }
 }
