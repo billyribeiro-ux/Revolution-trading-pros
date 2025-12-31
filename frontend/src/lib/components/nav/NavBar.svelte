@@ -153,7 +153,9 @@
 	];
 
 	const DEFAULT_DASHBOARD_ITEMS: readonly NavSubMenuItem[] = [
-		{ href: '/dashboard/', label: 'Member Dashboard' },
+		{ href: '/dashboard/', label: 'My Memberships' },
+		{ href: '/dashboard/classes/', label: 'My Classes' },
+		{ href: '/dashboard/indicators/', label: 'My Indicators' },
 		{ href: '/dashboard/account/', label: 'My Account' },
 		{ href: 'https://intercom.help/simpler-trading/en/', label: 'Support' }
 	];
