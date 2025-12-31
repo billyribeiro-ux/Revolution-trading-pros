@@ -298,16 +298,16 @@
 			// Save/clear remembered email
 			saveRememberedEmail();
 
-			// Success - redirect immediately
+			// Success - show Lottie animation
 			isSuccess = true;
 			if (gsap && submitBtn) {
 				gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 			}
 
-			// Redirect after login
-			const urlParams = new URLSearchParams(window.location.search);
-			const redirect = urlParams.get('redirect') || '/';
-			goto(validateRedirectUrl(redirect), { replaceState: true });
+			// Show Lottie animation before redirect
+			showLottie = true;
+			
+			// Lottie animation will call handleLottieComplete() which does the redirect
 		} catch (error: unknown) {
 			// Error handling
 			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
