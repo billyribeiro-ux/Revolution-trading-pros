@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { browser } from '$app/environment';
     import { cubicOut } from 'svelte/easing';
     import { slide } from 'svelte/transition';
     import gsap from 'gsap';
@@ -162,10 +161,6 @@
     let innerHeight = $state(0);
     let innerWidth = $state(0);
     let mounted = $state(false);
-    
-    // Mouse tracking for spotlight effects
-    let mouseX = $state(0);
-    let mouseY = $state(0);
 
     // Accordion State
     let openFaqIndex = $state<number | null>(0);
@@ -214,9 +209,6 @@
     // --- ACTIONS & UTILS ---
 
     function handleMouseMove(e: MouseEvent) {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        
         // Update CSS props for high-performance spotlights on specific containers
         const cards = document.querySelectorAll('.spotlight-card');
         cards.forEach((card) => {

@@ -9,7 +9,6 @@
 		IconCertificate,
 		IconTrendingUp,
 		IconCheck,
-		IconCalendar,
 		IconVideo,
 		IconFileText,
 		IconHeadset,

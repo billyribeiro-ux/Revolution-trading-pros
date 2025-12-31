@@ -15,8 +15,7 @@
 		IconBolt,
 		IconTarget,
 		IconShield,
-		IconTrophy,
-		IconCalendarEvent
+		IconTrophy
 	} from '$lib/icons';
 
 	interface Module {
