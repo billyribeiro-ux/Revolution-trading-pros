@@ -137,7 +137,13 @@ async fn create_indicator(
     user: User,
     Json(input): Json<CreateIndicatorRequest>,
 ) -> Result<Json<IndicatorRow>, (StatusCode, Json<serde_json::Value>)> {
-    let _ = &user; // TODO: Role check
+    // Role check - only admins and super_admins can create indicators
+    if user.role != "admin" && user.role != "super_admin" {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(serde_json::json!({"error": "Insufficient permissions to create indicators"}))
+        ));
+    }
 
     let slug = slug::slugify(&input.name);
     let version = input.version.unwrap_or_else(|| "1.0.0".to_string());

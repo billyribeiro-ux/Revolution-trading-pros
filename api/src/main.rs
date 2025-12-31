@@ -98,7 +98,7 @@ async fn main() -> anyhow::Result<()> {
             config
                 .cors_origins
                 .iter()
-                .map(|o| o.parse::<HeaderValue>().unwrap())
+                .filter_map(|o| o.parse::<HeaderValue>().ok())
                 .collect::<Vec<_>>(),
         )
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::PATCH, Method::OPTIONS])
