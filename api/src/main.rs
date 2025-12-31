@@ -92,7 +92,7 @@ async fn main() -> anyhow::Result<()> {
         config: config.clone(),
     };
 
-    // Build CORS layer - explicit headers required when using credentials
+    // Build CORS layer - ICT 11+ CORB Fix: explicit headers required when using credentials
     let cors = CorsLayer::new()
         .allow_origin(
             config
@@ -112,8 +112,16 @@ async fn main() -> anyhow::Result<()> {
             HeaderName::from_static("x-api-version"),
             HeaderName::from_static("x-session-id"),
         ])
-        .expose_headers([header::SET_COOKIE])
-        .allow_credentials(true);
+        // ICT 11+ CORB Fix: Expose headers so browser can read cross-origin responses
+        .expose_headers([
+            header::CONTENT_TYPE,
+            header::SET_COOKIE,
+            header::AUTHORIZATION,
+            HeaderName::from_static("x-api-version"),
+            HeaderName::from_static("x-session-id"),
+        ])
+        .allow_credentials(true)
+        .max_age(std::time::Duration::from_secs(3600)); // Cache preflight for 1 hour
 
     // ICT L11+ Security Headers
     // These headers protect against XSS, clickjacking, MIME sniffing, and enforce HTTPS
