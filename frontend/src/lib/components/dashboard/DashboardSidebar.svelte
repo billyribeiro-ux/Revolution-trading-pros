@@ -4,7 +4,7 @@
 
 	Phase Two: Collapsible sidebar with secondary hover panel
 
-	@version 2.0.0
+	@version 2.1.0 - RtpIcon Integration
 	@author Revolution Trading Pros
 
 	Svelte 5 Features Used:
@@ -18,6 +18,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
+	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Types for navigation links
 	interface NavLink {
@@ -100,9 +101,10 @@
 	}
 
 	// Navigation items matching WordPress reference
+	// Icons use RTP naming convention (rtp-icon-*)
 	const mainLinks: NavLink[] = [
 		{ href: '/dashboard/', icon: 'home', text: 'Member Dashboard' },
-		{ href: '/dashboard/classes/', icon: 'courses', text: 'My Classes', bold: true },
+		{ href: '/dashboard/classes/', icon: 'classes', text: 'My Classes', bold: true },
 		{ href: '/dashboard/indicators/', icon: 'indicators', text: 'My Indicators', bold: true }
 	];
 
@@ -131,7 +133,7 @@
 	});
 
 	const toolsLinks: NavLink[] = [
-		{ href: '/dashboard/ww/', icon: 'trade-of-the-week', text: 'Weekly Watchlist' },
+		{ href: '/dashboard/ww/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
 		{ href: 'https://intercom.help/simpler-trading/en/', icon: 'support', text: 'Support', external: true }
 	];
 
@@ -174,7 +176,9 @@
 				{#each mainLinks as link}
 					<li class:is-active={isActive(link.href)}>
 						<a href={link.href}>
-							<span class="dashboard__nav-item-icon st-icon-{link.icon}"></span>
+							<span class="dashboard__nav-item-icon">
+								<RtpIcon name={link.icon} size={20} />
+							</span>
 							<span class="dashboard__nav-item-text" class:font-bold={link.bold}>{link.text}</span>
 						</a>
 					</li>
@@ -192,7 +196,9 @@
 					{#each membershipLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
-								<span class="dashboard__nav-item-icon st-icon-{link.icon}"></span>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={20} />
+								</span>
 								<span class="dashboard__nav-item-text">{link.text}</span>
 							</a>
 						</li>
@@ -211,7 +217,9 @@
 					{#each masteryLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
-								<span class="dashboard__nav-item-icon st-icon-{link.icon}"></span>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={20} />
+								</span>
 								<span class="dashboard__nav-item-text">{link.text}</span>
 							</a>
 						</li>
@@ -233,7 +241,9 @@
 							target={link.external ? '_blank' : undefined}
 							rel={link.external ? 'noopener noreferrer' : undefined}
 						>
-							<span class="dashboard__nav-item-icon st-icon-{link.icon}"></span>
+							<span class="dashboard__nav-item-icon">
+								<RtpIcon name={link.icon} size={20} />
+							</span>
 							<span class="dashboard__nav-item-text">{link.text}</span>
 						</a>
 					</li>
@@ -250,7 +260,9 @@
 				{#each accountLinks as link}
 					<li class:is-active={isActive(link.href)}>
 						<a href={link.href}>
-							<span class="dashboard__nav-item-icon st-icon-{link.icon}"></span>
+							<span class="dashboard__nav-item-icon">
+								<RtpIcon name={link.icon} size={20} />
+							</span>
 							<span class="dashboard__nav-item-text">{link.text}</span>
 						</a>
 					</li>
@@ -268,7 +280,7 @@
 			aria-expanded={!collapsed}
 		>
 			<div class="dashboard__collapse-icon" class:is-collapsed={collapsed}>
-				<span class="collapse-arrow">&#9664;</span>
+				<RtpIcon name="chevron-left" size={18} />
 			</div>
 			<span class="dashboard__collapse-label">Collapse</span>
 		</button>
@@ -299,7 +311,9 @@
 										target={link.external ? '_blank' : undefined}
 										rel={link.external ? 'noopener noreferrer' : undefined}
 									>
-										<span class="dashboard__nav-item-icon st-icon-{link.icon}"></span>
+										<span class="dashboard__nav-item-icon">
+											<RtpIcon name={link.icon} size={20} />
+										</span>
 										<span class="dashboard__nav-item-text">{link.text}</span>
 									</a>
 								</li>
@@ -583,17 +597,7 @@
 		color: #ffffff;
 	}
 
-	/* Icon Classes */
-	.st-icon-home::before { content: '🏠'; }
-	.st-icon-courses::before { content: '📚'; }
-	.st-icon-indicators::before { content: '📊'; }
-	.st-icon-mastering-the-trade::before { content: '📈'; }
-	.st-icon-simpler-showcase::before { content: '🎯'; }
-	.st-icon-tr3ndy-spx-alerts-circle::before { content: '⚡'; }
-	.st-icon-consistent-growth::before { content: '📉'; }
-	.st-icon-trade-of-the-week::before { content: '📋'; }
-	.st-icon-support::before { content: '💬'; }
-	.st-icon-settings::before { content: '⚙️'; }
+	/* Icons are now rendered via RtpIcon component using Tabler Icons */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * NAVIGATION TEXT
@@ -659,11 +663,6 @@
 
 	.dashboard__collapse-icon.is-collapsed {
 		transform: rotate(180deg);
-	}
-
-	.collapse-arrow {
-		font-size: 16px;
-		line-height: 1;
 	}
 
 	.dashboard__collapse-label {

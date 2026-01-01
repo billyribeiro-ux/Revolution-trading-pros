@@ -13,13 +13,14 @@
 	- $derived() for computed values from auth store
 	- $effect() for reactive side effects
 
-	@version 3.0.0 - ICT 11+ Client-Side Auth
+	@version 3.1.0 - RtpIcon Integration
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import { user, isAuthenticated } from '$lib/stores/auth';
 	import { getUserMemberships, type CategorizedMemberships } from '$lib/api/user-memberships';
 	import { onMount } from 'svelte';
+	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -137,7 +138,7 @@
 		{
 			name: 'Weekly Watchlist',
 			href: '/dashboard/ww',
-			icon: 'trade-of-the-week',
+			icon: 'weekly-watchlist',
 			variant: 'ww'
 		}
 	];
@@ -192,7 +193,9 @@
 					aria-haspopup="true"
 				>
 					<strong>Enter a Trading Room</strong>
-					<span class="dropdown-arrow">▼</span>
+					<span class="dropdown-arrow">
+						<RtpIcon name="chevron-down" size={14} />
+					</span>
 				</button>
 
 				{#if isDropdownOpen}
@@ -245,7 +248,7 @@
 								<a href={card.href} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon">
-											<span class="icon icon--lg st-icon-{card.icon}"></span>
+											<RtpIcon name={card.icon} size={32} />
 										</span>
 									</span>
 									<span class="mem_div">{card.name}</span>
@@ -272,7 +275,7 @@
 								<a href={card.href} class="membership-card__header">
 									<span class="mem_icon">
 										<span class="membership-card__icon">
-											<span class="icon icon--lg st-icon-{card.icon}"></span>
+											<RtpIcon name={card.icon} size={32} />
 										</span>
 									</span>
 									<span class="mem_div">{card.name}</span>
@@ -298,7 +301,7 @@
 							<a href={card.href} class="membership-card__header">
 								<span class="mem_icon">
 									<span class="membership-card__icon">
-										<span class="icon icon--md st-icon-{card.icon}"></span>
+										<RtpIcon name={card.icon} size={24} />
 									</span>
 								</span>
 								<span class="mem_div">{card.name}</span>
@@ -652,12 +655,7 @@
 		font-size: 24px;
 	}
 
-	/* Icon placeholders */
-	.st-icon-mastering-the-trade::before { content: '📈'; }
-	.st-icon-simpler-showcase::before { content: '🎯'; }
-	.st-icon-tr3ndy-spx-alerts-circle::before { content: '⚡'; }
-	.st-icon-consistent-growth::before { content: '📉'; }
-	.st-icon-trade-of-the-week::before { content: '📋'; }
+	/* Icons are now rendered via RtpIcon component using Tabler Icons */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * MEMBERSHIP CARD ACTIONS
