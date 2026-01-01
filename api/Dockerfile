@@ -27,8 +27,9 @@ COPY migrations ./migrations
 # Build the actual application
 RUN touch src/main.rs && cargo build --release
 
-# Runtime stage - ICT 11+ Optimization: Minimal Debian Slim image (~100MB vs 1.5GB)
-FROM debian:bookworm-slim AS runtime
+# Runtime stage - ICT 11+ Fix: Use Debian Trixie for GLIBC 2.38+ compatibility
+# rust:latest uses GLIBC 2.38+ which requires Debian Trixie (testing) or newer
+FROM debian:trixie-slim AS runtime
 
 # Install runtime dependencies (OpenSSL, CA certs, curl for health checks)
 RUN apt-get update && apt-get install -y --no-install-recommends \
