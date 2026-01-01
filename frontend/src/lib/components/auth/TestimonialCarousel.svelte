@@ -1,14 +1,19 @@
 <script lang="ts">
 	/**
 	 * TestimonialCarousel - Trader Testimonials
-	 * Netflix L11+ Principal Engineer Grade
+	 * Apple Principal Engineer ICT 11 Grade
 	 *
 	 * Auto-rotating testimonial carousel using Embla
 	 *
-	 * @version 1.0.0
+	 * ICT 11+ Patterns:
+	 * - Embla carousel with autoplay plugin
+	 * - Proper cleanup via onDestroy (prevents memory leaks)
+	 * - Accessible navigation dots with ARIA labels
+	 * - Touch-optimized for mobile devices
+	 *
+	 * @version 2.0.0 - ICT 11 Grade
 	 */
-	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { onDestroy } from 'svelte';
 	import emblaCarouselSvelte from 'embla-carousel-svelte';
 	import Autoplay from 'embla-carousel-autoplay';
 	import type { EmblaCarouselType } from 'embla-carousel';
@@ -86,7 +91,7 @@
 		onemblaInit={onInit}
 	>
 		<div class="carousel-container">
-			{#each testimonials as testimonial, i}
+			{#each testimonials as testimonial}
 				<div class="carousel-slide">
 					<div class="testimonial-card">
 						<!-- Quote Icon -->

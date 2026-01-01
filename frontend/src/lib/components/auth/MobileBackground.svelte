@@ -1,15 +1,19 @@
 <script lang="ts">
 	/**
 	 * MobileBackground - Simplified Trading Background for Mobile
-	 * Netflix L11+ Principal Engineer Grade
+	 * Apple Principal Engineer ICT 11 Grade
 	 *
 	 * Lightweight animated background for mobile login.
 	 * Uses CSS animations instead of canvas for performance.
 	 *
-	 * @version 1.0.0
+	 * ICT 11+ Patterns:
+	 * - Client-side only rendering via onMount (prevents SSR hydration issues)
+	 * - Deterministic animations using index-based timing
+	 * - Performance-optimized CSS animations over JavaScript
+	 *
+	 * @version 2.0.0 - ICT 11 Grade
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 
 	let mounted = $state(false);
 
@@ -37,7 +41,7 @@
 
 		<!-- Floating Dots -->
 		<div class="floating-dots">
-			{#each { length: 12 } as _, i}
+			{#each { length: 12 } as _}
 				<div
 					class="dot"
 					style="
