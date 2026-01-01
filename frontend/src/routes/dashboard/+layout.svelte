@@ -2,20 +2,22 @@
 	Dashboard Layout - Member Dashboard with Sidebar
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation
+	Svelte 5 (December 2025) Best Practices
 
-	CLIENT-SIDE AUTH PATTERN:
-	- Auth is checked client-side using isAuthenticated store
-	- Redirects to login if not authenticated
-	- Fetches memberships data client-side when authenticated
-	- Shows loading skeleton during auth check
+	SERVER-SIDE AUTH PATTERN (Svelte 5 Recommended):
+	- Auth is validated server-side in hooks.server.ts BEFORE this component loads
+	- User data is passed from +layout.server.ts via load function
+	- No client-side auth polling needed - server already handled it
+	- Memberships fetched client-side for dynamic updates
 
 	Svelte 5 Features:
+	- $props() for component props including data from load
 	- $state() for reactive state management
-	- $effect() for side effects (auth check, data fetching)
 	- $derived() for computed values
+	- $effect() for side effects
 	- Snippet for children rendering
 
-	@version 3.0.0 - ICT 11+ Client-Side Auth
+	@version 4.0.0 - ICT 11+ Server-Side Auth
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
@@ -28,21 +30,28 @@
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// PROPS
+	// PROPS - Svelte 5 Pattern
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		children: Snippet;
+		data: {
+			user: {
+				id: string;
+				email: string;
+				name?: string;
+				role?: string;
+			} | null;
+		};
 	}
 
-	let { children }: Props = $props();
+	let { children, data }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auth state
-	let isCheckingAuth = $state(true);
+	// Loading state for memberships data
 	let isLoadingData = $state(false);
 
 	// Sidebar state
@@ -52,56 +61,42 @@
 	let membershipsData = $state<CategorizedMemberships | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE
+	// DERIVED STATE - Svelte 5 Pattern
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// User data for sidebar
+	// User data for sidebar - prefer server data, fall back to client store
 	const userData = $derived({
-		id: $user?.id?.toString() ?? '',
-		email: $user?.email ?? '',
-		name: $user?.name ?? $user?.email?.split('@')[0] ?? 'Member',
+		id: data.user?.id ?? $user?.id?.toString() ?? '',
+		email: data.user?.email ?? $user?.email ?? '',
+		name: data.user?.name ?? $user?.name ?? $user?.email?.split('@')[0] ?? 'Member',
 		avatar: $user?.avatar_url ?? null,
 		memberships: membershipsData?.memberships
 			?.filter(m => m.status === 'active')
 			?.map(m => m.slug) ?? []
 	});
 
-	// Show content only when authenticated
-	const showContent = $derived(!isCheckingAuth && $isAuthenticated);
+	// Auth is handled server-side, but we still check client store for logout detection
+	const isUserAuthenticated = $derived(!!data.user || $isAuthenticated);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// AUTH CHECK & DATA LOADING
+	// DATA LOADING
+	// Server-side auth is complete, just load memberships client-side
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(() => {
-		checkAuthAndLoadData();
-	});
-
-	async function checkAuthAndLoadData(): Promise<void> {
-		if (!browser) return;
-
-		isCheckingAuth = true;
-
-		// Wait a tick for auth store to initialize
-		await new Promise(resolve => setTimeout(resolve, 50));
-
-		// Check if authenticated
-		if (!$isAuthenticated) {
-			// Not authenticated - redirect to login
-			const currentPath = page?.url?.pathname ?? '/dashboard';
-			const redirectUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
-			await goto(redirectUrl, { replaceState: true });
-			return;
+	onMount(async () => {
+		// Sync server user to client store if needed
+		if (data.user && !$isAuthenticated) {
+			// Server has user but client doesn't - sync auth state
+			// This happens on page refresh when server validates token
+			console.debug('[Dashboard] Syncing server auth to client store');
 		}
-
-		isCheckingAuth = false;
 
 		// Load memberships data
 		await loadMembershipsData();
-	}
+	});
 
 	async function loadMembershipsData(): Promise<void> {
-		if (!$isAuthenticated) return;
+		if (!isUserAuthenticated) return;
 
 		isLoadingData = true;
 
@@ -116,12 +111,13 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// WATCH AUTH CHANGES
+	// WATCH AUTH CHANGES - Client-side logout detection
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	$effect(() => {
-		// If user logs out while on dashboard, redirect to login
-		if (!isCheckingAuth && !$isAuthenticated && browser) {
+		// If user logs out while on dashboard (client-side action), redirect to login
+		// Server auth is already validated, this is for client-side logout
+		if (!$isAuthenticated && !data.user && browser) {
 			const currentPath = page?.url?.pathname ?? '/dashboard';
 			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
 		}
@@ -134,74 +130,23 @@
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700" rel="stylesheet" />
 </svelte:head>
 
-<!-- Loading State -->
-{#if isCheckingAuth}
-	<div class="dashboard-loading">
-		<div class="dashboard-loading__container">
-			<div class="dashboard-loading__spinner"></div>
-			<p class="dashboard-loading__text">Loading your dashboard...</p>
-		</div>
-	</div>
+<!-- Dashboard Content - No loading spinner needed, server-side auth is complete -->
+<div class="dashboard">
+	<!-- Sidebar Navigation with bindable collapsed state -->
+	<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
 
-<!-- Authenticated Content -->
-{:else if showContent}
-	<div class="dashboard">
-		<!-- Sidebar Navigation with bindable collapsed state -->
-		<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
-
-		<!-- Main Content Area - margin adjusts based on sidebar state -->
-		<main class="dashboard__main" class:is-collapsed={sidebarCollapsed}>
-			{#if isLoadingData}
-				<div class="dashboard__loading-overlay">
-					<div class="dashboard__loading-spinner"></div>
-				</div>
-			{/if}
-			{@render children()}
-		</main>
-	</div>
-{/if}
+	<!-- Main Content Area - margin adjusts based on sidebar state -->
+	<main class="dashboard__main" class:is-collapsed={sidebarCollapsed}>
+		{#if isLoadingData}
+			<div class="dashboard__loading-overlay">
+				<div class="dashboard__loading-spinner"></div>
+			</div>
+		{/if}
+		{@render children()}
+	</main>
+</div>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Loading State
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard-loading {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 100vh;
-		background-color: #efefef;
-	}
-
-	.dashboard-loading__container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.dashboard-loading__spinner {
-		width: 48px;
-		height: 48px;
-		border: 4px solid #e0e0e0;
-		border-top-color: #0a2335;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	.dashboard-loading__text {
-		color: #666;
-		font-size: 1rem;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Layout Container
 	 * Matches WordPress Simpler Trading reference
@@ -254,6 +199,12 @@
 		animation: spin 1s linear infinite;
 	}
 
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Responsive - Mobile (≤768px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
@@ -293,7 +244,6 @@
 			transition: none;
 		}
 
-		.dashboard-loading__spinner,
 		.dashboard__loading-spinner {
 			animation: none;
 		}

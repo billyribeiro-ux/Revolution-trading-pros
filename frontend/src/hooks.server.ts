@@ -1,19 +1,154 @@
 /**
- * SvelteKit Server Hooks - Security Headers & Performance
+ * SvelteKit Server Hooks - Auth, Security Headers & Performance
+ * Apple ICT 11+ Principal Engineer Implementation
  * Following Google November 2025 SEO and security best practices
  *
  * Features:
+ * - Server-side authentication middleware (Svelte 5 best practice)
+ * - Route protection before load functions execute
  * - Comprehensive security headers (OWASP recommended)
  * - Performance headers for caching and compression
  * - SEO-friendly headers
  * - AI crawler control headers (November 2025)
  * - CORS configuration
  *
- * @version 2.0.0 - November 2025 Standards with AI Crawler Headers
+ * @version 3.0.0 - ICT 11+ Server-Side Auth + November 2025 Standards
  */
 
 import type { Handle } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+
+// API URL for server-side token validation
+const API_BASE_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+/**
+ * Protected routes that require authentication
+ * These routes will redirect to login if user is not authenticated
+ */
+const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room'];
+
+/**
+ * Authentication Handler - ICT 11+ Server-Side Pattern
+ * Runs BEFORE all load functions for secure route protection
+ *
+ * This is the Svelte 5 recommended pattern:
+ * - Auth check happens server-side before any data loading
+ * - Prevents unauthorized data fetching
+ * - More secure than client-side auth guards
+ */
+const authHandler: Handle = async ({ event, resolve }) => {
+	const { pathname } = event.url;
+
+	// Check if this is a protected route
+	const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+
+	if (!isProtectedRoute) {
+		// Not a protected route - continue without auth check
+		return resolve(event);
+	}
+
+	// Get auth token from cookies
+	const accessToken = event.cookies.get('rtp_access_token');
+	const refreshToken = event.cookies.get('rtp_refresh_token');
+
+	// Also check Authorization header (for API calls)
+	const authHeader = event.request.headers.get('Authorization');
+	const headerToken = authHeader?.replace('Bearer ', '');
+
+	const token = accessToken || headerToken;
+
+	if (!token && !refreshToken) {
+		// No tokens - redirect to login with return URL
+		const returnUrl = encodeURIComponent(pathname);
+		throw redirect(303, `/login?redirect=${returnUrl}`);
+	}
+
+	// Validate token by calling /api/auth/me
+	try {
+		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${token || refreshToken}`,
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			}
+		});
+
+		if (response.ok) {
+			const userData = await response.json();
+
+			// Set user in locals for use in load functions
+			event.locals.user = {
+				id: String(userData.id),
+				email: userData.email,
+				name: userData.name,
+				role: userData.role
+			};
+		} else if (response.status === 401 && refreshToken) {
+			// Token expired - try to refresh
+			const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify({ refresh_token: refreshToken })
+			});
+
+			if (refreshResponse.ok) {
+				const refreshData = await refreshResponse.json();
+
+				// Set new access token cookie
+				event.cookies.set('rtp_access_token', refreshData.token, {
+					path: '/',
+					httpOnly: true,
+					secure: true,
+					sameSite: 'lax',
+					maxAge: refreshData.expires_in || 3600
+				});
+
+				// Fetch user data with new token
+				const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+					method: 'GET',
+					headers: {
+						'Authorization': `Bearer ${refreshData.token}`,
+						'Content-Type': 'application/json'
+					}
+				});
+
+				if (userResponse.ok) {
+					const userData = await userResponse.json();
+					event.locals.user = {
+						id: String(userData.id),
+						email: userData.email,
+						name: userData.name,
+						role: userData.role
+					};
+				}
+			} else {
+				// Refresh failed - redirect to login
+				const returnUrl = encodeURIComponent(pathname);
+				throw redirect(303, `/login?redirect=${returnUrl}`);
+			}
+		} else {
+			// Auth failed - redirect to login
+			const returnUrl = encodeURIComponent(pathname);
+			throw redirect(303, `/login?redirect=${returnUrl}`);
+		}
+	} catch (error) {
+		// If it's a redirect, rethrow it
+		if (error instanceof Response || (error as any)?.status === 303) {
+			throw error;
+		}
+
+		// Network error - allow client-side auth to handle
+		console.error('[Auth Hook] Token validation failed:', error);
+		// Don't redirect on network errors - let client handle
+	}
+
+	return resolve(event);
+};
 
 /**
  * Security Headers Handler
@@ -177,4 +312,5 @@ const timingHandler: Handle = async ({ event, resolve }) => {
 };
 
 // Combine all handlers in sequence
-export const handle: Handle = sequence(timingHandler, securityHeaders, performanceHandler);
+// Auth handler runs FIRST to protect routes before any data loading
+export const handle: Handle = sequence(authHandler, timingHandler, securityHeaders, performanceHandler);
