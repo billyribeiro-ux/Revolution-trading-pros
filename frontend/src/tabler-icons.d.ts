@@ -98,6 +98,7 @@ declare module '@tabler/icons-svelte' {
 	export const IconExternalLink: IconComponent;
 	export const IconEye: IconComponent;
 	export const IconEyeCheck: IconComponent;
+	export const IconEyeOff: IconComponent;
 	export const IconFile: IconComponent;
 	export const IconFileAnalytics: IconComponent;
 	export const IconFilter: IconComponent;
@@ -118,6 +119,7 @@ declare module '@tabler/icons-svelte' {
 	export const IconLeaf: IconComponent;
 	export const IconList: IconComponent;
 	export const IconListCheck: IconComponent;
+	export const IconLoader: IconComponent;
 	export const IconLocation: IconComponent;
 	export const IconLock: IconComponent;
 	export const IconLockOpen: IconComponent;

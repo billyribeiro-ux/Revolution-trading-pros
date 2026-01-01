@@ -2,9 +2,9 @@
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Query, State},
     http::StatusCode,
-    routing::{get, post, delete},
+    routing::{get, post},
     Json, Router,
 };
 use serde::Deserialize;

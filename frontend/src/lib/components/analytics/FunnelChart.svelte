@@ -50,7 +50,6 @@
 	<div class="space-y-3">
 		{#each steps as step, index (step.step_number)}
 			{@const width = getStepWidth(step, index)}
-			{@const prevStep = index > 0 ? steps[index - 1] : null}
 
 			<div class="relative">
 				<!-- Step Bar -->

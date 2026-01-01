@@ -1,0 +1,14 @@
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/deps/serde-82ed339aa29591ed.d: /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/serde-7e3fc95dd1dcd44a/out/private.rs
+
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/deps/libserde-82ed339aa29591ed.rlib: /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/serde-7e3fc95dd1dcd44a/out/private.rs
+
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/deps/libserde-82ed339aa29591ed.rmeta: /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/serde-7e3fc95dd1dcd44a/out/private.rs
+
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/Users/user/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/serde-7e3fc95dd1dcd44a/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/user/Documents/revolution-svelte/api-rust/target/wasm32-unknown-unknown/debug/build/serde-7e3fc95dd1dcd44a/out

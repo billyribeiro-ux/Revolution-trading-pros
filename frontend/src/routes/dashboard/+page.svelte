@@ -18,7 +18,7 @@
 -->
 <script lang="ts">
 	import { user, isAuthenticated } from '$lib/stores/auth';
-	import { getUserMemberships, type CategorizedMemberships } from '$lib/api/user-memberships';
+	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -30,7 +30,7 @@
 	let isDropdownOpen = $state(false);
 
 	// Memberships data
-	let membershipsData = $state<CategorizedMemberships | null>(null);
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let isLoading = $state(true);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -40,8 +40,8 @@
 	// User's active membership slugs
 	const membershipSlugs = $derived(
 		membershipsData?.memberships
-			?.filter(m => m.status === 'active')
-			?.map(m => m.slug) ?? []
+			?.filter((m: { status: string }) => m.status === 'active')
+			?.map((m: { slug: string }) => m.slug) ?? []
 	);
 
 	// User display name

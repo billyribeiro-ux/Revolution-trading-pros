@@ -1,15 +1,20 @@
 <script lang="ts">
 	/**
 	 * SocialLoginButtons - OAuth Social Sign-In
-	 * ICT11+ Principal Engineer Grade
+	 * Apple Principal Engineer ICT 11 Grade
 	 *
 	 * Google and Apple sign-in buttons with premium styling
 	 * Uses SvelteKit goto() for proper SPA navigation & error feedback
 	 *
-	 * @version 1.1.0
+	 * ICT 11+ Patterns:
+	 * - Async error handling with user-visible feedback
+	 * - Optional callback props for custom OAuth flows
+	 * - SvelteKit navigation preserves SPA context
+	 * - Accessible ARIA labels and loading states
+	 *
+	 * @version 2.0.0 - ICT 11 Grade
 	 */
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 
 	interface Props {

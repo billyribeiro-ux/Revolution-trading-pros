@@ -10,7 +10,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
-    models::{Course, CreateCourse, Lesson, User},
+    models::{Course, CreateCourse, Lesson},
     middleware::admin::AdminUser,
     AppState,
 };

@@ -11,12 +11,10 @@
 	// Props
 	let {
 		selectedRooms = $bindable<string[]>([]),
-		disabled = false,
-		label = 'Target Rooms'
+		disabled = false
 	}: {
 		selectedRooms?: string[];
 		disabled?: boolean;
-		label?: string;
 	} = $props();
 
 	// State
@@ -95,9 +93,7 @@
 </script>
 
 <div class="room-selector" class:disabled>
-	<label class="selector-label">{label}</label>
-
-	<!-- Trigger Button -->
+	<!-- Trigger Button with accessible label -->
 	<button
 		type="button"
 		class="selector-trigger"
@@ -243,14 +239,6 @@
 	.room-selector.disabled {
 		opacity: 0.6;
 		pointer-events: none;
-	}
-
-	.selector-label {
-		display: block;
-		font-size: 14px;
-		font-weight: 600;
-		color: #e2e8f0;
-		margin-bottom: 8px;
 	}
 
 	/* Trigger Button */

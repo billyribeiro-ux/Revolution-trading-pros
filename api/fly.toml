@@ -14,8 +14,7 @@ kill_timeout = "10s"
   PORT = "8080"
   RUST_LOG = "info"
   ENVIRONMENT = "production"
-  # Skip migrations on startup - run manually via /setup-db endpoint
-  SKIP_MIGRATIONS = "true"
+  # Migrations run automatically on startup
 
 # Fly.io v2 HTTP Service Configuration
 [http_service]

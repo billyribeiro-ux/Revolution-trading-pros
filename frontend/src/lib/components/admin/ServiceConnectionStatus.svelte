@@ -18,7 +18,7 @@
 
 	import { goto } from '$app/navigation';
 	import { fade, fly, scale, slide } from 'svelte/transition';
-	import { quintOut, backOut, cubicOut } from 'svelte/easing';
+	import { backOut, cubicOut } from 'svelte/easing';
 	import {
 		connections,
 		isAnalyticsConnected,
@@ -26,7 +26,6 @@
 		isEmailConnected,
 		isPaymentConnected,
 		isCrmConnected,
-		isFluentConnected,
 		isFormsConnected,
 		isBehaviorConnected,
 		FEATURE_SERVICES,

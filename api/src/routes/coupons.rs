@@ -41,16 +41,16 @@ pub struct ValidateCouponResponse {
     pub error: Option<String>,
 }
 
+/// CouponInfo - matches Laravel production schema
 #[derive(Serialize)]
 pub struct CouponInfo {
     pub id: i64,
     pub code: String,
-    pub description: Option<String>,
-    pub discount_type: String,
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
-    pub expires_at: Option<String>,
+    #[serde(rename = "type")]
+    pub coupon_type: String,
+    pub value: f64,
+    pub min_purchase_amount: f64,
+    pub expiry_date: Option<String>,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
@@ -109,12 +109,11 @@ async fn validate_coupon(
         }));
     }
 
-    // Find coupon
+    // Find coupon - ICT 11+ Fix: Use Laravel production schema column names
     let coupon: Option<Coupon> = sqlx::query_as(
-        r#"SELECT id, code, description, discount_type, discount_value,
-                  min_purchase, max_discount, usage_limit, usage_count,
-                  is_active, starts_at, expires_at, applicable_products,
-                  applicable_plans, created_at, updated_at
+        r#"SELECT id, code, type, value, max_uses, current_uses,
+                  expiry_date, applicable_products, min_purchase_amount,
+                  is_active, created_at, updated_at
            FROM coupons
            WHERE UPPER(code) = $1"#
     )
@@ -145,21 +144,9 @@ async fn validate_coupon(
         }));
     }
 
-    // Check start date
-    if let Some(starts_at) = coupon.starts_at {
-        if starts_at > chrono::Utc::now().naive_utc() {
-            return Ok(Json(ValidateCouponResponse {
-                valid: false,
-                coupon: None,
-                discount_amount: None,
-                error: Some("This coupon is not yet active".to_string()),
-            }));
-        }
-    }
-
-    // Check expiry
-    if let Some(expires_at) = coupon.expires_at {
-        if expires_at < chrono::Utc::now().naive_utc() {
+    // Check expiry - Laravel uses expiry_date
+    if let Some(expiry_date) = coupon.expiry_date {
+        if expiry_date < chrono::Utc::now().naive_utc() {
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,
@@ -169,9 +156,9 @@ async fn validate_coupon(
         }
     }
 
-    // Check usage limit
-    if let Some(limit) = coupon.usage_limit {
-        if coupon.usage_count >= limit {
+    // Check usage limit - Laravel uses max_uses and current_uses
+    if coupon.max_uses > 0 {
+        if coupon.current_uses >= coupon.max_uses {
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,
@@ -181,15 +168,15 @@ async fn validate_coupon(
         }
     }
 
-    // Check minimum purchase
-    if let Some(min) = coupon.min_purchase {
+    // Check minimum purchase - Laravel uses min_purchase_amount
+    if coupon.min_purchase_amount > 0.0 {
         if let Some(subtotal) = input.subtotal {
-            if subtotal < min {
+            if subtotal < coupon.min_purchase_amount {
                 return Ok(Json(ValidateCouponResponse {
                     valid: false,
                     coupon: None,
                     discount_amount: None,
-                    error: Some(format!("Minimum purchase of ${:.2} required", min)),
+                    error: Some(format!("Minimum purchase of ${:.2} required", coupon.min_purchase_amount)),
                 }));
             }
         }
@@ -213,38 +200,16 @@ async fn validate_coupon(
         }
     }
 
-    // Check plan restrictions
-    if let Some(ref applicable) = coupon.applicable_plans {
-        if let Some(ref plan_ids) = input.plan_ids {
-            let applicable_ids: Vec<i64> = serde_json::from_value(applicable.clone()).unwrap_or_default();
-            if !applicable_ids.is_empty() {
-                let has_valid_plan = plan_ids.iter().any(|id| applicable_ids.contains(id));
-                if !has_valid_plan {
-                    return Ok(Json(ValidateCouponResponse {
-                        valid: false,
-                        coupon: None,
-                        discount_amount: None,
-                        error: Some("This coupon is not valid for the selected plan".to_string()),
-                    }));
-                }
-            }
-        }
-    }
+    // Note: Laravel schema doesn't have applicable_plans column
 
-    // Calculate discount
+    // Calculate discount - Laravel uses 'type' (percentage/fixed) and 'value'
     let discount_amount = if let Some(subtotal) = input.subtotal {
-        let discount = if coupon.discount_type == "percent" {
-            subtotal * (coupon.discount_value / 100.0)
+        let discount = if coupon.coupon_type == "percentage" {
+            subtotal * (coupon.value / 100.0)
         } else {
-            coupon.discount_value
+            coupon.value
         };
-
-        // Apply max discount cap
-        if let Some(max) = coupon.max_discount {
-            Some(discount.min(max))
-        } else {
-            Some(discount)
-        }
+        Some(discount)
     } else {
         None
     };
@@ -254,12 +219,10 @@ async fn validate_coupon(
         coupon: Some(CouponInfo {
             id: coupon.id,
             code: coupon.code,
-            description: coupon.description,
-            discount_type: coupon.discount_type,
-            discount_value: coupon.discount_value,
-            min_purchase: coupon.min_purchase,
-            max_discount: coupon.max_discount,
-            expires_at: coupon.expires_at.map(|d| d.to_string()),
+            coupon_type: coupon.coupon_type,
+            value: coupon.value,
+            min_purchase_amount: coupon.min_purchase_amount,
+            expiry_date: coupon.expiry_date.map(|d| d.to_string()),
         }),
         discount_amount,
         error: None,
@@ -324,19 +287,27 @@ async fn list_coupons(
     let limit = query.limit.unwrap_or(50).min(100);
     let offset = query.page.unwrap_or(0) * limit;
 
+    // ICT 11+ Fix: Explicitly list columns with NULL for description (may not exist in older schemas)
+    let coupon_columns = r#"id, code, NULL::TEXT as description, discount_type, discount_value,
+                  min_purchase, max_discount, usage_limit, usage_count,
+                  is_active, starts_at, expires_at, applicable_products,
+                  applicable_plans, created_at, updated_at"#;
+    
     let coupons: Vec<Coupon> = if query.active_only.unwrap_or(false) {
-        sqlx::query_as(
-            r#"SELECT * FROM coupons WHERE is_active = true ORDER BY created_at DESC LIMIT $1 OFFSET $2"#
-        )
+        sqlx::query_as(&format!(
+            "SELECT {} FROM coupons WHERE is_active = true ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+            coupon_columns
+        ))
         .bind(limit)
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     } else {
-        sqlx::query_as(
-            r#"SELECT * FROM coupons ORDER BY created_at DESC LIMIT $1 OFFSET $2"#
-        )
+        sqlx::query_as(&format!(
+            "SELECT {} FROM coupons ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+            coupon_columns
+        ))
         .bind(limit)
         .bind(offset)
         .fetch_all(&state.db.pool)

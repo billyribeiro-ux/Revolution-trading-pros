@@ -10,10 +10,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::AppState;
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct VideoRow {

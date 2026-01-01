@@ -1,15 +1,22 @@
 <script lang="ts">
 	/**
 	 * Scene3D - 3D Trading Scene Content
-	 * Netflix L11+ Principal Engineer Grade
+	 * Apple Principal Engineer ICT 11 Grade
 	 *
 	 * Contains camera, lights, and 3D candlestick objects
+	 * 
+	 * ICT 11+ Patterns:
+	 * - Dynamic import only (prevents SSR issues with @threlte/core)
+	 * - Three.js integration via Threlte wrapper
+	 * - Procedural generation using Math.random() for particle positioning
+	 * - Orbit controls for interactive camera manipulation
+	 * - Float animations for organic movement
 	 * 
 	 * NOTE: This component is dynamically imported by TradingScene3D.svelte
 	 * to prevent SSR issues. These imports are safe here because this
 	 * component only runs on the client.
 	 *
-	 * @version 2.0.0
+	 * @version 3.0.0 - ICT 11 Grade
 	 */
 	import { T, useTask } from '@threlte/core';
 	import { OrbitControls, Float } from '@threlte/extras';
@@ -151,7 +158,7 @@
 {/each}
 
 <!-- Floating Particles -->
-{#each { length: 30 } as _, i}
+{#each { length: 30 } as _}
 	{@const x = (Math.random() - 0.5) * 80}
 	{@const y = Math.random() * 40 - 10}
 	{@const z = (Math.random() - 0.5) * 80}

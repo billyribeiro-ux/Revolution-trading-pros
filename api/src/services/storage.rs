@@ -88,9 +88,71 @@ impl StorageService {
     }
 
     /// Generate a presigned URL for direct upload
-    pub async fn presigned_upload_url(&self, key: &str, _content_type: &str) -> Result<String> {
-        // Note: For R2, you might want to use Cloudflare's direct upload API
-        // This is a simplified version - content_type would be used in a full implementation
-        Ok(format!("{}/{}", self.public_url, key))
+    /// ICT 11+ FIX: Proper presigned URL generation for R2/S3
+    pub async fn presigned_upload_url(
+        &self,
+        key: &str,
+        content_type: &str,
+        expires_in_seconds: u64,
+    ) -> Result<String> {
+        use aws_sdk_s3::presigning::PresigningConfig;
+        use std::time::Duration;
+
+        let presigning_config = PresigningConfig::builder()
+            .expires_in(Duration::from_secs(expires_in_seconds))
+            .build()?;
+
+        let presigned_request = self.client
+            .put_object()
+            .bucket(&self.bucket)
+            .key(key)
+            .content_type(content_type)
+            .presigned(presigning_config)
+            .await?;
+
+        Ok(presigned_request.uri().to_string())
+    }
+
+    /// Generate a presigned URL for direct download
+    /// ICT 11+ ENHANCEMENT: Allow temporary access to private files
+    pub async fn presigned_download_url(
+        &self,
+        key: &str,
+        expires_in_seconds: u64,
+    ) -> Result<String> {
+        use aws_sdk_s3::presigning::PresigningConfig;
+        use std::time::Duration;
+
+        let presigning_config = PresigningConfig::builder()
+            .expires_in(Duration::from_secs(expires_in_seconds))
+            .build()?;
+
+        let presigned_request = self.client
+            .get_object()
+            .bucket(&self.bucket)
+            .key(key)
+            .presigned(presigning_config)
+            .await?;
+
+        Ok(presigned_request.uri().to_string())
+    }
+
+    /// List files in a folder
+    /// ICT 11+ ENHANCEMENT: Browse uploaded files
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+        let response = self.client
+            .list_objects_v2()
+            .bucket(&self.bucket)
+            .prefix(prefix)
+            .send()
+            .await?;
+
+        let keys = response
+            .contents()
+            .iter()
+            .filter_map(|obj| obj.key().map(|k| k.to_string()))
+            .collect();
+
+        Ok(keys)
     }
 }
