@@ -268,19 +268,7 @@
 </header>
 
 <!-- Dashboard Content -->
-{#if isLoading}
-	<!-- Loading State -->
-	<section class="dashboard__content-section">
-		<div class="loading-skeleton">
-			<div class="skeleton skeleton--title"></div>
-			<div class="skeleton-grid">
-				<div class="skeleton skeleton--card"></div>
-				<div class="skeleton skeleton--card"></div>
-				<div class="skeleton skeleton--card"></div>
-			</div>
-		</div>
-	</section>
-{:else}
+{#if !isLoading}
 	<!-- Memberships Section -->
 	{#if membershipCards.length > 0}
 		<section class="dashboard__content-section">
@@ -490,41 +478,6 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * LOADING SKELETON
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.loading-skeleton {
-		padding: 20px 0;
-	}
-
-	.skeleton {
-		background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-		background-size: 200% 100%;
-		animation: skeleton-loading 1.5s infinite;
-		border-radius: 8px;
-	}
-
-	.skeleton--title {
-		height: 32px;
-		width: 200px;
-		margin-bottom: 30px;
-	}
-
-	.skeleton--card {
-		height: 150px;
-	}
-
-	.skeleton-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 30px;
-	}
-
-	@keyframes skeleton-loading {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * EMPTY STATE
@@ -743,19 +696,6 @@
 		flex-direction: column;
 	}
 
-	/* Skeleton grid responsive */
-	@media (max-width: 575px) {
-		.skeleton-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (min-width: 576px) and (max-width: 1199px) {
-		.skeleton-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
 	.membership-card__header {
 		display: block;
 		padding: 20px;
@@ -961,8 +901,7 @@
 		.btn-dashboard,
 		.btn-room,
 		.dropdown-arrow,
-		.dropdown-menu,
-		.skeleton {
+		.dropdown-menu {
 			transition: none;
 			animation: none;
 		}
