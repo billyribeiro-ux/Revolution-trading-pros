@@ -99,13 +99,7 @@
 				</li>
 			{/if}
 
-			{#if index < breadcrumbItems.length - 1}
-				<!-- Separator -->
-				<li class="separator separator-{index === 0 ? 'home' : `item-${index}`}">
-					{' / '}
-				</li>
-			{/if}
-		{/each}
+			{/each}
 	</ul>
 </nav>
 
