@@ -41,16 +41,16 @@ pub struct ValidateCouponResponse {
     pub error: Option<String>,
 }
 
+/// CouponInfo - matches Laravel production schema
 #[derive(Serialize)]
 pub struct CouponInfo {
     pub id: i64,
     pub code: String,
-    pub description: Option<String>,
-    pub discount_type: String,
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
-    pub expires_at: Option<String>,
+    #[serde(rename = "type")]
+    pub coupon_type: String,
+    pub value: f64,
+    pub min_purchase_amount: f64,
+    pub expiry_date: Option<String>,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
@@ -219,12 +219,10 @@ async fn validate_coupon(
         coupon: Some(CouponInfo {
             id: coupon.id,
             code: coupon.code,
-            description: coupon.description,
-            discount_type: coupon.discount_type,
-            discount_value: coupon.discount_value,
-            min_purchase: coupon.min_purchase,
-            max_discount: coupon.max_discount,
-            expires_at: coupon.expires_at.map(|d| d.to_string()),
+            coupon_type: coupon.coupon_type,
+            value: coupon.value,
+            min_purchase_amount: coupon.min_purchase_amount,
+            expiry_date: coupon.expiry_date.map(|d| d.to_string()),
         }),
         discount_amount,
         error: None,
