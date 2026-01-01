@@ -110,8 +110,9 @@ async fn validate_coupon(
     }
 
     // Find coupon
+    // ICT 11+ Fix: Use NULL::TEXT for description column that may not exist in older schemas
     let coupon: Option<Coupon> = sqlx::query_as(
-        r#"SELECT id, code, description, discount_type, discount_value,
+        r#"SELECT id, code, NULL::TEXT as description, discount_type, discount_value,
                   min_purchase, max_discount, usage_limit, usage_count,
                   is_active, starts_at, expires_at, applicable_products,
                   applicable_plans, created_at, updated_at
@@ -324,19 +325,27 @@ async fn list_coupons(
     let limit = query.limit.unwrap_or(50).min(100);
     let offset = query.page.unwrap_or(0) * limit;
 
+    // ICT 11+ Fix: Explicitly list columns with NULL for description (may not exist in older schemas)
+    let coupon_columns = r#"id, code, NULL::TEXT as description, discount_type, discount_value,
+                  min_purchase, max_discount, usage_limit, usage_count,
+                  is_active, starts_at, expires_at, applicable_products,
+                  applicable_plans, created_at, updated_at"#;
+    
     let coupons: Vec<Coupon> = if query.active_only.unwrap_or(false) {
-        sqlx::query_as(
-            r#"SELECT * FROM coupons WHERE is_active = true ORDER BY created_at DESC LIMIT $1 OFFSET $2"#
-        )
+        sqlx::query_as(&format!(
+            "SELECT {} FROM coupons WHERE is_active = true ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+            coupon_columns
+        ))
         .bind(limit)
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     } else {
-        sqlx::query_as(
-            r#"SELECT * FROM coupons ORDER BY created_at DESC LIMIT $1 OFFSET $2"#
-        )
+        sqlx::query_as(&format!(
+            "SELECT {} FROM coupons ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+            coupon_columns
+        ))
         .bind(limit)
         .bind(offset)
         .fetch_all(&state.db.pool)
