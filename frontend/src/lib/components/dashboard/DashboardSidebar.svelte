@@ -569,7 +569,6 @@
 
 	.dash_main_links a:hover {
 		color: #fff;
-		background-color: rgba(255, 255, 255, 0.05);
 	}
 
 	/* Active State - Light blue RIGHT border indicator */
@@ -590,10 +589,6 @@
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
 		color: #fff;
-	}
-
-	.dash_main_links li.is-active a:hover {
-		background-color: rgba(255, 255, 255, 0.1);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
