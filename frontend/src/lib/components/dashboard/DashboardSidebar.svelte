@@ -491,8 +491,8 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dashboard__profile-nav-item:hover {
-		/* No background change on hover */
+	.dashboard__profile-nav-item:hover .dashboard__profile-name {
+		color: #0984ae;
 	}
 
 	.dashboard__profile-photo {
@@ -573,11 +573,13 @@
 
 	.dash_main_links a:hover {
 		color: #fff;
+		background-color: rgba(255, 255, 255, 0.05);
 	}
 
 	/* Active State - Light blue left border indicator */
 	.dash_main_links li.is-active a {
 		color: #fff;
+		background-color: rgba(255, 255, 255, 0.08);
 	}
 
 	.dash_main_links li.is-active a::after {
@@ -592,6 +594,10 @@
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
 		color: #fff;
+	}
+
+	.dash_main_links li.is-active a:hover {
+		background-color: rgba(255, 255, 255, 0.1);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
