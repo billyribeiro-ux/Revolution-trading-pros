@@ -109,13 +109,11 @@ async fn validate_coupon(
         }));
     }
 
-    // Find coupon
-    // ICT 11+ Fix: Use NULL::TEXT for description column that may not exist in older schemas
+    // Find coupon - ICT 11+ Fix: Use Laravel production schema column names
     let coupon: Option<Coupon> = sqlx::query_as(
-        r#"SELECT id, code, NULL::TEXT as description, discount_type, discount_value,
-                  min_purchase, max_discount, usage_limit, usage_count,
-                  is_active, starts_at, expires_at, applicable_products,
-                  applicable_plans, created_at, updated_at
+        r#"SELECT id, code, type, value, max_uses, current_uses,
+                  expiry_date, applicable_products, min_purchase_amount,
+                  is_active, created_at, updated_at
            FROM coupons
            WHERE UPPER(code) = $1"#
     )
@@ -146,21 +144,9 @@ async fn validate_coupon(
         }));
     }
 
-    // Check start date
-    if let Some(starts_at) = coupon.starts_at {
-        if starts_at > chrono::Utc::now().naive_utc() {
-            return Ok(Json(ValidateCouponResponse {
-                valid: false,
-                coupon: None,
-                discount_amount: None,
-                error: Some("This coupon is not yet active".to_string()),
-            }));
-        }
-    }
-
-    // Check expiry
-    if let Some(expires_at) = coupon.expires_at {
-        if expires_at < chrono::Utc::now().naive_utc() {
+    // Check expiry - Laravel uses expiry_date
+    if let Some(expiry_date) = coupon.expiry_date {
+        if expiry_date < chrono::Utc::now().naive_utc() {
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,
@@ -170,9 +156,9 @@ async fn validate_coupon(
         }
     }
 
-    // Check usage limit
-    if let Some(limit) = coupon.usage_limit {
-        if coupon.usage_count >= limit {
+    // Check usage limit - Laravel uses max_uses and current_uses
+    if coupon.max_uses > 0 {
+        if coupon.current_uses >= coupon.max_uses {
             return Ok(Json(ValidateCouponResponse {
                 valid: false,
                 coupon: None,

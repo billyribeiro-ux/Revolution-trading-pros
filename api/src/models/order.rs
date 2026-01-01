@@ -98,23 +98,21 @@ pub struct CheckoutSession {
     pub order_number: String,
 }
 
-/// Coupon entity
+/// Coupon entity - matches Laravel production schema
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Coupon {
     pub id: i64,
     pub code: String,
-    pub description: Option<String>,
-    pub discount_type: String, // percent, fixed
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
-    pub usage_limit: Option<i32>,
-    pub usage_count: i32,
-    pub is_active: bool,
-    pub starts_at: Option<NaiveDateTime>,
-    pub expires_at: Option<NaiveDateTime>,
+    #[sqlx(rename = "type")]
+    #[serde(rename = "type")]
+    pub coupon_type: String, // percentage, fixed
+    pub value: f64,
+    pub max_uses: i32,
+    pub current_uses: i32,
+    pub expiry_date: Option<NaiveDateTime>,
     pub applicable_products: Option<serde_json::Value>,
-    pub applicable_plans: Option<serde_json::Value>,
+    pub min_purchase_amount: f64,
+    pub is_active: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
