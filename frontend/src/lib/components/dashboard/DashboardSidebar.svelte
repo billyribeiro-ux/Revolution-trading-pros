@@ -531,9 +531,8 @@
 
 	.dashboard__nav-category {
 		padding: 30px 30px 0;
-		font-size: 10px;
+		font-size: 16px;
 		font-weight: 700;
-		letter-spacing: 0.15em;
 		text-transform: uppercase;
 		color: #fff;
 		margin: 0;
@@ -919,7 +918,7 @@
 		}
 
 		.dashboard__nav-category {
-			font-size: 9px;
+			font-size: 14px;
 		}
 	}
 
