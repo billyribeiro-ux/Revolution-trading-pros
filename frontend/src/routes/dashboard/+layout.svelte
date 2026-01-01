@@ -165,7 +165,8 @@
 	.dashboard__main {
 		flex: 1;
 		margin-left: 280px;
-		min-height: 100vh;
+		margin-top: 80px; /* Account for NavBar height */
+		min-height: calc(100vh - 80px);
 		background-color: #efefef;
 		transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;

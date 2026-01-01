@@ -381,15 +381,15 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * MAIN SIDEBAR - Collapsible (280px → 80px)
-	 * WordPress Reference: Full viewport height, no NavBar in dashboard area
+	 * Positioned below NavBar (80px height)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar {
 		background-color: #0f2d41;
 		width: 280px;
-		height: 100vh;
+		height: calc(100vh - 80px);
 		position: fixed;
-		top: 0;
+		top: 80px;
 		left: 0;
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -652,9 +652,9 @@
 	.dashboard__sidebar-secondary {
 		background-color: #0f2d41;
 		width: 280px;
-		height: 100vh;
+		height: calc(100vh - 80px);
 		position: fixed;
-		top: 0;
+		top: 80px;
 		left: 80px;
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -731,7 +731,7 @@
 
 	.dashboard__toggle {
 		display: none; /* Hidden on desktop, shown on mobile */
-		background-color: #0d2532;
+		background-color: #0f2d41; /* Match sidebar background */
 		padding: 15px 20px;
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 	}
