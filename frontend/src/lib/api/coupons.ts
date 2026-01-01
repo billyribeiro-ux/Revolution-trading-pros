@@ -600,64 +600,63 @@ class CouponManagementService {
 	// 	}
 	// }
 
-	private handleCouponUpdate(coupon: EnhancedCoupon): void {
-		this.coupons.update((coupons) => {
-			const index = coupons.findIndex((c) => c.id === coupon.id);
-			if (index >= 0) {
-				coupons[index] = coupon;
-			} else {
-				coupons.push(coupon);
-			}
-			return coupons;
-		});
-	}
+	// WebSocket event handlers - commented out until backend implementation
+	// private handleCouponUpdate(coupon: EnhancedCoupon): void {
+	// 	this.coupons.update((coupons) => {
+	// 		const index = coupons.findIndex((c) => c.id === coupon.id);
+	// 		if (index >= 0) {
+	// 			coupons[index] = coupon;
+	// 		} else {
+	// 			coupons.push(coupon);
+	// 		}
+	// 		return coupons;
+	// 	});
+	// }
 
-	private handleRedemption(data: any): void {
-		// Update metrics for the redeemed coupon
-		this.metrics.update((metrics) => {
-			const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
-			couponMetrics.totalRedemptions++;
-			couponMetrics.totalRevenue += data.orderTotal;
-			metrics[data.couponId] = couponMetrics;
-			return metrics;
-		});
+	// private handleRedemption(data: any): void {
+	// 	// Update metrics for the redeemed coupon
+	// 	this.metrics.update((metrics) => {
+	// 		const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
+	// 		couponMetrics.totalRedemptions++;
+	// 		couponMetrics.totalRevenue += data.orderTotal;
+	// 		metrics[data.couponId] = couponMetrics;
+	// 		return metrics;
+	// 	});
+	// 	// Update coupon usage count
+	// 	this.coupons.update((coupons) => {
+	// 		const coupon = coupons.find((c) => c.id === data.couponId);
+	// 		if (coupon) {
+	// 			coupon.currentUses++;
+	// 		}
+	// 		return coupons;
+	// 	});
+	// 	// Show notification
+	// 	this.showNotification(`Coupon ${data.code} redeemed!`, 'success');
+	// }
 
-		// Update coupon usage count
-		this.coupons.update((coupons) => {
-			const coupon = coupons.find((c) => c.id === data.couponId);
-			if (coupon) {
-				coupon.currentUses++;
-			}
-			return coupons;
-		});
+	// private handleCampaignUpdate(campaign: Campaign): void {
+	// 	this.campaigns.update((campaigns) => {
+	// 		const index = campaigns.findIndex((c) => c.id === campaign.id);
+	// 		if (index >= 0) {
+	// 			campaigns[index] = campaign;
+	// 		} else {
+	// 			campaigns.push(campaign);
+	// 		}
+	// 		return campaigns;
+	// 	});
+	// }
 
-		// Show notification
-		this.showNotification(`Coupon ${data.code} redeemed!`, 'success');
-	}
+	// private handleMetricsUpdate(data: { couponId: string; metrics: CouponMetrics }): void {
+	// 	this.metrics.update((metrics) => {
+	// 		metrics[data.couponId] = data.metrics;
+	// 		return metrics;
+	// 	});
+	// }
 
-	private handleCampaignUpdate(campaign: Campaign): void {
-		this.campaigns.update((campaigns) => {
-			const index = campaigns.findIndex((c) => c.id === campaign.id);
-			if (index >= 0) {
-				campaigns[index] = campaign;
-			} else {
-				campaigns.push(campaign);
-			}
-			return campaigns;
-		});
-	}
-
-	private handleMetricsUpdate(data: { couponId: string; metrics: CouponMetrics }): void {
-		this.metrics.update((metrics) => {
-			metrics[data.couponId] = data.metrics;
-			return metrics;
-		});
-	}
-
-	private handleFraudAlert(alert: any): void {
-		console.warn('[CouponService] Fraud alert:', alert);
-		this.showNotification(`Fraud detected: ${alert.message}`, 'error');
-	}
+	// private handleFraudAlert(alert: any): void {
+	// 	console.warn('[CouponService] Fraud alert:', alert);
+	// 	this.showNotification(`Fraud detected: ${alert.message}`, 'error');
+	// }
 
 	/**
 	 * Load initial data - gracefully handles missing endpoints
