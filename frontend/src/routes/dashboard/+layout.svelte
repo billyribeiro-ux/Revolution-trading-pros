@@ -71,9 +71,17 @@
 		email: data.user?.email ?? $user?.email ?? '',
 		name: data.user?.name ?? $user?.name ?? $user?.email?.split('@')[0] ?? 'Member',
 		avatar: $user?.avatar_url ?? null,
-		memberships: membershipsData?.memberships
-			?.filter((m: { status: string }) => m.status === 'active')
-			?.map((m: { slug: string }) => m.slug) ?? []
+		// Pass full membership objects for sidebar to render dynamically
+		memberships: [
+			...(membershipsData?.tradingRooms ?? []),
+			...(membershipsData?.alertServices ?? []),
+			...(membershipsData?.courses ?? [])
+		].filter((m: { status: string }) => m.status === 'active')
+		 .map((m: { name: string; slug: string; icon?: string }) => ({
+			name: m.name,
+			slug: m.slug,
+			icon: m.icon
+		}))
 	});
 
 	// Auth is handled server-side, but we still check client store for logout detection
