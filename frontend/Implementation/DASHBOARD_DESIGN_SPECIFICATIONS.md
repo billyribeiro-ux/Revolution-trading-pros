@@ -199,11 +199,11 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Left border indicator */
+/* RIGHT border indicator (user confirmed) */
 .dash_main_links li.is-active a::after {
   content: '';
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
   bottom: 0;
   width: 4px;
