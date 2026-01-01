@@ -25,8 +25,8 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { onMount, type Snippet } from 'svelte';
-	import { isAuthenticated, user, authStore } from '$lib/stores/auth';
-	import { getUserMemberships, type CategorizedMemberships } from '$lib/api/user-memberships';
+	import { isAuthenticated, user } from '$lib/stores/auth';
+	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -58,7 +58,7 @@
 	let sidebarCollapsed = $state(false);
 
 	// Memberships data
-	let membershipsData = $state<CategorizedMemberships | null>(null);
+	let membershipsData = $state<UserMembershipsResponse | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Pattern
@@ -71,8 +71,8 @@
 		name: data.user?.name ?? $user?.name ?? $user?.email?.split('@')[0] ?? 'Member',
 		avatar: $user?.avatar_url ?? null,
 		memberships: membershipsData?.memberships
-			?.filter(m => m.status === 'active')
-			?.map(m => m.slug) ?? []
+			?.filter((m: { status: string }) => m.status === 'active')
+			?.map((m: { slug: string }) => m.slug) ?? []
 	});
 
 	// Auth is handled server-side, but we still check client store for logout detection
