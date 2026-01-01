@@ -91,7 +91,8 @@
 	{@render children()}
 {:else if isDashboardArea}
 	<!-- Dashboard area: NavBar + Breadcrumbs + Content + Footer -->
-	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
+	<!-- NO bg-rtp-bg here - dashboard has its own light gray background (#f4f4f4) -->
+	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
