@@ -394,8 +394,9 @@
 		overflow-x: hidden;
 		z-index: 100;
 		display: flex;
+		flex: 0 0 auto;
 		flex-direction: column;
-		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: all 0.3s ease-in-out;
 	}
 
 	/* Scrollbar Styling */
@@ -483,31 +484,35 @@
 		display: flex;
 		align-items: center;
 		position: relative;
+		height: auto;
+		line-height: 1.4;
 		padding: 32px 30px 28px 80px;
 		text-decoration: none;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-nav-item:hover {
-		background-color: rgba(255, 255, 255, 0.05);
+		/* No background change on hover */
 	}
 
 	.dashboard__profile-photo {
 		position: absolute;
+		top: 50%;
 		left: 30px;
+		margin-top: -17px;
 		width: 34px;
 		height: 34px;
 		border-radius: 50%;
-		background-size: cover;
+		background-size: 32px;
 		background-position: center;
+		background-repeat: no-repeat;
 		flex-shrink: 0;
-		border: 2px solid rgba(255, 255, 255, 0.15);
-		transition: all 0.3s ease;
+		border: 2px solid #fff;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: rgba(255, 255, 255, 0.3);
+		border-color: #0984ae;
 	}
 
 	.dashboard__profile-name {
@@ -528,13 +533,13 @@
 		padding: 30px 30px 0;
 		font-size: 10px;
 		font-weight: 700;
-		letter-spacing: 0.2em;
+		letter-spacing: 0.15em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.5);
+		color: #fff;
 		margin: 0;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		white-space: nowrap;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -558,27 +563,24 @@
 		height: 50px;
 		padding: 0 20px 0 80px;
 		text-decoration: none;
-		color: rgba(255, 255, 255, 0.5);
+		color: hsla(0, 0%, 100%, 0.5);
 		font-size: 14px;
 		font-weight: 300;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: all 0.15s ease-in-out;
 		position: relative;
 	}
 
 	.dash_main_links a:hover {
-		background-color: rgba(255, 255, 255, 0.1);
-		color: #ffffff;
+		color: #fff;
 	}
 
-	/* Active State */
+	/* Active State - Light blue left border indicator */
 	.dash_main_links li.is-active a {
-		background-color: rgba(255, 255, 255, 0.15);
-		color: #ffffff;
-		font-weight: 600;
+		color: #fff;
 	}
 
-	.dash_main_links li.is-active a::before {
+	.dash_main_links li.is-active a::after {
 		content: '';
 		position: absolute;
 		left: 0;
@@ -586,22 +588,10 @@
 		bottom: 0;
 		width: 4px;
 		background-color: #0984ae;
-		animation: slideIn 0.3s ease-out;
-	}
-
-	@keyframes slideIn {
-		from {
-			transform: scaleY(0);
-			opacity: 0;
-		}
-		to {
-			transform: scaleY(1);
-			opacity: 1;
-		}
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
-		color: #ffffff;
+		color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -610,20 +600,23 @@
 
 	.dashboard__nav-item-icon {
 		position: absolute;
+		top: 50%;
 		left: 30px;
+		margin-top: -16px;
 		font-size: 32px;
 		width: 32px;
 		height: 32px;
+		line-height: 32px;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		color: rgba(255, 255, 255, 0.5);
-		transition: all 0.3s ease;
+		color: hsla(0, 0%, 100%, 0.5);
+		transition: all 0.15s ease-in-out;
 	}
 
 	.dash_main_links a:hover .dashboard__nav-item-icon {
-		color: #ffffff;
+		color: #fff;
 	}
 
 	/* Icons are now rendered via RtpIcon component using Tabler Icons */
