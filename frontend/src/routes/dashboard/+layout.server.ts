@@ -1,33 +1,32 @@
 /**
- * Dashboard Layout Server - SSR Configuration
+ * Dashboard Layout Server - ICT 11+ Server-Side Auth Pattern
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
+ * Svelte 5 (2025) Best Practice: Server-Side Route Protection
  *
- * ARCHITECTURE DECISION:
- * Authentication is handled CLIENT-SIDE because:
- * 1. JWT tokens are stored in memory (not httpOnly cookies)
- * 2. SSR cannot access client-side memory/localStorage
- * 3. Protected routes don't benefit from SSR (no SEO needed)
- * 4. Client-side auth is the industry standard for SPAs
+ * ARCHITECTURE (Updated December 2025):
+ * 1. Authentication is now handled SERVER-SIDE in hooks.server.ts
+ * 2. hooks.server.ts validates JWT and redirects to login if needed
+ * 3. This load function receives authenticated user from event.locals
+ * 4. User data is passed to client for hydration
  *
- * The +layout.svelte handles:
- * - Auth state checking via isAuthenticated store
- * - Redirect to login if not authenticated
- * - Loading memberships data client-side
+ * Benefits:
+ * - Auth check happens BEFORE any data loading
+ * - Prevents unauthorized API calls
+ * - More secure than client-side guards
+ * - Proper redirects with return URLs
  *
- * This file only configures SSR behavior for the dashboard routes.
- *
- * @version 3.0.0 - ICT 11+ Client-Side Auth Pattern
+ * @version 4.0.0 - ICT 11+ Server-Side Auth Pattern
  * @author Revolution Trading Pros
  */
 
 import type { LayoutServerLoad } from './$types';
 
 /**
- * Disable SSR for dashboard routes
- * Auth is handled client-side, SSR would cause hydration mismatches
+ * SSR enabled for dashboard - server-side auth is now secure
+ * The hooks.server.ts handles auth before this load runs
  */
-export const ssr = false;
+export const ssr = true;
 
 /**
  * Disable prerendering for dashboard routes
@@ -36,10 +35,13 @@ export const ssr = false;
 export const prerender = false;
 
 /**
- * Server load function - minimal, auth is client-side
+ * Server load function - receives authenticated user from hooks.server.ts
+ * If user is not authenticated, hooks.server.ts already redirected to login
  */
-export const load: LayoutServerLoad = async () => {
-	// No server-side auth check - handled in +layout.svelte client-side
-	// This prevents the redirect loop caused by locals.user being undefined
-	return {};
+export const load: LayoutServerLoad = async ({ locals }) => {
+	// User is guaranteed to exist here because hooks.server.ts
+	// redirects to login if not authenticated
+	return {
+		user: locals.user ?? null
+	};
 };
