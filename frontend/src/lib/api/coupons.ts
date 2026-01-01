@@ -67,6 +67,19 @@ const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 const CACHE_TTL = 300000; // 5 minutes
 const VALIDATION_CACHE_TTL = 60000; // 1 minute
 const FRAUD_CHECK_TIMEOUT = 3000; // 3 seconds
+const ANALYTICS_INTERVAL = 60000; // 1 minute
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WebSocket Configuration - Apple ICT 11 Principal Engineer Standards
+// ═══════════════════════════════════════════════════════════════════════════
+const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || 'wss://revolution-trading-pros-api.fly.dev' : '';
+const WS_RECONNECT_DELAY = 1000; // Start with 1 second
+const WS_MAX_RECONNECT_DELAY = 30000; // Max 30 seconds
+const WS_RECONNECT_BACKOFF = 1.5; // Exponential backoff multiplier
+const WS_MAX_RECONNECT_ATTEMPTS = 10; // Maximum reconnection attempts
+const WS_HEARTBEAT_INTERVAL = 30000; // 30 seconds
+const WS_HEARTBEAT_TIMEOUT = 5000; // 5 seconds
+const WS_MESSAGE_QUEUE_SIZE = 100; // Maximum queued messages
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
@@ -434,6 +447,17 @@ class CouponManagementService {
 	private analyticsInterval?: number;
 	private pendingValidations = new Map<string, Promise<any>>();
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
+	
+	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
+	private wsReconnectAttempts = 0;
+	private wsReconnectDelay = WS_RECONNECT_DELAY;
+	private wsReconnectTimer?: number;
+	private wsHeartbeatTimer?: number;
+	private wsHeartbeatTimeout?: number;
+	private wsMessageQueue: any[] = [];
+	private wsConnectionState = writable<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
+	private wsLastPingTime = 0;
+	private wsLastPongTime = 0;
 
 	// Stores
 	public coupons = writable<EnhancedCoupon[]>([]);
@@ -600,63 +624,64 @@ class CouponManagementService {
 	// 	}
 	// }
 
-	// WebSocket event handlers - commented out until backend implementation
-	// private handleCouponUpdate(coupon: EnhancedCoupon): void {
-	// 	this.coupons.update((coupons) => {
-	// 		const index = coupons.findIndex((c) => c.id === coupon.id);
-	// 		if (index >= 0) {
-	// 			coupons[index] = coupon;
-	// 		} else {
-	// 			coupons.push(coupon);
-	// 		}
-	// 		return coupons;
-	// 	});
-	// }
+	private handleCouponUpdate(coupon: EnhancedCoupon): void {
+		this.coupons.update((coupons) => {
+			const index = coupons.findIndex((c) => c.id === coupon.id);
+			if (index >= 0) {
+				coupons[index] = coupon;
+			} else {
+				coupons.push(coupon);
+			}
+			return coupons;
+		});
+	}
 
-	// private handleRedemption(data: any): void {
-	// 	// Update metrics for the redeemed coupon
-	// 	this.metrics.update((metrics) => {
-	// 		const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
-	// 		couponMetrics.totalRedemptions++;
-	// 		couponMetrics.totalRevenue += data.orderTotal;
-	// 		metrics[data.couponId] = couponMetrics;
-	// 		return metrics;
-	// 	});
-	// 	// Update coupon usage count
-	// 	this.coupons.update((coupons) => {
-	// 		const coupon = coupons.find((c) => c.id === data.couponId);
-	// 		if (coupon) {
-	// 			coupon.currentUses++;
-	// 		}
-	// 		return coupons;
-	// 	});
-	// 	// Show notification
-	// 	this.showNotification(`Coupon ${data.code} redeemed!`, 'success');
-	// }
+	private handleRedemption(data: any): void {
+		// Update metrics for the redeemed coupon
+		this.metrics.update((metrics) => {
+			const couponMetrics = metrics[data.couponId] || this.createEmptyMetrics();
+			couponMetrics.totalRedemptions++;
+			couponMetrics.totalRevenue += data.orderTotal;
+			metrics[data.couponId] = couponMetrics;
+			return metrics;
+		});
 
-	// private handleCampaignUpdate(campaign: Campaign): void {
-	// 	this.campaigns.update((campaigns) => {
-	// 		const index = campaigns.findIndex((c) => c.id === campaign.id);
-	// 		if (index >= 0) {
-	// 			campaigns[index] = campaign;
-	// 		} else {
-	// 			campaigns.push(campaign);
-	// 		}
-	// 		return campaigns;
-	// 	});
-	// }
+		// Update coupon usage count
+		this.coupons.update((coupons) => {
+			const coupon = coupons.find((c) => c.id === data.couponId);
+			if (coupon) {
+				coupon.currentUses++;
+			}
+			return coupons;
+		});
 
-	// private handleMetricsUpdate(data: { couponId: string; metrics: CouponMetrics }): void {
-	// 	this.metrics.update((metrics) => {
-	// 		metrics[data.couponId] = data.metrics;
-	// 		return metrics;
-	// 	});
-	// }
+		// Show notification
+		this.showNotification(`Coupon ${data.code} redeemed!`, 'success');
+	}
 
-	// private handleFraudAlert(alert: any): void {
-	// 	console.warn('[CouponService] Fraud alert:', alert);
-	// 	this.showNotification(`Fraud detected: ${alert.message}`, 'error');
-	// }
+	private handleCampaignUpdate(campaign: Campaign): void {
+		this.campaigns.update((campaigns) => {
+			const index = campaigns.findIndex((c) => c.id === campaign.id);
+			if (index >= 0) {
+				campaigns[index] = campaign;
+			} else {
+				campaigns.push(campaign);
+			}
+			return campaigns;
+		});
+	}
+
+	private handleMetricsUpdate(data: { couponId: string; metrics: CouponMetrics }): void {
+		this.metrics.update((metrics) => {
+			metrics[data.couponId] = data.metrics;
+			return metrics;
+		});
+	}
+
+	private handleFraudAlert(alert: any): void {
+		console.warn('[CouponService] Fraud alert:', alert);
+		this.showNotification(`Fraud detected: ${alert.message}`, 'error');
+	}
 
 	/**
 	 * Load initial data - gracefully handles missing endpoints
