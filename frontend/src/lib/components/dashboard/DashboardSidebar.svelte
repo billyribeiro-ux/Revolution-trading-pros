@@ -16,7 +16,7 @@
 	- browser check for SSR safety
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -45,8 +45,8 @@
 	let isHovered = $state(false);
 	let isMobileMenuOpen = $state(false);
 
-	// Current path for active state - SSR safe
-	let currentPath = $derived($page.url.pathname);
+	// Current path for active state - Svelte 5 $app/state (no store subscription needed)
+	let currentPath = $derived(page.url.pathname);
 
 	// Persist collapsed state to localStorage - SSR safe with $effect
 	$effect(() => {
