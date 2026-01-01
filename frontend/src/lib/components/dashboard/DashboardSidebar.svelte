@@ -100,7 +100,7 @@
 		isHovered = false;
 	}
 
-	// Navigation items matching WordPress reference
+	// Navigation items - RTP Product Structure
 	// Icons use RTP naming convention (rtp-icon-*)
 	const mainLinks: NavLink[] = [
 		{ href: '/dashboard/', icon: 'home', text: 'Member Dashboard' },
@@ -108,33 +108,42 @@
 		{ href: '/dashboard/indicators/', icon: 'indicators', text: 'My Indicators', bold: true }
 	];
 
-	// Membership links - dynamically shown based on user memberships
+	// Membership links - Live Trading Rooms (dynamically shown based on user memberships)
 	let membershipLinks = $derived.by(() => {
 		const links: NavLink[] = [];
-		if (user.memberships?.includes('mastering_the_trade')) {
-			links.push({ href: '/dashboard/mastering-the-trade', icon: 'mastering-the-trade', text: 'Mastering the Trade' });
+		if (user.memberships?.includes('options_day_trading_room')) {
+			links.push({ href: '/dashboard/options-day-trading/', icon: 'chart-candle', text: 'Options Day Trading Room' });
 		}
-		if (user.memberships?.includes('simpler_showcase')) {
-			links.push({ href: '/dashboard/simpler-showcase/', icon: 'simpler-showcase', text: 'Simpler Showcase' });
-		}
-		if (user.memberships?.includes('tr3ndy_spx_alerts')) {
-			links.push({ href: '/dashboard/tr3ndy-spx-alerts/', icon: 'tr3ndy-spx-alerts-circle', text: 'Tr3ndy SPX Alerts Service' });
+		if (user.memberships?.includes('swing_trading_room')) {
+			links.push({ href: '/dashboard/swing-trading/', icon: 'trending-up', text: 'Swing Trading Room' });
 		}
 		return links;
 	});
 
-	// Mastery links
+	// Mastery links - Mentorship Programs
 	let masteryLinks = $derived.by(() => {
 		const links: NavLink[] = [];
-		if (user.memberships?.includes('compounding_growth_mastery')) {
-			links.push({ href: '/dashboard/cgm/', icon: 'consistent-growth', text: 'Compounding Growth Mastery' });
+		if (user.memberships?.includes('small_accounts_mentorship')) {
+			links.push({ href: '/dashboard/small-accounts-mentorship/', icon: 'school', text: 'Small Accounts Mentorship' });
+		}
+		return links;
+	});
+
+	// Scanner links - Trading Scanners (NEW)
+	let scannerLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		if (user.memberships?.includes('high_octane_scanner')) {
+			links.push({ href: '/dashboard/high-octane-scanner/', icon: 'bolt', text: 'High Octane Scanner' });
+		}
+		if (user.memberships?.includes('h2_scanner')) {
+			links.push({ href: '/dashboard/h2-scanner/', icon: 'search', text: 'H2 Scanner' });
 		}
 		return links;
 	});
 
 	const toolsLinks: NavLink[] = [
-		{ href: '/dashboard/ww/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
-		{ href: 'https://intercom.help/simpler-trading/en/', icon: 'support', text: 'Support', external: true }
+		{ href: '/dashboard/weekly-watchlist/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
+		{ href: 'https://support.revolutiontradingpros.com/', icon: 'support', text: 'Support', external: true }
 	];
 
 	const accountLinks: NavLink[] = [
@@ -145,6 +154,7 @@
 	let allSections = $derived([
 		{ title: 'memberships', links: membershipLinks },
 		{ title: 'mastery', links: masteryLinks },
+		{ title: 'scanner', links: scannerLinks },
 		{ title: 'tools', links: toolsLinks }
 	]);
 </script>
@@ -215,6 +225,27 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each masteryLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
+		<!-- Scanner Section -->
+		{#if scannerLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">scanner</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
