@@ -530,10 +530,9 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-category {
-		padding: 30px 30px 10px;
-		font-size: 12px;
+		padding: 30px 30px 0;
+		font-size: 16px;
 		font-weight: 700;
-		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: #fff;
 		margin: 0;
@@ -919,7 +918,7 @@
 		}
 
 		.dashboard__nav-category {
-			font-size: 11px;
+			font-size: 14px;
 		}
 	}
 
