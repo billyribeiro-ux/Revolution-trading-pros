@@ -334,35 +334,75 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DASHBOARD HEADER - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__header {
-		background-color: #ffffff;
-		padding: 30px 40px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		border-bottom: 1px solid #e0e0e0;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		max-width: 1700px;
+		padding: 20px;
+	}
+
+	@media (min-width: 820px) {
+		.dashboard__header {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 
 	.dashboard__header-left {
-		flex: 1;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	@media (min-width: 577px) {
+		.dashboard__header-left {
+			flex-direction: row;
+		}
 	}
 
 	.dashboard__page-title {
-		font-size: 32px;
-		font-weight: 700;
-		color: #333333;
 		margin: 0;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
+		color: #333;
+		font-size: 36px;
+		font-weight: 300;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
 	.dashboard__header-right {
-		display: flex;
-		align-items: center;
-		gap: 15px;
+		flex-direction: column-reverse;
+		margin-top: 10px;
+	}
+
+	@media (min-width: 577px) {
+		.dashboard__header-right {
+			flex-direction: row-reverse;
+			justify-content: flex-end;
+		}
+	}
+
+	@media (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: row;
+			justify-content: flex-start;
+			margin-top: 0;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -413,19 +453,19 @@
 	.empty-state__title {
 		font-size: 28px;
 		font-weight: 700;
-		color: #333333;
+		color: #333;
 		margin: 0 0 16px;
-		font-family: 'Open Sans', sans-serif;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
 	.empty-state__text {
 		font-size: 16px;
-		color: #666666;
+		color: #666;
 		margin: 0 0 24px;
 		max-width: 400px;
 		margin-left: auto;
 		margin-right: auto;
-		font-family: 'Open Sans', sans-serif;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -438,15 +478,15 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background-color: #dc7309;
-		color: #ffffff;
+		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
-		font-family: 'Open Sans', sans-serif;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
-		transition: background-color 0.2s ease;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.btn-orange:hover {
@@ -463,7 +503,7 @@
 
 	.dropdown-arrow {
 		font-size: 10px;
-		transition: transform 0.2s ease;
+		transition: transform 0.15s ease-in-out;
 	}
 
 	.dropdown.is-open .dropdown-arrow {
@@ -471,7 +511,8 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DROPDOWN MENU
+	 * DROPDOWN MENU - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dropdown {
@@ -483,44 +524,42 @@
 		position: absolute;
 		top: 100%;
 		right: 0;
-		margin-top: 8px;
-		min-width: 220px;
+		padding: 20px;
+		min-width: 260px;
+		max-width: 280px;
+		margin: 5px 0 0;
+		font-size: 14px;
 		background-color: #ffffff;
-		border-radius: 6px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		border: none;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		z-index: 1000;
-		overflow: hidden;
-		animation: dropdownFadeIn 0.2s ease;
 	}
 
-	@keyframes dropdownFadeIn {
-		from {
-			opacity: 0;
-			transform: translateY(-10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+	.dropdown-menu__heading {
+		margin: -20px -20px 20px;
+		padding: 15px 20px;
+		color: #fff;
+		background: #0984ae;
+		font-size: 17px;
+		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		border-radius: 5px 5px 0 0;
 	}
 
 	.dropdown-item {
 		display: block;
-		padding: 12px 16px;
-		color: #333333;
+		padding: 10px 15px;
+		color: #666;
 		font-size: 14px;
 		font-weight: 400;
-		font-family: 'Open Sans', sans-serif;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
-		transition: background-color 0.2s ease;
+		transition: background-color 0.15s ease-in-out;
 	}
 
 	.dropdown-item:hover {
-		background-color: #f5f5f5;
-	}
-
-	.dropdown-item:not(:last-child) {
-		border-bottom: 1px solid #eeeeee;
+		background-color: #f4f4f4;
 	}
 
 	.dropdown-backdrop {
@@ -533,112 +572,114 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD CONTENT
+	 * DASHBOARD CONTENT - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
-		padding: 0;
+		display: flex;
+		flex-flow: row nowrap;
 	}
 
 	.dashboard__content-main {
-		background-color: #efefef;
-		padding: 0;
+		flex: 1 1 auto;
+		min-width: 0;
+		border-right: 1px solid #dbdbdb;
 	}
 
 	.dashboard__content-section {
-		padding: 30px 40px;
-		background-color: #ffffff;
-		margin-bottom: 20px;
+		padding: 30px 20px;
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__content-section {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__content-section {
+			padding: 40px;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SECTION TITLES
+	 * SECTION TITLES - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.section-title {
-		color: #333333;
-		font-size: 32px;
+		color: #333;
+		font-size: 20px;
 		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		margin: 0 0 30px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MEMBERSHIP CARDS
+	 * MEMBERSHIP CARDS - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-cards {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 30px;
-	}
-
-	@media (max-width: 1200px) {
-		.membership-cards {
-			grid-template-columns: repeat(2, 1fr);
-		}
+		margin-top: -30px;
 	}
 
 	@media (max-width: 768px) {
-		.membership-cards {
-			grid-template-columns: 1fr;
-		}
-
 		.skeleton-grid {
 			grid-template-columns: 1fr;
 		}
 	}
 
 	.membership-card {
-		background-color: #ffffff;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		overflow: hidden;
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.membership-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+		margin-top: 30px;
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		display: inline-block;
+		width: 100%;
 	}
 
 	.membership-card__header {
-		display: flex;
-		align-items: center;
-		padding: 25px 20px;
+		display: block;
+		padding: 20px;
+		color: #333;
+		font-weight: 700;
+		white-space: nowrap;
 		text-decoration: none;
-		color: #333333;
-		border-bottom: 1px solid #f0f0f0;
-		transition: background-color 0.2s ease;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.membership-card__header:hover {
-		background-color: #f9f9f9;
+		color: #0984ae;
 	}
 
 	.mem_icon {
-		margin-right: 15px;
+		display: inline-block;
+		vertical-align: middle;
+		margin-right: 9px;
 	}
 
 	.membership-card__icon {
-		width: 48px;
-		height: 48px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 8px;
-		background-color: #f5f5f5;
+		display: inline-block;
+		width: 50px;
+		height: 50px;
+		line-height: 50px;
+		color: #fff;
+		text-align: center;
+		border-radius: 50%;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.mem_div {
-		font-size: 18px;
+		display: inline-block;
+		vertical-align: middle;
+		font-size: 14px;
 		font-weight: 700;
-		color: #333333;
-		line-height: 1.3;
-		font-family: 'Open Sans', sans-serif;
+		color: #333;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
 	.icon {
@@ -658,72 +699,95 @@
 	/* Icons are now rendered via RtpIcon component using Tabler Icons */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MEMBERSHIP CARD ACTIONS
+	 * MEMBERSHIP CARD ACTIONS - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card__actions {
 		display: flex;
-		padding: 20px;
-		gap: 10px;
+		font-size: 14px;
+		border-top: 1px solid #ededed;
+		justify-content: center;
 	}
 
 	.membership-card__actions a {
-		flex: 1;
+		display: block;
+		flex: 0 0 auto;
+		flex-basis: 50%;
+		width: 50%;
+		height: 100%;
+		padding: 15px;
 		text-align: center;
-		padding: 10px 15px;
 		font-size: 14px;
-		font-weight: 600;
-		font-family: 'Open Sans', sans-serif;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
-		border-radius: 4px;
-		transition: all 0.2s ease;
+		color: #1e73be;
+		transition: all 0.15s ease-in-out;
 	}
 
-	.btn-dashboard {
-		background-color: #0984ae;
-		color: #ffffff;
+	.membership-card__actions a:hover {
+		color: #0984ae;
+		background-color: #f4f4f4;
 	}
 
-	.btn-dashboard:hover {
-		background-color: #076d8f;
-	}
-
-	.btn-room {
-		background-color: #f0f0f0;
-		color: #333333;
-	}
-
-	.btn-room:hover {
-		background-color: #e0e0e0;
+	.membership-card__actions a + a {
+		border-left: 1px solid #ededed;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * CARD VARIANTS
+	 * CARD VARIANTS - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-card--options .membership-card__icon {
-		background-color: #fff3e6;
-		color: #dc7309;
+		background-color: #0984ae;
+		box-shadow: 0 5px 15px rgba(9, 132, 174, 0.25);
+	}
+
+	.membership-card--options:hover .membership-card__icon {
+		background-color: #076787;
 	}
 
 	.membership-card--foundation .membership-card__icon {
-		background-color: #e6f7ff;
-		color: #0984ae;
+		background-color: #00abaf;
+		box-shadow: 0 5px 15px rgba(0, 171, 175, 0.25);
+	}
+
+	.membership-card--foundation:hover .membership-card__icon {
+		background-color: #008386;
 	}
 
 	.membership-card--tr3ndy .membership-card__icon {
-		background-color: #f0e6ff;
-		color: #7b3ff2;
+		background-color: #fe8900;
+		box-shadow: 0 5px 15px rgba(254, 137, 0, 0.25);
+	}
+
+	.membership-card--tr3ndy:hover .membership-card__icon {
+		background-color: #d57300;
 	}
 
 	.membership-card--growth .membership-card__icon {
-		background-color: #e6ffe6;
-		color: #28a745;
+		background-color: #005695;
+		box-shadow: 0 5px 15px rgba(0, 86, 149, 0.25);
 	}
 
 	.membership-card--ww .membership-card__icon {
-		background-color: #fff0f0;
-		color: #dc3545;
+		background-color: #0c2434;
+		box-shadow: 0 5px 15px rgba(12, 36, 52, 0.25);
+	}
+
+	.membership-card--ww:hover .membership-card__icon {
+		background-color: #040d13;
+	}
+
+	.membership-card--training .membership-card__icon {
+		background-color: #3c22f1;
+		box-shadow: 0 5px 15px rgba(60, 34, 241, 0.25);
+	}
+
+	.membership-card--training:hover .membership-card__icon {
+		background-color: #280edc;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -758,14 +822,16 @@
 		.dropdown-menu {
 			left: 0;
 			right: 0;
+			min-width: auto;
+			max-width: none;
 		}
 
 		.dashboard__content-section {
-			padding: 20px;
+			padding: 20px 15px;
 		}
 
 		.section-title {
-			font-size: 24px;
+			font-size: 18px;
 		}
 	}
 
