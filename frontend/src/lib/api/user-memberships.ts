@@ -586,6 +586,22 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
 			interval: 'monthly'
+		},
+		// ═══════════════════════════════════════════════════════════════════════════
+		// INDICATORS / SCANNERS (1)
+		// ═══════════════════════════════════════════════════════════════════════════
+		{
+			id: 'mock-6',
+			name: 'Options Scanner Pro',
+			type: 'indicator',
+			slug: 'options-scanner-pro',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'search',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly'
 		}
 		// NOTE: Weekly Watchlist is in the Tools section, not memberships cards
 	];
