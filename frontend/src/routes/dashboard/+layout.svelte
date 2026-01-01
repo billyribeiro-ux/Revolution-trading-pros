@@ -28,7 +28,6 @@
 	import { isAuthenticated, user } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
-	import Breadcrumbs from '$lib/components/dashboard/Breadcrumbs.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 Pattern
@@ -146,9 +145,6 @@
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
 	<main class="dashboard__main">
-		<!-- Breadcrumbs Navigation -->
-		<Breadcrumbs />
-		
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
