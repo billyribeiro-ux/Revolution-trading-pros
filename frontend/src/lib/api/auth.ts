@@ -588,6 +588,25 @@ class AuthenticationService {
 			response.refresh_token
 		);
 
+		// ICT11+ Pattern: Set httpOnly cookies for server-side auth
+		// This enables SSR auth checks in hooks.server.ts
+		if (browser) {
+			try {
+				await fetch('/api/auth/set-session', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						accessToken: response.token,
+						refreshToken: response.refresh_token,
+						expiresIn: response.expires_in
+					})
+				});
+			} catch (cookieError) {
+				console.warn('[AuthService] Failed to set session cookies:', cookieError);
+				// Continue anyway - client-side auth will still work
+			}
+		}
+
 		// Schedule token refresh
 		if (response.expires_in) {
 			this.scheduleTokenRefresh(response.expires_in * 1000);
@@ -664,6 +683,15 @@ class AuthenticationService {
 		} catch (error) {
 			console.error('[AuthService] Logout API call failed:', error);
 		} finally {
+			// ICT11+ Pattern: Clear httpOnly cookies for server-side auth
+			if (browser) {
+				try {
+					await fetch('/api/auth/set-session', { method: 'DELETE' });
+				} catch (cookieError) {
+					console.warn('[AuthService] Failed to clear session cookies:', cookieError);
+				}
+			}
+
 			// Always clear local auth state
 			this.clearAuth();
 		}
