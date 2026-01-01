@@ -7,7 +7,7 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, put, delete},
+    routing::{get, post, delete},
     Json, Router,
 };
 use serde::Deserialize;
@@ -270,7 +270,7 @@ async fn update_user(
     let user = query_builder
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
+        .map_err(|_e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
 
     Ok(Json(user))
 }

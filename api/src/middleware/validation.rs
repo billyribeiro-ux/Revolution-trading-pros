@@ -8,7 +8,6 @@
 //! - JSON schema validation support
 
 use axum::{
-    body::Body,
     extract::Request,
     http::{header, StatusCode},
     middleware::Next,

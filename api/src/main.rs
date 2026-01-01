@@ -16,6 +16,7 @@ mod utils;
 
 use axum::{
     http::{header, HeaderName, HeaderValue, Method},
+    middleware as axum_middleware,
     Router,
 };
 use std::net::SocketAddr;
@@ -177,11 +178,16 @@ async fn main() -> anyhow::Result<()> {
         .url("/api-docs/openapi.json", docs::ApiDoc::openapi());
 
     // Build router with security layers
+    // ICT 11+ Enhancement: Add metrics middleware to track all requests
     let app = Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
         .merge(swagger_router)
         .nest("/monitoring", monitoring::router().with_state(metrics.clone()))
+        .layer(axum_middleware::from_fn_with_state(
+            metrics.clone(),
+            monitoring::metrics_middleware,
+        ))
         .layer(security_headers)
         .layer(cors)
         .layer(CompressionLayer::new())

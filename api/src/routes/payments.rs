@@ -8,7 +8,7 @@
 //! - Refund processing
 
 use axum::{
-    extract::{State, Path},
+    extract::State,
     http::{StatusCode, HeaderMap},
     routing::{post, get},
     Json, Router,
@@ -308,7 +308,7 @@ async fn webhook(
     body: String,
 ) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
     // Get signature header
-    let signature = headers
+    let _signature = headers
         .get("stripe-signature")
         .and_then(|v| v.to_str().ok())
         .ok_or_else(|| {
@@ -581,7 +581,7 @@ async fn handle_checkout_completed(
 }
 
 async fn handle_subscription_created(
-    state: &AppState,
+    _state: &AppState,
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {

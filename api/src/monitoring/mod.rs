@@ -163,3 +163,32 @@ pub fn router() -> Router<Metrics> {
         .route("/metrics/json", get(metrics_json))
         .route("/health/detailed", get(health_detailed))
 }
+
+/// ICT 11+ Metrics Middleware Layer
+/// Tracks all requests and their success/failure status
+use axum::{
+    extract::Request,
+    middleware::Next,
+    response::Response,
+};
+
+pub async fn metrics_middleware(
+    State(metrics): State<Metrics>,
+    request: Request,
+    next: Next,
+) -> Response {
+    // Record request
+    metrics.record_request();
+    
+    // Process request
+    let response = next.run(request).await;
+    
+    // Record success/error based on status
+    if response.status().is_success() {
+        metrics.record_success();
+    } else if response.status().is_client_error() || response.status().is_server_error() {
+        metrics.record_error();
+    }
+    
+    response
+}

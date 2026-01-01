@@ -13,7 +13,6 @@
 //! - Constant-time comparison utilities
 
 pub mod errors;
-pub use errors::*;
 
 use anyhow::Result;
 use argon2::{
@@ -23,7 +22,6 @@ use argon2::{
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 /// JWT claims for access tokens
 #[derive(Debug, Serialize, Deserialize)]
@@ -242,7 +240,7 @@ pub fn generate_password_reset_token() -> String {
 /// The raw token is sent to the user, the hashed token is stored in the database
 pub fn generate_verification_token() -> (String, String) {
     use rand::Rng;
-    use sha2::{Digest, Sha256};
+    
     
     let mut rng = rand::thread_rng();
     let raw_token: String = (0..64)
