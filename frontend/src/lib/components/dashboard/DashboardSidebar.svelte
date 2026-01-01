@@ -16,7 +16,7 @@
 	- browser check for SSR safety
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -45,24 +45,15 @@
 	let isHovered = $state(false);
 	let isMobileMenuOpen = $state(false);
 
-	// Current path for active state - SSR safe
-	let currentPath = $derived($page.url.pathname);
+	// Current path for active state - Svelte 5 $app/state (no store subscription needed)
+	let currentPath = $derived(page.url.pathname);
 
-	// Persist collapsed state to localStorage - SSR safe with $effect
+	// Route-based collapse - sidebar collapses when navigating to sub-pages
+	// Full sidebar (280px) on /dashboard/ home, collapsed (80px) on sub-pages
 	$effect(() => {
 		if (browser) {
-			// Read initial state from localStorage on mount
-			const saved = localStorage.getItem('dashboard_sidebar_collapsed');
-			if (saved !== null) {
-				collapsed = saved === 'true';
-			}
-		}
-	});
-
-	// Save collapsed state when it changes
-	$effect(() => {
-		if (browser) {
-			localStorage.setItem('dashboard_sidebar_collapsed', String(collapsed));
+			const isDashboardHome = currentPath === '/dashboard' || currentPath === '/dashboard/';
+			collapsed = !isDashboardHome;
 		}
 	});
 
@@ -72,11 +63,6 @@
 			return currentPath === '/dashboard' || currentPath === '/dashboard/';
 		}
 		return currentPath.startsWith(href);
-	}
-
-	// Toggle collapse state
-	function toggleCollapse() {
-		collapsed = !collapsed;
 	}
 
 	// Toggle mobile menu
@@ -100,7 +86,7 @@
 		isHovered = false;
 	}
 
-	// Navigation items matching WordPress reference
+	// Navigation items - RTP Product Structure
 	// Icons use RTP naming convention (rtp-icon-*)
 	const mainLinks: NavLink[] = [
 		{ href: '/dashboard/', icon: 'home', text: 'Member Dashboard' },
@@ -108,33 +94,42 @@
 		{ href: '/dashboard/indicators/', icon: 'indicators', text: 'My Indicators', bold: true }
 	];
 
-	// Membership links - dynamically shown based on user memberships
+	// Membership links - Live Trading Rooms (dynamically shown based on user memberships)
 	let membershipLinks = $derived.by(() => {
 		const links: NavLink[] = [];
-		if (user.memberships?.includes('mastering_the_trade')) {
-			links.push({ href: '/dashboard/mastering-the-trade', icon: 'mastering-the-trade', text: 'Mastering the Trade' });
+		if (user.memberships?.includes('options_day_trading_room')) {
+			links.push({ href: '/dashboard/options-day-trading/', icon: 'chart-candle', text: 'Options Day Trading Room' });
 		}
-		if (user.memberships?.includes('simpler_showcase')) {
-			links.push({ href: '/dashboard/simpler-showcase/', icon: 'simpler-showcase', text: 'Simpler Showcase' });
-		}
-		if (user.memberships?.includes('tr3ndy_spx_alerts')) {
-			links.push({ href: '/dashboard/tr3ndy-spx-alerts/', icon: 'tr3ndy-spx-alerts-circle', text: 'Tr3ndy SPX Alerts Service' });
+		if (user.memberships?.includes('swing_trading_room')) {
+			links.push({ href: '/dashboard/swing-trading/', icon: 'trending-up', text: 'Swing Trading Room' });
 		}
 		return links;
 	});
 
-	// Mastery links
+	// Mastery links - Mentorship Programs
 	let masteryLinks = $derived.by(() => {
 		const links: NavLink[] = [];
-		if (user.memberships?.includes('compounding_growth_mastery')) {
-			links.push({ href: '/dashboard/cgm/', icon: 'consistent-growth', text: 'Compounding Growth Mastery' });
+		if (user.memberships?.includes('small_accounts_mentorship')) {
+			links.push({ href: '/dashboard/small-accounts-mentorship/', icon: 'school', text: 'Small Accounts Mentorship' });
+		}
+		return links;
+	});
+
+	// Scanner links - Trading Scanners (NEW)
+	let scannerLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		if (user.memberships?.includes('high_octane_scanner')) {
+			links.push({ href: '/dashboard/high-octane-scanner/', icon: 'bolt', text: 'High Octane Scanner' });
+		}
+		if (user.memberships?.includes('h2_scanner')) {
+			links.push({ href: '/dashboard/h2-scanner/', icon: 'search', text: 'H2 Scanner' });
 		}
 		return links;
 	});
 
 	const toolsLinks: NavLink[] = [
-		{ href: '/dashboard/ww/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
-		{ href: 'https://intercom.help/simpler-trading/en/', icon: 'support', text: 'Support', external: true }
+		{ href: '/dashboard/weekly-watchlist/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
+		{ href: 'https://support.revolutiontradingpros.com/', icon: 'support', text: 'Support', external: true }
 	];
 
 	const accountLinks: NavLink[] = [
@@ -145,6 +140,7 @@
 	let allSections = $derived([
 		{ title: 'memberships', links: membershipLinks },
 		{ title: 'mastery', links: masteryLinks },
+		{ title: 'scanner', links: scannerLinks },
 		{ title: 'tools', links: toolsLinks }
 	]);
 </script>
@@ -228,6 +224,27 @@
 			</ul>
 		{/if}
 
+		<!-- Scanner Section -->
+		{#if scannerLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">scanner</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each scannerLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
 		<!-- Tools Section -->
 		<ul>
 			<li>
@@ -271,18 +288,20 @@
 		</ul>
 	</nav>
 
-	<!-- Collapse Toggle Button -->
+	<!-- Toggle Footer - Mobile Menu Trigger (matches WordPress reference) -->
 	<footer class="dashboard__toggle">
 		<button
-			class="dashboard__collapse-button"
-			onclick={toggleCollapse}
-			aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-			aria-expanded={!collapsed}
+			class="dashboard__toggle-button"
+			onclick={toggleMobileMenu}
+			aria-label="Toggle dashboard menu"
+			aria-expanded={isMobileMenuOpen}
 		>
-			<div class="dashboard__collapse-icon" class:is-collapsed={collapsed}>
-				<RtpIcon name="chevron-left" size={18} />
+			<div class="dashboard__toggle-button-icon">
+				<span></span>
+				<span></span>
+				<span></span>
 			</div>
-			<span class="dashboard__collapse-label">Collapse</span>
+			<span class="dashboard__toggle-button-label">Dashboard Menu</span>
 		</button>
 	</footer>
 </aside>
@@ -326,14 +345,15 @@
 	</aside>
 {/if}
 
-<!-- Mobile Menu Toggle (visible on mobile only) -->
+<!-- Mobile Floating Trigger (visible when sidebar is hidden on mobile) -->
 <button
-	class="dashboard__mobile-toggle"
+	class="dashboard__mobile-trigger"
 	onclick={toggleMobileMenu}
-	aria-label="Toggle mobile menu"
+	aria-label="Open dashboard menu"
 	aria-expanded={isMobileMenuOpen}
+	class:is-hidden={isMobileMenuOpen}
 >
-	<span class="dashboard__mobile-toggle-icon">
+	<span class="dashboard__mobile-trigger-icon">
 		<span></span>
 		<span></span>
 		<span></span>
@@ -410,8 +430,7 @@
 
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
 	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed .dashboard__nav-category,
-	.dashboard__sidebar.is-collapsed .dashboard__collapse-label {
+	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
 		opacity: 0;
 		visibility: hidden;
 		width: 0;
@@ -615,7 +634,7 @@
 
 	.dashboard__nav-item-text {
 		font-size: 14px;
-		font-weight: 400;
+		font-weight: inherit; /* Inherits 300 from parent .dash_main_links a */
 		line-height: 1.4;
 		color: inherit;
 		white-space: nowrap;
@@ -625,80 +644,6 @@
 	.dashboard__nav-item-text.font-bold {
 		font-weight: bold;
 		color: white;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * COLLAPSE BUTTON
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__toggle {
-		height: 50px;
-		padding: 0 30px;
-		display: flex;
-		align-items: center;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		background-color: #0d2532;
-	}
-
-	.dashboard__collapse-button {
-		display: flex;
-		align-items: center;
-		width: 100%;
-		padding: 0;
-		background: none;
-		border: none;
-		color: rgba(255, 255, 255, 0.5);
-		font-size: 14px;
-		font-weight: 300;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		cursor: pointer;
-		transition: color 0.2s ease;
-	}
-
-	.dashboard__collapse-button:hover {
-		color: #ffffff;
-	}
-
-	.dashboard__collapse-button:focus-visible {
-		outline: 2px solid #0984ae;
-		outline-offset: 2px;
-	}
-
-	.dashboard__collapse-icon {
-		width: 24px;
-		height: 24px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-right: 12px;
-		transition: transform 0.3s ease;
-	}
-
-	.dashboard__collapse-icon.is-collapsed {
-		transform: rotate(180deg);
-	}
-
-	.dashboard__collapse-label {
-		font-size: 14px;
-		font-weight: 600;
-		white-space: nowrap;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
-	}
-
-	/* Collapsed state adjustments */
-	.dashboard__sidebar.is-collapsed .dashboard__toggle {
-		padding: 20px 0;
-		display: flex;
-		justify-content: center;
-	}
-
-	.dashboard__sidebar.is-collapsed .dashboard__collapse-button {
-		justify-content: center;
-		width: auto;
-	}
-
-	.dashboard__sidebar.is-collapsed .dashboard__collapse-icon {
-		margin-right: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -781,11 +726,67 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MOBILE TOGGLE BUTTON
+	 * TOGGLE FOOTER - Mobile Menu Trigger (WordPress Reference Match)
+	 * Background: #0d2532
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__mobile-toggle {
-		display: none;
+	.dashboard__toggle {
+		display: none; /* Hidden on desktop, shown on mobile */
+		background-color: #0d2532;
+		padding: 15px 20px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.dashboard__toggle-button {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		padding: 10px 15px;
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		color: rgba(255, 255, 255, 0.7);
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-size: 14px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		border-radius: 6px;
+	}
+
+	.dashboard__toggle-button:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
+	.dashboard__toggle-button-icon {
+		width: 20px;
+		height: 14px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.dashboard__toggle-button-icon span {
+		display: block;
+		width: 100%;
+		height: 2px;
+		background-color: currentColor;
+		transition: all 0.3s ease;
+	}
+
+	.dashboard__toggle-button-label {
+		font-size: 13px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MOBILE FLOATING TRIGGER - Opens sidebar when hidden
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__mobile-trigger {
+		display: none; /* Hidden on desktop, shown on mobile */
 		position: fixed;
 		top: 20px;
 		left: 20px;
@@ -799,9 +800,15 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		transition: opacity 0.3s ease, visibility 0.3s ease;
 	}
 
-	.dashboard__mobile-toggle-icon {
+	.dashboard__mobile-trigger.is-hidden {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.dashboard__mobile-trigger-icon {
 		width: 24px;
 		height: 18px;
 		display: flex;
@@ -809,7 +816,7 @@
 		justify-content: space-between;
 	}
 
-	.dashboard__mobile-toggle-icon span {
+	.dashboard__mobile-trigger-icon span {
 		display: block;
 		width: 100%;
 		height: 2px;
@@ -858,8 +865,14 @@
 			width: 280px;
 		}
 
-		.dashboard__mobile-toggle {
+		/* Show mobile floating trigger */
+		.dashboard__mobile-trigger {
 			display: flex;
+		}
+
+		/* Show toggle footer inside sidebar on mobile */
+		.dashboard__toggle {
+			display: block;
 		}
 
 		.dashboard__sidebar-secondary {
@@ -869,8 +882,7 @@
 		/* Reset collapsed styles on mobile */
 		.dashboard__sidebar.is-collapsed .dashboard__profile-name,
 		.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
-		.dashboard__sidebar.is-collapsed .dashboard__nav-category,
-		.dashboard__sidebar.is-collapsed .dashboard__collapse-label {
+		.dashboard__sidebar.is-collapsed .dashboard__nav-category {
 			opacity: 1;
 			visibility: visible;
 			width: auto;
@@ -940,8 +952,6 @@
 		.dashboard__profile-photo,
 		.dash_main_links a,
 		.dashboard__nav-item-icon,
-		.dashboard__collapse-button,
-		.dashboard__collapse-icon,
 		.dashboard__overlay,
 		.dashboard__sidebar-secondary {
 			transition: none;
