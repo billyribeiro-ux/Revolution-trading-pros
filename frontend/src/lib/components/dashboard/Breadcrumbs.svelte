@@ -32,13 +32,11 @@
 	const breadcrumbItems = $derived.by(() => {
 		if (items.length > 0) return items;
 
-		// Default: Home + Current Page
+		// Default: Current page only (no Home link)
 		const currentPath = $page?.url?.pathname ?? '/dashboard';
 		const pathSegments = currentPath.split('/').filter(Boolean);
-		
-		const defaultItems: BreadcrumbItem[] = [
-			{ name: 'Home', href: 'https://www.simplertrading.com', position: 1 }
-		];
+
+		const defaultItems: BreadcrumbItem[] = [];
 
 		// Add current page
 		if (pathSegments.length > 0) {
@@ -46,10 +44,10 @@
 				.split('-')
 				.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(' ');
-			
+
 			defaultItems.push({
 				name: pageName === 'Dashboard' ? 'Member Dashboard' : pageName,
-				position: 2
+				position: 1
 			});
 		}
 
