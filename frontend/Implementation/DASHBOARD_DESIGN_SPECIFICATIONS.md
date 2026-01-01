@@ -40,13 +40,15 @@
 
 ## TYPOGRAPHY
 
+**RTP uses Montserrat (not Open Sans like WordPress)**
+
 | Element | Font | Size | Weight |
 |---------|------|------|--------|
-| Body/Nav | Open Sans | 14px | 300 |
-| Category Headers | Open Sans | 16px | 700, uppercase |
-| Profile Name | Open Sans | 14px | 600 |
-| Nav Item Text | Open Sans | 14px | 300 (bold items: 700) |
-| Breadcrumbs | Open Sans | 13px | 400 |
+| Body/Nav | Montserrat | 14px | 300 |
+| Category Headers | Montserrat | 16px | 700, uppercase |
+| Profile Name | Montserrat | 14px | 600 |
+| Nav Item Text | Montserrat | 14px | 300 (bold items: 700) |
+| Breadcrumbs | Montserrat | 13px | 400 |
 
 ---
 

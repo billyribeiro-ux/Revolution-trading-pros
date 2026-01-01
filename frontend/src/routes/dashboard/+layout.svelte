@@ -127,7 +127,6 @@
 <svelte:head>
 	<meta name="robots" content="noindex, nofollow" />
 	<title>Member Dashboard | Revolution Trading Pros</title>
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700" rel="stylesheet" />
 </svelte:head>
 
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
