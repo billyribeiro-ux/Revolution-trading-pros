@@ -88,9 +88,23 @@
 	<meta name="theme-color" content="#0a101c" />
 </svelte:head>
 
-{#if isAdminArea || isEmbedArea || isDashboardArea}
-	<!-- Admin, Embed, and Dashboard areas have their own layouts -->
+{#if isAdminArea || isEmbedArea}
+	<!-- Admin and Embed areas have their own layouts -->
 	{@render children()}
+{:else if isDashboardArea}
+	<!-- Dashboard area: NavBar + AdminToolbar, no Footer -->
+	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
+		{#if mounted}
+			<AdminToolbar />
+		{/if}
+		<NavBar />
+		{@render children()}
+		{#if mounted}
+			<ConsentBanner />
+			<ConsentPreferencesModal />
+			<ConsentSettingsButton position="bottom-left" />
+		{/if}
+	</div>
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
