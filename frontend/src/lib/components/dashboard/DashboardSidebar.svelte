@@ -29,12 +29,19 @@
 		external?: boolean;
 	}
 
+	// Membership data from API
+	interface MembershipItem {
+		name: string;
+		slug: string;
+		icon?: string;
+	}
+
 	// Svelte 5 props with bindable for parent access
 	interface Props {
 		user: {
 			name: string;
 			avatar: string | null;
-			memberships?: string[];
+			memberships?: MembershipItem[];  // Full membership objects, not just slugs
 		};
 		collapsed?: boolean;
 	}
@@ -94,36 +101,19 @@
 		{ href: '/dashboard/indicators/', icon: 'indicators', text: 'My Indicators', bold: true }
 	];
 
-	// Membership links - Live Trading Rooms (dynamically shown based on user memberships)
+	// Membership links - Dynamically generated from user's actual memberships
 	let membershipLinks = $derived.by(() => {
 		const links: NavLink[] = [];
-		if (user.memberships?.includes('options_day_trading_room')) {
-			links.push({ href: '/dashboard/options-day-trading/', icon: 'chart-candle', text: 'Options Day Trading Room' });
-		}
-		if (user.memberships?.includes('swing_trading_room')) {
-			links.push({ href: '/dashboard/swing-trading/', icon: 'trending-up', text: 'Swing Trading Room' });
-		}
-		return links;
-	});
+		const memberships = user.memberships ?? [];
 
-	// Mastery links - Mentorship Programs
-	let masteryLinks = $derived.by(() => {
-		const links: NavLink[] = [];
-		if (user.memberships?.includes('small_accounts_mentorship')) {
-			links.push({ href: '/dashboard/small-accounts-mentorship/', icon: 'school', text: 'Small Accounts Mentorship' });
+		for (const membership of memberships) {
+			links.push({
+				href: `/dashboard/${membership.slug}/`,
+				icon: membership.icon ?? 'chart-line',
+				text: membership.name
+			});
 		}
-		return links;
-	});
 
-	// Scanner links - Trading Scanners (NEW)
-	let scannerLinks = $derived.by(() => {
-		const links: NavLink[] = [];
-		if (user.memberships?.includes('high_octane_scanner')) {
-			links.push({ href: '/dashboard/high-octane-scanner/', icon: 'bolt', text: 'High Octane Scanner' });
-		}
-		if (user.memberships?.includes('h2_scanner')) {
-			links.push({ href: '/dashboard/h2-scanner/', icon: 'search', text: 'H2 Scanner' });
-		}
 		return links;
 	});
 
@@ -139,8 +129,6 @@
 	// All navigation sections for secondary sidebar
 	let allSections = $derived([
 		{ title: 'memberships', links: membershipLinks },
-		{ title: 'mastery', links: masteryLinks },
-		{ title: 'scanner', links: scannerLinks },
 		{ title: 'tools', links: toolsLinks }
 	]);
 </script>
@@ -190,48 +178,6 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each membershipLinks as link}
-						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
-								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={link.icon} size={32} />
-								</span>
-								<span class="dashboard__nav-item-text">{link.text}</span>
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</ul>
-		{/if}
-
-		<!-- Mastery Section -->
-		{#if masteryLinks.length > 0}
-			<ul>
-				<li>
-					<p class="dashboard__nav-category">mastery</p>
-				</li>
-				<ul class="dash_main_links">
-					{#each masteryLinks as link}
-						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
-								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={link.icon} size={32} />
-								</span>
-								<span class="dashboard__nav-item-text">{link.text}</span>
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</ul>
-		{/if}
-
-		<!-- Scanner Section -->
-		{#if scannerLinks.length > 0}
-			<ul>
-				<li>
-					<p class="dashboard__nav-category">scanner</p>
-				</li>
-				<ul class="dash_main_links">
-					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
@@ -574,7 +520,6 @@
 	/* Active State - Light blue RIGHT border indicator */
 	.dash_main_links li.is-active a {
 		color: #fff;
-		background-color: rgba(255, 255, 255, 0.08);
 	}
 
 	.dash_main_links li.is-active a::after {
