@@ -17,9 +17,8 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { user, isAuthenticated } from '$lib/stores/auth';
+	import { user, isAuthenticated, isInitializing, authStore } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
-	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -32,44 +31,41 @@
 	// Memberships data
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let isLoading = $state(true);
+	let hasAttemptedLoad = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	// User's active membership slugs
-	const membershipSlugs = $derived(
-		membershipsData?.memberships
-			?.filter((m: { status: string }) => m.status === 'active')
-			?.map((m: { slug: string }) => m.slug) ?? []
-	);
 
 	// User display name
 	const userName = $derived(
 		$user?.name ?? $user?.email?.split('@')[0] ?? 'Member'
 	);
 
-	// Trading rooms based on memberships
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DYNAMIC MEMBERSHIP RENDERING
+	// Render cards from actual API data instead of hardcoded slugs
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Trading rooms for the dropdown button (from trading rooms + alert services)
 	const tradingRooms = $derived.by(() => {
 		const rooms: { name: string; href: string }[] = [];
 
-		if (membershipSlugs.includes('mastering_the_trade')) {
-			rooms.push({ name: 'Mastering the Trade', href: '/trading-room/mastering-the-trade' });
-		}
-		if (membershipSlugs.includes('simpler_showcase')) {
-			rooms.push({ name: 'Simpler Showcase Breakout Room', href: '/trading-room/simpler-showcase' });
-		}
-		if (membershipSlugs.includes('tr3ndy_spx_alerts')) {
-			rooms.push({ name: 'Tr3ndy SPX Trading Room', href: '/trading-room/tr3ndy-spx' });
-		}
-		if (membershipSlugs.includes('compounding_growth_mastery')) {
-			rooms.push({ name: 'Compounding Growth Mastery', href: '/trading-room/cgm' });
+		// Add trading rooms
+		const tradingRoomData = membershipsData?.tradingRooms ?? [];
+		for (const room of tradingRoomData) {
+			if (room.status === 'active') {
+				rooms.push({
+					name: room.name,
+					href: room.accessUrl ?? `/live-trading-rooms/${room.slug}`
+				});
+			}
 		}
 
 		return rooms;
 	});
 
-	// Membership cards data
+	// Membership cards - Trading Rooms and Alert Services
 	const membershipCards = $derived.by(() => {
 		const cards: {
 			name: string;
@@ -79,38 +75,37 @@
 			tradingRoom?: string;
 		}[] = [];
 
-		if (membershipSlugs.includes('mastering_the_trade')) {
-			cards.push({
-				name: 'Mastering the Trade',
-				href: '/dashboard/mastering-the-trade',
-				icon: 'mastering-the-trade',
-				variant: 'options',
-				tradingRoom: '/trading-room/mastering-the-trade'
-			});
+		// Add trading rooms
+		const tradingRoomData = membershipsData?.tradingRooms ?? [];
+		for (const membership of tradingRoomData) {
+			if (membership.status === 'active') {
+				cards.push({
+					name: membership.name,
+					href: `/dashboard/${membership.slug}`,
+					icon: membership.icon ?? 'chart-line',
+					variant: getVariantFromSlug(membership.slug),
+					tradingRoom: membership.accessUrl ?? `/live-trading-rooms/${membership.slug}`
+				});
+			}
 		}
-		if (membershipSlugs.includes('simpler_showcase')) {
-			cards.push({
-				name: 'Simpler Showcase',
-				href: '/dashboard/simpler-showcase',
-				icon: 'simpler-showcase',
-				variant: 'foundation',
-				tradingRoom: '/trading-room/simpler-showcase'
-			});
-		}
-		if (membershipSlugs.includes('tr3ndy_spx_alerts')) {
-			cards.push({
-				name: 'Tr3ndy SPX Alerts Service',
-				href: '/dashboard/tr3ndy-spx-alerts',
-				icon: 'tr3ndy-spx-alerts-circle',
-				variant: 'tr3ndy',
-				tradingRoom: '/trading-room/tr3ndy-spx'
-			});
+
+		// Add alert services
+		const alertServiceData = membershipsData?.alertServices ?? [];
+		for (const service of alertServiceData) {
+			if (service.status === 'active') {
+				cards.push({
+					name: service.name,
+					href: `/dashboard/${service.slug}`,
+					icon: service.icon ?? 'bell',
+					variant: getVariantFromSlug(service.slug)
+				});
+			}
 		}
 
 		return cards;
 	});
 
-	// Mastery cards
+	// Mastery cards - Courses
 	const masteryCards = $derived.by(() => {
 		const cards: {
 			name: string;
@@ -120,20 +115,23 @@
 			tradingRoom?: string;
 		}[] = [];
 
-		if (membershipSlugs.includes('compounding_growth_mastery')) {
-			cards.push({
-				name: 'Compounding Growth Mastery',
-				href: '/dashboard/cgm',
-				icon: 'consistent-growth',
-				variant: 'growth',
-				tradingRoom: '/trading-room/cgm'
-			});
+		const courseData = membershipsData?.courses ?? [];
+		for (const course of courseData) {
+			if (course.status === 'active') {
+				cards.push({
+					name: course.name,
+					href: `/dashboard/${course.slug}`,
+					icon: course.icon ?? 'book',
+					variant: 'growth',
+					tradingRoom: course.accessUrl
+				});
+			}
 		}
 
 		return cards;
 	});
 
-	// Tools cards (always shown)
+	// Tools cards (always shown - static)
 	const toolsCards = [
 		{
 			name: 'Weekly Watchlist',
@@ -143,20 +141,53 @@
 		}
 	];
 
+	// Helper function to get variant class based on slug
+	function getVariantFromSlug(slug: string): string {
+		const variantMap: Record<string, string> = {
+			'day-trading-room': 'options',
+			'swing-trading-room': 'foundation',
+			'small-account-mentorship': 'training',
+			'spx-profit-pulse': 'tr3ndy',
+			'explosive-swing': 'growth',
+			'mastering-the-trade': 'options',
+			'simpler-showcase': 'foundation',
+			'tr3ndy-spx-alerts': 'tr3ndy',
+			'compounding-growth-mastery': 'growth'
+		};
+		return variantMap[slug] ?? 'options';
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DATA LOADING
+	// DATA LOADING - Reactive pattern to handle auth race condition
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		if ($isAuthenticated) {
-			await loadMemberships();
+	// Use $effect to reactively load memberships when auth becomes ready
+	// This fixes the race condition where onMount runs before auth is initialized
+	$effect(() => {
+		// Wait for auth to finish initializing
+		if ($isInitializing) {
+			return;
+		}
+
+		// If not authenticated, stop loading
+		if (!$isAuthenticated) {
+			isLoading = false;
+			return;
+		}
+
+		// Load memberships once when authenticated
+		if (!hasAttemptedLoad) {
+			hasAttemptedLoad = true;
+			loadMemberships();
 		}
 	});
 
 	async function loadMemberships(): Promise<void> {
 		isLoading = true;
 		try {
+			console.log('[Dashboard] Loading memberships for user:', $user?.email);
 			membershipsData = await getUserMemberships();
+			console.log('[Dashboard] Memberships loaded:', membershipsData);
 		} catch (error) {
 			console.error('[Dashboard] Failed to load memberships:', error);
 			membershipsData = null;
