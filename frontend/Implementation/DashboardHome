@@ -2857,21 +2857,77 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <div class="dashboard__overlay" data-toggle-dashboard-menu></div>                    </aside>
         <main class="dashboard__main ">
                             
+
+<!-- 
+  ================================================================================
+  DASHBOARD HEADER SECTION - Apple Principal Engineer ICT 11 Grade
+  ================================================================================
+  
+  ARCHITECTURE PATTERN: Dual-pane header with page identification and primary CTA
+  
+  LEFT PANE: Semantic h1 for page title (SEO + Accessibility)
+  RIGHT PANE: Primary user action - Trading Room access dropdown
+  
+  SECURITY CONCERN: JWT tokens embedded in HTML (lines 2875-2878)
+  - Tokens visible in page source
+  - Logged in browser history  
+  - Cached by CDN/proxies
+  
+  ICT 11 RECOMMENDATION: Implement server-side token generation with POST request
+  Example:
+    async function enterTradingRoom(roomId) {
+        const token = await fetch('/api/trading-room/token', {
+            method: 'POST',
+            body: JSON.stringify({ roomId }),
+            credentials: 'include'
+        }).then(r => r.json());
+        window.open(tradingRoomUrl + '?token=' + token.jwt);
+    }
+-->
     <header class="dashboard__header">
         <div class="dashboard__header-left">
+
+    <!-- END: Dashboard Header Section -->
+
                         <h1 class="dashboard__page-title">Member Dashboard</h1>
                     </div>
                                             <div class="dashboard__header-right">
+
+                <!-- ICT 11 LEGAL COMPLIANCE: Trading Room Rules disclosure -->
                                         <ul class="ultradingroom" style="text-align: right;list-style: none;"><li class="litradingroom"><a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a></li><li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">By logging into  any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li></ul>                    
                      
                                                     <div class="dropdown display-inline-block">
+
+                <!-- ICT 11 PRIMARY CTA: Orange button = high visibility (trading industry standard) -->
                         <a href="#" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
                             <strong>Enter a Trading Room</strong>
                             
                         </a>
                         
                         <nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+
+                        <!-- ICT 11 SEMANTIC NAV: aria-labelledby links dropdown to trigger button -->
                             <ul class="dropdown-menu__menu">
+
+                            <!-- 
+                              CRITICAL SECURITY ISSUE - JWT Token Exposure
+                              
+                              JWT PAYLOAD (decoded):
+                              {
+                                  "userID": 94190,
+                                  "email": "welberribeirodrums@gmail.com",
+                                  "memberships": ["mastering_the_trade", "tr3ndy_spx_alerts", "compounding_growth_mastery"],
+                                  "exp": 1767879736  // 7-day expiration
+                              }
+                              
+                              SECURITY RISKS:
+                              1. Token visible in HTML source
+                              2. Token logged in browser history
+                              3. Token cached by CDN/proxies
+                              4. No IP validation in JWT claims
+                              
+                              ICT 11 FIX REQUIRED: Server-side token generation
+                            -->
                                                                     <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652754202ad80b3e7c5131e2?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXSwibWVtYmVyX3N0YXJ0X2RhdGUiOiIwMy0xMi0yMDI1In0.2LvwJek-nzi3L29z7b1zWwr3jCBLIks5-Dd7BsaiTAs" target="_blank" rel="nofollow"><span class="st-icon-mastering-the-trade icon icon--md"></span>Mastering The Trade Room</a></li>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652889ba2ad80b3e7c5133e3?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXSwibWVtYmVyX3N0YXJ0X2RhdGUiOiIzMC0xMi0yMDI1In0.AdUW_eZtwGoDRs6GyPvZeaBfwc-0slwwySexTRmR8hs" target="_blank" rel="nofollow"><span class="st-icon-consistent-growth icon icon--md"></span> Compounding Growth Room</a></li>
                                                                                                     <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652368e62ad80b3e7c513033?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXX0.dPoYVtKRMxFlbwuyFR2RT9SaWdbKVMb8x6efFEoJSyw" target="_blank" rel="nofollow"><span class="st-icon-simpler-showcase icon icon--md"></span> Simpler Showcase Room</a></li>
@@ -2889,12 +2945,159 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
             <div class="dashboard__content">
                 <div class="dashboard__content-main">
                     <!-- Dashboard Walkthrough Banner-->
+
+<!-- 
+  ================================================================================
+  MEMBERSHIPS SECTION - Primary Value Proposition
+  ================================================================================
+  
+
+    <!-- END: Memberships Section -->
+
+
+<!-- 
+  ================================================================================
+  MASTERY SECTION - Advanced Content Tier
+  ================================================================================
+  
+  CONTENT HIERARCHY: "Mastery" as premium tier above basic memberships
+  
+  INFORMATION ARCHITECTURE:
+  - Separated from basic "Memberships" section
+  - Signals skill progression path
+  - Upsell opportunity for engaged users
+  
+  USER JOURNEY:
+  1. User starts with basic membership
+  2. User gains confidence and skills
+  3. User sees "Mastery" section
+  4. User upgrades to advanced content
+  
+  CONVERSION PSYCHOLOGY:
+  - "Mastery" = aspirational positioning
+  - Separate section = premium perception
+  - Limited options = exclusivity signal
+-->
+  CONTENT STRATEGY: Card-based discovery pattern
+  CONVERSION FUNNEL: Membership cards → Dashboard/Trading Room → Engagement
+  
+  RESPONSIVE GRID:
+  - col-sm-6: 2 columns on small screens (mobile/tablet)
+  - col-xl-4: 3 columns on extra-large screens (desktop)
+  
+  CARD ANATOMY:
+  1. Header (clickable link to dashboard)
+
+    <!-- END: Mastery Section -->
+
+  2. Icon (visual brand identity)
+  3. Title (membership name)
+  4. Actions (dual CTA: Dashboard + Trading Room)
+
+                            <!-- 
+                              ============================================================
+                              MASTERY CARD: Compounding Growth Mastery
+                              ============================================================
+                              
+                              TIER: Advanced wealth-building strategy
+                              CLASS: membership-card--consistent-growth (green theme)
+                              
+                              NAMING STRATEGY:
+                              - "Compounding Growth" = long-term wealth building
+                              - "Mastery" suffix = expert-level content
+                              
+                              PSYCHOLOGICAL TRIGGERS:
+                              - "Compounding" = Warren Buffett principle
+                              - "Growth" = positive outcome framing
+                              - "Mastery" = achievement/status
+                              
+                              COLOR PSYCHOLOGY: Green = growth, money, success
+                              TARGET AUDIENCE: Experienced traders seeking long-term strategies
+                            -->
+  
+
+        <!-- END: Tools Section -->
+
+  USER PSYCHOLOGY: Dual CTAs reduce decision paralysis
+  ANALYTICS: Track which CTA gets more clicks for A/B testing
+-->
     <section class="dashboard__content-section">
         <h2 class="section-title">Memberships</h2>
         <div class="membership-cards row">
 
             
             
+
+                        <!-- 
+                          ============================================================
+                          MEMBERSHIP CARD: Mastering the Trade
+                          ============================================================
+                          
+                          TIER: Premium options trading education
+                          CLASS: membership-card--options (color-coded tier system)
+                          ICON: st-icon-mastering-the-trade (custom icon font)
+                          
+                          DUAL CTA PATTERN:
+                          - Dashboard: Educational content (lower commitment)
+                          - Trading Room: Live interaction (higher engagement)
+
+
+<!-- 
+  ================================================================================
+  TOOLS SECTION - Utility Content
+  ================================================================================
+  
+
+        <!-- END: Weekly Watchlist Featured Content -->
+        
+  CONTENT STRATEGY: Tools as supporting value (tertiary content)
+  
+  INFORMATION ARCHITECTURE:
+  - Positioned after Memberships and Mastery
+  - Utility-focused vs education-focused
+  - Recurring engagement mechanism
+  
+  USER ENGAGEMENT PATTERN:
+  - Weekly Watchlist = recurring content
+  - Drives weekly return visits
+  - Complements live trading rooms
+  - Free tool = lead generation for paid tiers
+
+<!-- END: Inline Styles (Technical Debt) -->
+  
+  CONVERSION FUNNEL:
+  Tools → Engagement → Membership upgrade
+-->
+                          
+                          CONVERSION OPTIMIZATION:
+                          - Large touch target for mobile users
+                          - Icon creates visual anchor
+
+        
+                    <!-- 
+                      ============================================================
+                      TOOL CARD: Weekly Watchlist
+                      ============================================================
+                      
+                      PURPOSE: Recurring weekly content for engagement
+                      CLASS: membership-card--ww (watchlist-specific styling)
+                      ICON: st-icon-trade-of-the-week (icon--md = medium size)
+                      
+                      ENGAGEMENT STRATEGY:
+                      - Weekly cadence = habit formation
+                      - Authority figure (David Starr) = trust building
+                      - Free tool = lead generation for paid tiers
+                      
+                      CONTENT MARKETING:
+                      - Provides value without payment
+                      - Demonstrates expertise
+                      - Creates FOMO for live rooms
+                      
+                      PATTERN BREAK: Only "Dashboard" CTA (no Trading Room)
+                      REASON: Watchlist is content, not live interaction
+                    -->
+                          - Dual CTAs reduce decision paralysis
+                        -->
                                         <div class="col-sm-6 col-xl-4">
                     <article class="membership-card membership-card--options">
                         <a href="https://www.simplertrading.com/dashboard/mastering-the-trade" class="membership-card__header">
@@ -2911,9 +3114,88 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                     </article>
                 </div>
                         
+
+                        <!-- 
+                          ============================================================
+                          MEMBERSHIP CARD: Simpler Showcase
+
+
+
+            <!-- 
+              ================================================================================
+              WEEKLY WATCHLIST FEATURED CONTENT - Hero Section
+              ================================================================================
+              
+              LAYOUT STRATEGY:
+              - Two-column responsive layout
+              - Text left (col-lg-5), image right (col-lg-7)
+              - Image top, text bottom on mobile
+              
+              CONVERSION ELEMENTS:
+              - Authority figure: "David Starr" (trust signal)
+              - Timeliness: "Week of December 29, 2025" (current content)
+              - Clear CTA: "Watch Now" (action-oriented)
+              
+              RESPONSIVE DESIGN:
+              - Asymmetric 5/7 split creates visual interest
+              - Image dominates on large screens
+              - Content-first on mobile
+            -->
+                          ============================================================
+                          
+                          TIER: Entry-level foundation tier
+                          CLASS: membership-card--foundation (different visual treatment)
+                          ICON: simpler-showcase-icon (custom styling)
+                          
+
+                    <!-- ICT 11 TYPOGRAPHY: section-title-alt with underline variant -->
+                          LANGUAGE DIFFERENTIATION:
+
+                    <!-- 
+                      ICT 11 RESPONSIVE IMAGE: Mobile-only duplicate
+                      
+                      PERFORMANCE CONCERN: Image loaded twice
+                      - Once for mobile (hidden-md d-lg-none)
+                      - Once for desktop (hidden-xs hidden-sm d-none d-lg-block)
+                      
+                      RECOMMENDATION: Use CSS background-image or picture element
+                      Example:
+                        <picture>
+                            <source media="(min-width: 992px)" srcset="image-large.webp">
+                            <source media="(min-width: 576px)" srcset="image-medium.webp">
+                            <img src="image-small.webp" alt="..." loading="lazy">
+                        </picture>
+                    -->
+                          - "Breakout Room" vs "Trading Room"
+                          - "Breakout" implies beginner-friendly learning environment
+                          - Less intimidating for new traders
+                          
+                          MARKETING PSYCHOLOGY:
+
+                    <!-- ICT 11 AUTHORITY FIGURE: David Starr name builds trust and credibility -->
+                          - Foundation tier = entry-level positioning
+
+                    <!-- ICT 11 UTILITY CLASS: u--hide-read-more for content truncation -->
+                          - Aspirational language for skill progression
+                        -->
                         <div class="col-sm-6 col-xl-4">
+
+                    <!-- ICT 11 CTA: btn-tiny btn-default = secondary action styling -->
                 <article class="membership-card membership-card--foundation">
                     <a href="https://www.simplertrading.com/dashboard/simpler-showcase" class="membership-card__header">
+
+                <!-- 
+                  ICT 11 DESKTOP IMAGE COLUMN:
+                  - col-lg-7: Larger column for visual impact
+                  - hidden-xs hidden-sm d-none d-lg-block: Desktop only
+                  
+                  IMAGE OPTIMIZATION RECOMMENDATIONS:
+                  1. Add width/height attributes (prevent layout shift)
+                  2. Use srcset for responsive images
+                  3. Implement lazy loading (loading="lazy")
+                  4. Consider WebP format with fallback
+                  5. CDN: S3 bucket already in use (good)
+                -->
                         <span class="mem_icon">
                         <span class="membership-card__icon simpler-showcase-icon">
                             <span class="icon icon--lg st-icon-simpler-showcase"></span>
@@ -2922,11 +3204,63 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
                     </a>
                     <div class="membership-card__actions">
                         <a href="https://www.simplertrading.com/dashboard/simpler-showcase">Dashboard</a>
+
+    
+<!-- 
+  ================================================================================
+  INLINE STYLES - Technical Debt
+  ================================================================================
+  
+  ICT 11 CONCERN: Inline styles prevent proper CSS cascade
+  
+  CURRENT IMPLEMENTATION:
+  - mem_icon, mem_div: Custom layout hack for icon alignment
+  - inline-block with vertical-align: middle
+  - calc(100% - 43px): Magic number for width calculation
+  
+  TECHNICAL DEBT:
+  - Inline styles prevent CSS caching
+  - Magic numbers reduce maintainability
+  - Should be in external stylesheet
+  
+  RECOMMENDATION: Use flexbox for cleaner implementation
+  Example:
+    .membership-card__header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .membership-card__icon {
+        flex-shrink: 0;
+    }
+    .membership-card__title {
+        flex: 1;
+        min-width: 0;
+    }
+-->
                         <a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652368e62ad80b3e7c513033?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXX0.dPoYVtKRMxFlbwuyFR2RT9SaWdbKVMb8x6efFEoJSyw" target="_blank" rel="nofollow">Breakout Room</a>
                     </div>
                 </article>
             </div>
         
+
+                    <!-- 
+                      ============================================================
+                      MEMBERSHIP CARD: Tr3ndy SPX Alerts
+                      ============================================================
+                      
+                      TIER: Specialized alert service
+                      CLASS: membership-card--tr3ndy-spx-alerts (unique styling)
+                      FOCUS: S&P 500 index alerts (niche offering)
+                      ICON: st-icon-tr3ndy-spx-alerts-circle (circular badge style)
+                      
+                      PRODUCT STRATEGY:
+                      - Specialized vs general trading rooms
+                      - Alert service vs live room (different value prop)
+                      - SPX focus = institutional/professional traders
+                      
+                      VISUAL HIERARCHY: Circular icon = alert/notification theme
+                    -->
                     <div class="col-sm-6 col-xl-4">
                 <article class="membership-card membership-card--tr3ndy-spx-alerts">
                     <a href="https://www.simplertrading.com/dashboard/tr3ndy-spx-alerts" class="membership-card__header">
