@@ -58,19 +58,6 @@
 		}).format(price);
 	}
 
-	function getIntervalLabel(interval?: string): string {
-		switch (interval) {
-			case 'monthly':
-				return '/ month';
-			case 'quarterly':
-				return 'every 3 months';
-			case 'yearly':
-				return '/ year';
-			default:
-				return '';
-		}
-	}
-
 	function getIntervalText(interval?: string): string {
 		switch (interval) {
 			case 'monthly':
@@ -153,7 +140,7 @@
 			<!-- Page Header -->
 			<header class="cart-page-header">
 				<a href="/" class="back-link">
-					<IconArrowLeft size={14} strokeWidth={2.5} />
+					<IconArrowLeft size={14} stroke={2.5} />
 					<span>Continue Shopping</span>
 				</a>
 				<h1 class="page-title">CART</h1>
@@ -180,6 +167,8 @@
 			{:else}
 				<!-- Cart Form - Simpler Trading Structure -->
 				<form class="woocommerce-cart-form" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
+					<!-- WordPress WooCommerce Compatibility: Cart Nonce -->
+					<input type="hidden" name="_wpnonce" value={cartNonce} />
 					<div class="woocommerce-cart-form__contents">
 						<div class="row">
 							<!-- Products Column -->
@@ -211,7 +200,7 @@
 																<span class="membership-tagline">
 																	<span class="bold">Subscription:</span>
 																	<span class="woocommerce-Price-amount amount">
-																		<span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}
+																		{formatPrice(item.price)}
 																	</span>
 																	<span class="subscription-details"> {getIntervalText(item.interval)}</span>
 																</span>
@@ -230,13 +219,13 @@
 																aria-label="Remove this item"
 																onclick={() => removeItem(item.id, item.interval)}
 															>
-																<IconX size={13} />&nbsp;Remove
+																<IconX size={13} stroke={2} />&nbsp;Remove
 															</button>
 														</div>
 														<div class="product-price">
 															<span class="woocommerce-Price-amount-wrap">
 																<span class="woocommerce-Price-amount amount">
-																	<span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}
+																	{formatPrice(item.price)}
 																</span>
 															</span>
 														</div>
@@ -269,9 +258,9 @@
 													<div>Total</div>
 													<div class="order-total-price">
 														{#if appliedCoupon && discountAmount > 0}
-															<span class="original-price">${$cartTotal.toFixed(2)}</span>
+															<span class="original-price">{formatPrice($cartTotal)}</span>
 														{/if}
-														${finalTotal.toFixed(2)}
+														{formatPrice(finalTotal)}
 													</div>
 												</div>
 
@@ -279,9 +268,9 @@
 												{#if appliedCoupon && discountAmount > 0}
 													<div class="coupon-applied">
 														<span class="coupon-label">Coupon: {appliedCoupon.code}</span>
-														<span class="coupon-discount">-${discountAmount.toFixed(2)}</span>
+														<span class="coupon-discount">-{formatPrice(discountAmount)}</span>
 														<button type="button" class="remove-coupon" onclick={removeCouponCode}>
-															<IconX size={14} />
+															<IconX size={14} stroke={2} />
 														</button>
 													</div>
 												{/if}
@@ -299,7 +288,7 @@
 																		<th rowspan="1">Subtotal</th>
 																		<td data-title="Subtotal">
 																			<span class="woocommerce-Price-amount amount">
-																				<span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}
+																				{formatPrice(item.price)}
 																			</span>
 																			{getIntervalText(item.interval)}
 																		</td>
@@ -667,8 +656,9 @@
 		padding: 24px;
 	}
 
+	/* Cart totals container */
 	.cart_totals {
-		/* Container for totals */
+		display: block;
 	}
 
 	/* Order Total - Simpler Trading Style */
@@ -910,10 +900,6 @@
 
 	/* WooCommerce Price Styling */
 	.woocommerce-Price-amount {
-		font-weight: 700;
-	}
-
-	.woocommerce-Price-currencySymbol {
 		font-weight: 700;
 	}
 
