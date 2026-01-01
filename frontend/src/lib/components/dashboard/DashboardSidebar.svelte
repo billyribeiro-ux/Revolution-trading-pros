@@ -487,8 +487,9 @@
 		transition: all 0.15s ease-in-out;
 	}
 
+	/* Profile name stays white on hover - only border changes */
 	.dashboard__profile-nav-item:hover .dashboard__profile-name {
-		color: #0984ae;
+		color: #fff;
 	}
 
 	.dashboard__profile-photo {
@@ -571,7 +572,7 @@
 		background-color: rgba(255, 255, 255, 0.05);
 	}
 
-	/* Active State - Light blue left border indicator */
+	/* Active State - Light blue RIGHT border indicator */
 	.dash_main_links li.is-active a {
 		color: #fff;
 		background-color: rgba(255, 255, 255, 0.08);
@@ -580,7 +581,7 @@
 	.dash_main_links li.is-active a::after {
 		content: '';
 		position: absolute;
-		left: 0;
+		right: 0;
 		top: 0;
 		bottom: 0;
 		width: 4px;
