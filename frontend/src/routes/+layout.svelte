@@ -89,12 +89,12 @@
 	<!-- Admin and Embed areas have their own layouts -->
 	{@render children()}
 {:else if isDashboardArea}
-	<!-- Dashboard area: NavBar + AdminToolbar, no Footer -->
-	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
+	<!-- Dashboard area: NO NavBar (matches WordPress reference) -->
+	<!-- Sidebar is full viewport height, starts at top: 0 -->
+	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
-		<NavBar />
 		{@render children()}
 		{#if mounted}
 			<ConsentBanner />

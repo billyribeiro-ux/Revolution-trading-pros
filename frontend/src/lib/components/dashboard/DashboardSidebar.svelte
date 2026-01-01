@@ -381,15 +381,15 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * MAIN SIDEBAR - Collapsible (280px → 80px)
-	 * ICT11+ Fix: Account for NavBar height when present
+	 * WordPress Reference: Full viewport height, no NavBar in dashboard area
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar {
 		background-color: #0f2d41;
 		width: 280px;
-		height: calc(100vh - var(--nav-height, 80px));
+		height: 100vh;
 		position: fixed;
-		top: var(--nav-height, 80px);
+		top: 0;
 		left: 0;
 		overflow-y: auto;
 		overflow-x: hidden;
