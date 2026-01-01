@@ -1,56 +1,67 @@
 <!--
 	Dashboard Home Page - Member Dashboard Landing
-	Pixel-perfect match to WordPress Simpler Trading reference
+	═══════════════════════════════════════════════════════════════════════════
+	Apple ICT 11+ Principal Engineer Implementation
 
-	@version 2.0.0
-	@author Revolution Trading Pros
+	CLIENT-SIDE AUTH PATTERN:
+	- User data from auth store (not server props)
+	- Memberships fetched client-side
+	- Reactive updates on auth changes
 
 	Svelte 5 Features:
-	- $props() for page data
-	- $state() for dropdown toggle
-	- $derived() for dynamic trading rooms
+	- $state() for component state
+	- $derived() for computed values from auth store
+	- $effect() for reactive side effects
+
+	@version 3.0.0 - ICT 11+ Client-Side Auth
+	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// Page data from layout
-	interface Props {
-		data: {
-			user: {
-				id: string;
-				name: string;
-				memberships: string[];
-			};
-		};
-	}
+	import { user, isAuthenticated } from '$lib/stores/auth';
+	import { getUserMemberships, type CategorizedMemberships } from '$lib/api/user-memberships';
+	import { onMount } from 'svelte';
 
-	let { data }: Props = $props();
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE
+	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Dropdown state
 	let isDropdownOpen = $state(false);
 
-	// Toggle dropdown
-	function toggleDropdown() {
-		isDropdownOpen = !isDropdownOpen;
-	}
+	// Memberships data
+	let membershipsData = $state<CategorizedMemberships | null>(null);
+	let isLoading = $state(true);
 
-	// Close dropdown when clicking outside
-	function closeDropdown() {
-		isDropdownOpen = false;
-	}
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// User's active membership slugs
+	const membershipSlugs = $derived(
+		membershipsData?.memberships
+			?.filter(m => m.status === 'active')
+			?.map(m => m.slug) ?? []
+	);
+
+	// User display name
+	const userName = $derived(
+		$user?.name ?? $user?.email?.split('@')[0] ?? 'Member'
+	);
 
 	// Trading rooms based on memberships
-	let tradingRooms = $derived.by(() => {
+	const tradingRooms = $derived.by(() => {
 		const rooms: { name: string; href: string }[] = [];
 
-		if (data.user.memberships?.includes('mastering_the_trade')) {
+		if (membershipSlugs.includes('mastering_the_trade')) {
 			rooms.push({ name: 'Mastering the Trade', href: '/trading-room/mastering-the-trade' });
 		}
-		if (data.user.memberships?.includes('simpler_showcase')) {
+		if (membershipSlugs.includes('simpler_showcase')) {
 			rooms.push({ name: 'Simpler Showcase Breakout Room', href: '/trading-room/simpler-showcase' });
 		}
-		if (data.user.memberships?.includes('tr3ndy_spx_alerts')) {
+		if (membershipSlugs.includes('tr3ndy_spx_alerts')) {
 			rooms.push({ name: 'Tr3ndy SPX Trading Room', href: '/trading-room/tr3ndy-spx' });
 		}
-		if (data.user.memberships?.includes('compounding_growth_mastery')) {
+		if (membershipSlugs.includes('compounding_growth_mastery')) {
 			rooms.push({ name: 'Compounding Growth Mastery', href: '/trading-room/cgm' });
 		}
 
@@ -58,7 +69,7 @@
 	});
 
 	// Membership cards data
-	let membershipCards = $derived.by(() => {
+	const membershipCards = $derived.by(() => {
 		const cards: {
 			name: string;
 			href: string;
@@ -67,7 +78,7 @@
 			tradingRoom?: string;
 		}[] = [];
 
-		if (data.user.memberships?.includes('mastering_the_trade')) {
+		if (membershipSlugs.includes('mastering_the_trade')) {
 			cards.push({
 				name: 'Mastering the Trade',
 				href: '/dashboard/mastering-the-trade',
@@ -76,7 +87,7 @@
 				tradingRoom: '/trading-room/mastering-the-trade'
 			});
 		}
-		if (data.user.memberships?.includes('simpler_showcase')) {
+		if (membershipSlugs.includes('simpler_showcase')) {
 			cards.push({
 				name: 'Simpler Showcase',
 				href: '/dashboard/simpler-showcase',
@@ -85,7 +96,7 @@
 				tradingRoom: '/trading-room/simpler-showcase'
 			});
 		}
-		if (data.user.memberships?.includes('tr3ndy_spx_alerts')) {
+		if (membershipSlugs.includes('tr3ndy_spx_alerts')) {
 			cards.push({
 				name: 'Tr3ndy SPX Alerts Service',
 				href: '/dashboard/tr3ndy-spx-alerts',
@@ -99,7 +110,7 @@
 	});
 
 	// Mastery cards
-	let masteryCards = $derived.by(() => {
+	const masteryCards = $derived.by(() => {
 		const cards: {
 			name: string;
 			href: string;
@@ -108,7 +119,7 @@
 			tradingRoom?: string;
 		}[] = [];
 
-		if (data.user.memberships?.includes('compounding_growth_mastery')) {
+		if (membershipSlugs.includes('compounding_growth_mastery')) {
 			cards.push({
 				name: 'Compounding Growth Mastery',
 				href: '/dashboard/cgm',
@@ -130,6 +141,40 @@
 			variant: 'ww'
 		}
 	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DATA LOADING
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	onMount(async () => {
+		if ($isAuthenticated) {
+			await loadMemberships();
+		}
+	});
+
+	async function loadMemberships(): Promise<void> {
+		isLoading = true;
+		try {
+			membershipsData = await getUserMemberships();
+		} catch (error) {
+			console.error('[Dashboard] Failed to load memberships:', error);
+			membershipsData = null;
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DROPDOWN HANDLERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function toggleDropdown(): void {
+		isDropdownOpen = !isDropdownOpen;
+	}
+
+	function closeDropdown(): void {
+		isDropdownOpen = false;
+	}
 </script>
 
 <!-- Dashboard Header -->
@@ -177,81 +222,108 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 
-		<!-- Memberships Section -->
-		{#if membershipCards.length > 0}
+		{#if isLoading}
+			<!-- Loading State -->
 			<section class="dashboard__content-section">
-				<h2 class="section-title">Memberships</h2>
+				<div class="loading-skeleton">
+					<div class="skeleton skeleton--title"></div>
+					<div class="skeleton-grid">
+						<div class="skeleton skeleton--card"></div>
+						<div class="skeleton skeleton--card"></div>
+						<div class="skeleton skeleton--card"></div>
+					</div>
+				</div>
+			</section>
+		{:else}
+			<!-- Memberships Section -->
+			{#if membershipCards.length > 0}
+				<section class="dashboard__content-section">
+					<h2 class="section-title">Memberships</h2>
+					<div class="membership-cards">
+						{#each membershipCards as card}
+							<article class="membership-card membership-card--{card.variant}">
+								<a href={card.href} class="membership-card__header">
+									<span class="mem_icon">
+										<span class="membership-card__icon">
+											<span class="icon icon--lg st-icon-{card.icon}"></span>
+										</span>
+									</span>
+									<span class="mem_div">{card.name}</span>
+								</a>
+								<div class="membership-card__actions">
+									<a href={card.href} class="btn-dashboard">Dashboard</a>
+									{#if card.tradingRoom}
+										<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
+									{/if}
+								</div>
+							</article>
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- Mastery Section -->
+			{#if masteryCards.length > 0}
+				<section class="dashboard__content-section">
+					<h2 class="section-title">Mastery</h2>
+					<div class="membership-cards">
+						{#each masteryCards as card}
+							<article class="membership-card membership-card--{card.variant}">
+								<a href={card.href} class="membership-card__header">
+									<span class="mem_icon">
+										<span class="membership-card__icon">
+											<span class="icon icon--lg st-icon-{card.icon}"></span>
+										</span>
+									</span>
+									<span class="mem_div">{card.name}</span>
+								</a>
+								<div class="membership-card__actions">
+									<a href={card.href} class="btn-dashboard">Dashboard</a>
+									{#if card.tradingRoom}
+										<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
+									{/if}
+								</div>
+							</article>
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- Tools Section -->
+			<section class="dashboard__content-section">
+				<h2 class="section-title">Tools</h2>
 				<div class="membership-cards">
-					{#each membershipCards as card}
+					{#each toolsCards as card}
 						<article class="membership-card membership-card--{card.variant}">
 							<a href={card.href} class="membership-card__header">
 								<span class="mem_icon">
 									<span class="membership-card__icon">
-										<span class="icon icon--lg st-icon-{card.icon}"></span>
+										<span class="icon icon--md st-icon-{card.icon}"></span>
 									</span>
 								</span>
 								<span class="mem_div">{card.name}</span>
 							</a>
 							<div class="membership-card__actions">
 								<a href={card.href} class="btn-dashboard">Dashboard</a>
-								{#if card.tradingRoom}
-									<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
-								{/if}
 							</div>
 						</article>
 					{/each}
 				</div>
 			</section>
-		{/if}
 
-		<!-- Mastery Section -->
-		{#if masteryCards.length > 0}
-			<section class="dashboard__content-section">
-				<h2 class="section-title">Mastery</h2>
-				<div class="membership-cards">
-					{#each masteryCards as card}
-						<article class="membership-card membership-card--{card.variant}">
-							<a href={card.href} class="membership-card__header">
-								<span class="mem_icon">
-									<span class="membership-card__icon">
-										<span class="icon icon--lg st-icon-{card.icon}"></span>
-									</span>
-								</span>
-								<span class="mem_div">{card.name}</span>
-							</a>
-							<div class="membership-card__actions">
-								<a href={card.href} class="btn-dashboard">Dashboard</a>
-								{#if card.tradingRoom}
-									<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
-								{/if}
-							</div>
-						</article>
-					{/each}
-				</div>
-			</section>
+			<!-- Empty State - No Memberships -->
+			{#if membershipCards.length === 0 && masteryCards.length === 0}
+				<section class="dashboard__content-section">
+					<div class="empty-state">
+						<h2 class="empty-state__title">Welcome, {userName}!</h2>
+						<p class="empty-state__text">
+							You don't have any active memberships yet. Explore our trading rooms and courses to get started.
+						</p>
+						<a href="/courses" class="btn btn-orange">Browse Courses</a>
+					</div>
+				</section>
+			{/if}
 		{/if}
-
-		<!-- Tools Section -->
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Tools</h2>
-			<div class="membership-cards">
-				{#each toolsCards as card}
-					<article class="membership-card membership-card--{card.variant}">
-						<a href={card.href} class="membership-card__header">
-							<span class="mem_icon">
-								<span class="membership-card__icon">
-									<span class="icon icon--md st-icon-{card.icon}"></span>
-								</span>
-							</span>
-							<span class="mem_div">{card.name}</span>
-						</a>
-						<div class="membership-card__actions">
-							<a href={card.href} class="btn-dashboard">Dashboard</a>
-						</div>
-					</article>
-				{/each}
-			</div>
-		</section>
 
 	</div>
 </div>
@@ -288,6 +360,69 @@
 		display: flex;
 		align-items: center;
 		gap: 15px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * LOADING SKELETON
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.loading-skeleton {
+		padding: 20px 0;
+	}
+
+	.skeleton {
+		background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+		background-size: 200% 100%;
+		animation: skeleton-loading 1.5s infinite;
+		border-radius: 8px;
+	}
+
+	.skeleton--title {
+		height: 32px;
+		width: 200px;
+		margin-bottom: 30px;
+	}
+
+	.skeleton--card {
+		height: 150px;
+	}
+
+	.skeleton-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 30px;
+	}
+
+	@keyframes skeleton-loading {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * EMPTY STATE
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+	}
+
+	.empty-state__title {
+		font-size: 28px;
+		font-weight: 700;
+		color: #333333;
+		margin: 0 0 16px;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.empty-state__text {
+		font-size: 16px;
+		color: #666666;
+		margin: 0 0 24px;
+		max-width: 400px;
+		margin-left: auto;
+		margin-right: auto;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -444,6 +579,10 @@
 
 	@media (max-width: 768px) {
 		.membership-cards {
+			grid-template-columns: 1fr;
+		}
+
+		.skeleton-grid {
 			grid-template-columns: 1fr;
 		}
 	}
@@ -642,11 +781,9 @@
 		.btn-dashboard,
 		.btn-room,
 		.dropdown-arrow,
-		.dropdown-menu {
+		.dropdown-menu,
+		.skeleton {
 			transition: none;
-		}
-
-		.dropdown-menu {
 			animation: none;
 		}
 	}
