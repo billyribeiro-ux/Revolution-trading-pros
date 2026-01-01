@@ -7,6 +7,7 @@
  */
 
 import { fail } from '@sveltejs/kit';
+// @ts-expect-error - SvelteKit generates this file during build
 import type { Actions, PageServerLoad } from './$types';
 
 /**
@@ -32,7 +33,7 @@ interface BillingInfo {
  * Page load function
  * Parent layout already handles auth - we just add account-specific data
  */
-export const load: PageServerLoad = async ({ parent }) => {
+export const load: PageServerLoad = async ({ parent }: { parent: () => Promise<any> }) => {
 	// Get user data from parent layout
 	const parentData = await parent();
 
@@ -69,7 +70,7 @@ export const actions: Actions = {
 	/**
 	 * Update user profile (name, email)
 	 */
-	updateProfile: async ({ request, locals: _locals }) => {
+	updateProfile: async ({ request, locals: _locals }: { request: Request; locals: any }) => {
 		const formData = await request.formData();
 		const firstName = formData.get('first_name')?.toString().trim();
 		const lastName = formData.get('last_name')?.toString().trim();
@@ -111,7 +112,7 @@ export const actions: Actions = {
 	/**
 	 * Update user password
 	 */
-	updatePassword: async ({ request, locals: _locals }) => {
+	updatePassword: async ({ request, locals: _locals }: { request: Request; locals: any }) => {
 		const formData = await request.formData();
 		const currentPassword = formData.get('current_password')?.toString();
 		const newPassword = formData.get('new_password')?.toString();
