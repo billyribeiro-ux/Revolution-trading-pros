@@ -14,6 +14,7 @@
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import { MarketingFooter } from '$lib/components/layout';
+	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
@@ -89,12 +90,13 @@
 	<!-- Admin and Embed areas have their own layouts -->
 	{@render children()}
 {:else if isDashboardArea}
-	<!-- Dashboard area: NavBar + Content + Footer -->
+	<!-- Dashboard area: NavBar + Breadcrumbs + Content + Footer -->
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
 		<NavBar />
+		<DashboardBreadcrumbs />
 		{@render children()}
 		<MarketingFooter />
 		{#if mounted}
