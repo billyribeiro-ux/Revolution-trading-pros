@@ -272,22 +272,24 @@
 			<h2 class="section-title">Memberships</h2>
 			<div class="membership-cards">
 				{#each membershipCards as card}
-					<article class="membership-card membership-card--{card.variant}">
-						<a href={card.href} class="membership-card__header">
-							<span class="mem_icon">
-								<span class="membership-card__icon">
-									<RtpIcon name={card.icon} size={32} />
+					<div class="membership-card-col">
+						<article class="membership-card membership-card--{card.variant}">
+							<a href={card.href} class="membership-card__header">
+								<span class="mem_icon">
+									<span class="membership-card__icon">
+										<RtpIcon name={card.icon} size={32} />
+									</span>
 								</span>
-							</span>
-							<span class="mem_div">{card.name}</span>
-						</a>
-						<div class="membership-card__actions">
-							<a href={card.href} class="btn-dashboard">Dashboard</a>
-							{#if card.tradingRoom}
-								<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
-							{/if}
-						</div>
-					</article>
+								<span class="mem_div">{card.name}</span>
+							</a>
+							<div class="membership-card__actions">
+								<a href={card.href}>Dashboard</a>
+								{#if card.tradingRoom}
+									<a href={card.tradingRoom} target="_blank">Trading Room</a>
+								{/if}
+							</div>
+						</article>
+					</div>
 				{/each}
 			</div>
 		</section>
@@ -299,22 +301,24 @@
 			<h2 class="section-title">Mastery</h2>
 			<div class="membership-cards">
 				{#each masteryCards as card}
-					<article class="membership-card membership-card--{card.variant}">
-						<a href={card.href} class="membership-card__header">
-							<span class="mem_icon">
-								<span class="membership-card__icon">
-									<RtpIcon name={card.icon} size={32} />
+					<div class="membership-card-col">
+						<article class="membership-card membership-card--{card.variant}">
+							<a href={card.href} class="membership-card__header">
+								<span class="mem_icon">
+									<span class="membership-card__icon">
+										<RtpIcon name={card.icon} size={32} />
+									</span>
 								</span>
-							</span>
-							<span class="mem_div">{card.name}</span>
-						</a>
-						<div class="membership-card__actions">
-							<a href={card.href} class="btn-dashboard">Dashboard</a>
-							{#if card.tradingRoom}
-								<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
-							{/if}
-						</div>
-					</article>
+								<span class="mem_div">{card.name}</span>
+							</a>
+							<div class="membership-card__actions">
+								<a href={card.href}>Dashboard</a>
+								{#if card.tradingRoom}
+									<a href={card.tradingRoom} target="_blank">Trading Room</a>
+								{/if}
+							</div>
+						</article>
+					</div>
 				{/each}
 			</div>
 		</section>
@@ -325,19 +329,21 @@
 		<h2 class="section-title">Tools</h2>
 		<div class="membership-cards">
 			{#each toolsCards as card}
-				<article class="membership-card membership-card--{card.variant}">
-					<a href={card.href} class="membership-card__header">
-						<span class="mem_icon">
-							<span class="membership-card__icon">
-								<RtpIcon name={card.icon} size={24} />
+				<div class="membership-card-col">
+					<article class="membership-card membership-card--{card.variant}">
+						<a href={card.href} class="membership-card__header">
+							<span class="mem_icon">
+								<span class="membership-card__icon">
+									<RtpIcon name={card.icon} size={24} />
+								</span>
 							</span>
-						</span>
-						<span class="mem_div">{card.name}</span>
-					</a>
-					<div class="membership-card__actions">
-						<a href={card.href} class="btn-dashboard">Dashboard</a>
-					</div>
-				</article>
+							<span class="mem_div">{card.name}</span>
+						</a>
+						<div class="membership-card__actions">
+							<a href={card.href}>Dashboard</a>
+						</div>
+					</article>
+				</div>
 			{/each}
 		</div>
 	</section>
@@ -634,25 +640,66 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * MEMBERSHIP CARDS - WordPress Exact Match
 	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
+	 * Grid: col-sm-6 col-xl-4 (Bootstrap breakpoints)
+	 * - Mobile (< 576px): 1 card per row
+	 * - Small-Large (576px - 1199px): 2 cards per row
+	 * - XL+ (≥ 1200px): 3 cards per row
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.membership-cards {
-		margin-top: -30px;
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
 	}
 
-	@media (max-width: 768px) {
+	/* Grid column wrapper - handles responsive layout */
+	.membership-card-col {
+		flex: 0 0 100%;
+		max-width: 100%;
+		padding-left: 15px;
+		padding-right: 15px;
+		margin-bottom: 30px;
+		box-sizing: border-box;
+	}
+
+	/* Small screens and up (≥576px): 2 columns */
+	@media (min-width: 576px) {
+		.membership-card-col {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* Extra large screens (≥1200px): 3 columns */
+	@media (min-width: 1200px) {
+		.membership-card-col {
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
+
+	/* Card styling - visual appearance */
+	.membership-card {
+		background: #fff;
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* Skeleton grid responsive */
+	@media (max-width: 575px) {
 		.skeleton-grid {
 			grid-template-columns: 1fr;
 		}
 	}
 
-	.membership-card {
-		margin-top: 30px;
-		background: #fff;
-		border-radius: 5px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		display: inline-block;
-		width: 100%;
+	@media (min-width: 576px) and (max-width: 1199px) {
+		.skeleton-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.membership-card__header {
@@ -693,6 +740,8 @@
 		font-weight: 700;
 		color: #333;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		white-space: normal;
+		width: calc(100% - 65px); /* Account for icon width + margin */
 	}
 
 	.icon {
