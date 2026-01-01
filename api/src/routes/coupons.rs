@@ -168,15 +168,15 @@ async fn validate_coupon(
         }
     }
 
-    // Check minimum purchase
-    if let Some(min) = coupon.min_purchase {
+    // Check minimum purchase - Laravel uses min_purchase_amount
+    if coupon.min_purchase_amount > 0.0 {
         if let Some(subtotal) = input.subtotal {
-            if subtotal < min {
+            if subtotal < coupon.min_purchase_amount {
                 return Ok(Json(ValidateCouponResponse {
                     valid: false,
                     coupon: None,
                     discount_amount: None,
-                    error: Some(format!("Minimum purchase of ${:.2} required", min)),
+                    error: Some(format!("Minimum purchase of ${:.2} required", coupon.min_purchase_amount)),
                 }));
             }
         }
@@ -200,38 +200,16 @@ async fn validate_coupon(
         }
     }
 
-    // Check plan restrictions
-    if let Some(ref applicable) = coupon.applicable_plans {
-        if let Some(ref plan_ids) = input.plan_ids {
-            let applicable_ids: Vec<i64> = serde_json::from_value(applicable.clone()).unwrap_or_default();
-            if !applicable_ids.is_empty() {
-                let has_valid_plan = plan_ids.iter().any(|id| applicable_ids.contains(id));
-                if !has_valid_plan {
-                    return Ok(Json(ValidateCouponResponse {
-                        valid: false,
-                        coupon: None,
-                        discount_amount: None,
-                        error: Some("This coupon is not valid for the selected plan".to_string()),
-                    }));
-                }
-            }
-        }
-    }
+    // Note: Laravel schema doesn't have applicable_plans column
 
-    // Calculate discount
+    // Calculate discount - Laravel uses 'type' (percentage/fixed) and 'value'
     let discount_amount = if let Some(subtotal) = input.subtotal {
-        let discount = if coupon.discount_type == "percent" {
-            subtotal * (coupon.discount_value / 100.0)
+        let discount = if coupon.coupon_type == "percentage" {
+            subtotal * (coupon.value / 100.0)
         } else {
-            coupon.discount_value
+            coupon.value
         };
-
-        // Apply max discount cap
-        if let Some(max) = coupon.max_discount {
-            Some(discount.min(max))
-        } else {
-            Some(discount)
-        }
+        Some(discount)
     } else {
         None
     };
