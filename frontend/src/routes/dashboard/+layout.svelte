@@ -71,11 +71,12 @@
 		email: data.user?.email ?? $user?.email ?? '',
 		name: data.user?.name ?? $user?.name ?? $user?.email?.split('@')[0] ?? 'Member',
 		avatar: $user?.avatar_url ?? null,
-		// Pass full membership objects for sidebar to render dynamically
+		// Pass ALL membership types for sidebar to render dynamically
 		memberships: [
 			...(membershipsData?.tradingRooms ?? []),
 			...(membershipsData?.alertServices ?? []),
-			...(membershipsData?.courses ?? [])
+			...(membershipsData?.courses ?? []),
+			...(membershipsData?.indicators ?? [])
 		].filter((m: { status: string }) => m.status === 'active')
 		 .map((m: { name: string; slug: string; icon?: string }) => ({
 			name: m.name,
