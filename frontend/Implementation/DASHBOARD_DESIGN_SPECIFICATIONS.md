@@ -418,3 +418,247 @@ transform: translate(5px);
   padding: 30px 40px 0;
 }
 ```
+
+---
+
+## DASHBOARD CONTENT AREA
+
+### Content Container (.dashboard__content)
+```css
+.dashboard__content {
+  display: flex;
+  flex-flow: row nowrap;
+}
+```
+
+### Content Main (.dashboard__content-main)
+```css
+.dashboard__content-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-right: 1px solid #dbdbdb;
+}
+```
+
+### Content Section (.dashboard__content-section)
+```css
+.dashboard__content-section {
+  padding: 30px 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+@media (min-width: 1280px) {
+  padding: 30px;
+}
+
+@media (min-width: 1440px) {
+  padding: 40px;
+}
+```
+
+### Content Sidebar (.dashboard__content-sidebar)
+```css
+.dashboard__content-sidebar {
+  display: none;
+  width: 260px;
+  flex: 0 0 auto;
+  margin-top: -1px;
+  border-right: 1px solid #dbdbdb;
+  border-top: 1px solid #dbdbdb;
+}
+
+@media (min-width: 1080px) {
+  display: block;
+}
+```
+
+### Page Title (.dashboard__page-title)
+```css
+h1.dashboard__page-title {
+  margin: 0;
+  color: #333;
+  font-size: 36px;
+  font-weight: 300;
+}
+```
+
+### Section Title (.section-title)
+```css
+h2.section-title {
+  color: #333;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+```
+
+### Section Title Alt (.section-title-alt)
+```css
+h2.section-title-alt {
+  color: #0984ae;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 20%;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+/* With --underline modifier */
+h2.section-title-alt--underline {
+  padding-bottom: 30px;
+  position: relative;
+}
+
+h2.section-title-alt--underline::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #e8e8e8;
+}
+```
+
+---
+
+## MEMBERSHIP CARDS
+
+### Card Container (.membership-cards)
+```css
+.membership-cards {
+  margin-top: -30px;
+}
+```
+
+### Card Base (.membership-card)
+```css
+.membership-card {
+  margin-top: 30px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+}
+```
+
+### Card Header (.membership-card__header)
+```css
+.membership-card__header {
+  display: block;
+  padding: 20px;
+  color: #333;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.15s ease-in-out;
+}
+
+.membership-card__header:hover {
+  color: #0984ae;
+}
+```
+
+### Card Icon (.membership-card__icon)
+```css
+.membership-card__icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin-right: 9px;
+  line-height: 50px;
+  color: #fff;
+  text-align: center;
+  border-radius: 50%;
+  transition: all 0.15s ease-in-out;
+}
+```
+
+### Card Actions (.membership-card__actions)
+```css
+.membership-card__actions {
+  display: flex;
+  font-size: 14px;
+  border-top: 1px solid #ededed;
+  justify-content: center;
+}
+
+.membership-card__actions a {
+  display: block;
+  flex: 0 0 auto;
+  flex-basis: 50%;
+  width: 50%;
+  height: 100%;
+  padding: 15px;
+  text-align: center;
+}
+
+.membership-card__actions a + a {
+  border-left: 1px solid #ededed;
+}
+```
+
+---
+
+## MEMBERSHIP CARD VARIANTS (Icon Colors)
+
+| Variant | Background | Box-Shadow | Hover |
+|---------|------------|------------|-------|
+| `--options` | `#0984ae` | `rgba(9,132,174,.25)` | `#076787` |
+| `--foundation` | `#00abaf` | `rgba(0,171,175,.25)` | `#008386` |
+| `--consistent-growth` | `#005695` | `rgba(0,86,149,.25)` | - |
+| `--tr3ndy-spx-alerts` | `#fe8900` | `rgba(254,137,0,.25)` | `#d57300` |
+| `--ww` (Weekly Watchlist) | `#0c2434` | `rgba(12,36,52,.25)` | `#040d13` |
+| `--training-room` | `#3c22f1` | `rgba(60,34,241,.25)` | `#280edc` |
+
+---
+
+## DROPDOWN MENU
+
+```css
+.dropdown-menu {
+  padding: 20px;
+  min-width: 260px;
+  max-width: 280px;
+  margin: 5px 0 0;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-menu__heading {
+  margin: -20px -20px 20px;
+  padding: 15px 20px;
+  color: #fff;
+  background: #0984ae;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.dropdown-menu__menu > li > a {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.dropdown-menu__menu > li > a:hover {
+  background-color: #f4f4f4;
+}
+```
+
+---
+
+## ICON SIZES
+
+```css
+.icon--md {
+  font-size: 24px;
+  line-height: 0;
+}
+
+.icon--lg {
+  font-size: 32px;
+  line-height: 0;
+}
+```
