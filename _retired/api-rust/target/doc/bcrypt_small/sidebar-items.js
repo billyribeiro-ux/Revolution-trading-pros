@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["FORMATTED_HASH_SIZE","KEY_SIZE_MAX"],"enum":["CompareError","HashError","ParseError"],"fn":["compare","hash"],"struct":["Hash","Salt","WorkFactor"]};
