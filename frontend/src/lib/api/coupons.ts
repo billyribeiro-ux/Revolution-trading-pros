@@ -49,7 +49,7 @@
  */
 
 import { browser } from '$app/environment';
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -59,17 +59,14 @@ import { getAuthToken } from '$lib/stores/auth';
 // Production fallbacks - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
 const API_URL = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
-const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const CACHE_TTL = 300000; // 5 minutes
 const VALIDATION_CACHE_TTL = 60000; // 1 minute
 const FRAUD_CHECK_TIMEOUT = 3000; // 3 seconds
-const ANALYTICS_INTERVAL = 60000; // 1 minute
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
@@ -698,30 +695,29 @@ class CouponManagementService {
 
 	/**
 	 * Start analytics collection
+	 * NOTE: Commented out - not yet implemented on backend
 	 */
-	private startAnalyticsCollection(): void {
-		if (!browser) return;
+	// private startAnalyticsCollection(): void {
+	// 	if (!browser) return;
+	// 	this.analyticsInterval = window.setInterval(() => {
+	// 		this.updateAnalytics();
+	// 	}, 60000); // 1 minute
+	// }
 
-		this.analyticsInterval = window.setInterval(() => {
-			this.updateAnalytics();
-		}, ANALYTICS_INTERVAL);
-	}
-
-	private async updateAnalytics(): Promise<void> {
-		const activeCoupons = get(this.activeCoupons);
-
-		for (const coupon of activeCoupons) {
-			try {
-				const metrics = await this.getCouponMetrics(coupon.id);
-				this.metrics.update((m) => {
-					m[coupon.id] = metrics;
-					return m;
-				});
-			} catch (error) {
-				console.error(`[CouponService] Failed to update metrics for ${coupon.id}:`, error);
-			}
-		}
-	}
+	// private async updateAnalytics(): Promise<void> {
+	// 	const activeCoupons = get(this.activeCoupons);
+	// 	for (const coupon of activeCoupons) {
+	// 		try {
+	// 			const metrics = await this.getCouponMetrics(coupon.id);
+	// 			this.metrics.update((m) => {
+	// 				m[coupon.id] = metrics;
+	// 				return m;
+	// 			});
+	// 		} catch (error) {
+	// 			console.error(`[CouponService] Failed to update metrics for ${coupon.id}:`, error);
+	// 		}
+	// 	}
+	// }
 
 	/**
 	 * Setup fraud detection

@@ -10,7 +10,6 @@
 	import {
 		IconBrain,
 		IconTrendingUp,
-		IconTrendingDown,
 		IconAlertTriangle,
 		IconBulb,
 		IconTarget

@@ -83,7 +83,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each data as row, rowIndex (row.cohort_date)}
+				{#each data as row (row.cohort_date)}
 					<tr class="border-t border-gray-100 hover:bg-gray-50/50">
 						<td class="px-3 py-2 font-medium text-gray-900 sticky left-0 bg-white z-10">
 							{formatDate(row.cohort_date ?? '')}
@@ -95,16 +95,13 @@
 							{@const periodData = row.periods ? row.periods[period] : null}
 							<td class="px-1 py-1">
 								{#if periodData && typeof periodData === 'object'}
-									{@const value =
-										metricType === 'retention'
-											? periodData.retention_rate
-											: periodData.total_revenue}
+									{@const retentionRate = periodData.retention_rate}
 									<div
 										class="w-full h-8 rounded flex items-center justify-center text-xs font-medium
-											{getRetentionColor(periodData.retention_rate)}
-											{getTextColor(periodData.retention_rate)}"
+											{getRetentionColor(retentionRate)}
+											{getTextColor(retentionRate)}"
 										title={metricType === 'retention'
-											? `${periodData.active_users} users (${periodData.retention_rate.toFixed(1)}%)`
+											? `${periodData.active_users} users (${retentionRate.toFixed(1)}%)`
 											: `$${periodData.total_revenue.toFixed(0)}`}
 									>
 										{metricType === 'retention'
@@ -129,7 +126,7 @@
 							data.reduce((sum, row) => sum + (row.cohort_size || row.size || 0), 0) / data.length
 						).toLocaleString()}
 					</td>
-					{#each periodAverages as avg, period}
+					{#each periodAverages as avg}
 						<td class="px-1 py-1">
 							{#if avg !== null}
 								<div

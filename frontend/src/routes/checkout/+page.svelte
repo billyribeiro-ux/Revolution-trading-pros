@@ -15,7 +15,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { user, isAuthenticated } from '$lib/stores/auth';
-	import { cartStore, cartTotal, cartItemCount } from '$lib/stores/cart';
+	import { cartStore, cartTotal } from '$lib/stores/cart';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
@@ -26,7 +26,6 @@
 	import IconCheck from '@tabler/icons-svelte/icons/check';
 	import IconTicket from '@tabler/icons-svelte/icons/ticket';
 	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
 	import IconLoader from '@tabler/icons-svelte/icons/loader';
 
 	// ═══════════════════════════════════════════════════════════════════════════

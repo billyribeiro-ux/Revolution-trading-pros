@@ -166,7 +166,7 @@
 			{/each}
 
 			<!-- X-axis labels -->
-			{#each xLabels as item, i}
+			{#each xLabels as item}
 				{@const index = data.indexOf(item)}
 				<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="text-xs fill-gray-500">
 					{formatDate(item.date)}
