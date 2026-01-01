@@ -565,40 +565,40 @@ class CouponManagementService {
 		return;
 	}
 
-	private subscribeToUpdates(): void {
-		this.wsConnection?.send(
-			JSON.stringify({
-				type: 'subscribe',
-				channels: ['coupons', 'campaigns', 'redemptions', 'metrics']
-			})
-		);
-	}
+	// WebSocket methods commented out - not yet implemented on backend
+	// private subscribeToUpdates(): void {
+	// 	this.wsConnection?.send(
+	// 		JSON.stringify({
+	// 			type: 'subscribe',
+	// 			channels: ['coupons', 'campaigns', 'redemptions', 'metrics']
+	// 		})
+	// 	);
+	// }
 
-	private handleWebSocketMessage(event: MessageEvent): void {
-		try {
-			const message = JSON.parse(event.data);
-
-			switch (message.type) {
-				case 'coupon_updated':
-					this.handleCouponUpdate(message.data);
-					break;
-				case 'redemption':
-					this.handleRedemption(message.data);
-					break;
-				case 'campaign_update':
-					this.handleCampaignUpdate(message.data);
-					break;
-				case 'metrics_update':
-					this.handleMetricsUpdate(message.data);
-					break;
-				case 'fraud_alert':
-					this.handleFraudAlert(message.data);
-					break;
-			}
-		} catch (error) {
-			console.error('[CouponService] Failed to handle WebSocket message:', error);
-		}
-	}
+	// private handleWebSocketMessage(event: MessageEvent): void {
+	// 	try {
+	// 		const message = JSON.parse(event.data);
+	// 		switch (message.type) {
+	// 			case 'coupon_updated':
+	// 				this.handleCouponUpdate(message.data);
+	// 				break;
+	// 			case 'redemption':
+	// 				this.handleRedemption(message.data);
+	// 				break;
+	// 			case 'campaign_update':
+	// 				this.handleCampaignUpdate(message.data);
+	// 				break;
+	// 			case 'metrics_update':
+	// 				this.handleMetricsUpdate(message.data);
+	// 				break;
+	// 			case 'fraud_alert':
+	// 				this.handleFraudAlert(message.data);
+	// 				break;
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('[CouponService] Failed to handle WebSocket message:', error);
+	// 	}
+	// }
 
 	private handleCouponUpdate(coupon: EnhancedCoupon): void {
 		this.coupons.update((coupons) => {
@@ -661,37 +661,36 @@ class CouponManagementService {
 
 	/**
 	 * Load initial data - gracefully handles missing endpoints
+	 * NOTE: Commented out - not yet implemented on backend
 	 */
-	private async loadInitialData(): Promise<void> {
-		try {
-			// Load coupons first
-			let coupons: EnhancedCoupon[] = [];
-			try {
-				coupons = await this.getAllCoupons();
-			} catch (error) {
-				console.debug('[CouponService] Coupons endpoint not available');
-			}
-
-			// Try to load campaigns (optional endpoint)
-			try {
-				await this.getCampaigns();
-			} catch (error) {
-				console.debug('[CouponService] Campaigns endpoint not available');
-			}
-
-			// Load metrics for active coupons
-			const activeCoupons = coupons.filter((c) => c.isActive);
-			for (const coupon of activeCoupons.slice(0, 10)) {
-				try {
-					await this.getCouponMetrics(coupon.id);
-				} catch {
-					// Metrics endpoint may not exist
-				}
-			}
-		} catch (error) {
-			console.debug('[CouponService] Initial data load skipped:', error);
-		}
-	}
+	// private async loadInitialData(): Promise<void> {
+	// 	try {
+	// 		// Load coupons first
+	// 		let coupons: EnhancedCoupon[] = [];
+	// 		try {
+	// 			coupons = await this.getAllCoupons();
+	// 		} catch (error) {
+	// 			console.debug('[CouponService] Coupons endpoint not available');
+	// 		}
+	// 		// Try to load campaigns (optional endpoint)
+	// 		try {
+	// 			await this.getCampaigns();
+	// 		} catch (error) {
+	// 			console.debug('[CouponService] Campaigns endpoint not available');
+	// 		}
+	// 		// Load metrics for active coupons
+	// 		const activeCoupons = coupons.filter((c) => c.isActive);
+	// 		for (const coupon of activeCoupons.slice(0, 10)) {
+	// 			try {
+	// 				await this.getCouponMetrics(coupon.id);
+	// 			} catch {
+	// 				// Metrics endpoint may not exist
+	// 			}
+	// 		}
+	// 	} catch (error) {
+	// 		console.debug('[CouponService] Initial data load skipped:', error);
+	// 	}
+	// }
 
 	/**
 	 * Start analytics collection
