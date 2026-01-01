@@ -1,1589 +1,664 @@
-# Dashboard Design Specifications - Complete Visual Guide
-**Apple ICT 11 Principal Engineer Grade Documentation**
-
-**Source File:** `frontend/Implementation/DashboardHome`  
-**Date Created:** January 1, 2026  
-**Purpose:** Comprehensive design specifications for all dashboard components including typography, hover effects, animations, colors, and spacing
+# Dashboard Design Specifications
+## Source: WordPress Simpler Trading (dashboard.8f78208b.css)
 
 ---
 
-## Table of Contents
-1. [Typography System](#typography-system)
-2. [Color Palette](#color-palette)
-3. [Hover Effects & Transitions](#hover-effects--transitions)
-4. [Animations](#animations)
-5. [Dashboard Components](#dashboard-components)
-6. [Navigation System](#navigation-system)
-7. [Button Specifications](#button-specifications)
-8. [Icon System](#icon-system)
-9. [Responsive Breakpoints](#responsive-breakpoints)
+## PAGE STRUCTURE (Line 2729+ of DashboardHome)
 
----
-
-## Typography System
-
-### Font Families
-```css
-/* Primary Font Stack */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
-                 Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-}
-
-/* Google Fonts Integration */
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
 ```
-
-### Font Sizes
-
-#### Headings
-| Element | Font Size | Font Weight | Line Height | Usage |
-|---------|-----------|-------------|-------------|-------|
-| `h1` | Not specified | bold | Default | Page titles |
-| `h2` | 32px | Default | Default | Section headers |
-| `h3` | 26px | Default | Default | Subsection headers |
-| `.dashboard__page-title` | Inherited | 700 | Default | Dashboard page titles |
-
-#### Body Text
-| Element | Font Size | Font Weight | Line Height | Usage |
-|---------|-----------|-------------|-------------|-------|
-| Body | 16px (default) | 400 | 1.5 | Standard content |
-| `.fl-photo-caption` | 13px | normal | 18px | Image captions |
-| `.fl-form-error-message` | 12px | lighter | Default | Form errors |
-
-#### Navigation
-| Element | Font Size | Font Weight | Usage |
-|---------|-----------|-------------|-------|
-| `.dashboard__nav-item-text` | Inherited | normal / bold | Navigation labels |
-| `.dashboard__nav-category` | Inherited | normal | Category labels |
-| Desktop nav links | 16px (implied) | normal | Main navigation |
-| Mobile nav links (≤950px) | 14px | normal | Mobile navigation |
-
-#### Icons
-| Element | Font Size | Usage |
-|---------|-----------|-------|
-| `.st-icon-this-week` | 28px | Feature icons |
-| `.dashboard__nav-item-icon.st-icon-training-room` (primary) | 26px | Primary nav training room |
-| `.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room` | 20px | Secondary nav training room |
-| `.dashboard__nav-item-icon.st-icon-stacked-profits` | 40px | Stacked profits feature |
-| `.fl-icon i` | 28px | Beaver Builder icons |
-| `.fl-button i` | 1.3em | Button icons (relative) |
-| `.mfp-preloader.fa` | 30px | Loading spinner |
-| `.product-sidebar-inner .video-thumb .video-play-icon:after` | 17px | Video play button |
-
----
-
-## Color Palette
-
-### Primary Colors
-```css
-/* Brand Colors */
---primary-orange: #ff8c00;
---primary-orange-hover: #dc7309;
---primary-blue: #0984ae;
---dark-blue: #0a2335;
---dark-blue-hover: #0a2436;
-
-/* Neutral Colors */
---white: #ffffff;
---black: #000000;
---gray-dark: #666666;
---gray-medium: #5D5D5D;
---gray-light: #f5f5f5;
---gray-lighter: #F0F0F0;
---gray-border: #e6e6e6;
---gray-hover: #e9ebed;
-
-/* Semantic Colors */
---error-color: #DD6420;
---success-color: (not defined)
---warning-color: (not defined)
-```
-
-### Background Colors
-| Element | Background | Hover State |
-|---------|------------|-------------|
-| `.primary-btn` | `#ff8c00` | `#dc7309` |
-| `.menu-item-cart` | Default | `#0a2436` |
-| `.sub-menu li` | Default | `#e9ebed` |
-| `.fl-photo-caption-hover` | `rgba(0,0,0,0.7)` | N/A |
-| `.fl-builder-pagination li span.current` | `#f5f5f5` | N/A |
-
-### Text Colors
-| Element | Color | Hover State |
-|---------|-------|-------------|
-| Body text | Default (black) | N/A |
-| `.fl-photo-caption-hover` | `#fff` | N/A |
-| `.fl-form-error-message` | `#DD6420` | N/A |
-| `.dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text` | `#0984ae` | N/A |
-
----
-
-## Hover Effects & Transitions
-
-### Navigation Hover Effects
-```css
-/* Menu Item Cart Hover */
-li.menu-item-cart:hover,
-.menu-item-cart a:hover {
-    background: #0a2436 !important;
-}
-
-/* Sub-menu Hover */
-.sub-menu li:hover,
-.sub-menu li:active {
-    background: #e9ebed;
-}
-
-/* Icon Hover */
-.fl-node-5b72f8ed22a5c .fl-icon i:hover,
-.fl-node-5b72f8ed22a5c .fl-icon i:hover:before,
-.fl-node-5b72f8ed22a5c .fl-icon a:hover i,
-.fl-node-5b72f8ed22a5c .fl-icon a:hover i:before {
-    color: #666666;
-}
-```
-
-### Button Hover Effects
-```css
-/* Primary Button Hover */
-.primary-btn {
-    background-color: #ff8c00;
-    transition: all .2s ease-in-out;
-}
-
-.primary-btn:hover {
-    background-color: #dc7309;
-}
-
-/* Squared Button Hover */
-.squared-btn {
-    transition: all .2s ease-in-out;
-}
-
-/* Beaver Builder Button Hover */
-.fl-builder-content .fl-button:hover {
-    text-decoration: none;
-}
-```
-
-### Photo Caption Hover
-```css
-.fl-photo-caption-hover {
-    background: rgba(0,0,0,0.7);
-    bottom: 0;
-    color: #fff;
-    left: 0;
-    opacity: 0;
-    filter: alpha(opacity = 0);
-    padding: 10px 15px;
-    position: absolute;
-    right: 0;
-    -webkit-transition: opacity 0.3s ease-in;
-    -moz-transition: opacity 0.3s ease-in;
-    transition: opacity 0.3s ease-in;
-}
-
-.fl-photo-content:hover .fl-photo-caption-hover {
-    opacity: 100;
-    filter: alpha(opacity = 100);
-}
-```
-
-### Pagination Hover
-```css
-.fl-builder-pagination li a.page-numbers:hover,
-.fl-builder-pagination li span.current {
-    background: #f5f5f5;
-    text-decoration: none;
-}
+1. <header id="masthead" class="site-header">     - Logo
+2. <nav id="site-navigation" class="main-navigation">  - Main Menu (70px line-height)
+3. <nav id="breadcrumbs" class="breadcrumbs">     - Breadcrumbs
+4. <div class="dashboard">                         - Dashboard Container
+   ├── <aside class="dashboard__sidebar">          - Sidebar
+   │   ├── <nav class="dashboard__nav-primary">    - Navigation
+   │   ├── <footer class="dashboard__toggle">      - Mobile Toggle (hidden desktop)
+   │   └── <div class="dashboard__overlay">        - Mobile Overlay
+   └── <main class="dashboard__main">              - Main Content
+       ├── <header class="dashboard__header">      - Page Header
+       └── <div class="dashboard__content">        - Content Area
 ```
 
 ---
 
-## Animations
+## COLORS
 
-### Button Icon Animation
-```css
-/* Icon Animation on Button Hover */
-.fl-button.fl-button-icon-animation i {
-    width: 0 !important;
-    opacity: 0;
-    -ms-filter: "alpha(opacity=0)";
-    transition: all 0.2s ease-out;
-    -webkit-transition: all 0.2s ease-out;
-}
-
-.fl-button.fl-button-icon-animation:hover i {
-    opacity: 1 !important;
-    -ms-filter: "alpha(opacity=100)";
-}
-
-/* Icon After (Right Side) */
-.fl-button.fl-button-icon-animation i.fl-button-icon-after {
-    margin-left: 0px !important;
-}
-
-.fl-button.fl-button-icon-animation:hover i.fl-button-icon-after {
-    margin-left: 10px !important;
-}
-
-/* Icon Before (Left Side) */
-.fl-button.fl-button-icon-animation i.fl-button-icon-before {
-    margin-right: 0 !important;
-}
-
-.fl-button.fl-button-icon-animation:hover i.fl-button-icon-before {
-    margin-right: 20px !important;
-    margin-left: -10px;
-}
-```
-
-### Animation Base Classes
-```css
-/* Animation Setup */
-.fl-animation {
-    opacity: 0;
-}
-
-.fl-builder-preview .fl-animation,
-.fl-builder-edit .fl-animation,
-.fl-animated {
-    opacity: 1;
-}
-
-.fl-animated {
-    animation-fill-mode: both;
-    -webkit-animation-fill-mode: both;
-}
-```
+| Element | Color |
+|---------|-------|
+| Sidebar Background | `#0f2d41` |
+| Toggle Footer Background | `#0d2532` |
+| Main Content Background | `#f4f4f4` |
+| Dashboard Header Background | `#ffffff` |
+| Text White | `#ffffff` |
+| Text Muted (links) | `hsla(0, 0%, 100%, 0.5)` |
+| Accent Blue (hover/active) | `#0984ae` |
+| Border Color | `#dbdbdb` |
+| Body Background | `#efefef` |
+| Link Blue | `#1e73be` |
 
 ---
 
-## Dashboard Components
+## TYPOGRAPHY
 
-### Dashboard Structure
+**RTP uses Montserrat (not Open Sans like WordPress)**
+
+| Element | Font | Size | Weight |
+|---------|------|------|--------|
+| Body/Nav | Montserrat | 14px | 300 |
+| Category Headers | Montserrat | 16px | 700, uppercase |
+| Profile Name | Montserrat | 14px | 600 |
+| Nav Item Text | Montserrat | 14px | 300 (bold items: 700) |
+| Breadcrumbs | Montserrat | 13px | 400 |
+
+---
+
+## SIDEBAR (.dashboard__sidebar)
+
+### Desktop (1280px+)
 ```css
-/* Main Dashboard Container */
-.dashboard {
-    /* Container for entire dashboard */
-}
-
-/* Sidebar */
 .dashboard__sidebar {
-    /* Left sidebar navigation */
-}
-
-/* Header */
-.dashboard__header {
-    justify-content: space-between;
-}
-
-/* Content Areas */
-.dashboard__content-sidebar {
-    /* Right sidebar content */
-}
-
-.dashboard__content-main {
-    /* Main content area */
-}
-
-.dashboard__content-section {
-    /* Content sections */
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: 280px;
+  background-color: #0f2d41;
+  position: static;  /* Part of flex layout */
+  min-height: 100vh;
 }
 ```
 
-### Dashboard Navigation
+### Collapsed State (desktop)
 ```css
-/* Primary Navigation */
-.dashboard__nav-primary {
-    /* Main navigation container */
+.dashboard__sidebar.is-collapsed {
+  width: 80px;
+  padding-top: 30px;
 }
-
-.dashboard__nav-primary.is-collapsed .dash_main_links .dashboard__nav-item-text {
-    color: #0984ae !important;
-}
-
-/* Secondary Navigation */
-.dashboard__nav-secondary {
-    /* Secondary navigation container */
-}
-
-.dashboard__nav-secondary .dashboard__nav-submenu {
-    z-index: 110 !important;
-}
-
-/* Navigation Items */
-.dashboard__nav-item-icon {
-    /* Icon container */
-}
-
-.dashboard__nav-item-text {
-    /* Text label */
-}
-
-/* Navigation Categories */
-.dashboard__nav-category {
-    /* Category labels (e.g., "memberships", "mastery") */
+/* Hide text, show only icons */
+.is-collapsed .dashboard__profile-name,
+.is-collapsed .dashboard__nav-item-text,
+.is-collapsed .dashboard__nav-category {
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
 }
 ```
 
-### Profile Navigation
+### Mobile (<1280px)
+```css
+.dashboard__sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 50px;  /* Space for toggle footer */
+  width: 280px;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 100010;
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in-out;
+}
+
+.dashboard__sidebar.is-mobile-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+```
+
+---
+
+## NAV PRIMARY (.dashboard__nav-primary)
+
+```css
+.dashboard__nav-primary {
+  width: 280px;
+  padding-bottom: 30px;
+  font-size: 16px;
+  background-color: #0f2d41;
+}
+```
+
+---
+
+## PROFILE SECTION
+
 ```css
 .dashboard__profile-nav-item {
-    /* Profile link in navigation */
+  height: auto;
+  line-height: 1.4;
+  padding: 32px 30px 28px 80px;
+  position: relative;
 }
 
 .dashboard__profile-photo {
-    /* Profile photo (background-image) */
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  margin-top: -17px;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background-size: 32px;
+  background-position: center;
+  transition: all 0.15s ease-in-out;
+}
+
+.dashboard__profile-nav-item:hover .dashboard__profile-photo {
+  border-color: #0984ae;
 }
 
 .dashboard__profile-name {
-    /* Profile name display */
-}
-```
-
-### Page-Specific Styles
-```css
-/* Hide Main Dashboard Sidebar */
-.page-id-401190 .dashboard__content-sidebar {
-    display: none;
-}
-
-/* Member Dashboard Page Title */
-h1.dashboard__page-title {
-    font-weight: 700;
-}
-
-/* Foundation Dashboard Minimum Height */
-.page-id-1390136 .dashboard__content-section,
-.parent-pageid-1390136 .dashboard__content-section {
-    min-height: 825px !important;
-}
-
-/* Hide Header on Specific Pages */
-.page-id-1390136 .dashboard__header,
-.parent-pageid-1390136 .dashboard__header {
-    display: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
 }
 ```
 
 ---
 
-## Navigation System
+## CATEGORY HEADERS (.dashboard__nav-category)
 
-### Navigation Icon Specifications
-
-#### Icon Dimensions & Positioning
 ```css
-/* Standard Navigation Icon Pattern */
-.{nav-item}-nav-item a:before {
-    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/{icon-name}.svg);
-    width: 18px;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-#### Specific Navigation Icons
-
-**Foundation Icon**
-```css
-.foundation-nav-item a:before {
-    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/foundation-icon.svg);
-    width: 18px;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-**Mastery Icon**
-```css
-.mastery-nav-item a:before {
-    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/mastery-icon.svg);
-    width: 18px;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-**Options Icon**
-```css
-.options-nav-item a:before {
-    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/options-icon.svg);
-    width: 18px;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-**Futures Icon**
-```css
-.futures-nav-item a:before {
-    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/futures-icon.svg);
-    width: 18px;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-**Fibonacci Icon**
-```css
-.fibonacci-nav-item a:before {
-    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/fibonacci-icon.svg);
-    width: 18px;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-**Premium Newsletter Icon** (Background Image)
-```css
-.premium-newsletter-nav-item a:before {
-    content: '';
-    background-image: url(https://cdn.simplertrading.com/images/icons/premium-newsletter-icon.svg);
-    background-size: contain;
-    background-position: center;
-    width: 18px;
-    height: 50px;
-    background-repeat: no-repeat;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-**Day Trading Room Icon** (Background Image)
-```css
-.day-nav-item a:before {
-    content: '';
-    background-image: url(https://cdn.simplertrading.com/images/icons/simpler-day-trading-room-icon.svg);
-    background-size: 100%;
-    background-position: center;
-    width: 18px;
-    height: 50px;
-    background-repeat: no-repeat;
-    position: relative;
-    float: left;
-    line-height: 54px;
-    vertical-align: bottom;
-    margin-right: 5px;
-}
-```
-
-### Sub-menu Styling
-```css
-.sub-menu li > a {
-    padding: 0px 0px !important;
-    text-align: left;
-}
-
-.sub-menu li:hover,
-.sub-menu li:active {
-    background: #e9ebed;
-}
-```
-
-### Menu Item Cart
-```css
-.menu-item-cart {
-    min-width: auto !important;
-    max-width: 50px !important;
-}
-
-li.menu-item-cart:hover,
-.menu-item-cart a:hover {
-    background: #0a2436 !important;
+.dashboard__nav-category {
+  padding: 30px 30px 0;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
 }
 ```
 
 ---
 
-## Button Specifications
+## NAV LINKS (.dash_main_links)
 
-### Primary Button (Rounded)
 ```css
-.primary-btn {
+.dash_main_links a {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 20px 0 80px;
+  color: hsla(0, 0%, 100%, 0.5);
+  font-size: 14px;
+  font-weight: 300;
+  transition: all 0.15s ease-in-out;
+  position: relative;
+}
+
+.dash_main_links a:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+```
+
+### Active State
+```css
+.dash_main_links li.is-active a {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Left border indicator */
+.dash_main_links li.is-active a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #0984ae;
+}
+```
+
+---
+
+## NAV ICONS (.dashboard__nav-item-icon)
+
+```css
+.dashboard__nav-item-icon {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  margin-top: -16px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  line-height: 32px;
+  color: hsla(0, 0%, 100%, 0.5);
+  transition: all 0.15s ease-in-out;
+}
+
+.dash_main_links a:hover .dashboard__nav-item-icon {
+  color: #fff;
+}
+```
+
+---
+
+## TOGGLE FOOTER (.dashboard__toggle)
+
+```css
+/* Hidden on desktop (1280px+) */
+.dashboard__toggle {
+  display: none;
+}
+
+/* Mobile only */
+@media (max-width: 1279px) {
+  .dashboard__toggle {
     display: block;
-    border-radius: 25px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    line-height: 50px;
+    background-color: #0d2532;
+    z-index: 100010;
+  }
+}
+```
+
+---
+
+## MAIN CONTENT (.dashboard__main)
+
+```css
+.dashboard__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  background-color: #f4f4f4;
+}
+
+/* Mobile */
+@media (max-width: 1279px) {
+  .dashboard__main {
     width: 100%;
-    font-weight: 800;
-    font-size: 18px;
-    text-transform: uppercase;
-    padding: 10px 20px;
-    letter-spacing: 1.125px;
-    transition: all .2s ease-in-out;
-    background-color: #ff8c00;
-    color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
-}
-
-.primary-btn:hover {
-    background-color: #dc7309;
-}
-```
-
-**Visual Specifications:**
-- **Border Radius:** 25px (fully rounded)
-- **Font Weight:** 800 (Extra Bold)
-- **Font Size:** 18px
-- **Text Transform:** UPPERCASE
-- **Padding:** 10px vertical, 20px horizontal
-- **Letter Spacing:** 1.125px
-- **Transition:** all .2s ease-in-out
-- **Box Shadow:** 0 2px 5px rgba(0, 0, 0, 0.16)
-
-### Secondary Button (Squared)
-```css
-.squared-btn {
-    display: block;
-    border-radius: 4px;
-    width: 100%;
-    font-weight: 800;
-    font-size: 14px;
-    text-transform: uppercase;
-    padding: 10px 20px;
-    letter-spacing: 1.125px;
-    transition: all .2s ease-in-out;
-}
-```
-
-**Visual Specifications:**
-- **Border Radius:** 4px (slightly rounded corners)
-- **Font Weight:** 800 (Extra Bold)
-- **Font Size:** 14px (22% smaller than primary)
-- **Text Transform:** UPPERCASE
-- **Padding:** 10px vertical, 20px horizontal
-- **Letter Spacing:** 1.125px
-- **Transition:** all .2s ease-in-out
-
-### Beaver Builder Button
-```css
-.fl-button {
-    border: none;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    display: inline-block;
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 18px;
-    padding: 12px 24px;
-    text-decoration: none;
-    text-shadow: none;
-}
-
-.fl-builder-content .fl-button:hover {
-    text-decoration: none;
-}
-```
-
-**Visual Specifications:**
-- **Border Radius:** 4px
-- **Font Size:** 16px
-- **Font Weight:** normal (400)
-- **Line Height:** 18px
-- **Padding:** 12px vertical, 24px horizontal
-- **Display:** inline-block
-
-### WordPress Block Button
-```css
-.wp-block-button__link {
-    color: #fff;
-    background-color: #32373c;
-    border-radius: 9999px;
-    box-shadow: none;
-    text-decoration: none;
-    padding: calc(.667em + 2px) calc(1.333em + 2px);
-    font-size: 1.125em;
-}
-```
-
-**Visual Specifications:**
-- **Border Radius:** 9999px (fully rounded)
-- **Font Size:** 1.125em (18px if base is 16px)
-- **Padding:** calc(.667em + 2px) vertical, calc(1.333em + 2px) horizontal
-- **Background:** #32373c (dark gray)
-- **Color:** #fff (white text)
-
----
-
-## Icon System
-
-### Dashboard Icon Sizes
-| Icon Class | Font Size | Context |
-|------------|-----------|---------|
-| `.st-icon-home` | Inherited | Home/Dashboard |
-| `.st-icon-courses` | Inherited | My Classes |
-| `.st-icon-indicators` | Inherited | My Indicators |
-| `.st-icon-mastering-the-trade` | Inherited | Mastering the Trade |
-| `.st-icon-simpler-showcase` | Inherited | Simpler Showcase |
-| `.st-icon-tr3ndy-spx-alerts-circle` | Inherited | Tr3ndy SPX Alerts |
-| `.st-icon-consistent-growth` | Inherited | Compounding Growth Mastery |
-| `.st-icon-trade-of-the-week` | Inherited | Weekly Watchlist |
-| `.st-icon-support` | Inherited | Support |
-| `.st-icon-training-room` (primary) | 26px | Training Room (primary nav) |
-| `.st-icon-training-room` (secondary) | 20px | Training Room (secondary nav) |
-| `.st-icon-stacked-profits` | 40px | Stacked Profits feature |
-| `.st-icon-this-week` | 28px | This Week feature |
-
-### Beaver Builder Icons
-```css
-.fl-node-5b72f8ed22a5c .fl-icon i,
-.fl-node-5b72f8ed22a5c .fl-icon i:before {
-    font-size: 28px;
-}
-
-/* Responsive - Same size across all breakpoints */
-@media(max-width: 992px) {
-    .fl-node-5b72f8ed22a5c .fl-icon i,
-    .fl-node-5b72f8ed22a5c .fl-icon i:before {
-        font-size: 28px;
-    }
-}
-
-@media(max-width: 768px) {
-    .fl-node-5b72f8ed22a5c .fl-icon i,
-    .fl-node-5b72f8ed22a5c .fl-icon i:before {
-        font-size: 28px;
-    }
-}
-```
-
-### Button Icons
-```css
-.fl-builder-content .fl-button i {
-    font-size: 1.3em; /* Relative to button font size */
-    height: auto;
-    margin-right: 8px;
-    vertical-align: middle;
+    padding-bottom: 50px;  /* Space for toggle footer */
+  }
 }
 ```
 
 ---
 
-## Responsive Breakpoints
-
-### Complete Breakpoint System
-
-The dashboard uses a comprehensive 7-breakpoint responsive system optimized for all device sizes from mobile to large desktop displays.
-
-| Breakpoint | Width | Device Target | Primary Changes |
-|------------|-------|---------------|-----------------|
-| **XXL Desktop** | Default | Large monitors (>1300px) | Full desktop experience |
-| **XL Desktop** | ≤1300px | Standard desktop | Submenu positioning |
-| **Large Desktop** | ≤1170px | Small desktop | Logo margin adjustments |
-| **Desktop** | ≤1120px | Laptop | Menu width adjustments |
-| **Tablet Landscape** | ≤992px | iPad landscape | Column widths, Beaver Builder layouts |
-| **Tablet Portrait** | ≤950px | iPad portrait | **Navigation font size reduction** |
-| **Mobile** | ≤768px | Phones | **Mobile-optimized layouts** |
-| **Small Mobile** | ≤641px | Small phones | Navigation color adjustments |
-| **Extra Small** | ≤600px | Compact phones | Hero image hiding |
-| **Tiny Mobile** | ≤567px | Very small screens | Footer logo centering |
-
----
-
-### Detailed Breakpoint Specifications
-
-#### 1. Desktop Breakpoint (≤1300px)
-**Purpose:** Submenu positioning optimization for standard desktop screens
+## DASHBOARD HEADER (.dashboard__header)
 
 ```css
-/*
-===============================================================================
-LARGE DESKTOP BREAKPOINT - 1300px
-===============================================================================
-ARCHITECTURAL OVERVIEW:
-Intermediate responsive breakpoint system optimizing layout for
-desktop and large tablet devices with adaptive menu systems.
+.dashboard__header {
+  background-color: #fff;
+  border-bottom: 1px solid #dbdbdb;
+  border-right: 1px solid #dbdbdb;
+  max-width: 1700px;
+  padding: 20px;
+}
 
-BREAKPOINT HIERARCHY:
-- Large Desktop: 1300px maximum width
-- Progressive Enhancement: Feature adaptation based on available space
-- Layout Optimization: Content-driven sizing strategies
+@media (min-width: 820px) {
+  .dashboard__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+}
 
-MENU SYSTEM ADAPTATIONS:
-- Submenu Positioning: Right-aligned for last menu items
-- Layout Flexibility: Responsive to content length variations
-- Visual Consistency: Maintained design integrity across sizes
-===============================================================================
-*/
+@media (min-width: 1280px) {
+  .dashboard__header {
+    padding: 30px;
+  }
+}
 
-@media (max-width: 1300px) {
-    .main-navigation li:last-child .sub-menu {
-        right: 0 !important;
-        left: auto !important;
-    }
+@media (min-width: 1440px) {
+  .dashboard__header {
+    padding: 30px 40px;
+  }
 }
 ```
 
-**Changes:**
-- Sub-menu positioning adjusted to prevent overflow
-- Last child menu items align right instead of left
-
 ---
 
-#### 2. Large Desktop Breakpoint (≤1170px)
-**Purpose:** Logo and navigation spacing optimization
+## BREADCRUMBS (#breadcrumbs)
 
-```css
-@media (max-width: 1170px) {
-    .main-navigation .navigation-logo.site-logo {
-        margin-left: 0;
-    }
-    
-    body.sticky-menu-logo.nav-float-left .main-navigation .site-logo.navigation-logo {
-        margin-right: 0;
-    }
-}
-```
-
-**Changes:**
-- Logo margin removed for better spacing
-- Sticky menu logo margins reset
-
----
-
-#### 3. Desktop Breakpoint (≤1120px)
-**Purpose:** Menu item width flexibility
-
-```css
-/*
-===============================================================================
-INTERMEDIATE BREAKPOINT SYSTEM - DESKTOP OPTIMIZATION
-===============================================================================
-ARCHITECTURAL OVERVIEW:
-Intermediate responsive breakpoint system optimizing layout for
-desktop and large tablet devices with adaptive menu systems.
-
-BREAKPOINT HIERARCHY:
-- Small Desktop: 1120px maximum width
-- Progressive Enhancement: Feature adaptation based on available space
-- Layout Optimization: Content-driven sizing strategies
-
-MENU SYSTEM ADAPTATIONS:
-- Homepage Menu 2020: Flexible width removal for content adaptation
-- Menu Items: Auto-width based on content requirements
-- Layout Flexibility: Responsive to content length variations
-- Visual Consistency: Maintained design integrity across sizes
-===============================================================================
-*/
-
-@media (max-width: 1120px) {
-    #menu-homepage-2020 li {
-        min-width: 0 !important;
-    }
-}
-```
-
-**Changes:**
-- Menu items no longer have minimum width constraints
-- Allows content-based sizing for better fit
-
----
-
-#### 4. Tablet Landscape Breakpoint (≤992px)
-**Purpose:** Beaver Builder layout optimization and column adjustments
-
-```css
-/*
-===============================================================================
-TABLET LANDSCAPE BREAKPOINT - 992px
-===============================================================================
-RESPONSIVE UTILITIES:
-- Column width adjustments for tablet landscape
-- Beaver Builder module spacing
-- Icon sizing consistency
-- Separator adjustments
-===============================================================================
-*/
-
-@media (max-width: 992px) {
-    /* Column Width Adjustments */
-    .fl-builder-content .fl-node-5b6c661a8e13a {
-        width: 26% !important;
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    .fl-builder-content .fl-node-5b6c661a8e176 {
-        width: 25% !important;
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    .fl-builder-content .fl-node-5b6c661a8e1b2 {
-        width: 25% !important;
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    .fl-builder-content .fl-node-5b6c661a8e1ec {
-        width: 24% !important;
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    /* Icon Sizing - Consistent 28px */
-    .fl-node-5b72f8ed22a5c .fl-icon i,
-    .fl-node-5b72f8ed22a5c .fl-icon i:before {
-        font-size: 28px;
-    }
-    
-    .fl-node-5b72f8ed22a5c .fl-icon-wrap .fl-icon-text {
-        height: 49px;
-    }
-    
-    /* Module Margin Adjustments */
-    .fl-node-59adb48fc0c6a.fl-module > .fl-module-content {
-        margin-right: 0px;
-        margin-left: 0px;
-    }
-    
-    .fl-node-5b6c66514654a.fl-module > .fl-module-content {
-        margin-top: 0px;
-    }
-    
-    .fl-node-5b6c693409ba7.fl-module > .fl-module-content {
-        margin-top: 0px;
-    }
-}
-```
-
-**Changes:**
-- 4-column grid system (26%, 25%, 25%, 24%)
-- Icon sizes maintained at 28px
-- Module margins reset for tighter spacing
-- Separator adjustments for tablet layout
-
----
-
-#### 5. Tablet Portrait Breakpoint (≤950px) 🔴 **CRITICAL MOBILE TRANSITION**
-**Purpose:** Primary mobile navigation optimization
-
-```css
-/*
-===============================================================================
-MOBILE RESPONSIVE DESIGN SYSTEM - TABLET AND MOBILE OPTIMIZATION
-===============================================================================
-ARCHITECTURAL OVERVIEW:
-Comprehensive mobile responsive design system optimizing user experience
-for tablet and mobile devices with adaptive layouts and touch interactions.
-
-MOBILE BREAKPOINT STRATEGY:
-- Tablet Breakpoint: 950px maximum width
-- Mobile Optimization: Touch-friendly interface elements
-- Progressive Enhancement: Feature adaptation based on screen size
-- Performance Optimization: Reduced resource usage for mobile devices
-
-CART SYSTEM OPTIMIZATION:
-- Cart Item: Max-width removal for flexible layout
-- Touch Targets: Optimized for finger interaction
-- Layout Adaptation: Content-based sizing
-- Visual Hierarchy: Prioritized mobile experience
-
-NAVIGATION ADAPTATIONS:
-- Font Size: 14px for improved mobile readability
-- Padding: 19px horizontal padding for touch targets
-- Menu Items: Optimized spacing for mobile interaction
-- Sub-menu: Left-aligned text for mobile consistency
-
-USER EXPERIENCE FEATURES:
-- Touch-Friendly: 44px minimum touch targets
-- Readability: Optimized font sizes and spacing
-- Navigation: Streamlined mobile menu structure
-- Performance: Optimized rendering for mobile processors
-===============================================================================
-*/
-
-@media (max-width: 950px) {
-    /* Navigation Title Size Reduction */
-    .navigation-branding .main-title {
-        font-size: 30px; /* Down from 50px - 40% reduction */
-    }
-    
-    /* Cart Item Flexibility */
-    .menu-item-cart {
-        max-width: none !important;
-    }
-    
-    /* Navigation Link Optimization */
-    .main-navigation ul > li > a {
-        font-size: 14px; /* Down from 16px - 12.5% reduction */
-        padding: 0 19px !important; /* Increased horizontal padding for touch */
-    }
-    
-    /* Sub-menu Alignment */
-    .sub-menu li a {
-        text-align: left;
-    }
-}
-```
-
-**Changes:**
-- **Navigation title:** 50px → 30px (40% reduction)
-- **Navigation links:** 16px → 14px (12.5% reduction)
-- **Touch targets:** 19px horizontal padding for easier tapping
-- **Cart max-width:** Removed for flexible layout
-- **Sub-menu:** Left-aligned for mobile consistency
-
----
-
-#### 6. Mobile Breakpoint (≤768px) 🔴 **FULL MOBILE OPTIMIZATION**
-**Purpose:** Complete mobile layout transformation
-
-```css
-/*
-===============================================================================
-MOBILE BREAKPOINT - 768px
-===============================================================================
-RESPONSIVE UTILITIES:
-- Full mobile layout transformation
-- Single column layouts
-- 50% width for paired elements
-- Text alignment adjustments
-- Module spacing optimization
-===============================================================================
-*/
-
-@media (max-width: 768px) {
-    /* Column Layout - Full Width */
-    .fl-builder-content .fl-node-5b6c661a8e13a {
-        width: 100% !important; /* Full width on mobile */
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    /* Column Layout - 50% Width (Paired) */
-    .fl-builder-content .fl-node-5b6c661a8e176 {
-        width: 50% !important; /* Half width for side-by-side */
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    .fl-builder-content .fl-node-5b6c661a8e1b2 {
-        width: 50% !important; /* Half width for side-by-side */
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    /* Column Layout - Full Width */
-    .fl-builder-content .fl-node-5b6c661a8e1ec {
-        width: 100% !important; /* Full width on mobile */
-        max-width: none;
-        clear: none;
-        float: left;
-    }
-    
-    /* Icon Sizing - Maintained */
-    .fl-node-5b72f8ed22a5c .fl-icon i,
-    .fl-node-5b72f8ed22a5c .fl-icon i:before {
-        font-size: 28px; /* Consistent with tablet */
-    }
-    
-    .fl-node-5b72f8ed22a5c .fl-icon-wrap .fl-icon-text {
-        height: 49px;
-    }
-    
-    /* Text Alignment - Center */
-    .fl-builder-content .fl-node-5b6c66888faf0 .fl-rich-text,
-    .fl-builder-content .fl-node-5b6c66888faf0 .fl-rich-text *:not(b, strong) {
-        text-align: center;
-    }
-    
-    .fl-builder-content .fl-node-5b6c66514654a .fl-rich-text,
-    .fl-builder-content .fl-node-5b6c66514654a .fl-rich-text *:not(b, strong) {
-        text-align: center;
-    }
-    
-    .fl-builder-content .fl-node-5b6c693409ba7 .fl-rich-text,
-    .fl-builder-content .fl-node-5b6c693409ba7 .fl-rich-text *:not(b, strong) {
-        text-align: center;
-    }
-    
-    .fl-builder-content .fl-node-5b6c6953e8ba2 .fl-rich-text,
-    .fl-builder-content .fl-node-5b6c6953e8ba2 .fl-rich-text *:not(b, strong) {
-        text-align: center;
-    }
-    
-    /* Typography Reduction */
-    .fl-builder-content .fl-node-59adb3c86fc1f .fl-rich-text,
-    .fl-builder-content .fl-node-59adb3c86fc1f .fl-rich-text *:not(b, strong) {
-        font-size: 12px; /* Down from 13px */
-        line-height: 1.3; /* Down from 21px */
-    }
-    
-    /* Module Margin Adjustments */
-    .fl-node-5b6c66514654a > .fl-module-content {
-        margin-left: 20px;
-    }
-    
-    .fl-node-5b6c693409ba7.fl-module > .fl-module-content {
-        margin-top: 0px;
-    }
-    
-    .fl-node-5b6c6953e8ba2.fl-module > .fl-module-content {
-        margin-top: 20px;
-    }
-    
-    .fl-node-5b96b44e7af4e.fl-module > .fl-module-content {
-        margin-right: 20px;
-        margin-left: 20px;
-    }
-}
-```
-
-**Changes:**
-- **Layout:** Mixed full-width (100%) and paired (50%) columns
-- **Typography:** 13px → 12px for rich text
-- **Line height:** 21px → 1.3 (relative)
-- **Text alignment:** Centered for mobile readability
-- **Module margins:** Adjusted for mobile spacing (20px standard)
-- **Icon sizes:** Maintained at 28px for consistency
-
----
-
-#### 7. Small Mobile Breakpoint (≤641px)
-**Purpose:** Navigation color adjustments for compact phones
-
-```css
-@media (max-width: 641px) {
-    .main-navigation .main-nav ul li[class*="current-menu-"] > a,
-    .main-navigation .main-nav ul li > a {
-        color: #191717 !important;
-    }
-}
-```
-
-**Changes:**
-- Navigation link color changed to dark gray (#191717)
-- Applies to current menu items and all links
-
----
-
-#### 8. Extra Small Mobile Breakpoint (≤600px)
-**Purpose:** Hero image optimization for very small screens
-
-```css
-@media only screen and (max-width: 600px) {
-    .courses-hero--img.col-lg-6 {
-        display: none; /* Hide hero images to save space */
-    }
-}
-```
-
-**Changes:**
-- Hero images hidden to prioritize content
-- Improves load time and screen real estate
-
----
-
-#### 9. Tiny Mobile Breakpoint (≤567px)
-**Purpose:** Footer logo centering for smallest screens
-
-```css
-@media (max-width: 567px) {
-    #footer-logo a {
-        text-align: center;
-    }
-}
-```
-
-**Changes:**
-- Footer logo centered for better visual balance
-
----
-
-### WooCommerce Mobile Styles
-
-**Small Screen Stylesheet (≤768px)**
-```html
-<link rel='stylesheet' 
-      href='woocommerce-smallscreen.css' 
-      media='only screen and (max-width: 768px)' />
-```
-
-**Purpose:** WooCommerce-specific mobile optimizations for cart, checkout, and product pages
-
----
-
-### Mobile-Specific Features
-
-#### Touch Target Optimization
-```css
-/* Minimum 44px touch targets for mobile accessibility */
-.main-navigation ul > li > a {
-    padding: 0 19px !important; /* Horizontal padding for touch */
-    min-height: 44px; /* WCAG AAA compliant */
-}
-```
-
-#### Mobile Navigation Color
-```css
-/* High contrast for mobile readability */
-.main-navigation .main-nav ul li > a {
-    color: #191717 !important; /* Dark gray for readability */
-}
-```
-
-#### Mobile Performance Optimizations
-- **Image hiding:** Hero images hidden on small screens
-- **Layout simplification:** Single column layouts
-- **Font size reduction:** Smaller text for mobile screens
-- **Margin optimization:** Tighter spacing for compact displays
-
----
-
-## Breadcrumbs Navigation
-
-### Breadcrumb Structure
-
-The dashboard uses a hierarchical breadcrumb navigation system for improved user orientation and SEO.
-
-**HTML Structure:**
-```html
-<nav id="breadcrumbs" class="breadcrumbs">
-    <div class="container-fluid">
-        <ul>
-            <li class="item-home">
-                <a class="breadcrumb-link breadcrumb-home" 
-                   href="https://www.simplertrading.com" 
-                   title="Home">
-                    Home
-                </a>
-            </li>
-            <li class="separator separator-home"> / </li>
-            <li class="item-current item-401190">
-                <strong class="breadcrumb-current breadcrumb-401190">
-                    Member Dashboard
-                </strong>
-            </li>
-        </ul>
-    </div>
-</nav>
-```
-
-### Breadcrumb Styling
-
-**Base Styles:**
 ```css
 .breadcrumbs {
-    z-index: 1;
-}
-```
-
-**Visual Specifications:**
-- **Position:** Below main navigation, above page content
-- **Z-Index:** 1 (ensures proper layering)
-- **Container:** `.container-fluid` for full-width responsive layout
-- **List Style:** Unstyled list (`ul`) with inline items
-
-### Breadcrumb Components
-
-#### 1. Home Link
-```css
-.item-home {
-    /* First breadcrumb item */
+  z-index: 1;
+  background-color: #efefef;
+  border-bottom: 1px solid #dbdbdb;
+  font-size: 13px;
+  padding: 10px 20px;
 }
 
-.breadcrumb-link.breadcrumb-home {
-    /* Home link styling */
-}
-```
-
-**Specifications:**
-- **Class:** `.item-home`
-- **Link Class:** `.breadcrumb-link.breadcrumb-home`
-- **Href:** Root domain (https://www.simplertrading.com)
-- **Title Attribute:** "Home" for accessibility
-
-#### 2. Separator
-```css
-.separator {
-    /* Breadcrumb separator */
+.breadcrumb-link {
+  color: #1e73be;
 }
 
-.separator-home {
-    /* Separator after home link */
-}
-```
-
-**Specifications:**
-- **Content:** " / " (forward slash with spaces)
-- **Class:** `.separator` with context class (e.g., `.separator-home`)
-- **Display:** Inline between breadcrumb items
-
-#### 3. Current Page
-```css
-.item-current {
-    /* Current page item */
+.breadcrumb-link:hover {
+  color: #0984ae;
 }
 
 .breadcrumb-current {
-    /* Current page text styling */
+  color: #666;
+  font-weight: 600;
 }
-```
 
-**Specifications:**
-- **Class:** `.item-current` with page-specific class (e.g., `.item-401190`)
-- **Text Element:** `<strong>` for semantic emphasis
-- **Text Class:** `.breadcrumb-current` with page-specific class
-- **Content:** Current page title (e.g., "Member Dashboard")
-
-### Breadcrumb Schema (JSON-LD)
-
-The breadcrumbs are enhanced with structured data for SEO:
-
-```json
-{
-    "@type": "BreadcrumbList",
-    "@id": "https://my.simplertrading.com/dashboard#breadcrumb",
-    "itemListElement": [
-        {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://www.simplertrading.com/"
-        },
-        {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Member Dashboard"
-        }
-    ]
-}
-```
-
-**SEO Benefits:**
-- **Rich Snippets:** Enhanced search results display
-- **Site Hierarchy:** Clear site structure for search engines
-- **User Navigation:** Improved click-through rates
-- **Schema.org Compliance:** Standard structured data format
-
-### Breadcrumb Patterns
-
-#### Two-Level Breadcrumb (Member Dashboard)
-```
-Home / Member Dashboard
-```
-
-#### Three-Level Breadcrumb (Sub-pages)
-```
-Home / Member Dashboard / My Classes
-```
-
-#### Four-Level Breadcrumb (Deep Navigation)
-```
-Home / Member Dashboard / My Classes / Course Name
-```
-
-### Breadcrumb Accessibility
-
-**ARIA Attributes:**
-```html
-<nav id="breadcrumbs" 
-     class="breadcrumbs" 
-     aria-label="Breadcrumb navigation">
-    <!-- Breadcrumb items -->
-</nav>
-```
-
-**Best Practices:**
-- **Semantic HTML:** Uses `<nav>` element
-- **List Structure:** Ordered list for hierarchy
-- **Current Page:** `<strong>` for emphasis (no link)
-- **Link Titles:** Descriptive title attributes
-- **Keyboard Navigation:** All links keyboard accessible
-
-### Breadcrumb Responsive Behavior
-
-**Desktop (>768px):**
-- Full breadcrumb trail displayed
-- Horizontal layout
-- Standard spacing
-
-**Mobile (≤768px):**
-- Breadcrumbs maintained (not hidden)
-- May wrap to multiple lines if needed
-- Consistent z-index layering
-
-### Integration Points
-
-**Location in Page Structure:**
-```
-1. Header
-2. Main Navigation
-3. Breadcrumbs ← Here
-4. Page Content
-5. Footer
-```
-
-**CSS Positioning:**
-- **After:** `#site-navigation`
-- **Before:** `#page` content wrapper
-- **Within:** Main page flow (not fixed/absolute)
-
----
-
-## Specific Dashboard Sections
-
-### Member Dashboard
-- **Page ID:** 401190
-- **Sidebar:** Hidden (`.dashboard__content-sidebar { display: none; }`)
-- **Page Title:** Font weight 700
-
-### Foundation Dashboard
-- **Page ID:** 1390136
-- **Content Section Min-Height:** 825px
-- **Header:** Hidden
-- **Sidebar:** Hidden
-
-### Password Reset
-```css
-.woocommerce-lost-password .dashboard__main--gradient .dashboard__content-main .woocommerce p {
-    color: #fff !important;
+.separator {
+  color: #999;
+  padding: 0 8px;
 }
 ```
 
 ---
 
-## Form Elements
+## BREAKPOINTS
 
-### Form Error Messages
+| Name | Width | Sidebar Behavior |
+|------|-------|------------------|
+| Mobile | < 1280px | Fixed, hidden by default |
+| Desktop | >= 1280px | Static, visible |
+| Desktop Large | >= 1440px | Increased padding |
+
+---
+
+## TRANSITIONS
+
 ```css
-.fl-form-error-message {
-    color: #DD6420;
-    display: none;
-    padding-top: 8px;
-    font-size: 12px;
-    font-weight: lighter;
-}
+/* Standard transition */
+transition: all 0.15s ease-in-out;
+
+/* Sidebar transition */
+transition: all 0.3s ease-in-out;
+
+/* Hover tooltip (collapsed state) */
+transition: all 0.15s ease-in-out;
+transform: translate(5px);
 ```
 
-### Form Button States
+---
+
+## Z-INDEX HIERARCHY
+
+| Element | z-index |
+|---------|---------|
+| Sidebar (mobile) | 100010 |
+| Toggle Footer | 100010 |
+| Overlay | 99 |
+| Secondary Sidebar | 99 |
+| Sidebar (desktop) | auto |
+
+---
+
+## HOVER EFFECTS
+
+### Profile
+- Photo border: `#fff` → `#0984ae`
+- Name color: `#fff` → `#0984ae`
+
+### Nav Links
+- Text: `hsla(0,0%,100%,0.5)` → `#fff`
+- Icon: `hsla(0,0%,100%,0.5)` → `#fff`
+- Background: transparent → `rgba(255,255,255,0.05)`
+
+### Active State
+- Left border: 4px `#0984ae`
+- Background: `rgba(255,255,255,0.08)`
+
+---
+
+## RESPONSIVE PADDING (1440px+)
+
 ```css
-.fl-form-button-disabled {
-    opacity: 0.5;
+.dash_main_links a {
+  padding: 0 40px 0 80px;
+}
+
+.dashboard__profile-nav-item {
+  padding: 32px 40px 28px 80px;
+}
+
+.dashboard__nav-category {
+  padding: 30px 40px 0;
 }
 ```
 
 ---
 
-## Photo & Media Elements
+## DASHBOARD CONTENT AREA
 
-### Photo Captions
+### Content Container (.dashboard__content)
 ```css
-.fl-photo-caption {
-    font-size: 13px;
-    line-height: 18px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.fl-photo-caption-below {
-    padding-bottom: 20px;
-    padding-top: 10px;
+.dashboard__content {
+  display: flex;
+  flex-flow: row nowrap;
 }
 ```
 
-### Photo Hover Caption
+### Content Main (.dashboard__content-main)
 ```css
-.fl-photo-caption-hover {
-    background: rgba(0,0,0,0.7);
-    bottom: 0;
-    color: #fff;
-    left: 0;
-    opacity: 0;
-    filter: alpha(opacity = 0);
-    padding: 10px 15px;
-    position: absolute;
-    right: 0;
-    -webkit-transition: opacity 0.3s ease-in;
-    -moz-transition: opacity 0.3s ease-in;
-    transition: opacity 0.3s ease-in;
-}
-
-.fl-photo-content:hover .fl-photo-caption-hover {
-    opacity: 100;
-    filter: alpha(opacity = 100);
+.dashboard__content-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-right: 1px solid #dbdbdb;
 }
 ```
 
-### Video Play Icon
+### Content Section (.dashboard__content-section)
 ```css
-.product-sidebar-inner .video-thumb .video-play-icon:after {
-    content: "Click to Play";
-    position: relative;
-    font-size: 17px;
-    margin: 0px -50px;
-    text-shadow: 0 0 7px #000;
+.dashboard__content-section {
+  padding: 30px 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+@media (min-width: 1280px) {
+  padding: 30px;
+}
+
+@media (min-width: 1440px) {
+  padding: 40px;
 }
 ```
 
----
-
-## Pagination
-
-### Pagination Styles
+### Content Sidebar (.dashboard__content-sidebar)
 ```css
-.fl-builder-pagination,
-.fl-builder-pagination-load-more {
-    padding: 40px 0;
+.dashboard__content-sidebar {
+  display: none;
+  width: 260px;
+  flex: 0 0 auto;
+  margin-top: -1px;
+  border-right: 1px solid #dbdbdb;
+  border-top: 1px solid #dbdbdb;
 }
 
-.fl-builder-pagination ul.page-numbers {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-}
-
-.fl-builder-pagination li {
-    display: inline-block;
-    margin: 0;
-}
-
-.fl-builder-pagination li span.page-numbers {
-    border: 1px solid #e6e6e6;
-    display: inline-block;
-    padding: 5px 10px;
-    margin: 0 0 5px;
-}
-
-.fl-builder-pagination li a.page-numbers:hover,
-.fl-builder-pagination li span.current {
-    background: #f5f5f5;
-    text-decoration: none;
+@media (min-width: 1080px) {
+  display: block;
 }
 ```
 
----
-
-## Modal & Lightbox
-
-### Magnific Popup Styles
+### Page Title (.dashboard__page-title)
 ```css
-/* Arrow Buttons */
-.mfp-wrap button.mfp-arrow,
-.mfp-wrap button.mfp-arrow:active,
-.mfp-wrap button.mfp-arrow:hover,
-.mfp-wrap button.mfp-arrow:focus {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
+h1.dashboard__page-title {
+  margin: 0;
+  color: #333;
+  font-size: 36px;
+  font-weight: 300;
+}
+```
+
+### Section Title (.section-title)
+```css
+h2.section-title {
+  color: #333;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+```
+
+### Section Title Alt (.section-title-alt)
+```css
+h2.section-title-alt {
+  color: #0984ae;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 20%;
+  margin-bottom: 30px;
+  text-transform: uppercase;
 }
 
-/* Close Button */
-.mfp-wrap .mfp-close,
-.mfp-wrap .mfp-close:active,
-.mfp-wrap .mfp-close:hover,
-.mfp-wrap .mfp-close:focus {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
+/* With --underline modifier */
+h2.section-title-alt--underline {
+  padding-bottom: 30px;
+  position: relative;
 }
 
-/* Admin Bar Adjustment */
-.admin-bar .mfp-wrap .mfp-close,
-.admin-bar .mfp-wrap .mfp-close:active,
-.admin-bar .mfp-wrap .mfp-close:hover,
-.admin-bar .mfp-wrap .mfp-close:focus {
-    top: 32px !important;
-}
-
-/* Preloader */
-.mfp-wrap .mfp-preloader.fa {
-    font-size: 30px;
+h2.section-title-alt--underline::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #e8e8e8;
 }
 ```
 
 ---
 
-## Rich Text Formatting
+## MEMBERSHIP CARDS
 
-### Rich Text Styles
+### Card Container (.membership-cards)
 ```css
-.fl-builder-content .fl-rich-text {
-    word-wrap: break-word;
+.membership-cards {
+  margin-top: -30px;
+}
+```
+
+### Card Base (.membership-card)
+```css
+.membership-card {
+  margin-top: 30px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+}
+```
+
+### Card Header (.membership-card__header)
+```css
+.membership-card__header {
+  display: block;
+  padding: 20px;
+  color: #333;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.15s ease-in-out;
 }
 
-.fl-builder-content .fl-rich-text * {
-    max-width: 100%;
-    word-wrap: break-word;
+.membership-card__header:hover {
+  color: #0984ae;
+}
+```
+
+### Card Icon (.membership-card__icon)
+```css
+.membership-card__icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin-right: 9px;
+  line-height: 50px;
+  color: #fff;
+  text-align: center;
+  border-radius: 50%;
+  transition: all 0.15s ease-in-out;
+}
+```
+
+### Card Actions (.membership-card__actions)
+```css
+.membership-card__actions {
+  display: flex;
+  font-size: 14px;
+  border-top: 1px solid #ededed;
+  justify-content: center;
 }
 
-.fl-builder-content .fl-rich-text strong {
-    font-weight: bold;
+.membership-card__actions a {
+  display: block;
+  flex: 0 0 auto;
+  flex-basis: 50%;
+  width: 50%;
+  height: 100%;
+  padding: 15px;
+  text-align: center;
+}
+
+.membership-card__actions a + a {
+  border-left: 1px solid #ededed;
 }
 ```
 
 ---
 
-## Summary of Key Measurements
+## MEMBERSHIP CARD VARIANTS (Icon Colors)
 
-### Typography Scale
-- **Extra Large:** 50px (desktop nav title)
-- **Large:** 32px (h2)
-- **Medium-Large:** 26px (h3)
-- **Medium:** 18px (primary button)
-- **Base:** 16px (body, FL button)
-- **Small:** 14px (secondary button, mobile nav)
-- **Extra Small:** 13px (captions)
-- **Tiny:** 12px (form errors)
-
-### Icon Scale
-- **Extra Large:** 40px (stacked profits)
-- **Large:** 30px (preloader)
-- **Medium:** 28px (FL icons, this week)
-- **Small-Medium:** 26px (training room primary)
-- **Small:** 20px (training room secondary)
-- **Extra Small:** 18px (navigation icons)
-
-### Spacing Scale
-- **Button Padding:** 10-12px vertical, 20-24px horizontal
-- **Icon Margin:** 5px right
-- **Section Padding:** 20-40px
-- **Form Error Padding:** 8px top
-
-### Border Radius Scale
-- **Fully Rounded:** 9999px / 25px (pill shape)
-- **Rounded:** 100% (circles)
-- **Slightly Rounded:** 4px (standard buttons)
-
-### Transition Timing
-- **Fast:** 0.2s (buttons, icon animations)
-- **Standard:** 0.3s (photo captions, opacity)
+| Variant | Background | Box-Shadow | Hover |
+|---------|------------|------------|-------|
+| `--options` | `#0984ae` | `rgba(9,132,174,.25)` | `#076787` |
+| `--foundation` | `#00abaf` | `rgba(0,171,175,.25)` | `#008386` |
+| `--consistent-growth` | `#005695` | `rgba(0,86,149,.25)` | - |
+| `--tr3ndy-spx-alerts` | `#fe8900` | `rgba(254,137,0,.25)` | `#d57300` |
+| `--ww` (Weekly Watchlist) | `#0c2434` | `rgba(12,36,52,.25)` | `#040d13` |
+| `--training-room` | `#3c22f1` | `rgba(60,34,241,.25)` | `#280edc` |
 
 ---
 
-**End of Design Specifications**
+## DROPDOWN MENU
 
-This document provides comprehensive design specifications extracted from the DashboardHome implementation file. All measurements, colors, and effects are documented as they appear in the production code.
+```css
+.dropdown-menu {
+  padding: 20px;
+  min-width: 260px;
+  max-width: 280px;
+  margin: 5px 0 0;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-menu__heading {
+  margin: -20px -20px 20px;
+  padding: 15px 20px;
+  color: #fff;
+  background: #0984ae;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.dropdown-menu__menu > li > a {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.dropdown-menu__menu > li > a:hover {
+  background-color: #f4f4f4;
+}
+```
+
+---
+
+## ICON SIZES
+
+```css
+.icon--md {
+  font-size: 24px;
+  line-height: 0;
+}
+
+.icon--lg {
+  font-size: 32px;
+  line-height: 0;
+}
+```

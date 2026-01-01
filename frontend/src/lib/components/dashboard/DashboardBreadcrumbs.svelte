@@ -79,7 +79,7 @@
 		z-index: 1;
 		background-color: #efefef;
 		border-bottom: 1px solid #dbdbdb;
-		font-family: 'Open Sans', sans-serif;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		font-size: 13px;
 		line-height: 1.5;
 	}
