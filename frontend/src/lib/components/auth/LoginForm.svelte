@@ -244,11 +244,21 @@
 
 	// --- Redirect Handler ---
 	function performRedirect() {
+		console.log('[LoginForm] performRedirect called');
 		const urlParams = new URLSearchParams(window.location.search);
 		const redirect = urlParams.get('redirect') || '/dashboard';
+		console.log('[LoginForm] Raw redirect param:', redirect);
 		const validatedRedirect = validateRedirectUrl(redirect);
-		console.log('[LoginForm] Redirecting to:', validatedRedirect);
-		goto(validatedRedirect, { replaceState: true });
+		console.log('[LoginForm] Validated redirect URL:', validatedRedirect);
+		console.log('[LoginForm] Calling goto() with:', validatedRedirect);
+		try {
+			goto(validatedRedirect, { replaceState: true });
+			console.log('[LoginForm] goto() called successfully');
+		} catch (error) {
+			console.error('[LoginForm] goto() failed:', error);
+			// Fallback: force navigation
+			window.location.href = validatedRedirect;
+		}
 	}
 
 	// --- Form Submit ---
@@ -309,7 +319,12 @@
 
 			// Brief success state display, then redirect
 			// 400ms is enough for visual feedback without feeling slow
-			setTimeout(performRedirect, 400)
+			console.log('[LoginForm] Scheduling redirect in 400ms');
+			const redirectTimer = setTimeout(() => {
+				console.log('[LoginForm] Redirect timer fired, calling performRedirect');
+				performRedirect();
+			}, 400);
+			console.log('[LoginForm] Redirect timer scheduled, ID:', redirectTimer);
 		} catch (error: unknown) {
 			// Error handling
 			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
