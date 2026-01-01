@@ -28,6 +28,7 @@
 	import { isAuthenticated, user } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
+	import Breadcrumbs from '$lib/components/dashboard/Breadcrumbs.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 Pattern
@@ -128,6 +129,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 	<title>Member Dashboard | Revolution Trading Pros</title>
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700" rel="stylesheet" />
+	<link rel="stylesheet" href="/dashboard/dashboard.css" />
 </svelte:head>
 
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
@@ -137,6 +139,9 @@
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
 	<main class="dashboard__main">
+		<!-- Breadcrumbs Navigation -->
+		<Breadcrumbs />
+		
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
