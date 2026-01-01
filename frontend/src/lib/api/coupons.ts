@@ -72,6 +72,10 @@ const ANALYTICS_INTERVAL = 60000; // 1 minute
 // ═══════════════════════════════════════════════════════════════════════════
 // WebSocket Configuration - Apple ICT 11 Principal Engineer Standards
 // ═══════════════════════════════════════════════════════════════════════════
+// WebSocket Feature Flag - Set VITE_WS_ENABLED=true in .env to enable real-time updates
+// Backend: Laravel Reverb WebSocket server with coupon channels implemented
+// Channels: coupons.public, coupons.user.{userId}, coupons.admin, coupons.analytics
+const WS_ENABLED = browser ? import.meta.env['VITE_WS_ENABLED'] === 'true' : false;
 const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || 'wss://revolution-trading-pros-api.fly.dev' : '';
 const WS_RECONNECT_DELAY = 1000; // Start with 1 second
 const WS_MAX_RECONNECT_DELAY = 30000; // Max 30 seconds
@@ -594,8 +598,8 @@ class CouponManagementService {
 	 * - Performance: Message batching and throttling
 	 */
 	private setupWebSocket(): void {
-		if (!browser || !WS_URL) {
-			console.debug('[CouponService] WebSocket not available, using REST API only');
+		if (!browser || !WS_ENABLED || !WS_URL) {
+			console.debug('[CouponService] WebSocket not available or disabled, using REST API only');
 			return;
 		}
 

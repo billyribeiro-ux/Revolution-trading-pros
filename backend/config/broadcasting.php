@@ -109,6 +109,21 @@ return [
 
         // Admin notifications
         'admin.notifications' => \App\Broadcasting\AdminChannel::class,
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // Coupon Channels - Apple ICT 11 Principal Engineer Implementation
+        // ═══════════════════════════════════════════════════════════════════════
+        // Public coupon channel (auto-apply, promotions)
+        'coupons.public' => \App\Broadcasting\CouponChannel::class . '@joinPublic',
+
+        // User-specific coupon notifications
+        'coupons.user.{userId}' => \App\Broadcasting\CouponChannel::class . '@joinUser',
+
+        // Admin coupon management channel
+        'coupons.admin' => \App\Broadcasting\CouponChannel::class . '@joinAdmin',
+
+        // Real-time coupon analytics channel
+        'coupons.analytics' => \App\Broadcasting\CouponChannel::class . '@joinAnalytics',
     ],
 
 ];

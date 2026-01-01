@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Events\CouponCreated;
+use App\Events\CouponUpdated;
+use App\Events\CouponDeleted;
+use App\Events\CouponRedeemed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -80,6 +84,9 @@ class CouponController extends Controller
 
         $coupon = Coupon::create($validated);
 
+        // Broadcast coupon creation via WebSocket
+        broadcast(new CouponCreated($coupon))->toOthers();
+
         return response()->json([
             'message' => 'Coupon created successfully',
             'coupon' => $coupon
@@ -136,7 +143,11 @@ class CouponController extends Controller
             $validated['code'] = strtoupper($validated['code']);
         }
 
+        $changedAttributes = array_keys($coupon->getDirty());
         $coupon->update($validated);
+
+        // Broadcast coupon update via WebSocket
+        broadcast(new CouponUpdated($coupon, $changedAttributes))->toOthers();
 
         return response()->json([
             'message' => 'Coupon updated successfully',
@@ -150,7 +161,12 @@ class CouponController extends Controller
     public function destroy(string $id)
     {
         $coupon = Coupon::findOrFail($id);
+        $couponId = $coupon->id;
+        $couponCode = $coupon->code;
         $coupon->delete();
+
+        // Broadcast coupon deletion via WebSocket
+        broadcast(new CouponDeleted($couponId, $couponCode))->toOthers();
 
         return response()->json([
             'message' => 'Coupon deleted successfully'
