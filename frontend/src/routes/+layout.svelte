@@ -17,7 +17,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
 	import { isAdminUser, authStore } from '$lib/stores/auth';
@@ -37,8 +37,8 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	// Derived state from page (safe - page state is consistent SSR/client)
-	let pathname = $derived(page.url.pathname);
+	// Derived state from page store (SSR-safe)
+	let pathname = $derived($page.url.pathname);
 	let isAdminArea = $derived(pathname.startsWith('/admin'));
 	let isEmbedArea = $derived(pathname.startsWith('/embed'));
 	let isDashboardArea = $derived(pathname.startsWith('/dashboard'));
