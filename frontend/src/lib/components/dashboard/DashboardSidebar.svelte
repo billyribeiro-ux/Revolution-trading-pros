@@ -287,6 +287,23 @@
 			</ul>
 		</ul>
 	</nav>
+
+	<!-- Toggle Footer - Mobile Menu Trigger (matches WordPress reference) -->
+	<footer class="dashboard__toggle">
+		<button
+			class="dashboard__toggle-button"
+			onclick={toggleMobileMenu}
+			aria-label="Toggle dashboard menu"
+			aria-expanded={isMobileMenuOpen}
+		>
+			<div class="dashboard__toggle-button-icon">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<span class="dashboard__toggle-button-label">Dashboard Menu</span>
+		</button>
+	</footer>
 </aside>
 
 <!-- Secondary Sidebar - Shows on hover when collapsed -->
@@ -328,14 +345,15 @@
 	</aside>
 {/if}
 
-<!-- Mobile Menu Toggle (visible on mobile only) -->
+<!-- Mobile Floating Trigger (visible when sidebar is hidden on mobile) -->
 <button
-	class="dashboard__mobile-toggle"
+	class="dashboard__mobile-trigger"
 	onclick={toggleMobileMenu}
-	aria-label="Toggle mobile menu"
+	aria-label="Open dashboard menu"
 	aria-expanded={isMobileMenuOpen}
+	class:is-hidden={isMobileMenuOpen}
 >
-	<span class="dashboard__mobile-toggle-icon">
+	<span class="dashboard__mobile-trigger-icon">
 		<span></span>
 		<span></span>
 		<span></span>
@@ -616,7 +634,7 @@
 
 	.dashboard__nav-item-text {
 		font-size: 14px;
-		font-weight: 400;
+		font-weight: inherit; /* Inherits 300 from parent .dash_main_links a */
 		line-height: 1.4;
 		color: inherit;
 		white-space: nowrap;
@@ -708,11 +726,67 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MOBILE TOGGLE BUTTON
+	 * TOGGLE FOOTER - Mobile Menu Trigger (WordPress Reference Match)
+	 * Background: #0d2532
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__mobile-toggle {
-		display: none;
+	.dashboard__toggle {
+		display: none; /* Hidden on desktop, shown on mobile */
+		background-color: #0d2532;
+		padding: 15px 20px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.dashboard__toggle-button {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		padding: 10px 15px;
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		color: rgba(255, 255, 255, 0.7);
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-size: 14px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+		border-radius: 6px;
+	}
+
+	.dashboard__toggle-button:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
+	.dashboard__toggle-button-icon {
+		width: 20px;
+		height: 14px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.dashboard__toggle-button-icon span {
+		display: block;
+		width: 100%;
+		height: 2px;
+		background-color: currentColor;
+		transition: all 0.3s ease;
+	}
+
+	.dashboard__toggle-button-label {
+		font-size: 13px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MOBILE FLOATING TRIGGER - Opens sidebar when hidden
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__mobile-trigger {
+		display: none; /* Hidden on desktop, shown on mobile */
 		position: fixed;
 		top: 20px;
 		left: 20px;
@@ -726,9 +800,15 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		transition: opacity 0.3s ease, visibility 0.3s ease;
 	}
 
-	.dashboard__mobile-toggle-icon {
+	.dashboard__mobile-trigger.is-hidden {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.dashboard__mobile-trigger-icon {
 		width: 24px;
 		height: 18px;
 		display: flex;
@@ -736,7 +816,7 @@
 		justify-content: space-between;
 	}
 
-	.dashboard__mobile-toggle-icon span {
+	.dashboard__mobile-trigger-icon span {
 		display: block;
 		width: 100%;
 		height: 2px;
@@ -785,8 +865,14 @@
 			width: 280px;
 		}
 
-		.dashboard__mobile-toggle {
+		/* Show mobile floating trigger */
+		.dashboard__mobile-trigger {
 			display: flex;
+		}
+
+		/* Show toggle footer inside sidebar on mobile */
+		.dashboard__toggle {
+			display: block;
 		}
 
 		.dashboard__sidebar-secondary {
