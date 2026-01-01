@@ -130,13 +130,13 @@
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,regular,600,700" rel="stylesheet" />
 </svelte:head>
 
-<!-- Dashboard Content - No loading spinner needed, server-side auth is complete -->
+<!-- Dashboard Content - Flex layout matching WordPress exactly -->
 <div class="dashboard">
-	<!-- Sidebar Navigation with bindable collapsed state -->
+	<!-- Sidebar Navigation -->
 	<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
 
-	<!-- Main Content Area - margin adjusts based on sidebar state -->
-	<main class="dashboard__main" class:is-collapsed={sidebarCollapsed}>
+	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
+	<main class="dashboard__main">
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
@@ -149,31 +149,27 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Layout Container
-	 * Matches WordPress Simpler Trading reference
+	 * Matches WordPress Simpler Trading reference exactly
+	 * WordPress CSS: display: flex; flex-flow: row;
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard {
 		display: flex;
+		flex-flow: row;
 		min-height: 100vh;
 		position: relative;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Main Content Area
+	 * WordPress CSS: flex: 1 1 auto; min-width: 0; background-color: #f4f4f4;
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__main {
-		flex: 1;
-		margin-left: 280px;
-		min-height: 100vh;
-		background-color: #efefef;
-		transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		flex: 1 1 auto;
+		min-width: 0;
+		background-color: #f4f4f4;
 		position: relative;
-	}
-
-	/* Collapsed sidebar state - main content shifts */
-	.dashboard__main.is-collapsed {
-		margin-left: 80px;
 	}
 
 	/* Loading overlay for data fetching */
@@ -206,32 +202,13 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive - Mobile (≤768px)
+	 * Responsive - Mobile (<1280px) - Sidebar is fixed, main takes full width
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 768px) {
+	@media (max-width: 1279px) {
 		.dashboard__main {
-			margin-left: 0;
-			padding-top: 64px; /* Space for mobile toggle button */
-		}
-
-		.dashboard__main.is-collapsed {
-			margin-left: 0;
-		}
-
-		/* Remove extra padding when content has its own header */
-		.dashboard__main:has(.dashboard__header) {
-			padding-top: 64px;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive - Tablet (769-1024px)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media (min-width: 769px) and (max-width: 1024px) {
-		.dashboard__main:not(.is-collapsed) {
-			margin-left: 240px;
+			width: 100%;
+			padding-bottom: 50px; /* Space for fixed toggle footer */
 		}
 	}
 
@@ -240,10 +217,6 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (prefers-reduced-motion: reduce) {
-		.dashboard__main {
-			transition: none;
-		}
-
 		.dashboard__loading-spinner {
 			animation: none;
 		}

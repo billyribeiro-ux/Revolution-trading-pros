@@ -375,28 +375,23 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Sidebar - Pixel Perfect WordPress Match
-	 * Phase Two: Collapsible with Secondary Sidebar
 	 * Source: dashboard.8f78208b.css from Simpler Trading
+	 *
+	 * LAYOUT PATTERN (matching WordPress exactly):
+	 * - Desktop (1280px+): position: static, part of flex layout
+	 * - Mobile (<1280px): position: fixed, full height overlay
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MAIN SIDEBAR - Collapsible (280px → 80px)
-	 * ICT11+ Fix: Account for NavBar height when present
+	 * SIDEBAR CONTAINER
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar {
-		background-color: #0f2d41;
-		width: 280px;
-		height: calc(100vh - var(--nav-height, 80px));
-		position: fixed;
-		top: var(--nav-height, 80px);
-		left: 0;
-		overflow-y: auto;
-		overflow-x: hidden;
-		z-index: 100;
 		display: flex;
 		flex: 0 0 auto;
 		flex-direction: column;
+		background-color: #0f2d41;
+		width: 280px;
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -419,7 +414,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * COLLAPSED STATE
+	 * COLLAPSED STATE (desktop only)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar.is-collapsed {
@@ -652,9 +647,9 @@
 	.dashboard__sidebar-secondary {
 		background-color: #0f2d41;
 		width: 280px;
-		height: 100vh;
+		height: calc(100vh - 80px);
 		position: fixed;
-		top: 0;
+		top: 80px;
 		left: 80px;
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -731,7 +726,7 @@
 
 	.dashboard__toggle {
 		display: none; /* Hidden on desktop, shown on mobile */
-		background-color: #0d2532;
+		background-color: #0f2d41; /* Match sidebar background */
 		padding: 15px 20px;
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 	}
@@ -846,39 +841,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Mobile (< 1080px) - Sidebar hidden by default
-	 * Reference: dashboard.8f78208b.css breakpoints
+	 * RESPONSIVE - Mobile (<1280px) - Fixed sidebar, hidden by default
+	 * Reference: dashboard.8f78208b.css - EXACT WordPress breakpoint
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1079px) {
+	@media (max-width: 1279px) {
 		.dashboard__sidebar {
-			transform: translateX(-100%);
+			position: fixed;
+			top: 0;
+			left: 0;
+			bottom: 50px; /* Space for toggle footer */
 			width: 280px;
+			overflow-x: hidden;
+			overflow-y: auto;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 100010;
+			transform: translateX(-100%);
 		}
 
 		.dashboard__sidebar.is-mobile-open {
+			opacity: 1;
+			visibility: visible;
 			transform: translateX(0);
 		}
 
+		/* Reset collapsed state on mobile - always show full sidebar */
 		.dashboard__sidebar.is-collapsed {
 			width: 280px;
 		}
 
-		/* Show mobile floating trigger */
-		.dashboard__mobile-trigger {
-			display: flex;
-		}
-
-		/* Show toggle footer inside sidebar on mobile */
-		.dashboard__toggle {
-			display: block;
-		}
-
-		.dashboard__sidebar-secondary {
-			display: none;
-		}
-
-		/* Reset collapsed styles on mobile */
 		.dashboard__sidebar.is-collapsed .dashboard__profile-name,
 		.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
 		.dashboard__sidebar.is-collapsed .dashboard__nav-category {
@@ -903,23 +895,53 @@
 			position: absolute;
 			left: 30px;
 		}
+
+		/* Show toggle footer on mobile */
+		.dashboard__toggle {
+			display: block;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 50px;
+			line-height: 50px;
+			z-index: 100010;
+		}
+
+		/* Show mobile floating trigger */
+		.dashboard__mobile-trigger {
+			display: flex;
+		}
+
+		/* Hide secondary sidebar on mobile */
+		.dashboard__sidebar-secondary {
+			display: none;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Desktop Small (1080px - 1279px)
+	 * RESPONSIVE - Desktop (1280px+) - Static sidebar in flex layout
+	 * Reference: dashboard.8f78208b.css - EXACT WordPress pattern
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (min-width: 1080px) and (max-width: 1279px) {
+	@media (min-width: 1280px) {
 		.dashboard__sidebar {
-			width: 260px;
+			position: static;
+			height: auto;
+			min-height: 100vh;
+			opacity: 1;
+			visibility: visible;
+			overflow: visible;
 		}
 
-		.dashboard__nav-item-text {
-			font-size: 13px;
+		/* Toggle footer hidden on desktop */
+		.dashboard__toggle {
+			display: none;
 		}
 
-		.dashboard__nav-category {
-			font-size: 14px;
+		/* Mobile trigger hidden on desktop */
+		.dashboard__mobile-trigger {
+			display: none;
 		}
 	}
 

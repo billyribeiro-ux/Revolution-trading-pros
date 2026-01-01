@@ -89,13 +89,14 @@
 	<!-- Admin and Embed areas have their own layouts -->
 	{@render children()}
 {:else if isDashboardArea}
-	<!-- Dashboard area: NavBar + AdminToolbar, no Footer -->
+	<!-- Dashboard area: NavBar + Content + Footer -->
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
 		<NavBar />
 		{@render children()}
+		<MarketingFooter />
 		{#if mounted}
 			<ConsentBanner />
 			<ConsentPreferencesModal />
