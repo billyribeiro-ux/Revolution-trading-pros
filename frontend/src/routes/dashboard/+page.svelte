@@ -432,21 +432,17 @@
 	}
 
 	.dashboard__header-right {
+		display: flex;
 		flex-direction: column-reverse;
+		align-items: flex-end;
 		margin-top: 10px;
-	}
-
-	@media (min-width: 577px) {
-		.dashboard__header-right {
-			flex-direction: row-reverse;
-			justify-content: flex-end;
-		}
 	}
 
 	@media (min-width: 820px) {
 		.dashboard__header-right {
 			flex-direction: row;
-			justify-content: flex-start;
+			align-items: center;
+			gap: 20px;
 			margin-top: 0;
 		}
 	}
@@ -489,10 +485,8 @@
 
 	@media (max-width: 819px) {
 		.trading-room-rules {
-			text-align: center;
 			margin-right: 0;
-			margin-bottom: 15px;
-			width: 100%;
+			margin-top: 10px;
 		}
 	}
 
