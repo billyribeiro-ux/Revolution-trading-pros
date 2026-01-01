@@ -1160,6 +1160,197 @@ RESPONSIVE UTILITIES:
 
 ---
 
+## Breadcrumbs Navigation
+
+### Breadcrumb Structure
+
+The dashboard uses a hierarchical breadcrumb navigation system for improved user orientation and SEO.
+
+**HTML Structure:**
+```html
+<nav id="breadcrumbs" class="breadcrumbs">
+    <div class="container-fluid">
+        <ul>
+            <li class="item-home">
+                <a class="breadcrumb-link breadcrumb-home" 
+                   href="https://www.simplertrading.com" 
+                   title="Home">
+                    Home
+                </a>
+            </li>
+            <li class="separator separator-home"> / </li>
+            <li class="item-current item-401190">
+                <strong class="breadcrumb-current breadcrumb-401190">
+                    Member Dashboard
+                </strong>
+            </li>
+        </ul>
+    </div>
+</nav>
+```
+
+### Breadcrumb Styling
+
+**Base Styles:**
+```css
+.breadcrumbs {
+    z-index: 1;
+}
+```
+
+**Visual Specifications:**
+- **Position:** Below main navigation, above page content
+- **Z-Index:** 1 (ensures proper layering)
+- **Container:** `.container-fluid` for full-width responsive layout
+- **List Style:** Unstyled list (`ul`) with inline items
+
+### Breadcrumb Components
+
+#### 1. Home Link
+```css
+.item-home {
+    /* First breadcrumb item */
+}
+
+.breadcrumb-link.breadcrumb-home {
+    /* Home link styling */
+}
+```
+
+**Specifications:**
+- **Class:** `.item-home`
+- **Link Class:** `.breadcrumb-link.breadcrumb-home`
+- **Href:** Root domain (https://www.simplertrading.com)
+- **Title Attribute:** "Home" for accessibility
+
+#### 2. Separator
+```css
+.separator {
+    /* Breadcrumb separator */
+}
+
+.separator-home {
+    /* Separator after home link */
+}
+```
+
+**Specifications:**
+- **Content:** " / " (forward slash with spaces)
+- **Class:** `.separator` with context class (e.g., `.separator-home`)
+- **Display:** Inline between breadcrumb items
+
+#### 3. Current Page
+```css
+.item-current {
+    /* Current page item */
+}
+
+.breadcrumb-current {
+    /* Current page text styling */
+}
+```
+
+**Specifications:**
+- **Class:** `.item-current` with page-specific class (e.g., `.item-401190`)
+- **Text Element:** `<strong>` for semantic emphasis
+- **Text Class:** `.breadcrumb-current` with page-specific class
+- **Content:** Current page title (e.g., "Member Dashboard")
+
+### Breadcrumb Schema (JSON-LD)
+
+The breadcrumbs are enhanced with structured data for SEO:
+
+```json
+{
+    "@type": "BreadcrumbList",
+    "@id": "https://my.simplertrading.com/dashboard#breadcrumb",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://www.simplertrading.com/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Member Dashboard"
+        }
+    ]
+}
+```
+
+**SEO Benefits:**
+- **Rich Snippets:** Enhanced search results display
+- **Site Hierarchy:** Clear site structure for search engines
+- **User Navigation:** Improved click-through rates
+- **Schema.org Compliance:** Standard structured data format
+
+### Breadcrumb Patterns
+
+#### Two-Level Breadcrumb (Member Dashboard)
+```
+Home / Member Dashboard
+```
+
+#### Three-Level Breadcrumb (Sub-pages)
+```
+Home / Member Dashboard / My Classes
+```
+
+#### Four-Level Breadcrumb (Deep Navigation)
+```
+Home / Member Dashboard / My Classes / Course Name
+```
+
+### Breadcrumb Accessibility
+
+**ARIA Attributes:**
+```html
+<nav id="breadcrumbs" 
+     class="breadcrumbs" 
+     aria-label="Breadcrumb navigation">
+    <!-- Breadcrumb items -->
+</nav>
+```
+
+**Best Practices:**
+- **Semantic HTML:** Uses `<nav>` element
+- **List Structure:** Ordered list for hierarchy
+- **Current Page:** `<strong>` for emphasis (no link)
+- **Link Titles:** Descriptive title attributes
+- **Keyboard Navigation:** All links keyboard accessible
+
+### Breadcrumb Responsive Behavior
+
+**Desktop (>768px):**
+- Full breadcrumb trail displayed
+- Horizontal layout
+- Standard spacing
+
+**Mobile (≤768px):**
+- Breadcrumbs maintained (not hidden)
+- May wrap to multiple lines if needed
+- Consistent z-index layering
+
+### Integration Points
+
+**Location in Page Structure:**
+```
+1. Header
+2. Main Navigation
+3. Breadcrumbs ← Here
+4. Page Content
+5. Footer
+```
+
+**CSS Positioning:**
+- **After:** `#site-navigation`
+- **Before:** `#page` content wrapper
+- **Within:** Main page flow (not fixed/absolute)
+
+---
+
 ## Specific Dashboard Sections
 
 ### Member Dashboard
