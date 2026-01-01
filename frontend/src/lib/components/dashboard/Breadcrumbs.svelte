@@ -77,38 +77,36 @@
 
 <!-- Breadcrumbs Navigation -->
 <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb navigation">
-	<div class="container-fluid">
-		<ul>
-			{#each breadcrumbItems as item, index}
-				{#if item.href}
-					<!-- Linked breadcrumb item -->
-					<li class="item-home">
-						<a 
-							class="breadcrumb-link breadcrumb-home" 
-							href={item.href}
-							title={item.name}
-						>
-							{item.name}
-						</a>
-					</li>
-				{:else}
-					<!-- Current page (no link) -->
-					<li class="item-current item-{$page?.route?.id?.replace(/\//g, '-') ?? 'page'}">
-						<strong class="breadcrumb-current breadcrumb-{$page?.route?.id?.replace(/\//g, '-') ?? 'page'}">
-							{item.name}
-						</strong>
-					</li>
-				{/if}
+	<ul>
+		{#each breadcrumbItems as item, index}
+			{#if item.href}
+				<!-- Linked breadcrumb item -->
+				<li class="item-home">
+					<a 
+						class="breadcrumb-link breadcrumb-home" 
+						href={item.href}
+						title={item.name}
+					>
+						{item.name}
+					</a>
+				</li>
+			{:else}
+				<!-- Current page (no link) -->
+				<li class="item-current item-{$page?.route?.id?.replace(/\//g, '-') ?? 'page'}">
+					<strong class="breadcrumb-current breadcrumb-{$page?.route?.id?.replace(/\//g, '-') ?? 'page'}">
+						{item.name}
+					</strong>
+				</li>
+			{/if}
 
-				{#if index < breadcrumbItems.length - 1}
-					<!-- Separator -->
-					<li class="separator separator-{index === 0 ? 'home' : `item-${index}`}">
-						{' / '}
-					</li>
-				{/if}
-			{/each}
-		</ul>
-	</div>
+			{#if index < breadcrumbItems.length - 1}
+				<!-- Separator -->
+				<li class="separator separator-{index === 0 ? 'home' : `item-${index}`}">
+					{' / '}
+				</li>
+			{/if}
+		{/each}
+	</ul>
 </nav>
 
 <style>
@@ -117,25 +115,17 @@
 	
 	/* Component-specific overrides if needed */
 	.breadcrumbs {
-		padding: 12px 0;
+		padding: 12px 20px;
 		background-color: transparent;
-	}
-
-	.container-fluid {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0 20px;
 	}
 
 	/* Responsive adjustments */
 	@media (max-width: 768px) {
 		.breadcrumbs {
-			padding: 8px 0;
+			padding: 8px 16px;
 			font-size: 14px;
-		}
-
-		.container-fluid {
-			padding: 0 16px;
 		}
 	}
 </style>
