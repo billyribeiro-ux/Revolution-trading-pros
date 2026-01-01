@@ -60,17 +60,14 @@
 	onMount(() => {
 		// Mark as mounted FIRST to enable client-only derived values
 		mounted = true;
-		
+
 		if (browser) {
-			// ICT11+ Pattern: Non-blocking auth initialization
-			// Only restore session if not already authenticated
-			const currentAuth = $isAdminUser || authStore.getToken();
-			if (!currentAuth) {
-				initializeAuth().catch((err) => {
-					console.debug('[Layout] Auth init failed (non-critical):', err);
-				});
-			}
-			
+			// ICT11+ Pattern: Always initialize auth on page load
+			// This handles page refresh scenarios where tokens need to be restored
+			initializeAuth().catch((err) => {
+				console.debug('[Layout] Auth init failed (non-critical):', err);
+			});
+
 			registerServiceWorker();
 			initPerformanceMonitoring();
 			initializeConsent();

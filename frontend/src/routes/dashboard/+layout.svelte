@@ -23,7 +23,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { onMount, type Snippet } from 'svelte';
-	import { isAuthenticated, user, authStore } from '$lib/stores/auth';
+	import { isAuthenticated, isInitializing, user, authStore } from '$lib/stores/auth';
 	import { getUserMemberships, type CategorizedMemberships } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 
@@ -71,6 +71,7 @@
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// AUTH CHECK & DATA LOADING
+	// ICT11+ Pattern: Wait for root layout auth initialization to complete
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(() => {
@@ -82,10 +83,18 @@
 
 		isCheckingAuth = true;
 
-		// Wait a tick for auth store to initialize
-		await new Promise(resolve => setTimeout(resolve, 50));
+		// ICT11+ Pattern: Wait for auth initialization to complete (max 6 seconds)
+		// The root layout's initializeAuth() sets isInitializing to false when done
+		const maxWaitTime = 6000;
+		const checkInterval = 100;
+		let waited = 0;
 
-		// Check if authenticated
+		while ($isInitializing && waited < maxWaitTime) {
+			await new Promise(resolve => setTimeout(resolve, checkInterval));
+			waited += checkInterval;
+		}
+
+		// Check if authenticated after initialization completes
 		if (!$isAuthenticated) {
 			// Not authenticated - redirect to login
 			const currentPath = page?.url?.pathname ?? '/dashboard';
@@ -117,11 +126,13 @@
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// WATCH AUTH CHANGES
+	// ICT11+ Pattern: Only redirect after initialization is complete
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	$effect(() => {
 		// If user logs out while on dashboard, redirect to login
-		if (!isCheckingAuth && !$isAuthenticated && browser) {
+		// Only redirect if not currently initializing or checking auth
+		if (!isCheckingAuth && !$isInitializing && !$isAuthenticated && browser) {
 			const currentPath = page?.url?.pathname ?? '/dashboard';
 			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
 		}
