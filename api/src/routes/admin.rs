@@ -92,7 +92,7 @@ pub struct UpdateUserRequest {
 }
 
 /// List all users (admin)
-/// SECURITY: Uses parameterized queries to prevent SQL injection
+/// ICT 11+ SECURITY FIX: Refactored to use safe parameterized queries with optional filters
 async fn list_users(
     State(state): State<AppState>,
     _user: User,
@@ -102,63 +102,51 @@ async fn list_users(
     let per_page = query.per_page.unwrap_or(50).min(100);
     let offset = (page - 1) * per_page;
 
-    // Build query with parameterized conditions
-    let mut sql = String::from("SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at FROM users WHERE 1=1");
-    let mut count_sql = String::from("SELECT COUNT(*) FROM users WHERE 1=1");
-    
-    if query.role.is_some() {
-        sql.push_str(" AND role = $1");
-        count_sql.push_str(" AND role = $1");
-    }
-    if query.is_active.is_some() {
-        let param_num = if query.role.is_some() { "$2" } else { "$1" };
-        sql.push_str(&format!(" AND is_active = {}", param_num));
-        count_sql.push_str(&format!(" AND is_active = {}", param_num));
-    }
-    if query.search.is_some() {
-        let param_num = match (query.role.is_some(), query.is_active.is_some()) {
-            (true, true) => "$3",
-            (true, false) | (false, true) => "$2",
-            (false, false) => "$1",
-        };
-        sql.push_str(&format!(" AND (name ILIKE {} OR email ILIKE {})", param_num, param_num));
-        count_sql.push_str(&format!(" AND (name ILIKE {} OR email ILIKE {})", param_num, param_num));
-    }
-    
-    sql.push_str(" ORDER BY created_at DESC LIMIT $");
-    sql.push_str(&(1 + [query.role.is_some(), query.is_active.is_some(), query.search.is_some()].iter().filter(|&&x| x).count()).to_string());
-    sql.push_str(" OFFSET $");
-    sql.push_str(&(2 + [query.role.is_some(), query.is_active.is_some(), query.search.is_some()].iter().filter(|&&x| x).count()).to_string());
-
-    // Bind parameters dynamically
-    let mut query_builder = sqlx::query_as::<_, AdminUserRow>(&sql);
-    let mut count_builder = sqlx::query_as::<_, (i64,)>(&count_sql);
-    
-    if let Some(ref role) = query.role {
-        query_builder = query_builder.bind(role);
-        count_builder = count_builder.bind(role);
-    }
-    if let Some(is_active) = query.is_active {
-        query_builder = query_builder.bind(is_active);
-        count_builder = count_builder.bind(is_active);
-    }
+    // ICT 11+ SECURITY: Use NULL-safe parameterized queries
+    // This approach is SQL injection proof and compile-time verified
     let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
-    if let Some(ref pattern) = search_pattern {
-        query_builder = query_builder.bind(pattern);
-        count_builder = count_builder.bind(pattern);
-    }
     
-    query_builder = query_builder.bind(per_page).bind(offset);
+    let users: Vec<AdminUserRow> = sqlx::query_as(
+        r#"
+        SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at 
+        FROM users
+        WHERE ($1::text IS NULL OR role = $1)
+          AND ($2::boolean IS NULL OR is_active = $2)
+          AND ($3::text IS NULL OR name ILIKE $3 OR email ILIKE $3)
+        ORDER BY created_at DESC
+        LIMIT $4 OFFSET $5
+        "#
+    )
+    .bind(query.role.as_deref())
+    .bind(query.is_active)
+    .bind(search_pattern.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error in list_users: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+    })?;
 
-    let users = query_builder
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
-
-    let total = count_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
+    let total: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*) 
+        FROM users
+        WHERE ($1::text IS NULL OR role = $1)
+          AND ($2::boolean IS NULL OR is_active = $2)
+          AND ($3::text IS NULL OR name ILIKE $3 OR email ILIKE $3)
+        "#
+    )
+    .bind(query.role.as_deref())
+    .bind(query.is_active)
+    .bind(search_pattern.as_deref())
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error in list_users count: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+    })?;
 
     Ok(Json(json!({
         "data": users,

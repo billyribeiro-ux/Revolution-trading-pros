@@ -138,7 +138,7 @@ async fn create_indicator(
     Json(input): Json<CreateIndicatorRequest>,
 ) -> Result<Json<IndicatorRow>, (StatusCode, Json<serde_json::Value>)> {
     // Role check - only admins and super_admins can create indicators
-    if user.role != "admin" && user.role != "super_admin" {
+    if user.role.as_deref() != Some("admin") && user.role.as_deref() != Some("super_admin") {
         return Err((
             StatusCode::FORBIDDEN,
             Json(serde_json::json!({"error": "Insufficient permissions to create indicators"}))
