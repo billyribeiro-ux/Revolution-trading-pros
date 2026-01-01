@@ -253,114 +253,108 @@
 </header>
 
 <!-- Dashboard Content -->
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-
-		{#if isLoading}
-			<!-- Loading State -->
-			<section class="dashboard__content-section">
-				<div class="loading-skeleton">
-					<div class="skeleton skeleton--title"></div>
-					<div class="skeleton-grid">
-						<div class="skeleton skeleton--card"></div>
-						<div class="skeleton skeleton--card"></div>
-						<div class="skeleton skeleton--card"></div>
-					</div>
-				</div>
-			</section>
-		{:else}
-			<!-- Memberships Section -->
-			{#if membershipCards.length > 0}
-				<section class="dashboard__content-section">
-					<h2 class="section-title">Memberships</h2>
-					<div class="membership-cards">
-						{#each membershipCards as card}
-							<article class="membership-card membership-card--{card.variant}">
-								<a href={card.href} class="membership-card__header">
-									<span class="mem_icon">
-										<span class="membership-card__icon">
-											<RtpIcon name={card.icon} size={32} />
-										</span>
-									</span>
-									<span class="mem_div">{card.name}</span>
-								</a>
-								<div class="membership-card__actions">
-									<a href={card.href} class="btn-dashboard">Dashboard</a>
-									{#if card.tradingRoom}
-										<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
-									{/if}
-								</div>
-							</article>
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- Mastery Section -->
-			{#if masteryCards.length > 0}
-				<section class="dashboard__content-section">
-					<h2 class="section-title">Mastery</h2>
-					<div class="membership-cards">
-						{#each masteryCards as card}
-							<article class="membership-card membership-card--{card.variant}">
-								<a href={card.href} class="membership-card__header">
-									<span class="mem_icon">
-										<span class="membership-card__icon">
-											<RtpIcon name={card.icon} size={32} />
-										</span>
-									</span>
-									<span class="mem_div">{card.name}</span>
-								</a>
-								<div class="membership-card__actions">
-									<a href={card.href} class="btn-dashboard">Dashboard</a>
-									{#if card.tradingRoom}
-										<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
-									{/if}
-								</div>
-							</article>
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- Tools Section -->
-			<section class="dashboard__content-section">
-				<h2 class="section-title">Tools</h2>
-				<div class="membership-cards">
-					{#each toolsCards as card}
-						<article class="membership-card membership-card--{card.variant}">
-							<a href={card.href} class="membership-card__header">
-								<span class="mem_icon">
-									<span class="membership-card__icon">
-										<RtpIcon name={card.icon} size={24} />
-									</span>
+{#if isLoading}
+	<!-- Loading State -->
+	<section class="dashboard__content-section">
+		<div class="loading-skeleton">
+			<div class="skeleton skeleton--title"></div>
+			<div class="skeleton-grid">
+				<div class="skeleton skeleton--card"></div>
+				<div class="skeleton skeleton--card"></div>
+				<div class="skeleton skeleton--card"></div>
+			</div>
+		</div>
+	</section>
+{:else}
+	<!-- Memberships Section -->
+	{#if membershipCards.length > 0}
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Memberships</h2>
+			<div class="membership-cards">
+				{#each membershipCards as card}
+					<article class="membership-card membership-card--{card.variant}">
+						<a href={card.href} class="membership-card__header">
+							<span class="mem_icon">
+								<span class="membership-card__icon">
+									<RtpIcon name={card.icon} size={32} />
 								</span>
-								<span class="mem_div">{card.name}</span>
-							</a>
-							<div class="membership-card__actions">
-								<a href={card.href} class="btn-dashboard">Dashboard</a>
-							</div>
-						</article>
-					{/each}
-				</div>
-			</section>
+							</span>
+							<span class="mem_div">{card.name}</span>
+						</a>
+						<div class="membership-card__actions">
+							<a href={card.href} class="btn-dashboard">Dashboard</a>
+							{#if card.tradingRoom}
+								<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
+							{/if}
+						</div>
+					</article>
+				{/each}
+			</div>
+		</section>
+	{/if}
 
-			<!-- Empty State - No Memberships -->
-			{#if membershipCards.length === 0 && masteryCards.length === 0}
-				<section class="dashboard__content-section">
-					<div class="empty-state">
-						<h2 class="empty-state__title">Welcome, {userName}!</h2>
-						<p class="empty-state__text">
-							You don't have any active memberships yet. Explore our trading rooms and courses to get started.
-						</p>
-						<a href="/courses" class="btn btn-orange">Browse Courses</a>
+	<!-- Mastery Section -->
+	{#if masteryCards.length > 0}
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Mastery</h2>
+			<div class="membership-cards">
+				{#each masteryCards as card}
+					<article class="membership-card membership-card--{card.variant}">
+						<a href={card.href} class="membership-card__header">
+							<span class="mem_icon">
+								<span class="membership-card__icon">
+									<RtpIcon name={card.icon} size={32} />
+								</span>
+							</span>
+							<span class="mem_div">{card.name}</span>
+						</a>
+						<div class="membership-card__actions">
+							<a href={card.href} class="btn-dashboard">Dashboard</a>
+							{#if card.tradingRoom}
+								<a href={card.tradingRoom} class="btn-room" target="_blank">Trading Room</a>
+							{/if}
+						</div>
+					</article>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
+	<!-- Tools Section -->
+	<section class="dashboard__content-section">
+		<h2 class="section-title">Tools</h2>
+		<div class="membership-cards">
+			{#each toolsCards as card}
+				<article class="membership-card membership-card--{card.variant}">
+					<a href={card.href} class="membership-card__header">
+						<span class="mem_icon">
+							<span class="membership-card__icon">
+								<RtpIcon name={card.icon} size={24} />
+							</span>
+						</span>
+						<span class="mem_div">{card.name}</span>
+					</a>
+					<div class="membership-card__actions">
+						<a href={card.href} class="btn-dashboard">Dashboard</a>
 					</div>
-				</section>
-			{/if}
-		{/if}
+				</article>
+			{/each}
+		</div>
+	</section>
 
-	</div>
-</div>
+	<!-- Empty State - No Memberships -->
+	{#if membershipCards.length === 0 && masteryCards.length === 0}
+		<section class="dashboard__content-section">
+			<div class="empty-state">
+				<h2 class="empty-state__title">Welcome, {userName}!</h2>
+				<p class="empty-state__text">
+					You don't have any active memberships yet. Explore our trading rooms and courses to get started.
+				</p>
+				<a href="/courses" class="btn btn-orange">Browse Courses</a>
+			</div>
+		</section>
+	{/if}
+{/if}
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -603,20 +597,8 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD CONTENT - WordPress Exact Match
-	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
+	 * DASHBOARD CONTENT SECTION
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content {
-		display: flex;
-		flex-flow: row nowrap;
-	}
-
-	.dashboard__content-main {
-		flex: 1 1 auto;
-		min-width: 0;
-		border-right: 1px solid #dbdbdb;
-	}
 
 	.dashboard__content-section {
 		padding: 30px 20px;
