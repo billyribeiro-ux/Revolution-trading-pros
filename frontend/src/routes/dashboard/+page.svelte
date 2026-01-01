@@ -17,7 +17,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { user, isAuthenticated, isInitializing, authStore } from '$lib/stores/auth';
+	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
