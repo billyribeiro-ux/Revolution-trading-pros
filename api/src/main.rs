@@ -5,8 +5,10 @@
 
 mod config;
 mod db;
+mod docs;
 mod middleware;
 mod models;
+mod monitoring;
 mod queue;
 mod routes;
 mod services;
@@ -164,10 +166,22 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::info!("Security headers configured");
 
+    // Initialize metrics
+    let metrics = monitoring::Metrics::default();
+
+    // ICT 11+ ENHANCEMENT: Swagger UI for API documentation
+    use utoipa::OpenApi;
+    use utoipa_swagger_ui::SwaggerUi;
+    
+    let swagger_router = SwaggerUi::new("/swagger-ui")
+        .url("/api-docs/openapi.json", docs::ApiDoc::openapi());
+
     // Build router with security layers
     let app = Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
+        .merge(swagger_router)
+        .nest("/monitoring", monitoring::router().with_state(metrics.clone()))
         .layer(security_headers)
         .layer(cors)
         .layer(CompressionLayer::new())
@@ -177,6 +191,8 @@ async fn main() -> anyhow::Result<()> {
     // Start server
     let addr = SocketAddr::from(([0, 0, 0, 0], config.port));
     tracing::info!("Listening on {}", addr);
+    tracing::info!("📚 API Documentation: http://{}:{}/swagger-ui", addr.ip(), addr.port());
+    tracing::info!("📊 Metrics: http://{}:{}/monitoring/metrics", addr.ip(), addr.port());
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
