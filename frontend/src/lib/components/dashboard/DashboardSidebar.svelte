@@ -1121,11 +1121,6 @@
 		.dashboard__mobile-trigger {
 			display: flex;
 		}
-
-		/* Hide secondary nav on mobile */
-		.dashboard__nav-secondary {
-			display: none;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
