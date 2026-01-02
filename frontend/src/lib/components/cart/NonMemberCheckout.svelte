@@ -1,14 +1,14 @@
 <script lang="ts">
 	/**
-	 * NonMemberCheckout Component - Simpler Trading Style (EXACT MATCH)
+	 * NonMemberCheckout Component - Revolution Trading Custom Cart System
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * This component replicates the exact Simpler Trading non-member checkout
-	 * experience including class names, HTML structure, and styling.
+	 * Custom cart system for non-member checkout with pixel-perfect styling
+	 * (no WooCommerce dependency)
 	 *
-	 * Reference: SimplerNonMemberCart file
+	 * Reference: Custom RTP Cart System
 	 *
-	 * @version 2.0.0 (Simpler Trading Exact Match / December 2025)
+	 * @version 3.0.0 (Custom RTP Cart System / January 2026)
 	 */
 
 	import { goto } from '$app/navigation';
@@ -132,7 +132,7 @@
      TEMPLATE - Simpler Trading NonMember Checkout (EXACT STRUCTURE)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-<div class="woocommerce-checkout woocommerce-page checkout-nonmember">
+<div class="rtp-checkout rtp-page checkout-nonmember">
 	<div class="container">
 		<!-- Page Header -->
 		<header class="checkout-page-header">
@@ -340,10 +340,10 @@
 						</div>
 					{/if}
 
-					<!-- Cart Sidebar - RIGHT SIDE - Simpler Trading Style -->
+					<!-- Cart Sidebar - RIGHT SIDE - Revolution Trading Style -->
 					<div class="checkout-cart">
-						<div id="order_review" class="woocommerce-checkout-review-order">
-							<div class="woocommerce-checkout-review-order-table">
+						<div id="order_review" class="rtp-checkout-review-order">
+							<div class="rtp-checkout-review-order-table">
 								<div class="card">
 									<div class="card-header">
 										<h4>Shopping Cart</h4>
@@ -372,8 +372,8 @@
 														{/if}
 													</div>
 													<div class="product-total">
-														<span class="woocommerce-Price-amount amount">
-															<bdi><span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}</bdi>
+														<span class="rtp-price-amount amount">
+															<bdi><span class="rtp-price-currency">$</span>{item.price.toFixed(2)}</bdi>
 														</span>
 													</div>
 												</div>
@@ -396,8 +396,8 @@
 										<div class="checkout-order-total">
 											<div>Total</div>
 											<div class="checkout-order-total-price">
-												<span class="woocommerce-Price-amount amount">
-													<bdi><span class="woocommerce-Price-currencySymbol">$</span>{$cartTotal.toFixed(2)}</bdi>
+												<span class="rtp-price-amount amount">
+													<bdi><span class="rtp-price-currency">$</span>{$cartTotal.toFixed(2)}</bdi>
 												</span>
 											</div>
 										</div>
@@ -405,16 +405,16 @@
 										<!-- Recurring Totals for Subscriptions -->
 										{#if hasSubscriptions}
 											<div class="cart-table-wrapper">
-												<table class="cart-table">
+												<table class="rtp-cart-table">
 													<tbody>
-														<tr class="recurring-totals">
+														<tr class="rtp-recurring-totals">
 															<th colspan="2">Recurring Totals</th>
 														</tr>
 														{#each $cartStore.items.filter((i) => i.interval) as item}
-															<tr class="cart-subtotal recurring-total">
+															<tr class="rtp-cart-subtotal rtp-recurring-total">
 																<td colspan="2">
-																	<span class="woocommerce-Price-amount amount">
-																		<bdi><span class="woocommerce-Price-currencySymbol">$</span>{item.price.toFixed(2)}</bdi>
+																	<span class="rtp-price-amount amount">
+																		<bdi><span class="rtp-price-currency">$</span>{item.price.toFixed(2)}</bdi>
 																	</span>
 																	{getIntervalLabel(item.interval)}
 																</td>
@@ -428,8 +428,8 @@
 
 									<!-- Coupon Section -->
 									<div class="coupon-section">
-										<div class="woocommerce-form-coupon-toggle">
-											<div class="woocommerce-info">
+										<div class="rtp-form-coupon-toggle">
+											<div class="rtp-info">
 												<IconTicket size={16} />
 												<button
 													type="button"
@@ -442,7 +442,7 @@
 										</div>
 
 										{#if couponFormVisible}
-											<form class="checkout_coupon woocommerce-form-coupon" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
+											<form class="rtp-checkout-coupon rtp-form-coupon" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
 												<p>If you have a coupon code, please apply it below.</p>
 												<div class="coupon-input-row">
 													<input
@@ -957,7 +957,7 @@
 		font-weight: 500;
 	}
 
-	.recurring-totals th {
+	.rtp-recurring-totals th {
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
@@ -965,7 +965,7 @@
 		padding-top: 16px;
 	}
 
-	.recurring-total td {
+	.rtp-recurring-total td {
 		text-align: left !important;
 		font-size: 13px;
 	}
@@ -988,12 +988,12 @@
 		font-weight: 700;
 	}
 
-	/* WooCommerce Price Styling */
-	.woocommerce-Price-amount {
+	/* RTP Price Styling */
+	.rtp-price-amount {
 		font-weight: 700;
 	}
 
-	.woocommerce-Price-currencySymbol {
+	.rtp-price-currency {
 		font-weight: 700;
 	}
 
@@ -1006,7 +1006,7 @@
 		border-top: 1px solid var(--st-border);
 	}
 
-	.woocommerce-info {
+	.rtp-info {
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -1028,11 +1028,11 @@
 		text-decoration: underline;
 	}
 
-	.checkout_coupon {
+	.rtp-checkout-coupon {
 		margin-top: 16px;
 	}
 
-	.checkout_coupon p {
+	.rtp-checkout-coupon p {
 		font-size: 13px;
 		color: var(--st-text-muted);
 		margin-bottom: 12px;

@@ -15,6 +15,14 @@
 -->
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+
+	interface BreadcrumbItem {
+		label: string;
+		href: string | null;
+		isCurrent: boolean;
+		className?: string;
+	}
 
 	// Generate breadcrumb items from current path
 	// Apple ICT 11+ Pattern: Works on both SSR and client
@@ -23,32 +31,103 @@
 		const pathname = $page?.url?.pathname || '/';
 		const segments = pathname.split('/').filter(Boolean);
 
-		const items: Array<{ label: string; href: string; isCurrent: boolean }> = [
-			{ label: 'Home', href: '/', isCurrent: false }
+		const items: BreadcrumbItem[] = [
+			{ label: 'Home', href: '/', isCurrent: false, className: 'item-home' }
 		];
 
-		let currentPath = '';
-		segments.forEach((segment, index) => {
-			currentPath += `/${segment}`;
-			const isLast = index === segments.length - 1;
+		// Check if we're on a class detail page (e.g., /classes/tax-loss-harvest)
+		const isClassDetailPage = segments[0] === 'classes' && segments.length > 1;
+		
+		// Check if we're on My Classes list page
+		const isMyClassesPage = pathname === '/dashboard/classes';
+		
+		// Check if we're on My Indicators list page
+		const isMyIndicatorsPage = pathname === '/dashboard/indicators';
 
-			// Format segment to readable label
-			const label = segment
+		if (isClassDetailPage) {
+			// Class detail page breadcrumb: Home / Classes / [Class Name]
+			items.push({
+				label: 'Classes',
+				href: '/dashboard/classes',
+				isCurrent: false,
+				className: 'item-cat item-custom-post-type-classes'
+			});
+
+			// Add class name as current item
+			const className = segments[1]
 				.split('-')
 				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(' ');
 
-			// Map dashboard to "Member Dashboard"
-			const displayLabel = segment === 'dashboard' ? 'Member Dashboard' : label;
+			items.push({
+				label: className,
+				href: null,
+				isCurrent: true,
+				className: 'item-current'
+			});
+		} else if (isMyClassesPage) {
+			// My Classes list page: Home / Member Dashboard / My Classes
+			items.push({
+				label: 'Member Dashboard',
+				href: '/dashboard',
+				isCurrent: false,
+				className: 'item-parent item-parent-401190'
+			});
 
 			items.push({
-				label: displayLabel,
-				href: currentPath,
-				isCurrent: isLast
+				label: 'My Classes',
+				href: null,
+				isCurrent: true,
+				className: 'item-current item-402845'
 			});
-		});
+		} else if (isMyIndicatorsPage) {
+			// My Indicators list page: Home / Member Dashboard / My Indicators
+			items.push({
+				label: 'Member Dashboard',
+				href: '/dashboard',
+				isCurrent: false,
+				className: 'item-parent item-parent-401190'
+			});
+
+			items.push({
+				label: 'My Indicators',
+				href: null,
+				isCurrent: true,
+				className: 'item-current item-1021444'
+			});
+		} else {
+			// Default breadcrumb generation for other pages
+			let currentPath = '';
+			segments.forEach((segment, index) => {
+				currentPath += `/${segment}`;
+				const isLast = index === segments.length - 1;
+
+				// Format segment to readable label
+				const label = segment
+					.split('-')
+					.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' ');
+
+				// Map dashboard to "Member Dashboard"
+				const displayLabel = segment === 'dashboard' ? 'Member Dashboard' : label;
+
+				items.push({
+					label: displayLabel,
+					href: isLast ? null : currentPath,
+					isCurrent: isLast
+				});
+			});
+		}
 
 		return items;
+	});
+
+	// Fix Classes breadcrumb link on mount (matches WordPress implementation)
+	onMount(() => {
+		const classesLink = document.querySelector('a.breadcrumb-custom-post-type-classes');
+		if (classesLink) {
+			classesLink.setAttribute('href', '/dashboard/classes');
+		}
 	});
 </script>
 
@@ -57,13 +136,19 @@
 		<ul>
 			{#each breadcrumbs as item, index}
 				{#if index > 0}
-					<li class="separator" aria-hidden="true"> / </li>
+					<li class="separator{index === 1 ? ' separator-home' : ''}" aria-hidden="true"> / </li>
 				{/if}
-				<li class={item.isCurrent ? 'item-current' : 'item-home'}>
+				<li class={item.className || (item.isCurrent ? 'item-current' : 'item-home')}>
 					{#if item.isCurrent}
-						<strong class="breadcrumb-current">{item.label}</strong>
+						<strong class="breadcrumb-current" title={item.label}>{item.label}</strong>
 					{:else}
-						<a class="breadcrumb-link" href={item.href}>{item.label}</a>
+						<a 
+							class="breadcrumb-link{index === 0 ? ' breadcrumb-home' : ''}{item.className?.includes('custom-post-type-classes') ? ' breadcrumb-cat breadcrumb-custom-post-type-classes' : ''}" 
+							href={item.href}
+							title={item.label}
+						>
+							{item.label}
+						</a>
 					{/if}
 				</li>
 			{/each}

@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
-	 * Shopping Cart Page - WordPress EXACT REPLICA
+	 * Shopping Cart Page - Revolution Trading Custom Cart System
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * Pixel-perfect conversion from WordPress cart HTML
-	 * @version 7.0.0 (WordPress IDENTICAL / December 2025)
+	 * Custom cart system with pixel-perfect styling (no WooCommerce dependency)
+	 * @version 8.0.0 (Custom RTP Cart System / January 2026)
 	 */
 
 	import { goto } from '$app/navigation';
@@ -25,7 +25,8 @@
 	let appliedCoupon = $state<{ code: string; discount: number; type: CouponType } | null>(null);
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
-	let cartNonce = $state('31d89a8fba');
+	// CSRF token for form security (replaces WordPress nonce)
+	let csrfToken = $state(crypto.randomUUID());
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
@@ -47,7 +48,7 @@
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function removeItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly') {
+	function removeItem(itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime') {
 		cartStore.removeItem(itemId, interval);
 	}
 
@@ -135,7 +136,7 @@
 {#if !$isAuthenticated && $cartStore.items.length > 0}
 	<NonMemberCheckout />
 {:else}
-	<div class="woocommerce-cart woocommerce-page">
+	<div class="rtp-cart rtp-page">
 		<div class="container">
 			<!-- Page Header -->
 			<header class="cart-page-header">
@@ -165,11 +166,11 @@
 					</div>
 				</div>
 			{:else}
-				<!-- Cart Form - Simpler Trading Structure -->
-				<form class="woocommerce-cart-form" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
-					<!-- WordPress WooCommerce Compatibility: Cart Nonce -->
-					<input type="hidden" name="_wpnonce" value={cartNonce} />
-					<div class="woocommerce-cart-form__contents">
+				<!-- Cart Form - Revolution Trading Structure -->
+				<form class="rtp-cart-form" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
+					<!-- CSRF Token for Security -->
+					<input type="hidden" name="_csrf_token" value={csrfToken} />
+					<div class="rtp-cart-form__contents">
 						<div class="row">
 							<!-- Products Column -->
 							<div class="col-xs-12 col-sm-7 col-md-8">
@@ -199,7 +200,7 @@
 															<div class="card-description">
 																<span class="membership-tagline">
 																	<span class="bold">Subscription:</span>
-																	<span class="woocommerce-Price-amount amount">
+																	<span class="rtp-price-amount amount">
 																		{formatPrice(item.price)}
 																	</span>
 																	<span class="subscription-details"> {getIntervalText(item.interval)}</span>
@@ -223,8 +224,8 @@
 															</button>
 														</div>
 														<div class="product-price">
-															<span class="woocommerce-Price-amount-wrap">
-																<span class="woocommerce-Price-amount amount">
+															<span class="rtp-price-amount-wrap">
+																<span class="rtp-price-amount amount">
 																	{formatPrice(item.price)}
 																</span>
 															</span>
@@ -287,7 +288,7 @@
 																	<tr class="cart-subtotal recurring-total">
 																		<th rowspan="1">Subtotal</th>
 																		<td data-title="Subtotal">
-																			<span class="woocommerce-Price-amount amount">
+																			<span class="rtp-price-amount amount">
 																				{formatPrice(item.price)}
 																			</span>
 																			{getIntervalText(item.interval)}
@@ -363,12 +364,12 @@
 {/if}
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     STYLES - Simpler Trading Cart (EXACT MATCH)
+     STYLES - Revolution Trading Custom Cart System (EXACT MATCH)
      ═══════════════════════════════════════════════════════════════════════════ -->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES - Simpler Trading Colors
+	   CSS CUSTOM PROPERTIES - Revolution Trading Colors
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
@@ -388,10 +389,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE LAYOUT - Simpler Trading Style
+	   PAGE LAYOUT - Revolution Trading Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.woocommerce-cart {
+	.rtp-cart {
 		min-height: 100vh;
 		background: var(--st-bg);
 		padding: 40px 0;
@@ -486,10 +487,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CART FORM LAYOUT - Simpler Trading Row Structure
+	   CART FORM LAYOUT - Revolution Trading Row Structure
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.woocommerce-cart-form__contents {
+	.rtp-cart-form__contents {
 		display: block;
 	}
 
@@ -898,8 +899,8 @@
 		background: #e9e9e9;
 	}
 
-	/* WooCommerce Price Styling */
-	.woocommerce-Price-amount {
+	/* RTP Price Styling */
+	.rtp-price-amount {
 		font-weight: 700;
 	}
 
@@ -950,7 +951,7 @@
 	}
 
 	@media screen and (max-width: 480px) {
-		.woocommerce-cart {
+		.rtp-cart {
 			padding: 20px 0;
 		}
 

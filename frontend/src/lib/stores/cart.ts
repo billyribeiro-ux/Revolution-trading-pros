@@ -152,7 +152,7 @@ function createCartStore() {
 		/**
 		 * Remove item from cart
 		 */
-		removeItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly') => {
+		removeItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime') => {
 			update((state) => {
 				state.items = state.items.filter(
 					(item) => !(item.id === itemId && item.interval === interval)
