@@ -744,6 +744,7 @@
 		padding: 30px 20px;
 		overflow-x: auto;
 		overflow-y: hidden;
+		background-color: #ffffff;
 	}
 
 	@media (min-width: 1280px) {
