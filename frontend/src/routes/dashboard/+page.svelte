@@ -33,7 +33,6 @@
 	// Memberships data
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let isLoading = $state(true);
-	let hasAttemptedLoad = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -166,23 +165,24 @@
 
 	// Use $effect to reactively load memberships when auth becomes ready
 	// This fixes the race condition where onMount runs before auth is initialized
+	// ICT 11+ Fix: Removed hasAttemptedLoad flag to ensure data loads on every page refresh
 	$effect(() => {
 		// Wait for auth to finish initializing
 		if ($isInitializing) {
+			isLoading = true;
 			return;
 		}
 
 		// If not authenticated, stop loading
 		if (!$isAuthenticated) {
 			isLoading = false;
+			membershipsData = null;
 			return;
 		}
 
-		// Load memberships once when authenticated
-		if (!hasAttemptedLoad) {
-			hasAttemptedLoad = true;
-			loadMemberships();
-		}
+		// Load memberships when authenticated
+		// This runs on every page load/refresh when user is authenticated
+		loadMemberships();
 	});
 
 	async function loadMemberships(): Promise<void> {
