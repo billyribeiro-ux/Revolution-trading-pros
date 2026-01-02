@@ -1119,6 +1119,7 @@ body.dark,
 		touch-action: pan-x;
 		-webkit-overflow-scrolling: touch;
 	}
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * DASHBOARD GLOBAL STYLES - Pixel Perfect Match to MasterDash Reference
