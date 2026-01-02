@@ -176,7 +176,6 @@
 
 <!-- Secondary Navigation Panel (appears when sidebar is collapsed) -->
 <CourseSecondaryNav
-	courseSlug="day-trading-room"
 	courseName="Day Trading Room"
 	menuItems={secondaryNavItems}
 />

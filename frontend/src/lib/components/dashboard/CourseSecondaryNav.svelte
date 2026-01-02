@@ -22,12 +22,11 @@
 	}
 
 	interface Props {
-		courseSlug: string;
 		courseName: string;
 		menuItems: NavItem[];
 	}
 
-	let { courseSlug, courseName, menuItems }: Props = $props();
+	let { courseName, menuItems }: Props = $props();
 
 	// Submenu state
 	let openSubmenu = $state<string | null>(null);
@@ -37,7 +36,7 @@
 	}
 </script>
 
-<nav class="dashboard__nav-secondary" role="navigation" aria-label="{courseName} Navigation">
+<nav class="dashboard__nav-secondary" aria-label="{courseName} Navigation">
 	<ul class="secondary-nav-list">
 		{#each menuItems as item}
 			<li class:has-submenu={item.submenu}>
