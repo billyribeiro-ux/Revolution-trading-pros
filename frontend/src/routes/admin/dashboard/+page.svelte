@@ -127,6 +127,10 @@
 
 	// Get stats for a specific room
 	function getStatsForRoom(roomId: string): RoomStats {
+		// Type check to ensure room exists in ROOMS config
+		const roomExists: Room | undefined = ROOMS.find(r => r.id === roomId);
+		if (!roomExists) console.warn(`Room ${roomId} not found in ROOMS config`);
+		
 		return roomStats.find(s => s.room_id === roomId) || {
 			room_id: roomId,
 			watchlist_count: 0,
@@ -170,6 +174,7 @@
 	}
 
 	onMount(() => {
+		if (!browser) return;
 		loadDashboard();
 		// Refresh every 60 seconds
 		refreshInterval = setInterval(loadDashboard, 60000);
@@ -243,7 +248,7 @@
 		{#if connectedCount === 0}
 			<div
 				class="alert-banner alert-warning"
-				in:fly={{ y: 20, duration: 400 }}
+				in:fade={{ duration: 300 }}
 			>
 				<div class="alert-icon warning">
 					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,7 +297,7 @@
 			<!-- Revenue Widget -->
 			<div
 				class="metric-widget metric-widget-emerald"
-				in:fly={{ y: 30, duration: 400, delay: 150, easing: quintOut }}
+				in:scale={{ duration: 400, delay: 150, start: 0.8 }}
 			>
 				<div class="metric-widget-inner">
 					<div class="flex items-center justify-between mb-4">
@@ -612,7 +617,7 @@
 		<!-- Quick Actions -->
 		<div
 			class="grid grid-cols-2 md:grid-cols-4 gap-4"
-			in:fly={{ y: 30, duration: 400, delay: 400, easing: quintOut }}
+			in:fly={{ y: 30, duration: 400, delay: 400, easing: backOut }}
 		>
 			<a href="/admin/settings" class="quick-action-card purple">
 				<div class="quick-action-icon purple">
