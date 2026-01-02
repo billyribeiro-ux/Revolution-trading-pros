@@ -512,7 +512,7 @@
 	.trading-room-rules__link {
 		display: block;
 		margin-bottom: 8px;
-		font-size: 16px;
+		font-size: 18px;
 		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
@@ -527,7 +527,7 @@
 
 	.trading-room-rules__disclaimer {
 		margin: 0;
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
