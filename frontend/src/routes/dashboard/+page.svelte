@@ -486,14 +486,14 @@
 	.dashboard__header-right {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-end;
+		align-items: center;
 		margin-top: 10px;
 	}
 
 	@media (min-width: 820px) {
 		.dashboard__header-right {
 			flex-direction: column;
-			align-items: flex-end;
+			align-items: center;
 			gap: 0;
 			margin-top: 0;
 		}
