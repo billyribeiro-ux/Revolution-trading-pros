@@ -837,7 +837,7 @@
 	.section-title {
 		color: #333;
 		font-size: 20px;
-		font-weight: 800;
+		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		margin: 0 0 30px;
 	}
@@ -929,7 +929,7 @@
 		display: inline-block;
 		vertical-align: middle;
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 800;
 		color: #333;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		white-space: normal;
