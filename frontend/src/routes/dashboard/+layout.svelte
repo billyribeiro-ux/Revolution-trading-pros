@@ -341,11 +341,15 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Collapsed Sidebar Hover Effect - DISABLED when secondary nav is visible
+	 * Collapsed Sidebar Hover Effect - DISABLED
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * 
+	 * REASON: Hover expansion in flex layout causes layout shift.
+	 * When sidebar is collapsed on membership pages, secondary nav is visible.
+	 * Hover expansion would conflict with secondary nav positioning.
+	 * 
+	 * WordPress behavior: No hover expansion when secondary nav is active.
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
-	/* Hover expansion ONLY when secondary nav is NOT present */
-	/* This prevents layout shift on membership pages */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Layout Container
