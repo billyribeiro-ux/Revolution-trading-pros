@@ -692,7 +692,11 @@
 	}
 
 	.btn-orange:hover {
-		background-color: #c56508;
+		background-color: #dc7309;
+	}
+
+	.btn-orange:hover strong {
+		color: #a85a00;
 	}
 
 	.btn-orange strong {
