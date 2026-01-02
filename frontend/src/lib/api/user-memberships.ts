@@ -548,11 +548,11 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 		{
 			id: 'mock-3',
 			name: 'Small Account Mentorship',
-			type: 'trading-room',
+			type: 'course',
 			slug: 'small-account-mentorship',
 			status: 'active',
 			membershipType: 'complimentary',
-			icon: 'school',
+			icon: 'users',
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
