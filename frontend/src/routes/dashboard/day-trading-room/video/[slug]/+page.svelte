@@ -10,7 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	// import { page } from '$app/stores'; // TODO: Will be used when fetching video data by slug
 	import CourseSecondaryNav from '$lib/components/dashboard/CourseSecondaryNav.svelte';
 
 	const secondaryNavItems = [
