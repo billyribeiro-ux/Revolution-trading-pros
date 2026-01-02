@@ -1,3 +1,7 @@
+<!--
+	URL: /chatroom-archive/[slug]/[date]
+-->
+
 <script lang="ts">
 	/**
 	 * Chatroom Archive - Dynamic Route

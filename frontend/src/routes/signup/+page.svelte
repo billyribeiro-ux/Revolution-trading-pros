@@ -1,3 +1,7 @@
+<!--
+	URL: /signup
+-->
+
 <script lang="ts">
 	/**
 	 * Signup Page - Svelte 5 Runes Implementation

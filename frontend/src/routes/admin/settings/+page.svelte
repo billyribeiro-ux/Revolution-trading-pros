@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/settings
+-->
+
 <script lang="ts">
 	/**
 	 * API Settings & Integrations - Apple ICT9+ Principal Engineer Grade

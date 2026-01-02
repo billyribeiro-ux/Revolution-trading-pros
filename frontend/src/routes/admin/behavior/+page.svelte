@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/behavior
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {

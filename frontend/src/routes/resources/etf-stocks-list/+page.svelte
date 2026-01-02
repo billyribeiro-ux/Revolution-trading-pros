@@ -1,3 +1,7 @@
+<!--
+	URL: /resources/etf-stocks-list
+-->
+
 <script lang="ts">
 	/**
 	 * ETF Stock List Page - Google L11 Enterprise Standard

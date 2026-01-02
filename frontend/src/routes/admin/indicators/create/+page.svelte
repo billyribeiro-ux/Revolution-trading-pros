@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/indicators/create
+-->
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { IconPhoto, IconX, IconSparkles, IconCheck } from '$lib/icons';

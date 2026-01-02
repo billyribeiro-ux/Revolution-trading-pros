@@ -1,3 +1,7 @@
+<!--
+	URL: /crm/contacts/[id]
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';

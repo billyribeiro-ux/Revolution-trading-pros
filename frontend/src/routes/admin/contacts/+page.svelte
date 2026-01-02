@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/contacts
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Table, Input, Select } from '$lib/components/ui';

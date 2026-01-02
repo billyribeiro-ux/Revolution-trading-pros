@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/forms/[id]/analytics
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
