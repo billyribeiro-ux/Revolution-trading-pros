@@ -692,11 +692,7 @@
 	}
 
 	.btn-orange:hover {
-		background-color: #dc7309;
-	}
-
-	.btn-orange:hover strong {
-		color: #a85a00;
+		background-color: #c56508;
 	}
 
 	.btn-orange strong {
@@ -952,8 +948,7 @@
 	}
 
 	.membership-card__actions a:hover {
-		color: #0984ae;
-		background-color: #f4f4f4;
+		color: #0a5a75;
 	}
 
 	.membership-card__actions a + a {
