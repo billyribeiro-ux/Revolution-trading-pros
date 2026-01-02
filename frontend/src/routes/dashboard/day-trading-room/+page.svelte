@@ -523,14 +523,6 @@
 		font-weight: 700;
 	}
 
-	.u--margin-bottom-0 {
-		margin-bottom: 0;
-	}
-
-	.u--font-size-sm {
-		font-size: 14px;
-	}
-
 	/* Article Cards Grid */
 	.article-cards {
 		display: grid;
