@@ -561,12 +561,22 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * PRIMARY NAVIGATION
+	 * WordPress CSS: width: 280px (default), width: 80px (collapsed)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-primary {
-		flex: 1;
+		width: 280px;
+		flex: 0 0 auto;
 		overflow-y: auto;
 		overflow-x: hidden;
+		background-color: #0f2d41;
+		min-height: 100vh;
+		transition: width 0.3s ease-in-out;
+	}
+
+	/* Collapsed state is on parent sidebar, so use descendant selector */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
+		width: 80px;
 	}
 
 	.dashboard__nav-primary > ul {
