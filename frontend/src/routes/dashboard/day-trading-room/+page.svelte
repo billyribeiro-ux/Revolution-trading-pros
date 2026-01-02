@@ -309,7 +309,7 @@
 						<h2 class="section-title-alt section-title-alt--underline">{weeklyWatchlist.title}</h2>
 						<div class="hidden-md d-lg-none pb-2">
 							<a href={weeklyWatchlist.url}>
-								<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist image" class="u--border-radius">
+								<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist" class="u--border-radius">
 							</a>
 						</div>
 						<h4 class="h5 u--font-weight-bold">{weeklyWatchlist.week} with {weeklyWatchlist.author}</h4>
