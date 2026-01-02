@@ -41,7 +41,8 @@
 	];
 
 	// Mock video data - will be replaced with API call
-	const slug = $page.params.slug;
+	// TODO: Fetch video data based on slug from API
+	// const slug = $page.params.slug;
 	
 	const video = {
 		title: 'Market Analysis: SPX 0DTE Strategy',
@@ -387,6 +388,7 @@
 	.u--hide-read-more {
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
+		line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
