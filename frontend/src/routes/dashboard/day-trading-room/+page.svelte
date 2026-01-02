@@ -320,7 +320,7 @@
 					</div>
 					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 						<a href={weeklyWatchlist.url}>
-							<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist image" class="u--border-radius">
+							<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist" class="u--border-radius">
 						</a>
 					</div>
 				</div>
