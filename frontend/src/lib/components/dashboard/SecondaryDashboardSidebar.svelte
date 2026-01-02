@@ -1,14 +1,14 @@
 <!--
-	Course Secondary Navigation - Appears when sidebar is collapsed
+	Secondary Dashboard Sidebar - Appears when main sidebar is collapsed
 	═══════════════════════════════════════════════════════════════════════════
 	
-	This component renders a 280px blue navigation panel that appears when:
-	- User is on a course-specific dashboard page
+	This component renders a 280px navigation panel that appears when:
+	- User is on a trading room or course-specific dashboard page
 	- Main sidebar is collapsed (80px)
 	
 	Based on MasterDash reference implementation from Simpler Trading.
 	
-	@version 1.0.0
+	@version 2.0.0 - Renamed from CourseSecondaryNav for clarity
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
