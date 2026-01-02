@@ -358,7 +358,7 @@
 				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 				<div class="watchlist-mobile-image">
 					<a href="/watchlist/current">
-						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="watchlist-image" />
+						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
 					</a>
 				</div>
 				<h4 class="watchlist-subtitle">Weekly Watchlist with David Starr</h4>
@@ -367,7 +367,7 @@
 			</div>
 			<div class="watchlist-col-right">
 				<a href="/watchlist/current">
-					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="watchlist-image" />
+					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
 				</a>
 			</div>
 		</div>
@@ -419,7 +419,7 @@
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		flex: 1;
 	}
 
