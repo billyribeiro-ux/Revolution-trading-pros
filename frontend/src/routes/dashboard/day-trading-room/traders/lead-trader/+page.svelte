@@ -47,6 +47,8 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<SecondaryDashboardSidebar courseName="Day Trading Room" menuItems={secondaryNavItems} />
+
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Lead Trader</h1>

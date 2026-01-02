@@ -1132,9 +1132,11 @@ body.dark,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * DASHBOARD GLOBAL STYLES
+ * DASHBOARD GLOBAL STYLES - Pixel Perfect Match to MasterDash Reference
+ * These styles apply to ALL dashboard pages for consistency
  * ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Dashboard Content Layout - Main + Sidebar Grid */
 .dashboard__content {
 	display: flex;
 	flex-direction: row;
@@ -1155,6 +1157,7 @@ body.dark,
 	padding: 0;
 }
 
+/* Dashboard Header */
 .dashboard__header {
 	display: flex;
 	flex-wrap: wrap;
@@ -1187,6 +1190,7 @@ body.dark,
 	font-family: var(--font-heading), 'Montserrat', sans-serif;
 }
 
+/* Dashboard Content Sections */
 .dashboard__content-section {
 	padding: 30px;
 }
@@ -1394,6 +1398,7 @@ body.dark,
 	padding-bottom: 0.5rem;
 }
 
+/* Responsive - Hide sidebar on mobile */
 @media (max-width: 1024px) {
 	.dashboard__content {
 		flex-direction: column;

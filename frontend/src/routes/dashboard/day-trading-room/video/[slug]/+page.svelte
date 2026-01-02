@@ -95,6 +95,8 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<SecondaryDashboardSidebar courseName="Day Trading Room" menuItems={secondaryNavItems} />
+
 <!-- Video Title Section -->
 <section id="dv-title" class="dv-section cpost-title-section cpost-section">
 	<div class="section-inner">

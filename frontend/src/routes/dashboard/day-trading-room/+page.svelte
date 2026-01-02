@@ -175,6 +175,12 @@
 
 <svelte:window onclick={handleClickOutside} />
 
+<!-- Secondary Navigation Panel (appears when sidebar is collapsed) -->
+<SecondaryDashboardSidebar
+	courseName="Day Trading Room"
+	menuItems={secondaryNavItems}
+/>
+
 <!-- ═══════════════════════════════════════════════════════════════════════════
 	 DASHBOARD HEADER
 	 ═══════════════════════════════════════════════════════════════════════════ -->
@@ -281,13 +287,13 @@
 							<a href={update.url}>{update.title}</a>
 						</h4>
 						
-						<div class="article-card__excerpt u--hide-read-more">
-							<p class="u--margin-bottom-0 u--font-size-sm"><i>With {update.author}</i></p>
-						</div>
-						
 						<span class="article-card__meta">
-							<small>{update.date}</small>
+							<small>{update.date} with {update.author}</small>
 						</span>
+						
+						<div class="article-card__excerpt">
+							<p>{update.excerpt}</p>
+						</div>
 						
 						<a href={update.url} class="btn btn-tiny btn-default">Watch Now</a>
 					</article>
@@ -358,163 +364,16 @@
 	 * Apple ICT 11+ Standards
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * LAYOUT - Dashboard Content Structure
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content {
-		display: flex;
-		flex-direction: row;
-		gap: 0;
-		width: 100%;
-		background: #f4f4f4;
-	}
-
-	.dashboard__content-main {
-		flex: 1 1 auto;
-		min-width: 0;
-		padding: 30px;
-	}
-
-	.dashboard__content-sidebar {
-		flex: 0 0 300px;
-		width: 300px;
-		background: #fff;
-		border-left: 1px solid #e5e5e5;
-		padding: 0;
-	}
-
-	/* Dashboard Header */
-	.dashboard__header {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
-		padding: 30px;
-		background: #fff;
-		border-bottom: 1px solid #e5e5e5;
-	}
-
-	.dashboard__header-left {
-		display: flex;
-		align-items: center;
-		gap: 15px;
-		flex: 1;
-	}
-
-	.dashboard__header-right {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 10px;
-	}
-
-	.dashboard__page-title {
-		margin: 0;
-		color: #333;
-		font-size: 36px;
-		font-weight: 700;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	/* Dashboard Content Sections */
-	.dashboard__content-section {
-		padding: 0 0 30px 0;
-	}
-
-	.dashboard__content-section-member {
-		padding: 0 0 30px 0;
-	}
-
-	/* Content Sidebar Sections */
-	.content-sidebar__section {
-		padding: 30px;
-		border-bottom: 1px solid #e5e5e5;
-	}
-
-	.content-sidebar__section:last-child {
-		border-bottom: none;
-	}
-
-	.content-sidebar__heading {
-		font-size: 16px;
-		font-weight: 700;
-		text-transform: uppercase;
-		color: #191717;
-		margin: 0 0 15px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	/* Link Lists in Sidebar */
-	.link-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.link-list li {
-		margin-bottom: 10px;
-	}
-
-	.link-list a {
-		color: #143E59;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 600;
-		transition: color 0.2s ease;
-	}
-
-	.link-list a:hover {
-		color: #0a5a75;
-		text-decoration: underline;
-	}
-
-	/* Section Titles */
-	.section-title {
-		font-size: 28px;
-		font-weight: 800;
-		color: #191717;
-		margin: 0 0 20px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	.section-title-alt {
-		font-size: 28px;
-		font-weight: 800;
-		color: #191717;
-		margin: 0 0 16px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	.section-title-alt--underline {
-		border-bottom: 3px solid #143E59;
-		padding-bottom: 12px;
-		display: inline-block;
-	}
-
 	/* Welcome Video Section */
+	.dashboard__content-section-member {
+		margin-bottom: 40px;
+	}
+
 	.welcome-video {
 		background: #fff;
 		border-radius: 8px;
 		padding: 20px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
-
-	/* Utility Classes */
-	.u--background-color-white {
-		background-color: #fff;
-	}
-
-	.u--border-radius {
-		border-radius: 8px;
-	}
-
-	.u--hide-read-more p {
-		margin: 0;
-	}
-
-	.u--font-weight-bold {
-		font-weight: 700;
 	}
 
 	/* Article Cards Grid */
@@ -653,19 +512,6 @@
 	/* Sidebar Links - Removed (using global .link-list from app.css) */
 
 	/* Responsive Design */
-	@media (max-width: 1024px) {
-		.dashboard__content {
-			flex-direction: column;
-		}
-
-		.dashboard__content-sidebar {
-			flex: 1 1 auto;
-			width: 100%;
-			border-left: none;
-			border-top: 1px solid #e5e5e5;
-		}
-	}
-
 	@media (max-width: 768px) {
 		.article-cards {
 			grid-template-columns: 1fr;
@@ -681,30 +527,6 @@
 			width: 100%;
 			flex-direction: column;
 			align-items: stretch;
-		}
-	}
-
-	@media (min-width: 1280px) {
-		.dashboard__header {
-			padding: 30px;
-		}
-
-		.dashboard__content-section {
-			padding-bottom: 30px;
-		}
-
-		.dashboard__content-section-member {
-			padding-bottom: 30px;
-		}
-	}
-
-	@media (min-width: 1440px) {
-		.dashboard__header {
-			padding: 30px 40px;
-		}
-
-		.dashboard__content-main {
-			padding: 40px;
 		}
 	}
 </style>
