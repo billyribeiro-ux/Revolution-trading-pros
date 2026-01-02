@@ -57,10 +57,11 @@
 
     /**
      * Animation Controller
+     * ICT 11+: Prefixed with _ as these are template-only (bind:this) variables
      */
-    let heroContainer: HTMLElement | undefined;
-    let gridRef: HTMLElement | undefined;
-    let benefitsRef: HTMLElement | undefined;
+    let _heroContainer: HTMLElement | undefined;
+    let _gridRef: HTMLElement | undefined;
+    let _benefitsRef: HTMLElement | undefined;
     let ctaRef: HTMLElement | undefined;
 
     /**
@@ -374,7 +375,7 @@
 
     <main class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
         
-        <section bind:this={heroContainer} class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24">
+        <section bind:this={_heroContainer} class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24">
             
             <div class="hero-grid-plane absolute inset-0 pointer-events-none opacity-0">
                 <div class="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] z-10"></div>
@@ -437,7 +438,7 @@
         </section>
 
 
-        <div bind:this={gridRef} id="rooms-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32">
+        <div bind:this={_gridRef} id="rooms-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32">
             {#each rooms as room}
                 <article use:tilt class="group relative h-full card-3d" role="region" aria-label={room.name}>
                     <div class={`absolute -inset-[1px] rounded-3xl bg-gradient-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
@@ -554,7 +555,7 @@
                     We don't just sell courses. We build institutional-grade traders through immersion, technology, and community.
                 </p>
             </div>
-            <div bind:this={benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div bind:this={_benefitsRef} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {#each benefits as item}
                     <div class="p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors duration-300 text-center group cursor-default">
                         <div class="mx-auto w-12 h-12 mb-6 text-zinc-400 group-hover:text-blue-400 transition-colors duration-300">

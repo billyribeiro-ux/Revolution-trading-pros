@@ -29,7 +29,8 @@
 	} from '$lib/icons';
 
 	let showUploadModal = false;
-	let showCreateFolderModal = false;
+	// TODO: Implement CreateFolderModal component
+	// let showCreateFolderModal = false;
 	let searchQuery = '';
 	let selectedFileType = 'all';
 
@@ -107,7 +108,10 @@
 			<FolderTree
 				currentFolderId={$mediaStore.currentFolder}
 				onFolderSelect={handleFolderSelect}
-				onCreateFolder={() => (showCreateFolderModal = true)}
+				onCreateFolder={() => {
+					// TODO: Implement CreateFolderModal
+					console.warn('Create folder modal not yet implemented');
+				}}
 			/>
 		</aside>
 

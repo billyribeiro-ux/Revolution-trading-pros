@@ -20,7 +20,7 @@
 	import { page } from '$app/stores';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
 	import { initPerformanceMonitoring } from '$lib/utils/performance';
-	import { isAdminUser, authStore } from '$lib/stores/auth';
+	import { isAdminUser } from '$lib/stores/auth';
 	import { initializeAuth } from '$lib/api/auth';
 	import type { Snippet } from 'svelte';
 
