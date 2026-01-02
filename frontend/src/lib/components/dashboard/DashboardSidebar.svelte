@@ -121,13 +121,13 @@
 		return links;
 	});
 
-	let masteryLinks = $derived.by(() => {
+	let mentorshipLinks = $derived.by(() => {
 		const links: NavLink[] = [];
 		const memberships = user.memberships ?? [];
 
 		for (const membership of memberships) {
-			// Exclude Small Account Mentorship from Mastery section
-			if (membership.type === 'course' && membership.slug !== 'small-account-mentorship') {
+			// Show all courses in Mentorship section
+			if (membership.type === 'course') {
 				links.push({
 					href: `/dashboard/${membership.slug}/`,
 					icon: membership.icon ?? 'book',
@@ -157,24 +157,6 @@
 		return links;
 	});
 
-	let mentorshipLinks = $derived.by(() => {
-		const links: NavLink[] = [];
-		const memberships = user.memberships ?? [];
-
-		for (const membership of memberships) {
-			// Show mentorship programs (e.g., Small Account Mentorship)
-			if (membership.type === 'course' && membership.slug === 'small-account-mentorship') {
-				links.push({
-					href: `/dashboard/${membership.slug}/`,
-					icon: membership.icon ?? 'users',
-					text: membership.name
-				});
-			}
-		}
-
-		return links;
-	});
-
 	const toolsLinks: NavLink[] = [
 		{ href: '/dashboard/weekly-watchlist/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
 		{ href: 'https://support.revolutiontradingpros.com/', icon: 'support', text: 'Support', external: true }
@@ -187,7 +169,6 @@
 	// All navigation sections for secondary sidebar
 	let allSections = $derived([
 		{ title: 'memberships', links: tradingRoomLinks },
-		{ title: 'mastery', links: masteryLinks },
 		{ title: 'mentorship', links: mentorshipLinks },
 		{ title: 'scanners', links: scannerLinks },
 		{ title: 'tools', links: toolsLinks }
@@ -252,14 +233,14 @@
 			</ul>
 		{/if}
 
-		<!-- Mastery Section (Courses) -->
-		{#if masteryLinks.length > 0}
+		<!-- Mentorship Section (Courses) -->
+		{#if mentorshipLinks.length > 0}
 			<ul>
 				<li>
-					<p class="dashboard__nav-category">mastery</p>
+					<p class="dashboard__nav-category">mentorship</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each masteryLinks as link}
+					{#each mentorshipLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">

@@ -105,34 +105,7 @@
 		return cards;
 	});
 
-	// Mastery cards - Courses (excluding mentorship)
-	const masteryCards = $derived.by(() => {
-		const cards: {
-			name: string;
-			href: string;
-			icon: string;
-			variant: string;
-			tradingRoom?: string;
-		}[] = [];
-
-		const courseData = membershipsData?.courses ?? [];
-		for (const course of courseData) {
-			// Exclude Small Account Mentorship from Mastery section
-			if (course.status === 'active' && course.slug !== 'small-account-mentorship') {
-				cards.push({
-					name: course.name,
-					href: `/dashboard/${course.slug}`,
-					icon: course.icon ?? 'book',
-					variant: 'growth',
-					tradingRoom: course.accessUrl
-				});
-			}
-		}
-
-		return cards;
-	});
-
-	// Mentorship cards - Small Account Mentorship only
+	// Mentorship cards - All courses (main education section)
 	const mentorshipCards = $derived.by(() => {
 		const cards: {
 			name: string;
@@ -144,13 +117,13 @@
 
 		const courseData = membershipsData?.courses ?? [];
 		for (const course of courseData) {
-			// Only show Small Account Mentorship
-			if (course.status === 'active' && course.slug === 'small-account-mentorship') {
+			// Show all active courses in Mentorship section
+			if (course.status === 'active') {
 				cards.push({
 					name: course.name,
 					href: `/dashboard/${course.slug}`,
-					icon: course.icon ?? 'users',
-					variant: 'training',
+					icon: course.icon ?? 'book',
+					variant: course.slug === 'small-account-mentorship' ? 'training' : 'growth',
 					tradingRoom: course.accessUrl
 				});
 			}
@@ -330,12 +303,12 @@
 		</section>
 	{/if}
 
-	<!-- Mastery Section -->
-	{#if masteryCards.length > 0}
+	<!-- Mentorship Section -->
+	{#if mentorshipCards.length > 0}
 		<section class="dashboard__content-section">
-			<h2 class="section-title">Mastery</h2>
+			<h2 class="section-title">Mentorship</h2>
 			<div class="membership-cards">
-				{#each masteryCards as card}
+				{#each mentorshipCards as card}
 					<div class="membership-card-col">
 						<article class="membership-card membership-card--{card.variant}">
 							<a href={card.href} class="membership-card__header">
@@ -451,7 +424,7 @@
 	</section>
 
 	<!-- Empty State - No Memberships -->
-	{#if membershipCards.length === 0 && masteryCards.length === 0}
+	{#if membershipCards.length === 0 && mentorshipCards.length === 0}
 		<section class="dashboard__content-section">
 			<div class="empty-state">
 				<h2 class="empty-state__title">Welcome, {userName}!</h2>
