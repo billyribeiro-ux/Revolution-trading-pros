@@ -248,24 +248,29 @@
 					></div>
 				{/if}
 			</div>
+
+			<!-- Trading Room Rules - Legal Compliance -->
+			<div class="trading-room-rules">
+				<a
+					href="/trading-room-rules.pdf"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="trading-room-rules__link"
+				>
+					Trading Room Rules
+				</a>
+				<p class="trading-room-rules__disclaimer">
+					By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+				</p>
+			</div>
 		{/if}
-		
-		<!-- Trading Room Rules - Legal Compliance -->
-		<div class="trading-room-rules">
-			<a
-				href="/trading-room-rules.pdf"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="trading-room-rules__link"
-			>
-				Trading Room Rules
-			</a>
-			<p class="trading-room-rules__disclaimer">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</p>
-		</div>
 	</div>
 </header>
+
+<!-- Divider - WordPress Match -->
+<div class="dashboard-divider">
+	<div class="dashboard-divider__line"></div>
+</div>
 
 <!-- Dashboard Content -->
 {#if !isLoading}
@@ -448,6 +453,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD DIVIDER - WordPress Exact Match
+	 * Source: DashboardHome Implementation
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard-divider {
+		background-color: #ffffff;
+		padding: 0 20px;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard-divider {
+			padding: 0 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard-divider {
+			padding: 0 40px;
+		}
+	}
+
+	.dashboard-divider__line {
+		border-top-width: 1px;
+		border-top-style: solid;
+		border-top-color: #cccccc;
+		max-width: 100%;
+		margin: 10px auto 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * TRADING ROOM RULES - Legal Compliance (WordPress Match)
 	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
 	 * ═══════════════════════════════════════════════════════════════════════════ */
@@ -459,14 +494,13 @@
 
 	.trading-room-rules__link {
 		display: block;
-		padding: 6px 12px;
+		margin-bottom: 8px;
 		font-size: 16px;
 		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
-		margin-bottom: 8px;
 	}
 
 	.trading-room-rules__link:hover {
@@ -476,23 +510,11 @@
 
 	.trading-room-rules__disclaimer {
 		margin: 0;
-		padding: 0;
-		font-size: 13px;
+		font-size: 11px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
 		line-height: 1.4;
-		max-width: 280px;
-	}
-
-	@media (max-width: 819px) {
-		.trading-room-rules {
-			margin-top: 10px;
-		}
-		
-		.trading-room-rules__disclaimer {
-			max-width: 100%;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
