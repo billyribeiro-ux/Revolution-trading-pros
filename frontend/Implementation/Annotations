@@ -1,0 +1,1464 @@
+<style type="text/css" id="wp-custom-css">
+			/* Fix Main nav shift 
+.main-navigation .inside-navigation.grid-container.grid-parent {
+    display: flex;
+	justify-content: space-around;
+}*/
+
+/* Hide Trade Quiz on product/product-category/courses */
+section.quiz-banner {
+    display: none;
+}
+
+/* Hide Courses Banner /product/product-category/courses*/
+div[data-post-id="1647830"] {
+    display: none;
+}
+
+#ecomm_mktg_ifr {
+	display: none;
+}
+.main-navigation .navigation-logo>a {
+	background: none!important;
+}
+.main-navigation .navigation-logo>a>img {
+	opacity: 1!important;
+	visibility: visible!important;
+}
+/* product template temp fix -- move to theme/template -- */
+.product-sidebar-inner .video-thumb .video-play-icon:after {
+    content: "Click to Play";
+    position: relative;
+    font-size: 17px;
+    margin: 0px -50px;
+    text-shadow: 0 0 7px #000;
+}
+
+/* main menu updates -- move to theme/template --*/
+
+.dashboard__nav-secondary .dashboard__nav-item-icon.st-icon-training-room {
+    font-size: 20px!important;
+}
+.dashboard__nav-item-icon.st-icon-training-room {
+    font-size: 26px!important;
+}
+.dashboard__nav-item-icon.st-icon-stacked-profits {
+	font-size:40px!important;
+}
+
+.menu-item-cart {
+    min-width: auto!important;
+	max-width: 50px!important;
+}
+li.menu-item-cart:hover, .menu-item-cart a:hover {
+background: #0a2436!important; 
+}
+span.dropdown-menu-toggle {
+    padding: 0!important;
+}
+.sub-menu li>a {
+    padding: 0px 0px!important;
+    text-align: left;
+}
+
+.premium-newsletter-nav-item a:before {
+    content:'';
+	background-image: url(https://cdn.simplertrading.com/images/icons/premium-newsletter-icon.svg);
+	background-size: contain;
+	background-position: center;
+    width: 18px;
+	height: 50px;
+	background-repeat: no-repeat;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+.day-nav-item a:before {
+   content:'';
+	background-image: url(https://cdn.simplertrading.com/images/icons/simpler-day-trading-room-icon.svg);
+	background-size: 100%;
+	background-position: center;
+    width: 18px;
+	height: 50px;
+	background-repeat: no-repeat;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+.foundation-nav-item a:before {
+    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/foundation-icon.svg);
+    width: 18px;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+.mastery-nav-item a:before {
+    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/mastery-icon.svg);
+    width: 18px;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+.options-nav-item a:before {
+    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/options-icon.svg);
+    width: 18px;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+.futures-nav-item a:before {
+    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/futures-icon.svg);
+    width: 18px;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+.fibonacci-nav-item a:before {
+    content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/fibonacci-icon.svg);
+    width: 18px;
+    position: relative;
+    float: left;
+    line-height: 54px;
+    vertical-align: bottom;
+    margin-right: 5px;
+}
+
+/*
+	===============================================================================
+	NAVIGATION ICON SYSTEM - CLOUD-BASED SVG INFRASTRUCTURE
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Cloud-based SVG icon system providing scalable, high-performance
+	navigation elements with CDN delivery and caching optimization.
+	
+	CDN INFRASTRUCTURE:
+	- Provider: Amazon S3 (cloud-streaming.s3.amazonaws.com)
+	- Asset Path: /inc/SVG/[icon-name].svg
+	- Protocol: HTTPS with TLS encryption
+	- Caching: Browser and CDN caching headers optimized
+	
+	ICON SYSTEM SPECIFICATIONS:
+	- Format: Scalable Vector Graphics (SVG)
+	- Dimensions: 18px width with responsive scaling
+	- Positioning: Relative positioning with float layout
+	- Line Height: 54px for consistent vertical alignment
+	
+	NAVIGATION COMPONENTS:
+	- Scanner Navigation: Trading scanner tools access
+	- Edge Navigation: Market edge analysis tools
+	- Bias Navigation: Market bias indicators
+	- Performance: Hardware-accelerated CSS transforms
+	
+	PERFORMANCE OPTIMIZATIONS:
+	- SVG format for resolution independence
+	- CDN delivery for reduced latency
+	- CSS float positioning for efficient rendering
+	- Hover states with background color transitions
+	===============================================================================
+	*/
+
+	/* Trading Tools Navigation Icons */
+	.scanner-nav-item a:before {
+		content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/scanner-icon.svg);
+		width: 18px;
+		position: relative;
+		float: left;
+		line-height: 54px;
+		vertical-align: bottom;
+		margin-right: 5px;
+	}
+	.edge-nav-item a:before {
+		content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/edge-icon.svg);
+		width: 18px;
+		position: relative;
+		float: left;
+		line-height: 54px;
+		vertical-align: bottom;
+		margin-right: 5px;
+	}
+	.bias-nav-item a:before {
+		content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/bias-icon.svg);
+		width: 18px;
+		position: relative;
+		float: left;
+		line-height: 54px;
+		vertical-align: bottom;
+		margin-right: 5px;
+	}
+
+	/*
+	===============================================================================
+	INTERACTIVE NAVIGATION STATES - USER EXPERIENCE ENHANCEMENT
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Interactive navigation system providing visual feedback for user
+	interactions through CSS hover and active states with smooth transitions.
+	
+	INTERACTION DESIGN:
+	- Hover State: #e9ebed background color for visual feedback
+	- Active State: Maintained hover state for touch devices
+	- Transition: Smooth color transitions for enhanced UX
+	- Accessibility: Keyboard navigation support
+	
+	PERFORMANCE CONSIDERATIONS:
+	- CSS-only transitions for hardware acceleration
+	- Minimal repaints and reflows for smooth performance
+	- Touch device optimization for mobile experience
+	- Progressive enhancement for older browsers
+	
+	USER EXPERIENCE FEATURES:
+	- Visual feedback for user actions
+	- Consistent interaction patterns
+	- Accessibility compliance with keyboard navigation
+	- Mobile-friendly touch targets
+	===============================================================================
+	*/
+
+	/* Interactive Navigation States */
+	.sub-menu li:hover, .sub-menu li:active {
+		background: #e9ebed;
+	}
+
+	/*
+	===============================================================================
+	MOBILE NAVIGATION SYSTEM - RESPONSIVE DESIGN IMPLEMENTATION
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Responsive mobile navigation system providing touch-friendly interface
+	for mobile devices with hamburger menu and gesture support.
+	
+	MOBILE OPTIMIZATION:
+	- Touch Targets: 20px padding for finger-friendly interaction
+	- Menu Toggle: Hamburger icon for mobile navigation
+	- Responsive Design: Adaptive layout for screen sizes
+	- Performance: Optimized for mobile processors
+	
+	ICON ROTATION SYSTEM:
+	- Transform: 90-degree rotation for menu state indication
+	- Browser Support: WebKit, MS, and standard transform properties
+	- Hardware Acceleration: GPU-accelerated CSS transforms
+	- Animation: Smooth rotation transitions
+	
+	ACCESSIBILITY FEATURES:
+	- Semantic HTML structure for screen readers
+	- Touch-friendly target sizes (44px minimum)
+	- Keyboard navigation support
+	- High contrast mode compatibility
+	===============================================================================
+	*/
+
+	/* Mobile Navigation Toggle */
+	.menu-toggle {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	/* Menu Phone Icon - Mobile Navigation Indicator */
+	.fa-cust-rotate-90{
+		-webkit-transform: rotate(90deg);
+		-ms-transform: rotate(90deg);
+		transform: rotate(90deg);
+	}
+
+	/*
+	===============================================================================
+	ICON COLOR SYSTEM - BRAND CONSISTENCY AND VISUAL HIERARCHY
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Comprehensive icon color system maintaining brand consistency
+	and providing visual hierarchy for navigation elements.
+	
+	COLOR SYSTEM SPECIFICATIONS:
+	- Primary Blue: #0f6ac4 (Brand primary color)
+	- Hover White: #ffffff (Interactive state)
+	- Transition: Smooth color transitions for UX
+	- Accessibility: WCAG AA compliance for contrast ratios
+	
+	VISUAL HIERARCHY:
+	- Default State: Blue icons for brand recognition
+	- Hover State: White icons for interactive feedback
+	- Active State: Maintained hover state for consistency
+	- Focus State: Outline support for keyboard navigation
+	
+	PERFORMANCE OPTIMIZATIONS:
+	- CSS transitions for smooth color changes
+	- Hardware acceleration for rendering
+	- Minimal DOM manipulation for performance
+	- Cross-browser compatibility ensured
+	===============================================================================
+	*/
+
+	/* Navigation Icon Color System */
+	.main-navigation ul>li.menu-item>a .blue_icon{
+		color: #0f6ac4;
+	}
+	.main-navigation ul>li.menu-item>a:hover .blue_icon {
+		color: #fff;
+	}
+
+	/*
+	===============================================================================
+	RESPONSIVE NAVIGATION LAYOUT - MOBILE-FIRST DESIGN SYSTEM
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Responsive navigation layout system implementing mobile-first design
+	principles with adaptive breakpoints and flexible grid systems.
+	
+	MOBILE-FIRST STRATEGY:
+	- Base Styles: Optimized for mobile devices (320px+)
+	- Progressive Enhancement: Enhanced experience for larger screens
+	- Breakpoint System: 768px tablet breakpoint for layout changes
+	- Flexible Units: Relative units for scalability
+	
+	LAYOUT OPTIMIZATIONS:
+	- Menu Items: Auto width adjustment for content-based sizing
+	- Navigation Logo: Responsive image scaling for brand consistency
+	- Grid System: Flexible layout adaptation
+	- Performance: Optimized rendering for mobile processors
+	
+	BREAKPOINT SPECIFICATIONS:
+	- Mobile: 320px - 767px (Base styles)
+	- Tablet: 768px - 1023px (Enhanced layout)
+	- Desktop: 1024px+ (Full feature set)
+	- High-DPI: Retina display optimization
+	
+	PERFORMANCE CONSIDERATIONS:
+	- CSS Media Queries for efficient responsive design
+	- Hardware acceleration for smooth transitions
+	- Optimized images for different screen densities
+	- Minimal JavaScript for layout changes
+	===============================================================================
+	*/
+
+	/* Responsive Navigation Layout */
+	#menu-header-menu-2023 > li {
+		min-width: auto !important;
+	}
+
+	/* Tablet and Desktop Responsive Design */
+	@media screen and (min-width: 768px){
+		.main-navigation .navigation-logo>a>img {
+			width: auto !important;
+		}
+	} 
+
+	/*
+	===============================================================================
+	END OF NAVIGATION AND LAYOUT CSS SECTION
+	===============================================================================
+	Next Section: Custom JavaScript Functionality and Interactive Components
+	===============================================================================
+	*/
+
+    ===============================================================================
+	NAVIGATION ICON SYSTEM - CLOUD-BASED SVG INFRASTRUCTURE
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Cloud-based SVG icon system providing scalable, high-performance
+	navigation elements with CDN delivery and caching optimization.
+	
+	CDN INFRASTRUCTURE:
+	- Provider: Amazon S3 (cloud-streaming.s3.amazonaws.com)
+	- Asset Path: /inc/SVG/[icon-name].svg
+	- Protocol: HTTPS with TLS encryption
+	- Caching: Browser and CDN caching headers optimized
+	
+	ICON SYSTEM SPECIFICATIONS:
+	- Format: Scalable Vector Graphics (SVG)
+	- Dimensions: 18px width with responsive scaling
+	- Positioning: Relative positioning with float layout
+	- Line Height: 54px for consistent vertical alignment
+	
+	NAVIGATION COMPONENTS:
+	- Scanner Navigation: Trading scanner tools access
+	- Edge Navigation: Market edge analysis tools
+	- Bias Navigation: Market bias indicators
+	- Performance: Hardware-accelerated CSS transforms
+	
+	PERFORMANCE OPTIMIZATIONS:
+	- SVG format for resolution independence
+	- CDN delivery for reduced latency
+	- CSS float positioning for efficient rendering
+	- Hover states with background color transitions
+	===============================================================================
+	*/
+
+	/* Trading Tools Navigation Icons */
+	.scanner-nav-item a:before {
+		content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/scanner-icon.svg);
+		width: 18px;
+		position: relative;
+		float: left;
+		line-height: 54px;
+		vertical-align: bottom;
+		margin-right: 5px;
+	}
+	.edge-nav-item a:before {
+		content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/edge-icon.svg);
+		width: 18px;
+		position: relative;
+		float: left;
+		line-height: 54px;
+		vertical-align: bottom;
+		margin-right: 5px;
+	}
+	.bias-nav-item a:before {
+		content: url(https://cloud-streaming.s3.amazonaws.com/inc/SVG/bias-icon.svg);
+		width: 18px;
+		position: relative;
+		float: left;
+		line-height: 54px;
+		vertical-align: bottom;
+		margin-right: 5px;
+	}
+
+	/*
+	===============================================================================
+	INTERACTIVE NAVIGATION STATES - USER EXPERIENCE ENHANCEMENT
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Interactive navigation system providing visual feedback for user
+	interactions through CSS hover and active states with smooth transitions.
+	
+	INTERACTION DESIGN:
+	- Hover State: #e9ebed background color for visual feedback
+	- Active State: Maintained hover state for touch devices
+	- Transition: Smooth color transitions for enhanced UX
+	- Accessibility: Keyboard navigation support
+	
+	PERFORMANCE CONSIDERATIONS:
+	- CSS-only transitions for hardware acceleration
+	- Minimal repaints and reflows for smooth performance
+	- Touch device optimization for mobile experience
+	- Progressive enhancement for older browsers
+	
+	USER EXPERIENCE FEATURES:
+	- Visual feedback for user actions
+	- Consistent interaction patterns
+	- Accessibility compliance with keyboard navigation
+	- Mobile-friendly touch targets
+	===============================================================================
+	*/
+
+	/* Interactive Navigation States */
+	.sub-menu li:hover, .sub-menu li:active {
+		background: #e9ebed;
+	}
+
+	/*
+	===============================================================================
+	MOBILE NAVIGATION SYSTEM - RESPONSIVE DESIGN IMPLEMENTATION
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Responsive mobile navigation system providing touch-friendly interface
+	for mobile devices with hamburger menu and gesture support.
+	
+	MOBILE OPTIMIZATION:
+	- Touch Targets: 20px padding for finger-friendly interaction
+	- Menu Toggle: Hamburger icon for mobile navigation
+	- Responsive Design: Adaptive layout for screen sizes
+	- Performance: Optimized for mobile processors
+	
+	ICON ROTATION SYSTEM:
+	- Transform: 90-degree rotation for menu state indication
+	- Browser Support: WebKit, MS, and standard transform properties
+	- Hardware Acceleration: GPU-accelerated CSS transforms
+	- Animation: Smooth rotation transitions
+	
+	ACCESSIBILITY FEATURES:
+	- Semantic HTML structure for screen readers
+	- Touch-friendly target sizes (44px minimum)
+	- Keyboard navigation support
+	- High contrast mode compatibility
+	===============================================================================
+	*/
+
+	/* Mobile Navigation Toggle */
+	.menu-toggle {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	/* Menu Phone Icon - Mobile Navigation Indicator */
+	.fa-cust-rotate-90{
+		-webkit-transform: rotate(90deg);
+		-ms-transform: rotate(90deg);
+		transform: rotate(90deg);
+	}
+
+	/*
+	===============================================================================
+	ICON COLOR SYSTEM - BRAND CONSISTENCY AND VISUAL HIERARCHY
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Comprehensive icon color system maintaining brand consistency
+	and providing visual hierarchy for navigation elements.
+	
+	COLOR SYSTEM SPECIFICATIONS:
+	- Primary Blue: #0f6ac4 (Brand primary color)
+	- Hover White: #ffffff (Interactive state)
+	- Transition: Smooth color transitions for UX
+	- Accessibility: WCAG AA compliance for contrast ratios
+	
+	VISUAL HIERARCHY:
+	- Default State: Blue icons for brand recognition
+	- Hover State: White icons for interactive feedback
+	- Active State: Maintained hover state for consistency
+	- Focus State: Outline support for keyboard navigation
+	
+	PERFORMANCE OPTIMIZATIONS:
+	- CSS transitions for smooth color changes
+	- Hardware acceleration for rendering
+	- Minimal DOM manipulation for performance
+	- Cross-browser compatibility ensured
+	===============================================================================
+	*/
+
+	/* Navigation Icon Color System */
+	.main-navigation ul>li.menu-item>a .blue_icon{
+		color: #0f6ac4;
+	}
+	.main-navigation ul>li.menu-item>a:hover .blue_icon {
+		color: #fff;
+	}
+
+	/*
+	===============================================================================
+	RESPONSIVE NAVIGATION LAYOUT - MOBILE-FIRST DESIGN SYSTEM
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Responsive navigation layout system implementing mobile-first design
+	principles with adaptive breakpoints and flexible grid systems.
+	
+	MOBILE-FIRST STRATEGY:
+	- Base Styles: Optimized for mobile devices (320px+)
+	- Progressive Enhancement: Enhanced experience for larger screens
+	- Breakpoint System: 768px tablet breakpoint for layout changes
+	- Flexible Units: Relative units for scalability
+	
+	LAYOUT OPTIMIZATIONS:
+	- Menu Items: Auto width adjustment for content-based sizing
+	- Navigation Logo: Responsive image scaling for brand consistency
+	- Grid System: Flexible layout adaptation
+	- Performance: Optimized rendering for mobile processors
+	
+	BREAKPOINT SPECIFICATIONS:
+	- Mobile: 320px - 767px (Base styles)
+	- Tablet: 768px - 1023px (Enhanced layout)
+	- Desktop: 1024px+ (Full feature set)
+	- High-DPI: Retina display optimization
+	
+	PERFORMANCE CONSIDERATIONS:
+	- CSS Media Queries for efficient responsive design
+	- Hardware acceleration for smooth transitions
+	- Optimized images for different screen densities
+	- Minimal JavaScript for layout changes
+	===============================================================================
+	*/
+
+	/* Responsive Navigation Layout */
+	#menu-header-menu-2023 > li {
+		min-width: auto !important;
+	}
+
+	/* Tablet and Desktop Responsive Design */
+	@media screen and (min-width: 768px){
+		.main-navigation .navigation-logo>a>img {
+			width: auto !important;
+		}
+	} 
+
+	/*
+	===============================================================================
+	END OF NAVIGATION AND LAYOUT CSS SECTION
+	===============================================================================
+	Next Section: Custom JavaScript Functionality and Interactive Components
+	===============================================================================
+	*/
+
+
+
+    /*
+	===============================================================================
+	MOBILE RESPONSIVE DESIGN SYSTEM - TABLET AND MOBILE OPTIMIZATION
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Comprehensive mobile responsive design system optimizing user experience
+	for tablet and mobile devices with adaptive layouts and touch interactions.
+	
+	MOBILE BREAKPOINT STRATEGY:
+	- Tablet Breakpoint: 950px maximum width
+	- Mobile Optimization: Touch-friendly interface elements
+	- Progressive Enhancement: Feature adaptation based on screen size
+	- Performance Optimization: Reduced resource usage for mobile devices
+	
+	CART SYSTEM OPTIMIZATION:
+	- Cart Item: Max-width removal for flexible layout
+	- Touch Targets: Optimized for finger interaction
+	- Layout Adaptation: Content-based sizing
+	- Visual Hierarchy: Prioritized mobile experience
+	
+	NAVIGATION ADAPTATIONS:
+	- Font Size: 14px for improved mobile readability
+	- Padding: 19px horizontal padding for touch targets
+	- Menu Items: Optimized spacing for mobile interaction
+	- Sub-menu: Left-aligned text for mobile consistency
+	
+	USER EXPERIENCE FEATURES:
+	- Touch-Friendly: 44px minimum touch targets
+	- Readability: Optimized font sizes and spacing
+	- Navigation: Streamlined mobile menu structure
+	- Performance: Optimized rendering for mobile processors
+	===============================================================================
+	*/
+
+	/* Mobile Responsive Design - Tablet and Mobile Optimization */
+	@media (max-width: 950px) {
+		.menu-item-cart {
+			max-width: none!important;
+		}	
+		.main-navigation ul>li>a {
+			font-size: 14px;
+			padding: 0 19px!important;
+		}
+		.sub-menu li a {
+			text-align: left;
+	}
+}
+
+	/*
+	===============================================================================
+	INTERMEDIATE BREAKPOINT SYSTEM - DESKTOP OPTIMIZATION
+	===============================================================================
+	ARCHITECTURAL OVERVIEW:
+	Intermediate responsive breakpoint system optimizing layout for
+	desktop and large tablet devices with adaptive menu systems.
+	
+	BREAKPOINT HIERARCHY:
+	- Small Desktop: 1120px maximum width
+	- Large Desktop: 1300px maximum width
+	- Progressive Enhancement: Feature adaptation based on available space
+	- Layout Optimization: Content-driven sizing strategies
+	
+	MENU SYSTEM ADAPTATIONS:
+	- Homepage Menu 2020: Flexible width removal for content adaptation
+	- Menu Items: Auto-width based on content requirements
+	- Layout Flexibility: Responsive to content length variations
+	- Visual Consistency: Maintained design integrity across sizes
+	
+	PERFORMANCE OPTIMIZATIONS:
+	- CSS Media Queries for efficient breakpoint management
+	- Minimal DOM manipulation for layout changes
+	- Hardware acceleration for smooth transitions
+	- Optimized rendering for desktop processors
+	
+	USER EXPERIENCE CONSIDERATIONS:
+	- Consistent navigation patterns across breakpoints
+	- Optimal content density for screen sizes
+	- Maintained accessibility features
+	- Smooth transition between layout states
+	===============================================================================
+	*/
+
+	/* Intermediate Desktop Breakpoint - 1120px */
+	@media(max-width: 1120px) {
+		#menu-homepage-2020 li {
+			min-width: 0!important;
+		}
+	}
+
+	/* Large Desktop Breakpoint - 1300px */
+	@media(max-width: 1300px) {
+	.main-navigation li:last-child .sub-menu {
+		right: 0!important;
+		left: auto!important;
+	}
+}
+/* - - end menu updates - - */
+.breadcrumbs {
+	z-index: 1;
+}
+#current-promo-top {
+	display: none;
+}
+#custom_html-11 {
+    padding: 0;
+}
+article.trial-card.trial-card--crypto {
+    display: none;
+}
+div article.membership-card.membership-card--crypto {
+    display: none;
+}
+
+@media only screen and (max-width: 600px) {
+.courses-hero--img.col-lg-6 {
+    display: none;
+	}
+}
+tr.cart-discount.coupon-q1sama {
+    display: none;
+}
+
+.woocommerce-lost-password .woocommerce .woocommerce-message {
+	width: 35%;
+}
+
+/* Updating font color for password reset paragraph. */
+.woocommerce-lost-password
+.dashboard__main--gradient .dashboard__content-main .woocommerce p {
+	color: #fff !important;
+}
+
+.woocommerce-lost-password .dashboard__main--gradient form .woocommerce .woocommerce-ResetPassword .lost_reset_password p {
+	color: #fff !important;
+}
+
+/*hide trial on member dashboard */
+.dashboard > main > div > div > section > div:nth-child(2) > div.col-lg-5 > .u--color-white-children {
+    display: none;
+}
+.dashboard > main > div > div > section > div:nth-child(2) > div.col-lg-7 > div > div {
+    display: none;
+}
+/* - - Strikezone Dashboard  - - - */
+.page-id-1307589 .dashboard-filters, .page-id-1307589 .section-title  {
+    display: none;
+}
+/*--- Hide Date Meta - Simpler Tech ---*/
+.page-id-413033 .article-card__meta {
+    display: none;
+}
+/* - - - -END Foundation Dashboard  - - - - */
+
+/* - - - Hide Main Dashboard Sidebar - - - */
+.page-id-401190 .dashboard__content-sidebar {
+    display: none;
+}
+
+/* - - - min height on single product page - - - */
+.single-product .product-main {
+	min-height:825px!important; 
+}
+/* - - - member dashboard page title - - - */
+h1.dashboard__page-title {
+    font-weight: 700;
+}
+
+/* - - - post titles - - - */
+h1.cpost-title, h1.entry-title {
+	font-weight: bold;
+}
+
+
+/* - - - member dashboard trial cards - - - */
+.trial-card {
+	min-height: 290px;
+}
+
+.plug_img {
+	height: 5vw!important;
+	min-height: 100px;
+}
+
+/* .page-id-1390136 .dashboard__content-section, .parent-pageid-1390136 .dashboard__content-section {
+	padding: 0;
+} */
+
+.page-id-1390136 .dashboard__header, .parent-pageid-1390136 .dashboard__header {
+	display: none;
+}
+
+/* Fix cards padding on Weekly watchlist dashboard */
+.page-id-1367253 .article-card, .parent-pageid-1367253 .article-card {
+    padding-bottom: 0!important;
+}
+
+// Style blog pagination
+#nav-below {
+	display: flex;
+	justify-content: center;
+}
+.paging-navigation .nav-links {
+	display: flex;
+	justify-content: center;
+}
+
+.paging-navigation .nav-links .current {
+	font-weight: 400;
+	color: #fff;
+	background: #0984ae;
+	padding: 10px 15px;
+}
+
+.paging-navigation .nav-links .page-numbers:first-child {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	font-weight: 400;
+	color: #fff;
+	background: #0984ae;
+	padding: 10px 15px;
+}
+
+.paging-navigation .nav-links .prev {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	font-weight: 400;
+	color: #fff;
+	background: #0984ae;
+	padding: 10px 15px;
+}
+
+.paging-navigation .nav-links .next {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	font-weight: 400;
+	color: #fff;
+	background: #0984ae;
+	padding: 10px 15px;
+}
+
+.paging-navigation .nav-links a {
+		border-left: 1px solid #ededed;
+		display: inline-block;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 5px;
+    padding: 10px 15px;
+    color: #666;
+    background: #f4f4f4;
+    text-align: center;
+}
+
+.post-type-archive-blog-post #page, .archive.category #page {
+	max-width: 1200px;
+	margin: auto;
+}
+
+.nlf-survey .enjoy-webinar thead , .logged-in #om-xtjjylzskik6ibfssnql {display: none !important;}
+
+.grecaptcha-badge { 
+    visibility: hidden;
+}
+.has-submenu .dashboard__nav-submenu a[href*="simpler_essentials/learning-center/introduction-to-trading"],
+.has-submenu .dashboard__nav-submenu a[href*="simpler_essentials/learning-center/introduction-to-stocks"],
+.has-submenu .dashboard__nav-submenu a[href*="simpler_essentials/learning-center/trading-psychology"]  {
+    display:none
+}
+
+.main-navigation .inside-navigation {
+	max-width: 1300px !important;
+}
+
+.main-navigation .sub-menu {
+    min-width: 220px;
+}
+
+.main-navigation ul>li>a {
+	font-weight:700;
+}
+
+.main-navigation .main-nav ul li[class*="current-menu-"] > a {
+    color: #0A2335;
+    background: #ffffff;
+}
+.main-navigation .main-nav ul li[class*="current-menu-"]:hover > a {
+    color: #0A2335;
+    background: #e9ebed;
+}
+.main-navigation ul>li.menu-item>a:hover{
+    background: #0E6AC4!important;
+    color: #ffffff !important;
+}
+#menu-header-menu-2023 li>a {
+	text-transform: capitalize;
+}
+#menu-header-menu-2023 .sub-menu li {
+    transition: background 0.2s linear;
+}
+#menu-header-menu-2023 .sub-menu li:hover, #menu-header-menu-2023 .sub-menu li:active {
+    
+}
+.main-navigation #menu-header-menu-2023 ul.sub-menu>li>a {
+transition: color 0.2s linear;
+}
+.main-navigation #menu-header-menu-2023 ul.sub-menu>li>a:hover {
+background: initial !important;
+	color: #3BA5FF !important;
+}
+#menu-header-menu-2023 > li {
+    text-align: center;
+    min-width: 150px;
+}
+#menu-header-menu-2023 .sub-item
+{
+	font-weight: 400 !important;
+	margin-left: 10px !important;
+}
+
+#menu-header-menu-2023 ul.sub-menu > li > a {
+    text-transform: capitalize;
+    line-height: 40px !important;
+}
+
+/* .main-navigation .main-nav ul li[class*="current-menu-"] > a {
+    color: #0A2335;
+    background-color: rgba(48,48,48,0);
+} */
+/* Replicate white nav as per marketting site start */
+.main-navigation .main-nav ul li a, button.menu-toggle, button.menu-toggle:focus {
+    color: #0A2335;
+}
+.main-navigation .main-nav ul li a, .menu-toggle, .main-navigation .mobile-bar-items a {
+    transition: line-height 300ms ease;
+}
+.main-navigation {
+    background-color: #fff;
+	box-shadow: 0 2px 2px -2px rgba(0,0,0,.2);
+}
+.main-navigation .navigation-logo>a>img {
+    filter: invert(10%) sepia(70%) saturate(730%) hue-rotate(165deg) brightness(20%) contrast(96%);
+}
+.regular-menu-logo .navigation-stick .navigation-logo{
+	display:block  !important;
+}
+.main-navigation ul>li>a {
+    font-size: 14px;
+}
+.main-navigation .navigation-logo>a{
+	height:72px !important;
+}
+/**simpler essential **/
+  .page-template-simpler_essentials .featured-image{
+    display:none;
+}
+/** simpler essential css **/
+
+/*Replicate white nav as per marketting site end*/
+/** regular price **/
+.page-template-dashboard-trader-store [data-id="697549"] .product-price-regular {
+    display: none;
+}
+@media (min-width:950px) and (max-width:1250px){
+    #menu-header-menu-2023 > li {
+			min-width: 75px;
+	}
+	.main-navigation ul>li>a {
+			padding: 0 8px!important;
+	}
+
+}
+	/*Replicate white nav as per marketting site start*/
+@media (max-width:950px)  {
+	.main-navigation.toggled .main-nav > ul {
+    background-color: #fff !important;
+}
+}
+	/*Replicate white nav as per marketting site end*/
+@media (max-width:641px)  {
+	.main-navigation .main-nav ul li[class*="current-menu-"] > a,
+	.main-navigation .main-nav ul li > a{
+    color: #ffffff;
+}
+}
+
+a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycling"]:before {
+	content: "Small Lot";
+	visibility: visible;
+	display: block;
+	position: absolute;
+}
+
+a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycling"] {
+	visibility: hidden;
+	padding: 10px;
+}
+
+
+.st_box form div:nth-child(3) {
+    display: none;
+}
+
+.dashboard__nav-primary.is-collapsed  .dash_main_links .dashboard__nav-item-text {
+    color: #0984ae !important
+}
+
+.dashboard__nav-primary  .dash_main_links a[href*="/dashboard/add-a-membership"] {
+    display: none;
+}
+
+.dashboard .dashboard__sidebar .dashboard__nav-secondary a[href*="/dashboard/cgm/beta-score-sheet"] {
+    display: none;
+} 
+
+.term-courses.term-33 .facetwp-checkbox[data-value="mary-ellen-mcgonagle"]{
+	display: none;
+}
+
+.dashboard .dashboard__sidebar .dashboard__nav-secondary a[href*="/dashboard/simpler-showcase/meet-traders/mary-ellen-mcgonagle/trader-store"] {
+    display: none;
+}
+
+.dashboard .dashboard__sidebar .dashboard__nav-secondary a[href*="/dashboard/simpler-showcase/meet-traders/mary-ellen-mcgonagle"] {
+    display: none;
+}
+
+.st-icon-big-market-scorecard:before {
+	margin-left: 4px;
+}
+
+#cs_preview_popup_button {
+	display: none !important;
+}
+    
+#my-consent-preference:hover {
+    cursor: pointer;
+}
+
+
+
+
+
+
+		</style>
+		
+		<script type="text/javascript">
+			// Initial Data Layer Init
+			var om_load_webfont = false;
+			window.dataLayer = window.dataLayer || [];
+			window.dataLayer.push({
+				'event': 'dataLayer-initialized',
+				'user_id': 94190,
+				'pageType': "Uncategorized",
+				'membership_type': [],
+				'content_author_id': "2",
+				'content_author': "Taylor Letterman",
+				'content_title': "Member Dashboard",
+				'content_publish_date': "24th Jul 2018",
+				'post_id': 401190,
+				'content_type': "Uncategorized",
+				'activeSubscriptions': [],
+				'currentTime': {"date":"2026-01-01 07:42:16.257434","timezone_type":3,"timezone":"America\/Chicago"},
+				'employee_alias': "",
+			});
+
+
+			//product list data layer functions
+			let filterObj = {};
+			const FireViewListItem = new Event('fire-view-list-gtm');
+
+			const getNumberOfProducts = ({
+				page,
+				per_page,
+				total_rows,
+				total_pages
+			}) => {
+				if (page === 1 && total_pages === 1) return total_rows;
+				if (page !== total_pages) return per_page;
+				if (page === total_pages) return total_rows - (per_page * (total_pages - 1));
+			}
+
+			const getProductList = () => {
+				const productList = [];
+				const {
+					response: {
+						counts
+					},
+					settings: {
+						pager
+					}
+				} = FWP;
+				if (pager.total_pages > 0 && pager.total_rows > 0) {
+					const numberOfProducts = Number(counts) ? counts : getNumberOfProducts(pager)
+					const productListElements = document.getElementById("products-list")?.children[0]?.children
+					let listIndex = 0;
+					while (listIndex !== numberOfProducts) {
+						let {
+							id,
+							name,
+							traders,
+							markets,
+							category,
+							platform,
+							skill_level,
+							price
+						} = productListElements[listIndex].dataset
+						productList.push({
+							'item_id': id,
+							'item_name': name,
+							'item_brand': 'Simpler Trading',
+							'item_category': traders ? traders : undefined,
+							'item_category2': markets ? markets : undefined,
+							'item_category3': category ? category : undefined,
+							'item_category4': platform ? platform : undefined,
+							'item_category5': skill_level ? skill_level : undefined,
+							'price': price * 1,
+							'currency': 'USD',
+							'quantity': '1',
+							'index': listIndex
+						});
+						listIndex++
+					}
+				}
+				return productList
+			}
+		</script>
+		<!-- Google Tag Manager - Install in Head -->
+	<script type="text/plain" data-cs-class="cs-blocker-script-advanced" class="cs-blocker-script-advanced" data-cs-element-position="head">
+		(function(w, d, s, l, i) {
+			w[l] = w[l] || [];
+			w[l].push({
+				'gtm.start': new Date().getTime(),
+				event: 'gtm.js'
+			});
+			var f = d.getElementsByTagName(s)[0],
+				j = d.createElement(s),
+				dl = l != 'dataLayer' ? '&l=' + l : '';
+			j.async = true;
+			j.src =
+				'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+			f.parentNode.insertBefore(j, f);
+		})(window, document, 'script', 'dataLayer', 'GTM-PT24H76');
+	</script>
+	<!-- End Google Tag Manager - Install in Head -->
+</head>
+
+<body class="page-template page-template-templates page-template-dashboard-landing page-template-templatesdashboard-landing-php page page-id-401190 page-parent logged-in wp-custom-logo wp-embed-responsive theme-generatepress fl-builder post-image-aligned-center sticky-menu-slide sticky-enabled regular-menu-logo menu-logo-enabled both-sticky-menu woocommerce-no-js fl-theme-builder-footer member-logged-in no-sidebar nav-below-header fluid-header separate-containers active-footer-widgets-4 nav-aligned-right header-aligned-center dropdown-hover full-width-content elementor-default elementor-kit-1684418 cm-manage-google-fonts" itemtype="https://schema.org/WebPage" itemscope>
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PT24H76"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	<!-- End Google Tag Manager (noscript) -->
+		<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
+			<div class="inside-header grid-container grid-parent">
+				<div class="site-logo">
+				<a href="https://www.simplertrading.com/" title="Simpler Trading" rel="home">
+					<img  class="header-image" alt="Simpler Trading" src="https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png" title="Simpler Trading" srcset="https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png 1x, https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png 2x" width="901" height="80" />
+				</a>
+			</div>			</div><!-- .inside-header -->
+		</header><!-- #masthead -->
+				<nav id="site-navigation" class="main-navigation" itemtype="https://schema.org/SiteNavigationElement" itemscope>
+			<div class="inside-navigation grid-container grid-parent">
+				<div class="site-logo sticky-logo navigation-logo">
+				<a href="https://www.simplertrading.com/" title="Simpler Trading" rel="home">
+					<img src="https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png" alt="Simpler Trading" />
+				</a>
+			</div>				<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+					<span class="gp-icon icon-menu-bars"><svg viewBox="0 0 512 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M0 96c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24zm0 160c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24zm0 160c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24z" />
+					</svg><svg viewBox="0 0 512 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M71.029 71.029c9.373-9.372 24.569-9.372 33.942 0L256 222.059l151.029-151.03c9.373-9.372 24.569-9.372 33.942 0 9.372 9.373 9.372 24.569 0 33.942L289.941 256l151.03 151.029c9.372 9.373 9.372 24.569 0 33.942-9.373 9.372-24.569 9.372-33.942 0L256 289.941l-151.029 151.03c-9.373 9.372-24.569 9.372-33.942 0-9.372-9.373-9.372-24.569 0-33.942L222.059 256 71.029 104.971c-9.372-9.373-9.372-24.569 0-33.942z" />
+					</svg></span><span class="mobile-menu">Menu</span>				</button>
+				<div id="primary-menu" class="main-nav"><ul id="menu-header-menu-2023" class=" menu sf-menu"><li id="menu-item-1857439" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1857439"><a href="#">Live Trading Rooms<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+					</svg></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1857441" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1857441"><a href="/#"><span class="sub-top"><strong>Asset Trading Rooms</strong></span></a></li>
+	<li id="menu-item-1903913" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903913"><a href="/trading-rooms/mastering-the-trade"><span class="sub-item">Mastering the Trade</span></a></li>
+	<li id="menu-item-1903915" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903915"><a href="/trade-alerts/"><span class="sub-top"><strong>Strategy Trading Rooms</strong></span></a></li>
+	<li id="menu-item-2128989" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2128989"><a href="/trading-rooms/long-term-growth"><span class="sub-item">Long-Term Growth</span></a></li>
+	<li id="menu-item-1903920" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903920"><a href="/trading-rooms/small-lot"><span class="sub-item">Small Lot<span></a></li>
+	<li id="menu-item-2054669" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2054669"><a href="/trade-alerts/stock-mavericks"><span class="sub-item"> Stock Mavericks<span></a></li>
+	<li id="menu-item-1903922" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903922"><a href="/trading-rooms/trendy"><span class="sub-item">Tr3ndy Trading<span></a></li>
+	<li id="menu-item-2062942" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2062942"><a href="/trade-alerts/tr3ndy-spx-alerts"><span class="sub-item">Trendy SPX Alerts<span></a></li>
+	<li id="menu-item-1903923" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903923"><a href="/trading-rooms/bias"><span class="sub-item">BIAS<span></a></li>
+	<li id="menu-item-1903924" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903924"><a href="/trading-rooms/sector-secrets"><span class="sub-item">Sector Secrets<span></a></li>
+	<li id="menu-item-1903925" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903925"><a href="/trading-rooms/moxie-indicator-mastery"><span class="sub-item">Moxie Indicator<span></a></li>
+	<li id="menu-item-1903926" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903926"><a href="/trading-rooms/compounding-growth"><span class="sub-item">Compounding Growth<span></a></li>
+	<li id="menu-item-1903928" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903928"><a href="/trading-rooms/voodoo-mastery"><span class="sub-item">Voodoo<span></a></li>
+</ul>
+</li>
+<li id="menu-item-1903929" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1903929"><a href="#">Learning<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+					</svg></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1903930" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903930"><a href="/courses/"><span class="sub-top"><strong>Courses</strong></span></a></li>
+	<li id="menu-item-1903931" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903931"><a href="/trading-education-center"><span class="sub-item">101s</span></a></li>
+	<li id="menu-item-1903932" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903932"><a href="/courses"><span class="sub-item">Live &#038; On-demand Classes</span></a></li>
+	<li id="menu-item-1903933" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903933"><a href="https://www.simplertrading.com/research-tools"><span class="sub-top"><strong>Research Reports</strong></span></a></li>
+	<li id="menu-item-1903935" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903935"><a href="/premium-newsletters/top-tier-outlook"><span class="sub-item">Top Tier Outlook</span></a></li>
+</ul>
+</li>
+<li id="menu-item-1903936" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1903936"><a href="#">Tools<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+					</svg></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1903937" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903937"><a href="/indicators">Indicators</a></li>
+	<li id="menu-item-1903938" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903938"><a href="/join/scanner/">The Scanner</a></li>
+</ul>
+</li>
+<li id="menu-item-1903939" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1903939"><a href="#">Resources<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+					</svg></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1903940" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903940"><a href="https://www.simplertrading.com/research-tools"><span class="sub-top"><strong>Research Reports</strong></span></a></li>
+	<li id="menu-item-1903942" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903942"><a href="/premium-newsletters/top-tier-outlook-2"><span class="sub-item">Top Tier Outlook</span></a></li>
+	<li id="menu-item-1903943" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903943"><a href="/blog">Commentary</a></li>
+	<li id="menu-item-1903944" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903944"><a href="https://www.simplertrading.com/daily-videos">Daily Videos</a></li>
+	<li id="menu-item-1903945" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903945"><a href="/news">News</a></li>
+	<li id="menu-item-1903946" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903946"><a href="/newsletters"><span class="sub-top"><strong>Newsletters</strong></span></a></li>
+	<li id="menu-item-1903947" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903947"><a href="/free-goods"><span class="sub-item">Simpler Insights</span></a></li>
+	<li id="menu-item-1903948" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903948"><a href="/free-goods"><span class="sub-item">Five Star Trader</span></a></li>
+	<li id="menu-item-1903949" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903949"><a href="/free-goods"><span class="sub-item">Countdown Trader</span></a></li>
+	<li id="menu-item-1903952" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903952"><a href="/free-goods"><span class="sub-item">Profit Pilot</span></a></li>
+	<li id="menu-item-1903953" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903953"><a href="/free-goods"><span class="sub-item">Focused Trades</span></a></li>
+</ul>
+</li>
+<li id="menu-item-1903954" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1903954"><a href="/about">About Us<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+					</svg></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1903955" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903955"><a href="/about">Who We Are</a></li>
+	<li id="menu-item-1903956" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903956"><a href="/traders">Our Traders</a></li>
+</ul>
+</li>
+<li id="menu-item-1903958" class="nmr-logged-in menu-item menu-item-type-custom menu-item-object-custom current-menu-item current-menu-ancestor current-menu-parent menu-item-has-children menu-item-1903958"><a href="/dashboard" aria-current="page">Dashboard<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+					</svg></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1903959" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-1903959"><a href="/dashboard" aria-current="page">My Memberships</a></li>
+	<li id="menu-item-1903960" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903960"><a href="/dashboard/classes">My Classes</a></li>
+	<li id="menu-item-1903961" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903961"><a href="/dashboard/indicators">My Indicators</a></li>
+	<li id="menu-item-1903962" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903962"><a href="/dashboard/account">My Account</a></li>
+	<li id="menu-item-1903963" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903963"><a href="/support">Support</a></li>
+	<li id="menu-item-1903966" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903966"><a href="https://www.simplertrading.com/dashboard/account/customer-logout/">Logout</a></li>
+</ul>
+</li>
+<li id="menu-item-1957762" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1957762"><a href="tel:5122668659"><span class="fa fa-phone fa-cust-rotate-90 blue_icon"></span> (512) 266-8659</a></li>
+</ul></div>			</div><!-- .inside-navigation -->
+		</nav><!-- #site-navigation -->
+		<nav id="breadcrumbs" class="breadcrumbs"><div class="container-fluid"><ul><li class="item-home"><a class="breadcrumb-link breadcrumb-home" href="https://www.simplertrading.com" title="Home">Home</a></li><li class="separator separator-home"> / </li><li class="item-current item-401190"><strong class="breadcrumb-current breadcrumb-401190"> Member Dashboard</strong></li></ul></div></nav>
+	<div id="page" class="hfeed site grid-parent">
+				<div id="content" class="site-content">
+			
+
+<a id="top"></a>
+
+    <div class="dashboard">
+        <aside class="dashboard__sidebar">
+            <nav class="dashboard__nav-primary  ">
+  <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
+    <span class="dashboard__profile-photo" style="background-image: url(https://secure.gravatar.com/avatar/b27c0cfb1c74fb928f5e40ba6711669f?s=32&d=mm&r=g);"></span>
+    <span class="dashboard__profile-name">Zack Stambowski</span>
+    </span>
+  </a>
+      <ul>
+      <li>
+              </li>
+      <ul class="dash_main_links">
+                                          <li class=" is-active">
+                <a href="/dashboard/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-home"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Member Dashboard</span>
+                </a>
+              </li>
+                                                    <li class=" ">
+                <a href="/dashboard/classes/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-courses"></span>
+                  <span class="dashboard__nav-item-text" style="font-weight:bold;color: white; ">My Classes</span>
+                </a>
+              </li>
+                                                    <li class=" ">
+                <a href="/dashboard/indicators/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-indicators"></span>
+                  <span class="dashboard__nav-item-text" style="font-weight:bold;color: white; ">My Indicators</span>
+                </a>
+              </li>
+                        </ul>
+    </ul>
+      <ul>
+      <li>
+                  <p class="dashboard__nav-category">memberships</p>
+              </li>
+      <ul class="dash_main_links">
+                                                                      <li class=" ">
+                <a href="/dashboard/mastering-the-trade" target="">
+                  <span class="dashboard__nav-item-icon st-icon-mastering-the-trade"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Mastering the Trade</span>
+                </a>
+              </li>
+                                                    <li class=" ">
+                <a href="/dashboard/simpler-showcase/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-simpler-showcase"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Simpler Showcase</span>
+                </a>
+              </li>
+                                                    <li class=" ">
+                <a href="/dashboard/tr3ndy-spx-alerts/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-tr3ndy-spx-alerts-circle"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Tr3ndy SPX Alerts Service</span>
+                </a>
+              </li>
+                        </ul>
+    </ul>
+      <ul>
+      <li>
+                  <p class="dashboard__nav-category">mastery</p>
+              </li>
+      <ul class="dash_main_links">
+                                                                                                                                                                                      <li class=" ">
+                <a href="/dashboard/cgm/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-consistent-growth"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Compounding Growth Mastery</span>
+                </a>
+              </li>
+                                                                                                            </ul>
+    </ul>
+      <ul>
+      <li>
+                  <p class="dashboard__nav-category">premium reports</p>
+              </li>
+      <ul class="dash_main_links">
+                                                                      </ul>
+    </ul>
+      <ul>
+      <li>
+                  <p class="dashboard__nav-category">tools</p>
+              </li>
+      <ul class="dash_main_links">
+                                                                      <li class=" ">
+                <a href="/dashboard/ww/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Weekly Watchlist</span>
+                </a>
+              </li>
+                                                                                <li class=" ">
+                <a href="https://intercom.help/simpler-trading/en/" target="_blank">
+                  <span class="dashboard__nav-item-icon st-icon-support"></span>
+                  <span class="dashboard__nav-item-text" style=" ">Support</span>
+                </a>
+              </li>
+                        </ul>
+    </ul>
+      <ul>
+      <li>
+                  <p class="dashboard__nav-category">account</p>
+              </li>
+      <ul class="dash_main_links">
+                                          <li class=" ">
+                <a href="/dashboard/account/" target="">
+                  <span class="dashboard__nav-item-icon st-icon-settings"></span>
+                  <span class="dashboard__nav-item-text" style=" ">My Account</span>
+                </a>
+              </li>
+                        </ul>
+    </ul>
+  </nav>
+
+<footer class="dashboard__toggle  ">
+  <button class="dashboard__toggle-button" data-toggle-dashboard-menu>
+    <div class="dashboard__toggle-button-icon">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <span class="framework__toggle-button-label">Dashboard Menu</span>
+  </button>
+</footer>
+<div class="dashboard__overlay" data-toggle-dashboard-menu></div>                    </aside>
+        <main class="dashboard__main ">
+                            
+
+<!-- 
+*/
+
+
+ ================================================================================
+  DASHBOARD HEADER SECTION - Apple Principal Engineer ICT 11 Grade
+  ================================================================================
+  
+  ARCHITECTURE PATTERN: Dual-pane header with page identification and primary CTA
+  
+  LEFT PANE: Semantic h1 for page title (SEO + Accessibility)
+  RIGHT PANE: Primary user action - Trading Room access dropdown
+  
+  SECURITY CONCERN: JWT tokens embedded in HTML (lines 2875-2878)
+  - Tokens visible in page source
+  - Logged in browser history  
+  - Cached by CDN/proxies
+  
+  ICT 11 RECOMMENDATION: Implement server-side token generation with POST request
+  Example:
+    async function enterTradingRoom(roomId) {
+        const token = await fetch('/api/trading-room/token', {
+            method: 'POST',
+            body: JSON.stringify({ roomId }),
+            credentials: 'include'
+        }).then(r => r.json());
+        window.open(tradingRoomUrl + '?token=' + token.jwt);
+    }
+-->
+    <header class="dashboard__header">
+        <div class="dashboard__header-left">
+
+    <!-- END: Dashboard Header Section -->
+
+                        <h1 class="dashboard__page-title">Member Dashboard</h1>
+                    </div>
+                                            <div class="dashboard__header-right">
+
+                <!-- ICT 11 LEGAL COMPLIANCE: Trading Room Rules disclosure -->
+                                        <ul class="ultradingroom" style="text-align: right;list-style: none;"><li class="litradingroom"><a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a></li><li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">By logging into  any of our Live Trading Rooms, You are agreeing to our Rules of the Room.</li></ul>                    
+                     
+                                                    <div class="dropdown display-inline-block">
+
+                <!-- ICT 11 PRIMARY CTA: Orange button = high visibility (trading industry standard) -->
+                        <a href="#" class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
+                            <strong>Enter a Trading Room</strong>
+                            
+                        </a>
+                        
+                        <nav class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+
+                        <!-- ICT 11 SEMANTIC NAV: aria-labelledby links dropdown to trigger button -->
+                            <ul class="dropdown-menu__menu">
+
+                            <!-- 
+                              CRITICAL SECURITY ISSUE - JWT Token Exposure
+                              
+                              JWT PAYLOAD (decoded):
+                              {
+                                  "userID": 94190,
+                                  "email": "welberribeirodrums@gmail.com",
+                                  "memberships": ["mastering_the_trade", "tr3ndy_spx_alerts", "compounding_growth_mastery"],
+                                  "exp": 1767879736  // 7-day expiration
+                              }
+                              
+                              SECURITY RISKS:
+                              1. Token visible in HTML source
+                              2. Token logged in browser history
+                              3. Token cached by CDN/proxies
+                              4. No IP validation in JWT claims
+                              
+                              ICT 11 FIX REQUIRED: Server-side token generation
+                            -->
+                                                                    <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652754202ad80b3e7c5131e2?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXSwibWVtYmVyX3N0YXJ0X2RhdGUiOiIwMy0xMi0yMDI1In0.2LvwJek-nzi3L29z7b1zWwr3jCBLIks5-Dd7BsaiTAs" target="_blank" rel="nofollow"><span class="st-icon-mastering-the-trade icon icon--md"></span>Mastering The Trade Room</a></li>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652889ba2ad80b3e7c5133e3?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXSwibWVtYmVyX3N0YXJ0X2RhdGUiOiIzMC0xMi0yMDI1In0.AdUW_eZtwGoDRs6GyPvZeaBfwc-0slwwySexTRmR8hs" target="_blank" rel="nofollow"><span class="st-icon-consistent-growth icon icon--md"></span> Compounding Growth Room</a></li>
+                                                                                                    <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/652368e62ad80b3e7c513033?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXX0.dPoYVtKRMxFlbwuyFR2RT9SaWdbKVMb8x6efFEoJSyw" target="_blank" rel="nofollow"><span class="st-icon-simpler-showcase icon icon--md"></span> Simpler Showcase Room</a></li>
+                                                                                                    <li><a href="https://chat.protradingroom.com/ptr_app/sessions/v2/authUser/670d255d4c45202c5ee724bb?sl=1&#038;jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NjcyNzQ5MzYsImlzcyI6Imh0dHBzOi8vd3d3LnNpbXBsZXJ0cmFkaW5nLmNvbSIsImV4cCI6MTc2Nzg3OTczNiwidHlwZSI6IkpXVFNTTyIsIm5hbWUiOiJaYWNrIFN0YW1ib3dza2kiLCJlbWFpbCI6IndlbGJlcnJpYmVpcm9kcnVtc0BnbWFpbC5jb20iLCJ1c2VySUQiOjk0MTkwLCJwZXJtcyI6InIiLCJtZW1iZXJzaGlwcyI6WyJtYXN0ZXJpbmdfdGhlX3RyYWRlIiwidHIzbmR5X3NweF9hbGVydHMiLCJjb21wb3VuZGluZ19ncm93dGhfbWFzdGVyeSJdLCJpcCI6bnVsbCwiYmFkZ2VzIjpbXSwibWVtYmVyX3N0YXJ0X2RhdGUiOiIzMC0xMi0yMDI1In0.AdUW_eZtwGoDRs6GyPvZeaBfwc-0slwwySexTRmR8hs" target="_blank" rel="nofollow"><span class="st-icon-tr3ndy-spx-alerts-circle icon icon--md"></span> Tr3ndy SPX Alerts Service</a></li>
+                                                                                                                                                           </ul>
+                        </nav>
+                    </div>
+
+                            </div>
+        
+                     
+
+    </header>
+            
+            <div class="dashboard__content">
+                <div class="dashboard__content-main">
+                    <!-- Dashboard Walkthrough Banner-->
+
+<!-- 
