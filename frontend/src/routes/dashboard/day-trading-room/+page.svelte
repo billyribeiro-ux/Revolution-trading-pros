@@ -352,11 +352,10 @@
 
 		<section class="content-sidebar__section">
 			<h4 class="content-sidebar__heading">Quick Links</h4>
-			<ul class="sidebar-links">
-				<li><a href="/courses/day-trading-masterclass">Course Materials</a></li>
-				<li><a href="/dashboard/account">Account Settings</a></li>
-				<li><a href="/trading-room-rules.pdf" target="_blank">Room Rules</a></li>
-				<li><a href="/support">Support Center</a></li>
+			<ul class="link-list">
+				<li><a href="/support" target="_blank">Support</a></li>
+				<li><a href="/tutorials" target="_blank">Platform Tutorials</a></li>
+				<li><a href="/blog" target="_blank">Simpler Blog</a></li>
 			</ul>
 		</section>
 	</aside>
@@ -566,29 +565,7 @@
 		font-size: 12px;
 	}
 
-	/* Sidebar Links */
-	.sidebar-links {
-		list-style: none;
-		padding: 0;
-		margin: 16px 0 0;
-	}
-
-	.sidebar-links li {
-		margin-bottom: 8px;
-	}
-
-	.sidebar-links a {
-		color: #0984ae;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 600;
-		transition: color 0.2s ease;
-	}
-
-	.sidebar-links a:hover {
-		color: #0a5a75;
-		text-decoration: underline;
-	}
+	/* Sidebar Links - Removed (using global .link-list from app.css) */
 
 	/* Responsive Design */
 	@media (max-width: 992px) {
