@@ -510,28 +510,30 @@
 
 	.dashboard__header-right {
 		display: flex;
-		flex-direction: column-reverse;
+		flex-direction: column;
 		align-items: flex-end;
 		margin-top: 10px;
 	}
 
 	@media (min-width: 820px) {
 		.dashboard__header-right {
-			flex-direction: row;
-			align-items: center;
-			gap: 20px;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 0;
 			margin-top: 0;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * TRADING ROOM RULES - Legal Compliance (WordPress Match)
-	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
+	 * Button on top, text below in vertical stack
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.trading-room-rules {
 		text-align: center;
-		margin-top: 15px;
+		margin-top: 10px;
+		width: 100%;
+		max-width: 300px;
 	}
 
 	.trading-room-rules__link {
