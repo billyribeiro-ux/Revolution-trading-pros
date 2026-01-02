@@ -215,21 +215,6 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<!-- Trading Room Rules - Legal Compliance -->
-		<div class="trading-room-rules">
-			<a
-				href="/trading-room-rules.pdf"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="trading-room-rules__link"
-			>
-				Trading Room Rules
-			</a>
-			<p class="trading-room-rules__disclaimer">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</p>
-		</div>
-
 		{#if tradingRooms.length > 0}
 			<div class="dropdown" class:is-open={isDropdownOpen}>
 				<button
@@ -264,6 +249,21 @@
 				{/if}
 			</div>
 		{/if}
+		
+		<!-- Trading Room Rules - Legal Compliance -->
+		<div class="trading-room-rules">
+			<a
+				href="/trading-room-rules.pdf"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</p>
+		</div>
 	</div>
 </header>
 
@@ -453,19 +453,20 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.trading-room-rules {
-		text-align: right;
-		margin-right: 20px;
+		text-align: center;
+		margin-top: 15px;
 	}
 
 	.trading-room-rules__link {
-		display: inline-block;
+		display: block;
 		padding: 6px 12px;
-		font-size: 14px;
+		font-size: 16px;
 		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
+		margin-bottom: 8px;
 	}
 
 	.trading-room-rules__link:hover {
@@ -475,18 +476,22 @@
 
 	.trading-room-rules__disclaimer {
 		margin: 0;
-		padding: 0 12px;
-		font-size: 11px;
+		padding: 0;
+		font-size: 13px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
 		line-height: 1.4;
+		max-width: 280px;
 	}
 
 	@media (max-width: 819px) {
 		.trading-room-rules {
-			margin-right: 0;
 			margin-top: 10px;
+		}
+		
+		.trading-room-rules__disclaimer {
+			max-width: 100%;
 		}
 	}
 
