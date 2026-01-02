@@ -15,13 +15,12 @@
 -->
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { browser } from '$app/environment';
 
 	// Generate breadcrumb items from current path
+	// Apple ICT 11+ Pattern: Works on both SSR and client
 	let breadcrumbs = $derived.by(() => {
-		if (!browser) return [{ label: 'Home', href: '/', isCurrent: false }];
-		
-		const pathname = $page.url.pathname;
+		// Access pathname safely - $page store works on both server and client
+		const pathname = $page?.url?.pathname || '/';
 		const segments = pathname.split('/').filter(Boolean);
 
 		const items: Array<{ label: string; href: string; isCurrent: boolean }> = [
