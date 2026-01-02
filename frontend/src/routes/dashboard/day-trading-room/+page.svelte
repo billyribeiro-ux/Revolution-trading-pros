@@ -364,10 +364,141 @@
 	 * Apple ICT 11+ Standards
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Welcome Video Section */
-	.dashboard__content-section-member {
-		margin-bottom: 40px;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * LAYOUT - Dashboard Content Structure
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content {
+		display: flex;
+		flex-direction: row;
+		gap: 0;
+		width: 100%;
+		background: #f4f4f4;
 	}
+
+	.dashboard__content-main {
+		flex: 1 1 auto;
+		min-width: 0;
+		padding: 30px;
+	}
+
+	.dashboard__content-sidebar {
+		flex: 0 0 300px;
+		width: 300px;
+		background: #fff;
+		border-left: 1px solid #e5e5e5;
+		padding: 0;
+	}
+
+	/* Dashboard Header */
+	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		padding: 30px;
+		background: #fff;
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+		flex: 1;
+	}
+
+	.dashboard__header-right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 10px;
+	}
+
+	.dashboard__page-title {
+		margin: 0;
+		color: #333;
+		font-size: 36px;
+		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	/* Dashboard Content Sections */
+	.dashboard__content-section {
+		padding: 0 0 30px 0;
+	}
+
+	.dashboard__content-section-member {
+		padding: 0 0 30px 0;
+	}
+
+	/* Content Sidebar Sections */
+	.content-sidebar__section {
+		padding: 30px;
+		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.content-sidebar__section:last-child {
+		border-bottom: none;
+	}
+
+	.content-sidebar__heading {
+		font-size: 16px;
+		font-weight: 700;
+		text-transform: uppercase;
+		color: #191717;
+		margin: 0 0 15px;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	/* Link Lists in Sidebar */
+	.link-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.link-list li {
+		margin-bottom: 10px;
+	}
+
+	.link-list a {
+		color: #143E59;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 600;
+		transition: color 0.2s ease;
+	}
+
+	.link-list a:hover {
+		color: #0a5a75;
+		text-decoration: underline;
+	}
+
+	/* Section Titles */
+	.section-title {
+		font-size: 28px;
+		font-weight: 800;
+		color: #191717;
+		margin: 0 0 20px;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.section-title-alt {
+		font-size: 28px;
+		font-weight: 800;
+		color: #191717;
+		margin: 0 0 16px;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.section-title-alt--underline {
+		border-bottom: 3px solid #143E59;
+		padding-bottom: 12px;
+		display: inline-block;
+	}
+
+	/* Welcome Video Section */
 
 	.welcome-video {
 		background: #fff;
