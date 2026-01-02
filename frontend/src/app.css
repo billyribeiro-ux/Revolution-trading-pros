@@ -1132,11 +1132,12 @@ body.dark,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * DASHBOARD GLOBAL STYLES - Pixel Perfect Match to MasterDash Reference
- * These styles apply to ALL dashboard pages for consistency
+ * DASHBOARD GLOBAL STYLES - TEMPORARILY DISABLED
+ * Moving all dashboard styles to component files for easier debugging
+ * Will consolidate back here once everything is working perfectly
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Dashboard Content Layout - Main + Sidebar Grid */
+/* COMMENTED OUT - Now in component files
 .dashboard__content {
 	display: flex;
 	flex-direction: row;
@@ -1157,7 +1158,6 @@ body.dark,
 	padding: 0;
 }
 
-/* Dashboard Header */
 .dashboard__header {
 	display: flex;
 	flex-wrap: wrap;
@@ -1190,7 +1190,6 @@ body.dark,
 	font-family: var(--font-heading), 'Montserrat', sans-serif;
 }
 
-/* Dashboard Content Sections */
 .dashboard__content-section {
 	padding: 30px;
 }
@@ -1198,6 +1197,7 @@ body.dark,
 .dashboard__content-section-member {
 	padding: 30px;
 }
+*/
 
 /* Section Titles */
 .section-title {
@@ -1398,7 +1398,7 @@ body.dark,
 	padding-bottom: 0.5rem;
 }
 
-/* Responsive - Hide sidebar on mobile */
+/* COMMENTED OUT - Now in component files
 @media (max-width: 1024px) {
 	.dashboard__content {
 		flex-direction: column;
@@ -1439,6 +1439,7 @@ body.dark,
 		padding: 40px;
 	}
 }
+*/
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * Print Styles - Optimized for documentation and reports
