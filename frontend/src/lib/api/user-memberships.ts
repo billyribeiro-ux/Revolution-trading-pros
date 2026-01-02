@@ -554,19 +554,6 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			price: 0,
 			interval: 'monthly'
 		},
-		{
-			id: 'small-account-mentorship',
-			name: 'Small Account Mentorship',
-			type: 'course',
-			slug: 'small-account-mentorship',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'users',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly'
-		},
 		// ═══════════════════════════════════════════════════════════════════════════
 		// ALERT SERVICES (2)
 		// ═══════════════════════════════════════════════════════════════════════════

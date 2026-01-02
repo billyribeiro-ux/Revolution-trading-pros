@@ -1153,7 +1153,7 @@ body.dark,
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	padding: 20px;
+	padding: 30px;
 	background: #fff;
 	border-bottom: 1px solid #e5e5e5;
 }
@@ -1182,11 +1182,11 @@ body.dark,
 
 /* Dashboard Content Sections */
 .dashboard__content-section {
-	padding: 30px 20px;
+	padding: 30px;
 }
 
 .dashboard__content-section-member {
-	padding: 30px 20px;
+	padding: 30px;
 }
 
 /* Section Titles */
@@ -1214,7 +1214,7 @@ body.dark,
 
 /* Content Sidebar Sections */
 .content-sidebar__section {
-	padding: 30px 20px;
+	padding: 30px;
 	border-bottom: 1px solid #e5e5e5;
 }
 
