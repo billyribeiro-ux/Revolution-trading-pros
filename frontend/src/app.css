@@ -308,12 +308,12 @@ body.dark,
 		--focus-ring-offset: 2px;
 	}
 
-	/* Dark mode color scheme preference */
-	@media (prefers-color-scheme: dark) {
+	/* Dark mode color scheme preference - DISABLED */
+	/* @media (prefers-color-scheme: dark) {
 		:root {
 			color-scheme: dark;
 		}
-	}
+	} */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Performance Optimizations
