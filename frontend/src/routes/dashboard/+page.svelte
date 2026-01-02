@@ -105,7 +105,7 @@
 		return cards;
 	});
 
-	// Mastery cards - Courses
+	// Mastery cards - Courses (excluding mentorship)
 	const masteryCards = $derived.by(() => {
 		const cards: {
 			name: string;
@@ -117,12 +117,40 @@
 
 		const courseData = membershipsData?.courses ?? [];
 		for (const course of courseData) {
-			if (course.status === 'active') {
+			// Exclude Small Account Mentorship from Mastery section
+			if (course.status === 'active' && course.slug !== 'small-account-mentorship') {
 				cards.push({
 					name: course.name,
 					href: `/dashboard/${course.slug}`,
 					icon: course.icon ?? 'book',
 					variant: 'growth',
+					tradingRoom: course.accessUrl
+				});
+			}
+		}
+
+		return cards;
+	});
+
+	// Mentorship cards - Small Account Mentorship only
+	const mentorshipCards = $derived.by(() => {
+		const cards: {
+			name: string;
+			href: string;
+			icon: string;
+			variant: string;
+			tradingRoom?: string;
+		}[] = [];
+
+		const courseData = membershipsData?.courses ?? [];
+		for (const course of courseData) {
+			// Only show Small Account Mentorship
+			if (course.status === 'active' && course.slug === 'small-account-mentorship') {
+				cards.push({
+					name: course.name,
+					href: `/dashboard/${course.slug}`,
+					icon: course.icon ?? 'users',
+					variant: 'training',
 					tradingRoom: course.accessUrl
 				});
 			}
@@ -295,6 +323,10 @@
 					</div>
 				{/each}
 			</div>
+			<!-- Divider -->
+			<div class="section-divider">
+				<div class="section-divider__line"></div>
+			</div>
 		</section>
 	{/if}
 
@@ -324,6 +356,43 @@
 					</div>
 				{/each}
 			</div>
+			<!-- Divider -->
+			<div class="section-divider">
+				<div class="section-divider__line"></div>
+			</div>
+		</section>
+	{/if}
+
+	<!-- Mentorship Section -->
+	{#if mentorshipCards.length > 0}
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Mentorship</h2>
+			<div class="membership-cards">
+				{#each mentorshipCards as card}
+					<div class="membership-card-col">
+						<article class="membership-card membership-card--{card.variant}">
+							<a href={card.href} class="membership-card__header">
+								<span class="mem_icon">
+									<span class="membership-card__icon">
+										<RtpIcon name={card.icon} size={32} />
+									</span>
+								</span>
+								<span class="mem_div">{card.name}</span>
+							</a>
+							<div class="membership-card__actions">
+								<a href={card.href}>Dashboard</a>
+								{#if card.tradingRoom}
+									<a href={card.tradingRoom} target="_blank">Trading Room</a>
+								{/if}
+							</div>
+						</article>
+					</div>
+				{/each}
+			</div>
+			<!-- Divider -->
+			<div class="section-divider">
+				<div class="section-divider__line"></div>
+			</div>
 		</section>
 	{/if}
 
@@ -349,6 +418,10 @@
 				</div>
 			{/each}
 		</div>
+		<!-- Divider -->
+		<div class="section-divider">
+			<div class="section-divider__line"></div>
+		</div>
 	</section>
 
 	<!-- Weekly Watchlist Section -->
@@ -370,6 +443,10 @@
 					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
 				</a>
 			</div>
+		</div>
+		<!-- Divider -->
+		<div class="section-divider">
+			<div class="section-divider__line"></div>
 		</div>
 	</section>
 
@@ -480,6 +557,22 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
 		line-height: 1.4;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECTION DIVIDER - WordPress Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.section-divider {
+		margin-top: 30px;
+	}
+
+	.section-divider__line {
+		border-top-width: 1px;
+		border-top-style: solid;
+		border-top-color: #cccccc;
+		max-width: 100%;
+		margin: 0 auto;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
