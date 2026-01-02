@@ -785,17 +785,26 @@
 	 * Uses #143E59 (dark teal/navy) per design system
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DESKTOP (≥1280px): position: static - part of flex layout within sidebar
+	 * MOBILE (<1280px): position: fixed - overlay panel
+	 * SOURCE: dashboard.8f78208b.css (WordPress production CSS)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__nav-secondary {
-		position: fixed;
-		top: 0;
-		left: 80px;
 		width: 280px;
-		height: 100vh;
+		font-size: 14px;
+		font-weight: 600;
 		background-color: #143E59;
 		overflow-y: auto;
 		overflow-x: hidden;
-		z-index: 98;
-		box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+		transition: all 0.3s ease-in-out;
+		/* Desktop: static positioning (part of flex layout) */
+		position: static;
+		height: auto;
+		min-height: 100vh;
+		opacity: 1;
+		visibility: visible;
+		z-index: auto;
 	}
 
 	.dashboard__nav-secondary > ul {

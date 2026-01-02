@@ -409,10 +409,14 @@
 		container-name: dashboard-main;
 	}
 
-	/* Offset main content when secondary sidebar is visible (membership pages) */
-	.dashboard__main.has-secondary-sidebar {
-		margin-inline-start: 360px; /* Collapsed primary (80px) + Secondary (280px) */
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Secondary sidebar offset - NOT NEEDED with position: static
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * When secondary nav uses position: static (WordPress behavior), it's part
+	 * of the flex layout within the sidebar. The sidebar flex container
+	 * (primary 80px + secondary 280px = 360px) automatically pushes main content.
+	 * No manual margin needed - flex handles it.
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Loading Overlay - Modern backdrop-filter
