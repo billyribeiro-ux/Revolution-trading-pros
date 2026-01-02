@@ -99,6 +99,17 @@
 		if (data.user && !$isAuthenticated) {
 			console.debug('[Dashboard] Server auth valid, syncing to client store...');
 
+			// ALWAYS set user first from server data - this is the source of truth
+			const serverUser = {
+				id: parseInt(data.user.id) || 0,
+				name: data.user.name || data.user.email?.split('@')[0] || 'Member',
+				email: data.user.email || '',
+				role: data.user.role,
+				created_at: new Date().toISOString()
+			};
+			authStore.setUser(serverUser);
+			console.debug('[Dashboard] User synced to client store:', serverUser.email);
+
 			// Try to refresh the token to get a valid access token in memory
 			// The refresh token is persisted in localStorage
 			try {
@@ -106,27 +117,10 @@
 				if (refreshed) {
 					console.debug('[Dashboard] Token refreshed successfully');
 				} else {
-					// If refresh fails but server validated us, set user anyway
-					// API calls will use cookies via credentials: 'include'
-					console.debug('[Dashboard] Token refresh failed, using server auth');
-					authStore.setUser({
-						id: parseInt(data.user.id) || 0,
-						name: data.user.name || data.user.email?.split('@')[0] || 'Member',
-						email: data.user.email || '',
-						role: data.user.role,
-						created_at: new Date().toISOString()
-					});
+					console.debug('[Dashboard] Token refresh failed, will use cookies for API calls');
 				}
 			} catch (error) {
-				console.warn('[Dashboard] Auth sync error:', error);
-				// Still set user from server data so UI works
-				authStore.setUser({
-					id: parseInt(data.user.id) || 0,
-					name: data.user.name || data.user.email?.split('@')[0] || 'Member',
-					email: data.user.email || '',
-					role: data.user.role,
-					created_at: new Date().toISOString()
-				});
+				console.warn('[Dashboard] Token refresh error (will use cookies):', error);
 			}
 		}
 
