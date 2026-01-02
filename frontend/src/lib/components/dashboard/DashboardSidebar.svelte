@@ -56,14 +56,9 @@
 	// Current path for active state - Svelte 5 $app/state (no store subscription needed)
 	let currentPath = $derived(page.url.pathname);
 
-	// Route-based collapse - sidebar collapses when navigating to sub-pages
-	// Full sidebar (280px) on /dashboard/ home, collapsed (80px) on sub-pages
-	$effect(() => {
-		if (browser) {
-			const isDashboardHome = currentPath === '/dashboard' || currentPath === '/dashboard/';
-			collapsed = !isDashboardHome;
-		}
-	});
+	// NOTE: Collapsed state is now controlled by parent (+layout.svelte)
+	// Parent uses $effect to auto-collapse on membership dashboard routes
+	// DO NOT add $effect here that modifies collapsed - it will conflict with parent
 
 	// Check if a link is active
 	function isActive(href: string): boolean {
