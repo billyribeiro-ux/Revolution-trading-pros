@@ -20,6 +20,7 @@
 -->
 <script lang="ts">
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import CourseSecondaryNav from '$lib/components/dashboard/CourseSecondaryNav.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -27,6 +28,53 @@
 
 	// Dropdown state for trading room access
 	let isDropdownOpen = $state(false);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// SECONDARY NAVIGATION MENU ITEMS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const secondaryNavItems = [
+		{
+			href: '/dashboard/day-trading-room',
+			icon: 'layout-dashboard',
+			text: 'Day Trading Room Dashboard'
+		},
+		{
+			href: '/dashboard/day-trading-room/daily-videos',
+			icon: 'video',
+			text: 'Premium Daily Videos'
+		},
+		{
+			href: '/dashboard/day-trading-room/learning-center',
+			icon: 'school',
+			text: 'Learning Center'
+		},
+		{
+			href: '/dashboard/day-trading-room/trading-room-archive',
+			icon: 'archive',
+			text: 'Trading Room Archives'
+		},
+		{
+			href: '#',
+			icon: 'users',
+			text: 'Meet the Traders',
+			submenu: [
+				{ href: '/dashboard/day-trading-room/traders/lead-trader', icon: '', text: 'Lead Trader' },
+				{ href: '/dashboard/day-trading-room/traders/senior-analyst', icon: '', text: 'Senior Analyst' },
+				{ href: '/dashboard/day-trading-room/traders/head-moderator', icon: '', text: 'Head Moderator' }
+			]
+		},
+		{
+			href: '#',
+			icon: 'shopping-cart',
+			text: 'Trader Store',
+			submenu: [
+				{ href: '/dashboard/day-trading-room/store/indicators', icon: '', text: 'Indicators' },
+				{ href: '/dashboard/day-trading-room/store/courses', icon: '', text: 'Advanced Courses' },
+				{ href: '/dashboard/day-trading-room/store/tools', icon: '', text: 'Trading Tools' }
+			]
+		}
+	];
 
 	// Toggle dropdown
 	function toggleDropdown() {
@@ -125,6 +173,13 @@
 </svelte:head>
 
 <svelte:window on:click={handleClickOutside} />
+
+<!-- Secondary Navigation Panel (appears when sidebar is collapsed) -->
+<CourseSecondaryNav
+	courseSlug="day-trading-room"
+	courseName="Day Trading Room"
+	menuItems={secondaryNavItems}
+/>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
 	 DASHBOARD HEADER
