@@ -287,13 +287,13 @@
 							<a href={update.url}>{update.title}</a>
 						</h4>
 						
-						<span class="article-card__meta">
-							<small>{update.date} with {update.author}</small>
-						</span>
-						
-						<div class="article-card__excerpt">
-							<p>{update.excerpt}</p>
+						<div class="article-card__excerpt u--hide-read-more">
+							<p class="u--margin-bottom-0 u--font-size-sm"><i>With {update.author}</i></p>
 						</div>
+						
+						<span class="article-card__meta">
+							<small>{update.date}</small>
+						</span>
 						
 						<a href={update.url} class="btn btn-tiny btn-default">Watch Now</a>
 					</article>
