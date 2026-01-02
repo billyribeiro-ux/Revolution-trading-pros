@@ -351,6 +351,28 @@
 		</div>
 	</section>
 
+	<!-- Weekly Watchlist Section -->
+	<section class="dashboard__content-section">
+		<div class="watchlist-row">
+			<div class="watchlist-col-left">
+				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+				<div class="watchlist-mobile-image">
+					<a href="/watchlist/current">
+						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="watchlist-image" />
+					</a>
+				</div>
+				<h4 class="watchlist-subtitle">Weekly Watchlist with David Starr</h4>
+				<p class="watchlist-description">Week of December 29, 2025.</p>
+				<a href="/watchlist/current" class="btn btn-tiny btn-default">Watch Now</a>
+			</div>
+			<div class="watchlist-col-right">
+				<a href="/watchlist/current">
+					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="watchlist-image" />
+				</a>
+			</div>
+		</div>
+	</section>
+
 	<!-- Empty State - No Memberships -->
 	{#if membershipCards.length === 0 && masteryCards.length === 0}
 		<section class="dashboard__content-section">
@@ -468,6 +490,121 @@
 		}
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * WEEKLY WATCHLIST SECTION - WordPress Exact Match
+	 * Bootstrap: col-sm-6 col-lg-5 / col-sm-6 col-lg-7
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.watchlist-row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	.watchlist-col-left {
+		flex: 0 0 100%;
+		max-width: 100%;
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+
+	.watchlist-col-right {
+		display: none;
+	}
+
+	@media (min-width: 576px) {
+		.watchlist-col-left {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+
+		.watchlist-col-right {
+			display: none;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.watchlist-col-left {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
+
+		.watchlist-col-right {
+			display: block;
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+			padding-left: 15px;
+			padding-right: 15px;
+		}
+
+		.watchlist-mobile-image {
+			display: none;
+		}
+	}
+
+	.section-title-alt {
+		font-size: 26px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 20px;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.section-title-alt--underline {
+		padding-bottom: 10px;
+		border-bottom: 3px solid #ff8c00;
+		display: inline-block;
+	}
+
+	.watchlist-mobile-image {
+		margin-bottom: 15px;
+	}
+
+	.watchlist-mobile-image img {
+		width: 100%;
+		border-radius: 5px;
+	}
+
+	.watchlist-subtitle {
+		font-size: 18px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 10px;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.watchlist-description {
+		font-size: 14px;
+		color: #666;
+		margin: 0 0 15px;
+	}
+
+	.watchlist-image {
+		width: 100%;
+		border-radius: 5px;
+	}
+
+	.btn-tiny {
+		display: inline-block;
+		padding: 6px 12px;
+		font-size: 12px;
+		font-weight: 700;
+		text-decoration: none;
+		border-radius: 3px;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.btn-default {
+		background-color: #f5f5f5;
+		color: #333;
+		border: 1px solid #ddd;
+	}
+
+	.btn-default:hover {
+		background-color: #e8e8e8;
+		border-color: #ccc;
+	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * EMPTY STATE
