@@ -164,7 +164,7 @@
 
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
 <div class="dashboard">
-	<!-- Sidebar Navigation -->
+	<!-- Sidebar Navigation (LEFT) -->
 	<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
@@ -174,7 +174,19 @@
 				<div class="dashboard__loading-spinner"></div>
 			</div>
 		{/if}
-		{@render children()}
+		<!-- Content Wrapper - WordPress exact structure -->
+		<div class="dashboard__content">
+			<!-- Content Main - Contains page content -->
+			<div class="dashboard__content-main">
+				{@render children()}
+			</div>
+			<!-- Content Sidebar (RIGHT) - Hidden by default, shows at 1080px+ -->
+			<aside class="dashboard__content-sidebar">
+				<section class="content-sidebar__section">
+					<!-- Sidebar content populated by child pages via context/slots -->
+				</section>
+			</aside>
+		</div>
 	</main>
 </div>
 
@@ -202,6 +214,62 @@
 		min-width: 0;
 		background-color: #f4f4f4;
 		position: relative;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Content Wrapper - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md:427-432
+	 * WordPress CSS: display: flex; flex-flow: row nowrap;
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content {
+		display: flex;
+		flex-flow: row nowrap;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Content Main - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md:434-440
+	 * WordPress CSS: flex: 1 1 auto; min-width: 0; border-right: 1px solid #dbdbdb;
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content-main {
+		flex: 1 1 auto;
+		min-width: 0;
+		border-right: 1px solid #dbdbdb;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Content Sidebar (RIGHT) - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md:460-474
+	 * Hidden by default, shows at 1080px+ breakpoint
+	 * Width: 260px fixed
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__content-sidebar {
+		display: none;
+		width: 260px;
+		flex: 0 0 auto;
+		margin-top: -1px;
+		border-right: 1px solid #dbdbdb;
+		border-top: 1px solid #dbdbdb;
+		background-color: #ffffff;
+	}
+
+	/* Show at 1080px+ (WordPress exact breakpoint) */
+	@media (min-width: 1080px) {
+		.dashboard__content-sidebar {
+			display: block;
+		}
+	}
+
+	.content-sidebar__section {
+		padding: 20px;
+		border-bottom: 1px solid #ededed;
+	}
+
+	.content-sidebar__section:last-child {
+		border-bottom: none;
 	}
 
 	/* Loading overlay for data fetching */
