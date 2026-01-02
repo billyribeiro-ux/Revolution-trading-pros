@@ -34,6 +34,7 @@
 		name: string;
 		slug: string;
 		icon?: string;
+		type?: 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report';
 	}
 
 	// Svelte 5 props with bindable for parent access
@@ -102,16 +103,53 @@
 	];
 
 	// Membership links - Dynamically generated from user's actual memberships
-	let membershipLinks = $derived.by(() => {
+	// Separate by type to match WordPress structure
+	let tradingRoomLinks = $derived.by(() => {
 		const links: NavLink[] = [];
 		const memberships = user.memberships ?? [];
 
 		for (const membership of memberships) {
-			links.push({
-				href: `/dashboard/${membership.slug}/`,
-				icon: membership.icon ?? 'chart-line',
-				text: membership.name
-			});
+			if (membership.type === 'trading-room' || membership.type === 'alert-service') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'chart-line',
+					text: membership.name
+				});
+			}
+		}
+
+		return links;
+	});
+
+	let masteryLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		const memberships = user.memberships ?? [];
+
+		for (const membership of memberships) {
+			if (membership.type === 'course') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'book',
+					text: membership.name
+				});
+			}
+		}
+
+		return links;
+	});
+
+	let indicatorLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		const memberships = user.memberships ?? [];
+
+		for (const membership of memberships) {
+			if (membership.type === 'indicator') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'chart-candle',
+					text: membership.name
+				});
+			}
 		}
 
 		return links;
@@ -128,7 +166,9 @@
 
 	// All navigation sections for secondary sidebar
 	let allSections = $derived([
-		{ title: 'memberships', links: membershipLinks },
+		{ title: 'memberships', links: tradingRoomLinks },
+		{ title: 'mastery', links: masteryLinks },
+		{ title: 'indicators', links: indicatorLinks },
 		{ title: 'tools', links: toolsLinks }
 	]);
 </script>
@@ -170,14 +210,56 @@
 			</ul>
 		</ul>
 
-		<!-- Memberships Section -->
-		{#if membershipLinks.length > 0}
+		<!-- Memberships Section (Trading Rooms + Alert Services) -->
+		{#if tradingRoomLinks.length > 0}
 			<ul>
 				<li>
 					<p class="dashboard__nav-category">memberships</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each membershipLinks as link}
+					{#each tradingRoomLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
+		<!-- Mastery Section (Courses) -->
+		{#if masteryLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">mastery</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each masteryLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
+		<!-- Indicators Section (Scanners) -->
+		{#if indicatorLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">indicators</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each indicatorLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">

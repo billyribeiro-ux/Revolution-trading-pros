@@ -77,10 +77,11 @@
 			...(membershipsData?.courses ?? []),
 			...(membershipsData?.indicators ?? [])
 		].filter((m: { status: string }) => m.status === 'active')
-		 .map((m: { name: string; slug: string; icon?: string }) => ({
+		 .map((m: { name: string; slug: string; icon?: string; type: 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report' }) => ({
 			name: m.name,
 			slug: m.slug,
-			icon: m.icon
+			icon: m.icon,
+			type: m.type as 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report'
 		}))
 	});
 
