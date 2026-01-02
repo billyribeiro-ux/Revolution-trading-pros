@@ -186,7 +186,7 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
-		<a href="/courses/day-trading-masterclass" class="btn btn-xs btn-default">
+		<a href="/dashboard/day-trading-room/start-here" class="btn btn-xs btn-default">
 			New? Start Here
 		</a>
 	</div>
