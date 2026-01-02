@@ -561,18 +561,22 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECTION DIVIDER - WordPress Match
+	 * Full width across content area, not crossing sidebar
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.section-divider {
 		margin-top: 30px;
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
 	}
 
 	.section-divider__line {
 		border-top-width: 1px;
 		border-top-style: solid;
 		border-top-color: #cccccc;
-		max-width: 100%;
-		margin: 0 auto;
+		width: 100%;
+		margin: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
