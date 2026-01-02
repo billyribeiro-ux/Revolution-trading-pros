@@ -1268,6 +1268,126 @@ body.dark,
 	margin: 0;
 }
 
+.u--font-weight-bold {
+	font-weight: 700;
+}
+
+/* Bootstrap Grid Utilities for Dashboard */
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+}
+
+.flex-grid {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.flex-grid-item {
+	display: flex;
+}
+
+.col-xs-12,
+.col-sm-6,
+.col-md-6,
+.col-lg-5,
+.col-lg-7,
+.col-xl-4 {
+	position: relative;
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.col-xs-12 {
+	flex: 0 0 100%;
+	max-width: 100%;
+}
+
+@media (min-width: 576px) {
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+}
+
+@media (min-width: 768px) {
+	.col-md-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+}
+
+@media (min-width: 992px) {
+	.col-lg-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+	
+	.col-lg-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+}
+
+@media (min-width: 1200px) {
+	.col-xl-4 {
+		flex: 0 0 33.333333%;
+		max-width: 33.333333%;
+	}
+}
+
+/* Bootstrap Display Utilities */
+.hidden-xs {
+	display: none !important;
+}
+
+.hidden-sm {
+	display: none !important;
+}
+
+.hidden-md {
+	display: block !important;
+}
+
+.d-none {
+	display: none !important;
+}
+
+.d-lg-none {
+	display: none !important;
+}
+
+.d-lg-block {
+	display: block !important;
+}
+
+@media (min-width: 992px) {
+	.hidden-xs,
+	.hidden-sm {
+		display: block !important;
+	}
+	
+	.hidden-md {
+		display: none !important;
+	}
+	
+	.d-lg-none {
+		display: none !important;
+	}
+	
+	.d-lg-block {
+		display: block !important;
+	}
+}
+
+/* Bootstrap Spacing Utilities */
+.pb-2 {
+	padding-bottom: 0.5rem;
+}
+
 /* Responsive - Hide sidebar on mobile */
 @media (max-width: 1024px) {
 	.dashboard__content {

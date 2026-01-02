@@ -192,19 +192,14 @@
 	</div>
 
 	<div class="dashboard__header-right">
-		<!-- Trading Room Rules -->
-		<div class="trading-room-rules">
-			<a 
-				href="/trading-room-rules.pdf" 
-				target="_blank" 
-				class="trading-room-rules__link"
-			>
-				Trading Room Rules
-			</a>
-			<p class="trading-room-rules__disclaimer">
-				By logging into any of our Live Trading Rooms, you are agreeing to our Rules of the Room.
-			</p>
-		</div>
+		<ul class="ultradingroom" style="text-align: right;list-style: none;">
+			<li class="litradingroom">
+				<a href="/trading-room-rules.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a>
+			</li>
+			<li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</li>
+		</ul>
 
 		<!-- Enter Trading Room Dropdown -->
 		<div class="dropdown" class:is-open={isDropdownOpen}>
@@ -270,9 +265,10 @@
 		<!-- Latest Updates Section -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Latest Updates</h2>
-			<div class="article-cards">
+			<div class="article-cards row flex-grid">
 				{#each latestUpdates as update}
-					<article class="article-card">
+					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+						<article class="article-card">
 						<figure 
 							class="article-card__image" 
 							style="background-image: url({update.thumbnail});"
@@ -286,7 +282,7 @@
 							</span>
 						</div>
 						
-						<h4 class="article-card__title">
+						<h4 class="h5 article-card__title">
 							<a href={update.url}>{update.title}</a>
 						</h4>
 						
@@ -300,31 +296,31 @@
 						
 						<a href={update.url} class="btn btn-tiny btn-default">Watch Now</a>
 					</article>
+				</div>
 				{/each}
 			</div>
 		</section>
 
 		<!-- Weekly Watchlist Section -->
 		<div class="dashboard__content-section u--background-color-white">
-			<section class="weekly-watchlist-section">
-				<div class="weekly-watchlist-content">
-					<div class="weekly-watchlist-text">
-						<h2 class="section-title-alt section-title-alt--underline">
-							{weeklyWatchlist.title}
-						</h2>
-						<h4 class="weekly-watchlist-subtitle">
-							{weeklyWatchlist.week} with {weeklyWatchlist.author}
-						</h4>
-						<p>{weeklyWatchlist.description}</p>
+			<section>
+				<div class="row">
+					<div class="col-sm-6 col-lg-5">
+						<h2 class="section-title-alt section-title-alt--underline">{weeklyWatchlist.title}</h2>
+						<div class="hidden-md d-lg-none pb-2">
+							<a href={weeklyWatchlist.url}>
+								<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist image" class="u--border-radius">
+							</a>
+						</div>
+						<h4 class="h5 u--font-weight-bold">{weeklyWatchlist.week} with {weeklyWatchlist.author}</h4>
+						<div class="u--hide-read-more">
+							<p>{weeklyWatchlist.description}</p>
+						</div>
 						<a href={weeklyWatchlist.url} class="btn btn-tiny btn-default">Watch Now</a>
 					</div>
-					<div class="weekly-watchlist-image">
+					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
 						<a href={weeklyWatchlist.url}>
-							<img 
-								src={weeklyWatchlist.thumbnail} 
-								alt="Weekly Watchlist" 
-								class="u--border-radius"
-							/>
+							<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist image" class="u--border-radius">
 						</a>
 					</div>
 				</div>
@@ -335,9 +331,8 @@
 	<!-- Sidebar -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">
-				Trading Room Schedule
-				<p class="schedule-note">Schedule is subject to change.</p>
+			<h4 class="content-sidebar__heading">Trading Room Schedule
+				<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;">Schedule is subject to change.</p>
 			</h4>
 			<div class="schedule-list">
 				{#each tradingSchedule as schedule}
@@ -480,59 +475,7 @@
 		margin: 0 16px 16px;
 	}
 
-	/* Weekly Watchlist Section */
-	.weekly-watchlist-section {
-		padding: 40px 0;
-	}
-
-	.weekly-watchlist-content {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 40px;
-		align-items: center;
-	}
-
-	.section-title-alt {
-		font-size: 28px;
-		font-weight: 800;
-		color: #191717;
-		margin-bottom: 16px;
-	}
-
-	.section-title-alt--underline {
-		border-bottom: 3px solid #0984ae;
-		padding-bottom: 12px;
-		display: inline-block;
-	}
-
-	.weekly-watchlist-subtitle {
-		font-size: 18px;
-		font-weight: 800;
-		color: #191717;
-		margin: 16px 0 12px;
-	}
-
-	.weekly-watchlist-text p {
-		color: #555;
-		line-height: 1.6;
-		margin-bottom: 20px;
-	}
-
-	.weekly-watchlist-image img {
-		width: 100%;
-		height: auto;
-		border-radius: 8px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	/* Schedule Section */
-	.schedule-note {
-		font-size: 10px;
-		margin-top: 8px;
-		text-transform: initial;
-		color: #666;
-		font-weight: 400;
-	}
+	/* Schedule Section - pssubject class handled by inline styles */
 
 	.schedule-list {
 		margin-top: 16px;
@@ -568,16 +511,6 @@
 	/* Sidebar Links - Removed (using global .link-list from app.css) */
 
 	/* Responsive Design */
-	@media (max-width: 992px) {
-		.weekly-watchlist-content {
-			grid-template-columns: 1fr;
-		}
-
-		.weekly-watchlist-image {
-			order: -1;
-		}
-	}
-
 	@media (max-width: 768px) {
 		.article-cards {
 			grid-template-columns: 1fr;
