@@ -321,12 +321,24 @@
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
-	/* Article Cards Grid */
+	/* Article Cards Grid - WordPress: col-xl-4 = 3 columns */
 	.article-cards {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		grid-template-columns: repeat(3, 1fr);
 		gap: 24px;
 		margin-top: 24px;
+	}
+
+	@media (max-width: 1199px) {
+		.article-cards {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 767px) {
+		.article-cards {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.article-card {
@@ -454,14 +466,41 @@
 		font-size: 12px;
 	}
 
-	/* Sidebar Links - Removed (using global .link-list from app.css) */
+	/* Quick Links - Orange with arrow prefix (WordPress match) */
+	.link-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.link-list li {
+		margin-bottom: 8px;
+	}
+
+	.link-list a {
+		color: #dd6b20;
+		font-size: 14px;
+		text-decoration: none;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		transition: color 0.2s ease;
+	}
+
+	.link-list a:hover {
+		color: #c05621;
+		text-decoration: underline;
+	}
+
+	.link-list a::before {
+		content: '›';
+		font-size: 18px;
+		font-weight: bold;
+		color: #dd6b20;
+	}
 
 	/* Responsive Design */
 	@media (max-width: 768px) {
-		.article-cards {
-			grid-template-columns: 1fr;
-		}
-
 		.dashboard__header {
 			flex-direction: column;
 			align-items: flex-start;
