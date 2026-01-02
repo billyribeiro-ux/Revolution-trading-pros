@@ -341,15 +341,45 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Collapsed Sidebar Hover Effect - DISABLED
+	 * Collapsed Sidebar Hover Effect - WordPress Evidence-Based Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * 
-	 * REASON: Hover expansion in flex layout causes layout shift.
-	 * When sidebar is collapsed on membership pages, secondary nav is visible.
-	 * Hover expansion would conflict with secondary nav positioning.
+	 * SOURCE EVIDENCE: dashboard.8f78208b.css
 	 * 
-	 * WordPress behavior: No hover expansion when secondary nav is active.
+	 * WordPress behavior: Collapsed primary nav does NOT change width on hover.
+	 * It only shows absolutely-positioned tooltip labels that appear OUTSIDE
+	 * the sidebar element, preventing layout shift.
+	 * 
+	 * The nav item text/profile name are positioned with:
+	 *   position: absolute;
+	 *   left: 100%;  (appears outside sidebar)
+	 *   transform: translate(0);  (on hover)
+	 * 
+	 * NO width change = NO layout shift
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Show tooltip labels on hover - these are absolutely positioned OUTSIDE sidebar */
+	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-text),
+	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-name) {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(0);
+	}
+	
+	/* Hover state visual feedback on the icon background */
+	:global(.dashboard__nav-primary.is-collapsed a:hover:before) {
+		transform: scale(1);
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+	
+	:global(.dashboard__nav-primary.is-collapsed a:hover:after) {
+		transform: scaleX(0);
+	}
+	
+	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-icon),
+	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-photo) {
+		transform: scale(0.9);
+	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Layout Container
