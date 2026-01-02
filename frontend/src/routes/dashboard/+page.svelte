@@ -845,12 +845,12 @@
 	}
 
 	.membership-card__icon {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		width: 50px;
 		height: 50px;
-		line-height: 50px;
 		color: #fff;
-		text-align: center;
 		border-radius: 50%;
 		transition: all 0.15s ease-in-out;
 	}
