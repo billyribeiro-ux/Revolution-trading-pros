@@ -11,7 +11,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import SecondaryDashboardSidebar from '$lib/components/dashboard/SecondaryDashboardSidebar.svelte';
 
 	const secondaryNavItems = [
 		{ href: '/dashboard/day-trading-room', icon: 'layout-dashboard', text: 'Day Trading Room Dashboard' },
@@ -46,8 +45,6 @@
 	<meta name="description" content="Take your trading to the next level with our advanced courses and masterclasses." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
-
-<SecondaryDashboardSidebar courseName="Day Trading Room" menuItems={secondaryNavItems} />
 
 <header class="dashboard__header">
 	<div class="dashboard__header-left">

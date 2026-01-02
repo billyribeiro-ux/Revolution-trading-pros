@@ -20,7 +20,6 @@
 -->
 <script lang="ts">
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import SecondaryDashboardSidebar from '$lib/components/dashboard/SecondaryDashboardSidebar.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -174,12 +173,6 @@
 </svelte:head>
 
 <svelte:window onclick={handleClickOutside} />
-
-<!-- Secondary Navigation Panel (appears when sidebar is collapsed) -->
-<SecondaryDashboardSidebar
-	courseName="Day Trading Room"
-	menuItems={secondaryNavItems}
-/>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
 	 DASHBOARD HEADER

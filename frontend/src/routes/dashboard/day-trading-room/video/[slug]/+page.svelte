@@ -11,7 +11,6 @@
 -->
 <script lang="ts">
 	// import { page } from '$app/stores'; // TODO: Will be used when fetching video data by slug
-	import SecondaryDashboardSidebar from '$lib/components/dashboard/SecondaryDashboardSidebar.svelte';
 
 	const secondaryNavItems = [
 		{ href: '/dashboard/day-trading-room', icon: 'layout-dashboard', text: 'Day Trading Room Dashboard' },
@@ -94,8 +93,6 @@
 	<meta name="description" content={video.description.replace(/<[^>]*>/g, '')} />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
-
-<SecondaryDashboardSidebar courseName="Day Trading Room" menuItems={secondaryNavItems} />
 
 <!-- Video Title Section -->
 <section id="dv-title" class="dv-section cpost-title-section cpost-section">
