@@ -25,7 +25,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { onMount, type Snippet } from 'svelte';
-	import { isAuthenticated, user } from '$lib/stores/auth';
+	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 
@@ -90,14 +90,44 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA LOADING
 	// Server-side auth is complete, just load memberships client-side
+	// ICT 11+ FIX: Must sync auth state before loading memberships
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(async () => {
-		// Sync server user to client store if needed
+		// ICT 11+ FIX: On page refresh, server has validated auth but client store is empty
+		// We need to restore auth state before making API calls that require token
 		if (data.user && !$isAuthenticated) {
-			// Server has user but client doesn't - sync auth state
-			// This happens on page refresh when server validates token
-			console.debug('[Dashboard] Syncing server auth to client store');
+			console.debug('[Dashboard] Server auth valid, syncing to client store...');
+
+			// Try to refresh the token to get a valid access token in memory
+			// The refresh token is persisted in localStorage
+			try {
+				const refreshed = await authStore.refreshToken();
+				if (refreshed) {
+					console.debug('[Dashboard] Token refreshed successfully');
+				} else {
+					// If refresh fails but server validated us, set user anyway
+					// API calls will use cookies via credentials: 'include'
+					console.debug('[Dashboard] Token refresh failed, using server auth');
+					authStore.setUser({
+						id: parseInt(data.user.id) || 0,
+						name: data.user.name || data.user.email?.split('@')[0] || 'Member',
+						email: data.user.email || '',
+						role: data.user.role,
+						created_at: new Date().toISOString()
+					});
+				}
+			} catch (error) {
+				console.warn('[Dashboard] Auth sync error:', error);
+				// Still set user from server data so UI works
+				authStore.setUser({
+					id: parseInt(data.user.id) || 0,
+					name: data.user.name || data.user.email?.split('@')[0] || 'Member',
+					email: data.user.email || '',
+					role: data.user.role,
+					created_at: new Date().toISOString()
+				});
+			}
 		}
 
 		// Load memberships data

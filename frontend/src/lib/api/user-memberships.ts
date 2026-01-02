@@ -227,19 +227,28 @@ export async function getUserMemberships(options?: {
 		return categorizeMemberships([]);
 	}
 
-	// Check auth - if no token, return empty (user needs to login)
+	// ICT 11+ FIX: Check for token, but don't fail immediately if missing
+	// On page refresh, token may not be in memory yet but cookies are still valid
+	// The fetch call includes credentials: 'include' so cookies will be sent
 	const token = authStore.getToken();
-	if (!token) {
-		console.log('[UserMemberships] No auth token - user not authenticated');
+	const { user: storeUser } = get(authStore);
+
+	// If no token AND no user in store, we're truly not authenticated
+	// But if we have a user (from server sync), try the API with cookies
+	if (!token && !storeUser) {
+		console.log('[UserMemberships] No auth token or user - not authenticated');
 		return categorizeMemberships([]);
+	}
+
+	if (!token) {
+		console.log('[UserMemberships] No in-memory token - will use cookies for auth');
 	}
 
 	// ENTERPRISE DEVELOPER ACCESS: Check if user is developer or superadmin
 	// Developers get all memberships to test the complete member experience
-	const { user } = get(authStore);
-	const isDeveloper = user && (
-		user.email === 'welberribeirodrums@gmail.com' || 
-		isSuperadminEmail(user.email)
+	const isDeveloper = storeUser && (
+		storeUser.email === 'welberribeirodrums@gmail.com' ||
+		isSuperadminEmail(storeUser.email)
 	);
 	
 	if (isDeveloper) {
