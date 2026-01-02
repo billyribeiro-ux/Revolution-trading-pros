@@ -509,6 +509,8 @@
 		margin-top: 10px;
 		width: 100%;
 		max-width: 300px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.trading-room-rules__link {
@@ -520,6 +522,7 @@
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
+		text-align: center;
 	}
 
 	.trading-room-rules__link:hover {
@@ -534,6 +537,7 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
 		line-height: 1.4;
+		text-align: center;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
