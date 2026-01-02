@@ -653,14 +653,22 @@
 		font-size: 14px;
 		font-weight: inherit; /* Inherits 300 from parent .dash_main_links a */
 		line-height: 1.4;
-		color: inherit;
+		color: hsla(0, 0%, 100%, 0.5); /* Gray by default - matches parent link */
 		white-space: nowrap;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		transition: color 0.15s ease-in-out;
 	}
 
 	.dashboard__nav-item-text.font-bold {
 		font-weight: bold;
-		color: white;
+		color: hsla(0, 0%, 100%, 0.5); /* Gray by default - same as regular text */
+	}
+
+	.dash_main_links a:hover .dashboard__nav-item-text {
+		color: #fff; /* White on hover - applies to ALL text */
+	}
+
+	.dash_main_links li.is-active .dashboard__nav-item-text {
+		color: #fff; /* White when active - applies to ALL text */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

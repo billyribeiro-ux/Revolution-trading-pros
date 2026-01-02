@@ -142,6 +142,9 @@
 	<title>Member Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
+<!-- Breadcrumbs Navigation - Full Width -->
+<DashboardBreadcrumbs />
+
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
 <div class="dashboard">
 	<!-- Sidebar Navigation -->
@@ -149,9 +152,6 @@
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
 	<main class="dashboard__main">
-		<!-- Breadcrumbs Navigation -->
-		<DashboardBreadcrumbs />
-		
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
