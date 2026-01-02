@@ -175,13 +175,15 @@
 		'/dashboard/explosive-swings'
 	];
 
+	// Derived: Check if on membership route (secondary sidebar visible)
+	let isOnMembershipRoute = $derived(
+		membershipRoutes.some(route => (page?.url?.pathname ?? '').startsWith(route))
+	);
+
 	$effect(() => {
-		const currentPath = page?.url?.pathname ?? '';
-		const shouldCollapse = membershipRoutes.some(route => currentPath.startsWith(route));
-		
-		if (shouldCollapse && !sidebarCollapsed) {
+		if (isOnMembershipRoute && !sidebarCollapsed) {
 			sidebarCollapsed = true;
-		} else if (!shouldCollapse && sidebarCollapsed) {
+		} else if (!isOnMembershipRoute && sidebarCollapsed) {
 			sidebarCollapsed = false;
 		}
 	});
@@ -201,7 +203,7 @@
 	<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
-	<main class="dashboard__main">
+	<main class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
@@ -332,6 +334,11 @@
 		container-name: dashboard-main;
 	}
 
+	/* Offset main content when secondary sidebar is visible (membership pages) */
+	.dashboard__main.has-secondary-sidebar {
+		margin-inline-start: 280px; /* Secondary sidebar width */
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Loading Overlay - Modern backdrop-filter
 	 * ═══════════════════════════════════════════════════════════════════════════ */
@@ -377,6 +384,11 @@
 			inline-size: 100%;
 			padding-block-end: var(--mobile-footer-height);
 		}
+
+		/* No secondary sidebar margin on mobile */
+		.dashboard__main.has-secondary-sidebar {
+			margin-inline-start: 0;
+		}
 	}
 
 	/* Tablet: 768px - 1279px (iPad, Surface, small laptops) */
@@ -384,6 +396,11 @@
 		.dashboard__main {
 			inline-size: 100%;
 			padding-block-end: var(--mobile-footer-height);
+		}
+
+		/* No secondary sidebar margin on tablet */
+		.dashboard__main.has-secondary-sidebar {
+			margin-inline-start: 0;
 		}
 	}
 
