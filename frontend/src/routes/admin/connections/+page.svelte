@@ -9,7 +9,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
 	import { toastStore } from '$lib/stores/toast';
@@ -268,7 +268,7 @@
 	onMount(async () => {
 		await fetchConnections();
 
-		const urlParams = $page.url.searchParams;
+		const urlParams = page.url.searchParams;
 		const connectServiceKey = urlParams.get('connect');
 		if (connectServiceKey) {
 			const serviceToConnect = connections.find(s => s.key === connectServiceKey);

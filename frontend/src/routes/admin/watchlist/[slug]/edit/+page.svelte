@@ -6,7 +6,7 @@
 	 * @version 1.0.0 - December 2025
 	 */
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
@@ -19,7 +19,7 @@
 	import IconEye from '@tabler/icons-svelte/icons/eye';
 
 	// Get slug from URL
-	const slug = $derived($page.params.slug);
+	const slug = $derived(page.params.slug);
 
 	// State
 	let isLoading = $state(true);

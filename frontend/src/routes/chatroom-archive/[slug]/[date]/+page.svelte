@@ -7,10 +7,10 @@
 	 * URL structure: /chatroom-archive/[slug]/[date]
 	 * Example: /chatroom-archive/mastering-the-trade/12242025
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	const slug = $derived($page.params.slug);
-	const dateSlug = $derived($page.params.date);
+	const slug = $derived(page.params.slug);
+	const dateSlug = $derived(page.params.date);
 
 	// Parse date from slug (MMDDYYYY format)
 	function parseDate(dateStr: string): { display: string; prevDate: string; nextDate: string } {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import { contacts, contactFilters, isLoading, error } from '$lib/stores/crm';

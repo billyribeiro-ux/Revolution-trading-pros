@@ -3,7 +3,7 @@
 	 * Analytics Layout - Shared navigation for analytics section
 	 * Updated to Svelte 5 syntax (November 2025)
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
 	// Svelte 5: Props with children snippet
@@ -20,7 +20,7 @@
 	];
 
 	// Svelte 5: Derived state
-	let currentPath = $derived($page.url.pathname);
+	let currentPath = $derived(page.url.pathname);
 </script>
 
 <div class="min-h-screen bg-gray-50">

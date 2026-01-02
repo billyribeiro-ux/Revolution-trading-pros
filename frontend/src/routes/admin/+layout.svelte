@@ -9,7 +9,7 @@
 	 * @version 4.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth';
 	import { themeStore, type Theme } from '$lib/stores/theme';
@@ -171,7 +171,7 @@
 				<IconMenu2 size={24} />
 			</button>
 			<div class="header-title">
-				<h1>{formatPageTitle($page.url.pathname)}</h1>
+				<h1>{formatPageTitle(page.url.pathname)}</h1>
 			</div>
 			<div class="header-actions">
 				<!-- Search Button -->

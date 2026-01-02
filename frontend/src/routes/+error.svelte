@@ -10,13 +10,13 @@
 	 *
 	 * @version 1.0.0 - L8 Principal Engineer
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// Error details from SvelteKit
-	let status = $derived($page.status);
-	let message = $derived($page.error?.message || 'An unexpected error occurred');
+	let status = $derived(page.status);
+	let message = $derived(page.error?.message || 'An unexpected error occurred');
 
 	// Error configuration by status code
 	const errorConfig: Record<number, { title: string; description: string; icon: string }> = {
@@ -71,7 +71,7 @@
 		if (browser && status >= 400) {
 			// Log error to console in development
 			if (import.meta.env.DEV) {
-				console.error(`[Error ${status}]`, message, $page.url.pathname);
+				console.error(`[Error ${status}]`, message, page.url.pathname);
 			}
 
 			// Send to analytics/error tracking service
@@ -129,7 +129,7 @@
 		<!-- Actions -->
 		<div class="error-actions">
 			{#if status === 401}
-				<a href="/login?redirect={encodeURIComponent($page.url.pathname)}" class="btn btn-primary">
+				<a href="/login?redirect={encodeURIComponent(page.url.pathname)}" class="btn btn-primary">
 					Sign In
 				</a>
 			{:else if status === 404}

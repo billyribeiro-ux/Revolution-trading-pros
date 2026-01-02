@@ -4,7 +4,7 @@
 	 * ICT11+ Production-Grade with Full Analytics & Engagement Features
 	 * @version 3.0.0 - December 2024
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
@@ -49,7 +49,7 @@
 	let error = $state('');
 
 	// Derived values from page store
-	let slug = $derived($page.params['slug']!);
+	let slug = $derived(page.params['slug']!);
 
 	// Load post when slug changes
 	$effect(() => {

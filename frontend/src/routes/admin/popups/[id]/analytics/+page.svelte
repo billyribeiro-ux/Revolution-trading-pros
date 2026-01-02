@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Card, Button, Badge } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
@@ -14,7 +14,7 @@
 		IconCalendar
 	} from '$lib/icons';
 
-	const popupId = parseInt($page.params.id!);
+	const popupId = parseInt(page.params.id!);
 
 	let popup: Popup | null = null;
 	let analytics: any = null;

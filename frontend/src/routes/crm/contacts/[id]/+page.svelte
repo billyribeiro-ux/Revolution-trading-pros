@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, TimelineEvent } from '$lib/crm/types';
@@ -17,7 +17,7 @@
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 
-	let contactId = $derived($page.params.id as string);
+	let contactId = $derived(page.params.id as string);
 
 	onMount(async () => {
 		await loadContact();

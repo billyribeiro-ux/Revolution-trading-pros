@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { IconCheck, IconX, IconUser } from '$lib/icons';
 
 	let loading = $state(true);
@@ -19,7 +19,7 @@
 		roles: [] as string[]
 	};
 
-	let userId = $derived(parseInt($page.params.id!));
+	let userId = $derived(parseInt(page.params.id!));
 
 	onMount(async () => {
 		await loadUser();
