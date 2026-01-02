@@ -29,6 +29,20 @@
 		external?: boolean;
 	}
 
+	// Types for secondary nav (course-specific navigation)
+	interface SecondaryNavSubItem {
+		href: string;
+		icon: string;
+		text: string;
+	}
+
+	interface SecondaryNavItem {
+		href: string;
+		icon: string;
+		text: string;
+		submenu?: SecondaryNavSubItem[];
+	}
+
 	// Membership data from API
 	interface MembershipItem {
 		name: string;
@@ -45,9 +59,34 @@
 			memberships?: MembershipItem[];  // Full membership objects, not just slugs
 		};
 		collapsed?: boolean;
+		secondaryNavItems?: SecondaryNavItem[];  // Course-specific secondary nav
+		secondarySidebarTitle?: string;  // Title for secondary sidebar
 	}
 
-	let { user, collapsed = $bindable(false) }: Props = $props();
+	let { user, collapsed = $bindable(false), secondaryNavItems = [], secondarySidebarTitle = '' }: Props = $props();
+
+	// State for expanded submenus in secondary nav
+	let expandedSubmenus = $state<Set<string>>(new Set());
+
+	// Check if secondary nav should be shown
+	let showSecondaryNav = $derived(secondaryNavItems.length > 0 && collapsed);
+
+	// Toggle submenu expansion
+	function toggleSubmenu(text: string): void {
+		const newSet = new Set(expandedSubmenus);
+		if (newSet.has(text)) {
+			newSet.delete(text);
+		} else {
+			newSet.add(text);
+		}
+		expandedSubmenus = newSet;
+	}
+
+	// Check if submenu has active item
+	function hasActiveSubmenuItem(submenu: SecondaryNavSubItem[] | undefined): boolean {
+		if (!submenu) return false;
+		return submenu.some(item => isActive(item.href));
+	}
 
 	// Svelte 5 state
 	let isHovered = $state(false);
@@ -350,46 +389,68 @@
 			<span class="dashboard__toggle-button-label">Dashboard Menu</span>
 		</button>
 	</footer>
+
+	<!-- Overlay for mobile -->
+	<div
+		class="dashboard__overlay"
+		class:is-active={isMobileMenuOpen}
+		onclick={closeMobileMenu}
+		onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
+		role="button"
+		tabindex="-1"
+		aria-label="Close menu"
+	></div>
+
+	<!-- Secondary Navigation - INSIDE sidebar (WordPress structure match) -->
+	{#if showSecondaryNav}
+		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
+			<ul>
+				{#each secondaryNavItems as item}
+					<li class:has-submenu={item.submenu && item.submenu.length > 0}>
+						{#if item.submenu && item.submenu.length > 0}
+							<!-- Item with submenu -->
+							<button
+								type="button"
+								class="dashboard__nav-secondary-item"
+								class:is-active={hasActiveSubmenuItem(item.submenu)}
+								class:is-expanded={expandedSubmenus.has(item.text)}
+								onclick={() => toggleSubmenu(item.text)}
+								aria-expanded={expandedSubmenus.has(item.text)}
+							>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={item.icon} size={20} />
+								</span>
+								<span class="dashboard__nav-item-text">{item.text}</span>
+							</button>
+
+							{#if expandedSubmenus.has(item.text)}
+								<ul class="dashboard__nav-submenu">
+									{#each item.submenu as subitem}
+										<li class:is-active={isActive(subitem.href)}>
+											<a href={subitem.href}>{subitem.text}</a>
+										</li>
+									{/each}
+								</ul>
+							{/if}
+						{:else}
+							<!-- Regular item -->
+							<a
+								class="dashboard__nav-secondary-item"
+								class:is-active={isActive(item.href)}
+								href={item.href}
+							>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={item.icon} size={20} />
+								</span>
+								<span class="dashboard__nav-item-text">{item.text}</span>
+							</a>
+						{/if}
+					</li>
+				{/each}
+			</ul>
+		</nav>
+	{/if}
 </aside>
-
-<!-- Secondary Sidebar - Shows on hover when collapsed -->
-{#if collapsed && isHovered}
-	<aside
-		class="dashboard__sidebar-secondary"
-		onmouseenter={() => isHovered = true}
-		onmouseleave={() => isHovered = false}
-		role="navigation"
-		aria-label="Quick access navigation"
-	>
-		<div class="dashboard__sidebar-secondary-content">
-			<h3 class="dashboard__sidebar-secondary-title">Quick Access</h3>
-
-			{#each allSections as section}
-				{#if section.links.length > 0}
-					<div class="dashboard__sidebar-secondary-section">
-						<p class="dashboard__nav-category">{section.title}</p>
-						<ul class="dash_secondary_links">
-							{#each section.links as link}
-								<li>
-									<a
-										href={link.href}
-										target={link.external ? '_blank' : undefined}
-										rel={link.external ? 'noopener noreferrer' : undefined}
-									>
-										<span class="dashboard__nav-item-icon">
-											<RtpIcon name={link.icon} size={32} />
-										</span>
-										<span class="dashboard__nav-item-text">{link.text}</span>
-									</a>
-								</li>
-							{/each}
-						</ul>
-					</div>
-				{/if}
-			{/each}
-		</div>
-	</aside>
-{/if}
 
 <!-- Mobile Floating Trigger (visible when sidebar is hidden on mobile) -->
 <button
@@ -720,82 +781,132 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SECONDARY SIDEBAR - Expanded Detail View
+	 * SECONDARY NAVIGATION - Inside sidebar (WordPress structure match)
+	 * Uses #143E59 (dark teal/navy) per design system
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__sidebar-secondary {
-		background-color: #0f2d41;
-		width: 280px;
-		height: calc(100vh - 80px);
+	.dashboard__nav-secondary {
 		position: fixed;
-		top: 80px;
+		top: 0;
 		left: 80px;
+		width: 280px;
+		height: 100vh;
+		background-color: #143E59;
 		overflow-y: auto;
 		overflow-x: hidden;
-		z-index: 99;
-		box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-		animation: slideInSecondary 0.3s ease;
+		z-index: 98;
+		box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 	}
 
-	@keyframes slideInSecondary {
-		from {
-			opacity: 0;
-			transform: translateX(-20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	.dashboard__sidebar-secondary-content {
-		padding: 30px 20px;
-	}
-
-	.dashboard__sidebar-secondary-title {
-		color: #ffffff;
-		font-size: 18px;
-		font-weight: 700;
-		margin-bottom: 20px;
-		padding: 0 10px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	.dashboard__sidebar-secondary-section {
-		margin-bottom: 30px;
-	}
-
-	.dashboard__sidebar-secondary .dashboard__nav-category {
-		padding: 10px 10px 8px;
-	}
-
-	.dash_secondary_links {
+	.dashboard__nav-secondary > ul {
 		list-style: none;
 		margin: 0;
-		padding: 0;
+		padding: 30px 0;
 	}
 
-	.dash_secondary_links li {
+	.dashboard__nav-secondary > ul > li {
 		list-style: none;
 		margin: 0;
 	}
 
-	.dash_secondary_links a {
+	.dashboard__nav-secondary-item {
 		display: flex;
 		align-items: center;
-		padding: 12px 20px;
+		gap: 12px;
+		width: 100%;
+		padding: 14px 24px;
+		color: rgba(255, 255, 255, 0.75);
 		text-decoration: none;
-		color: rgba(255, 255, 255, 0.5);
 		font-size: 14px;
-		font-weight: 300;
+		font-weight: 500;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		background: none;
+		border: none;
+		cursor: pointer;
+		text-align: left;
 		transition: all 0.2s ease;
-		border-radius: 6px;
+		position: relative;
 	}
 
-	.dash_secondary_links a:hover {
-		background-color: rgba(255, 255, 255, 0.1);
+	.dashboard__nav-secondary-item:hover {
+		background-color: rgba(255, 255, 255, 0.08);
 		color: #ffffff;
+	}
+
+	.dashboard__nav-secondary-item.is-active {
+		background-color: rgba(255, 255, 255, 0.12);
+		color: #ffffff;
+		font-weight: 600;
+	}
+
+	.dashboard__nav-secondary-item.is-active::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 3px;
+		background-color: #f7931e;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-item-icon {
+		position: static;
+		left: auto;
+		margin-right: 0;
+	}
+
+	.dashboard__nav-secondary .dashboard__nav-item-text {
+		opacity: 1;
+		visibility: visible;
+		width: auto;
+		flex: 1;
+	}
+
+	/* Submenu styles */
+	.dashboard__nav-submenu {
+		list-style: none;
+		margin: 0;
+		padding: 4px 0 8px;
+		background-color: rgba(0, 0, 0, 0.15);
+	}
+
+	.dashboard__nav-submenu li {
+		list-style: none;
+		margin: 0;
+	}
+
+	.dashboard__nav-submenu a {
+		display: block;
+		padding: 10px 24px 10px 56px;
+		color: rgba(255, 255, 255, 0.65);
+		text-decoration: none;
+		font-size: 13px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+
+	.dashboard__nav-submenu a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.dashboard__nav-submenu li.is-active a {
+		color: #ffffff;
+		font-weight: 600;
+	}
+
+	.dashboard__nav-submenu li.is-active a::before {
+		content: '';
+		position: absolute;
+		left: 40px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background-color: #f7931e;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -992,8 +1103,8 @@
 			display: flex;
 		}
 
-		/* Hide secondary sidebar on mobile */
-		.dashboard__sidebar-secondary {
+		/* Hide secondary nav on mobile */
+		.dashboard__nav-secondary {
 			display: none;
 		}
 	}
@@ -1053,15 +1164,12 @@
 		.dash_main_links a,
 		.dashboard__nav-item-icon,
 		.dashboard__overlay,
-		.dashboard__sidebar-secondary {
+		.dashboard__nav-secondary,
+		.dashboard__nav-secondary-item {
 			transition: none;
 		}
 
 		.dash_main_links li.is-active a::before {
-			animation: none;
-		}
-
-		.dashboard__sidebar-secondary {
 			animation: none;
 		}
 	}

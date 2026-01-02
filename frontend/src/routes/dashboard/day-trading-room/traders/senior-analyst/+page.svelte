@@ -11,34 +11,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import SecondaryDashboardSidebar from '$lib/components/dashboard/SecondaryDashboardSidebar.svelte';
-
-	const secondaryNavItems = [
-		{ href: '/dashboard/day-trading-room', icon: 'layout-dashboard', text: 'Day Trading Room Dashboard' },
-		{ href: '/dashboard/day-trading-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
-		{ href: '/dashboard/day-trading-room/learning-center', icon: 'school', text: 'Learning Center' },
-		{ href: '/dashboard/day-trading-room/trading-room-archive', icon: 'archive', text: 'Trading Room Archives' },
-		{
-			href: '#',
-			icon: 'users',
-			text: 'Meet the Traders',
-			submenu: [
-				{ href: '/dashboard/day-trading-room/traders/lead-trader', icon: '', text: 'Lead Trader' },
-				{ href: '/dashboard/day-trading-room/traders/senior-analyst', icon: '', text: 'Senior Analyst' },
-				{ href: '/dashboard/day-trading-room/traders/head-moderator', icon: '', text: 'Head Moderator' }
-			]
-		},
-		{
-			href: '#',
-			icon: 'shopping-cart',
-			text: 'Trader Store',
-			submenu: [
-				{ href: '/dashboard/day-trading-room/store/indicators', icon: '', text: 'Indicators' },
-				{ href: '/dashboard/day-trading-room/store/courses', icon: '', text: 'Advanced Courses' },
-				{ href: '/dashboard/day-trading-room/store/tools', icon: '', text: 'Trading Tools' }
-			]
-		}
-	];
+	// Secondary nav now handled by DashboardSidebar in +layout.svelte
 </script>
 
 <svelte:head>
@@ -46,8 +19,6 @@
 	<meta name="description" content="Meet our senior analyst and learn about their market analysis expertise." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
-
-<SecondaryDashboardSidebar courseName="Day Trading Room" menuItems={secondaryNavItems} />
 
 <header class="dashboard__header">
 	<div class="dashboard__header-left">

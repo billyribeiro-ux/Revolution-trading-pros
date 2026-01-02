@@ -166,19 +166,82 @@
 	// so the secondary sidebar can extend
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Routes that should auto-collapse the main sidebar
-	const membershipRoutes = [
-		'/dashboard/day-trading-room',
-		'/dashboard/swing-trading-room',
-		'/dashboard/small-accounts-room',
-		'/dashboard/spx-profit-pulse',
-		'/dashboard/explosive-swings'
-	];
+	// Routes that should auto-collapse the main sidebar and show secondary nav
+	const membershipRoutes: Record<string, { title: string; items: Array<{ href: string; icon: string; text: string; submenu?: Array<{ href: string; icon: string; text: string }> }> }> = {
+		'/dashboard/day-trading-room': {
+			title: 'Day Trading Room',
+			items: [
+				{ href: '/dashboard/day-trading-room', icon: 'layout-dashboard', text: 'Day Trading Room Dashboard' },
+				{ href: '/dashboard/day-trading-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
+				{ href: '/dashboard/day-trading-room/learning-center', icon: 'school', text: 'Learning Center' },
+				{ href: '/dashboard/day-trading-room/trading-room-archive', icon: 'archive', text: 'Trading Room Archives' },
+				{
+					href: '#',
+					icon: 'users',
+					text: 'Meet the Traders',
+					submenu: [
+						{ href: '/dashboard/day-trading-room/traders/lead-trader', icon: '', text: 'Lead Trader' },
+						{ href: '/dashboard/day-trading-room/traders/senior-analyst', icon: '', text: 'Senior Analyst' },
+						{ href: '/dashboard/day-trading-room/traders/head-moderator', icon: '', text: 'Head Moderator' }
+					]
+				},
+				{
+					href: '#',
+					icon: 'shopping-cart',
+					text: 'Trader Store',
+					submenu: [
+						{ href: '/dashboard/day-trading-room/store/indicators', icon: '', text: 'Indicators' },
+						{ href: '/dashboard/day-trading-room/store/courses', icon: '', text: 'Advanced Courses' },
+						{ href: '/dashboard/day-trading-room/store/tools', icon: '', text: 'Trading Tools' }
+					]
+				}
+			]
+		},
+		'/dashboard/swing-trading-room': {
+			title: 'Swing Trading Room',
+			items: [
+				{ href: '/dashboard/swing-trading-room', icon: 'layout-dashboard', text: 'Swing Trading Dashboard' },
+				{ href: '/dashboard/swing-trading-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
+				{ href: '/dashboard/swing-trading-room/learning-center', icon: 'school', text: 'Learning Center' }
+			]
+		},
+		'/dashboard/small-accounts-room': {
+			title: 'Small Accounts Room',
+			items: [
+				{ href: '/dashboard/small-accounts-room', icon: 'layout-dashboard', text: 'Small Accounts Dashboard' },
+				{ href: '/dashboard/small-accounts-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
+				{ href: '/dashboard/small-accounts-room/learning-center', icon: 'school', text: 'Learning Center' }
+			]
+		},
+		'/dashboard/spx-profit-pulse': {
+			title: 'SPX Profit Pulse',
+			items: [
+				{ href: '/dashboard/spx-profit-pulse', icon: 'layout-dashboard', text: 'SPX Profit Pulse Dashboard' },
+				{ href: '/dashboard/spx-profit-pulse/alerts', icon: 'bolt', text: 'Alerts' }
+			]
+		},
+		'/dashboard/explosive-swings': {
+			title: 'Explosive Swings',
+			items: [
+				{ href: '/dashboard/explosive-swings', icon: 'layout-dashboard', text: 'Explosive Swings Dashboard' },
+				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' }
+			]
+		}
+	};
+
+	// Derived: Get current membership route data (if on a membership page)
+	let currentMembershipData = $derived.by(() => {
+		const currentPath = page?.url?.pathname ?? '';
+		for (const [route, data] of Object.entries(membershipRoutes)) {
+			if (currentPath.startsWith(route)) {
+				return data;
+			}
+		}
+		return null;
+	});
 
 	// Derived: Check if on membership route (secondary sidebar visible)
-	let isOnMembershipRoute = $derived(
-		membershipRoutes.some(route => (page?.url?.pathname ?? '').startsWith(route))
-	);
+	let isOnMembershipRoute = $derived(currentMembershipData !== null);
 
 	$effect(() => {
 		if (isOnMembershipRoute && !sidebarCollapsed) {
@@ -200,7 +263,12 @@
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
 <div class="dashboard">
 	<!-- Sidebar Navigation -->
-	<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
+	<DashboardSidebar
+		user={userData}
+		bind:collapsed={sidebarCollapsed}
+		secondaryNavItems={currentMembershipData?.items ?? []}
+		secondarySidebarTitle={currentMembershipData?.title ?? ''}
+	/>
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
 	<main class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
