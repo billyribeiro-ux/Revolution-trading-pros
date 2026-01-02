@@ -1132,6 +1132,7 @@ body.dark,
 	flex-direction: row;
 	gap: 0;
 	width: 100%;
+	margin-left: 280px; /* Account for fixed secondary nav */
 }
 
 .dashboard__content-main {
@@ -1156,6 +1157,7 @@ body.dark,
 	padding: 20px;
 	background: #fff;
 	border-bottom: 1px solid #e5e5e5;
+	margin-left: 280px; /* Account for fixed secondary nav */
 }
 
 .dashboard__header-left {
@@ -1392,6 +1394,11 @@ body.dark,
 @media (max-width: 1024px) {
 	.dashboard__content {
 		flex-direction: column;
+		margin-left: 0; /* Remove margin on mobile */
+	}
+	
+	.dashboard__header {
+		margin-left: 0; /* Remove margin on mobile */
 	}
 
 	.dashboard__content-sidebar {
