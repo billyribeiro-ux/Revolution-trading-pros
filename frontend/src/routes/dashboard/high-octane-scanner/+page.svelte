@@ -249,40 +249,4 @@
 			transition: none;
 		}
 	}
-
-	/* Dark Mode Support */
-	@media (prefers-color-scheme: dark) {
-		.scanner-dashboard-page {
-			background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
-		}
-
-		.scanner-content {
-			background: #1e293b;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 10px 15px rgba(0, 0, 0, 0.4);
-		}
-
-		.page-header h1 {
-			color: #f1f5f9;
-		}
-
-		.scanner-placeholder h2 {
-			color: #f1f5f9;
-		}
-
-		.scanner-placeholder p {
-			color: #94a3b8;
-		}
-
-		.features-list li {
-			color: #cbd5e1;
-		}
-
-		.breadcrumb-nav ol {
-			color: #94a3b8;
-		}
-
-		.breadcrumb-nav [aria-current="page"] {
-			color: #f1f5f9;
-		}
-	}
 </style>
