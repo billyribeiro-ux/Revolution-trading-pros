@@ -132,11 +132,28 @@ class CartController extends Controller
                     ], 400);
                 }
 
-                // Check usage limit
-                if ($coupon->max_uses && $coupon->uses_count >= $coupon->max_uses) {
-                    return response()->json([
-                        'error' => 'Coupon has reached its usage limit',
-                    ], 400);
+                // SECURITY FIX: Atomic coupon usage check and increment
+                // Uses database-level atomic operation to prevent race conditions
+                // where multiple concurrent requests could exceed max_uses limit
+                if ($coupon->max_uses) {
+                    $updated = Coupon::where('id', $coupon->id)
+                        ->where(function ($query) use ($coupon) {
+                            $query->where('uses_count', '<', $coupon->max_uses)
+                                  ->orWhereNull('max_uses');
+                        })
+                        ->update(['uses_count' => \DB::raw('uses_count + 1')]);
+
+                    if ($updated === 0) {
+                        return response()->json([
+                            'error' => 'Coupon has reached its usage limit',
+                        ], 400);
+                    }
+
+                    // Refresh coupon to get updated uses_count
+                    $coupon->refresh();
+                } else {
+                    // No limit, just increment
+                    $coupon->increment('uses_count');
                 }
 
                 // Calculate discount
@@ -148,9 +165,6 @@ class CartController extends Controller
                 } else {
                     $discount = min($coupon->value, $subtotal);
                 }
-
-                // Increment coupon usage
-                $coupon->increment('uses_count');
             }
 
             // Calculate taxable amount (subtotal minus discount on taxable items)

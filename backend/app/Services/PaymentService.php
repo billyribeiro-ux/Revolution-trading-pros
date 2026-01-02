@@ -132,8 +132,12 @@ class PaymentService
         // Merge additional options
         $payload = array_merge($payload, $options);
 
+        // SECURITY: Generate idempotency key based on order to prevent double charges
+        // Format: pi_{order_number}_{timestamp_minute} - allows retry within same minute
+        $idempotencyKey = "pi_{$order->order_number}_" . floor(time() / 60);
+
         try {
-            $response = $this->stripeRequest('POST', '/payment_intents', $payload);
+            $response = $this->stripeRequest('POST', '/payment_intents', $payload, $idempotencyKey);
 
             // Update order with payment intent
             $order->update([
@@ -222,6 +226,9 @@ class PaymentService
 
     /**
      * Handle successful payment
+     *
+     * SECURITY: Validates payment amount matches order total to prevent
+     * manipulation attacks where wrong amounts are paid via Stripe dashboard.
      */
     private function handlePaymentSucceeded(array $data): array
     {
@@ -233,6 +240,39 @@ class PaymentService
                 'payment_intent_id' => $paymentIntentId,
             ]);
             return ['handled' => false, 'message' => 'Order not found'];
+        }
+
+        // CRITICAL SECURITY: Validate payment amount matches order total
+        $paidAmount = $data['amount_received'] ?? $data['amount'] ?? 0;
+        $expectedAmount = $this->convertToSmallestUnit($order->total, $order->currency ?? 'USD');
+
+        // Allow 1 cent tolerance for rounding issues
+        if (abs($paidAmount - $expectedAmount) > 1) {
+            Log::critical('Payment amount mismatch detected - potential fraud', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'expected_amount' => $expectedAmount,
+                'paid_amount' => $paidAmount,
+                'currency' => $order->currency ?? 'USD',
+                'payment_intent_id' => $paymentIntentId,
+            ]);
+
+            $order->update([
+                'payment_status' => Order::PAYMENT_FAILED,
+                'status' => Order::STATUS_ON_HOLD,
+                'metadata' => array_merge($order->metadata ?? [], [
+                    'amount_mismatch' => true,
+                    'expected_amount' => $expectedAmount,
+                    'paid_amount' => $paidAmount,
+                    'flagged_at' => now()->toIso8601String(),
+                ]),
+            ]);
+
+            return [
+                'handled' => false,
+                'message' => 'Payment amount mismatch - order flagged for review',
+                'order_id' => $order->id,
+            ];
         }
 
         // Extract payment method details
@@ -414,6 +454,9 @@ class PaymentService
 
     /**
      * Create a refund for an order
+     *
+     * SECURITY: Validates refund amount against order total and previous refunds
+     * to prevent over-refunding attacks or accidental money loss.
      */
     public function createRefund(Order $order, ?float $amount = null, ?string $reason = null): array
     {
@@ -423,17 +466,41 @@ class PaymentService
             throw new InvalidArgumentException('Order has no payment intent');
         }
 
+        // SECURITY: Verify order was actually paid
+        if ($order->payment_status !== Order::PAYMENT_PAID &&
+            $order->payment_status !== Order::PAYMENT_PARTIALLY_REFUNDED) {
+            throw new InvalidArgumentException('Order has not been paid or is already fully refunded');
+        }
+
         $currency = strtolower($order->currency ?? 'usd');
         $refundAmount = $amount ?? $order->total;
+
+        // SECURITY: Calculate already refunded amount from order record
+        $previousRefunds = $order->refund_amount ?? 0;
+        $maxRefundable = round($order->total - $previousRefunds, 2);
+
+        // SECURITY: Prevent refunding more than remaining balance
+        if ($refundAmount > $maxRefundable) {
+            Log::warning('Attempted over-refund blocked', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'order_total' => $order->total,
+                'previous_refunds' => $previousRefunds,
+                'max_refundable' => $maxRefundable,
+                'attempted_refund' => $refundAmount,
+            ]);
+
+            throw new InvalidArgumentException(
+                "Cannot refund {$refundAmount}. Maximum refundable amount is {$maxRefundable}"
+            );
+        }
 
         $payload = [
             'payment_intent' => $order->payment_intent_id,
         ];
 
-        // Partial refund
-        if ($amount && $amount < $order->total) {
-            $payload['amount'] = $this->convertToSmallestUnit($amount, $currency);
-        }
+        // Partial refund - always specify amount to be explicit
+        $payload['amount'] = $this->convertToSmallestUnit($refundAmount, $currency);
 
         if ($reason) {
             $payload['reason'] = match ($reason) {
@@ -655,15 +722,28 @@ class PaymentService
 
     /**
      * Make a request to Stripe API
+     *
+     * @param string $method HTTP method (GET, POST, DELETE)
+     * @param string $endpoint Stripe API endpoint
+     * @param array $data Request payload
+     * @param string|null $idempotencyKey Optional idempotency key to prevent duplicate operations
      */
-    private function stripeRequest(string $method, string $endpoint, array $data = []): array
+    private function stripeRequest(string $method, string $endpoint, array $data = [], ?string $idempotencyKey = null): array
     {
         $url = self::STRIPE_API_URL . $endpoint;
 
+        $headers = [
+            'Stripe-Version' => self::STRIPE_API_VERSION,
+        ];
+
+        // SECURITY: Add idempotency key for POST requests to prevent double-charges
+        // on network retries. Key should be unique per intended operation.
+        if ($idempotencyKey !== null && strtoupper($method) === 'POST') {
+            $headers['Idempotency-Key'] = $idempotencyKey;
+        }
+
         $request = Http::withBasicAuth($this->secretKey, '')
-            ->withHeaders([
-                'Stripe-Version' => self::STRIPE_API_VERSION,
-            ])
+            ->withHeaders($headers)
             ->timeout(30);
 
         $response = match (strtoupper($method)) {
