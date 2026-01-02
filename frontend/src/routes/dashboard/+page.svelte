@@ -479,7 +479,7 @@
 		margin: 0;
 		color: #333;
 		font-size: 36px;
-		font-weight: 300;
+		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
@@ -533,7 +533,7 @@
 	.trading-room-rules__disclaimer {
 		margin: 0;
 		font-size: 13px;
-		font-weight: 400;
+		font-weight: 500;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
 		line-height: 1.4;
