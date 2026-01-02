@@ -101,7 +101,7 @@
 			author: 'Lead Trader',
 			excerpt: 'Deep dive into today\'s SPX levels and key gamma zones for optimal 0DTE entries.',
 			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			url: '#'
+			url: '/dashboard/day-trading-room/video/market-analysis-spx-0dte-strategy'
 		},
 		{
 			type: 'video',
