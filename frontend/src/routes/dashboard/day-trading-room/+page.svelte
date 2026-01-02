@@ -20,6 +20,7 @@
 -->
 <script lang="ts">
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import SecondaryDashboardSidebar from '$lib/components/dashboard/SecondaryDashboardSidebar.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
