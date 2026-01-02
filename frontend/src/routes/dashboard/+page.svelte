@@ -372,19 +372,14 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
 		max-width: 1700px;
 		padding: 20px;
-	}
-
-	@media (min-width: 820px) {
-		.dashboard__header {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
-		}
 	}
 
 	@media (min-width: 1280px) {
@@ -402,13 +397,8 @@
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
-		flex-direction: column;
-	}
-
-	@media (min-width: 577px) {
-		.dashboard__header-left {
-			flex-direction: row;
-		}
+		justify-content: center;
+		flex: 1;
 	}
 
 	.dashboard__page-title {
