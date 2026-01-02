@@ -126,7 +126,8 @@
 		const memberships = user.memberships ?? [];
 
 		for (const membership of memberships) {
-			if (membership.type === 'course') {
+			// Exclude Small Account Mentorship from Mastery section
+			if (membership.type === 'course' && membership.slug !== 'small-account-mentorship') {
 				links.push({
 					href: `/dashboard/${membership.slug}/`,
 					icon: membership.icon ?? 'book',
