@@ -74,22 +74,24 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Breadcrumbs - WordPress Reference Match
+	 * Breadcrumbs - Mobile-First Responsive Design
+	 * Apple ICT 11+ Standards
 	 * Position: Below main navigation, above dashboard content
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Base styles - Mobile (320px+) */
 	.breadcrumbs {
 		z-index: 1;
 		background-color: #efefef;
 		border-bottom: 1px solid #dbdbdb;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		font-size: 13px;
+		font-size: 12px;
 		line-height: 1.5;
 	}
 
 	.container-fluid {
 		max-width: 100%;
-		padding: 10px 20px;
+		padding: 8px 15px;
 	}
 
 	ul {
@@ -99,6 +101,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
+		gap: 4px;
 	}
 
 	li {
@@ -108,13 +111,15 @@
 
 	.separator {
 		color: #999;
-		padding: 0 8px;
+		padding: 0 4px;
+		font-size: 11px;
 	}
 
 	.breadcrumb-link {
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
+		font-size: 12px;
 	}
 
 	.breadcrumb-link:hover {
@@ -125,28 +130,44 @@
 	.breadcrumb-current {
 		color: #666;
 		font-weight: 600;
+		font-size: 12px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive
+	 * Tablet (768px+)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	@media (max-width: 768px) {
-		.container-fluid {
-			padding: 8px 15px;
+	@media (min-width: 768px) {
+		.breadcrumbs {
+			font-size: 13px;
 		}
 
-		.breadcrumbs {
-			font-size: 12px;
+		.container-fluid {
+			padding: 10px 20px;
+		}
+
+		.separator {
+			padding: 0 8px;
+			font-size: 13px;
+		}
+
+		.breadcrumb-link,
+		.breadcrumb-current {
+			font-size: 13px;
 		}
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Desktop (1280px+)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 1280px) {
 		.container-fluid {
 			padding: 12px 30px;
 		}
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Large Desktop (1440px+)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (min-width: 1440px) {
 		.container-fluid {
 			padding: 12px 40px;
