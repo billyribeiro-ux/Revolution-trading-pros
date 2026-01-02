@@ -119,6 +119,7 @@
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
 		font-size: 12px;
+		font-weight: 700;
 	}
 
 	.breadcrumb-link:hover {
@@ -128,7 +129,7 @@
 
 	.breadcrumb-current {
 		color: #666;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 12px;
 	}
 
