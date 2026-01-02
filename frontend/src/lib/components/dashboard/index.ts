@@ -7,5 +7,4 @@
  */
 
 export { default as DashboardSidebar } from './DashboardSidebar.svelte';
-export { default as SecondaryDashboardSidebar } from './SecondaryDashboardSidebar.svelte';
 export { default as DashboardBreadcrumbs } from './DashboardBreadcrumbs.svelte';
