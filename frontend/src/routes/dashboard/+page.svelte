@@ -338,39 +338,6 @@
 		</section>
 	{/if}
 
-	<!-- Mentorship Section -->
-	{#if mentorshipCards.length > 0}
-		<section class="dashboard__content-section">
-			<h2 class="section-title">Mentorship</h2>
-			<div class="membership-cards">
-				{#each mentorshipCards as card}
-					<div class="membership-card-col">
-						<article class="membership-card membership-card--{card.variant}">
-							<a href={card.href} class="membership-card__header">
-								<span class="mem_icon">
-									<span class="membership-card__icon">
-										<RtpIcon name={card.icon} size={32} />
-									</span>
-								</span>
-								<span class="mem_div">{card.name}</span>
-							</a>
-							<div class="membership-card__actions">
-								<a href={card.href}>Dashboard</a>
-								{#if card.tradingRoom}
-									<a href={card.tradingRoom} target="_blank">Trading Room</a>
-								{/if}
-							</div>
-						</article>
-					</div>
-				{/each}
-			</div>
-			<!-- Divider -->
-			<div class="section-divider">
-				<div class="section-divider__line"></div>
-			</div>
-		</section>
-	{/if}
-
 	<!-- Tools Section -->
 	<section class="dashboard__content-section">
 		<h2 class="section-title">Tools</h2>
