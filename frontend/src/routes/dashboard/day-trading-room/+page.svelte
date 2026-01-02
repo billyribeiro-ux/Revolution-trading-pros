@@ -111,10 +111,18 @@
 		url: '#'
 	};
 
+	// Trading schedule - Individual trader listings (WordPress format)
 	const tradingSchedule = [
-		{ day: 'Monday - Friday', time: '8:30 AM - 12:00 PM EST', session: 'Live Trading Session' },
-		{ day: 'Monday - Friday', time: '12:00 PM - 1:00 PM EST', session: 'Market Recap & Q&A' },
-		{ day: 'Daily', time: '3:00 PM EST', session: 'Daily Video Analysis' }
+		{ traderName: 'Taylor Horton', date: 'Jan 5, 2026', time: '9:20 AM EST' },
+		{ traderName: 'Sam Shames', date: 'Jan 5, 2026', time: '10:30 AM EST' },
+		{ traderName: 'Neil Yeager', date: 'Jan 5, 2026', time: '11:30 AM EST' },
+		{ traderName: 'Bruce Marshall', date: 'Jan 5, 2026', time: '2:00 PM EST' },
+		{ traderName: 'Henry Gambell', date: 'Jan 5, 2026', time: '3:00 PM EST' },
+		{ traderName: 'Henry Gambell', date: 'Jan 6, 2026', time: '9:15 AM EST' },
+		{ traderName: 'Raghee Horner', date: 'Jan 6, 2026', time: '10:30 AM EST' },
+		{ traderName: 'David Starr', date: 'Jan 6, 2026', time: '11:30 AM EST' },
+		{ traderName: 'Taylor Horton', date: 'Jan 6, 2026', time: '2:00 PM EST' },
+		{ traderName: 'Danielle Shay / John Carter', date: 'Jan 6, 2026', time: '3:00 PM EST' }
 	];
 </script>
 
@@ -277,15 +285,13 @@
 	<!-- Sidebar -->
 	<aside class="dashboard__content-sidebar">
 		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Trading Room Schedule
-				<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;">Schedule is subject to change.</p>
-			</h4>
+			<h4 class="content-sidebar__heading">Trading Room Schedule</h4>
+			<p class="schedule-subtext">Schedule is subject to change.</p>
 			<div class="schedule-list">
-				{#each tradingSchedule as schedule}
+				{#each tradingSchedule as item}
 					<div class="schedule-item">
-						<div class="schedule-day">{schedule.day}</div>
-						<div class="schedule-time">{schedule.time}</div>
-						<div class="schedule-session">{schedule.session}</div>
+						<div class="trader-name">{item.traderName}</div>
+						<div class="trader-datetime">{item.date}, {item.time}</div>
 					</div>
 				{/each}
 			</div>
@@ -449,21 +455,23 @@
 		border-bottom: none;
 	}
 
-	.schedule-day {
-		font-weight: 700;
-		color: #191717;
-		margin-bottom: 4px;
-	}
-
-	.schedule-time {
-		color: #143E59;
-		font-weight: 600;
-		margin-bottom: 4px;
-	}
-
-	.schedule-session {
+	.schedule-subtext {
+		font-size: 11px;
 		color: #666;
-		font-size: 12px;
+		font-style: italic;
+		margin: 0 0 16px 0;
+	}
+
+	.trader-name {
+		font-size: 14px;
+		font-weight: 600;
+		color: #191717;
+	}
+
+	.trader-datetime {
+		font-size: 13px;
+		color: #666;
+		margin-top: 2px;
 	}
 
 	/* Quick Links - Orange with arrow prefix (WordPress match) */

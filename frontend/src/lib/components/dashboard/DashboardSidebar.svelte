@@ -288,27 +288,6 @@
 			</ul>
 		{/if}
 
-		<!-- Mentorship Section (Small Account Mentorship) -->
-		{#if mentorshipLinks.length > 0}
-			<ul>
-				<li>
-					<p class="dashboard__nav-category">mentorship</p>
-				</li>
-				<ul class="dash_main_links">
-					{#each mentorshipLinks as link}
-						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
-								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={link.icon} size={32} />
-								</span>
-								<span class="dashboard__nav-item-text">{link.text}</span>
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</ul>
-		{/if}
-
 		<!-- Scanners Section (High Octane only) -->
 		{#if scannerLinks.length > 0}
 			<ul>
@@ -373,35 +352,7 @@
 		</ul>
 	</nav>
 
-	<!-- Toggle Footer - Mobile Menu Trigger (matches WordPress reference) -->
-	<footer class="dashboard__toggle">
-		<button
-			class="dashboard__toggle-button"
-			onclick={toggleMobileMenu}
-			aria-label="Toggle dashboard menu"
-			aria-expanded={isMobileMenuOpen}
-		>
-			<div class="dashboard__toggle-button-icon">
-				<span></span>
-				<span></span>
-				<span></span>
-			</div>
-			<span class="dashboard__toggle-button-label">Dashboard Menu</span>
-		</button>
-	</footer>
-
-	<!-- Overlay for mobile -->
-	<div
-		class="dashboard__overlay"
-		class:is-active={isMobileMenuOpen}
-		onclick={closeMobileMenu}
-		onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
-		role="button"
-		tabindex="-1"
-		aria-label="Close menu"
-	></div>
-
-	<!-- Secondary Navigation - INSIDE sidebar (WordPress structure match) -->
+	<!-- Secondary Navigation - IMMEDIATELY after primary nav (flex sibling, WordPress structure) -->
 	{#if showSecondaryNav}
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
@@ -450,6 +401,34 @@
 			</ul>
 		</nav>
 	{/if}
+
+	<!-- Toggle Footer - Mobile Menu Trigger (matches WordPress reference) -->
+	<footer class="dashboard__toggle">
+		<button
+			class="dashboard__toggle-button"
+			onclick={toggleMobileMenu}
+			aria-label="Toggle dashboard menu"
+			aria-expanded={isMobileMenuOpen}
+		>
+			<div class="dashboard__toggle-button-icon">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<span class="dashboard__toggle-button-label">Dashboard Menu</span>
+		</button>
+	</footer>
+
+	<!-- Overlay for mobile -->
+	<div
+		class="dashboard__overlay"
+		class:is-active={isMobileMenuOpen}
+		onclick={closeMobileMenu}
+		onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
+		role="button"
+		tabindex="-1"
+		aria-label="Close menu"
+	></div>
 </aside>
 
 <!-- Mobile Floating Trigger (visible when sidebar is hidden on mobile) -->
@@ -688,19 +667,19 @@
 		color: #fff;
 	}
 
-	/* Active State - Light blue RIGHT border indicator */
+	/* Active State - Orange LEFT border indicator (WordPress match) */
 	.dash_main_links li.is-active a {
 		color: #fff;
 	}
 
-	.dash_main_links li.is-active a::after {
+	.dash_main_links li.is-active a::before {
 		content: '';
 		position: absolute;
-		right: 0;
+		left: 0;
 		top: 0;
 		bottom: 0;
 		width: 4px;
-		background-color: #143E59;
+		background-color: #f7931e;
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
@@ -874,11 +853,21 @@
 		margin-right: 0;
 	}
 
-	.dashboard__nav-secondary .dashboard__nav-item-text {
-		opacity: 1;
-		visibility: visible;
-		width: auto;
+	/* Force secondary nav text visibility regardless of collapsed state */
+	.dashboard__nav-secondary .dashboard__nav-item-text,
+	.dashboard__nav-secondary .dashboard__nav-secondary-item .dashboard__nav-item-text {
+		opacity: 1 !important;
+		visibility: visible !important;
+		width: auto !important;
+		overflow: visible !important;
+		white-space: nowrap;
 		flex: 1;
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	/* Active state in secondary nav - text white */
+	.dashboard__nav-secondary .dashboard__nav-secondary-item.is-active .dashboard__nav-item-text {
+		color: #ffffff;
 	}
 
 	/* Submenu styles */
