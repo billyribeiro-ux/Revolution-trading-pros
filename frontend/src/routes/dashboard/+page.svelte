@@ -267,11 +267,6 @@
 	</div>
 </header>
 
-<!-- Divider - WordPress Match -->
-<div class="dashboard-divider">
-	<div class="dashboard-divider__line"></div>
-</div>
-
 <!-- Dashboard Content -->
 {#if !isLoading}
 	<!-- Memberships Section -->
@@ -450,36 +445,6 @@
 			gap: 20px;
 			margin-top: 0;
 		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD DIVIDER - WordPress Exact Match
-	 * Source: DashboardHome Implementation
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard-divider {
-		background-color: #ffffff;
-		padding: 0 20px;
-	}
-
-	@media (min-width: 1280px) {
-		.dashboard-divider {
-			padding: 0 30px;
-		}
-	}
-
-	@media (min-width: 1440px) {
-		.dashboard-divider {
-			padding: 0 40px;
-		}
-	}
-
-	.dashboard-divider__line {
-		border-top-width: 1px;
-		border-top-style: solid;
-		border-top-color: #cccccc;
-		max-width: 100%;
-		margin: 10px auto 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
