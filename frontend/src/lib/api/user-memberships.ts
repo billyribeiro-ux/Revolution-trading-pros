@@ -588,21 +588,8 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		// ═══════════════════════════════════════════════════════════════════════════
-		// INDICATORS / SCANNERS (2)
+		// INDICATORS / SCANNERS (1) - High Octane Scanner Only
 		// ═══════════════════════════════════════════════════════════════════════════
-		{
-			id: 'options-scanner-pro',
-			name: 'Options Scanner Pro',
-			type: 'indicator',
-			slug: 'options-scanner-pro',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'search',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly'
-		},
 		{
 			id: 'high-octane-scanner',
 			name: 'High Octane Scanner',
