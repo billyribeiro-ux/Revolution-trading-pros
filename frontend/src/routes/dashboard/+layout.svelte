@@ -245,6 +245,40 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Collapsed Sidebar Hover Effect - MasterDash Reference Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	
+	/* Global sidebar styles are in DashboardSidebar.svelte component */
+	/* This adds the hover expansion behavior for collapsed state */
+	:global(.dashboard__sidebar.is-collapsed:hover) {
+		width: 280px;
+		box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+	}
+	
+	:global(.dashboard__sidebar.is-collapsed:hover .dashboard__nav-item-text),
+	:global(.dashboard__sidebar.is-collapsed:hover .dashboard__profile-name),
+	:global(.dashboard__sidebar.is-collapsed:hover .dashboard__nav-category) {
+		opacity: 1;
+		visibility: visible;
+		width: auto;
+		transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
+	}
+	
+	:global(.dashboard__sidebar.is-collapsed:hover .dash_main_links li a) {
+		justify-content: flex-start;
+		padding: 12px 20px;
+	}
+	
+	:global(.dashboard__sidebar.is-collapsed:hover .dashboard__profile-nav-item) {
+		justify-content: flex-start;
+		padding: 15px 20px;
+	}
+	
+	:global(.dashboard__sidebar.is-collapsed:hover .dashboard__nav-item-icon) {
+		margin-right: 12px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Dashboard Layout Container
 	 * Modern Flexbox with logical properties
 	 * ═══════════════════════════════════════════════════════════════════════════ */

@@ -695,6 +695,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * COLLAPSED STATE - Icon-only mode (80px)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
+	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
+		opacity: 0;
+		visibility: hidden;
+		width: 0;
+		transition: opacity 0.2s ease, visibility 0.2s ease;
+	}
+
+	/* Center icons when collapsed */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a {
+		justify-content: center;
+		padding: 12px 0;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item {
+		justify-content: center;
+		padding: 15px 0;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon {
+		margin-right: 0;
+		position: static;
+		left: auto;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECONDARY SIDEBAR - Expanded Detail View
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
