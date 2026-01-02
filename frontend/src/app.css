@@ -13,6 +13,16 @@
  * @author Revolution Trading Pros
  */
 
+/**
+ * Revolution Trading Pros - Global Styles
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Apple ICT 11+ Principal Engineer Implementation
+ * Modern CSS Architecture (December 2025)
+ */
+
+/* Import Simpler Trading Icon Font */
+@import './lib/styles/simpler-icons.css';
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * Tailwind v4 Theme Configuration
  * This @theme block registers custom colors as utility classes

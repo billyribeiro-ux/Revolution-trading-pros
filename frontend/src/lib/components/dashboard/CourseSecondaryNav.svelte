@@ -99,6 +99,7 @@
 		overflow-x: hidden;
 		z-index: 98;
 		box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+		padding-top: 0;
 	}
 
 	/* Scrollbar Styling */

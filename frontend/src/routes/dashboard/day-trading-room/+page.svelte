@@ -37,7 +37,8 @@
 		{
 			href: '/dashboard/day-trading-room',
 			icon: 'layout-dashboard',
-			text: 'Day Trading Room Dashboard'
+			text: 'Day Trading Room Dashboard',
+			simplerIcon: 'st-icon-dashboard'
 		},
 		{
 			href: '/dashboard/day-trading-room/daily-videos',
