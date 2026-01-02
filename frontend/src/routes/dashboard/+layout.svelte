@@ -348,21 +348,6 @@
 		}
 	}
 
-	/* Dark Mode Support (future-ready) */
-	@media (prefers-color-scheme: dark) {
-		.dashboard__main {
-			background-color: #1a1a1a;
-		}
-
-		.dashboard__loading-overlay {
-			background: rgb(26 26 26 / 0.8);
-		}
-
-		.dashboard__loading-spinner {
-			border-color: #333;
-			border-block-start-color: #fff;
-		}
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * CONTAINER QUERIES - Component-level responsiveness
