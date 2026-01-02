@@ -499,12 +499,36 @@
 	}
 
 	/* Welcome Video Section */
-
 	.welcome-video {
 		background: #fff;
 		border-radius: 8px;
 		padding: 20px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Utility Classes */
+	.u--background-color-white {
+		background-color: #fff;
+	}
+
+	.u--border-radius {
+		border-radius: 8px;
+	}
+
+	.u--hide-read-more p {
+		margin: 0;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700;
+	}
+
+	.u--margin-bottom-0 {
+		margin-bottom: 0;
+	}
+
+	.u--font-size-sm {
+		font-size: 14px;
 	}
 
 	/* Article Cards Grid */
@@ -643,6 +667,19 @@
 	/* Sidebar Links - Removed (using global .link-list from app.css) */
 
 	/* Responsive Design */
+	@media (max-width: 1024px) {
+		.dashboard__content {
+			flex-direction: column;
+		}
+
+		.dashboard__content-sidebar {
+			flex: 1 1 auto;
+			width: 100%;
+			border-left: none;
+			border-top: 1px solid #e5e5e5;
+		}
+	}
+
 	@media (max-width: 768px) {
 		.article-cards {
 			grid-template-columns: 1fr;
@@ -658,6 +695,30 @@
 			width: 100%;
 			flex-direction: column;
 			align-items: stretch;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+
+		.dashboard__content-section {
+			padding-bottom: 30px;
+		}
+
+		.dashboard__content-section-member {
+			padding-bottom: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+
+		.dashboard__content-main {
+			padding: 40px;
 		}
 	}
 </style>
