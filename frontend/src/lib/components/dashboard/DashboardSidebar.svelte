@@ -493,12 +493,15 @@
 	 * SIDEBAR CONTAINER
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * WordPress CSS evidence: flex-flow: row no-wrap
+	 * Primary nav (80px collapsed) + Secondary nav (280px) = 360px total
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__sidebar {
 		display: flex;
 		flex: 0 0 auto;
-		flex-direction: column;
+		flex-flow: row nowrap;  /* WordPress: row layout, navs side by side */
 		background-color: #0f2d41;
-		width: 280px;
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -522,11 +525,8 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * COLLAPSED STATE (desktop only)
+	 * WordPress: Only primary nav width changes to 80px, sidebar is row flex
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__sidebar.is-collapsed {
-		width: 80px;
-	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
 		padding-top: 30px;
