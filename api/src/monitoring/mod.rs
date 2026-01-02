@@ -139,9 +139,10 @@ async fn metrics_json(State(metrics): State<Metrics>) -> Json<MetricsSnapshot> {
 /// Health check with detailed status
 /// GET /health/detailed
 async fn health_detailed() -> (StatusCode, Json<serde_json::Value>) {
+    // ICT 11+ Fix: Use unwrap_or_default to prevent panic on system clock issues
     let uptime = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_default()
         .as_secs();
 
     (

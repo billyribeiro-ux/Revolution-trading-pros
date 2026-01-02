@@ -108,6 +108,7 @@ pub struct StripeService {
 
 impl StripeService {
     /// Create new Stripe service with API key
+    /// ICT 11+ Fix: Use unwrap_or_else with default client instead of expect()
     pub fn new(secret_key: &str) -> Self {
         Self {
             secret_key: secret_key.to_string(),
@@ -115,7 +116,10 @@ impl StripeService {
             client: reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(30))
                 .build()
-                .expect("Failed to create HTTP client"),
+                .unwrap_or_else(|e| {
+                    tracing::error!("Failed to create HTTP client with timeout: {}, using default", e);
+                    reqwest::Client::new()
+                }),
         }
     }
 
