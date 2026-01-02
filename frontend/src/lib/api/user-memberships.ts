@@ -588,7 +588,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		// ═══════════════════════════════════════════════════════════════════════════
-		// INDICATORS / SCANNERS (1)
+		// INDICATORS / SCANNERS (2)
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
 			id: 'mock-6',
@@ -601,6 +601,19 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
+			interval: 'monthly'
+		},
+		{
+			id: 'high-octane-scanner',
+			name: 'High Octane Scanner',
+			type: 'indicator',
+			slug: 'high-octane-scanner',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'chart-candle',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 119,
 			interval: 'monthly'
 		}
 		// NOTE: Weekly Watchlist is in the Tools section, not memberships cards
