@@ -172,7 +172,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <!-- Secondary Navigation Panel (appears when sidebar is collapsed) -->
 <CourseSecondaryNav
