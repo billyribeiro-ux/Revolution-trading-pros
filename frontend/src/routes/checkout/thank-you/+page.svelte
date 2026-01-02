@@ -9,10 +9,13 @@
 	 * @version 2.0.0 - Svelte 5 Migration
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import type { PageProps } from '@sveltejs/kit';
+	import type { PageData } from './$types';
 
 	// Receive data from load function using Svelte 5 $props()
-	let { data }: PageProps = $props();
+	interface Props {
+		data: PageData;
+	}
+	let { data }: Props = $props();
 
 	// Derive order details with fallbacks
 	let orderNumber = $derived(data.orderNumber || 'RTP-' + Date.now().toString(36).toUpperCase());

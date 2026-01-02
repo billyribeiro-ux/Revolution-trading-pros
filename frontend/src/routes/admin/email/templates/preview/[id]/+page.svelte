@@ -2,13 +2,13 @@
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	let loading = true;
 	let error = '';
 	let preview: { subject?: string; body_html?: string } | null = null;
-	const id = $page.params['id']!;
+	const id = page.params['id']!;
 
 	onMount(async () => {
 		try {

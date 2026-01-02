@@ -15,7 +15,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// Svelte 5 individual icon imports (Dec 2025 pattern)
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
@@ -156,7 +156,7 @@
 	let availableTags = $state<{ id: string; name: string; color?: string }[]>([]);
 	let availableLists = $state<{ id: string; name: string }[]>([]);
 
-	let contactId = $derived($page.params.id as string);
+	let contactId = $derived(page.params.id as string);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS

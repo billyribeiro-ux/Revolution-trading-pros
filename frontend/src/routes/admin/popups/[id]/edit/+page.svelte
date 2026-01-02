@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Card, Button, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
-	const popupId = parseInt($page.params['id'] ?? '0');
+	const popupId = parseInt(page.params['id'] ?? '0');
 
 	// Form state
 	let formData: Partial<Popup> = {

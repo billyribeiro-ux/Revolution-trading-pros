@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import FormBuilder from '$lib/components/forms/FormBuilder.svelte';
 	import EmbedCodeGenerator from '$lib/components/forms/EmbedCodeGenerator.svelte';
@@ -21,7 +21,7 @@
 	let showThemeCustomizer = $state(false);
 	let selectedTheme = $state<FormTheme | null>(null);
 
-	let formId = $derived(parseInt($page.params['id']!));
+	let formId = $derived(parseInt(page.params['id']!));
 
 	onMount(async () => {
 		try {

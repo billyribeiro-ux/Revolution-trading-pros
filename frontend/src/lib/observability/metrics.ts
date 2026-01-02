@@ -24,7 +24,7 @@
 
 import { browser } from '$app/environment';
 import { getOrchestrator } from './orchestrator';
-import {
+import type {
 	PageViewPayload,
 	CustomEventPayload,
 	PurchasePayload,

@@ -24,9 +24,7 @@
     import IconSchool from '@tabler/icons-svelte/icons/school';
     import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
     import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
-    import IconSettings from '@tabler/icons-svelte/icons/settings';
     import IconClock from '@tabler/icons-svelte/icons/clock';
-    import IconFilter from '@tabler/icons-svelte/icons/filter';
     import SEOHead from '$lib/components/SEOHead.svelte';
 
     // --- Types ---

@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import FormRenderer from '$lib/components/forms/FormRenderer.svelte';
 	import { previewForm } from '$lib/api/forms';
 	import type { Form } from '$lib/api/forms';
@@ -14,7 +14,7 @@
 	let error = $state('');
 	let submitted = $state(false);
 
-	let formSlug = $derived($page.params.slug!);
+	let formSlug = $derived(page.params.slug!);
 
 	onMount(async () => {
 		try {

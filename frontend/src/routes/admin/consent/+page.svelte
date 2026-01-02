@@ -50,8 +50,8 @@
 		abTestAnalytics = getABTestAnalytics();
 	}
 
-	function handleExportData() {
-		const data = exportConsentData();
+	async function handleExportData() {
+		const data = await exportConsentData();
 		downloadJSON(data, 'consent-data-export.json');
 	}
 

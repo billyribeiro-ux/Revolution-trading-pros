@@ -1,9 +1,12 @@
 //! Health check routes
+//! ICT 11+ FIX: setup-db and run-migrations now require admin authentication
 
 use axum::{routing::{get, post}, Json, Router};
+use axum::http::StatusCode;
 use serde::Serialize;
 
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 #[derive(Serialize)]
 struct HealthResponse {
@@ -51,9 +54,12 @@ async fn ready_check(
 
 /// Setup endpoint - creates missing tables
 /// POST /setup-db
+/// ICT 11+ SECURITY FIX: Now requires admin authentication
 async fn setup_db(
+    admin: AdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
-) -> Result<Json<SetupResponse>, (axum::http::StatusCode, Json<SetupResponse>)> {
+) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
+    tracing::info!("Admin {} running setup-db", admin.email);
     // Create email_verification_tokens table
     let create_table = r#"
         DROP TABLE IF EXISTS email_verification_tokens CASCADE;
@@ -161,10 +167,13 @@ async fn setup_db(
 
 /// Run all pending migrations including membership plan seeding
 /// POST /run-migrations
-/// ICT 11+ Pattern: Migrations are defined in SQL files, not hardcoded
+/// ICT 11+ SECURITY FIX: Now requires admin authentication
+/// Migrations are defined in SQL files, not hardcoded
 async fn run_migrations(
+    admin: AdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
-) -> Result<Json<SetupResponse>, (axum::http::StatusCode, Json<SetupResponse>)> {
+) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
+    tracing::info!("Admin {} running migrations", admin.email);
     // Migration: Seed membership plans (from migrations/008_seed_membership_plans.sql)
     // This SQL is loaded from the migration file at compile time
     let seed_plans_sql = include_str!("../../migrations/008_seed_membership_plans.sql");

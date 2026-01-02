@@ -14,8 +14,12 @@ pub struct Database {
 impl Database {
     /// Create a new database connection
     pub async fn new(config: &Config) -> Result<Self> {
+        // ICT 11+ FIX: Increased pool size for production load
+        // 10 was causing connection starvation at scale
         let pool = PgPoolOptions::new()
-            .max_connections(10)
+            .max_connections(50)
+            .min_connections(5)
+            .acquire_timeout(std::time::Duration::from_secs(30))
             .connect(&config.database_url)
             .await?;
 

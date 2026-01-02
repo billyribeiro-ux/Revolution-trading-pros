@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { boardsAPI } from '$lib/api/boards';
 	import type { Board, Stage, Task, Label, BoardMember, Comment, Attachment, Subtask, CustomFieldDefinition } from '$lib/boards/types';
 	import {
@@ -27,7 +27,7 @@
 	} from '$lib/icons';
 
 	// Get board ID from URL
-	const boardId = $derived($page.params['id'] ?? '');
+	const boardId = $derived(page.params['id'] ?? '');
 
 	// State
 	let board = $state<Board | null>(null);
@@ -98,7 +98,7 @@
 		loadBoard();
 
 		// Check for task in URL query
-		const taskId = $page.url.searchParams.get('task');
+		const taskId = page.url.searchParams.get('task');
 		if (taskId) {
 			const task = tasks.find(t => t.id === taskId);
 			if (task) {

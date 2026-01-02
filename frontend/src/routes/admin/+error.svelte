@@ -10,7 +10,7 @@
 	 *
 	 * @version 1.0.0 - L8 Principal Engineer
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
@@ -26,8 +26,8 @@
 	} from '$lib/icons';
 
 	// Error details from SvelteKit
-	let status = $derived($page.status);
-	let message = $derived($page.error?.message || 'An unexpected error occurred');
+	let status = $derived(page.status);
+	let message = $derived(page.error?.message || 'An unexpected error occurred');
 
 	// Admin error configuration
 	const errorConfig: Record<
@@ -107,7 +107,7 @@
 		if (browser && status >= 400) {
 			console.error(`[Admin Error ${status}]`, {
 				message,
-				path: $page.url.pathname,
+				path: page.url.pathname,
 				timestamp: new Date().toISOString()
 			});
 		}
@@ -127,7 +127,7 @@
 
 	async function handleLogin() {
 		authStore.clearAuth();
-		await goto(`/login?redirect=${encodeURIComponent($page.url.pathname)}`);
+		await goto(`/login?redirect=${encodeURIComponent(page.url.pathname)}`);
 	}
 </script>
 
@@ -167,7 +167,7 @@
 						</div>
 						<div class="debug-row">
 							<span class="debug-key">Path:</span>
-							<span class="debug-value">{$page.url.pathname}</span>
+							<span class="debug-value">{page.url.pathname}</span>
 						</div>
 						<div class="debug-row">
 							<span class="debug-key">Message:</span>

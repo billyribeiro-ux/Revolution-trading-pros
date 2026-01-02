@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { membersApi } from '$lib/api/members';
 	import type { Member, Subscription, Order } from '$lib/api/members';
@@ -33,7 +33,7 @@
 		IconFileText
 	} from '$lib/icons';
 
-	let memberId = $derived(Number($page.params.id));
+	let memberId = $derived(Number(page.params.id));
 
 	// State
 	let member = $state<Member | null>(null);

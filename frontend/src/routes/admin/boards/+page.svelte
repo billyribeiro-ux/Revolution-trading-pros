@@ -61,7 +61,7 @@
 		title: '',
 		description: '',
 		type: 'kanban' as const,
-		folder_id: null as string | null
+		folder_id: undefined as string | undefined
 	});
 
 	// New folder form
@@ -133,7 +133,7 @@
 			const board = await boardsAPI.createBoard(newBoard);
 			boards = [board, ...boards];
 			showCreateModal = false;
-			newBoard = { title: '', description: '', type: 'kanban', folder_id: null };
+			newBoard = { title: '', description: '', type: 'kanban', folder_id: undefined };
 			goto(`/admin/boards/${board.id}`);
 		} catch (error) {
 			console.error('Failed to create board:', error);

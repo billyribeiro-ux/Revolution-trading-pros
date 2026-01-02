@@ -18,7 +18,7 @@
 	 * @version 3.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
@@ -140,7 +140,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function verify() {
-		const token = $page.url.searchParams.get('token');
+		const token = page.url.searchParams.get('token');
 
 		if (!token) {
 			status = 'no-token';

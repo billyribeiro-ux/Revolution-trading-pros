@@ -13,7 +13,7 @@
 	 * @version 3.0.0 (Svelte 5 / December 2025)
 	 */
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import pastMembersApi, {
@@ -54,7 +54,7 @@
 	// PAGE DATA
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const data = $derived($page.data as PastMembersPageData);
+	const data = $derived(page.data as PastMembersPageData);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE (Svelte 5 Runes)

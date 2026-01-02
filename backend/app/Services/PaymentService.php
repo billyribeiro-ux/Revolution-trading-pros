@@ -302,10 +302,15 @@ class PaymentService
             $item->deductInventory();
         }
 
+        // ICT 11+ CRITICAL FIX: Provision membership access after successful payment
+        // This was MISSING - users were paying but not getting access!
+        $this->provisionMembershipAccess($order);
+
         Log::info('Payment succeeded for order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'amount' => $order->total,
+            'memberships_provisioned' => true,
         ]);
 
         return [
@@ -392,12 +397,16 @@ class PaymentService
                     $item->restoreInventory();
                 }
             }
+
+            // ICT 11+ FIX: Revoke membership access on full refund
+            $this->revokeMembershipAccess($order);
         }
 
         Log::info('Refund processed for order', [
             'order_id' => $order->id,
             'amount_refunded' => $amountRefundedDecimal,
             'is_full_refund' => $isFullRefund,
+            'memberships_revoked' => $isFullRefund,
         ]);
 
         return [
@@ -885,5 +894,124 @@ class PaymentService
     public function isTestMode(): bool
     {
         return $this->testMode;
+    }
+
+    /**
+     * ICT 11+ CRITICAL FIX: Provision membership access after successful payment
+     *
+     * This method creates UserMembership records for each membership item in the order,
+     * granting the user access to their purchased trading rooms, courses, etc.
+     */
+    private function provisionMembershipAccess(Order $order): void
+    {
+        if (!$order->user_id) {
+            Log::warning('Cannot provision memberships: Order has no user', ['order_id' => $order->id]);
+            return;
+        }
+
+        foreach ($order->items as $item) {
+            // Only process membership-type items
+            if (!in_array($item->item_type, ['membership', 'trading_room', 'alert_service', 'course', 'indicator'])) {
+                continue;
+            }
+
+            $planId = $item->plan_id ?? $item->product_id;
+            if (!$planId) {
+                Log::warning('Cannot provision membership: No plan/product ID', [
+                    'order_id' => $order->id,
+                    'item_id' => $item->id,
+                ]);
+                continue;
+            }
+
+            // Calculate expiration based on billing cycle
+            $startsAt = now();
+            $expiresAt = match ($item->billing_cycle ?? 'monthly') {
+                'yearly', 'annual' => $startsAt->copy()->addYear(),
+                'quarterly' => $startsAt->copy()->addMonths(3),
+                'lifetime' => null, // Never expires
+                default => $startsAt->copy()->addMonth(), // monthly
+            };
+
+            // Check if user already has this membership (avoid duplicates)
+            $existing = \App\Models\UserMembership::where('user_id', $order->user_id)
+                ->where('plan_id', $planId)
+                ->where('status', 'active')
+                ->first();
+
+            if ($existing) {
+                // Extend existing membership
+                if ($expiresAt && $existing->expires_at) {
+                    $existing->update([
+                        'expires_at' => $existing->expires_at->max($expiresAt),
+                    ]);
+                    Log::info('Extended existing membership', [
+                        'user_id' => $order->user_id,
+                        'plan_id' => $planId,
+                        'new_expires_at' => $existing->expires_at,
+                    ]);
+                }
+            } else {
+                // Create new membership
+                \App\Models\UserMembership::create([
+                    'user_id' => $order->user_id,
+                    'plan_id' => $planId,
+                    'starts_at' => $startsAt,
+                    'expires_at' => $expiresAt,
+                    'status' => 'active',
+                    'payment_provider' => 'stripe',
+                    'subscription_id' => $order->payment_intent_id,
+                ]);
+
+                Log::info('Provisioned new membership', [
+                    'user_id' => $order->user_id,
+                    'plan_id' => $planId,
+                    'order_id' => $order->id,
+                    'expires_at' => $expiresAt,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * ICT 11+ FIX: Revoke membership access on full refund
+     *
+     * This prevents users from keeping access after requesting a refund.
+     */
+    private function revokeMembershipAccess(Order $order): void
+    {
+        if (!$order->user_id) {
+            return;
+        }
+
+        foreach ($order->items as $item) {
+            if (!in_array($item->item_type, ['membership', 'trading_room', 'alert_service', 'course', 'indicator'])) {
+                continue;
+            }
+
+            $planId = $item->plan_id ?? $item->product_id;
+            if (!$planId) {
+                continue;
+            }
+
+            // Find and revoke the membership
+            $membership = \App\Models\UserMembership::where('user_id', $order->user_id)
+                ->where('plan_id', $planId)
+                ->where('subscription_id', $order->payment_intent_id)
+                ->first();
+
+            if ($membership) {
+                $membership->update([
+                    'status' => 'revoked',
+                    'expires_at' => now(),
+                ]);
+
+                Log::info('Revoked membership due to refund', [
+                    'user_id' => $order->user_id,
+                    'plan_id' => $planId,
+                    'order_id' => $order->id,
+                ]);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { serviceMembersStore, emailStore } from '$lib/stores/members';
 	import type { Member } from '$lib/api/members';
@@ -22,7 +22,7 @@
 		IconChartBar
 	} from '$lib/icons';
 
-	let serviceId = $derived(Number($page.params.id));
+	let serviceId = $derived(Number(page.params.id));
 
 	// Store state
 	let service = $derived($serviceMembersStore.service);

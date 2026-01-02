@@ -53,7 +53,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fade, slide } from 'svelte/transition';
 	import {
 		couponsApi,
@@ -244,7 +244,7 @@
 	let testing = $state(false);
 	let errors = $state<ValidationError[]>([]);
 	let activeTab = $state<'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing'>('basic');
-	let duplicateFrom: string | null = $page.url.searchParams.get('duplicate');
+	let duplicateFrom: string | null = page.url.searchParams.get('duplicate');
 
 	// Form Data
 	let formData = $state<CouponFormData>({

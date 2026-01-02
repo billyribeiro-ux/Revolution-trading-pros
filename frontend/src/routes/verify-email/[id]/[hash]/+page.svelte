@@ -1,25 +1,29 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { IconCircleCheck, IconAlertCircle, IconMail } from '$lib/icons';
+	import { page } from '$app/state';
+	import { IconCircleCheck, IconAlertCircle } from '$lib/icons';
 
-	let verifying = true;
-	let success = false;
-	let error = '';
-	let message = '';
+	let verifying = $state(true);
+	let success = $state(false);
+	let error = $state('');
+	let message = $state('');
 
 	onMount(async () => {
-		const { id, hash } = $page.params;
+		// ICT 11+ FIX: The hash IS the token - construct proper API call
+		// Backend expects: GET /api/auth/verify-email?token=xxx
+		const { hash } = page.params;
+		const token = hash;
 
 		try {
 			const response = await fetch(
-				`${import.meta.env.VITE_API_URL}/email/verify/${id}/${hash}?${$page.url.searchParams}`,
+				`${import.meta.env.VITE_API_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`,
 				{
 					method: 'GET',
 					headers: {
 						Accept: 'application/json'
-					}
+					},
+					credentials: 'include'
 				}
 			);
 

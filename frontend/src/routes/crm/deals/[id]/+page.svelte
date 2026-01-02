@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Deal } from '$lib/crm/types';
@@ -14,7 +14,7 @@
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 
-	let dealId = $derived($page.params.id as string);
+	let dealId = $derived(page.params.id as string);
 
 	onMount(async () => {
 		await loadDeal();
