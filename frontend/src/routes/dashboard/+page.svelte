@@ -403,7 +403,7 @@
 		max-width: 1700px;
 		padding: 20px;
 	}
-
+    
 	@media (min-width: 1280px) {
 		.dashboard__header {
 			padding: 30px;
