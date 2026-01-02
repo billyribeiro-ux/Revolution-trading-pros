@@ -520,7 +520,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 		// TRADING ROOMS (3)
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
-			id: 'mock-1',
+			id: 'day-trading-room',
 			name: 'Day Trading Room',
 			type: 'trading-room',
 			slug: 'day-trading-room',
@@ -533,7 +533,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		{
-			id: 'mock-2',
+			id: 'swing-trading-room',
 			name: 'Swing Trading Room',
 			type: 'trading-room',
 			slug: 'swing-trading-room',
@@ -546,7 +546,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		{
-			id: 'mock-3',
+			id: 'small-account-mentorship',
 			name: 'Small Account Mentorship',
 			type: 'course',
 			slug: 'small-account-mentorship',
@@ -562,7 +562,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 		// ALERT SERVICES (2)
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
-			id: 'mock-4',
+			id: 'spx-profit-pulse',
 			name: 'SPX Profit Pulse',
 			type: 'alert-service',
 			slug: 'spx-profit-pulse',
@@ -575,7 +575,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		{
-			id: 'mock-5',
+			id: 'explosive-swing',
 			name: 'Explosive Swing',
 			type: 'alert-service',
 			slug: 'explosive-swing',
@@ -591,7 +591,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 		// INDICATORS / SCANNERS (2)
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
-			id: 'mock-6',
+			id: 'options-scanner-pro',
 			name: 'Options Scanner Pro',
 			type: 'indicator',
 			slug: 'options-scanner-pro',
