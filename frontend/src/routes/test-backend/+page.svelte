@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { submitForm, type Form } from '$lib/api/forms';
-	import { popupsApi, recordPopupImpression, recordPopupConversion } from '$lib/api/popups';
+	import { submitForm } from '$lib/api/forms';
+	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { IconMail, IconUser, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { IconMail, IconUser, IconCheck } from '$lib/icons';
 
 	// Form state
 	let formData = {

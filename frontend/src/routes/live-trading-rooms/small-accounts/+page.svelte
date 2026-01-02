@@ -9,6 +9,7 @@
 
     // --- FAQ Logic (Svelte 5 Runes) ---
     let openFaq: number | null = $state(null);
+    let mounted = $state(false);
     const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
     // --- Apple ICT9+ Scroll Animations ---

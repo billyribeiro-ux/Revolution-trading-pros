@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { IconCircleCheck, IconAlertCircle, IconMail } from '$lib/icons';
+	import { IconCircleCheck, IconAlertCircle } from '$lib/icons';
 
 	let verifying = $state(true);
 	let success = $state(false);

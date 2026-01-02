@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups';
-	import { IconRocket, IconGift, IconMail, IconAlertCircle } from '$lib/icons';
+	import { IconRocket } from '$lib/icons';
 
 	// Demo popup templates
 	const demoPopups: Partial<Popup>[] = [

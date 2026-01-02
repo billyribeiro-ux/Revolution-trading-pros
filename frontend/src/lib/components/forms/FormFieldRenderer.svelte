@@ -96,7 +96,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Email -->
@@ -110,7 +110,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Number -->
@@ -130,7 +130,7 @@
 				typeof field.validation?.step === 'string'
 					? field.validation.step
 					: 'any'}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Phone -->
@@ -144,7 +144,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- URL -->
@@ -158,7 +158,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Textarea -->
@@ -178,7 +178,7 @@
 						: 5}
 				minlength={field.validation?.min_length}
 				maxlength={field.validation?.max_length}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			></textarea>
 
 			<!-- Select Dropdown -->
@@ -190,7 +190,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			>
 				<option value="">-- Select --</option>
 				{#if field.options}
@@ -213,7 +213,7 @@
 								checked={value === option}
 								required={field.required}
 								onchange={handleChange}
-								{...field.attributes || {}}
+								{...(field.attributes as Record<string, any>) || {}}
 							/>
 							<span>{option}</span>
 						</label>
@@ -234,7 +234,7 @@
 								value={optionValue}
 								checked={isChecked(optionValue)}
 								onchange={(e: Event) => handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
-								{...field.attributes || {}}
+								{...(field.attributes as Record<string, any>) || {}}
 							/>
 							<span>{optionLabel}</span>
 						</label>
@@ -252,7 +252,7 @@
 				class={getInputClasses()}
 				onchange={handleChange}
 				accept={typeof field.validation?.accept === 'string' ? field.validation.accept : undefined}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 			{#if field.validation?.max_size}
 				<small class="field-help">Maximum file size: {field.validation.max_size}</small>
@@ -270,7 +270,7 @@
 				oninput={handleChange}
 				min={field.validation?.min}
 				max={field.validation?.max}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Time -->
@@ -283,7 +283,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Date & Time -->
@@ -296,7 +296,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Range Slider -->
@@ -316,7 +316,7 @@
 					typeof field.validation?.step === 'string'
 						? field.validation.step
 						: 1}
-					{...field.attributes || {}}
+					{...(field.attributes as Record<string, any>) || {}}
 				/>
 				<output class="range-value">{value || field.validation?.min || 0}</output>
 			</div>
@@ -331,12 +331,12 @@
 				required={field.required}
 				class="form-color"
 				oninput={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			/>
 
 			<!-- Hidden Field -->
 		{:else if field.field_type === 'hidden'}
-			<input type="hidden" name={field.name} {value} {...field.attributes || {}} />
+			<input type="hidden" name={field.name} {value} {...(field.attributes as Record<string, any>) || {}} />
 
 			<!-- Rating (Stars) -->
 		{:else if field.field_type === 'rating'}
@@ -372,7 +372,7 @@
 						name={field.name}
 						checked={value === true || value === '1' || value === 'yes' || value === 'on'}
 						onchange={(e: Event) => onchange?.((e.currentTarget as HTMLInputElement).checked)}
-						{...field.attributes || {}}
+						{...(field.attributes as Record<string, any>) || {}}
 					/>
 					<span class="newsletter-checkbox-text">
 						{field.options?.checkbox_label || 'Yes, I want to receive newsletters'}
@@ -443,7 +443,7 @@
 				required={field.required}
 				class={getInputClasses()}
 				onchange={handleChange}
-				{...field.attributes || {}}
+				{...(field.attributes as Record<string, any>) || {}}
 			>
 				{#if field.options && Array.isArray(field.options)}
 					{#each field.options as option}
