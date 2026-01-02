@@ -13,11 +13,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// Breadcrumb data
-	const breadcrumbs = [
-		{ name: 'Dashboard', url: '/dashboard' },
-		{ name: 'High Octane Scanner', url: '/dashboard/high-octane-scanner' }
-	];
+	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 </script>
 
 <svelte:head>
@@ -26,23 +22,11 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<!-- Breadcrumb Navigation -->
+<DashboardBreadcrumbs />
+
 <div class="scanner-dashboard-page">
 	<div class="container">
-		<!-- Breadcrumb Navigation -->
-		<nav aria-label="Breadcrumb" class="breadcrumb-nav">
-			<ol>
-				{#each breadcrumbs as crumb, index}
-					<li>
-						{#if index < breadcrumbs.length - 1}
-							<a href={crumb.url}>{crumb.name}</a>
-							<span class="separator" aria-hidden="true">›</span>
-						{:else}
-							<span aria-current="page">{crumb.name}</span>
-						{/if}
-					</li>
-				{/each}
-			</ol>
-		</nav>
 
 		<!-- Main Header -->
 		<header class="page-header">
@@ -90,49 +74,6 @@
 	.container {
 		max-width: 1200px;
 		margin: 0 auto;
-	}
-
-	/* Breadcrumb Navigation */
-	.breadcrumb-nav {
-		margin-bottom: 32px;
-	}
-
-	.breadcrumb-nav ol {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		font-size: 0.875rem;
-		color: #64748b;
-	}
-
-	.breadcrumb-nav li {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.breadcrumb-nav a {
-		color: #0984ae;
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.breadcrumb-nav a:hover {
-		color: #0a2335;
-		text-decoration: underline;
-	}
-
-	.breadcrumb-nav .separator {
-		color: #cbd5e1;
-		font-weight: 300;
-	}
-
-	.breadcrumb-nav [aria-current="page"] {
-		color: #0a2335;
-		font-weight: 500;
 	}
 
 	/* Page Header */
@@ -245,8 +186,9 @@
 
 	/* Accessibility - Reduced Motion */
 	@media (prefers-reduced-motion: reduce) {
-		.breadcrumb-nav a {
-			transition: none;
+		* {
+			transition: none !important;
+			animation: none !important;
 		}
 	}
 </style>

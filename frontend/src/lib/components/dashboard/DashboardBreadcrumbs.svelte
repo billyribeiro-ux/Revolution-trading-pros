@@ -14,11 +14,14 @@
 	</nav>
 -->
 <script lang="ts">
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 
 	// Generate breadcrumb items from current path
 	let breadcrumbs = $derived.by(() => {
-		const pathname = page.url.pathname;
+		if (!browser) return [{ label: 'Home', href: '/', isCurrent: false }];
+		
+		const pathname = $page.url.pathname;
 		const segments = pathname.split('/').filter(Boolean);
 
 		const items: Array<{ label: string; href: string; isCurrent: boolean }> = [
