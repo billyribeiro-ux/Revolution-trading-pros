@@ -13,7 +13,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 </script>
 
 <svelte:head>
@@ -21,9 +20,6 @@
 	<meta name="description" content="Access your High Octane Scanner - Professional options scanning tool" />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
-
-<!-- Breadcrumb Navigation -->
-<DashboardBreadcrumbs />
 
 <div class="scanner-dashboard-page">
 	<div class="container">
