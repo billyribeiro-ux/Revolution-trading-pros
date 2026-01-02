@@ -159,6 +159,32 @@
 			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
 		}
 	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// AUTO-COLLAPSE SIDEBAR ON MEMBERSHIP DASHBOARD PAGES
+	// When user navigates to a membership dashboard, collapse main sidebar
+	// so the secondary sidebar can extend
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Routes that should auto-collapse the main sidebar
+	const membershipRoutes = [
+		'/dashboard/day-trading-room',
+		'/dashboard/swing-trading-room',
+		'/dashboard/small-accounts-room',
+		'/dashboard/spx-profit-pulse',
+		'/dashboard/explosive-swings'
+	];
+
+	$effect(() => {
+		const currentPath = page?.url?.pathname ?? '';
+		const shouldCollapse = membershipRoutes.some(route => currentPath.startsWith(route));
+		
+		if (shouldCollapse && !sidebarCollapsed) {
+			sidebarCollapsed = true;
+		} else if (!shouldCollapse && sidebarCollapsed) {
+			sidebarCollapsed = false;
+		}
+	});
 </script>
 
 <svelte:head>
