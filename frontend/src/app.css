@@ -1209,7 +1209,7 @@ body.dark,
 }
 
 .section-title-alt--underline {
-	border-bottom: 3px solid #0984ae;
+	border-bottom: 3px solid #143E59;
 	padding-bottom: 12px;
 	display: inline-block;
 }
@@ -1245,7 +1245,7 @@ body.dark,
 }
 
 .link-list a {
-	color: #0984ae;
+	color: #143E59;
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 600;

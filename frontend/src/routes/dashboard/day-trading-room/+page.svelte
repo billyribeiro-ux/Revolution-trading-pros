@@ -431,7 +431,7 @@
 	}
 
 	.label--info {
-		background-color: #0984ae;
+		background-color: #143E59;
 		color: #fff;
 	}
 
@@ -450,7 +450,7 @@
 	}
 
 	.article-card__title a:hover {
-		color: #0984ae;
+		color: #143E59;
 	}
 
 	.article-card__meta {
@@ -498,7 +498,7 @@
 	}
 
 	.schedule-time {
-		color: #0984ae;
+		color: #143E59;
 		font-weight: 600;
 		margin-bottom: 4px;
 	}

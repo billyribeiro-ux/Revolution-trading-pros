@@ -83,7 +83,7 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * COURSE SECONDARY NAVIGATION - Pixel Perfect Match to MasterDash
-	 * Background: #0984ae (lighter blue than main sidebar)
+	 * Background: #143E59 (new dashboard color - dark teal/navy)
 	 * Width: 280px
 	 * Position: Fixed, left: 80px (after collapsed sidebar)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
@@ -94,7 +94,7 @@
 		left: 80px;
 		width: 280px;
 		height: 100vh;
-		background-color: #0984ae;
+		background-color: #143E59;
 		overflow-y: auto;
 		overflow-x: hidden;
 		z-index: 98;

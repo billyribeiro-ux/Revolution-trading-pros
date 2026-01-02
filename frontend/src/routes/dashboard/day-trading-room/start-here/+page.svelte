@@ -137,7 +137,7 @@
 
 	.contact-support {
 		background: #f8f9fa;
-		border-left: 4px solid #0984ae;
+		border-left: 4px solid #143E59;
 		padding: 20px;
 		margin: 30px 0;
 		border-radius: 4px;
@@ -183,7 +183,7 @@
 	.checklist-section h4 {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #0984ae;
+		color: #143E59;
 		margin-bottom: 15px;
 		font-family: 'Open Sans', sans-serif;
 	}
@@ -208,7 +208,7 @@
 	}
 
 	.checklist-section a {
-		color: #0984ae;
+		color: #143E59;
 		text-decoration: none;
 		font-weight: 600;
 	}

@@ -233,7 +233,7 @@
 
 	.cpost-previous a,
 	.cpost-next a {
-		color: #0984ae;
+		color: #143E59;
 		text-decoration: none;
 		font-size: 1rem;
 		font-weight: 600;
@@ -376,7 +376,7 @@
 	}
 
 	.card-title a:hover {
-		color: #0984ae;
+		color: #143E59;
 	}
 
 	.card-description {

@@ -560,7 +560,7 @@
 	}
 
 	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: #0984ae;
+		border-color: #143E59;
 	}
 
 	.dashboard__profile-name {
@@ -634,7 +634,7 @@
 		top: 0;
 		bottom: 0;
 		width: 4px;
-		background-color: #0984ae;
+		background-color: #143E59;
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {

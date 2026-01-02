@@ -123,7 +123,7 @@
 	}
 
 	.breadcrumb-link:hover {
-		color: #0984ae;
+		color: #143E59;
 		text-decoration: underline;
 	}
 
