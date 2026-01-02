@@ -90,10 +90,10 @@
 
 	.dashboard__nav-secondary {
 		position: fixed;
-		top: 42px; /* Account for breadcrumbs height (padding + content + border) */
+		top: 0;
 		left: 80px;
 		width: 280px;
-		height: calc(100vh - 42px); /* Subtract breadcrumbs height */
+		height: 100vh;
 		background-color: #143E59;
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -239,31 +239,6 @@
 	/* Has Submenu Indicator */
 	.has-submenu > .secondary-nav-link {
 		cursor: pointer;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SIBLING CONTENT OFFSET
-	 * When secondary sidebar is present, offset all sibling content
-	 * This ensures content doesn't overlap with the fixed secondary sidebar
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Desktop: Offset all dashboard content when secondary sidebar is present */
-	@media (min-width: 1280px) {
-		/* Target sibling elements after the secondary sidebar */
-		:global(.dashboard__nav-secondary ~ .dashboard__header),
-		:global(.dashboard__nav-secondary ~ .dashboard__content),
-		:global(.dashboard__nav-secondary ~ section),
-		:global(.dashboard__nav-secondary ~ header),
-		:global(.dashboard__nav-secondary ~ div:not(.dashboard__nav-secondary)),
-		:global(.dashboard__nav-secondary ~ main) {
-			margin-left: 280px;
-		}
-
-		/* Hide DashboardSidebar's hover secondary panel when this nav is present */
-		/* Prevents conflict between the two secondary sidebar systems */
-		:global(.dashboard__sidebar-secondary) {
-			display: none !important;
-		}
 	}
 
 	/* Responsive - Hide on mobile/tablet */
