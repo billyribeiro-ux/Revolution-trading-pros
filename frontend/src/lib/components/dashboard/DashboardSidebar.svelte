@@ -138,15 +138,34 @@
 		return links;
 	});
 
-	let indicatorLinks = $derived.by(() => {
+	let scannerLinks = $derived.by(() => {
 		const links: NavLink[] = [];
 		const memberships = user.memberships ?? [];
 
 		for (const membership of memberships) {
-			if (membership.type === 'indicator') {
+			// Only show High Octane scanner
+			if (membership.type === 'indicator' && membership.slug === 'high-octane-scanner') {
 				links.push({
 					href: `/dashboard/${membership.slug}/`,
 					icon: membership.icon ?? 'chart-candle',
+					text: membership.name
+				});
+			}
+		}
+
+		return links;
+	});
+
+	let mentorshipLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		const memberships = user.memberships ?? [];
+
+		for (const membership of memberships) {
+			// Show mentorship programs (e.g., Small Account Mentorship)
+			if (membership.type === 'course' && membership.slug === 'small-account-mentorship') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'users',
 					text: membership.name
 				});
 			}
@@ -168,7 +187,8 @@
 	let allSections = $derived([
 		{ title: 'memberships', links: tradingRoomLinks },
 		{ title: 'mastery', links: masteryLinks },
-		{ title: 'indicators', links: indicatorLinks },
+		{ title: 'mentorship', links: mentorshipLinks },
+		{ title: 'scanners', links: scannerLinks },
 		{ title: 'tools', links: toolsLinks }
 	]);
 </script>
@@ -252,14 +272,35 @@
 			</ul>
 		{/if}
 
-		<!-- Indicators Section (Scanners) -->
-		{#if indicatorLinks.length > 0}
+		<!-- Mentorship Section (Small Account Mentorship) -->
+		{#if mentorshipLinks.length > 0}
 			<ul>
 				<li>
-					<p class="dashboard__nav-category">indicators</p>
+					<p class="dashboard__nav-category">mentorship</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each indicatorLinks as link}
+					{#each mentorshipLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
+		<!-- Scanners Section (High Octane only) -->
+		{#if scannerLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">scanners</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
