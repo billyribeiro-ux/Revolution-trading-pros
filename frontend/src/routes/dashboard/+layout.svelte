@@ -404,7 +404,7 @@
 
 	/* Offset main content when secondary sidebar is visible (membership pages) */
 	.dashboard__main.has-secondary-sidebar {
-		margin-inline-start: 280px; /* Secondary sidebar width */
+		margin-inline-start: 360px; /* Collapsed primary (80px) + Secondary (280px) */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
