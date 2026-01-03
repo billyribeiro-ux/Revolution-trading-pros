@@ -4,8 +4,14 @@
 
 	Phase Two: Collapsible sidebar with secondary hover panel
 
-	@version 2.1.0 - RtpIcon Integration
+	@version 2.2.0 - FIXED: Secondary nav positioning & icon alignment
 	@author Revolution Trading Pros
+
+	FIXES APPLIED (ICT 11+ Forensic Investigation):
+	1. Secondary nav desktop positioning - removed position:fixed bleed-through
+	2. Icon/text alignment in secondary nav - switched to flexbox layout
+	3. Removed !important wars causing cascade conflicts
+	4. Added proper padding-top alignment for secondary nav
 
 	Svelte 5 Features Used:
 	- $props() with interface typing
@@ -369,10 +375,11 @@
 								onclick={() => toggleSubmenu(item.text)}
 								aria-expanded={expandedSubmenus.has(item.text)}
 							>
-								<span class="dashboard__nav-item-icon">
+								<span class="dashboard__nav-secondary-icon">
 									<RtpIcon name={item.icon} size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">{item.text}</span>
+								<span class="dashboard__nav-secondary-text">{item.text}</span>
+								<span class="dashboard__nav-secondary-chevron">›</span>
 							</button>
 
 							{#if expandedSubmenus.has(item.text)}
@@ -391,10 +398,10 @@
 								class:is-active={isActive(item.href)}
 								href={item.href}
 							>
-								<span class="dashboard__nav-item-icon">
+								<span class="dashboard__nav-secondary-icon">
 									<RtpIcon name={item.icon} size={24} />
 								</span>
-								<span class="dashboard__nav-item-text">{item.text}</span>
+								<span class="dashboard__nav-secondary-text">{item.text}</span>
 							</a>
 						{/if}
 					</li>
@@ -464,6 +471,12 @@
 	 * Dashboard Sidebar - Pixel Perfect WordPress Match
 	 * Source: dashboard.8f78208b.css from Simpler Trading
 	 *
+	 * VERSION 2.2.0 - ICT 11+ FIXES APPLIED:
+	 * - FIX #1: Secondary nav positioning (removed position:fixed bleed-through)
+	 * - FIX #2: Icon/text alignment (flexbox instead of absolute positioning)
+	 * - FIX #3: Removed !important cascade conflicts
+	 * - FIX #4: Proper padding-top alignment
+	 *
 	 * LAYOUT PATTERN (matching WordPress exactly):
 	 * - Desktop (1280px+): position: static, part of flex layout
 	 * - Mobile (<1280px): position: fixed, full height overlay
@@ -473,18 +486,14 @@
 	 * SIDEBAR CONTAINER
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * WordPress CSS evidence: flex-flow: row no-wrap
-	 * Primary nav (80px collapsed) + Secondary nav (280px) = 360px total
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__sidebar {
 		display: flex;
 		flex: 0 0 auto;
 		flex-direction: column;
 		width: 280px;
 		background-color: #0f2d41;
-		position: static;              /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:65] */
-		min-height: 100vh;             /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:66] */
+		position: static;
+		min-height: 100vh;
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -508,13 +517,13 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * COLLAPSED STATE (desktop only)
-	 * WordPress: Only primary nav width changes to 80px, sidebar is row flex
+	 * WordPress: Sidebar becomes row flex, primary 80px + secondary 280px
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__sidebar.is-collapsed {
 		flex-direction: row;
 		flex-wrap: nowrap;
-		width: auto; /* Allow sidebar to expand for primary (80px) + secondary (280px) */
+		width: auto;
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
@@ -557,13 +566,12 @@
 
 	.dashboard__nav-primary {
 		flex: 1;
-		width: 280px;                  /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:114] */
-		padding-bottom: 30px;          /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:115] */
-		font-size: 16px;               /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:116] */
-		background-color: #0f2d41;     /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:117] */
+		width: 280px;
+		padding-bottom: 30px;
+		font-size: 16px;
+		background-color: #0f2d41;
 		overflow-y: auto;
 		overflow-x: hidden;
-		background-color: #0f2d41;
 		transition: width 0.3s ease-in-out;
 	}
 
@@ -592,7 +600,6 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* Profile name stays white on hover - only border changes */
 	.dashboard__profile-nav-item:hover .dashboard__profile-name {
 		color: #fff;
 	}
@@ -613,7 +620,6 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* WordPress: border-color: #0984ae on hover */
 	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
 		border-color: #0984ae;
 	}
@@ -677,12 +683,10 @@
 		color: #fff;
 	}
 
-	/* Active State - Blue RIGHT border indicator (WordPress EXACT: dashboard.8f78208b.css) */
 	.dash_main_links li.is-active a {
 		color: #fff;
 	}
 
-	/* WordPress: .dashboard__nav-primary a:after */
 	.dashboard__nav-primary a::after {
 		position: absolute;
 		display: block;
@@ -697,7 +701,6 @@
 		transform-origin: 100% 50%;
 	}
 
-	/* WordPress: .dashboard__nav-primary li.is-active a:after */
 	.dash_main_links li.is-active a::after {
 		background-color: #0984ae;
 	}
@@ -707,7 +710,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * NAVIGATION ICONS
+	 * NAVIGATION ICONS (PRIMARY NAV)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-item-icon {
@@ -731,39 +734,36 @@
 		color: #fff;
 	}
 
-	/* Icons are now rendered via RtpIcon component using Tabler Icons */
-
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * NAVIGATION TEXT
+	 * NAVIGATION TEXT (PRIMARY NAV)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-item-text {
 		font-size: 14px;
-		font-weight: inherit; /* Inherits 300 from parent .dash_main_links a */
+		font-weight: inherit;
 		line-height: 1.4;
-		color: hsla(0, 0%, 100%, 0.5); /* Gray by default - matches parent link */
+		color: hsla(0, 0%, 100%, 0.5);
 		white-space: nowrap;
 		transition: color 0.15s ease-in-out;
 	}
 
 	.dashboard__nav-item-text.font-bold {
 		font-weight: bold;
-		color: hsla(0, 0%, 100%, 0.5); /* Gray by default - same as regular text */
+		color: hsla(0, 0%, 100%, 0.5);
 	}
 
 	.dash_main_links a:hover .dashboard__nav-item-text {
-		color: #fff; /* White on hover - applies to ALL text */
+		color: #fff;
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-text {
-		color: #fff; /* White when active - applies to ALL text */
+		color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * COLLAPSED STATE - Icon-only mode (80px) - WordPress EXACT
+	 * COLLAPSED STATE - Icon-only mode (80px) - PRIMARY NAV ONLY
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Hide text, profile name, and category headers when collapsed */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
 		display: none;
 	}
@@ -774,7 +774,6 @@
 		width: 0;
 	}
 
-	/* Center icons and remove padding when collapsed */
 	.dashboard__sidebar.is-collapsed .dash_main_links li {
 		margin-top: 20px;
 	}
@@ -791,7 +790,7 @@
 		justify-content: center;
 	}
 
-	/* Icon centering - PRIMARY NAV ONLY (not secondary nav) */
+	/* Icon centering - PRIMARY NAV ONLY */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-icon,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-photo {
 		left: 50%;
@@ -801,7 +800,7 @@
 		position: absolute;
 	}
 
-	/* WordPress: Circular background pseudo-element */
+	/* Circular background pseudo-element */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:before {
 		position: absolute;
 		display: block;
@@ -818,8 +817,7 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* WordPress: Text label positioning (hidden by default) - PRIMARY NAV ONLY */
-	/* z-index: 100020 to appear above secondary nav (z-index: 100010) */
+	/* Text label positioning (tooltip) - PRIMARY NAV ONLY */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
 		z-index: 100020;
@@ -845,24 +843,24 @@
 		width: auto;
 	}
 
-	/* WordPress: HOVER EFFECTS - Circular background appears */
+	/* HOVER EFFECTS - Circular background appears */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:before {
 		transform: scale(1);
 		background-color: rgba(0,0,0,.2);
 	}
 
-	/* WordPress: Active indicator hides on hover */
+	/* Active indicator hides on hover */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:after {
 		transform: scaleX(0);
 	}
 
-	/* WordPress: Icon scales down on hover */
+	/* Icon scales down on hover */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-icon,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-photo {
 		transform: scale(.9);
 	}
 
-	/* WordPress: White label slides in on hover - PRIMARY NAV ONLY */
+	/* White label slides in on hover - PRIMARY NAV ONLY */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dash_main_links li a:hover .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
 		opacity: 1;
@@ -871,16 +869,13 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SECONDARY NAVIGATION - Inside sidebar (WordPress structure match)
-	 * Uses #143E59 (dark teal/navy) per design system
+	 * SECONDARY NAVIGATION - ICT 11+ FIX APPLIED
+	 * 
+	 * FIX #1: Desktop uses position:static (flex child), NOT position:fixed
+	 * FIX #2: Mobile uses position:fixed as overlay
+	 * FIX #3: Items use FLEXBOX for icon/text alignment, NOT absolute positioning
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DESKTOP (≥1280px): position: static - part of flex layout within sidebar
-	 * MOBILE (<1280px): position: fixed - overlay panel
-	 * SOURCE: dashboard.8f78208b.css (WordPress production CSS)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	/* WordPress: background-color: #153e59 */
 	.dashboard__nav-secondary {
 		font-size: 14px;
 		font-weight: 600;
@@ -888,44 +883,47 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		transition: all 0.3s ease-in-out;
-		/* Mobile: fixed overlay (WordPress exact) */
-		position: fixed;
-		bottom: 50px;
-		left: 80px;
-		top: 0;
-		width: auto;
-		opacity: 0;
-		visibility: hidden;
-		z-index: 100010;
+
+		/* ═══════════════════════════════════════════════════════════════════════
+		 * DESKTOP FIRST (≥1280px) - Static flex child
+		 * This is the DEFAULT state on desktop - NOT fixed positioning
+		 * ═══════════════════════════════════════════════════════════════════════ */
+		display: block;
+		position: static;
+		width: 280px;
+		flex: 0 0 280px;
+		min-height: 100vh;
+		padding-top: 30px;
+		opacity: 1;
+		visibility: visible;
 	}
 
-	/* WordPress: Show secondary nav on hover when sidebar collapsed (mobile/tablet) */
-	.dashboard__sidebar.is-collapsed:hover .dashboard__nav-secondary,
-	.dashboard__sidebar.is-collapsed:focus-within .dashboard__nav-secondary {
-		opacity: 1 !important;
-		visibility: visible !important;
-	}
-
-	@media (min-width: 1280px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * MOBILE/TABLET (<1280px) - Fixed overlay panel
+	 * Only apply fixed positioning on smaller screens
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 1279px) {
 		.dashboard__nav-secondary {
-			/* Desktop: static in layout (WordPress exact) */
-			display: block;
-			position: static;
-			bottom: auto;
-			left: auto;
-			top: auto;
+			position: fixed;
+			bottom: 50px;
+			left: 80px;
+			top: 0;
 			width: 280px;
-			flex: 0 0 280px;
-			height: auto;
-			min-height: 100vh;
+			min-height: auto;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 100010;
+		}
+
+		/* Show on hover when collapsed (mobile/tablet) */
+		.dashboard__sidebar.is-collapsed:hover .dashboard__nav-secondary,
+		.dashboard__sidebar.is-collapsed:focus-within .dashboard__nav-secondary {
 			opacity: 1;
 			visibility: visible;
-			z-index: auto;
-			overflow: visible;
 		}
 	}
 
-	/* WordPress EXACT: padding: 20px 15px (small), 20px (large) */
+	/* Secondary nav list */
 	.dashboard__nav-secondary > ul {
 		list-style: none;
 		margin: 0;
@@ -943,102 +941,97 @@
 		margin: 0;
 	}
 
-	/* WordPress EXACT: padding: 16px 15px 15px 50px (with icons) */
-	/* Icon is positioned absolutely at left: 15px (20px on large screens) */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECONDARY NAV ITEMS - ICT 11+ FIX: FLEXBOX LAYOUT
+	 * 
+	 * FIX #2: Use display:flex with gap instead of absolute icon positioning
+	 * This prevents icon/text overlap issues
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__nav-secondary-item {
 		position: relative;
-		display: block;
-		padding: 16px 15px 15px 50px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		padding: 16px 15px;
 		color: hsla(0, 0%, 100%, 0.75);
 		border-radius: 5px;
 		background-color: transparent;
 		text-align: left;
+		text-decoration: none;
+		border: none;
+		cursor: pointer;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-size: 14px;
+		font-weight: 600;
 		transition: all 0.2s ease;
 	}
 
 	@media screen and (min-width: 1440px) {
 		.dashboard__nav-secondary-item {
-			padding: 18px 20px 18px 55px;
+			padding: 18px 20px;
 		}
 	}
 
-	/* WordPress: hover darkens slightly */
 	.dashboard__nav-secondary-item:hover {
 		background-color: rgba(0, 0, 0, 0.15);
 		color: #fff;
 	}
 
-	/* WordPress: Active state with blue background */
+	/* Active state - blue background */
 	.dashboard__nav-secondary-item.is-active {
 		color: #fff;
 		background-color: #0984ae;
 	}
 
-	/* WordPress: icon positioned absolutely left of text */
-	.dashboard__nav-secondary .dashboard__nav-item-icon {
-		position: absolute;
-		top: 50%;
-		left: 15px;
-		margin-top: -12px;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECONDARY NAV ICON - ICT 11+ FIX: FLEX CHILD (not absolute)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__nav-secondary-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 24px;
 		height: 24px;
-		font-size: 24px;
-		line-height: 24px;
+		flex-shrink: 0;
 		color: hsla(0, 0%, 100%, 0.75);
+		transition: color 0.2s ease;
 	}
 
-	@media screen and (min-width: 1440px) {
-		.dashboard__nav-secondary .dashboard__nav-item-icon {
-			left: 20px;
-		}
-	}
-
-	.dashboard__nav-secondary-item:hover .dashboard__nav-item-icon,
-	.dashboard__nav-secondary-item.is-active .dashboard__nav-item-icon {
+	.dashboard__nav-secondary-item:hover .dashboard__nav-secondary-icon,
+	.dashboard__nav-secondary-item.is-active .dashboard__nav-secondary-icon {
 		color: #fff;
 	}
 
-	/* Force secondary nav text visibility regardless of collapsed state */
-	/* Use high-specificity selector to override collapsed tooltip styles */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-secondary .dashboard__nav-item-text,
-	.dashboard__sidebar .dashboard__nav-secondary .dashboard__nav-item-text,
-	.dashboard__nav-secondary .dashboard__nav-secondary-item .dashboard__nav-item-text {
-		position: static !important;
-		top: auto !important;
-		left: auto !important;
-		margin-top: 0 !important;
-		margin-left: 0 !important;
-		transform: none !important;
-		z-index: auto !important;
-		opacity: 1 !important;
-		visibility: visible !important;
-		width: auto !important;
-		height: auto !important;
-		line-height: inherit !important;
-		overflow: visible !important;
-		white-space: nowrap;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECONDARY NAV TEXT - ICT 11+ FIX: FLEX CHILD (normal flow)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__nav-secondary-text {
 		flex: 1;
-		background: transparent !important;
-		box-shadow: none !important;
-		border-radius: 0 !important;
-		padding: 0 !important;
-		color: rgba(255, 255, 255, 0.75) !important;
-		font-weight: 600 !important;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		color: inherit;
 	}
 
-	/* Active state in secondary nav - text white */
-	.dashboard__nav-secondary .dashboard__nav-secondary-item.is-active .dashboard__nav-item-text {
-		color: #ffffff !important;
+	/* Chevron for submenus */
+	.dashboard__nav-secondary-chevron {
+		font-size: 18px;
+		transition: transform 0.2s ease;
+		margin-left: auto;
 	}
 
-	/* Ensure secondary nav icons are NOT affected by collapsed centering */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-secondary .dashboard__nav-item-icon {
-		left: 15px !important;
-		margin-left: 0 !important;
-		transform: none !important;
+	.dashboard__nav-secondary-item.is-expanded .dashboard__nav-secondary-chevron {
+		transform: rotate(90deg);
 	}
 
-	/* Submenu styles */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SUBMENU STYLES
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__nav-submenu {
 		list-style: none;
 		margin: 0;
@@ -1086,13 +1079,12 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TOGGLE FOOTER - Mobile Menu Trigger (WordPress Reference Match)
-	 * Background: #0d2532
+	 * TOGGLE FOOTER - Mobile Menu Trigger
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__toggle {
-		display: none; /* Hidden on desktop, shown on mobile */
-		background-color: #0f2d41; /* Match sidebar background */
+		display: none;
+		background-color: #0f2d41;
 		padding: 15px 20px;
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 	}
@@ -1142,11 +1134,11 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MOBILE FLOATING TRIGGER - Opens sidebar when hidden
+	 * MOBILE FLOATING TRIGGER
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__mobile-trigger {
-		display: none; /* Hidden on desktop, shown on mobile */
+		display: none;
 		position: fixed;
 		top: 20px;
 		left: 20px;
@@ -1207,8 +1199,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Mobile (<1280px) - Fixed sidebar, hidden by default
-	 * Reference: dashboard.8f78208b.css - EXACT WordPress breakpoint
+	 * RESPONSIVE - Mobile (<1280px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (max-width: 1279px) {
@@ -1216,7 +1207,7 @@
 			position: fixed;
 			top: 0;
 			left: 0;
-			bottom: 50px; /* Space for toggle footer */
+			bottom: 50px;
 			width: 280px;
 			overflow-x: hidden;
 			overflow-y: auto;
@@ -1232,7 +1223,7 @@
 			transform: translateX(0);
 		}
 
-		/* Reset collapsed state on mobile - always show full sidebar */
+		/* Reset collapsed state on mobile */
 		.dashboard__sidebar.is-collapsed {
 			width: 280px;
 		}
@@ -1281,8 +1272,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Desktop (1280px+) - Static sidebar in flex layout
-	 * Reference: dashboard.8f78208b.css - EXACT WordPress pattern
+	 * RESPONSIVE - Desktop (1280px+)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (min-width: 1280px) {
@@ -1295,19 +1285,17 @@
 			overflow: visible;
 		}
 
-		/* Toggle footer hidden on desktop */
 		.dashboard__toggle {
 			display: none;
 		}
 
-		/* Mobile trigger hidden on desktop */
 		.dashboard__mobile-trigger {
 			display: none;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Desktop Large (1440px+) - Increased padding
+	 * RESPONSIVE - Desktop Large (1440px+)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (min-width: 1440px) {
