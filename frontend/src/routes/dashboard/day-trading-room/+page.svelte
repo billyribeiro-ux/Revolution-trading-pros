@@ -3,55 +3,105 @@
 	
 	Day Trading Room Dashboard Page
 	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
+	Apple ICT 11+ Principal Engineer | Svelte 5 / SvelteKit Best Practices
 	
-	Member dashboard for Day Trading Room subscribers.
-	Displays latest updates, videos, chatroom archives, and resources.
+	Features:
+	- Full TypeScript typing with interfaces
+	- Svelte 5 runes: $state(), $derived(), $effect()
+	- Proper accessibility (ARIA, keyboard navigation)
+	- SEO optimized with structured data
+	- Scoped CSS with CSS custom properties
 	
-	Based on Mastering the Trade dashboard structure from MasterDash reference.
-	
-	Svelte 5 Features:
-	- $state() for component state
-	- $derived() for computed values
-	- $effect() for reactive side effects
-	
-	@version 1.0.0
+	@version 2.0.0 - Svelte 5 Best Practices
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
+	// TYPE DEFINITIONS - Svelte 5 / TypeScript Best Practice
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Dropdown state for trading room access
-	let isDropdownOpen = $state(false);
+	interface Update {
+		type: 'video' | 'archive';
+		title: string;
+		date: string;
+		author: string;
+		excerpt: string;
+		thumbnail: string;
+		url: string;
+	}
 
-	// Toggle dropdown
-	function toggleDropdown() {
+	interface Watchlist {
+		title: string;
+		week: string;
+		author: string;
+		description: string;
+		thumbnail: string;
+		url: string;
+	}
+
+	interface ScheduleItem {
+		traderName: string;
+		date: string;
+		time: string;
+	}
+
+	interface TradingRoom {
+		name: string;
+		icon: string;
+		url: string;
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// REACTIVE STATE - Svelte 5 Runes
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Dropdown state with $state rune
+	let isDropdownOpen = $state<boolean>(false);
+
+	// Derived: Button aria-label based on state
+	let dropdownAriaLabel = $derived(
+		isDropdownOpen ? 'Close trading room menu' : 'Open trading room menu'
+	);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EVENT HANDLERS - Svelte 5 Pattern
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function toggleDropdown(): void {
 		isDropdownOpen = !isDropdownOpen;
 	}
 
-	// Close dropdown when clicking outside
-	function handleClickOutside(event: MouseEvent) {
+	function closeDropdown(): void {
+		isDropdownOpen = false;
+	}
+
+	function handleClickOutside(event: MouseEvent): void {
 		const target = event.target as HTMLElement;
 		if (!target.closest('.dropdown')) {
-			isDropdownOpen = false;
+			closeDropdown();
+		}
+	}
+
+	function handleKeydown(event: KeyboardEvent): void {
+		if (event.key === 'Escape' && isDropdownOpen) {
+			closeDropdown();
 		}
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// MOCK DATA - Replace with API calls
+	// DATA - Would come from +page.server.ts load function in production
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const latestUpdates = [
+	const latestUpdates: Update[] = [
 		{
 			type: 'video',
 			title: 'Market Analysis: SPX 0DTE Strategy',
 			date: 'January 2, 2026',
 			author: 'Lead Trader',
-			excerpt: 'Deep dive into today\'s SPX levels and key gamma zones for optimal 0DTE entries.',
+			excerpt: "Deep dive into today's SPX levels and key gamma zones for optimal 0DTE entries.",
 			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			url: '/dashboard/day-trading-room/video/market-analysis-spx-0dte-strategy'
 		},
@@ -69,7 +119,7 @@
 			title: 'January 2, 2026 - Live Trading Session',
 			date: 'January 2, 2026',
 			author: 'Head Moderator',
-			excerpt: 'Full recording of today\'s live trading session with real-time commentary.',
+			excerpt: "Full recording of today's live trading session with real-time commentary.",
 			thumbnail: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			url: '#'
 		},
@@ -102,7 +152,7 @@
 		}
 	];
 
-	const weeklyWatchlist = {
+	const weeklyWatchlist: Watchlist = {
 		title: 'Weekly Watchlist',
 		week: 'Week of January 2, 2026',
 		author: 'Market Analyst',
@@ -111,8 +161,7 @@
 		url: '#'
 	};
 
-	// Trading schedule - Individual trader listings (WordPress format)
-	const tradingSchedule = [
+	const tradingSchedule: ScheduleItem[] = [
 		{ traderName: 'Taylor Horton', date: 'Jan 5, 2026', time: '9:20 AM EST' },
 		{ traderName: 'Sam Shames', date: 'Jan 5, 2026', time: '10:30 AM EST' },
 		{ traderName: 'Neil Yeager', date: 'Jan 5, 2026', time: '11:30 AM EST' },
@@ -124,6 +173,12 @@
 		{ traderName: 'Taylor Horton', date: 'Jan 6, 2026', time: '2:00 PM EST' },
 		{ traderName: 'Danielle Shay / John Carter', date: 'Jan 6, 2026', time: '3:00 PM EST' }
 	];
+
+	const tradingRooms: TradingRoom[] = [
+		{ name: 'Day Trading Room', icon: 'chart-line', url: '/live-trading-rooms/day-trading' },
+		{ name: 'Swing Trading Room', icon: 'chart-bar', url: '/live-trading-rooms/swing-trading' },
+		{ name: 'Small Account Mentorship', icon: 'school', url: '/dashboard' }
+	];
 </script>
 
 <svelte:head>
@@ -132,10 +187,10 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<svelte:window onclick={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-	 DASHBOARD HEADER
+	 DASHBOARD HEADER - Semantic HTML with ARIA
 	 ═══════════════════════════════════════════════════════════════════════════ -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
@@ -146,50 +201,57 @@
 	</div>
 
 	<div class="dashboard__header-right">
-		<ul class="ultradingroom" style="text-align: right;list-style: none;">
-			<li class="litradingroom">
-				<a href="/trading-room-rules.pdf" target="_blank" class="btn btn-xs btn-link" style="font-weight: 700 !important;">Trading Room Rules</a>
-			</li>
-			<li style="font-size: 11px;" class="btn btn-xs btn-link litradingroomhind">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</li>
-		</ul>
+		<div class="trading-room-rules">
+			<a 
+				href="/trading-room-rules.pdf" 
+				target="_blank" 
+				rel="noopener noreferrer"
+				class="btn btn-xs btn-link trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, you are agreeing to our Rules of the Room.
+			</p>
+		</div>
 
-		<!-- Enter Trading Room Dropdown -->
+		<!-- Enter Trading Room Dropdown - Full Accessibility -->
 		<div class="dropdown" class:is-open={isDropdownOpen}>
 			<button
 				type="button"
-				class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+				class="btn btn-orange btn-tradingroom dropdown-toggle"
 				onclick={toggleDropdown}
 				aria-expanded={isDropdownOpen}
+				aria-haspopup="menu"
+				aria-label={dropdownAriaLabel}
+				id="trading-room-dropdown-btn"
 			>
 				<strong>Enter a Trading Room</strong>
-				<span class="dropdown-arrow">▼</span>
+				<span class="dropdown-arrow" aria-hidden="true">▼</span>
 			</button>
 
 			{#if isDropdownOpen}
-				<nav class="dropdown-menu dropdown-menu--full-width">
+				<div 
+					class="dropdown-menu" 
+					role="menu" 
+					aria-labelledby="trading-room-dropdown-btn"
+				>
 					<ul class="dropdown-menu__menu">
-						<li>
-							<a href="/live-trading-rooms/day-trading" target="_blank">
-								<RtpIcon name="chart-line" size={20} />
-								Day Trading Room
-							</a>
-						</li>
-						<li>
-							<a href="/live-trading-rooms/swing-trading" target="_blank">
-								<RtpIcon name="chart-bar" size={20} />
-								Swing Trading Room
-							</a>
-						</li>
-						<li>
-							<a href="/dashboard" target="_blank">
-								<RtpIcon name="graduation-cap" size={20} />
-								Small Account Mentorship
-							</a>
-						</li>
+						{#each tradingRooms as room}
+							<li role="none">
+								<a 
+									href={room.url} 
+									target="_blank"
+									rel="noopener noreferrer"
+									role="menuitem"
+								>
+									<RtpIcon name={room.icon} size={20} />
+									{room.name}
+								</a>
+							</li>
+						{/each}
 					</ul>
-				</nav>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -352,19 +414,21 @@
 		gap: 8px;
 	}
 
-	/* Trading Room Rules List */
-	.ultradingroom {
-		margin: 0;
-		padding: 0;
+	/* Trading Room Rules - Semantic Structure */
+	.trading-room-rules {
+		text-align: right;
+		margin-bottom: 12px;
 	}
 
-	.litradingroom {
-		display: inline;
+	.trading-room-rules__link {
+		font-weight: 700;
 	}
 
-	.litradingroomhind {
-		display: block;
+	.trading-room-rules__disclaimer {
+		font-size: 11px;
 		color: #666;
+		margin: 4px 0 0 0;
+		line-height: 1.4;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
