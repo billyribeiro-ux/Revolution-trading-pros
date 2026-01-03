@@ -45,57 +45,49 @@
 	let isVisible = $state(false);
 	let timeoutId: ReturnType<typeof setTimeout> | null = null;
 	let triggerElement = $state<HTMLElement | null>(null);
-	let tooltipElement = $state<HTMLElement | null>(null);
-	let portalContainer: HTMLDivElement | null = null;
-	
-	// Calculated position and coordinates
-	let tooltipStyle = $state('');
-	let computedPosition = $state<'top' | 'right' | 'bottom' | 'left'>('right');
+	let tooltipElement: HTMLDivElement | null = null;
 
-	// Create portal container on mount
-	onMount(() => {
-		if (browser) {
-			portalContainer = document.createElement('div');
-			portalContainer.id = 'tooltip-portal';
-			portalContainer.style.position = 'absolute';
-			portalContainer.style.top = '0';
-			portalContainer.style.left = '0';
-			portalContainer.style.zIndex = '9999';
-			portalContainer.style.pointerEvents = 'none';
-			document.body.appendChild(portalContainer);
-		}
-	});
-
-	// Cleanup portal on destroy
+	// Cleanup tooltip on destroy
 	onDestroy(() => {
-		if (browser && portalContainer && document.body.contains(portalContainer)) {
-			document.body.removeChild(portalContainer);
+		if (tooltipElement && tooltipElement.parentNode) {
+			tooltipElement.parentNode.removeChild(tooltipElement);
+			tooltipElement = null;
+		}
+		if (timeoutId) {
+			clearTimeout(timeoutId);
 		}
 	});
 
-	function calculatePosition() {
-		if (!triggerElement || !tooltipElement || !browser) return;
+	function createAndPositionTooltip() {
+		if (!triggerElement || !browser) return;
 
+		// Create tooltip element
+		tooltipElement = document.createElement('div');
+		tooltipElement.className = 'tooltip-portal';
+		tooltipElement.setAttribute('role', 'tooltip');
+		tooltipElement.innerHTML = `<div class="tooltip-portal__content">${text}</div>`;
+
+		// Get trigger position
 		const triggerRect = triggerElement.getBoundingClientRect();
-		const tooltipRect = tooltipElement.getBoundingClientRect();
 		const viewportWidth = window.innerWidth;
 		const viewportHeight = window.innerHeight;
-		const scrollX = window.scrollX || window.pageXOffset;
-		const scrollY = window.scrollY || window.pageYOffset;
-		const gap = 8; // Gap between trigger and tooltip
+		const gap = 10;
+
+		// Append to body first to measure
+		document.body.appendChild(tooltipElement);
+		const tooltipRect = tooltipElement.getBoundingClientRect();
 
 		let top = 0;
 		let left = 0;
 		let finalPosition = position === 'auto' ? 'right' : position;
 
-		// Auto-detect best position if 'auto'
+		// Auto-detect best position
 		if (position === 'auto') {
 			const spaceRight = viewportWidth - triggerRect.right;
 			const spaceLeft = triggerRect.left;
 			const spaceTop = triggerRect.top;
 			const spaceBottom = viewportHeight - triggerRect.bottom;
 
-			// Prefer right, then left, then bottom, then top
 			if (spaceRight >= tooltipRect.width + gap) {
 				finalPosition = 'right';
 			} else if (spaceLeft >= tooltipRect.width + gap) {
@@ -107,75 +99,70 @@
 			}
 		}
 
-		// Calculate position based on final position
+		// Calculate position
 		switch (finalPosition) {
 			case 'right':
-				left = triggerRect.right + gap + scrollX;
-				top = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2) + scrollY;
-				// Adjust if overflows viewport
-				if (left + tooltipRect.width > viewportWidth + scrollX) {
-					left = triggerRect.left - tooltipRect.width - gap + scrollX;
+				left = triggerRect.right + gap;
+				top = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2);
+				if (left + tooltipRect.width > viewportWidth) {
+					left = triggerRect.left - tooltipRect.width - gap;
 					finalPosition = 'left';
 				}
 				break;
 			case 'left':
-				left = triggerRect.left - tooltipRect.width - gap + scrollX;
-				top = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2) + scrollY;
-				// Adjust if overflows viewport
-				if (left < scrollX) {
-					left = triggerRect.right + gap + scrollX;
+				left = triggerRect.left - tooltipRect.width - gap;
+				top = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2);
+				if (left < 0) {
+					left = triggerRect.right + gap;
 					finalPosition = 'right';
 				}
 				break;
 			case 'top':
-				left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2) + scrollX;
-				top = triggerRect.top - tooltipRect.height - gap + scrollY;
-				// Adjust if overflows viewport
-				if (top < scrollY) {
-					top = triggerRect.bottom + gap + scrollY;
+				left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2);
+				top = triggerRect.top - tooltipRect.height - gap;
+				if (top < 0) {
+					top = triggerRect.bottom + gap;
 					finalPosition = 'bottom';
 				}
 				break;
 			case 'bottom':
-				left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2) + scrollX;
-				top = triggerRect.bottom + gap + scrollY;
-				// Adjust if overflows viewport
-				if (top + tooltipRect.height > viewportHeight + scrollY) {
-					top = triggerRect.top - tooltipRect.height - gap + scrollY;
+				left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2);
+				top = triggerRect.bottom + gap;
+				if (top + tooltipRect.height > viewportHeight) {
+					top = triggerRect.top - tooltipRect.height - gap;
 					finalPosition = 'top';
 				}
 				break;
 		}
 
-		// Ensure tooltip stays within viewport horizontally
-		if (left < scrollX) {
-			left = scrollX + 4;
-		} else if (left + tooltipRect.width > viewportWidth + scrollX) {
-			left = viewportWidth + scrollX - tooltipRect.width - 4;
+		// Clamp to viewport
+		if (left < 4) left = 4;
+		if (left + tooltipRect.width > viewportWidth - 4) {
+			left = viewportWidth - tooltipRect.width - 4;
+		}
+		if (top < 4) top = 4;
+		if (top + tooltipRect.height > viewportHeight - 4) {
+			top = viewportHeight - tooltipRect.height - 4;
 		}
 
-		// Ensure tooltip stays within viewport vertically
-		if (top < scrollY) {
-			top = scrollY + 4;
-		} else if (top + tooltipRect.height > viewportHeight + scrollY) {
-			top = viewportHeight + scrollY - tooltipRect.height - 4;
-		}
+		// Apply position
+		tooltipElement.style.cssText = `
+			position: fixed;
+			top: ${top}px;
+			left: ${left}px;
+			z-index: 99999;
+			pointer-events: none;
+		`;
 
-		computedPosition = finalPosition;
-		tooltipStyle = `left: ${left}px; top: ${top}px;`;
+		tooltipElement.classList.add(`tooltip-portal--${finalPosition}`);
 	}
 
 	function showTooltip() {
-		if (disabled) return;
+		if (disabled || !browser) return;
 		
 		timeoutId = setTimeout(() => {
+			createAndPositionTooltip();
 			isVisible = true;
-			// Calculate position after tooltip is rendered
-			if (browser) {
-				requestAnimationFrame(() => {
-					calculatePosition();
-				});
-			}
 		}, delay);
 	}
 
@@ -184,26 +171,12 @@
 			clearTimeout(timeoutId);
 			timeoutId = null;
 		}
+		if (tooltipElement && tooltipElement.parentNode) {
+			tooltipElement.parentNode.removeChild(tooltipElement);
+			tooltipElement = null;
+		}
 		isVisible = false;
 	}
-
-	// Recalculate on scroll/resize
-	function handleScroll() {
-		if (isVisible) {
-			calculatePosition();
-		}
-	}
-
-	$effect(() => {
-		if (browser && isVisible) {
-			window.addEventListener('scroll', handleScroll, { passive: true });
-			window.addEventListener('resize', handleScroll, { passive: true });
-			return () => {
-				window.removeEventListener('scroll', handleScroll);
-				window.removeEventListener('resize', handleScroll);
-			};
-		}
-	});
 </script>
 
 <div
@@ -220,39 +193,21 @@
 	{/if}
 </div>
 
-{#if isVisible && browser && portalContainer}
-	<div
-		bind:this={tooltipElement}
-		class="tooltip tooltip--{computedPosition}"
-		style={tooltipStyle}
-		role="tooltip"
-		id="tooltip-content"
-	>
-		<div class="tooltip__content">
-			{text}
-		</div>
-	</div>
-{/if}
-
 <style>
-	/* Trigger wrapper */
 	.tooltip-trigger {
 		display: inline-flex;
 		align-items: center;
-		/* NO position:relative - tooltip is portaled to body */
 	}
 
-	/* Tooltip (rendered in portal at body level) */
-	.tooltip {
-		position: absolute;
-		z-index: 9999;
+	/* Global styles for portaled tooltip */
+	:global(.tooltip-portal) {
+		position: fixed !important;
+		z-index: 99999 !important;
 		pointer-events: none;
 		animation: tooltipFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-		will-change: opacity, transform;
 	}
 
-	/* Tooltip content box */
-	.tooltip__content {
+	:global(.tooltip-portal__content) {
 		background: #fff;
 		color: #0984ae;
 		padding: 0 12px;
@@ -268,24 +223,6 @@
 			0 0 0 1px rgba(0, 0, 0, 0.05);
 	}
 
-	/* Animations per position */
-	.tooltip--right {
-		animation: tooltipFadeInRight 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.tooltip--left {
-		animation: tooltipFadeInLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.tooltip--top {
-		animation: tooltipFadeInTop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.tooltip--bottom {
-		animation: tooltipFadeInBottom 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	/* Keyframes */
 	@keyframes tooltipFadeIn {
 		from {
 			opacity: 0;
@@ -297,53 +234,8 @@
 		}
 	}
 
-	@keyframes tooltipFadeInRight {
-		from {
-			opacity: 0;
-			transform: translateX(-8px) scale(0.95);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0) scale(1);
-		}
-	}
-
-	@keyframes tooltipFadeInLeft {
-		from {
-			opacity: 0;
-			transform: translateX(8px) scale(0.95);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0) scale(1);
-		}
-	}
-
-	@keyframes tooltipFadeInTop {
-		from {
-			opacity: 0;
-			transform: translateY(8px) scale(0.95);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	@keyframes tooltipFadeInBottom {
-		from {
-			opacity: 0;
-			transform: translateY(-8px) scale(0.95);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
-		.tooltip {
+		:global(.tooltip-portal) {
 			animation: tooltipFadeInSimple 0.15s ease-out;
 		}
 
