@@ -819,9 +819,10 @@
 	}
 
 	/* WordPress: Text label positioning (hidden by default) - PRIMARY NAV ONLY */
+	/* z-index: 100020 to appear above secondary nav (z-index: 100010) */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
-		z-index: 100;
+		z-index: 100020;
 		position: absolute;
 		top: 50%;
 		left: 100%;
