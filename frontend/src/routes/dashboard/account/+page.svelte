@@ -19,11 +19,11 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData, PageData } from './$types';
+	import type { AccountPageData } from './+page.d';
 
 	interface Props {
-		data: PageData;
-		form: ActionData;
+		data: AccountPageData;
+		form?: any;
 	}
 
 	let { data, form }: Props = $props();
@@ -32,15 +32,17 @@
 	let isSubmittingProfile = $state(false);
 	let isSubmittingPassword = $state(false);
 
-	// Derived user name from data
-	let displayName = $derived(data.user?.name || 'Member');
-	let userEmail = $derived(data.user?.email || '');
-	let firstName = $derived(displayName.split(' ')[0] || '');
-	let lastName = $derived(displayName.split(' ').slice(1).join(' ') || '');
+	// Derived user data from server load function
+	let firstName = $derived(data.profile?.firstName || '');
+	let lastName = $derived(data.profile?.lastName || '');
+	let userEmail = $derived(data.profile?.email || '');
+	let displayName = $derived(`${firstName} ${lastName}`.trim() || 'Member');
 
-	// Generate avatar URL (Gravatar or placeholder)
-	// User type doesn't include avatar, so we use a placeholder
+	// Generate avatar URL from server data or placeholder
 	let avatarUrl = $derived.by(() => {
+		if (data.profile?.avatarUrl) {
+			return data.profile.avatarUrl;
+		}
 		// Generate placeholder with initials
 		const initials = `${firstName.charAt(0)}${lastName.charAt(0) || firstName.charAt(1) || ''}`.toUpperCase();
 		return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=1a73e8&color=fff&size=100`;
