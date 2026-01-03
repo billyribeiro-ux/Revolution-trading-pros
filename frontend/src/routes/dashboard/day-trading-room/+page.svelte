@@ -219,10 +219,9 @@
 		<!-- Latest Updates Section -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Latest Updates</h2>
-			<div class="article-cards row flex-grid">
+			<div class="article-cards">
 				{#each latestUpdates as update}
-					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
-						<article class="article-card">
+					<article class="article-card">
 						<figure 
 							class="article-card__image" 
 							style="background-image: url({update.thumbnail});"
@@ -250,36 +249,31 @@
 						
 						<a href={update.url} class="btn btn-tiny btn-default">Watch Now</a>
 					</article>
-				</div>
 				{/each}
 			</div>
 		</section>
 
 		<!-- Weekly Watchlist Section -->
-		<div class="dashboard__content-section u--background-color-white">
-			<section>
-				<div class="row">
-					<div class="col-sm-6 col-lg-5">
-						<h2 class="section-title-alt section-title-alt--underline">{weeklyWatchlist.title}</h2>
-						<div class="hidden-md d-lg-none pb-2">
-							<a href={weeklyWatchlist.url}>
-								<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist" class="u--border-radius">
-							</a>
-						</div>
-						<h4 class="h5 u--font-weight-bold">{weeklyWatchlist.week} with {weeklyWatchlist.author}</h4>
-						<div class="u--hide-read-more">
-							<p>{weeklyWatchlist.description}</p>
-						</div>
-						<a href={weeklyWatchlist.url} class="btn btn-tiny btn-default">Watch Now</a>
-					</div>
-					<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+		<section class="dashboard__content-section watchlist-section">
+			<div class="watchlist-grid">
+				<div class="watchlist-content">
+					<h2 class="section-title">{weeklyWatchlist.title}</h2>
+					<div class="watchlist-mobile-image">
 						<a href={weeklyWatchlist.url}>
-							<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist" class="u--border-radius">
+							<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist" />
 						</a>
 					</div>
+					<h4 class="watchlist-subtitle">{weeklyWatchlist.week} with {weeklyWatchlist.author}</h4>
+					<p class="watchlist-description">{weeklyWatchlist.description}</p>
+					<a href={weeklyWatchlist.url} class="btn btn-tiny btn-default">Watch Now</a>
 				</div>
-			</section>
-		</div>
+				<div class="watchlist-image">
+					<a href={weeklyWatchlist.url}>
+						<img src={weeklyWatchlist.thumbnail} alt="Weekly Watchlist" />
+					</a>
+				</div>
+			</div>
+		</section>
 	</div>
 
 	<!-- Sidebar -->
@@ -706,6 +700,68 @@
 		font-size: 13px;
 		color: #666;
 		margin-top: 2px;
+	}
+
+	/* Weekly Watchlist Section */
+	.watchlist-section {
+		background: #fff;
+		border-radius: 8px;
+		padding: 24px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.watchlist-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 30px;
+		align-items: center;
+	}
+
+	@media (max-width: 991px) {
+		.watchlist-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.watchlist-image {
+			display: none;
+		}
+
+		.watchlist-mobile-image {
+			display: block;
+			margin-bottom: 16px;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.watchlist-mobile-image {
+			display: none;
+		}
+	}
+
+	.watchlist-content {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.watchlist-subtitle {
+		font-size: 16px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+	}
+
+	.watchlist-description {
+		font-size: 14px;
+		color: #555;
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.watchlist-image img,
+	.watchlist-mobile-image img {
+		width: 100%;
+		border-radius: 8px;
 	}
 
 	/* Quick Links - Orange with arrow prefix (WordPress match) */
