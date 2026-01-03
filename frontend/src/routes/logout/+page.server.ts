@@ -10,6 +10,10 @@ import type { RequestEvent } from '@sveltejs/kit';
  * - Clears all auth-related cookies
  * - Redirects to home with confirmation
  */
+
+// Disable prerendering for this dynamic route
+export const prerender = false;
+
 export const load = async ({ locals, cookies, fetch }: RequestEvent) => {
 	// Get the session for verification
 	const session = await locals.auth();
