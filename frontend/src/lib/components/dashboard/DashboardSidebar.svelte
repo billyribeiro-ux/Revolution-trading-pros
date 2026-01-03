@@ -516,7 +516,7 @@
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
 		opacity: 0;
 		visibility: hidden;
@@ -898,8 +898,8 @@
 	/* WordPress: Show secondary nav on hover when sidebar collapsed (mobile/tablet) */
 	.dashboard__sidebar.is-collapsed:hover .dashboard__nav-secondary,
 	.dashboard__sidebar.is-collapsed:focus-within .dashboard__nav-secondary {
-		opacity: 1;
-		visibility: visible;
+		opacity: 1 !important;
+		visibility: visible !important;
 	}
 
 	@media (min-width: 1280px) {
