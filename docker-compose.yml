@@ -1,0 +1,113 @@
+# Revolution Trading Pros - Development Environment
+# ICT 11+ Principal Engineer Grade
+# Rust/Axum Backend + SvelteKit Frontend
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # RUST API BACKEND
+  # ==========================================================================
+  api:
+    build:
+      context: ./backend-rust
+      dockerfile: Dockerfile
+    container_name: rtp-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgres://rtp:rtp_password@db:5432/revolution_trading_pros
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:-development-secret-key-min-32-chars}
+      - RUST_LOG=info,sqlx=warn,tower_http=debug
+      - HOST=0.0.0.0
+      - PORT=8080
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - rtp-network
+
+  # ==========================================================================
+  # POSTGRESQL DATABASE
+  # ==========================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: rtp-db
+    environment:
+      POSTGRES_USER: rtp
+      POSTGRES_PASSWORD: rtp_password
+      POSTGRES_DB: revolution_trading_pros
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rtp -d revolution_trading_pros"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - rtp-network
+
+  # ==========================================================================
+  # REDIS CACHE
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: rtp-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - rtp-network
+
+  # ==========================================================================
+  # SVELTEKIT FRONTEND (Development)
+  # ==========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: rtp-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://api:8080
+      - PUBLIC_API_URL=http://localhost:8080
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - rtp-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  rtp-network:
+    driver: bridge
