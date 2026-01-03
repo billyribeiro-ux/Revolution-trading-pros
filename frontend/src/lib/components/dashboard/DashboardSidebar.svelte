@@ -479,8 +479,11 @@
 	.dashboard__sidebar {
 		display: flex;
 		flex: 0 0 auto;
-		flex-flow: row nowrap;  /* WordPress: row layout, navs side by side */
+		flex-direction: column;
+		width: 280px;
 		background-color: #0f2d41;
+		position: static;              /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:65] */
+		min-height: 100vh;             /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:66] */
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -544,8 +547,11 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-primary {
-		width: 280px;
-		flex: 0 0 auto;
+		flex: 1;
+		width: 280px;                  /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:114] */
+		padding-bottom: 30px;          /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:115] */
+		font-size: 16px;               /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:116] */
+		background-color: #0f2d41;     /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:117] */
 		overflow-y: auto;
 		overflow-x: hidden;
 		background-color: #0f2d41;
@@ -666,11 +672,13 @@
 
 	.dash_main_links a:hover {
 		color: #fff;
+		background-color: rgba(255, 255, 255, 0.05); /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:191] */
 	}
 
 	/* Active State - Blue RIGHT border indicator (WordPress EXACT: dashboard.8f78208b.css) */
 	.dash_main_links li.is-active a {
 		color: #fff;
+		background-color: rgba(255, 255, 255, 0.08); /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:199] */
 	}
 
 	/* WordPress: .dashboard__nav-primary a:after */
