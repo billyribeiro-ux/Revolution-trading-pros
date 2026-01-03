@@ -610,9 +610,9 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* WordPress: border-color: #143E59 on hover (updated from #0984ae) */
+	/* WordPress: border-color: #0984ae on hover */
 	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: #143E59;
+		border-color: #0984ae;
 	}
 
 	.dashboard__profile-name {
@@ -698,7 +698,7 @@
 
 	/* WordPress: .dashboard__nav-primary li.is-active a:after */
 	.dash_main_links li.is-active a::after {
-		background-color: #143E59;
+		background-color: #0984ae;
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
@@ -789,35 +789,6 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * COLLAPSED HOVER EFFECT - Show labels with rounded background
-	 * WordPress behavior: On hover, text appears with #143E59 color
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Show text on hover when collapsed */
-	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-text {
-		opacity: 1;
-		visibility: visible;
-		width: auto;
-		color: #143E59 !important;
-		background-color: rgba(255, 255, 255, 0.95);
-		padding: 8px 16px;
-		border-radius: 20px;
-		position: absolute;
-		left: 70px;
-		white-space: nowrap;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		z-index: 1000;
-		font-weight: 500;
-		transition: all 0.2s ease;
-	}
-
-	/* Rounded background effect on icon hover when collapsed */
-	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover {
-		background-color: rgba(255, 255, 255, 0.1);
-		border-radius: 8px;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECONDARY NAVIGATION - Inside sidebar (WordPress structure match)
 	 * Uses #143E59 (dark teal/navy) per design system
 	 * ═══════════════════════════════════════════════════════════════════════════ */
@@ -827,12 +798,12 @@
 	 * MOBILE (<1280px): position: fixed - overlay panel
 	 * SOURCE: dashboard.8f78208b.css (WordPress production CSS)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	/* WordPress: background-color: #143E59 (updated to match new color scheme) */
+	/* WordPress: background-color: #153e59 */
 	.dashboard__nav-secondary {
 		width: 280px;
 		font-size: 14px;
 		font-weight: 600;
-		background-color: #143E59;
+		background-color: #153e59;
 		overflow-y: auto;
 		overflow-x: hidden;
 		transition: all 0.3s ease-in-out;
@@ -859,21 +830,20 @@
 
 	/* WordPress: padding: 18px 20px 18px 55px */
 	.dashboard__nav-secondary-item {
-		display: block;
 		position: relative;
-		width: 100%;
-		padding: 18px 20px 18px 55px;
+		display: block;
+		padding: 16px 15px 15px 50px;
 		color: hsla(0, 0%, 100%, 0.75);
 		border-radius: 5px;
-		text-decoration: none;
-		font-size: 14px;
-		font-weight: 500;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		background: none;
-		border: none;
-		cursor: pointer;
+		background-color: transparent;
 		text-align: left;
 		transition: all 0.2s ease;
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__nav-secondary-item {
+			padding: 18px 20px 18px 55px;
+		}
 	}
 
 	/* WordPress: hover darkens slightly */
@@ -885,25 +855,26 @@
 	/* WordPress: NO special background on secondary nav active - just white text */
 	.dashboard__nav-secondary-item.is-active {
 		color: #fff;
-		background-color: transparent;
+		background-color: #0984ae;
 	}
 
 	/* WordPress: icon positioned absolutely left of text */
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
 		position: absolute;
 		top: 50%;
-		left: 20px;
-		margin-top: -10px;
-		width: 20px;
-		height: 20px;
-		font-size: 20px;
-		line-height: 20px;
+		left: 15px;
+		margin-top: -12px;
+		width: 24px;
+		height: 24px;
+		font-size: 24px;
+		line-height: 24px;
 		color: hsla(0, 0%, 100%, 0.75);
 	}
 
-	/* DASHMAIN specific icon size overrides - using :global() for external class */
-	.dashboard__nav-secondary :global(.dashboard__nav-item-icon.st-icon-training-room) {
-		font-size: 20px !important;
+	@media screen and (min-width: 1440px) {
+		.dashboard__nav-secondary .dashboard__nav-item-icon {
+			left: 20px;
+		}
 	}
 
 	.dashboard__nav-secondary-item:hover .dashboard__nav-item-icon,
@@ -934,7 +905,6 @@
 		margin: 0;
 		padding: 4px 0 8px;
 		background-color: rgba(0, 0, 0, 0.15);
-		z-index: 110 !important;
 	}
 
 	.dashboard__nav-submenu li {
