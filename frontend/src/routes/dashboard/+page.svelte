@@ -582,7 +582,7 @@
 
 	.section-title-alt {
 		font-size: 26px;
-		font-weight: 700;
+		font-weight: 800;
 		color: #333;
 		margin: 0 0 20px;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
@@ -605,7 +605,7 @@
 
 	.watchlist-subtitle {
 		font-size: 18px;
-		font-weight: 700;
+		font-weight: 800;
 		color: #333;
 		margin: 0 0 10px;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
@@ -804,7 +804,7 @@
 	.section-title {
 		color: #333;
 		font-size: 20px;
-		font-weight: 700;
+		font-weight: 800;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		margin: 0 0 30px;
 	}
@@ -940,7 +940,7 @@
 		padding: 15px;
 		text-align: center;
 		font-size: 14px;
-		font-weight: 400;
+		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		color: #1e73be;
