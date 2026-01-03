@@ -511,8 +511,15 @@
 	 * WordPress: Only primary nav width changes to 80px, sidebar is row flex
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	.dashboard__sidebar.is-collapsed {
+		flex-direction: row;
+		flex-wrap: nowrap;
+	}
+
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
 		padding-top: 30px;
+		flex: 0 0 80px;
+		width: 80px;
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
@@ -556,13 +563,7 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		background-color: #0f2d41;
-		min-height: 100vh;
 		transition: width 0.3s ease-in-out;
-	}
-
-	/* Collapsed state is on parent sidebar, so use descendant selector */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
-		width: 80px;
 	}
 
 	.dashboard__nav-primary > ul {
@@ -911,6 +912,7 @@
 			left: auto;
 			top: auto;
 			width: 280px;
+			flex: 0 0 280px;
 			height: auto;
 			min-height: 100vh;
 			opacity: 1;
