@@ -25,6 +25,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import Tooltip from '$lib/components/ui/Tooltip.svelte';
 
 	// Types for navigation links
 	interface NavLink {
@@ -239,13 +240,24 @@
 >
 	<nav class="dashboard__nav-primary">
 		<!-- User Profile Section -->
-		<a href="/dashboard/account" class="dashboard__profile-nav-item">
-			<span
-				class="dashboard__profile-photo"
-				style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
-			></span>
-			<span class="dashboard__profile-name">{user.name}</span>
-		</a>
+		{#if collapsed}
+			<Tooltip text={user.name} position="right" delay={150}>
+				<a href="/dashboard/account" class="dashboard__profile-nav-item" aria-label={user.name}>
+					<span
+						class="dashboard__profile-photo"
+						style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
+					></span>
+				</a>
+			</Tooltip>
+		{:else}
+			<a href="/dashboard/account" class="dashboard__profile-nav-item">
+				<span
+					class="dashboard__profile-photo"
+					style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
+				></span>
+				<span class="dashboard__profile-name">{user.name}</span>
+			</a>
+		{/if}
 
 		<!-- Main Navigation Links -->
 		<ul>
@@ -253,12 +265,22 @@
 			<ul class="dash_main_links">
 				{#each mainLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a href={link.href}>
-							<span class="dashboard__nav-item-icon">
-								<RtpIcon name={link.icon} size={32} />
-							</span>
-							<span class="dashboard__nav-item-text" class:font-bold={link.bold}>{link.text}</span>
-						</a>
+						{#if collapsed}
+							<Tooltip text={link.text} position="right" delay={150}>
+								<a href={link.href}>
+									<span class="dashboard__nav-item-icon">
+										<RtpIcon name={link.icon} size={32} />
+									</span>
+								</a>
+							</Tooltip>
+						{:else}
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text" class:font-bold={link.bold}>{link.text}</span>
+							</a>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -273,12 +295,22 @@
 				<ul class="dash_main_links">
 					{#each tradingRoomLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
-								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={link.icon} size={32} />
-								</span>
-								<span class="dashboard__nav-item-text">{link.text}</span>
-							</a>
+							{#if collapsed}
+								<Tooltip text={link.text} position="right" delay={150}>
+									<a href={link.href}>
+										<span class="dashboard__nav-item-icon">
+											<RtpIcon name={link.icon} size={32} />
+										</span>
+									</a>
+								</Tooltip>
+							{:else}
+								<a href={link.href}>
+									<span class="dashboard__nav-item-icon">
+										<RtpIcon name={link.icon} size={32} />
+									</span>
+									<span class="dashboard__nav-item-text">{link.text}</span>
+								</a>
+							{/if}
 						</li>
 					{/each}
 				</ul>
@@ -294,12 +326,22 @@
 				<ul class="dash_main_links">
 					{#each mentorshipLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
-								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={link.icon} size={32} />
-								</span>
-								<span class="dashboard__nav-item-text">{link.text}</span>
-							</a>
+							{#if collapsed}
+								<Tooltip text={link.text} position="right" delay={150}>
+									<a href={link.href}>
+										<span class="dashboard__nav-item-icon">
+											<RtpIcon name={link.icon} size={32} />
+										</span>
+									</a>
+								</Tooltip>
+							{:else}
+								<a href={link.href}>
+									<span class="dashboard__nav-item-icon">
+										<RtpIcon name={link.icon} size={32} />
+									</span>
+									<span class="dashboard__nav-item-text">{link.text}</span>
+								</a>
+							{/if}
 						</li>
 					{/each}
 				</ul>
@@ -315,12 +357,22 @@
 				<ul class="dash_main_links">
 					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
-								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={link.icon} size={32} />
-								</span>
-								<span class="dashboard__nav-item-text">{link.text}</span>
-							</a>
+							{#if collapsed}
+								<Tooltip text={link.text} position="right" delay={150}>
+									<a href={link.href}>
+										<span class="dashboard__nav-item-icon">
+											<RtpIcon name={link.icon} size={32} />
+										</span>
+									</a>
+								</Tooltip>
+							{:else}
+								<a href={link.href}>
+									<span class="dashboard__nav-item-icon">
+										<RtpIcon name={link.icon} size={32} />
+									</span>
+									<span class="dashboard__nav-item-text">{link.text}</span>
+								</a>
+							{/if}
 						</li>
 					{/each}
 				</ul>
@@ -335,16 +387,30 @@
 			<ul class="dash_main_links">
 				{#each toolsLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a
-							href={link.href}
-							target={link.external ? '_blank' : undefined}
-							rel={link.external ? 'noopener noreferrer' : undefined}
-						>
-							<span class="dashboard__nav-item-icon">
-								<RtpIcon name={link.icon} size={32} />
-							</span>
-							<span class="dashboard__nav-item-text">{link.text}</span>
-						</a>
+						{#if collapsed}
+							<Tooltip text={link.text} position="right" delay={150}>
+								<a
+									href={link.href}
+									target={link.external ? '_blank' : undefined}
+									rel={link.external ? 'noopener noreferrer' : undefined}
+								>
+									<span class="dashboard__nav-item-icon">
+										<RtpIcon name={link.icon} size={32} />
+									</span>
+								</a>
+							</Tooltip>
+						{:else}
+							<a
+								href={link.href}
+								target={link.external ? '_blank' : undefined}
+								rel={link.external ? 'noopener noreferrer' : undefined}
+							>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -358,12 +424,22 @@
 			<ul class="dash_main_links">
 				{#each accountLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a href={link.href}>
-							<span class="dashboard__nav-item-icon">
-								<RtpIcon name={link.icon} size={32} />
-							</span>
-							<span class="dashboard__nav-item-text">{link.text}</span>
-						</a>
+						{#if collapsed}
+							<Tooltip text={link.text} position="right" delay={150}>
+								<a href={link.href}>
+									<span class="dashboard__nav-item-icon">
+										<RtpIcon name={link.icon} size={32} />
+									</span>
+								</a>
+							</Tooltip>
+						{:else}
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -834,33 +910,7 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* Text label positioning (tooltip) - PRIMARY NAV ONLY */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
-		z-index: 100020 !important; /* Ensure tooltip appears above all other elements */
-		position: absolute !important;
-		top: 50%;
-		left: 100%;
-		margin-top: -15px;
-		margin-left: -10px;
-		height: 30px;
-		line-height: 30px;
-		padding: 0 12px;
-		font-size: 14px;
-		font-weight: 600;
-		opacity: 0;
-		visibility: hidden;
-		color: #0984ae;
-		background: #fff;
-		border-radius: 5px;
-		transform: translate(5px);
-		transition: all 0.15s ease-in-out;
-		white-space: nowrap;
-		box-shadow: 0 10px 30px rgba(0,0,0,.15);
-		width: auto !important; /* Ensure width is not constrained */
-		overflow: visible !important; /* Prevent text clipping */
-		pointer-events: none; /* Tooltip should not interfere with mouse events */
-	}
+	/* OLD CSS-BASED TOOLTIP STYLES REMOVED - Now using Tooltip.svelte component */
 
 	/* HOVER EFFECTS - Circular background appears */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:before {
@@ -879,14 +929,7 @@
 		transform: scale(.9);
 	}
 
-	/* White label slides in on hover - PRIMARY NAV ONLY */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dash_main_links li a:hover .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
-		opacity: 1 !important;
-		visibility: visible !important;
-		transform: translate(0) !important;
-		display: block !important; /* Ensure tooltip is displayed */
-	}
+	/* OLD CSS-BASED TOOLTIP HOVER STYLES REMOVED - Now using Tooltip.svelte component */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECONDARY NAVIGATION - ICT 11+ FIX APPLIED
