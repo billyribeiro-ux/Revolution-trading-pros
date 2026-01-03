@@ -26,15 +26,13 @@
 	import { browser } from '$app/environment';
 	import { onMount, type Snippet } from 'svelte';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
-	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
+	import { getUserMemberships, type UserMembershipsResponse, type MembershipType } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 Pattern
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'scanner' | 'weekly-watchlist' | 'premium-report';
 
 	interface Props {
 		children: Snippet;

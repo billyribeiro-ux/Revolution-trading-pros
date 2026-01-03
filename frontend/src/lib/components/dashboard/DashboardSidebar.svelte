@@ -26,6 +26,7 @@
 	import { browser } from '$app/environment';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import Tooltip from '$lib/components/ui/Tooltip.svelte';
+	import type { MembershipType } from '$lib/api/user-memberships';
 
 	// Types for navigation links
 	interface NavLink {
@@ -55,7 +56,7 @@
 		name: string;
 		slug: string;
 		icon?: string;
-		type?: 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'scanner' | 'weekly-watchlist' | 'premium-report';
+		type?: MembershipType;
 	}
 
 	// Svelte 5 props with bindable for parent access
