@@ -845,20 +845,10 @@
 		color: #fff;
 	}
 
-	/* WordPress: background-color: #0984ae */
+	/* WordPress: background-color: #0984ae - NO orange bar on secondary nav */
 	.dashboard__nav-secondary-item.is-active {
 		color: #fff;
 		background-color: #0984ae;
-	}
-
-	.dashboard__nav-secondary-item.is-active::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 3px;
-		background-color: #f7931e;
 	}
 
 	/* WordPress: position absolute, left 20px */
