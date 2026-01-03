@@ -205,6 +205,7 @@ function getAccessUrl(type: MembershipType, slug: string): string {
 		'alert-service': '/alerts',
 		course: '/courses',
 		indicator: '/indicators',
+		scanner: '/scanners',
 		'weekly-watchlist': '/weekly-watchlist',
 		'premium-report': '/premium-reports'
 	};
@@ -514,6 +515,7 @@ function getDefaultIcon(type: MembershipType): string {
 		'alert-service': 'bell',
 		'course': 'book',
 		'indicator': 'chart-candle',
+		'scanner': 'chart-candle',
 		'weekly-watchlist': 'calendar',
 		'premium-report': 'file-text'
 	};
