@@ -839,28 +839,34 @@
 		transition: all 0.2s ease;
 	}
 
-	/* WordPress: background-color: rgba(0,0,0,.15) */
+	/* WordPress: hover darkens slightly */
 	.dashboard__nav-secondary-item:hover {
 		background-color: rgba(0, 0, 0, 0.15);
 		color: #fff;
 	}
 
-	/* WordPress: background-color: #0984ae - NO orange bar on secondary nav */
+	/* WordPress: NO special background on secondary nav active - just white text */
 	.dashboard__nav-secondary-item.is-active {
 		color: #fff;
-		background-color: #0984ae;
+		background-color: transparent;
 	}
 
-	/* WordPress: position absolute, left 20px */
+	/* WordPress: icon positioned absolutely left of text */
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
 		position: absolute;
 		top: 50%;
 		left: 20px;
-		margin-top: -12px;
-		width: 24px;
-		height: 24px;
-		font-size: 24px;
-		line-height: 24px;
+		margin-top: -10px;
+		width: 20px;
+		height: 20px;
+		font-size: 20px;
+		line-height: 20px;
+		color: hsla(0, 0%, 100%, 0.75);
+	}
+
+	.dashboard__nav-secondary-item:hover .dashboard__nav-item-icon,
+	.dashboard__nav-secondary-item.is-active .dashboard__nav-item-icon {
+		color: #fff;
 	}
 
 	/* Force secondary nav text visibility regardless of collapsed state */
