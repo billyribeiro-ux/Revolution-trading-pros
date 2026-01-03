@@ -59,7 +59,7 @@ async fn setup_db(
     admin: AdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
-    tracing::info!("Admin {} running setup-db", admin.email);
+    tracing::info!("Admin {} running setup-db", admin.0.email);
     // Create email_verification_tokens table
     let create_table = r#"
         DROP TABLE IF EXISTS email_verification_tokens CASCADE;
@@ -173,7 +173,7 @@ async fn run_migrations(
     admin: AdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
-    tracing::info!("Admin {} running migrations", admin.email);
+    tracing::info!("Admin {} running migrations", admin.0.email);
     // Migration: Seed membership plans (from migrations/008_seed_membership_plans.sql)
     // This SQL is loaded from the migration file at compile time
     let seed_plans_sql = include_str!("../../migrations/008_seed_membership_plans.sql");
@@ -194,9 +194,28 @@ async fn run_migrations(
 
     tracing::info!("Ran membership seed migration successfully");
 
+    // Migration: Seed test coupon (from migrations/011_seed_test_coupon.sql)
+    let seed_coupon_sql = include_str!("../../migrations/011_seed_test_coupon.sql");
+
+    sqlx::raw_sql(seed_coupon_sql)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!("Failed to run coupon seed migration: {}", e);
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(SetupResponse {
+                    success: false,
+                    message: format!("Failed to run coupon migration: {}", e),
+                }),
+            )
+        })?;
+
+    tracing::info!("Ran coupon seed migration successfully");
+
     Ok(Json(SetupResponse {
         success: true,
-        message: "Migrations completed: membership plans seeded and assigned to super admin".to_string(),
+        message: "Migrations completed: membership plans and test coupon seeded".to_string(),
     }))
 }
 
