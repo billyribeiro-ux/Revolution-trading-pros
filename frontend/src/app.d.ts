@@ -45,6 +45,8 @@ declare global {
 				name?: string;
 				role?: string;
 			} | null;
+			/** Authentication method to get current session */
+			auth: () => Promise<{ user: { id: string; email: string; name?: string; role?: string } | null } | null>;
 		}
 		// interface PageData {}
 		// interface PageState {}
