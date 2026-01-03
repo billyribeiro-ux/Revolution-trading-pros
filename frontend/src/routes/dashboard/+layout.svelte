@@ -283,12 +283,6 @@
 			<div class="dashboard__content-main">
 				{@render children()}
 			</div>
-			<!-- Content Sidebar (RIGHT) - Hidden by default, shows at 1080px+ -->
-			<aside class="dashboard__content-sidebar">
-				<section class="content-sidebar__section">
-					<!-- Sidebar content populated by child pages via context/slots -->
-				</section>
-			</aside>
 		</div>
 	</main>
 </div>
@@ -450,32 +444,6 @@
 	 * Hidden by default, shows at 1080px+ breakpoint
 	 * Width: 260px fixed
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content-sidebar {
-		display: none;
-		width: 260px;
-		flex: 0 0 auto;
-		margin-top: -1px;
-		border-right: 1px solid #dbdbdb;
-		border-top: 1px solid #dbdbdb;
-		background-color: #ffffff;
-	}
-
-	/* Show at 1080px+ (WordPress exact breakpoint) */
-	@media (min-width: 1080px) {
-		.dashboard__content-sidebar {
-			display: block;
-		}
-	}
-
-	.content-sidebar__section {
-		padding: 20px;
-		border-bottom: 1px solid #ededed;
-	}
-
-	.content-sidebar__section:last-child {
-		border-bottom: none;
-	}
 
 	/* Loading overlay for data fetching */
 	.dashboard__loading-overlay {

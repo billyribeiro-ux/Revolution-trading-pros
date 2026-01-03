@@ -337,31 +337,6 @@
 			</div>
 		</section>
 	</div>
-
-	<!-- Sidebar -->
-	<aside class="dashboard__content-sidebar">
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Trading Room Schedule</h4>
-			<p class="schedule-subtext">Schedule is subject to change.</p>
-			<div class="schedule-list">
-				{#each tradingSchedule as item}
-					<div class="schedule-item">
-						<div class="trader-name">{item.traderName}</div>
-						<div class="trader-datetime">{item.date}, {item.time}</div>
-					</div>
-				{/each}
-			</div>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Quick Links</h4>
-			<ul class="link-list">
-				<li><a href="/support" target="_blank">Support</a></li>
-				<li><a href="/tutorials" target="_blank">Platform Tutorials</a></li>
-				<li><a href="/blog" target="_blank">Simpler Blog</a></li>
-			</ul>
-		</section>
-	</aside>
 </div>
 
 <style>
@@ -570,37 +545,12 @@
 		min-width: 0;
 	}
 
-	.dashboard__content-sidebar {
-		width: 300px;
-		flex-shrink: 0;
-	}
-
 	.dashboard__content-section {
 		margin-bottom: 40px;
 	}
 
 	.section-title {
 		font-size: 24px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 16px 0;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SIDEBAR SECTIONS
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.content-sidebar__section {
-		background: #fff;
-		border-radius: 8px;
-		padding: 20px;
-		margin-bottom: 20px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
-
-	.content-sidebar__heading {
-		font-size: 18px;
 		font-weight: 700;
 		color: #333;
 		margin: 0 0 16px 0;
@@ -731,41 +681,6 @@
 		margin: 0 16px 16px;
 	}
 
-	/* Schedule Section - pssubject class handled by inline styles */
-
-	.schedule-list {
-		margin-top: 16px;
-	}
-
-	.schedule-item {
-		padding: 12px;
-		border-bottom: 1px solid #ededed;
-		font-size: 13px;
-	}
-
-	.schedule-item:last-child {
-		border-bottom: none;
-	}
-
-	.schedule-subtext {
-		font-size: 11px;
-		color: #666;
-		font-style: italic;
-		margin: 0 0 16px 0;
-	}
-
-	.trader-name {
-		font-size: 14px;
-		font-weight: 600;
-		color: #191717;
-	}
-
-	.trader-datetime {
-		font-size: 13px;
-		color: #666;
-		margin-top: 2px;
-	}
-
 	/* Weekly Watchlist Section */
 	.watchlist-section {
 		background: #fff;
@@ -826,39 +741,6 @@
 	.watchlist-mobile-image img {
 		width: 100%;
 		border-radius: 8px;
-	}
-
-	/* Quick Links - Orange with arrow prefix (WordPress match) */
-	.link-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.link-list li {
-		margin-bottom: 8px;
-	}
-
-	.link-list a {
-		color: #dd6b20;
-		font-size: 14px;
-		text-decoration: none;
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		transition: color 0.2s ease;
-	}
-
-	.link-list a:hover {
-		color: #c05621;
-		text-decoration: underline;
-	}
-
-	.link-list a::before {
-		content: '›';
-		font-size: 18px;
-		font-weight: bold;
-		color: #dd6b20;
 	}
 
 	/* Responsive Design */
