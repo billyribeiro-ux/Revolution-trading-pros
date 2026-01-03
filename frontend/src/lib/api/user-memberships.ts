@@ -37,7 +37,7 @@ const CACHE_TTL = {
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report';
+export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'scanner' | 'weekly-watchlist' | 'premium-report';
 export type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
 export type BillingInterval = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
 export type MembershipSubscriptionType = 'trial' | 'active' | 'paused' | 'complimentary' | null;
@@ -68,6 +68,7 @@ export interface UserMembershipsResponse {
 	alertServices: UserMembership[];
 	courses: UserMembership[];
 	indicators: UserMembership[];
+	scanners: UserMembership[];
 	weeklyWatchlist: UserMembership[];
 	premiumReports: UserMembership[];
 	stats?: {
@@ -142,6 +143,7 @@ function categorizeMemberships(memberships: UserMembership[]): UserMembershipsRe
 	const alertServices = memberships.filter((m) => m.type === 'alert-service');
 	const courses = memberships.filter((m) => m.type === 'course');
 	const indicators = memberships.filter((m) => m.type === 'indicator');
+	const scanners = memberships.filter((m) => m.type === 'scanner');
 	const weeklyWatchlist = memberships.filter((m) => m.type === 'weekly-watchlist');
 	const premiumReports = memberships.filter((m) => m.type === 'premium-report');
 
@@ -155,6 +157,7 @@ function categorizeMemberships(memberships: UserMembership[]): UserMembershipsRe
 		alertServices,
 		courses,
 		indicators,
+		scanners,
 		weeklyWatchlist,
 		premiumReports,
 		stats: {

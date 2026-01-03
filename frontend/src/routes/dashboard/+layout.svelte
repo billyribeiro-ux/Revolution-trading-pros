@@ -34,7 +34,7 @@
 	// PROPS - Svelte 5 Pattern
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report';
+	type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'scanner' | 'weekly-watchlist' | 'premium-report';
 
 	interface Props {
 		children: Snippet;
@@ -79,6 +79,7 @@
 			...(membershipsData?.alertServices ?? []),
 			...(membershipsData?.courses ?? []),
 			...(membershipsData?.indicators ?? []),
+			...(membershipsData?.scanners ?? []),
 			...(membershipsData?.weeklyWatchlist ?? []),
 			...(membershipsData?.premiumReports ?? [])
 		].filter((m: { status: string }) => m.status === 'active')

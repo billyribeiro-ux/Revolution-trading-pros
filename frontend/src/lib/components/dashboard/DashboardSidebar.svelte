@@ -55,7 +55,7 @@
 		name: string;
 		slug: string;
 		icon?: string;
-		type?: 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report';
+		type?: 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'scanner' | 'weekly-watchlist' | 'premium-report';
 	}
 
 	// Svelte 5 props with bindable for parent access
@@ -197,8 +197,9 @@
 		const memberships = user.memberships ?? [];
 
 		for (const membership of memberships) {
-			// Only show High Octane scanner
-			if (membership.type === 'indicator' && membership.slug === 'high-octane-scanner') {
+			// Show all scanners (type: 'scanner') and High Octane indicator
+			if (membership.type === 'scanner' || 
+			    (membership.type === 'indicator' && membership.slug === 'high-octane-scanner')) {
 				links.push({
 					href: `/dashboard/${membership.slug}/`,
 					icon: membership.icon ?? 'chart-candle',
