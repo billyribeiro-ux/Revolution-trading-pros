@@ -69,7 +69,8 @@
 	let expandedSubmenus = $state<Set<string>>(new Set());
 
 	// Check if secondary nav should be shown
-	let showSecondaryNav = $derived(secondaryNavItems.length > 0 && collapsed);
+	// WordPress: Secondary nav shows based on route/content, not collapse state
+	let showSecondaryNav = $derived(secondaryNavItems.length > 0);
 
 	// Toggle submenu expansion
 	function toggleSubmenu(text: string): void {
@@ -879,20 +880,39 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	/* WordPress: background-color: #153e59 */
 	.dashboard__nav-secondary {
-		width: 280px;
 		font-size: 14px;
 		font-weight: 600;
 		background-color: #153e59;
 		overflow-y: auto;
 		overflow-x: hidden;
 		transition: all 0.3s ease-in-out;
-		/* Desktop: static positioning (part of flex layout) */
-		position: static;
-		height: auto;
-		min-height: 100vh;
-		opacity: 1;
-		visibility: visible;
-		z-index: auto;
+		/* Mobile: fixed overlay (WordPress exact) */
+		position: fixed;
+		bottom: 50px;
+		left: 80px;
+		top: 0;
+		width: auto;
+		opacity: 0;
+		visibility: hidden;
+		z-index: 100010;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__nav-secondary {
+			/* Desktop: static in layout (WordPress exact) */
+			display: block;
+			position: static;
+			bottom: auto;
+			left: auto;
+			top: auto;
+			width: 280px;
+			height: auto;
+			min-height: 100vh;
+			opacity: 1;
+			visibility: visible;
+			z-index: auto;
+			overflow: visible;
+		}
 	}
 
 	/* WordPress: padding: 20px */
