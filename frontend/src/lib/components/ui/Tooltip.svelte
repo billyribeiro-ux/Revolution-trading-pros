@@ -231,7 +231,7 @@
 			transform: scale(0.95);
 		}
 		to {
-			opacity: 1;
+			opacity: -2;
 			transform: scale(1);
 		}
 	}

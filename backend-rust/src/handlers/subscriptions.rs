@@ -6,7 +6,7 @@ use axum::{extract::{Path, State}, Json};
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{errors::AppError, extractors::AuthUser, responses::ApiResponse, AppState};
+use crate::{errors::AppError, extractors::AuthUser, responses::ApiResponse, services::SubscriptionService, AppState};
 
 #[derive(Debug, Serialize)]
 pub struct SubscriptionResponse {
@@ -19,12 +19,42 @@ pub struct SubscriptionResponse {
     pub next_payment_date: Option<String>,
 }
 
-pub async fn index(State(_state): State<AppState>, _auth: AuthUser) -> Result<Json<ApiResponse<Vec<SubscriptionResponse>>>, AppError> {
-    Ok(Json(ApiResponse::success(vec![])))
+pub async fn index(State(state): State<AppState>, auth: AuthUser) -> Result<Json<ApiResponse<Vec<SubscriptionResponse>>>, AppError> {
+    let subscription_service = SubscriptionService::new(&state.db);
+    let subscriptions = subscription_service.get_user_subscriptions(auth.user_id).await?;
+
+    let response: Vec<SubscriptionResponse> = subscriptions
+        .into_iter()
+        .map(|s| SubscriptionResponse {
+            id: s.id.to_string(),
+            plan_name: s.plan_name,
+            status: s.status,
+            price: format!("{:.2}", s.price),
+            billing_period: s.billing_period,
+            start_date: s.start_date.to_rfc3339(),
+            next_payment_date: s.next_payment_date.map(|d| d.to_rfc3339()),
+        })
+        .collect();
+
+    Ok(Json(ApiResponse::success(response)))
 }
 
-pub async fn show(State(_state): State<AppState>, _auth: AuthUser, Path(_id): Path<Uuid>) -> Result<Json<serde_json::Value>, AppError> {
-    Ok(Json(serde_json::json!({"success": true, "data": null})))
+pub async fn show(State(state): State<AppState>, auth: AuthUser, Path(id): Path<Uuid>) -> Result<Json<ApiResponse<SubscriptionResponse>>, AppError> {
+    let subscription_service = SubscriptionService::new(&state.db);
+    let subscription = subscription_service
+        .get_user_subscription(auth.user_id, id)
+        .await?
+        .ok_or(AppError::NotFound("Subscription not found".to_string()))?;
+
+    Ok(Json(ApiResponse::success(SubscriptionResponse {
+        id: subscription.id.to_string(),
+        plan_name: subscription.plan_name,
+        status: subscription.status,
+        price: format!("{:.2}", subscription.price),
+        billing_period: subscription.billing_period,
+        start_date: subscription.start_date.to_rfc3339(),
+        next_payment_date: subscription.next_payment_date.map(|d| d.to_rfc3339()),
+    })))
 }
 
 pub async fn cancel(State(_state): State<AppState>, _auth: AuthUser, Path(_id): Path<Uuid>) -> Result<Json<serde_json::Value>, AppError> {
