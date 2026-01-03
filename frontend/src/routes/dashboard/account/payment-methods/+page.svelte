@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-
 	interface PaymentMethod {
 		id: number;
 		method: string;
@@ -8,6 +6,10 @@
 		expires: string;
 		isDefault: boolean;
 		subscriptions: string[];
+	}
+
+	interface PageData {
+		paymentMethods: PaymentMethod[];
 	}
 
 	let { data }: { data: PageData } = $props();

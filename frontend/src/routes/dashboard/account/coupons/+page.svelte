@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-
 	interface Coupon {
 		id: number;
 		code: string;
@@ -9,6 +7,10 @@
 		expiryDate: string;
 		usageCount: number;
 		usageLimit: number;
+	}
+
+	interface PageData {
+		coupons: Coupon[];
 	}
 
 	let { data }: { data: PageData } = $props();

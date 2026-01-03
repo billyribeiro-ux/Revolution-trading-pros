@@ -1,7 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals, fetch }) => {
+export const load = async ({ locals, fetch }: RequestEvent) => {
 	const session = await locals.auth();
 
 	if (!session?.user) {
@@ -32,8 +32,8 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 	}
 };
 
-export const actions: Actions = {
-	default: async ({ request, locals, fetch }) => {
+export const actions = {
+	default: async ({ request, locals, fetch }: RequestEvent) => {
 		const session = await locals.auth();
 
 		if (!session?.user) {

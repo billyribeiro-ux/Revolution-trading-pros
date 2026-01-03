@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { PageData, ActionData } from './$types';
 
 	interface Address {
 		firstName?: string;
@@ -16,7 +15,16 @@
 		phone?: string;
 	}
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	interface PageData {
+		address: Address;
+	}
+
+	interface ActionData {
+		success?: boolean;
+		message?: string;
+	}
+
+	let { data, form }: { data: PageData; form?: ActionData } = $props();
 
 	const address = $derived(data.address || {});
 </script>

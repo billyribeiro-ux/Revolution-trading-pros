@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-
 	interface Subscription {
 		id: number;
 		status: string;
@@ -8,6 +6,10 @@
 		nextPayment: string;
 		total: string;
 		items: string[];
+	}
+
+	interface PageData {
+		subscriptions: Subscription[];
 	}
 
 	let { data }: { data: PageData } = $props();
