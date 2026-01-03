@@ -931,7 +931,109 @@
 		transform: scale(.9);
 	}
 
-	/* OLD CSS-BASED TOOLTIP HOVER STYLES REMOVED - Now using Tooltip.svelte component */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TOOLTIP WRAPPER FIX - Makes tooltip-trigger behave correctly
+	 * When collapsed, the Tooltip component wraps the <a> tag, breaking the
+	 * expected li > a structure. These rules fix the layout.
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Tooltip wrapper must fill the li and center contents */
+	:global(.dashboard__sidebar.is-collapsed .dash_main_links li > .tooltip-trigger) {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	/* Profile tooltip wrapper */
+	:global(.dashboard__sidebar.is-collapsed .dashboard__nav-primary > .tooltip-trigger) {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		margin-top: 0;
+	}
+
+	/* Links inside tooltip wrapper in collapsed state */
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 50px;
+		height: 50px;
+		padding: 0;
+		position: relative;
+	}
+
+	/* Icon inside tooltip-wrapped link - use static positioning */
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger .dashboard__nav-item-icon) {
+		position: static;
+		left: auto;
+		top: auto;
+		margin: 0;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Profile photo inside tooltip-wrapped link */
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger .dashboard__profile-photo) {
+		position: static;
+		left: auto;
+		top: auto;
+		margin: 0;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Hover effects for tooltip-wrapped links */
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover .dashboard__nav-item-icon),
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover .dashboard__profile-photo) {
+		transform: scale(0.9);
+		color: #fff;
+	}
+
+	/* Circular background on hover for tooltip-wrapped links */
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a::before) {
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
+		border-radius: 50%;
+		transform: scale(0.9);
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+		z-index: -1;
+	}
+
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover::before) {
+		transform: scale(1);
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+
+	/* Active state indicator for tooltip-wrapped links */
+	:global(.dashboard__sidebar.is-collapsed .dash_main_links li.is-active .tooltip-trigger a::after) {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: -15px;
+		bottom: 0;
+		width: 5px;
+		background-color: #0984ae;
+	}
+
+	/* Hide active indicator on hover */
+	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover::after) {
+		transform: scaleX(0);
+	}
+
+	/* Active state icon color */
+	:global(.dashboard__sidebar.is-collapsed .dash_main_links li.is-active .tooltip-trigger .dashboard__nav-item-icon) {
+		color: #fff;
+	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECONDARY NAVIGATION - ICT 11+ FIX APPLIED
