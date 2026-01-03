@@ -108,10 +108,21 @@
 
 	// Check if a link is active
 	function isActive(href: string): boolean {
+		// Exact match for dashboard home
 		if (href === '/dashboard/' || href === '/dashboard') {
 			return currentPath === '/dashboard' || currentPath === '/dashboard/';
 		}
-		return currentPath.startsWith(href);
+		
+		// Normalize paths (remove trailing slashes)
+		const normalizedCurrent = currentPath.endsWith('/') && currentPath !== '/' 
+			? currentPath.slice(0, -1) 
+			: currentPath;
+		const normalizedHref = href.endsWith('/') && href !== '/' 
+			? href.slice(0, -1) 
+			: href;
+		
+		// ONLY exact match - no parent path matching
+		return normalizedCurrent === normalizedHref;
 	}
 
 	// Toggle mobile menu
