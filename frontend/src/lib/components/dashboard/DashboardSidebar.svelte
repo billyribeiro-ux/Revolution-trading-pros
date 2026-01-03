@@ -936,12 +936,12 @@
 		margin: 0;
 	}
 
-	/* WordPress: padding for items with icons: 18px 20px 18px 55px */
-	/* For account section (no icons), use smaller left padding */
+	/* WordPress EXACT: padding: 16px 15px 15px 50px (with icons) */
+	/* Icon is positioned absolutely at left: 15px (20px on large screens) */
 	.dashboard__nav-secondary-item {
 		position: relative;
 		display: block;
-		padding: 16px 20px 16px 20px;
+		padding: 16px 15px 15px 50px;
 		color: hsla(0, 0%, 100%, 0.75);
 		border-radius: 5px;
 		background-color: transparent;
@@ -951,7 +951,7 @@
 
 	@media screen and (min-width: 1440px) {
 		.dashboard__nav-secondary-item {
-			padding: 18px 20px 18px 20px;
+			padding: 18px 20px 18px 55px;
 		}
 	}
 
