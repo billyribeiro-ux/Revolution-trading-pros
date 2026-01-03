@@ -555,17 +555,6 @@
 			background-color: #0f2d41;
 		}
 
-		.btn-link {
-			background: transparent;
-			color: #1e73be;
-			padding: 6px 12px;
-		}
-
-		.btn-link:hover {
-			color: #0984ae;
-			text-decoration: underline;
-		}
-
 		.btn-orange {
 			background-color: #dd6b20;
 			color: #fff;
