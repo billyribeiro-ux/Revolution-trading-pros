@@ -1,6 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
+/**
+ * Edit Address Page Server Load
+ * ICT 11 Protocol: Secure billing address management with auth verification
+ */
 export const load = async ({ locals, fetch }: RequestEvent) => {
 	const session = await locals.auth();
 

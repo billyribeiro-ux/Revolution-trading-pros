@@ -1,6 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
+/**
+ * Coupons Page Server Load
+ * ICT 11 Protocol: Secure coupon retrieval with user verification
+ */
 export const load = async ({ locals, fetch }: RequestEvent) => {
 	const session = await locals.auth();
 

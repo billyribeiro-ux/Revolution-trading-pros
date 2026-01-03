@@ -157,6 +157,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Alias routes for frontend compatibility
     Route::get('/user/memberships', [MeController::class, 'memberships']);
     Route::get('/user/indicators', [MeController::class, 'indicators']);
+    
+    // User Orders (Self-Service) - ICT 11 Protocol
+    Route::get('/my/orders', [MeController::class, 'orders']);
+    Route::get('/my/orders/{id}', [MeController::class, 'showOrder']);
 
     Route::post('/cart/checkout', [CartController::class, 'checkout']);
     Route::post('/cart/calculate-tax', [CartController::class, 'calculateTax']);

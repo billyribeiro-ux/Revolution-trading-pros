@@ -1,6 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
+/**
+ * Subscriptions Page Server Load
+ * ICT 11 Protocol: Enterprise-grade subscription retrieval with auth verification
+ */
 export const load = async ({ locals, fetch }: RequestEvent) => {
 	const session = await locals.auth();
 
@@ -9,20 +13,22 @@ export const load = async ({ locals, fetch }: RequestEvent) => {
 	}
 
 	try {
-		const response = await fetch('/api/woocommerce/subscriptions', {
+		// Fetch subscriptions from real API endpoint
+		const response = await fetch('/api/my/subscriptions', {
 			headers: {
 				'Content-Type': 'application/json'
-			}
+			},
+			credentials: 'include'
 		});
 
 		if (!response.ok) {
 			throw error(response.status, 'Failed to fetch subscriptions');
 		}
 
-		const subscriptions = await response.json();
+		const data = await response.json();
 
 		return {
-			subscriptions: subscriptions || []
+			subscriptions: data.subscriptions || []
 		};
 	} catch (err) {
 		console.error('Error loading subscriptions:', err);

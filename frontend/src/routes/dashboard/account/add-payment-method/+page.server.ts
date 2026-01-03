@@ -1,6 +1,10 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
+/**
+ * Add Payment Method Page Server
+ * ICT 11 Protocol: Secure Stripe payment method creation with PCI compliance
+ */
 export const load = async ({ locals }: RequestEvent) => {
 	const session = await locals.auth();
 

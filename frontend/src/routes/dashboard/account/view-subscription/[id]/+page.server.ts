@@ -1,6 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
+/**
+ * View Subscription Page Server
+ * ICT 11 Protocol: Secure subscription detail retrieval with lifecycle management
+ */
 export const load = async ({ params, locals, fetch }: RequestEvent) => {
 	const session = await locals.auth();
 

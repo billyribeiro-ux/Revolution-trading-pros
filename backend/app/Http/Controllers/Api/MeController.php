@@ -85,4 +85,87 @@ class MeController extends Controller
 
         return response()->json($indicators);
     }
+
+    /**
+     * Get user's orders with formatted response
+     * ICT 11 Protocol: Enterprise-grade order retrieval
+     */
+    public function orders(Request $request)
+    {
+        $orders = $request->user()
+            ->orders()
+            ->with(['items.product'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'number' => $order->order_number ?? $order->id,
+                    'date' => $order->created_at?->toIso8601String(),
+                    'status' => $order->status,
+                    'total' => number_format($order->total ?? 0, 2),
+                    'currency' => $order->currency ?? 'USD',
+                    'itemCount' => $order->items->count(),
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->product?->name ?? $item->name ?? 'Product',
+                            'quantity' => $item->quantity ?? 1,
+                            'price' => number_format($item->price ?? 0, 2),
+                            'total' => number_format($item->total ?? 0, 2),
+                        ];
+                    }),
+                    'billingAddress' => $order->billing_address ?? null,
+                    'paymentMethod' => $order->payment_method ?? null,
+                ];
+            });
+
+        return response()->json([
+            'orders' => $orders
+        ]);
+    }
+
+    /**
+     * Get single order by ID
+     * ICT 11 Protocol: Secure order detail retrieval with ownership verification
+     */
+    public function showOrder(Request $request, $id)
+    {
+        $order = $request->user()
+            ->orders()
+            ->with(['items.product'])
+            ->where('id', $id)
+            ->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        return response()->json([
+            'order' => [
+                'id' => $order->id,
+                'number' => $order->order_number ?? $order->id,
+                'date' => $order->created_at?->toIso8601String(),
+                'status' => $order->status,
+                'total' => number_format($order->total ?? 0, 2),
+                'subtotal' => number_format($order->subtotal ?? 0, 2),
+                'tax' => number_format($order->tax ?? 0, 2),
+                'discount' => number_format($order->discount ?? 0, 2),
+                'currency' => $order->currency ?? 'USD',
+                'paymentMethod' => $order->payment_method ?? null,
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->product?->name ?? $item->name ?? 'Product',
+                        'quantity' => $item->quantity ?? 1,
+                        'price' => number_format($item->price ?? 0, 2),
+                        'total' => number_format($item->total ?? 0, 2),
+                    ];
+                }),
+                'billingAddress' => $order->billing_address ?? null,
+                'shippingAddress' => $order->shipping_address ?? null,
+                'notes' => $order->notes ?? null,
+            ]
+        ]);
+    }
 }
