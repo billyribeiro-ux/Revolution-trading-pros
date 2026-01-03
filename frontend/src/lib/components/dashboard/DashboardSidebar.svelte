@@ -108,10 +108,28 @@
 
 	// Check if a link is active
 	function isActive(href: string): boolean {
+		// Exact match for dashboard home
 		if (href === '/dashboard/' || href === '/dashboard') {
 			return currentPath === '/dashboard' || currentPath === '/dashboard/';
 		}
-		return currentPath.startsWith(href);
+		
+		// Normalize paths (remove trailing slashes)
+		const normalizedCurrent = currentPath.endsWith('/') && currentPath !== '/' 
+			? currentPath.slice(0, -1) 
+			: currentPath;
+		const normalizedHref = href.endsWith('/') && href !== '/' 
+			? href.slice(0, -1) 
+			: href;
+		
+		// Exact match first
+		if (normalizedCurrent === normalizedHref) {
+			return true;
+		}
+		
+		// Only match if current path is a child route (has additional segments)
+		// e.g., /dashboard/day-trading-room/videos matches /dashboard/day-trading-room
+		// but /dashboard/day-trading-room does NOT match /dashboard/day-trading-room/start-here
+		return normalizedCurrent.startsWith(normalizedHref + '/');
 	}
 
 	// Toggle mobile menu
