@@ -78,7 +78,9 @@
 			...(membershipsData?.tradingRooms ?? []),
 			...(membershipsData?.alertServices ?? []),
 			...(membershipsData?.courses ?? []),
-			...(membershipsData?.indicators ?? [])
+			...(membershipsData?.indicators ?? []),
+			...(membershipsData?.weeklyWatchlist ?? []),
+			...(membershipsData?.premiumReports ?? [])
 		].filter((m: { status: string }) => m.status === 'active')
 		 .map((m: { name: string; slug: string; icon?: string; type: MembershipType }) => ({
 			name: m.name,
