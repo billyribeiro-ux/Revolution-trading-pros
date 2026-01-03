@@ -584,6 +584,23 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		// ═══════════════════════════════════════════════════════════════════════════
+		// COURSES / MENTORSHIP (1)
+		// ═══════════════════════════════════════════════════════════════════════════
+		{
+			id: 'small-account-mentorship',
+			name: 'Small Account Mentorship',
+			type: 'course',
+			slug: 'small-account-mentorship',
+			status: 'active',
+			membershipType: 'complimentary',
+			icon: 'school',
+			startDate: new Date().toISOString(),
+			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+			price: 0,
+			interval: 'monthly',
+			accessUrl: '/live-trading-rooms/small-accounts-room'
+		},
+		// ═══════════════════════════════════════════════════════════════════════════
 		// INDICATORS / SCANNERS (1) - High Octane Scanner Only
 		// ═══════════════════════════════════════════════════════════════════════════
 		{

@@ -940,7 +940,7 @@
 		padding: 15px;
 		text-align: center;
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 800;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		color: #1e73be;
