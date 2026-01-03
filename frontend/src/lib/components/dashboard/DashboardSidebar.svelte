@@ -924,11 +924,17 @@
 		}
 	}
 
-	/* WordPress: padding: 20px */
+	/* WordPress EXACT: padding: 20px 15px (small), 20px (large) */
 	.dashboard__nav-secondary > ul {
 		list-style: none;
 		margin: 0;
-		padding: 20px;
+		padding: 20px 15px;
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__nav-secondary > ul {
+			padding: 20px;
+		}
 	}
 
 	.dashboard__nav-secondary > ul > li {
