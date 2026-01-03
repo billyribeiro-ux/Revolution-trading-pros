@@ -604,8 +604,9 @@
 		transition: all 0.15s ease-in-out;
 	}
 
+	/* WordPress: border-color: #0984ae on hover */
 	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		border-color: #143E59;
+		border-color: #0984ae;
 	}
 
 	.dashboard__profile-name {
@@ -667,19 +668,29 @@
 		color: #fff;
 	}
 
-	/* Active State - Orange LEFT border indicator (WordPress match) */
+	/* Active State - Blue RIGHT border indicator (WordPress EXACT: dashboard.8f78208b.css) */
 	.dash_main_links li.is-active a {
 		color: #fff;
 	}
 
-	.dash_main_links li.is-active a::before {
-		content: '';
+	/* WordPress: .dashboard__nav-primary a:after */
+	.dashboard__nav-primary a::after {
 		position: absolute;
-		left: 0;
+		display: block;
+		content: '';
 		top: 0;
+		right: 0;
 		bottom: 0;
-		width: 4px;
-		background-color: #f7931e;
+		width: 5px;
+		background: transparent;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+		transform-origin: 100% 50%;
+	}
+
+	/* WordPress: .dashboard__nav-primary li.is-active a:after */
+	.dash_main_links li.is-active a::after {
+		background-color: #0984ae;
 	}
 
 	.dash_main_links li.is-active .dashboard__nav-item-icon {
@@ -779,11 +790,12 @@
 	 * MOBILE (<1280px): position: fixed - overlay panel
 	 * SOURCE: dashboard.8f78208b.css (WordPress production CSS)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* WordPress: background-color: #153e59 */
 	.dashboard__nav-secondary {
 		width: 280px;
 		font-size: 14px;
 		font-weight: 600;
-		background-color: #143E59;
+		background-color: #153e59;
 		overflow-y: auto;
 		overflow-x: hidden;
 		transition: all 0.3s ease-in-out;
@@ -796,10 +808,11 @@
 		z-index: auto;
 	}
 
+	/* WordPress: padding: 20px */
 	.dashboard__nav-secondary > ul {
 		list-style: none;
 		margin: 0;
-		padding: 30px 0;
+		padding: 20px;
 	}
 
 	.dashboard__nav-secondary > ul > li {
@@ -807,13 +820,14 @@
 		margin: 0;
 	}
 
+	/* WordPress: padding: 18px 20px 18px 55px */
 	.dashboard__nav-secondary-item {
-		display: flex;
-		align-items: center;
-		gap: 12px;
+		display: block;
+		position: relative;
 		width: 100%;
-		padding: 14px 24px;
-		color: rgba(255, 255, 255, 0.75);
+		padding: 18px 20px 18px 55px;
+		color: hsla(0, 0%, 100%, 0.75);
+		border-radius: 5px;
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 500;
@@ -823,18 +837,18 @@
 		cursor: pointer;
 		text-align: left;
 		transition: all 0.2s ease;
-		position: relative;
 	}
 
+	/* WordPress: background-color: rgba(0,0,0,.15) */
 	.dashboard__nav-secondary-item:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-		color: #ffffff;
+		background-color: rgba(0, 0, 0, 0.15);
+		color: #fff;
 	}
 
+	/* WordPress: background-color: #0984ae */
 	.dashboard__nav-secondary-item.is-active {
-		background-color: rgba(255, 255, 255, 0.12);
-		color: #ffffff;
-		font-weight: 600;
+		color: #fff;
+		background-color: #0984ae;
 	}
 
 	.dashboard__nav-secondary-item.is-active::before {
@@ -847,10 +861,16 @@
 		background-color: #f7931e;
 	}
 
+	/* WordPress: position absolute, left 20px */
 	.dashboard__nav-secondary .dashboard__nav-item-icon {
-		position: static;
-		left: auto;
-		margin-right: 0;
+		position: absolute;
+		top: 50%;
+		left: 20px;
+		margin-top: -12px;
+		width: 24px;
+		height: 24px;
+		font-size: 24px;
+		line-height: 24px;
 	}
 
 	/* Force secondary nav text visibility regardless of collapsed state */
