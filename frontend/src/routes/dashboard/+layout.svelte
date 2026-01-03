@@ -230,12 +230,14 @@
 		'/dashboard/account': {
 			title: 'My Account',
 			items: [
-				{ href: '/dashboard/account/orders', icon: 'shopping-bag', text: 'My Orders' },
-				{ href: '/dashboard/account/subscriptions', icon: 'refresh-cw', text: 'My Subscriptions' },
-				{ href: '/dashboard/account/coupons', icon: 'tag', text: 'Coupons' },
-				{ href: '/dashboard/account/billing-address', icon: 'map-pin', text: 'Billing Address' },
-				{ href: '/dashboard/account/payment-methods', icon: 'credit-card', text: 'Payment Methods' },
-				{ href: '/dashboard/account/details', icon: 'user', text: 'Account Details' }
+				{ href: '/dashboard/account', icon: '', text: 'Account Overview' },
+				{ href: '/dashboard/account/orders', icon: '', text: 'My Orders' },
+				{ href: '/dashboard/account/subscriptions', icon: '', text: 'My Subscriptions' },
+				{ href: '/dashboard/account/wc-smart-coupons', icon: '', text: 'Coupons' },
+				{ href: '/dashboard/account/edit-address', icon: '', text: 'Billing Address' },
+				{ href: '/dashboard/account/payment-methods', icon: '', text: 'Payment Methods' },
+				{ href: '/dashboard/account/edit-account', icon: '', text: 'Account Details' },
+				{ href: '/logout', icon: '', text: 'Log out' }
 			]
 		}
 	};
