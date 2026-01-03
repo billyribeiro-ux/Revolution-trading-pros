@@ -226,6 +226,17 @@
 				{ href: '/dashboard/explosive-swings', icon: 'layout-dashboard', text: 'Explosive Swings Dashboard' },
 				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' }
 			]
+		},
+		'/dashboard/account': {
+			title: 'My Account',
+			items: [
+				{ href: '/dashboard/account/orders', icon: 'shopping-bag', text: 'My Orders' },
+				{ href: '/dashboard/account/subscriptions', icon: 'refresh-cw', text: 'My Subscriptions' },
+				{ href: '/dashboard/account/coupons', icon: 'tag', text: 'Coupons' },
+				{ href: '/dashboard/account/billing-address', icon: 'map-pin', text: 'Billing Address' },
+				{ href: '/dashboard/account/payment-methods', icon: 'credit-card', text: 'Payment Methods' },
+				{ href: '/dashboard/account/details', icon: 'user', text: 'Account Details' }
+			]
 		}
 	};
 
