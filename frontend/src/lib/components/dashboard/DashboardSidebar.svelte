@@ -673,13 +673,11 @@
 
 	.dash_main_links a:hover {
 		color: #fff;
-		background-color: rgba(255, 255, 255, 0.05); /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:191] */
 	}
 
 	/* Active State - Blue RIGHT border indicator (WordPress EXACT: dashboard.8f78208b.css) */
 	.dash_main_links li.is-active a {
 		color: #fff;
-		background-color: rgba(255, 255, 255, 0.08); /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:199] */
 	}
 
 	/* WordPress: .dashboard__nav-primary a:after */
