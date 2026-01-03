@@ -230,7 +230,6 @@
 		'/dashboard/account': {
 			title: 'My Account',
 			items: [
-				{ href: '/dashboard/account', icon: '', text: 'Account Overview' },
 				{ href: '/dashboard/account/orders', icon: '', text: 'My Orders' },
 				{ href: '/dashboard/account/subscriptions', icon: '', text: 'My Subscriptions' },
 				{ href: '/dashboard/account/wc-smart-coupons', icon: '', text: 'Coupons' },

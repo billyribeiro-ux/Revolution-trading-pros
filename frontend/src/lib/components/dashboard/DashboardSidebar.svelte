@@ -378,20 +378,22 @@
 					<li class:has-submenu={item.submenu && item.submenu.length > 0}>
 						{#if item.submenu && item.submenu.length > 0}
 							<!-- Item with submenu -->
-							<button
-								type="button"
-								class="dashboard__nav-secondary-item"
-								class:is-active={hasActiveSubmenuItem(item.submenu)}
-								class:is-expanded={expandedSubmenus.has(item.text)}
-								onclick={() => toggleSubmenu(item.text)}
-								aria-expanded={expandedSubmenus.has(item.text)}
-							>
+						<button
+							type="button"
+							class="dashboard__nav-secondary-item"
+							class:is-active={hasActiveSubmenuItem(item.submenu)}
+							class:is-expanded={expandedSubmenus.has(item.text)}
+							onclick={() => toggleSubmenu(item.text)}
+							aria-expanded={expandedSubmenus.has(item.text)}
+						>
+							{#if item.icon}
 								<span class="dashboard__nav-secondary-icon">
 									<RtpIcon name={item.icon} size={24} />
 								</span>
-								<span class="dashboard__nav-secondary-text">{item.text}</span>
-								<span class="dashboard__nav-secondary-chevron">›</span>
-							</button>
+							{/if}
+							<span class="dashboard__nav-secondary-text">{item.text}</span>
+							<span class="dashboard__nav-secondary-chevron">›</span>
+						</button>
 
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
@@ -404,16 +406,18 @@
 							{/if}
 						{:else}
 							<!-- Regular item -->
-							<a
-								class="dashboard__nav-secondary-item"
-								class:is-active={isActive(item.href)}
-								href={item.href}
-							>
+						<a
+							class="dashboard__nav-secondary-item"
+							class:is-active={isActive(item.href)}
+							href={item.href}
+						>
+							{#if item.icon}
 								<span class="dashboard__nav-secondary-icon">
 									<RtpIcon name={item.icon} size={24} />
 								</span>
-								<span class="dashboard__nav-secondary-text">{item.text}</span>
-							</a>
+							{/if}
+							<span class="dashboard__nav-secondary-text">{item.text}</span>
+						</a>
 						{/if}
 					</li>
 				{/each}
