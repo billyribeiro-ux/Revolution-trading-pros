@@ -624,23 +624,27 @@
 
 	.btn-tiny {
 		display: inline-block;
-		padding: 6px 12px;
-		font-size: 12px;
+		padding: 8px 16px;
+		font-size: 13px;
 		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
-		border-radius: 3px;
+		border-radius: 4px;
 		transition: all 0.15s ease-in-out;
+		cursor: pointer;
+		text-align: center;
+		white-space: nowrap;
 	}
 
 	.btn-default {
-		background-color: #f5f5f5;
-		color: #333;
-		border: 1px solid #ddd;
+		background-color: #143E59;
+		color: #fff;
+		border: 1px solid #143E59;
 	}
 
 	.btn-default:hover {
-		background-color: #e8e8e8;
-		border-color: #ccc;
+		background-color: #0f2d41;
+		border-color: #0f2d41;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
