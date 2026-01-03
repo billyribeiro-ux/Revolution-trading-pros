@@ -356,6 +356,7 @@
 		align-items: center;
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
 		max-width: 1700px;
 		padding: 20px;
 	}
@@ -366,12 +367,17 @@
 		}
 	}
 
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+	}
+
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
 		flex: 1;
-		gap: 16px;
 	}
 
 	.dashboard__page-title {
@@ -386,7 +392,16 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
-		gap: 8px;
+		margin-top: 10px;
+	}
+
+	@media (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 0;
+			margin-top: 0;
+		}
 	}
 
 	/* Trading Room Rules - Semantic Structure */
