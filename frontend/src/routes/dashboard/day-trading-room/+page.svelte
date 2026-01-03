@@ -665,6 +665,7 @@
 			color: #333;
 			margin: 0 0 16px 0;
 			font-family: var(--font-heading), 'Montserrat', sans-serif;
+		}
 
 	.btn {
 		display: inline-flex;
