@@ -1,20 +1,60 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+
 	interface PaymentMethod {
-		id: number;
-		method: string;
-		details: string;
-		expires: string;
+		id: string;
+		type: string;
+		brand?: string;
+		last4?: string;
+		expiryMonth?: number;
+		expiryYear?: number;
 		isDefault: boolean;
-		subscriptions: string[];
+		subscriptions?: string[];
 	}
 
 	interface PageData {
 		paymentMethods: PaymentMethod[];
 	}
 
-	let { data }: { data: PageData } = $props();
+	interface ActionData {
+		success?: boolean;
+		message?: string;
+		error?: string;
+	}
+
+	let { data, form }: { data: PageData; form?: ActionData } = $props();
 
 	const paymentMethods = $derived(data.paymentMethods || []);
+	let isSubmitting = $state(false);
+
+	function confirmDelete(event: Event, method: PaymentMethod): boolean {
+		if (method.subscriptions && method.subscriptions.length > 0) {
+			event.preventDefault();
+			alert('That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again.');
+			return false;
+		}
+		
+		const confirmed = confirm('Are you sure you want to delete this payment method?');
+		if (!confirmed) {
+			event.preventDefault();
+			return false;
+		}
+		return true;
+	}
+
+	function formatExpiry(method: PaymentMethod): string {
+		if (method.expiryMonth && method.expiryYear) {
+			return `${String(method.expiryMonth).padStart(2, '0')}/${method.expiryYear}`;
+		}
+		return 'N/A';
+	}
+
+	function formatDetails(method: PaymentMethod): string {
+		if (method.brand && method.last4) {
+			return `${method.brand} ending in ${method.last4}`;
+		}
+		return method.type || 'Card';
+	}
 </script>
 
 <svelte:head>
@@ -23,7 +63,19 @@
 
 <div class="woocommerce">
 	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper"></div>
+		<div class="woocommerce-notices-wrapper">
+			{#if form?.success}
+				<div class="woocommerce-message" role="alert">
+					{form.message}
+				</div>
+			{/if}
+
+			{#if form?.error}
+				<div class="woocommerce-error" role="alert">
+					{form.error}
+				</div>
+			{/if}
+		</div>
 		
 		<div class="row">
 			<div class="col-md-6">
@@ -74,13 +126,13 @@
 					{#each paymentMethods as method (method.id)}
 						<tr class:default-payment-method={method.isDefault}>
 							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--method payment-method-method" data-title="Method">
-								{method.method}
+								{method.type || 'Card'}
 							</td>
 							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--details payment-method-details" data-title="Details">
-								{method.details || ''}
+								{formatDetails(method)}
 							</td>
 							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--expires payment-method-expires" data-title="Expires">
-								{method.expires}
+								{formatExpiry(method)}
 							</td>
 							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--default payment-method-default" data-title="Default?">
 								{#if method.isDefault}
@@ -94,7 +146,27 @@
 							</td>
 							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--actions payment-method-actions" data-title="&nbsp;">
 								{#if !method.isDefault}
-									<a href="/dashboard/account/payment-methods/delete/{method.id}" class="button">Delete</a>
+									<form 
+										method="post" 
+										action="?/delete"
+										use:enhance={() => {
+											isSubmitting = true;
+											return async ({ update }) => {
+												await update();
+												isSubmitting = false;
+											};
+										}}
+										onsubmit={(e) => confirmDelete(e, method)}
+									>
+										<input type="hidden" name="payment_method_id" value={method.id} />
+										<button 
+											type="submit" 
+											class="button"
+											disabled={isSubmitting}
+										>
+											Delete
+										</button>
+									</form>
 								{/if}
 							</td>
 						</tr>
