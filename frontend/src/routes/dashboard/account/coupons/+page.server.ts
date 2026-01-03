@@ -9,20 +9,25 @@ export const load = async ({ locals, fetch }: RequestEvent) => {
 	}
 
 	try {
-		const response = await fetch('/api/woocommerce/coupons', {
+		// Fetch user's available coupons from backend
+		const response = await fetch('/api/coupons/user/available', {
 			headers: {
 				'Content-Type': 'application/json'
-			}
+			},
+			credentials: 'include'
 		});
 
 		if (!response.ok) {
-			throw error(response.status, 'Failed to fetch coupons');
+			console.error('Failed to fetch coupons:', response.status);
+			return {
+				coupons: []
+			};
 		}
 
-		const coupons = await response.json();
+		const data = await response.json();
 
 		return {
-			coupons: coupons || []
+			coupons: data.coupons || []
 		};
 	} catch (err) {
 		console.error('Error loading coupons:', err);

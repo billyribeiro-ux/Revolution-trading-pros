@@ -2,11 +2,17 @@
 	interface Coupon {
 		id: number;
 		code: string;
+		type: string;
+		value: number;
 		amount: string;
-		description: string;
-		expiryDate: string;
-		usageCount: number;
-		usageLimit: number;
+		description: string | null;
+		display_name: string | null;
+		expiry_date: string | null;
+		min_purchase_amount: number;
+		max_discount_amount: number | null;
+		usage_count: number;
+		usage_limit: number;
+		is_expired: boolean;
 	}
 
 	interface PageData {
@@ -16,8 +22,10 @@
 	let { data }: { data: PageData } = $props();
 
 	const coupons = $derived(data.coupons || []);
+	let copiedCode = $state<string | null>(null);
 
-	function formatDate(dateString: string): string {
+	function formatDate(dateString: string | null): string {
+		if (!dateString) return 'No expiration';
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
@@ -26,8 +34,27 @@
 		});
 	}
 
-	function isExpired(dateString: string): boolean {
-		return new Date(dateString) < new Date();
+	function isExpired(coupon: Coupon): boolean {
+		if (!coupon.expiry_date) return false;
+		return coupon.is_expired || new Date(coupon.expiry_date) < new Date();
+	}
+
+	function isAvailable(coupon: Coupon): boolean {
+		if (isExpired(coupon)) return false;
+		if (coupon.usage_limit > 0 && coupon.usage_count >= coupon.usage_limit) return false;
+		return true;
+	}
+
+	async function copyCouponCode(code: string): Promise<void> {
+		try {
+			await navigator.clipboard.writeText(code);
+			copiedCode = code;
+			setTimeout(() => {
+				copiedCode = null;
+			}, 2000);
+		} catch (err) {
+			console.error('Failed to copy code:', err);
+		}
 	}
 </script>
 
@@ -48,7 +75,7 @@
 		{:else}
 			<div class="coupons-grid">
 				{#each coupons as coupon (coupon.id)}
-					<div class="coupon-card" class:expired={isExpired(coupon.expiryDate)}>
+					<div class="coupon-card" class:expired={isExpired(coupon)}>
 						<div class="coupon-header">
 							<div class="coupon-code">
 								<span class="code-label">Code:</span>
@@ -60,37 +87,51 @@
 						</div>
 						
 						<div class="coupon-body">
-							{#if coupon.description}
-								<p class="coupon-description">{coupon.description}</p>
+							{#if coupon.description || coupon.display_name}
+								<p class="coupon-description">{coupon.display_name || coupon.description}</p>
+							{/if}
+							
+							{#if coupon.min_purchase_amount > 0}
+								<p class="coupon-min-purchase">
+									Minimum purchase: ${coupon.min_purchase_amount.toFixed(2)}
+								</p>
 							{/if}
 							
 							<div class="coupon-meta">
-								{#if coupon.expiryDate}
+								{#if coupon.expiry_date}
 									<div class="coupon-expiry">
 										<i class="fa fa-calendar"></i>
 										<span>
-											{#if isExpired(coupon.expiryDate)}
-												Expired: {formatDate(coupon.expiryDate)}
+											{#if isExpired(coupon)}
+												Expired: {formatDate(coupon.expiry_date)}
 											{:else}
-												Expires: {formatDate(coupon.expiryDate)}
+												Expires: {formatDate(coupon.expiry_date)}
 											{/if}
 										</span>
 									</div>
 								{/if}
 								
-								{#if coupon.usageLimit}
+								{#if coupon.usage_limit > 0}
 									<div class="coupon-usage">
 										<i class="fa fa-check-circle"></i>
-										<span>Used {coupon.usageCount} of {coupon.usageLimit} times</span>
+										<span>Used {coupon.usage_count} of {coupon.usage_limit} times</span>
 									</div>
 								{/if}
 							</div>
 						</div>
 						
 						<div class="coupon-footer">
-							{#if !isExpired(coupon.expiryDate) && coupon.usageCount < coupon.usageLimit}
-								<button class="btn btn-primary btn-sm" onclick={() => navigator.clipboard.writeText(coupon.code)}>
-									<i class="fa fa-copy"></i> Copy Code
+							{#if isAvailable(coupon)}
+								<button 
+									class="btn btn-primary btn-sm" 
+									class:btn-success={copiedCode === coupon.code}
+									onclick={() => copyCouponCode(coupon.code)}
+								>
+									{#if copiedCode === coupon.code}
+										<i class="fa fa-check"></i> Copied!
+									{:else}
+										<i class="fa fa-copy"></i> Copy Code
+									{/if}
 								</button>
 							{:else}
 								<span class="coupon-status-expired">Not Available</span>
@@ -232,9 +273,25 @@
 		background: #0f2f43;
 	}
 
+	.btn-success {
+		background: #28a745;
+		color: #fff;
+	}
+
+	.btn-success:hover {
+		background: #218838;
+	}
+
 	.btn-sm {
 		padding: 8px 16px;
 		font-size: 13px;
+	}
+
+	.coupon-min-purchase {
+		font-size: 13px;
+		color: #6c757d;
+		margin-bottom: 12px;
+		font-style: italic;
 	}
 
 	.coupon-status-expired {

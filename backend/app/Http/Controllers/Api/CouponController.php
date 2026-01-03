@@ -174,6 +174,61 @@ class CouponController extends Controller
     }
 
     /**
+     * Get user's available coupons.
+     */
+    public function userCoupons(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'coupons' => []
+            ]);
+        }
+
+        // Get all active coupons that are public or assigned to this user
+        $coupons = Coupon::where('is_active', true)
+            ->where(function($query) use ($user) {
+                $query->where('is_public', true)
+                    ->orWhereJsonContains('customer_segments', $user->id)
+                    ->orWhereJsonContains('metadata->assigned_users', $user->id);
+            })
+            ->where(function($query) {
+                $query->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>', now());
+            })
+            ->where(function($query) {
+                $query->where('max_uses', 0)
+                    ->orWhereRaw('current_uses < max_uses');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($coupon) {
+                return [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'type' => $coupon->type,
+                    'value' => $coupon->value,
+                    'description' => $coupon->description,
+                    'display_name' => $coupon->display_name,
+                    'expiry_date' => $coupon->expiry_date?->toIso8601String(),
+                    'min_purchase_amount' => $coupon->min_purchase_amount,
+                    'max_discount_amount' => $coupon->max_discount_amount,
+                    'usage_count' => $coupon->current_uses,
+                    'usage_limit' => $coupon->max_uses,
+                    'is_expired' => $coupon->expiry_date ? now()->isAfter($coupon->expiry_date) : false,
+                    'amount' => $coupon->type === 'percentage' 
+                        ? $coupon->value . '%' 
+                        : '$' . number_format($coupon->value, 2),
+                ];
+            });
+
+        return response()->json([
+            'coupons' => $coupons
+        ]);
+    }
+
+    /**
      * Validate a coupon code (public endpoint).
      */
     public function validate(Request $request)

@@ -385,6 +385,7 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->
     Route::get('/coupons/{id}', [CouponController::class, 'show']);
     Route::put('/coupons/{id}', [CouponController::class, 'update']);
     Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
+    Route::get('/coupons/user/available', [CouponController::class, 'userCoupons']);
 
     // Users (Admin staff)
     Route::get('/users', [UserController::class, 'index']);
