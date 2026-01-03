@@ -233,7 +233,7 @@
 			items: [
 				{ href: '/dashboard/account/orders', icon: '', text: 'My Orders' },
 				{ href: '/dashboard/account/subscriptions', icon: '', text: 'My Subscriptions' },
-				{ href: '/dashboard/account/wc-smart-coupons', icon: '', text: 'Coupons' },
+				{ href: '/dashboard/account/coupons', icon: '', text: 'Coupons' },
 				{ href: '/dashboard/account/edit-address', icon: '', text: 'Billing Address' },
 				{ href: '/dashboard/account/payment-methods', icon: '', text: 'Payment Methods' },
 				{ href: '/dashboard/account/edit-account', icon: '', text: 'Account Details' },
