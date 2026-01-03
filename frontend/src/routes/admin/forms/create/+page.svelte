@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/forms/create
+-->
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import FormBuilder from '$lib/components/forms/FormBuilder.svelte';

@@ -1,3 +1,7 @@
+<!--
+	URL: /resources/stock-indexes-list
+-->
+
 <script lang="ts">
 	/**
 	 * Stock Indexes List Page - Google L11 Enterprise Standard

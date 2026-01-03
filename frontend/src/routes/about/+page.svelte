@@ -1,3 +1,7 @@
+<!--
+	URL: /about
+-->
+
 <script lang="ts">
     import { onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';

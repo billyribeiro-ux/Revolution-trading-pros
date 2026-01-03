@@ -87,6 +87,7 @@ const config = {
 				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
 				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
+				'media-src': ['self', 'https://simpler-options.s3.amazonaws.com', 'https://simpler-cdn.s3.amazonaws.com', 'https://*.s3.amazonaws.com', 'blob:'],
 				'connect-src': ['self', 'ws:', 'wss:', 'https:', 'https://revolution-trading-pros-api.fly.dev', 'https://revolution-trading-pros.pages.dev', 'https://www.googleapis.com'],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],

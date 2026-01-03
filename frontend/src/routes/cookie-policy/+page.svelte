@@ -1,3 +1,7 @@
+<!--
+	URL: /cookie-policy
+-->
+
 <script lang="ts">
 	/**
 	 * Cookie Policy Page

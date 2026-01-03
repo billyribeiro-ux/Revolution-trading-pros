@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/forms
+-->
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import FormList from '$lib/components/forms/FormList.svelte';

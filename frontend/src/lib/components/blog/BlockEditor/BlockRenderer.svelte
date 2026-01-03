@@ -42,9 +42,9 @@
 	// State
 	// ==========================================================================
 
-	// Used in bind:this directives for paragraph and heading blocks
-	// @ts-ignore - Variable is used in bind:this directives
-	let editableRef = $state<HTMLElement | undefined>(undefined);
+	// Used in bind:this directives for paragraph and heading blocks (lines 133, 165)
+	// Prefixed with _ to indicate intentional: used in template, not in script
+	let _editableRef = $state<HTMLElement | undefined>(undefined);
 
 	// ==========================================================================
 	// Content Update
@@ -131,7 +131,7 @@
 	<!-- Paragraph Block -->
 	{#if block.type === 'paragraph'}
 		<p
-			bind:this={editableRef}
+			bind:this={_editableRef}
 			contenteditable={isEditing}
 			class="editable-content"
 			class:placeholder={!block.content.text}
@@ -163,7 +163,7 @@
 			{/if}
 			<svelte:element
 				this={`h${level}`}
-				bind:this={editableRef}
+				bind:this={_editableRef}
 				contenteditable={isEditing}
 				class="editable-content heading-{level}"
 				class:placeholder={!block.content.text}

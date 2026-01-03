@@ -6,11 +6,11 @@ export interface CartItem {
 	name: string;
 	description?: string;
 	price: number;
-	type: 'membership' | 'course' | 'alert-service' | 'indicator';
+	type: 'membership' | 'course' | 'alert-service' | 'indicator' | 'trading-room' | 'weekly-watchlist' | 'premium-report';
 	image?: string;
 	thumbnail?: string; // Product thumbnail URL
 	quantity: number;
-	interval?: 'monthly' | 'quarterly' | 'yearly'; // For subscriptions
+	interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime'; // For subscriptions
 	couponCode?: string; // Applied coupon code
 	discount?: number; // Discount amount
 	productSlug?: string; // Unique product identifier
@@ -152,7 +152,7 @@ function createCartStore() {
 		/**
 		 * Remove item from cart
 		 */
-		removeItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly') => {
+		removeItem: (itemId: string, interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime') => {
 			update((state) => {
 				state.items = state.items.filter(
 					(item) => !(item.id === itemId && item.interval === interval)
@@ -248,3 +248,32 @@ export const cartTotal = derived(cartStore, ($cart) =>
 );
 
 export const hasCartItems = derived(cartItemCount, ($count) => $count > 0);
+
+/**
+ * Helper function to add a product to cart
+ * Simplified API for adding products from product pages
+ */
+export async function addToCart(params: {
+	productId: string;
+	productName: string;
+	productType: CartItem['type'];
+	price: number;
+	interval?: CartItem['interval'];
+	quantity?: number;
+	description?: string;
+	image?: string;
+	productSlug?: string;
+}): Promise<boolean> {
+	const item: Omit<CartItem, 'quantity'> = {
+		id: params.productId,
+		name: params.productName,
+		type: params.productType,
+		price: params.price,
+		interval: params.interval,
+		description: params.description,
+		image: params.image,
+		productSlug: params.productSlug || params.productId
+	};
+
+	return cartStore.addItem(item);
+}

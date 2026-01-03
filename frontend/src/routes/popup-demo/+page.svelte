@@ -1,3 +1,7 @@
+<!--
+	URL: /popup-demo
+-->
+
 <script lang="ts">
 	import { popupStore, type Popup } from '$lib/stores/popups';
 	import { IconRocket } from '$lib/icons';

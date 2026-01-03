@@ -1,4 +1,6 @@
 <!--
+	URL: /dashboard
+	
 	Dashboard Home Page - Member Dashboard Landing
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation
@@ -31,7 +33,6 @@
 	// Memberships data
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
 	let isLoading = $state(true);
-	let hasAttemptedLoad = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
@@ -105,8 +106,8 @@
 		return cards;
 	});
 
-	// Mastery cards - Courses
-	const masteryCards = $derived.by(() => {
+	// Mentorship cards - All courses (main education section)
+	const mentorshipCards = $derived.by(() => {
 		const cards: {
 			name: string;
 			href: string;
@@ -117,12 +118,13 @@
 
 		const courseData = membershipsData?.courses ?? [];
 		for (const course of courseData) {
+			// Show all active courses in Mentorship section
 			if (course.status === 'active') {
 				cards.push({
 					name: course.name,
 					href: `/dashboard/${course.slug}`,
 					icon: course.icon ?? 'book',
-					variant: 'growth',
+					variant: course.slug === 'small-account-mentorship' ? 'training' : 'growth',
 					tradingRoom: course.accessUrl
 				});
 			}
@@ -163,23 +165,24 @@
 
 	// Use $effect to reactively load memberships when auth becomes ready
 	// This fixes the race condition where onMount runs before auth is initialized
+	// ICT 11+ Fix: Removed hasAttemptedLoad flag to ensure data loads on every page refresh
 	$effect(() => {
 		// Wait for auth to finish initializing
 		if ($isInitializing) {
+			isLoading = true;
 			return;
 		}
 
 		// If not authenticated, stop loading
 		if (!$isAuthenticated) {
 			isLoading = false;
+			membershipsData = null;
 			return;
 		}
 
-		// Load memberships once when authenticated
-		if (!hasAttemptedLoad) {
-			hasAttemptedLoad = true;
-			loadMemberships();
-		}
+		// Load memberships when authenticated
+		// This runs on every page load/refresh when user is authenticated
+		loadMemberships();
 	});
 
 	async function loadMemberships(): Promise<void> {
@@ -215,21 +218,6 @@
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<!-- Trading Room Rules - Legal Compliance -->
-		<div class="trading-room-rules">
-			<a
-				href="/trading-room-rules.pdf"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="trading-room-rules__link"
-			>
-				Trading Room Rules
-			</a>
-			<p class="trading-room-rules__disclaimer">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</p>
-		</div>
-
 		{#if tradingRooms.length > 0}
 			<div class="dropdown" class:is-open={isDropdownOpen}>
 				<button
@@ -263,6 +251,21 @@
 					></div>
 				{/if}
 			</div>
+
+			<!-- Trading Room Rules - Legal Compliance -->
+			<div class="trading-room-rules">
+				<a
+					href="/trading-room-rules.pdf"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="trading-room-rules__link"
+				>
+					Trading Room Rules
+				</a>
+				<p class="trading-room-rules__disclaimer">
+					By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+				</p>
+			</div>
 		{/if}
 	</div>
 </header>
@@ -295,15 +298,19 @@
 					</div>
 				{/each}
 			</div>
+			<!-- Divider -->
+			<div class="section-divider">
+				<div class="section-divider__line"></div>
+			</div>
 		</section>
 	{/if}
 
-	<!-- Mastery Section -->
-	{#if masteryCards.length > 0}
+	<!-- Mentorship Section -->
+	{#if mentorshipCards.length > 0}
 		<section class="dashboard__content-section">
-			<h2 class="section-title">Mastery</h2>
+			<h2 class="section-title">Mentorship</h2>
 			<div class="membership-cards">
-				{#each masteryCards as card}
+				{#each mentorshipCards as card}
 					<div class="membership-card-col">
 						<article class="membership-card membership-card--{card.variant}">
 							<a href={card.href} class="membership-card__header">
@@ -323,6 +330,10 @@
 						</article>
 					</div>
 				{/each}
+			</div>
+			<!-- Divider -->
+			<div class="section-divider">
+				<div class="section-divider__line"></div>
 			</div>
 		</section>
 	{/if}
@@ -349,6 +360,10 @@
 				</div>
 			{/each}
 		</div>
+		<!-- Divider -->
+		<div class="section-divider">
+			<div class="section-divider__line"></div>
+		</div>
 	</section>
 
 	<!-- Weekly Watchlist Section -->
@@ -358,7 +373,7 @@
 				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 				<div class="watchlist-mobile-image">
 					<a href="/watchlist/current">
-						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="watchlist-image" />
+						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
 					</a>
 				</div>
 				<h4 class="watchlist-subtitle">Weekly Watchlist with David Starr</h4>
@@ -367,14 +382,18 @@
 			</div>
 			<div class="watchlist-col-right">
 				<a href="/watchlist/current">
-					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="watchlist-image" />
+					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
 				</a>
 			</div>
+		</div>
+		<!-- Divider -->
+		<div class="section-divider">
+			<div class="section-divider__line"></div>
 		</div>
 	</section>
 
 	<!-- Empty State - No Memberships -->
-	{#if membershipCards.length === 0 && masteryCards.length === 0}
+	{#if membershipCards.length === 0 && mentorshipCards.length === 0}
 		<section class="dashboard__content-section">
 			<div class="empty-state">
 				<h2 class="empty-state__title">Welcome, {userName}!</h2>
@@ -403,7 +422,7 @@
 		max-width: 1700px;
 		padding: 20px;
 	}
-
+    
 	@media (min-width: 1280px) {
 		.dashboard__header {
 			padding: 30px;
@@ -419,7 +438,7 @@
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		flex: 1;
 	}
 
@@ -427,45 +446,50 @@
 		margin: 0;
 		color: #333;
 		font-size: 36px;
-		font-weight: 300;
+		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
 	.dashboard__header-right {
 		display: flex;
-		flex-direction: column-reverse;
+		flex-direction: column;
 		align-items: flex-end;
 		margin-top: 10px;
 	}
 
 	@media (min-width: 820px) {
 		.dashboard__header-right {
-			flex-direction: row;
-			align-items: center;
-			gap: 20px;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 0;
 			margin-top: 0;
 		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * TRADING ROOM RULES - Legal Compliance (WordPress Match)
-	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
+	 * Button on top, text below in vertical stack
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.trading-room-rules {
-		text-align: right;
-		margin-right: 20px;
+		text-align: center;
+		margin-top: 10px;
+		width: 100%;
+		max-width: 300px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.trading-room-rules__link {
-		display: inline-block;
-		padding: 6px 12px;
-		font-size: 14px;
+		display: block;
+		margin-bottom: 8px;
+		font-size: 18px;
 		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 0.15s ease-in-out;
+		text-align: center;
 	}
 
 	.trading-room-rules__link:hover {
@@ -475,19 +499,32 @@
 
 	.trading-room-rules__disclaimer {
 		margin: 0;
-		padding: 0 12px;
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #666;
 		line-height: 1.4;
+		text-align: center;
 	}
 
-	@media (max-width: 819px) {
-		.trading-room-rules {
-			margin-right: 0;
-			margin-top: 10px;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECTION DIVIDER - WordPress Match
+	 * Full width across content area, not crossing sidebar
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.section-divider {
+		margin-top: 30px;
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.section-divider__line {
+		border-top-width: 1px;
+		border-top-style: solid;
+		border-top-color: #cccccc;
+		width: 100%;
+		margin: 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -744,6 +781,7 @@
 		padding: 30px 20px;
 		overflow-x: auto;
 		overflow-y: hidden;
+		background-color: #ffffff;
 	}
 
 	@media (min-width: 1280px) {
@@ -858,7 +896,7 @@
 		display: inline-block;
 		vertical-align: middle;
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 800;
 		color: #333;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		white-space: normal;
@@ -910,8 +948,7 @@
 	}
 
 	.membership-card__actions a:hover {
-		color: #0984ae;
-		background-color: #f4f4f4;
+		color: #0a5a75;
 	}
 
 	.membership-card__actions a + a {

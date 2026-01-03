@@ -211,8 +211,9 @@ async fn update_post(
     if let Some(ref status) = input.status {
         set_clauses.push(format!("status = '{}'", status));
     }
-    if input.indexable.is_some() {
-        set_clauses.push(format!("indexable = {}", input.indexable.unwrap()));
+    // ICT 11+ Fix: Use if let instead of is_some() + unwrap()
+    if let Some(indexable) = input.indexable {
+        set_clauses.push(format!("indexable = {}", indexable));
     }
 
     set_clauses.push("updated_at = NOW()".to_string());

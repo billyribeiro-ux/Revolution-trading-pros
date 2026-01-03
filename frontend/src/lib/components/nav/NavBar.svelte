@@ -136,7 +136,8 @@
 			label: 'Store',
 			submenu: [
 				{ href: '/courses', label: 'Courses' },
-				{ href: '/indicators', label: 'Indicators' }
+				{ href: '/indicators', label: 'Indicators' },
+				{ href: '/store/scanners', label: 'Scanners' }
 			]
 		},
 		{ id: 'mission', label: 'Our Mission', href: '/our-mission' },

@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<title>Simpler Trading - Navigation Components (Complete with CSS & JS)</title>
+
+<!--
+================================================================================
+COMPLETE NAVIGATION EXTRACTION
+================================================================================
+SOURCE: https://www.simplertrading.com/dashboard
+INCLUDES: HTML + CSS + JavaScript + Animations + Hover Effects
+DATE: January 2, 2026
+
+ALL NAVIGATION COMPONENTS WITH COMPLETE STYLING:
+1. Skip Link (Accessibility)
+2. Site Header (Logo with sticky behavior)
+3. Main Navigation (Dropdown menus with hover/animations)
+4. Breadcrumbs
+5. Dashboard Sidebar (Multi-level with icons)
+6. Mobile Toggle (Hamburger animation)
+
+EXTERNAL DEPENDENCIES:
+- jQuery 3.7.1
+- Superfish (dropdown menu plugin)
+- GeneratePress theme CSS
+- Custom dashboard CSS
+- Icon fonts (st-icon-*)
+
+================================================================================
+-->
+
+<!-- 
+================================================================================
+CSS STYLES - NAVIGATION COMPONENTS
+================================================================================
+-->
+<style type="text/css">
+/* ============================================================================
+   GENERAL NAVIGATION STYLES - GeneratePress Theme
+   ============================================================================ */
+
+/* Skip Link - Accessibility */
+.screen-reader-text.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100000;
+}
+
+.screen-reader-text.skip-link:focus {
+    top: 0;
+}
+
+/* Site Header */
+.site-header {
+    background-color: #ffffff;
+    color: #3a3a3a;
+}
+
+.site-header a,
+.site-header a:visited {
+    color: #3a3a3a;
+}
+
+.inside-header {
+    padding: 20px 40px;
+}
+
+.grid-container {
+    max-width: 1160px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.site-logo img {
+    max-height: 80px;
+    width: auto;
+}
+
+/* ============================================================================
+   MAIN NAVIGATION - Primary Menu
+   ============================================================================ */
+
+.main-navigation {
+    background-color: #0a2335;
+    position: relative;
+    z-index: 1000;
+}
+
+.main-navigation,
+.main-navigation ul ul {
+    background-color: #0a2335;
+}
+
+/* Navigation Logo (Sticky) */
+.main-navigation .navigation-logo img {
+    height: 70px;
+    transition: height 300ms ease;
+}
+
+@media (max-width: 1170px) {
+    .main-navigation .navigation-logo.site-logo {
+        margin-left: 0;
+    }
+    
+    body.sticky-menu-logo.nav-float-left .main-navigation .site-logo.navigation-logo {
+        margin-right: 0;
+    }
+}
+
+/* Sticky Navigation Transition */
+.main-navigation .main-nav ul li a,
+.menu-toggle,
+.main-navigation .mobile-bar-items a {
+    transition: line-height 300ms ease;
+}
+
+@media (min-width: 769px) and (max-width: 1024px),
+(min-width:1025px) {
+    .main-navigation.sticky-navigation-transition .main-nav > ul > li > a,
+    .sticky-navigation-transition .menu-toggle,
+    .main-navigation.sticky-navigation-transition .mobile-bar-items a,
+    .sticky-navigation-transition .navigation-branding .main-title {
+        line-height: 20px;
+    }
+    
+    .main-navigation.sticky-navigation-transition .site-logo img,
+    .main-navigation.sticky-navigation-transition .navigation-search input,
+    .main-navigation.sticky-navigation-transition .navigation-branding img {
+        height: 20px;
+    }
+}
+
+/* Menu Links */
+.main-navigation .main-nav ul li a,
+.menu-toggle {
+    color: #ffffff;
+    font-family: "Open Sans", sans-serif;
+    text-transform: capitalize;
+    font-size: 14px;
+    padding: 20px 15px;
+    display: block;
+    text-decoration: none;
+}
+
+.main-navigation .main-nav ul ul li a {
+    font-size: 13px;
+}
+
+/* Hover Effects */
+.main-navigation .main-nav ul li:hover > a,
+.main-navigation .main-nav ul li:focus > a,
+.main-navigation .main-nav ul li.sfHover > a {
+    color: #0a2335;
+    background-color: #e9ebed;
+}
+
+/* Current Menu Item */
+.main-navigation .main-nav ul li[class*="current-menu-"] > a {
+    color: #ffffff;
+    background-color: rgba(48,48,48,0);
+}
+
+.main-navigation .main-nav ul li[class*="current-menu-"] > a:hover,
+.main-navigation .main-nav ul li[class*="current-menu-"].sfHover > a {
+    color: #ffffff;
+    background-color: rgba(48,48,48,0);
+}
+
+/* Menu Structure */
+.main-navigation .main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-navigation .main-nav > ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.main-navigation .main-nav ul li {
+    position: relative;
+}
+
+/* Dropdown Menus */
+.main-navigation .main-nav ul ul {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: #0a2335;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    z-index: 99;
+}
+
+.main-navigation .main-nav ul li:hover > ul,
+.main-navigation .main-nav ul li.sfHover > ul {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown Arrow Icon */
+.dropdown-menu-toggle {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.dropdown-menu-toggle svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    transition: transform 0.3s ease;
+}
+
+.main-navigation .main-nav ul li:hover > a .dropdown-menu-toggle svg,
+.main-navigation .main-nav ul li.sfHover > a .dropdown-menu-toggle svg {
+    transform: rotate(180deg);
+}
+
+/* Sub-menu Styling */
+.sub-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sub-menu .sub-top {
+    display: block;
+    padding: 10px 15px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.sub-menu .sub-item {
+    display: block;
+    padding: 10px 15px 10px 30px;
+}
+
+/* ============================================================================
+   MOBILE MENU TOGGLE
+   ============================================================================ */
+
+.menu-toggle {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    display: none;
+    padding: 20px 15px;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: inline-block;
+    }
+    
+    .main-navigation .main-nav {
+        display: none;
+    }
+    
+    .main-navigation.toggled .main-nav {
+        display: block;
+    }
+    
+    .main-navigation.toggled .main-nav > ul {
+        background-color: #0a2335;
+        flex-direction: column;
+    }
+}
+
+button.menu-toggle:hover,
+button.menu-toggle:focus {
+    color: #ffffff;
+}
+
+.menu-toggle .gp-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Hamburger Icon Animation */
+.menu-toggle .gp-icon svg:first-child {
+    display: inline-block;
+}
+
+.menu-toggle .gp-icon svg:last-child {
+    display: none;
+}
+
+.main-navigation.toggled .menu-toggle .gp-icon svg:first-child {
+    display: none;
+}
+
+.main-navigation.toggled .menu-toggle .gp-icon svg:last-child {
+    display: inline-block;
+}
+
+.mobile-menu {
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* ============================================================================
+   BREADCRUMBS NAVIGATION
+   ============================================================================ */
+
+.breadcrumbs {
+    background-color: #f5f5f5;
+    padding: 15px 0;
+    font-size: 14px;
+}
+
+.breadcrumbs .container-fluid {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.breadcrumbs ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.breadcrumbs li {
+    display: inline-block;
+}
+
+.breadcrumbs a {
+    color: #1e73be;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumbs a:hover {
+    color: #000000;
+}
+
+.breadcrumbs .separator {
+    margin: 0 10px;
+    color: #666666;
+}
+
+.breadcrumbs .item-current strong {
+    color: #666666;
+    font-weight: normal;
+}
+
+/* ============================================================================
+   DASHBOARD SIDEBAR NAVIGATION
+   ============================================================================ */
+
+.dashboard__sidebar {
+    background-color: #0a2335;
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 999;
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* Collapsed State (Icon-only mode - 80px) */
+.dashboard__sidebar.is-collapsed {
+    width: 80px;
+}
+
+/* When collapsed, hide text labels */
+.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+.dashboard__sidebar.is-collapsed .dashboard__profile-name,
+.dashboard__sidebar.is-collapsed .dashboard__nav-category {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* When collapsed, center icons */
+.dashboard__sidebar.is-collapsed .dash_main_links li a {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item {
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon {
+    margin-right: 0;
+}
+
+/* Expanded Overlay (on hover when collapsed) */
+.dashboard__sidebar.is-collapsed:hover {
+    width: 280px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+}
+
+.dashboard__sidebar.is-collapsed:hover .dashboard__nav-item-text,
+.dashboard__sidebar.is-collapsed:hover .dashboard__profile-name,
+.dashboard__sidebar.is-collapsed:hover .dashboard__nav-category {
+    opacity: 1;
+    visibility: visible;
+    width: auto;
+    transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
+}
+
+.dashboard__sidebar.is-collapsed:hover .dash_main_links li a {
+    justify-content: flex-start;
+    padding: 12px 20px;
+}
+
+.dashboard__sidebar.is-collapsed:hover .dashboard__profile-nav-item {
+    justify-content: flex-start;
+    padding: 15px 20px;
+}
+
+.dashboard__sidebar.is-collapsed:hover .dashboard__nav-item-icon {
+    margin-right: 12px;
+}
+
+/* Adjust main content when sidebar is collapsed */
+.dashboard__main {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+}
+
+.dashboard__sidebar.is-collapsed ~ .dashboard__main {
+    margin-left: 80px;
+}
+
+@media (max-width: 768px) {
+    .dashboard__sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+    }
+    
+    .dashboard__sidebar.open {
+        transform: translateX(0);
+    }
+    
+    /* Disable collapsed mode on mobile */
+    .dashboard__sidebar.is-collapsed {
+        width: 280px;
+    }
+    
+    .dashboard__main {
+        margin-left: 0;
+    }
+}
+
+.dashboard__nav-primary {
+    padding: 20px 0;
+}
+
+/* User Profile Section */
+.dashboard__profile-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard__profile-nav-item:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.dashboard__profile-photo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.dashboard__profile-name {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Navigation Lists */
+.dashboard__nav-primary ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard__nav-primary > ul {
+    margin-bottom: 20px;
+}
+
+/* Category Headers */
+.dashboard__nav-category {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    padding: 15px 20px 10px;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+/* Navigation Links */
+.dash_main_links li {
+    margin: 0;
+}
+
+.dash_main_links li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.dash_main_links li a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: #ffffff;
+    padding-left: 25px;
+}
+
+/* Active State */
+.dash_main_links li.is-active a {
+    background-color: rgba(255,255,255,0.15);
+    color: #ffffff;
+    border-left: 3px solid #45E0B1;
+}
+
+.dash_main_links li.is-active a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #45E0B1;
+}
+
+/* Navigation Icons */
+.dashboard__nav-item-icon {
+    font-size: 20px;
+    margin-right: 12px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.dashboard__nav-item-text {
+    font-size: 14px;
+    flex: 1;
+}
+
+/* Icon Font Classes (Custom st-icon-* font) */
+.st-icon-home::before { content: "\e900"; }
+.st-icon-courses::before { content: "\e901"; }
+.st-icon-indicators::before { content: "\e902"; }
+.st-icon-mastering-the-trade::before { content: "\e903"; }
+.st-icon-simpler-showcase::before { content: "\e904"; }
+.st-icon-tr3ndy-spx-alerts-circle::before { content: "\e905"; }
+.st-icon-consistent-growth::before { content: "\e906"; }
+.st-icon-trade-of-the-week::before { content: "\e907"; }
+.st-icon-support::before { content: "\e908"; }
+.st-icon-settings::before { content: "\e909"; }
+
+/* ============================================================================
+   SIDEBAR COLLAPSE TOGGLE BUTTON
+   ============================================================================ */
+
+.dashboard__collapse-toggle {
+    position: absolute;
+    top: 20px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background-color: #0a2335;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    transition: all 0.3s ease;
+    font-size: 12px;
+}
+
+.dashboard__collapse-toggle:hover {
+    background-color: #45E0B1;
+    border-color: #45E0B1;
+    transform: scale(1.1);
+}
+
+.dashboard__sidebar.is-collapsed .dashboard__collapse-toggle {
+    right: -15px;
+}
+
+@media (max-width: 768px) {
+    .dashboard__collapse-toggle {
+        display: none;
+    }
+}
+
+/* ============================================================================
+   MOBILE TOGGLE BUTTON (Dashboard Sidebar)
+   ============================================================================ */
+
+.dashboard__toggle {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 280px;
+    background-color: #0a2335;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 15px 20px;
+    z-index: 1000;
+    transition: width 0.3s ease;
+}
+
+.dashboard__sidebar.is-collapsed .dashboard__toggle {
+    width: 80px;
+}
+
+@media (min-width: 769px) {
+    .dashboard__toggle {
+        display: none;
+    }
+}
+
+.dashboard__toggle-button {
+    background: transparent;
+    border: 0;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    font-size: 14px;
+}
+
+/* Hamburger Icon (3 bars) */
+.dashboard__toggle-button-icon {
+    width: 24px;
+    height: 18px;
+    position: relative;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.dashboard__toggle-button-icon span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 2px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: 0.25s ease-in-out;
+}
+
+.dashboard__toggle-button-icon span:nth-child(1) {
+    top: 0px;
+}
+
+.dashboard__toggle-button-icon span:nth-child(2) {
+    top: 8px;
+}
+
+.dashboard__toggle-button-icon span:nth-child(3) {
+    top: 16px;
+}
+
+/* Animated to X when open */
+.dashboard__sidebar.open .dashboard__toggle-button-icon span:nth-child(1) {
+    top: 8px;
+    transform: rotate(135deg);
+}
+
+.dashboard__sidebar.open .dashboard__toggle-button-icon span:nth-child(2) {
+    opacity: 0;
+    left: -60px;
+}
+
+.dashboard__sidebar.open .dashboard__toggle-button-icon span:nth-child(3) {
+    top: 8px;
+    transform: rotate(-135deg);
+}
+
+/* Overlay */
+.dashboard__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 998;
+}
+
+.dashboard__sidebar.open ~ .dashboard__overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (min-width: 769px) {
+    .dashboard__overlay {
+        display: none;
+    }
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .inside-header {
+        padding: 15px 20px;
+    }
+    
+    .breadcrumbs .container-fluid {
+        padding: 0 20px;
+    }
+    
+    .site-logo img {
+        max-height: 50px;
+    }
+}
+
+@media (max-width: 950px) {
+    .navigation-branding .main-title {
+        font-size: 30px;
+    }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.grid-parent {
+    position: relative;
+}
+
+.hidden-xs {
+    display: none !important;
+}
+
+@media (min-width: 769px) {
+    .hidden-xs {
+        display: block !important;
+    }
+}
+
+.hidden-md {
+    display: block !important;
+}
+
+@media (min-width: 769px) {
+    .hidden-md {
+        display: none !important;
+    }
+}
+
+</style>
+
+</head>
+<body>
+
+<!-- 
+================================================================================
+HTML - NAVIGATION COMPONENTS
+================================================================================
+-->
+
+<!-- Skip Link -->
+<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>
+
+<!-- Site Header -->
+<header id="masthead" class="site-header" itemtype="https://schema.org/WPHeader" itemscope>
+  <div class="inside-header grid-container grid-parent">
+    <div class="site-logo">
+      <a href="https://www.simplertrading.com/" title="Simpler Trading" rel="home">
+        <img 
+          class="header-image" 
+          alt="Simpler Trading" 
+          src="https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png" 
+          title="Simpler Trading" 
+          srcset="https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png 1x, https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png 2x" 
+          width="901" 
+          height="80" 
+        />
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- Main Navigation -->
+<nav id="site-navigation" class="main-navigation" itemtype="https://schema.org/SiteNavigationElement" itemscope>
+  <div class="inside-navigation grid-container grid-parent">
+    
+    <!-- Sticky Logo -->
+    <div class="site-logo sticky-logo navigation-logo">
+      <a href="https://www.simplertrading.com/" title="Simpler Trading" rel="home">
+        <img src="https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png" alt="Simpler Trading" />
+      </a>
+    </div>
+    
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+      <span class="gp-icon icon-menu-bars">
+        <svg viewBox="0 0 512 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em">
+          <path d="M0 96c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24zm0 160c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24zm0 160c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24z" />
+        </svg>
+        <svg viewBox="0 0 512 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em">
+          <path d="M71.029 71.029c9.373-9.372 24.569-9.372 33.942 0L256 222.059l151.029-151.03c9.373-9.372 24.569-9.372 33.942 0 9.372 9.373 9.372 24.569 0 33.942L289.941 256l151.03 151.029c9.372 9.373 9.372 24.569 0 33.942-9.373 9.372-24.569 9.372-33.942 0L256 289.941l-151.029 151.03c-9.373 9.372-24.569 9.372-33.942 0-9.372-9.373-9.372-24.569 0-33.942L222.059 256 71.029 104.971c-9.372-9.373-9.372-24.569 0-33.942z" />
+        </svg>
+      </span>
+      <span class="mobile-menu">Menu</span>
+    </button>
+    
+    <!-- Primary Menu -->
+    <div id="primary-menu" class="main-nav">
+      <ul id="menu-header-menu-2023" class="menu sf-menu">
+        
+        <!-- Live Trading Rooms -->
+        <li class="menu-item menu-item-has-children">
+          <a href="#">
+            Live Trading Rooms
+            <span role="presentation" class="dropdown-menu-toggle">
+              <span class="gp-icon icon-arrow">
+                <svg viewBox="0 0 330 512" aria-hidden="true" role="img" width="1em" height="1em">
+                  <path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
+                </svg>
+              </span>
+            </span>
+          </a>
+          <ul class="sub-menu">
+            <li><a href="/#"><span class="sub-top"><strong>Asset Trading Rooms</strong></span></a></li>
+            <li><a href="/trading-rooms/mastering-the-trade"><span class="sub-item">Mastering the Trade</span></a></li>
+            <li><a href="/trade-alerts/"><span class="sub-top"><strong>Strategy Trading Rooms</strong></span></a></li>
+            <li><a href="/trading-rooms/long-term-growth"><span class="sub-item">Long-Term Growth</span></a></li>
+            <li><a href="/trading-rooms/small-lot"><span class="sub-item">Small Lot</span></a></li>
+            <li><a href="/trade-alerts/stock-mavericks"><span class="sub-item">Stock Mavericks</span></a></li>
+            <li><a href="/trading-rooms/trendy"><span class="sub-item">Tr3ndy Trading</span></a></li>
+            <li><a href="/trade-alerts/tr3ndy-spx-alerts"><span class="sub-item">Trendy SPX Alerts</span></a></li>
+            <li><a href="/trading-rooms/bias"><span class="sub-item">BIAS</span></a></li>
+            <li><a href="/trading-rooms/sector-secrets"><span class="sub-item">Sector Secrets</span></a></li>
+            <li><a href="/trading-rooms/moxie-indicator-mastery"><span class="sub-item">Moxie Indicator</span></a></li>
+            <li><a href="/trading-rooms/compounding-growth"><span class="sub-item">Compounding Growth</span></a></li>
+            <li><a href="/trading-rooms/voodoo-mastery"><span class="sub-item">Voodoo</span></a></li>
+          </ul>
+        </li>
+        
+        <!-- Learning -->
+        <li class="menu-item menu-item-has-children">
+          <a href="#">Learning</a>
+          <ul class="sub-menu">
+            <li><a href="/courses/"><span class="sub-top"><strong>Courses</strong></span></a></li>
+            <li><a href="/trading-education-center"><span class="sub-item">101s</span></a></li>
+            <li><a href="/courses"><span class="sub-item">Live & On-demand Classes</span></a></li>
+            <li><a href="https://www.simplertrading.com/research-tools"><span class="sub-top"><strong>Research Reports</strong></span></a></li>
+            <li><a href="/premium-newsletters/top-tier-outlook"><span class="sub-item">Top Tier Outlook</span></a></li>
+          </ul>
+        </li>
+        
+        <!-- Tools -->
+        <li class="menu-item menu-item-has-children">
+          <a href="#">Tools</a>
+          <ul class="sub-menu">
+            <li><a href="/indicators">Indicators</a></li>
+            <li><a href="/join/scanner/">The Scanner</a></li>
+          </ul>
+        </li>
+        
+        <!-- Resources -->
+        <li class="menu-item menu-item-has-children">
+          <a href="#">Resources</a>
+          <ul class="sub-menu">
+            <li><a href="https://www.simplertrading.com/research-tools"><span class="sub-top"><strong>Research Reports</strong></span></a></li>
+            <li><a href="/premium-newsletters/top-tier-outlook-2"><span class="sub-item">Top Tier Outlook</span></a></li>
+            <li><a href="/blog">Commentary</a></li>
+            <li><a href="https://www.simplertrading.com/daily-videos">Daily Videos</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/newsletters"><span class="sub-top"><strong>Newsletters</strong></span></a></li>
+            <li><a href="/free-goods"><span class="sub-item">Simpler Insights</span></a></li>
+            <li><a href="/free-goods"><span class="sub-item">Five Star Trader</span></a></li>
+            <li><a href="/free-goods"><span class="sub-item">Countdown Trader</span></a></li>
+            <li><a href="/free-goods"><span class="sub-item">Profit Pilot</span></a></li>
+            <li><a href="/free-goods"><span class="sub-item">Focused Trades</span></a></li>
+          </ul>
+        </li>
+        
+        <!-- About Us -->
+        <li class="menu-item menu-item-has-children">
+          <a href="/about">About Us</a>
+          <ul class="sub-menu">
+            <li><a href="/about">Who We Are</a></li>
+            <li><a href="/traders">Our Traders</a></li>
+          </ul>
+        </li>
+        
+        <!-- Dashboard -->
+        <li class="nmr-logged-in menu-item current-menu-item menu-item-has-children">
+          <a href="/dashboard" aria-current="page">Dashboard</a>
+          <ul class="sub-menu">
+            <li><a href="/dashboard" aria-current="page">My Memberships</a></li>
+            <li><a href="/dashboard/classes">My Classes</a></li>
+            <li><a href="/dashboard/indicators">My Indicators</a></li>
+            <li><a href="/dashboard/account">My Account</a></li>
+            <li><a href="/support">Support</a></li>
+            <li><a href="https://www.simplertrading.com/dashboard/account/customer-logout/">Logout</a></li>
+          </ul>
+        </li>
+        
+        <!-- Phone -->
+        <li class="menu-item">
+          <a href="tel:5122668659">
+            <span class="fa fa-phone fa-cust-rotate-90 blue_icon"></span> (512) 266-8659
+          </a>
+        </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Breadcrumbs -->
+<nav id="breadcrumbs" class="breadcrumbs">
+  <div class="container-fluid">
+    <ul>
+      <li class="item-home">
+        <a class="breadcrumb-link breadcrumb-home" href="https://www.simplertrading.com" title="Home">Home</a>
+      </li>
+      <li class="separator separator-home"> / </li>
+      <li class="item-current item-401190">
+        <strong class="breadcrumb-current breadcrumb-401190">Member Dashboard</strong>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Dashboard Sidebar -->
+<aside class="dashboard__sidebar">
+  <nav class="dashboard__nav-primary">
+    
+    <!-- User Profile -->
+    <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
+      <span class="dashboard__profile-photo" style="background-image: url(https://secure.gravatar.com/avatar/b27c0cfb1c74fb928f5e40ba6711669f?s=32&d=mm&r=g);"></span>
+      <span class="dashboard__profile-name">Zack Stambowski</span>
+    </a>
+    
+    <!-- Main Links -->
+    <ul>
+      <li></li>
+      <ul class="dash_main_links">
+        <li class="is-active">
+          <a href="/dashboard/">
+            <span class="dashboard__nav-item-icon st-icon-home"></span>
+            <span class="dashboard__nav-item-text">Member Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="/dashboard/classes/">
+            <span class="dashboard__nav-item-icon st-icon-courses"></span>
+            <span class="dashboard__nav-item-text">My Classes</span>
+          </a>
+        </li>
+        <li>
+          <a href="/dashboard/indicators/">
+            <span class="dashboard__nav-item-icon st-icon-indicators"></span>
+            <span class="dashboard__nav-item-text">My Indicators</span>
+          </a>
+        </li>
+      </ul>
+    </ul>
+    
+    <!-- Memberships -->
+    <ul>
+      <li>
+        <p class="dashboard__nav-category">memberships</p>
+      </li>
+      <ul class="dash_main_links">
+        <li>
+          <a href="/dashboard/mastering-the-trade">
+            <span class="dashboard__nav-item-icon st-icon-mastering-the-trade"></span>
+            <span class="dashboard__nav-item-text">Mastering the Trade</span>
+          </a>
+        </li>
+        <li>
+          <a href="/dashboard/simpler-showcase/">
+            <span class="dashboard__nav-item-icon st-icon-simpler-showcase"></span>
+            <span class="dashboard__nav-item-text">Simpler Showcase</span>
+          </a>
+        </li>
+        <li>
+          <a href="/dashboard/tr3ndy-spx-alerts/">
+            <span class="dashboard__nav-item-icon st-icon-tr3ndy-spx-alerts-circle"></span>
+            <span class="dashboard__nav-item-text">Tr3ndy SPX Alerts Service</span>
+          </a>
+        </li>
+      </ul>
+    </ul>
+    
+    <!-- Mastery -->
+    <ul>
+      <li>
+        <p class="dashboard__nav-category">mastery</p>
+      </li>
+      <ul class="dash_main_links">
+        <li>
+          <a href="/dashboard/cgm/">
+            <span class="dashboard__nav-item-icon st-icon-consistent-growth"></span>
+            <span class="dashboard__nav-item-text">Compounding Growth Mastery</span>
+          </a>
+        </li>
+      </ul>
+    </ul>
+    
+    <!-- Premium Reports -->
+    <ul>
+      <li>
+        <p class="dashboard__nav-category">premium reports</p>
+      </li>
+      <ul class="dash_main_links">
+      </ul>
+    </ul>
+    
+    <!-- Tools -->
+    <ul>
+      <li>
+        <p class="dashboard__nav-category">tools</p>
+      </li>
+      <ul class="dash_main_links">
+        <li>
+          <a href="/dashboard/ww/">
+            <span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
+            <span class="dashboard__nav-item-text">Weekly Watchlist</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://intercom.help/simpler-trading/en/" target="_blank">
+            <span class="dashboard__nav-item-icon st-icon-support"></span>
+            <span class="dashboard__nav-item-text">Support</span>
+          </a>
+        </li>
+      </ul>
+    </ul>
+    
+    <!-- Account -->
+    <ul>
+      <li>
+        <p class="dashboard__nav-category">account</p>
+      </li>
+      <ul class="dash_main_links">
+        <li>
+          <a href="/dashboard/account/">
+            <span class="dashboard__nav-item-icon st-icon-settings"></span>
+            <span class="dashboard__nav-item-text">My Account</span>
+          </a>
+        </li>
+      </ul>
+    </ul>
+    
+  </nav>
+  
+  <!-- Mobile Toggle -->
+  <footer class="dashboard__toggle">
+    <button class="dashboard__toggle-button" data-toggle-dashboard-menu>
+      <div class="dashboard__toggle-button-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <span class="framework__toggle-button-label">Dashboard Menu</span>
+    </button>
+  </footer>
+  
+  <!-- Overlay -->
+  <div class="dashboard__overlay" data-toggle-dashboard-menu></div>
+  
+</aside>
+
+<!-- 
+================================================================================
+JAVASCRIPT - NAVIGATION FUNCTIONALITY
+================================================================================
+-->
+
+<script>
+// Mobile Menu Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navigation = document.querySelector('.main-navigation');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            navigation.classList.toggle('toggled');
+            const expanded = this.getAttribute('aria-expanded') === 'true' || false;
+            this.setAttribute('aria-expanded', !expanded);
+        });
+    }
+    
+    // Dashboard Sidebar Toggle
+    const sidebarToggle = document.querySelectorAll('[data-toggle-dashboard-menu]');
+    const sidebar = document.querySelector('.dashboard__sidebar');
+    
+    sidebarToggle.forEach(function(toggle) {
+        toggle.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+        });
+    });
+    
+    // Close sidebar when clicking overlay
+    const overlay = document.querySelector('.dashboard__overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('open');
+        });
+    }
+});
+
+// Sticky Navigation (on scroll)
+window.addEventListener('scroll', function() {
+    const navigation = document.querySelector('.main-navigation');
+    if (window.scrollY > 100) {
+        navigation.classList.add('sticky-navigation-transition');
+    } else {
+        navigation.classList.remove('sticky-navigation-transition');
+    }
+});
+
+// Dropdown Menu Hover (Desktop)
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.main-navigation .menu-item-has-children');
+    
+    menuItems.forEach(function(item) {
+        item.addEventListener('mouseenter', function() {
+            this.classList.add('sfHover');
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.classList.remove('sfHover');
+        });
+    });
+});
+
+// Sidebar Collapse Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.dashboard__sidebar');
+    
+    // Create collapse toggle button
+    const collapseButton = document.createElement('button');
+    collapseButton.className = 'dashboard__collapse-toggle';
+    collapseButton.innerHTML = '<span>◀</span>';
+    collapseButton.setAttribute('aria-label', 'Toggle sidebar');
+    
+    // Insert button at top of sidebar
+    if (sidebar) {
+        sidebar.insertBefore(collapseButton, sidebar.firstChild);
+    }
+    
+    // Toggle collapsed state
+    collapseButton.addEventListener('click', function() {
+        sidebar.classList.toggle('is-collapsed');
+        
+        // Update button icon
+        if (sidebar.classList.contains('is-collapsed')) {
+            this.innerHTML = '<span>▶</span>';
+            localStorage.setItem('sidebarCollapsed', 'true');
+        } else {
+            this.innerHTML = '<span>◀</span>';
+            localStorage.setItem('sidebarCollapsed', 'false');
+        }
+    });
+    
+    // Restore collapsed state from localStorage
+    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+        sidebar.classList.add('is-collapsed');
+        collapseButton.innerHTML = '<span>▶</span>';
+    }
+});
+</script>
+
+<!--
+================================================================================
+NOTES FOR IMPLEMENTATION
+================================================================================
+
+EXTERNAL DEPENDENCIES NEEDED:
+1. jQuery 3.7.1 (if using Superfish plugin)
+2. Superfish jQuery plugin (optional - for enhanced dropdown behavior)
+3. Icon font file (st-icon-* custom font)
+4. Google Fonts: Open Sans, Open Sans Condensed
+
+CSS FILES REFERENCED:
+- GeneratePress theme: all.min.css
+- Dashboard custom: dashboard.8f78208b.css
+- Sticky menu: sticky.min.css
+- Menu logo: menu-logo.min.css
+
+JAVASCRIPT BEHAVIOR:
+- Mobile menu toggle (hamburger animation)
+- Dropdown menus (hover on desktop, click on mobile)
+- Sticky navigation (shrinks on scroll)
+- Dashboard sidebar toggle (mobile)
+- Overlay dismiss functionality
+
+ANIMATIONS INCLUDED:
+✓ Dropdown slide-in (opacity + transform)
+✓ Hamburger to X animation
+✓ Hover effects (background color transitions)
+✓ Active state indicators
+✓ Sticky navigation transitions
+✓ Sidebar slide-in (mobile)
+
+RESPONSIVE BREAKPOINTS:
+- Mobile: < 768px
+- Tablet: 769px - 1024px
+- Desktop: > 1024px
+
+================================================================================
+-->
+
+</body>
+</html>

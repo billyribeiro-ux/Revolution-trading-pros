@@ -1,3 +1,7 @@
+<!--
+	URL: /embed/form/[slug]
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';

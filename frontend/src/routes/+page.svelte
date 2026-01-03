@@ -1,3 +1,7 @@
+<!--
+	URL: /
+-->
+
 <script lang="ts">
 	/**
 	 * Homepage - Enterprise Performance Optimized + SEO Enhanced

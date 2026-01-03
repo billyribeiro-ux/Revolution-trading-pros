@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/contacts/new
+-->
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { IconUserPlus, IconArrowLeft } from '$lib/icons';

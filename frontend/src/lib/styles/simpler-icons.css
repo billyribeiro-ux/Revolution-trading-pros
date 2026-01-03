@@ -1,0 +1,46 @@
+/**
+ * Simpler Trading Icon Font
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Custom icon font extracted from Simpler Trading dashboard
+ * Source: Navigation_Complete_With_CSS_JS.html
+ * 
+ * Usage: <span class="st-icon-home"></span>
+ */
+
+/* Base icon class */
+[class^="st-icon-"],
+[class*=" st-icon-"] {
+	font-family: 'simplertrading-icons' !important;
+	speak: never;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Icon mappings - Unicode characters */
+.st-icon-home::before { content: "\e900"; }
+.st-icon-courses::before { content: "\e901"; }
+.st-icon-indicators::before { content: "\e902"; }
+.st-icon-mastering-the-trade::before { content: "\e903"; }
+.st-icon-simpler-showcase::before { content: "\e904"; }
+.st-icon-tr3ndy-spx-alerts-circle::before { content: "\e905"; }
+.st-icon-consistent-growth::before { content: "\e906"; }
+.st-icon-trade-of-the-week::before { content: "\e907"; }
+.st-icon-support::before { content: "\e908"; }
+.st-icon-settings::before { content: "\e909"; }
+.st-icon-dashboard::before { content: "\e90a"; }
+.st-icon-daily-videos::before { content: "\e90b"; }
+.st-icon-learning-center::before { content: "\e90c"; }
+.st-icon-chatroom-archive::before { content: "\e90d"; }
+.st-icon-forum::before { content: "\e90e"; }
+.st-icon-training-room::before { content: "\e90f"; }
+
+/* Additional icon sizes */
+.st-icon-sm { font-size: 16px; }
+.st-icon-md { font-size: 20px; }
+.st-icon-lg { font-size: 24px; }
+.st-icon-xl { font-size: 32px; }

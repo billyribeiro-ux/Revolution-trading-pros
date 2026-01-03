@@ -20,7 +20,7 @@
  * @author Revolution Trading Pros
  */
 
-import type { LayoutServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 /**
  * SSR enabled for dashboard - server-side auth is now secure
@@ -38,10 +38,10 @@ export const prerender = false;
  * Server load function - receives authenticated user from hooks.server.ts
  * If user is not authenticated, hooks.server.ts already redirected to login
  */
-export const load: LayoutServerLoad = async ({ locals }) => {
+export const load = async ({ locals }: ServerLoadEvent) => {
 	// User is guaranteed to exist here because hooks.server.ts
 	// redirects to login if not authenticated
 	return {
-		user: locals.user ?? null
+		user: (locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ?? null
 	};
 };

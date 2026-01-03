@@ -529,7 +529,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 		// TRADING ROOMS (3)
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
-			id: 'mock-1',
+			id: 'day-trading-room',
 			name: 'Day Trading Room',
 			type: 'trading-room',
 			slug: 'day-trading-room',
@@ -542,7 +542,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		{
-			id: 'mock-2',
+			id: 'swing-trading-room',
 			name: 'Swing Trading Room',
 			type: 'trading-room',
 			slug: 'swing-trading-room',
@@ -554,24 +554,11 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			price: 0,
 			interval: 'monthly'
 		},
-		{
-			id: 'mock-3',
-			name: 'Small Account Mentorship',
-			type: 'trading-room',
-			slug: 'small-account-mentorship',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'school',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly'
-		},
 		// ═══════════════════════════════════════════════════════════════════════════
 		// ALERT SERVICES (2)
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
-			id: 'mock-4',
+			id: 'spx-profit-pulse',
 			name: 'SPX Profit Pulse',
 			type: 'alert-service',
 			slug: 'spx-profit-pulse',
@@ -584,7 +571,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		{
-			id: 'mock-5',
+			id: 'explosive-swing',
 			name: 'Explosive Swing',
 			type: 'alert-service',
 			slug: 'explosive-swing',
@@ -597,19 +584,19 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			interval: 'monthly'
 		},
 		// ═══════════════════════════════════════════════════════════════════════════
-		// INDICATORS / SCANNERS (1)
+		// INDICATORS / SCANNERS (1) - High Octane Scanner Only
 		// ═══════════════════════════════════════════════════════════════════════════
 		{
-			id: 'mock-6',
-			name: 'Options Scanner Pro',
+			id: 'high-octane-scanner',
+			name: 'High Octane Scanner',
 			type: 'indicator',
-			slug: 'options-scanner-pro',
+			slug: 'high-octane-scanner',
 			status: 'active',
 			membershipType: 'complimentary',
-			icon: 'search',
+			icon: 'chart-candle',
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
+			price: 119,
 			interval: 'monthly'
 		}
 		// NOTE: Weekly Watchlist is in the Tools section, not memberships cards

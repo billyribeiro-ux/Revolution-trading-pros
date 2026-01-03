@@ -904,20 +904,4 @@
 			border: 2px solid currentColor;
 		}
 	}
-
-	/* Dark mode support */
-	@media (prefers-color-scheme: dark) {
-		.popup-container {
-			background-color: #1f2937;
-			color: #f3f4f6;
-		}
-
-		.popup-title {
-			color: #f3f4f6;
-		}
-
-		.popup-body {
-			color: #d1d5db;
-		}
-	}
 </style>

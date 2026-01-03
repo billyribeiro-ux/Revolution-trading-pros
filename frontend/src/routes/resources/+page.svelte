@@ -1,3 +1,7 @@
+<!--
+	URL: /resources
+-->
+
 <script lang="ts">
 	import SEOHead from '$lib/components/SEOHead.svelte';
 

@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/forms/entries
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';

@@ -1,3 +1,7 @@
+<!--
+	URL: /signup
+-->
+
 <script lang="ts">
 	/**
 	 * Signup Page - Svelte 5 Runes Implementation
@@ -86,7 +90,7 @@
 					<p class="text-red-800 text-sm">{errorMessage}</p>
 					{#if Object.keys(validationErrors).length > 0}
 						<ul class="mt-2 list-disc list-inside text-red-700 text-sm">
-							{#each Object.entries(validationErrors) as [field, errors]}
+							{#each Object.entries(validationErrors) as [, errors]}
 								{#each errors as error}
 									<li>{error}</li>
 								{/each}

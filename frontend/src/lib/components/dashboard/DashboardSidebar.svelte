@@ -29,11 +29,26 @@
 		external?: boolean;
 	}
 
+	// Types for secondary nav (course-specific navigation)
+	interface SecondaryNavSubItem {
+		href: string;
+		icon: string;
+		text: string;
+	}
+
+	interface SecondaryNavItem {
+		href: string;
+		icon: string;
+		text: string;
+		submenu?: SecondaryNavSubItem[];
+	}
+
 	// Membership data from API
 	interface MembershipItem {
 		name: string;
 		slug: string;
 		icon?: string;
+		type?: 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'weekly-watchlist' | 'premium-report';
 	}
 
 	// Svelte 5 props with bindable for parent access
@@ -44,9 +59,34 @@
 			memberships?: MembershipItem[];  // Full membership objects, not just slugs
 		};
 		collapsed?: boolean;
+		secondaryNavItems?: SecondaryNavItem[];  // Course-specific secondary nav
+		secondarySidebarTitle?: string;  // Title for secondary sidebar
 	}
 
-	let { user, collapsed = $bindable(false) }: Props = $props();
+	let { user, collapsed = $bindable(false), secondaryNavItems = [], secondarySidebarTitle = '' }: Props = $props();
+
+	// State for expanded submenus in secondary nav
+	let expandedSubmenus = $state<Set<string>>(new Set());
+
+	// Check if secondary nav should be shown
+	let showSecondaryNav = $derived(secondaryNavItems.length > 0 && collapsed);
+
+	// Toggle submenu expansion
+	function toggleSubmenu(text: string): void {
+		const newSet = new Set(expandedSubmenus);
+		if (newSet.has(text)) {
+			newSet.delete(text);
+		} else {
+			newSet.add(text);
+		}
+		expandedSubmenus = newSet;
+	}
+
+	// Check if submenu has active item
+	function hasActiveSubmenuItem(submenu: SecondaryNavSubItem[] | undefined): boolean {
+		if (!submenu) return false;
+		return submenu.some(item => isActive(item.href));
+	}
 
 	// Svelte 5 state
 	let isHovered = $state(false);
@@ -55,14 +95,9 @@
 	// Current path for active state - Svelte 5 $app/state (no store subscription needed)
 	let currentPath = $derived(page.url.pathname);
 
-	// Route-based collapse - sidebar collapses when navigating to sub-pages
-	// Full sidebar (280px) on /dashboard/ home, collapsed (80px) on sub-pages
-	$effect(() => {
-		if (browser) {
-			const isDashboardHome = currentPath === '/dashboard' || currentPath === '/dashboard/';
-			collapsed = !isDashboardHome;
-		}
-	});
+	// NOTE: Collapsed state is now controlled by parent (+layout.svelte)
+	// Parent uses $effect to auto-collapse on membership dashboard routes
+	// DO NOT add $effect here that modifies collapsed - it will conflict with parent
 
 	// Check if a link is active
 	function isActive(href: string): boolean {
@@ -102,16 +137,55 @@
 	];
 
 	// Membership links - Dynamically generated from user's actual memberships
-	let membershipLinks = $derived.by(() => {
+	// Separate by type to match WordPress structure
+	let tradingRoomLinks = $derived.by(() => {
 		const links: NavLink[] = [];
 		const memberships = user.memberships ?? [];
 
 		for (const membership of memberships) {
-			links.push({
-				href: `/dashboard/${membership.slug}/`,
-				icon: membership.icon ?? 'chart-line',
-				text: membership.name
-			});
+			if (membership.type === 'trading-room' || membership.type === 'alert-service') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'chart-line',
+					text: membership.name
+				});
+			}
+		}
+
+		return links;
+	});
+
+	let mentorshipLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		const memberships = user.memberships ?? [];
+
+		for (const membership of memberships) {
+			// Show all courses in Mentorship section
+			if (membership.type === 'course') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'book',
+					text: membership.name
+				});
+			}
+		}
+
+		return links;
+	});
+
+	let scannerLinks = $derived.by(() => {
+		const links: NavLink[] = [];
+		const memberships = user.memberships ?? [];
+
+		for (const membership of memberships) {
+			// Only show High Octane scanner
+			if (membership.type === 'indicator' && membership.slug === 'high-octane-scanner') {
+				links.push({
+					href: `/dashboard/${membership.slug}/`,
+					icon: membership.icon ?? 'chart-candle',
+					text: membership.name
+				});
+			}
 		}
 
 		return links;
@@ -128,7 +202,9 @@
 
 	// All navigation sections for secondary sidebar
 	let allSections = $derived([
-		{ title: 'memberships', links: membershipLinks },
+		{ title: 'memberships', links: tradingRoomLinks },
+		{ title: 'mentorship', links: mentorshipLinks },
+		{ title: 'scanners', links: scannerLinks },
 		{ title: 'tools', links: toolsLinks }
 	]);
 </script>
@@ -170,14 +246,56 @@
 			</ul>
 		</ul>
 
-		<!-- Memberships Section -->
-		{#if membershipLinks.length > 0}
+		<!-- Memberships Section (Trading Rooms + Alert Services) -->
+		{#if tradingRoomLinks.length > 0}
 			<ul>
 				<li>
 					<p class="dashboard__nav-category">memberships</p>
 				</li>
 				<ul class="dash_main_links">
-					{#each membershipLinks as link}
+					{#each tradingRoomLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
+		<!-- Mentorship Section (Courses) -->
+		{#if mentorshipLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">mentorship</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each mentorshipLinks as link}
+						<li class:is-active={isActive(link.href)}>
+							<a href={link.href}>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={link.icon} size={32} />
+								</span>
+								<span class="dashboard__nav-item-text">{link.text}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</ul>
+		{/if}
+
+		<!-- Scanners Section (High Octane only) -->
+		{#if scannerLinks.length > 0}
+			<ul>
+				<li>
+					<p class="dashboard__nav-category">scanners</p>
+				</li>
+				<ul class="dash_main_links">
+					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
 							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
@@ -234,6 +352,56 @@
 		</ul>
 	</nav>
 
+	<!-- Secondary Navigation - IMMEDIATELY after primary nav (flex sibling, WordPress structure) -->
+	{#if showSecondaryNav}
+		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
+			<ul>
+				{#each secondaryNavItems as item}
+					<li class:has-submenu={item.submenu && item.submenu.length > 0}>
+						{#if item.submenu && item.submenu.length > 0}
+							<!-- Item with submenu -->
+							<button
+								type="button"
+								class="dashboard__nav-secondary-item"
+								class:is-active={hasActiveSubmenuItem(item.submenu)}
+								class:is-expanded={expandedSubmenus.has(item.text)}
+								onclick={() => toggleSubmenu(item.text)}
+								aria-expanded={expandedSubmenus.has(item.text)}
+							>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={item.icon} size={20} />
+								</span>
+								<span class="dashboard__nav-item-text">{item.text}</span>
+							</button>
+
+							{#if expandedSubmenus.has(item.text)}
+								<ul class="dashboard__nav-submenu">
+									{#each item.submenu as subitem}
+										<li class:is-active={isActive(subitem.href)}>
+											<a href={subitem.href}>{subitem.text}</a>
+										</li>
+									{/each}
+								</ul>
+							{/if}
+						{:else}
+							<!-- Regular item -->
+							<a
+								class="dashboard__nav-secondary-item"
+								class:is-active={isActive(item.href)}
+								href={item.href}
+							>
+								<span class="dashboard__nav-item-icon">
+									<RtpIcon name={item.icon} size={20} />
+								</span>
+								<span class="dashboard__nav-item-text">{item.text}</span>
+							</a>
+						{/if}
+					</li>
+				{/each}
+			</ul>
+		</nav>
+	{/if}
+
 	<!-- Toggle Footer - Mobile Menu Trigger (matches WordPress reference) -->
 	<footer class="dashboard__toggle">
 		<button
@@ -250,46 +418,18 @@
 			<span class="dashboard__toggle-button-label">Dashboard Menu</span>
 		</button>
 	</footer>
+
+	<!-- Overlay for mobile -->
+	<div
+		class="dashboard__overlay"
+		class:is-active={isMobileMenuOpen}
+		onclick={closeMobileMenu}
+		onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
+		role="button"
+		tabindex="-1"
+		aria-label="Close menu"
+	></div>
 </aside>
-
-<!-- Secondary Sidebar - Shows on hover when collapsed -->
-{#if collapsed && isHovered}
-	<aside
-		class="dashboard__sidebar-secondary"
-		onmouseenter={() => isHovered = true}
-		onmouseleave={() => isHovered = false}
-		role="navigation"
-		aria-label="Quick access navigation"
-	>
-		<div class="dashboard__sidebar-secondary-content">
-			<h3 class="dashboard__sidebar-secondary-title">Quick Access</h3>
-
-			{#each allSections as section}
-				{#if section.links.length > 0}
-					<div class="dashboard__sidebar-secondary-section">
-						<p class="dashboard__nav-category">{section.title}</p>
-						<ul class="dash_secondary_links">
-							{#each section.links as link}
-								<li>
-									<a
-										href={link.href}
-										target={link.external ? '_blank' : undefined}
-										rel={link.external ? 'noopener noreferrer' : undefined}
-									>
-										<span class="dashboard__nav-item-icon">
-											<RtpIcon name={link.icon} size={32} />
-										</span>
-										<span class="dashboard__nav-item-text">{link.text}</span>
-									</a>
-								</li>
-							{/each}
-						</ul>
-					</div>
-				{/if}
-			{/each}
-		</div>
-	</aside>
-{/if}
 
 <!-- Mobile Floating Trigger (visible when sidebar is hidden on mobile) -->
 <button
@@ -332,6 +472,10 @@
 	 * SIDEBAR CONTAINER
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * WordPress CSS evidence: flex-flow: row no-wrap
+	 * Primary nav (80px collapsed) + Secondary nav (280px) = 360px total
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__sidebar {
 		display: flex;
 		flex: 0 0 auto;
@@ -363,11 +507,8 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * COLLAPSED STATE (desktop only)
+	 * WordPress: Only primary nav width changes to 80px, sidebar is row flex
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__sidebar.is-collapsed {
-		width: 80px;
-	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
 		padding-top: 30px;
@@ -402,6 +543,7 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * PRIMARY NAVIGATION
+	 * WordPress CSS: width: 280px (default), width: 80px (collapsed)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-primary {
@@ -412,6 +554,14 @@
 		background-color: #0f2d41;     /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:117] */
 		overflow-y: auto;
 		overflow-x: hidden;
+		background-color: #0f2d41;
+		min-height: 100vh;
+		transition: width 0.3s ease-in-out;
+	}
+
+	/* Collapsed state is on parent sidebar, so use descendant selector */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
+		width: 80px;
 	}
 
 	.dashboard__nav-primary > ul {
@@ -460,6 +610,7 @@
 		transition: all 0.15s ease-in-out;
 	}
 
+	/* WordPress: border-color: #0984ae on hover */
 	.dashboard__profile-nav-item:hover .dashboard__profile-photo {
 		border-color: #0984ae;
 	}
@@ -524,19 +675,29 @@
 		background-color: rgba(255, 255, 255, 0.05); /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:191] */
 	}
 
-	/* Active State - Light blue RIGHT border indicator */
+	/* Active State - Blue RIGHT border indicator (WordPress EXACT: dashboard.8f78208b.css) */
 	.dash_main_links li.is-active a {
 		color: #fff;
 		background-color: rgba(255, 255, 255, 0.08); /* [DASHBOARD_DESIGN_SPECIFICATIONS.md:199] */
 	}
 
-	.dash_main_links li.is-active a::after {
-		content: '';
+	/* WordPress: .dashboard__nav-primary a:after */
+	.dashboard__nav-primary a::after {
 		position: absolute;
-		right: 0;
+		display: block;
+		content: '';
 		top: 0;
+		right: 0;
 		bottom: 0;
-		width: 4px;
+		width: 5px;
+		background: transparent;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+		transform-origin: 100% 50%;
+	}
+
+	/* WordPress: .dashboard__nav-primary li.is-active a:after */
+	.dash_main_links li.is-active a::after {
 		background-color: #0984ae;
 	}
 
@@ -579,93 +740,205 @@
 		font-size: 14px;
 		font-weight: inherit; /* Inherits 300 from parent .dash_main_links a */
 		line-height: 1.4;
-		color: inherit;
+		color: hsla(0, 0%, 100%, 0.5); /* Gray by default - matches parent link */
 		white-space: nowrap;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		transition: color 0.15s ease-in-out;
 	}
 
 	.dashboard__nav-item-text.font-bold {
 		font-weight: bold;
-		color: white;
+		color: hsla(0, 0%, 100%, 0.5); /* Gray by default - same as regular text */
+	}
+
+	.dash_main_links a:hover .dashboard__nav-item-text {
+		color: #fff; /* White on hover - applies to ALL text */
+	}
+
+	.dash_main_links li.is-active .dashboard__nav-item-text {
+		color: #fff; /* White when active - applies to ALL text */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SECONDARY SIDEBAR - Expanded Detail View
+	 * COLLAPSED STATE - Icon-only mode (80px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__sidebar-secondary {
-		background-color: #0f2d41;
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
+	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
+		opacity: 0;
+		visibility: hidden;
+		width: 0;
+		transition: opacity 0.2s ease, visibility 0.2s ease;
+	}
+
+	/* Center icons when collapsed */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a {
+		justify-content: center;
+		padding: 12px 0;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item {
+		justify-content: center;
+		padding: 15px 0;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon {
+		margin-right: 0;
+		position: static;
+		left: auto;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECONDARY NAVIGATION - Inside sidebar (WordPress structure match)
+	 * Uses #143E59 (dark teal/navy) per design system
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DESKTOP (≥1280px): position: static - part of flex layout within sidebar
+	 * MOBILE (<1280px): position: fixed - overlay panel
+	 * SOURCE: dashboard.8f78208b.css (WordPress production CSS)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* WordPress: background-color: #153e59 */
+	.dashboard__nav-secondary {
 		width: 280px;
-		height: calc(100vh - 80px);
-		position: fixed;
-		top: 80px;
-		left: 80px;
+		font-size: 14px;
+		font-weight: 600;
+		background-color: #153e59;
 		overflow-y: auto;
 		overflow-x: hidden;
-		z-index: 99;
-		box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-		animation: slideInSecondary 0.3s ease;
+		transition: all 0.3s ease-in-out;
+		/* Desktop: static positioning (part of flex layout) */
+		position: static;
+		height: auto;
+		min-height: 100vh;
+		opacity: 1;
+		visibility: visible;
+		z-index: auto;
 	}
 
-	@keyframes slideInSecondary {
-		from {
-			opacity: 0;
-			transform: translateX(-20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	.dashboard__sidebar-secondary-content {
-		padding: 30px 20px;
-	}
-
-	.dashboard__sidebar-secondary-title {
-		color: #ffffff;
-		font-size: 18px;
-		font-weight: 700;
-		margin-bottom: 20px;
-		padding: 0 10px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-
-	.dashboard__sidebar-secondary-section {
-		margin-bottom: 30px;
-	}
-
-	.dashboard__sidebar-secondary .dashboard__nav-category {
-		padding: 10px 10px 8px;
-	}
-
-	.dash_secondary_links {
+	/* WordPress: padding: 20px */
+	.dashboard__nav-secondary > ul {
 		list-style: none;
 		margin: 0;
-		padding: 0;
+		padding: 20px;
 	}
 
-	.dash_secondary_links li {
+	.dashboard__nav-secondary > ul > li {
 		list-style: none;
 		margin: 0;
 	}
 
-	.dash_secondary_links a {
-		display: flex;
-		align-items: center;
-		padding: 12px 20px;
+	/* WordPress: padding: 18px 20px 18px 55px */
+	.dashboard__nav-secondary-item {
+		display: block;
+		position: relative;
+		width: 100%;
+		padding: 18px 20px 18px 55px;
+		color: hsla(0, 0%, 100%, 0.75);
+		border-radius: 5px;
 		text-decoration: none;
-		color: rgba(255, 255, 255, 0.5);
 		font-size: 14px;
-		font-weight: 300;
+		font-weight: 500;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		background: none;
+		border: none;
+		cursor: pointer;
+		text-align: left;
+		transition: all 0.2s ease;
+	}
+
+	/* WordPress: hover darkens slightly */
+	.dashboard__nav-secondary-item:hover {
+		background-color: rgba(0, 0, 0, 0.15);
+		color: #fff;
+	}
+
+	/* WordPress: NO special background on secondary nav active - just white text */
+	.dashboard__nav-secondary-item.is-active {
+		color: #fff;
+		background-color: transparent;
+	}
+
+	/* WordPress: icon positioned absolutely left of text */
+	.dashboard__nav-secondary .dashboard__nav-item-icon {
+		position: absolute;
+		top: 50%;
+		left: 20px;
+		margin-top: -10px;
+		width: 20px;
+		height: 20px;
+		font-size: 20px;
+		line-height: 20px;
+		color: hsla(0, 0%, 100%, 0.75);
+	}
+
+	.dashboard__nav-secondary-item:hover .dashboard__nav-item-icon,
+	.dashboard__nav-secondary-item.is-active .dashboard__nav-item-icon {
+		color: #fff;
+	}
+
+	/* Force secondary nav text visibility regardless of collapsed state */
+	.dashboard__nav-secondary .dashboard__nav-item-text,
+	.dashboard__nav-secondary .dashboard__nav-secondary-item .dashboard__nav-item-text {
+		opacity: 1 !important;
+		visibility: visible !important;
+		width: auto !important;
+		overflow: visible !important;
+		white-space: nowrap;
+		flex: 1;
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	/* Active state in secondary nav - text white */
+	.dashboard__nav-secondary .dashboard__nav-secondary-item.is-active .dashboard__nav-item-text {
+		color: #ffffff;
+	}
+
+	/* Submenu styles */
+	.dashboard__nav-submenu {
+		list-style: none;
+		margin: 0;
+		padding: 4px 0 8px;
+		background-color: rgba(0, 0, 0, 0.15);
+	}
+
+	.dashboard__nav-submenu li {
+		list-style: none;
+		margin: 0;
+	}
+
+	.dashboard__nav-submenu a {
+		display: block;
+		padding: 10px 24px 10px 56px;
+		color: rgba(255, 255, 255, 0.65);
+		text-decoration: none;
+		font-size: 13px;
+		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		transition: all 0.2s ease;
-		border-radius: 6px;
+		position: relative;
 	}
 
-	.dash_secondary_links a:hover {
-		background-color: rgba(255, 255, 255, 0.1);
+	.dashboard__nav-submenu a:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.dashboard__nav-submenu li.is-active a {
 		color: #ffffff;
+		font-weight: 600;
+	}
+
+	.dashboard__nav-submenu li.is-active a::before {
+		content: '';
+		position: absolute;
+		left: 40px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background-color: #f7931e;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -861,11 +1134,6 @@
 		.dashboard__mobile-trigger {
 			display: flex;
 		}
-
-		/* Hide secondary sidebar on mobile */
-		.dashboard__sidebar-secondary {
-			display: none;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -923,15 +1191,12 @@
 		.dash_main_links a,
 		.dashboard__nav-item-icon,
 		.dashboard__overlay,
-		.dashboard__sidebar-secondary {
+		.dashboard__nav-secondary,
+		.dashboard__nav-secondary-item {
 			transition: none;
 		}
 
 		.dash_main_links li.is-active a::before {
-			animation: none;
-		}
-
-		.dashboard__sidebar-secondary {
 			animation: none;
 		}
 	}

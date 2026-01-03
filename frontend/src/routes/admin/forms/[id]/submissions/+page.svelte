@@ -1,3 +1,7 @@
+<!--
+	URL: /admin/forms/[id]/submissions
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';

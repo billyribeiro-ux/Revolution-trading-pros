@@ -13,6 +13,16 @@
  * @author Revolution Trading Pros
  */
 
+/**
+ * Revolution Trading Pros - Global Styles
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Apple ICT 11+ Principal Engineer Implementation
+ * Modern CSS Architecture (December 2025)
+ */
+
+/* Import Simpler Trading Icon Font */
+@import './lib/styles/simpler-icons.css';
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * Tailwind v4 Theme Configuration
  * This @theme block registers custom colors as utility classes
@@ -308,12 +318,12 @@ body.dark,
 		--focus-ring-offset: 2px;
 	}
 
-	/* Dark mode color scheme preference */
-	@media (prefers-color-scheme: dark) {
+	/* Dark mode color scheme preference - DISABLED */
+	/* @media (prefers-color-scheme: dark) {
 		:root {
 			color-scheme: dark;
 		}
-	}
+	} */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Performance Optimizations
@@ -1122,51 +1132,371 @@ body.dark,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * Print Styles
+ * DASHBOARD GLOBAL STYLES - Pixel Perfect Match to MasterDash Reference
+ * These styles apply to ALL dashboard pages for consistency
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Dashboard Content Layout - Main + Sidebar Grid */
+.dashboard__content {
+	display: flex;
+	flex-direction: row;
+	gap: 0;
+	width: 100%;
+}
+
+.dashboard__content-main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.dashboard__content-sidebar {
+	flex: 0 0 300px;
+	width: 300px;
+	background: #fff;
+	border-left: 1px solid #e5e5e5;
+	padding: 0;
+}
+
+/* Dashboard Header */
+.dashboard__header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30px;
+	background: #fff;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.dashboard__header-left {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	flex: 1;
+}
+
+.dashboard__header-right {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 10px;
+}
+
+.dashboard__page-title {
+	margin: 0;
+	color: #333;
+	font-size: 36px;
+	font-weight: 700;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+/* Dashboard Content Sections */
+.dashboard__content-section {
+	padding: 30px;
+}
+
+.dashboard__content-section-member {
+	padding: 30px;
+}
+
+/* Section Titles */
+.section-title {
+	font-size: 28px;
+	font-weight: 800;
+	color: #191717;
+	margin: 0 0 20px;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+.section-title-alt {
+	font-size: 28px;
+	font-weight: 800;
+	color: #191717;
+	margin: 0 0 16px;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+.section-title-alt--underline {
+	border-bottom: 3px solid #143E59;
+	padding-bottom: 12px;
+	display: inline-block;
+}
+
+/* Content Sidebar Sections */
+.content-sidebar__section {
+	padding: 30px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.content-sidebar__section:last-child {
+	border-bottom: none;
+}
+
+.content-sidebar__heading {
+	font-size: 16px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #191717;
+	margin: 0 0 15px;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+/* Link Lists in Sidebar */
+.link-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.link-list li {
+	margin-bottom: 10px;
+}
+
+.link-list a {
+	color: #143E59;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 600;
+	transition: color 0.2s ease;
+}
+
+.link-list a:hover {
+	color: #0a5a75;
+	text-decoration: underline;
+}
+
+/* Utility Classes */
+.u--background-color-white {
+	background-color: #fff;
+}
+
+.u--border-radius {
+	border-radius: 8px;
+}
+
+.u--hide-read-more p {
+	margin: 0;
+}
+
+.u--font-weight-bold {
+	font-weight: 700;
+}
+
+/* Bootstrap Grid Utilities for Dashboard */
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+}
+
+.flex-grid {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.flex-grid-item {
+	display: flex;
+}
+
+.col-xs-12,
+.col-sm-6,
+.col-md-6,
+.col-lg-5,
+.col-lg-7,
+.col-xl-4 {
+	position: relative;
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.col-xs-12 {
+	flex: 0 0 100%;
+	max-width: 100%;
+}
+
+@media (min-width: 576px) {
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+}
+
+@media (min-width: 768px) {
+	.col-md-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+}
+
+@media (min-width: 992px) {
+	.col-lg-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+	
+	.col-lg-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+}
+
+@media (min-width: 1200px) {
+	.col-xl-4 {
+		flex: 0 0 33.333333%;
+		max-width: 33.333333%;
+	}
+}
+
+/* Bootstrap Display Utilities */
+.hidden-xs {
+	display: none !important;
+}
+
+.hidden-sm {
+	display: none !important;
+}
+
+.hidden-md {
+	display: block !important;
+}
+
+.d-none {
+	display: none !important;
+}
+
+.d-lg-none {
+	display: none !important;
+}
+
+.d-lg-block {
+	display: block !important;
+}
+
+@media (min-width: 992px) {
+	.hidden-xs,
+	.hidden-sm {
+		display: block !important;
+	}
+	
+	.hidden-md {
+		display: none !important;
+	}
+	
+	.d-lg-none {
+		display: none !important;
+	}
+	
+	.d-lg-block {
+		display: block !important;
+	}
+}
+
+/* Bootstrap Spacing Utilities */
+.pb-2 {
+	padding-bottom: 0.5rem;
+}
+
+/* Responsive - Hide sidebar on mobile */
+@media (max-width: 1024px) {
+	.dashboard__content {
+		flex-direction: column;
+	}
+
+	.dashboard__content-sidebar {
+		flex: 1 1 auto;
+		width: 100%;
+		border-left: none;
+		border-top: 1px solid #e5e5e5;
+	}
+}
+
+@media (min-width: 1280px) {
+	.dashboard__header {
+		padding: 30px;
+	}
+
+	.dashboard__content-section {
+		padding: 30px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 30px;
+	}
+}
+
+@media (min-width: 1440px) {
+	.dashboard__header {
+		padding: 30px 40px;
+	}
+
+	.dashboard__content-section {
+		padding: 40px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 40px;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Print Styles - Optimized for documentation and reports
  * ═══════════════════════════════════════════════════════════════════════════ */
 @media print {
-	*,
-	*::before,
-	*::after {
-		background: transparent !important;
-		color: black !important;
-		box-shadow: none !important;
-		text-shadow: none !important;
+	@page {
+		margin: 2cm;
+		size: letter;
 	}
 
 	body {
 		font-size: 12pt;
-		line-height: 1.4;
+		line-height: 1.5;
+		color: #000;
+		background: #fff;
 	}
 
-	a,
-	a:visited {
-		text-decoration: underline;
+	/* Hide non-essential elements */
+	nav,
+	aside,
+	.no-print,
+	button,
+	.btn {
+		display: none !important;
 	}
 
-	a[href]::after {
-		content: ' (' attr(href) ')';
+	/* Ensure content flows properly */
+	main {
+		width: 100% !important;
+		margin: 0 !important;
+		padding: 0 !important;
 	}
 
-	img {
-		max-width: 100% !important;
+	/* Prevent page breaks inside important elements */
+	h1, h2, h3, h4, h5, h6,
+	p, li, tr {
 		page-break-inside: avoid;
 	}
 
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		page-break-after: avoid;
+	/* Add page breaks before major sections */
+	h1, h2 {
+		page-break-before: always;
 	}
 
-	p,
-	h2,
-	h3 {
-		orphans: 3;
-		widows: 3;
+	h1:first-child, h2:first-child {
+		page-break-before: avoid;
+	}
+
+	/* Show link URLs in print */
+	a[href]:after {
+		content: " (" attr(href) ")";
+		font-size: 90%;
+		color: #666;
+	}
+
+	a[href^="#"]:after,
+	a[href^="javascript:"]:after {
+		content: "";
 	}
 }
 

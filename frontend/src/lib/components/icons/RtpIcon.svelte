@@ -105,6 +105,11 @@
 	// Business
 	import IconBuilding from '@tabler/icons-svelte/icons/building';
 
+	// Additional Navigation & Layout
+	import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
+	import IconArchive from '@tabler/icons-svelte/icons/archive';
+	import IconUsers from '@tabler/icons-svelte/icons/users';
+
 	// Time
 	import IconClock from '@tabler/icons-svelte/icons/clock';
 
@@ -124,6 +129,10 @@
 		'chevron-right': IconChevronRight,
 		'chevron-down': IconChevronDown,
 		'external': IconExternalLink,
+		'layout-dashboard': IconLayoutDashboard,
+		'archive': IconArchive,
+		'users': IconUsers,
+		'shopping-cart': IconShoppingCart,
 
 		// Education & Courses
 		'courses': IconVideo,

@@ -1,3 +1,7 @@
+<!--
+	URL: /behavior
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { dashboardData, isLoading } from '$lib/stores/behavior';
