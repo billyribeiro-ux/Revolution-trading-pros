@@ -134,7 +134,7 @@
 	const mainLinks: NavLink[] = [
 		{ href: '/dashboard/', icon: 'home', text: 'Member Dashboard' },
 		{ href: '/dashboard/classes/', icon: 'classes', text: 'My Classes', bold: true },
-		{ href: '/dashboard/indicators/', icon: 'indicators', text: 'My Indicators', bold: true }
+		{ href: '/dashboard/indicators/', icon: 'activity', text: 'My Indicators', bold: true }
 	];
 
 	// Membership links - Dynamically generated from user's actual memberships
@@ -147,7 +147,7 @@
 			if (membership.type === 'trading-room' || membership.type === 'alert-service') {
 				links.push({
 					href: `/dashboard/${membership.slug}/`,
-					icon: membership.icon ?? 'chart-line',
+					icon: membership.icon ?? 'trending-up',
 					text: membership.name
 				});
 			}
