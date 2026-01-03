@@ -289,13 +289,13 @@
 							style="background-image: url({update.thumbnail});"
 						>
 							<img src={update.thumbnail} alt={update.title} />
+							
+							<div class="article-card__type">
+								<span class="label label--info">
+									{update.type === 'video' ? 'Daily Video' : 'Trading Archive'}
+								</span>
+							</div>
 						</figure>
-						
-						<div class="article-card__type">
-							<span class="label label--info">
-								{update.type === 'video' ? 'Daily Video' : 'Trading Archive'}
-							</span>
-						</div>
 						
 						<h4 class="h5 article-card__title">
 							<a href={update.url}>{update.title}</a>
