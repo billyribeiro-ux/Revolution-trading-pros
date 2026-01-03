@@ -545,7 +545,7 @@
 		padding-top: 30px;
 		flex: 0 0 80px;
 		width: 80px;
-		overflow-x: visible;
+		overflow-x: visible !important; /* CRITICAL: Allow tooltip to extend beyond 80px boundary */
 		overflow-y: auto;
 	}
 
@@ -837,8 +837,8 @@
 	/* Text label positioning (tooltip) - PRIMARY NAV ONLY */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
-		z-index: 100020;
-		position: absolute;
+		z-index: 100020 !important; /* Ensure tooltip appears above all other elements */
+		position: absolute !important;
 		top: 50%;
 		left: 100%;
 		margin-top: -15px;
@@ -857,7 +857,9 @@
 		transition: all 0.15s ease-in-out;
 		white-space: nowrap;
 		box-shadow: 0 10px 30px rgba(0,0,0,.15);
-		width: auto;
+		width: auto !important; /* Ensure width is not constrained */
+		overflow: visible !important; /* Prevent text clipping */
+		pointer-events: none; /* Tooltip should not interfere with mouse events */
 	}
 
 	/* HOVER EFFECTS - Circular background appears */
@@ -880,9 +882,10 @@
 	/* White label slides in on hover - PRIMARY NAV ONLY */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dash_main_links li a:hover .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
-		opacity: 1;
-		visibility: visible;
-		transform: translate(0);
+		opacity: 1 !important;
+		visibility: visible !important;
+		transform: translate(0) !important;
+		display: block !important; /* Ensure tooltip is displayed */
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
