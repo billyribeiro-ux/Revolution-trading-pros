@@ -419,7 +419,6 @@
 		background-color: #fff;
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
-		max-width: 1700px;
 		padding: 20px;
 	}
     
