@@ -221,7 +221,7 @@
 >
 	<nav class="dashboard__nav-primary">
 		<!-- User Profile Section -->
-		<a href="/dashboard/account" class="dashboard__profile-nav-item">
+		<a href="/dashboard/account" class="dashboard__profile-nav-item" data-tooltip={user.name}>
 			<span
 				class="dashboard__profile-photo"
 				style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
@@ -235,7 +235,7 @@
 			<ul class="dash_main_links">
 				{#each mainLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a href={link.href}>
+						<a href={link.href} data-tooltip={link.text}>
 							<span class="dashboard__nav-item-icon">
 								<RtpIcon name={link.icon} size={32} />
 							</span>
@@ -255,7 +255,7 @@
 				<ul class="dash_main_links">
 					{#each tradingRoomLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
+							<a href={link.href} data-tooltip={link.text}>
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
@@ -276,7 +276,7 @@
 				<ul class="dash_main_links">
 					{#each mentorshipLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
+							<a href={link.href} data-tooltip={link.text}>
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
@@ -297,7 +297,7 @@
 				<ul class="dash_main_links">
 					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href}>
+							<a href={link.href} data-tooltip={link.text}>
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
@@ -319,6 +319,7 @@
 					<li class:is-active={isActive(link.href)}>
 						<a
 							href={link.href}
+							data-tooltip={link.text}
 							target={link.external ? '_blank' : undefined}
 							rel={link.external ? 'noopener noreferrer' : undefined}
 						>
@@ -340,7 +341,7 @@
 			<ul class="dash_main_links">
 				{#each accountLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a href={link.href}>
+						<a href={link.href} data-tooltip={link.text}>
 							<span class="dashboard__nav-item-icon">
 								<RtpIcon name={link.icon} size={32} />
 							</span>
@@ -556,6 +557,60 @@
 	/* Collapsed state is on parent sidebar, so use descendant selector */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
 		width: 80px;
+	}
+
+	/* Tooltip bubble on hover when collapsed (WordPress match) */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a::after {
+		content: attr(data-tooltip);
+		position: absolute;
+		left: 80px;
+		top: 50%;
+		transform: translateY(-50%);
+		background-color: #143E59;
+		color: #fff;
+		padding: 8px 16px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+		white-space: nowrap;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 0.2s ease, visibility 0.2s ease;
+		z-index: 1000;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover::after {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	/* Profile tooltip when collapsed */
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item::after {
+		content: attr(data-tooltip);
+		position: absolute;
+		left: 80px;
+		top: 50%;
+		transform: translateY(-50%);
+		background-color: #143E59;
+		color: #fff;
+		padding: 8px 16px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: 500;
+		white-space: nowrap;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 0.2s ease, visibility 0.2s ease;
+		z-index: 1000;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover::after {
+		opacity: 1;
+		visibility: visible;
 	}
 
 	.dashboard__nav-primary > ul {
@@ -851,6 +906,8 @@
 		position: static;
 		left: auto;
 		margin-right: 0;
+		margin-top: 0;
+		flex-shrink: 0;
 	}
 
 	/* Force secondary nav text visibility regardless of collapsed state */
