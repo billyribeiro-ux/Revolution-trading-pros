@@ -71,7 +71,7 @@
 		const triggerRect = triggerElement.getBoundingClientRect();
 		const viewportWidth = window.innerWidth;
 		const viewportHeight = window.innerHeight;
-		const gap = 10;
+		const gap = 5;
 
 		// Append to body first to measure
 		document.body.appendChild(tooltipElement);
