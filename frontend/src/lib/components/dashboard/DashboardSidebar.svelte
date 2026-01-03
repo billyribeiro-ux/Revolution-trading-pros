@@ -370,7 +370,7 @@
 								aria-expanded={expandedSubmenus.has(item.text)}
 							>
 								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={item.icon} size={20} />
+									<RtpIcon name={item.icon} size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">{item.text}</span>
 							</button>
@@ -392,7 +392,7 @@
 								href={item.href}
 							>
 								<span class="dashboard__nav-item-icon">
-									<RtpIcon name={item.icon} size={20} />
+									<RtpIcon name={item.icon} size={24} />
 								</span>
 								<span class="dashboard__nav-item-text">{item.text}</span>
 							</a>
