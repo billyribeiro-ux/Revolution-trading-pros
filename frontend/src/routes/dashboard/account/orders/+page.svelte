@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import type { PageData } from './$types';
-
 	interface Order {
 		id: number;
 		number: string;
@@ -15,6 +12,10 @@
 		name: string;
 		url: string;
 		icon: string;
+	}
+
+	interface PageData {
+		orders: Order[];
 	}
 
 	let { data }: { data: PageData } = $props();
@@ -69,15 +70,16 @@
 							</td>
 							<td class="col-xs-2 text-right table__actions">
 								<div class="dropdown">
-									<a
-										href="#"
+									<button
+										type="button"
 										class="btn btn-xs btn-white table__more-actions"
 										id="dLabel-{order.id}"
 										data-bs-toggle="dropdown"
 										aria-expanded="false"
+										aria-label="Order actions for #{order.number}"
 									>
 										<span class="st-icon-ellipsis-h icon--md"></span>
-									</a>
+									</button>
 									<nav
 										class="dropdown-menu"
 										data-append-to-body="1"
