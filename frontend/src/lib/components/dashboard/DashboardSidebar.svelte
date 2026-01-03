@@ -895,6 +895,13 @@
 		z-index: 100010;
 	}
 
+	/* WordPress: Show secondary nav on hover when sidebar collapsed (mobile/tablet) */
+	.dashboard__sidebar.is-collapsed:hover .dashboard__nav-secondary,
+	.dashboard__sidebar.is-collapsed:focus-within .dashboard__nav-secondary {
+		opacity: 1;
+		visibility: visible;
+	}
+
 	@media (min-width: 1280px) {
 		.dashboard__nav-secondary {
 			/* Desktop: static in layout (WordPress exact) */
