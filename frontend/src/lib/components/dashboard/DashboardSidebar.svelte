@@ -759,33 +759,112 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * COLLAPSED STATE - Icon-only mode (80px)
+	 * COLLAPSED STATE - Icon-only mode (80px) - WordPress EXACT
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
+	/* Hide text, profile name, and category headers when collapsed */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
+		display: none;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
 		opacity: 0;
 		visibility: hidden;
 		width: 0;
-		transition: opacity 0.2s ease, visibility 0.2s ease;
 	}
 
-	/* Center icons when collapsed */
+	/* Center icons and remove padding when collapsed */
+	.dashboard__sidebar.is-collapsed .dash_main_links li {
+		margin-top: 20px;
+	}
+
 	.dashboard__sidebar.is-collapsed .dash_main_links li a {
+		padding: 0;
 		justify-content: center;
-		padding: 12px 0;
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item {
+		height: 50px;
+		line-height: 50px;
+		padding: 0;
 		justify-content: center;
-		padding: 15px 0;
 	}
 
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon {
-		margin-right: 0;
-		position: static;
-		left: auto;
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-photo {
+		left: 50%;
+		margin-left: -16px;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+		position: absolute;
+	}
+
+	/* WordPress: Circular background pseudo-element */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a:before {
+		position: absolute;
+		display: block;
+		content: "";
+		top: 50%;
+		left: 50%;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
+		border-radius: 50%;
+		transform: scale(.9);
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* WordPress: Text label positioning (hidden by default) */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
+		z-index: 100;
+		position: absolute;
+		top: 50%;
+		left: 100%;
+		margin-top: -15px;
+		margin-left: -10px;
+		height: 30px;
+		line-height: 30px;
+		padding: 0 12px;
+		font-size: 14px;
+		font-weight: 600;
+		opacity: 0;
+		visibility: hidden;
+		color: #0984ae;
+		background: #fff;
+		border-radius: 5px;
+		transform: translate(5px);
+		transition: all 0.15s ease-in-out;
+		white-space: nowrap;
+		box-shadow: 0 10px 30px rgba(0,0,0,.15);
+		width: auto;
+	}
+
+	/* WordPress: HOVER EFFECTS - Circular background appears */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:before {
+		transform: scale(1);
+		background-color: rgba(0,0,0,.2);
+	}
+
+	/* WordPress: Active indicator hides on hover */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:after {
+		transform: scaleX(0);
+	}
+
+	/* WordPress: Icon scales down on hover */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-icon,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-photo {
+		transform: scale(.9);
+	}
+
+	/* WordPress: White label slides in on hover */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(0);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
