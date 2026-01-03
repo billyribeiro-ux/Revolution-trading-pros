@@ -514,6 +514,7 @@
 	.dashboard__sidebar.is-collapsed {
 		flex-direction: row;
 		flex-wrap: nowrap;
+		width: auto; /* Allow sidebar to expand for primary (80px) + secondary (280px) */
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
@@ -790,7 +791,8 @@
 		justify-content: center;
 	}
 
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon,
+	/* Icon centering - PRIMARY NAV ONLY (not secondary nav) */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-icon,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-photo {
 		left: 50%;
 		margin-left: -16px;
@@ -816,8 +818,8 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* WordPress: Text label positioning (hidden by default) */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	/* WordPress: Text label positioning (hidden by default) - PRIMARY NAV ONLY */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
 		z-index: 100;
 		position: absolute;
@@ -859,8 +861,8 @@
 		transform: scale(.9);
 	}
 
-	/* WordPress: White label slides in on hover */
-	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-text,
+	/* WordPress: White label slides in on hover - PRIMARY NAV ONLY */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-primary .dash_main_links li a:hover .dashboard__nav-item-text,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-name {
 		opacity: 1;
 		visibility: visible;
@@ -989,20 +991,43 @@
 	}
 
 	/* Force secondary nav text visibility regardless of collapsed state */
-	.dashboard__nav-secondary .dashboard__nav-item-text,
+	/* Use high-specificity selector to override collapsed tooltip styles */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-secondary .dashboard__nav-item-text,
+	.dashboard__sidebar .dashboard__nav-secondary .dashboard__nav-item-text,
 	.dashboard__nav-secondary .dashboard__nav-secondary-item .dashboard__nav-item-text {
+		position: static !important;
+		top: auto !important;
+		left: auto !important;
+		margin-top: 0 !important;
+		margin-left: 0 !important;
+		transform: none !important;
+		z-index: auto !important;
 		opacity: 1 !important;
 		visibility: visible !important;
 		width: auto !important;
+		height: auto !important;
+		line-height: inherit !important;
 		overflow: visible !important;
 		white-space: nowrap;
 		flex: 1;
-		color: rgba(255, 255, 255, 0.75);
+		background: transparent !important;
+		box-shadow: none !important;
+		border-radius: 0 !important;
+		padding: 0 !important;
+		color: rgba(255, 255, 255, 0.75) !important;
+		font-weight: 600 !important;
 	}
 
 	/* Active state in secondary nav - text white */
 	.dashboard__nav-secondary .dashboard__nav-secondary-item.is-active .dashboard__nav-item-text {
-		color: #ffffff;
+		color: #ffffff !important;
+	}
+
+	/* Ensure secondary nav icons are NOT affected by collapsed centering */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-secondary .dashboard__nav-item-icon {
+		left: 15px !important;
+		margin-left: 0 !important;
+		transform: none !important;
 	}
 
 	/* Submenu styles */
