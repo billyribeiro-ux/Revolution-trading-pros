@@ -1,0 +1,32 @@
+# Rust build artifacts
+target/
+debug/
+*.pdb
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Tests (not needed in production image)
+tests/
+
+# Misc
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
