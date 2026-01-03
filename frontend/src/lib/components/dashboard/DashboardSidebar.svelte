@@ -557,60 +557,98 @@
 	/* Collapsed state is on parent sidebar, so use descendant selector */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
 		width: 80px;
+		padding-top: 30px;
 	}
 
-	/* Tooltip bubble on hover when collapsed (WordPress match) */
-	.dashboard__sidebar.is-collapsed .dash_main_links li a::after {
-		content: attr(data-tooltip);
+	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
+		display: none;
+	}
+
+	.dashboard__sidebar.is-collapsed li {
+		margin-top: 20px;
+	}
+
+	.dashboard__sidebar.is-collapsed a {
+		padding: 0;
+	}
+
+	/* Circular hover background effect */
+	.dashboard__sidebar.is-collapsed a::before {
 		position: absolute;
-		left: 80px;
+		display: block;
+		content: '';
 		top: 50%;
-		transform: translateY(-50%);
-		background-color: #143E59;
-		color: #fff;
-		padding: 8px 16px;
-		border-radius: 4px;
-		font-size: 13px;
-		font-weight: 500;
-		white-space: nowrap;
+		left: 50%;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
+		border-radius: 50%;
+		transform: scale(0.9);
+		background: transparent;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dashboard__sidebar.is-collapsed a.dashboard__profile-nav-item {
+		height: 50px;
+		line-height: 50px;
+	}
+
+	/* Center icons when collapsed */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-photo {
+		left: 50%;
+		margin-left: -16px;
+		transform: scale(1);
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Text labels positioned to the right, hidden by default */
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
+		z-index: 100;
+		position: absolute;
+		top: 50%;
+		left: 100%;
+		margin-top: -15px;
+		margin-left: -10px;
+		height: 30px;
+		line-height: 30px;
+		padding: 0 12px;
+		font-size: 14px;
+		font-weight: 600;
 		opacity: 0;
 		visibility: hidden;
-		pointer-events: none;
-		transition: opacity 0.2s ease, visibility 0.2s ease;
-		z-index: 1000;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-	}
-
-	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover::after {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	/* Profile tooltip when collapsed */
-	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item::after {
-		content: attr(data-tooltip);
-		position: absolute;
-		left: 80px;
-		top: 50%;
-		transform: translateY(-50%);
-		background-color: #143E59;
-		color: #fff;
-		padding: 8px 16px;
-		border-radius: 4px;
-		font-size: 13px;
-		font-weight: 500;
+		color: #0984ae;
+		background: #fff;
+		border-radius: 5px;
+		transform: translate(5px);
+		transition: all 0.15s ease-in-out;
 		white-space: nowrap;
-		opacity: 0;
-		visibility: hidden;
-		pointer-events: none;
-		transition: opacity 0.2s ease, visibility 0.2s ease;
-		z-index: 1000;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		width: auto;
 	}
 
-	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover::after {
+	/* Hover effects - reveal text labels */
+	.dashboard__sidebar.is-collapsed a:hover::before {
+		transform: scale(1);
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+
+	.dashboard__sidebar.is-collapsed a:hover::after {
+		transform: scaleX(0);
+	}
+
+	.dashboard__sidebar.is-collapsed a:hover .dashboard__nav-item-icon,
+	.dashboard__sidebar.is-collapsed a:hover .dashboard__profile-photo {
+		transform: scale(0.9);
+	}
+
+	.dashboard__sidebar.is-collapsed a:hover .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed a:hover .dashboard__profile-name {
 		opacity: 1;
 		visibility: visible;
+		transform: translate(0);
 	}
 
 	.dashboard__nav-primary > ul {
@@ -797,32 +835,6 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * COLLAPSED STATE - Icon-only mode (80px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
-	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
-		opacity: 0;
-		visibility: hidden;
-		width: 0;
-		transition: opacity 0.2s ease, visibility 0.2s ease;
-	}
-
-	/* Center icons when collapsed */
-	.dashboard__sidebar.is-collapsed .dash_main_links li a {
-		justify-content: center;
-		padding: 12px 0;
-	}
-
-	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item {
-		justify-content: center;
-		padding: 15px 0;
-	}
-
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon {
-		margin-right: 0;
-		position: static;
-		left: auto;
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECONDARY NAVIGATION - Inside sidebar (WordPress structure match)
