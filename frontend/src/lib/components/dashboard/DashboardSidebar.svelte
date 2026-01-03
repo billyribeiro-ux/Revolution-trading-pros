@@ -545,6 +545,8 @@
 		padding-top: 30px;
 		flex: 0 0 80px;
 		width: 80px;
+		overflow-x: visible;
+		overflow-y: auto;
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
