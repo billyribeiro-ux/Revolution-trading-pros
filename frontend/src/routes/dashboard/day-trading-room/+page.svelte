@@ -190,23 +190,25 @@
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-	 DASHBOARD HEADER - Semantic HTML with ARIA
+	 DASHBOARD HEADER - Mobile-First Responsive Design
 	 ═══════════════════════════════════════════════════════════════════════════ -->
 <header class="dashboard__header">
-	<div class="dashboard__header-left">
+	<!-- Title Row -->
+	<div class="dashboard__header-title-row">
 		<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
-		<a href="/dashboard/day-trading-room/start-here" class="btn btn-xs btn-default">
+		<a href="/dashboard/day-trading-room/start-here" class="btn btn-xs btn-default btn-start-here">
 			New? Start Here
 		</a>
 	</div>
 
-	<div class="dashboard__header-right">
+	<!-- Actions Row -->
+	<div class="dashboard__header-actions-row">
 		<div class="trading-room-rules">
 			<a 
 				href="/trading-room-rules.pdf" 
 				target="_blank" 
 				rel="noopener noreferrer"
-				class="btn btn-xs btn-link trading-room-rules__link"
+				class="trading-room-rules__link"
 			>
 				Trading Room Rules
 			</a>
@@ -215,7 +217,7 @@
 			</p>
 		</div>
 
-		<!-- Enter Trading Room Dropdown - Full Accessibility -->
+		<!-- Enter Trading Room Dropdown -->
 		<div class="dropdown" class:is-open={isDropdownOpen}>
 			<button
 				type="button"
@@ -342,88 +344,327 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DAY TRADING ROOM DASHBOARD STYLES
-	 * Based on MasterDash reference implementation
-	 * Apple ICT 11+ Standards
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD HEADER - WordPress Exact Match
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+		/* ═══════════════════════════════════════════════════════════════════════════
+		 * DASHBOARD HEADER - Mobile-First Responsive Design
+		 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__header {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		background-color: #fff;
-		border-bottom: 1px solid #dbdbdb;
-		border-right: 1px solid #dbdbdb;
-		max-width: 1700px;
-		padding: 20px;
-	}
-
-	@media (min-width: 1280px) {
 		.dashboard__header {
-			padding: 30px;
+			margin-bottom: 30px;
+			padding: 15px;
 		}
-	}
 
-	@media (min-width: 1440px) {
-		.dashboard__header {
-			padding: 30px 40px;
+		@media (min-width: 768px) {
+			.dashboard__header {
+				padding: 20px;
+			}
 		}
-	}
 
-	.dashboard__header-left {
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		flex: 1;
-	}
+		@media (min-width: 1280px) {
+			.dashboard__header {
+				padding: 30px;
+			}
+		}
 
-	.dashboard__page-title {
-		margin: 0;
-		color: #333;
-		font-size: 36px;
-		font-weight: 400;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
+		@media (min-width: 1440px) {
+			.dashboard__header {
+				padding: 30px 40px;
+			}
+		}
 
-	.dashboard__header-right {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		margin-top: 10px;
-	}
-
-	@media (min-width: 820px) {
-		.dashboard__header-right {
+		/* Title Row - Mobile: stacked, Desktop: inline */
+		.dashboard__header-title-row {
+			display: flex;
 			flex-direction: column;
-			align-items: flex-end;
-			gap: 0;
-			margin-top: 0;
+			gap: 12px;
+			margin-bottom: 20px;
 		}
-	}
 
-	/* Trading Room Rules - Semantic Structure */
-	.trading-room-rules {
-		text-align: right;
-		margin-bottom: 12px;
-	}
+		@media (min-width: 768px) {
+			.dashboard__header-title-row {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				gap: 20px;
+			}
+		}
 
-	.trading-room-rules__link {
-		font-weight: 700;
-	}
+		.dashboard__page-title {
+			margin: 0;
+			color: #333;
+			font-size: 24px;
+			font-weight: 400;
+			font-family: var(--font-heading), 'Montserrat', sans-serif;
+			line-height: 1.2;
+		}
 
-	.trading-room-rules__disclaimer {
-		font-size: 11px;
-		color: #666;
-		margin: 4px 0 0 0;
-		line-height: 1.4;
-	}
+		@media (min-width: 768px) {
+			.dashboard__page-title {
+				font-size: 28px;
+			}
+		}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * BUTTONS - WordPress Exact Match
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+		@media (min-width: 1024px) {
+			.dashboard__page-title {
+				font-size: 32px;
+			}
+		}
+
+		@media (min-width: 1440px) {
+			.dashboard__page-title {
+				font-size: 36px;
+			}
+		}
+
+		.btn-start-here {
+			align-self: flex-start;
+		}
+
+		@media (min-width: 768px) {
+			.btn-start-here {
+				align-self: center;
+				white-space: nowrap;
+			}
+		}
+
+		/* Actions Row - Mobile: stacked, Desktop: side by side */
+		.dashboard__header-actions-row {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		}
+
+		@media (min-width: 768px) {
+			.dashboard__header-actions-row {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				gap: 20px;
+			}
+		}
+
+		/* Trading Room Rules */
+		.trading-room-rules {
+			text-align: left;
+			order: 2;
+		}
+
+		@media (min-width: 768px) {
+			.trading-room-rules {
+				text-align: right;
+				order: 1;
+				flex: 1;
+			}
+		}
+
+		.trading-room-rules__link {
+			display: block;
+			font-size: 14px;
+			font-weight: 700;
+			font-family: var(--font-heading), 'Montserrat', sans-serif;
+			color: #1e73be;
+			text-decoration: none;
+			margin-bottom: 4px;
+			transition: color 0.15s ease-in-out;
+		}
+
+		@media (min-width: 768px) {
+			.trading-room-rules__link {
+				font-size: 16px;
+			}
+		}
+
+		@media (min-width: 1024px) {
+			.trading-room-rules__link {
+				font-size: 18px;
+			}
+		}
+
+		.trading-room-rules__link:hover {
+			color: #0984ae;
+			text-decoration: underline;
+		}
+
+		.trading-room-rules__disclaimer {
+			font-size: 11px;
+			color: #666;
+			margin: 0;
+			line-height: 1.4;
+			font-family: var(--font-heading), 'Montserrat', sans-serif;
+		}
+
+		@media (min-width: 768px) {
+			.trading-room-rules__disclaimer {
+				font-size: 12px;
+			}
+		}
+
+		@media (min-width: 1024px) {
+			.trading-room-rules__disclaimer {
+				font-size: 13px;
+			}
+		}
+
+		/* Dropdown Container */
+		.dropdown {
+			order: 1;
+		}
+
+		@media (min-width: 768px) {
+			.dropdown {
+				order: 2;
+			}
+		}
+
+		/* ═══════════════════════════════════════════════════════════════════════════
+		 * BUTTONS - WordPress Exact Match
+		 * ═══════════════════════════════════════════════════════════════════════════ */
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			padding: 10px 20px;
+			border-radius: 4px;
+			font-size: 14px;
+			font-weight: 600;
+			font-family: var(--font-heading), 'Montserrat', sans-serif;
+			text-decoration: none;
+			border: none;
+			cursor: pointer;
+			transition: all 0.15s ease-in-out;
+		}
+
+		.btn-xs {
+			padding: 6px 12px;
+			font-size: 12px;
+		}
+
+		.btn-tiny {
+			padding: 8px 16px;
+			font-size: 13px;
+		}
+
+		.btn-default {
+			background-color: #143E59;
+			color: #fff;
+		}
+
+		.btn-default:hover {
+			background-color: #0f2d41;
+		}
+
+		.btn-link {
+			background: transparent;
+			color: #1e73be;
+			padding: 6px 12px;
+		}
+
+		.btn-link:hover {
+			color: #0984ae;
+			text-decoration: underline;
+		}
+
+		.btn-orange {
+			background-color: #dd6b20;
+			color: #fff;
+		}
+
+		.btn-orange:hover {
+			background-color: #c05621;
+		}
+
+		.btn-tradingroom {
+			padding: 12px 24px;
+			font-size: 14px;
+		}
+
+		/* ═══════════════════════════════════════════════════════════════════════════
+		 * DROPDOWN - Enter Trading Room Button
+		 * ═══════════════════════════════════════════════════════════════════════════ */
+
+		.dropdown {
+			position: relative;
+			display: inline-block;
+		}
+
+		.dropdown-toggle {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.dropdown-arrow {
+			font-size: 10px;
+			transition: transform 0.2s ease;
+		}
+
+		.dropdown.is-open .dropdown-arrow {
+			transform: rotate(180deg);
+		}
+
+		.dropdown-menu {
+			position: absolute;
+			top: 100%;
+			right: 0;
+			margin-top: 4px;
+			background: #fff;
+			border-radius: 8px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+			z-index: 1000;
+			min-width: 220px;
+			overflow: hidden;
+		}
+
+		.dropdown-menu__menu {
+			list-style: none;
+			margin: 0;
+			padding: 8px 0;
+		}
+
+		.dropdown-menu__menu li a {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 12px 16px;
+			color: #333;
+			text-decoration: none;
+			font-size: 14px;
+			transition: background-color 0.15s ease;
+		}
+
+		.dropdown-menu__menu li a:hover {
+			background-color: #f4f4f4;
+			color: #143E59;
+		}
+
+		/* ═══════════════════════════════════════════════════════════════════════════
+		 * DASHBOARD CONTENT LAYOUT - WordPress Exact Match
+		 * ═══════════════════════════════════════════════════════════════════════════ */
+
+		.dashboard__content {
+			display: flex;
+			gap: 30px;
+			padding: 30px;
+			max-width: 1700px;
+		}
+
+		.dashboard__content-main {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.dashboard__content-section {
+			margin-bottom: 40px;
+		}
+
+		.section-title {
+			font-size: 24px;
+			font-weight: 700;
+			color: #333;
+			margin: 0 0 16px 0;
+			font-family: var(--font-heading), 'Montserrat', sans-serif;
 
 	.btn {
 		display: inline-flex;
