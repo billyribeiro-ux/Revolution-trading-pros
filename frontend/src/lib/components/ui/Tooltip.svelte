@@ -182,6 +182,8 @@
 <div
 	bind:this={triggerElement}
 	class="tooltip-trigger {className}"
+	role="button"
+	tabindex="0"
 	onmouseenter={showTooltip}
 	onmouseleave={hideTooltip}
 	onfocus={showTooltip}
