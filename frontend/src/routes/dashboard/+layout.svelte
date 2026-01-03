@@ -263,7 +263,12 @@
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
 <div class="dashboard">
 	<!-- Sidebar Navigation (LEFT) -->
-	<DashboardSidebar user={userData} bind:collapsed={sidebarCollapsed} />
+	<DashboardSidebar
+		user={userData}
+		bind:collapsed={sidebarCollapsed}
+		secondaryNavItems={currentMembershipData?.items ?? []}
+		secondarySidebarTitle={currentMembershipData?.title ?? ''}
+	/>
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
 	<main class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
