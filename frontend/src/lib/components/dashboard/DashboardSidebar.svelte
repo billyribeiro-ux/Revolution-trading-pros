@@ -221,7 +221,7 @@
 >
 	<nav class="dashboard__nav-primary">
 		<!-- User Profile Section -->
-		<a href="/dashboard/account" class="dashboard__profile-nav-item" data-tooltip={user.name}>
+		<a href="/dashboard/account" class="dashboard__profile-nav-item">
 			<span
 				class="dashboard__profile-photo"
 				style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
@@ -235,7 +235,7 @@
 			<ul class="dash_main_links">
 				{#each mainLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a href={link.href} data-tooltip={link.text}>
+						<a href={link.href}>
 							<span class="dashboard__nav-item-icon">
 								<RtpIcon name={link.icon} size={32} />
 							</span>
@@ -255,7 +255,7 @@
 				<ul class="dash_main_links">
 					{#each tradingRoomLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href} data-tooltip={link.text}>
+							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
@@ -276,7 +276,7 @@
 				<ul class="dash_main_links">
 					{#each mentorshipLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href} data-tooltip={link.text}>
+							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
@@ -297,7 +297,7 @@
 				<ul class="dash_main_links">
 					{#each scannerLinks as link}
 						<li class:is-active={isActive(link.href)}>
-							<a href={link.href} data-tooltip={link.text}>
+							<a href={link.href}>
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
@@ -319,7 +319,6 @@
 					<li class:is-active={isActive(link.href)}>
 						<a
 							href={link.href}
-							data-tooltip={link.text}
 							target={link.external ? '_blank' : undefined}
 							rel={link.external ? 'noopener noreferrer' : undefined}
 						>
@@ -341,7 +340,7 @@
 			<ul class="dash_main_links">
 				{#each accountLinks as link}
 					<li class:is-active={isActive(link.href)}>
-						<a href={link.href} data-tooltip={link.text}>
+						<a href={link.href}>
 							<span class="dashboard__nav-item-icon">
 								<RtpIcon name={link.icon} size={32} />
 							</span>
@@ -557,98 +556,6 @@
 	/* Collapsed state is on parent sidebar, so use descendant selector */
 	.dashboard__sidebar.is-collapsed .dashboard__nav-primary {
 		width: 80px;
-		padding-top: 30px;
-	}
-
-	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
-		display: none;
-	}
-
-	.dashboard__sidebar.is-collapsed li {
-		margin-top: 20px;
-	}
-
-	.dashboard__sidebar.is-collapsed a {
-		padding: 0;
-	}
-
-	/* Circular hover background effect */
-	.dashboard__sidebar.is-collapsed a::before {
-		position: absolute;
-		display: block;
-		content: '';
-		top: 50%;
-		left: 50%;
-		width: 50px;
-		height: 50px;
-		margin-top: -25px;
-		margin-left: -25px;
-		border-radius: 50%;
-		transform: scale(0.9);
-		background: transparent;
-		transition: all 0.15s ease-in-out;
-	}
-
-	.dashboard__sidebar.is-collapsed a.dashboard__profile-nav-item {
-		height: 50px;
-		line-height: 50px;
-	}
-
-	/* Center icons when collapsed */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon,
-	.dashboard__sidebar.is-collapsed .dashboard__profile-photo {
-		left: 50%;
-		margin-left: -16px;
-		transform: scale(1);
-		transition: all 0.15s ease-in-out;
-	}
-
-	/* Text labels positioned to the right, hidden by default */
-	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed .dashboard__profile-name {
-		z-index: 100;
-		position: absolute;
-		top: 50%;
-		left: 100%;
-		margin-top: -15px;
-		margin-left: -10px;
-		height: 30px;
-		line-height: 30px;
-		padding: 0 12px;
-		font-size: 14px;
-		font-weight: 600;
-		opacity: 0;
-		visibility: hidden;
-		color: #0984ae;
-		background: #fff;
-		border-radius: 5px;
-		transform: translate(5px);
-		transition: all 0.15s ease-in-out;
-		white-space: nowrap;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-		width: auto;
-	}
-
-	/* Hover effects - reveal text labels */
-	.dashboard__sidebar.is-collapsed a:hover::before {
-		transform: scale(1);
-		background-color: rgba(0, 0, 0, 0.2);
-	}
-
-	.dashboard__sidebar.is-collapsed a:hover::after {
-		transform: scaleX(0);
-	}
-
-	.dashboard__sidebar.is-collapsed a:hover .dashboard__nav-item-icon,
-	.dashboard__sidebar.is-collapsed a:hover .dashboard__profile-photo {
-		transform: scale(0.9);
-	}
-
-	.dashboard__sidebar.is-collapsed a:hover .dashboard__nav-item-text,
-	.dashboard__sidebar.is-collapsed a:hover .dashboard__profile-name {
-		opacity: 1;
-		visibility: visible;
-		transform: translate(0);
 	}
 
 	.dashboard__nav-primary > ul {
@@ -836,6 +743,32 @@
 	 * COLLAPSED STATE - Icon-only mode (80px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-text,
+	.dashboard__sidebar.is-collapsed .dashboard__profile-name,
+	.dashboard__sidebar.is-collapsed .dashboard__nav-category {
+		opacity: 0;
+		visibility: hidden;
+		width: 0;
+		transition: opacity 0.2s ease, visibility 0.2s ease;
+	}
+
+	/* Center icons when collapsed */
+	.dashboard__sidebar.is-collapsed .dash_main_links li a {
+		justify-content: center;
+		padding: 12px 0;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item {
+		justify-content: center;
+		padding: 15px 0;
+	}
+
+	.dashboard__sidebar.is-collapsed .dashboard__nav-item-icon {
+		margin-right: 0;
+		position: static;
+		left: auto;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * SECONDARY NAVIGATION - Inside sidebar (WordPress structure match)
 	 * Uses #143E59 (dark teal/navy) per design system
@@ -918,8 +851,6 @@
 		position: static;
 		left: auto;
 		margin-right: 0;
-		margin-top: 0;
-		flex-shrink: 0;
 	}
 
 	/* Force secondary nav text visibility regardless of collapsed state */
