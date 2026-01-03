@@ -931,23 +931,10 @@
 		color: #fff;
 	}
 
-	/* WordPress: Active state with blue background and left border indicator */
+	/* WordPress: Active state with blue background */
 	.dashboard__nav-secondary-item.is-active {
 		color: #fff;
 		background-color: #0984ae;
-		position: relative;
-	}
-
-	/* WordPress: Darker blue vertical bar on left side of active items */
-	.dashboard__nav-secondary-item.is-active:before {
-		content: "";
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 4px;
-		background-color: #076787;
-		border-radius: 5px 0 0 5px;
 	}
 
 	/* WordPress: icon positioned absolutely left of text */
