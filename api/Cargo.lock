@@ -3214,6 +3214,7 @@ dependencies = [
  "http-body-util",
  "hyper 1.8.1",
  "jsonwebtoken",
+ "lazy_static",
  "meilisearch-sdk",
  "rand 0.8.5",
  "redis",
