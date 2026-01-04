@@ -440,34 +440,19 @@
 			}
 		}
 
-		/* Actions Row - Mobile: stacked, Desktop: side by side */
+		/* Actions Row - Always horizontal with button on right */
 		.dashboard__header-actions-row {
 			display: flex;
-			flex-direction: column;
-			gap: 15px;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			gap: 20px;
 		}
 
-		@media (min-width: 768px) {
-			.dashboard__header-actions-row {
-				flex-direction: row;
-				align-items: center;
-				justify-content: space-between;
-				gap: 20px;
-			}
-		}
-
-		/* Trading Room Rules */
+		/* Trading Room Rules - Always on left */
 		.trading-room-rules {
 			text-align: left;
-			order: 2;
-		}
-
-		@media (min-width: 768px) {
-			.trading-room-rules {
-				text-align: right;
-				order: 1;
-				flex: 1;
-			}
+			flex: 1;
 		}
 
 		.trading-room-rules__link {
@@ -518,15 +503,9 @@
 			}
 		}
 
-		/* Dropdown Container */
+		/* Dropdown Container - Always on right */
 		.dropdown {
-			order: 1;
-		}
-
-		@media (min-width: 768px) {
-			.dropdown {
-				order: 2;
-			}
+			flex-shrink: 0;
 		}
 
 		/* ═══════════════════════════════════════════════════════════════════════════
