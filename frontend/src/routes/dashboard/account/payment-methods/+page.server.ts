@@ -5,7 +5,7 @@ import type { RequestEvent } from '@sveltejs/kit';
  * Payment Methods Page Server Load
  * ICT 11 Protocol: Secure Stripe payment method management
  */
-export const load = async ({ locals, fetch }: RequestEvent) => {
+export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 	const session = await locals.auth();
 
 	if (!session?.user) {
@@ -13,10 +13,14 @@ export const load = async ({ locals, fetch }: RequestEvent) => {
 	}
 
 	try {
+		// Get auth token from cookies
+		const token = cookies.get('rtp_access_token');
+		
 		// Fetch payment methods from your Stripe/payment provider API
 		const response = await fetch('/api/user/payment-methods', {
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				...(token && { 'Authorization': `Bearer ${token}` })
 			},
 			credentials: 'include'
 		});
@@ -39,7 +43,7 @@ export const load = async ({ locals, fetch }: RequestEvent) => {
 };
 
 export const actions = {
-	delete: async ({ request, locals, fetch }: RequestEvent) => {
+	delete: async ({ request, locals, fetch, cookies }: RequestEvent) => {
 		const session = await locals.auth();
 
 		if (!session?.user) {
@@ -54,10 +58,14 @@ export const actions = {
 		}
 
 		try {
+			// Get auth token from cookies
+			const token = cookies.get('rtp_access_token');
+			
 			const response = await fetch(`/api/user/payment-methods/${paymentMethodId}`, {
 				method: 'DELETE',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					...(token && { 'Authorization': `Bearer ${token}` })
 				},
 				credentials: 'include'
 			});

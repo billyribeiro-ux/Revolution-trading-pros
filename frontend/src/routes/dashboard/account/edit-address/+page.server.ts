@@ -5,7 +5,7 @@ import type { RequestEvent } from '@sveltejs/kit';
  * Edit Address Page Server Load
  * ICT 11 Protocol: Secure billing address management with auth verification
  */
-export const load = async ({ locals, fetch }: RequestEvent) => {
+export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 	const session = await locals.auth();
 
 	if (!session?.user) {
@@ -13,10 +13,14 @@ export const load = async ({ locals, fetch }: RequestEvent) => {
 	}
 
 	try {
+		// Get auth token from cookies
+		const token = cookies.get('rtp_access_token');
+		
 		// Fetch user profile which includes basic info
 		const response = await fetch('/api/user/profile', {
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				...(token && { 'Authorization': `Bearer ${token}` })
 			},
 			credentials: 'include'
 		});
@@ -64,7 +68,7 @@ export const load = async ({ locals, fetch }: RequestEvent) => {
 };
 
 export const actions = {
-	default: async ({ request, locals, fetch }: RequestEvent) => {
+	default: async ({ request, locals, fetch, cookies }: RequestEvent) => {
 		const session = await locals.auth();
 
 		if (!session?.user) {
@@ -87,11 +91,15 @@ export const actions = {
 		};
 
 		try {
+			// Get auth token from cookies
+			const token = cookies.get('rtp_access_token');
+			
 			// Update user profile with billing address
 			const response = await fetch('/api/user/profile', {
 				method: 'PUT',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					...(token && { 'Authorization': `Bearer ${token}` })
 				},
 				credentials: 'include',
 				body: JSON.stringify({
