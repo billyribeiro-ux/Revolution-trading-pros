@@ -1,17 +1,19 @@
 /**
  * ChartTheme - Unified chart theming for all chart libraries
  * Ensures consistent styling across lightweight-charts, ApexCharts, Chart.js
- * 
- * @version 2.0.0
+ * Apple ICT 11+ Principal Engineer - Full light/dark mode support
+ *
+ * @version 3.0.0
  * @author Revolution Trading Pros
  */
 
-export const ChartColors = {
+// Dark theme chart colors (original)
+export const ChartColorsDark = {
 	// Primary palette
 	primary: '#6366f1',
 	primaryLight: '#818cf8',
 	primaryDark: '#4f46e5',
-	
+
 	// Semantic colors
 	success: '#10b981',
 	successLight: '#34d399',
@@ -21,7 +23,7 @@ export const ChartColors = {
 	warningLight: '#fbbf24',
 	info: '#3b82f6',
 	infoLight: '#60a5fa',
-	
+
 	// Neutral colors
 	text: '#e2e8f0',
 	textSecondary: '#94a3b8',
@@ -30,17 +32,62 @@ export const ChartColors = {
 	surface: '#1e293b',
 	border: 'rgba(99, 102, 241, 0.1)',
 	grid: 'rgba(99, 102, 241, 0.1)',
-	
+
 	// Chart-specific
 	upColor: '#10b981',
 	downColor: '#ef4444',
 	volumeUp: 'rgba(16, 185, 129, 0.5)',
 	volumeDown: 'rgba(239, 68, 68, 0.5)',
-	
+
 	// Gradient colors
 	gradientTop: 'rgba(99, 102, 241, 0.4)',
 	gradientBottom: 'rgba(99, 102, 241, 0.0)',
 } as const;
+
+// Light theme chart colors - Apple-inspired clean aesthetic
+export const ChartColorsLight = {
+	// Primary palette
+	primary: '#4f46e5',
+	primaryLight: '#6366f1',
+	primaryDark: '#4338ca',
+
+	// Semantic colors
+	success: '#059669',
+	successLight: '#10b981',
+	error: '#dc2626',
+	errorLight: '#ef4444',
+	warning: '#d97706',
+	warningLight: '#f59e0b',
+	info: '#2563eb',
+	infoLight: '#3b82f6',
+
+	// Neutral colors
+	text: '#1d1d1f',
+	textSecondary: '#424245',
+	textMuted: '#6e6e73',
+	background: '#f5f5f7',
+	surface: '#ffffff',
+	border: 'rgba(0, 0, 0, 0.08)',
+	grid: 'rgba(0, 0, 0, 0.06)',
+
+	// Chart-specific
+	upColor: '#059669',
+	downColor: '#dc2626',
+	volumeUp: 'rgba(5, 150, 105, 0.4)',
+	volumeDown: 'rgba(220, 38, 38, 0.4)',
+
+	// Gradient colors
+	gradientTop: 'rgba(79, 70, 229, 0.3)',
+	gradientBottom: 'rgba(79, 70, 229, 0.0)',
+} as const;
+
+// Default to light theme colors (Apple Principal Engineer preference)
+export const ChartColors = ChartColorsLight;
+
+// Function to get theme-aware colors
+export function getChartColors(isDark: boolean = false) {
+	return isDark ? ChartColorsDark : ChartColorsLight;
+}
 
 export const ChartFonts = {
 	family: "'Inter', system-ui, -apple-system, sans-serif",
@@ -153,12 +200,14 @@ export function getHistogramSeriesOptions(color = ChartColors.primary) {
 
 /**
  * ApexCharts theme configuration
+ * Now supports light/dark mode
  */
-export function getApexChartsTheme() {
+export function getApexChartsTheme(isDark: boolean = false) {
+	const colors = getChartColors(isDark);
 	return {
 		chart: {
 			background: 'transparent',
-			foreColor: ChartColors.textSecondary,
+			foreColor: colors.textSecondary,
 			fontFamily: ChartFonts.family,
 			toolbar: {
 				show: false,
@@ -167,9 +216,9 @@ export function getApexChartsTheme() {
 				enabled: false,
 			},
 		},
-		colors: [ChartColors.primary, ChartColors.success, ChartColors.warning, ChartColors.info],
+		colors: [colors.primary, colors.success, colors.warning, colors.info],
 		grid: {
-			borderColor: ChartColors.grid,
+			borderColor: colors.grid,
 			strokeDashArray: 4,
 		},
 		stroke: {
@@ -177,18 +226,18 @@ export function getApexChartsTheme() {
 			width: 2,
 		},
 		tooltip: {
-			theme: 'dark',
+			theme: isDark ? 'dark' : 'light',
 			style: {
 				fontSize: '12px',
 				fontFamily: ChartFonts.family,
 			},
 		},
 		xaxis: {
-			axisBorder: { color: ChartColors.border },
-			axisTicks: { color: ChartColors.border },
+			axisBorder: { color: colors.border },
+			axisTicks: { color: colors.border },
 			labels: {
 				style: {
-					colors: ChartColors.textMuted,
+					colors: colors.textMuted,
 					fontSize: '11px',
 				},
 			},
@@ -196,14 +245,14 @@ export function getApexChartsTheme() {
 		yaxis: {
 			labels: {
 				style: {
-					colors: ChartColors.textMuted,
+					colors: colors.textMuted,
 					fontSize: '11px',
 				},
 			},
 		},
 		legend: {
 			labels: {
-				colors: ChartColors.textSecondary,
+				colors: colors.textSecondary,
 			},
 		},
 	};
@@ -211,15 +260,17 @@ export function getApexChartsTheme() {
 
 /**
  * Chart.js theme configuration
+ * Now supports light/dark mode
  */
-export function getChartJsTheme() {
+export function getChartJsTheme(isDark: boolean = false) {
+	const colors = getChartColors(isDark);
 	return {
 		responsive: true,
 		maintainAspectRatio: false,
 		plugins: {
 			legend: {
 				labels: {
-					color: ChartColors.textSecondary,
+					color: colors.textSecondary,
 					font: {
 						family: ChartFonts.family,
 						size: ChartFonts.size.sm,
@@ -227,10 +278,10 @@ export function getChartJsTheme() {
 				},
 			},
 			tooltip: {
-				backgroundColor: ChartColors.surface,
-				titleColor: ChartColors.text,
-				bodyColor: ChartColors.textSecondary,
-				borderColor: ChartColors.border,
+				backgroundColor: isDark ? colors.surface : '#ffffff',
+				titleColor: colors.text,
+				bodyColor: colors.textSecondary,
+				borderColor: colors.border,
 				borderWidth: 1,
 				titleFont: {
 					family: ChartFonts.family,
@@ -246,10 +297,10 @@ export function getChartJsTheme() {
 		scales: {
 			x: {
 				grid: {
-					color: ChartColors.grid,
+					color: colors.grid,
 				},
 				ticks: {
-					color: ChartColors.textMuted,
+					color: colors.textMuted,
 					font: {
 						family: ChartFonts.family,
 						size: ChartFonts.size.xs,
@@ -258,10 +309,10 @@ export function getChartJsTheme() {
 			},
 			y: {
 				grid: {
-					color: ChartColors.grid,
+					color: colors.grid,
 				},
 				ticks: {
-					color: ChartColors.textMuted,
+					color: colors.textMuted,
 					font: {
 						family: ChartFonts.family,
 						size: ChartFonts.size.xs,
@@ -274,7 +325,10 @@ export function getChartJsTheme() {
 
 export default {
 	colors: ChartColors,
+	colorsDark: ChartColorsDark,
+	colorsLight: ChartColorsLight,
 	fonts: ChartFonts,
+	getChartColors,
 	getLightweightChartsOptions,
 	getAreaSeriesOptions,
 	getLineSeriesOptions,

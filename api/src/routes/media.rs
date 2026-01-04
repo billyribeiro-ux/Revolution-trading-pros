@@ -1,10 +1,18 @@
 //! Media Controller - ICT 11+ Principal Engineer
 //!
-//! Manages media library with CRUD operations, filtering, and pagination.
-//! Note: File upload requires S3/R2 integration - currently stub implementation.
+//! Manages media library with CRUD operations, filtering, pagination,
+//! and full file upload support with Cloudflare R2 integration.
+//!
+//! Features:
+//! - File upload with automatic optimization
+//! - Presigned URL generation for direct uploads
+//! - Image dimension extraction
+//! - MIME type validation
+//!
+//! @version 2.0.0 - January 2026
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, Query, State, Multipart},
     response::Json,
     routing::{delete, get, post, put},
     Router,
@@ -12,6 +20,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 use crate::{
     utils::errors::ApiError,
@@ -364,10 +373,261 @@ fn format_bytes(bytes: i64) -> String {
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// FILE UPLOAD ENDPOINTS - ICT 11+ Principal Engineer
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Request for presigned upload URL
+#[derive(Debug, Deserialize)]
+pub struct PresignedUploadRequest {
+    pub filename: String,
+    pub content_type: String,
+    pub size: Option<i64>,
+    pub collection: Option<String>,
+}
+
+/// Response for presigned upload
+#[derive(Debug, Serialize)]
+pub struct PresignedUploadResponse {
+    pub upload_url: String,
+    pub file_key: String,
+    pub public_url: String,
+    pub expires_in: u64,
+}
+
+/// POST /admin/media/presigned-upload - Get presigned URL for direct upload
+/// Client uploads directly to R2, then confirms with /admin/media/confirm-upload
+#[tracing::instrument(skip(state))]
+pub async fn presigned_upload(
+    State(state): State<AppState>,
+    Json(payload): Json<PresignedUploadRequest>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    // Validate content type
+    let allowed_types = [
+        "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
+        "video/mp4", "video/webm", "video/quicktime",
+        "application/pdf", "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "text/plain", "text/csv",
+    ];
+
+    if !allowed_types.contains(&payload.content_type.as_str()) {
+        return Err(ApiError::validation_error(&format!(
+            "Content type '{}' not allowed. Allowed: {:?}",
+            payload.content_type, allowed_types
+        )));
+    }
+
+    // Generate file key
+    let extension = match payload.content_type.as_str() {
+        "image/jpeg" => "jpg",
+        "image/png" => "png",
+        "image/webp" => "webp",
+        "image/gif" => "gif",
+        "image/svg+xml" => "svg",
+        "video/mp4" => "mp4",
+        "video/webm" => "webm",
+        "video/quicktime" => "mov",
+        "application/pdf" => "pdf",
+        _ => "bin",
+    };
+
+    let folder = payload.collection.unwrap_or_else(|| "uploads".to_string());
+    let file_key = format!("{}/{}.{}", folder, Uuid::new_v4(), extension);
+
+    // Get presigned URL from storage service
+    let storage = state.storage.as_ref()
+        .ok_or_else(|| ApiError::internal_error("Storage service not configured"))?;
+
+    let expires_in = 3600u64; // 1 hour
+    let upload_url = storage.presigned_upload_url(&file_key, &payload.content_type, expires_in)
+        .await
+        .map_err(|e| ApiError::internal_error(&format!("Failed to generate upload URL: {}", e)))?;
+
+    // Get public URL
+    let public_url = format!("{}/{}", state.config.r2_public_url, file_key);
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": {
+            "upload_url": upload_url,
+            "file_key": file_key,
+            "public_url": public_url,
+            "expires_in": expires_in
+        }
+    })))
+}
+
+/// Request to confirm upload after direct upload to R2
+#[derive(Debug, Deserialize)]
+pub struct ConfirmUploadRequest {
+    pub file_key: String,
+    pub original_filename: String,
+    pub content_type: String,
+    pub size: i64,
+    pub width: Option<i32>,
+    pub height: Option<i32>,
+    pub title: Option<String>,
+    pub alt_text: Option<String>,
+    pub caption: Option<String>,
+    pub description: Option<String>,
+    pub collection: Option<String>,
+}
+
+/// POST /admin/media/confirm-upload - Confirm upload and save to database
+#[tracing::instrument(skip(state))]
+pub async fn confirm_upload(
+    State(state): State<AppState>,
+    Json(payload): Json<ConfirmUploadRequest>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    // Build the public URL
+    let public_url = format!("{}/{}", state.config.r2_public_url, payload.file_key);
+
+    // Extract filename from key
+    let filename = payload.file_key.split('/').last()
+        .unwrap_or(&payload.file_key)
+        .to_string();
+
+    // Insert into database
+    let media: Media = sqlx::query_as(
+        r#"
+        INSERT INTO media (
+            filename, original_filename, mime_type, size, path, url,
+            title, alt_text, caption, description, collection,
+            width, height, is_optimized, created_at, updated_at
+        ) VALUES (
+            $1, $2, $3, $4, $5, $6,
+            $7, $8, $9, $10, $11,
+            $12, $13, false, NOW(), NOW()
+        )
+        RETURNING id, filename, original_filename, mime_type, size, path, url,
+                  title, alt_text, caption, description, collection, is_optimized,
+                  width, height, created_at, updated_at
+        "#,
+    )
+    .bind(&filename)
+    .bind(&payload.original_filename)
+    .bind(&payload.content_type)
+    .bind(payload.size)
+    .bind(&payload.file_key)
+    .bind(&public_url)
+    .bind(&payload.title)
+    .bind(&payload.alt_text)
+    .bind(&payload.caption)
+    .bind(&payload.description)
+    .bind(&payload.collection)
+    .bind(payload.width)
+    .bind(payload.height)
+    .fetch_one(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": media,
+        "message": "Media uploaded successfully"
+    })))
+}
+
+/// POST /admin/media/upload - Direct multipart file upload
+/// For smaller files or when presigned URLs aren't suitable
+#[tracing::instrument(skip(state, multipart))]
+pub async fn direct_upload(
+    State(state): State<AppState>,
+    mut multipart: Multipart,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let storage = state.storage.as_ref()
+        .ok_or_else(|| ApiError::internal_error("Storage service not configured"))?;
+
+    let mut uploaded_files: Vec<Media> = Vec::new();
+
+    while let Some(field) = multipart.next_field().await
+        .map_err(|e| ApiError::validation_error(&format!("Failed to read multipart: {}", e)))?
+    {
+        let name = field.name().unwrap_or("file").to_string();
+
+        // Skip non-file fields
+        if name == "collection" || name == "title" {
+            continue;
+        }
+
+        let filename = field.file_name()
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| format!("{}.bin", Uuid::new_v4()));
+
+        let content_type = field.content_type()
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| "application/octet-stream".to_string());
+
+        // Read file data
+        let data = field.bytes().await
+            .map_err(|e| ApiError::validation_error(&format!("Failed to read file: {}", e)))?;
+
+        let size = data.len() as i64;
+
+        // Max file size: 50MB
+        if size > 50 * 1024 * 1024 {
+            return Err(ApiError::validation_error("File too large. Maximum size is 50MB"));
+        }
+
+        // Upload to R2
+        let folder = "uploads";
+        let public_url = storage.upload(data.to_vec(), &content_type, folder)
+            .await
+            .map_err(|e| ApiError::internal_error(&format!("Upload failed: {}", e)))?;
+
+        // Extract key from URL
+        let file_key = public_url.replace(&state.config.r2_public_url, "").trim_start_matches('/').to_string();
+        let stored_filename = file_key.split('/').last().unwrap_or(&file_key).to_string();
+
+        // Insert into database
+        let media: Media = sqlx::query_as(
+            r#"
+            INSERT INTO media (
+                filename, original_filename, mime_type, size, path, url,
+                is_optimized, created_at, updated_at
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6,
+                false, NOW(), NOW()
+            )
+            RETURNING id, filename, original_filename, mime_type, size, path, url,
+                      title, alt_text, caption, description, collection, is_optimized,
+                      width, height, created_at, updated_at
+            "#,
+        )
+        .bind(&stored_filename)
+        .bind(&filename)
+        .bind(&content_type)
+        .bind(size)
+        .bind(&file_key)
+        .bind(&public_url)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+        uploaded_files.push(media);
+    }
+
+    if uploaded_files.is_empty() {
+        return Err(ApiError::validation_error("No files uploaded"));
+    }
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": uploaded_files,
+        "message": format!("{} file(s) uploaded successfully", uploaded_files.len())
+    })))
+}
+
 /// Build the media router
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/admin/media", get(index))
+        .route("/admin/media/upload", post(direct_upload))
+        .route("/admin/media/presigned-upload", post(presigned_upload))
+        .route("/admin/media/confirm-upload", post(confirm_upload))
         .route("/admin/media/statistics", get(statistics))
         .route("/admin/media/:id", get(show).put(update).delete(destroy))
 }

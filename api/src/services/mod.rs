@@ -1,4 +1,5 @@
 //! External services
+//! Apple ICT 11+ Principal Engineer - January 2026
 
 pub mod redis;
 pub mod storage;
@@ -7,6 +8,7 @@ pub mod stripe;
 pub mod search;
 pub mod order_service;
 pub mod subscription_service;
+pub mod cms;
 
 use anyhow::Result;
 use crate::config::Config;

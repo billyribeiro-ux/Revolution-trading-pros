@@ -15,7 +15,8 @@ import { browser } from '$app/environment';
 export type Theme = 'light' | 'dark' | 'auto';
 
 function createThemeStore() {
-	const defaultTheme: Theme = 'dark';
+	// ICT 11+ Apple Principal Engineer: Light theme default for better UX
+	const defaultTheme: Theme = 'light';
 
 	// Get initial theme from localStorage or default
 	const initialTheme = browser
@@ -50,10 +51,10 @@ function createThemeStore() {
 		// Set data attribute for CSS selectors
 		root.dataset['theme'] = effectiveTheme;
 
-		// Update meta theme-color for mobile browsers
+		// Update meta theme-color for mobile browsers - Apple-style colors
 		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
 		if (metaThemeColor) {
-			metaThemeColor.setAttribute('content', effectiveTheme === 'dark' ? '#0f172a' : '#f8fafc');
+			metaThemeColor.setAttribute('content', effectiveTheme === 'dark' ? '#0f172a' : '#f5f5f7');
 		}
 	}
 
