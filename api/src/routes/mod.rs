@@ -1,5 +1,5 @@
 //! API routes - Revolution Trading Pros
-//! Apple ICT 11+ Principal Engineer Grade - December 2025
+//! Apple ICT 11+ Principal Engineer Grade - January 2026
 
 pub mod health;
 pub mod auth;
@@ -30,6 +30,8 @@ pub mod coupons;
 pub mod security;
 pub mod orders;
 pub mod schedules;
+pub mod cms;
+pub mod realtime;
 
 use axum::Router;
 use crate::AppState;
@@ -60,6 +62,11 @@ pub fn api_router() -> Router<AppState> {
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())
+        // CMS routes - ICT 11+ Advanced Features
+        .nest("/admin/cms", cms::admin_router())
+        .nest("/preview", cms::preview_router())
+        // Real-time updates - SSE
+        .nest("/realtime", realtime::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())

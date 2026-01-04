@@ -30,6 +30,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::config::Config;
 use crate::db::Database;
+use crate::routes::realtime::EventBroadcaster;
 use crate::services::Services;
 
 /// Application state shared across all routes
@@ -38,6 +39,7 @@ pub struct AppState {
     pub db: Database,
     pub services: Services,
     pub config: Config,
+    pub event_broadcaster: EventBroadcaster,
 }
 
 #[tokio::main]
@@ -88,11 +90,16 @@ async fn main() -> anyhow::Result<()> {
     });
     tracing::info!("Job queue worker started");
 
+    // Initialize real-time event broadcaster - ICT 11+ SSE Updates
+    let event_broadcaster = EventBroadcaster::new();
+    tracing::info!("Real-time event broadcaster initialized");
+
     // Create app state
     let state = AppState {
         db,
         services,
         config: config.clone(),
+        event_broadcaster,
     };
 
     // Build CORS layer - ICT 11+ CORB Fix: explicit headers required when using credentials
