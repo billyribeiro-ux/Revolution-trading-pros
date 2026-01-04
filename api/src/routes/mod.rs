@@ -1,5 +1,5 @@
 //! API routes - Revolution Trading Pros
-//! Apple ICT 11+ Principal Engineer Grade - December 2025
+//! Apple ICT 11+ Principal Engineer Grade - January 2026
 
 pub mod health;
 pub mod auth;
@@ -31,6 +31,7 @@ pub mod security;
 pub mod orders;
 pub mod schedules;
 pub mod migrate;
+pub mod unified_videos;
 
 use axum::Router;
 use crate::AppState;
@@ -58,6 +59,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/security", security::router())
         .nest("/schedules", schedules::router())
         .nest("/admin/schedules", schedules::admin_router())
+        .nest("/admin/unified-videos", unified_videos::router())
         .nest("/migrate", migrate::router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())

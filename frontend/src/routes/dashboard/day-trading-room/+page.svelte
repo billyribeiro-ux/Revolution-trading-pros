@@ -139,6 +139,38 @@
 	<script src="https://apis.google.com/js/api.js"></script>
 </svelte:head>
 
+<!-- Dashboard Header - Matching Member Dashboard -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">Day Trading Room</h1>
+	</div>
+	<div class="dashboard__header-right">
+		<a
+			href="https://live.simplertrading.com/day-trading-room"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="btn btn-orange btn-tradingroom"
+		>
+			<strong>Enter Trading Room</strong>
+		</a>
+
+		<!-- Trading Room Rules - Legal Compliance -->
+		<div class="trading-room-rules">
+			<a
+				href="/trading-room-rules.pdf"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</p>
+		</div>
+	</div>
+</header>
+
 <!-- DASHBOARD CONTENT - Exact WordPress Structure -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
@@ -236,6 +268,152 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DASHBOARD HEADER - WordPress Exact Match (Member Dashboard)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+	}
+
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		flex: 1;
+	}
+
+	.dashboard__header-right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		margin-top: 10px;
+	}
+
+	@media (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 0;
+			margin-top: 0;
+		}
+	}
+
+	.dashboard__page-title {
+		margin: 0;
+		color: #333;
+		font-size: 36px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	/* Enter Trading Room Button */
+	.btn-orange {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 20px;
+		background-color: #dc7309;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		text-decoration: none;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.btn-orange:hover {
+		background-color: #c56508;
+	}
+
+	.btn-orange strong {
+		font-weight: 600;
+	}
+
+	.btn-tradingroom {
+		text-transform: none;
+	}
+
+	/* Trading Room Rules - Legal Compliance */
+	.trading-room-rules {
+		text-align: center;
+		margin-top: 10px;
+		width: 100%;
+		max-width: 300px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.trading-room-rules__link {
+		display: block;
+		margin-bottom: 8px;
+		font-size: 18px;
+		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		color: #1e73be;
+		text-decoration: none;
+		transition: color 0.15s ease-in-out;
+		text-align: center;
+	}
+
+	.trading-room-rules__link:hover {
+		color: #0984ae;
+		text-decoration: underline;
+	}
+
+	.trading-room-rules__disclaimer {
+		margin: 0;
+		font-size: 13px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		color: #666;
+		line-height: 1.4;
+		text-align: center;
+	}
+
+	@media (max-width: 768px) {
+		.dashboard__header {
+			padding: 20px;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 15px;
+		}
+
+		.dashboard__page-title {
+			font-size: 24px;
+		}
+
+		.dashboard__header-right {
+			width: 100%;
+			align-items: center;
+		}
+
+		.btn-orange {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DASHBOARD CONTENT - Exact WordPress Match
 	   ═══════════════════════════════════════════════════════════════════════════ */

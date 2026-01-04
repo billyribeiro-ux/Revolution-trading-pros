@@ -1,5 +1,5 @@
 //! Data models - Revolution Trading Pros
-//! Apple ICT 11+ Principal Engineer Grade - December 2025
+//! Apple ICT 11+ Principal Engineer Grade - January 2026
 
 pub mod user;
 pub mod course;
@@ -12,6 +12,7 @@ pub mod subscription;
 pub mod order;
 pub mod newsletter;
 pub mod order_service_types;
+pub mod video;
 
 pub use user::*;
 pub use course::*;

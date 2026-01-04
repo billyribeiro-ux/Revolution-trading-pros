@@ -9,6 +9,7 @@ pub mod search;
 pub mod order_service;
 pub mod subscription_service;
 pub mod cms;
+pub mod bunny;
 
 use anyhow::Result;
 use crate::config::Config;
