@@ -16,13 +16,13 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
-use chrono::{NaiveDate, NaiveTime, Utc};
+use chrono::{Datelike, NaiveDate, NaiveTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
 use crate::{
-    middleware::auth::{AdminUser, User},
+    middleware::admin::AdminUser,
     AppState,
 };
 
@@ -596,7 +596,7 @@ async fn admin_create_schedule(
     tracing::info!(
         target: "security_audit",
         event = "admin_create_schedule",
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         plan_id = input.plan_id,
         title = %input.title,
         "ICT 11+ AUDIT: Admin creating schedule event"
@@ -674,7 +674,7 @@ async fn admin_create_schedule(
     .bind(effective_until)
     .bind(&input.room_url)
     .bind(input.room_type.as_deref().unwrap_or("live"))
-    .bind(admin.id)
+    .bind(admin.0.id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
@@ -689,7 +689,7 @@ async fn admin_create_schedule(
         target: "security_audit",
         event = "schedule_created",
         schedule_id = schedule.id,
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         "ICT 11+ AUDIT: Schedule created successfully"
     );
 
@@ -710,7 +710,7 @@ async fn admin_update_schedule(
     tracing::info!(
         target: "security_audit",
         event = "admin_update_schedule",
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         schedule_id = id,
         "ICT 11+ AUDIT: Admin updating schedule event"
     );
@@ -817,7 +817,7 @@ async fn admin_update_schedule(
         query_builder = query_builder.bind(room_type);
     }
 
-    query_builder = query_builder.bind(admin.id);
+    query_builder = query_builder.bind(admin.0.id);
     query_builder = query_builder.bind(id);
 
     let schedule = query_builder
@@ -835,7 +835,7 @@ async fn admin_update_schedule(
         target: "security_audit",
         event = "schedule_updated",
         schedule_id = id,
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         "ICT 11+ AUDIT: Schedule updated successfully"
     );
 
@@ -855,7 +855,7 @@ async fn admin_delete_schedule(
     tracing::info!(
         target: "security_audit",
         event = "admin_delete_schedule",
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         schedule_id = id,
         "ICT 11+ AUDIT: Admin deleting schedule event"
     );
@@ -883,7 +883,7 @@ async fn admin_delete_schedule(
         target: "security_audit",
         event = "schedule_deleted",
         schedule_id = id,
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         "ICT 11+ AUDIT: Schedule deleted successfully"
     );
 
@@ -902,7 +902,7 @@ async fn admin_bulk_schedules(
     tracing::info!(
         target: "security_audit",
         event = "admin_bulk_schedules",
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         plan_id = input.plan_id,
         schedule_count = input.schedules.len(),
         clear_existing = input.clear_existing.unwrap_or(false),
@@ -965,7 +965,7 @@ async fn admin_bulk_schedules(
         .bind(schedule.is_recurring.unwrap_or(true))
         .bind(&schedule.room_url)
         .bind(schedule.room_type.as_deref().unwrap_or("live"))
-        .bind(admin.id)
+        .bind(admin.0.id)
         .execute(&mut *tx)
         .await
         .map_err(|e| {
@@ -993,7 +993,7 @@ async fn admin_bulk_schedules(
         event = "bulk_schedules_created",
         plan_id = input.plan_id,
         created_count = created_count,
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         "ICT 11+ AUDIT: Bulk schedules created successfully"
     );
 
@@ -1013,7 +1013,7 @@ async fn admin_create_exception(
     tracing::info!(
         target: "security_audit",
         event = "admin_create_exception",
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         schedule_id = input.schedule_id,
         exception_type = %input.exception_type,
         "ICT 11+ AUDIT: Admin creating schedule exception"
@@ -1060,7 +1060,7 @@ async fn admin_create_exception(
     .bind(new_end_time)
     .bind(&input.new_trader_name)
     .bind(&input.reason)
-    .bind(admin.id)
+    .bind(admin.0.id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
@@ -1075,7 +1075,7 @@ async fn admin_create_exception(
         target: "security_audit",
         event = "exception_created",
         exception_id = exception.id,
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         "ICT 11+ AUDIT: Schedule exception created successfully"
     );
 
@@ -1095,7 +1095,7 @@ async fn admin_delete_exception(
     tracing::info!(
         target: "security_audit",
         event = "admin_delete_exception",
-        admin_id = %admin.id,
+        admin_id = %admin.0.id,
         exception_id = id,
         "ICT 11+ AUDIT: Admin deleting schedule exception"
     );
