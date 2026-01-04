@@ -34,14 +34,40 @@
 	let totalPages = 1;
 	let paginatedResources: LearningResource[] = [];
 
-	// Category options matching WordPress
+	// Category options matching WordPress exactly
 	const categories = [
-		{ id: 'all', label: 'All' },
-		{ id: 'methodology', label: 'Methodology' },
 		{ id: 'trade-setups', label: 'Trade Setups & Strategies' },
+		{ id: 'methodology', label: 'Methodology' },
 		{ id: 'member-webinar', label: 'Member Webinar' },
-		{ id: 'trade-management', label: 'Trade & Money Management' },
-		{ id: 'indicators', label: 'Indicators & Tools' }
+		{ id: 'trade-management', label: 'Trade & Money Management/Trading Plan' },
+		{ id: 'indicators', label: 'Indicators' },
+		{ id: 'options', label: 'Options' },
+		{ id: 'foundation', label: 'Foundation' },
+		{ id: 'fundamentals', label: 'Fundamentals' },
+		{ id: 'simpler-tech', label: 'Simpler Tech' },
+		{ id: 'charting-indicators-tools', label: 'Charting/Indicators/Tools' },
+		{ id: 'charting', label: 'Charting' },
+		{ id: 'drama-free-daytrades', label: 'Drama Free Daytrades' },
+		{ id: 'quick-hits-daytrades', label: 'Quick Hits Daytrades' },
+		{ id: 'psychology', label: 'Psychology' },
+		{ id: 'trading-platform', label: 'Trading Platform' },
+		{ id: 'calls', label: 'Calls' },
+		{ id: 'thinkorswim', label: 'ThinkorSwim' },
+		{ id: 'tradestation', label: 'TradeStation' },
+		{ id: 'charting-software', label: 'Charting Software' },
+		{ id: 'trading-computer', label: 'Trading Computer' },
+		{ id: 'calls-puts-credit-spreads', label: 'Calls Puts Credit Spreads' },
+		{ id: 'puts', label: 'Puts' },
+		{ id: 'profit-recycling', label: 'Profit Recycling' },
+		{ id: 'trade-strategies', label: 'Trade Strategies' },
+		{ id: 'website-support', label: 'Website Support' },
+		{ id: 'options-strategies', label: 'Options Strategies (Level 2 & 3)' },
+		{ id: 'crypto', label: 'Crypto' },
+		{ id: 'fibonacci-options', label: 'Fibonacci & Options Trading' },
+		{ id: 'pricing-volatility', label: 'Pricing/Volatility' },
+		{ id: 'crypto-indicators', label: 'Crypto Indicators & Trading' },
+		{ id: 'browser-support', label: 'Browser Support' },
+		{ id: 'earnings-expiration', label: 'Earnings & Options Expiration' }
 	];
 
 	// Learning resources data - matches WordPress structure
@@ -216,19 +242,40 @@
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Category Filter Buttons -->
-		<div class="lc-filter-buttons">
+		<!-- Category Filter Form - matches WordPress exactly -->
+		<form class="term-filter" on:submit|preventDefault>
+			<!-- Reset Filter Button -->
+			<div class="reset-filter">
+				<input 
+					type="radio" 
+					id="filter-reset" 
+					value="all" 
+					name="categoryfilter"
+					checked={activeFilter === 'all'}
+					on:change={() => filterResources('all')}
+				/>
+				<label for="filter-reset" title="Reset Filter">
+					<svg aria-hidden="true" focusable="false" class="reset-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+						<path fill="currentColor" d="M212.333 224.333H12c-6.627 0-12-5.373-12-12V12C0 5.373 5.373 0 12 0h48c6.627 0 12 5.373 12 12v78.112C117.773 39.279 184.26 7.47 258.175 8.007c136.906.994 246.448 111.623 246.157 248.532C504.041 393.258 393.12 504 256.333 504c-64.089 0-122.496-24.313-166.51-64.215-5.099-4.622-5.334-12.554-.467-17.42l33.967-33.967c4.474-4.474 11.662-4.717 16.401-.525C170.76 415.336 211.58 432 256.333 432c97.268 0 176-78.716 176-176 0-97.267-78.716-176-176-176-58.496 0-110.28 28.476-142.274 72.333h98.274c6.627 0 12 5.373 12 12v48c0 6.627-5.373 12-12 12z"></path>
+					</svg>
+				</label>
+			</div>
+
+			<!-- Category Filter Buttons -->
 			{#each categories as category}
-				<button
-					type="button"
-					class="lc-filter-btn"
-					class:active={activeFilter === category.id}
-					on:click={() => filterResources(category.id)}
-				>
-					{category.label}
-				</button>
+				<div class="filter-btn" class:active={activeFilter === category.id}>
+					<input 
+						type="radio" 
+						id="filter-{category.id}" 
+						value={category.id} 
+						name="categoryfilter"
+						checked={activeFilter === category.id}
+						on:change={() => filterResources(category.id)}
+					/>
+					<label for="filter-{category.id}">{category.label}</label>
+				</div>
 			{/each}
-		</div>
+		</form>
 
 		<!-- Results Count -->
 		<div class="lc-results-count">
@@ -332,36 +379,86 @@
 </div>
 
 <style>
-	/* Filter Buttons */
-	.lc-filter-buttons {
+	/* Term Filter Form - matches WordPress exactly */
+	.term-filter {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 10px;
+		gap: 8px;
 		margin-bottom: 25px;
 		padding: 20px;
 		background: #f5f5f5;
 		border-radius: 4px;
+		align-items: center;
 	}
 
-	.lc-filter-btn {
-		padding: 8px 16px;
-		border: 1px solid #ddd;
+	/* Reset Filter Button */
+	.reset-filter {
+		display: inline-flex;
+	}
+
+	.reset-filter input[type="radio"] {
+		display: none;
+	}
+
+	.reset-filter label {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
 		background: #fff;
-		color: #333;
-		font-size: 13px;
-		font-weight: 600;
+		border: 1px solid #ddd;
 		border-radius: 4px;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		font-family: inherit;
+		color: #666;
 	}
 
-	.lc-filter-btn:hover {
+	.reset-filter label:hover {
 		background: #e9e9e9;
 		border-color: #ccc;
 	}
 
-	.lc-filter-btn.active {
+	.reset-filter input[type="radio"]:checked + label {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
+	}
+
+	.reset-icon {
+		width: 14px;
+		height: 14px;
+	}
+
+	/* Filter Buttons */
+	.filter-btn {
+		display: inline-flex;
+	}
+
+	.filter-btn input[type="radio"] {
+		display: none;
+	}
+
+	.filter-btn label {
+		padding: 8px 14px;
+		border: 1px solid #ddd;
+		background: #fff;
+		color: #333;
+		font-size: 13px;
+		font-weight: 500;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.filter-btn label:hover {
+		background: #e9e9e9;
+		border-color: #ccc;
+	}
+
+	.filter-btn input[type="radio"]:checked + label,
+	.filter-btn.active label {
 		background: #143E59;
 		color: #fff;
 		border-color: #143E59;
@@ -599,14 +696,19 @@
 			width: 50%;
 		}
 		
-		.lc-filter-buttons {
+		.term-filter {
 			padding: 15px;
-			gap: 8px;
+			gap: 6px;
 		}
 		
-		.lc-filter-btn {
-			padding: 6px 12px;
-			font-size: 12px;
+		.filter-btn label {
+			padding: 6px 10px;
+			font-size: 11px;
+		}
+
+		.reset-filter label {
+			width: 32px;
+			height: 32px;
 		}
 	}
 
