@@ -33,13 +33,13 @@ pub struct MembershipPlanRow {
     pub updated_at: chrono::NaiveDateTime,
 }
 
-/// User subscription row
+/// User subscription row - flexible schema for production compatibility
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct UserSubscriptionRow {
     pub id: i64,
     pub user_id: i64,
-    pub plan_id: i64,
-    pub starts_at: chrono::NaiveDateTime,
+    pub plan_id: Option<i64>,
+    pub starts_at: Option<chrono::NaiveDateTime>,
     pub expires_at: Option<chrono::NaiveDateTime>,
     pub cancelled_at: Option<chrono::NaiveDateTime>,
     pub status: String,
@@ -48,9 +48,9 @@ pub struct UserSubscriptionRow {
     pub stripe_customer_id: Option<String>,
     pub current_period_start: Option<chrono::NaiveDateTime>,
     pub current_period_end: Option<chrono::NaiveDateTime>,
-    pub cancel_at_period_end: bool,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub cancel_at_period_end: Option<bool>,
+    pub created_at: Option<chrono::NaiveDateTime>,
+    pub updated_at: Option<chrono::NaiveDateTime>,
 }
 
 /// Create subscription request
@@ -117,7 +117,7 @@ async fn get_my_subscriptions(
         json!({
             "id": sub.id,
             "status": sub.status,
-            "startDate": sub.starts_at.format("%Y-%m-%d").to_string(),
+            "startDate": sub.starts_at.map(|d| d.format("%Y-%m-%d").to_string()).unwrap_or_else(|| "N/A".to_string()),
             "nextPayment": sub.current_period_end.map(|d| d.format("%Y-%m-%d").to_string()).unwrap_or_default(),
             "total": "$0.00", // TODO: Calculate from plan price
             "items": [] // TODO: Get plan details
