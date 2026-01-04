@@ -2,7 +2,7 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{errors::AppError, models::{OrderSummary, OrderWithItems}};
+use crate::{utils::errors::ApiError, models::{OrderSummary, OrderWithItems, OrderItemData}};
 
 pub struct OrderService<'a> {
     db: &'a PgPool,
@@ -13,7 +13,7 @@ impl<'a> OrderService<'a> {
         Self { db }
     }
 
-    pub async fn get_user_orders(&self, user_id: Uuid) -> Result<Vec<OrderSummary>, AppError> {
+    pub async fn get_user_orders(&self, user_id: Uuid) -> Result<Vec<OrderSummary>, ApiError> {
         let orders = sqlx::query_as!(
             OrderSummary,
             r#"
@@ -39,7 +39,7 @@ impl<'a> OrderService<'a> {
         Ok(orders)
     }
 
-    pub async fn get_user_order(&self, user_id: Uuid, order_id: Uuid) -> Result<Option<OrderWithItems>, AppError> {
+    pub async fn get_user_order(&self, user_id: Uuid, order_id: Uuid) -> Result<Option<OrderWithItems>, ApiError> {
         let order = sqlx::query!(
             r#"
             SELECT 
@@ -96,7 +96,7 @@ impl<'a> OrderService<'a> {
             payment_method: order.payment_method,
             billing_address: order.billing_address,
             created_at: order.created_at,
-            items: items.into_iter().map(|i| crate::models::OrderItem {
+            items: items.into_iter().map(|i| OrderItemData {
                 id: i.id,
                 name: i.name,
                 quantity: i.quantity,

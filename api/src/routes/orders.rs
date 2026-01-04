@@ -14,8 +14,9 @@ use uuid::Uuid;
 
 use crate::{
     middleware::auth::AuthUser,
-    models::{MessageResponse, order::*},
+    models::{MessageResponse, OrderSummary as ModelOrderSummary, OrderWithItems as ModelOrderWithItems},
     services::order_service::OrderService,
+    db::Database,
     AppState,
 };
 
@@ -60,9 +61,10 @@ pub struct OrderItemResponse {
 pub async fn index(
     State(state): State<AppState>,
     auth_user: AuthUser,
-) -> Result<Json<ApiResponse<Vec<OrderResponse>>>, AppError> {
-    let order_service = OrderService::new(&state.db);
-    let orders = order_service.get_user_orders(auth_user.user_id).await?;
+) -> Result<Json<serde_json::Value>, (axum::http::StatusCode, Json<serde_json::Value>)> {
+    let order_service = OrderService::new(&state.db.pool);
+    let orders = order_service.get_user_orders(auth_user.user_id).await
+        .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.message}))))?;
 
     let response: Vec<OrderResponse> = orders
         .into_iter()
@@ -77,7 +79,10 @@ pub async fn index(
         })
         .collect();
 
-    Ok(Json(ApiResponse::success(response)))
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": response
+    })))
 }
 
 /// GET /api/my/orders/:id - Get order details
@@ -86,12 +91,13 @@ pub async fn show(
     State(state): State<AppState>,
     auth_user: AuthUser,
     Path(id): Path<Uuid>,
-) -> Result<Json<ApiResponse<OrderDetailResponse>>, AppError> {
-    let order_service = OrderService::new(&state.db);
+) -> Result<Json<serde_json::Value>, (axum::http::StatusCode, Json<serde_json::Value>)> {
+    let order_service = OrderService::new(&state.db.pool);
     let order = order_service
         .get_user_order(auth_user.user_id, id)
-        .await?
-        .ok_or(AppError::NotFound("Order not found".to_string()))?;
+        .await
+        .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.message}))))?
+        .ok_or((axum::http::StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"}))))?;
 
     let items: Vec<OrderItemResponse> = order
         .items
@@ -105,19 +111,22 @@ pub async fn show(
         })
         .collect();
 
-    Ok(Json(ApiResponse::success(OrderDetailResponse {
-        id: order.id.to_string(),
-        number: order.order_number,
-        date: order.created_at.to_rfc3339(),
-        status: order.status,
-        total: format!("{:.2}", order.total),
-        subtotal: format!("{:.2}", order.subtotal),
-        tax: format!("{:.2}", order.tax),
-        discount: format!("{:.2}", order.discount),
-        currency: order.currency,
-        payment_method: order.payment_method,
-        items,
-        billing_address: order.billing_address,
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": OrderDetailResponse {
+            id: order.id.to_string(),
+            number: order.order_number,
+            date: order.created_at.to_rfc3339(),
+            status: order.status,
+            total: format!("{:.2}", order.total),
+            subtotal: format!("{:.2}", order.subtotal),
+            tax: format!("{:.2}", order.tax),
+            discount: format!("{:.2}", order.discount),
+            currency: order.currency,
+            payment_method: order.payment_method,
+            items,
+            billing_address: order.billing_address,
+        }
     })))
 }
 

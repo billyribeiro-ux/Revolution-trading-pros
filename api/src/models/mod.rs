@@ -11,6 +11,7 @@ pub mod indicator;
 pub mod subscription;
 pub mod order;
 pub mod newsletter;
+pub mod order_service_types;
 
 pub use user::*;
 pub use course::*;
@@ -18,3 +19,4 @@ pub use course::*;
 pub use membership::*;
 pub use job::*;
 pub use product::*;
+pub use order_service_types::*;
