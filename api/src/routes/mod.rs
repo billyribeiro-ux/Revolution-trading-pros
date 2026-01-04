@@ -11,6 +11,7 @@ pub mod categories;
 pub mod tags;
 pub mod redirects;
 pub mod media;
+pub mod members;
 // pub mod settings; // Already handled by admin.rs
 pub mod courses;
 pub mod payments;
@@ -62,4 +63,5 @@ pub fn api_router() -> Router<AppState> {
         .merge(tags::router())
         .merge(redirects::router())
         .merge(media::router())
+        .merge(members::router())
 }
