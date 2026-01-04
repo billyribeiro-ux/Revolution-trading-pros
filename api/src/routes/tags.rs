@@ -11,7 +11,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
+// Minimal schema - production tags only has id, name, slug
 
 use crate::{
     utils::errors::ApiError,
@@ -23,8 +23,6 @@ pub struct Tag {
     pub id: i64,
     pub name: String,
     pub slug: String,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -55,7 +53,7 @@ pub async fn index(
     State(state): State<AppState>,
     Query(params): Query<TagQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let mut query = String::from("SELECT id, name, slug, created_at, updated_at FROM tags WHERE 1=1");
+    let mut query = String::from("SELECT id, name, slug FROM tags WHERE 1=1");
     let mut conditions = Vec::new();
 
     // Search
@@ -71,8 +69,8 @@ pub async fn index(
         query.push_str(&format!(" AND {}", conditions.join(" AND ")));
     }
 
-    // Sort - default to id since "order" column may not exist in all schemas
-    let allowed_columns = ["name", "slug", "created_at", "updated_at", "id"];
+    // Sort - only use columns that exist in production
+    let allowed_columns = ["name", "slug", "id"];
     let sort_by = params.sort_by.as_deref().unwrap_or("id");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("asc");
 
@@ -156,9 +154,9 @@ pub async fn store(
     }
 
     let tag: Tag = sqlx::query_as(
-        "INSERT INTO tags (name, slug, created_at, updated_at)
-         VALUES ($1, $2, NOW(), NOW())
-         RETURNING id, name, slug, created_at, updated_at"
+        "INSERT INTO tags (name, slug)
+         VALUES ($1, $2)
+         RETURNING id, name, slug"
     )
     .bind(&payload.name)
     .bind(&payload.slug)
@@ -216,12 +214,14 @@ pub async fn update(
     if payload.name.is_some() { updates.push(format!("name = ${}", param_count)); param_count += 1; }
     if payload.slug.is_some() { updates.push(format!("slug = ${}", param_count)); param_count += 1; }
 
-    updates.push(format!("updated_at = ${}", param_count));
+    if updates.is_empty() {
+        return Err(ApiError::validation_error("No fields to update"));
+    }
 
     let query_str = format!(
-        "UPDATE tags SET {} WHERE id = ${} RETURNING id, name, slug, created_at, updated_at",
+        "UPDATE tags SET {} WHERE id = ${} RETURNING id, name, slug",
         updates.join(", "),
-        param_count + 1
+        param_count
     );
 
     let mut query = sqlx::query_as::<_, Tag>(&query_str);
@@ -229,7 +229,6 @@ pub async fn update(
     if let Some(name) = payload.name { query = query.bind(name); }
     if let Some(slug) = payload.slug { query = query.bind(slug); }
 
-    query = query.bind(Utc::now());
     query = query.bind(id);
 
     let tag = query
